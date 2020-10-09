@@ -238,6 +238,7 @@
 		"string-strip-html": "^4.5.1",
 		"styled-components": "^4.4.1",
 		"tar-stream": "^1.6.2",
+		"tinykeys": "^1.1.0",
 		"toastr": "^2.1.4",
 		"turndown": "^5.0.3",
 		"twilio": "^3.48.2",

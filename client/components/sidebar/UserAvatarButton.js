@@ -137,7 +137,7 @@ const LoggedUserAvatarButton = React.memo(({ user }) => {
 
 	const handleClick = useMutableCallback((e) => onClick(e, t, allowAnonymousRead));
 
-	return <Box position='relative' onClick={handleClick} className={css`cursor: pointer;`}>
+	return <Box position='relative' onClick={handleClick} className={css`cursor: pointer;`} data-qa='sidebar-avatar-button'>
 		<UserAvatar size='x24' username={username} etag={avatarETag}/>
 		<Box className={css`bottom: 0; right: 0;`} position='absolute' p='x2' bg='neutral-200' borderRadius='full' mie='neg-x2' mbe='neg-x2'>
 			<UserStatus status={status} size='x8'/>
