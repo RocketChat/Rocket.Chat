@@ -6,21 +6,16 @@ import memoize from 'memoize-one';
 import { css } from '@rocket.chat/css-in-js';
 import { FixedSizeList as List } from 'react-window';
 import tinykeys from 'tinykeys';
-// import { NamedChunksPlugin } from 'webpack';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { usePreventDefault } from './hooks/usePreventDefault';
-// import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-// import { useSession } from '../../contexts/SessionContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useMethodData, AsyncState } from '../../contexts/ServerContext';
 import { roomTypes } from '../../../app/utils';
-// import { usePermission } from '../../contexts/AuthorizationContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
-// import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useChatRoomTemplate, useAvatarTemplate, itemSizeMap, SideBarItemTemplateWithData } from './Chats';
 
-export const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName) => ({
+const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName) => ({
 	items,
 	t,
 	SideBarItemTemplate,
@@ -28,7 +23,7 @@ export const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemp
 	useRealName,
 }));
 
-export const Row = React.memo(({ data, index, style }) => {
+const Row = React.memo(({ data, index, style }) => {
 	const { items, t, SideBarItemTemplate, AvatarTemplate, useRealName } = data;
 	const item = items[index];
 	if (item.t === 'd' && !item.u) {

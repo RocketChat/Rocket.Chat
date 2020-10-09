@@ -25,7 +25,6 @@ const groupByName = (colors) => {
 	return map;
 };
 
-
 const COLOR_MAP = {
 	b: 'blue',
 	g: 'green',
@@ -89,6 +88,5 @@ const HeaderWithData = () => {
 		</Sidebar.TopBar.Section>
 	</>;
 };
-
 
 export default HeaderWithData;

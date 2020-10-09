@@ -7,8 +7,7 @@ import mem from 'mem';
 
 import { APIClient } from '../../utils/client';
 import { saveUser, interestedUserIds } from '../../../imports/startup/client/listenActiveUsers';
-import { Presence } from '../../../client/components/basic/UserStatus';
-
+import { Presence } from '../../../client/lib/presence';
 
 import './userPresence.html';
 
