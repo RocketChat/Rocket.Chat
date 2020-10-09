@@ -151,3 +151,12 @@
 		transform: translate3d(200%, 0, 0);
 	}
 }
+
+@media (min-width: 1372px) { /* 1440px -68px (eletron menu) */
+	.sidebar {
+		flex: 0 0 20%;
+
+		width: 20%;
+		max-width: 20%;
+	}
+}
