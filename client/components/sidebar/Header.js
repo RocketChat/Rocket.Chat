@@ -78,11 +78,11 @@ const HeaderWithData = () => {
 			<UserAvatarButton user={user}/>
 			<Sidebar.TopBar.Actions>
 				<Home />
-				<Search />
+				<Search data-qa='sidebar-search' />
 				{user && <>
 					<Directory />
 					<Sort />
-					<CreateRoom />
+					<CreateRoom data-qa='sidebar-create' />
 					<Menu />
 				</>}
 			</Sidebar.TopBar.Actions>

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import tinykeys from 'tinykeys';
 // import { css } from '@rocket.chat/css-in-js';
 
 import '../../../../app/ui-sidenav/client/toolbar';
@@ -17,26 +18,32 @@ const Search = (props) => {
 		// viewRef.current && Blaze.remove(viewRef.current);
 	});
 
-	const handleSearch = useMutableCallback(() => {
+	const openSearch = useMutableCallback(() => {
 		setSearchOpen(true);
 	});
 
 	const ref = useOutsideClick(handleCloseSearch);
 
-	// useEffect(() => {
-	// 	if (searchOpen) {
-	// 		const renderSearch = async () => {
-	// 			viewRef.current = ref.current && Blaze.renderWithData(Template.toolbar, { onClose: handleCloseSearch }, ref.current);
-	// 		};
-	// 		renderSearch();
-	// 	}
-	// 	return () => viewRef.current && Blaze.remove(viewRef.current);
-	// }, [handleCloseSearch, ref, searchOpen]);
+
+	useEffect(() => {
+		const unsubscribe = tinykeys(window, {
+			'$mod+K': (event) => {
+				event.preventDefault();
+				openSearch();
+			},
+			'$mod+P': (event) => {
+				event.preventDefault();
+				openSearch();
+			},
+		});
+		return () => {
+			unsubscribe();
+		};
+	}, [openSearch]);
 
 	return <>
-		<Sidebar.TopBar.Action icon='magnifier' onClick={handleSearch} {...props}/>
+		<Sidebar.TopBar.Action icon='magnifier' onClick={openSearch} {...props}/>
 		{searchOpen && <SearchList ref={ref} onClose={handleCloseSearch}/>}
-		{/* {searchOpen && <Box position='absolute' w='full' p='x16' bg='neutral-200' className={[css`left: 0; top: 0;`]} ref={ref} />} */}
 	</>;
 };
 
