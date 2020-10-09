@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import tinykeys from 'tinykeys';
-// import { css } from '@rocket.chat/css-in-js';
 
-import '../../../../app/ui-sidenav/client/toolbar';
 import { useOutsideClick } from '../../../hooks/useOutsideClick';
 import SearchList from '../SearchList';
 
