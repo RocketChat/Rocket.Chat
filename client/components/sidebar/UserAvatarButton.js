@@ -5,7 +5,6 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { css } from '@rocket.chat/css-in-js';
 
-import { useUser } from '../../contexts/UserContext';
 import { popover, modal, AccountBox } from '../../../app/ui-utils';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
