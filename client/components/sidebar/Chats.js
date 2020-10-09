@@ -95,23 +95,24 @@ const SidebarIcon = ({ room }) => {
 	}
 };
 
-export const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom) => ({
+export const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, username) => ({
 	items,
 	extended,
 	t,
 	SideBarItemTemplate,
 	AvatarTemplate,
 	openedRoom,
+	username,
 }));
 
 export const Row = React.memo(({ data, index, style }) => {
-	const { extended, items, t, SideBarItemTemplate, AvatarTemplate, openedRoom } = data;
+	const { extended, items, t, SideBarItemTemplate, AvatarTemplate, openedRoom, username } = data;
 	const item = items[index];
 	if (typeof item === 'string') {
 		const Section = sections[item];
 		return Section ? <Section aria-level='1' style={style}/> : <Sidebar.Section.Title aria-level='1' style={style}>{t(item)}</Sidebar.Section.Title>;
 	}
-	return <SideBarItemTemplateWithData style={style} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+	return <SideBarItemTemplateWithData username={username} style={style} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 });
 
 export const normalizeThreadMessage = ({ ...message }) => {
@@ -253,7 +254,23 @@ export default () => {
 	</Box>;
 };
 
-export const SideBarItemTemplateWithData = React.memo(({ room, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style }) => {
+const getMessage = (room, username, lastMessage, t) => {
+	if (!lastMessage) {
+		return t('No_messages_yet');
+	}
+	if (!lastMessage.u) {
+		return normalizeThreadMessage(lastMessage);
+	}
+	if (lastMessage.u.username === username) {
+		return `${ t('You') }: ${ normalizeThreadMessage(lastMessage) }`;
+	}
+	if (room.t === 'd' && room.ids < 2) {
+		return normalizeThreadMessage(lastMessage);
+	}
+	return `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeThreadMessage(lastMessage) }`;
+};
+
+export const SideBarItemTemplateWithData = React.memo(({ room, username, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style }) => {
 	const title = roomTypes.getRoomName(room.t, room);
 	const icon = <SidebarIcon room={room}/>;
 	const href = roomTypes.getRouteLink(room.t, room);
@@ -272,7 +289,9 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 	} = room;
 
 	const threadUnread = tunread.length > 0;
-	const message = <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: extended && lastMessage ? `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeThreadMessage(lastMessage) }` : t('No_messages_yet') }}/>;
+	const message = extended && getMessage(room, username, lastMessage, t);
+
+	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }}/> : null;
 	const variant = ((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
 	const badges = unread > 0 || threadUnread ? <Badge variant={ variant } flexShrink={0}>{unread + tunread?.length}</Badge> : null;
 
@@ -287,7 +306,7 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 		aria-label={title}
 		title={title}
 		time={lastMessage?.ts}
-		subtitle={message}
+		subtitle={subtitle}
 		icon={icon}
 		style={style}
 		badges={badges}
