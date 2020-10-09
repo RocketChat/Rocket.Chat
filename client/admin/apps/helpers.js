@@ -66,6 +66,10 @@ export const handleAPIError = (error) => {
 	toastr.error(message);
 };
 
+export const handleUpdateMessage = (appName) => {
+	toastr.success(t('Updated_Successfully'), appName);
+};
+
 export const warnStatusChange = (appName, status) => {
 	if (appErroredStatuses.includes(status)) {
 		toastr.error(t(`App_status_${ status }`), appName);
