@@ -26,16 +26,17 @@ const useOmnichannelInquiries = (): Array<any> => {
 	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed') as number;
 	useEffect(() => {
 		let cleanup: undefined | (() => void);
+		const handler = async (): void => {
+			initializeLivechatInquiryStream(uid, isOmnichannelManger);
+		};
 
 		(async (): Promise<void> => {
 			initializeLivechatInquiryStream(uid, isOmnichannelManger);
-			Notifications.onUser('departmentAgentData', async () => {
-				initializeLivechatInquiryStream(uid, isOmnichannelManger);
-			});
+			Notifications.onUser('departmentAgentData', handler);
 		})();
 
 		return (): void => {
-			Notifications.unUser('departmentAgentData');
+			Notifications.unUser('departmentAgentData', handler);
 			cleanup && cleanup();
 		};
 	}, [isOmnichannelManger, uid]);
