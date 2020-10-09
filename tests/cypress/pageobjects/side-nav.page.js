@@ -22,7 +22,7 @@ class SideNav extends Page {
 
 	get sidebarHeader() { return browser.element('.sidebar__header'); }
 
-	get sidebarUserMenu() { return browser.element('.sidebar__header .avatar'); }
+	get sidebarUserMenu() { return browser.element('[data-qa="sidebar-avatar-button"]'); }
 
 	get sidebarMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
 
@@ -87,7 +87,7 @@ class SideNav extends Page {
 
 	// Opens a channel via rooms list
 	openChannel(channelName) {
-		cy.contains('.sidebar-item__ellipsis', channelName).scrollIntoView().click();
+		cy.contains('[data-qa="sidebar-item-title"]', channelName).scrollIntoView().click();
 		cy.get('.rc-header__name').should('contain', channelName);
 	}
 
