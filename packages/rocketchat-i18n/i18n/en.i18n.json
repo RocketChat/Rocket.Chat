@@ -1830,6 +1830,7 @@
   "How_knowledgeable_was_the_chat_agent": "How knowledgeable was the chat agent?",
   "How_long_to_wait_after_agent_goes_offline": "How Long to Wait After Agent Goes Offline",
   "How_long_to_wait_to_consider_visitor_abandonment": "How Long to Wait to Consider Visitor Abandonment?",
+  "How_long_to_wait_to_consider_visitor_abandonment_in_seconds": "How Long to Wait to Consider Visitor Abandonment?",
   "How_responsive_was_the_chat_agent": "How responsive was the chat agent?",
   "How_satisfied_were_you_with_this_chat": "How satisfied were you with this chat?",
   "How_to_handle_open_sessions_when_agent_goes_offline": "How to Handle Open Sessions When Agent Goes Offline",
