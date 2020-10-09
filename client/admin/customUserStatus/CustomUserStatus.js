@@ -1,25 +1,13 @@
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
-import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
+import { Table } from '@rocket.chat/fuselage';
 
 import { GenericTable, Th } from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
+import FilterByText from './FilterByText';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
-const FilterByText = ({ setFilter, ...props }) => {
-	const t = useTranslation();
-	const [text, setText] = useState('');
-	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
-
-	useEffect(() => {
-		setFilter({ text });
-	}, [setFilter, text]);
-	return <Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
-		<TextInput flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-	</Box>;
-};
-
-export function CustomUserStatus({
+function CustomUserStatus({
 	data,
 	sort,
 	onClick,
@@ -44,3 +32,5 @@ export function CustomUserStatus({
 
 	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.statuses} total={data.total} setParams={setParams} params={params} />;
 }
+
+export default CustomUserStatus;
