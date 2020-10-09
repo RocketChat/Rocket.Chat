@@ -168,6 +168,7 @@ declare module '@rocket.chat/fuselage' {
 		ghost?: boolean;
 		danger?: boolean;
 		small?: boolean;
+		square?: boolean;
 	};
 	export const Button: ForwardRefExoticComponent<ButtonProps>;
 
@@ -211,7 +212,10 @@ declare module '@rocket.chat/fuselage' {
 	export const Icon: ForwardRefExoticComponent<IconProps>;
 
 	type InputBoxProps = BoxProps;
-	export const InputBox: ForwardRefExoticComponent<InputBoxProps>;
+	type InputBoxSkeletonProps = BoxProps;
+	export const InputBox: ForwardRefExoticComponent<InputBoxProps> & {
+		Skeleton: ForwardRefExoticComponent<InputBoxSkeletonProps>;
+	};
 
 	type ModalProps = BoxProps;
 	type ModalHeaderProps = BoxProps;
