@@ -3,7 +3,7 @@ import { boolean, object } from '@storybook/addon-knobs/react';
 import React from 'react';
 
 import { dummyDate } from '../../../.storybook/helpers';
-import { InformationPage } from './InformationPage';
+import InformationPage from './InformationPage';
 
 export default {
 	title: 'admin/info/InformationPage',
