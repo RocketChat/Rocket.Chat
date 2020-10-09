@@ -83,6 +83,7 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '', statu
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
+			closeModal();
 		};
 
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.HIDE_WARNING);
