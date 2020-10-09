@@ -1,17 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue, useStableArray, useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
 import { css } from '@rocket.chat/css-in-js';
 import { FixedSizeList as List } from 'react-window';
+import tinykeys from 'tinykeys';
 // import { NamedChunksPlugin } from 'webpack';
 
 import { useTranslation } from '../../contexts/TranslationContext';
+import { usePreventDefault } from './hooks/usePreventDefault';
 // import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 // import { useSession } from '../../contexts/SessionContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useMethodData } from '../../contexts/ServerContext';
+import { useMethodData, AsyncState } from '../../contexts/ServerContext';
 import { roomTypes } from '../../../app/utils';
 // import { usePermission } from '../../contexts/AuthorizationContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
@@ -80,13 +82,13 @@ const useSpotlight = (filterText = '', usernames) => {
 	}, [searchForChannels, searchForDMs]);
 	const args = useMemo(() => [name, usernames, type], [type, name, usernames]);
 
-	const [data = { users: [], rooms: [] }] = useMethodData('spotlight', args);
+	const [data = { users: [], rooms: [] }, status] = useMethodData('spotlight', args);
 
 	return useMemo(() => {
 		if (!data) {
-			return { users: [], rooms: [] };
+			return { data: { users: [], rooms: [] }, status: AsyncState.LOADING };
 		}
-		return data;
+		return { data, status };
 	}, [data]);
 };
 
@@ -113,7 +115,7 @@ const useSearchItems = (filterText) => {
 
 	const usernamesFromClient = useStableArray([...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean));
 
-	const spotlight = useSpotlight(filterText, usernamesFromClient);
+	const { data: spotlight, status } = useSpotlight(filterText, usernamesFromClient);
 
 	return useMemo(() => {
 		const resultsFromServer = [];
@@ -135,7 +137,7 @@ const useSearchItems = (filterText) => {
 		resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersfilter).map(userMap));
 		resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
 
-		return Array.from(new Set([...exact, ...localRooms, ...resultsFromServer]));
+		return { data: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])), status };
 	}, [localRooms, name, spotlight]);
 };
 
@@ -164,17 +166,34 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 
 	const placeholder = [t('Search'), shortcut].filter(Boolean).join(' ');
 
-	const items = useSearchItems(filterText);
+	const { data: items, status } = useSearchItems(filterText);
 
 	const itemData = createItemData(items, t, SideBarItemTemplate, AvatarTemplate, showRealName);
 
-	const { boxRef, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
+	const { ref: boxRef, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
-	return <Box position='absolute' bg='neutral-200' h='full' zIndex={99} w='full' className={css`left: 0; top: 0;`} ref={ref}>
+	usePreventDefault(boxRef);
+
+	useEffect(() => {
+		if (!autofocus.current) {
+			return;
+		}
+		const unsubscribe = tinykeys(autofocus.current, {
+			Escape: (event) => {
+				event.preventDefault();
+				onClose();
+			},
+		});
+		return () => {
+			unsubscribe();
+		};
+	}, [autofocus?.current]);
+
+	return <Box position='absolute' bg='neutral-200' h='full' display='flex' flexDirection='column' zIndex={99} w='full' className={css`left: 0; top: 0;`} ref={ref}>
 		<Sidebar.TopBar.Section>
-			<TextInput ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
+			<TextInput data-qa='sidebar-search-input' ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
 		</Sidebar.TopBar.Section>
-		<Box h='full' w='full' ref={boxRef}>
+		<Box flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncState.DONE}>
 			<List
 				height={blockSize}
 				itemCount={items?.length}

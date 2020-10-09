@@ -1,10 +1,12 @@
 import s from 'underscore.string';
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import memoize from 'memoize-one';
 
+
+import { usePreventDefault } from './hooks/usePreventDefault';
 import { renderMessageBody } from '../../../app/ui-utils/client';
 import { ReactiveUserStatus, colors } from '../basic/UserStatus';
 import { ChatSubscription } from '../../../app/models';
@@ -77,17 +79,17 @@ const SidebarIcon = ({ room }) => {
 	switch (room.t) {
 		case 'p':
 		case 'c':
-			return <Sidebar.Item.Icon name={roomTypes.getIcon(room)} />;
+			return <Sidebar.Item.Icon aria-hidden='true' name={roomTypes.getIcon(room)} />;
 		case 'l':
-			return <Sidebar.Item.Icon name='headset' color={colors[room.v.status]}/>;
+			return <Sidebar.Item.Icon aria-hidden='true' name='headset' color={colors[room.v.status]}/>;
 		case 'd':
 			if (room.uids && room.uids.length > 2) {
-				return <Sidebar.Item.Icon name='team'/>;
+				return <Sidebar.Item.Icon aria-hidden='true' name='team'/>;
 			}
 			if (room.uids && room.uids.length > 0) {
 				return room.uids && room.uids.length && <Sidebar.Item.Icon><ReactiveUserStatus uid={room.uids.filter((uid) => uid !== room.u._id)[0]} /></Sidebar.Item.Icon>;
 			}
-			return <Sidebar.Item.Icon name={roomTypes.getIcon(room)}/>;
+			return <Sidebar.Item.Icon aria-hidden='true' name={roomTypes.getIcon(room)}/>;
 		default:
 			return null;
 	}
@@ -107,7 +109,7 @@ export const Row = React.memo(({ data, index, style }) => {
 	const item = items[index];
 	if (typeof item === 'string') {
 		const Section = sections[item];
-		return Section ? <Section style={style}/> : <Sidebar.Section.Title style={style}>{t(item)}</Sidebar.Section.Title>;
+		return Section ? <Section aria-level='1' style={style}/> : <Sidebar.Section.Title aria-level='1' style={style}>{t(item)}</Sidebar.Section.Title>;
 	}
 	return <SideBarItemTemplateWithData style={style} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 });
@@ -130,24 +132,6 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 };
 
-const usePreventPropagation = (ref) => {
-	// Flowrouter uses an addEventListener on the document to capture any clink link, since the react synthetic event use an addEventListener on the document too,
-	// it is impossible/hard to determine which one will happen before and prevent/stop propagation, so feel free to remove this effect after remove flow router :)
-
-	useLayoutEffect(() => {
-		const { current } = ref;
-		const stopPropagation = (e) => {
-			if ([e.target.nodeName, e.target.parentElement.nodeName].includes('BUTTON')) {
-				e.preventDefault();
-			}
-		};
-		current?.addEventListener('click', stopPropagation);
-
-		return () => current?.addEventListener('click', stopPropagation);
-	}, [ref.current]);
-
-	return { ref };
-};
 
 export default () => {
 	const t = useTranslation();
@@ -246,7 +230,7 @@ export default () => {
 
 	const itemData = createItemData(items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom);
 
-	usePreventPropagation(ref);
+	usePreventDefault(ref);
 
 	const listRef = useRef();
 
@@ -294,10 +278,13 @@ export const SideBarItemTemplateWithData = React.memo(({ room, extended, selecte
 
 	return <SideBarItemTemplate
 		is='a'
+		data-qa='sidebar-item'
+		aria-level='2'
 		unread={unread}
 		threadUnread={threadUnread}
 		selected={selected}
 		href={href}
+		aria-label={title}
 		title={title}
 		time={lastMessage?.ts}
 		subtitle={message}

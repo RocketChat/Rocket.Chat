@@ -36,11 +36,6 @@ Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
 
 	$(document.body).on('keydown', function(e) {
-		if ((e.keyCode === 80 || e.keyCode === 75) && (e.ctrlKey === true || e.metaKey === true) && e.shiftKey === false) {
-			e.preventDefault();
-			e.stopPropagation();
-			toolbarSearch.show(true);
-		}
 		const unread = Session.get('unread');
 		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && (unread != null) && unread !== '') {
 			e.preventDefault();
@@ -120,7 +115,7 @@ Template.body.onRendered(function() {
 		}
 	});
 
-	Tracker.autorun(function(c) {
+	this.autorun(function(c) {
 		const w = window;
 		const d = document;
 		const script = 'script';

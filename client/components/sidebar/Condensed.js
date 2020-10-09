@@ -14,7 +14,7 @@ const Condensed = React.memo(({
 	badges,
 	...props
 }) => {
-	const [menuVisibility, setMenuVisibility] = useState(false);
+	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
 	const handleMenu = useMutableCallback((e) => {
 		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
@@ -25,7 +25,7 @@ const Condensed = React.memo(({
 		</Sidebar.Item.Avatar>}
 		<Sidebar.Item.Content>
 			{ icon }
-			<Sidebar.Item.Title className={unread && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title> {badges}
+			<Sidebar.Item.Title data-qa='sidebar-item-title' className={unread && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title> {badges}
 		</Sidebar.Item.Content>
 		<Sidebar.Item.Container>
 			{<Sidebar.Item.Actions>

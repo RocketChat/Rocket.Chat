@@ -62,16 +62,19 @@ const CreateRoom = (props) => {
 		canCreateChannel && {
 			icon: 'hashtag',
 			name: t('Channel'),
+			qa: 'sidebar-create-channel',
 			action: createChannel,
 		},
 		canCreateDirectMessages && {
 			icon: 'team',
 			name: t('Direct_Messages'),
+			qa: 'sidebar-create-dm',
 			action: createDirectMessage,
 		},
 		discussionEnabled && canCreateDiscussion && {
 			icon: 'discussion',
 			name: t('Discussion'),
+			qa: 'sidebar-create-discussion',
 			action: createDiscussion,
 		},
 	].filter(Boolean), [canCreateChannel, canCreateDirectMessages, canCreateDiscussion, createChannel, createDirectMessage, createDiscussion, discussionEnabled, t]);

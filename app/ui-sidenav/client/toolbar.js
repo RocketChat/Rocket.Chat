@@ -7,7 +7,6 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
-import { toolbarSearch } from './sidebarHeader';
 import { Rooms, Subscriptions } from '../../models';
 import { roomTypes } from '../../utils';
 import { hasAtLeastOnePermission } from '../../authorization';
@@ -174,10 +173,6 @@ Template.toolbar.events({
 	'submit form'(e) {
 		e.preventDefault();
 		return false;
-	},
-
-	'click [role="search"] input'() {
-		toolbarSearch.shortcut = false;
 	},
 
 	'click [role="search"] button, touchend [role="search"] button'(e) {
