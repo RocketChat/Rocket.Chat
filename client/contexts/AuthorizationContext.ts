@@ -1,5 +1,15 @@
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext, useMemo, useState, useCallback, useEffect } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
+import EventEmitter from 'wolfy87-eventemitter';
+
+import { IRole } from '../../definition/IUser';
+
+type IRoles = { [_id: string]: IRole }
+
+
+export class RoleStore extends EventEmitter {
+	roles: IRoles = {};
+}
 
 export type AuthorizationContextValue = {
 	queryPermission(
@@ -15,7 +25,9 @@ export type AuthorizationContextValue = {
 		scope?: string | Mongo.ObjectID
 	): Subscription<boolean>;
 	queryRole(role: string | Mongo.ObjectID): Subscription<boolean>;
+	roleStore: RoleStore;
 };
+
 
 export const AuthorizationContext = createContext<AuthorizationContextValue>({
 	queryPermission: () => ({
@@ -34,6 +46,7 @@ export const AuthorizationContext = createContext<AuthorizationContextValue>({
 		getCurrentValue: (): boolean => false,
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
+	roleStore: new RoleStore(),
 });
 
 export const usePermission = (
@@ -70,6 +83,26 @@ export const useAllPermissions = (
 		[queryAllPermissions, permissions, scope],
 	);
 	return useSubscription(subscription);
+};
+
+export const useRolesDescription = (): (ids: Array<string>) => [string] => {
+	const { roleStore } = useContext(AuthorizationContext);
+
+	const [roles, setRoles] = useState<IRoles>(() => roleStore.roles || {});
+
+	useEffect(() => {
+		const handle = (roles: IRoles): void => {
+			console.log(roles);
+			setRoles(roles);
+		};
+		roleStore.on('change', handle);
+		return (): void => {
+			roleStore.off('change', handle);
+		};
+	}, [roleStore]);
+
+	return useCallback((values) => values.map((role: string) => (roles[role] && roles[role].description) || role)
+		, [roles]) as (ids: Array<string>) => [string];
 };
 
 export const useRole = (role: string | Mongo.ObjectID): boolean => {
