@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useMemo, useCallback } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 import EventEmitter from 'wolfy87-eventemitter';
 
@@ -88,18 +88,20 @@ export const useAllPermissions = (
 export const useRolesDescription = (): (ids: Array<string>) => [string] => {
 	const { roleStore } = useContext(AuthorizationContext);
 
-	const [roles, setRoles] = useState<IRoles>(() => roleStore.roles || {});
+	const subscription = useMemo(
+		() => ({
+			getCurrentValue: (): IRoles => roleStore.roles,
+			subscribe: (callback: Function): () => void => {
+				roleStore.on('change', callback);
+				return (): void => {
+					roleStore.off('change', callback);
+				};
+			},
+		}),
+		[roleStore],
+	);
 
-	useEffect(() => {
-		const handle = (roles: IRoles): void => {
-			console.log(roles);
-			setRoles(roles);
-		};
-		roleStore.on('change', handle);
-		return (): void => {
-			roleStore.off('change', handle);
-		};
-	}, [roleStore]);
+	const roles = useSubscription<IRoles>(subscription);
 
 	return useCallback((values) => values.map((role: string) => (roles[role] && roles[role].description) || role)
 		, [roles]) as (ids: Array<string>) => [string];
