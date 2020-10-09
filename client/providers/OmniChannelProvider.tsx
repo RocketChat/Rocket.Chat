@@ -25,8 +25,7 @@ const useOmnichannelInquiries = (): Array<any> => {
 	const isOmnichannelManger = useRole('livechat-manager');
 	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed') as number;
 	useEffect(() => {
-		let cleanup: undefined | (() => void);
-		const handler = async (): void => {
+		const handler = async (): Promise<void> => {
 			initializeLivechatInquiryStream(uid, isOmnichannelManger);
 		};
 
@@ -37,7 +36,6 @@ const useOmnichannelInquiries = (): Array<any> => {
 
 		return (): void => {
 			Notifications.unUser('departmentAgentData', handler);
-			cleanup && cleanup();
 		};
 	}, [isOmnichannelManger, uid]);
 
