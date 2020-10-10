@@ -1,15 +1,21 @@
-import React, { FC } from 'react';
 import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
+import React, { FC } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../contexts/TranslationContext';
 
 type DeleteWarningModalProps = {
 	onDelete: () => void;
 	onCancel: () => void;
 };
 
-const DeleteWarningModal: FC<DeleteWarningModalProps> = ({ onDelete, onCancel, ...props }) => {
+const DeleteWarningModal: FC<DeleteWarningModalProps> = ({
+	children,
+	onDelete,
+	onCancel,
+	...props
+}) => {
 	const t = useTranslation();
+
 	return <Modal {...props}>
 		<Modal.Header>
 			<Icon color='danger' name='modal-warning' size={20}/>
@@ -17,7 +23,7 @@ const DeleteWarningModal: FC<DeleteWarningModalProps> = ({ onDelete, onCancel, .
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			{t('Custom_Sound_Delete_Warning')}
+			{children}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>

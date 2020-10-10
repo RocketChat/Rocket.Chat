@@ -6,7 +6,7 @@ import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import VerticalBar from '../../components/basic/VerticalBar';
-import DeleteWarningModal from './DeleteWarningModal';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 import SuccessModal from './SuccessModal';
 
 export function EditCustomUserStatus({ close, onChange, data, ...props }) {
@@ -54,7 +54,11 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		}
 	}, [_id, close, deleteStatus, dispatchToastMessage, onChange]);
 
-	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
+	const openConfirmDelete = () => setModal(() => <DeleteWarningModal
+		children={t('Custom_User_Status_Delete_Warning')}
+		onDelete={onDeleteConfirm}
+		onCancel={() => setModal(undefined)}
+	/>);
 
 	const presenceOptions = [
 		['online', t('Online')],

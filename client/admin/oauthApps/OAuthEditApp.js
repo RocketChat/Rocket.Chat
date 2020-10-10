@@ -22,26 +22,7 @@ import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import VerticalBar from '../../components/basic/VerticalBar';
-
-const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Application_delete_warning')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 
 const SuccessModal = ({ onClose, ...props }) => {
 	const t = useTranslation();
@@ -145,7 +126,11 @@ function EditOauthApp({ onChange, data, ...props }) {
 		}
 	}, [close, data._id, deleteApp, dispatchToastMessage]);
 
-	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
+	const openConfirmDelete = () => setModal(() => <DeleteWarningModal
+		children={t('Application_delete_warning')}
+		onDelete={onDeleteConfirm}
+		onCancel={() => setModal(undefined)}
+	/>);
 
 	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) => setNewData({ ...newData, [field]: getValue(e) });
 

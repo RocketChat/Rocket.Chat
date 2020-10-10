@@ -7,8 +7,8 @@ import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import VerticalBar from '../../components/basic/VerticalBar';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 import SuccessModal from './SuccessModal';
-import DeleteWarningModal from './DeleteWarningModal';
 import { EmojiDescriptor } from './types';
 
 type EditCustomEmojiProps = {
@@ -68,7 +68,11 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		}
 	}, [close, deleteAction, onChange, setModal]);
 
-	const openConfirmDelete = useCallback(() => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={(): void => setModal(undefined)}/>), [onDeleteConfirm, setModal]);
+	const openConfirmDelete = useCallback(() => setModal(() => <DeleteWarningModal
+		children={t('Custom_Emoji_Delete_Warning')}
+		onDelete={onDeleteConfirm}
+		onCancel={(): void => setModal(undefined)}
+	/>), [onDeleteConfirm, setModal, t]);
 
 	const handleAliasesChange = useCallback((e) => setAliases(e.currentTarget.value), [setAliases]);
 

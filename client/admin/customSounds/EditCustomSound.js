@@ -9,7 +9,7 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { validate, createSoundData } from './lib';
 import { useSetModal } from '../../contexts/ModalContext';
 import VerticalBar from '../../components/basic/VerticalBar';
-import DeleteWarningModal from './DeleteWarningModal';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 import SuccessModal from './SuccessModal';
 
 function EditCustomSound({ _id, cache, ...props }) {
@@ -116,7 +116,11 @@ function EditSound({ close, onChange, data, ...props }) {
 		}
 	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange]);
 
-	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
+	const openConfirmDelete = () => setModal(() => <DeleteWarningModal
+		children={t('Custom_Sound_Delete_Warning')}
+		onDelete={onDeleteConfirm}
+		onCancel={() => setModal(undefined)}
+	/>);
 
 	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
