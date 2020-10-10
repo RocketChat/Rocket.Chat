@@ -6,8 +6,8 @@ import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import VerticalBar from '../../components/basic/VerticalBar';
+import DeleteSuccessModal from '../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
-import SuccessModal from './SuccessModal';
 
 export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 	const t = useTranslation();
@@ -47,7 +47,10 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteStatus(_id);
-			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
+			setModal(() => <DeleteSuccessModal
+				children={t('Custom_User_Status_Has_Been_Deleted')}
+				onClose={() => { setModal(undefined); close(); onChange(); }}
+			/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 			onChange();

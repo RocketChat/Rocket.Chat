@@ -1,13 +1,17 @@
 import React, { FC } from 'react';
 import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../contexts/TranslationContext';
 
-type SuccessModalProps = {
+type DeleteSuccessModalProps = {
 	onClose: () => void;
 };
 
-const SuccessModal: FC<SuccessModalProps> = ({ onClose, ...props }) => {
+const DeleteSuccessModal: FC<DeleteSuccessModalProps> = ({
+	children,
+	onClose,
+	...props
+}) => {
 	const t = useTranslation();
 	return <Modal {...props}>
 		<Modal.Header>
@@ -16,7 +20,7 @@ const SuccessModal: FC<SuccessModalProps> = ({ onClose, ...props }) => {
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			{t('Custom_User_Status_Has_Been_Deleted')}
+			{children}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
@@ -26,4 +30,4 @@ const SuccessModal: FC<SuccessModalProps> = ({ onClose, ...props }) => {
 	</Modal>;
 };
 
-export default SuccessModal;
+export default DeleteSuccessModal;

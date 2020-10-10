@@ -4,14 +4,18 @@ import React, { FC } from 'react';
 import { useTranslation } from '../contexts/TranslationContext';
 
 type DeleteWarningModalProps = {
+	cancelText?: string;
+	deleteText?: string;
 	onDelete: () => void;
 	onCancel: () => void;
 };
 
 const DeleteWarningModal: FC<DeleteWarningModalProps> = ({
 	children,
-	onDelete,
+	cancelText,
+	deleteText,
 	onCancel,
+	onDelete,
 	...props
 }) => {
 	const t = useTranslation();
@@ -27,8 +31,8 @@ const DeleteWarningModal: FC<DeleteWarningModalProps> = ({
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
+				<Button ghost onClick={onCancel}>{cancelText ?? t('Cancel')}</Button>
+				<Button primary danger onClick={onDelete}>{deleteText ?? t('Delete')}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;

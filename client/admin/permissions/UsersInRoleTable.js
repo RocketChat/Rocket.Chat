@@ -61,9 +61,11 @@ export function UsersInRoleTable({ data, reload, roleName, total, params, setPar
 			closeModal();
 			reload();
 		};
-		setModal(<DeleteWarningModal onCancel={closeModal} onDelete={remove}>
-			{t('The_user_s_will_be_removed_from_role_s', username, roleName)}
-		</DeleteWarningModal>);
+		setModal(<DeleteWarningModal
+			children={t('The_user_s_will_be_removed_from_role_s', username, roleName)}
+			onCancel={closeModal}
+			onDelete={remove}
+		/>);
 	});
 
 	return <GenericTable

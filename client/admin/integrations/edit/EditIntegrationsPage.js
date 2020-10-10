@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import Page from '../../../components/basic/Page';
@@ -6,25 +6,6 @@ import EditIncomingWebhookWithData from './EditIncomingWebhook';
 import EditOutgoingWebhookWithData from './EditOutgoingWebhook';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-
-export const SuccessModal = ({ onClose, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='success' name='checkmark-circled' size={20}/>
-			<Modal.Title>{t('Deleted')}</Modal.Title>
-			<Modal.Close onClick={onClose}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Your_entry_has_been_deleted')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button primary onClick={onClose}>{t('Ok')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
 
 export default function EditIntegrationsPage({ ...props }) {
 	const t = useTranslation();

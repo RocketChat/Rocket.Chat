@@ -53,7 +53,10 @@ export function RemoveAgentButton({ agentId, setAgentList, agentList }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteAgent}
+			onCancel={() => setModal()}
+		/>);
 	});
 
 	return <Button small ghost title={t('Remove')} onClick={handleDelete}><Icon name='trash' size='x16'/></Button>;

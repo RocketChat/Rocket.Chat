@@ -7,9 +7,10 @@ import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import VerticalBar from '../../components/basic/VerticalBar';
+import DeleteSuccessModal from '../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
-import SuccessModal from './SuccessModal';
 import { EmojiDescriptor } from './types';
+
 
 type EditCustomEmojiProps = {
 	close: () => void;
@@ -64,9 +65,12 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 	const onDeleteConfirm = useCallback(async () => {
 		const result = await deleteAction();
 		if (result.success) {
-			setModal(() => <SuccessModal onClose={(): void => { setModal(undefined); close(); onChange(); }}/>);
+			setModal(() => <DeleteSuccessModal
+				children={t('Custom_Emoji_Has_Been_Deleted')}
+				onClose={(): void => { setModal(undefined); close(); onChange(); }}
+			/>);
 		}
-	}, [close, deleteAction, onChange, setModal]);
+	}, [close, deleteAction, onChange, setModal, t]);
 
 	const openConfirmDelete = useCallback(() => setModal(() => <DeleteWarningModal
 		children={t('Custom_Emoji_Delete_Warning')}

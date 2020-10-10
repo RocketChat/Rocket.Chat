@@ -9,8 +9,8 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { validate, createSoundData } from './lib';
 import { useSetModal } from '../../contexts/ModalContext';
 import VerticalBar from '../../components/basic/VerticalBar';
+import DeleteSuccessModal from '../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
-import SuccessModal from './SuccessModal';
 
 function EditCustomSound({ _id, cache, ...props }) {
 	const query = useMemo(() => ({
@@ -109,7 +109,10 @@ function EditSound({ close, onChange, data, ...props }) {
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteCustomSound(_id);
-			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
+			setModal(() => <DeleteSuccessModal
+				children={t('Custom_Sound_Has_Been_Deleted')}
+				onClose={() => { setModal(undefined); close(); onChange(); }}
+			/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 			onChange();

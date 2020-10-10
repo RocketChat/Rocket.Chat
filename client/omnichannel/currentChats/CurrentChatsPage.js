@@ -126,7 +126,10 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAll} onCancel={() => setModal()}/>);
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteAll}
+			onCancel={() => setModal()}
+		/>);
 	});
 
 

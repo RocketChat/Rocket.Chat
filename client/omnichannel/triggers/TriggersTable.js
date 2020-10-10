@@ -58,7 +58,10 @@ const TriggersRow = memo(function TriggersRow(props) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteTrigger} onCancel={() => setModal()}/>);
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteTrigger}
+			onCancel={() => setModal()}
+		/>);
 	});
 
 	return <Table.Row
