@@ -4,11 +4,13 @@ declare module '@rocket.chat/fuselage' {
 		AllHTMLAttributes,
 		Context,
 		CSSProperties,
+		Dispatch,
 		ElementType,
 		ForwardRefExoticComponent,
 		PropsWithChildren,
 		ReactNode,
 		RefAttributes,
+		SetStateAction,
 	} from 'react';
 
 	type CssClassName = ReturnType<typeof css>;
@@ -183,6 +185,11 @@ declare module '@rocket.chat/fuselage' {
 	type CalloutProps = BoxProps;
 	export const Callout: ForwardRefExoticComponent<CalloutProps>;
 
+	type CheckBoxProps = BoxProps & {
+		indeterminate?: boolean;
+	};
+	export const CheckBox: ForwardRefExoticComponent<CheckBoxProps>;
+
 	type ChevronProps = Omit<BoxProps, 'size'> & {
 		size?: BoxProps['width'];
 		right?: boolean;
@@ -234,6 +241,17 @@ declare module '@rocket.chat/fuselage' {
 	type NumberInputProps = BoxProps;
 	export const NumberInput: ForwardRefExoticComponent<NumberInputProps>;
 
+	type PaginationProps = BoxProps & {
+		count: number;
+		current?: number;
+		itemsPerPage?: 25 | 50 | 100;
+		itemsPerPageLabel?: () => string;
+		showingResultsLabel?: (props: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) => string;
+		onSetCurrent?: Dispatch<SetStateAction<number>>;
+		onSetItemsPerPage?: Dispatch<SetStateAction<25 | 50 | 100>>;
+	};
+	export const Pagination: ForwardRefExoticComponent<PaginationProps>;
+
 	type PasswordInputProps = BoxProps & {
 		error?: string;
 	};
@@ -245,16 +263,24 @@ declare module '@rocket.chat/fuselage' {
 	export const Skeleton: ForwardRefExoticComponent<SkeletonProps>;
 
 	type TableProps = BoxProps;
+	type TableHeadProps = BoxProps;
+	type TableBodyProps = BoxProps;
 	type TableRowProps = Omit<BoxProps, 'action'> & {
 		action?: boolean;
 	};
-	type TableCellProps = BoxProps;
+	type TableCellProps = BoxProps & {
+		align?: 'start' | 'center' | 'end';
+	};
 	export const Table: ForwardRefExoticComponent<TableProps> & {
+		Head: ForwardRefExoticComponent<TableHeadProps>;
+		Body: ForwardRefExoticComponent<TableBodyProps>;
 		Row: ForwardRefExoticComponent<TableRowProps>;
 		Cell: ForwardRefExoticComponent<TableCellProps>;
 	};
 
-	type TagProps = BoxProps;
+	type TagProps = BoxProps & {
+		variant?: 'secondary' | 'primary' | 'danger';
+	};
 	export const Tag: ForwardRefExoticComponent<TagProps>;
 
 	type TextAreaInputProps = BoxProps;
