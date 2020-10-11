@@ -317,13 +317,9 @@ Read about [how it all started](https://www.synopsys.com/blogs/software-security
 
 [![Softpedia 100% Free and Clean Award for 2017](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/softpedia.gif)](http://www.softpedia.com/get/Internet/Chat/Other-Chat-Tools/Rocket-Chat.shtml#status)
 
-## Issues
+## Issues and Feature Requests
 
-[Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs and tasks on the roadmap.
-
-## Feature Requests
-
-[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) are used to suggest, discuss and upvote feature suggestions.
+[Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs, tasks, and feature requests on the roadmap.
 
 ### Stack Overflow
 
