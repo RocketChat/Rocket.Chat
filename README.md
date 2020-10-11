@@ -319,7 +319,7 @@ Read about [how it all started](https://www.synopsys.com/blogs/software-security
 
 ## Issues and Feature Requests
 
-[Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs, tasks, and feature requests on the roadmap.
+[Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs, tasks, and feature requests on the roadmap. To view the historical archive of old feature requests, visit [this link](https://forums.rocket.chat/c/feature-requests)
 
 ### Stack Overflow
 
