@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Table } from '@rocket.chat/fuselage';
 
-import { GenericTable, Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import FilterByText from './FilterByText';
 
@@ -18,8 +18,8 @@ function CustomUserStatus({
 	const t = useTranslation();
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		<Th key={'presence'} direction={sort[1]} active={sort[0] === 'statusType'} onClick={onHeaderClick} sort='statusType'>{t('Presence')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'presence'} direction={sort[1]} active={sort[0] === 'statusType'} onClick={onHeaderClick} sort='statusType'>{t('Presence')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [onHeaderClick, sort, t]);
 
 	const renderRow = (status) => {

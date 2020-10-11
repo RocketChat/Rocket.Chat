@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { Box, Table, Flex, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-import { GenericTable, Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
@@ -52,10 +52,10 @@ function UserTable({
 	}, [sort]);
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		mediaQuery && canViewFullOtherUserInfo && <Th key={'email'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email' style={{ width: '200px' }} >{t('Email')}</Th>,
-		federation && <Th key={'origin'} direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin' style={{ width: '200px' }} >{t('Domain')}</Th>,
-		mediaQuery && <Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '200px' }}>{t('Joined_at')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
+		mediaQuery && canViewFullOtherUserInfo && <GenericTable.HeaderCell key={'email'} direction={sort[1]} active={sort[0] === 'email'} onClick={onHeaderClick} sort='email' style={{ width: '200px' }} >{t('Email')}</GenericTable.HeaderCell>,
+		federation && <GenericTable.HeaderCell key={'origin'} direction={sort[1]} active={sort[0] === 'origin'} onClick={onHeaderClick} sort='origin' style={{ width: '200px' }} >{t('Domain')}</GenericTable.HeaderCell>,
+		mediaQuery && <GenericTable.HeaderCell key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '200px' }}>{t('Joined_at')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery, canViewFullOtherUserInfo, federation]);
 
 	const directRoute = useRoute('direct');

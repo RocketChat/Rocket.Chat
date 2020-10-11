@@ -3,7 +3,7 @@ import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
-import { GenericTable } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { capitalize } from '../../helpers/capitalize';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';

@@ -9,7 +9,7 @@ import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { usePermission } from '../../contexts/AuthorizationContext';
-import { GenericTable } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useMethod } from '../../contexts/ServerContext';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';

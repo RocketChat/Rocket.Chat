@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback, useState } from 'react';
 
-import { GenericTable, Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useMethod } from '../../contexts/ServerContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -39,11 +39,11 @@ const AccountTokensTable = ({ data, reload }) => {
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	const header = useMemo(() => [
-		<Th key={'name'}>{t('API_Personal_Access_Token_Name')}</Th>,
-		isMedium && <Th key={'createdAt'}>{t('Created_at')}</Th>,
-		<Th key={'lastTokenPart'}>{t('Last_token_part')}</Th>,
-		<Th key={'2fa'}>{t('Two Factor Authentication')}</Th>,
-		<Th key={'actions'} />,
+		<GenericTable.HeaderCell key={'name'}>{t('API_Personal_Access_Token_Name')}</GenericTable.HeaderCell>,
+		isMedium && <GenericTable.HeaderCell key={'createdAt'}>{t('Created_at')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'lastTokenPart'}>{t('Last_token_part')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'2fa'}>{t('Two Factor Authentication')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'actions'} />,
 	].filter(Boolean), [isMedium, t]);
 
 	const onRegenerate = useCallback((name) => {

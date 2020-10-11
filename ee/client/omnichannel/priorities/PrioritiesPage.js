@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../../../client/components/basic/Page';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { GenericTable } from '../../../../client/components/GenericTable';
+import GenericTable from '../../../../client/components/GenericTable';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 
 

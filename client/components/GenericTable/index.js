@@ -3,16 +3,10 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
-import { useTranslation } from '../contexts/TranslationContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import SortIcon from './SortIcon';
 
-function SortIcon({ direction }) {
-	return <Box is='svg' width='x16' height='x16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-		<path d='M5.33337 5.99999L8.00004 3.33333L10.6667 5.99999' stroke={direction === 'desc' ? '#9EA2A8' : '#E4E7EA' } strokeWidth='1.33333' strokeLinecap='round' strokeLinejoin='round'/>
-		<path d='M5.33337 10L8.00004 12.6667L10.6667 10' stroke={ direction === 'asc' ? '#9EA2A8' : '#E4E7EA'} strokeWidth='1.33333' strokeLinecap='round' strokeLinejoin='round'/>
-	</Box>;
-}
-
-export function Th({ children, active, direction, sort, onClick, align, ...props }) {
+function Th({ children, active, direction, sort, onClick, align, ...props }) {
 	const fn = useMemo(() => () => onClick && onClick(sort), [sort, onClick]);
 	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
 		<Box display='flex' alignItems='center' wrap='no-wrap'>{children}{sort && <SortIcon direction={active && direction} />}</Box>
@@ -36,7 +30,7 @@ const LoadingRow = ({ cols }) => <Table.Row>
 	</Table.Cell>)}
 </Table.Row>;
 
-export const GenericTable = forwardRef(function GenericTable({
+const GenericTable = forwardRef(function GenericTable({
 	children,
 	results,
 	fixed = true,

@@ -5,7 +5,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
-import { GenericTable } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { UserAutoComplete } from '../../components/basic/AutoComplete';
 
 const FilterByText = ({ setFilter, ...props }) => {

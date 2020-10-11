@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Box, Table } from '@rocket.chat/fuselage';
 
-import { GenericTable, Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import FilterByText from './FilterByText';
 
@@ -16,8 +16,8 @@ function CustomEmoji({
 	const t = useTranslation();
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
-		<Th key={'aliases'} w='x200'>{t('Aliases')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'aliases'} w='x200'>{t('Aliases')}</GenericTable.HeaderCell>,
 	], [onHeaderClick, sort, t]);
 
 	const renderRow = (emojis) => {

@@ -11,6 +11,7 @@ declare module '@rocket.chat/fuselage' {
 		ReactNode,
 		RefAttributes,
 		SetStateAction,
+		SVGAttributes,
 	} from 'react';
 
 	type CssClassName = ReturnType<typeof css>;
@@ -145,7 +146,10 @@ declare module '@rocket.chat/fuselage' {
 		minSize?: CSSProperties['blockSize'];
 		maxSize?: CSSProperties['blockSize'];
 		fontScale?: FontScale;
-	}> & Omit<AllHTMLAttributes<HTMLOrSVGElement>, 'className'> & RefAttributes<unknown>;
+	}>
+	& Omit<AllHTMLAttributes<HTMLOrSVGElement>, 'className'>
+	& Omit<SVGAttributes<SVGElement>, 'className'>
+	& RefAttributes<unknown>;
 
 	export const Box: ForwardRefExoticComponent<BoxProps>;
 

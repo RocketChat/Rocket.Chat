@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from 'react';
 import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { GenericTable, Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useCustomSound } from '../../contexts/CustomSoundContext';
 import FilterByText from './FilterByText';
 
@@ -17,8 +17,8 @@ function AdminSounds({
 	const t = useTranslation();
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		<Th w='x40' key='action'></Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell w='x40' key='action' />,
 	], [sort]);
 
 	const customSound = useCustomSound();

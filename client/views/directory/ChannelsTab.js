@@ -2,7 +2,7 @@ import { Box, Margins, Table, Avatar, Tag, Icon, TextInput } from '@rocket.chat/
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback, useEffect } from 'react';
 
-import { GenericTable, Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import MarkdownText from '../../components/basic/MarkdownText';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -59,10 +59,10 @@ function ChannelsTable() {
 	}, [sort]);
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		<Th key={'usersCount'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount' style={{ width: '100px' }}>{t('Users')}</Th>,
-		mediaQuery && <Th key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '150px' }}>{t('Created_at')}</Th>,
-		mediaQuery && <Th key={'lastMessage'} direction={sort[1]} active={sort[0] === 'lastMessage'} onClick={onHeaderClick} sort='lastMessage' style={{ width: '150px' }}>{t('Last_Message')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'usersCount'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount' style={{ width: '100px' }}>{t('Users')}</GenericTable.HeaderCell>,
+		mediaQuery && <GenericTable.HeaderCell key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '150px' }}>{t('Created_at')}</GenericTable.HeaderCell>,
+		mediaQuery && <GenericTable.HeaderCell key={'lastMessage'} direction={sort[1]} active={sort[0] === 'lastMessage'} onClick={onHeaderClick} sort='lastMessage' style={{ width: '150px' }}>{t('Last_Message')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const channelRoute = useRoute('channel');

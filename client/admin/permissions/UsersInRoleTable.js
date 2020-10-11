@@ -5,7 +5,7 @@ import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hoo
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useMethod } from '../../contexts/ServerContext';
-import { GenericTable } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useSetModal } from '../../contexts/ModalContext';
