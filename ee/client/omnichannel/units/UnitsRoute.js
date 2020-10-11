@@ -127,11 +127,11 @@ function UnitsRoute() {
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
 
-			{context === 'edit' && <UnitEditWithData unitId={id} reload={reload}/>}
-			{context === 'new' && <UnitNew reload={reload} />}
+			{context === 'edit' && <UnitEditWithData unitId={id} reload={reload} allUnits={data} />}
+			{context === 'new' && <UnitNew reload={reload} allUnits={data} />}
 
 		</VerticalBar>;
-	}, [t, context, id, unitsRoute, reload]);
+	}, [t, context, id, unitsRoute, reload, data]);
 
 	if (!canViewUnits) {
 		return <NotAuthorizedPage />;
