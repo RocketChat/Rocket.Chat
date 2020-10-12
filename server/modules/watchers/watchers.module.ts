@@ -26,6 +26,8 @@ import { IInstanceStatus } from '../../../definition/IInstanceStatus';
 import { InstanceStatusRaw } from '../../../app/models/server/raw/InstanceStatus';
 import { IntegrationHistoryRaw } from '../../../app/models/server/raw/IntegrationHistory';
 import { IIntegrationHistory } from '../../../definition/IIntegrationHistory';
+import { LivechatDepartmentAgentsRaw } from '../../../app/models/server/raw/LivechatDepartmentAgents';
+import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartmentAgents';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -34,6 +36,7 @@ interface IModelsParam {
 	Settings: SettingsRaw;
 	Messages: MessagesRaw;
 	LivechatInquiry: LivechatInquiryRaw;
+	LivechatDepartmentAgents: LivechatDepartmentAgentsRaw;
 	UsersSessions: UsersSessionsRaw;
 	Roles: RolesRaw;
 	Rooms: RoomsRaw;
@@ -61,6 +64,7 @@ export function initWatchers({
 	Roles,
 	Permissions,
 	LivechatInquiry,
+	LivechatDepartmentAgents,
 	Rooms,
 	LoginServiceConfiguration,
 	InstanceStatus,
@@ -173,6 +177,24 @@ export function initWatchers({
 
 		api.broadcast('watch.inquiries', { clientAction, inquiry: data, diff });
 	});
+
+	watch<ILivechatDepartmentAgents>(LivechatDepartmentAgents, async ({ clientAction, id, data, diff }) => {
+		if (clientAction === 'removed') {
+			data = await LivechatDepartmentAgents.trashFindOneById(id, { projection: { agentId: 1, departmentId: 1 } });
+			if (!data) {
+				return;
+			}
+			api.broadcast('watch.livechatDepartmentAgents', { clientAction, id, data, diff });
+			return;
+		}
+
+		data = await LivechatDepartmentAgents.findOneById(id, { projection: { agentId: 1, departmentId: 1 } });
+		if (!data) {
+			return;
+		}
+		api.broadcast('watch.livechatDepartmentAgents', { clientAction, id, data, diff });
+	});
+
 
 	watch<IPermission>(Permissions, async ({ clientAction, id, data, diff }) => {
 		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {

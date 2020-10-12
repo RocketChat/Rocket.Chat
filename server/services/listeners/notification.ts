@@ -248,5 +248,17 @@ export class NotificationService extends ServiceClass {
 				}
 			}
 		});
+
+		this.onEvent('watch.livechatDepartmentAgents', ({ clientAction, data }): void => {
+			const { agentId } = data;
+			if (!agentId) {
+				return;
+			}
+
+			notifications.notifyUserInThisInstance(agentId, 'departmentAgentData', {
+				action: clientAction,
+				...data,
+			});
+		});
 	}
 }

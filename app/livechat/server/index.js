@@ -80,7 +80,6 @@ import './lib/routing/External';
 import './lib/routing/ManualSelection';
 import './lib/routing/AutoSelection';
 import './lib/stream/agentStatus';
-import './lib/stream/departmentAgents';
 import './sendMessageBySMS';
 import './api';
 import './api/rest';

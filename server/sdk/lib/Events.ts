@@ -12,6 +12,7 @@ import { IUserSession } from '../../../definition/IUserSession';
 import { ILoginServiceConfiguration } from '../../../definition/ILoginServiceConfiguration';
 import { IInstanceStatus } from '../../../definition/IInstanceStatus';
 import { IIntegrationHistory } from '../../../definition/IIntegrationHistory';
+import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartmentAgents';
 
 export type EventSignatures = {
 	'emoji.deleteCustom'(emoji: IEmoji): void;
@@ -48,4 +49,5 @@ export type EventSignatures = {
 	'watch.loginServiceConfiguration'(data: { clientAction: string; data: Partial<ILoginServiceConfiguration>; id: string }): void;
 	'watch.instanceStatus'(data: { clientAction: string; data?: Partial<IInstanceStatus>; diff?: Record<string, any>; id: string }): void;
 	'watch.integrationHistory'(data: { clientAction: string; data: Partial<IIntegrationHistory>; diff?: Record<string, any>; id: string }): void;
+	'watch.livechatDepartmentAgents'(data: { clientAction: string; data: Partial<ILivechatDepartmentAgents>; diff?: Record<string, any>; id: string }): void;
 }

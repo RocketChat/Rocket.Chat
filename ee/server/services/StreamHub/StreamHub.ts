@@ -13,6 +13,7 @@ import { RoomsRaw } from '../../../../app/models/server/raw/Rooms';
 import { LoginServiceConfigurationRaw } from '../../../../app/models/server/raw/LoginServiceConfiguration';
 import { InstanceStatusRaw } from '../../../../app/models/server/raw/InstanceStatus';
 import { IntegrationHistoryRaw } from '../../../../app/models/server/raw/IntegrationHistory';
+import { LivechatDepartmentAgentsRaw } from '../../../app/models/server/raw/LivechatDepartmentAgents';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
@@ -30,6 +31,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), Trash);
 		const Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), Trash);
 		const LivechatInquiry = new LivechatInquiryRaw(db.collection('rocketchat_livechat_inquiry'), Trash);
+		const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(db.collection('rocketchat_livechat_department_agents'), Trash);
 		const Messages = new MessagesRaw(db.collection('rocketchat_message'), Trash);
 		const Permissions = new MessagesRaw(db.collection('rocketchat_permissions'), Trash);
 		const Roles = new RolesRaw(db.collection('rocketchat_roles'), Trash, { Users, Subscriptions });
@@ -44,6 +46,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			Subscriptions,
 			Permissions,
 			LivechatInquiry,
+			LivechatDepartmentAgents,
 			Settings,
 			Roles,
 			Rooms,
