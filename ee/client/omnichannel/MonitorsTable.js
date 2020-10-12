@@ -110,7 +110,7 @@ export function MonitorsTable({ monitors, totalMonitors, params, sort, onHeaderC
 		total={totalMonitors}
 		params={params}
 		setParams={onChangeParams}
-		FilterComponent={FilterByText}
+		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
 	>
 		{(props) => <MonitorsRow key={props._id} medium={onMediumBreakpoint} onDelete={onDelete} {...props} />}
 	</GenericTable>;

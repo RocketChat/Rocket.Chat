@@ -104,7 +104,16 @@ export function IntegrationsTable({ type }) {
 
 	const renderRow = useCallback((props) => <IntegrationRow {...props} isBig={isBig} onClick={onClick} />, [isBig, onClick]);
 
-	return <GenericTable ref={ref} FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data && data.integrations} total={data && data.total} setParams={setParams} params={params} />;
+	return <GenericTable
+		ref={ref}
+		header={header}
+		renderRow={renderRow}
+		results={data && data.integrations}
+		total={data && data.total}
+		setParams={setParams}
+		params={params}
+		renderFilter={({ onChange, ...props }) => <FilterByTypeAndText setFilter={onChange} {...props} />}
+	/>;
 }
 
 export default IntegrationsTable;

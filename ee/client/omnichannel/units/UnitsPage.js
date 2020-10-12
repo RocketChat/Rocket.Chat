@@ -49,7 +49,15 @@ function UnitsPage({
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>
-				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.units} total={data && data.total} setParams={setParams} params={params} />
+				<GenericTable
+					renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+					header={header}
+					renderRow={renderRow}
+					results={data && data.units}
+					total={data && data.total}
+					setParams={setParams}
+					params={params}
+				/>
 			</Page.Content>
 		</Page>
 		{children}

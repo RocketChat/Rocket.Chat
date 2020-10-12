@@ -61,7 +61,15 @@ function ManagersPage({
 			<Page.Header title={title}/>
 			<AddManager reload={reload} pi='x24'/>
 			<Page.Content>
-				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.users} total={data && data.total} setParams={setParams} params={params} />
+				<GenericTable
+					header={header}
+					renderRow={renderRow}
+					results={data && data.users}
+					total={data && data.total}
+					setParams={setParams}
+					params={params}
+					renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+				/>
 			</Page.Content>
 		</Page>
 		{children}

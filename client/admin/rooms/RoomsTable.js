@@ -162,7 +162,15 @@ function RoomsTable() {
 		</Table.Row>;
 	}, [mediaQuery, onClick, t]);
 
-	return <GenericTable FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data.rooms} total={data.total} setParams={setParams} params={params}/>;
+	return <GenericTable
+		header={header}
+		renderRow={renderRow}
+		results={data.rooms}
+		total={data.total}
+		setParams={setParams}
+		params={params}
+		renderFilter={({ onChange, ...props }) => <FilterByTypeAndText setFilter={onChange} {...props} />}
+	/>;
 }
 
 export default RoomsTable;

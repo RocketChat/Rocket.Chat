@@ -30,7 +30,15 @@ function CustomUserStatus({
 		</Table.Row>;
 	};
 
-	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.statuses} total={data.total} setParams={setParams} params={params} />;
+	return <GenericTable
+		header={header}
+		renderRow={renderRow}
+		results={data.statuses}
+		total={data.total}
+		setParams={setParams}
+		params={params}
+		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+	/>;
 }
 
 export default CustomUserStatus;

@@ -183,7 +183,7 @@ export function BusinessHoursTable({ businessHours, totalbusinessHours, params, 
 		total={totalbusinessHours}
 		params={params}
 		setParams={onChangeParams}
-		FilterComponent={FilterByText}
+		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
 	>
 		{(props) => <BusinessHoursRow key={props._id} medium={onMediumBreakpoint} reload={reload} {...props} />}
 	</GenericTable>;

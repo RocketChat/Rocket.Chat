@@ -49,7 +49,15 @@ function TagsPage({
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>
-				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.tags} total={data && data.total} setParams={setParams} params={params} />
+				<GenericTable
+					header={header}
+					renderRow={renderRow}
+					results={data && data.tags}
+					total={data && data.total}
+					setParams={setParams}
+					params={params}
+					renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+				/>
 			</Page.Content>
 		</Page>
 		{children}

@@ -9,14 +9,14 @@ import LoadingRow from './LoadingRow';
 
 const GenericTable = ({
 	children,
-	results,
 	fixed = true,
-	total,
-	renderRow: RenderRow,
 	header,
-	setParams = () => { },
 	params: paramsDefault = '',
-	FilterComponent = () => null,
+	renderFilter,
+	renderRow: RenderRow,
+	results,
+	setParams = () => { },
+	total,
 	...props
 }, ref) => {
 	const t = useTranslation();
@@ -43,7 +43,7 @@ const GenericTable = ({
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return <>
-		<FilterComponent setFilter={setFilter} { ...props}/>
+		{typeof renderFilter === 'function' ? renderFilter({ onChange: setFilter, ...props }) : null}
 		{results && !results.length
 			? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
 				{t('No_data_found')}

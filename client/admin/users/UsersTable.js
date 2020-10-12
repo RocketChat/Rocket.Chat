@@ -98,7 +98,6 @@ export function UsersTable() {
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	return <GenericTable
-		FilterComponent={FilterByText}
 		header={<>
 			<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>
 				{t('Name')}
@@ -120,6 +119,7 @@ export function UsersTable() {
 		total={data.total}
 		setParams={setParams}
 		params={params}
+		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
 	>
 		{(props) => <UserRow key={props._id} onClick={onClick} mediaQuery={mediaQuery} {...props}/>}
 	</GenericTable>;

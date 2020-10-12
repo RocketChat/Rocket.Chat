@@ -192,7 +192,16 @@ function CurrentChatsPage({
 		<Page>
 			<Page.Header title={title} />
 			<Page.Content>
-				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.rooms} total={data && data.total} setParams={setParams} params={params} reload={reload}/>
+				<GenericTable
+					header={header}
+					renderRow={renderRow}
+					results={data && data.rooms}
+					total={data && data.total}
+					setParams={setParams}
+					params={params}
+					reload={reload}
+					renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+				/>
 			</Page.Content>
 		</Page>
 		{children}

@@ -65,7 +65,7 @@ function AppsTable() {
 		total={filteredAppsCount}
 		params={params}
 		setParams={setParams}
-		FilterComponent={FilterByText}
+		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
 	>
 		{(props) => <AppRow key={props.id} medium={onMediumBreakpoint} {...props} />}
 	</GenericTable>;

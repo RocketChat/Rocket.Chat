@@ -105,7 +105,14 @@ function ChannelsTable() {
 	}
 	, [formatDate, mediaQuery, onClick]);
 
-	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.result} total={data.total} setParams={setParams} />;
+	return <GenericTable
+		header={header}
+		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+		renderRow={renderRow}
+		results={data.result}
+		setParams={setParams}
+		total={data.total}
+	/>;
 }
 
 export default function ChannelsTab(props) {

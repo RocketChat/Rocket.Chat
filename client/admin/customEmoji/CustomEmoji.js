@@ -28,7 +28,15 @@ function CustomEmoji({
 		</Table.Row>;
 	};
 
-	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.emojis} total={data.total} setParams={setParams} params={params} />;
+	return <GenericTable
+		header={header}
+		renderRow={renderRow}
+		results={data.emojis}
+		total={data.total}
+		setParams={setParams}
+		params={params}
+		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+	/>;
 }
 
 export default CustomEmoji;

@@ -23,5 +23,8 @@ export const _default = () => {
 		<GenericTable.HeaderCell>Data</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell>Info</GenericTable.HeaderCell>,
 	];
-	return <GenericTable FilterComponent={Search} header={header} />;
+	return <GenericTable
+		header={header}
+		renderFilter={(props) => <Search {...props} />}
+	/>;
 };

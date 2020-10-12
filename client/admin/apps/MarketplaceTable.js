@@ -72,7 +72,7 @@ function MarketplaceTable() {
 		total={filteredAppsCount}
 		setParams={setParams}
 		params={params}
-		FilterComponent={FilterByText}
+		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
 	>
 		{(props) => <MarketplaceRow
 			key={props.id}
