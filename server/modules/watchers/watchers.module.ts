@@ -1,5 +1,3 @@
-// import { Authorization } from '../../sdk';
-// import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
@@ -22,9 +20,10 @@ import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
 import { IUserSession } from '../../../definition/IUserSession';
 import { subscriptionFields, roomFields } from './publishFields';
 import { IUser } from '../../../definition/IUser';
+import { LoginServiceConfigurationRaw } from '../../../app/models/server/raw/LoginServiceConfiguration';
+import { ILoginServiceConfiguration } from '../../../definition/ILoginServiceConfiguration';
 
 interface IModelsParam {
-	// Rooms: RoomsRaw;
 	Subscriptions: SubscriptionsRaw;
 	Permissions: PermissionsRaw;
 	Users: UsersRaw;
@@ -34,6 +33,7 @@ interface IModelsParam {
 	UsersSessions: UsersSessionsRaw;
 	Roles: RolesRaw;
 	Rooms: RoomsRaw;
+	LoginServiceConfiguration: LoginServiceConfigurationRaw;
 }
 
 interface IChange<T> {
@@ -56,6 +56,7 @@ export function initWatchers({
 	Permissions,
 	LivechatInquiry,
 	Rooms,
+	LoginServiceConfiguration,
 }: IModelsParam, watch: Watcher): void {
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
@@ -241,5 +242,15 @@ export function initWatchers({
 
 	watch<IUser>(Users, ({ clientAction, id, data, diff }) => {
 		api.broadcast('watch.users', { clientAction, data, diff, id });
+	});
+
+	watch<ILoginServiceConfiguration>(LoginServiceConfiguration, async ({ clientAction, id }) => {
+		const data = await InstanceStatus.findOneById(id, { projection: { secret: 0 } });
+		if (!data) {
+			return;
+		}
+
+		api.broadcast('watch.loginServiceConfiguration', { clientAction, data, id });
+	});
 	});
 }

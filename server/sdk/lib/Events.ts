@@ -9,6 +9,7 @@ import { AutoUpdateRecord } from '../types/IMeteor';
 import { IEmoji } from '../../../definition/IEmoji';
 import { IUserStatus } from '../../../definition/IUserStatus';
 import { IUserSession } from '../../../definition/IUserSession';
+import { ILoginServiceConfiguration } from '../../../definition/ILoginServiceConfiguration';
 
 export type EventSignatures = {
 	'emoji.deleteCustom'(emoji: IEmoji): void;
@@ -17,7 +18,6 @@ export type EventSignatures = {
 	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: IInquiry }): void;
 	'message'(data: { action: string; message: IMessage }): void;
 	'meteor.autoUpdateClientVersionChanged'(data: {record: AutoUpdateRecord }): void;
-	'meteor.loginServiceConfiguration'(data: { action: string; record: any }): void;
 	'notify.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 	'permission.changed'(data: { clientAction: string; data: any }): void;
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
@@ -43,4 +43,5 @@ export type EventSignatures = {
 	'watch.inquiries'(data: { clientAction: string; inquiry: IInquiry; diff?: Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: string; setting: ISetting }): void;
 	'watch.users'(data: { clientAction: string; data?: Partial<IUser>; diff?: Record<string, any>; id: string }): void;
+	'watch.loginServiceConfiguration'(data: { clientAction: string; data: Partial<ILoginServiceConfiguration>; id: string }): void;
 }

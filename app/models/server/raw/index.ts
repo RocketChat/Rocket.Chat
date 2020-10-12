@@ -54,6 +54,8 @@ import UsersSessionsModel from '../models/UsersSessions';
 import { ServerEventsRaw } from './ServerEvents';
 import { trash } from '../models/_BaseDb';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
+import LoginServiceConfigurationModel from '../models/LoginServiceConfiguration';
+import { LoginServiceConfigurationRaw } from './LoginServiceConfiguration';
 
 const trashCollection = trash.rawCollection();
 
@@ -84,6 +86,7 @@ export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusine
 export const ServerEvents = new ServerEventsRaw(ServerEventModel.model.rawCollection(), trashCollection);
 export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollection, { Users, Subscriptions });
 export const UsersSessions = new UsersSessionsRaw(UsersSessionsModel.model.rawCollection(), trashCollection);
+export const LoginServiceConfiguration = new LoginServiceConfigurationRaw(LoginServiceConfigurationModel.model.rawCollection(), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
@@ -95,6 +98,7 @@ const map = {
 	[LivechatInquiry.col.collectionName]: LivechatInquiryModel,
 	[UsersSessions.col.collectionName]: UsersSessionsModel,
 	[Rooms.col.collectionName]: RoomsModel,
+	[LoginServiceConfiguration.col.collectionName]: LoginServiceConfigurationModel,
 };
 
 initWatchers({
@@ -107,6 +111,7 @@ initWatchers({
 	Permissions,
 	Roles,
 	Rooms,
+	LoginServiceConfiguration,
 }, (model, fn) => {
 	const meteorModel = map[model.col.collectionName];
 

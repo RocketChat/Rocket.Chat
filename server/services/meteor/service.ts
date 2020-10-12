@@ -14,7 +14,6 @@ import { setValue, updateValue } from '../../../app/settings/server/raw';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { minimongoChangeMap } from '../listeners/notification';
-import loginServiceConfiguration from '../../../app/models/server/models/LoginServiceConfiguration';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { IUser } from '../../../definition/IUser';
 
@@ -46,11 +45,11 @@ type Callbacks = {
 let processOnChange: (diff: Record<string, any>, id: string) => void;
 // eslint-disable-next-line no-undef
 const disableOplog = Package['disable-oplog'];
+const serviceConfigCallbacks = new Set<Callbacks>();
 
 if (disableOplog) {
 	// Stores the callbacks for the disconnection reactivity bellow
 	const userCallbacks = new Map();
-	const serviceConfigCallbacks = new Set<Callbacks>();
 
 	// Overrides the native observe changes to prevent database polling and stores the callbacks
 	// for the users' tokens to re-implement the reactivity based on our database listeners
@@ -107,23 +106,6 @@ if (disableOplog) {
 			}
 		}
 	};
-
-	loginServiceConfiguration.on('change', ({ clientAction, id, data, diff }) => {
-		switch (clientAction) {
-			case 'inserted':
-			case 'updated':
-				const record = { ...data || diff };
-				delete record.secret;
-				serviceConfigCallbacks.forEach((callbacks) => {
-					callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, record);
-				});
-				break;
-			case 'removed':
-				serviceConfigCallbacks.forEach((callbacks) => {
-					callbacks.removed?.(id);
-				});
-		}
-	});
 }
 
 export class MeteorService extends ServiceClass implements IMeteor {
@@ -162,6 +144,19 @@ export class MeteorService extends ServiceClass implements IMeteor {
 				if (clientAction === 'updated' && diff) {
 					processOnChange(diff, id);
 				}
+			});
+
+			this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
+				if (clientAction === 'removed') {
+					serviceConfigCallbacks.forEach((callbacks) => {
+						callbacks.removed?.(id);
+					});
+					return;
+				}
+
+				serviceConfigCallbacks.forEach((callbacks) => {
+					callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
+				});
 			});
 		}
 

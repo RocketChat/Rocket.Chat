@@ -1,7 +1,6 @@
 import { watchUsers } from './watchUsers';
 import { getConnection } from '../mongo';
 import { ServiceClass, IServiceClass } from '../../../../server/sdk/types/ServiceClass';
-import { watchLoginServiceConfiguration } from './watchLoginServiceConfiguration';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 import { MessagesRaw } from '../../../../app/models/server/raw/Messages';
 import { UsersRaw } from '../../../../app/models/server/raw/Users';
@@ -11,6 +10,7 @@ import { RolesRaw } from '../../../../app/models/server/raw/Roles';
 import { LivechatInquiryRaw } from '../../../../app/models/server/raw/LivechatInquiry';
 import { UsersSessionsRaw } from '../../../../app/models/server/raw/UsersSessions';
 import { RoomsRaw } from '../../../../app/models/server/raw/Rooms';
+import { LoginServiceConfigurationRaw } from '../../../../app/models/server/raw/LoginServiceConfiguration';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
@@ -19,7 +19,6 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const db = await getConnection();
 
 		const Trash = db.collection('rocketchat_trash');
-		const loginServiceConfiguration = db.collection('meteor_accounts_loginServiceConfiguration');
 
 		const UsersCol = db.collection('users');
 		const SettingsCol = db.collection('rocketchat_settings');
@@ -33,6 +32,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const Messages = new MessagesRaw(db.collection('rocketchat_message'), Trash);
 		const Permissions = new MessagesRaw(db.collection('rocketchat_permissions'), Trash);
 		const Roles = new RolesRaw(db.collection('rocketchat_roles'), Trash, { Users, Subscriptions });
+		const LoginServiceConfiguration = new LoginServiceConfigurationRaw(db.collection('meteor_accounts_loginServiceConfiguration'), Trash);
 
 		const models = {
 			Messages,
@@ -44,6 +44,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			Settings,
 			Roles,
 			Rooms,
+			LoginServiceConfiguration,
 		};
 
 		initWatchers(models, (model, fn) => {
@@ -124,7 +125,5 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		// 		},
 		// 	},
 		// }], { fullDocument: 'updateLookup' }).on('change', watchSettings);
-
-		loginServiceConfiguration.watch([{ $project: { 'fullDocument.secret': 0 } }], { fullDocument: 'updateLookup' }).on('change', watchLoginServiceConfiguration);
 	}
 }
