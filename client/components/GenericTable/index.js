@@ -1,36 +1,13 @@
-import { Box, Pagination, Skeleton, Table, Flex, Tile, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Pagination, Table, Tile, Scrollable } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
+import React, { useState, useEffect, useCallback, forwardRef } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import SortIcon from './SortIcon';
+import HeaderCell from './HeaderCell';
+import LoadingRow from './LoadingRow';
 
-function Th({ children, active, direction, sort, onClick, align, ...props }) {
-	const fn = useMemo(() => () => onClick && onClick(sort), [sort, onClick]);
-	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
-		<Box display='flex' alignItems='center' wrap='no-wrap'>{children}{sort && <SortIcon direction={active && direction} />}</Box>
-	</Table.Cell>;
-}
-
-const LoadingRow = ({ cols }) => <Table.Row>
-	<Table.Cell>
-		<Box display='flex'>
-			<Flex.Item>
-				<Skeleton variant='rect' height={40} width={40} />
-			</Flex.Item>
-			<Box mi='x8' flexGrow={1}>
-				<Skeleton width='100%' />
-				<Skeleton width='100%' />
-			</Box>
-		</Box>
-	</Table.Cell>
-	{ Array.from({ length: cols - 1 }, (_, i) => <Table.Cell key={i}>
-		<Skeleton width='100%' />
-	</Table.Cell>)}
-</Table.Row>;
-
-const GenericTable = forwardRef(function GenericTable({
+const GenericTable = ({
 	children,
 	results,
 	fixed = true,
@@ -41,7 +18,7 @@ const GenericTable = forwardRef(function GenericTable({
 	params: paramsDefault = '',
 	FilterComponent = () => null,
 	...props
-}, ref) {
+}, ref) => {
 	const t = useTranslation();
 
 	const [filter, setFilter] = useState(paramsDefault);
@@ -104,8 +81,8 @@ const GenericTable = forwardRef(function GenericTable({
 			</>
 		}
 	</>;
-});
+};
 
-export default Object.assign(GenericTable, {
-	HeaderCell: Th,
+export default Object.assign(forwardRef(GenericTable), {
+	HeaderCell,
 });

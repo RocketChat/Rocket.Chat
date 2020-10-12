@@ -274,6 +274,7 @@ declare module '@rocket.chat/fuselage' {
 	};
 	type TableCellProps = BoxProps & {
 		align?: 'start' | 'center' | 'end';
+		clickable?: boolean;
 	};
 	export const Table: ForwardRefExoticComponent<TableProps> & {
 		Head: ForwardRefExoticComponent<TableHeadProps>;
