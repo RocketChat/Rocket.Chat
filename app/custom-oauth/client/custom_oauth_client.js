@@ -7,6 +7,7 @@ import { OAuth } from 'meteor/oauth';
 import s from 'underscore.string';
 
 import { isURL } from '../../utils/lib/isURL';
+import { callbacks } from '../../callbacks';
 
 // Request custom OAuth credentials for the user
 // @param options {optional}
@@ -66,6 +67,7 @@ export class CustomOAuth {
 
 			const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback);
 			this.requestCredential(options, credentialRequestCompleteCallback);
+			callbacks.run('onUserLogin');
 		};
 	}
 

@@ -1,14 +1,20 @@
+import URL from 'url';
+
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 
-import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger, LivechatFilter } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
 
 export function online(department) {
 	return Livechat.online(department);
+}
+
+export function findFilters() {
+	return LivechatFilter.findEnabled().fetch().map((trigger) => _.pick(trigger, '_id', 'regex', 'slug'));
 }
 
 export function findTriggers() {
@@ -88,19 +94,52 @@ export function normalizeHttpHeaderData(headers = {}) {
 	const httpHeaders = Object.assign({}, headers);
 	return { httpHeaders };
 }
-export function settings() {
+
+export function settings(url) {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = findTriggers();
+	const filters = findFilters();
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
 	const emojis = Meteor.call('listEmojiCustom');
+
+	const shouldShowRegistrationForm = () => {
+		if (!url) {
+			return initSettings.Livechat_registration_form;
+		}
+
+		let skipOnDomainList = initSettings.Livechat_skip_registration_form_DomainsList;
+		skipOnDomainList = (!_.isEmpty(skipOnDomainList.trim()) && _.map(skipOnDomainList.split(','), function(domain) {
+			return domain.trim();
+		})) || [];
+
+		const urlObject = URL.parse(url);
+		const { hostname: urlHost, pathname: urlPath } = urlObject;
+
+		const matchedDomain = skipOnDomainList.find((domain) => {
+			if (!domain.match(/^[a-zA-Z]+:\/\//)) {
+				domain = `http://${ domain }`;
+			}
+			const domainUrlObject = URL.parse(domain);
+			const { hostname: domainHost, pathname: domainPath } = domainUrlObject;
+
+			if (domainPath !== '/') {
+				return domainHost.includes(urlHost) && (domainPath === urlPath);
+			}
+			return domainHost.includes(urlHost);
+		});
+
+		return initSettings.Livechat_registration_form && !matchedDomain;
+	};
+
 	return {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
-			registrationForm: initSettings.Livechat_registration_form,
+			registrationForm: shouldShowRegistrationForm(),
 			allowSwitchingDepartments: initSettings.Livechat_allow_switching_departments,
 			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
 			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,
+			guestDefaultAvatar: initSettings.Assets_livechat_guest_default_avatar,
 			displayOfflineForm: initSettings.Livechat_display_offline_form,
 			videoCall: initSettings.Livechat_videocall_enabled === true && initSettings.Jitsi_Enabled === true,
 			fileUpload: initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled,
@@ -138,6 +177,7 @@ export function settings() {
 			values: ['1', '2', '3', '4', '5'],
 		},
 		triggers,
+		filters,
 		departments,
 		resources: {
 			sound,

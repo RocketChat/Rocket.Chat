@@ -61,6 +61,7 @@
 	--rc-color-primary-lightest: var(--color-gray-lightest);
 	--rc-color-content: var(--color-white);
 	--rc-color-link-active: var(--rc-color-button-primary);
+	--veranda-color-primary: #008085;
 
 	/* #endregion */
 
@@ -233,6 +234,7 @@
 	* Sidebar Account
 	*/
 	--sidebar-account-thumb-size: 23px;
+	--sidebar-account-thumb-size-mobile: 1.75em;
 	--sidebar-small-account-thumb-size: 40px;
 	--sidebar-account-status-bullet-size: 10px;
 	--sidebar-small-account-status-bullet-size: 8px;
@@ -266,6 +268,7 @@
 	--sidebar-item-user-status-size: 6px;
 	--sidebar-item-user-status-radius: 50%;
 	--sidebar-item-text-size: 0.875rem;
+	--sidebar-item-text-size-mobile: 1rem;
 
 	/*
 	* Modal
@@ -293,8 +296,10 @@
 	*/
 	--rooms-list-title-color: var(--rc-color-primary-light);
 	--rooms-list-title-text-size: 0.75rem;
+	--rooms-list-title-text-size-mobile: 1rem;
 	--rooms-list-empty-text-color: var(--color-gray);
 	--rooms-list-empty-text-size: 0.75rem;
+	--rooms-list-empty-text-size-mobile: 1rem;
 	--rooms-list-padding: var(--sidebar-default-padding);
 	--rooms-list-small-padding: var(--sidebar-small-default-padding);
 

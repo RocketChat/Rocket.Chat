@@ -110,6 +110,11 @@
 		border: 0;
 		border-color: var(--button-cancel-color);
 		background-color: var(--button-cancel-color);
+
+		.rc-button-icon {
+			display: none;
+			visibility: hidden;
+		}
 	}
 
 	&--cancel.rc-button--outline {
@@ -215,5 +220,19 @@
 @media (width < 780px) {
 	.rc-button--full {
 		width: 100%;
+	}
+
+	.rc-button--cancel {
+		padding: 0 1rem;
+
+		.rc-button-icon {
+			display: block;
+			visibility: visible;
+		}
+
+		.rc-button-text {
+			display: none;
+			visibility: hidden;
+		}
 	}
 }

@@ -1,5 +1,7 @@
 import './polyfills';
 
+import './importServiceWorker';
+
 import './lib/meteorCallWrapper';
 import './importPackages';
 import '../imports/startup/client';
@@ -17,6 +19,7 @@ import './methods/toggleFavorite';
 import './methods/updateMessage';
 import './notifications/notification';
 import './notifications/updateAvatar';
+import './notifications/updateUserDetailsForPushSubscription';
 import './notifications/updateUserState';
 import './notifications/UsersNameChanged';
 import './routes';

@@ -9,9 +9,11 @@ API.v1.addRoute('livechat/config', {
 			check(this.queryParams, {
 				token: Match.Maybe(String),
 				department: Match.Maybe(String),
+				url: Match.Maybe(String),
 			});
 
-			const config = settings();
+			const { url } = this.queryParams;
+			const config = settings(url);
 			if (!config.enabled) {
 				return API.v1.success({ config: { enabled: false } });
 			}

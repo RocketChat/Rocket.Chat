@@ -1,3 +1,4 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
@@ -6,7 +7,6 @@ import EventEmitter from 'wolfy87-eventemitter';
 import { isRtl } from '../../../utils';
 
 const sideNavW = 280;
-const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 
 export const menu = new class extends EventEmitter {
 	constructor() {
@@ -104,23 +104,20 @@ export const menu = new class extends EventEmitter {
 					this.diff = 0;
 				}
 			}
-			// if (map((this.diff / sideNavW), 0, 1, -.1, .8) > 0) {
 			this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
-			// this.sidebarWrap.css('z-index', '9998');
 			this.translate(this.diff);
-			// }
 		}
 	}
 
-	translate(diff, width = sideNavW) {
+	translate(diff) {
 		if (diff === undefined) {
 			diff = this.isRtl ? -1 * sideNavW : sideNavW;
 		}
-		this.sidebarWrap.css('width', '100%');
+
 		this.wrapper.css('overflow', 'hidden');
-		this.sidebarWrap.css('background-color', '#000');
-		this.sidebarWrap.css('opacity', map(Math.abs(diff) / width, 0, 1, -0.1, 0.8).toFixed(2));
-		this.isRtl ? this.sidebar.css('transform', `translate3d(${ (sideNavW + diff).toFixed(3) }px, 0 , 0)`) : this.sidebar.css('transform', `translate3d(${ (diff - sideNavW).toFixed(3) }px, 0 , 0)`);
+
+		// WIDECHAT translate main content
+		this.isRtl ? this.mainContent.css('transform', `translate3d(${ diff.toFixed(3) }px, 0 , 0)`) : this.mainContent.css('transform', `translate3d(${ diff.toFixed(3) }px, 0 , 0)`);
 	}
 
 	touchend() {
@@ -154,6 +151,8 @@ export const menu = new class extends EventEmitter {
 		this.sidebar = this.menu;
 		this.sidebarWrap = $('.sidebar-wrap');
 		this.wrapper = $('.messages-box > .wrapper');
+		this.mainContent = $('.main-content');
+
 		const ignore = (fn) => (event) => document.body.clientWidth <= 780 && fn(event);
 
 		document.body.addEventListener('touchstart', ignore((e) => this.touchstart(e)));
@@ -163,21 +162,21 @@ export const menu = new class extends EventEmitter {
 			e.target === this.sidebarWrap[0] && this.isOpen() && this.emit('clickOut', e);
 		}));
 		this.on('close', () => {
-			this.sidebarWrap.css('width', '');
-			// this.sidebarWrap.css('z-index', '');
-			this.sidebarWrap.css('background-color', '');
-			this.sidebar.css('transform', '');
-			this.sidebar.css('box-shadow', '');
-			this.sidebar.css('transition', '');
-			this.sidebarWrap.css('transition', '');
-			this.wrapper && this.wrapper.css('overflow', '');
+			// WIDECHAT open main content
+			this.mainContent.css('transform', 'translate3d( 0, 0 , 0)');
 		});
 		this.on('open', ignore(() => {
-			this.sidebar.css('box-shadow', '0 0 15px 1px rgba(0,0,0,.3)');
-			// this.sidebarWrap.css('z-index', '9998');
-			this.translate();
+			// WIDECHAT close main content
+			this.mainContent.css('transform', 'translate3d( 100%, 0 , 0)');
+			if (!FlowRouter.current().path.startsWith('/admin')
+				&& !FlowRouter.current().path.startsWith('/account')
+				&& !FlowRouter.current().path.startsWith('/omnichannel')) {
+				FlowRouter.withReplaceState(function() {
+					FlowRouter.go('/home');
+				});
+				Session.set('openSearchPage', false);
+			}
 		}));
-		this.mainContent = $('.main-content');
 
 		this.list = $('.rooms-list');
 		this._open = false;

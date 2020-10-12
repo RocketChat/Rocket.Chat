@@ -503,6 +503,26 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
+		this.add('Accounts_Default_User_Preferences_discoverability', 'all', {
+			type: 'select',
+			values: [
+				{
+					key: 'all',
+					i18nLabel: 'Everyone',
+				},
+				{
+					key: 'contacts',
+					i18nLabel: 'My Contacts',
+				},
+				{
+					key: 'none',
+					i18nLabel: 'Nobody',
+				},
+			],
+
+			public: true,
+			i18nLabel: 'Discoverability',
+		});
 	});
 
 	this.section('Avatar', function() {
@@ -930,6 +950,14 @@ settings.addGroup('General', function() {
 			public: true,
 			i18nDescription: 'Notifications_Max_Room_Members_Description',
 		});
+		this.add('Notifications_Always_Notify_Mobile', false, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Notifications_Always_Notify_Mobile_Description',
+		});
+		this.add('Notification_Service_User_Username', 'viasat.notification.service', {
+			type: 'string',
+		});
 	});
 	this.section('REST API', function() {
 		return this.add('API_User_Limit', 500, {
@@ -999,6 +1027,11 @@ settings.addGroup('Message', function() {
 	this.add('Message_AllowEditing', true, {
 		type: 'boolean',
 		public: true,
+	});
+	this.add('Message_AllowPrefetch_PrefetchRoomLimit', 20, {
+		type: 'int',
+		public: true,
+		i18nDescription: 'Message_AllowPrefetch_PrefetchRoomLimit',
 	});
 	this.add('Message_AllowEditing_BlockEditInMinutes', 0, {
 		type: 'int',
@@ -1281,10 +1314,26 @@ settings.addGroup('Push', function() {
 			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
+		this.add('Vapid_public_key', '', {
+			type: 'string',
+			public: true,
+		});
+		this.add('Vapid_private_key', '', {
+			type: 'string',
+			secret: true,
+		});
+		this.add('Vapid_subject', 'https://www.viasat.com', {
+			type: 'string',
+			public: false,
+		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
 			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
+		});
+		this.add('Gcm_sender_id', '', {
+			type: 'string',
+			public: true,
 		});
 		return this.add('Push_gcm_project_number', '', {
 			type: 'string',
@@ -1378,6 +1427,58 @@ settings.addGroup('Layout', function() {
 	});
 	return this.section('User_Interface', function() {
 		this.add('UI_DisplayRoles', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayLocalization', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayPrivacy', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayUserPresence', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayNotifications', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayMessages', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplaySidebar', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayHighlights', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplaySound', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayMyData', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_DisplayDirectory', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_Display_Security', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_Display_Integrations', true, {
+			type: 'boolean',
+			public: true,
+		});
+		this.add('UI_Display_Personal_Access_Tokens', true, {
 			type: 'boolean',
 			public: true,
 		});

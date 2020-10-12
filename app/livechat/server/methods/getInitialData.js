@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { LivechatRooms, Users, LivechatDepartment, LivechatTrigger, LivechatVisitors } from '../../../models';
+import { LivechatRooms, Users, LivechatDepartment, LivechatTrigger, LivechatFilter, LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -13,6 +13,7 @@ Meteor.methods({
 			registrationForm: null,
 			room: null,
 			visitor: null,
+			filters: [],
 			triggers: [],
 			departments: [],
 			allowSwitchingDepartments: null,
@@ -28,6 +29,7 @@ Meteor.methods({
 			conversationFinishedText: null,
 			nameFieldRegistrationForm: null,
 			emailFieldRegistrationForm: null,
+			guestDefaultAvatar: null,
 			registrationFormMessage: null,
 			showConnecting: false,
 		};
@@ -83,10 +85,15 @@ Meteor.methods({
 		info.conversationFinishedText = initSettings.Livechat_conversation_finished_text;
 		info.nameFieldRegistrationForm = initSettings.Livechat_name_field_registration_form;
 		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
+		info.guestDefaultAvatar = initSettings.Assets_livechat_guest_default_avatar;
 		info.registrationFormMessage = initSettings.Livechat_registration_form_message;
 		info.showConnecting = initSettings.Livechat_Show_Connecting;
 
 		info.agentData = room && room[0] && room[0].servedBy && Users.getAgentInfo(room[0].servedBy._id);
+
+		LivechatFilter.findEnabled().forEach((filter) => {
+			info.filters.push(_.pick(filter, '_id', 'regex', 'slug'));
+		});
 
 		LivechatTrigger.findEnabled().forEach((trigger) => {
 			info.triggers.push(_.pick(trigger, '_id', 'actions', 'conditions', 'runOnce'));
