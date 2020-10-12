@@ -1,13 +1,14 @@
-import { Box, Margins, Table, Avatar, Tag, Icon, TextInput } from '@rocket.chat/fuselage';
+import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 
-import GenericTable from '../../components/GenericTable';
 import MarkdownText from '../../components/basic/MarkdownText';
+import FilterByText from '../../components/FilterByText';
+import GenericTable from '../../components/GenericTable';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import { useTranslation } from '../../contexts/TranslationContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRoute } from '../../contexts/RouterContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
 import { roomTypes } from '../../../app/utils/client';
@@ -24,20 +25,6 @@ function RoomTags({ room }) {
 		</Margins>
 	</Box>;
 }
-
-const FilterByText = ({ setFilter, ...props }) => {
-	const t = useTranslation();
-	const [text, setText] = useState('');
-	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
-
-	useEffect(() => {
-		setFilter({ text });
-	}, [setFilter, text]);
-
-	return <Box flexShrink={0} mb='x16' is='form' display='flex' flexDirection='column' {...props}>
-		<TextInput flexShrink={0} placeholder={t('Search_Channels')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-	</Box>;
-};
 
 function ChannelsTable() {
 	const t = useTranslation();
@@ -107,7 +94,7 @@ function ChannelsTable() {
 
 	return <GenericTable
 		header={header}
-		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Channels')} onChange={onChange} {...props} />}
 		renderRow={renderRow}
 		results={data.result}
 		setParams={setParams}

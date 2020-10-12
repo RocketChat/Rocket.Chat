@@ -1,28 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { TextInput, Button, Box, Icon } from '@rocket.chat/fuselage';
+import React, { useState } from 'react';
+import { Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
+import { UserAutoComplete } from '../../components/basic/AutoComplete';
 import Page from '../../components/basic/Page';
+import FilterByText from '../../components/FilterByText';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
-import GenericTable from '../../components/GenericTable';
-import { UserAutoComplete } from '../../components/basic/AutoComplete';
-
-const FilterByText = ({ setFilter, ...props }) => {
-	const t = useTranslation();
-	const [text, setText] = useState('');
-
-	const handleChange = useMutableCallback((event) => setText(event.currentTarget.value));
-	const onSubmit = useMutableCallback((e) => e.preventDefault());
-
-	useEffect(() => {
-		setFilter({ text });
-	}, [setFilter, text]);
-	return <Box mb='x16' is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
-		<TextInput flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-	</Box>;
-};
-
 
 function AddAgent({ reload, ...props }) {
 	const t = useTranslation();
@@ -69,7 +54,7 @@ function AgentsPage({
 					total={data && data.total}
 					setParams={setParams}
 					params={params}
-					renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+					renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
 				/>
 			</Page.Content>
 		</Page>

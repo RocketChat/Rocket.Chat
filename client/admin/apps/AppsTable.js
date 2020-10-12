@@ -7,7 +7,7 @@ import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint
 import { useFilteredApps } from './hooks/useFilteredApps';
 import { AppDataContext } from './AppProvider';
 import AppRow from './AppRow';
-import FilterByText from './FilterByText';
+import FilterByText from '../../components/FilterByText';
 
 function AppsTable() {
 	const t = useTranslation();
@@ -65,7 +65,7 @@ function AppsTable() {
 		total={filteredAppsCount}
 		params={params}
 		setParams={setParams}
-		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Apps')} onChange={onChange} {...props} />}
 	>
 		{(props) => <AppRow key={props.id} medium={onMediumBreakpoint} {...props} />}
 	</GenericTable>;

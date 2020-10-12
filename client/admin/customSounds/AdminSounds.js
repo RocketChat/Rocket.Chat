@@ -1,10 +1,10 @@
 import React, { useMemo, useCallback } from 'react';
 import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../contexts/TranslationContext';
+import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import { useCustomSound } from '../../contexts/CustomSoundContext';
-import FilterByText from './FilterByText';
+import { useTranslation } from '../../contexts/TranslationContext';
 
 function AdminSounds({
 	data,
@@ -47,7 +47,7 @@ function AdminSounds({
 		total={data.total}
 		setParams={setParams}
 		params={params}
-		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
 	/>;
 }
 

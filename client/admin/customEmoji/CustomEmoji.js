@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Box, Table } from '@rocket.chat/fuselage';
 
+import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import FilterByText from './FilterByText';
 
 function CustomEmoji({
 	data,
@@ -35,7 +35,7 @@ function CustomEmoji({
 		total={data.total}
 		setParams={setParams}
 		params={params}
-		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
 	/>;
 }
 

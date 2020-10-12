@@ -6,8 +6,8 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useFilteredApps } from './hooks/useFilteredApps';
 import { AppDataContext } from './AppProvider';
-import FilterByText from './FilterByText';
 import MarketplaceRow from './MarketplaceRow';
+import FilterByText from '../../components/FilterByText';
 
 function MarketplaceTable() {
 	const t = useTranslation();
@@ -72,7 +72,7 @@ function MarketplaceTable() {
 		total={filteredAppsCount}
 		setParams={setParams}
 		params={params}
-		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Apps')} onChange={onChange} {...props} />}
 	>
 		{(props) => <MarketplaceRow
 			key={props.id}

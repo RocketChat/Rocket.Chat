@@ -1,31 +1,18 @@
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
-import { Box, Table, Flex, TextInput, Icon } from '@rocket.chat/fuselage';
+import React, { useMemo, useState, useCallback } from 'react';
+import { Box, Table, Flex } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
+import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import MarkdownText from '../../components/basic/MarkdownText';
+import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useRoute } from '../../contexts/RouterContext';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
-import { useQuery } from './hooks';
+import { useRoute } from '../../contexts/RouterContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormatDate } from '../../hooks/useFormatDate';
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
-import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import MarkdownText from '../../components/basic/MarkdownText';
-
-const FilterByText = ({ setFilter, ...props }) => {
-	const t = useTranslation();
-	const [text, setText] = useState('');
-	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
-
-	useEffect(() => {
-		setFilter({ text });
-	}, [text, setFilter]);
-
-	return <Box mb='x16' is='form' display='flex' flexDirection='column' {...props}>
-		<TextInput flexShrink={0} placeholder={t('Search_Users')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-	</Box>;
-};
+import { useQuery } from './hooks';
 
 function UserTable({
 	workspace = 'local',
@@ -102,7 +89,7 @@ function UserTable({
 
 	return <GenericTable
 		header={header}
-		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Users')} onChange={onChange} {...props} />}
 		renderRow={renderRow}
 		results={data.result}
 		setParams={setParams}

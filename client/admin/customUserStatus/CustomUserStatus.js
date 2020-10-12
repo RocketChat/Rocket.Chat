@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Table } from '@rocket.chat/fuselage';
 
+import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import FilterByText from './FilterByText';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -37,7 +37,7 @@ function CustomUserStatus({
 		total={data.total}
 		setParams={setParams}
 		params={params}
-		renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
 	/>;
 }
 
