@@ -28,6 +28,8 @@ import { IntegrationHistoryRaw } from '../../../app/models/server/raw/Integratio
 import { IIntegrationHistory } from '../../../definition/IIntegrationHistory';
 import { LivechatDepartmentAgentsRaw } from '../../../app/models/server/raw/LivechatDepartmentAgents';
 import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartmentAgents';
+import { IIntegration } from '../../../definition/IIntegration';
+import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -43,6 +45,7 @@ interface IModelsParam {
 	LoginServiceConfiguration: LoginServiceConfigurationRaw;
 	InstanceStatus: InstanceStatusRaw;
 	IntegrationHistory: IntegrationHistoryRaw;
+	Integrations: IntegrationsRaw;
 }
 
 interface IChange<T> {
@@ -69,6 +72,7 @@ export function initWatchers({
 	LoginServiceConfiguration,
 	InstanceStatus,
 	IntegrationHistory,
+	Integrations,
 }: IModelsParam, watch: Watcher): void {
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
@@ -306,5 +310,19 @@ export function initWatchers({
 				break;
 			}
 		}
+	});
+
+	watch<IIntegration>(Integrations, async ({ clientAction, id, data }) => {
+		if (clientAction === 'removed') {
+			api.broadcast('watch.integrations', { clientAction, id, data: { _id: id } });
+			return;
+		}
+
+		data = data ?? await Integrations.findOneById(id);
+		if (!data) {
+			return;
+		}
+
+		api.broadcast('watch.integrations', { clientAction, data, id });
 	});
 }

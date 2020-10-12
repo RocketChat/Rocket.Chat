@@ -17,6 +17,7 @@ import { minimongoChangeMap } from '../listeners/notification';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { IUser } from '../../../definition/IUser';
 import { matrixBroadCastActions } from '../../stream/streamBroadcast';
+import { integrations } from '../../../app/integrations/server/lib/triggerHandler';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -204,6 +205,25 @@ export class MeteorService extends ServiceClass implements IMeteor {
 					break;
 				case 'removed':
 					onlineAgents.remove(id);
+					break;
+			}
+		});
+
+		this.onEvent('watch.integrations', async ({ clientAction, id, data }) => {
+			switch (clientAction) {
+				case 'inserted':
+					if (data.type === 'webhook-outgoing') {
+						integrations.triggerHandler.addIntegration(data);
+					}
+					break;
+				case 'updated':
+					if (data.type === 'webhook-outgoing') {
+						integrations.triggerHandler.removeIntegration(data);
+						integrations.triggerHandler.addIntegration(data);
+					}
+					break;
+				case 'removed':
+					integrations.triggerHandler.removeIntegration({ _id: id });
 					break;
 			}
 		});

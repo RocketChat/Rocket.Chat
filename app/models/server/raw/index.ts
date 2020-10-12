@@ -108,6 +108,7 @@ const map = {
 	[LoginServiceConfiguration.col.collectionName]: LoginServiceConfigurationModel,
 	[InstanceStatus.col.collectionName]: InstanceStatusModel,
 	[IntegrationHistory.col.collectionName]: IntegrationHistoryModel,
+	[Integrations.col.collectionName]: IntegrationsModel,
 };
 
 initWatchers({
@@ -124,6 +125,7 @@ initWatchers({
 	LoginServiceConfiguration,
 	InstanceStatus,
 	IntegrationHistory,
+	Integrations,
 }, (model, fn) => {
 	const meteorModel = map[model.col.collectionName];
 
