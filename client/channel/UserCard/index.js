@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -10,21 +10,8 @@ import { Backdrop } from '../../components/basic/Backdrop';
 import * as UserStatus from '../../components/basic/UserStatus';
 import { LocalTime } from '../../components/basic/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
+import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { useCurrentRoute } from '../../contexts/RouterContext';
-
-export const useComponentDidUpdate = (
-	effect,
-	dependencies = [],
-) => {
-	const hasMounted = useRef(false);
-	useEffect(() => {
-		if (!hasMounted.current) {
-			hasMounted.current = true;
-			return;
-		}
-		effect();
-	}, dependencies);
-};
 
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
