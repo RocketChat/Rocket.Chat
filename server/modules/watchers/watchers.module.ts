@@ -22,6 +22,8 @@ import { subscriptionFields, roomFields } from './publishFields';
 import { IUser } from '../../../definition/IUser';
 import { LoginServiceConfigurationRaw } from '../../../app/models/server/raw/LoginServiceConfiguration';
 import { ILoginServiceConfiguration } from '../../../definition/ILoginServiceConfiguration';
+import { IInstanceStatus } from '../../../definition/IInstanceStatus';
+import { InstanceStatusRaw } from '../../../app/models/server/raw/InstanceStatus';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -34,6 +36,7 @@ interface IModelsParam {
 	Roles: RolesRaw;
 	Rooms: RoomsRaw;
 	LoginServiceConfiguration: LoginServiceConfigurationRaw;
+	InstanceStatus: InstanceStatusRaw;
 }
 
 interface IChange<T> {
@@ -57,6 +60,7 @@ export function initWatchers({
 	LivechatInquiry,
 	Rooms,
 	LoginServiceConfiguration,
+	InstanceStatus,
 }: IModelsParam, watch: Watcher): void {
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
@@ -252,5 +256,8 @@ export function initWatchers({
 
 		api.broadcast('watch.loginServiceConfiguration', { clientAction, data, id });
 	});
+
+	watch<IInstanceStatus>(InstanceStatus, ({ clientAction, id, data, diff }) => {
+		api.broadcast('watch.instanceStatus', { clientAction, data, diff, id });
 	});
 }

@@ -10,6 +10,10 @@ declare module 'meteor/konecty:user-presence' {
 	namespace UserPresenceMonitor {
 		function processUserSession(userSession: any, event: string): void;
 	}
+
+	namespace UserPresence {
+		function removeConnectionsByInstanceId(id: string): void;
+	}
 }
 
 declare const Package: {

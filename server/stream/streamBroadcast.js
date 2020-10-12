@@ -60,12 +60,13 @@ function authorizeConnection(instance) {
 
 const cache = new Map();
 const originalSetDefaultStatus = UserPresence.setDefaultStatus;
+export let matrixBroadCastActions;
 function startMatrixBroadcast() {
 	if (!startMonitor) {
 		UserPresence.setDefaultStatus = originalSetDefaultStatus;
 	}
 
-	const actions = {
+	matrixBroadCastActions = {
 		added(record) {
 			cache.set(record._id, record);
 
@@ -143,19 +144,7 @@ function startMatrixBroadcast() {
 		},
 	};
 
-	InstanceStatusModel.find(query, options).fetch().forEach(actions.added);
-	return InstanceStatusModel.on('change', ({ clientAction, id, data }) => {
-		switch (clientAction) {
-			case 'inserted':
-				if (data.extraInformation?.port) {
-					actions.added(data);
-				}
-				break;
-			case 'removed':
-				actions.removed(id);
-				break;
-		}
-	});
+	InstanceStatusModel.find(query, options).fetch().forEach(matrixBroadCastActions.added);
 }
 
 Meteor.methods({

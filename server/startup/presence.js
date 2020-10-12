@@ -37,13 +37,5 @@ Meteor.startup(function() {
 			},
 		};
 		UsersSessionsModel.update({}, update, { multi: true });
-
-		InstanceStatusModel.on('change', ({ clientAction, id }) => {
-			switch (clientAction) {
-				case 'removed':
-					UserPresence.removeConnectionsByInstanceId(id);
-					break;
-			}
-		});
 	}
 });

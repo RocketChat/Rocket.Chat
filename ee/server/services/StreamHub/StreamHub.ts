@@ -11,6 +11,7 @@ import { LivechatInquiryRaw } from '../../../../app/models/server/raw/LivechatIn
 import { UsersSessionsRaw } from '../../../../app/models/server/raw/UsersSessions';
 import { RoomsRaw } from '../../../../app/models/server/raw/Rooms';
 import { LoginServiceConfigurationRaw } from '../../../../app/models/server/raw/LoginServiceConfiguration';
+import { InstanceStatusRaw } from '../../../../app/models/server/raw/InstanceStatus';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
@@ -33,6 +34,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const Permissions = new MessagesRaw(db.collection('rocketchat_permissions'), Trash);
 		const Roles = new RolesRaw(db.collection('rocketchat_roles'), Trash, { Users, Subscriptions });
 		const LoginServiceConfiguration = new LoginServiceConfigurationRaw(db.collection('meteor_accounts_loginServiceConfiguration'), Trash);
+		const InstanceStatus = new InstanceStatusRaw(db.collection('instances'), Trash);
 
 		const models = {
 			Messages,
@@ -45,6 +47,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			Roles,
 			Rooms,
 			LoginServiceConfiguration,
+			InstanceStatus,
 		};
 
 		initWatchers(models, (model, fn) => {

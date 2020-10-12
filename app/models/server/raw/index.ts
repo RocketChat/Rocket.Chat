@@ -56,6 +56,8 @@ import { trash } from '../models/_BaseDb';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 import LoginServiceConfigurationModel from '../models/LoginServiceConfiguration';
 import { LoginServiceConfigurationRaw } from './LoginServiceConfiguration';
+import { InstanceStatusRaw } from './InstanceStatus';
+import InstanceStatusModel from '../models/InstanceStatus';
 
 const trashCollection = trash.rawCollection();
 
@@ -87,6 +89,7 @@ export const ServerEvents = new ServerEventsRaw(ServerEventModel.model.rawCollec
 export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollection, { Users, Subscriptions });
 export const UsersSessions = new UsersSessionsRaw(UsersSessionsModel.model.rawCollection(), trashCollection);
 export const LoginServiceConfiguration = new LoginServiceConfigurationRaw(LoginServiceConfigurationModel.model.rawCollection(), trashCollection);
+export const InstanceStatus = new InstanceStatusRaw(InstanceStatusModel.model.rawCollection(), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
@@ -99,6 +102,7 @@ const map = {
 	[UsersSessions.col.collectionName]: UsersSessionsModel,
 	[Rooms.col.collectionName]: RoomsModel,
 	[LoginServiceConfiguration.col.collectionName]: LoginServiceConfigurationModel,
+	[InstanceStatus.col.collectionName]: InstanceStatusModel,
 };
 
 initWatchers({
@@ -112,6 +116,7 @@ initWatchers({
 	Roles,
 	Rooms,
 	LoginServiceConfiguration,
+	InstanceStatus,
 }, (model, fn) => {
 	const meteorModel = map[model.col.collectionName];
 

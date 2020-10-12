@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
+import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
@@ -16,6 +16,7 @@ import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager'
 import { minimongoChangeMap } from '../listeners/notification';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { IUser } from '../../../definition/IUser';
+import { matrixBroadCastActions } from '../../stream/streamBroadcast';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -137,6 +138,20 @@ export class MeteorService extends ServiceClass implements IMeteor {
 			}
 
 			UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
+		});
+
+		this.onEvent('watch.instanceStatus', async ({ clientAction, id, data }): Promise<void> => {
+			if (clientAction === 'removed') {
+				UserPresence.removeConnectionsByInstanceId(id);
+				matrixBroadCastActions?.removed?.(id);
+				return;
+			}
+
+			if (clientAction === 'inserted') {
+				if (data?.extraInformation?.port) {
+					matrixBroadCastActions?.added?.(data);
+				}
+			}
 		});
 
 		if (disableOplog) {
