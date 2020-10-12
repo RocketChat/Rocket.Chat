@@ -46,4 +46,5 @@ export type EventSignatures = {
 	'watch.userSessions'(data: { clientAction: string; userSession: Partial<IUserSession> }): void;
 	'watch.inquiries'(data: { clientAction: string; inquiry: IInquiry; diff?: Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: string; setting: ISetting }): void;
+	'watch.users'(data: { clientAction: string; data?: Partial<IUser>; diff?: Record<string, any>; id: string }): void;
 }

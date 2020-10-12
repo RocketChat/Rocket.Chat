@@ -11,3 +11,7 @@ declare module 'meteor/konecty:user-presence' {
 		function processUserSession(userSession: any, event: string): void;
 	}
 }
+
+declare const Package: {
+	'disable-oplog': object;
+};

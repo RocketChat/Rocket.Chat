@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { Promise } from 'meteor/promise';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { UserPresenceMonitor } from 'meteor/konecty:user-presence';
+import { MongoInternals } from 'meteor/mongo';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
@@ -12,6 +14,9 @@ import { setValue, updateValue } from '../../../app/settings/server/raw';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { minimongoChangeMap } from '../listeners/notification';
+import loginServiceConfiguration from '../../../app/models/server/models/LoginServiceConfiguration';
+import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
+import { IUser } from '../../../definition/IUser';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -31,6 +36,95 @@ Meteor.server.publish_handlers.meteor_autoupdate_clientVersions.call({
 		//
 	},
 });
+
+type Callbacks = {
+	added(id: string, record: object): void;
+	changed(id: string, record: object): void;
+	removed(id: string): void;
+}
+
+let processOnChange: (diff: Record<string, any>, id: string) => void;
+// eslint-disable-next-line no-undef
+const disableOplog = Package['disable-oplog'];
+
+if (disableOplog) {
+	// Stores the callbacks for the disconnection reactivity bellow
+	const userCallbacks = new Map();
+	const serviceConfigCallbacks = new Set<Callbacks>();
+
+	// Overrides the native observe changes to prevent database polling and stores the callbacks
+	// for the users' tokens to re-implement the reactivity based on our database listeners
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+	MongoInternals.Connection.prototype._observeChanges = function({ collectionName, selector, options = {} }: {collectionName: string; selector: Record<string, any>; options?: {fields?: Record<string, number>}}, _ordered: boolean, callbacks: Callbacks): any {
+		// console.error('Connection.Collection.prototype._observeChanges', collectionName, selector, options);
+		let cbs: Set<{hashedToken: string; callbacks: Callbacks}>;
+		let data: {hashedToken: string; callbacks: Callbacks};
+		if (callbacks?.added) {
+			const records = Promise.await(mongo.rawCollection(collectionName).find(selector, { projection: options.fields }).toArray());
+			for (const { _id, ...fields } of records) {
+				callbacks.added(_id, fields);
+			}
+
+			if (collectionName === 'users' && selector['services.resume.loginTokens.hashedToken']) {
+				cbs = userCallbacks.get(selector._id) || new Set();
+				data = {
+					hashedToken: selector['services.resume.loginTokens.hashedToken'],
+					callbacks,
+				};
+
+				cbs.add(data);
+				userCallbacks.set(selector._id, cbs);
+			}
+		}
+
+		if (collectionName === 'meteor_accounts_loginServiceConfiguration') {
+			serviceConfigCallbacks.add(callbacks);
+		}
+
+		return {
+			stop(): void {
+				if (cbs) {
+					cbs.delete(data);
+				}
+				serviceConfigCallbacks.delete(callbacks);
+			},
+		};
+	};
+
+	// Re-implement meteor's reactivity that uses observe to disconnect sessions when the token
+	// associated was removed
+	processOnChange = (diff: Record<string, any>, id: string): void => {
+		const loginTokens: undefined | {hashedToken: string}[] = diff['services.resume.loginTokens'];
+		if (loginTokens) {
+			const tokens = loginTokens.map(({ hashedToken }) => hashedToken);
+
+			const cbs = userCallbacks.get(id);
+			if (cbs) {
+				[...cbs].filter(({ hashedToken }) => !tokens.includes(hashedToken)).forEach((item) => {
+					item.callbacks.removed(id);
+					cbs.delete(item);
+				});
+			}
+		}
+	};
+
+	loginServiceConfiguration.on('change', ({ clientAction, id, data, diff }) => {
+		switch (clientAction) {
+			case 'inserted':
+			case 'updated':
+				const record = { ...data || diff };
+				delete record.secret;
+				serviceConfigCallbacks.forEach((callbacks) => {
+					callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, record);
+				});
+				break;
+			case 'removed':
+				serviceConfigCallbacks.forEach((callbacks) => {
+					callbacks.removed?.(id);
+				});
+		}
+	});
+}
 
 export class MeteorService extends ServiceClass implements IMeteor {
 	protected name = 'meteor';
@@ -61,6 +155,47 @@ export class MeteorService extends ServiceClass implements IMeteor {
 			}
 
 			UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
+		});
+
+		if (disableOplog) {
+			this.onEvent('watch.users', ({ clientAction, id, diff }) => {
+				if (clientAction === 'updated' && diff) {
+					processOnChange(diff, id);
+				}
+			});
+		}
+
+		this.onEvent('watch.users', async ({ clientAction, id, diff }) => {
+			if (!monitorAgents) {
+				return;
+			}
+
+			if (clientAction !== 'removed' && diff && !diff.status && !diff.statusLivechat) {
+				return;
+			}
+
+			switch (clientAction) {
+				case 'updated':
+				case 'inserted':
+					const agent: IUser | undefined = await Users.findOneAgentById(id, {
+						projection: {
+							status: 1,
+							statusLivechat: 1,
+						},
+					});
+					const serviceOnline = agent && agent.status !== 'offline' && agent.statusLivechat === 'available';
+
+					if (serviceOnline) {
+						return onlineAgents.add(id);
+					}
+
+					onlineAgents.remove(id);
+
+					break;
+				case 'removed':
+					onlineAgents.remove(id);
+					break;
+			}
 		});
 	}
 

@@ -27,6 +27,15 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneAgentById(_id, options) {
+		const query = {
+			_id,
+			roles: 'livechat-agent',
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findUsersInRolesWithQuery(roles, query, options) {
 		roles = [].concat(roles);
 

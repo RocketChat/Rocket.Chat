@@ -218,5 +218,19 @@ export class NotificationService extends ServiceClass {
 			// TODO validate emitWithoutBroadcast
 			notifications.streamRoomData.emitWithoutBroadcast(room._id, clientAction, room);
 		});
+
+		this.onEvent('watch.users', ({ clientAction, data, diff, id }): void => {
+			switch (clientAction) {
+				case 'updated':
+					notifications.notifyUserInThisInstance(id, 'userData', { diff, type: clientAction });
+					break;
+				case 'inserted':
+					notifications.notifyUserInThisInstance(id, 'userData', { data, type: clientAction });
+					break;
+				case 'removed':
+					notifications.notifyUserInThisInstance(id, 'userData', { id, type: clientAction });
+					break;
+			}
+		});
 	}
 }

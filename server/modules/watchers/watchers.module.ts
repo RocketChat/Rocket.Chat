@@ -21,6 +21,7 @@ import { IInquiry } from '../../../definition/IInquiry';
 import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
 import { IUserSession } from '../../../definition/IUserSession';
 import { subscriptionFields, roomFields } from './publishFields';
+import { IUser } from '../../../definition/IUser';
 
 interface IModelsParam {
 	// Rooms: RoomsRaw;
@@ -236,5 +237,9 @@ export function initWatchers({
 		}
 
 		api.broadcast('watch.rooms', { clientAction, room });
+	});
+
+	watch<IUser>(Users, ({ clientAction, id, data, diff }) => {
+		api.broadcast('watch.users', { clientAction, data, diff, id });
 	});
 }

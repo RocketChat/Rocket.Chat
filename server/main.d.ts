@@ -1,5 +1,5 @@
 import { EJSON } from 'meteor/ejson';
-import { Db } from 'mongodb';
+import { Db, Collection } from 'mongodb';
 
 import { IStreamerConstructor } from './modules/streamer/streamer.module';
 
@@ -103,10 +103,15 @@ declare module 'meteor/mongo' {
 	interface MongoConnection {
 		db: Db;
 		_oplogHandle: OplogHandle;
+		rawCollection(name: string): Collection;
 	}
 
 	namespace MongoInternals {
 		function defaultRemoteCollectionDriver(): RemoteCollectionDriver;
+
+		class ConnectionClass {}
+
+		function Connection(): ConnectionClass;
 	}
 }
 
