@@ -148,7 +148,7 @@ declare module '@rocket.chat/fuselage' {
 		fontScale?: FontScale;
 	}>
 	& Omit<AllHTMLAttributes<HTMLOrSVGElement>, 'className'>
-	& Omit<SVGAttributes<SVGElement>, 'className'>
+	& Omit<SVGAttributes<SVGElement>, keyof AllHTMLAttributes<HTMLOrSVGElement>>
 	& RefAttributes<unknown>;
 
 	export const Box: ForwardRefExoticComponent<BoxProps>;
