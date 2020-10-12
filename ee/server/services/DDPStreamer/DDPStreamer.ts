@@ -6,7 +6,6 @@ import WebSocket from 'ws';
 
 import { Client } from './Client';
 // import { STREAMER_EVENTS, STREAM_NAMES } from './constants';
-import { isEmpty } from './lib/utils';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { events } from './configureServer';
 import notifications from './streams/index';
@@ -110,85 +109,6 @@ export class DDPStreamer extends ServiceClass {
 			const stream = StreamerCentral.instances[streamer];
 			return stream && stream.emitWithoutBroadcast(eventName, ...args);
 		});
-
-		// userpresence(payload) {
-		this.onEvent('userpresence', (payload): void => {
-			const STATUS_MAP: {[k: string]: number} = {
-				offline: 0,
-				online: 1,
-				away: 2,
-				busy: 3,
-			};
-
-			const {
-				user: { _id, username, status, statusText },
-			} = payload;
-			// Streamer.userpresence.emit(_id, status);
-			if (status) {
-				notifications.notifyLogged('user-status', [_id, username, STATUS_MAP[status], statusText]);
-			}
-			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user); // use this method
-		});
-
-		// user(payload) {
-		this.onEvent('user', (payload): void => {
-			const {
-				action,
-				user: { _id, ...user },
-			} = payload;
-			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user);
-
-			if (isEmpty(user)) {
-				return;
-			}
-
-			const data: {
-				type: string;
-				diff?: object;
-				data?: object;
-				id?: string;
-			} = {
-				type: action,
-			};
-
-			switch (action) {
-				case 'updated':
-					data.diff = user;
-					break;
-				case 'inserted':
-					data.data = user;
-					break;
-				case 'removed':
-					data.id = _id;
-					break;
-			}
-
-			_id && notifications.notifyUser(
-				_id,
-				'userData',
-				data,
-			);
-
-			// Notifications.notifyUserInThisInstance(id, 'userData', { diff, type: clientAction });
-		});
-
-		// 'user.name'(payload) {
-		this.onEvent('user.name', (payload): void => {
-			const {
-				user: { _id, name, username },
-			} = payload;
-			// User.emit(`${ STREAMER_EVENTS.USER_CHANGED }/${ _id }`, _id, user);
-			notifications.notifyLogged('Users:NameChanged', { _id, name, username });
-		});
-
-		// stream: {
-		// 	group: 'streamer',
-		// 	handler(payload) {
-		// 		const [stream, ev, data] = msgpack.decode(payload);
-		// 		Streamer.central.emit(stream, ev, data);
-		// 	},
-		// },
-		// role(payload) {
 
 		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
 			if (clientAction === 'removed') {

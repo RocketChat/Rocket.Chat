@@ -30,12 +30,10 @@ export type EventSignatures = {
 	'stream'([streamer, eventName, payload]: [string, string, string]): void;
 	'stream.ephemeralMessage'(uid: string, rid: string, message: Partial<IMessage>): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
-	'user'(data: { action: string; user: Partial<IUser> }): void;
 	'user.avatarUpdate'(user: Partial<IUser>): void;
 	'user.deleted'(user: Partial<IUser>): void;
 	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
 	'user.nameChanged'(user: Partial<IUser>): void;
-	'user.name'(data: { action: string; user: Partial<IUser> }): void;
 	'user.roleUpdate'(update: Record<string, any>): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'userpresence'(data: { action: string; user: Partial<IUser> }): void;
