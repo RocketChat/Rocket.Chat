@@ -21,6 +21,7 @@ export interface IBrokerNode {
 }
 
 export interface IBroker {
+	destroyService(service: ServiceClass): void;
 	createService(service: ServiceClass): void;
 	call(method: string, data: any): Promise<any>;
 	waitAndCall(method: string, data: any): Promise<any>;

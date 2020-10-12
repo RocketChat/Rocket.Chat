@@ -80,6 +80,12 @@ class NetworkBroker implements IBroker {
 		return this.broker.call(method, data);
 	}
 
+	destroyService(instance: ServiceClass): void {
+		this.localBroker.destroyService(instance);
+
+		this.broker.destroyService(instance.getName());
+	}
+
 	createService(instance: ServiceClass): void {
 		this.localBroker.createService(instance);
 

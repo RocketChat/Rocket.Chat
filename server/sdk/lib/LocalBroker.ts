@@ -23,6 +23,26 @@ export class LocalBroker implements IBroker {
 		return this.call(method, data);
 	}
 
+	destroyService(instance: ServiceClass): void {
+		const namespace = instance.getName();
+
+		for (const [event, fn] of Object.entries(instance.getEvents())) {
+			const fns = this.events.get(event);
+			if (fns) {
+				fns.delete(fn);
+			}
+		}
+
+		const methods = instance.constructor?.name === 'Object' ? Object.getOwnPropertyNames(instance) : Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
+		for (const method of methods) {
+			if (method === 'constructor') {
+				continue;
+			}
+
+			this.methods.delete(`${ namespace }.${ method }`);
+		}
+	}
+
 	createService(instance: ServiceClass): void {
 		const namespace = instance.getName();
 

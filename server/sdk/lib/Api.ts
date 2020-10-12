@@ -4,7 +4,7 @@ import { ServiceClass } from '../types/ServiceClass';
 import { EventSignatures } from './Events';
 
 export class Api {
-	private services: ServiceClass[] = [];
+	private services = new Set<ServiceClass>();
 
 	private broker: IBroker;
 
@@ -15,8 +15,16 @@ export class Api {
 		this.services.forEach((service) => this.broker.createService(service));
 	}
 
+	destroyService(instance: ServiceClass): void {
+		this.services.delete(instance);
+
+		if (this.broker) {
+			this.broker.destroyService(instance);
+		}
+	}
+
 	registerService(instance: ServiceClass): void {
-		this.services.push(instance);
+		this.services.add(instance);
 
 		if (this.broker) {
 			this.broker.createService(instance);

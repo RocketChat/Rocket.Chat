@@ -1,5 +1,3 @@
-import { MessagePack } from 'msgpack5';
-
 import { IInquiry } from '../../../definition/IInquiry';
 import { IMessage } from '../../../definition/IMessage';
 import { IRole } from '../../../definition/IRole';
@@ -11,8 +9,6 @@ import { AutoUpdateRecord } from '../types/IMeteor';
 import { IEmoji } from '../../../definition/IEmoji';
 import { IUserStatus } from '../../../definition/IUserStatus';
 import { IUserSession } from '../../../definition/IUserSession';
-
-export type BufferList = ReturnType<MessagePack['encode']>;
 
 export type EventSignatures = {
 	'emoji.deleteCustom'(emoji: IEmoji): void;
