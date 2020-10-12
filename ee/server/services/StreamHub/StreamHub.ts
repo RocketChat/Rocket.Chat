@@ -12,6 +12,7 @@ import { UsersSessionsRaw } from '../../../../app/models/server/raw/UsersSession
 import { RoomsRaw } from '../../../../app/models/server/raw/Rooms';
 import { LoginServiceConfigurationRaw } from '../../../../app/models/server/raw/LoginServiceConfiguration';
 import { InstanceStatusRaw } from '../../../../app/models/server/raw/InstanceStatus';
+import { IntegrationHistoryRaw } from '../../../../app/models/server/raw/IntegrationHistory';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
@@ -22,10 +23,9 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const Trash = db.collection('rocketchat_trash');
 
 		const UsersCol = db.collection('users');
-		const SettingsCol = db.collection('rocketchat_settings');
 
 		const Rooms = new RoomsRaw(db.collection('rocketchat_room'), Trash);
-		const Settings = new SettingsRaw(SettingsCol, Trash);
+		const Settings = new SettingsRaw(db.collection('rocketchat_settings'), Trash);
 		const Users = new UsersRaw(UsersCol, Trash);
 		const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), Trash);
 		const Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'), Trash);
@@ -35,6 +35,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const Roles = new RolesRaw(db.collection('rocketchat_roles'), Trash, { Users, Subscriptions });
 		const LoginServiceConfiguration = new LoginServiceConfigurationRaw(db.collection('meteor_accounts_loginServiceConfiguration'), Trash);
 		const InstanceStatus = new InstanceStatusRaw(db.collection('instances'), Trash);
+		const IntegrationHistory = new IntegrationHistoryRaw(db.collection('rocketchat_integration_history'), Trash);
 
 		const models = {
 			Messages,
@@ -48,6 +49,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			Rooms,
 			LoginServiceConfiguration,
 			InstanceStatus,
+			IntegrationHistory,
 		};
 
 		initWatchers(models, (model, fn) => {

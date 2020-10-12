@@ -58,6 +58,8 @@ import LoginServiceConfigurationModel from '../models/LoginServiceConfiguration'
 import { LoginServiceConfigurationRaw } from './LoginServiceConfiguration';
 import { InstanceStatusRaw } from './InstanceStatus';
 import InstanceStatusModel from '../models/InstanceStatus';
+import { IntegrationHistoryRaw } from './IntegrationHistory';
+import IntegrationHistoryModel from '../models/IntegrationHistory';
 
 const trashCollection = trash.rawCollection();
 
@@ -90,6 +92,7 @@ export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollect
 export const UsersSessions = new UsersSessionsRaw(UsersSessionsModel.model.rawCollection(), trashCollection);
 export const LoginServiceConfiguration = new LoginServiceConfigurationRaw(LoginServiceConfigurationModel.model.rawCollection(), trashCollection);
 export const InstanceStatus = new InstanceStatusRaw(InstanceStatusModel.model.rawCollection(), trashCollection);
+export const IntegrationHistory = new IntegrationHistoryRaw(IntegrationHistoryModel.model.rawCollection(), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
@@ -103,6 +106,7 @@ const map = {
 	[Rooms.col.collectionName]: RoomsModel,
 	[LoginServiceConfiguration.col.collectionName]: LoginServiceConfigurationModel,
 	[InstanceStatus.col.collectionName]: InstanceStatusModel,
+	[IntegrationHistory.col.collectionName]: IntegrationHistoryModel,
 };
 
 initWatchers({
@@ -117,6 +121,7 @@ initWatchers({
 	Rooms,
 	LoginServiceConfiguration,
 	InstanceStatus,
+	IntegrationHistory,
 }, (model, fn) => {
 	const meteorModel = map[model.col.collectionName];
 

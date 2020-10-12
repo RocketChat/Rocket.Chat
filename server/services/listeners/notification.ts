@@ -232,5 +232,21 @@ export class NotificationService extends ServiceClass {
 					break;
 			}
 		});
+
+		this.onEvent('watch.integrationHistory', ({ clientAction, data, diff, id }): void => {
+			if (!data?.integration?._id) {
+				return;
+			}
+			switch (clientAction) {
+				case 'updated': {
+					notifications.streamIntegrationHistory.emit(data.integration._id, { id, diff, type: clientAction });
+					break;
+				}
+				case 'inserted': {
+					notifications.streamIntegrationHistory.emit(data.integration._id, { data, type: clientAction });
+					break;
+				}
+			}
+		});
 	}
 }

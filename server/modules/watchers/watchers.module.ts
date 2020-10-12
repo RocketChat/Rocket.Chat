@@ -24,6 +24,8 @@ import { LoginServiceConfigurationRaw } from '../../../app/models/server/raw/Log
 import { ILoginServiceConfiguration } from '../../../definition/ILoginServiceConfiguration';
 import { IInstanceStatus } from '../../../definition/IInstanceStatus';
 import { InstanceStatusRaw } from '../../../app/models/server/raw/InstanceStatus';
+import { IntegrationHistoryRaw } from '../../../app/models/server/raw/IntegrationHistory';
+import { IIntegrationHistory } from '../../../definition/IIntegrationHistory';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -37,6 +39,7 @@ interface IModelsParam {
 	Rooms: RoomsRaw;
 	LoginServiceConfiguration: LoginServiceConfigurationRaw;
 	InstanceStatus: InstanceStatusRaw;
+	IntegrationHistory: IntegrationHistoryRaw;
 }
 
 interface IChange<T> {
@@ -61,6 +64,7 @@ export function initWatchers({
 	Rooms,
 	LoginServiceConfiguration,
 	InstanceStatus,
+	IntegrationHistory,
 }: IModelsParam, watch: Watcher): void {
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
@@ -259,5 +263,26 @@ export function initWatchers({
 
 	watch<IInstanceStatus>(InstanceStatus, ({ clientAction, id, data, diff }) => {
 		api.broadcast('watch.instanceStatus', { clientAction, data, diff, id });
+	});
+
+	watch<IIntegrationHistory>(IntegrationHistory, async ({ clientAction, id, data, diff }) => {
+		switch (clientAction) {
+			case 'updated': {
+				const history = await IntegrationHistory.findOneById(id, { projection: { 'integration._id': 1 } });
+				if (!history || !history.integration) {
+					return;
+				}
+				data = history;
+				api.broadcast('watch.integrationHistory', { clientAction, data, diff, id });
+				break;
+			}
+			case 'inserted': {
+				if (!data) {
+					return;
+				}
+				api.broadcast('watch.integrationHistory', { clientAction, data, diff, id });
+				break;
+			}
+		}
 	});
 }
