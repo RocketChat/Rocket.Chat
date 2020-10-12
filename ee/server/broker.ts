@@ -204,6 +204,8 @@ const {
 } = process.env;
 
 const network = new ServiceBroker({
+	// TODO: Reevaluate, without this setting it was preventing the process to stop
+	skipProcessEventRegistration: true,
 	transporter: TRANSPORTER,
 	metrics: {
 		enabled: MS_METRICS === 'true',

@@ -2,11 +2,12 @@
 import { IBroker } from '../types/IBroker';
 import { ServiceClass } from '../types/ServiceClass';
 import { EventSignatures } from './Events';
+import { LocalBroker } from './LocalBroker';
 
 export class Api {
 	private services = new Set<ServiceClass>();
 
-	private broker: IBroker;
+	private broker: IBroker = new LocalBroker();
 
 	// set a broker for the API and registers all services in the broker
 	setBroker(broker: IBroker): void {
