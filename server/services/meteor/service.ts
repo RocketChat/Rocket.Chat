@@ -156,12 +156,6 @@ export class MeteorService extends ServiceClass implements IMeteor {
 		});
 
 		if (disableOplog) {
-			this.onEvent('watch.users', ({ clientAction, id, diff }) => {
-				if (clientAction === 'updated' && diff) {
-					processOnChange(diff, id);
-				}
-			});
-
 			this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
 				if (clientAction === 'removed') {
 					serviceConfigCallbacks.forEach((callbacks) => {
@@ -177,6 +171,12 @@ export class MeteorService extends ServiceClass implements IMeteor {
 		}
 
 		this.onEvent('watch.users', async ({ clientAction, id, diff }) => {
+			if (disableOplog) {
+				if (clientAction === 'updated' && diff) {
+					processOnChange(diff, id);
+				}
+			}
+
 			if (!monitorAgents) {
 				return;
 			}

@@ -52,7 +52,7 @@ export abstract class ServiceClass implements IServiceClass {
 
 	public onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void {
 		if (this.events.has(event)) {
-			throw new Error('event already registered');
+			throw new Error(`event "${ event }" already registered`);
 		}
 
 		this.events.set(event, handler);

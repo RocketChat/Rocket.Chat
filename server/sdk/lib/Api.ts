@@ -16,11 +16,15 @@ export class Api {
 	}
 
 	destroyService(instance: ServiceClass): void {
-		this.services.delete(instance);
+		if (!this.services.has(instance)) {
+			return;
+		}
 
 		if (this.broker) {
 			this.broker.destroyService(instance);
 		}
+
+		this.services.delete(instance);
 	}
 
 	registerService(instance: ServiceClass): void {
