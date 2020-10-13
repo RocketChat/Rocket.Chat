@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Field, TextInput, Select, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import toastr from 'toastr';
 
 import VerticalBar from '../../components/basic/VerticalBar';
 import { UserAutoComplete } from '../../components/basic/AutoComplete';
@@ -10,7 +9,8 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useUserRoom } from '../hooks/useUserRoom';
 import { useEndpoint } from '../../contexts/ServerContext';
-import { roomTypes, isEmail } from '../../../app/utils';
+import { roomTypes, isEmail } from '../../../app/utils/client';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
 const clickable = css`
 	cursor: pointer;
@@ -44,6 +44,8 @@ const FileExport = ({ onCancel, rid }) => {
 
 	const roomsExport = useEndpoint('POST', 'rooms.export');
 
+	const dispatchToastMessage = useToastMessageDispatch();
+
 	const handleSubmit = async () => {
 		try {
 			await roomsExport({
@@ -54,10 +56,15 @@ const FileExport = ({ onCancel, rid }) => {
 				format,
 			});
 
-			toastr.success(t('Your_email_has_been_queued_for_sending'));
-			return;
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Your_email_has_been_queued_for_sending'),
+			});
 		} catch (error) {
-			toastr.error(t('Error'));
+			dispatchToastMessage({
+				type: 'error',
+				message: error,
+			});
 		}
 	};
 
@@ -111,14 +118,14 @@ const MailExportForm = ({ onCancel, rid }) => {
 		subject: t('Mail_Messages_Subject', roomName),
 	});
 
+	const dispatchToastMessage = useToastMessageDispatch();
+
 	const {
 		toUsers,
 		additionalEmails,
 		subject,
 	} = values;
 
-	const add = useMutableCallback((id) => setSelected(selectedMessages.concat(id)));
-	const remove = useMutableCallback((id) => setSelected(selectedMessages.filter((message) => message !== id)));
 	const reset = useMutableCallback(() => {
 		setSelected([]);
 		$(`#chat-window-${ rid }.messages-box .message.selected`)
@@ -128,15 +135,16 @@ const MailExportForm = ({ onCancel, rid }) => {
 	useEffect(() => {
 		const $root = $(`#chat-window-${ rid }`);
 		$('.messages-box', $root).addClass('selectable');
+
 		const handler = function() {
 			const { id } = this;
 
 			if (this.classList.contains('selected')) {
 				this.classList.remove('selected');
-				remove(id);
+				setSelected((selectedMessages) => selectedMessages.filter((message) => message !== id));
 			} else {
 				this.classList.add('selected');
-				add(id);
+				setSelected((selectedMessages) => selectedMessages.concat(id));
 			}
 		};
 		$('.messages-box .message', $root).on('click', handler);
@@ -183,10 +191,15 @@ const MailExportForm = ({ onCancel, rid }) => {
 				messages: selectedMessages,
 			});
 
-			toastr.success(t('Your_email_has_been_queued_for_sending'));
-			return;
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Your_email_has_been_queued_for_sending'),
+			});
 		} catch (error) {
-			toastr.error(t('Error'));
+			dispatchToastMessage({
+				type: 'error',
+				message: error,
+			});
 		}
 	};
 
@@ -218,7 +231,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 				</Field.Row>
 			</Field>
 
-			{ errorMessage && <Callout type={'danger'} title={errorMessage} /> }
+			{errorMessage && <Callout type={'danger'} title={errorMessage} />}
 
 			<ButtonGroup stretch mb='x12'>
 				<Button onClick={onCancel}>
