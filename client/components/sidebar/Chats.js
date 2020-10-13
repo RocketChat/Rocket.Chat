@@ -31,6 +31,10 @@ const sections = {
 	Omnichannel,
 };
 
+const style = {
+	overflow: 'scroll',
+};
+
 export const useChatRoomTemplate = (sidebarViewMode) => useMemo(() => {
 	switch (sidebarViewMode) {
 		case 'extended':
@@ -183,7 +187,7 @@ export default () => {
 				return unread.add(room);
 			}
 
-			if (showDiscussion && room.drid) {
+			if (showDiscussion && room.prid) {
 				return discussion.add(room);
 			}
 
@@ -248,6 +252,7 @@ export default () => {
 			overscanCount={10}
 			width='100%'
 			ref={listRef}
+			style={style}
 		>
 			{Row}
 		</List>
@@ -270,13 +275,14 @@ const getMessage = (room, username, lastMessage, t) => {
 	return `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeThreadMessage(lastMessage) }`;
 };
 
-export const SideBarItemTemplateWithData = React.memo(({ room, username, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style }) => {
+export const SideBarItemTemplateWithData = React.memo(({ room, id, username, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style }) => {
 	const title = roomTypes.getRoomName(room.t, room);
 	const icon = <SidebarIcon room={room}/>;
 	const href = roomTypes.getRouteLink(room.t, room);
 
 	const {
 		lastMessage,
+		hideUnreadStatus,
 		unread = 0,
 		alert,
 		userMentions,
@@ -297,9 +303,10 @@ export const SideBarItemTemplateWithData = React.memo(({ room, username, extende
 
 	return <SideBarItemTemplate
 		is='a'
+		id={id}
 		data-qa='sidebar-item'
 		aria-level='2'
-		unread={alert || unread}
+		unread={!hideUnreadStatus && (alert || unread)}
 		threadUnread={threadUnread}
 		selected={selected}
 		href={href}
