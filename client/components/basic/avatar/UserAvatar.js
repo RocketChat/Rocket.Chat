@@ -1,7 +1,6 @@
 import React from 'react';
 
 import BaseAvatar from './BaseAvatar';
-import { settings } from '../../../../app/settings';
 import { useSetting } from '../../../contexts/SettingsContext';
 
 function UserAvatar({ url, username, etag, ...props }) {
