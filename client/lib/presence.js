@@ -36,10 +36,11 @@ const getPresence = (() => {
 	};
 
 	Presence.on('remove', (uid) => {
-		if (Presence._events[uid]) {
+		if (Presence._events[uid]?.length) {
 			return;
 		}
 		Statuses.delete(uid);
+		delete Presence._events[uid];
 	});
 
 	Presence.on('reset', () => {
@@ -67,4 +68,5 @@ Presence.stop = (uid, handle) => {
 
 Presence.reset = () => {
 	Presence.emit('reset', { status: 'offline' });
+	Statuses.clear();
 };
