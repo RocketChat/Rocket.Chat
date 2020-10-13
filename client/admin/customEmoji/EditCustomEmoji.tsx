@@ -1,86 +1,24 @@
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, Skeleton, Throbber, InputBox, Modal } from '@rocket.chat/fuselage';
+import React, { useCallback, useState, useMemo, useEffect, FC, ChangeEvent } from 'react';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFileInput } from '../../hooks/useFileInput';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import VerticalBar from '../../components/basic/VerticalBar';
+import DeleteSuccessModal from '../../components/DeleteSuccessModal';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
+import { EmojiDescriptor } from './types';
 
-const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Custom_Emoji_Delete_Warning')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
+
+type EditCustomEmojiProps = {
+	close: () => void;
+	onChange: () => void;
+	data: EmojiDescriptor;
 };
 
-const SuccessModal = ({ onClose, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='success' name='checkmark-circled' size={20}/>
-			<Modal.Title>{t('Deleted')}</Modal.Title>
-			<Modal.Close onClick={onClose}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Custom_Emoji_Has_Been_Deleted')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button primary onClick={onClose}>{t('Ok')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
-
-export function EditCustomEmojiWithData({ _id, cache, onChange, ...props }) {
-	const t = useTranslation();
-	const query = useMemo(() => ({
-		query: JSON.stringify({ _id }),
-	// TODO: remove cache. Is necessary for data invalidation
-	}), [_id, cache]);
-
-	const { data = { emojis: {} }, state, error } = useEndpointDataExperimental('emoji-custom.list', query);
-
-	if (state === ENDPOINT_STATES.LOADING) {
-		return <Box pb='x20'>
-			<Skeleton mbs='x8'/>
-			<InputBox.Skeleton w='full'/>
-			<Skeleton mbs='x8'/>
-			<InputBox.Skeleton w='full'/>
-			<ButtonGroup stretch w='full' mbs='x8'>
-				<Button disabled><Throbber inheritColor/></Button>
-				<Button primary disabled><Throbber inheritColor/></Button>
-			</ButtonGroup>
-			<ButtonGroup stretch w='full' mbs='x8'>
-				<Button primary danger disabled><Throbber inheritColor/></Button>
-			</ButtonGroup>
-		</Box>;
-	}
-
-	if (error || !data || !data.emojis || data.emojis.update.length < 1) {
-		return <Box fontScale='h1' pb='x20'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Box>;
-	}
-
-	return <EditCustomEmoji data={data.emojis.update[0]} onChange={onChange} {...props}/>;
-}
-
-export function EditCustomEmoji({ close, onChange, data, ...props }) {
+const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...props }) => {
 	const t = useTranslation();
 
 	const { _id, name: previousName, aliases: previousAliases, extension: previousExtension } = data || {};
@@ -88,7 +26,7 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 
 	const [name, setName] = useState(previousName);
 	const [aliases, setAliases] = useState(previousAliases.join(', '));
-	const [emojiFile, setEmojiFile] = useState();
+	const [emojiFile, setEmojiFile] = useState<Blob>();
 	const setModal = useSetModal();
 	const [newEmojiPreview, setNewEmojiPreview] = useState(`/emoji-custom/${ encodeURIComponent(previousName) }.${ previousExtension }`);
 
@@ -107,12 +45,16 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 	const saveAction = useEndpointUpload('emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
 
 	const handleSave = useCallback(async () => {
+		if (!emojiFile) {
+			return;
+		}
+
 		const formData = new FormData();
 		formData.append('emoji', emojiFile);
 		formData.append('_id', _id);
 		formData.append('name', name);
 		formData.append('aliases', aliases);
-		const result = await saveAction(formData);
+		const result = (await saveAction(formData)) as { success: boolean };
 		if (result.success) {
 			onChange();
 		}
@@ -123,21 +65,28 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 	const onDeleteConfirm = useCallback(async () => {
 		const result = await deleteAction();
 		if (result.success) {
-			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
+			setModal(() => <DeleteSuccessModal
+				children={t('Custom_Emoji_Has_Been_Deleted')}
+				onClose={(): void => { setModal(undefined); close(); onChange(); }}
+			/>);
 		}
-	}, [close, deleteAction, onChange]);
+	}, [close, deleteAction, onChange, setModal, t]);
 
-	const openConfirmDelete = useCallback(() => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>), [onDeleteConfirm, setModal]);
+	const openConfirmDelete = useCallback(() => setModal(() => <DeleteWarningModal
+		children={t('Custom_Emoji_Delete_Warning')}
+		onDelete={onDeleteConfirm}
+		onCancel={(): void => setModal(undefined)}
+	/>), [onDeleteConfirm, setModal, t]);
 
 	const handleAliasesChange = useCallback((e) => setAliases(e.currentTarget.value), [setAliases]);
 
 	const [clickUpload] = useFileInput(setEmojiPreview, 'emoji');
 
-	return <VerticalBar.ScrollableContent {...props}>
+	return <VerticalBar.ScrollableContent {...(props as any)}>
 		<Field>
 			<Field.Label>{t('Name')}</Field.Label>
 			<Field.Row>
-				<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
+				<TextInput value={name} onChange={(e: ChangeEvent<HTMLInputElement>): void => setName(e.currentTarget.value)} placeholder={t('Name')} />
 			</Field.Row>
 		</Field>
 		<Field>
@@ -173,4 +122,6 @@ export function EditCustomEmoji({ close, onChange, data, ...props }) {
 			</Field.Row>
 		</Field>
 	</VerticalBar.ScrollableContent>;
-}
+};
+
+export default EditCustomEmoji;
