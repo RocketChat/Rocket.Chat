@@ -261,6 +261,12 @@ declare module '@rocket.chat/fuselage' {
 	};
 	export const PasswordInput: ForwardRefExoticComponent<PasswordInputProps>;
 
+	type SearchInputProps = BoxProps & {
+		addon?: ReactNode;
+		error?: string;
+	};
+	export const SearchInput: ForwardRefExoticComponent<SearchInputProps>;
+
 	type SkeletonProps = BoxProps & {
 		variant?: 'rect';
 	};
