@@ -323,7 +323,8 @@ Read about [how it all started](https://www.synopsys.com/blogs/software-security
 
 ## Feature Requests
 
-[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) are used to suggest, discuss and upvote feature suggestions.
+[RocketChat/feature-requests](https://github.com/RocketChat/feature-requests) is used to track Rocket.Chat feature requests and discussions. Click [here](https://github.com/RocketChat/feature-requests/issues/new?template=feature_request.md) to open a new feature request.
+[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) store the historical archives of old feature requests (upto 2018).
 
 ### Stack Overflow
 
