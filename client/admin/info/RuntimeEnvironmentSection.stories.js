@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { RuntimeEnvironmentSection } from './RuntimeEnvironmentSection';
+import RuntimeEnvironmentSection from './RuntimeEnvironmentSection';
 
 export default {
 	title: 'admin/info/RuntimeEnvironmentSection',

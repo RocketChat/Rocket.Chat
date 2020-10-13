@@ -11,12 +11,12 @@ const CustomTextInput = ({ name, required, minLength, maxLength, setState, state
 	const verify = useMemo(() => {
 		const error = [];
 		if (!state && required) { error.push(t('Field_required')); }
-		if (state.length < minLength) { error.push(t('Min_length_is', minLength)); }
+		if (state.length < minLength && state.length > 0) { error.push(t('Min_length_is', minLength)); }
 		return error.join(', ');
 	}, [state, required, minLength, t]);
 
 	return useMemo(() => <Field className={className}>
-		<Field.Label>{name}</Field.Label>
+		<Field.Label>{t(name)}</Field.Label>
 		<Field.Row>
 			<TextInput name={name} error={verify} maxLength={maxLength} flexGrow={1} value={state} required={required} onChange={(e) => setState(e.currentTarget.value)}/>
 		</Field.Row>
@@ -30,7 +30,7 @@ const CustomSelect = ({ name, required, options, setState, state, className }) =
 	const verify = useMemo(() => (!state.length && required ? t('Field_required') : ''), [required, state.length, t]);
 
 	return useMemo(() => <Field className={className}>
-		<Field.Label>{name}</Field.Label>
+		<Field.Label>{t(name)}</Field.Label>
 		<Field.Row>
 			<Select name={name} error={verify} flexGrow={1} value={state} options={mappedOptions} required={required} onChange={(val) => setState(val)}/>
 		</Field.Row>
@@ -46,15 +46,21 @@ const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...prop
 		state: formValues[key],
 		...value,
 	};
-	return value.type === 'text'
-		? <CustomTextInput {...extraProps} {...props}/>
-		: <CustomSelect {...extraProps} {...props}/>;
+
+	if (value.type === 'select') {
+		return <CustomSelect {...extraProps} {...props}/>;
+	}
+
+	if (value.type === 'text') {
+		return <CustomTextInput {...extraProps} {...props}/>;
+	}
+
+	return null;
 });
 
 export default function CustomFieldsForm({ customFieldsData, setCustomFieldsData, onLoadFields = () => {}, ...props }) {
 	const customFieldsJson = useSetting('Accounts_CustomFields');
 
-	// TODO: add deps. Left this way so that a possible change in the setting can't crash the page (useForm generates states automatically)
 	const [customFields] = useState(() => {
 		try {
 			return JSON.parse(customFieldsJson || '{}');

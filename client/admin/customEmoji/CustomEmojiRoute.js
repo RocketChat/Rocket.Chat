@@ -6,12 +6,12 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/basic/Page';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import { CustomEmoji } from './CustomEmoji';
-import { EditCustomEmojiWithData } from './EditCustomEmoji';
-import { AddCustomEmoji } from './AddCustomEmoji';
+import AddCustomEmoji from './AddCustomEmoji';
+import CustomEmoji from './CustomEmoji';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import VerticalBar from '../../components/basic/VerticalBar';
+import EditCustomEmojiWithData from './EditCustomEmojiWithData';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -23,7 +23,7 @@ export const useQuery = ({ text, itemsPerPage, current }, [column, direction], c
 // TODO: remove cache. Is necessary for data invalidation
 }), [text, itemsPerPage, current, column, direction, cache]);
 
-export default function CustomEmojiRoute({ props }) {
+function CustomEmojiRoute({ props }) {
 	const t = useTranslation();
 	const canManageEmoji = usePermission('manage-emoji');
 
@@ -101,3 +101,6 @@ export default function CustomEmojiRoute({ props }) {
 			</VerticalBar>}
 	</Page>;
 }
+
+
+export default CustomEmojiRoute;
