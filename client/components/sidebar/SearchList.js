@@ -160,36 +160,9 @@ const toggleSelectionState = (next, current) => {
 	}
 };
 
-const changeSelection = (dir, elementRef) => {
-	if (!elementRef.current) {
-		const item = document.querySelector('[data-qa="sidebar-search-result"] [data-qa="sidebar-item"]');
-		if (item) {
-			toggleSelectionState(item);
-			elementRef.current = item;
-		}
-		return;
-	}
-	if (dir === 'up') {
-		const previousElement = elementRef.current.previousSibling;
-		if (previousElement) {
-			toggleSelectionState(previousElement, elementRef.current);
-			elementRef.current = previousElement;
-			return false;
-		}
-	} else {
-		const nextElement = elementRef.current.nextSibling;
-		if (nextElement) {
-			toggleSelectionState(nextElement, elementRef.current);
-			elementRef.current = nextElement;
-			return false;
-		}
-	}
-	return true;
-};
-
 const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 	const t = useTranslation();
-	const filter = useInput('');
+	const { setValue: setFilterValue, ...filter } = useInput('');
 
 	const autofocus = useAutoFocus();
 
@@ -217,11 +190,29 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 
 	usePreventDefault(boxRef);
 
+	const changeSelection = useMutableCallback((dir) => {
+		let nextSelectedElement = null;
+
+		if (dir === 'up') {
+			nextSelectedElement = selectedElement.current.previousSibling;
+		} else {
+			nextSelectedElement = selectedElement.current.nextSibling;
+		}
+
+		if (nextSelectedElement) {
+			toggleSelectionState(nextSelectedElement, selectedElement.current);
+			return nextSelectedElement;
+		}
+		return selectedElement.current;
+	});
+
 	const resetCursor = useMutableCallback(() => {
 		itemIndexRef.current = 0;
 		listRef.current.scrollToItem(itemIndexRef.current);
-		selectedElement.current = undefined;
-		changeSelection('down', selectedElement);
+		selectedElement.current = boxRef.current.querySelector('a.rcx-sidebar-item');
+		if (selectedElement.current) {
+			toggleSelectionState(selectedElement.current);
+		}
 	});
 
 	useEffect(() => {
@@ -235,7 +226,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		const unsubscribe = tinykeys(autofocus.current, {
 			Escape: (event) => {
 				event.preventDefault();
-				filter.setValue((value) => {
+				setFilterValue((value) => {
 					if (!value) {
 						onClose();
 					}
@@ -243,15 +234,20 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 					return '';
 				});
 			},
+			Tab: () => {
+				onClose();
+			},
 			ArrowUp: () => {
 				itemIndexRef.current = Math.max(itemIndexRef.current - 1, 0);
 				listRef.current.scrollToItem(itemIndexRef.current);
-				changeSelection('up', selectedElement);
+				const currentElement = changeSelection('up');
+				selectedElement.current = currentElement;
 			},
 			ArrowDown: () => {
-				const isLastElement = changeSelection('down', selectedElement);
-				itemIndexRef.current = isLastElement ? itemIndexRef.current : itemIndexRef.current + 1;
-				!isLastElement && listRef.current.scrollToItem(itemIndexRef.current);
+				const currentElement = changeSelection('down');
+				selectedElement.current = currentElement;
+				itemIndexRef.current = Math.min(itemIndexRef.current + 1, items?.length + 1);
+				listRef.current.scrollToItem(itemIndexRef.current);
 			},
 			Enter: () => {
 				if (selectedElement.current) {
@@ -268,7 +264,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		<Sidebar.TopBar.Section>
 			<TextInput data-qa='sidebar-search-input' ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
 		</Sidebar.TopBar.Section>
-		<Box flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncState.DONE}>
+		<Box tabIndex={-1} flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncState.DONE}>
 			<List
 				height={blockSize}
 				itemCount={items?.length}
