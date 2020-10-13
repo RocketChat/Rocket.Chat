@@ -13,9 +13,12 @@ import UserCard from '../../components/basic/UserCard';
 import { FormSkeleton } from '../../admin/users/Skeleton';
 import VerticalBar from '../../components/basic/VerticalBar';
 import UserActions from './actions/UserActions';
+import { useRolesDescription } from '../../contexts/AuthorizationContext';
 
 export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClose, video, showBackButton, ...props }) {
 	const t = useTranslation();
+
+	const getRoles = useRolesDescription();
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
@@ -44,7 +47,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			name: showRealNames ? name : username,
 			username,
 			lastLogin,
-			roles: roles.map((role, index) => (
+			roles: roles && getRoles(roles).map((role, index) => (
 				<UserCard.Role key={index}>{role}</UserCard.Role>
 			)),
 			bio,
@@ -58,7 +61,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			customStatus: statusText,
 			nickname,
 		};
-	}, [data, showRealNames]);
+	}, [data, showRealNames, getRoles]);
 
 	return (
 		<VerticalBar>
