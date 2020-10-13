@@ -1,27 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { TextInput, Button, Box, Icon } from '@rocket.chat/fuselage';
+import React from 'react';
+import { Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../components/basic/Page';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { GenericTable } from '../../components/GenericTable';
+import FilterByText from '../../components/FilterByText';
+import GenericTable from '../../components/GenericTable';
 import { useRoute } from '../../contexts/RouterContext';
-
-
-const FilterByText = ({ setFilter, ...props }) => {
-	const t = useTranslation();
-	const [text, setText] = useState('');
-
-	const handleChange = useMutableCallback((event) => setText(event.currentTarget.value));
-	const onSubmit = useMutableCallback((e) => e.preventDefault());
-
-	useEffect(() => {
-		setFilter({ text });
-	}, [setFilter, text]);
-	return <Box mb='x16' is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
-		<TextInput flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-	</Box>;
-};
 
 function DepartmentsPage({
 	data,
@@ -45,7 +29,15 @@ function DepartmentsPage({
 				</Button>
 			</Page.Header>
 			<Page.Content>
-				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.departments} total={data && data.total} setParams={setParams} params={params} />
+				<GenericTable
+					header={header}
+					renderRow={renderRow}
+					results={data && data.departments}
+					total={data && data.total}
+					setParams={setParams}
+					params={params}
+					renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
+				/>
 			</Page.Content>
 		</Page>
 		{children}
