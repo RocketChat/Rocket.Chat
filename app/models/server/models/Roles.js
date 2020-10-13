@@ -32,25 +32,14 @@ export class Roles extends Base {
 		const queryData = {
 			name,
 			scope,
-			protected: protectedRole,
-		};
-
-		const updateData = {
-			...queryData,
 			description,
-			mandatory2fa,
+			protected: protectedRole,
+			mandatory2fa
 		};
 
-		const exists = this.findOne({
-			_id: name,
-			...queryData,
-		}, { fields: { _id: 1 } });
+		this.upsert({ _id: name }, { $set: queryData });
 
-		if (exists) {
-			return exists._id;
-		}
-
-		this.upsert({ _id: name }, { $set: updateData });
+		return queryData
 	}
 
 	addUserRoles(userId, roles, scope) {
