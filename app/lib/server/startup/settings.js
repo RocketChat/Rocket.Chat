@@ -522,6 +522,11 @@ settings.addGroup('Accounts', function() {
 			public: true,
 		});
 
+		this.add('Accounts_RoomAvatarExternalProviderUrl', '', {
+			type: 'string',
+			public: true,
+		});
+
 		this.add('Accounts_AvatarCacheTime', 3600, {
 			type: 'int',
 			i18nDescription: 'Accounts_AvatarCacheTime_description',

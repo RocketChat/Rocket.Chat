@@ -54,6 +54,8 @@
   "Accounts_AvatarSize": "Avatar Size",
   "Accounts_AvatarExternalProviderUrl": "Avatar External Provider URL",
   "Accounts_AvatarExternalProviderUrl_Description": "Example: `https://acme.com/api/v1/{username}`",
+  "Accounts_RoomAvatarExternalProviderUrl": "Room Avatar External Provider URL",
+  "Accounts_RoomAvatarExternalProviderUrl_Description": "Example: `https://acme.com/api/v1/{roomId}`",
   "Accounts_BlockedDomainsList": "Blocked Domains List",
   "Accounts_BlockedDomainsList_Description": "Comma-separated list of blocked domains",
   "Accounts_Verify_Email_For_External_Accounts": "Verify Email for External Accounts",
