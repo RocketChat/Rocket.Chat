@@ -148,7 +148,7 @@ const useInput = (initial) => {
 	const onChange = useMutableCallback((e) => {
 		setValue(e.currentTarget.value);
 	});
-	return { value, onChange };
+	return { value, onChange, setValue };
 };
 
 const toggleSelectionState = (next, current) => {
@@ -193,8 +193,9 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 
 	const autofocus = useAutoFocus();
 
-	const selectedElement = useRef();
 	const listRef = useRef();
+
+	const selectedElement = useRef();
 	const itemIndexRef = useRef(0);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
@@ -216,6 +217,17 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 
 	usePreventDefault(boxRef);
 
+	const resetCursor = useMutableCallback(() => {
+		itemIndexRef.current = 0;
+		listRef.current.scrollToItem(itemIndexRef.current);
+		selectedElement.current = undefined;
+		changeSelection('down', selectedElement);
+	});
+
+	useEffect(() => {
+		resetCursor();
+	}, [filterText, resetCursor]);
+
 	useEffect(() => {
 		if (!autofocus.current) {
 			return;
@@ -223,7 +235,13 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		const unsubscribe = tinykeys(autofocus.current, {
 			Escape: (event) => {
 				event.preventDefault();
-				onClose();
+				filter.setValue((value) => {
+					if (!value) {
+						onClose();
+					}
+					resetCursor();
+					return '';
+				});
 			},
 			ArrowUp: () => {
 				itemIndexRef.current = Math.max(itemIndexRef.current - 1, 0);
@@ -244,7 +262,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		return () => {
 			unsubscribe();
 		};
-	}, [autofocus?.current]);
+	}, [autofocus.current]);
 
 	return <Box position='absolute' bg='neutral-200' h='full' display='flex' flexDirection='column' zIndex={99} w='full' className={css`left: 0; top: 0;`} ref={ref}>
 		<Sidebar.TopBar.Section>
