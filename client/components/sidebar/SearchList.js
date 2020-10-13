@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue, useStableArray, useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
@@ -151,11 +151,51 @@ const useInput = (initial) => {
 	return { value, onChange };
 };
 
+const toggleSelectionState = (next, current) => {
+	next['aria-selected'] = true;
+	next.classList.add('rcx-sidebar-item--selected');
+	if (current) {
+		current['aria-selected'] = false;
+		current.classList.remove('rcx-sidebar-item--selected');
+	}
+};
+
+const changeSelection = (dir, elementRef) => {
+	if (!elementRef.current) {
+		const item = document.querySelector('[data-qa="sidebar-search-result"] [data-qa="sidebar-item"]');
+		if (item) {
+			toggleSelectionState(item);
+			elementRef.current = item;
+		}
+		return;
+	}
+	if (dir === 'up') {
+		const previousElement = elementRef.current.previousSibling;
+		if (previousElement) {
+			toggleSelectionState(previousElement, elementRef.current);
+			elementRef.current = previousElement;
+			return false;
+		}
+	} else {
+		const nextElement = elementRef.current.nextSibling;
+		if (nextElement) {
+			toggleSelectionState(nextElement, elementRef.current);
+			elementRef.current = nextElement;
+			return false;
+		}
+	}
+	return true;
+};
+
 const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 	const t = useTranslation();
 	const filter = useInput('');
 
 	const autofocus = useAutoFocus();
+
+	const selectedElement = useRef();
+	const listRef = useRef();
+	const itemIndexRef = useRef(0);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = useUserPreference('sidebarHideAvatar');
@@ -185,6 +225,21 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 				event.preventDefault();
 				onClose();
 			},
+			ArrowUp: () => {
+				itemIndexRef.current = Math.max(itemIndexRef.current - 1, 0);
+				listRef.current.scrollToItem(itemIndexRef.current);
+				changeSelection('up', selectedElement);
+			},
+			ArrowDown: () => {
+				const isLastElement = changeSelection('down', selectedElement);
+				itemIndexRef.current = isLastElement ? itemIndexRef.current : itemIndexRef.current + 1;
+				!isLastElement && listRef.current.scrollToItem(itemIndexRef.current);
+			},
+			Enter: () => {
+				if (selectedElement.current) {
+					selectedElement.current.click();
+				}
+			},
 		});
 		return () => {
 			unsubscribe();
@@ -203,6 +258,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 				itemData={itemData}
 				overscanCount={25}
 				width='100%'
+				ref={listRef}
 			>
 				{Row}
 			</List>
