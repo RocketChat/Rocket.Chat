@@ -1,7 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback, useDebouncedValue, useStableArray, useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useDebouncedValue, useStableArray, useResizeObserver, useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
 import { css } from '@rocket.chat/css-in-js';
 import { FixedSizeList as List } from 'react-window';
@@ -15,30 +15,32 @@ import { roomTypes } from '../../../app/utils';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { useChatRoomTemplate, useAvatarTemplate, itemSizeMap, SideBarItemTemplateWithData } from './Chats';
 
-const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName) => ({
+const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended) => ({
 	items,
 	t,
 	SideBarItemTemplate,
 	AvatarTemplate,
 	useRealName,
+	extended,
 }));
 
 const Row = React.memo(({ data, index, style }) => {
-	const { items, t, SideBarItemTemplate, AvatarTemplate, useRealName } = data;
+	const { items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended } = data;
 	const item = items[index];
 	if (item.t === 'd' && !item.u) {
-		return <UserItem useRealName={useRealName} style={style} t={t} item={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+		return <UserItem id={`search-${ item._id }`} useRealName={useRealName} style={style} t={t} item={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 	}
-	return <SideBarItemTemplateWithData style={style} t={t} room={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+	return <SideBarItemTemplateWithData id={`search-${ item._id }`} tabIndex={-1} extended={extended} style={style} t={t} room={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 });
 
-const UserItem = React.memo(({ item, style, t, SideBarItemTemplate, AvatarTemplate, useRealName }) => {
+const UserItem = React.memo(({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName }) => {
 	const title = useRealName ? item.fname || item.name : item.name || item.fname;
 	const icon = <Sidebar.Item.Icon name={roomTypes.getIcon(item)}/>;
 	const href = roomTypes.getRouteLink(item.t, item);
 
 	return <SideBarItemTemplate
 		is='a'
+		id={id}
 		href={href}
 		title={title}
 		subtitle={t('No_messages_yet')}
@@ -148,14 +150,30 @@ const useInput = (initial) => {
 	const onChange = useMutableCallback((e) => {
 		setValue(e.currentTarget.value);
 	});
-	return { value, onChange };
+	return { value, onChange, setValue };
+};
+
+const toggleSelectionState = (next, current, input) => {
+	input.setAttribute('aria-activedescendant', next.id);
+	next.setAttribute('aria-selected', true);
+	next.classList.add('rcx-sidebar-item--selected');
+	if (current) {
+		current.setAttribute('aria-selected', false);
+		current.classList.remove('rcx-sidebar-item--selected');
+	}
 };
 
 const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
+	const listId = useUniqueId();
 	const t = useTranslation();
-	const filter = useInput('');
+	const { setValue: setFilterValue, ...filter } = useInput('');
 
 	const autofocus = useAutoFocus();
+
+	const listRef = useRef();
+
+	const selectedElement = useRef();
+	const itemIndexRef = useRef(0);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = useUserPreference('sidebarHideAvatar');
@@ -164,17 +182,48 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 	const AvatarTemplate = useAvatarTemplate(sidebarHideAvatar, sidebarViewMode);
 	const itemSize = itemSizeMap(sidebarViewMode);
 
+	const extended = sidebarViewMode === 'extended';
+
 	const filterText = useDebouncedValue(filter.value, 100);
 
 	const placeholder = [t('Search'), shortcut].filter(Boolean).join(' ');
 
 	const { data: items, status } = useSearchItems(filterText);
 
-	const itemData = createItemData(items, t, SideBarItemTemplate, AvatarTemplate, showRealName);
+	const itemData = createItemData(items, t, SideBarItemTemplate, AvatarTemplate, showRealName, extended);
 
 	const { ref: boxRef, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
 	usePreventDefault(boxRef);
+
+	const changeSelection = useMutableCallback((dir) => {
+		let nextSelectedElement = null;
+
+		if (dir === 'up') {
+			nextSelectedElement = selectedElement.current.previousSibling;
+		} else {
+			nextSelectedElement = selectedElement.current.nextSibling;
+		}
+
+		if (nextSelectedElement) {
+			toggleSelectionState(nextSelectedElement, selectedElement.current, autofocus.current);
+			return nextSelectedElement;
+		}
+		return selectedElement.current;
+	});
+
+	const resetCursor = useMutableCallback(() => {
+		itemIndexRef.current = 0;
+		listRef.current.scrollToItem(itemIndexRef.current);
+		selectedElement.current = boxRef.current.querySelector('a.rcx-sidebar-item');
+		if (selectedElement.current) {
+			toggleSelectionState(selectedElement.current, undefined, autofocus.current);
+		}
+	});
+
+	useEffect(() => {
+		resetCursor();
+	}, [filterText, resetCursor]);
 
 	useEffect(() => {
 		if (!autofocus.current) {
@@ -183,19 +232,43 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		const unsubscribe = tinykeys(autofocus.current, {
 			Escape: (event) => {
 				event.preventDefault();
-				onClose();
+				setFilterValue((value) => {
+					if (!value) {
+						onClose();
+					}
+					resetCursor();
+					return '';
+				});
+			},
+			Tab: onClose,
+			ArrowUp: () => {
+				itemIndexRef.current = Math.max(itemIndexRef.current - 1, 0);
+				listRef.current.scrollToItem(itemIndexRef.current);
+				const currentElement = changeSelection('up');
+				selectedElement.current = currentElement;
+			},
+			ArrowDown: () => {
+				const currentElement = changeSelection('down');
+				selectedElement.current = currentElement;
+				itemIndexRef.current = Math.min(itemIndexRef.current + 1, items?.length + 1);
+				listRef.current.scrollToItem(itemIndexRef.current);
+			},
+			Enter: () => {
+				if (selectedElement.current) {
+					selectedElement.current.click();
+				}
 			},
 		});
 		return () => {
 			unsubscribe();
 		};
-	}, [autofocus?.current]);
+	}, [autofocus.current]);
 
 	return <Box position='absolute' bg='neutral-200' h='full' display='flex' flexDirection='column' zIndex={99} w='full' className={css`left: 0; top: 0;`} ref={ref}>
-		<Sidebar.TopBar.Section>
-			<TextInput data-qa='sidebar-search-input' ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
+		<Sidebar.TopBar.Section role='search' is='form'>
+			<TextInput aria-owns={listId} data-qa='sidebar-search-input' ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
 		</Sidebar.TopBar.Section>
-		<Box flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncState.DONE}>
+		<Box aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncState.DONE}>
 			<List
 				height={blockSize}
 				itemCount={items?.length}
@@ -203,6 +276,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 				itemData={itemData}
 				overscanCount={25}
 				width='100%'
+				ref={listRef}
 			>
 				{Row}
 			</List>
