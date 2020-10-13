@@ -1,53 +1,24 @@
-import { Box, Pagination, Skeleton, Table, Flex, Tile, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Pagination, Table, Tile, Scrollable } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
+import React, { useState, useEffect, useCallback, forwardRef } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
-import { useTranslation } from '../contexts/TranslationContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import HeaderCell from './HeaderCell';
+import LoadingRow from './LoadingRow';
 
-function SortIcon({ direction }) {
-	return <Box is='svg' width='x16' height='x16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-		<path d='M5.33337 5.99999L8.00004 3.33333L10.6667 5.99999' stroke={direction === 'desc' ? '#9EA2A8' : '#E4E7EA' } strokeWidth='1.33333' strokeLinecap='round' strokeLinejoin='round'/>
-		<path d='M5.33337 10L8.00004 12.6667L10.6667 10' stroke={ direction === 'asc' ? '#9EA2A8' : '#E4E7EA'} strokeWidth='1.33333' strokeLinecap='round' strokeLinejoin='round'/>
-	</Box>;
-}
-
-export function Th({ children, active, direction, sort, onClick, align, ...props }) {
-	const fn = useMemo(() => () => onClick && onClick(sort), [sort, onClick]);
-	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
-		<Box display='flex' alignItems='center' wrap='no-wrap'>{children}{sort && <SortIcon direction={active && direction} />}</Box>
-	</Table.Cell>;
-}
-
-const LoadingRow = ({ cols }) => <Table.Row>
-	<Table.Cell>
-		<Box display='flex'>
-			<Flex.Item>
-				<Skeleton variant='rect' height={40} width={40} />
-			</Flex.Item>
-			<Box mi='x8' flexGrow={1}>
-				<Skeleton width='100%' />
-				<Skeleton width='100%' />
-			</Box>
-		</Box>
-	</Table.Cell>
-	{ Array.from({ length: cols - 1 }, (_, i) => <Table.Cell key={i}>
-		<Skeleton width='100%' />
-	</Table.Cell>)}
-</Table.Row>;
-
-export const GenericTable = forwardRef(function GenericTable({
+const GenericTable = ({
 	children,
-	results,
 	fixed = true,
-	total,
-	renderRow: RenderRow,
 	header,
-	setParams = () => { },
 	params: paramsDefault = '',
-	FilterComponent = () => null,
+	renderFilter,
+	renderRow: RenderRow,
+	results,
+	setParams = () => { },
+	total,
 	...props
-}, ref) {
+}, ref) => {
 	const t = useTranslation();
 
 	const [filter, setFilter] = useState(paramsDefault);
@@ -72,7 +43,7 @@ export const GenericTable = forwardRef(function GenericTable({
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return <>
-		<FilterComponent setFilter={setFilter} { ...props}/>
+		{typeof renderFilter === 'function' ? renderFilter({ onChange: setFilter, ...props }) : null}
 		{results && !results.length
 			? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
 				{t('No_data_found')}
@@ -110,8 +81,8 @@ export const GenericTable = forwardRef(function GenericTable({
 			</>
 		}
 	</>;
-});
+};
 
-export default Object.assign(GenericTable, {
-	HeaderCell: Th,
+export default Object.assign(forwardRef(GenericTable), {
+	HeaderCell,
 });

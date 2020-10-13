@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CommitSection } from './CommitSection';
+import CommitSection from './CommitSection';
 
 export default {
 	title: 'admin/info/CommitSection',

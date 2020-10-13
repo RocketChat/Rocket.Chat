@@ -4,11 +4,10 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { useMethod, useServerInformation, useEndpoint } from '../../contexts/ServerContext';
 import { downloadJsonAsAFile } from '../../helpers/download';
-import { InformationPage } from './InformationPage';
+import InformationPage from './InformationPage';
 
-export const InformationRoute = React.memo(function InformationRoute() {
+const InformationRoute = React.memo(function InformationRoute() {
 	const canViewStatistics = usePermission('view-statistics');
-
 
 	const [isLoading, setLoading] = useState(true);
 	const [statistics, setStatistics] = useState({});

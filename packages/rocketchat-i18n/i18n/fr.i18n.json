@@ -502,6 +502,8 @@
   "CAS_button_color": "Bouton de connexion, couleur de fond",
   "CAS_button_label_color": "Bouton de connexion, couleur du texte",
   "CAS_button_label_text": "Bouton de connexion, texte / label",
+  "CAS_Creation_User_Enabled": "Autoriser la création de l'utilisateur",
+  "CAS_Creation_User_Enabled_Description": "Autoriser la création de l'utilisateur CAS à partir des informations transmises dans le ticket CAS.",
   "CAS_enabled": "Activé",
   "CAS_Login_Layout": "Disposition de connexion CAS",
   "CAS_login_url": "URL de login SSO",
