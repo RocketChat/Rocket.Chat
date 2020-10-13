@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Icon, Accordion, Skeleton, Margins, Pagination } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Icon, Accordion, Pagination } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, useEffect } from 'react';
 
@@ -6,43 +6,9 @@ import Page from '../../components/basic/Page';
 import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useHighlightedCode } from '../../hooks/useHighlightedCode';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
-
-const LogEntry = ({ severity, timestamp, caller, args }) => {
-	const t = useTranslation();
-	return <Box>
-		<Box>{severity}: {timestamp} {t('Caller')}: {caller}</Box>
-		<Box withRichContent width='full'>
-			<pre>
-				<code
-					dangerouslySetInnerHTML={{
-						__html: useHighlightedCode('json', JSON.stringify(args, null, 2)),
-					}}
-				/>
-			</pre>
-		</Box>
-	</Box>;
-};
-
-const LogItem = ({ entries, instanceId, title, t, ...props }) => <Accordion.Item title={title} {...props}>
-	{instanceId && <Box>{t('Instance')}: {instanceId}</Box>}
-	{entries.map(({ severity, timestamp, caller, args }, i) => <LogEntry
-		key={i}
-		severity={severity}
-		timestamp={timestamp}
-		caller={caller}
-		args={args}
-	/>)}
-</Accordion.Item>;
-
-const LogsLoading = () => <Box maxWidth='x600' w='full' alignSelf='center'>
-	<Margins block='x2'>
-		<Skeleton variant='rect' width='100%' height='x80' />
-		<Skeleton variant='rect' width='100%' height='x80' />
-		<Skeleton variant='rect' width='100%' height='x80' />
-	</Margins>
-</Box>;
+import LogItem from './LogItem';
+import LogsLoading from './LogsLoading';
 
 const useAppWithLogs = ({ id, current, itemsPerPage }) => {
 	const [data, setData] = useSafely(useState({}));
@@ -123,7 +89,6 @@ function AppLogsPage({ id, ...props }) {
 						title={`${ formatDateAndTime(log._createdAt) }: "${ log.method }" (${ log.totalTime }ms)`}
 						instanceId={log.instanceId}
 						entries={log.entries}
-						t={t}
 					/>)}
 				</Accordion>
 			</>}
