@@ -201,13 +201,3 @@ export const getOplogHandle = async (): Promise<OplogHandle | CustomOplogHandle 
 	}
 	return mongo._oplogHandle;
 };
-
-process.on('SIGTERM', async () => {
-	if (!oplogHandle) {
-		process.exit(0);
-	}
-
-	// gracefully closes oplog connection on SIGTERM
-	await (await oplogHandle).stop();
-	process.exit(0);
-});
