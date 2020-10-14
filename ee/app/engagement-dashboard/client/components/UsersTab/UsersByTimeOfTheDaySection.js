@@ -1,12 +1,11 @@
 import { ResponsiveHeatMap } from '@nivo/heatmap';
-import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
-import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
 import { saveFile } from '../../../../../../client/lib/saveFile';
 
 const convertDataToCSV = (data) => `// date, users
@@ -88,7 +87,7 @@ export function UsersByTimeOfTheDaySection() {
 	};
 	return <Section
 		title={t('Users_by_time_of_day')}
-		filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />{<ActionButton mis='x16' onClick={downloadData} aria-label={t('Download_Info')} icon='download'/>}</>}
+		filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />{<ActionButton small mis='x16' onClick={downloadData} aria-label={t('Download_Info')} icon='download'/>}</>}
 	>
 		{data
 			? <Box display='flex' style={{ height: 696 }}>
