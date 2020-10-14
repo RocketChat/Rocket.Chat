@@ -4,13 +4,14 @@ import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 import _ from 'underscore';
+import s from 'underscore.string';
 
 import { WebRTC } from '../../../webrtc/client';
-import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models';
-import { modal } from '../../../ui-utils';
+import { ChatRoom, ChatSubscription, RoomRoles, Subscriptions } from '../../../models/client';
+import { modal } from '../../../ui-utils/client';
 import { t, handleError, roomTypes } from '../../../utils';
-import { settings } from '../../../settings';
-import { hasPermission, hasAllPermission, userHasAllPermission } from '../../../authorization';
+import { settings } from '../../../settings/client';
+import { hasPermission, hasAllPermission, userHasAllPermission } from '../../../authorization/client';
 import { RoomMemberActions } from '../../../utils/client';
 
 const canSetLeader = () => hasAllPermission('set-leader', Session.get('openedRoom'));
@@ -223,7 +224,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 						}
 						Meteor.call('removeRoomOwner', Session.get('openedRoom'), _id, success(() => {
 							const room = ChatRoom.findOne(Session.get('openedRoom'));
-							toastr.success(TAPi18n.__('User__username__removed_from__room_name__owners', { username, room_name: roomTypes.getRoomName(room.t, room) }));
+							toastr.success(TAPi18n.__('User__username__removed_from__room_name__owners', { username, room_name: s.escapeHTML(roomTypes.getRoomName(room.t, room)) }));
 						}));
 					}) };
 			}
@@ -238,7 +239,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					}
 					Meteor.call('addRoomOwner', Session.get('openedRoom'), _id, success(() => {
 						const room = ChatRoom.findOne(Session.get('openedRoom'));
-						toastr.success(TAPi18n.__('User__username__is_now_a_owner_of__room_name_', { username, room_name: roomTypes.getRoomName(room.t, room) }));
+						toastr.success(TAPi18n.__('User__username__is_now_a_owner_of__room_name_', { username, room_name: s.escapeHTML(roomTypes.getRoomName(room.t, room)) }));
 					}));
 				}),
 			};
@@ -261,7 +262,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 						}
 						Meteor.call('removeRoomLeader', Session.get('openedRoom'), _id, success(() => {
 							const room = ChatRoom.findOne(Session.get('openedRoom'));
-							toastr.success(TAPi18n.__('User__username__removed_from__room_name__leaders', { username, room_name: roomTypes.getRoomName(room.t, room) }));
+							toastr.success(TAPi18n.__('User__username__removed_from__room_name__leaders', { username, room_name: s.escapeHTML(roomTypes.getRoomName(room.t, room)) }));
 						}));
 					}),
 				};
@@ -277,7 +278,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					}
 					Meteor.call('addRoomLeader', Session.get('openedRoom'), _id, success(() => {
 						const room = ChatRoom.findOne(Session.get('openedRoom'));
-						toastr.success(TAPi18n.__('User__username__is_now_a_leader_of__room_name_', { username, room_name: roomTypes.getRoomName(room.t, room) }));
+						toastr.success(TAPi18n.__('User__username__is_now_a_leader_of__room_name_', { username, room_name: s.escapeHTML(roomTypes.getRoomName(room.t, room)) }));
 					}));
 				}),
 			};
@@ -300,7 +301,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 						}
 						Meteor.call('removeRoomModerator', Session.get('openedRoom'), _id, success(() => {
 							const room = ChatRoom.findOne(Session.get('openedRoom'));
-							toastr.success(TAPi18n.__('User__username__removed_from__room_name__moderators', { username, room_name: roomTypes.getRoomName(room.t, room) }));
+							toastr.success(TAPi18n.__('User__username__removed_from__room_name__moderators', { username, room_name: s.escapeHTML(roomTypes.getRoomName(room.t, room)) }));
 						}));
 					}),
 				};
@@ -316,7 +317,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					}
 					Meteor.call('addRoomModerator', Session.get('openedRoom'), _id, success(() => {
 						const room = ChatRoom.findOne(Session.get('openedRoom'));
-						toastr.success(TAPi18n.__('User__username__is_now_a_moderator_of__room_name_', { username, room_name: roomTypes.getRoomName(room.t, room) }));
+						toastr.success(TAPi18n.__('User__username__is_now_a_moderator_of__room_name_', { username, room_name: s.escapeHTML(roomTypes.getRoomName(room.t, room)) }));
 					}));
 				}),
 			};
@@ -374,7 +375,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 					}
 					modal.open({
 						title: t('Are_you_sure'),
-						text: t('The_user_wont_be_able_to_type_in_s', roomTypes.getRoomName(room.t, room)),
+						text: t('The_user_wont_be_able_to_type_in_s', s.escapeHTML(roomTypes.getRoomName(room.t, room))),
 						type: 'warning',
 						showCancelButton: true,
 						confirmButtonColor: '#DD6B55',
@@ -386,7 +387,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 						Meteor.call('muteUserInRoom', { rid, username }, success(() => {
 							modal.open({
 								title: t('Muted'),
-								text: t('User_has_been_muted_in_s', roomTypes.getRoomName(room.t, room)),
+								text: t('User_has_been_muted_in_s', s.escapeHTML(roomTypes.getRoomName(room.t, room))),
 								type: 'success',
 								timer: 2000,
 								showConfirmButton: false,
@@ -408,7 +409,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				}
 				modal.open({
 					title: t('Are_you_sure'),
-					text: t('The_user_will_be_removed_from_s', roomTypes.getRoomName(room.t, room)),
+					text: t('The_user_will_be_removed_from_s', s.escapeHTML(roomTypes.getRoomName(room.t, room))),
 					type: 'warning',
 					showCancelButton: true,
 					confirmButtonColor: '#DD6B55',
@@ -419,7 +420,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				}, () => Meteor.call('removeUserFromRoom', { rid, username: user.username }, success(() => {
 					modal.open({
 						title: t('Removed'),
-						text: t('User_has_been_removed_from_s', roomTypes.getRoomName(room.t, room)),
+						text: t('User_has_been_removed_from_s', s.escapeHTML(roomTypes.getRoomName(room.t, room))),
 						type: 'success',
 						timer: 2000,
 						showConfirmButton: false,
@@ -442,6 +443,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				this.editingUser.set(user._id);
 			}),
 		}, {
+			// deprecated, this action should not be called as this component is not used on admin pages anymore
 			icon: 'trash',
 			name: 'Delete',
 			action: prevent(getUser, ({ _id }) => {
@@ -502,6 +504,7 @@ export const getActions = ({ user, directActions, hideAdminControls }) => {
 				),
 			};
 		}, () => {
+			// deprecated, this action should not be called as this component is not used on admin pages anymore
 			if (hideAdminControls || !hasPermission('edit-other-user-active-status')) {
 				return;
 			}

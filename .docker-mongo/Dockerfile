@@ -1,24 +1,40 @@
-FROM rocketchat/base:12.16.1
+FROM node:12.18.4-buster-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
+# Install MongoDB and dependencies
 RUN set -x \
- && apt-get update \
- && apt-get install -y wget \
- && wget -qO - https://www.mongodb.org/static/pgp/server-4.0.asc | apt-key add - \
- && echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list \
- && apt-get update \
- && apt-get install -y pwgen mongodb-org \
- && apt-get clean my room
+    && apt-get update \
+    && apt-get install -y wget gnupg dirmngr pwgen \
+    && wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | apt-key add - \
+    && echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" | tee /etc/apt/sources.list.d/mongodb-org-4.2.list \
+    && apt-get update \
+    && apt-get install -y mongodb-org fontconfig \
+    && apt-get clean my room \
+    && groupadd -g 65533 -r rocketchat \
+    && useradd -u 65533 -r -g rocketchat rocketchat \
+    && mkdir -p /app/uploads \
+    && chown rocketchat:rocketchat /app/uploads
 
 ADD . /app
 ADD entrypoint.sh /app/bundle/
 
-RUN set -x \
- && cd /app/bundle/programs/server \
- && npm install \
- && npm cache clear --force \
- && chown -R rocketchat:rocketchat /app
+RUN aptMark="$(apt-mark showmanual)" \
+    && apt-get install -y --no-install-recommends g++ make python ca-certificates \
+    && cd /app/bundle/programs/server \
+    && npm install \
+    && apt-mark auto '.*' > /dev/null \
+    && apt-mark manual $aptMark > /dev/null \
+    && find /usr/local -type f -executable -exec ldd '{}' ';' \
+       | awk '/=>/ { print $(NF-1) }' \
+       | sort -u \
+       | xargs -r dpkg-query --search \
+       | cut -d: -f1 \
+       | sort -u \
+       | xargs -r apt-mark manual \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && npm cache clear --force \
+    && chown -R rocketchat:rocketchat /app
 
 VOLUME /app/uploads
 

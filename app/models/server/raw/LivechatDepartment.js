@@ -25,4 +25,57 @@ export class LivechatDepartmentRaw extends BaseRaw {
 
 		return this.find(query, options);
 	}
+
+	findByBusinessHourId(businessHourId, options) {
+		const query = { businessHourId };
+		return this.find(query, options);
+	}
+
+	findEnabledByBusinessHourId(businessHourId, options) {
+		const query = { businessHourId, enabled: true };
+		return this.find(query, options);
+	}
+
+	addBusinessHourToDepartmentsByIds(ids = [], businessHourId) {
+		const query = {
+			_id: { $in: ids },
+		};
+
+		const update = {
+			$set: {
+				businessHourId,
+			},
+		};
+
+		return this.col.update(query, update, { multi: true });
+	}
+
+	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(ids = [], businessHourId) {
+		const query = {
+			_id: { $in: ids },
+			businessHourId,
+		};
+
+		const update = {
+			$unset: {
+				businessHourId: 1,
+			},
+		};
+
+		return this.col.update(query, update, { multi: true });
+	}
+
+	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId) {
+		const query = {
+			businessHourId,
+		};
+
+		const update = {
+			$unset: {
+				businessHourId: 1,
+			},
+		};
+
+		return this.col.update(query, update, { multi: true });
+	}
 }

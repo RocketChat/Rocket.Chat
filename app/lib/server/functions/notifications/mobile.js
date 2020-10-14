@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../settings';
 import { Subscriptions } from '../../../../models';
@@ -40,24 +41,35 @@ function enableNotificationReplyButton(room, username) {
 	return !room.muted.includes(username);
 }
 
-export async function getPushData({ room, message, userId, receiverUsername, senderUsername, senderName, notificationMessage }) {
-	let username = '';
-	if (settings.get('Push_show_username_room')) {
-		username = settings.get('UI_Use_Real_Name') === true ? senderName : senderUsername;
+export async function getPushData({ room, message, userId, senderUsername, senderName, notificationMessage, receiver, shouldOmitMessage = true }) {
+	const username = (settings.get('Push_show_username_room') && settings.get('UI_Use_Real_Name') && senderName) || senderUsername;
+
+	const lng = receiver.language || settings.get('Language') || 'en';
+
+	let messageText;
+	if (shouldOmitMessage && settings.get('Push_request_content_from_server')) {
+		messageText = TAPi18n.__('You_have_a_new_message', { lng });
+	} else if (!settings.get('Push_show_message')) {
+		messageText = ' ';
+	} else {
+		messageText = notificationMessage;
 	}
 
 	return {
 		payload: {
 			sender: message.u,
+			senderName: username,
 			type: room.t,
 			name: room.name,
 			messageType: message.t,
+			tmid: message.tmid,
+			...message.t === 'e2e' && { msg: message.msg },
 		},
 		roomName: settings.get('Push_show_username_room') && roomTypes.getConfig(room.t).isGroupChat(room) ? `#${ roomTypes.getRoomName(room.t, room) }` : '',
 		username,
-		message: settings.get('Push_show_message') ? notificationMessage : ' ',
+		message: messageText,
 		badge: await getBadgeCount(userId),
-		category: enableNotificationReplyButton(room, receiverUsername) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
+		category: enableNotificationReplyButton(room, receiver.username) ? CATEGORY_MESSAGE : CATEGORY_MESSAGE_NOREPLY,
 	};
 }
 
@@ -69,7 +81,12 @@ export function shouldNotifyMobile({
 	hasMentionToUser,
 	hasReplyToThread,
 	roomType,
+	isThread,
 }) {
+	if (settings.get('Push_enable') !== true) {
+		return false;
+	}
+
 	if (disableAllMessageNotifications && mobilePushNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
@@ -79,7 +96,7 @@ export function shouldNotifyMobile({
 	}
 
 	if (!mobilePushNotifications) {
-		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all') {
+		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all' && (!isThread || hasReplyToThread)) {
 			return true;
 		}
 		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'nothing') {
@@ -87,5 +104,5 @@ export function shouldNotifyMobile({
 		}
 	}
 
-	return roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser || hasReplyToThread;
+	return (roomType === 'd' || (!disableAllMessageNotifications && hasMentionToAll) || isHighlighted || mobilePushNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
 }

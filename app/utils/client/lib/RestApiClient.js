@@ -49,7 +49,12 @@ export const APIClient = {
 			Object.keys(params).forEach((key) => {
 				query += query === '' ? '?' : '&';
 
-				query += `${ key }=${ params[key] }`;
+				if (Array.isArray(params[key])) {
+					const joinedArray = params[key].join(`&${ key }[]=`);
+					query += `${ key }[]=${ joinedArray }`;
+				} else {
+					query += `${ key }=${ params[key] }`;
+				}
 			});
 		}
 

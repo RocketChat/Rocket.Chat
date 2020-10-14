@@ -119,16 +119,20 @@ Meteor.methods({
 
 		const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
 
+		const viewFullOtherUserInfo = hasPermission(user._id, 'view-full-other-user-info');
+
 		const options = {
 			...pagination,
 			sort: sortUsers(sortBy, sortDirection),
 			fields: {
 				username: 1,
 				name: 1,
+				nickname: 1,
 				bio: 1,
 				createdAt: 1,
-				emails: 1,
+				...viewFullOtherUserInfo && { emails: 1 },
 				federation: 1,
+				avatarETag: 1,
 			},
 		};
 
@@ -156,6 +160,7 @@ Meteor.methods({
 					username: user.username,
 					name: user.name,
 					bio: user.bio,
+					nickname: user.nickname,
 					emails: user.emails,
 					federation: user.federation,
 					isRemote: true,

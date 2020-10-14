@@ -11,9 +11,12 @@ import { renderMessageBody } from './renderMessageBody';
 import { getConfig } from '../config';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { call } from './callMethod';
+import { filterMarkdown } from '../../../markdown/lib/markdown';
 
-export const normalizeThreadMessage = (message) => {
+export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {
+		message.msg = filterMarkdown(message.msg);
+		delete message.mentions;
 		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
 	}
 
@@ -78,7 +81,7 @@ export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessa
 
 const defaultLimit = parseInt(getConfig('roomListLimit')) || 50;
 
-const waitAfterFlush = (fn) => setTimeout(() => Tracker.afterFlush(fn), 70);
+const waitAfterFlush = (fn) => setTimeout(() => Tracker.afterFlush(fn), 10);
 
 export const RoomHistoryManager = new class {
 	constructor() {
@@ -164,7 +167,7 @@ export const RoomHistoryManager = new class {
 
 		if (wrapper) {
 			waitAfterFlush(() => {
-				if (wrapper.scrollHeight <= wrapper.offsetHeight) {
+				if (wrapper.children[0].scrollHeight <= wrapper.offsetHeight) {
 					return this.getMore(rid);
 				}
 				const heightDiff = wrapper.scrollHeight - previousHeight;

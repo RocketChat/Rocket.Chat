@@ -101,8 +101,8 @@
 		background-color: var(--sidebar-item-active-background);
 	}
 
-	&--unread,
-	&--mention {
+	&--unread &__message-top,
+	&--mention &__message-top {
 		color: var(--sidebar-item-unread-color);
 
 		font-weight: var(--sidebar-item-unread-font-weight);
@@ -137,15 +137,15 @@
 
 		&-status {
 			&--online {
-				color: var(--status-online);
+				color: var(--rc-status-online);
 			}
 
 			&--away {
-				color: var(--status-away);
+				color: var(--rc-status-away);
 			}
 
 			&--busy {
-				color: var(--status-busy);
+				color: var(--rc-status-busy);
 			}
 		}
 	}
@@ -175,19 +175,19 @@
 		border-radius: var(--sidebar-item-user-status-radius);
 
 		&--online {
-			background-color: var(--status-online);
+			background-color: var(--rc-status-online);
 		}
 
 		&--away {
-			background-color: var(--status-away);
+			background-color: var(--rc-status-away);
 		}
 
 		&--busy {
-			background-color: var(--status-busy);
+			background-color: var(--rc-status-busy);
 		}
 
 		&--offline {
-			background-color: var(--status-invisible-sidebar);
+			background-color: var(--rc-status-invisible-sidebar);
 		}
 	}
 
@@ -274,6 +274,12 @@
 
 		font-size: 12px;
 		line-height: normal;
+
+		&--unread {
+			color: var(--sidebar-item-unread-color);
+
+			font-weight: var(--sidebar-item-unread-font-weight);
+		}
 	}
 
 	&__time {

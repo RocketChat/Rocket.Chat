@@ -6,7 +6,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { Settings } from '../../models';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 
 const headInjections = new ReactiveDict();
 
@@ -35,7 +35,6 @@ Meteor.startup(() => {
 	});
 
 	injectIntoHead('noreferrer', '<meta name="referrer" content="origin-when-cross-origin" />');
-	injectIntoHead('dynamic', `<script>${ Assets.getText('server/dynamic-css.js') }</script>`);
 
 	if (process.env.DISABLE_ANIMATION || process.env.TEST_MODE === 'true') {
 		injectIntoHead('disable-animation', `
@@ -158,9 +157,7 @@ renderDynamicCssList();
 // 	changed: renderDynamicCssList
 // });
 
-Settings.find({ _id: /theme-color-rc/i }, { fields: { value: 1 } }).observe({
-	changed: renderDynamicCssList,
-});
+settings.get(/theme-color-rc/i, () => renderDynamicCssList());
 
 injectIntoBody('icons', Assets.getText('public/icons.svg'));
 

@@ -12,7 +12,6 @@ import './views/cmsPage.html';
 import './views/404/roomNotFound.html';
 import './views/404/invalidSecretURL.html';
 import './views/404/invalidInvite.html';
-import './views/app/audioNotification.html';
 import './views/app/burger.html';
 import './views/app/createChannel.html';
 import './views/app/editStatus.html';
@@ -58,6 +57,7 @@ import './components/header/headerRoom';
 import './components/contextualBar.html';
 import './components/contextualBar';
 import './components/tooltip';
+import './lib/Tooltip';
 
 export { ChatMessages } from './lib/chatMessages';
 export { fileUpload } from './lib/fileUpload';
@@ -67,5 +67,6 @@ export { Login, animationSupport, animeBack, Button, preLoadImgs } from './lib/r
 export { AudioRecorder } from './lib/recorderjs/audioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';
 export { chatMessages } from './views/app/room';
+export * from './lib/userPopoverStatus';
 
-createTemplateForComponent('RoomForeword', () => import('./views/app/RoomForeword'));
+createTemplateForComponent('RoomForeword', () => import('../../../client/components/RoomForeword'));

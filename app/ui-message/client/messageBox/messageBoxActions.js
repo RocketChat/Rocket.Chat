@@ -18,6 +18,8 @@ messageBox.actions.add('Create_new', 'Video_message', {
 		&& window.MediaRecorder
 		&& settings.get('FileUpload_Enabled')
 		&& settings.get('Message_VideoRecorderEnabled')
+		&& (!settings.get('FileUpload_MediaTypeBlackList')
+			|| !settings.get('FileUpload_MediaTypeBlackList').match(/video\/webm|video\/\*/i))
 		&& (!settings.get('FileUpload_MediaTypeWhiteList')
 			|| settings.get('FileUpload_MediaTypeWhiteList').match(/video\/webm|video\/\*/i)),
 	action: ({ rid, tmid, messageBox }) => (VRecDialog.opened ? VRecDialog.close() : VRecDialog.open(messageBox, { rid, tmid })),
@@ -63,15 +65,78 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 	},
 });
 
-const geolocation = new ReactiveVar(false);
+const canGetGeolocation = new ReactiveVar(false);
+
+const getGeolocationPermission = () => new Promise((resolve) => {
+	if (!navigator.permissions) { resolve(true); }
+	navigator.permissions.query({ name: 'geolocation' }).then(({ state }) => { resolve(state); });
+});
+
+const getGeolocationPosition = () => new Promise((resolvePos) => {
+	navigator.geolocation.getCurrentPosition(resolvePos, () => { resolvePos(false); }, {
+		enableHighAccuracy: true,
+		maximumAge: 0,
+		timeout: 10000,
+	});
+});
+
+const getCoordinates = async () => {
+	const status = await getGeolocationPermission();
+	if (status === 'prompt') {
+		let resolveModal;
+		const modalAnswer = new Promise((resolve) => { resolveModal = resolve; });
+		modal.open({
+			title: t('You_will_be_asked_for_permissions'),
+			confirmButtonText: t('Continue'),
+			showCancelButton: true,
+			closeOnConfirm: true,
+			closeOnCancel: true,
+		}, async (isConfirm) => {
+			if (!isConfirm) {
+				resolveModal(false);
+			}
+			const position = await getGeolocationPosition();
+			if (!position) {
+				const newStatus = getGeolocationPermission();
+				resolveModal(newStatus);
+			}
+			resolveModal(position);
+		});
+		const position = await modalAnswer;
+		return position;
+	}
+
+	if (status === 'denied') {
+		return status;
+	}
+
+	const position = await getGeolocationPosition();
+	return position;
+};
+
 
 messageBox.actions.add('Share', 'My_location', {
 	id: 'share-location',
 	icon: 'map-pin',
-	condition: () => geolocation.get() !== false,
-	action({ rid, tmid }) {
-		const position = geolocation.get();
-		const { latitude, longitude } = position.coords;
+	condition: () => canGetGeolocation.get(),
+	async action({ rid, tmid }) {
+		const position = await getCoordinates();
+
+		if (!position) {
+			return;
+		}
+
+		if (position === 'denied') {
+			modal.open({
+				title: t('Cannot_share_your_location'),
+				text: t('The_necessary_browser_permissions_for_location_sharing_are_not_granted'),
+				confirmButtonText: t('Ok'),
+				closeOnConfirm: true,
+			});
+			return;
+		}
+
+		const { coords: { latitude, longitude } } = position;
 		const text = `<div class="upload-preview"><div class="upload-preview-file" style="background-size: cover; box-shadow: 0 0 0px 1px #dfdfdf; border-radius: 2px; height: 250px; width:100%; max-width: 500px; background-image:url(https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=500x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ settings.get('MapView_GMapsAPIKey') })" ></div></div>`;
 
 		modal.open({
@@ -100,24 +165,10 @@ messageBox.actions.add('Share', 'My_location', {
 });
 
 Meteor.startup(() => {
-	const handleGeolocation = (position) => geolocation.set(position);
-	const handleGeolocationError = () => geolocation.set(false);
-
 	Tracker.autorun(() => {
 		const isMapViewEnabled = settings.get('MapView_Enabled') === true;
-		const isGeolocationWatchSupported = navigator.geolocation && navigator.geolocation.watchPosition;
+		const isGeolocationCurrentPositionSupported = navigator.geolocation && navigator.geolocation.getCurrentPosition;
 		const googleMapsApiKey = settings.get('MapView_GMapsAPIKey');
-		const canGetGeolocation =			isMapViewEnabled && isGeolocationWatchSupported && (googleMapsApiKey && googleMapsApiKey.length);
-
-		if (!canGetGeolocation) {
-			geolocation.set(false);
-			return;
-		}
-
-		navigator.geolocation.watchPosition(handleGeolocation, handleGeolocationError, {
-			enableHighAccuracy: true,
-			maximumAge: 0,
-			timeout: 10000,
-		});
+		canGetGeolocation.set(isMapViewEnabled && isGeolocationCurrentPositionSupported && googleMapsApiKey && googleMapsApiKey.length);
 	});
 });

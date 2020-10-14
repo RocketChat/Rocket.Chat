@@ -8,7 +8,9 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
+import { HTML } from 'meteor/htmljs';
 
+import { createTemplateForComponent } from '../../../../client/reactAdapters';
 import { messageArgs } from './messageArgs';
 import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
@@ -149,15 +151,9 @@ Meteor.startup(async function() {
 	const { chatMessages } = await import('../../../ui');
 
 	const getChatMessagesFrom = (msg) => {
-		const { rid, tmid } = msg;
+		const { rid = Session.get('openedRoom'), tmid = msg._id } = msg;
 
-		if (rid) {
-			if (tmid) {
-				return chatMessages[`${ rid }-${ tmid }`];
-			}
-			return chatMessages[rid];
-		}
-		return chatMessages[Session.get('openedRoom')];
+		return chatMessages[`${ rid }-${ tmid }`] || chatMessages[rid];
 	};
 
 	MessageAction.addButton({
@@ -192,7 +188,7 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
-			const { input } = chatMessages[message.rid + (message.tmid ? `-${ message.tmid }` : '')];
+			const { input } = getChatMessagesFrom(message);
 			const $input = $(input);
 
 			let messages = $input.data('reply') || [];
@@ -212,8 +208,8 @@ Meteor.startup(async function() {
 
 			return true;
 		},
-		order: 3,
-		group: 'menu',
+		order: -3,
+		group: ['message', 'menu'],
 	});
 
 	MessageAction.addButton({
@@ -222,18 +218,14 @@ Meteor.startup(async function() {
 		label: 'Get_link',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads'],
-		async action(event) {
+		async action() {
 			const { msg: message } = messageArgs(this);
 			const permalink = await MessageAction.getPermaLink(message._id);
-			$(event.currentTarget).attr('data-clipboard-text', permalink);
+			navigator.clipboard.writeText(permalink);
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition({ subscription }) {
-			if (subscription == null) {
-				return false;
-			}
-
-			return true;
+			return !!subscription;
 		},
 		order: 4,
 		group: 'menu',
@@ -245,9 +237,9 @@ Meteor.startup(async function() {
 		label: 'Copy',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads'],
-		action(event) {
+		action() {
 			const { msg: { msg } } = messageArgs(this);
-			$(event.currentTarget).attr('data-clipboard-text', msg);
+			navigator.clipboard.writeText(msg);
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition({ subscription }) {
@@ -363,6 +355,28 @@ Meteor.startup(async function() {
 			return Boolean(subscription);
 		},
 		order: 17,
+		group: 'menu',
+	});
+
+	MessageAction.addButton({
+		id: 'reaction-list',
+		icon: 'emoji',
+		label: 'Reactions',
+		context: ['message', 'message-mobile', 'threads'],
+		action(_, roomInstance) {
+			const { msg: { reactions } } = messageArgs(this);
+
+			modal.open({
+				template: createTemplateForComponent('reactionList', () => import('./ReactionListContent'), {
+					renderContainerView: () => HTML.DIV({ style: 'margin: -16px; height: 100%; display: flex; flex-direction: column; overflow: hidden;' }), // eslint-disable-line new-cap
+				}),
+				data: { reactions, roomInstance, onClose: () => modal.close() },
+			});
+		},
+		condition({ msg: { reactions } }) {
+			return !!reactions;
+		},
+		order: 18,
 		group: 'menu',
 	});
 });

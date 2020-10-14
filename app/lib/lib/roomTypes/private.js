@@ -4,8 +4,7 @@ import { ChatRoom, ChatSubscription } from '../../../models';
 import { openRoom } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
-import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, roomTypes, RoomMemberActions } from '../../../utils';
-import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
+import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, RoomMemberActions } from '../../../utils';
 import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 
@@ -13,7 +12,7 @@ export class PrivateRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'group',
-			path: '/group/:name',
+			path: '/group/:name/:tab?/:context?',
 		});
 	}
 
@@ -123,21 +122,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		// TODO: change to always get avatar from _id when rooms have avatars
-
-		// if room is not a discussion, returns the avatar for its name
-		if (!roomData.prid) {
-			return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
-		}
-
-		// if discussion's parent room is known, get his avatar
-		const proom = ChatRoom.findOne({ _id: roomData.prid }, { reactive: false });
-		if (proom) {
-			return roomTypes.getConfig(proom.t).getAvatarPath(proom);
-		}
-
-		// otherwise gets discussion's avatar via _id
-		return getRoomAvatarURL(roomData.prid);
+		return getAvatarURL({ roomId: roomData._id, cache: roomData.avatarETag });
 	}
 
 	includeInDashboard() {

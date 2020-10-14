@@ -11,6 +11,7 @@ import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
 import { Users } from '../../app/models/server';
+import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -56,26 +57,17 @@ function authorizeConnection(instance) {
 	return _authorizeConnection(instance);
 }
 
+const cache = new Map();
 const originalSetDefaultStatus = UserPresence.setDefaultStatus;
 function startMatrixBroadcast() {
 	if (!startMonitor) {
 		UserPresence.setDefaultStatus = originalSetDefaultStatus;
 	}
 
-	const query = {
-		'extraInformation.port': {
-			$exists: true,
-		},
-	};
-
-	const options = {
-		sort: {
-			_createdAt: -1,
-		},
-	};
-
-	return InstanceStatus.getCollection().find(query, options).observe({
+	const actions = {
 		added(record) {
+			cache.set(record._id, record);
+
 			const subPath = getURL('', { cdn: false, full: false });
 			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
 
@@ -111,7 +103,13 @@ function startMatrixBroadcast() {
 			};
 		},
 
-		removed(record) {
+		removed(id) {
+			const record = cache.get(id);
+			if (!record) {
+				return;
+			}
+			cache.delete(id);
+
 			const subPath = getURL('', { cdn: false, full: false });
 			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
 
@@ -130,6 +128,32 @@ function startMatrixBroadcast() {
 				return delete connections[instance];
 			}
 		},
+	};
+
+	const query = {
+		'extraInformation.port': {
+			$exists: true,
+		},
+	};
+
+	const options = {
+		sort: {
+			_createdAt: -1,
+		},
+	};
+
+	InstanceStatusModel.find(query, options).fetch().forEach(actions.added);
+	return InstanceStatusModel.on('change', ({ clientAction, id, data }) => {
+		switch (clientAction) {
+			case 'inserted':
+				if (data.extraInformation?.port) {
+					actions.added(data);
+				}
+				break;
+			case 'removed':
+				actions.removed(id);
+				break;
+		}
 	});
 }
 
@@ -164,8 +188,7 @@ Meteor.methods({
 		}
 
 		if (instance.serverOnly) {
-			const scope = {};
-			instance.emitWithScope(eventName, scope, ...args);
+			instance.__emit(eventName, ...args);
 		} else {
 			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
 		}
@@ -216,8 +239,7 @@ function startStreamCastBroadcast(value) {
 		}
 
 		if (instance.serverOnly) {
-			const scope = {};
-			return instance.emitWithScope(eventName, scope, args);
+			return instance.__emit(eventName, ...args);
 		}
 		return instance._emit(eventName, args);
 	});
