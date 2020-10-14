@@ -5,13 +5,13 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/basic/Page';
-import { CustomUserStatus } from './CustomUserStatus';
-import { EditCustomUserStatusWithData } from './EditCustomUserStatus';
-import { AddCustomUserStatus } from './AddCustomUserStatus';
+import CustomUserStatus from './CustomUserStatus';
+import AddCustomUserStatus from './AddCustomUserStatus';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import VerticalBar from '../../components/basic/VerticalBar';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import EditCustomUserStatusWithData from './EditCustomUserStatusWithData';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -23,7 +23,7 @@ export const useQuery = ({ text, itemsPerPage, current }, [column, direction], c
 	// TODO: remove cache. Is necessary for data invalidation
 }), [text, itemsPerPage, current, column, direction, cache]);
 
-export default function CustomUserStatusRoute({ props }) {
+function CustomUserStatusRoute({ props }) {
 	const t = useTranslation();
 	const canManageUserStatus = usePermission('manage-user-status');
 
@@ -102,3 +102,5 @@ export default function CustomUserStatusRoute({ props }) {
 			</VerticalBar>}
 	</Page>;
 }
+
+export default CustomUserStatusRoute;

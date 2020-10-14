@@ -3,17 +3,13 @@ import {
 	Box,
 	Button,
 	ButtonGroup,
-	CheckBox,
 	Icon,
 	Margins,
-	Table,
-	Tag,
 	Throbber,
-	Pagination,
 	Tabs,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 
@@ -30,6 +26,8 @@ import {
 import { useErrorHandler } from './useErrorHandler';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpoint } from '../../contexts/ServerContext';
+import PrepareUsers from './PrepareUsers';
+import PrepareChannels from './PrepareChannels';
 
 const waitFor = (fn, predicate) => new Promise((resolve, reject) => {
 	const callPromise = () => {
@@ -45,138 +43,6 @@ const waitFor = (fn, predicate) => new Promise((resolve, reject) => {
 
 	callPromise();
 });
-
-function PrepareUsers({ usersCount, users, setUsers }) {
-	const t = useTranslation();
-	const [current, setCurrent] = useState(0);
-	const [itemsPerPage, setItemsPerPage] = useState(25);
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
-	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
-
-	return <>
-		<Table>
-			<Table.Head>
-				<Table.Row>
-					<Table.Cell width='x36'>
-						<CheckBox
-							checked={usersCount > 0}
-							indeterminate={usersCount > 0 && usersCount !== users.length}
-							onChange={() => {
-								setUsers((users) => {
-									const hasCheckedDeletedUsers = users.some(({ is_deleted, do_import }) => is_deleted && do_import);
-									const isChecking = usersCount === 0;
-
-									if (isChecking) {
-										return users.map((user) => ({ ...user, do_import: true }));
-									}
-
-									if (hasCheckedDeletedUsers) {
-										return users.map((user) => (user.is_deleted ? { ...user, do_import: false } : user));
-									}
-
-									return users.map((user) => ({ ...user, do_import: false }));
-								});
-							}}
-						/>
-					</Table.Cell>
-					<Table.Cell is='th'>{t('Username')}</Table.Cell>
-					<Table.Cell is='th'>{t('Email')}</Table.Cell>
-					<Table.Cell is='th'></Table.Cell>
-				</Table.Row>
-			</Table.Head>
-			<Table.Body>
-				{users.slice(current, current + itemsPerPage).map((user) => <Table.Row key={user.user_id}>
-					<Table.Cell width='x36'>
-						<CheckBox
-							checked={user.do_import}
-							onChange={(event) => {
-								const { checked } = event.currentTarget;
-								setUsers((users) =>
-									users.map((_user) => (_user === user ? { ..._user, do_import: checked } : _user)));
-							}}
-						/>
-					</Table.Cell>
-					<Table.Cell>{user.username}</Table.Cell>
-					<Table.Cell>{user.email}</Table.Cell>
-					<Table.Cell align='end'>{user.is_deleted && <Tag variant='danger'>{t('Deleted')}</Tag>}</Table.Cell>
-				</Table.Row>)}
-			</Table.Body>
-		</Table>
-		<Pagination
-			current={current}
-			itemsPerPage={itemsPerPage}
-			count={users.length || 0}
-			onSetItemsPerPage={setItemsPerPage}
-			onSetCurrent={setCurrent}
-			itemsPerPageLabel={itemsPerPageLabel}
-			showingResultsLabel={showingResultsLabel}
-		/>
-	</>;
-}
-
-function PrepareChannels({ channels, channelsCount, setChannels }) {
-	const t = useTranslation();
-	const [current, setCurrent] = useState(0);
-	const [itemsPerPage, setItemsPerPage] = useState(25);
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
-	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
-
-	return channels.length && <><Table>
-		<Table.Head>
-			<Table.Row>
-				<Table.Cell width='x36'>
-					<CheckBox
-						checked={channelsCount > 0}
-						indeterminate={channelsCount > 0 && channelsCount !== channels.length}
-						onChange={() => {
-							setChannels((channels) => {
-								const hasCheckedArchivedChannels = channels.some(({ is_archived, do_import }) => is_archived && do_import);
-								const isChecking = channelsCount === 0;
-
-								if (isChecking) {
-									return channels.map((channel) => ({ ...channel, do_import: true }));
-								}
-
-								if (hasCheckedArchivedChannels) {
-									return channels.map((channel) => (channel.is_archived ? { ...channel, do_import: false } : channel));
-								}
-
-								return channels.map((channel) => ({ ...channel, do_import: false }));
-							});
-						}}
-					/>
-				</Table.Cell>
-				<Table.Cell is='th'>{t('Name')}</Table.Cell>
-				<Table.Cell is='th' align='end'></Table.Cell>
-			</Table.Row>
-		</Table.Head>
-		<Table.Body>
-			{channels.slice(current, current + itemsPerPage).map((channel) => <Table.Row key={channel.channel_id}>
-				<Table.Cell width='x36'>
-					<CheckBox
-						checked={channel.do_import}
-						onChange={(event) => {
-							const { checked } = event.currentTarget;
-							setChannels((channels) =>
-								channels.map((_channel) => (_channel === channel ? { ..._channel, do_import: checked } : _channel)));
-						}}
-					/>
-				</Table.Cell>
-				<Table.Cell>{channel.name}</Table.Cell>
-				<Table.Cell align='end'>{channel.is_archived && <Tag variant='danger'>{t('Importer_Archived')}</Tag>}</Table.Cell>
-			</Table.Row>)}
-		</Table.Body>
-	</Table>
-	<Pagination
-		current={current}
-		itemsPerPage={itemsPerPage}
-		itemsPerPageLabel={itemsPerPageLabel}
-		showingResultsLabel={showingResultsLabel}
-		count={channels.length || 0}
-		onSetItemsPerPage={setItemsPerPage}
-		onSetCurrent={setCurrent}
-	/></>;
-}
 
 function PrepareImportPage() {
 	const t = useTranslation();

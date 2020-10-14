@@ -3,7 +3,7 @@ import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 import { Box, Table, Icon, Button, NumberInput } from '@rocket.chat/fuselage';
 
-import { Th, GenericTable } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
@@ -53,7 +53,10 @@ export function RemoveAgentButton({ agentId, setAgentList, agentList }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteAgent}
+			onCancel={() => setModal()}
+		/>);
 	});
 
 	return <Button small ghost title={t('Remove')} onClick={handleDelete}><Icon name='trash' size='x16'/></Button>;
@@ -130,10 +133,10 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
 		<AddAgent agentList={agentList} setAgentList={setAgentList}/>
 		<GenericTable
 			header={<>
-				<Th key={'name'} w='x200'>{t('Name')}</Th>
-				<Th key={'Count'} w='x140'>{t('Count')}</Th>
-				<Th key={'Order'} w='x120'>{t('Order')}</Th>
-				<Th key={'remove'} w='x40'>{t('Remove')}</Th>
+				<GenericTable.HeaderCell key={'name'} w='x200'>{t('Name')}</GenericTable.HeaderCell>
+				<GenericTable.HeaderCell key={'Count'} w='x140'>{t('Count')}</GenericTable.HeaderCell>
+				<GenericTable.HeaderCell key={'Order'} w='x120'>{t('Order')}</GenericTable.HeaderCell>
+				<GenericTable.HeaderCell key={'remove'} w='x40'>{t('Remove')}</GenericTable.HeaderCell>
 			</>}
 			results={agentList}
 			total={agentList?.length}

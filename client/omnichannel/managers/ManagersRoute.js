@@ -3,7 +3,7 @@ import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.ch
 import React, { useMemo, useCallback, useState } from 'react';
 import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
 
-import { Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
@@ -68,10 +68,10 @@ export function ManagersRoute() {
 
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
-		mediaQuery && <Th key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>{t('Username')}</Th>,
-		<Th key={'email'} direction={sort[1]} active={sort[0] === 'emails.adress'} onClick={onHeaderClick} sort='emails.address' w='x120'>{t('Email')}</Th>,
-		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</GenericTable.HeaderCell>,
+		mediaQuery && <GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>{t('Username')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'email'} direction={sort[1]} active={sort[0] === 'emails.adress'} onClick={onHeaderClick} sort='emails.address' w='x120'>{t('Email')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'remove'} w='x40'>{t('Remove')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const renderRow = useCallback(({ emails, _id, username, name, avatarETag }) => <Table.Row key={_id} tabIndex={0} qa-user-id={_id}>

@@ -12,7 +12,6 @@ import {
 	TextAreaInput,
 	ToggleSwitch,
 	FieldGroup,
-	Modal,
 } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -22,45 +21,8 @@ import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import VerticalBar from '../../components/basic/VerticalBar';
-
-const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Application_delete_warning')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
-
-const SuccessModal = ({ onClose, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='success' name='checkmark-circled' size={20}/>
-			<Modal.Title>{t('Deleted')}</Modal.Title>
-			<Modal.Close onClick={onClose}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Your_entry_has_been_deleted')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button primary onClick={onClose}>{t('Ok')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
+import DeleteSuccessModal from '../../components/DeleteSuccessModal';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 
 export default function EditOauthAppWithData({ _id, ...props }) {
 	const t = useTranslation();
@@ -139,13 +101,20 @@ function EditOauthApp({ onChange, data, ...props }) {
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteApp(data._id);
-			setModal(() => <SuccessModal onClose={() => { setModal(); close(); }}/>);
+			setModal(() => <DeleteSuccessModal
+				children={t('Your_entry_has_been_deleted')}
+				onClose={() => { setModal(); close(); }}
+			/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [close, data._id, deleteApp, dispatchToastMessage]);
+	}, [close, data._id, deleteApp, dispatchToastMessage, setModal, t]);
 
-	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
+	const openConfirmDelete = () => setModal(() => <DeleteWarningModal
+		children={t('Application_delete_warning')}
+		onDelete={onDeleteConfirm}
+		onCancel={() => setModal(undefined)}
+	/>);
 
 	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) => setNewData({ ...newData, [field]: getValue(e) });
 

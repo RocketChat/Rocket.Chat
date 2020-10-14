@@ -9,17 +9,7 @@ import React, {
 import { Apps } from '../../../app/apps/client/orchestrator';
 import { AppEvents } from '../../../app/apps/client/communication';
 import { handleAPIError } from './helpers';
-
-type App = {
-	id: string;
-	name: string;
-	status: unknown;
-	installed: boolean;
-	marketplace: unknown;
-	version: unknown;
-	marketplaceVersion: unknown;
-	bundledIn: unknown;
-};
+import { App } from './types';
 
 export type AppDataContextValue = {
 	data: App[];
@@ -143,7 +133,7 @@ const AppProvider: FunctionComponent = ({ children }) => {
 
 				const marketplaceApps = await Apps.getAppsFromMarketplace() as App[];
 
-				const appsData = marketplaceApps.length ? marketplaceApps.map((app) => {
+				const appsData = marketplaceApps.length ? marketplaceApps.map<App>((app) => {
 					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
 					if (!installedApps[appIndex]) {
 						return {
@@ -158,8 +148,10 @@ const AppProvider: FunctionComponent = ({ children }) => {
 					return {
 						...app,
 						installed: true,
-						status: installedApp?.status,
-						version: installedApp?.version,
+						...installedApp && {
+							status: installedApp.status,
+							version: installedApp.version,
+						},
 						bundledIn: app.bundledIn,
 						marketplaceVersion: app.version,
 					};
