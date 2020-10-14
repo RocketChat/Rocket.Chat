@@ -1,30 +1,11 @@
 import React, { useCallback } from 'react';
-import { Accordion, Field, FieldGroup, ButtonGroup, Button, Icon, Box, Modal } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetModal } from '../../contexts/ModalContext';
-
-const MyDataModal = ({ onCancel, title, text, ...props }) => {
-	const t = useTranslation();
-
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='success' name='circle-check' size={20}/>
-			<Modal.Title>{title}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			<Box mb='x8'>{text}</Box>
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button primary onClick={onCancel}>{t('Ok')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
+import MyDataModal from './MyDataModal';
 
 const PreferencesMyDataSection = ({ onChange, ...props }) => {
 	const t = useTranslation();
@@ -41,9 +22,10 @@ const PreferencesMyDataSection = ({ onChange, ...props }) => {
 		try {
 			const result = await requestDataDownload({ fullExport });
 			if (result.requested) {
+				const text = t('UserDataDownload_Requested_Text', { pending_operations: result.pendingOperationsBeforeMyRequest });
 				setModal(<MyDataModal
 					title={t('UserDataDownload_Requested')}
-					text={t('UserDataDownload_Requested_Text', { pending_operations: result.pendingOperationsBeforeMyRequest })}
+					text={<Box dangerouslySetInnerHTML={{ __html: text }} />}
 					onCancel={closeModal}
 				/>);
 				return;
@@ -64,9 +46,10 @@ const PreferencesMyDataSection = ({ onChange, ...props }) => {
 					return;
 				}
 
+				const text = t('UserDataDownload_RequestExisted_Text', { pending_operations: result.pendingOperationsBeforeMyRequest });
 				setModal(<MyDataModal
 					title={t('UserDataDownload_Requested')}
-					text={t('UserDataDownload_RequestExisted_Text', { pending_operations: result.pendingOperationsBeforeMyRequest })}
+					text={<Box dangerouslySetInnerHTML={{ __html: text }} />}
 					onCancel={closeModal}
 				/>);
 

@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
+import { debounce } from 'underscore';
 
-import { settings } from '../../settings';
-import { Rooms, Settings } from '../../models';
+import { settings } from '../../settings/server';
+import { Rooms } from '../../models/server';
 import { cleanRoomHistory } from '../../lib';
 
 let types = [];
 
 const oldest = new Date('0001-01-01T00:00:00Z');
-
 
 const maxTimes = {
 	c: 0,
@@ -56,20 +56,20 @@ function job() {
 function getSchedule(precision) {
 	switch (precision) {
 		case '0':
-			return '0 */30 * * * *'; // 30 minutes
+			return '*/30 * * * *'; // 30 minutes
 		case '1':
-			return '0 0 * * * *'; // hour
+			return '0 * * * *'; // hour
 		case '2':
-			return '0 0 */6 * * *'; // 6 hours
+			return '0 */6 * * *'; // 6 hours
 		case '3':
-			return '0 0 0 * * *'; // day
+			return '0 0 * * *'; // day
 	}
 }
 
 const pruneCronName = 'Prune old messages by retention policy';
 
 function deployCron(precision) {
-	const schedule = (parser) => parser.cron(getSchedule(precision), true);
+	const schedule = (parser) => parser.cron(precision);
 
 	SyncedCron.remove(pruneCronName);
 	SyncedCron.add({
@@ -79,7 +79,7 @@ function deployCron(precision) {
 	});
 }
 
-function reloadPolicy() {
+const reloadPolicy = debounce(Meteor.bindEnvironment(function reloadPolicy() {
 	types = [];
 
 	if (!settings.get('RetentionPolicy_Enabled')) {
@@ -101,30 +101,15 @@ function reloadPolicy() {
 	maxTimes.p = settings.get('RetentionPolicy_MaxAge_Groups');
 	maxTimes.d = settings.get('RetentionPolicy_MaxAge_DMs');
 
-	return deployCron(settings.get('RetentionPolicy_Precision'));
-}
+
+	const precision = (settings.get('RetentionPolicy_Advanced_Precision') && settings.get('RetentionPolicy_Advanced_Precision_Cron')) || getSchedule(settings.get('RetentionPolicy_Precision'));
+
+	return deployCron(precision);
+}), 500);
 
 Meteor.startup(function() {
 	Meteor.defer(function() {
-		Settings.find({
-			_id: {
-				$in: [
-					'RetentionPolicy_Enabled',
-					'RetentionPolicy_Precision',
-					'RetentionPolicy_AppliesToChannels',
-					'RetentionPolicy_AppliesToGroups',
-					'RetentionPolicy_AppliesToDMs',
-					'RetentionPolicy_MaxAge_Channels',
-					'RetentionPolicy_MaxAge_Groups',
-					'RetentionPolicy_MaxAge_DMs',
-				],
-			},
-		}).observe({
-			changed() {
-				reloadPolicy();
-			},
-		});
-
+		settings.get(/^RetentionPolicy_/, reloadPolicy);
 		reloadPolicy();
 	});
 });

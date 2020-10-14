@@ -15,6 +15,7 @@ const defaultFields = {
 	utcOffset: 1,
 	type: 1,
 	active: 1,
+	bio: 1,
 	reason: 1,
 	statusText: 1,
 	avatarETag: 1,

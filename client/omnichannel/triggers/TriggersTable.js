@@ -1,9 +1,9 @@
-import { Table, Callout, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback, Button } from '@rocket.chat/fuselage-hooks';
+import { Table, Callout, Icon, Button } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useMemo } from 'react';
 
 import GenericTable from '../../components/GenericTable';
-import DeleteWarningModal from '../DeleteWarningModal';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -58,7 +58,10 @@ const TriggersRow = memo(function TriggersRow(props) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteTrigger} onCancel={() => setModal()}/>);
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteTrigger}
+			onCancel={() => setModal()}
+		/>);
 	});
 
 	return <Table.Row

@@ -22,6 +22,7 @@ import { setStatusText } from '../../../lib/server';
 import { findUsersToAutocomplete } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
+import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -417,12 +418,14 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
+					const { status } = this.bodyParams;
 					Meteor.users.update(user._id, {
 						$set: {
-							status: this.bodyParams.status,
-							statusDefault: this.bodyParams.status,
+							status,
+							statusDefault: status,
 						},
 					});
+					setUserStatus(user, status);
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
 						method: 'users.setStatus',

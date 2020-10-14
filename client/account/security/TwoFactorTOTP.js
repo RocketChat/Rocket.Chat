@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { Box, Button, TextInput, Icon, ButtonGroup, Margins, Modal } from '@rocket.chat/fuselage';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Box, Button, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import qrcode from 'yaqrcode';
 
@@ -10,73 +10,8 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useMethod } from '../../contexts/ServerContext';
 import TextCopy from '../../components/basic/TextCopy';
-
-const BackupCodesModal = ({ codes, onClose, ...props }) => {
-	const t = useTranslation();
-
-	const codesText = useMemo(() => codes.join(' '), [codes]);
-
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon name='info' size={20}/>
-			<Modal.Title>{t('Backup_codes')}</Modal.Title>
-			<Modal.Close onClick={onClose}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			<Box mb='x8' withRichContent>{t('Make_sure_you_have_a_copy_of_your_codes_1')}</Box>
-			<TextCopy text={codesText} wordBreak='break-word' mb='x8' />
-			<Box mb='x8' withRichContent>{t('Make_sure_you_have_a_copy_of_your_codes_2')}</Box>
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button primary onClick={onClose}>{t('Ok')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
-
-const VerifyCodeModal = ({ onVerify, onCancel, ...props }) => {
-	const t = useTranslation();
-
-	const ref = useRef();
-
-	useEffect(() => {
-		if (typeof ref?.current?.focus === 'function') {
-			ref.current.focus();
-		}
-	}, [ref]);
-
-	const { values, handlers } = useForm({ code: '' });
-
-	const { code } = values;
-	const { handleCode } = handlers;
-
-	const handleVerify = useCallback((e) => {
-		if (e.type === 'click' || (e.type === 'keydown' && e.keyCode === 13)) {
-			onVerify(code);
-		}
-	}, [code, onVerify]);
-
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon name='info' size={20}/>
-			<Modal.Title>{t('Two-factor_authentication')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			<Box mbe='x8'>{t('Open_your_authentication_app_and_enter_the_code')}</Box>
-			<Box display='flex' alignItems='stretch'>
-				<TextInput ref={ref} placeholder={t('Enter_authentication_code')} value={code} onChange={handleCode} onKeyDown={handleVerify}/>
-			</Box>
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary onClick={handleVerify}>{t('Verify')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
+import BackupCodesModal from './BackupCodesModal';
+import VerifyCodeModal from './VerifyCodeModal';
 
 const TwoFactorTOTP = (props) => {
 	const t = useTranslation();

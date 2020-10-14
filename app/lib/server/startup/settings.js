@@ -522,6 +522,11 @@ settings.addGroup('Accounts', function() {
 			public: true,
 		});
 
+		this.add('Accounts_RoomAvatarExternalProviderUrl', '', {
+			type: 'string',
+			public: true,
+		});
+
 		this.add('Accounts_AvatarCacheTime', 3600, {
 			type: 'int',
 			i18nDescription: 'Accounts_AvatarCacheTime_description',
@@ -1172,6 +1177,10 @@ settings.addGroup('Meta', function() {
 });
 
 settings.addGroup('Mobile', function() {
+	this.add('Allow_Save_Media_to_Gallery', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.section('Screen_Lock', function() {
 		this.add('Force_Screen_Lock', false, { type: 'boolean', i18nDescription: 'Force_Screen_Lock_description', public: true });
 		this.add('Force_Screen_Lock_After', 1800, { type: 'int', i18nDescription: 'Force_Screen_Lock_After_description', enableQuery: { _id: 'Force_Screen_Lock', value: true }, public: true });
