@@ -8,7 +8,7 @@ import { useEndpointData } from '../../../../../../client/hooks/useEndpointData'
 import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
 import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
-import { downloadCsvAs } from '../../../../../../client/helpers/download';
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 export function MessagesPerChannelSection() {
 	const t = useTranslation();

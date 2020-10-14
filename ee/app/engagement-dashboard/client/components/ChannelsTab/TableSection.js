@@ -7,7 +7,7 @@ import { useEndpointData } from '../../../../../../client/hooks/useEndpointData'
 import Growth from '../../../../../../client/components/data/Growth';
 import { Section } from '../Section';
 import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
-import { downloadCsvAs } from '../../../../../../client/helpers/download';
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 export function TableSection() {
 	const t = useTranslation();

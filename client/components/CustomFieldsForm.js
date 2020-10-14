@@ -4,7 +4,7 @@ import { TextInput, Select, Field } from '@rocket.chat/fuselage';
 import { useSetting } from '../contexts/SettingsContext';
 import { useForm } from '../hooks/useForm';
 import { useTranslation } from '../contexts/TranslationContext';
-import { capitalize } from '../helpers/capitalize';
+import { capitalize } from '../lib/capitalize';
 
 const CustomTextInput = ({ name, required, minLength, maxLength, setState, state, className }) => {
 	const t = useTranslation();

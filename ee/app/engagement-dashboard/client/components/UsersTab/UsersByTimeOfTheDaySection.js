@@ -7,7 +7,7 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
 import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
-import { downloadCsvAs } from '../../../../../../client/helpers/download';
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 export function UsersByTimeOfTheDaySection() {
 	const t = useTranslation();

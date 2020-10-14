@@ -10,7 +10,7 @@ import { canDeleteMessage, getURL, handleError, t, APIClient } from '../../../ut
 import { popover, modal } from '../../../ui-utils/client';
 import { Rooms, Messages } from '../../../models/client';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
-import { download } from '../../../../client/helpers/download';
+import { download } from '../../../../client/lib/download';
 
 const LIST_SIZE = 50;
 const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;

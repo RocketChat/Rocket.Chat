@@ -1,6 +1,6 @@
 import { useCallback, useReducer, useMemo, ChangeEvent } from 'react';
 
-import { capitalize } from '../helpers/capitalize';
+import { capitalize } from '../lib/capitalize';
 
 type Field = {
 	name: string;

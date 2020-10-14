@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { useMethod, useServerInformation, useEndpoint } from '../../contexts/ServerContext';
-import { downloadJsonAs } from '../../helpers/download';
+import { downloadJsonAs } from '../../lib/download';
 import InformationPage from './InformationPage';
 
 const InformationRoute = React.memo(function InformationRoute() {
