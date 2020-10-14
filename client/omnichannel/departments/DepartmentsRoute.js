@@ -3,7 +3,7 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import React, { useMemo, useCallback, useState } from 'react';
 import { Table, Icon } from '@rocket.chat/fuselage';
 
-import { Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
@@ -70,12 +70,12 @@ function DepartmentsRoute() {
 	const { data, reload } = useEndpointDataExperimental('livechat/department', query) || {};
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
-		<Th key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x140'>{t('Description')}</Th>,
-		<Th key={'numAgents'} direction={sort[1]} active={sort[0] === 'numAgents'} onClick={onHeaderClick} sort='numAgents' w='x120'>{t('Num_Agents')}</Th>,
-		<Th key={'enabled'} direction={sort[1]} active={sort[0] === 'enabled'} onClick={onHeaderClick} sort='enabled' w='x120'>{t('Enabled')}</Th>,
-		<Th key={'showOnRegistration'} direction={sort[1]} active={sort[0] === 'showOnRegistration'} onClick={onHeaderClick} sort='status' w='x120'>{t('Show_on_registration_page')}</Th>,
-		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x140'>{t('Description')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'numAgents'} direction={sort[1]} active={sort[0] === 'numAgents'} onClick={onHeaderClick} sort='numAgents' w='x120'>{t('Num_Agents')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'enabled'} direction={sort[1]} active={sort[0] === 'enabled'} onClick={onHeaderClick} sort='enabled' w='x120'>{t('Enabled')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'showOnRegistration'} direction={sort[1]} active={sort[0] === 'showOnRegistration'} onClick={onHeaderClick} sort='status' w='x120'>{t('Show_on_registration_page')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'remove'} w='x40'>{t('Remove')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
 	const renderRow = useCallback(({ name, _id, description, numAgents, enabled, showOnRegistration }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
