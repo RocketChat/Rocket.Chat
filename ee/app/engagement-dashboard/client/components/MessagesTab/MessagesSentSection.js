@@ -8,10 +8,7 @@ import { useEndpointData } from '../../../../../../client/hooks/useEndpointData'
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { Section } from '../Section';
 import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
-import { saveFile } from '../../../../../../client/lib/saveFile';
-
-const convertDataToCSV = (data) => `// date, newMessages
-${ data.map(({ date, newMessages }) => `${ date }, ${ newMessages }`).join('\n') }`;
+import { downloadCsvAs } from '../../../../../../client/helpers/download';
 
 export function MessagesSentSection() {
 	const t = useTranslation();
@@ -87,7 +84,8 @@ export function MessagesSentSection() {
 	}, [data, period]);
 
 	const downloadData = () => {
-		saveFile(convertDataToCSV(values), `MessagesSentSection_start_${ params.start }_end_${ params.end }.csv`);
+		const data = values.map(({ date, newMessages }) => [date, newMessages]);
+		downloadCsvAs(data, `MessagesSentSection_start_${ params.start }_end_${ params.end }`);
 	};
 
 	return <Section
