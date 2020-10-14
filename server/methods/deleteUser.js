@@ -36,7 +36,7 @@ Meteor.methods({
 
 		const adminCount = Meteor.users.find({ roles: 'admin' }).count();
 
-		const userIsAdmin = user.roles.indexOf('admin') > -1;
+		const userIsAdmin = user.roles?.indexOf('admin') > -1;
 
 		if (adminCount === 1 && userIsAdmin) {
 			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
