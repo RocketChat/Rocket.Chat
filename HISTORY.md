@@ -1,4 +1,38 @@
 
+# 3.7.1
+`2020-10-09  ·  6 🐛  ·  5 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.18.0`
+
+### 🐛 Bug fixes
+
+
+- Adding missing custom fields translation in my account's profile ([#19179](https://github.com/RocketChat/Rocket.Chat/pull/19179))
+
+- Admin Sidebar overflowing ([#19101](https://github.com/RocketChat/Rocket.Chat/pull/19101))
+
+- Missing "Bio" in user's profile view (#18821) ([#19166](https://github.com/RocketChat/Rocket.Chat/pull/19166))
+
+- Omnichannel: triggers page not rendering. ([#19134](https://github.com/RocketChat/Rocket.Chat/pull/19134))
+
+- Performance issues when using new Oplog implementation ([#19181](https://github.com/RocketChat/Rocket.Chat/pull/19181))
+
+  A missing configuration was not limiting the new oplog tailing to pool the database frequently even when no data was available, leading to both node and mongodb process been consuming high CPU even with low usage. This case was happening for installations using `mmapv1` database engine or when no admin access was granted to the database user, both preventing the usage of the new [Change Streams](https://docs.mongodb.com/manual/changeStreams/) implementation and fallbacking to our custom oplog implementation in replacement to the Meteor's one what was able to be disabled and use the native implementation via the environmental variable `USE_NATIVE_OPLOG=true`.
+
+- VisitorAutoComplete component ([#19133](https://github.com/RocketChat/Rocket.Chat/pull/19133))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.7.0
 `2020-09-28  ·  10 🎉  ·  3 🚀  ·  39 🐛  ·  26 🔍  ·  22 👩‍💻👨‍💻`
 
