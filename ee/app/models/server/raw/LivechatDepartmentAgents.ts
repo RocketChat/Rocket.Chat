@@ -1,5 +1,4 @@
 import { LivechatDepartmentAgentsRaw as Raw } from '../../../../../app/models/server/raw/LivechatDepartmentAgents';
-import { LivechatDepartmentAgents } from '../../../../../app/models/server';
 
 export class LivechatDepartmentAgentsRaw extends Raw {
 	findAgentsByAgentIdAndBusinessHourId(agentId: string, businessHourId: string): Promise<Record<string, any>> {
@@ -25,5 +24,3 @@ export class LivechatDepartmentAgentsRaw extends Raw {
 		return this.col.aggregate([match, lookup, unwind, withBusinessHourId, project]).toArray();
 	}
 }
-
-export default new LivechatDepartmentAgentsRaw(LivechatDepartmentAgents.model.rawCollection());
