@@ -40,7 +40,7 @@ const Extended = React.memo(({
 				{time && <Sidebar.Item.Time>{formatDate(time)}</Sidebar.Item.Time>}
 			</Sidebar.Item.Wrapper>
 			<Sidebar.Item.Wrapper>
-				<Sidebar.Item.Subtitle tabindex='-1' className={unread && 'rcx-sidebar-item--highlighted'}>
+				<Sidebar.Item.Subtitle tabIndex='-1' className={unread && 'rcx-sidebar-item--highlighted'}>
 					{ subtitle }
 				</Sidebar.Item.Subtitle>
 				{badges}
