@@ -4,9 +4,9 @@ import {
 } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
 import { LivechatDepartmentRaw } from '../../../../../app/models/server/raw/LivechatDepartment';
-import { LivechatDepartment } from '../../../../../app/models/server/raw';
+import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/raw/LivechatDepartmentAgents';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
-import LivechatDepartmentAgents, { LivechatDepartmentAgentsRaw } from '../../../models/server/raw/LivechatDepartmentAgents';
 
 export interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
