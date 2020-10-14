@@ -5,10 +5,9 @@ import {
 	IBusinessHourBehavior,
 } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { ILivechatBusinessHour } from '../../../../../definition/ILivechatBusinessHour';
-import { LivechatDepartment } from '../../../../../app/models/server';
-import { LivechatDepartment as Raw } from '../../../../../app/models/server/raw';
 import { LivechatDepartmentRaw } from '../../../../../app/models/server/raw/LivechatDepartment';
-import LivechatDepartmentAgents, { LivechatDepartmentAgentsRaw } from '../../../models/server/raw/LivechatDepartmentAgents';
+import { LivechatDepartmentAgentsRaw } from '../../../models/server/raw/LivechatDepartmentAgents';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
 import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 
@@ -18,7 +17,7 @@ interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 }
 
 export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
-	private DepartmentsRepository: LivechatDepartmentRaw = Raw;
+	private DepartmentsRepository: LivechatDepartmentRaw = LivechatDepartment;
 
 	private DepartmentsAgentsRepository: LivechatDepartmentAgentsRaw = LivechatDepartmentAgents;
 
