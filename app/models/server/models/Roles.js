@@ -34,12 +34,12 @@ export class Roles extends Base {
 			scope,
 			description,
 			protected: protectedRole,
-			mandatory2fa
+			mandatory2fa,
 		};
 
 		this.upsert({ _id: name }, { $set: queryData });
 
-		return queryData
+		return queryData;
 	}
 
 	addUserRoles(userId, roles, scope) {
