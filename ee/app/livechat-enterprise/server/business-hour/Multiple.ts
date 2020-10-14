@@ -19,7 +19,7 @@ interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
 	private DepartmentsRepository: LivechatDepartmentRaw = LivechatDepartment;
 
-	private DepartmentsAgentsRepository: LivechatDepartmentAgentsRaw = LivechatDepartmentAgents;
+	private DepartmentsAgentsRepository = LivechatDepartmentAgents as LivechatDepartmentAgentsRaw;
 
 	constructor() {
 		super();
