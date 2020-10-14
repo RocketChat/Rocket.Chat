@@ -73,6 +73,15 @@ export interface IUserSettings {
 	};
 }
 
+export interface IRole {
+	description: string;
+	mandatory2fa?: boolean;
+	name: string;
+	protected: boolean;
+	scope?: string;
+	_id: string;
+}
+
 export interface IUser {
 	_id: string;
 	createdAt: Date;
