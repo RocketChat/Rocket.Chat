@@ -7,7 +7,7 @@ import { useUserInfoActions, useUserInfoActionsSpread } from '../../hooks/useUse
 const UserActions = ({ user, rid }) => {
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions(user, rid));
 
-	const menu = menuOptions && <Menu mi='x4' ghost={false} small={false} renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />} flexShrink={0} key='menu' options={menuOptions} />;
+	const menu = menuOptions && <Menu small={false} mi='x4' ghost={false} renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />} flexShrink={0} key='menu' options={menuOptions} />;
 
 	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
 

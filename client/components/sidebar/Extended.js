@@ -40,10 +40,11 @@ const Extended = React.memo(({
 				{time && <Sidebar.Item.Time>{formatDate(time)}</Sidebar.Item.Time>}
 			</Sidebar.Item.Wrapper>
 			<Sidebar.Item.Wrapper>
-				<Sidebar.Item.Subtitle className={unread && 'rcx-sidebar-item--highlighted'}>
+				<Sidebar.Item.Subtitle tabindex='-1' className={unread && 'rcx-sidebar-item--highlighted'}>
 					{ subtitle }
 				</Sidebar.Item.Subtitle>
 				{badges}
+				<Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility && menu()}</Sidebar.Item.Menu>
 			</Sidebar.Item.Wrapper>
 		</Sidebar.Item.Content>
 		{ actions && <Sidebar.Item.Container>
@@ -52,7 +53,6 @@ const Extended = React.memo(({
 			</Sidebar.Item.Actions>}
 		</Sidebar.Item.Container>
 		}
-		<Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility && menu()}</Sidebar.Item.Menu>
 	</Sidebar.Item>;
 });
 

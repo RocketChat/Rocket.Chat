@@ -146,8 +146,7 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '', statu
 
 	return !isQueued ? <Menu
 		rcx-sidebar-item__menu
-		square
-		small
+		mini
 		options={menuOptions}
 		renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>}
 	/> : null;

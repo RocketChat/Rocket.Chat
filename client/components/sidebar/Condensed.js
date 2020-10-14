@@ -25,14 +25,13 @@ const Condensed = React.memo(({
 		</Sidebar.Item.Avatar>}
 		<Sidebar.Item.Content>
 			{ icon }
-			<Sidebar.Item.Title data-qa='sidebar-item-title' className={unread && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title> {badges}
+			<Sidebar.Item.Title data-qa='sidebar-item-title' className={unread && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title> {badges} <Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility && menu()}</Sidebar.Item.Menu>
 		</Sidebar.Item.Content>
 		<Sidebar.Item.Container>
 			{<Sidebar.Item.Actions>
 				{ actions }
 			</Sidebar.Item.Actions>}
 		</Sidebar.Item.Container>
-		<Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility && menu()}</Sidebar.Item.Menu>
 	</Sidebar.Item>;
 });
 

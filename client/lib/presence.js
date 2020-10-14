@@ -22,7 +22,6 @@ const getPresence = (() => {
 			} = await APIClient.v1.get('users.presence', params);
 
 			users.forEach((user) => {
-				Statuses.set(user._id, user.status);
 				Presence.emit(user._id, user);
 			});
 
@@ -51,8 +50,13 @@ const getPresence = (() => {
 })();
 
 
+const update = ({ _id: uid, status }) => {
+	Statuses.set(uid, status);
+};
+
 Presence.listen = async (uid, handle) => {
 	Presence.on(uid, handle);
+	Presence.on(uid, update);
 	Presence.on('reset', handle);
 	if (Statuses.has(uid)) {
 		return handle({ status: Statuses.get(uid) });
