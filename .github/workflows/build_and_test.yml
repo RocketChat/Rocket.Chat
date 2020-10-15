@@ -511,6 +511,8 @@ jobs:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       run: |
+        npm i
+
         cd ./ee/server/services
         npm i
         npm run build
