@@ -82,14 +82,6 @@
 	background-color: var(--attention-color);
 }
 
-.tertiary-background-color {
-	background-color: var(--tertiary-background-color);
-}
-
-.border-tertiary-background-color {
-	border-color: var(--tertiary-background-color);
-}
-
 .color-tertiary-font-color {
 	color: var(--tertiary-font-color);
 }
