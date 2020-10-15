@@ -1,4 +1,3 @@
-// import mem from 'mem';
 import { Db, Collection } from 'mongodb';
 import mem from 'mem';
 
@@ -72,6 +71,10 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	async canAccessRoom(...args: Parameters<RoomAccessValidator>): Promise<boolean> {
 		return canAccessRoom(...args);
+	}
+
+	async addRoleRestrictions(role: string, permissions: string[]): Promise<void> {
+		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
 	}
 
 	private async rolesHasPermission(permission: string, roles: string[]): Promise<boolean> {
