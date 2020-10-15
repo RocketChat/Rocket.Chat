@@ -1,10 +1,39 @@
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { api } from '../../../../server/sdk/api';
 import { ILicense } from '../../../../server/sdk/types/ILicense';
-import { hasLicense, isEnterprise, getModules } from './license';
+import { hasLicense, isEnterprise, getModules, onValidateLicenses, onModule } from './license';
+import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
+import { Authorization } from '../../../../server/sdk';
+import { guestPermissions } from '../../authorization/lib/guestPermissions';
 
-class License extends ServiceClass implements ILicense {
+class LicenseService extends ServiceClass implements ILicense {
 	protected name = 'license';
+
+	constructor() {
+		super();
+
+		onValidateLicenses((): void => {
+			if (!isEnterprise()) {
+				return;
+			}
+
+			Authorization.addRoleRestrictions('guest', guestPermissions);
+			resetEnterprisePermissions();
+		});
+
+		onModule((licenseModule) => {
+			api.broadcast('license.module', licenseModule);
+		});
+	}
+
+	async started(): Promise<void> {
+		if (!isEnterprise()) {
+			return;
+		}
+
+		Authorization.addRoleRestrictions('guest', guestPermissions);
+		resetEnterprisePermissions();
+	}
 
 	hasLicense(feature: string): boolean {
 		return hasLicense(feature);
@@ -19,4 +48,4 @@ class License extends ServiceClass implements ILicense {
 	}
 }
 
-api.registerService(new License());
+api.registerService(new LicenseService());

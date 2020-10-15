@@ -1,4 +1,3 @@
-// import mem from 'mem';
 import { Db, Collection } from 'mongodb';
 import mem from 'mem';
 
@@ -74,8 +73,11 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return canAccessRoom(...args);
 	}
 
+	async addRoleRestrictions(role: string, permissions: string[]): Promise<void> {
+		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
+	}
+
 	private async rolesHasPermission(permission: string, roles: string[]): Promise<boolean> {
-		// TODO this AuthorizationUtils should be brought to this service. currently its state is kept on the application only, but it needs to kept here
 		if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
 			return false;
 		}
