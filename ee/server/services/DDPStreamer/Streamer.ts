@@ -45,10 +45,9 @@ export class Stream extends Streamer {
 			readOnly: false, // the data can be modified as needed
 		};
 
-		// TODO: missing typing
 		const data = {
-			meteor: [Buffer.concat((WebSocket as any).Sender.frame(Buffer.from(`a${ JSON.stringify([getMsg]) }`), options))],
-			normal: [Buffer.concat((WebSocket as any).Sender.frame(Buffer.from(getMsg), options))],
+			meteor: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(`a${ JSON.stringify([getMsg]) }`), options))],
+			normal: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(getMsg), options))],
 		};
 
 		for await (const { subscription } of subscriptions) {
@@ -58,8 +57,7 @@ export class Stream extends Streamer {
 
 			if (await this.isEmitAllowed(subscription, eventName, ...args)) {
 				await new Promise((resolve) => {
-					// TODO: missing typing
-					(subscription.client.ws as any)._sender.sendFrame(
+					subscription.client.ws._sender.sendFrame(
 						data[subscription.client.meteorClient ? 'meteor' : 'normal'],
 						resolve,
 					);
