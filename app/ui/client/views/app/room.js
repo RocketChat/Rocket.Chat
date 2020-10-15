@@ -72,7 +72,7 @@ const openProfileTab = (e, instance, username) => {
 	instance.tabBar.open('members-list');
 };
 
-const openProfileTabOrOpenDM = (e, instance, username) => {
+export const openProfileTabOrOpenDM = (e, instance, username) => {
 	// if (settings.get('UI_Click_Direct_Message')) {
 	// 	Meteor.call('createDirectMessage', username, (error, result) => {
 	// 		if (error) {

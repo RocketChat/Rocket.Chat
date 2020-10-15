@@ -1,7 +1,26 @@
-import React from 'react';
+import React, { FC, ReactNode } from 'react';
 import { Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 
-const InfoModal = ({ title, content, icon, onConfirm, onClose, confirmText, cancelText, ...props }) =>
+type InfoModalProps = {
+	title: string;
+	content: ReactNode;
+	icon: ReactNode;
+	confirmText: string;
+	cancelText: string;
+	onConfirm: () => void;
+	onClose: () => void;
+};
+
+const InfoModal: FC<InfoModalProps> = ({
+	title,
+	content,
+	icon,
+	confirmText,
+	cancelText,
+	onConfirm,
+	onClose,
+	...props
+}) =>
 	<Modal {...props}>
 		<Modal.Header>
 			{icon}
