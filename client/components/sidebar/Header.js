@@ -8,6 +8,7 @@ import Directory from './headerActions/Directory';
 import Sort from './headerActions/Sort';
 import CreateRoom from './headerActions/CreateRoom';
 import Menu from './headerActions/Menu';
+import Login from './headerActions/Login';
 import UserAvatarButton from './UserAvatarButton';
 import { useUser } from '../../contexts/UserContext';
 
@@ -84,6 +85,7 @@ const HeaderWithData = () => {
 					<CreateRoom data-qa='sidebar-create' />
 					<Menu />
 				</>}
+				{!user && <Login/>}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.Section>
 	</>;
