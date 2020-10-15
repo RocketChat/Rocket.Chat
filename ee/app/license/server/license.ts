@@ -1,12 +1,9 @@
 import { EventEmitter } from 'events';
 
 import { Users } from '../../../../app/models/server';
-import { addRoleRestrictions } from '../../authorization/lib/addRoleRestrictions';
-import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import { api } from '../../../../server/sdk/api';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -31,7 +28,6 @@ export interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
-let addedRoleRestrictions = false;
 
 class LicenseClass {
 	private url: string|null = null;
@@ -63,7 +59,7 @@ class LicenseClass {
 
 			modules.forEach((module) => {
 				this.modules.add(module);
-				api.broadcast('license.module', { module, valid: true });
+				EnterpriseLicenses.emit('module', { module, valid: true });
 				EnterpriseLicenses.emit(`valid:${ module }`);
 			});
 		});
@@ -76,7 +72,7 @@ class LicenseClass {
 				: [licenseModule];
 
 			modules.forEach((module) => {
-				api.broadcast('license.module', { module, valid: false });
+				EnterpriseLicenses.emit('module', { module, valid: false });
 				EnterpriseLicenses.emit(`invalid:${ module }`);
 			});
 		});
@@ -117,12 +113,6 @@ class LicenseClass {
 		});
 
 		this.validate();
-
-		if (!addedRoleRestrictions && this.hasAnyValidLicense()) {
-			addRoleRestrictions();
-			resetEnterprisePermissions();
-			addedRoleRestrictions = true;
-		}
 	}
 
 	hasModule(module: string): boolean {
@@ -275,6 +265,10 @@ export function onLicense(feature: string, cb: (...args: any[]) => void): void {
 	}
 
 	EnterpriseLicenses.once(`valid:${ feature }`, cb);
+}
+
+export function onModule(cb: (...args: any[]) => void): void {
+	EnterpriseLicenses.on('module', cb);
 }
 
 export function onValidateLicenses(cb: (...args: any[]) => void): void {
