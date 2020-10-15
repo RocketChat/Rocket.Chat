@@ -17,14 +17,14 @@ WORKDIR /app
 
 COPY --from=build /app .
 
+# add dist/ folder from tsc so we don't need to add all rocket.chat repo
 ADD ./dist .
 
-ENV NODE_ENV=production
-ENV PORT=80
+ENV NODE_ENV=production \
+    PORT=3000
 
 WORKDIR /app/ee/server/services/${SERVICE}
 
-EXPOSE 9458
-EXPOSE 80
+EXPOSE 3000 9458
 
 CMD ["node", "service.js"]
