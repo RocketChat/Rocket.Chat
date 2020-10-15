@@ -4,7 +4,7 @@ import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import memoize from 'memoize-one';
-
+import tinykeys from 'tinykeys';
 
 import { usePreventDefault } from './hooks/usePreventDefault';
 import { renderMessageBody } from '../../../app/ui-utils/client';
@@ -137,6 +137,24 @@ export const normalizeThreadMessage = ({ ...message }) => {
 };
 
 
+// used to open the menu option by keyboard
+const useShortcutOpenMenu = (ref) => {
+	useEffect(() => {
+		const unsubscribe = tinykeys(ref.current, {
+			Alt: (event) => {
+				if (!event.target.className.includes('rcx-sidebar-item')) {
+					return;
+				}
+				event.preventDefault();
+				event.target.querySelector('button').click();
+			},
+		});
+		return () => {
+			unsubscribe();
+		};
+	}, []);
+};
+
 export default () => {
 	const t = useTranslation();
 
@@ -235,6 +253,7 @@ export default () => {
 	const itemData = createItemData(items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom);
 
 	usePreventDefault(ref);
+	useShortcutOpenMenu(ref);
 
 	const listRef = useRef();
 
