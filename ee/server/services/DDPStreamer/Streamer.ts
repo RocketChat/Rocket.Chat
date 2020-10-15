@@ -37,7 +37,6 @@ export class Stream extends Streamer {
 			return super.sendToManySubscriptions(subscriptions, origin, eventName, args, getMsg);
 		}
 
-		// TODO: missing typing
 		const options = {
 			fin: true, // sending a single fragment message
 			rsv1: false, // don"t set rsv1 bit (no compression)
@@ -46,6 +45,7 @@ export class Stream extends Streamer {
 			readOnly: false, // the data can be modified as needed
 		};
 
+		// TODO: missing typing
 		const data = {
 			meteor: [Buffer.concat((WebSocket as any).Sender.frame(Buffer.from(`a${ JSON.stringify([getMsg]) }`), options))],
 			normal: [Buffer.concat((WebSocket as any).Sender.frame(Buffer.from(getMsg), options))],

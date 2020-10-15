@@ -10,23 +10,6 @@ export const server = new Server();
 
 export const events = new EventEmitter();
 
-// TODO: remove, this was replaced by stream-notify-user/[user-id]/userData
-// server.subscribe('userData', async function(publication) {
-// 	if (!publication.userId) {
-// 		throw new Error('user should be connected');
-// 	}
-
-// 	const key = `${ STREAMER_EVENTS.USER_CHANGED }/${ publication.userId }`;
-// 	await User.addSubscription(publication, key);
-// 	publication.once('stop', () => User.removeSubscription(publication, key));
-// 	publication.ready();
-// });
-
-// TODO: remove, this was replaced by stream-notify-logged/user-status, check if sending this data
-// server.subscribe('activeUsers', function(publication) {
-// 	publication.ready();
-// });
-
 const loginServiceConfigurationCollection = 'meteor_accounts_loginServiceConfiguration';
 const loginServiceConfigurationPublication = 'meteor.loginServiceConfiguration';
 const loginServices = new Map<string, any>();

@@ -1,8 +1,13 @@
 import { ChangeEvent } from 'mongodb';
 
-import { normalize } from './utils';
 import { IUser } from '../../../../definition/IUser';
 import { api } from '../../../../server/sdk/api';
+
+const normalize: {[key: string]: string} = {
+	update: 'updated',
+	insert: 'inserted',
+	remove: 'removed',
+};
 
 export async function watchUsers(event: ChangeEvent<IUser>): Promise<void> {
 	switch (event.operationType) {

@@ -21,7 +21,7 @@ export const DDP_EVENTS = {
 	UPDATED: 'updated',
 	PING: 'ping',
 	PONG: 'pong',
-	SUSBCRIBE: 'sub',
+	SUBSCRIBE: 'sub',
 	CONNECT: 'connect',
 	CONNECTED: 'connected',
 	SUBSCRIPTIONS: 'subs',
@@ -45,12 +45,3 @@ export const WS_ERRORS_MESSAGES = {
 };
 
 export const TIMEOUT = 1000 * 30; // 30 seconds
-
-// export const STREAM_NAMES = {
-// 	STREAMER_PREFIX: 'stream-',
-
-// 	ROOMS_CHANGED: 'rooms-changed',
-// 	ROOM_DATA: 'room-data', // TODO both data are the same plx merge them
-
-// 	'my-message': '__my_messages__',
-// };

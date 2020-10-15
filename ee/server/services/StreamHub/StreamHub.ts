@@ -110,32 +110,5 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		});
 
 		UsersCol.watch([], { fullDocument: 'updateLookup' }).on('change', watchUsers);
-
-		// TODO: check the improvement mentioned below that was ignored on code unification
-		// Messages.watch([{
-		// 	$addFields: {
-		// 		tmpfields: {
-		// 			$objectToArray: '$updateDescription.updatedFields',
-		// 		},
-		// 	} }, {
-		// 	$match: {
-		// 		'tmpfields.k': {
-		// 			$nin: ['u.username'], // avoid flood the streamer with messages changes (by username change)
-		// 		},
-		// 	} }], { fullDocument: 'updateLookup' }).on('change', watchMessages);
-
-		// SettingsCol.watch([{
-		// 	$addFields: {
-		// 		tmpfields: {
-		// 			$objectToArray: '$updateDescription.updatedFields',
-		// 		},
-		// 	},
-		// }, {
-		// 	$match: {
-		// 		'tmpfields.k': {
-		// 			$in: ['value'], // avoid flood the streamer with messages changes (by username change)
-		// 		},
-		// 	},
-		// }], { fullDocument: 'updateLookup' }).on('change', watchSettings);
 	}
 }

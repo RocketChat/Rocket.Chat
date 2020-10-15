@@ -100,7 +100,7 @@ export class Client extends EventEmitter {
 				}
 				this.callMethod(packet);
 				break;
-			case DDP_EVENTS.SUSBCRIBE:
+			case DDP_EVENTS.SUBSCRIBE:
 				if (!packet.name) {
 					return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
 				}
