@@ -12,9 +12,12 @@ import { LocalTime } from '../../components/basic/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { useCurrentRoute } from '../../contexts/RouterContext';
+import { useRolesDescription } from '../../contexts/AuthorizationContext';
 
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
+
+	const getRoles = useRolesDescription();
 
 	const t = useTranslation();
 
@@ -54,7 +57,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			_id,
 			name: showRealNames ? name : username,
 			username,
-			roles: roles && roles.map((role, index) => (
+			roles: roles && getRoles(roles).map((role, index) => (
 				<UserCard.Role key={index}>{role}</UserCard.Role>
 			)),
 			bio,
@@ -66,7 +69,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			customStatus: statusText,
 			nickname,
 		};
-	}, [data, username, showRealNames, state]);
+	}, [data, username, showRealNames, state, getRoles]);
 
 	const handleOpen = useMutableCallback((e) => {
 		open && open(e);

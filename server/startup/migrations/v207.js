@@ -1,24 +1,9 @@
 import { Migrations } from '../../../app/migrations';
-import { Users, Sessions } from '../../../app/models/server';
+import { Settings } from '../../../app/models';
 
 Migrations.add({
 	version: 207,
 	up() {
-		const users = Users.find({}, {
-			fields: {
-				roles: 1,
-			},
-		});
-		users.forEach(({ _id, roles }) => {
-			Sessions.update({
-				userId: _id,
-			}, {
-				$set: {
-					roles,
-				},
-			}, {
-				multi: true,
-			});
-		});
+		Settings.removeById('theme-color-tertiary-background-color');
 	},
 });

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import { Meteor } from 'meteor/meteor';
 
 import {
@@ -7,8 +7,11 @@ import {
 	hasAllPermission,
 	hasRole,
 } from '../../app/authorization/client';
-import { AuthorizationContext } from '../contexts/AuthorizationContext';
+import { AuthorizationContext, RoleStore } from '../contexts/AuthorizationContext';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
+import { useReactiveValue } from '../hooks/useReactiveValue';
+import { Roles } from '../../app/models/client/models/Roles';
+
 
 const contextValue = {
 	queryPermission: createReactiveSubscriptionFactory(
@@ -23,9 +26,22 @@ const contextValue = {
 	queryRole: createReactiveSubscriptionFactory(
 		(role) => hasRole(Meteor.userId(), role),
 	),
+	roleStore: new RoleStore(),
 };
 
-const AuthorizationProvider: FC = ({ children }) =>
-	<AuthorizationContext.Provider children={children} value={contextValue} />;
+
+const AuthorizationProvider: FC = ({ children }) => {
+	const roles = useReactiveValue(useCallback(() => Roles.find().fetch().reduce((ret, obj) => {
+		ret[obj._id] = obj;
+		return ret;
+	}, {}), []));
+
+	useEffect(() => {
+		contextValue.roleStore.roles = roles;
+		contextValue.roleStore.emit('change', roles);
+	}, [roles]);
+
+	return <AuthorizationContext.Provider children={children} value={contextValue} />;
+};
 
 export default AuthorizationProvider;
