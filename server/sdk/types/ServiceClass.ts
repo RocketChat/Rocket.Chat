@@ -42,6 +42,10 @@ export abstract class ServiceClass implements IServiceClass {
 
 	protected events = new EventEmitter();
 
+	constructor() {
+		this.emit = this.emit.bind(this);
+	}
+
 	getEvents(): Array<keyof EventSignatures> {
 		return this.events.eventNames() as unknown as Array<keyof EventSignatures>;
 	}
