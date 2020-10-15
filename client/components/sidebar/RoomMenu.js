@@ -9,7 +9,7 @@ import { RoomManager } from '../../../app/ui-utils/client/lib/RoomManager';
 import { useMethod } from '../../contexts/ServerContext';
 import { roomTypes, UiTextContext } from '../../../app/utils';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useUserSubscription } from '../../contexts/UserContext';
+import { useUserSubscription, useUserId } from '../../contexts/UserContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import WarningModal from '../../admin/apps/WarningModal';
@@ -24,6 +24,8 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '', statu
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
+
+	const isAnonymous = !useUserId();
 
 	const closeModal = useMutableCallback(() => setModal());
 
@@ -144,7 +146,7 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '', statu
 	}), [canFavorite, canLeave, handleHide, handleLeave, handleToggleFavorite, handleToggleRead, isFavorite, t, unread]);
 
 
-	return !isQueued ? <Menu
+	return !isQueued && !isAnonymous ? <Menu
 		rcx-sidebar-item__menu
 		mini
 		aria-keyshortcuts='alt'

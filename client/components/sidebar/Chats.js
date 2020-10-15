@@ -9,13 +9,13 @@ import tinykeys from 'tinykeys';
 import { usePreventDefault } from './hooks/usePreventDefault';
 import { renderMessageBody } from '../../../app/ui-utils/client';
 import { ReactiveUserStatus, colors } from '../basic/UserStatus';
-import { ChatSubscription } from '../../../app/models';
+import { ChatSubscription, Rooms } from '../../../app/models';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { roomTypes } from '../../../app/utils';
-import { useUserPreference } from '../../contexts/UserContext';
+import { useUserPreference, useUserId } from '../../contexts/UserContext';
 import Condensed from './Condensed';
 import Extended from './Extended';
 import Medium from './Medium';
@@ -160,6 +160,8 @@ export default () => {
 
 	const openedRoom = useSession('openedRoom');
 
+	const anonymous = !useUserId();
+
 	const sortBy = useUserPreference('sidebarSortby');
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
@@ -181,7 +183,13 @@ export default () => {
 		},
 	}), [sortBy, showRealName]);
 
-	const rooms = useReactiveValue(useCallback(() => ChatSubscription.find(query, { sort }).fetch(), [sort]));
+	let rooms;
+
+	if (!anonymous) {
+		rooms = useReactiveValue(useCallback(() => ChatSubscription.find(query, { sort }).fetch(), [sort]));
+	} else {
+		rooms = useReactiveValue(useCallback(() => Rooms.find({ t: 'c' }, { sort }).fetch(), [sort]));
+	}
 
 	const inquiries = useQueuedInquiries();
 
