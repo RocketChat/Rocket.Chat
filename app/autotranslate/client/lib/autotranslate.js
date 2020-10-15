@@ -6,7 +6,7 @@ import mem from 'mem';
 import { Subscriptions, Messages } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
-import { hasAtLeastOnePermission } from '../../../authorization';
+import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 
 let userLanguage = 'en';
@@ -60,12 +60,25 @@ export const AutoTranslate = {
 	},
 
 	init() {
-		Meteor.call('autoTranslate.getSupportedLanguages', 'en', (err, languages) => {
-			this.supportedLanguages = languages || [];
-		});
+		Tracker.autorun(() => {
+			this.supportedLanguages = [];
+			this.providersMetadata = {};
 
-		Meteor.call('autoTranslate.getProviderUiMetadata', (err, metadata) => {
-			this.providersMetadata = metadata;
+			const uid = Meteor.userId();
+			if (!uid) {
+				return;
+			}
+
+			if (!hasPermission('auto-translate')) {
+				return;
+			}
+
+			Meteor.call('autoTranslate.getSupportedLanguages', 'en', (err, languages) => {
+				this.supportedLanguages = languages || [];
+			});
+			Meteor.call('autoTranslate.getProviderUiMetadata', (err, metadata) => {
+				this.providersMetadata = metadata;
+			});
 		});
 
 		Tracker.autorun(() => {
