@@ -64,7 +64,7 @@ Rocket.Chat is moving to a single codebase. Get to know the reasons and how the 
 
 # Help Wanted
 
-At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github  community.
+At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our GitHub  community.
 
 If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
 
@@ -134,7 +134,8 @@ Host your own Rocket.Chat server in a few seconds.
 ## IndieHosters
 Get your Rocket.Chat instance hosted in an "as a Service" style. You register and we manage it for you! (updates, backup...).
 
-[![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
+<!-- [![Rocket.Chat on IndieHosters](https://indiehosters.net/img/generated/logo-indiehosters-horizontal-681-4b587b638.png)](https://indiehosters.net/shop/product/rocket-chat-21) -->
+<a href="https://indiehosters.net/shop/product/rocket-chat-21"><img src="https://indiehosters.net/img/generated/logo-indiehosters-horizontal-681-4b587b638.png" alt="Rocket.Chat on IndieHosters" width="200" height="30"></a>
 
 ## Cloudron.io
 
@@ -319,7 +320,7 @@ Read about [how it all started](https://www.synopsys.com/blogs/software-security
 
 ## Issues
 
-[Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs and tasks on the roadmap.
+[GitHub Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs and tasks on the roadmap.
 
 ## Feature Requests
 
