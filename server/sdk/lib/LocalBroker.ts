@@ -1,3 +1,5 @@
+import { EventEmitter } from 'events';
+
 import { IBroker, IBrokerNode } from '../types/IBroker';
 import { ServiceClass } from '../types/ServiceClass';
 import { asyncLocalStorage } from '..';
@@ -6,7 +8,7 @@ import { EventSignatures } from './Events';
 export class LocalBroker implements IBroker {
 	private methods = new Map<string, Function>();
 
-	private events = new Map<string, Set<Function>>();
+	private events = new EventEmitter();
 
 	async call(method: string, data: any): Promise<any> {
 		const result = await asyncLocalStorage.run({
@@ -26,12 +28,9 @@ export class LocalBroker implements IBroker {
 	destroyService(instance: ServiceClass): void {
 		const namespace = instance.getName();
 
-		for (const [event, fn] of Object.entries(instance.getEvents())) {
-			const fns = this.events.get(event);
-			if (fns) {
-				fns.delete(fn);
-			}
-		}
+		instance.getEvents().forEach((eventName) => {
+			this.events.removeListener(eventName, instance.emit);
+		});
 
 		const methods = instance.constructor?.name === 'Object' ? Object.getOwnPropertyNames(instance) : Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
 		for (const method of methods) {
@@ -46,11 +45,9 @@ export class LocalBroker implements IBroker {
 	createService(instance: ServiceClass): void {
 		const namespace = instance.getName();
 
-		for (const [event, fn] of Object.entries(instance.getEvents())) {
-			const fns = this.events.get(event) || new Set();
-			fns.add(fn);
-			this.events.set(event, fns);
-		}
+		instance.getEvents().forEach((eventName) => {
+			this.events.on(eventName, instance.emit);
+		});
 
 		const methods = instance.constructor?.name === 'Object' ? Object.getOwnPropertyNames(instance) : Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
 		for (const method of methods) {
@@ -64,10 +61,8 @@ export class LocalBroker implements IBroker {
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		const fns = this.events.get(event);
-		if (fns) {
-			fns.forEach((fn) => fn(...args));
-		}
+		// Pass the event name twice to forward it to the instance's emit method
+		this.events.emit(event, event, ...args);
 	}
 
 	async nodeList(): Promise<IBrokerNode[]> {

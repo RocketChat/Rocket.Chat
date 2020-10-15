@@ -1,5 +1,5 @@
-import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { NotificationsModule } from '../../modules/notifications/notifications.module';
+import { IServiceClass } from '../../sdk/types/ServiceClass';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings, MeteorService } from '../../sdk/index';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 
@@ -12,28 +12,24 @@ const STATUS_MAP: {[k: string]: number} = {
 
 export const minimongoChangeMap: Record<string, string> = { inserted: 'added', updated: 'changed', removed: 'removed' };
 
-// TODO: Convert to module and implement/import on monolith and on DDPStreamer
-export class NotificationService extends ServiceClass {
-	protected name = 'notification';
-
+export class ListenersModule {
 	constructor(
+		service: IServiceClass,
 		notifications: NotificationsModule,
 	) {
-		super();
-
-		this.onEvent('emoji.deleteCustom', (emoji) => {
+		service.onEvent('emoji.deleteCustom', (emoji) => {
 			notifications.notifyLogged('deleteEmojiCustom', {
 				emojiData: emoji,
 			});
 		});
 
-		this.onEvent('emoji.updateCustom', (emoji) => {
+		service.onEvent('emoji.updateCustom', (emoji) => {
 			notifications.notifyLogged('updateEmojiCustom', {
 				emojiData: emoji,
 			});
 		});
 
-		this.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
+		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
 			notifications.notifyLogged(`${ uid }/message`, {
 				groupable: false,
 				...message,
@@ -43,45 +39,45 @@ export class NotificationService extends ServiceClass {
 			});
 		});
 
-		this.onEvent('permission.changed', ({ clientAction, data }) => {
+		service.onEvent('permission.changed', ({ clientAction, data }) => {
 			notifications.notifyLogged('permissions-changed', clientAction, data);
 		});
 
-		this.onEvent('room.avatarUpdate', ({ _id: rid, avatarETag: etag }) => {
+		service.onEvent('room.avatarUpdate', ({ _id: rid, avatarETag: etag }) => {
 			notifications.notifyLogged('updateAvatar', {
 				rid,
 				etag,
 			});
 		});
 
-		this.onEvent('user.avatarUpdate', ({ username, avatarETag: etag }) => {
+		service.onEvent('user.avatarUpdate', ({ username, avatarETag: etag }) => {
 			notifications.notifyLogged('updateAvatar', {
 				username,
 				etag,
 			});
 		});
 
-		this.onEvent('user.deleted', ({ _id: userId }) => {
+		service.onEvent('user.deleted', ({ _id: userId }) => {
 			notifications.notifyLogged('Users:Deleted', {
 				userId,
 			});
 		});
 
-		this.onEvent('user.deleteCustomStatus', (userStatus) => {
+		service.onEvent('user.deleteCustomStatus', (userStatus) => {
 			notifications.notifyLogged('deleteCustomUserStatus', {
 				userStatusData: userStatus,
 			});
 		});
 
-		this.onEvent('user.nameChanged', (user) => {
+		service.onEvent('user.nameChanged', (user) => {
 			notifications.notifyLogged('Users:NameChanged', user);
 		});
 
-		this.onEvent('user.roleUpdate', (update) => {
+		service.onEvent('user.roleUpdate', (update) => {
 			notifications.notifyLogged('roles-change', update);
 		});
 
-		this.onEvent('userpresence', ({ user }) => {
+		service.onEvent('userpresence', ({ user }) => {
 			const {
 				_id, username, status, statusText,
 			} = user;
@@ -92,13 +88,13 @@ export class NotificationService extends ServiceClass {
 			notifications.notifyLogged('user-status', [_id, username, STATUS_MAP[status], statusText]);
 		});
 
-		this.onEvent('user.updateCustomStatus', (userStatus) => {
+		service.onEvent('user.updateCustomStatus', (userStatus) => {
 			notifications.notifyLogged('updateCustomUserStatus', {
 				userStatusData: userStatus,
 			});
 		});
 
-		this.onEvent('watch.messages', ({ message }) => {
+		service.onEvent('watch.messages', ({ message }) => {
 			if (!message.rid) {
 				return;
 			}
@@ -111,7 +107,7 @@ export class NotificationService extends ServiceClass {
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
 		});
 
-		this.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
+		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
 			if (!subscription.u?._id) {
 				return;
 			}
@@ -131,7 +127,7 @@ export class NotificationService extends ServiceClass {
 			);
 		});
 
-		this.onEvent('watch.roles', ({ clientAction, role }): void => {
+		service.onEvent('watch.roles', ({ clientAction, role }): void => {
 			const payload = {
 				type: clientAction,
 				...role,
@@ -148,7 +144,7 @@ export class NotificationService extends ServiceClass {
 			return autoAssignAgent;
 		}
 
-		this.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
+		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
 			const config = await getRoutingManagerConfig();
 			if (config.autoAssignAgent) {
 				return;
@@ -178,7 +174,7 @@ export class NotificationService extends ServiceClass {
 			}
 		});
 
-		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+		service.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
 			if (setting._id === 'Livechat_Routing_Method') {
 				autoAssignAgent = undefined;
 			}
@@ -211,7 +207,7 @@ export class NotificationService extends ServiceClass {
 			notifications.notifyLogged('private-settings-changed', clientAction, value);
 		});
 
-		this.onEvent('watch.rooms', ({ clientAction, room }): void => {
+		service.onEvent('watch.rooms', ({ clientAction, room }): void => {
 			// this emit will cause the user to receive a 'rooms-changed' event
 			notifications.streamUser.__emit(room._id, clientAction, room);
 
@@ -219,7 +215,7 @@ export class NotificationService extends ServiceClass {
 			notifications.streamRoomData.emitWithoutBroadcast(room._id, clientAction, room);
 		});
 
-		this.onEvent('watch.users', ({ clientAction, data, diff, id }): void => {
+		service.onEvent('watch.users', ({ clientAction, data, diff, id }): void => {
 			switch (clientAction) {
 				case 'updated':
 					notifications.notifyUserInThisInstance(id, 'userData', { diff, type: clientAction });
@@ -233,7 +229,7 @@ export class NotificationService extends ServiceClass {
 			}
 		});
 
-		this.onEvent('watch.integrationHistory', ({ clientAction, data, diff, id }): void => {
+		service.onEvent('watch.integrationHistory', ({ clientAction, data, diff, id }): void => {
 			if (!data?.integration?._id) {
 				return;
 			}
@@ -249,7 +245,7 @@ export class NotificationService extends ServiceClass {
 			}
 		});
 
-		this.onEvent('watch.livechatDepartmentAgents', ({ clientAction, data }): void => {
+		service.onEvent('watch.livechatDepartmentAgents', ({ clientAction, data }): void => {
 			const { agentId } = data;
 			if (!agentId) {
 				return;

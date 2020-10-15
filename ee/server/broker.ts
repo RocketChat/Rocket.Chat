@@ -103,18 +103,20 @@ class NetworkBroker implements IBroker {
 		const service: ServiceSchema = {
 			name,
 			actions: {},
-			// Prevent listen events when not allowed except by `license.module`
-			events: Object.fromEntries(Object.entries(instance.getEvents()).map(([event, fn]) => {
-				if (!this.whitelist.events.includes(event)) {
-					const originalFn = fn;
-					fn = (...args: any[]): any => {
-						if (this.allowed) {
-							return originalFn(...args);
-						}
-					};
+			events: instance.getEvents().reduce<Record<string, Function>>((map, eventName) => {
+				if (this.whitelist.events.includes(eventName)) {
+					map[eventName] = (data: Parameters<EventSignatures[typeof eventName]>): void => instance.emit(eventName, ...data);
+					return map;
 				}
-				return [event, (data: any[]): void => fn(...data)];
-			})),
+
+				map[eventName] = (data: Parameters<EventSignatures[typeof eventName]>): any => {
+					if (this.allowed) {
+						return instance.emit(eventName, ...data);
+					}
+				};
+
+				return map;
+			}, {}),
 		};
 
 		if (!service.events || !service.actions) {

@@ -10,6 +10,7 @@ import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { events } from './configureServer';
 import notifications from './streams/index';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import { ListenersModule } from '../../../../server/modules/listeners/listeners.module';
 
 const {
 	PORT: port = 4000,
@@ -103,6 +104,8 @@ export class DDPStreamer extends ServiceClass {
 
 	constructor() {
 		super();
+
+		new ListenersModule(this, notifications);
 
 		// [STREAMER_EVENTS.STREAM]([streamer, eventName, payload]) {
 		this.onEvent('stream', ([streamer, eventName, args]): void => {

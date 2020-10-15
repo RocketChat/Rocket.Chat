@@ -1,3 +1,5 @@
+import { EventEmitter } from 'events';
+
 import { asyncLocalStorage } from '..';
 import { IBroker, IBrokerNode } from './IBroker';
 import { EventSignatures } from '../lib/Events';
@@ -28,6 +30,8 @@ export interface IServiceClass {
 	onNodeUpdated?({ node }: {node: IBrokerNode }): void;
 	onNodeDisconnected?({ node, unexpected }: {node: IBrokerNode; unexpected: boolean}): Promise<void>;
 
+	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
+
 	created?(): Promise<void>;
 	started?(): Promise<void>;
 	stopped?(): Promise<void>;
@@ -36,10 +40,10 @@ export interface IServiceClass {
 export abstract class ServiceClass implements IServiceClass {
 	protected name: string;
 
-	protected events = new Map<string, Function>();
+	protected events = new EventEmitter();
 
-	getEvents(): Record<string, Function> {
-		return Object.fromEntries(this.events.entries());
+	getEvents(): Array<keyof EventSignatures> {
+		return this.events.eventNames() as unknown as Array<keyof EventSignatures>;
 	}
 
 	getName(): string {
@@ -51,10 +55,10 @@ export abstract class ServiceClass implements IServiceClass {
 	}
 
 	public onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void {
-		if (this.events.has(event)) {
-			throw new Error(`event "${ event }" already registered`);
-		}
+		this.events.on(event, handler);
+	}
 
-		this.events.set(event, handler);
+	public emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void {
+		this.events.emit(event, ...args);
 	}
 }

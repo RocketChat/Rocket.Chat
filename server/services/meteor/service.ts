@@ -13,11 +13,12 @@ import { settings } from '../../../app/settings/server/functions/settings';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
-import { minimongoChangeMap } from '../listeners/notification';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { IUser } from '../../../definition/IUser';
 import { matrixBroadCastActions } from '../../stream/streamBroadcast';
 import { integrations } from '../../../app/integrations/server/lib/triggerHandler';
+import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
+import notifications from '../../../app/notifications/server/lib/Notifications';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -115,6 +116,8 @@ export class MeteorService extends ServiceClass implements IMeteor {
 
 	constructor() {
 		super();
+
+		new ListenersModule(this, notifications);
 
 		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
 			if (clientAction !== 'removed') {
