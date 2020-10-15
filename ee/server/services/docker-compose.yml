@@ -6,8 +6,8 @@ services:
     build:
       context: .
       args:
-        SERVICE: Authorization
-    # image: registry.rocket.chat/microservices_authorization-service:latest
+        SERVICE: authorization
+    image: rocketchat/authorization-service:latest
     env_file: .config/services/service.env
     depends_on:
       - nats
@@ -17,8 +17,8 @@ services:
     build:
       context: .
       args:
-        SERVICE: Account
-    # image: registry.rocket.chat/microservices_accounts-service:latest
+        SERVICE: account
+    image: rocketchat/account-service:latest
     env_file: .config/services/service.env
     depends_on:
       - nats
@@ -28,8 +28,8 @@ services:
     build:
       context: .
       args:
-        SERVICE: Presence
-    # image: registry.rocket.chat/microservices_presence-service:latest
+        SERVICE: presence
+    image: rocketchat/presence-service:latest
     env_file: .config/services/service.env
     depends_on:
       - nats
@@ -39,15 +39,15 @@ services:
     build:
       context: .
       args:
-        SERVICE: DDPStreamer
-    # image: registry.rocket.chat/microservices_ddp-streamer:latest
+        SERVICE: ddp-streamer
+    image: rocketchat/ddp-streamer-service:latest
     env_file: .config/services/service.env
     depends_on:
       - nats
       - traefik
     labels:
       traefik.enable: true
-      traefik.http.services.ddp-streamer-service.loadbalancer.server.port: 80
+      traefik.http.services.ddp-streamer-service.loadbalancer.server.port: 3000
       traefik.http.routers.ddp-streamer-service.service: ddp-streamer-service
 
   stream-hub-service:
@@ -55,8 +55,8 @@ services:
     build:
       context: .
       args:
-        SERVICE: StreamHub
-    # image: registry.rocket.chat/microservices_mongodb-stream-hub:latest
+        SERVICE: stream-hub
+    image: rocketchat/stream-hub-service:latest
     env_file: .config/services/service.env
     depends_on:
       - nats
