@@ -43,7 +43,7 @@ const Extended = React.memo(({
 				<Sidebar.Item.Subtitle tabIndex='-1' className={unread && 'rcx-sidebar-item--highlighted'}>
 					{ subtitle }
 				</Sidebar.Item.Subtitle>
-				{badges}
+				<Sidebar.Item.Badge>{ badges }</Sidebar.Item.Badge>
 				<Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility && menu()}</Sidebar.Item.Menu>
 			</Sidebar.Item.Wrapper>
 		</Sidebar.Item.Content>
