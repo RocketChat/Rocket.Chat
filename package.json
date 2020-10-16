@@ -71,7 +71,7 @@
 		"@types/mocha": "^8.0.3",
 		"@types/mock-require": "^2.0.0",
 		"@types/moment-timezone": "^0.5.30",
-		"@types/mongodb": "^3.5.26",
+		"@types/mongodb": "^3.5.28",
 		"@types/msgpack5": "^3.4.1",
 		"@types/node": "^10.12.14",
 		"@types/react-dom": "^16.9.8",
