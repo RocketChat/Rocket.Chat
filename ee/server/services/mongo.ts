@@ -7,12 +7,6 @@ const {
 
 const name = /^mongodb:\/\/.*?(?::[0-9]+)?\/([^?]*)/.exec(MONGO_URL)?.[1];
 
-const client = new MongoClient(MONGO_URL, {
-	useUnifiedTopology: true,
-	useNewUrlParser: true,
-	poolSize: 15,
-});
-
 export enum Collections {
 	Subscriptions = 'rocketchat_subscription',
 	UserSession = 'usersSessions',
@@ -24,8 +18,14 @@ export enum Collections {
 }
 
 let db: Db;
-export async function getConnection(): Promise<Db> {
+export async function getConnection(poolSize = 5): Promise<Db> {
 	if (!db) {
+		const client = new MongoClient(MONGO_URL, {
+			useUnifiedTopology: true,
+			useNewUrlParser: true,
+			poolSize,
+		});
+
 		await client.connect();
 		db = client.db(name);
 	}
