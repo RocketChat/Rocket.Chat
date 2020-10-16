@@ -12,6 +12,7 @@ const Condensed = React.memo(({
 	unread,
 	menu,
 	badges,
+	threadUnread,
 	...props
 }) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
@@ -27,11 +28,11 @@ const Condensed = React.memo(({
 			{ icon }
 			<Sidebar.Item.Title data-qa='sidebar-item-title' className={unread && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title> {badges} <Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility && menu()}</Sidebar.Item.Menu>
 		</Sidebar.Item.Content>
-		<Sidebar.Item.Container>
+		{ actions && <Sidebar.Item.Container>
 			{<Sidebar.Item.Actions>
 				{ actions }
 			</Sidebar.Item.Actions>}
-		</Sidebar.Item.Container>
+		</Sidebar.Item.Container>}
 	</Sidebar.Item>;
 });
 

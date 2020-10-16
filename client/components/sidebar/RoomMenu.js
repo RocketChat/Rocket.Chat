@@ -149,6 +149,8 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '', statu
 	return !isQueued && !isAnonymous ? <Menu
 		rcx-sidebar-item__menu
 		mini
+		aria-keyshortcuts='alt'
+		tabIndex={-1}
 		options={menuOptions}
 		renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>}
 	/> : null;

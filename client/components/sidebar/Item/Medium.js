@@ -30,11 +30,11 @@ const Medium = React.memo(({
 			{badges}
 			<Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility && menu()}</Sidebar.Item.Menu>
 		</Sidebar.Item.Content>
-		<Sidebar.Item.Container>
+		{ actions && <Sidebar.Item.Container>
 			{<Sidebar.Item.Actions>
 				{ actions }
 			</Sidebar.Item.Actions>}
-		</Sidebar.Item.Container>
+		</Sidebar.Item.Container>}
 	</Sidebar.Item>;
 });
 

@@ -1,10 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { Box } from '@rocket.chat/fuselage';
+import { StatusBullet } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Presence } from '../../lib/presence';
 
-const Base = (props) => <Box size='x12' borderRadius='full' flexShrink={0} {...props}/>;
+export const UserStatus = React.memo(({ small, ...props }) => {
+	const size = small ? 'small' : 'large';
+	const t = useTranslation();
+	switch (props.status) {
+		case 'online':
+			return <StatusBullet size={size} title={t('Online')} {...props}/>;
+		case 'busy':
+			return <StatusBullet size={size} title={t('Busy')} {...props}/>;
+		case 'away':
+			return <StatusBullet size={size} title={t('Away')} {...props}/>;
+		case 'Offline':
+			return <StatusBullet size={size} title={t('Offline')} {...props}/>;
+		default:
+			return <StatusBullet size={size} title={t('Loading')} {...props}/>;
+	}
+});
+
+export const Busy = (props) => <UserStatus status='busy' {...props}/>;
+export const Away = (props) => <UserStatus status='away' {...props}/>;
+export const Online = (props) => <UserStatus status='online' {...props}/>;
+export const Offline = (props) => <UserStatus status='offline' {...props}/>;
+export const Loading = (props) => <UserStatus {...props}/>;
 
 export const colors = {
 	busy: 'danger-500',
@@ -13,35 +34,10 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-export const Busy = (props) => <Base bg='danger-500' {...props}/>;
-export const Away = (props) => <Base bg='warning-600' {...props}/>;
-export const Online = (props) => <Base bg='success-500' {...props}/>;
-export const Offline = (props) => <Base bg='neutral-600' {...props}/>;
-export const Loading = (props) => <Base bg='transparent' {...props}/>;
-
-// TODO: fuselage
-
-export const UserStatus = React.memo(({ status, ...props }) => {
-	const t = useTranslation();
-	switch (status) {
-		case 'online':
-			return <Online title={t('Online')} {...props}/>;
-		case 'busy':
-			return <Busy title={t('Busy')} {...props}/>;
-		case 'away':
-			return <Away title={t('Away')} {...props}/>;
-		case 'Offline':
-			return <Offline title={t('Offline')} {...props}/>;
-		default:
-			return <Loading {...props}/>;
-	}
-});
-
-
 export const usePresence = (uid, presence) => {
 	const [status, setStatus] = useState(presence);
 	useEffect(() => {
-		const handle = ({ status }) => {
+		const handle = ({ status = 'offline' }) => {
 			setStatus(status);
 		};
 		Presence.listen(uid, handle);
@@ -55,5 +51,5 @@ export const usePresence = (uid, presence) => {
 
 export const ReactiveUserStatus = React.memo(({ uid, presence, ...props }) => {
 	const status = usePresence(uid, presence);
-	return status && <UserStatus status={status} {...props} />;
+	return <UserStatus status={status} {...props} />;
 });

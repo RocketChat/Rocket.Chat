@@ -56,6 +56,8 @@ const HeaderWithData = () => {
 		<style>
 			{useMemo(() => toCssVars(invert(groupByName(colors)), '.sidebar .sidebar--custom-colors'), [])}
 			{`.sidebar .sidebar--custom-colors {
+
+				--rcx-color-primary-100: var(--rcx-color-blue-100);
 				--rcx-button-colors-secondary-active-border-color: var(--rcx-color-neutral-100);
 				--rcx-button-colors-secondary-active-background-color: var(--rcx-color-neutral-200);
 				--rcx-button-colors-secondary-color: var(--rcx-color-neutral-400);
