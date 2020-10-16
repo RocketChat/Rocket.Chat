@@ -13,7 +13,7 @@ module.exports = {
 	}, {
 		name: 'ddp-streamer',
 	}].map((app) => Object.assign(app, {
-		script: app.script || `ts-node ${ app.name }/service.ts`,
+		script: app.script || `ts-node --files ${ app.name }/service.ts`,
 		watch: app.watch || ['.', '../broker.ts', '../../../server/sdk', '../../../server/modules'],
 		instances: 1,
 		env: {
