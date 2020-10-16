@@ -15,7 +15,7 @@ const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
 		return getValue(Rooms.findOne({ _id: roomId }));
 	}
 
-	if (type === 'd') {
+	if (type === 'd' || type === 'u') {
 		return getValue(Rooms.findDirectRoomContainingAllUsernames(users));
 	}
 

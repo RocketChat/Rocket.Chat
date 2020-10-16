@@ -38,7 +38,7 @@ const AuditPage = () => {
 		type,
 		dateRange: {
 			start: startDate,
-			end: endDate,
+			// end: endDate,
 		},
 		visitor,
 		agent,
@@ -73,7 +73,7 @@ const AuditPage = () => {
 	const apply = useMutableCallback(() => {
 		if (!rid && type === '') {
 			return setErrors({
-				rid: t('The_field_is_required', t('room_name')),
+				rid: t('The_field_is_required', t('Channel_name')),
 			});
 		}
 
@@ -96,11 +96,14 @@ const AuditPage = () => {
 		}
 
 		setErrors({});
+
+		console.log(msg);
+
 		setData.current({
 			msg,
 			type,
 			startDate: new Date(startDate),
-			endDate: new Date(endDate),
+			// endDate: new Date(endDate),
 			visitor,
 			agent,
 			users,
@@ -111,7 +114,8 @@ const AuditPage = () => {
 	return <Page>
 		<Page.Header title={t('Message_auditing')} />
 		<Tabs>
-			<Tabs.Item selected={type === ''} onClick={useHandleType('')}>{t('Others')}</Tabs.Item>
+			<Tabs.Item selected={type === ''} onClick={useHandleType('')}>{t('Channels')}</Tabs.Item>
+			<Tabs.Item selected={type === 'u'} onClick={useHandleType('u')}>{t('Users')}</Tabs.Item>
 			<Tabs.Item selected={type === 'd'} onClick={useHandleType('d')}>{t('Direct_Messages')}</Tabs.Item>
 			<Tabs.Item selected={type === 'l'} onClick={useHandleType('l')}>{t('Omnichannel')}</Tabs.Item>
 		</Tabs>
@@ -135,12 +139,21 @@ const AuditPage = () => {
 				</Box>
 				<Box display='flex' flexDirection='row'>
 					{type === '' && <Field>
-						<Field.Label>{t('room_name')}</Field.Label>
+						<Field.Label>{t('Channel_name')}</Field.Label>
 						<Field.Row>
 							<RoomAutoComplete error={errors.rid} value={rid} onChange={handleRid} placeholder={t('Channel_Name_Placeholder')}/>
 						</Field.Row>
 						{errors.rid && <Field.Error>
 							{errors.rid}
+						</Field.Error>}
+					</Field>}
+					{type === 'u' && <Field>
+						<Field.Label>{t('Users')}</Field.Label>
+						<Field.Row>
+							<UserAutoCompleteMultiple error={errors.users} value={users} onChange={onChangeUsers} placeholder={t('Username_Placeholder')}/>
+						</Field.Row>
+						{errors.users && <Field.Error>
+							{errors.users}
 						</Field.Error>}
 					</Field>}
 					{type === 'd' && <Field>
