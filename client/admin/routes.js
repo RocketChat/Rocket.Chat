@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { createRouteGroup } from '../helpers/createRouteGroup';
+import { createRouteGroup } from '../lib/createRouteGroup';
 
 export const registerAdminRoute = createRouteGroup('admin', '/admin', () => import('./AdministrationRouter'));
 

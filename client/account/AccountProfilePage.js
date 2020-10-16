@@ -13,7 +13,7 @@ import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useMethod } from '../contexts/ServerContext';
 import { useSetModal } from '../contexts/ModalContext';
 import { useUpdateAvatar } from '../hooks/useUpdateAvatar';
-import { getUserEmailAddress } from '../helpers/getUserEmailAddress';
+import { getUserEmailAddress } from '../lib/getUserEmailAddress';
 import ActionConfirmModal from './ActionConfirmModal';
 
 const getInitialValues = (user) => ({
