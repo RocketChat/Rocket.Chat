@@ -38,7 +38,7 @@ const AuditPage = () => {
 		type,
 		dateRange: {
 			start: startDate,
-			// end: endDate,
+			end: endDate,
 		},
 		visitor,
 		agent,
@@ -101,7 +101,7 @@ const AuditPage = () => {
 			msg,
 			type,
 			startDate: new Date(startDate),
-			// endDate: new Date(endDate),
+			endDate: new Date(`${ endDate }T23:59:00`),
 			visitor,
 			agent,
 			users,
@@ -135,7 +135,7 @@ const AuditPage = () => {
 						</Field>
 					</Margins>
 				</Box>
-				<Box display='flex' flexDirection='row'>
+				<Box display='flex' flexDirection='row' alignItems='flex-end'>
 					{type === '' && <Field>
 						<Field.Label>{t('Channel_name')}</Field.Label>
 						<Field.Row>
@@ -185,10 +185,10 @@ const AuditPage = () => {
 							</Field>
 						</Margins>
 					</Box>}
+					<ButtonGroup mis='x8' align='end'>
+						<Button primary onClick={apply}>{t('Apply')}</Button>
+					</ButtonGroup>
 				</Box>
-				<ButtonGroup mis='x8' align='end'>
-					<Button primary onClick={apply}>{t('Apply')}</Button>
-				</ButtonGroup>
 				<Result setDataRef={setData} />
 			</Margins>
 		</Page.ScrollableContentWithShadow>
