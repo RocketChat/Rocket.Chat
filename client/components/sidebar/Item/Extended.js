@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { useShortTimeAgo } from '../../hooks/useTimeAgo';
+import { useShortTimeAgo } from '../../../hooks/useTimeAgo';
 
 const Extended = React.memo(({
 	icon,
@@ -51,8 +51,7 @@ const Extended = React.memo(({
 			{<Sidebar.Item.Actions>
 				{ actions }
 			</Sidebar.Item.Actions>}
-		</Sidebar.Item.Container>
-		}
+		</Sidebar.Item.Container>}
 	</Sidebar.Item>;
 });
 

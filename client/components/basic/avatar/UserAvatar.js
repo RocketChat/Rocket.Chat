@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import BaseAvatar from './BaseAvatar';
 import { useSetting } from '../../../contexts/SettingsContext';
@@ -17,4 +17,4 @@ function UserAvatar({ url, username, etag, ...props }) {
 	return <BaseAvatar url={avatarUrl} title={username} {...props}/>;
 }
 
-export default UserAvatar;
+export default memo(UserAvatar);

@@ -23,6 +23,11 @@ const getPresence = (() => {
 
 			users.forEach((user) => {
 				Presence.emit(user._id, user);
+				uids.delete(user._id);
+			});
+
+			[...uids].forEach((uid) => {
+				Presence.emit(uid, { uid });
 			});
 
 			uids.clear();

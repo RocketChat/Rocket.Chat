@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 
-import Extended from '../Extended';
+import Extended from './Extended';
 
 const ExtendedSkeleton = ({ showAvatar }) => <Box height='x44'><Extended
 	title={<Skeleton width='100%' />}

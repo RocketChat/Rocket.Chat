@@ -123,32 +123,24 @@ const onClick = (e, t, allowAnonymousRead) => {
 	}
 };
 
-const LoggedUserAvatarButton = React.memo(({ user }) => {
+export default React.memo(({ user = {} }) => {
 	const t = useTranslation();
 
 	const {
-		status,
-		username,
+		_id: uid,
+		status = !uid && 'online',
+		username = 'Anonymous',
 		avatarETag,
 	} = user;
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 
-	const handleClick = useMutableCallback((e) => onClick(e, t, allowAnonymousRead));
+	const handleClick = useMutableCallback((e) => uid && onClick(e, t, allowAnonymousRead));
 
 	return <Box position='relative' onClick={handleClick} className={css`cursor: pointer;`} data-qa='sidebar-avatar-button'>
 		<UserAvatar size='x24' username={username} etag={avatarETag}/>
-		<Box className={css`bottom: 0; right: 0;`} position='absolute' p='x2' bg='neutral-200' borderRadius='full' mie='neg-x2' mbe='neg-x2'>
-			<UserStatus status={status} size='x8'/>
+		<Box className={css`bottom: 0; right: 0;`} justifyContent='center' alignItems='center'display='flex' overflow='hidden' size='x12' borderWidth='x2' position='absolute' bg='neutral-200' borderColor='neutral-200' borderRadius='full' mie='neg-x2' mbe='neg-x2'>
+			<UserStatus small status={status}/>
 		</Box>
 	</Box>;
 });
-
-const AnonymousUserAvatarButton = () => <Box position='relative'>
-	<UserAvatar size='x24' username={'Anonymous'}/>
-	<Box className={css`bottom: 0; right: 0;`} position='absolute' p='x2' bg='neutral-200' borderRadius='full' mie='neg-x2' mbe='neg-x2'>
-		<UserStatus status='online' size='x8'/>
-	</Box>
-</Box>;
-
-export default function({ user }) { return user ? <LoggedUserAvatarButton user={user} /> : <AnonymousUserAvatarButton />; }

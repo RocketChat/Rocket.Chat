@@ -13,7 +13,9 @@ import { useSetting } from '../../contexts/SettingsContext';
 import { useMethodData, AsyncState } from '../../contexts/ServerContext';
 import { roomTypes } from '../../../app/utils';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
-import { useChatRoomTemplate, useAvatarTemplate, itemSizeMap, SideBarItemTemplateWithData } from './Chats';
+import { itemSizeMap, SideBarItemTemplateWithData } from './Chats';
+import { useTemplateByViewMode } from './hooks/useTemplateByViewMode';
+import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 
 const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended) => ({
 	items,
@@ -176,10 +178,11 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 	const itemIndexRef = useRef(0);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
-	const sidebarHideAvatar = useUserPreference('sidebarHideAvatar');
 	const showRealName = useSetting('UI_Use_Real_Name');
-	const SideBarItemTemplate = useChatRoomTemplate(sidebarViewMode);
-	const AvatarTemplate = useAvatarTemplate(sidebarHideAvatar, sidebarViewMode);
+
+	const sideBarItemTemplate = useTemplateByViewMode();
+	const avatarTemplate = useAvatarTemplate();
+
 	const itemSize = itemSizeMap(sidebarViewMode);
 
 	const extended = sidebarViewMode === 'extended';
@@ -190,7 +193,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 
 	const { data: items, status } = useSearchItems(filterText);
 
-	const itemData = createItemData(items, t, SideBarItemTemplate, AvatarTemplate, showRealName, extended);
+	const itemData = createItemData(items, t, sideBarItemTemplate, avatarTemplate, showRealName, extended);
 
 	const { ref: boxRef, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 

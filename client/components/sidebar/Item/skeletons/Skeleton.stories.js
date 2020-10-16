@@ -1,7 +1,7 @@
 import React from 'react';
 
 import CondensedSkeleton from './CondensedSkeleton';
-import ExtendedSkeleton from './ExtendedSkeleton';
+import ExtendedSkeleton from '../ExtendedSkeleton';
 import MediumSkeleton from './MediumSkeleton';
 
 export default {
