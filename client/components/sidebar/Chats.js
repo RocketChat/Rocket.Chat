@@ -210,7 +210,10 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 	if (prevProps.room._id !== nextProps.room._id) {
 		return false;
 	}
-	if (prevProps._updatedAt?.toISOString() !== nextProps._updatedAt?.toISOString()) {
+	if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
+		return false;
+	}
+	if (prevProps.room.lastMessage?._updatedAt?.toISOString() !== nextProps.room.lastMessage?._updatedAt?.toISOString()) {
 		return false;
 	}
 	return true;
