@@ -10,10 +10,10 @@ Start NATS first, you can it via Docker:
 docker run --rm -d -p 4222:4222 nats
 ```
 
-Then run Rocket.Chat as usual with an additional `TRANSPORTER` env var:
+Then run Rocket.Chat as usual with an additional `TRANSPORTER` and `DISABLE_DB_WATCH` env vars:
 
 ```
-TRANSPORTER=nats://localhost:4222 MOLECULER_LOG_LEVEL=debug meteor
+TRANSPORTER=nats://localhost:4222 MOLECULER_LOG_LEVEL=debug DISABLE_DB_WATCH=true meteor
 ```
 
 Set up an Enterprise license going to Admin > Enterprise.

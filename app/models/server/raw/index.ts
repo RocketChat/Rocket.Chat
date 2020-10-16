@@ -111,7 +111,7 @@ const map = {
 	[Integrations.col.collectionName]: IntegrationsModel,
 };
 
-initWatchers({
+!process.env.DISABLE_DB_WATCH && initWatchers({
 	Messages,
 	Users,
 	Subscriptions,

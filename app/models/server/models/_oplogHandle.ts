@@ -180,17 +180,23 @@ class CustomOplogHandle {
 
 let oplogHandle: Promise<CustomOplogHandle>;
 
-// @ts-ignore
-// eslint-disable-next-line no-undef
-if (Package['disable-oplog']) {
-	try {
-		oplogHandle = Promise.await(new CustomOplogHandle().start());
-	} catch (e) {
-		console.error(e.message);
+if (!process.env.DISABLE_DB_WATCH) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	if (Package['disable-oplog']) {
+		try {
+			oplogHandle = Promise.await(new CustomOplogHandle().start());
+		} catch (e) {
+			console.error(e.message);
+		}
 	}
 }
 
 export const getOplogHandle = async (): Promise<OplogHandle | CustomOplogHandle | undefined> => {
+	if (process.env.DISABLE_DB_WATCH) {
+		return;
+	}
+
 	if (oplogHandle) {
 		return oplogHandle;
 	}
