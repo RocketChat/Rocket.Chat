@@ -5,18 +5,24 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import AuditLog from './auditLog';
-import { LivechatRooms, Rooms, Messages } from '../../../../app/models/server';
+import { LivechatRooms, Rooms, Messages, Users, Subscriptions } from '../../../../app/models/server';
 import { hasAllPermission } from '../../../../app/authorization/server';
 
 const getValue = (room) => room && { rids: [room._id], name: room.name };
+const getValues = (subs) => subs && { rids: subs.map((sub) => sub.rid), names: subs.map((sub) => sub.name) };
 
 const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
 	if (roomId) {
 		return getValue(Rooms.findOne({ _id: roomId }));
 	}
 
-	if (type === 'd' || type === 'u') {
+	if (type === 'd') {
 		return getValue(Rooms.findDirectRoomContainingAllUsernames(users));
+	}
+
+	if (type === 'u') {
+		const user = users && Users.findOneByUsernameIgnoringCase(users[0]);
+		return getValues(Subscriptions.findByUserId(user._id).fetch());
 	}
 
 	if (type === 'l') {
@@ -40,15 +46,20 @@ Meteor.methods({
 			throw new Meteor.Error('Room doesn`t exist');
 		}
 
+		const currentUser = users && Users.findOneByUsernameIgnoringCase(users[0]);
+
 		const { rids, name } = roomInfo;
 
 		const query = {
 			rid: { $in: rids },
+			'u._id': currentUser._id,
 			ts: {
 				$gt: startDate,
 				$lt: endDate,
 			},
 		};
+
+		console.log(query);
 
 		if (msg) {
 			const regex = new RegExp(s.trim(s.escapeRegExp(msg)), 'i');
