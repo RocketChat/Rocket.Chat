@@ -10,6 +10,7 @@ const name = /^mongodb:\/\/.*?(?::[0-9]+)?\/([^?]*)/.exec(MONGO_URL)?.[1];
 const client = new MongoClient(MONGO_URL, {
 	useUnifiedTopology: true,
 	useNewUrlParser: true,
+	poolSize: 15,
 });
 
 export enum Collections {
