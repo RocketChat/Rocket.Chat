@@ -71,7 +71,6 @@ const AuditPage = () => {
 	});
 
 	const apply = useMutableCallback(() => {
-		console.log(users);
 		if (!rid && type === '') {
 			return setErrors({
 				rid: t('The_field_is_required', t('Channel_name')),

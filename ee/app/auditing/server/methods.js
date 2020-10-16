@@ -11,6 +11,11 @@ import { hasAllPermission } from '../../../../app/authorization/server';
 const getValue = (room) => room && { rids: [room._id], name: room.name };
 const getValues = (subs) => subs && { rids: subs.map((sub) => sub.rid), names: subs.map((sub) => sub.name) };
 
+const getUsersIdFromUserName = (usersName) => {
+	const user = usersName && Users.findByUsername({ $in: usersName });
+	return user.map((userId) => userId._id);
+};
+
 const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
 	if (roomId) {
 		return getValue(Rooms.findOne({ _id: roomId }));
@@ -21,8 +26,8 @@ const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
 	}
 
 	if (type === 'u') {
-		const user = users && Users.findOneByUsernameIgnoringCase(users[0]);
-		return getValues(Subscriptions.findByUserId(user._id).fetch());
+		const usersId = getUsersIdFromUserName(users);
+		return getValues(Subscriptions.find({ 'u._id': { $in: usersId } }).fetch());
 	}
 
 	if (type === 'l') {
@@ -46,20 +51,20 @@ Meteor.methods({
 			throw new Meteor.Error('Room doesn`t exist');
 		}
 
-		const currentUser = users && Users.findOneByUsernameIgnoringCase(users[0]);
-
 		const { rids, name } = roomInfo;
 
 		const query = {
 			rid: { $in: rids },
-			'u._id': currentUser._id,
 			ts: {
 				$gt: startDate,
 				$lt: endDate,
 			},
 		};
 
-		console.log(query);
+		if (type === 'u') {
+			const usersId = getUsersIdFromUserName(users);
+			query['u._id'] = { $in: usersId };
+		}
 
 		if (msg) {
 			const regex = new RegExp(s.trim(s.escapeRegExp(msg)), 'i');
