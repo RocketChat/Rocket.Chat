@@ -267,13 +267,6 @@
 	--sidebar-item-text-size: 0.875rem;
 
 	/*
-	* Modal
-	*/
-	--modal-wrapper-width: 650px;
-	--modal-wrapper-margin: 3rem;
-	--modal-back-button-color: var(--color-gray);
-
-	/*
 	* Modal - Create Channel
 	*/
 	--create-channel-gap-between-elements: 1rem;
