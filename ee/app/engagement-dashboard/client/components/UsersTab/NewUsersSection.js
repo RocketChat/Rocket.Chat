@@ -7,10 +7,7 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { Section } from '../Section';
-import { saveFile } from '../../../../../../client/lib/saveFile';
-
-const convertDataToCSV = (data) => `// date, newUsers
-${ data.map(({ date, newUsers }) => `${ date }, ${ newUsers }`).join('\n') }`;
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 export function NewUsersSection() {
 	const t = useTranslation();
@@ -86,7 +83,8 @@ export function NewUsersSection() {
 	}, [data, period]);
 
 	const downloadData = () => {
-		saveFile(convertDataToCSV(values), `NewUsersSection_start_${ params.start }_end_${ params.end }.csv`);
+		const data = values.map(({ data, newUsers }) => [data, newUsers]);
+		downloadCsvAs(data, `NewUsersSection_start_${ params.start }_end_${ params.end }`);
 	};
 
 	return <Section
