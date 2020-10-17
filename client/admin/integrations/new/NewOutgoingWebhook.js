@@ -45,7 +45,7 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 	const query = useMemo(() => ({
 		...formValues,
 		urls: urls.split('\n'),
-		triggerWords: triggerWords.split(';'),
+		triggerWords: triggerWords.split(/\s*(?:;|$)\s*/),
 		// TODO: remove JSON.stringify. Is used to keep useEndpointAction from rerendering the page indefinitely.
 	}), [JSON.stringify(formValues)]);
 
