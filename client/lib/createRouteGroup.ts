@@ -1,14 +1,24 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import type { ElementType } from 'react';
 
 import { renderRouteComponent } from '../reactAdapters';
 
-export const createRouteGroup = (name, prefix, importRouter) => {
+type RouteRegister = {
+	(path: string, params: {
+		name: string;
+		lazyRouteComponent: () => Promise<ElementType>;
+		props: Record<string, unknown>;
+		action: (params?: Record<string, string>, queryParams?: Record<string, string>) => void;
+	}): void;
+};
+
+export const createRouteGroup = (name: string, prefix: string, importRouter: () => Promise<ElementType>): RouteRegister => {
 	const routeGroup = FlowRouter.group({
 		name,
 		prefix,
 	});
 
-	const registerRoute = (path, { lazyRouteComponent, props, action, ...options } = {}) => {
+	const registerRoute: RouteRegister = (path, { lazyRouteComponent, props, action, ...options }) => {
 		routeGroup.route(path, {
 			...options,
 			action: (params, queryParams) => {
