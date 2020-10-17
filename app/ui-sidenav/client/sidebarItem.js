@@ -69,6 +69,17 @@ Template.sidebarItem.helpers({
 			return 'badge';
 		}
 	},
+	statusText() {
+		if (this.t === 'd') {
+			return Session.get(`user_${ this.username }_status_text`);
+		}
+
+		if (this.t === 'l') {
+			return roomTypes.getUserStatusText('l', this.rid);
+		}
+
+		return false;
+	},
 });
 
 function setLastMessageTs(instance, ts) {
