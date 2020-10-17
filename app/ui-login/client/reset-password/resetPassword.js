@@ -34,25 +34,23 @@ Template.resetPassword.helpers({
 	},
 });
 
-const resetPassword = (token, password) => new Promise((resolve, reject) => {
-	Accounts.resetPassword(token, password, function(error, result) {
-		if (!error) {
-			FlowRouter.go('home');
-			toastr.success(t('Password_changed_successfully'));
-			callbacks.run('userPasswordReset');
-			resolve(result);
-		}
-
+async function resetPassword(token, password) {
+	try {
+		await call('checkUserPassword', password);
+		Accounts.resetPassword(token, password);
+		FlowRouter.go('home');
+		toastr.success(t('Password_changed_successfully'));
+		callbacks.run('userPasswordReset');
+	} catch (error) {
 		if (error.error !== 'totp-required') {
-			reject(error);
+			throw error;
 		}
 
 		toastr.success(t('Password_changed_successfully'));
 		callbacks.run('userPasswordReset');
 		FlowRouter.go('login');
-		resolve(result);
-	});
-});
+	}
+}
 
 async function setUserPassword(password) {
 	try {
