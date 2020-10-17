@@ -282,6 +282,10 @@ export class Users extends Base {
 			},
 		};
 
+		if (settings.get('Livechat_show_agent_info') === 'nickname') {
+			options.fields.nickname = 1;
+		}
+
 		if (settings.get('Livechat_show_agent_email')) {
 			options.fields.emails = 1;
 		}

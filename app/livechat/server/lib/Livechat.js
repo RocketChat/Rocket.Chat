@@ -966,7 +966,7 @@ export const Livechat = {
 			if (message.u._id === visitor._id) {
 				author = TAPi18n.__('You', { lng: userLanguage });
 			} else {
-				author = showAgentInfo ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
+				author = (showAgentInfo !== 'none') ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
 			}
 
 			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
@@ -1102,7 +1102,7 @@ export const Livechat = {
 
 	notifyAgentStatusChanged(userId, status) {
 		callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
-		if (!settings.get('Livechat_show_agent_info')) {
+		if (settings.get('Livechat_show_agent_info') === 'none') {
 			return;
 		}
 

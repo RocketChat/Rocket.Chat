@@ -109,7 +109,7 @@ export function settings() {
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
-			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
+			agentHiddenInfo: initSettings.Livechat_show_agent_info === 'none',
 			limitTextLength: initSettings.Livechat_enable_message_character_limit
 			&& (initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
 		},

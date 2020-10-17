@@ -211,7 +211,7 @@ export const normalizeAgent = (agentId) => {
 		return;
 	}
 
-	if (!settings.get('Livechat_show_agent_info')) {
+	if (settings.get('Livechat_show_agent_info') === 'none') {
 		return { hiddenInfo: true };
 	}
 
