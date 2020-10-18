@@ -21,7 +21,7 @@
   - Video Conferencing
   - Screensharing
 - Notifications
-  - Desktop and Mobile
+  - Desktop,Mobile and laptop
   - Use your own gateway
   - Use @all to notify everyone in the room (configurable to max. users)
   - Receive missed messages in your e-mail
