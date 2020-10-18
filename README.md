@@ -1,4 +1,4 @@
-![](https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/horizontal.png)
+![](https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png)
 
 <h1 align="center">
   The Ultimate Open Source WebChat Platform
