@@ -3,7 +3,6 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { Notifications } from '../../../app/notifications/client';
 
-// mirror of object in /imports/users-presence/server/activeUsers.js - keep updated
 const STATUS_MAP = [
 	'offline',
 	'online',
