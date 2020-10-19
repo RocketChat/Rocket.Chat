@@ -429,7 +429,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
+						result = HTTP.get(`${ baseUrl }/v2/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
 							headers,
 							npmRequestOptions: { encoding: null },
 						});
