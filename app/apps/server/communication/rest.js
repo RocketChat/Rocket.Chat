@@ -64,7 +64,7 @@ export class AppsRestApi {
 			if (isNetworkError(e.code)) {
 				// air gapped environment, a.k.a. no internet to reach the marketplace
 				orchestrator.getRocketChatLogger().error(message, e.message);
-				return API.v1.internalError('Could not reach the Marketplace to get Apps info');
+				return API.v1.internalError('Could not reach the Marketplace');
 			}
 
 			orchestrator.getRocketChatLogger().error(message, e.response.data);
