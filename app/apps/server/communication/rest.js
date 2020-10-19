@@ -178,7 +178,7 @@ export class AppsRestApi {
 					const downloadPromise = new Promise((resolve, reject) => {
 						const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
 
-						HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
+						HTTP.get(`${ baseUrl }/v2/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
 							headers,
 							npmRequestOptions: { encoding: null },
 						}, (error, result) => {
