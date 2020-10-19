@@ -70,7 +70,7 @@ class CustomOplogHandle {
 		this.client = new MongoClient(oplogUrl, {
 			useUnifiedTopology: true,
 			useNewUrlParser: true,
-			...!this.usingChangeStream && { poolSize: 1 },
+			poolSize: this.usingChangeStream ? 15 : 1,
 		});
 
 		await this.client.connect();
