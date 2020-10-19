@@ -82,7 +82,6 @@
 	/* #endregion */
 
 	/* #region less-colors Old Colors (minor) */
-	--tertiary-background-color: var(--component-color);
 	--tertiary-font-color: var(--transparent-lightest);
 	--link-font-color: var(--primary-action-color);
 	--info-font-color: var(--secondary-font-color);
@@ -266,13 +265,6 @@
 	--sidebar-item-user-status-size: 6px;
 	--sidebar-item-user-status-radius: 50%;
 	--sidebar-item-text-size: 0.875rem;
-
-	/*
-	* Modal
-	*/
-	--modal-wrapper-width: 650px;
-	--modal-wrapper-margin: 3rem;
-	--modal-back-button-color: var(--color-gray);
 
 	/*
 	* Modal - Create Channel

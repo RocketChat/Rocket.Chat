@@ -11,7 +11,7 @@ import hljs from '../../app/markdown/lib/hljs';
 import { fireGlobalEvent, alerts } from '../../app/ui-utils';
 import { getUserPreference, t } from '../../app/utils';
 import 'highlight.js/styles/github.css';
-import { syncUserdata } from '../lib/userData';
+import { synchronizeUserData } from '../lib/userData';
 
 hljs.initHighlightingOnLoad();
 
@@ -42,7 +42,7 @@ Meteor.startup(function() {
 			return;
 		}
 
-		const user = await syncUserdata(uid);
+		const user = await synchronizeUserData(uid);
 		if (!user) {
 			return;
 		}

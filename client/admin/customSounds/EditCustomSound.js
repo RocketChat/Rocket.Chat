@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, Skeleton, Throbber, InputBox, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -9,47 +9,10 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { validate, createSoundData } from './lib';
 import { useSetModal } from '../../contexts/ModalContext';
 import VerticalBar from '../../components/basic/VerticalBar';
+import DeleteSuccessModal from '../../components/DeleteSuccessModal';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 
-const DeleteWarningModal = ({ onDelete, onCancel, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Custom_Sound_Delete_Warning')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={onDelete}>{t('Delete')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
-
-const SuccessModal = ({ onClose, ...props }) => {
-	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='success' name='checkmark-circled' size={20}/>
-			<Modal.Title>{t('Deleted')}</Modal.Title>
-			<Modal.Close onClick={onClose}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{t('Custom_Sound_Has_Been_Deleted')}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button primary onClick={onClose}>{t('Ok')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
-
-export function EditCustomSound({ _id, cache, ...props }) {
+function EditCustomSound({ _id, cache, ...props }) {
 	const query = useMemo(() => ({
 		query: JSON.stringify({ _id }),
 	}), [_id]);
@@ -146,14 +109,21 @@ function EditSound({ close, onChange, data, ...props }) {
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteCustomSound(_id);
-			setModal(() => <SuccessModal onClose={() => { setModal(undefined); close(); onChange(); }}/>);
+			setModal(() => <DeleteSuccessModal
+				children={t('Custom_Sound_Has_Been_Deleted')}
+				onClose={() => { setModal(undefined); close(); onChange(); }}
+			/>);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 			onChange();
 		}
 	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange]);
 
-	const openConfirmDelete = () => setModal(() => <DeleteWarningModal onDelete={onDeleteConfirm} onCancel={() => setModal(undefined)}/>);
+	const openConfirmDelete = () => setModal(() => <DeleteWarningModal
+		children={t('Custom_Sound_Delete_Warning')}
+		onDelete={onDeleteConfirm}
+		onCancel={() => setModal(undefined)}
+	/>);
 
 	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
@@ -192,3 +162,5 @@ function EditSound({ close, onChange, data, ...props }) {
 		</Field>
 	</VerticalBar.ScrollableContent>;
 }
+
+export default EditCustomSound;
