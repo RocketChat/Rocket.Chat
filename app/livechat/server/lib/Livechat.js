@@ -966,7 +966,7 @@ export const Livechat = {
 			if (message.u._id === visitor._id) {
 				author = TAPi18n.__('You', { lng: userLanguage });
 			} else {
-				author = (showAgentInfo !== 'none') ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
+				author = showAgentInfo !== 'none' ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
 			}
 
 			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
