@@ -45,6 +45,11 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 
 	async findOne(query = {}, options: FindOneOptions<T> = {}): Promise<T | undefined> {
 		const optionsDef = this._ensureDefaultFields<T>(options);
+
+		if (typeof query === 'string') {
+			return this.findOneById(query, options);
+		}
+
 		return await this.col.findOne<T>(query, optionsDef) ?? undefined;
 	}
 
