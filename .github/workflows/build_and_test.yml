@@ -345,24 +345,22 @@ jobs:
       run: |
         meteor build --server-only --directory /tmp/build-pr
 
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+
     - name: Build Docker image for PRs
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        VERSION: pr-${{ github.event.number }}
       run: |
         cd /tmp/build-pr
 
-        docker login docker.pkg.github.com -u "${GITHUB_ACTOR}" -p "${GITHUB_TOKEN}"
-
-        cp $GITHUB_WORKSPACE/.docker/Dockerfile .
-
-        export LOWERCASE_REPOSITORY=$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")
-
-        export IMAGE_NAME="docker.pkg.github.com/${LOWERCASE_REPOSITORY}/rocket.chat:${VERSION}"
+        IMAGE_NAME="ghcr.io/${{ github.repository_owner }}/rocket.chat:pr-${{ github.event.number }}"
 
         echo "Build official Docker image ${IMAGE_NAME}"
 
-        docker build -t $IMAGE_NAME .
+        docker build -f $GITHUB_WORKSPACE/.docker/Dockerfile -t $IMAGE_NAME .
         docker push $IMAGE_NAME
 
   deploy:
@@ -433,17 +431,14 @@ jobs:
         path: /tmp/build
 
     - name: Unpack build
-      env:
-        DOCKER_USER: ${{ secrets.DOCKER_USER }}
-        DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       run: |
         cd /tmp/build
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
-        export DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
+        DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export DOCKER_PATH="${DOCKER_PATH}-mongo"
+          DOCKER_PATH="${DOCKER_PATH}-mongo"
         fi;
 
         echo "Build ${{ matrix.release }} Docker image"
@@ -452,25 +447,29 @@ jobs:
           cp ${DOCKER_PATH}/entrypoint.sh .
         fi;
 
-        docker login -u $DOCKER_USER -p $DOCKER_PASS
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
 
     - name: Build Docker image for tag
       if: github.event_name == 'release'
       run: |
         cd /tmp/build
-        export CIRCLE_TAG="${GITHUB_REF#*tags/}"
+        CIRCLE_TAG="${GITHUB_REF#*tags/}"
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export IMAGE="${IMAGE}.preview"
+          IMAGE="${IMAGE}.preview"
         fi;
 
         docker build -t ${IMAGE}:$CIRCLE_TAG .
         docker push ${IMAGE}:$CIRCLE_TAG
 
         if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-          export RELEASE="latest"
+          RELEASE="latest"
         elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-          export RELEASE="release-candidate"
+          RELEASE="release-candidate"
         fi
 
         docker tag ${IMAGE}:$CIRCLE_TAG ${IMAGE}:${RELEASE}
@@ -482,7 +481,7 @@ jobs:
         cd /tmp/build
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export IMAGE="${IMAGE}.preview"
+          IMAGE="${IMAGE}.preview"
         fi;
 
         docker build -t ${IMAGE}:develop .
