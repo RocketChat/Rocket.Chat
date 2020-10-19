@@ -137,7 +137,7 @@ const AppearanceForm: FC<AppearanceFormProps> = ({ values = {}, handlers = {} })
 					<Box display='flex' flexDirection='row'>
 						<Field.Label >{t('Show_agent_info')}</Field.Label>
 						<Field.Row>
-						<Select options={liveChatShowAgentInfoOptions} placeholder={t('Select_an_option')} onChange={handleLivechat_show_agent_info} value={Livechat_show_agent_info}/>
+							<Select options={liveChatShowAgentInfoOptions} placeholder={t('Select_an_option')} onChange={handleLivechat_show_agent_info} value={Livechat_show_agent_info}/>
 						</Field.Row>
 					</Box>
 				</Field>
