@@ -1,4 +1,3 @@
-import { watchUsers } from './watchUsers';
 import { getConnection } from '../mongo';
 import { ServiceClass, IServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
@@ -108,7 +107,5 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 				}
 			});
 		});
-
-		UsersCol.watch([], { fullDocument: 'updateLookup' }).on('change', watchUsers);
 	}
 }
