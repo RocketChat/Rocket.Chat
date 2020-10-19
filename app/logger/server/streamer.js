@@ -54,13 +54,14 @@ export const StdOut = new class extends EventEmitter {
 
 Meteor.startup(() => {
 	const handler = (string, item) => {
-		// TODO change to 'emit' from 'emitWithoutBroadcast' because ddp-streamer needs to receive this as well but we may need to think a way to broadcast only if needed
-		notifications.streamStdout.emit('stdout', {
+		// TODO having this as 'emitWithoutBroadcast' will not sent this data to ddp-streamer, so this data
+		// won't be available when using micro services.
+		notifications.streamStdout.emitWithoutBroadcast('stdout', {
 			...item,
 		});
 	};
 
-	// does not emit to StdOut if moleculer log level set to debug because it creates an infinite loop
+	// do not emit to StdOut if moleculer log level set to debug because it creates an infinite loop
 	if (String(process.env.MOLECULER_LOG_LEVEL).toLowerCase() !== 'debug') {
 		StdOut.on('write', handler);
 	}
