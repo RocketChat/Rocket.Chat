@@ -79,6 +79,8 @@ export class CustomOAuth {
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
 		this.mergeRoles = options.mergeRoles || false;
+		this.mergeRolesUseMap = options.mergeRolesUseMap || false;
+		this.mergeRolesMap = options.mergeRolesMap || {};
 		this.rolesClaim = options.rolesClaim || 'roles';
 		this.accessTokenParam = options.accessTokenParam;
 
@@ -327,7 +329,7 @@ export class CustomOAuth {
 				}
 
 				if (this.mergeRoles) {
-					updateRolesFromSSO(user, serviceData, this.rolesClaim);
+					updateRolesFromSSO(user, serviceData, this.rolesClaim, this.mergeRolesUseMap, this.mergeRolesMap);
 				}
 
 				// User already created or merged and has identical name as before
@@ -369,7 +371,7 @@ export class CustomOAuth {
 			}
 
 			if (this.mergeRoles) {
-				user.roles = mapRolesFromSSO(user.services[this.name], this.rolesClaim);
+				user.roles = mapRolesFromSSO(user.services[this.name], this.rolesClaim, this.mergeRolesUseMap, this.mergeRolesMap);
 			}
 
 			return true;

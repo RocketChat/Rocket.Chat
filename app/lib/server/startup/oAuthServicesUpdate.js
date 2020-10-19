@@ -53,6 +53,8 @@ function _OAuthServicesUpdate() {
 				data.rolesClaim = settings.get(`${ service.key }-roles_claim`);
 				data.mergeUsers = settings.get(`${ service.key }-merge_users`);
 				data.mergeRoles = settings.get(`${ service.key }-merge_roles`);
+				data.mergeRolesUseMap = settings.get(`${ service.key }-merge_roles_use_map`);
+				data.mergeRolesMap = settings.get(`${ service.key }-merge_roles_map`);
 				data.showButton = settings.get(`${ service.key }-show_button`);
 				new CustomOAuth(serviceName.toLowerCase(), {
 					serverURL: data.serverURL,
@@ -70,6 +72,8 @@ function _OAuthServicesUpdate() {
 					rolesClaim: data.rolesClaim,
 					mergeUsers: data.mergeUsers,
 					mergeRoles: data.mergeRoles,
+					mergeRolesUseMap: data.mergeRolesUseMap,
+					mergeRolesMap: data.mergeRolesMap,
 					accessTokenParam: data.accessTokenParam,
 					showButton: data.showButton,
 				});

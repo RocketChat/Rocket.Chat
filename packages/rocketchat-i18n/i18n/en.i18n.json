@@ -128,6 +128,8 @@
   "Accounts_OAuth_Custom_Name_Field": "Name field",
   "Accounts_OAuth_Custom_Roles_Claim": "Roles/Groups field name",
   "Accounts_OAuth_Custom_Merge_Roles": "Merge Roles from SSO",
+  "Accounts_OAuth_Custom_Use_Custom_Map_To_Merge_Roles": "Use custom map to merge Roles from SSO",
+  "Accounts_OAuth_Custom_Custom_Map_Used_To_Merge_Roles": "Custom map used to merge Roles from SSO",
   "Accounts_OAuth_Drupal": "Drupal Login Enabled",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Redirect URI",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 Client ID",

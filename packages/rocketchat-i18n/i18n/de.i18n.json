@@ -109,6 +109,8 @@
   "Accounts_OAuth_Custom_Name_Field": "Namensfeld",
   "Accounts_OAuth_Custom_Roles_Claim": "Rollen/Gruppen Feld Name",
   "Accounts_OAuth_Custom_Merge_Roles": "Übernehme Rollen von SSO",
+  "Accounts_OAuth_Custom_Use_Custom_Map_To_Merge_Roles": "Nutze eigene Zuordnung der Rollen von SSO",
+  "Accounts_OAuth_Custom_Custom_Map_Used_To_Merge_Roles": "Eigene Zuordnung der Rollen von SSO",
   "Accounts_OAuth_Drupal": "Anmeldung über Drupal",
   "Accounts_OAuth_Drupal_callback_url": "Drupal OAuth Redirect Url",
   "Accounts_OAuth_Drupal_id": "Drupal oAuth2 Client ID",
