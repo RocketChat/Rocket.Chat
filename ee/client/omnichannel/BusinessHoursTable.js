@@ -1,28 +1,54 @@
-import { Table, Callout, Box, TextInput, Icon } from '@rocket.chat/fuselage';
+import { Table, Callout, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, memo, useMemo, useEffect } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
+import DeleteWarningModal from '../../../client/components/DeleteWarningModal';
 import GenericTable from '../../../client/components/GenericTable';
+import FilterByText from '../../../client/components/FilterByText';
+import { useSetModal } from '../../../client/contexts/ModalContext';
 import { useRoute } from '../../../client/contexts/RouterContext';
+import { useMethod } from '../../../client/contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../client/hooks/useResizeInlineBreakpoint';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../client/hooks/useEndpointDataExperimental';
 
-const FilterByText = memo(({ setFilter, ...props }) => {
+export function RemoveBusinessHourButton({ _id, type, reload }) {
+	const removeBusinessHour = useMethod('livechat:removeBusinessHour');
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const [text, setText] = useState('');
+	const handleRemoveClick = useMutableCallback(async () => {
+		try {
+			await removeBusinessHour(_id, type);
+		} catch (error) {
+			console.log(error);
+		}
+		reload();
+	});
 
-	const handleChange = useMutableCallback((event) => setText(event.currentTarget.value), []);
+	const handleDelete = useMutableCallback((e) => {
+		e.stopPropagation();
+		const onBusinessHour = async () => {
+			try {
+				await handleRemoveClick();
+				dispatchToastMessage({ type: 'success', message: t('Business_Hour_Removed') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			setModal();
+		};
 
-	useEffect(() => {
-		setFilter({ text });
-	}, [setFilter, text]);
+		setModal(<DeleteWarningModal onDelete={onBusinessHour} onCancel={() => setModal()}/>);
+	});
 
-	return <Box mb='x16' is='form' onSubmit={useMutableCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
-		<TextInput placeholder={t('Search_Apps')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-	</Box>;
-});
+	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText>
+		<Button small ghost title={t('Remove')} onClick={handleDelete}>
+			<Icon name='trash' size='x16'/>
+		</Button>
+	</Table.Cell>;
+}
 
 const BusinessHoursRow = memo(function BusinessHoursRow(props) {
 	const {
@@ -32,6 +58,7 @@ const BusinessHoursRow = memo(function BusinessHoursRow(props) {
 		workHours,
 		active,
 		type,
+		reload,
 	} = props;
 
 	const t = useTranslation();
@@ -61,6 +88,10 @@ const BusinessHoursRow = memo(function BusinessHoursRow(props) {
 		return acc;
 	}, []), [t, workHours]);
 
+	const preventClickPropagation = (e) => {
+		e.stopPropagation();
+	};
+
 	return <Table.Row
 		key={_id}
 		role='link'
@@ -81,6 +112,9 @@ const BusinessHoursRow = memo(function BusinessHoursRow(props) {
 		<Table.Cell withTruncatedText>
 			{active ? t('Yes') : t('No')}
 		</Table.Cell>
+		{name && <Table.Cell withTruncatedText onClick={preventClickPropagation}>
+			<RemoveBusinessHourButton _id={_id} reload={reload} type={type}/>
+		</Table.Cell>}
 	</Table.Row>;
 });
 
@@ -88,7 +122,7 @@ const BusinessHoursTableContainer = () => {
 	const t = useTranslation();
 	const [params, setParams] = useState(() => ({ current: 0, itemsPerPage: 25, text: '' }));
 
-	const { data, state } = useEndpointDataExperimental(`livechat/business-hours.list?count=${ params.itemsPerPage }&offset=${ params.current }&name=${ params.text }`);
+	const { data, state, reload } = useEndpointDataExperimental(`livechat/business-hours.list?count=${ params.itemsPerPage }&offset=${ params.current }&name=${ params.text }`);
 
 	if (state === ENDPOINT_STATES.ERROR) {
 		return <Callout>
@@ -101,10 +135,11 @@ const BusinessHoursTableContainer = () => {
 		totalbusinessHours={data?.total}
 		params={params}
 		onChangeParams={setParams}
+		reload={reload}
 	/>;
 };
 
-export function BusinessHoursTable({ businessHours, totalbusinessHours, params, onChangeParams }) {
+export function BusinessHoursTable({ businessHours, totalbusinessHours, params, onChangeParams, reload }) {
 	const t = useTranslation();
 
 	const [ref, onMediumBreakpoint] = useResizeInlineBreakpoint([600], 200);
@@ -124,14 +159,17 @@ export function BusinessHoursTable({ businessHours, totalbusinessHours, params, 
 			<GenericTable.HeaderCell width='x100'>
 				{t('Enabled')}
 			</GenericTable.HeaderCell>
+			<GenericTable.HeaderCell width='x100'>
+				{t('Remove')}
+			</GenericTable.HeaderCell>
 		</>}
 		results={businessHours}
 		total={totalbusinessHours}
 		params={params}
 		setParams={onChangeParams}
-		FilterComponent={FilterByText}
+		renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
 	>
-		{(props) => <BusinessHoursRow key={props._id} medium={onMediumBreakpoint} {...props} />}
+		{(props) => <BusinessHoursRow key={props._id} medium={onMediumBreakpoint} reload={reload} {...props} />}
 	</GenericTable>;
 }
 

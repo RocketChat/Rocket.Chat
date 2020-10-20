@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { createRouteGroup } from '../helpers/createRouteGroup';
+import { createRouteGroup } from '../lib/createRouteGroup';
 
 export const registerAdminRoute = createRouteGroup('admin', '/admin', () => import('./AdministrationRouter'));
 
@@ -112,6 +112,11 @@ registerAdminRoute('/view-logs', {
 registerAdminRoute('/federation-dashboard', {
 	name: 'federation-dashboard',
 	lazyRouteComponent: () => import('./federationDashboard/FederationDashboardRoute'),
+});
+
+registerAdminRoute('/permissions/:context?/:_id?', {
+	name: 'admin-permissions',
+	lazyRouteComponent: () => import('./permissions/PermissionsRouter'),
 });
 
 Meteor.startup(() => {

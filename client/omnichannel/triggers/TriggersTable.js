@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useMemo } from 'react';
 
 import GenericTable from '../../components/GenericTable';
-import DeleteWarningModal from '../DeleteWarningModal';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -58,7 +58,10 @@ const TriggersRow = memo(function TriggersRow(props) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteTrigger} onCancel={() => setModal()}/>);
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteTrigger}
+			onCancel={() => setModal()}
+		/>);
 	});
 
 	return <Table.Row
@@ -79,8 +82,8 @@ const TriggersRow = memo(function TriggersRow(props) {
 			{enabled ? t('Yes') : t('No')}
 		</Table.Cell>
 		<Table.Cell withTruncatedText>
-			<Button onClick={handleDelete} small>
-				<Icon name='trash' size='x16' />
+			<Button small ghost title={t('Remove')} onClick={handleDelete}>
+				<Icon name='trash' size='x16'/>
 			</Button>
 		</Table.Cell>
 	</Table.Row>;
@@ -131,7 +134,10 @@ export function TriggersTable({ triggers, totalTriggers, params, onChangeParams,
 			<GenericTable.HeaderCell>
 				{t('Enabled')}
 			</GenericTable.HeaderCell>
-			<GenericTable.HeaderCell width='x60'/>
+			<GenericTable.HeaderCell width='x60'>
+				{t('Remove')}
+			</GenericTable.HeaderCell>
+
 		</>}
 		results={triggers}
 		total={totalTriggers}

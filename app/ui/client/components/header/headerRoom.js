@@ -33,7 +33,6 @@ Template.headerRoom.helpers({
 		const room = Rooms.findOne(this._id);
 		return !roomTypes.getConfig(room.t).isGroupChat(room);
 	},
-	isDirect() { return Rooms.findOne(this._id).t === 'd'; },
 	isToggleFavoriteButtonVisible: () => Template.instance().state.get('favorite') !== null,
 	isToggleFavoriteButtonChecked: () => Template.instance().state.get('favorite'),
 	toggleFavoriteButtonIconLabel: () => (Template.instance().state.get('favorite') ? t('Unfavorite') : t('Favorite')),
@@ -170,7 +169,7 @@ Template.headerRoom.events({
 		event.stopPropagation();
 		event.preventDefault();
 		const room = ChatRoom.findOne(this._id);
-		if (hasAllPermission('edit-room', this._id)) {
+		if (hasAllPermission('edit-room', this._id) || (room && room.t)) {
 			call('saveRoomSettings', this._id, 'encrypted', !(room && room.encrypted)).then(() => {
 				toastr.success(
 					t('Encrypted_setting_changed_successfully'),

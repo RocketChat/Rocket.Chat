@@ -30,17 +30,18 @@ export const AgentInfo = React.memo(function AgentInfo({
 		return <FormSkeleton/>;
 	}
 
-	if (error) {
+	if (error || !data || !data.user) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 
-	const { user } = data || { user: {} };
+	const { user } = data;
 	const {
 		username,
 		statusLivechat,
+		status: userStatus,
 	} = user;
 
-	const status = UserStatus.getStatus(data.status);
+	const status = UserStatus.getStatus(userStatus);
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
@@ -54,7 +55,7 @@ export const AgentInfo = React.memo(function AgentInfo({
 			<UserInfo.Username name={username} status={status} />
 
 			{statusLivechat && <>
-				<UserInfo.Label>{t('Livechat_Status')}</UserInfo.Label>
+				<UserInfo.Label>{t('Livechat_status')}</UserInfo.Label>
 				<UserInfo.Info>{t(statusLivechat)}</UserInfo.Info>
 			</>}
 

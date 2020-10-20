@@ -1,5 +1,5 @@
 import { hasPermission } from '../../app/authorization/client';
-import { createSidebarItems } from '../helpers/createSidebarItems';
+import { createSidebarItems } from '../lib/createSidebarItems';
 
 export const {
 	registerSidebarItem: registerOmnichannelSidebarItem,
@@ -11,11 +11,11 @@ export const {
 		i18nLabel: 'Current_Chats',
 		permissionGranted: () => hasPermission('view-livechat-current-chats'),
 	}, {
-		href: 'omnichannel/analytics',
+		href: 'omnichannel-analytics',
 		i18nLabel: 'Analytics',
 		permissionGranted: () => hasPermission('view-livechat-analytics'),
 	}, {
-		href: 'omnichannel/real-time-monitoring',
+		href: 'omnichannel-realTime',
 		i18nLabel: 'Real_Time_Monitoring',
 		permissionGranted: () => hasPermission('view-livechat-real-time-monitoring'),
 	}, {
@@ -44,7 +44,7 @@ export const {
 		permissionGranted: () => hasPermission('view-livechat-installation'),
 	}, {
 		href: 'omnichannel-appearance',
-		i18nLabel: 'Omnichannel_appearance',
+		i18nLabel: 'Livechat_Appearance',
 		permissionGranted: () => hasPermission('view-livechat-appearance'),
 	}, {
 		href: 'omnichannel-webhooks',

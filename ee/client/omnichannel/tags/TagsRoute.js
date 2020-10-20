@@ -2,9 +2,9 @@
 
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
-import { Table, Icon } from '@rocket.chat/fuselage';
+import { Table, Icon, Button } from '@rocket.chat/fuselage';
 
-import { Th } from '../../../../client/components/GenericTable';
+import GenericTable from '../../../../client/components/GenericTable';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../../../client/hooks/useEndpointDataExperimental';
 import { useMethod } from '../../../../client/contexts/ServerContext';
@@ -14,15 +14,18 @@ import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterC
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 import TagsPage from './TagsPage';
 import { TagEditWithData, TagNew } from './EditTag';
+import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
+import { useSetModal } from '../../../../client/contexts/ModalContext';
+import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 
 export function RemoveTagButton({ _id, reload }) {
 	const removeTag = useMethod('livechat:removeTag');
 	const tagsRoute = useRoute('omnichannel-tags');
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const t = useTranslation();
 
-
-	const handleRemoveClick = useMutableCallback(async (e) => {
-		e.preventDefault();
-		e.stopPropagation();
+	const handleRemoveClick = useMutableCallback(async () => {
 		try {
 			await removeTag(_id);
 		} catch (error) {
@@ -32,7 +35,26 @@ export function RemoveTagButton({ _id, reload }) {
 		reload();
 	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleRemoveClick} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+	const handleDelete = useMutableCallback((e) => {
+		e.stopPropagation();
+		const onDeleteAgent = async () => {
+			try {
+				await handleRemoveClick();
+				dispatchToastMessage({ type: 'success', message: t('Tag_removed') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			setModal();
+		};
+
+		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+	});
+
+	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText>
+		<Button small ghost title={t('Remove')} onClick={handleDelete}>
+			<Icon name='trash' size='x16'/>
+		</Button>
+	</Table.Cell>;
 }
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
@@ -77,9 +99,9 @@ function TagsRoute() {
 	const { data, reload } = useEndpointDataExperimental('livechat/tags.list', query) || {};
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</Th>,
-		<Th key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x200'>{t('Description')}</Th>,
-		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x200'>{t('Description')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'remove'} w='x40'>{t('Remove')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
 	const renderRow = useCallback(({ _id, name, description }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>

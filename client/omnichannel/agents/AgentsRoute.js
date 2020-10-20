@@ -1,9 +1,9 @@
 
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
-import { Box, Table, Icon } from '@rocket.chat/fuselage';
+import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
 
-import { Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
@@ -15,19 +15,48 @@ import AgentInfo from './AgentInfo';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import VerticalBar from '../../components/basic/VerticalBar';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
+import { useSetModal } from '../../contexts/ModalContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+
 
 export function RemoveAgentButton({ _id, reload }) {
 	const deleteAction = useEndpointAction('DELETE', `livechat/users/agent/${ _id }`);
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const t = useTranslation();
 
-	const handleRemoveClick = useMutableCallback(async (e) => {
-		e.preventDefault();
+
+	const handleRemoveClick = useMutableCallback(async () => {
 		const result = await deleteAction();
 		if (result.success === true) {
 			reload();
 		}
 	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleRemoveClick} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+	const handleDelete = useMutableCallback((e) => {
+		e.stopPropagation();
+		const onDeleteAgent = async () => {
+			try {
+				await handleRemoveClick();
+				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			setModal();
+		};
+
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteAgent}
+			onCancel={() => setModal()}
+		/>);
+	});
+
+	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		<Button small ghost title={t('Remove')} onClick={handleDelete}>
+			<Icon name='trash' size='x16'/>
+		</Button>
+	</Table.Cell>;
 }
 
 export function AgentInfoActions({ reload }) {
@@ -35,6 +64,8 @@ export function AgentInfoActions({ reload }) {
 	const _id = useRouteParameter('id');
 	const agentsRoute = useRoute('omnichannel-agents');
 	const deleteAction = useEndpointAction('DELETE', `livechat/users/agent/${ _id }`);
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		const result = await deleteAction();
@@ -44,13 +75,31 @@ export function AgentInfoActions({ reload }) {
 		}
 	});
 
+	const handleDelete = useMutableCallback((e) => {
+		e.stopPropagation();
+		const onDeleteAgent = async () => {
+			try {
+				await handleRemoveClick();
+				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			setModal();
+		};
+
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteAgent}
+			onCancel={() => setModal()}
+		/>);
+	});
+
 	const handleEditClick = useMutableCallback(() => agentsRoute.push({
 		context: 'edit',
 		id: _id,
 	}));
 
 	return [
-		<AgentInfo.Action key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleRemoveClick} icon={'trash'} />,
+		<AgentInfo.Action key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon={'trash'} />,
 		<AgentInfo.Action key={t('Edit')} title={t('Edit')} label={t('Edit')} onClick={handleEditClick} icon={'edit'} />,
 	];
 }
@@ -100,11 +149,11 @@ function AgentsRoute() {
 
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
-		mediaQuery && <Th key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>{t('Username')}</Th>,
-		<Th key={'email'} direction={sort[1]} active={sort[0] === 'emails.adress'} onClick={onHeaderClick} sort='emails.address' w='x120'>{t('Email')}</Th>,
-		<Th key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x120'>{t('Livechat_status')}</Th>,
-		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</GenericTable.HeaderCell>,
+		mediaQuery && <GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>{t('Username')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'email'} direction={sort[1]} active={sort[0] === 'emails.adress'} onClick={onHeaderClick} sort='emails.address' w='x120'>{t('Email')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x120'>{t('Livechat_status')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'remove'} w='x40'>{t('Remove')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const renderRow = useCallback(({ emails, _id, username, name, avatarETag, statusLivechat }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
