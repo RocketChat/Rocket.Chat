@@ -134,10 +134,22 @@ export class AppLivechatBridge {
 			currentRoom,
 		} = transferData;
 
+		const appUser = Users.findOneByAppId(appId);
+		if (!appUser) {
+			throw new Error('Invalid app user, cannot transfer');
+		}
+		const { _id, username, name, type } = appUser;
+		const transferredBy = {
+			_id,
+			username,
+			name,
+			type,
+		};
+
 		return Livechat.transfer(
 			this.orch.getConverters().get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
-			{ userId: targetAgent.id, departmentId },
+			{ userId: targetAgent ? targetAgent.id : undefined, departmentId, transferredBy },
 		);
 	}
 
@@ -179,5 +191,11 @@ export class AppLivechatBridge {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat departments.`);
 
 		return this.orch.getConverters().get('departments').convertDepartment(LivechatDepartment.findOneByIdOrName(value));
+	}
+
+	async setCustomFields(data, appId) {
+		this.orch.debugLog(`The App ${ appId } is setting livechat visitor's custom fields.`);
+
+		return Livechat.setCustomFields(data);
 	}
 }

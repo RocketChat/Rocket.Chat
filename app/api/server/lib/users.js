@@ -1,3 +1,5 @@
+import s from 'underscore.string';
+
 import { Users } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -11,7 +13,9 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 		fields: {
 			name: 1,
 			username: 1,
+			nickname: 1,
 			status: 1,
+			avatarETag: 1,
 		},
 		sort: {
 			username: 1,
@@ -19,7 +23,7 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 		limit: 10,
 	};
 
-	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
+	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(new RegExp(s.escapeRegExp(selector.term), 'i'), exceptions, conditions, options).toArray();
 
 	return {
 		items: users,

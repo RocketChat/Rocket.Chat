@@ -11,6 +11,7 @@ export class LivechatDepartmentAgents extends Base {
 		super('livechat_department_agents');
 
 		this.tryEnsureIndex({ departmentId: 1 });
+		this.tryEnsureIndex({ departmentEnabled: 1 });
 		this.tryEnsureIndex({ agentId: 1 });
 		this.tryEnsureIndex({ username: 1 });
 	}
@@ -23,6 +24,10 @@ export class LivechatDepartmentAgents extends Base {
 		return this.find({ agentId });
 	}
 
+	findOneByAgentIdAndDepartmentId(agentId, departmentId) {
+		return this.findOne({ agentId, departmentId });
+	}
+
 	saveAgent(agent) {
 		return this.upsert({
 			agentId: agent.agentId,
@@ -30,6 +35,7 @@ export class LivechatDepartmentAgents extends Base {
 		}, {
 			$set: {
 				username: agent.username,
+				departmentEnabled: agent.departmentEnabled,
 				count: parseInt(agent.count),
 				order: parseInt(agent.order),
 			},
@@ -42,6 +48,10 @@ export class LivechatDepartmentAgents extends Base {
 
 	removeByDepartmentIdAndAgentId(departmentId, agentId) {
 		this.remove({ departmentId, agentId });
+	}
+
+	removeByDepartmentId(departmentId) {
+		this.remove({ departmentId });
 	}
 
 	getNextAgentForDepartment(departmentId) {
@@ -199,6 +209,12 @@ export class LivechatDepartmentAgents extends Base {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	setDepartmentEnabledByDepartmentId(departmentId, departmentEnabled) {
+		return this.update({ departmentId },
+			{ $set: { departmentEnabled } },
+			{ multi: true });
 	}
 }
 export default new LivechatDepartmentAgents();

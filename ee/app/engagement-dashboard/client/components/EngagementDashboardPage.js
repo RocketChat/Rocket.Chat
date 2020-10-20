@@ -1,8 +1,8 @@
-import { Box, Margins, Tabs } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Box, Tabs } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import { Page } from '../../../../../client/components/basic/Page';
+import Page from '../../../../../client/components/basic/Page';
 import { UsersTab } from './UsersTab';
 import { MessagesTab } from './MessagesTab';
 import { ChannelsTab } from './ChannelsTab';
@@ -13,7 +13,7 @@ export function EngagementDashboardPage({
 }) {
 	const t = useTranslation();
 
-	const handleTabClick = onSelectTab ? (tab) => () => onSelectTab(tab) : () => undefined;
+	const handleTabClick = useMemo(() => (onSelectTab ? (tab) => () => onSelectTab(tab) : () => undefined), [onSelectTab]);
 
 	return <Page>
 		<Page.Header title={t('Engagement_Dashboard')} />
@@ -22,14 +22,12 @@ export function EngagementDashboardPage({
 			<Tabs.Item selected={tab === 'messages'} onClick={handleTabClick('messages')}>{t('Messages')}</Tabs.Item>
 			<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>{t('Channels')}</Tabs.Item>
 		</Tabs>
-		<Page.Content style={{ padding: 0 }}>
-			<Margins all='x24'>
-				<Box>
-					{(tab === 'users' && <UsersTab />)
-				|| (tab === 'messages' && <MessagesTab />)
-				|| (tab === 'channels' && <ChannelsTab />)}
-				</Box>
-			</Margins>
-		</Page.Content>
+		<Page.ScrollableContent padding={0}>
+			<Box m='x24'>
+				{(tab === 'users' && <UsersTab />)
+			|| (tab === 'messages' && <MessagesTab />)
+			|| (tab === 'channels' && <ChannelsTab />)}
+			</Box>
+		</Page.ScrollableContent>
 	</Page>;
 }

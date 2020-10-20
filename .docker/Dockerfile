@@ -1,14 +1,33 @@
-FROM rocketchat/base:12.16.1
-
-ADD . /app
+FROM node:12.18.4-buster-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
-RUN set -x \
- && cd /app/bundle/programs/server \
- && npm install \
- && npm cache clear --force \
- && chown -R rocketchat:rocketchat /app
+# dependencies
+RUN groupadd -g 65533 -r rocketchat \
+    && useradd -u 65533 -r -g rocketchat rocketchat \
+    && mkdir -p /app/uploads \
+    && chown rocketchat:rocketchat /app/uploads \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends fontconfig
+
+ADD . /app
+
+RUN aptMark="$(apt-mark showmanual)" \
+    && apt-get install -y --no-install-recommends g++ make python ca-certificates \
+    && cd /app/bundle/programs/server \
+    && npm install \
+    && apt-mark auto '.*' > /dev/null \
+    && apt-mark manual $aptMark > /dev/null \
+    && find /usr/local -type f -executable -exec ldd '{}' ';' \
+       | awk '/=>/ { print $(NF-1) }' \
+       | sort -u \
+       | xargs -r dpkg-query --search \
+       | cut -d: -f1 \
+       | sort -u \
+       | xargs -r apt-mark manual \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && npm cache clear --force \
+    && chown -R rocketchat:rocketchat /app
 
 USER rocketchat
 

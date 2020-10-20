@@ -4,40 +4,19 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
 import { popover, AccountBox, menu, SideNav, modal } from '../../ui-utils';
-import { t, getUserPreference, handleError } from '../../utils';
+import { t } from '../../utils';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { userStatus } from '../../user-status';
 import { hasPermission } from '../../authorization/client';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
+
 
 const setStatus = (status, statusText) => {
 	AccountBox.setStatus(status, statusText);
 	callbacks.run('userStatusManuallySet', status);
 	popover.close();
-};
-
-const viewModeIcon = {
-	extended: 'th-list',
-	medium: 'list',
-	condensed: 'list-alt',
-};
-
-const extendedViewOption = (user) => {
-	if (settings.get('Store_Last_Message')) {
-		return {
-			icon: viewModeIcon.extended,
-			name: t('Extended'),
-			modifier: getUserPreference(user, 'sidebarViewMode') === 'extended' ? 'bold' : null,
-			action: () => {
-				Meteor.call('saveUserPreferences', { sidebarViewMode: 'extended' }, function(error) {
-					if (error) {
-						return handleError(error);
-					}
-				});
-			},
-		};
-	}
 };
 
 const showToolbar = new ReactiveVar(false);
@@ -57,7 +36,15 @@ export const toolbarSearch = {
 	},
 };
 
-const toolbarButtons = (user) => [{
+const toolbarButtons = (/* user */) => [{
+	name: t('Home'),
+	icon: 'home',
+	condition: () => settings.get('Layout_Show_Home_Button'),
+	action: () => {
+		FlowRouter.go('home');
+	},
+},
+{
 	name: t('Search'),
 	icon: 'magnifier',
 	action: () => {
@@ -73,77 +60,13 @@ const toolbarButtons = (user) => [{
 	},
 },
 {
-	name: t('View_mode'),
-	icon: () => viewModeIcon[getUserPreference(user, 'sidebarViewMode') || 'condensed'],
-	hasPopup: true,
-	action: (e) => {
-		const hideAvatarSetting = getUserPreference(user, 'sidebarHideAvatar');
-		const config = {
-			columns: [
-				{
-					groups: [
-						{
-							items: [
-								extendedViewOption(user),
-								{
-									icon: viewModeIcon.medium,
-									name: t('Medium'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'medium' ? 'bold' : null,
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarViewMode: 'medium' }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-								{
-									icon: viewModeIcon.condensed,
-									name: t('Condensed'),
-									modifier: getUserPreference(user, 'sidebarViewMode') === 'condensed' ? 'bold' : null,
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarViewMode: 'condensed' }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-							],
-						},
-						{
-							items: [
-								{
-									icon: 'user-rounded',
-									name: hideAvatarSetting ? t('Show_Avatars') : t('Hide_Avatars'),
-									action: () => {
-										Meteor.call('saveUserPreferences', { sidebarHideAvatar: !hideAvatarSetting }, function(error) {
-											if (error) {
-												return handleError(error);
-											}
-										});
-									},
-								},
-							],
-						},
-					],
-				},
-			],
-			currentTarget: e.currentTarget,
-			offsetVertical: e.currentTarget.clientHeight + 10,
-		};
-
-		popover.open(config);
-	},
-},
-{
 	name: t('Sort'),
 	icon: 'sort',
 	hasPopup: true,
-	action: (e) => {
+	action: async (e) => {
 		const options = [];
 		const config = {
-			template: 'sortlist',
+			template: createTemplateForComponent('SortList', () => import('../../../client/components/SortList')),
 			currentTarget: e.currentTarget,
 			data: {
 				options,
@@ -236,8 +159,6 @@ const toolbarButtons = (user) => [{
 				type: 'open',
 				id: 'administration',
 				action: () => {
-					SideNav.setFlex('adminFlex');
-					SideNav.openFlex();
 					FlowRouter.go('admin', { group: 'info' });
 					popover.close();
 				},
@@ -253,18 +174,17 @@ const toolbarButtons = (user) => [{
 							items: AccountBox.getItems().map((item) => {
 								let action;
 
-								if (item.href) {
+								if (item.href || item.sideNav) {
 									action = () => {
-										FlowRouter.go(item.href);
-										popover.close();
-									};
-								}
-
-								if (item.sideNav) {
-									action = () => {
-										SideNav.setFlex(item.sideNav);
-										SideNav.openFlex();
-										popover.close();
+										if (item.href) {
+											FlowRouter.go(item.href);
+											popover.close();
+										}
+										if (item.sideNav) {
+											SideNav.setFlex(item.sideNav);
+											SideNav.openFlex();
+											popover.close();
+										}
 									};
 								}
 
@@ -304,7 +224,7 @@ Template.sidebarHeader.helpers({
 		} });
 	},
 	toolbarButtons() {
-		return toolbarButtons(Meteor.userId()).filter((button) => !button.condition || button.condition());
+		return toolbarButtons(/* Meteor.userId() */).filter((button) => !button.condition || button.condition());
 	},
 	showToolbar() {
 		return showToolbar.get();
@@ -391,8 +311,6 @@ Template.sidebarHeader.events({
 										type: 'open',
 										id: 'account',
 										action: () => {
-											SideNav.setFlex('accountFlex');
-											SideNav.openFlex();
 											FlowRouter.go('account');
 											popover.close();
 										},

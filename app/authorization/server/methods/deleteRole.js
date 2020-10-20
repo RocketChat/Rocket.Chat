@@ -35,6 +35,7 @@ Meteor.methods({
 				method: 'authorization:deleteRole',
 			});
 		}
+
 		const removed = Models.Roles.remove(role.name);
 		if (removed) {
 			rolesStreamer.emit('roles', {

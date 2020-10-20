@@ -20,8 +20,15 @@ Meteor.startup(() => {
 					const room = ChatRoom.findOne(Session.get('openedRoom'));
 					call('saveRoomSettings', room._id, 'encrypted', !room.encrypted);
 				},
-				order: 10,
-				condition: () => hasAllPermission('edit-room', Session.get('openedRoom')),
+				order: 13,
+				condition: () => {
+					const session = Session.get('openedRoom');
+					const room = ChatRoom.findOne(session);
+					if (room && room.t === 'd') {
+						return true;
+					}
+					return hasAllPermission('edit-room', session);
+				},
 			});
 		} else {
 			TabBar.removeButton('e2e');

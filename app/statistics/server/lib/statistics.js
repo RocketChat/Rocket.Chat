@@ -21,6 +21,8 @@ import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { Apps } from '../../../apps/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
+import { NotificationQueue } from '../../../models/server/raw';
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
 const wizardFields = [
 	'Organization_Type',
@@ -34,6 +36,8 @@ const wizardFields = [
 
 export const statistics = {
 	get: function _getStatistics() {
+		const readPreference = readSecondaryPreferred(Uploads.model.rawDatabase());
+
 		const statistics = {};
 
 		// Setup Wizard
@@ -61,6 +65,7 @@ export const statistics = {
 		// User statistics
 		statistics.totalUsers = Users.find().count();
 		statistics.activeUsers = Users.getActiveLocalUserCount();
+		statistics.activeGuests = Users.getActiveLocalGuestCount();
 		statistics.nonActiveUsers = Users.find({ active: false }).count();
 		statistics.appUsers = Users.find({ type: 'app' }).count();
 		statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
@@ -129,7 +134,9 @@ export const statistics = {
 		statistics.enterpriseReady = true;
 
 		statistics.uploadsTotal = Uploads.find().count();
-		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
+		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{
+			$group: { _id: 'total', total: { $sum: '$size' } },
+		}], { readPreference }).toArray());
 		statistics.uploadsTotalSize = result ? result.total : 0;
 
 		statistics.migration = Migrations._getControl();
@@ -154,7 +161,15 @@ export const statistics = {
 			totalActive: Apps.isInitialized() && Apps.getManager().get({ enabled: true }).length,
 		};
 
-		const integrations = Integrations.find().fetch();
+		const integrations = Promise.await(Integrations.model.rawCollection().find({}, {
+			projection: {
+				_id: 0,
+				type: 1,
+				enabled: 1,
+				scriptEnabled: 1,
+			},
+			readPreference,
+		}).toArray());
 
 		statistics.integrations = {
 			totalIntegrations: integrations.length,
@@ -164,6 +179,8 @@ export const statistics = {
 			totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing').length,
 			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
+
+		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
 
 		return statistics;
 	},

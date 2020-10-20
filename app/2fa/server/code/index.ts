@@ -43,6 +43,7 @@ export function getUserForCheck(userId: string): IUser {
 		fields: {
 			emails: 1,
 			language: 1,
+			createdAt: 1,
 			'services.totp': 1,
 			'services.email2fa': 1,
 			'services.emailCode': 1,
@@ -61,6 +62,19 @@ export function getFingerprintFromConnection(connection: IMethodConnection): str
 	return crypto.createHash('md5').update(data).digest('hex');
 }
 
+function getRememberDate(from: Date = new Date()): Date | undefined {
+	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor') as string, 10);
+
+	if (rememberFor <= 0) {
+		return;
+	}
+
+	const expires = new Date(from);
+	expires.setSeconds(expires.getSeconds() + rememberFor);
+
+	return expires;
+}
+
 export function isAuthorizedForToken(connection: IMethodConnection, user: IUser, options: ITwoFactorOptions): boolean {
 	const currentToken = Accounts._getLoginToken(connection.id);
 	const tokenObject = user.services?.resume?.loginTokens?.find((i) => i.hashedToken === currentToken);
@@ -75,6 +89,12 @@ export function isAuthorizedForToken(connection: IMethodConnection, user: IUser,
 
 	if (options.disableRememberMe === true) {
 		return false;
+	}
+
+	// remember user right after their registration
+	const rememberAfterRegistration = user.createdAt && getRememberDate(user.createdAt);
+	if (rememberAfterRegistration && rememberAfterRegistration >= new Date()) {
+		return true;
 	}
 
 	if (!tokenObject.twoFactorAuthorizedUntil || !tokenObject.twoFactorAuthorizedHash) {
@@ -95,14 +115,10 @@ export function isAuthorizedForToken(connection: IMethodConnection, user: IUser,
 export function rememberAuthorization(connection: IMethodConnection, user: IUser): void {
 	const currentToken = Accounts._getLoginToken(connection.id);
 
-	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor'));
-
-	if (rememberFor <= 0) {
+	const expires = getRememberDate();
+	if (!expires) {
 		return;
 	}
-
-	const expires = new Date();
-	expires.setSeconds(expires.getSeconds() + rememberFor);
 
 	Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(user._id, currentToken, getFingerprintFromConnection(connection), expires);
 }

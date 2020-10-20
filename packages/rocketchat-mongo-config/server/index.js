@@ -3,6 +3,22 @@ import { PassThrough } from 'stream';
 
 import { EmailTest } from 'meteor/email';
 import { Mongo } from 'meteor/mongo';
+import { HTTP } from 'meteor/http';
+
+if (!process.env.USE_NATIVE_OPLOG) {
+	Package['disable-oplog'] = {};
+}
+
+// Set default HTTP call timeout to 20s
+const envTimeout = parseInt(process.env.HTTP_DEFAULT_TIMEOUT, 10);
+const timeout = !isNaN(envTimeout) ? envTimeout : 20000;
+
+const { call } = HTTP;
+HTTP.call = function _call(method, url, options = {}, callback) {
+	const defaultTimeout = 'timeout' in options ? options : { ...options, timeout };
+
+	return call.call(HTTP, method, url, defaultTimeout, callback);
+};
 
 // FIX For TLS error see more here https://github.com/RocketChat/Rocket.Chat/issues/9316
 // TODO: Remove after NodeJS fix it, more information
@@ -11,11 +27,20 @@ import { Mongo } from 'meteor/mongo';
 // This is fixed in Node 10, but this supports LTS versions
 tls.DEFAULT_ECDH_CURVE = 'auto';
 
+const mongoConnectionOptions = {
+	// add retryWrites=false if not present in MONGO_URL
+	...!process.env.MONGO_URL.includes('retryWrites') && { retryWrites: false },
+};
+
 const mongoOptionStr = process.env.MONGO_OPTIONS;
 if (typeof mongoOptionStr !== 'undefined') {
 	const mongoOptions = JSON.parse(mongoOptionStr);
 
-	Mongo.setConnectionOptions(mongoOptions);
+	Object.assign(mongoConnectionOptions, mongoOptions);
+}
+
+if (Object.keys(mongoConnectionOptions).length > 0) {
+	Mongo.setConnectionOptions(mongoConnectionOptions);
 }
 
 process.env.HTTP_FORWARDED_COUNT = process.env.HTTP_FORWARDED_COUNT || '1';

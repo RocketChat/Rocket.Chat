@@ -9,7 +9,7 @@ export class Messages extends Base {
 	constructor() {
 		super('message');
 
-		this.tryEnsureIndex({ rid: 1, ts: 1 });
+		this.tryEnsureIndex({ rid: 1, ts: 1, _updatedAt: 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ editedAt: 1 }, { sparse: true });
@@ -172,7 +172,7 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion = true, ts, users = [], options = {}) {
+	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion = true, ts, users = [], ignoreThreads = true, options = {}) {
 		const query = {
 			rid,
 			ts,
@@ -181,6 +181,11 @@ export class Messages extends Base {
 
 		if (excludePinned) {
 			query.pinned = { $ne: true };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: 0 };
+			query.tcount = { $exists: 0 };
 		}
 
 		if (ignoreDiscussion) {
@@ -251,7 +256,6 @@ export class Messages extends Base {
 			_hidden: {
 				$ne: true,
 			},
-
 			rid: roomId,
 		};
 
@@ -443,13 +447,11 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	getLastTimestamp(options) {
-		if (options == null) { options = {}; }
-		const query = { ts: { $exists: 1 } };
+	getLastTimestamp(options = { fields: { _id: 0, ts: 1 } }) {
 		options.sort = { ts: -1 };
 		options.limit = 1;
-		const [message] = this.find(query, options).fetch();
-		return message && message.ts;
+		const [message] = this.find({}, options).fetch();
+		return message?.ts;
 	}
 
 	findByRoomIdAndMessageIds(rid, messageIds, options) {
@@ -502,6 +504,10 @@ export class Messages extends Base {
 			rid,
 			_hidden: { $ne: true },
 			t: { $exists: false },
+			$or: [
+				{ tmid: { $exists: false } },
+				{ tshow: true },
+			],
 		};
 
 		if (messageId) {
@@ -804,6 +810,29 @@ export class Messages extends Base {
 		return record;
 	}
 
+	createTranscriptHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
+		const type = 'livechat_transcript_history';
+		const record = {
+			t: type,
+			rid: roomId,
+			ts: new Date(),
+			msg: message,
+			u: {
+				_id: user._id,
+				username: user.username,
+			},
+			groupable: false,
+		};
+
+		if (settings.get('Message_Read_Receipt_Enabled')) {
+			record.unread = true;
+		}
+		Object.assign(record, extraData);
+
+		record._id = this.insertOrUpsert(record);
+		return record;
+	}
+
 	createUserJoinWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);
@@ -900,7 +929,30 @@ export class Messages extends Base {
 		return this.remove({ rid: { $in: rids } });
 	}
 
-	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = []) {
+	findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned, ignoreDiscussion = true, ts, users = [] }, options) {
+		const query = {
+			rid,
+			ts,
+			tlm: { $exists: 1 },
+			tcount: { $exists: 1 },
+		};
+
+		if (pinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (ignoreDiscussion) {
+			query.drid = { $exists: 0 };
+		}
+
+		if (users.length > 0) {
+			query['u.username'] = { $in: users };
+		}
+
+		return this.find(query, options);
+	}
+
+	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = [], ignoreThreads = true) {
 		const query = {
 			rid,
 			ts,
@@ -912,6 +964,11 @@ export class Messages extends Base {
 
 		if (ignoreDiscussion) {
 			query.drid = { $exists: 0 };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: 0 };
+			query.tcount = { $exists: 0 };
 		}
 
 		if (users.length) {

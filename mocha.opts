@@ -1,4 +1,0 @@
---require babel-mocha-es6-compiler
---require babel-polyfill
---reporter spec
---ui bdd

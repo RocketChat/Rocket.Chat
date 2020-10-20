@@ -13,9 +13,6 @@ Template.visitorForward.helpers({
 	visitor() {
 		return Template.instance().visitor.get();
 	},
-	hasDepartments() {
-		return Template.instance().departments.get().filter((department) => department.enabled === true).length > 0;
-	},
 	agentName() {
 		return this.name || this.username;
 	},
@@ -56,7 +53,8 @@ Template.visitorForward.helpers({
 		return Template.instance().onSelectDepartments;
 	},
 	departmentConditions() {
-		return { enabled: true, numAgents: { $gt: 0 } };
+		const departmentForwardRestrictions = Template.instance().departmentForwardRestrictions.get();
+		return { enabled: true, numAgents: { $gt: 0 }, ...departmentForwardRestrictions };
 	},
 });
 
@@ -66,6 +64,7 @@ Template.visitorForward.onCreated(async function() {
 	this.departments = new ReactiveVar([]);
 	this.selectedAgents = new ReactiveVar([]);
 	this.selectedDepartments = new ReactiveVar([]);
+	this.departmentForwardRestrictions = new ReactiveVar({});
 
 	this.onSelectDepartments = ({ item: department }) => {
 		department.text = department.name;
@@ -92,6 +91,12 @@ Template.visitorForward.onCreated(async function() {
 
 	this.autorun(() => {
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().roomId }));
+		const { departmentId } = this.room.get();
+		if (departmentId) {
+			Meteor.call('livechat:getDepartmentForwardRestrictions', departmentId, (err, result) => {
+				this.departmentForwardRestrictions.set(result);
+			});
+		}
 	});
 
 	const { departments } = await APIClient.v1.get('livechat/department');
@@ -105,6 +110,7 @@ Template.visitorForward.events({
 
 		const transferData = {
 			roomId: instance.room.get()._id,
+			comment: event.target.comment.value,
 		};
 
 		const [user] = instance.selectedAgents.get();

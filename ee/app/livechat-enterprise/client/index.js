@@ -1,10 +1,7 @@
 import { hasLicense } from '../../license/client';
-import './views/livechatMonitors';
-import './views/livechatUnits';
-import './views/livechatUnitForm';
+import '../lib/messageTypes';
 import './route';
-import './views/livechatTags';
-import './views/livechatTagForm';
+import './startup';
 
 hasLicense('livechat-enterprise').then((enabled) => {
 	if (!enabled) {
@@ -13,4 +10,5 @@ hasLicense('livechat-enterprise').then((enabled) => {
 
 	require('./views/app/registerCustomTemplates');
 	require('./views/livechatSideNavItems');
+	require('./views/business-hours/Multiple');
 });

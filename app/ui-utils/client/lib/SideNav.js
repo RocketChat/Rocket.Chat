@@ -32,11 +32,13 @@ export const SideNav = new class {
 		}
 
 		if (window.DISABLE_ANIMATION === true) {
+			!this.flexNav.opened && this.setFlex();
 			this.animating = false;
 			return typeof callback === 'function' && callback();
 		}
 
 		return setTimeout(() => {
+			!this.flexNav.opened && this.setFlex();
 			this.animating = false;
 			return typeof callback === 'function' && callback();
 		}, 500);
@@ -45,7 +47,7 @@ export const SideNav = new class {
 	closeFlex(callback = null) {
 		const routesNamesForRooms = roomTypes.getTypes().filter((i) => i.route).map((i) => i.route.name);
 		if (!routesNamesForRooms.includes(FlowRouter.current().route.name)) {
-			const subscription = Subscriptions.findOne({ rid: Session.get('openedRoom') });
+			const subscription = Subscriptions.findOne({ rid: Session.get('lastOpenedRoom') });
 			if (subscription) {
 				roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 			} else {
@@ -62,10 +64,7 @@ export const SideNav = new class {
 		return this.flexNav.opened;
 	}
 
-	setFlex(template, data) {
-		if (data == null) {
-			data = {};
-		}
+	setFlex(template, data = {}) {
 		Session.set('flex-nav-template', template);
 		return Session.set('flex-nav-data', data);
 	}
@@ -114,7 +113,7 @@ export const SideNav = new class {
 		return false;
 	}
 
-	openFlex(callback) {
+	openFlex(callback = () => {}) {
 		if (!this.initiated) {
 			return this.openQueue.push({
 				config: this.getFlex(),
@@ -124,7 +123,6 @@ export const SideNav = new class {
 		if (this.animating === true) {
 			return;
 		}
-		AccountBox.close();
 		this.toggleFlex(1, callback);
 		return this.focusInput();
 	}

@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 
 import { ChatRoom, Subscriptions } from '../../../models';
 import { openRoom } from '../../../ui-utils';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext } from '../../../utils';
+import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../utils';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
@@ -13,7 +13,7 @@ export class DirectMessageRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'direct',
-			path: '/direct/:rid',
+			path: '/direct/:rid/:tab?/:context?',
 		});
 	}
 
@@ -73,7 +73,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			: Subscriptions.findOne({ rid: roomData._id });
 
 		if (subscription === undefined) {
-			return console.log('roomData', roomData);
+			return;
 		}
 
 		if (settings.get('UI_Use_Real_Name') && subscription.fname) {
@@ -131,8 +131,13 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 		}
 	}
 
-	allowMemberAction(/* room, action */) {
-		return false;
+	allowMemberAction(room, action) {
+		switch (action) {
+			case RoomMemberActions.BLOCK:
+				return !this.isGroupChat(room);
+			default:
+				return false;
+		}
 	}
 
 	enableMembersListProfile() {
@@ -181,11 +186,29 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData, subData) {
-		if (roomData && this.isGroupChat(roomData)) {
+		if (!roomData && !subData) {
+			return '';
+		}
+
+		// if coming from sidenav search
+		if (roomData.name && roomData.avatarETag) {
+			return getUserAvatarURL(roomData.name, roomData.avatarETag);
+		}
+
+		if (this.isGroupChat(roomData)) {
 			return getAvatarURL({ username: roomData.uids.length + roomData.usernames.join() });
 		}
+
 		const sub = subData || Subscriptions.findOne({ rid: roomData._id }, { fields: { name: 1 } });
-		return getUserAvatarURL(sub.name || this.roomName(roomData));
+
+		if (sub && sub.name) {
+			const user = Meteor.users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } });
+			return getUserAvatarURL(user?.username || sub.name, user?.avatarETag);
+		}
+
+		if (roomData) {
+			return getUserAvatarURL(roomData.name || this.roomName(roomData)); // rooms should have no name for direct messages...
+		}
 	}
 
 	includeInDashboard() {
@@ -193,6 +216,6 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 	}
 
 	isGroupChat(room) {
-		return room.uids && room.uids.length > 2;
+		return room && room.uids && room.uids.length > 2;
 	}
 }

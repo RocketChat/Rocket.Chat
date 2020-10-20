@@ -2,6 +2,7 @@ import { Random } from 'meteor/random';
 
 import { BaseRaw } from './BaseRaw';
 import Analytics from '../models/Analytics';
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
 export class AnalyticsRaw extends BaseRaw {
 	saveMessageSent({ room, date }) {
@@ -140,6 +141,11 @@ export class AnalyticsRaw extends BaseRaw {
 		}
 		return this.col.aggregate(params).toArray();
 	}
+
+	findByTypeBeforeDate({ type, date }) {
+		return this.find({ type, date: { $lte: date } });
+	}
 }
 
-export default new AnalyticsRaw(Analytics.model.rawCollection());
+const db = Analytics.model.rawDatabase();
+export default new AnalyticsRaw(db.collection(Analytics.model._name, { readPreference: readSecondaryPreferred(db) }));

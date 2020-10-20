@@ -52,6 +52,13 @@ export interface IUserServices {
 		changedAt: Date;
 	};
 	emailCode: IUserEmailCode[];
+	saml?: {
+		inResponseTo?: string;
+		provider?: string;
+		idp?: string;
+		idpSession?: string;
+		nameID?: string;
+	};
 }
 
 export interface IUserEmail {
@@ -64,6 +71,15 @@ export interface IUserSettings {
 	preferences: {
 		[key: string]: any;
 	};
+}
+
+export interface IRole {
+	description: string;
+	mandatory2fa?: boolean;
+	name: string;
+	protected: boolean;
+	scope?: string;
+	_id: string;
 }
 
 export interface IUser {

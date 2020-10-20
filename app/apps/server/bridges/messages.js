@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 
-import { Messages, Users, Subscriptions } from '../../../models';
+import { Messages, Users, Subscriptions } from '../../../models/server';
 import { Notifications } from '../../../notifications';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
@@ -48,35 +48,39 @@ export class AppMessageBridge {
 
 		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
 
-		Notifications.notifyUser(user.id, 'message', Object.assign(msg, {
+		if (!msg) {
+			return;
+		}
+
+		Notifications.notifyUser(user.id, 'message', {
+			...msg,
 			_id: Random.id(),
 			ts: new Date(),
-			u: undefined,
-			editor: undefined,
-		}));
+		});
 	}
 
 	async notifyRoom(room, message, appId) {
 		this.orch.debugLog(`The App ${ appId } is notifying a room's users.`);
 
-		if (room) {
-			const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
-			const rmsg = Object.assign(msg, {
-				_id: Random.id(),
-				rid: room.id,
-				ts: new Date(),
-				u: undefined,
-				editor: undefined,
-			});
-
-			const users = Subscriptions.findByRoomIdWhenUserIdExists(room._id, { fields: { 'u._id': 1 } })
-				.fetch()
-				.map((s) => s.u._id);
-			Users.findByIds(users, { fields: { _id: 1 } })
-				.fetch()
-				.forEach(({ _id }) =>
-					Notifications.notifyUser(_id, 'message', rmsg),
-				);
+		if (!room || !room.id) {
+			return;
 		}
+
+		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+		const rmsg = Object.assign(msg, {
+			_id: Random.id(),
+			rid: room.id,
+			ts: new Date(),
+		});
+
+		const users = Subscriptions.findByRoomIdWhenUserIdExists(room.id, { fields: { 'u._id': 1 } })
+			.fetch()
+			.map((s) => s.u._id);
+
+		Users.findByIds(users, { fields: { _id: 1 } })
+			.fetch()
+			.forEach(({ _id }) =>
+				Notifications.notifyUser(_id, 'message', rmsg),
+			);
 	}
 }

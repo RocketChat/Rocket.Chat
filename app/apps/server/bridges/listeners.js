@@ -1,6 +1,59 @@
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
+import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
+
 export class AppListenerBridge {
 	constructor(orch) {
 		this.orch = orch;
+	}
+
+	async handleEvent(event, ...payload) {
+		const method = (() => {
+			switch (event) {
+				case AppInterface.IPreMessageSentPrevent:
+				case AppInterface.IPreMessageSentExtend:
+				case AppInterface.IPreMessageSentModify:
+				case AppInterface.IPostMessageSent:
+				case AppInterface.IPreMessageDeletePrevent:
+				case AppInterface.IPostMessageDeleted:
+				case AppInterface.IPreMessageUpdatedPrevent:
+				case AppInterface.IPreMessageUpdatedExtend:
+				case AppInterface.IPreMessageUpdatedModify:
+				case AppInterface.IPostMessageUpdated:
+					return 'messageEvent';
+				case AppInterface.IPreRoomCreatePrevent:
+				case AppInterface.IPreRoomCreateExtend:
+				case AppInterface.IPreRoomCreateModify:
+				case AppInterface.IPostRoomCreate:
+				case AppInterface.IPreRoomDeletePrevent:
+				case AppInterface.IPostRoomDeleted:
+				case AppInterface.IPreRoomUserJoined:
+				case AppInterface.IPostRoomUserJoined:
+					return 'roomEvent';
+				/**
+				 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
+				 */
+				case AppInterface.ILivechatRoomClosedHandler:
+				case AppInterface.IPostLivechatRoomStarted:
+				case AppInterface.IPostLivechatRoomClosed:
+				case AppInterface.IPostLivechatAgentAssigned:
+				case AppInterface.IPostLivechatAgentUnassigned:
+				case AppInterface.IPostLivechatRoomTransferred:
+				case AppInterface.IPostLivechatGuestSaved:
+				case AppInterface.IPostLivechatRoomSaved:
+					return 'livechatEvent';
+				case AppInterface.IUIKitInteractionHandler:
+				case AppInterface.IUIKitLivechatInteractionHandler:
+				case AppInterface.IPostExternalComponentOpened:
+				case AppInterface.IPostExternalComponentClosed:
+					return 'defaultEvent';
+			}
+		})();
+
+		return this[method](event, ...payload);
+	}
+
+	async defaultEvent(inte, payload) {
+		return this.orch.getManager().getListenerManager().executeListener(inte, payload);
 	}
 
 	async messageEvent(inte, message) {
@@ -11,56 +64,59 @@ export class AppListenerBridge {
 			return result;
 		}
 		return this.orch.getConverters().get('messages').convertAppMessage(result);
-
-		// try {
-
-		// } catch (e) {
-		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
-		// 	this.orch.debugLog(e.stack);
-		// }
 	}
 
-	async roomEvent(inte, room) {
+	async roomEvent(inte, room, ...payload) {
 		const rm = this.orch.getConverters().get('rooms').convertRoom(room);
-		const result = await this.orch.getManager().getListenerManager().executeListener(inte, rm);
+
+		const params = (() => {
+			switch (inte) {
+				case AppInterface.IPreRoomUserJoined:
+				case AppInterface.IPostRoomUserJoined:
+					const [joiningUser, invitingUser] = payload;
+					return {
+						room: rm,
+						joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser),
+						invitingUser: this.orch.getConverters().get('users').convertToApp(invitingUser),
+					};
+				default:
+					return rm;
+			}
+		})();
+
+		const result = await this.orch.getManager().getListenerManager().executeListener(inte, params);
 
 		if (typeof result === 'boolean') {
 			return result;
 		}
 		return this.orch.getConverters().get('rooms').convertAppRoom(result);
-
-		// try {
-
-		// } catch (e) {
-		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
-		// 	this.orch.debugLog(e.stack);
-		// }
 	}
 
-	async externalComponentEvent(inte, externalComponent) {
-		const result = await this.orch.getManager().getListenerManager().executeListener(inte, externalComponent);
+	async livechatEvent(inte, data) {
+		switch (inte) {
+			case AppInterface.IPostLivechatAgentAssigned:
+			case AppInterface.IPostLivechatAgentUnassigned:
+				return this.orch.getManager().getListenerManager().executeListener(inte, {
+					room: this.orch.getConverters().get('rooms').convertRoom(data.room),
+					agent: this.orch.getConverters().get('users').convertToApp(data.user),
+				});
+			case AppInterface.IPostLivechatRoomTransferred:
+				const converter = data.type === LivechatTransferEventType.AGENT ? 'users' : 'departments';
 
-		return result;
-	}
+				return this.orch.getManager().getListenerManager().executeListener(inte, {
+					type: data.type,
+					room: this.orch.getConverters().get('rooms').convertById(data.room),
+					from: this.orch.getConverters().get(converter).convertById(data.from),
+					to: this.orch.getConverters().get(converter).convertById(data.to),
+				});
+			case AppInterface.IPostLivechatGuestSaved:
+				return this.orch.getManager().getListenerManager().executeListener(inte, this.orch.getConverters().get('visitors').convertById(data));
+			case AppInterface.IPostLivechatRoomSaved:
+				return this.orch.getManager().getListenerManager().executeListener(inte, this.orch.getConverters().get('rooms').convertById(data));
+			default:
+				const room = this.orch.getConverters().get('rooms').convertRoom(data);
 
-	async uiKitInteractionEvent(inte, action) {
-		return this.orch.getManager().getListenerManager().executeListener(inte, action);
-
-		// try {
-
-		// } catch (e) {
-		// 	this.orch.debugLog(`${ e.name }: ${ e.message }`);
-		// 	this.orch.debugLog(e.stack);
-		// }
-	}
-
-	async livechatEvent(inte, room) {
-		const rm = this.orch.getConverters().get('rooms').convertRoom(room);
-		const result = await this.orch.getManager().getListenerManager().executeListener(inte, rm);
-
-		if (typeof result === 'boolean') {
-			return result;
+				return this.orch.getManager().getListenerManager().executeListener(inte, room);
 		}
-		return this.orch.getConverters().get('rooms').convertAppRoom(result);
 	}
 }

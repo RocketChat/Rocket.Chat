@@ -127,7 +127,9 @@ export class ChatMessages {
 	}
 
 	clearCurrentDraft() {
+		const hasValue = this.records[this.editing.id];
 		delete this.records[this.editing.id];
+		return !!hasValue;
 	}
 
 	resetToDraft(id) {
@@ -243,7 +245,7 @@ export class ChatMessages {
 		this.$input.setCursorPosition(cursorPosition);
 	}
 
-	async send(event, { rid, tmid, value }, done = () => {}) {
+	async send(event, { rid, tmid, value, tshow }, done = () => {}) {
 		const threadsEnabled = settings.get('Threads_enabled');
 
 		MsgTyping.stop(rid);
@@ -267,6 +269,13 @@ export class ChatMessages {
 			}
 		}
 
+		// don't add tmid or tshow if the message isn't part of a thread (it can happen if editing the main message of a thread)
+		const originalMessage = ChatMessage.findOne({ _id: this.editing.id }, { fields: { tmid: 1 }, reactive: false });
+		if (originalMessage && tmid && !originalMessage.tmid) {
+			tmid = undefined;
+			tshow = undefined;
+		}
+
 		if (msg) {
 			readMessage.readNow(rid);
 			readMessage.refreshUnreadMark(rid);
@@ -274,6 +283,7 @@ export class ChatMessages {
 			const message = await promises.run('onClientBeforeSendMessage', {
 				_id: Random.id(),
 				rid,
+				tshow,
 				tmid,
 				msg,
 			});
@@ -365,7 +375,7 @@ export class ChatMessages {
 				showCancelButton: true,
 				confirmButtonText: t('Yes'),
 				cancelButtonText: t('No'),
-				closeOnConfirm: true,
+				closeOnConfirm: false,
 			});
 
 			const contentType = 'text/plain';
@@ -374,6 +384,7 @@ export class ChatMessages {
 			const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
 			fileUpload([{ file, name: fileName }], this.input, { rid, tmid });
 		} catch (e) {
+			messageBoxState.set(this.input, msg);
 			return true;
 		}
 		return true;
@@ -509,13 +520,15 @@ export class ChatMessages {
 		const { currentTarget: input, which: keyCode } = event;
 
 		if (keyCode === keyCodes.ESCAPE && this.editing.element) {
+			event.preventDefault();
+			event.stopPropagation();
+
 			if (!this.resetToDraft(this.editing.id)) {
 				this.clearCurrentDraft();
 				this.clearEditing();
+				return true;
 			}
 
-			event.preventDefault();
-			event.stopPropagation();
 			return;
 		}
 

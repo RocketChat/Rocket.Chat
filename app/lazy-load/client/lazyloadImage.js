@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import './lazyloadImage.html';
 import { addImage } from '.';
 
-const emptyImageEncoded =	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8+/u3PQAJJAM0dIyWdgAAAABJRU5ErkJggg==';
+const emptyImageEncoded = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8+/u3PQAJJAM0dIyWdgAAAABJRU5ErkJggg==';
 
 const imgsrcs = new Set();
 
@@ -15,12 +15,17 @@ Template.lazyloadImage.helpers({
 	},
 
 	srcUrl() {
+		if (Template.instance().loaded.get()) {
+			return;
+		}
 		return this.src;
 	},
 
 	lazySrcUrl() {
 		const { preview, placeholder, src } = this;
-		if (Template.instance().loaded.get() || (!preview && !placeholder) || imgsrcs.has(src)) {
+		const { loaded } = Template.instance();
+
+		if (loaded.get() || (!preview && !placeholder) || imgsrcs.has(src)) {
 			return src;
 		}
 
