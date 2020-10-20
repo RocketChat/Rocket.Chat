@@ -137,6 +137,7 @@ const validateMessage = (message) => {
 		tshow: Boolean,
 		avatar: ValidPartialURLParam,
 		attachments: [Match.Any],
+		file: [Match.Any],
 		blocks: [Match.Any],
 	}));
 
