@@ -434,6 +434,7 @@ export const Livechat = {
 			'Message_MaxAllowedSize',
 			'Livechat_enabled',
 			'Livechat_registration_form',
+			'Livechat_start_session_on_new_chat',
 			'Livechat_allow_switching_departments',
 			'Livechat_offline_title',
 			'Livechat_offline_title_color',

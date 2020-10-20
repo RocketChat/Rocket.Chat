@@ -22,6 +22,7 @@ const NewTriggerPage = ({ onSave }) => {
 		description: '',
 		enabled: true,
 		runOnce: false,
+		registeredOnly: false,
 		conditions: {
 			name: 'page-url',
 			value: '',

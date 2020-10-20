@@ -33,6 +33,7 @@ const getInitialValues = ({
 	description,
 	enabled,
 	runOnce,
+	registeredOnly,
 	conditions: [{
 		name: condName,
 		value: condValue,
@@ -51,6 +52,7 @@ const getInitialValues = ({
 	description: description ?? '',
 	enabled: !!enabled,
 	runOnce: !!runOnce,
+	registeredOnly: !!registeredOnly,
 	conditions: {
 		name: condName ?? 'page-url',
 		value: condValue ?? '',

@@ -25,6 +25,7 @@ type TriggersFormProps = {
 		description: string;
 		enabled: boolean;
 		runOnce: boolean;
+		registeredOnly: boolean;
 		// In the future, this will be an array
 		conditions: TriggerConditions;
 		// In the future, this will be an array
@@ -35,6 +36,7 @@ type TriggersFormProps = {
 		handleDescription: (event: FormEvent<HTMLInputElement>) => void;
 		handleEnabled: (event: FormEvent<HTMLInputElement>) => void;
 		handleRunOnce: (event: FormEvent<HTMLInputElement>) => void;
+		handleRegisteredOnly: (event: FormEvent<HTMLInputElement>) => void;
 		handleConditions: (value: TriggerConditions) => void;
 		handleActions: (value: TriggerActions) => void;
 	};
@@ -48,6 +50,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 		description,
 		enabled,
 		runOnce,
+		registeredOnly,
 		conditions,
 		actions,
 	} = values;
@@ -57,6 +60,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 		handleDescription,
 		handleEnabled,
 		handleRunOnce,
+		handleRegisteredOnly,
 		handleConditions,
 		handleActions,
 	} = handlers;
@@ -168,6 +172,14 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 				<Field.Label>{t('Run_only_once_for_each_visitor')}</Field.Label>
 				<Field.Row>
 					<ToggleSwitch checked={runOnce} onChange={handleRunOnce}/>
+				</Field.Row>
+			</Box>
+		</Field>
+		<Field className={className}>
+			<Box display='flex' flexDirection='row'>
+				<Field.Label>{t('Run_for_registered_visitor_only')}</Field.Label>
+				<Field.Row>
+					<ToggleSwitch checked={registeredOnly} onChange={handleRegisteredOnly}/>
 				</Field.Row>
 			</Box>
 		</Field>
