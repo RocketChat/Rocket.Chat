@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
-import { useQueuedInquiries, useOmnichannelEnabled } from '../../../contexts/OmnichannelContext';
-import { useUserPreference, useUserSubscriptions } from '../../../contexts/UserContext';
+import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
+import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { useQueryOptions } from './useQueryOptions';
 
 

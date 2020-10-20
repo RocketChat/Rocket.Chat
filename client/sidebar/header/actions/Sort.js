@@ -4,7 +4,7 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { popover } from '../../../../app/ui-utils';
 import { createTemplateForComponent } from '../../../reactAdapters';
 
-const SortList = createTemplateForComponent('SortList', () => import('../../SortList'));
+const SortList = createTemplateForComponent('SortList', () => import('../../../components/SortList'));
 
 const config = (e) => ({
 	template: SortList,

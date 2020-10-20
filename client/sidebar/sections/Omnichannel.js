@@ -1,9 +1,9 @@
 import React from 'react';
 import { Sidebar } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useOmnichannelShowQueueLink, useOmnichannelAgentAvailable, useOmnichannelQueueLink } from '../../../contexts/OmnichannelContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useMethod } from '../../contexts/ServerContext';
+import { useOmnichannelShowQueueLink, useOmnichannelAgentAvailable, useOmnichannelQueueLink } from '../../contexts/OmnichannelContext';
 
 const OmnichannelSection = React.memo((props) => {
 	const method = useMethod('livechat:changeLivechatStatus');

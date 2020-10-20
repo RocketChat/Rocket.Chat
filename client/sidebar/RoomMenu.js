@@ -2,17 +2,17 @@ import { Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useSetting } from '../../contexts/SettingsContext';
-import { useRoute } from '../../contexts/RouterContext';
-import { RoomManager } from '../../../app/ui-utils/client/lib/RoomManager';
-import { useMethod } from '../../contexts/ServerContext';
-import { roomTypes, UiTextContext } from '../../../app/utils';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useUserSubscription, useUserId } from '../../contexts/UserContext';
-import { usePermission } from '../../contexts/AuthorizationContext';
-import { useSetModal } from '../../contexts/ModalContext';
-import WarningModal from '../../admin/apps/WarningModal';
+import { useTranslation } from '../contexts/TranslationContext';
+import { useSetting } from '../contexts/SettingsContext';
+import { useRoute } from '../contexts/RouterContext';
+import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
+import { useMethod } from '../contexts/ServerContext';
+import { roomTypes, UiTextContext } from '../../app/utils';
+import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
+import { useUserSubscription, useUserId } from '../contexts/UserContext';
+import { usePermission } from '../contexts/AuthorizationContext';
+import { useSetModal } from '../contexts/ModalContext';
+import WarningModal from '../admin/apps/WarningModal';
 
 const fields = {
 	f: 1,

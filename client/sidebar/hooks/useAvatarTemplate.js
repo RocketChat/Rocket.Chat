@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 
-import RoomAvatar from '../../basic/avatar/RoomAvatar';
-import { useUserPreference } from '../../../contexts/UserContext';
+import RoomAvatar from '../../components/basic/avatar/RoomAvatar';
+import { useUserPreference } from '../../contexts/UserContext';
 
 export const useAvatarTemplate = () => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');

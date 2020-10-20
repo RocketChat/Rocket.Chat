@@ -1,14 +1,14 @@
 import React from 'react';
-import { Box, ActionButton } from '@rocket.chat/fuselage';
+import { Box, ActionButton, Badge } from '@rocket.chat/fuselage';
 
-import Medium from './Medium';
-import * as Status from '../../basic/UserStatus';
-import UserAvatar from '../../basic/avatar/UserAvatar';
+import Extended from './Extended';
+import * as Status from '../../components/basic/UserStatus';
+import UserAvatar from '../../components/basic/avatar/UserAvatar';
 
 
 export default {
-	title: 'Sidebar/medium',
-	component: Medium,
+	title: 'Sidebar/Extended',
+	component: Extended,
 };
 
 const actions = <>
@@ -18,31 +18,44 @@ const actions = <>
 	<ActionButton icon='phone'/>
 </>;
 
-const avatar = <UserAvatar size='x28' url='https://via.placeholder.com/16' />;
+const title = <Box display='flex' flexDirection='row' w='full' alignItems='center'>
+	<Box flexGrow='1' withTruncatedText>John Doe</Box>
+	<Box fontScale='micro'>15:38</Box>
+</Box>;
+
+const subtitle = <Box display='flex' flexDirection='row' w='full' alignItems='center'>
+	<Box flexGrow='1' withTruncatedText>John Doe: test 123</Box>
+	<Badge bg='neutral-700' color='surface' flexShrink={0}>99</Badge>
+</Box>;
+
+const avatar = <UserAvatar size='x36' url='https://via.placeholder.com/16' />;
 
 export const Normal = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
-	<Medium
+	<Extended
 		clickable
-		title='John Doe'
+		title={title}
+		subtitle={subtitle}
 		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
 		avatar={avatar}
 	/>
 </Box>;
 
 export const Selected = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
-	<Medium
+	<Extended
 		clickable
 		selected
-		title='John Doe'
+		title={title}
+		subtitle={subtitle}
 		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
 		avatar={avatar}
 	/>
 </Box>;
 
 export const Menu = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
-	<Medium
+	<Extended
 		clickable
-		title='John Doe'
+		title={title}
+		subtitle={subtitle}w
 		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
 		avatar={avatar}
 		menuOptions={{
@@ -63,9 +76,10 @@ export const Menu = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4
 </Box>;
 
 export const Actions = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4'>
-	<Medium
+	<Extended
 		clickable
 		title='John Doe'
+		subtitle='John Doe: test 123'
 		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
 		avatar={avatar}
 		actions={actions}

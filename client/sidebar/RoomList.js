@@ -6,18 +6,19 @@ import { VariableSizeList as List, areEqual } from 'react-window';
 import memoize from 'memoize-one';
 
 import { usePreventDefault } from './hooks/usePreventDefault';
-import { filterMarkdown } from '../../../app/markdown/lib/markdown';
-import { ReactiveUserStatus, colors } from '../basic/UserStatus';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { roomTypes } from '../../../app/utils';
-import { useUserPreference } from '../../contexts/UserContext';
+import { filterMarkdown } from '../../app/markdown/lib/markdown';
+import { ReactiveUserStatus, colors } from '../components/basic/UserStatus';
+import { useTranslation } from '../contexts/TranslationContext';
+import { roomTypes } from '../../app/utils';
+import { useUserPreference } from '../contexts/UserContext';
 import RoomMenu from './RoomMenu';
-import { useSession } from '../../contexts/SessionContext';
+import { useSession } from '../contexts/SessionContext';
 import Omnichannel from './sections/Omnichannel';
 import { useTemplateByViewMode } from './hooks/useTemplateByViewMode';
 import { useShortcutOpenMenu } from './hooks/useShortcutOpenMenu';
 import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 import { useRoomList } from './hooks/useRoomList';
+import { useSidebarPalettColor } from './hooks/useSidebarPalettColor';
 
 const sections = {
 	Omnichannel,
@@ -98,6 +99,7 @@ export const normalizeSidebarMessage = ({ ...message }) => {
 };
 
 export default () => {
+	useSidebarPalettColor();
 	const listRef = useRef();
 	const { ref, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 

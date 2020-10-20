@@ -8,14 +8,14 @@ import { FixedSizeList as List } from 'react-window';
 import tinykeys from 'tinykeys';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { usePreventDefault } from './hooks/usePreventDefault';
+import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useMethodData, AsyncState } from '../../contexts/ServerContext';
 import { roomTypes } from '../../../app/utils';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
-import { itemSizeMap, SideBarItemTemplateWithData } from './Chats';
-import { useTemplateByViewMode } from './hooks/useTemplateByViewMode';
-import { useAvatarTemplate } from './hooks/useAvatarTemplate';
+import { itemSizeMap, SideBarItemTemplateWithData } from '../RoomList';
+import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
+import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 
 const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended) => ({
 	items,
@@ -265,9 +265,9 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		return () => {
 			unsubscribe();
 		};
-	}, [autofocus.current]);
+	}, [autofocus, changeSelection, items.length, onClose, resetCursor, setFilterValue]);
 
-	return <Box position='absolute' bg='neutral-200' h='full' display='flex' flexDirection='column' zIndex={99} w='full' className={css`left: 0; top: 0;`} ref={ref}>
+	return <Box position='absolute' rcx-sidebar h='full' display='flex' flexDirection='column' zIndex={99} w='full' className={css`left: 0; top: 0;`} ref={ref}>
 		<Sidebar.TopBar.Section role='search' is='form'>
 			<TextInput aria-owns={listId} data-qa='sidebar-search-input' ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
 		</Sidebar.TopBar.Section>

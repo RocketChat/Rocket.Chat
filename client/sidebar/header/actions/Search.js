@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import tinykeys from 'tinykeys';
 
 import { useOutsideClick } from '../../../hooks/useOutsideClick';
-import SearchList from '../SearchList';
+import SearchList from '../../search/SearchList';
 
 const Search = (props) => {
 	const [searchOpen, setSearchOpen] = useState(false);

@@ -11,8 +11,8 @@ import { roomTypes, getUserPreference } from '../../utils';
 import { Users } from '../../models';
 import { createTemplateForComponent } from '../../../client/reactAdapters';
 
-createTemplateForComponent('sidebarHeader', () => import('../../../client/components/sidebar/Header'));
-createTemplateForComponent('sidebarChats', () => import('../../../client/components/sidebar/Chats'), { renderContainerView: () => HTML.DIV({ style: 'display: flex; flex: 1 1 auto;' }) });// eslint-disable-line new-cap
+createTemplateForComponent('sidebarHeader', () => import('../../../client/sidebar/header'));
+createTemplateForComponent('sidebarChats', () => import('../../../client/sidebar/RoomList'), { renderContainerView: () => HTML.DIV({ style: 'display: flex; flex: 1 1 auto;' }) });// eslint-disable-line new-cap
 
 Template.sideNav.helpers({
 	flexTemplate() {
