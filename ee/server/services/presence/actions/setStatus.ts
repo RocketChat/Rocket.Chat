@@ -1,7 +1,9 @@
 import { processPresenceAndStatus } from '../lib/processConnectionStatus';
 import { getCollection, Collections } from '../../mongo';
+import { IUser } from '../../../../../definition/IUser';
 import { USER_STATUS } from '../../../../../definition/UserStatus';
 import { IUserSession } from '../../../../../definition/IUserSession';
+import { api } from '../../../../../server/sdk/api';
 
 export async function setStatus(uid: string, statusDefault: USER_STATUS, statusText?: string): Promise<boolean> {
 	const query = { _id: uid };
@@ -28,6 +30,14 @@ export async function setStatus(uid: string, statusDefault: USER_STATUS, statusT
 			$set: update,
 		},
 	);
+
+	if (result.modifiedCount > 0) {
+		const user = await User.findOne<IUser>(query, { projection: { username: 1 } });
+		api.broadcast('userpresence', {
+			action: 'updated',
+			user: { _id: uid, username: user?.username, status, statusText },
+		});
+	}
 
 	return !!result.modifiedCount;
 }
