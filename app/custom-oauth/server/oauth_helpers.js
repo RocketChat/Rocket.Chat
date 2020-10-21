@@ -63,7 +63,7 @@ export function mapSSOGroupsToChannels(user, identity, groupClaimName, channelsM
 							return;
 						}
 					}
-					if (groupsFromSSO.includes(ssoGroup)) {
+					if (Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
 						addUserToRoom(room._id, user);
 					}
 				}
