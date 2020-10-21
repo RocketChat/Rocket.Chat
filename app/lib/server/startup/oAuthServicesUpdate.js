@@ -53,7 +53,7 @@ function _OAuthServicesUpdate() {
 				data.rolesClaim = settings.get(`${ service.key }-roles_claim`);
 				data.groupsClaim = settings.get(`${ service.key }-groups_claim`);
 				data.channelsMap = settings.get(`${ service.key }-groups_channel_map`);
-				data.channelsAdmin = settings.get(`${ service.key }--channels_admin`);
+				data.channelsAdmin = settings.get(`${ service.key }-channels_admin`);
 				data.mergeUsers = settings.get(`${ service.key }-merge_users`);
 				data.mapChannels = settings.get(`${ service.key }-map_channels`);
 				data.mergeRoles = settings.get(`${ service.key }-merge_roles`);
