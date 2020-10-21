@@ -206,9 +206,28 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(options);
 
-	const menu = menuOptions && <Menu mi='x4' placement='bottom-start' small={false} ghost={false} flexShrink={0} key='menu' renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>} options={menuOptions}/>;
+	const menu = useMemo(() => {
+		if (!menuOptions) {
+			return null;
+		}
 
-	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
+		return <Menu
+			mi='x4'
+			placement='bottom-start'
+			small={false}
+			ghost={false}
+			flexShrink={0}
+			key='menu'
+			renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>}
+			options={menuOptions}
+		/>;
+	}, [menuOptions]);
+
+	const actions = useMemo(() => {
+		const mapAction = ([key, { label, icon, action }]) =>
+			<UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon}/>;
+		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
+	}, [actionsDefinition, menu]);
 
 	return <ButtonGroup flexGrow={0} justifyContent='center'>
 		{actions}

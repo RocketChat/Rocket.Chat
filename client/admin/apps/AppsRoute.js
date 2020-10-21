@@ -9,7 +9,7 @@ import AppDetailsPage from './AppDetailsPage';
 import MarketplacePage from './MarketplacePage';
 import AppsPage from './AppsPage';
 import AppInstallPage from './AppInstallPage';
-import AppProvider from './AppProvider';
+import AppsProvider from './AppsProvider';
 import AppLogsPage from './AppLogsPage';
 
 function AppsRoute() {
@@ -61,7 +61,7 @@ function AppsRoute() {
 		return <PageSkeleton />;
 	}
 
-	return <AppProvider>
+	return <AppsProvider>
 		{
 			(!context && isMarketPlace && <MarketplacePage />)
 		|| (!context && !isMarketPlace && <AppsPage />)
@@ -69,7 +69,7 @@ function AppsRoute() {
 		|| (context === 'logs' && <AppLogsPage id={id}/>)
 		|| (context === 'install' && <AppInstallPage />)
 		}
-	</AppProvider>;
+	</AppsProvider>;
 }
 
 export default AppsRoute;
