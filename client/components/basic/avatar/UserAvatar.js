@@ -1,7 +1,7 @@
 import React from 'react';
 
 import BaseAvatar from './BaseAvatar';
-import { useUserAvatarPath } from '../../../contexts/AvatarContext';
+import { useUserAvatarPath } from '../../../contexts/AvatarUrlContext';
 
 function UserAvatar({ username, etag, ...rest }) {
 	const getUserAvatarPath = useUserAvatarPath();

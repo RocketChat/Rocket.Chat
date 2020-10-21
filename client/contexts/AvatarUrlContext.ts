@@ -6,13 +6,13 @@ type AvatarContextValue = {
 	getUserPathAvatar: (uid: string, etag?: string) => string;
 	getRoomPathAvatar: (...args: any) => string;
 }
-const AvatarContextValueDefault: AvatarContextValue = {
+const AvatarUrlContextValueDefault: AvatarContextValue = {
 	getUserPathAvatar: () => dummy,
 	getRoomPathAvatar: () => dummy,
 };
 
-export const AvatarContext = createContext<AvatarContextValue>(AvatarContextValueDefault);
+export const AvatarUrlContext = createContext<AvatarContextValue>(AvatarUrlContextValueDefault);
 
-export const useRoomAvatarPath = () => useContext(AvatarContext).getRoomPathAvatar;
+export const useRoomAvatarPath = () => useContext(AvatarUrlContext).getRoomPathAvatar;
 
-export const useUserAvatarPath = () => useContext(AvatarContext).getUserPathAvatar;
+export const useUserAvatarPath = () => useContext(AvatarUrlContext).getUserPathAvatar;

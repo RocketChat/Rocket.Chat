@@ -13,7 +13,6 @@ import SidebarProvider from './SidebarProvider';
 import ToastMessagesProvider from './ToastMessagesProvider';
 import TranslationProvider from './TranslationProvider';
 import UserProvider from './UserProvider';
-import AvatarProvider from './AvatarProvider';
 
 
 function MeteorProvider({ children }) {
@@ -25,19 +24,17 @@ function MeteorProvider({ children }) {
 						<SidebarProvider>
 							<ToastMessagesProvider>
 								<SettingsProvider>
-									<AvatarProvider>
+									<AvatarUrlProvider>
 										<CustomSoundProvider>
-											<AvatarUrlProvider>
-												<UserProvider>
-													<AuthorizationProvider>
-														<ModalProvider>
-															{children}
-														</ModalProvider>
-													</AuthorizationProvider>
-												</UserProvider>
-											</AvatarUrlProvider>
+											<UserProvider>
+												<AuthorizationProvider>
+													<ModalProvider>
+														{children}
+													</ModalProvider>
+												</AuthorizationProvider>
+											</UserProvider>
 										</CustomSoundProvider>
-									</AvatarProvider>
+									</AvatarUrlProvider>
 								</SettingsProvider>
 							</ToastMessagesProvider>
 						</SidebarProvider>
