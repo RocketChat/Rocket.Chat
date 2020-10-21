@@ -1,34 +1,24 @@
 import React, {
-	createContext,
 	useEffect,
 	useRef,
 	useState,
-	FunctionComponent,
+	FC,
 } from 'react';
 
 import { Apps } from '../../../app/apps/client/orchestrator';
 import { AppEvents } from '../../../app/apps/client/communication';
 import { handleAPIError } from './helpers';
 import { App } from './types';
-
-export type AppDataContextValue = {
-	data: App[];
-	dataCache: any;
-	finishedLoading: boolean;
-}
-
-export const AppDataContext = createContext<AppDataContextValue>({
-	data: [],
-	dataCache: [],
-	finishedLoading: false,
-});
+import { AppsContext } from './AppsContext';
 
 type ListenersMapping = {
 	readonly [P in keyof typeof AppEvents]?: (...args: any[]) => void;
 };
 
 const registerListeners = (listeners: ListenersMapping): (() => void) => {
-	const entries = Object.entries(listeners) as [keyof typeof AppEvents, () => void][];
+	const entries = Object.entries(listeners) as Exclude<{
+		[K in keyof ListenersMapping]: [K, ListenersMapping[K]];
+	}[keyof ListenersMapping], undefined>[];
 
 	for (const [event, callback] of entries) {
 		Apps.getWsListener()?.registerListener(AppEvents[event], callback);
@@ -41,23 +31,22 @@ const registerListeners = (listeners: ListenersMapping): (() => void) => {
 	};
 };
 
-const AppProvider: FunctionComponent = ({ children }) => {
-	const [data, setData] = useState<App[]>(() => []);
+const AppsProvider: FC = ({ children }) => {
+	const [apps, setApps] = useState<App[]>(() => []);
 	const [finishedLoading, setFinishedLoading] = useState<boolean>(() => false);
-	const [dataCache, setDataCache] = useState<any>(() => []);
 
-	const ref = useRef(data);
-	ref.current = data;
+	const ref = useRef(apps);
+	ref.current = apps;
 
 	const invalidateData = (): void => {
-		setDataCache(() => []);
+		setApps((apps) => [...apps]);
 	};
 
 	const getDataCopy = (): typeof ref.current => ref.current.slice(0);
 
 	useEffect(() => {
 		const updateData = (data: App[]): void => {
-			setData(data.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)));
+			setApps(data.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)));
 			invalidateData();
 		};
 
@@ -74,7 +63,7 @@ const AppProvider: FunctionComponent = ({ children }) => {
 					version,
 					marketplaceVersion: app.version,
 				};
-				setData(updatedData);
+				setApps(updatedData);
 				invalidateData();
 			} catch (error) {
 				handleAPIError(error);
@@ -99,7 +88,7 @@ const AppProvider: FunctionComponent = ({ children }) => {
 					updatedData[index].version = updatedData[index].marketplaceVersion;
 				}
 
-				setData(updatedData);
+				setApps(updatedData);
 				invalidateData();
 			},
 			APP_STATUS_CHANGE: ({ appId, status }: {appId: string; status: unknown}): void => {
@@ -110,7 +99,7 @@ const AppProvider: FunctionComponent = ({ children }) => {
 					return;
 				}
 				app.status = status;
-				setData(updatedData);
+				setApps(updatedData);
 				invalidateData();
 			},
 			APP_SETTING_UPDATED: (): void => {
@@ -120,7 +109,7 @@ const AppProvider: FunctionComponent = ({ children }) => {
 
 		const unregisterListeners = registerListeners(listeners);
 
-		(async (): Promise<void> => {
+		const fetchData = async (): Promise<void> => {
 			try {
 				const installedApps = await Apps.getApps().then((result) => {
 					let apps: App[] = [];
@@ -167,12 +156,19 @@ const AppProvider: FunctionComponent = ({ children }) => {
 				handleAPIError(e);
 				unregisterListeners();
 			}
-		})();
+		};
+
+		fetchData();
 
 		return unregisterListeners;
-	}, [setData, setFinishedLoading]);
+	}, []);
 
-	return <AppDataContext.Provider children={children} value={{ data, dataCache, finishedLoading }} />;
+	const value = {
+		apps,
+		finishedLoading,
+	};
+
+	return <AppsContext.Provider children={children} value={value} />;
 };
 
-export default AppProvider;
+export default AppsProvider;
