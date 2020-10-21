@@ -137,7 +137,12 @@ class NetworkBroker implements IBroker {
 			}
 
 			if (lifecycle[method]) {
-				service[method] = i[method].bind(i);
+				service[method] = (): void => asyncLocalStorage.run({
+					id: '',
+					nodeID: this.broker.nodeID,
+					requestID: null,
+					broker: this,
+				}, i[method].bind(i));
 				continue;
 			}
 
