@@ -35,7 +35,6 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 
 		const unsubscribe = subscription.subscribe(() => {
 			onClose && onClose();
-			unsubscribe();
 		});
 
 		return () => {
