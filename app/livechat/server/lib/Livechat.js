@@ -36,8 +36,10 @@ import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
-import { Apps, AppEvents } from '../../../apps/server';
+import { Apps, AppEvents, LivechatNotifications } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
+
+const rooms = {};
 
 export const Livechat = {
 	Analytics,
@@ -48,6 +50,21 @@ export const Livechat = {
 			webhook: 'Webhook',
 		},
 	}),
+
+	addTypingListener(rid, callback) {
+		if (rooms[rid]) {
+			return;
+		}
+		rooms[rid] = callback;
+		return LivechatNotifications.onRoom(rid, 'typing', rooms[rid]);
+	},
+
+	removeTypingListener(rid) {
+		if (rooms[rid]) {
+			LivechatNotifications.unRoom(rid, 'typing', rooms[rid]);
+			delete rooms[rid];
+		}
+	},
 
 	online(department) {
 		if (settings.get('Livechat_accept_chats_with_no_agents')) {
@@ -380,6 +397,7 @@ export const Livechat = {
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
 			callbacks.runAsync('livechat.closeRoom', room);
+			Livechat.removeTypingListener(rid);
 		});
 
 		return true;
@@ -395,6 +413,7 @@ export const Livechat = {
 		Messages.removeByRoomId(rid);
 		Subscriptions.removeByRoomId(rid);
 		LivechatInquiry.removeByRoomId(rid);
+		Livechat.removeTypingListener(rid);
 		return LivechatRooms.removeById(rid);
 	},
 
