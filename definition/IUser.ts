@@ -118,3 +118,19 @@ export interface IUser {
 	};
 	settings?: IUserSettings;
 }
+
+export type IUserDataEvent = {
+	id: unknown;
+}
+& (
+	({
+		type: 'inserted';
+	} & IUser)
+	| ({
+		type: 'removed';
+	})
+	| ({
+		type: 'updated';
+		diff: Partial<IUser>;
+	})
+)
