@@ -74,6 +74,7 @@ import '../app/ui-login';
 import '../app/ui-master/client';
 import '../app/ui-message';
 import '../app/ui-sidenav';
+import '../app/ui-share';
 import '../app/ui-vrecord/client';
 import '../app/videobridge/client';
 import '../app/webdav/client';

@@ -5,6 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
+import { share, isShareAvailable } from '../../../utils';
 import { hide, leave } from './ChannelActions';
 import { messageBox } from './messageBox';
 import { MessageAction } from './MessageAction';
@@ -177,6 +178,23 @@ Template.popover.events({
 			button.action.call(t.data.data, e, t.data.instance);
 			popover.close();
 			return false;
+		}
+	},
+	'click [data-type="share-action"]'(e) {
+		if (isShareAvailable()) {
+			share();
+		} else {
+			popover.close();
+			const options = [];
+			const config = {
+				template: 'share',
+				currentTarget: e.target,
+				data: {
+					options,
+				},
+				offsetVertical: e.target.clientHeight + 10,
+			};
+			popover.open(config);
 		}
 	},
 	'click [data-type="sidebar-item"]'(e, instance) {

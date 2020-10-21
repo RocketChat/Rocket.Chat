@@ -46,6 +46,7 @@
 @import 'imports/components/emojiPicker.css';
 @import 'imports/components/table.css';
 @import 'imports/components/tabs.css';
+@import 'imports/components/share.css';
 
 /* Modal */
 @import 'imports/components/modal/create-channel.css';

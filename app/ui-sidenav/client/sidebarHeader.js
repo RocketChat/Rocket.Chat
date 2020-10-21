@@ -165,6 +165,12 @@ const toolbarButtons = (/* user */) => [{
 			};
 		}
 
+		const shareOption = {
+			name: t('Share'),
+			icon: 'share',
+			type: 'share-action',
+		};
+
 		const config = {
 			popoverClass: 'sidebar-header',
 			columns: [
@@ -205,6 +211,8 @@ const toolbarButtons = (/* user */) => [{
 			currentTarget: e.currentTarget,
 			offsetVertical: e.currentTarget.clientHeight + 10,
 		};
+
+		config.columns[0].groups[0].items = config.columns[0].groups[0].items.concat([shareOption]);
 
 		popover.open(config);
 	},
