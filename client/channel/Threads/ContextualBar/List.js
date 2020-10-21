@@ -169,7 +169,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 			rid: room._id,
 			name: room.name,
 		});
-	}, [room._id, room.name]);
+	}, [channelRoute, room._id, room.name]);
 
 	const formatDate = useTimeAgo();
 

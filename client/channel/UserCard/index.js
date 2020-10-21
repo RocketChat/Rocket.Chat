@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -10,8 +10,7 @@ import { Backdrop } from '../../components/basic/Backdrop';
 import * as UserStatus from '../../components/basic/UserStatus';
 import { LocalTime } from '../../components/basic/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
-import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
-import { useCurrentRoute } from '../../contexts/RouterContext';
+import { RouterContext } from '../../contexts/RouterContext';
 import { useRolesDescription } from '../../contexts/AuthorizationContext';
 
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
@@ -29,11 +28,20 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 
 	ref.current = target;
 
-	const [route, params] = useCurrentRoute();
+	const { queryCurrentRoute } = useContext(RouterContext);
 
-	useComponentDidUpdate(() => {
-		onClose && onClose();
-	}, [route, JSON.stringify(params), onClose]);
+	useEffect(() => {
+		const subscription = queryCurrentRoute();
+
+		const unsubscribe = subscription.subscribe(() => {
+			onClose && onClose();
+			unsubscribe();
+		});
+
+		return () => {
+			unsubscribe();
+		};
+	}, [onClose, queryCurrentRoute]);
 
 	const user = useMemo(() => {
 		const loading = state === ENDPOINT_STATES.LOADING;
@@ -78,9 +86,27 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions(user, rid));
 
-	const menu = menuOptions && <Menu flexShrink={0} mi='x2' key='menu' ghost={false} renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />} options={menuOptions}/>;
+	const menu = useMemo(() => {
+		if (!menuOptions) {
+			return null;
+		}
 
-	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserCard.Action key={key} title={label} aria-label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
+		return <Menu
+			flexShrink={0}
+			mi='x2'
+			key='menu'
+			ghost={false}
+			renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
+			options={menuOptions}
+		/>;
+	}, [menuOptions]);
+
+	const actions = useMemo(() => {
+		const mapAction = ([key, { label, icon, action }]) =>
+			<UserCard.Action key={key} title={label} aria-label={label} onClick={action} icon={icon}/>;
+
+		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
+	}, [actionsDefinition, menu]);
 
 	return (<>
 		<Backdrop bg='transparent' onClick={onClose}/>
