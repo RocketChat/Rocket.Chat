@@ -3,11 +3,11 @@ import { useMemo } from 'react';
 import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { useQueryOptions } from './useQueryOptions';
-
+import { ISubscription } from '../../../definition/ISubscription';
 
 const query = { open: { $ne: false } };
 
-export const useRoomList = () => {
+export const useRoomList = (): Array<ISubscription> => {
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
@@ -75,5 +75,5 @@ export const useRoomList = () => {
 		sidebarGroupByType && direct.size && groups.set('Direct', direct);
 		!sidebarGroupByType && groups.set('Conversations', conversation);
 		return [...groups.entries()].flatMap(([key, group]) => [key, ...group]);
-	}, [rooms, showOmnichannel, inquiries.enabled, inquiries.queue, favoritesEnabled, sidebarShowUnread, showDiscussion, sidebarGroupByType]);
+	}, [rooms, showOmnichannel, inquiries.enabled, inquiries.enabled && inquiries.queue, sidebarShowUnread, favoritesEnabled, showDiscussion, sidebarGroupByType]);
 };

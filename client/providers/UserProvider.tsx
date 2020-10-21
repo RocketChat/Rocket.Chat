@@ -6,6 +6,7 @@ import { UserContext } from '../contexts/UserContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 import { Subscriptions, Rooms } from '../../app/models/client';
+import { ISubscription } from '../../definition/ISubscription';
 
 const getUserId = (): string | null => Meteor.userId();
 
@@ -33,8 +34,8 @@ const UserProvider: FC = ({ children }) => {
 		queryPreference: createReactiveSubscriptionFactory(
 			(key, defaultValue) => getUserPreference(userId, key, defaultValue),
 		),
-		querySubscription: createReactiveSubscriptionFactory((query, fields) => Subscriptions.findOne(query, { fields })),
-		querySubscriptions: createReactiveSubscriptionFactory((query, options) => (userId ? Subscriptions : Rooms).find(query, options).fetch()),
+		querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields) => Subscriptions.findOne(query, { fields })),
+		querySubscriptions: createReactiveSubscriptionFactory<Array<ISubscription> | []>((query, options) => (userId ? Subscriptions : Rooms).find(query, options).fetch()),
 	}), [userId, user]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;

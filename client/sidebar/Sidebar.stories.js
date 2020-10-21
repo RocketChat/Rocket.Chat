@@ -1,19 +1,19 @@
 import React from 'react';
 
-import Header from './Header';
-import Chats from './Chats';
+import Header from './header';
+import RoomList from './RoomList';
 // import Extended from './Item/Extended';
 // import RoomAvatar from '../basic/avatar/RoomAvatar';
-import { UserContext } from '../../contexts/UserContext';
-import { SettingsContext } from '../../contexts/SettingsContext';
+import { UserContext } from '../contexts/UserContext';
+import { SettingsContext } from '../contexts/SettingsContext';
 
 export default {
 	title: 'Sidebar',
 	component: '',
 };
 
-const viewModes = ['extended', 'medium', 'condensed'];
-const sortBy = ['activity', 'alphabetical'];
+// const viewModes = ['extended', 'medium', 'condensed'];
+// const sortBy = ['activity', 'alphabetical'];
 
 /*
 	[] extended
@@ -66,6 +66,7 @@ const subscriptions = [
 		rid: 'GENERAL',
 		name: 'general',
 		t: 'c',
+		type: 'c',
 		u: {
 			_id: '5yLFEABCSoqR5vozz',
 			username: 'yyy',
@@ -96,7 +97,7 @@ const subscriptions = [
 	},
 ];
 
-const t = (text) => text;
+// const t = (text) => text;
 
 const userPreferences = {
 	sidebarViewMode: 'medium',
@@ -150,7 +151,7 @@ const Sidebar = () => <>
 			<aside class='sidebar sidebar--main' role='navigation'>
 				<Header />
 				<div class='rooms-list sidebar--custom-colors' aria-label='Channels' role='region'>
-					<Chats />
+					<RoomList />
 				</div>
 			</aside>
 		</UserContext.Provider>

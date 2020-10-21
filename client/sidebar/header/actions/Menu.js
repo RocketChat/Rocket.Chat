@@ -72,7 +72,7 @@ const Menu = (props) => {
 
 	const onClick = useMutableCallback((e) => openPopover(e, accountBoxItems, t, adminOption(showAdmin, t)));
 
-	const showMenu = accountBoxItems.length > 0;
+	const showMenu = accountBoxItems?.length > 0;
 
 	return showAdmin || showMenu ? <Sidebar.TopBar.Action {...props} icon='menu' onClick={onClick}/> : null;
 };

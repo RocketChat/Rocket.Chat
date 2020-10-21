@@ -1,7 +1,10 @@
 import React, { useState, useEffect, FC, useCallback, useMemo } from 'react';
 
+
+import { OmichannelRoutingConfig } from '../../definition/OmichannelRoutingConfig';
+import { IOmnichannelAgent } from '../../definition/IOmnichannelAgent';
 import { Notifications } from '../../app/notifications/client';
-import { OmnichannelContext, OmnichannelContextValue, OmnichannelAgent, OmichannelRoutingConfig } from '../contexts/OmnichannelContext';
+import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useUser, useUserId } from '../contexts/UserContext';
 import { useMethodData, AsyncState } from '../contexts/ServerContext';
@@ -76,7 +79,7 @@ const OmnichannelEnabledProvider: FC = ({ children }) => {
 		enabled: true,
 	});
 
-	const user = useUser() as OmnichannelAgent;
+	const user = useUser() as IOmnichannelAgent;
 	const [routeConfig, status, reload] = useMethodData<OmichannelRoutingConfig>('livechat:getRoutingConfig', args);
 
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');

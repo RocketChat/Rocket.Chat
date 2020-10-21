@@ -1,29 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { createContext, useContext } from 'react';
 
-export type OmnichannelAgent = Meteor.User & {
-	statusLivechat: OmnichannelAgentStatus;
-}
-
-export type OmnichannelAgentStatus = 'available' | 'not-available';
-
-
-export type OmichannelRoutingConfig = {
-	previewRoom: boolean;
-	showConnecting: boolean;
-	showQueue: boolean;
-	showQueueLink: boolean;
-	returnQueue: boolean;
-	enableTriggerAction: boolean;
-	autoAssignAgent: boolean;
-};
-
-type Inquiries = {
-	enabled: true;
-	queue: Array<any>;
-} | {
-	enabled: false;
-}
+import { OmichannelRoutingConfig, Inquiries } from '../../definition/OmichannelRoutingConfig';
 
 export type OmnichannelContextValue = {
 	inquiries: Inquiries;
@@ -45,5 +22,5 @@ export const useOmnichannelShowQueueLink = (): boolean => useOmnichannel().showO
 export const useOmnichannelRouteConfig = (): OmichannelRoutingConfig | undefined => useOmnichannel().routeConfig;
 export const useOmnichannelAgentAvailable = (): boolean => useOmnichannel().agentAvailable;
 export const useQueuedInquiries = (): Inquiries => useOmnichannel().inquiries;
-export const useOmnichannelQueueLink = () => '/livechat-queue';
-export const useOmnichannelEnabled = () => useOmnichannel().enabled;
+export const useOmnichannelQueueLink = (): string => '/livechat-queue';
+export const useOmnichannelEnabled = (): boolean => useOmnichannel().enabled;
