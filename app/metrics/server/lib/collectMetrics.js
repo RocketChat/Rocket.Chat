@@ -6,8 +6,10 @@ import _ from 'underscore';
 import gcStats from 'prometheus-gc-stats';
 import { Meteor } from 'meteor/meteor';
 import { Facts } from 'meteor/facts-base';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { Info, getOplogInfo } from '../../../utils/server';
+import { Apps } from '../../../apps/server/orchestrator';
 import { Migrations } from '../../../migrations';
 import { settings } from '../../../settings';
 import { Statistics } from '../../../models';
@@ -61,6 +63,14 @@ const setPrometheusData = async () => {
 	metrics.totalPrivateGroupMessages.set(statistics.totalPrivateGroupMessages);
 	metrics.totalDirectMessages.set(statistics.totalDirectMessages);
 	metrics.totalLivechatMessages.set(statistics.totalLivechatMessages);
+
+	// Apps metrics
+	metrics.totalAppsInstalled.set(Apps.isInitialized() && Apps.getManager().get().length || 0);
+	metrics.totalAppsEnabled.set(Apps.isInitialized() && Apps.getManager().get({ enabled: true }).length || 0);
+	metrics.totalAppsFailed.set(
+		Apps.isInitialized() && Apps.getManager().get({ disabled: true })
+			.filter(({ app: { status } }) => status !== AppStatus.MANUALLY_DISABLED).length
+	);
 
 	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
 	metrics.oplogQueue.set(oplogQueue);

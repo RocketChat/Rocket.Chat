@@ -3,6 +3,7 @@ import os from 'os';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import {
 	Sessions,
@@ -159,7 +160,11 @@ export const statistics = {
 			enabled: Apps.isEnabled(),
 			totalInstalled: Apps.isInitialized() && Apps.getManager().get().length,
 			totalActive: Apps.isInitialized() && Apps.getManager().get({ enabled: true }).length,
+			totalFailed: Apps.isInitialized() && Apps.getManager().get({ disabled: true })
+				.filter(({ app: { status } }) => status !== AppStatus.MANUALLY_DISABLED).length,
 		};
+
+		console.log(statistics.apps);
 
 		const integrations = Promise.await(Integrations.model.rawCollection().find({}, {
 			projection: {
