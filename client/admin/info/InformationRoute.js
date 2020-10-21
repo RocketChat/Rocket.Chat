@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { useMethod, useServerInformation, useEndpoint } from '../../contexts/ServerContext';
-import { downloadJsonAsAFile } from '../../helpers/download';
-import { InformationPage } from './InformationPage';
+import { downloadJsonAs } from '../../lib/download';
+import InformationPage from './InformationPage';
 
-export const InformationRoute = React.memo(function InformationRoute() {
+const InformationRoute = React.memo(function InformationRoute() {
 	const canViewStatistics = usePermission('view-statistics');
 
 	const [isLoading, setLoading] = useState(true);
@@ -19,12 +20,6 @@ export const InformationRoute = React.memo(function InformationRoute() {
 		let didCancel = false;
 
 		const fetchStatistics = async ({ refresh = false } = {}) => {
-			if (!canViewStatistics) {
-				setStatistics(null);
-				setInstances(null);
-				return;
-			}
-
 			setLoading(true);
 
 			try {
@@ -66,18 +61,21 @@ export const InformationRoute = React.memo(function InformationRoute() {
 		if (isLoading) {
 			return;
 		}
-		downloadJsonAsAFile(statistics, 'statistics');
+		downloadJsonAs(statistics, 'statistics');
 	};
 
-	return <InformationPage
-		canViewStatistics={canViewStatistics}
-		isLoading={isLoading}
-		info={info}
-		statistics={statistics}
-		instances={instances}
-		onClickRefreshButton={handleClickRefreshButton}
-		onClickDownloadInfo={handleClickDownloadInfo}
-	/>;
+	if (canViewStatistics) {
+		return <InformationPage
+			canViewStatistics={canViewStatistics}
+			isLoading={isLoading}
+			info={info}
+			statistics={statistics}
+			instances={instances}
+			onClickRefreshButton={handleClickRefreshButton}
+			onClickDownloadInfo={handleClickDownloadInfo}
+		/>;
+	}
+	return <NotAuthorizedPage />;
 });
 
 export default InformationRoute;

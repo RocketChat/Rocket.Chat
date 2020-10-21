@@ -6,6 +6,19 @@ import _ from 'underscore';
 import { Settings } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { API } from '../api';
+import { SettingsEvents, settings } from '../../../settings/server';
+
+const fetchSettings = (query, sort, offset, count, fields) => {
+	const settings = Settings.find(query, {
+		sort: sort || { _id: 1 },
+		skip: offset,
+		limit: count,
+		fields: Object.assign({ _id: 1, value: 1, enterprise: 1, invalidValue: 1, modules: 1 }, fields),
+	}).fetch();
+
+	SettingsEvents.emit('fetch-settings', settings);
+	return settings;
+};
 
 // settings endpoints
 API.v1.addRoute('settings.public', { authRequired: false }, {
@@ -20,12 +33,7 @@ API.v1.addRoute('settings.public', { authRequired: false }, {
 
 		ourQuery = Object.assign({}, query, ourQuery);
 
-		const settings = Settings.find(ourQuery, {
-			sort: sort || { _id: 1 },
-			skip: offset,
-			limit: count,
-			fields: Object.assign({ _id: 1, value: 1 }, fields),
-		}).fetch();
+		const settings = fetchSettings(ourQuery, sort, offset, count, fields);
 
 		return API.v1.success({
 			settings,
@@ -64,7 +72,7 @@ API.v1.addRoute('settings.oauth', { authRequired: false }, {
 	},
 });
 
-API.v1.addRoute('settings.addCustomOAuth', { authRequired: true }, {
+API.v1.addRoute('settings.addCustomOAuth', { authRequired: true, twoFactorRequired: true }, {
 	post() {
 		if (!this.requestParams().name || !this.requestParams().name.trim()) {
 			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
@@ -94,12 +102,7 @@ API.v1.addRoute('settings', { authRequired: true }, {
 
 		ourQuery = Object.assign({}, query, ourQuery);
 
-		const settings = Settings.find(ourQuery, {
-			sort: sort || { _id: 1 },
-			skip: offset,
-			limit: count,
-			fields: Object.assign({ _id: 1, value: 1 }, fields),
-		}).fetch();
+		const settings = fetchSettings(ourQuery, sort, offset, count, fields);
 
 		return API.v1.success({
 			settings,
@@ -118,33 +121,40 @@ API.v1.addRoute('settings/:_id', { authRequired: true }, {
 
 		return API.v1.success(_.pick(Settings.findOneNotHiddenById(this.urlParams._id), '_id', 'value'));
 	},
-	post() {
-		if (!hasPermission(this.userId, 'edit-privileged-setting')) {
-			return API.v1.unauthorized();
-		}
+	post: {
+		twoFactorRequired: true,
+		action() {
+			if (!hasPermission(this.userId, 'edit-privileged-setting')) {
+				return API.v1.unauthorized();
+			}
 
-		// allow special handling of particular setting types
-		const setting = Settings.findOneNotHiddenById(this.urlParams._id);
-		if (setting.type === 'action' && this.bodyParams && this.bodyParams.execute) {
-			// execute the configured method
-			Meteor.call(setting.value);
-			return API.v1.success();
-		}
+			// allow special handling of particular setting types
+			const setting = Settings.findOneNotHiddenById(this.urlParams._id);
+			if (setting.type === 'action' && this.bodyParams && this.bodyParams.execute) {
+				// execute the configured method
+				Meteor.call(setting.value);
+				return API.v1.success();
+			}
 
-		if (setting.type === 'color' && this.bodyParams && this.bodyParams.editor && this.bodyParams.value) {
-			Settings.updateOptionsById(this.urlParams._id, { editor: this.bodyParams.editor });
-			Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
-			return API.v1.success();
-		}
+			if (setting.type === 'color' && this.bodyParams && this.bodyParams.editor && this.bodyParams.value) {
+				Settings.updateOptionsById(this.urlParams._id, { editor: this.bodyParams.editor });
+				Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+				return API.v1.success();
+			}
 
-		check(this.bodyParams, {
-			value: Match.Any,
-		});
-		if (Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value)) {
-			return API.v1.success();
-		}
+			check(this.bodyParams, {
+				value: Match.Any,
+			});
+			if (Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value)) {
+				settings.storeSettingValue({
+					_id: this.urlParams._id,
+					value: this.bodyParams.value,
+				});
+				return API.v1.success();
+			}
 
-		return API.v1.failure();
+			return API.v1.failure();
+		},
 	},
 });
 

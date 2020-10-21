@@ -1,4 +1,4 @@
-![](https://user-images.githubusercontent.com/551004/43643393-884b00a4-9701-11e8-94d8-14c46d1f3660.png)
+![](https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png)
 
 <h1 align="center">
   The Ultimate Open Source WebChat Platform
@@ -13,7 +13,7 @@
 [![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
-* [**NEW!** Rocket.Chat Moving to a Single Codebase](#moving-to-a-single-codebase) 
+* [**NEW!** Rocket.Chat Moving to a Single Codebase](#moving-to-a-single-codebase)
 * [Community](#community)
 * [Mobile Apps](#mobile-apps)
 * [Desktop Apps](#desktop-apps)
@@ -60,11 +60,11 @@
 
 # Moving to a Single Codebase
 
-Rocket.Chat is moving to a single codebase. Get to know the reasons and how the community will benefit from it. Read the [details](https://rocket.chat/2020/03/28/moving-to-a-single-codebase/).
+Rocket.Chat is moving to a single codebase. Get to know the reasons and how the community will benefit from it. Read the [details](https://rocket.chat/rocket-chat-is-moving-to-a-single-codebase-get-to-know-the-reasons-and-how-the-community-will-benefit-from-it/).
 
 # Help Wanted
 
-At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github  community.
+At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our GitHub  community.
 
 If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
 
@@ -78,6 +78,12 @@ Join thousands of members worldwide 24/7 in our [community server](https://open.
 [![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=dev)](https://open.rocket.chat/channel/dev) for developers needing help from the community to developing new features.
 
 You can also join the conversation on [Twitter](https://twitter.com/RocketChat) and [Facebook](https://www.facebook.com/RocketChatApp).
+
+## Share your story
+We’d love to hear about [your experience](https://survey.zohopublic.com/zs/e4BUFG) and potentially feature it on our [Blog](https://rocket.chat/case-studies/?utm_source=github&utm_medium=readme&utm_campaign=community).
+
+## Subscribe for Updates
+Once a month our marketing team releases an email update with news about product releases, company related topics, events and use cases. [Sign Up!](https://rocket.chat/newsletter/?utm_source=github&utm_medium=readme&utm_campaign=community)
 
 # Desktop Apps
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
@@ -128,7 +134,8 @@ Host your own Rocket.Chat server in a few seconds.
 ## IndieHosters
 Get your Rocket.Chat instance hosted in an "as a Service" style. You register and we manage it for you! (updates, backup...).
 
-[![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
+<!-- [![Rocket.Chat on IndieHosters](https://indiehosters.net/img/generated/logo-indiehosters-horizontal-681-4b587b638.png)](https://indiehosters.net/shop/product/rocket-chat-21) -->
+<a href="https://indiehosters.net/shop/product/rocket-chat-21"><img src="https://indiehosters.net/img/generated/logo-indiehosters-horizontal-681-4b587b638.png" alt="Rocket.Chat on IndieHosters" width="200" height="30"></a>
 
 ## Cloudron.io
 
@@ -313,7 +320,7 @@ Read about [how it all started](https://www.synopsys.com/blogs/software-security
 
 ## Issues
 
-[Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs and tasks on the roadmap.
+[GitHub Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs and tasks on the roadmap.
 
 ## Feature Requests
 
@@ -358,7 +365,7 @@ Prerequisites:
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [Meteor](https://www.meteor.com/install)
 
-> Meteor automatically installs a hidden [NodeJS v12](https://nodejs.org/download/release/v12.16.1/) and [MongoDB v4.2](https://docs.mongodb.com/manual/introduction/) to be used when you run your app in development mode using the `meteor` command.
+> Meteor automatically installs a hidden [NodeJS v12](https://nodejs.org/download/release/v12.18.4/) and [MongoDB v4.2](https://docs.mongodb.com/manual/introduction/) to be used when you run your app in development mode using the `meteor` command.
 
 Now just clone and start the app:
 

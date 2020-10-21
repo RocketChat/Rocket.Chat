@@ -567,15 +567,11 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
-	getLastSeen(options) {
-		if (options == null) {
-			options = {};
-		}
-		const query = { ls: { $exists: 1 } };
+	getLastSeen(options = { fields: { _id: 0, ls: 1 } }) {
 		options.sort = { ls: -1 };
 		options.limit = 1;
-		const [subscription] = this.find(query, options).fetch();
-		return subscription && subscription.ls;
+		const [subscription] = this.find({}, options).fetch();
+		return subscription?.ls;
 	}
 
 	findByRoomIdAndUserIds(roomId, userIds, options) {
@@ -1308,6 +1304,10 @@ export class Subscriptions extends Base {
 
 		Rooms.incUsersCountById(room._id);
 
+		if (!['d', 'l'].includes(room.t)) {
+			Users.addRoomByUserId(user._id, room._id);
+		}
+
 		return result;
 	}
 
@@ -1326,6 +1326,8 @@ export class Subscriptions extends Base {
 			Rooms.incUsersCountNotDMsByIds(roomIds, -1);
 		}
 
+		Users.removeAllRoomsByUserId(userId);
+
 		return result;
 	}
 
@@ -1339,6 +1341,8 @@ export class Subscriptions extends Base {
 		if (Match.test(result, Number) && result > 0) {
 			Rooms.incUsersCountById(roomId, - result);
 		}
+
+		Users.removeRoomByRoomId(roomId);
 
 		return result;
 	}
@@ -1355,11 +1359,17 @@ export class Subscriptions extends Base {
 			Rooms.incUsersCountById(roomId, - result);
 		}
 
+		Users.removeRoomByUserId(userId, roomId);
+
 		return result;
 	}
 
 	removeByRoomIds(rids) {
-		return this.remove({ rid: { $in: rids } });
+		const result = this.remove({ rid: { $in: rids } });
+
+		Users.removeRoomByRoomIds(rids);
+
+		return result;
 	}
 
 	// //////////////////////////////////////////////////////////////////
@@ -1382,17 +1392,23 @@ export class Subscriptions extends Base {
 		}, { multi: true });
 	}
 
-	removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid) {
-		return this.update({
-			'u._id': userId,
-			rid,
-		}, {
+	removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert = false) {
+		const update = {
 			$pull: {
 				tunread: tmid,
 				tunreadGroup: tmid,
 				tunreadUser: tmid,
 			},
-		});
+		};
+
+		if (clearAlert) {
+			update.$set = { alert: false };
+		}
+
+		return this.update({
+			'u._id': userId,
+			rid,
+		}, update);
 	}
 
 	removeAllUnreadThreadsByRoomIdAndUserId(rid, userId) {
@@ -1404,10 +1420,29 @@ export class Subscriptions extends Base {
 		const update = {
 			$unset: {
 				tunread: 1,
+				tunreadUser: 1,
+				tunreadGroup: 1,
 			},
 		};
 
 		return this.update(query, update);
+	}
+
+	removeUnreadThreadsByRoomId(rid, tunread) {
+		const query = {
+			rid,
+			tunread,
+		};
+
+		const update = {
+			$pullAll: {
+				tunread,
+				tunreadUser: tunread,
+				tunreadGroup: tunread,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 }
 

@@ -21,6 +21,8 @@ import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
 import { findUsersToAutocomplete } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
+import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
+import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -31,6 +33,7 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			username: String,
 			active: Match.Maybe(Boolean),
 			bio: Match.Maybe(String),
+			nickname: Match.Maybe(String),
 			statusText: Match.Maybe(String),
 			roles: Match.Maybe(Array),
 			joinDefaultChannels: Match.Maybe(Boolean),
@@ -96,8 +99,10 @@ API.v1.addRoute('users.deleteOwnAccount', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
+		const { confirmRelinquish = false } = this.requestParams();
+
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('deleteUserOwnAccount', password);
+			Meteor.call('deleteUserOwnAccount', password, confirmRelinquish);
 		});
 
 		return API.v1.success();
@@ -131,7 +136,8 @@ API.v1.addRoute('users.setActiveStatus', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.activeStatus, this.bodyParams.confirmRelinquish);
+			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
+			Meteor.call('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
 		});
 		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }) });
 	},
@@ -341,8 +347,12 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 									return callback(new Meteor.Error('error-not-allowed', 'Not allowed'));
 								}
 							}
-							setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
-							callback();
+							try {
+								setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
+								callback();
+							} catch (e) {
+								callback(e);
+							}
 						}));
 					}));
 					busboy.on('field', (fieldname, val) => {
@@ -408,12 +418,14 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
+					const { status } = this.bodyParams;
 					Meteor.users.update(user._id, {
 						$set: {
-							status: this.bodyParams.status,
-							statusDefault: this.bodyParams.status,
+							status,
+							statusDefault: status,
 						},
 					});
+					setUserStatus(user, status);
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
 						method: 'users.setStatus',
@@ -436,6 +448,7 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 				password: Match.Maybe(String),
 				username: Match.Maybe(String),
 				bio: Match.Maybe(String),
+				nickname: Match.Maybe(String),
 				statusText: Match.Maybe(String),
 				active: Match.Maybe(Boolean),
 				roles: Match.Maybe(Array),
@@ -456,8 +469,10 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 		}
 
 		if (typeof this.bodyParams.data.active !== 'undefined') {
+			const { userId, data: { active }, confirmRelinquish = false } = this.bodyParams;
+
 			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('setUserActiveStatus', this.bodyParams.userId, this.bodyParams.data.active);
+				Meteor.call('setUserActiveStatus', userId, active, confirmRelinquish);
 			});
 		}
 		const { fields } = this.parseJsonQuery();
@@ -473,6 +488,7 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 				email: Match.Maybe(String),
 				name: Match.Maybe(String),
 				username: Match.Maybe(String),
+				nickname: Match.Maybe(String),
 				statusText: Match.Maybe(String),
 				currentPassword: Match.Maybe(String),
 				newPassword: Match.Maybe(String),
@@ -484,6 +500,7 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 			email: this.bodyParams.data.email,
 			realname: this.bodyParams.data.name,
 			username: this.bodyParams.data.username,
+			nickname: this.bodyParams.data.nickname,
 			statusText: this.bodyParams.data.statusText,
 			newPassword: this.bodyParams.data.newPassword,
 			typedPassword: this.bodyParams.data.currentPassword,
@@ -762,6 +779,7 @@ API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
 API.v1.addRoute('users.autocomplete', { authRequired: true }, {
 	get() {
 		const { selector } = this.queryParams;
+
 		if (!selector) {
 			return API.v1.failure('The \'selector\' param is required');
 		}
@@ -776,5 +794,35 @@ API.v1.addRoute('users.autocomplete', { authRequired: true }, {
 API.v1.addRoute('users.removeOtherTokens', { authRequired: true }, {
 	post() {
 		API.v1.success(Meteor.call('removeOtherTokens'));
+	},
+});
+
+API.v1.addRoute('users.resetE2EKey', { authRequired: true, twoFactorRequired: true }, {
+	post() {
+		// reset own keys
+		if (this.isUserFromParams()) {
+			resetUserE2EEncriptionKey(this.userId, false);
+			return API.v1.success();
+		}
+
+		// reset other user keys
+		const user = this.getUserFromParams();
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+		}
+
+		if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		if (!hasPermission(Meteor.userId(), 'edit-other-user-e2ee')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		if (!resetUserE2EEncriptionKey(user._id, true)) {
+			return API.v1.failure();
+		}
+
+		return API.v1.success();
 	},
 });

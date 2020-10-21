@@ -97,7 +97,7 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Accounts_SearchFields', 'username, name, bio', {
+	this.add('Accounts_SearchFields', 'username, name, bio, nickname', {
 		type: 'string',
 	});
 	this.add('Accounts_Directory_DefaultView', 'channels', {
@@ -522,6 +522,11 @@ settings.addGroup('Accounts', function() {
 			public: true,
 		});
 
+		this.add('Accounts_RoomAvatarExternalProviderUrl', '', {
+			type: 'string',
+			public: true,
+		});
+
 		this.add('Accounts_AvatarCacheTime', 3600, {
 			type: 'int',
 			i18nDescription: 'Accounts_AvatarCacheTime_description',
@@ -529,6 +534,7 @@ settings.addGroup('Accounts', function() {
 
 		this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
 			type: 'boolean',
+			public: true,
 		});
 
 		return this.add('Accounts_SetDefaultAvatar', true, {
@@ -1171,6 +1177,10 @@ settings.addGroup('Meta', function() {
 });
 
 settings.addGroup('Mobile', function() {
+	this.add('Allow_Save_Media_to_Gallery', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.section('Screen_Lock', function() {
 		this.add('Force_Screen_Lock', false, { type: 'boolean', i18nDescription: 'Force_Screen_Lock_description', public: true });
 		this.add('Force_Screen_Lock_After', 1800, { type: 'int', i18nDescription: 'Force_Screen_Lock_After_description', enableQuery: { _id: 'Force_Screen_Lock', value: true }, public: true });
@@ -1197,10 +1207,20 @@ settings.addGroup('Push', function() {
 	this.add('Push_enable_gateway', true, {
 		type: 'boolean',
 		alert: 'Push_Setting_Requires_Restart_Alert',
-		enableQuery: {
-			_id: 'Push_enable',
-			value: true,
-		},
+		enableQuery: [
+			{
+				_id: 'Push_enable',
+				value: true,
+			},
+			{
+				_id: 'Register_Server',
+				value: true,
+			},
+			{
+				_id: 'Cloud_Service_Agree_PrivacyTerms',
+				value: true,
+			},
+		],
 	});
 	this.add('Push_gateway', 'https://gateway.rocket.chat', {
 		type: 'string',
@@ -1283,9 +1303,17 @@ settings.addGroup('Push', function() {
 			type: 'boolean',
 			public: true,
 		});
-		return this.add('Push_show_message', true, {
+		this.add('Push_show_message', true, {
 			type: 'boolean',
 			public: true,
+		});
+		this.add('Push_request_content_from_server', true, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: [
+				'push-privacy',
+			],
 		});
 	});
 });
@@ -1374,6 +1402,12 @@ settings.addGroup('Layout', function() {
 			type: 'boolean',
 			public: true,
 		});
+
+		this.add('Number_of_users_autocomplete_suggestions', 5, {
+			type: 'int',
+			public: true,
+		});
+
 		this.add('UI_Unread_Counter_Style', 'Different_Style_For_User_Mentions', {
 			type: 'select',
 			values: [
@@ -2654,7 +2688,7 @@ settings.addGroup('Setup_Wizard', function() {
 		this.add('Allow_Marketing_Emails', true, {
 			type: 'boolean',
 		});
-		this.add('Register_Server', true, {
+		this.add('Register_Server', false, {
 			type: 'boolean',
 		});
 		this.add('Organization_Email', '', {

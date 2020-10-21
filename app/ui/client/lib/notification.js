@@ -35,16 +35,17 @@ export const KonchatNotification = {
 		if (window.Notification && Notification.permission === 'granted') {
 			const message = { rid: notification.payload != null ? notification.payload.rid : undefined, msg: notification.text, notification: true };
 			return promises.run('onClientMessageReceived', message).then(function(message) {
+				const requireInteraction = getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction');
 				const n = new Notification(notification.title, {
 					icon: notification.icon || getUserAvatarURL(notification.payload.sender.username),
 					body: s.stripTags(message.msg),
 					tag: notification.payload._id,
-					silent: true,
 					canReply: true,
-					requireInteraction: getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction'),
+					silent: true,
+					requireInteraction,
 				});
 
-				const notificationDuration = notification.duration - 0 || 10;
+				const notificationDuration = !requireInteraction && (notification.duration - 0 || 10);
 				if (notificationDuration > 0) {
 					setTimeout(() => n.close(), notificationDuration * 1000);
 				}

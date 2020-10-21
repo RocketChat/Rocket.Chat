@@ -6,8 +6,8 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useMethod, useEndpoint } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { appEnabledStatuses, warnStatusChange, handleAPIError } from './helpers';
-import { CloudLoginModal } from './CloudLoginModal';
-import { IframeModal } from './IframeModal';
+import CloudLoginModal from './CloudLoginModal';
+import IframeModal from './IframeModal';
 import WarningModal from './WarningModal';
 
 function AppMenu({ app, ...props }) {
@@ -174,7 +174,7 @@ function AppMenu({ app, ...props }) {
 		handleUninstall,
 	]);
 
-	return <Menu options={menuOptions} placement='bottom left' {...props}/>;
+	return <Menu options={menuOptions} placement='bottom-start' {...props}/>;
 }
 
 export default AppMenu;

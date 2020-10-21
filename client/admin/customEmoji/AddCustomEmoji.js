@@ -6,7 +6,7 @@ import { useFileInput } from '../../hooks/useFileInput';
 import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import VerticalBar from '../../components/basic/VerticalBar';
 
-export function AddCustomEmoji({ close, onChange, ...props }) {
+function AddCustomEmoji({ close, onChange, ...props }) {
 	const t = useTranslation();
 
 	const [name, setName] = useState('');
@@ -34,7 +34,7 @@ export function AddCustomEmoji({ close, onChange, ...props }) {
 		}
 	}, [emojiFile, name, aliases, saveAction, onChange, close]);
 
-	const clickUpload = useFileInput(setEmojiPreview, 'emoji');
+	const [clickUpload] = useFileInput(setEmojiPreview, 'emoji');
 
 	return <VerticalBar.ScrollableContent {...props}>
 		<Field>
@@ -77,3 +77,5 @@ export function AddCustomEmoji({ close, onChange, ...props }) {
 		</Field>
 	</VerticalBar.ScrollableContent>;
 }
+
+export default AddCustomEmoji;

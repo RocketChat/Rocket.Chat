@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 
 import { useRole } from '../../contexts/AuthorizationContext';
-import NotAuthorizedPage from '../NotAuthorizedPage';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import FederationDashboardPage from './FederationDashboardPage';
 
-const FederationDashboardRoute: FC<{}> = () => {
+const FederationDashboardRoute: FC = () => {
 	const authorized = useRole('admin');
 
 	if (!authorized) {

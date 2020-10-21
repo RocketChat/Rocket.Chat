@@ -111,7 +111,14 @@ Template.videoFlexTab.onRendered(function() {
 			}
 
 			const domain = settings.get('Jitsi_Domain');
-			const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + rid + settings.get('Jitsi_URL_Room_Suffix');
+			let rname;
+			if (settings.get('Jitsi_URL_Room_Hash')) {
+				rname = settings.get('uniqueID') + rid;
+			} else {
+				const room = Rooms.findOne({ _id: rid });
+				rname = encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+			}
+			const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + rname + settings.get('Jitsi_URL_Room_Suffix');
 			const noSsl = !settings.get('Jitsi_SSL');
 			const isEnabledTokenAuth = settings.get('Jitsi_Enabled_TokenAuth');
 
@@ -131,7 +138,7 @@ Template.videoFlexTab.onRendered(function() {
 				return Tracker.nonreactive(async () => {
 					await start();
 
-					const queryString = accessToken && `?jwt=${ accessToken }`;
+					const queryString = accessToken ? `?jwt=${ accessToken }` : '';
 
 					const newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }${ queryString }`, jitsiRoom);
 					if (newWindow) {

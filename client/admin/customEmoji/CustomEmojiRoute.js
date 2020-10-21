@@ -1,17 +1,17 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/basic/Page';
-import NotAuthorizedPage from '../NotAuthorizedPage';
-import { CustomEmoji } from './CustomEmoji';
-import { EditCustomEmojiWithData } from './EditCustomEmoji';
-import { AddCustomEmoji } from './AddCustomEmoji';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import AddCustomEmoji from './AddCustomEmoji';
+import CustomEmoji from './CustomEmoji';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import VerticalBar from '../../components/basic/VerticalBar';
+import EditCustomEmojiWithData from './EditCustomEmojiWithData';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -23,7 +23,7 @@ export const useQuery = ({ text, itemsPerPage, current }, [column, direction], c
 // TODO: remove cache. Is necessary for data invalidation
 }), [text, itemsPerPage, current, column, direction, cache]);
 
-export default function CustomEmojiRoute({ props }) {
+function CustomEmojiRoute({ props }) {
 	const t = useTranslation();
 	const canManageEmoji = usePermission('manage-emoji');
 
@@ -41,9 +41,6 @@ export default function CustomEmojiRoute({ props }) {
 	const data = useEndpointData('emoji-custom.all', query) || { emojis: { } };
 
 	const router = useRoute(routeName);
-
-	const mobile = useMediaQuery('(max-width: 420px)');
-	const small = useMediaQuery('(max-width: 780px)');
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -93,15 +90,17 @@ export default function CustomEmojiRoute({ props }) {
 			</Page.Content>
 		</Page>
 		{ context
-			&& <VerticalBar mod-small={small} mod-mobile={mobile} style={{ width: '378px' }} qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
+			&& <VerticalBar className='contextual-bar' width='x380' qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
 				<VerticalBar.Header>
 					{ context === 'edit' && t('Custom_Emoji_Info') }
 					{ context === 'new' && t('Custom_Emoji_Add') }
-					<VerticalBar.Close onClick={close}/></VerticalBar.Header>
-				<VerticalBar.Content>
-					{context === 'edit' && <EditCustomEmojiWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
-					{context === 'new' && <AddCustomEmoji close={close} onChange={onChange}/>}
-				</VerticalBar.Content>
+					<VerticalBar.Close onClick={close}/>
+				</VerticalBar.Header>
+				{context === 'edit' && <EditCustomEmojiWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
+				{context === 'new' && <AddCustomEmoji close={close} onChange={onChange}/>}
 			</VerticalBar>}
 	</Page>;
 }
+
+
+export default CustomEmojiRoute;

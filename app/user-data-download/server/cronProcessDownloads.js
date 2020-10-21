@@ -1,4 +1,5 @@
 import fs from 'fs';
+import util from 'util';
 import path from 'path';
 
 import _ from 'underscore';
@@ -8,10 +9,16 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
 import moment from 'moment';
 
-import { settings } from '../../settings';
-import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models';
-import { FileUpload } from '../../file-upload';
+import { settings } from '../../settings/server';
+import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
+import { FileUpload } from '../../file-upload/server';
 import * as Mailer from '../../mailer';
+import { readSecondaryPreferred } from '../../../server/database/readSecondaryPreferred';
+
+const fsStat = util.promisify(fs.stat);
+const fsOpen = util.promisify(fs.open);
+const fsExists = util.promisify(fs.exists);
+const fsUnlink = util.promisify(fs.unlink);
 
 let zipFolder = '/tmp/zipFiles';
 if (settings.get('UserData_FileSystemZipPath') != null) {
@@ -39,39 +46,45 @@ const createDir = function(folderName) {
 	}
 };
 
-const loadUserSubscriptions = function(exportOperation) {
-	exportOperation.roomList = [];
+export const getRoomData = (roomId, ownUserId) => {
+	const roomData = Rooms.findOneById(roomId);
 
-	const exportUserId = exportOperation.userId;
-	const cursor = Subscriptions.findByUserId(exportUserId);
+	if (!roomData) {
+		return {};
+	}
+
+	const roomName = roomData.name && roomData.t !== 'd' ? roomData.name : roomId;
+	const [userId] = roomData.t === 'd' ? roomData.uids.filter((uid) => uid !== ownUserId) : [null];
+
+	return {
+		roomId,
+		roomName,
+		userId,
+		exportedCount: 0,
+		status: 'pending',
+		type: roomData.t,
+		targetFile: '',
+	};
+};
+
+export const loadUserSubscriptions = function(exportOperation, fileType, userId) {
+	const roomList = [];
+
+	const cursor = Subscriptions.findByUserId(userId);
 	cursor.forEach((subscription) => {
-		const roomId = subscription.rid;
-		const roomData = Rooms.findOneById(roomId);
-		const roomName = roomData && roomData.name && subscription.t !== 'd' ? roomData.name : roomId;
-		const [userId] = subscription.t === 'd' ? roomData.uids.filter((uid) => uid !== exportUserId) : [null];
-		const fileName = exportOperation.fullExport ? roomId : roomName;
-		const fileType = exportOperation.fullExport ? 'json' : 'html';
-		const targetFile = `${ fileName }.${ fileType }`;
+		const roomData = getRoomData(subscription.rid, userId);
+		const targetFile = `${ (fileType === 'json' && roomData.roomName) || subscription.rid }.${ fileType }`;
 
-		exportOperation.roomList.push({
-			roomId,
-			roomName,
-			userId,
-			exportedCount: 0,
-			status: 'pending',
+		roomList.push({
+			...roomData,
 			targetFile,
-			type: subscription.t,
 		});
 	});
 
-	if (exportOperation.fullExport) {
-		exportOperation.status = 'exporting-rooms';
-	} else {
-		exportOperation.status = 'exporting';
-	}
+	return roomList;
 };
 
-const getAttachmentData = function(attachment) {
+const getAttachmentData = function(attachment, message) {
 	const attachmentData = {
 		type: attachment.type,
 		title: attachment.title,
@@ -95,81 +108,43 @@ const getAttachmentData = function(attachment) {
 	const url = attachment.title_link || attachment.image_url || attachment.audio_url || attachment.video_url || attachment.message_link;
 	if (url) {
 		attachmentData.url = url;
+	}
 
-		const urlMatch = /\:\/\//.exec(url);
-		if (urlMatch && urlMatch.length > 0) {
-			attachmentData.remote = true;
-		} else {
-			const match = /^\/([^\/]+)\/([^\/]+)\/(.*)/.exec(url);
-
-			if (match && match[2]) {
-				const file = Uploads.findOneById(match[2]);
-
-				if (file) {
-					attachmentData.fileId = file._id;
-					attachmentData.fileName = file.name;
-				}
-			}
-		}
+	if (message.file?._id) {
+		attachmentData.fileId = message.file._id;
+		attachmentData.fileName = message.file.name;
+	} else {
+		attachmentData.remote = true;
 	}
 
 	return attachmentData;
 };
 
-const addToFileList = function(exportOperation, attachment) {
-	const targetFile = path.join(exportOperation.assetsPath, `${ attachment.fileId }-${ attachment.fileName }`);
-
-	const attachmentData = {
-		url: attachment.url,
-		copied: false,
-		remote: attachment.remote,
-		fileId: attachment.fileId,
-		fileName: attachment.fileName,
-		targetFile,
-	};
-
-	exportOperation.fileList.push(attachmentData);
-};
-
-const hideUserName = function(username, exportOperation) {
-	if (!exportOperation.userNameTable) {
-		exportOperation.userNameTable = {};
+const hideUserName = function(username, userData, usersMap) {
+	if (!usersMap.userNameTable) {
+		usersMap.userNameTable = {};
 	}
 
-	if (!exportOperation.userNameTable[username]) {
-		if (exportOperation.userData && username === exportOperation.userData.username) {
-			exportOperation.userNameTable[username] = username;
+	if (!usersMap.userNameTable[username]) {
+		if (userData && username === userData.username) {
+			usersMap.userNameTable[username] = username;
 		} else {
-			exportOperation.userNameTable[username] = `User_${ Object.keys(exportOperation.userNameTable).length + 1 }`;
+			usersMap.userNameTable[username] = `User_${ Object.keys(usersMap.userNameTable).length + 1 }`;
 		}
 	}
 
-	return exportOperation.userNameTable[username];
+	return usersMap.userNameTable[username];
 };
 
-const getMessageData = function(msg, exportOperation) {
-	const attachments = [];
-
-	if (msg.attachments) {
-		msg.attachments.forEach((attachment) => {
-			const attachmentData = getAttachmentData(attachment);
-
-			attachments.push(attachmentData);
-			addToFileList(exportOperation, attachmentData);
-		});
-	}
-
-	const username = hideUserName(msg.u.username || msg.u.name, exportOperation);
+const getMessageData = function(msg, hideUsers, userData, usersMap) {
+	const username = hideUsers ? hideUserName(msg.u.username || msg.u.name, userData, usersMap) : msg.u.username;
 
 	const messageObject = {
 		msg: msg.msg,
 		username,
 		ts: msg.ts,
+		...msg.attachments && { attachments: msg.attachments.map((attachment) => getAttachmentData(attachment, msg)) },
 	};
-
-	if (attachments && attachments.length > 0) {
-		messageObject.attachments = attachments;
-	}
 
 	if (msg.t) {
 		messageObject.type = msg.t;
@@ -182,13 +157,13 @@ const getMessageData = function(msg, exportOperation) {
 				messageObject.msg = TAPi18n.__('User_left');
 				break;
 			case 'au':
-				messageObject.msg = TAPi18n.__('User_added_by', { user_added: hideUserName(msg.msg, exportOperation), user_by: username });
+				messageObject.msg = TAPi18n.__('User_added_by', { user_added: hideUserName(msg.msg, userData, usersMap), user_by: username });
 				break;
 			case 'r':
 				messageObject.msg = TAPi18n.__('Room_name_changed', { room_name: msg.msg, user_by: username });
 				break;
 			case 'ru':
-				messageObject.msg = TAPi18n.__('User_removed_by', { user_removed: hideUserName(msg.msg, exportOperation), user_by: username });
+				messageObject.msg = TAPi18n.__('User_removed_by', { user_removed: hideUserName(msg.msg, userData, usersMap), user_by: username });
 				break;
 			case 'wm':
 				messageObject.msg = TAPi18n.__('Welcome', { user: username });
@@ -202,131 +177,94 @@ const getMessageData = function(msg, exportOperation) {
 	return messageObject;
 };
 
-const copyFile = function(exportOperation, attachmentData) {
-	if (attachmentData.copied || attachmentData.remote || !attachmentData.fileId) {
-		attachmentData.copied = true;
+export const copyFile = function(attachmentData, assetsPath) {
+	const file = Uploads.findOneById(attachmentData._id);
+	if (!file) {
 		return;
 	}
-
-	const file = Uploads.findOneById(attachmentData.fileId);
-
-	if (file) {
-		if (FileUpload.copy(file, attachmentData.targetFile)) {
-			attachmentData.copied = true;
-		}
-	}
+	FileUpload.copy(file, path.join(assetsPath, `${ attachmentData._id }-${ attachmentData.name }`));
 };
 
-const continueExportingRoom = function(exportOperation, exportOpRoomData) {
-	createDir(exportOperation.exportPath);
-	createDir(exportOperation.assetsPath);
-
-	const filePath = path.join(exportOperation.exportPath, exportOpRoomData.targetFile);
-
-	if (exportOpRoomData.status === 'pending') {
-		exportOpRoomData.status = 'exporting';
-		startFile(filePath, '');
-		if (!exportOperation.fullExport) {
-			writeToFile(filePath, '<meta http-equiv="content-type" content="text/html; charset=utf-8">');
-		}
+const exportMessageObject = (type, messageObject, messageFile) => {
+	if (type === 'json') {
+		return JSON.stringify(messageObject);
 	}
 
-	let limit = 1000;
-	if (settings.get('UserData_MessageLimitPerRequest') > 0) {
-		limit = settings.get('UserData_MessageLimitPerRequest');
+	const file = [];
+
+	const messageType = messageObject.type;
+	const timestamp = messageObject.ts ? new Date(messageObject.ts).toUTCString() : '';
+
+	const italicTypes = ['uj', 'ul', 'au', 'r', 'ru', 'wm', 'livechat-close'];
+
+	const message = italicTypes.includes(messageType) ? `<i>${ messageObject.msg }</i>` : messageObject.msg;
+
+	file.push(`<p><strong>${ messageObject.username }</strong> (${ timestamp }):<br/>`);
+	file.push(message);
+
+	if (messageFile?._id) {
+		const attachment = messageObject.attachments.find((att) => att.type === 'file' && att.title_link.includes(messageFile._id));
+
+		const description = attachment.description || attachment.title || TAPi18n.__('Message_Attachments');
+
+		const assetUrl = `./assets/${ messageFile._id }-${ messageFile.name }`;
+		const link = `<br/><a href="${ assetUrl }">${ description }</a>`;
+		file.push(link);
 	}
 
-	const skip = exportOpRoomData.exportedCount;
-	const cursor = Messages.model.rawCollection().aggregate([
-		{ $match: { rid: exportOpRoomData.roomId } },
-		{ $sort: { ts: 1 } },
-		{ $skip: skip },
-		{ $limit: limit },
-	]);
+	file.push('</p>');
 
-	const findCursor = Messages.findByRoomId(exportOpRoomData.roomId, { limit: 1 });
-	const count = findCursor.count();
+	return file.join('\n');
+};
 
-	cursor.forEach(Meteor.bindEnvironment((msg) => {
-		const messageObject = getMessageData(msg, exportOperation);
+export async function exportRoomMessages(rid, exportType, skip, limit, assetsPath, exportOpRoomData, userData, filter = {}, usersMap = {}, hideUsers = true) {
+	const query = { ...filter, rid };
 
-		if (exportOperation.fullExport) {
-			const messageString = JSON.stringify(messageObject);
-			writeToFile(filePath, `${ messageString }\n`);
-		} else {
-			const messageType = messageObject.type;
-			const timestamp = msg.ts ? new Date(msg.ts).toUTCString() : '';
-			let message = messageObject.msg;
+	const cursor = Messages.model.rawCollection().find(query, {
+		sort: { ts: 1 },
+		skip,
+		limit,
+		readPreference: readSecondaryPreferred(Messages.model.rawDatabase()),
+	});
 
-			const italicTypes = ['uj', 'ul', 'au', 'r', 'ru', 'wm', 'livechat-close'];
+	const total = await cursor.count();
+	const results = await cursor.toArray();
 
-			if (italicTypes.includes(messageType)) {
-				message = `<i>${ message }</i>`;
-			}
+	const result = {
+		total,
+		exported: results.length,
+		messages: [],
+		uploads: [],
+	};
 
-			writeToFile(filePath, `<p><strong>${ messageObject.username }</strong> (${ timestamp }):<br/>`);
-			writeToFile(filePath, message);
+	results.forEach(Meteor.bindEnvironment((msg) => {
+		const messageObject = getMessageData(msg, hideUsers, userData, usersMap);
 
-			if (messageObject.attachments && messageObject.attachments.length > 0) {
-				messageObject.attachments.forEach((attachment) => {
-					if (attachment.type === 'file') {
-						const description = attachment.description || attachment.title || TAPi18n.__('Message_Attachments');
-
-						const assetUrl = `./assets/${ attachment.fileId }-${ attachment.fileName }`;
-						const link = `<br/><a href="${ assetUrl }">${ description }</a>`;
-						writeToFile(filePath, link);
-					}
-				});
-			}
-
-			writeToFile(filePath, '</p>');
+		if (msg.file) {
+			result.uploads.push(msg.file);
 		}
 
-		exportOpRoomData.exportedCount++;
+		result.messages.push(exportMessageObject(exportType, messageObject, msg.file));
 	}));
 
-	if (count <= exportOpRoomData.exportedCount) {
-		exportOpRoomData.status = 'completed';
-		return true;
-	}
+	return result;
+}
 
-	return false;
-};
-
-const isExportComplete = function(exportOperation) {
+export const isExportComplete = function(exportOperation) {
 	const incomplete = exportOperation.roomList.some((exportOpRoomData) => exportOpRoomData.status !== 'completed');
 
 	return !incomplete;
 };
 
-const isDownloadFinished = function(exportOperation) {
-	const anyDownloadPending = exportOperation.fileList.some((fileData) => !fileData.copied && !fileData.remote);
-
-	return !anyDownloadPending;
-};
-
-const sendEmail = function(userId, fileId) {
-	const file = fileId ? UserDataFiles.findOneById(fileId) : UserDataFiles.findLastFileByUser(userId);
-	if (!file) {
-		return;
-	}
-	const userData = Users.findOneById(userId);
-
-	if (!userData || !userData.emails || !userData.emails[0] || !userData.emails[0].address) {
-		return;
-	}
+export const sendEmail = function(userData, subject, body) {
 	const emailAddress = `${ userData.name } <${ userData.emails[0].address }>`;
 	const fromAddress = settings.get('From_Email');
-	const subject = TAPi18n.__('UserDataDownload_EmailSubject');
-
-	const download_link = file.url;
-	const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link });
 
 	if (!Mailer.checkAddressFormat(emailAddress)) {
 		return;
 	}
 
-	return Mailer.sendNoWrap({
+	return Mailer.send({
 		to: emailAddress,
 		from: fromAddress,
 		subject,
@@ -334,48 +272,28 @@ const sendEmail = function(userId, fileId) {
 	});
 };
 
-const makeZipFile = function(exportOperation) {
-	createDir(zipFolder);
-
-	const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
-	if (fs.existsSync(targetFile)) {
-		exportOperation.status = 'uploading';
-		return;
-	}
-
+export const makeZipFile = function(folderToZip, targetFile) {
 	return new Promise((resolve, reject) => {
 		const output = fs.createWriteStream(targetFile);
 
-		exportOperation.generatedFile = targetFile;
-
 		const archive = archiver('zip');
 
-		output.on('close', () => {
-			exportOperation.status = 'uploading';
-			resolve();
-		});
+		output.on('close', () => resolve());
 
-		archive.on('error', (err) => {
-			reject(err);
-		});
+		archive.on('error', (err) => reject(err));
 
 		archive.pipe(output);
-		archive.directory(exportOperation.exportPath, false);
+		archive.directory(folderToZip, false);
 		archive.finalize();
 	});
 };
 
-const uploadZipFile = function(exportOperation, callback) {
-	const userDataStore = FileUpload.getStore('UserDataFiles');
-	const filePath = exportOperation.generatedFile;
-
-	const stat = Meteor.wrapAsync(fs.stat)(filePath);
-	const stream = fs.createReadStream(filePath);
+export const uploadZipFile = async function(filePath, userId, exportType) {
+	const stat = await fsStat(filePath);
 
 	const contentType = 'application/zip';
 	const { size } = stat;
 
-	const { userId } = exportOperation;
 	const user = Users.findOneById(userId);
 	let userDisplayName = userId;
 	if (user) {
@@ -383,7 +301,7 @@ const uploadZipFile = function(exportOperation, callback) {
 	}
 
 	const utcDate = new Date().toISOString().split('T')[0];
-	const fileSuffix = exportOperation.fullExport ? '-data' : '';
+	const fileSuffix = exportType === 'json' ? '-data' : '';
 
 	const newFileName = encodeURIComponent(`${ utcDate }-${ userDisplayName }${ fileSuffix }.zip`);
 
@@ -394,43 +312,81 @@ const uploadZipFile = function(exportOperation, callback) {
 		name: newFileName,
 	};
 
-	const file = userDataStore.insert(details, stream, (err) => {
-		if (err) {
-			throw new Meteor.Error('invalid-file', 'Invalid Zip File', { method: 'cronProcessDownloads.uploadZipFile' });
-		} else {
-			callback();
-		}
-	});
+	const fd = await fsOpen(filePath);
 
-	exportOperation.fileId = file._id;
+	const stream = fs.createReadStream('', { fd });
+
+	const userDataStore = FileUpload.getStore('UserDataFiles');
+
+	const file = userDataStore.insertSync(details, stream);
+
+	fs.close(fd);
+
+	return file;
 };
 
-const generateChannelsFile = function(exportOperation) {
-	if (exportOperation.fullExport) {
-		const fileName = path.join(exportOperation.exportPath, 'channels.json');
-		startFile(fileName, '');
-
-		exportOperation.roomList.forEach((roomData) => {
-			const newRoomData = {
-				roomId: roomData.roomId,
-				roomName: roomData.roomName,
-				type: roomData.type,
-			};
-
-			const messageString = JSON.stringify(newRoomData);
-			writeToFile(fileName, `${ messageString }\n`);
-		});
-	}
-
-	exportOperation.status = 'exporting';
-};
-
-const generateUserFile = function(exportOperation) {
-	if (!exportOperation.userData) {
+const generateChannelsFile = function(type, exportPath, exportOperation) {
+	if (type !== 'json') {
 		return;
 	}
 
-	const { username, name, statusText, emails, roles, services } = exportOperation.userData;
+	const fileName = path.join(exportPath, 'channels.json');
+	startFile(fileName,
+		exportOperation.roomList.map((roomData) =>
+			JSON.stringify({
+				roomId: roomData.roomId,
+				roomName: roomData.roomName,
+				type: roomData.type,
+			}),
+		).join('\n'));
+};
+
+export const exportRoomMessagesToFile = async function(exportPath, assetsPath, exportType, roomList, userData, messagesFilter = {}, usersMap = {}, hideUsers = true) {
+	createDir(exportPath);
+	createDir(assetsPath);
+
+	const result = {
+		fileList: [],
+	};
+
+	const limit = settings.get('UserData_MessageLimitPerRequest') > 0 ? settings.get('UserData_MessageLimitPerRequest') : 1000;
+	for (const exportOpRoomData of roomList) {
+		const filePath = path.join(exportPath, exportOpRoomData.targetFile);
+		if (exportOpRoomData.status === 'pending') {
+			exportOpRoomData.status = 'exporting';
+			startFile(filePath, exportType === 'html' ? '<meta http-equiv="content-type" content="text/html; charset=utf-8">' : '');
+		}
+
+		const skip = exportOpRoomData.exportedCount;
+
+		const {
+			total,
+			exported,
+			uploads,
+			messages,
+		// eslint-disable-next-line no-await-in-loop
+		} = await exportRoomMessages(exportOpRoomData.roomId, exportType, skip, limit, assetsPath, exportOpRoomData, userData, messagesFilter, usersMap, hideUsers);
+
+		result.fileList.push(...uploads);
+
+		exportOpRoomData.exportedCount += exported;
+
+		if (total <= exportOpRoomData.exportedCount) {
+			exportOpRoomData.status = 'completed';
+		}
+
+		writeToFile(filePath, `${ messages.join('\n') }\n`);
+	}
+
+	return result;
+};
+
+const generateUserFile = function(exportOperation, userData) {
+	if (!userData) {
+		return;
+	}
+
+	const { username, name, statusText, emails, roles, services } = userData;
 
 	const dataToSave = {
 		username,
@@ -474,12 +430,12 @@ const generateUserFile = function(exportOperation) {
 	}
 };
 
-const generateUserAvatarFile = function(exportOperation) {
-	if (!exportOperation.userData) {
+const generateUserAvatarFile = function(exportOperation, userData) {
+	if (!userData) {
 		return;
 	}
 
-	const file = Avatars.findOneByName(exportOperation.userData.username);
+	const file = Avatars.findOneByName(userData.username);
 	if (!file) {
 		return;
 	}
@@ -495,28 +451,48 @@ const continueExportOperation = async function(exportOperation) {
 		return;
 	}
 
+	const exportType = exportOperation.fullExport ? 'json' : 'html';
+
 	if (!exportOperation.roomList) {
-		loadUserSubscriptions(exportOperation);
+		exportOperation.roomList = loadUserSubscriptions(exportOperation, exportType, exportOperation.userId);
+
+		if (exportOperation.fullExport) {
+			exportOperation.status = 'exporting-rooms';
+		} else {
+			exportOperation.status = 'exporting';
+		}
 	}
 
 	try {
 		if (!exportOperation.generatedUserFile) {
-			generateUserFile(exportOperation);
+			generateUserFile(exportOperation, exportOperation.userData);
 		}
 
 		if (!exportOperation.generatedAvatar) {
-			generateUserAvatarFile(exportOperation);
+			generateUserAvatarFile(exportOperation, exportOperation.userData);
 		}
 
 		if (exportOperation.status === 'exporting-rooms') {
-			generateChannelsFile(exportOperation);
+			generateChannelsFile(exportType, exportOperation.exportPath, exportOperation);
+
+			exportOperation.status = 'exporting';
 		}
 
 		// Run every room on every request, to avoid missing new messages on the rooms that finished first.
 		if (exportOperation.status === 'exporting') {
-			exportOperation.roomList.forEach((exportOpRoomData) => {
-				continueExportingRoom(exportOperation, exportOpRoomData);
-			});
+			const { fileList } = await exportRoomMessagesToFile(
+				exportOperation.exportPath,
+				exportOperation.assetsPath,
+				exportType,
+				exportOperation.roomList,
+				exportOperation.userData,
+				{},
+				exportOperation.userNameTable,
+			);
+			if (!exportOperation.fileList) {
+				exportOperation.fileList = [];
+			}
+			exportOperation.fileList.push(...fileList);
 
 			if (isExportComplete(exportOperation)) {
 				exportOperation.status = 'downloading';
@@ -525,28 +501,34 @@ const continueExportOperation = async function(exportOperation) {
 
 		if (exportOperation.status === 'downloading') {
 			exportOperation.fileList.forEach((attachmentData) => {
-				copyFile(exportOperation, attachmentData);
+				copyFile(attachmentData, exportOperation.assetsPath);
 			});
 
-			if (isDownloadFinished(exportOperation)) {
-				const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
-				if (fs.existsSync(targetFile)) {
-					fs.unlinkSync(targetFile);
-				}
-
-				exportOperation.status = 'compressing';
+			const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
+			if (await fsExists(targetFile)) {
+				await fsUnlink(targetFile);
 			}
+
+			exportOperation.status = 'compressing';
 		}
 
 		if (exportOperation.status === 'compressing') {
-			await makeZipFile(exportOperation);
+			createDir(zipFolder);
+
+			exportOperation.generatedFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
+			if (!await fsExists(exportOperation.generatedFile)) {
+				await makeZipFile(exportOperation.exportPath, exportOperation.generatedFile);
+			}
+
+			exportOperation.status = 'uploading';
 		}
 
 		if (exportOperation.status === 'uploading') {
-			uploadZipFile(exportOperation, () => {
-				exportOperation.status = 'completed';
-				ExportOperations.updateOperation(exportOperation);
-			});
+			const { _id: fileId } = await uploadZipFile(exportOperation.generatedFile, exportOperation.userId, exportType);
+			exportOperation.fileId = fileId;
+
+			exportOperation.status = 'completed';
+			ExportOperations.updateOperation(exportOperation);
 		}
 
 		ExportOperations.updateOperation(exportOperation);
@@ -578,7 +560,15 @@ async function processDataDownloads() {
 	await ExportOperations.updateOperation(operation);
 
 	if (operation.status === 'completed') {
-		sendEmail(operation.userId, operation.fileId);
+		const file = operation.fileId ? UserDataFiles.findOneById(operation.fileId) : UserDataFiles.findLastFileByUser(operation.userId);
+		if (!file) {
+			return;
+		}
+
+		const subject = TAPi18n.__('UserDataDownload_EmailSubject');
+		const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: file.url });
+
+		sendEmail(operation.userData, subject, body);
 	}
 }
 

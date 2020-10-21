@@ -6,12 +6,12 @@ interface IServerStream {
 }
 
 type ServerContextValue = {
-	info: object;
+	info: {};
 	absoluteUrl: (path: string) => string;
 	callMethod: (methodName: string, ...args: any[]) => Promise<any>;
 	callEndpoint: (httpMethod: 'GET' | 'POST' | 'DELETE', endpoint: string, ...args: any[]) => Promise<any>;
-	uploadToEndpoint: (endpoint: string) => Promise<void>;
-	getStream: (streamName: string, options?: object) => IServerStream;
+	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
+	getStream: (streamName: string, options?: {}) => IServerStream;
 };
 
 export const ServerContext = createContext<ServerContextValue>({
@@ -26,26 +26,26 @@ export const ServerContext = createContext<ServerContextValue>({
 	}),
 });
 
-export const useServerInformation = (): object => useContext(ServerContext).info;
+export const useServerInformation = (): {} => useContext(ServerContext).info;
 
 export const useAbsoluteUrl = (): ((path: string) => string) => useContext(ServerContext).absoluteUrl;
 
 export const useMethod = (methodName: string): (...args: any[]) => Promise<any> => {
 	const { callMethod } = useContext(ServerContext);
-	return useCallback((...args) => callMethod(methodName, ...args), [callMethod, methodName]);
+	return useCallback((...args: any[]) => callMethod(methodName, ...args), [callMethod, methodName]);
 };
 
 export const useEndpoint = (httpMethod: 'GET' | 'POST' | 'DELETE', endpoint: string): (...args: any[]) => Promise<any> => {
 	const { callEndpoint } = useContext(ServerContext);
-	return useCallback((...args) => callEndpoint(httpMethod, endpoint, ...args), [callEndpoint, httpMethod, endpoint]);
+	return useCallback((...args: any[]) => callEndpoint(httpMethod, endpoint, ...args), [callEndpoint, httpMethod, endpoint]);
 };
 
-export const useUpload = (endpoint: string): () => Promise<void> => {
+export const useUpload = (endpoint: string): (params: any, formData: any) => Promise<void> => {
 	const { uploadToEndpoint } = useContext(ServerContext);
-	return useCallback((...args) => uploadToEndpoint(endpoint, ...args), [endpoint, uploadToEndpoint]);
+	return useCallback((params, formData: any) => uploadToEndpoint(endpoint, params, formData), [endpoint, uploadToEndpoint]);
 };
 
-export const useStream = (streamName: string, options?: object): IServerStream => {
+export const useStream = (streamName: string, options?: {}): IServerStream => {
 	const { getStream } = useContext(ServerContext);
 	return useMemo(() => getStream(streamName, options), [getStream, streamName, options]);
 };
@@ -57,7 +57,7 @@ export enum AsyncState {
 }
 
 export const useMethodData = <T>(methodName: string, args: any[] = []): [T | undefined, AsyncState, () => void] => {
-	const getData = useMethod(methodName);
+	const getData: (...args: unknown[]) => Promise<T> = useMethod(methodName);
 	const [[data, state], updateState] = useState<[T | undefined, AsyncState]>([undefined, AsyncState.LOADING]);
 
 	const isMountedRef = useRef(true);
@@ -85,7 +85,7 @@ export const useMethodData = <T>(methodName: string, args: any[] = []): [T | und
 				updateState(([data]) => [data, AsyncState.ERROR]);
 				console.error(error);
 			});
-	}, [getData, ...args]);
+	}, [getData, args]);
 
 	useEffect(() => {
 		fetchData();

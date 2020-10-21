@@ -95,6 +95,12 @@ function _OAuthServicesUpdate() {
 				data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
 			}
 
+			// If there's no data other than the service name, then put the service name in the data object so the operation won't fail
+			const keys = Object.keys(data).filter((key) => data[key] !== undefined);
+			if (!keys.length) {
+				data.service = serviceName.toLowerCase();
+			}
+
 			ServiceConfiguration.configurations.upsert({
 				service: serviceName.toLowerCase(),
 			}, {
@@ -126,3 +132,15 @@ settings.get(/^Accounts_OAuth_Custom-[a-z0-9_]+/, function(key, value) {
 		return OAuthServicesRemove(key);// eslint-disable-line new-cap
 	}
 });
+
+function customOAuthServicesInit() {
+	// Add settings for custom OAuth providers to the settings so they get
+	// automatically added when they are defined in ENV variables
+	Object.keys(process.env).forEach((key) => {
+		if (/Accounts_OAuth_Custom-[a-zA-Z0-9_-]+$/.test(key)) {
+			settings.add(key, process.env[key]);
+		}
+	});
+}
+
+customOAuthServicesInit();
