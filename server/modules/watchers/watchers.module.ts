@@ -106,24 +106,26 @@ export function initWatchers({
 		}
 	});
 
-	watch<ISubscription>(Subscriptions, async ({ clientAction, id, data }) => {
+	watch<ISubscription>(Subscriptions, async ({ clientAction, id }) => {
 		switch (clientAction) {
 			case 'inserted':
-			case 'updated':
+			case 'updated': {
 				// Override data cuz we do not publish all fields
-				data = await Subscriptions.findOneById(id, { projection: subscriptionFields });
+				const subscription = await Subscriptions.findOneById(id, { projection: subscriptionFields });
+				if (!subscription) {
+					return;
+				}
+				api.broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
+			}
 
-			case 'removed':
-				data = await Subscriptions.trashFindOneById(id, { projection: { u: 1, rid: 1 } });
+			case 'removed': {
+				const trash = await Subscriptions.trashFindOneById(id, { projection: { u: 1, rid: 1 } });
+				const subscription = trash || { _id: id };
+				api.broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
+			}
 		}
-
-		if (!data) {
-			return;
-		}
-
-		api.broadcast('watch.subscriptions', { clientAction, subscription: data });
 	});
 
 	watch<IRole>(Roles, async ({ clientAction, id, data, diff }) => {
