@@ -86,8 +86,12 @@ const AuditPage = () => {
 		if (type === 'l') {
 			const errors = {};
 
-			if (agent === '') {
+			if (agent === 'all' || agent === '') {
 				errors.agent = t('The_field_is_required', t('Agent'));
+			}
+
+			if (visitor === '') {
+				errors.visitor = t('The_field_is_required', t('Visitor'));
 			}
 
 			if (errors.visitor || errors.agent) {
