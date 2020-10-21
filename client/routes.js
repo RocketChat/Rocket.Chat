@@ -172,6 +172,4 @@ FlowRouter.notFound = {
 	},
 };
 
-Meteor.startup(() => {
-	FlowRouter.initialize();
-});
+Meteor.startup(() => FlowRouter.initialize);
