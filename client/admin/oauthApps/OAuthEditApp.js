@@ -27,18 +27,12 @@ import DeleteWarningModal from '../../components/DeleteWarningModal';
 export default function EditOauthAppWithData({ _id, ...props }) {
 	const t = useTranslation();
 
-	const [cache, setCache] = useState();
+	const params = useMemo(() => ({ appId: _id }), [_id]);
+	const { data, state, error, reload } = useEndpointDataExperimental('oauth-apps.get', params);
 
 	const onChange = useCallback(() => {
-		setCache(new Date());
-	}, []);
-
-	const query = useMemo(() => ({
-		appId: _id,
-		// TODO: remove cache. Is necessary for data invalidation
-	}), [_id, cache]);
-
-	const { data, state, error } = useEndpointDataExperimental('oauth-apps.get', query);
+		reload();
+	}, [reload]);
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box pb='x20' maxWidth='x600' w='full' alignSelf='center'>
