@@ -63,7 +63,7 @@ export function MessagesPerChannelSection() {
 			[...entries, { i, t, name: name || usernames.join(' × '), messages }], []);
 
 		return [pie, table];
-	}, [period, pieData, tableData]);
+	}, [pieData, tableData]);
 
 	const downloadData = () => {
 		const data = pieData.origins.map(({ t, messages }) => [t, messages]);
