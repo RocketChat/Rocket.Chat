@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { APIClient } from '../../app/utils/client';
 import { Users } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
-import type { IUser } from '../../definition/IUser';
+import type { IUser, IUserDataEvent } from '../../definition/IUser';
 
 export const isSyncReady = new ReactiveVar(false);
 
@@ -27,29 +27,21 @@ const updateUser = (userData: IUser & { _updatedAt: Date }): void => {
 	Meteor.users.update({ _id: user._id }, { $set: userData });
 };
 
-type UserDataNotification = {
-	id: unknown;
-}
-& (
-	({ type: 'inserted' } & Meteor.User)
-	| ({ type: 'updated' } & Partial<Meteor.User>)
-	| ({ type: 'removed' })
-)
-
 export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<unknown> => {
 	if (!uid) {
 		return;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	await Notifications.onUser('userData', ({ type, id, ...data }: UserDataNotification) => {
-		switch (type) {
+	await Notifications.onUser('userData', (data: IUserDataEvent) => {
+		switch (data.type) {
 			case 'inserted':
-				Meteor.users.insert(data);
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				const { type, id, ...user } = data;
+				Meteor.users.insert(user);
 				break;
 
 			case 'updated':
-				Meteor.users.upsert({ _id: uid }, { $set: data });
+				Meteor.users.upsert({ _id: uid }, { $set: data.diff });
 				break;
 
 			case 'removed':
