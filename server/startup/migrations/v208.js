@@ -5,7 +5,7 @@ import { Users, Sessions } from '../../../app/models/server/raw';
 
 async function migrateSessions(fut) {
 	const userIds = await Sessions.col.distinct('userId', { roles: { $exists: false } });
-	const items = await Users.find({ _id: { $in: userIds } }, { fields: { roles: 1 } });
+	const items = await Users.find({ _id: { $in: userIds }, roles: { $eq: ['anonymous'] } }, { fields: { roles: 1 } });
 	if (!items) {
 		return;
 	}
@@ -25,7 +25,6 @@ async function migrateSessions(fut) {
 
 	fut.return();
 }
-
 
 Migrations.add({
 	version: 208,
