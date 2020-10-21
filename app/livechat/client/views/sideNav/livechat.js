@@ -134,9 +134,13 @@ Template.livechat.onCreated(function() {
 		}
 	});
 
-	initializeLivechatInquiryStream(Meteor.userId());
-	this.updateAgentDepartments = () => initializeLivechatInquiryStream(Meteor.userId());
-	this.autorun(() => this.inquiriesLimit.set(settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed')));
+	this.autorun(() => {
+		const maxNumberOfInquiries = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed');
+		initializeLivechatInquiryStream(Meteor.userId(), maxNumberOfInquiries);
+		this.inquiriesLimit.set(maxNumberOfInquiries);
+	});
+
+	this.updateAgentDepartments = () => initializeLivechatInquiryStream(Meteor.userId(), settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed'));
 
 	Notifications.onUser('departmentAgentData', (payload) => this.updateAgentDepartments(payload));
 });
