@@ -9,12 +9,12 @@ const AvatarUrlProvider: FC = ({ children }) => {
 	const externalProviderUrl = String(useSetting('Accounts_AvatarExternalProviderUrl') || '');
 	const getUserPathAvatar = (() => {
 		if(externalProviderUrl) {
-			return (uid: string) => externalProviderUrl.trim().replace(/\/+$/, '').replace('{username}', uid);
+			return (uid: string): string => externalProviderUrl.trim().replace(/\/+$/, '').replace('{username}', uid);
 		}
 		if(cdnAvatarUrl){
-			return (uid: string, etag?: string) => `${ cdnAvatarUrl }/avatar/${ uid }${ etag ? `?etag=${ etag }` : '' }`)
+			return (uid: string, etag?: string): string => `${ cdnAvatarUrl }/avatar/${ uid }${ etag ? `?etag=${ etag }` : '' }`);
 		}
-		return (uid: string, etag?: string) => `/avatar/${ uid }${ etag ? `?etag=${ etag }` : '' }`
+		return (uid: string, etag?: string): string => `/avatar/${ uid }${ etag ? `?etag=${ etag }` : '' }`
 	})();
 	
 	const contextValue = useMemo(() => ({
