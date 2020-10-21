@@ -12,12 +12,10 @@ import VerticalBar from '../../components/basic/VerticalBar';
 import DeleteSuccessModal from '../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 
-function EditCustomSound({ _id, cache, ...props }) {
-	const query = useMemo(() => ({
-		query: JSON.stringify({ _id }),
-	}), [_id]);
+function EditCustomSound({ _id, onChange, ...props }) {
+	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { data, state, error } = useEndpointDataExperimental('custom-sounds.list', query);
+	const { data, state, error, reload } = useEndpointDataExperimental('custom-sounds.list', query);
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box pb='x20'>
@@ -39,7 +37,12 @@ function EditCustomSound({ _id, cache, ...props }) {
 		return <Box fontScale='h1' pb='x20'>{error}</Box>;
 	}
 
-	return <EditSound data={data.sounds[0]} {...props}/>;
+	const handleChange = () => {
+		onChange && onChange();
+		reload && reload();
+	};
+
+	return <EditSound data={data.sounds[0]} onChange={handleChange} {...props}/>;
 }
 
 function EditSound({ close, onChange, data, ...props }) {
