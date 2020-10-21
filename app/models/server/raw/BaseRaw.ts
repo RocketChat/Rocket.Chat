@@ -13,7 +13,7 @@ const baseName = 'rocketchat_';
 export class BaseRaw<T> implements IBaseRaw<T> {
 	public defaultFields?: Record<string, 1 | 0>;
 
-	protected name;
+	protected name: string;
 
 	constructor(
 		public readonly col: Collection<T>,
