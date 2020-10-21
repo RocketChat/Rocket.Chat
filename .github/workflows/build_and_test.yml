@@ -424,6 +424,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
+
     - name: Restore build
       uses: actions/download-artifact@v1
       with:
@@ -446,12 +452,6 @@ jobs:
         if [ -e ${DOCKER_PATH}/entrypoint.sh ]; then
           cp ${DOCKER_PATH}/entrypoint.sh .
         fi;
-
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_PASS }}
 
     - name: Build Docker image for tag
       if: github.event_name == 'release'
