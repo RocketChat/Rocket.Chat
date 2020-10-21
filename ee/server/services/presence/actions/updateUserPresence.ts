@@ -4,12 +4,13 @@ import { getCollection, Collections } from '../../mongo';
 import { IUserSession } from '../../../../../definition/IUserSession';
 import { IUser } from '../../../../../definition/IUser';
 import { USER_STATUS } from '../../../../../definition/UserStatus';
-
-// export default afterAll;
+import { api } from '../../../../../server/sdk/api';
 
 const projection = {
 	projection: {
+		username: 1,
 		statusDefault: 1,
+		statusText: 1,
 	},
 };
 
@@ -25,7 +26,14 @@ export async function updateUserPresence(uid: string): Promise<void> {
 	const userSessions = await UserSession.findOne(query) || { connections: [] };
 	const { statusDefault = USER_STATUS.OFFLINE } = user;
 	const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
-	User.updateOne(query, {
+	const result = await User.updateOne(query, {
 		$set: { status, statusConnection },
 	});
+
+	if (result.modifiedCount > 0) {
+		api.broadcast('userpresence', {
+			action: 'updated',
+			user: { _id: uid, username: user.username, status, statusText: user.statusText },
+		});
+	}
 }
