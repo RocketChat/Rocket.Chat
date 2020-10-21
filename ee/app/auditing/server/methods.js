@@ -41,24 +41,18 @@ Meteor.methods({
 			throw new Meteor.Error('Not allowed');
 		}
 
+		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, { fields: { _id: 1 } }).fetch();
+		const roomsData = rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
+
+		const { rids, name } = roomsData;
+
 		const query = {
+			rid: { $in: rids },
 			ts: {
 				$gt: startDate,
 				$lt: endDate,
 			},
 		};
-
-		let rooms;
-		if (agent !== 'all' && visitor) {
-			rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, { fields: { _id: 1 } }).fetch();
-		} else {
-			rooms = LivechatRooms.findLivechat().fetch();
-		}
-
-		const roomsData = rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
-
-		const { rids, name } = roomsData;
-		query.rid = { $in: rids };
 
 		if (msg) {
 			const regex = new RegExp(s.trim(s.escapeRegExp(msg)), 'i');
