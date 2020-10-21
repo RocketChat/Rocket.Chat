@@ -8,14 +8,18 @@ export interface IBaseRaw<T> {
 	col: Collection<T>;
 }
 
+const baseName = 'rocketchat_';
+
 export class BaseRaw<T> implements IBaseRaw<T> {
 	public defaultFields?: Record<string, 1 | 0>;
+
+	protected name;
 
 	constructor(
 		public readonly col: Collection<T>,
 		public readonly trash?: Collection<T>,
 	) {
-		//
+		this.name = this.col.collectionName.replace(baseName, '');
 	}
 
 	_ensureDefaultFields<T>(options: FindOneOptions<T>): FindOneOptions<T> {
@@ -74,7 +78,7 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 	// Trash
 	trashFind(query: FilterQuery<T & ITrash>, options: FindOneOptions<T>): Cursor<T> | undefined {
 		return this.trash?.find<T>({
-			__collection__: this.col.collectionName,
+			__collection__: this.name,
 			...query,
 		}, options);
 	}
@@ -82,7 +86,7 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 	async trashFindOneById(_id: string, options: FindOneOptions<T> = {}): Promise<T | undefined> {
 		const query: object = {
 			_id,
-			__collection__: this.col.collectionName,
+			__collection__: this.name,
 		};
 
 		return await this.trash?.findOne<T>(query, options) ?? undefined;
