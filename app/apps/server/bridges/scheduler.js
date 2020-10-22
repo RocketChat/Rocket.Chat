@@ -3,22 +3,21 @@ import Agenda from 'agenda';
 export class AppSchedulerBridge {
 	constructor(orch) {
 		this.orch = orch;
+		this.scheduler = new Agenda();
 	}
 
-	async define(info) {
-		this.orch.debugLog(`The App ${ info.appId } is defining a new schedulable job`, info);
-
-		if (info.job.processor) {
-			Agenda.define(info.job.name, info.job.processor);
-		} else {
-			Agenda.define(info.job.name, async () => {
-				console.log(`this is the new job ${ info.job.name }`);
-			});
-		}
+	async registerProcessor(processor, appId) {
+		this.orch.debugLog(`The App ${ appId } is registering a new job processor`, processor);
+		this.scheduler.define(processor.id, processor.processor);
 	}
 
-	async schedule(info) {
-		this.orch.debugLog(`The App ${ info.appId } is scheduling a new job`, info);
-		await Agenda.every(info.job.schedule, info.job.name, info.job.data || {});
+	async scheduleOnce(info) {
+		this.orch.debugLog(`The App ${ info.appId } is scheduling an onetime job`, info);
+		await this.scheduler.schedule(info.job.when, info.job.id, info.job.data || {});
+	}
+
+	async scheduleRecurring(info) {
+		this.orch.debugLog(`The App ${ info.appId } is scheduling a recurring job`, info);
+		await this.scheduler.every(info.job.cron, info.job.id, info.job.data || {});
 	}
 }
