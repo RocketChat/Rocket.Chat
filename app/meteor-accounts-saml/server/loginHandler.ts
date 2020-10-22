@@ -32,9 +32,6 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 		return SAML.insertOrUpdateSAMLUser(userObject);
 	} catch (error) {
 		console.error(error);
-		return {
-			type: 'saml',
-			error,
-		};
+		return makeError(error.toString());
 	}
 });
