@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, Table } from '@rocket.chat/fuselage';
 
 import FilterByText from '../../components/FilterByText';
@@ -21,9 +21,13 @@ function CustomEmoji({
 	], [onHeaderClick, sort, t]);
 
 	const renderRow = (emojis) => {
-		const { _id, name, aliases } = emojis;
+		const { _id, name, aliases, extension } = emojis;
 		return <Table.Row key={_id} onKeyDown={onClick(_id, emojis)} onClick={onClick(_id, emojis)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<Table.Cell fontScale='p1' color='default'><Box withTruncatedText>{name}</Box></Table.Cell>
+			<Table.Cell fontScale='p1' color='default'>
+				<Box display='flex' alignContent='center'>
+					<Box is='img' style={{ objectFit: 'contain' }} w='x32' h='x32' src={`/emoji-custom/${ encodeURIComponent(name) }.${ extension }`} /><Box withTruncatedText mi='x8'>{name}</Box>
+				</Box>
+			</Table.Cell>
 			<Table.Cell fontScale='p1' color='default'><Box withTruncatedText>{aliases}</Box></Table.Cell>
 		</Table.Row>;
 	};
