@@ -41,7 +41,7 @@ Meteor.methods({
 			throw new Meteor.Error('Not allowed');
 		}
 
-		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, { fields: { _id: 1 } }).fetch();
+		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent !== 'all' && agent, { fields: { _id: 1 } }).fetch();
 		const roomsData = rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
 
 		const { rids, name } = roomsData;

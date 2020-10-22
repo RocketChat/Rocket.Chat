@@ -57,6 +57,10 @@ const AuditPage = () => {
 	} = handlers;
 
 	const useHandleType = (type) => useMutableCallback(() => {
+		handleVisitor('');
+		handleAgent();
+		handleRid('');
+		handleUsers([]);
 		handleType(type);
 	});
 
@@ -86,7 +90,7 @@ const AuditPage = () => {
 		if (type === 'l') {
 			const errors = {};
 
-			if (agent === 'all' || agent === '') {
+			if (agent === '') {
 				errors.agent = t('The_field_is_required', t('Agent'));
 			}
 
