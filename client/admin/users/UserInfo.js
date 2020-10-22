@@ -10,6 +10,7 @@ import * as UserStatus from '../../components/basic/UserStatus';
 import UserCard from '../../components/basic/UserCard';
 import { UserInfoActions } from './UserInfoActions';
 import { FormSkeleton } from './Skeleton';
+import { getUserEmailAddress } from '../../lib/getUserEmailAddress';
 
 export function UserInfoWithData({ uid, username, ...props }) {
 	const t = useTranslation();
@@ -45,7 +46,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			phone: user.phone,
 			utcOffset,
 			customFields: { ...user.customFields, ...approveManuallyUsers && user.active === false && user.reason && { Reason: user.reason } },
-			email: Array.isArray(user.emails) && user.emails.find(({ address }) => !!address),
+			email: getUserEmailAddress(user),
 			createdAt: user.createdAt,
 			status: UserStatus.getStatus(status),
 			customStatus: statusText,
