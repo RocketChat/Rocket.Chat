@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Box, Table } from '@rocket.chat/fuselage';
 
 import FilterByText from '../../components/FilterByText';
