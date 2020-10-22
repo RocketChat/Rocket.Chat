@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "3.7.0-develop",
+	"version": "3.8.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -65,6 +65,7 @@
 		"@types/bcrypt": "^3.0.0",
 		"@types/chai": "^4.2.12",
 		"@types/chai-spies": "^1.0.1",
+		"@types/clipboard": "^2.0.1",
 		"@types/meteor": "^1.4.49",
 		"@types/mocha": "^8.0.3",
 		"@types/mock-require": "^2.0.0",
@@ -95,6 +96,8 @@
 		"husky": "^1.2.0",
 		"i18next": "^17.3.1",
 		"inquirer": "^7.3.3",
+		"jsdom": "16.4.0",
+		"jsdom-global": "3.0.2",
 		"less-loader": "^5.0.0",
 		"md5": "^2.3.0",
 		"mocha": "^8.1.1",
@@ -144,6 +147,7 @@
 		"@types/mkdirp": "^1.0.1",
 		"@types/underscore.string": "0.0.38",
 		"@types/use-subscription": "^1.0.0",
+		"@types/wolfy87-eventemitter": "^5.2.0",
 		"@types/xml-crypto": "^1.4.1",
 		"@types/xmldom": "^0.1.30",
 		"adm-zip": "RocketChat/adm-zip",

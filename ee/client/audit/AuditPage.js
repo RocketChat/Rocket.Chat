@@ -20,7 +20,7 @@ const initialValues = {
 		end: '',
 	},
 	visitor: '',
-	agent: '',
+	agent: 'all',
 	rid: '',
 	users: [],
 };
@@ -86,12 +86,8 @@ const AuditPage = () => {
 		if (type === 'l') {
 			const errors = {};
 
-			if (visitor === '') {
-				errors.visitor = t('The_field_is_required', t('Visitor'));
-			}
-
 			if (agent === '') {
-				errors.visitor = t('The_field_is_required', t('Agent'));
+				errors.agent = t('The_field_is_required', t('Agent'));
 			}
 
 			if (errors.visitor || errors.agent) {
@@ -159,7 +155,7 @@ const AuditPage = () => {
 					{type === 'l' && <Box display='flex' flexDirection='row' w='full' mi='neg-x4'>
 						<Margins inline='x4'>
 							<Field>
-								<Field.Label>{t('Visitor')}</Field.Label>
+								<Field.Label flexGrow={0}>{t('Visitor')}</Field.Label>
 								<Field.Row>
 									<VisitorAutoComplete error={errors.visitor} value={visitor} onChange={handleVisitor} placeholder={t('Username_Placeholder')}/>
 								</Field.Row>
@@ -168,7 +164,7 @@ const AuditPage = () => {
 								</Field.Error>}
 							</Field>
 							<Field>
-								<Field.Label>{t('Agent')}</Field.Label>
+								<Field.Label flexGrow={0}>{t('Agent')}</Field.Label>
 								<Field.Row>
 									<AutoCompleteAgent error={errors.agent} value={agent} onChange={handleAgent} placeholder={t('Username_Placeholder')}/>
 								</Field.Row>

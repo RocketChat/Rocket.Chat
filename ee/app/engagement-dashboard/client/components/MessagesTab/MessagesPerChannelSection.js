@@ -8,10 +8,7 @@ import { useEndpointData } from '../../../../../../client/hooks/useEndpointData'
 import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
 import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
-import { saveFile } from '../../../../../../client/lib/saveFile';
-
-const convertDataToCSV = (data) => `// type, messagesSent
-${ data.map(({ t, messages }) => `${ t }, ${ messages }`).join('\n') }`;
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 export function MessagesPerChannelSection() {
 	const t = useTranslation();
@@ -67,10 +64,11 @@ export function MessagesPerChannelSection() {
 			[...entries, { i, t, name: name || usernames.join(' × '), messages }], []);
 
 		return [pie, table];
-	}, [period, pieData, tableData]);
+	}, [pieData, tableData]);
 
 	const downloadData = () => {
-		saveFile(convertDataToCSV(pieData.origins), `MessagesPerChannelSection_start_${ params.start }_end_${ params.end }.csv`);
+		const data = pieData.origins.map(({ t, messages }) => [t, messages]);
+		downloadCsvAs(data, `MessagesPerChannelSection_start_${ params.start }_end_${ params.end }`);
 	};
 
 

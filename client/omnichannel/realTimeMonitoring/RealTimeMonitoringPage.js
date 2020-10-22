@@ -14,7 +14,7 @@ import AgentsOverview from './overviews/AgentsOverview';
 import ChatsOverview from './overviews/ChatsOverview';
 import ProductivityOverview from './overviews/ProductivityOverview';
 import DepartmentAutoComplete from '../DepartmentAutoComplete';
-import { getDateRange } from '../../helpers/getDateRange';
+import { getDateRange } from '../../lib/getDateRange';
 import { useTranslation } from '../../contexts/TranslationContext';
 
 const dateRange = getDateRange();
