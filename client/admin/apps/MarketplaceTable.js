@@ -1,13 +1,16 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useState, useContext, useMemo } from 'react';
+import React, { useState, useContext } from 'react';
 
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useFilteredApps } from './hooks/useFilteredApps';
-import { AppDataContext } from './AppProvider';
+import { AppsContext } from './AppsContext';
 import MarketplaceRow from './MarketplaceRow';
 import FilterByText from '../../components/FilterByText';
+
+const filterFunction = (text) =>
+	({ name, marketplace }) => marketplace !== false && name.toLowerCase().indexOf(text.toLowerCase()) > -1;
 
 function MarketplaceTable() {
 	const t = useTranslation();
@@ -18,22 +21,16 @@ function MarketplaceTable() {
 	const [sort, setSort] = useState(['name', 'asc']);
 
 	const { text, current, itemsPerPage } = params;
-	const { data, dataCache, finishedLoading } = useContext(AppDataContext);
+
 	const [filteredApps, filteredAppsCount] = useFilteredApps({
-		filterFunction: useCallback(
-			(text) => ({ name, marketplace }) => marketplace !== false && name.toLowerCase().indexOf(text.toLowerCase()) > -1,
-			[],
-		),
+		filterFunction,
 		text: useDebouncedValue(text, 500),
 		current,
 		itemsPerPage,
 		sort: useDebouncedValue(sort, 200),
-		data: useMemo(
-			() => (data.length ? data : null),
-			[dataCache],
-		),
-		dataCache,
 	});
+
+	const { finishedLoading } = useContext(AppsContext);
 
 	const [sortBy, sortDirection] = sort;
 	const onHeaderCellClick = (id) => {

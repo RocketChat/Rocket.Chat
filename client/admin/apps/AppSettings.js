@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { MemoizedSetting } from '../settings/Setting';
-import { capitalize } from '../../helpers/capitalize';
+import { capitalize } from '../../lib/capitalize';
 import { useRouteParameter } from '../../contexts/RouterContext';
 import MarkdownText from '../../components/basic/MarkdownText';
 
