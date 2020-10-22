@@ -1,13 +1,26 @@
-import React, { FC, useMemo } from 'react';
-import { Avatar } from '@rocket.chat/fuselage';
+import React, { useMemo, FC } from 'react';
 
-// import { baseURI } from '../../app/utils/client/lib/baseuri';
-
-// const base = baseURI;
+import { useSetting } from '../contexts/SettingsContext';
+import { AvatarUrlContext } from '../contexts/AvatarUrlContext';
+import { roomTypes } from '../../app/utils/client';
 
 const AvatarUrlProvider: FC = ({ children }) => {
-	const avatarBase = useMemo(() => ({ baseUrl: '' }), []);
-	return <Avatar.Context.Provider children={children} value={avatarBase} />;
+	const cdnAvatarUrl = String(useSetting('CDN_PREFIX') || '');
+	const externalProviderUrl = String(useSetting('Accounts_AvatarExternalProviderUrl') || '');
+	const contextValue = useMemo(() => ({
+		getUserPathAvatar: ((): (uid: string, etag?: string) => string => {
+			if (externalProviderUrl) {
+				return (uid: string): string => externalProviderUrl.trim().replace(/\/+$/, '').replace('{username}', uid);
+			}
+			if (cdnAvatarUrl) {
+				return (uid: string, etag?: string): string => `${ cdnAvatarUrl }/avatar/${ uid }${ etag ? `?etag=${ etag }` : '' }`;
+			}
+			return (uid: string, etag?: string): string => `/avatar/${ uid }${ etag ? `?etag=${ etag }` : '' }`;
+		})(),
+		getRoomPathAvatar: ({ type, ...room }: any): string => roomTypes.getConfig(type || room.t).getAvatarPath({ username: room._id, ...room }),
+	}), [externalProviderUrl, cdnAvatarUrl]);
+
+	return <AvatarUrlContext.Provider children={children} value={contextValue} />;
 };
 
 export default AvatarUrlProvider;

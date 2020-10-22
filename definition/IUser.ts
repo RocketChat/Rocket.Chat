@@ -85,6 +85,7 @@ export interface IRole {
 
 export interface IUser {
 	_id: string;
+	avatarETag: string;
 	createdAt: Date;
 	roles: string[];
 	type: string;

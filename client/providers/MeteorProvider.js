@@ -15,6 +15,7 @@ import ToastMessagesProvider from './ToastMessagesProvider';
 import TranslationProvider from './TranslationProvider';
 import UserProvider from './UserProvider';
 
+
 function MeteorProvider({ children }) {
 	return <ConnectionStatusProvider>
 		<ServerProvider>
@@ -24,8 +25,8 @@ function MeteorProvider({ children }) {
 						<SidebarProvider>
 							<ToastMessagesProvider>
 								<SettingsProvider>
-									<CustomSoundProvider>
-										<AvatarUrlProvider>
+									<AvatarUrlProvider>
+										<CustomSoundProvider>
 											<UserProvider>
 												<AuthorizationProvider>
 													<OmniChannelProvider>
@@ -35,8 +36,8 @@ function MeteorProvider({ children }) {
 													</OmniChannelProvider>
 												</AuthorizationProvider>
 											</UserProvider>
-										</AvatarUrlProvider>
-									</CustomSoundProvider>
+										</CustomSoundProvider>
+									</AvatarUrlProvider>
 								</SettingsProvider>
 							</ToastMessagesProvider>
 						</SidebarProvider>
