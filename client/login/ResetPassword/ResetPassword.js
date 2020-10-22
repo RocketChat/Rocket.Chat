@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Button, TextInput, Field, Modal, Box, Throbber } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 
@@ -19,11 +19,14 @@ const getChangePasswordReason = ({
 const ResetPassword = () => {
 	const user = useUser();
 	const t = useTranslation();
-	const [{ enabled: policyEnabled, policy: policies } = {}] = useMethodData('getPasswordPolicy');
-
 	const setUserPassword = useMethod('setUserPassword');
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
+	const params = useMemo(() => [{
+		token,
+	}], [token]);
+
+	const [{ enabled: policyEnabled, policy: policies } = {}] = useMethodData('getPasswordPolicy', params);
 
 	const router = useRoute('home');
 
