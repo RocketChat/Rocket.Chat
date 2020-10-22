@@ -1,6 +1,10 @@
 import { useLayoutEffect } from 'react';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 
+import { isIE11 } from '../../../app/ui-utils/client/lib/isIE11.js';
+
+const isInternetExplorer11 = isIE11();
+
 const getStyleTag = () => {
 	const style = document.getElementById('sidebar-style');
 	if (style) {
@@ -150,7 +154,21 @@ export const useSidebarPalettColor = () => {
 			}
 		`;
 		}
-		() => {
+		// if (isInternetExplorer11) {
+		const cssVars = require('css-vars-ponyfill').default;
+		console.log(getStyleTag().innerText);
+		cssVars({
+			include: 'style#sidebar-style',
+			onlyLegacy: false,
+			preserveStatic: true,
+			onComplete(...args) {
+				// Update <code> tag with CSS result
+				console.log(args);
+			},
+		});
+		console.log(cssVars);
+		// }
+		return () => {
 			counter--;
 			if (counter === 0) {
 				getStyleTag().innerText = '';
