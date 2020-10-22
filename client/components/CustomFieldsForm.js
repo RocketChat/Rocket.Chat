@@ -24,7 +24,7 @@ const CustomTextInput = ({ name, required, minLength, maxLength, setState, state
 	</Field>, [name, verify, maxLength, state, required, setState, className]);
 };
 
-const CustomSelect = ({ name, required, options, setState, state, className }) => {
+const CustomSelect = ({ name, required, options = {}, setState, state, className }) => {
 	const t = useTranslation();
 	const mappedOptions = useMemo(() => Object.values(options).map((value) => [value, value]), [options]);
 	const verify = useMemo(() => (!state.length && required ? t('Field_required') : ''), [required, state.length, t]);

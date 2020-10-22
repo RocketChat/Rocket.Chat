@@ -45,7 +45,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			phone: user.phone,
 			utcOffset,
 			customFields: { ...user.customFields, ...approveManuallyUsers && user.active === false && user.reason && { Reason: user.reason } },
-			email: user.emails?.find(({ address }) => !!address),
+			email: Array.isArray(user.emails) && user.emails.find(({ address }) => !!address),
 			createdAt: user.createdAt,
 			status: UserStatus.getStatus(status),
 			customStatus: statusText,
