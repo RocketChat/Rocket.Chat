@@ -15,6 +15,7 @@ const getChangePasswordReason = ({
 		: 'Please_enter_your_new_password_below',
 } = {}) => requirePasswordChangeReason;
 
+const args = [];
 
 const ResetPassword = () => {
 	const user = useUser();
@@ -67,10 +68,10 @@ const ResetPassword = () => {
 				<Modal.Title textAlign='start'>{t('Password')}</Modal.Title>
 			</Modal.Header>
 			<Modal.Content>
-				<Box is='p' fontScale='h1' textAlign='start'>
-					{t(changePasswordReason)}
-				</Box>
 				<Field>
+					<Field.Label>
+						{t(changePasswordReason)}
+					</Field.Label>
 					<Field.Row>
 						<TextInput
 							placeholder={t('Type_your_new_password')}
