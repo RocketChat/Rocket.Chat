@@ -15,8 +15,6 @@ const getChangePasswordReason = ({
 		: 'Please_enter_your_new_password_below',
 } = {}) => requirePasswordChangeReason;
 
-const args = [];
-
 const ResetPassword = () => {
 	const user = useUser();
 	const t = useTranslation();
