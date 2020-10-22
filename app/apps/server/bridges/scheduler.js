@@ -11,13 +11,13 @@ export class AppSchedulerBridge {
 		this.scheduler.define(processor.id, processor.processor);
 	}
 
-	async scheduleOnce(info) {
-		this.orch.debugLog(`The App ${ info.appId } is scheduling an onetime job`, info);
-		await this.scheduler.schedule(info.job.when, info.job.id, info.job.data || {});
+	async scheduleOnce(job, appId) {
+		this.orch.debugLog(`The App ${ appId } is scheduling an onetime job`, job);
+		await this.scheduler.schedule(job.when, job.id, job.data || {});
 	}
 
-	async scheduleRecurring(info) {
-		this.orch.debugLog(`The App ${ info.appId } is scheduling a recurring job`, info);
-		await this.scheduler.every(info.job.cron, info.job.id, info.job.data || {});
+	async scheduleRecurring(job, appId) {
+		this.orch.debugLog(`The App ${ appId } is scheduling a recurring job`, job);
+		await this.scheduler.every(job.cron, job.id, job.data || {});
 	}
 }
