@@ -8,7 +8,7 @@ const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 const VisitorAutoComplete = React.memo((props) => {
 	const [filter, setFilter] = useState('');
 	const { data } = useEndpointDataExperimental('livechat/visitors.autocomplete', useMemo(() => query(filter), [filter]));
-	const options = useMemo(() => (data && data.items.map((user) => ({ value: user.username, label: user.name }))) || [], [data]);
+	const options = useMemo(() => (data && data.items.map((user) => ({ value: user._id, label: user.name }))) || [], [data]);
 	return <AutoComplete
 		{...props}
 		filter={filter}

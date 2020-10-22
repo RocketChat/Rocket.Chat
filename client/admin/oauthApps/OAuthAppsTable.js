@@ -1,7 +1,7 @@
 import { Table } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
-import { GenericTable, Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
@@ -21,9 +21,9 @@ export function OAuthAppsTable() {
 	}), [router]);
 
 	const header = useMemo(() => [
-		<Th key={'name'}>{t('Name')}</Th>,
-		<Th key={'_createdBy'}>{t('Created_by')}</Th>,
-		<Th key={'_createdAt'}>{t('Created_at')}</Th>,
+		<GenericTable.HeaderCell key={'name'}>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'_createdBy'}>{t('Created_by')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'_createdAt'}>{t('Created_at')}</GenericTable.HeaderCell>,
 	], [t]);
 
 	const renderRow = useCallback(({ _id, name, _createdAt, _createdBy: { username: createdBy } }) =>

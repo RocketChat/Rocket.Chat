@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { dummyDate } from '../../../.storybook/helpers';
-import { RocketChatSection } from './RocketChatSection';
+import RocketChatSection from './RocketChatSection';
 
 export default {
 	title: 'admin/info/RocketChatSection',

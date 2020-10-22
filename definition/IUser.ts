@@ -73,6 +73,15 @@ export interface IUserSettings {
 	};
 }
 
+export interface IRole {
+	description: string;
+	mandatory2fa?: boolean;
+	name: string;
+	protected: boolean;
+	scope?: string;
+	_id: string;
+}
+
 export interface IUser {
 	_id: string;
 	createdAt: Date;
@@ -105,3 +114,19 @@ export interface IUser {
 	};
 	settings?: IUserSettings;
 }
+
+export type IUserDataEvent = {
+	id: unknown;
+}
+& (
+	({
+		type: 'inserted';
+	} & IUser)
+	| ({
+		type: 'removed';
+	})
+	| ({
+		type: 'updated';
+		diff: Partial<IUser>;
+	})
+)

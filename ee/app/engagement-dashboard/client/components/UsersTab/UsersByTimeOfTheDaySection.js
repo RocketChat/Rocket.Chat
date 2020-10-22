@@ -7,11 +7,7 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
 import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
-import { saveFile } from '../../../../../../client/lib/saveFile';
-
-const convertDataToCSV = (data) => `// date, users
-${ data.map(({ users, hour, day, month, year }) => ({ date: moment([year, month - 1, day, hour, 0, 0, 0]), users })).sort((a, b) => a > b).map(({ date, users }) => `${ date.toISOString() }, ${ users }`).join('\n') }`;
-
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 export function UsersByTimeOfTheDaySection() {
 	const t = useTranslation();
@@ -84,7 +80,19 @@ export function UsersByTimeOfTheDaySection() {
 	}, [data, period.end, period.start]);
 
 	const downloadData = () => {
-		saveFile(convertDataToCSV(data.week), `UsersByTimeOfTheDaySection_start_${ params.start }_end_${ params.end }.csv`);
+		const _data = data.week.map(({
+			users,
+			hour,
+			day,
+			month,
+			year,
+		}) => ({
+			date: moment([year, month - 1, day, hour, 0, 0, 0]),
+			users,
+		}))
+			.sort((a, b) => a > b)
+			.map(({ date, users }) => [date.toISOString(), users]);
+		downloadCsvAs(_data, `UsersByTimeOfTheDaySection_start_${ params.start }_end_${ params.end }`);
 	};
 	return <Section
 		title={t('Users_by_time_of_day')}
