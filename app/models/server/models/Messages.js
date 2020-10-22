@@ -22,7 +22,7 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ pinned: 1 }, { sparse: true });
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ location: '2dsphere' });
-		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: true });
+		this.tryEnsureIndex({ slackTs: 1, slackBotId: 1 }, { sparse: true });
 		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 
 		// discussions
