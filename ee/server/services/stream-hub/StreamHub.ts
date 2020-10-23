@@ -22,7 +22,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 	async created(): Promise<void> {
 		const db = await getConnection(15);
 
-		const Trash = db.collection('rocketchat_trash');
+		const Trash = db.collection('rocketchat__trash');
 
 		const UsersCol = db.collection('users');
 
