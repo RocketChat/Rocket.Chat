@@ -9,7 +9,7 @@ export async function setStatus(uid: string, statusDefault: USER_STATUS, statusT
 	const query = { _id: uid };
 
 	const UserSession = await getCollection<IUserSession>(Collections.UserSession);
-	const userSessions = await UserSession.findOne(query) || { connections: [] };
+	const userSessions = await UserSession.findOne(query) || { connections: [], metadata: undefined };
 
 	const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
 
@@ -36,6 +36,7 @@ export async function setStatus(uid: string, statusDefault: USER_STATUS, statusT
 		api.broadcast('userpresence', {
 			action: 'updated',
 			user: { _id: uid, username: user?.username, status, statusText },
+			metadata: userSessions.metadata,
 		});
 	}
 

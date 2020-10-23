@@ -11,4 +11,5 @@ export interface IUserSessionConnection {
 export interface IUserSession {
 	_id: string;
 	connections: IUserSessionConnection[];
+	metadata?: object;
 }

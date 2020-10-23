@@ -36,7 +36,7 @@ export type EventSignatures = {
 	'user.nameChanged'(user: Partial<IUser>): void;
 	'user.roleUpdate'(update: Record<string, any>): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
-	'userpresence'(data: { action: string; user: Partial<IUser> }): void;
+	'userpresence'(data: { action: string; user: Partial<IUser>; metadata?: object }): void;
 	'watch.messages'(data: { clientAction: string; message: Partial<IMessage> }): void;
 	'watch.roles'(data: { clientAction: string; role: Partial<IRole> }): void;
 	'watch.rooms'(data: { clientAction: string; room: Pick<IRoom, '_id'> & Partial<IRoom> }): void;

@@ -23,9 +23,19 @@ export async function updateUserPresence(uid: string): Promise<void> {
 	const user = await User.findOne<IUser>(query, projection);
 	if (!user) { return; }
 
-	const userSessions = await UserSession.findOne(query) || { connections: [] };
+	const userSessions = await UserSession.findOne(query) || { connections: [], metadata: undefined };
 	const { statusDefault = USER_STATUS.OFFLINE } = user;
 	const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
+
+	// if (userSessions.metadata?.visitor) {
+	// 	api.broadcast('visitopresence', {
+	// 		action: 'updated',
+	// 		// user: { _id: uid, username: user.username, status, statusText: user.statusText },
+	// 		metadata: userSessions.metadata,
+	// 	});
+	// 	return;
+	// }
+
 	const result = await User.updateOne(query, {
 		$set: { status, statusConnection },
 	});
@@ -34,6 +44,7 @@ export async function updateUserPresence(uid: string): Promise<void> {
 		api.broadcast('userpresence', {
 			action: 'updated',
 			user: { _id: uid, username: user.username, status, statusText: user.statusText },
+			metadata: userSessions.metadata,
 		});
 	}
 }

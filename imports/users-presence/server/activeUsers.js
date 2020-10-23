@@ -23,14 +23,16 @@ export const setUserStatus = (user, status/* , statusConnection*/) => {
 	api.broadcast('userpresence', { user: { status, _id: uid, username, statusText } }); // remove username
 };
 
-let TroubleshootDisablePresenceBroadcast;
-settings.get('Troubleshoot_Disable_Presence_Broadcast', (key, value) => {
-	if (TroubleshootDisablePresenceBroadcast === value) { return; }
-	TroubleshootDisablePresenceBroadcast = value;
+if (!process.env.DISABLE_DB_WATCH) {
+	let TroubleshootDisablePresenceBroadcast;
+	settings.get('Troubleshoot_Disable_Presence_Broadcast', (key, value) => {
+		if (TroubleshootDisablePresenceBroadcast === value) { return; }
+		TroubleshootDisablePresenceBroadcast = value;
 
-	if (value) {
-		return UserPresenceEvents.removeListener('setUserStatus', setUserStatus);
-	}
+		if (value) {
+			return UserPresenceEvents.removeListener('setUserStatus', setUserStatus);
+		}
 
-	UserPresenceEvents.on('setUserStatus', setUserStatus);
-});
+		UserPresenceEvents.on('setUserStatus', setUserStatus);
+	});
+}
