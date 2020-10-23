@@ -25,7 +25,7 @@ const sections = {
 };
 
 const style = {
-	overflow: 'scroll',
+	overflowY: 'scroll',
 };
 
 export const itemSizeMap = (sidebarViewMode) => {
