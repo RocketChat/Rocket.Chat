@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import Agenda from 'agenda';
 
 import { Logger } from '../../app/logger';
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
@@ -78,11 +76,6 @@ Meteor.startup(function() {
 			},
 			job: cleanupOEmbedCache,
 		});
-
-		new Agenda({
-			mongo: MongoInternals.defaultRemoteCollectionDriver().mongo.client.db(),
-			collection: 'rocketchat_agenda_jobs',
-		}).start();
 
 		return SyncedCron.start();
 	});
