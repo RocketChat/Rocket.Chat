@@ -56,6 +56,15 @@
 								<div class="sidebar-item__last-message {{#if showUnread }}{{#if lastMessageUnread }} sidebar-item__last-message--unread{{/if}}{{/if}}">
 									<span class="message-body--unstyled">{{{lastMessage}}}</span>
 								</div>
+								{{#if lastMessageSentByUser}}
+									<div class="sidebar-item__time">
+										{{#if lastMessageDelivered}}
+											{{>icon icon="check"}}
+										{{else}}
+											{{>icon icon="clock"}}
+										{{/if}}
+									</div>
+								{{/if}}
 							{{/if}}
 						{{/if}}
 						{{#if unread}}
