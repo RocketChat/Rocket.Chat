@@ -15,10 +15,12 @@ export class AppSchedulerBridge {
 		this.isConnected = false;
 	}
 
-	async registerProcessor(processor, appId) {
-		this.orch.debugLog(`The App ${ appId } is registering a new job processor`, processor);
-		const processorRealId = createProcessorId(processor.id, appId);
-		this.scheduler.define(processorRealId, processor.processor);
+	async registerProcessors(processors = [], appId) {
+		this.orch.debugLog(`The App ${ appId } is registering job processors`, processors);
+		processors.forEach((processor) => {
+			const processorRealId = createProcessorId(processor.id, appId);
+			this.scheduler.define(processorRealId, processor.processor);
+		});
 	}
 
 	async scheduleOnce(job, appId) {
