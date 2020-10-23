@@ -60,14 +60,18 @@ export const AutoTranslate = {
 	},
 
 	init() {
-		Tracker.autorun(() => {
-			this.supportedLanguages = [];
-			this.providersMetadata = {};
+		this.supportedLanguages = [];
+		this.providersMetadata = {};
 
+		Tracker.autorun((c) => {
 			const uid = Meteor.userId();
 			if (!uid) {
 				return;
 			}
+
+			Meteor.call('autoTranslate.getProviderUiMetadata', (err, metadata) => {
+				this.providersMetadata = metadata;
+			});
 
 			if (!hasPermission('auto-translate')) {
 				return;
@@ -76,9 +80,8 @@ export const AutoTranslate = {
 			Meteor.call('autoTranslate.getSupportedLanguages', 'en', (err, languages) => {
 				this.supportedLanguages = languages || [];
 			});
-			Meteor.call('autoTranslate.getProviderUiMetadata', (err, metadata) => {
-				this.providersMetadata = metadata;
-			});
+
+			c.stop();
 		});
 
 		Tracker.autorun(() => {
