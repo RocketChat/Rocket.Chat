@@ -47,7 +47,7 @@ export class AppSchedulerBridge {
 	}
 
 	async cancelAllJobs(appId) {
-		this.orch.debugLog(`Removing all registered processors of App ${ appId }`);
+		this.orch.debugLog(`Canceling all jobs of App ${ appId }`);
 		await this.startAgenda();
 		const matcher = new RegExp(`^${ appId }_`);
 		try {
