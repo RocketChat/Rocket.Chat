@@ -6,8 +6,8 @@ import * as Mailer from '../../../mailer';
 import { Users } from '../../../models/server/raw/index';
 import { IUser } from '../../../../definition/IUser';
 
-const sendResetNotification = function(uid: string): void {
-	const user: IUser = Users.findOneById(uid, {});
+const sendResetNotification = async function(uid: string): Promise<void> {
+	const user: IUser = await Users.findOneById(uid, { projection: { language: 1, emails: 1 } });
 	if (!user) {
 		throw new Meteor.Error('invalid-user');
 	}
@@ -54,7 +54,7 @@ const sendResetNotification = function(uid: string): void {
 
 export async function resetTOTP(userId: string, notifyUser = false): Promise<boolean> {
 	if (notifyUser) {
-		sendResetNotification(userId);
+		await sendResetNotification(userId);
 	}
 
 	const result = await Users.resetTOTPById(userId);
