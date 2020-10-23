@@ -158,7 +158,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 	const userCanDirectMessage = usePermission('create-d');
 
 	const shouldAllowCalls = getShouldAllowCalls(webRTCInstance);
-	const callInProgress = useReactiveValue(useCallback(() => webRTCInstance?.callInProgress?.get(), []));
+	const callInProgress = useReactiveValue(useCallback(() => webRTCInstance?.callInProgress.get(), [webRTCInstance]));
 	const shouldOpenDirectMessage = getShouldOpenDirectMessage(currentSubscription, usernameSubscription, userCanDirectMessage, user.username);
 
 	const openDirectDm = useMutableCallback(() => directRoute.push({

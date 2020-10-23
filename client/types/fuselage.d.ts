@@ -234,12 +234,14 @@ declare module '@rocket.chat/fuselage' {
 	type ModalCloseProps = BoxProps;
 	type ModalContentProps = BoxProps;
 	type ModalFooterProps = BoxProps;
+	type ModalBackdropProps = BoxProps;
 	export const Modal: ForwardRefExoticComponent<ModalProps> & {
 		Header: ForwardRefExoticComponent<ModalHeaderProps>;
 		Title: ForwardRefExoticComponent<ModalTitleProps>;
 		Close: ForwardRefExoticComponent<ModalCloseProps>;
 		Content: ForwardRefExoticComponent<ModalContentProps>;
 		Footer: ForwardRefExoticComponent<ModalFooterProps>;
+		Backdrop: ForwardRefExoticComponent<ModalBackdropProps>;
 	};
 
 	type NumberInputProps = BoxProps;
