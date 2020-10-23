@@ -1,4 +1,4 @@
-The WideChat repo is a fork of RocketChat for development of features to be merged upstream in coordination with the RocketChat team.
+The WideChat repo is a fork of RocketChat for development of features to be merged upstream in coordination with the RocketChat team...
 
 ![Rocket.Chat logo](https://upload.wikimedia.org/wikipedia/commons/1/12/Rocket.Chat_Logo.svg)
 
