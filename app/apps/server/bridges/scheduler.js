@@ -1,5 +1,9 @@
 import Agenda from 'agenda';
 
+function createProcessorId(jobId, appId) {
+	return `${ jobId }_${ appId }`;
+}
+
 export class AppSchedulerBridge {
 	constructor(orch) {
 		this.orch = orch;
@@ -23,8 +27,4 @@ export class AppSchedulerBridge {
 		const processorRealId = createProcessorId(job.id, appId);
 		await this.scheduler.every(job.cron, processorRealId, job.data || {});
 	}
-}
-
-function createProcessorId(jobId, appId) {
-	return `${jobId}_${appId}`;
 }
