@@ -17,15 +17,15 @@ function AdminSounds({
 	const t = useTranslation();
 
 	const header = useMemo(() => [
-		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key='name' direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell w='x40' key='action' />,
-	], [sort]);
+	], [onHeaderClick, sort, t]);
 
 	const customSound = useCustomSound();
 
 	const handlePlay = useCallback((sound) => {
 		customSound.play(sound);
-	}, []);
+	}, [customSound]);
 
 	const renderRow = (sound) => {
 		const { _id, name } = sound;
@@ -43,8 +43,8 @@ function AdminSounds({
 	return <GenericTable
 		header={header}
 		renderRow={renderRow}
-		results={data.sounds}
-		total={data.total}
+		results={data?.sounds ?? []}
+		total={data?.total ?? 0}
 		setParams={setParams}
 		params={params}
 		renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
