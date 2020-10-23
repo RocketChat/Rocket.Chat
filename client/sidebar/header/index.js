@@ -10,11 +10,11 @@ import Menu from './actions/Menu';
 import Login from './actions/Login';
 import UserAvatarButton from './UserAvatarButton';
 import { useUser } from '../../contexts/UserContext';
-import { useSidebarPalettColor } from '../hooks/useSidebarPalettColor';
+import { useSidebarPaletteColor } from '../hooks/useSidebarPaletteColor';
 
 const HeaderWithData = () => {
 	const user = useUser();
-	useSidebarPalettColor();
+	useSidebarPaletteColor();
 	return <>
 		<Sidebar.TopBar.Section className='sidebar--custom-colors'>
 			<UserAvatarButton user={user}/>

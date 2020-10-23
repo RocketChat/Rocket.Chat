@@ -18,7 +18,7 @@ import { useTemplateByViewMode } from './hooks/useTemplateByViewMode';
 import { useShortcutOpenMenu } from './hooks/useShortcutOpenMenu';
 import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 import { useRoomList } from './hooks/useRoomList';
-import { useSidebarPalettColor } from './hooks/useSidebarPalettColor';
+import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
 
 const sections = {
 	Omnichannel,
@@ -99,7 +99,7 @@ export const normalizeSidebarMessage = ({ ...message }) => {
 };
 
 export default () => {
-	useSidebarPalettColor();
+	useSidebarPaletteColor();
 	const listRef = useRef();
 	const { ref, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 

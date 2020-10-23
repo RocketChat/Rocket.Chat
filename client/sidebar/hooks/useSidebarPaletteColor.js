@@ -3,9 +3,7 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 
 import { isIE11 } from '../../../app/ui-utils/client/lib/isIE11.js';
 
-const isInternetExplorer11 = true || isIE11();
-
-console.log('isIECARALHO', isInternetExplorer11);
+const isInternetExplorer11 = isIE11();
 
 const getStyleTag = () => {
 	const style = document.getElementById('sidebar-style');
@@ -27,9 +25,7 @@ function h2r(hex, a) {
 
 const modifier = '.sidebar--custom-colors';
 
-const getStyle = (() => {
-	const selector = isInternetExplorer11 ? ':root' : modifier;
-	return (colors) => `
+const getStyle = ((selector) => (colors) => `
 		${ selector } {
 			--rcx-color-neutral-100: ${ colors.n900 } ;
 			--rcx-color-neutral-200: ${ colors.n800 } ;
@@ -67,63 +63,51 @@ const getStyle = (() => {
 		.rcx-sidebar {
 			background: var(--rcx-color-neutral-200);
 		}
-	`;
-})();
+	`)(isInternetExplorer11 ? ':root' : modifier);
 
 let counter = 0;
-const useSidebarPalettColorIE11 = () => {
+const useSidebarPaletteColorIE11 = () => {
 	useEffect(() => {
-		const fuselageStyle = document.getElementById('fuselage-style');
-		const sidebarStyle = fuselageStyle.cloneNode(true);
-		sidebarStyle.setAttribute('id', 'sidebar-styless');
-		document.head.appendChild(sidebarStyle);
-
-		const fuselageStyleRules = sidebarStyle.innerText.match(/(.|\n)*?\{((.|\n)*?)\}(.|\n)*?/gi).filter((text) => /\.rcx-(sidebar|button|divider)/.test(text) && /(color|background|shadow)/.test(text) && /var\(--/.test(text));
-		// console.log('rules123123', fuselageStyle.sheet.cssRules);
-		// console.log('rulesFilter', sidebarStyle.innerText.match(/(.|\n)*?\{((.|\n)*?)\}(.|\n)*?/gi));
-		// console.log('rulesFilter2', [...fuselageStyle.sheet.cssRules].filter(({ selectorText }) => selectorText).filter(({ selectorText, cssText }) => /\.rcx-(sidebar|button|divider)/.test(selectorText) && /(color|background|shadow)/.test(cssText) && /var\(--/.test(cssText)));
-		// console.log('rules', fuselageStyleRules);
-		// console.log('fuselage', fuselageStyle);
-		// console.log('inner', fuselageStyle.innerText);
-		// console.log('inner2', fuselageStyle.innerText.match(/.*?\{(.*?)\}.*?/, 'gs'));
-		const newStyle = fuselageStyleRules.map((rule) => {
-			// sidebarStyle.
-			// console.log('MATCH', rule.match(/^(?!\})((.|\n)(?!\}))*?(?!\})\{$/gmi));
-			// console.log(rule);
-			rule = rule.split(',').map((rule) => rule.replace(/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/, (match, group, g2, g3, offset, text) => {
-				if (group === '.') {
-					return `${ modifier } ${ text }`;
-				}
-				return `${ match } ${ modifier } ${ g3 }`;
-			})).join();
-			return rule;
-		}).join('');
-		sidebarStyle.innerText = newStyle;
 		counter++;
-		if (counter === 1) {
-			getStyleTag().innerText = getStyle(colors);
+		if (counter > 1) {
+			return;
 		}
+		(async () => {
+			const [{ default: cssVars }] = await Promise.all([import('css-vars-ponyfill'), (() => {
+				try {
+					getStyleTag().innerText = getStyle(colors);
+					const fuselageStyle = document.getElementById('fuselage-style');
 
-		const cssVars = require('css-vars-ponyfill');
+					if (!fuselageStyle) {
+						return;
+					}
 
-		// console.log(newStyle);
-		// console.log(getStyleTag().innerText);
-		// console.log(cssVars);
-		// console.log(require('css-vars-ponyfill'));
+					const sidebarStyle = fuselageStyle.cloneNode(true);
+					sidebarStyle.setAttribute('id', 'sidebar-modifier');
+					document.head.appendChild(sidebarStyle);
 
-		cssVars({
-			include: 'style#sidebar-style,style#sidebar-styless',
-			onlyLegacy: false,
-			preserveStatic: true,
-			silent: false,
-			onError: (...args) => {
-				console.log('error', args);
-			},
-			onComplete: (...args) => {
-				console.log('complete', args);
-			},
-		});
-
+					const fuselageStyleRules = sidebarStyle.innerText.match(/(.|\n)*?\{((.|\n)*?)\}(.|\n)*?/gi).filter((text) => /\.rcx-(sidebar|button|divider)/.test(text) && /(color|background|shadow)/.test(text) && /var\(--/.test(text));
+					const newStyle = fuselageStyleRules.map((rule) => {
+						rule = rule.split(',').map((rule) => rule.replace(/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/, (match, group, g2, g3, offset, text) => {
+							if (group === '.') {
+								return `${ modifier } ${ text }`;
+							}
+							return `${ match } ${ modifier } ${ g3 }`;
+						})).join();
+						return rule;
+					}).join('');
+					sidebarStyle.innerText = newStyle;
+				} catch (error) {
+					console.log(error);
+				}
+			})()]);
+			cssVars({
+				include: 'style#sidebar-style,style#sidebar-modifier',
+				onlyLegacy: true,
+				preserveStatic: true,
+				silent: true,
+			});
+		})();
 		return () => {
 			counter--;
 			if (counter === 0) {
@@ -133,7 +117,7 @@ const useSidebarPalettColorIE11 = () => {
 	}, []);
 };
 
-export const useSidebarPalettColor = isInternetExplorer11 ? useSidebarPalettColorIE11 : () => {
+export const useSidebarPaletteColor = isInternetExplorer11 ? useSidebarPaletteColorIE11 : () => {
 	useLayoutEffect(() => {
 		counter++;
 		if (counter === 1) {
