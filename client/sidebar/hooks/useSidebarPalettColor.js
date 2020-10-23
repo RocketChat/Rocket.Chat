@@ -1,9 +1,11 @@
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useEffect } from 'react';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 
 import { isIE11 } from '../../../app/ui-utils/client/lib/isIE11.js';
 
-const isInternetExplorer11 = false && isIE11();
+const isInternetExplorer11 = true || isIE11();
+
+console.log('isIECARALHO', isInternetExplorer11);
 
 const getStyleTag = () => {
 	const style = document.getElementById('sidebar-style');
@@ -70,22 +72,31 @@ const getStyle = (() => {
 
 let counter = 0;
 const useSidebarPalettColorIE11 = () => {
-	useLayoutEffect(() => {
-		const fuselageStyle = document.getElementById('fuselage-id');
+	useEffect(() => {
+		const fuselageStyle = document.getElementById('fuselage-style');
 		const sidebarStyle = fuselageStyle.cloneNode(true);
 		sidebarStyle.setAttribute('id', 'sidebar-styless');
 		document.head.appendChild(sidebarStyle);
 
-		const fuselageStyleRules = [...sidebarStyle.sheet.cssRules].filter(({ selectorText }) => selectorText).filter(({ selectorText, cssText }) => /\.rcx-(sidebar|button|divider)/.test(selectorText) && /(color|background|shadow)/.test(cssText) && /var\(--/.test(cssText));
+		const fuselageStyleRules = sidebarStyle.innerText.match(/(.|\n)*?\{((.|\n)*?)\}(.|\n)*?/gi).filter((text) => /\.rcx-(sidebar|button|divider)/.test(text) && /(color|background|shadow)/.test(text) && /var\(--/.test(text));
+		// console.log('rules123123', fuselageStyle.sheet.cssRules);
+		// console.log('rulesFilter', sidebarStyle.innerText.match(/(.|\n)*?\{((.|\n)*?)\}(.|\n)*?/gi));
+		// console.log('rulesFilter2', [...fuselageStyle.sheet.cssRules].filter(({ selectorText }) => selectorText).filter(({ selectorText, cssText }) => /\.rcx-(sidebar|button|divider)/.test(selectorText) && /(color|background|shadow)/.test(cssText) && /var\(--/.test(cssText)));
+		// console.log('rules', fuselageStyleRules);
+		// console.log('fuselage', fuselageStyle);
+		// console.log('inner', fuselageStyle.innerText);
+		// console.log('inner2', fuselageStyle.innerText.match(/.*?\{(.*?)\}.*?/, 'gs'));
 		const newStyle = fuselageStyleRules.map((rule) => {
 			// sidebarStyle.
-			rule.selectorText = rule.selectorText.split(',').map((rule) => rule.replace(/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/, (match, group, g2, g3, offset, text) => {
+			// console.log('MATCH', rule.match(/^(?!\})((.|\n)(?!\}))*?(?!\})\{$/gmi));
+			// console.log(rule);
+			rule = rule.split(',').map((rule) => rule.replace(/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/, (match, group, g2, g3, offset, text) => {
 				if (group === '.') {
 					return `${ modifier } ${ text }`;
 				}
 				return `${ match } ${ modifier } ${ g3 }`;
 			})).join();
-			return rule.cssText;
+			return rule;
 		}).join('');
 		sidebarStyle.innerText = newStyle;
 		counter++;
@@ -93,13 +104,24 @@ const useSidebarPalettColorIE11 = () => {
 			getStyleTag().innerText = getStyle(colors);
 		}
 
-		const cssVars = require('css-vars-ponyfill').default;
+		const cssVars = require('css-vars-ponyfill');
+
+		// console.log(newStyle);
+		// console.log(getStyleTag().innerText);
+		// console.log(cssVars);
+		// console.log(require('css-vars-ponyfill'));
 
 		cssVars({
-			include: 'style#sidebar-style, style#sidebar-styless',
+			include: 'style#sidebar-style,style#sidebar-styless',
 			onlyLegacy: false,
 			preserveStatic: true,
-			silent: true,
+			silent: false,
+			onError: (...args) => {
+				console.log('error', args);
+			},
+			onComplete: (...args) => {
+				console.log('complete', args);
+			},
 		});
 
 		return () => {
