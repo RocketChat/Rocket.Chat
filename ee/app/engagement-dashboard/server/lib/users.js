@@ -7,7 +7,7 @@ import { Analytics } from '../../../../../app/models/server';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = (user) => {
-	if (user.roles?.length === 1 && user.roles[0] === 'anonymous') {
+	if (user.roles?.includes('anonymous')) {
 		return;
 	}
 

@@ -4,24 +4,29 @@ import { Migrations } from '../../../app/migrations';
 import { Users, Sessions } from '../../../app/models/server/raw';
 
 async function migrateSessions(fut) {
-	const userIds = await Sessions.col.distinct('userId', { roles: { $exists: false } });
-	const items = await Users.find({ _id: { $in: userIds }, roles: { $eq: ['anonymous'] } }, { fields: { roles: 1 } });
-	if (!items) {
+	const cursor = Users.find({ roles: 'anonymous' }, { projection: { _id: 1 } });
+	if (!cursor) {
 		return;
 	}
-	const users = await items.toArray();
 
-	for (const { _id, roles } of users) {
-		Sessions.update({
-			userId: _id,
-		}, {
-			$set: {
-				roles,
-			},
-		}, {
-			multi: true,
-		});
+
+	const users = await cursor.toArray();
+	if (users.length === 0) {
+		fut.return();
+		return;
 	}
+
+	const userIds = users.map(({ _id }) => _id);
+
+	Sessions.update({
+		userId: { $in: userIds },
+	}, {
+		$set: {
+			roles: ['anonymous'],
+		},
+	}, {
+		multi: true,
+	});
 
 	fut.return();
 }
