@@ -32,6 +32,8 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ autoTranslateLanguage: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ prid: 1 });
+		this.tryEnsureIndex({ open: 1, t: 1 });
+		this.tryEnsureIndex({ 'u._id': 1 });
 	}
 
 	findByRoomIds(roomIds) {

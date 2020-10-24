@@ -2,7 +2,6 @@ import { callbacks } from '../../../../../app/callbacks/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms, LivechatInquiry, LivechatVisitors, Users } from '../../../../../app/models/server';
-import { checkWaitingQueue } from '../lib/Helper';
 
 const normalizeDefaultAgent = (agent) => {
 	if (!agent) {
@@ -50,17 +49,9 @@ const onMaxNumberSimultaneousChatsReached = (inquiry, agent) => {
 		return inquiry;
 	}
 
-	const { _id, defaultAgent, department } = inquiry;
+	const { _id } = inquiry;
 
 	LivechatInquiry.removeDefaultAgentById(_id);
-
-	const { _id: defaultAgentId } = defaultAgent;
-	const { agentId } = agent;
-
-	if (defaultAgentId === agentId) {
-		checkWaitingQueue(department);
-	}
-
 	return LivechatInquiry.findOneById(_id);
 };
 

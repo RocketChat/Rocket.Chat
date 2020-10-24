@@ -117,6 +117,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	async getNextLeastBusyAgent(department) {
+		/*
 		const aggregate = [
 			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
 			{ $lookup: { from: 'view_livechat_queue_status', localField: '_id', foreignField: '_id', as: 'LivechatQueueStatus' } }, // the `view_livechat_queue_status` it's a view created when the server starts
@@ -129,8 +130,16 @@ export class UsersRaw extends BaseRaw {
 			aggregate.push({ $unwind: '$departments' });
 			aggregate.push({ $match: { 'departments.departmentId': department } });
 		}
+		*/
+		const aggregate = [
+			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
+			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
+			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, count: { $size: '$subs' } } },
+			{ $sort: { count: 1, lastRoutingTime: 1, username: 1 } },
+			{ $limit: 1 },
+		];
 
-		aggregate.push({ $limit: 1 });
+		// aggregate.push({ $limit: 1 });
 
 		const [agent] = await this.col.aggregate(aggregate).toArray();
 		if (agent) {
@@ -140,25 +149,27 @@ export class UsersRaw extends BaseRaw {
 		return agent;
 	}
 
-	setLastRoutingTime(userId) {
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$set: {
-				lastRoutingTime: new Date(),
-			},
-		};
-
-		return this.col.updateOne(query, update);
+	async setLastRoutingTime(userId) {
+		const result = await this.col.findAndModify(
+			{ _id: userId }
+			, {
+				sort: {
+					_id: 1,
+				},
+			}, {
+				$set: {
+					lastRoutingTime: new Date(),
+				},
+			});
+		return result.value;
 	}
 
 	async getAgentAndAmountOngoingChats(userId) {
 		const aggregate = [
 			{ $match: { _id: userId, status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
-			{ $lookup: { from: 'view_livechat_queue_status', localField: '_id', foreignField: '_id', as: 'LivechatQueueStatus' } },
-			{ $project: { username: 1, queueInfo: { $arrayElemAt: ['$LivechatQueueStatus', 0] } } },
+			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
+			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: '$subs' } } },
+			{ $sort: { 'queueInfo.chats': 1, lastAssignTime: 1, lastRoutingTime: 1, username: 1 } },
 		];
 
 		const [agent] = await this.col.aggregate(aggregate).toArray();
