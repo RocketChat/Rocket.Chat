@@ -34,6 +34,7 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ prid: 1 });
 		this.tryEnsureIndex({ open: 1, t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
+		this.tryEnsureIndex({ department: 1 }, { sparse: 1 });
 	}
 
 	findByRoomIds(roomIds) {
@@ -281,6 +282,19 @@ export class Subscriptions extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	changeDepartmentByRoomId(rid, department) {
+		const query = {
+			rid,
+		};
+		const update = {
+			$set: {
+				department,
+			},
+		};
+
+		this.update(query, update);
 	}
 
 	findAlwaysNotifyAudioUsersByRoomId(roomId) {

@@ -254,6 +254,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 export const updateChatDepartment = ({ rid, newDepartmentId, oldDepartmentId }) => {
 	LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
+	Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
 
 	Meteor.defer(() => {
 		Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {

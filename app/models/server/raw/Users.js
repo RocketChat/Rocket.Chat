@@ -116,30 +116,30 @@ export class UsersRaw extends BaseRaw {
 		return this.col.distinct('federation.origin', { federation: { $exists: true } });
 	}
 
-	async getNextLeastBusyAgent(/* department */) {
-		/*
+	async getNextLeastBusyAgent(department) {
 		const aggregate = [
 			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
-			{ $lookup: { from: 'view_livechat_queue_status', localField: '_id', foreignField: '_id', as: 'LivechatQueueStatus' } }, // the `view_livechat_queue_status` it's a view created when the server starts
+			{ $lookup: {
+				from: 'rocketchat_subscription',
+				let: { id: '$_id' },
+				pipeline: [
+					{ $match: { $expr: { $eq: ['$u._id', '$$id'] } } },
+					{ $match: { $expr: { $eq: ['$open', true] } } },
+					{ ...department && { $match: { $expr: { $eq: ['$department', department] } } } },
+				],
+				as: 'subs' },
+			},
 			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
-			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1, queueInfo: { $arrayElemAt: ['$LivechatQueueStatus', 0] } } },
-			{ $sort: { 'queueInfo.chats': 1, lastRoutingTime: 1, username: 1 } },
+			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1, count: { $size: '$subs' } } },
+			{ $sort: { count: 1, lastRoutingTime: 1, username: 1 } },
 		];
 
 		if (department) {
 			aggregate.push({ $unwind: '$departments' });
 			aggregate.push({ $match: { 'departments.departmentId': department } });
 		}
-		*/
-		const aggregate = [
-			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
-			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
-			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, count: { $size: '$subs' } } },
-			{ $sort: { count: 1, lastRoutingTime: 1, username: 1 } },
-			{ $limit: 1 },
-		];
 
-		// aggregate.push({ $limit: 1 });
+		aggregate.push({ $limit: 1 });
 
 		const [agent] = await this.col.aggregate(aggregate).toArray();
 		if (agent) {
