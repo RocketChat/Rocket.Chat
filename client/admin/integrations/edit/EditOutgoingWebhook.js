@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import {
 	Field,
 	Box,
@@ -21,12 +21,13 @@ import DeleteWarningModal from '../../../components/DeleteWarningModal';
 
 export default function EditOutgoingWebhookWithData({ integrationId, ...props }) {
 	const t = useTranslation();
-	const [cache, setCache] = useState();
 
-	// TODO: remove cache. Is necessary for data validation
-	const { data, state, error } = useEndpointDataExperimental('integrations.get', useMemo(() => ({ integrationId }), [integrationId, cache]));
+	const params = useMemo(() => ({ integrationId }), [integrationId]);
+	const { data, state, error, reload } = useEndpointDataExperimental('integrations.get', params);
 
-	const onChange = () => setCache(new Date());
+	const onChange = () => {
+		reload();
+	};
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24' {...props}>

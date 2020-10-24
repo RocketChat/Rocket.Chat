@@ -1,4 +1,4 @@
-![](https://user-images.githubusercontent.com/551004/43643393-884b00a4-9701-11e8-94d8-14c46d1f3660.png)
+![](https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png)
 
 <h1 align="center">
   The Ultimate Open Source WebChat Platform
@@ -35,7 +35,6 @@
   * [Raspberry Pi 4](#raspberry-pi-4)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
-  * [WeDeploy](#wedeploy)
   * [D2C.io](#d2cio)
   * [Syncloud.org](#syncloudorg)
 * [About Rocket.Chat](#about-rocketchat)
@@ -201,11 +200,6 @@ Add Rocket.Chat to this world famous time tested small enterprise server today.
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/).
-
-## WeDeploy
-Install Rocket.Chat on [WeDeploy](https://wedeploy.com):
-
-[![Deploy](https://cdn.wedeploy.com/images/deploy.svg)](https://console.wedeploy.com/deploy?repo=https://github.com/wedeploy-examples/rocketchat-example)
 
 ## D2C.io
 Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with a single click, check live logs and metrics:
