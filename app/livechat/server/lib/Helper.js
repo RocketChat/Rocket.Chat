@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { MongoInternals } from 'meteor/mongo';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 
 import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment, LivechatDepartmentAgents } from '../../../models/server';
@@ -210,7 +209,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		throw new Meteor.Error('error-user-is-offline', 'User is offline', { function: 'forwardRoomToAgent' });
 	}
 
-	const { _id: rid, servedBy: oldServedBy, departmentId } = room;
+	const { _id: rid, servedBy: oldServedBy } = room;
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
 		throw new Meteor.Error('error-invalid-inquiry', 'Invalid inquiry', { function: 'forwardRoomToAgent' });

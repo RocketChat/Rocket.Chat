@@ -40,7 +40,7 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	return lastRoomAgent || defaultAgent;
 };
 
-const onMaxNumberSimultaneousChatsReached = (inquiry, agent) => {
+const onMaxNumberSimultaneousChatsReached = (inquiry) => {
 	if (!inquiry || !inquiry.defaultAgent) {
 		return inquiry;
 	}

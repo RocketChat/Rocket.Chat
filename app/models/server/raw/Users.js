@@ -116,7 +116,7 @@ export class UsersRaw extends BaseRaw {
 		return this.col.distinct('federation.origin', { federation: { $exists: true } });
 	}
 
-	async getNextLeastBusyAgent(department) {
+	async getNextLeastBusyAgent(/* department */) {
 		/*
 		const aggregate = [
 			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
