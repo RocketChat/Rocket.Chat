@@ -36,7 +36,7 @@ export class AppSchedulerBridge {
 		this.orch.debugLog(`The App ${ appId } is canceling a job`, jobId);
 		await this.startScheduler();
 		try {
-			await this.scheduler.cancel({ name: job.id });
+			await this.scheduler.cancel({ name: jobId });
 		} catch (e) {
 			console.error(e);
 		}
@@ -60,4 +60,3 @@ export class AppSchedulerBridge {
 		}
 	}
 }
-
