@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
 
 import { TabBar } from '../../../app/ui-utils/client';
 import { hasAllPermission } from '../../../app/authorization/client';
@@ -13,6 +14,6 @@ Meteor.startup(() => {
 		template: 'ExportMessages',
 		full: true,
 		order: 12,
-		condition: () => hasAllPermission('mail-messages'),
+		condition: () => hasAllPermission('mail-messages', Session.get('openedRoom')),
 	});
 });

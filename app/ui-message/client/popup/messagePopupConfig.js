@@ -17,6 +17,7 @@ import { customMessagePopups } from './customMessagePopups';
 import './messagePopupConfig.html';
 import './messagePopupSlashCommand.html';
 import './messagePopupUser.html';
+import { escapeRegExp } from '../../../../client/lib/escapeRegExp';
 
 const reloadUsersFromRoomMessages = (rid, template) => {
 	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
@@ -144,7 +145,7 @@ const getEmojis = (collection, filter) => {
 		return [];
 	}
 
-	const regExp = new RegExp(RegExp.escape(filter), 'i');
+	const regExp = new RegExp(escapeRegExp(filter), 'i');
 	const recents = EmojiPicker.getRecent().map((item) => `:${ item }:`);
 
 	return Object.keys(collection)
@@ -208,7 +209,7 @@ Template.messagePopupConfig.helpers({
 			getFilter: (collection, filter = '', cb) => {
 				const { rid } = this;
 				const filterText = filter.trim();
-				const filterRegex = filterText !== '' && new RegExp(`${ RegExp.escape(filterText) }`, 'i');
+				const filterRegex = filterText !== '' && new RegExp(`${ escapeRegExp(filterText) }`, 'i');
 
 				const items = template.usersFromRoomMessages
 					.find(

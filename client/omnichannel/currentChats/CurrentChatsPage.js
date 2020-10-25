@@ -9,7 +9,7 @@ import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { usePermission } from '../../contexts/AuthorizationContext';
-import { GenericTable } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useMethod } from '../../contexts/ServerContext';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -126,7 +126,10 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAll} onCancel={() => setModal()}/>);
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteAll}
+			onCancel={() => setModal()}
+		/>);
 	});
 
 
@@ -189,7 +192,16 @@ function CurrentChatsPage({
 		<Page>
 			<Page.Header title={title} />
 			<Page.Content>
-				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.rooms} total={data && data.total} setParams={setParams} params={params} reload={reload}/>
+				<GenericTable
+					header={header}
+					renderRow={renderRow}
+					results={data && data.rooms}
+					total={data && data.total}
+					setParams={setParams}
+					params={params}
+					reload={reload}
+					renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+				/>
 			</Page.Content>
 		</Page>
 		{children}

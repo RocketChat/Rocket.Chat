@@ -5,7 +5,7 @@ import { css } from '@rocket.chat/css-in-js';
 
 import Page from '../../components/basic/Page';
 import PermissionsContextBar from './PermissionsContextBar';
-import { GenericTable } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';

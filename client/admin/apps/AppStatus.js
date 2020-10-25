@@ -5,8 +5,8 @@ import React, { useCallback, useState, memo } from 'react';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange } from './helpers';
 import { Apps } from '../../../app/apps/client/orchestrator';
-import { IframeModal } from './IframeModal';
-import { CloudLoginModal } from './CloudLoginModal';
+import IframeModal from './IframeModal';
+import CloudLoginModal from './CloudLoginModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useMethod } from '../../contexts/ServerContext';
 
@@ -32,7 +32,7 @@ const actions = {
 	},
 };
 
-const AppStatus = memo(({ app, showStatus = true, ...props }) => {
+const AppStatus = ({ app, showStatus = true, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
 	const setModal = useSetModal();
@@ -97,6 +97,6 @@ const AppStatus = memo(({ app, showStatus = true, ...props }) => {
 			{t(status.label)}
 		</Box>}
 	</Box>;
-});
+};
 
-export default AppStatus;
+export default memo(AppStatus);

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { menu, SideNav, Layout } from '../../app/ui-utils/client';
@@ -8,7 +8,7 @@ import Sidebar from '../components/basic/Sidebar';
 import SettingsProvider from '../providers/SettingsProvider';
 import { itemsSubscription } from './sidebarItems';
 
-export default React.memo(function AccountSidebar() {
+const AccountSidebar = () => {
 	const t = useTranslation();
 
 	const items = useSubscription(itemsSubscription);
@@ -40,4 +40,6 @@ export default React.memo(function AccountSidebar() {
 			</Sidebar.Content>
 		</Sidebar>
 	</SettingsProvider>;
-});
+};
+
+export default memo(AccountSidebar);
