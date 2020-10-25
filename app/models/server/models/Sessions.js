@@ -8,6 +8,7 @@ export const aggregates = {
 				userId: { $exists: true },
 				lastActivityAt: { $exists: true },
 				device: { $exists: true },
+				roles: { $ne: 'anonymous' },
 				type: 'session',
 				$or: [{
 					year: { $lt: year },
