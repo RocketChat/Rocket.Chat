@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { OmnichannelQueue, Users } from '../../../../../app/models';
+import { LivechatDepartment, OmnichannelQueue, Users } from '../../../../../app/models';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
@@ -168,7 +168,12 @@ const QUEUE_TIMEOUT = 1000;
 
 const queueWorker = {
 	running: false,
+	queues: [],
 	start() {
+		if (this.running) {
+			return;
+		}
+
 		OmnichannelQueue.initQueue();
 		this.running = true;
 		this.execute();
@@ -177,19 +182,25 @@ const queueWorker = {
 		this.running = false;
 		OmnichannelQueue.stopQueue();
 	},
+	nextQueue() {
+		if (!this.queues.length) {
+			this.queues = [undefined].concat(LivechatDepartment.findEnabledWithAgents().fetch().map((department) => department._id));
+		}
+
+		return this.queues.shift();
+	},
 	execute() {
 		if (!this.running) {
 			return;
 		}
 
-		setTimeout(this.processQueue.bind(this), QUEUE_TIMEOUT);
+		const queue = this.nextQueue();
+		setTimeout(this.checkQueue.bind(this, queue), QUEUE_TIMEOUT);
 	},
-	async processQueue() {
-		// const departments = [undefined].concat(LivechatDepartment.findEnabledWithAgents().fetch().map((department) => department._id));
-		// Promise.all(departments.map(async (department) => processWaitingQueue(department)));
-		const queue = OmnichannelQueue.lockQueue();
-		if (queue) {
-			await processWaitingQueue();
+
+	async checkQueue(queue) {
+		if (OmnichannelQueue.lockQueue()) {
+			await processWaitingQueue(queue);
 			OmnichannelQueue.unlockQueue();
 		}
 
