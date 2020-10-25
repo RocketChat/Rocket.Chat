@@ -67,7 +67,7 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({
 		() => createReactiveSubscriptionFactory(
 			(query = {}) => cachedCollection.collection.find({
 				...('_id' in query && Array.isArray(query._id)) && { _id: { $in: query._id } },
-				...('_id' in query && !Array.isArray(query._id)) && { _id: query._id},
+				...('_id' in query && !Array.isArray(query._id)) && { _id: query._id },
 				...('group' in query) && { group: query.group },
 				...('section' in query) && (
 					query.section

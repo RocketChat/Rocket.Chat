@@ -75,5 +75,6 @@ export const useRoomList = (): Array<ISubscription> => {
 		sidebarGroupByType && direct.size && groups.set('Direct', direct);
 		!sidebarGroupByType && groups.set('Conversations', conversation);
 		return [...groups.entries()].flatMap(([key, group]) => [key, ...group]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [rooms, showOmnichannel, inquiries.enabled, inquiries.enabled && inquiries.queue, sidebarShowUnread, favoritesEnabled, showDiscussion, sidebarGroupByType]);
 };
