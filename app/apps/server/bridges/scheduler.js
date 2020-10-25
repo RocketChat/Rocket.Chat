@@ -1,8 +1,8 @@
 import Agenda from 'agenda';
 import { MongoInternals } from 'meteor/mongo';
 
-function createProcessorId(jobId, appId) {
-	return `${ appId }_${ jobId }`;
+function _callProcessor(processor) {
+	return (job) => processor(job.attrs.data);
 }
 
 export class AppSchedulerBridge {
@@ -17,32 +17,26 @@ export class AppSchedulerBridge {
 
 	async registerProcessors(processors = [], appId) {
 		this.orch.debugLog(`The App ${ appId } is registering job processors`, processors);
-		processors.forEach((processor) => {
-			const processorRealId = createProcessorId(processor.id, appId);
-			this.scheduler.define(processorRealId, processor.processor);
-		});
+		processors.forEach(({ id, processor }) => this.scheduler.define(id, _callProcessor(processor)));
 	}
 
 	async scheduleOnce(job, appId) {
 		this.orch.debugLog(`The App ${ appId } is scheduling an onetime job`, job);
-		await this.startAgenda();
-		const processorRealId = createProcessorId(job.id, appId);
-		await this.scheduler.schedule(job.when, processorRealId, job.data || {});
+		await this.startScheduler();
+		await this.scheduler.schedule(job.when, job.id, job.data || {});
 	}
 
 	async scheduleRecurring(job, appId) {
 		this.orch.debugLog(`The App ${ appId } is scheduling a recurring job`, job);
-		await this.startAgenda();
-		const processorRealId = createProcessorId(job.id, appId);
-		await this.scheduler.every(job.cron, processorRealId, job.data || {});
+		await this.startScheduler();
+		await this.scheduler.every(job.cron, job.id, job.data || {});
 	}
 
 	async cancelJob(jobId, appId) {
 		this.orch.debugLog(`The App ${ appId } is canceling a job`, jobId);
-		await this.startAgenda();
-		const processorRealId = createProcessorId(jobId, appId);
+		await this.startScheduler();
 		try {
-			await this.scheduler.cancel({ name: processorRealId });
+			await this.scheduler.cancel({ name: job.id });
 		} catch (e) {
 			console.error(e);
 		}
@@ -50,8 +44,8 @@ export class AppSchedulerBridge {
 
 	async cancelAllJobs(appId) {
 		this.orch.debugLog(`Canceling all jobs of App ${ appId }`);
-		await this.startAgenda();
-		const matcher = new RegExp(`^${ appId }_`);
+		await this.startScheduler();
+		const matcher = new RegExp(`^_${ appId }`);
 		try {
 			await this.scheduler.cancel({ name: { $regex: matcher } });
 		} catch (e) {
@@ -59,10 +53,11 @@ export class AppSchedulerBridge {
 		}
 	}
 
-	async startAgenda() {
+	async startScheduler() {
 		if (!this.isConnected) {
 			await this.scheduler.start();
 			this.isConnected = true;
 		}
 	}
 }
+
