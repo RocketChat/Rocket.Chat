@@ -7,7 +7,6 @@ const UNIQUE_QUEUE_ID = 'queue';
 export class OmnichannelQueue extends Base {
 	constructor() {
 		super('omnichannel_queue');
-		// this.tryEnsureIndex({ locked: 1 }, { sparse: true });
 	}
 
 	initQueue() {
