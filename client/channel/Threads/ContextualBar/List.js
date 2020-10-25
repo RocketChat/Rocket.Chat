@@ -104,7 +104,7 @@ export function withData(WrappedComponent) {
 			});
 
 			return () => cursor.stop();
-		}, [room._id, type, setThreads, userId, subscription.tunread]);
+		}, [room._id, type, setThreads, userId, subscription.tunread, text]);
 
 		const handleTextChange = useCallback((e) => {
 			setPagination({ skip: 0, count: LIST_SIZE });
