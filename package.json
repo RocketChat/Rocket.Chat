@@ -220,7 +220,7 @@
 		"node-dogstatsd": "^0.0.7",
 		"node-gcm": "0.14.4",
 		"node-rsa": "^1.1.1",
-		"object-path": "^0.11.4",
+		"object-path": "^0.11.5",
 		"pdfjs-dist": "^2.4.456",
 		"photoswipe": "^4.1.3",
 		"poplib": "^0.1.7",
