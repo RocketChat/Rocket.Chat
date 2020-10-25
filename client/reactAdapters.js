@@ -122,7 +122,7 @@ export const createTemplateForComponent = (
 	name,
 	importFn,
 	{
-		renderContainerView = () => HTML.DIV(), // eslint-disable-line new-cap
+		renderContainerView = () => HTML.DIV({ style: 'height: 100%;' }), // eslint-disable-line new-cap
 	} = {},
 ) => {
 	if (Template[name]) {

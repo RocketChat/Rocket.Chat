@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users, Rooms } from '../../../../models';
+import { Users } from '../../../../models';
 
 export default function handleQUIT(args) {
 	const user = Users.findOne({
@@ -12,6 +12,4 @@ export default function handleQUIT(args) {
 			status: 'offline',
 		},
 	});
-
-	Rooms.removeUsernameFromAll(user.username);
 }
