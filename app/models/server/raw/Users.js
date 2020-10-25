@@ -326,6 +326,7 @@ export class UsersRaw extends BaseRaw {
 			{
 				$match: {
 					createdAt: { $gte: start, $lte: end },
+					roles: { $ne: 'anonymous' },
 				},
 			},
 			{
