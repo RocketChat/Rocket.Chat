@@ -27,7 +27,7 @@ const EditRolePage = ({ data }) => {
 	const usersInRoleRouter = useRoute('admin-permissions');
 	const router = useRoute('admin-permissions');
 
-	const { values, handlers } = useForm({
+	const { values, handlers, hasUnsavedChanges } = useForm({
 		name: data.name,
 		description: data.description || '',
 		scope: data.scope || 'Users',
@@ -69,7 +69,7 @@ const EditRolePage = ({ data }) => {
 				<RoleForm values={values} handlers={handlers} editing isProtected={data.protected}/>
 				<Field>
 					<Field.Row>
-						<Button primary w='full' onClick={handleSave}>{t('Save')}</Button>
+						<Button primary w='full' disabled={!hasUnsavedChanges} onClick={handleSave}>{t('Save')}</Button>
 					</Field.Row>
 				</Field>
 				{!data.protected && <Field>

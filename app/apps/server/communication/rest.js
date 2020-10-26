@@ -197,7 +197,7 @@ export class AppsRestApi {
 					const downloadPromise = new Promise((resolve, reject) => {
 						const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
 
-						HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
+						HTTP.get(`${ baseUrl }/v2/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
 							headers,
 							npmRequestOptions: { encoding: null },
 						}, (error, result) => {
@@ -247,15 +247,11 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff.toString('base64'), true, marketplaceInfo));
+				const aff = Promise.await(manager.add(buff, true, marketplaceInfo));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
 					return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
-				}
-
-				if (aff.getCompilerErrors().length) {
-					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
 				}
 
 				if (aff.hasAppUserError()) {
@@ -438,7 +434,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
+						result = HTTP.get(`${ baseUrl }/v2/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
 							headers,
 							npmRequestOptions: { encoding: null },
 						});

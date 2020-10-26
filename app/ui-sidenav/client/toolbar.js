@@ -12,6 +12,7 @@ import { Rooms, Subscriptions } from '../../models';
 import { roomTypes } from '../../utils';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { menu } from '../../ui-utils';
+import { escapeRegExp } from '../../../client/lib/escapeRegExp';
 
 let filterText = '';
 let usernamesFromClient;
@@ -130,7 +131,7 @@ Template.toolbar.helpers({
 					query.t = 'd';
 				}
 
-				const searchQuery = new RegExp(RegExp.escape(filterText), 'i');
+				const searchQuery = new RegExp(escapeRegExp(filterText), 'i');
 				query.$or = [
 					{ name: searchQuery },
 					{ fname: searchQuery },

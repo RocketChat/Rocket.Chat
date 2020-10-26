@@ -14,8 +14,10 @@ const setOpen = (open: boolean | ((isOpen: boolean) => boolean)): void => {
 	return open ? menu.open() : menu.close();
 };
 
-export const SidebarProvider: FC = ({ children }) =>
+const SidebarProvider: FC = ({ children }) =>
 	<SidebarContext.Provider
 		children={children}
 		value={[useReactiveValue<boolean>(getOpen), setOpen]}
 	/>;
+
+export default SidebarProvider;

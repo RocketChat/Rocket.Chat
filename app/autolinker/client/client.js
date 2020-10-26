@@ -7,6 +7,7 @@ import Autolinker from 'autolinker';
 
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
+import { escapeRegExp } from '../../../client/lib/escapeRegExp';
 
 let config;
 
@@ -33,7 +34,7 @@ const renderMessage = (message) => {
 	let msgParts;
 	let regexTokens;
 	if (message.tokens && message.tokens.length) {
-		regexTokens = new RegExp(`(${ (message.tokens || []).map(({ token }) => RegExp.escape(token)) })`, 'g');
+		regexTokens = new RegExp(`(${ (message.tokens || []).map(({ token }) => escapeRegExp(token)) })`, 'g');
 		msgParts = message.html.split(regexTokens);
 	} else {
 		msgParts = [message.html];

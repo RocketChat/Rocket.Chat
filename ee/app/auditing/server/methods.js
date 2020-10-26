@@ -5,10 +5,15 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import AuditLog from './auditLog';
-import { LivechatRooms, Rooms, Messages } from '../../../../app/models/server';
+import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
 import { hasAllPermission } from '../../../../app/authorization/server';
 
 const getValue = (room) => room && { rids: [room._id], name: room.name };
+
+const getUsersIdFromUserName = (usersName) => {
+	const user = usersName && Users.findByUsername({ $in: usersName });
+	return user.map((userId) => userId._id);
+};
 
 const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
 	if (roomId) {
@@ -20,13 +25,14 @@ const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
 	}
 
 	if (type === 'l') {
+		console.warning('Deprecation Warning! This method will be removed in the next version (4.0.0)');
 		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, { fields: { _id: 1 } }).fetch();
 		return rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
 	}
 };
 
 Meteor.methods({
-	auditGetMessages({ rid: roomId, startDate, endDate, users, msg, type, visitor, agent }) {
+	auditGetOmnichannelMessages({ startDate, endDate, users, msg, type, visitor, agent }) {
 		check(startDate, Date);
 		check(endDate, Date);
 
@@ -35,12 +41,10 @@ Meteor.methods({
 			throw new Meteor.Error('Not allowed');
 		}
 
-		const roomInfo = getRoomInfoByAuditParams({ type, roomId, users, visitor, agent });
-		if (!roomInfo) {
-			throw new Meteor.Error('Room doesn`t exist');
-		}
+		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent !== 'all' && agent, { fields: { _id: 1 } }).fetch();
+		const roomsData = rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
 
-		const { rids, name } = roomInfo;
+		const { rids, name } = roomsData;
 
 		const query = {
 			rid: { $in: rids },
@@ -54,6 +58,52 @@ Meteor.methods({
 			const regex = new RegExp(s.trim(s.escapeRegExp(msg)), 'i');
 			query.msg = regex;
 		}
+		const messages = Messages.find(query).fetch();
+
+		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
+
+		AuditLog.insert({ ts: new Date(), results: messages.length, u: user, fields: { msg, users, rids, room: name, startDate, endDate, type, visitor, agent } });
+
+		return messages;
+	},
+	auditGetMessages({ rid: roomId, startDate, endDate, users, msg, type, visitor, agent }) {
+		check(startDate, Date);
+		check(endDate, Date);
+
+		const user = Meteor.user();
+		if (!hasAllPermission(user._id, 'can-audit')) {
+			throw new Meteor.Error('Not allowed');
+		}
+
+		let rids;
+		let name;
+
+		const query = {
+			ts: {
+				$gt: startDate,
+				$lt: endDate,
+			},
+		};
+
+		if (type === 'u') {
+			const usersId = getUsersIdFromUserName(users);
+			query['u._id'] = { $in: usersId };
+		} else {
+			const roomInfo = getRoomInfoByAuditParams({ type, roomId, users, visitor, agent });
+			if (!roomInfo) {
+				throw new Meteor.Error('Room doesn`t exist');
+			}
+
+			rids = roomInfo.rids;
+			name = roomInfo.name;
+			query.rid = { $in: rids };
+		}
+
+		if (msg) {
+			const regex = new RegExp(s.trim(s.escapeRegExp(msg)), 'i');
+			query.msg = regex;
+		}
+
 		const messages = Messages.find(query).fetch();
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.

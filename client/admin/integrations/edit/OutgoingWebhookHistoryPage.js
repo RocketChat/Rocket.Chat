@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, Icon, Skeleton, Box, Accordion, Field, FieldGroup, Pagination } from '@rocket.chat/fuselage';
-import React, { useMemo, useCallback, useState } from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
 import Page from '../../../components/basic/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -10,8 +11,9 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/use
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { integrationHistoryStreamer } from '../../../../app/integrations/client/streamer';
 
-function HistoryItem({ data, onChange, ...props }) {
+function HistoryItem({ data, ...props }) {
 	const t = useTranslation();
 
 	const replayOutgoingIntegration = useMethod('replayOutgoingIntegration');
@@ -34,14 +36,17 @@ function HistoryItem({ data, onChange, ...props }) {
 		integration: { _id: integrationId },
 	} = data;
 
-	const handleClickReplay = useCallback((e) => {
+	const createdAt = typeof _createdAt === 'string' ? _createdAt : _createdAt.toISOString();
+	const updatedAt = typeof _updatedAt === 'string' ? _updatedAt : _updatedAt.toISOString();
+
+	const handleClickReplay = useMutableCallback((e) => {
 		e.stopPropagation();
 		replayOutgoingIntegration({ integrationId, historyId: _id });
-		onChange();
-	}, [_id, integrationId, onChange, replayOutgoingIntegration]);
+	});
 
 	const formatDateAndTime = useFormatDateAndTime();
 
+	const dataSentToTriggerCode = useHighlightedCode('json', JSON.stringify(dataSentToTrigger || '', null, 2));
 	const prepareSentMessageCode = useHighlightedCode('json', JSON.stringify(prepareSentMessage || '', null, 2));
 	const processSentMessageCode = useHighlightedCode('json', JSON.stringify(processSentMessage || '', null, 2));
 	const httpCallDataCode = useHighlightedCode('json', JSON.stringify(httpCallData || '', null, 2));
@@ -73,7 +78,7 @@ function HistoryItem({ data, onChange, ...props }) {
 				<Field.Label>{t('Integration_Outgoing_WebHook_History_Time_Triggered')}</Field.Label>
 				<Field.Row>
 					<Box withRichContent w='full'>
-						<code>{_createdAt}</code>
+						<code>{createdAt}</code>
 					</Box>
 				</Field.Row>
 			</Field>
@@ -81,7 +86,7 @@ function HistoryItem({ data, onChange, ...props }) {
 				<Field.Label>{t('Integration_Outgoing_WebHook_History_Time_Ended_Or_Error')}</Field.Label>
 				<Field.Row>
 					<Box withRichContent w='full'>
-						<code>{_updatedAt}</code>
+						<code>{updatedAt}</code>
 					</Box>
 				</Field.Row>
 			</Field>
@@ -101,14 +106,14 @@ function HistoryItem({ data, onChange, ...props }) {
 					</Box>
 				</Field.Row>
 			</Field>
-			<Field>
+			{dataSentToTrigger && <Field>
 				<Field.Label>{t('Integration_Outgoing_WebHook_History_Data_Passed_To_Trigger')}</Field.Label>
 				<Field.Row>
 					<Box withRichContent w='full'>
-						<pre><code dangerouslySetInnerHTML={{ __html: useHighlightedCode('json', JSON.stringify(dataSentToTrigger, null, 2)) }}></code></pre>
+						<pre><code dangerouslySetInnerHTML={{ __html: dataSentToTriggerCode }}></code></pre>
 					</Box>
 				</Field.Row>
-			</Field>
+			</Field>}
 			{prepareSentMessage && <Field>
 				<Field.Label>{t('Integration_Outgoing_WebHook_History_Messages_Sent_From_Prepare_Script')}</Field.Label>
 				<Field.Row>
@@ -183,16 +188,15 @@ function HistoryContent({ data, state, onChange, ...props }) {
 		</Box>;
 	}
 
-	if (data.history.length < 1) {
+	if (data.length < 1) {
 		return <Box mbs='x16' {...props}>{t('Integration_Outgoing_WebHook_No_History')}</Box>;
 	}
 
 	return <>
 		<Accordion w='full' maxWidth='x600' alignSelf='center' key='content'>
-			{data.history.map((current) => <HistoryItem
+			{data.map((current) => <HistoryItem
 				data={current}
 				key={current._id}
-				onChange={onChange}
 			/>)}
 		</Accordion>
 	</>;
@@ -202,22 +206,33 @@ function OutgoingWebhookHistoryPage(props) {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const [cache, setCache] = useState();
+	const [currentData, setCurrentData] = useState();
 	const [current, setCurrent] = useState();
 	const [itemsPerPage, setItemsPerPage] = useState();
-	const onChange = useCallback(() => {
-		setCache(new Date());
-	}, []);
+
+	const [mounted, setMounted] = useState(false);
+	const [total, setTotal] = useState(0);
 
 	const router = useRoute('admin-integrations');
 
 	const clearHistory = useMethod('clearIntegrationHistory');
 
+	const id = useRouteParameter('id');
+
+	const query = useMemo(() => ({
+		id,
+		count: itemsPerPage,
+		offset: current,
+	}), [id, itemsPerPage, current]);
+
+	const { data, state, reload } = useEndpointDataExperimental('integrations.history', query);
+
 	const handleClearHistory = async () => {
 		try {
 			await clearHistory();
 			dispatchToastMessage({ type: 'success', message: t('Integration_History_Cleared') });
-			onChange();
+			reload();
+			setMounted(false);
 		} catch (e) {
 			dispatchToastMessage({ type: 'error', message: e });
 		}
@@ -227,16 +242,42 @@ function OutgoingWebhookHistoryPage(props) {
 		router.push({ });
 	};
 
-	const id = useRouteParameter('id');
+	const handleDataChange = useMutableCallback(({ type, id, diff, data }) => {
+		if (type === 'inserted') {
+			setTotal((total) => total + 1);
+			setCurrentData((state) => [data].concat(state));
+			return;
+		}
 
-	const query = useMemo(() => ({
-		id,
-		count: itemsPerPage,
-		offset: current,
-		// TODO: remove cache. Is necessary for data validation
-	}), [id, itemsPerPage, current, cache]);
+		if (type === 'updated') {
+			setCurrentData((state) => {
+				const index = state.findIndex(({ _id }) => _id === id);
+				Object.assign(state[index], diff);
+				return state;
+			});
+			return;
+		}
 
-	const { data, state } = useEndpointDataExperimental('integrations.history', query);
+		if (type === 'removed') {
+			setCurrentData([]);
+		}
+	});
+
+	useEffect(() => {
+		if (state === ENDPOINT_STATES.DONE && !mounted) {
+			setCurrentData(data.history);
+			setTotal(data.total);
+			setMounted(true);
+		}
+	}, [data, mounted, state]);
+
+	useEffect(() => {
+		if (mounted) {
+			integrationHistoryStreamer.on(id, handleDataChange);
+		}
+
+		return () => integrationHistoryStreamer.removeListener(id, handleDataChange);
+	}, [handleDataChange, id, mounted]);
 
 	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
 
@@ -246,19 +287,19 @@ function OutgoingWebhookHistoryPage(props) {
 				<Button onClick={handleClickReturn}>
 					<Icon name='back' size='x16'/> {t('Back')}
 				</Button>
-				<Button primary danger onClick={handleClearHistory} disabled={!(data && data.history.length > 0)}>
+				<Button primary danger onClick={handleClearHistory} disabled={total === 0}>
 					<Icon name='trash'/> {t('clear_history')}
 				</Button>
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>
-			<HistoryContent key='historyContent' data={data} state={state} onChange={onChange} />
+			<HistoryContent key='historyContent' data={currentData} state={state} />
 			<Pagination
 				current={current}
 				itemsPerPage={itemsPerPage}
 				itemsPerPageLabel={t('Items_per_page:')}
 				showingResultsLabel={showingResultsLabel}
-				count={(data && data.total) || 0}
+				count={total}
 				onSetItemsPerPage={setItemsPerPage}
 				onSetCurrent={setCurrent}
 			/>
