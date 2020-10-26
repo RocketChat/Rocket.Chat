@@ -148,7 +148,6 @@
 		"@types/mkdirp": "^1.0.1",
 		"@types/underscore.string": "0.0.38",
 		"@types/use-subscription": "^1.0.0",
-		"@types/wolfy87-eventemitter": "^5.2.0",
 		"@types/xml-crypto": "^1.4.1",
 		"@types/xmldom": "^0.1.30",
 		"adm-zip": "RocketChat/adm-zip",
