@@ -61,8 +61,6 @@ export function withData(WrappedComponent) {
 			return new Promise((resolve) => { ref.current = resolve; });
 		}, []);
 
-		useEffect(() => () => Threads.current.remove({}, () => {}), [text, type]);
-
 		useEffect(() => {
 			if (state !== ENDPOINT_STATES.DONE || !data || !data.threads) {
 				return;
@@ -71,10 +69,8 @@ export function withData(WrappedComponent) {
 			data.threads.forEach(({ _id, ...message }) => {
 				Threads.current.upsert({ _id }, filterProps(message));
 			});
-
-			ref.current && ref.current();
-
 			setTotal(data.total);
+			ref.current && ref.current();
 		}, [data, state]);
 
 		useEffect(() => {
@@ -97,12 +93,18 @@ export function withData(WrappedComponent) {
 			const cursor = Tracker.autorun(() => {
 				const query = {
 					...type === 'subscribed' && { replies: { $in: [userId] } },
+					...type === 'unread' && { _id: { $in: subscription?.tunread } },
+					...text && {
+						$text: {
+							$search: text,
+						},
+					},
 				};
 				setThreads(Threads.current.find(query, { sort: { tlm: -1 } }).fetch().map(filterProps));
 			});
 
 			return () => cursor.stop();
-		}, [room._id, type, setThreads, userId]);
+		}, [room._id, type, setThreads, userId, subscription.tunread, text]);
 
 		const handleTextChange = useCallback((e) => {
 			setPagination({ skip: 0, count: LIST_SIZE });
