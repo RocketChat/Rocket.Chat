@@ -138,6 +138,19 @@ class NotificationClass {
 			items,
 		});
 	}
+
+  /**
+   * Expedite scheduled notifications for given user, to be scheduled now.
+   * Used when the user that was "online" becomes "away" or "offline".
+   * @param uid User ID
+   */
+	async expediteSheduleByUserId(uid: string) {
+		const updateResult = await NotificationQueue.expediteSheduleByUserId(uid);
+		if (updateResult.modifiedCount > 0) {
+			console.debug(`Expedited ${updateResult.modifiedCount} notifications for user ${uid}`);
+		}
+		return updateResult;
+	}
 }
 
 export const Notification = new NotificationClass();
