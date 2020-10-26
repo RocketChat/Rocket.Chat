@@ -5,7 +5,7 @@ import Busboy from 'busboy';
 import { API } from '../../../api/server';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings';
-import { Info, isNetworkError } from '../../../utils';
+import { Info } from '../../../utils';
 import { Settings, Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
 
@@ -61,8 +61,9 @@ export class AppsRestApi {
 		const fileHandler = this._handleFile;
 
 		const handleError = (message, e) => {
-			if (isNetworkError(e.code)) {
-				// air gapped environment, a.k.a. no internet to reach the marketplace
+			// when there is no `response` field in the error, it means the request
+			// couldn't even make it to the server
+			if (!e.hasOwnProperty('response')) {
 				orchestrator.getRocketChatLogger().error(message, e.message);
 				return API.v1.internalError('Could not reach the Marketplace');
 			}

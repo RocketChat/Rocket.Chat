@@ -18,4 +18,3 @@ export { placeholders } from '../lib/placeholders';
 export { templateVarHandler } from '../lib/templateVarHandler';
 export { mime } from '../lib/mimeTypes';
 export { secondsToHHMMSS } from '../lib/timeConverter';
-export { isNetworkError } from '../lib/isNetworkError';
