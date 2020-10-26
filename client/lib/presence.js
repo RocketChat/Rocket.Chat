@@ -1,8 +1,8 @@
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { APIClient } from '../../app/utils/client';
 
-export const Presence = new EventEmitter();
+export const Presence = new Emitter();
 
 const Statuses = new Map();
 
