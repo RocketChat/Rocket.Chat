@@ -1,5 +1,5 @@
 import { ResponsivePie } from '@nivo/pie';
-import { Box, Flex, Icon, Margins, Select, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
+import { Box, Flex, Icon, Margins, Select, Skeleton, Table, Tile, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
@@ -7,7 +7,6 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
-import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 export function MessagesPerChannelSection() {
@@ -74,7 +73,7 @@ export function MessagesPerChannelSection() {
 
 	return <Section
 		title={t('Where_are_the_messages_being_sent?')}
-		filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton mis='x16' disabled={!pieData} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
+		filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton small mis='x16' disabled={!pieData} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
 	>
 		<Flex.Container>
 			<Margins inline='neg-x12'>
