@@ -2,10 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { TimeSync } from 'meteor/mizzao:timesync';
-import { UserPresence } from 'meteor/konecty:user-presence';
 import { Accounts } from 'meteor/accounts-base';
 import toastr from 'toastr';
-
 
 import hljs from '../../app/markdown/lib/hljs';
 import { fireGlobalEvent, alerts } from '../../app/ui-utils';
@@ -13,6 +11,7 @@ import { getUserPreference, t } from '../../app/utils';
 import { hasPermission } from '../../app/authorization/client';
 import 'highlight.js/styles/github.css';
 import { synchronizeUserData } from '../lib/userData';
+import { UserPresence } from '../../app/presence/client/client';
 
 hljs.initHighlightingOnLoad();
 

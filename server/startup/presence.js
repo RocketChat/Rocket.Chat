@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
-import { UserPresence } from 'meteor/konecty:user-presence';
 
 import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
 import UsersSessionsModel from '../../app/models/server/models/UsersSessions';
+import { UserPresence } from '../../app/presence/server/server';
 
 Meteor.startup(function() {
 	const instance = {

@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
@@ -20,6 +19,8 @@ import { integrations } from '../../../app/integrations/server/lib/triggerHandle
 import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
 import notifications from '../../../app/notifications/server/lib/Notifications';
 import { hasRole } from '../../../app/authorization/server';
+import { UserPresenceMonitor } from '../../../app/presence/server/monitor';
+import { UserPresence } from '../../../app/presence/server/server';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
