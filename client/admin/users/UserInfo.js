@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -6,7 +7,7 @@ import { UserInfo } from '../../components/basic/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import * as UserStatus from '../../components/basic/UserStatus';
+import { UserStatus } from '../../components/basic/UserStatus';
 import UserCard from '../../components/basic/UserCard';
 import { UserInfoActions } from './UserInfoActions';
 import { FormSkeleton } from './Skeleton';
@@ -48,7 +49,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			customFields: { ...user.customFields, ...approveManuallyUsers && user.active === false && user.reason && { Reason: user.reason } },
 			email: getUserEmailAddress(user),
 			createdAt: user.createdAt,
-			status: UserStatus.getStatus(status),
+			status: <UserStatus status={status} />,
 			customStatus: statusText,
 			nickname,
 		};

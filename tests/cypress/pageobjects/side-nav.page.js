@@ -22,7 +22,7 @@ class SideNav extends Page {
 
 	get sidebarHeader() { return browser.element('.sidebar__header'); }
 
-	get sidebarUserMenu() { return browser.element('.sidebar__header .avatar'); }
+	get sidebarUserMenu() { return browser.element('[data-qa="sidebar-avatar-button"]'); }
 
 	get sidebarMenu() { return browser.element('.sidebar__toolbar-button-icon--menu'); }
 
@@ -45,19 +45,19 @@ class SideNav extends Page {
 	get sideNavBar() { return browser.element('.sidebar'); }
 
 	// Toolbar
-	get spotlightSearchIcon() { return browser.element('.sidebar__toolbar-button-icon--magnifier'); }
+	get spotlightSearchIcon() { return browser.element('[data-qa="sidebar-search"]'); }
 
-	get spotlightSearch() { return browser.element('.toolbar__search input'); }
+	get spotlightSearch() { return browser.element('[data-qa="sidebar-search-input"]'); }
 
-	get spotlightSearchPopUp() { return browser.element('.rooms-list__toolbar-search'); }
+	get spotlightSearchPopUp() { return browser.element('[data-qa="sidebar-search-result"]'); }
 
-	get newChannelBtnToolbar() { return browser.element('.sidebar__toolbar-button-icon--edit-rounded'); }
+	get newChannelBtnToolbar() { return browser.element('[data-qa="sidebar-create"]'); }
 
-	get newChannelBtn() { return browser.element('.rc-popover__icon-element--hashtag'); }
+	get newChannelBtn() { return browser.element('[data-qa="sidebar-create-dm"]'); }
 
-	get newDiscussionBtn() { return browser.element('.rc-popover__icon-element--discussion'); }
+	get newDiscussionBtn() { return browser.element('[data-qa="sidebar-create-discussion"]'); }
 
-	get newChannelIcon() { return browser.element('.toolbar__icon.toolbar__search-create-channel'); }
+	get newChannelIcon() { return browser.element('[data-qa="sidebar-create-channel"]'); }
 
 	// Rooms List
 	get general() { return this.getChannelFromList('general'); }
@@ -65,8 +65,6 @@ class SideNav extends Page {
 	get channelLeave() { return browser.element('.leave-room'); }
 
 	get channelHoverIcon() { return browser.element('.rooms-list > .wrapper > ul [title="general"] .icon-eye-off'); }
-
-	get moreChannels() { return browser.element('.rooms-list .more-channels'); }
 
 	// Account
 	get preferences() { return browser.element('[href="/account/preferences"]'); }
@@ -89,7 +87,7 @@ class SideNav extends Page {
 
 	// Opens a channel via rooms list
 	openChannel(channelName) {
-		cy.contains('.sidebar-item__ellipsis', channelName).scrollIntoView().click();
+		cy.contains('[data-qa="sidebar-item-title"]', channelName).scrollIntoView().click();
 		cy.get('.rc-header__name').should('contain', channelName);
 	}
 
@@ -98,15 +96,16 @@ class SideNav extends Page {
 		this.spotlightSearch.should('be.visible');
 		this.spotlightSearch.should('have.focus');
 		this.spotlightSearch.type(channelName);
+		cy.wait(500);
 
-		cy.get(`.rooms-list__toolbar-search [aria-label='${ channelName }']`).click();
+		cy.get(`[data-qa='sidebar-item'][aria-label='${ channelName }']:first-child`).click();
 
 		cy.get('.rc-header__name').should('contain', channelName);
 	}
 
 	// Gets a channel from the rooms list
 	getChannelFromList(channelName) {
-		return cy.get('.sidebar-item__name').contains(channelName);
+		return cy.get('[data-qa="sidebar-item-title"]').contains(channelName);
 	}
 
 	createChannel(channelName, isPrivate /* isReadOnly*/) {
