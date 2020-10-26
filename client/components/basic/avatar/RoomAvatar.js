@@ -1,10 +1,11 @@
 import React from 'react';
 
-import { roomTypes } from '../../../../app/utils/client';
 import BaseAvatar from './BaseAvatar';
+import { useRoomAvatarPath } from '../../../contexts/AvatarUrlContext';
 
-function RoomAvatar({ room: { type, ...room }, ...rest }) {
-	const { url = roomTypes.getConfig(type).getAvatarPath({ username: room._id, ...room }), ...props } = rest;
+function RoomAvatar({ room, ...rest }) {
+	const getRoomPathAvatar = useRoomAvatarPath();
+	const { url = getRoomPathAvatar(room), ...props } = rest;
 	return <BaseAvatar url={url} {...props}/>;
 }
 

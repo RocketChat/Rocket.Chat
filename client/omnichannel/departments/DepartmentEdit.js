@@ -141,9 +141,15 @@ export function EditDepartment({ data, id, title, reload }) {
 	const [tagError, setTagError] = useState();
 
 
-	useComponentDidUpdate(() => setNameError(!name ? t('The_field_is_required', 'name') : ''), [t, name]);
-	useComponentDidUpdate(() => setEmailError(!email ? t('The_field_is_required', 'email') : ''), [t, email]);
-	useComponentDidUpdate(() => setTagError(requestTagBeforeClosingChat && (!tags || tags.length === 0) ? t('The_field_is_required', 'name') : ''), [t, tags]);
+	useComponentDidUpdate(() => {
+		setNameError(!name ? t('The_field_is_required', 'name') : '');
+	}, [t, name]);
+	useComponentDidUpdate(() => {
+		setEmailError(!email ? t('The_field_is_required', 'email') : '');
+	}, [t, email]);
+	useComponentDidUpdate(() => {
+		setTagError(requestTagBeforeClosingChat && (!tags || tags.length === 0) ? t('The_field_is_required', 'name') : '');
+	}, [requestTagBeforeClosingChat, t, tags]);
 
 	const handleSubmit = useMutableCallback(async (e) => {
 		e.preventDefault();

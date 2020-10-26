@@ -98,9 +98,9 @@ function SetupWizardState() {
 		canDeclineServerRegistration,
 	} = useParameters();
 
-	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), []);
-	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), []);
-	const goToFinalStep = useCallback(() => setCurrentStep(finalStep), []);
+	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
+	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
+	const goToFinalStep = useCallback(() => setCurrentStep(finalStep), [setCurrentStep]);
 
 	const value = useMemo(() => ({
 		currentStep,

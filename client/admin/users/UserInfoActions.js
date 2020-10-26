@@ -26,6 +26,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 	const canEditOtherUserInfo = usePermission('edit-other-user-info');
 	const canAssignAdminRole = usePermission('assign-admin-role');
 	const canResetE2EEKey = usePermission('edit-other-user-e2ee');
+	const canResetTOTP = usePermission('edit-other-user-totp');
 	const canEditOtherUserActiveStatus = usePermission('edit-other-user-active-status');
 	const canDeleteUser = usePermission('delete-user');
 
@@ -98,6 +99,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 	}, [_id, dispatchToastMessage, isAdmin, onChange, setAdminStatus, t]);
 
 	const resetE2EEKeyRequest = useEndpoint('POST', 'users.resetE2EKey');
+	const resetTOTPRequest = useEndpoint('POST', 'users.resetTOTP');
 	const resetE2EEKey = useCallback(async () => {
 		setModal();
 		const result = await resetE2EEKeyRequest({ userId: _id });
@@ -110,6 +112,18 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		}
 	}, [resetE2EEKeyRequest, onChange, setModal, t, _id]);
 
+	const resetTOTP = useCallback(async () => {
+		setModal();
+		const result = await resetTOTPRequest({ userId: _id });
+
+		if (result) {
+			setModal(<DeleteSuccessModal
+				children={t('Users_TOTP_has_been_reset')}
+				onClose={() => { setModal(); onChange(); }}
+			/>);
+		}
+	}, [resetTOTPRequest, onChange, setModal, t, _id]);
+
 	const confirmResetE2EEKey = useCallback(() => {
 		setModal(<DeleteWarningModal
 			children={t('E2E_Reset_Other_Key_Warning')}
@@ -118,6 +132,15 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 			onDelete={resetE2EEKey}
 		/>);
 	}, [resetE2EEKey, t, setModal]);
+
+	const confirmResetTOTP = useCallback(() => {
+		setModal(<DeleteWarningModal
+			children={t('TOTP_Reset_Other_Key_Warning')}
+			deleteText={t('Reset')}
+			onCancel={() => setModal()}
+			onDelete={resetTOTP}
+		/>);
+	}, [resetTOTP, t, setModal]);
 
 	const activeStatusQuery = useMemo(() => ({
 		userId: _id,
@@ -174,6 +197,11 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 			label: t('Reset_E2E_Key'),
 			action: confirmResetE2EEKey,
 		} },
+		...canResetTOTP && enforcePassword && { resetTOTP: {
+			icon: 'key',
+			label: t('Reset_TOTP'),
+			action: confirmResetTOTP,
+		} },
 		...canDeleteUser && { delete: {
 			icon: 'trash',
 			label: t('Delete'),
@@ -200,15 +228,36 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		changeActiveStatus,
 		enforcePassword,
 		canResetE2EEKey,
+		canResetTOTP,
 		confirmResetE2EEKey,
+		confirmResetTOTP,
 		username,
 	]);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(options);
 
-	const menu = menuOptions && <Menu mi='x4' placement='bottom-start' small={false} ghost={false} flexShrink={0} key='menu' renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>} options={menuOptions}/>;
+	const menu = useMemo(() => {
+		if (!menuOptions) {
+			return null;
+		}
 
-	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
+		return <Menu
+			mi='x4'
+			placement='bottom-start'
+			small={false}
+			ghost={false}
+			flexShrink={0}
+			key='menu'
+			renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>}
+			options={menuOptions}
+		/>;
+	}, [menuOptions]);
+
+	const actions = useMemo(() => {
+		const mapAction = ([key, { label, icon, action }]) =>
+			<UserInfo.Action key={key} title={label} label={label} onClick={action} icon={icon}/>;
+		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
+	}, [actionsDefinition, menu]);
 
 	return <ButtonGroup flexGrow={0} justifyContent='center'>
 		{actions}

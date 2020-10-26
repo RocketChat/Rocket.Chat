@@ -84,6 +84,7 @@ export interface IRole {
 
 export interface IUser {
 	_id: string;
+	avatarETag: string;
 	createdAt: Date;
 	roles: string[];
 	type: string;
@@ -114,3 +115,19 @@ export interface IUser {
 	};
 	settings?: IUserSettings;
 }
+
+export type IUserDataEvent = {
+	id: unknown;
+}
+& (
+	({
+		type: 'inserted';
+	} & IUser)
+	| ({
+		type: 'removed';
+	})
+	| ({
+		type: 'updated';
+		diff: Partial<IUser>;
+	})
+)

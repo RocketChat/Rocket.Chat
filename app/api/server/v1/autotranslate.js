@@ -22,6 +22,7 @@ API.v1.addRoute('autotranslate.saveSettings', { authRequired: true }, {
 		if (!settings.get('AutoTranslate_Enabled')) {
 			return API.v1.failure('AutoTranslate is disabled.');
 		}
+
 		if (!roomId) {
 			return API.v1.failure('The bodyParam "roomId" is required.');
 		}

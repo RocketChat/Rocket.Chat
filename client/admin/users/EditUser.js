@@ -60,14 +60,12 @@ export function EditUser({ data, roles, ...props }) {
 	const saveQuery = useMemo(() => ({
 		userId: data._id,
 		data: values,
-		// TODO: remove JSON.stringify. Is used to keep useEndpointAction from rerendering the page indefinitely.
-	}), [data._id, JSON.stringify(values)]);
+	}), [data._id, values]);
 
 	const saveAvatarQuery = useMemo(() => ({
 		userId: data._id,
 		avatarUrl: avatarObj && avatarObj.avatarUrl,
-		// TODO: remove JSON.stringify. Is used to keep useEndpointAction from rerendering the page indefinitely.
-	}), [data._id, JSON.stringify(avatarObj)]);
+	}), [data._id, avatarObj]);
 
 	const resetAvatarQuery = useMemo(() => ({
 		userId: data._id,
