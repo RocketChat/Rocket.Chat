@@ -1,5 +1,3 @@
-// import { UserPresenceEvents } from 'meteor/konecty:user-presence';
-
 // import { Livechat } from './lib/Livechat';
 // import { hasRole } from '../../authorization';
 

@@ -1,7 +1,6 @@
-import { UserPresenceEvents } from 'meteor/konecty:user-presence';
-
 import { settings } from '../../../app/settings/server';
 import { api } from '../../../server/sdk/api';
+import { UserPresenceEvents } from '../../../app/presence/server/monitor';
 
 // mirror of object in /imports/startup/client/listenActiveUsers.js - keep updated
 export const STATUS_MAP = {

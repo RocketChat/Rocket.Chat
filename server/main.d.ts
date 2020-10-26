@@ -1,7 +1,3 @@
-import { EJSON } from 'meteor/ejson';
-import { Db, Collection } from 'mongodb';
-
-import { IStreamerConstructor } from './modules/streamer/streamer.module';
 
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 declare module 'meteor/random' {
@@ -28,6 +24,15 @@ declare module 'meteor/accounts-base' {
 	}
 }
 
+interface IConnection {
+	id: string;
+	close: Function;
+	onClose: Function;
+	clientAddress: string;
+	httpHeaders: Record<string, any>;
+	metadata: Record<string, any>;
+}
+
 declare module 'meteor/meteor' {
 	type globalError = Error;
 	namespace Meteor {
@@ -40,7 +45,7 @@ declare module 'meteor/meteor' {
 			details?: string | undefined | Record<string, string>;
 		}
 
-		const Streamer: IStreamerConstructor;
+		const Streamer: import('./modules/streamer/streamer.module').IStreamerConstructor;
 
 		const server: any;
 
@@ -49,13 +54,33 @@ declare module 'meteor/meteor' {
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;
 		}
+
+		type Connection = IConnection;
+
+		interface User {
+			_id: string;
+			username?: string;
+			emails?: UserEmail[];
+			createdAt?: Date;
+			profile?: any;
+			services?: any;
+			status?: string;
+			statusDefault?: string;
+		}
+	}
+}
+
+declare module 'meteor/accounts' {
+	namespace Accounts {
+		function onLogin(callback: (login: {user: {_id: string}; connection: IConnection}) => void): void;
+		function onLogout(callback: (login: {user: {_id: string}; connection: IConnection}) => void): void;
 	}
 }
 
 declare module 'meteor/ddp-common' {
 	namespace DDPCommon {
-		function stringifyDDP(msg: EJSON): string;
-		function parseDDP(msg: string): EJSON;
+		function stringifyDDP(msg: import('meteor/ejson').EJSON): string;
+		function parseDDP(msg: string): import('meteor/ejson').EJSON;
 	}
 }
 
@@ -101,9 +126,9 @@ declare module 'meteor/mongo' {
 		_defineTooFarBehind(value: number): void;
 	}
 	interface MongoConnection {
-		db: Db;
+		db: import('mongodb').Db;
 		_oplogHandle: OplogHandle;
-		rawCollection(name: string): Collection;
+		rawCollection(name: string): import('mongodb').Collection;
 	}
 
 	namespace MongoInternals {
