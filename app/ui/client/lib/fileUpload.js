@@ -260,6 +260,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			confirmButtonText: t('Send'),
 			cancelButtonText: t('Cancel'),
 			html: true,
+			allowOutsideClick: false,
 			onRendered: () => $('#file-name').focus(),
 		}, async (isConfirm) => {
 			if (!isConfirm) {
