@@ -3419,7 +3419,7 @@
 		}
 	}
 
-	& a {
+	& a:not(.rcx-box) {
 		font-weight: 300;
 	}
 
@@ -3430,7 +3430,7 @@
 		vertical-align: middle;
 	}
 
-	& header {
+	& header:not(.rcx-box) {
 		position: relative;
 		z-index: 1;
 
