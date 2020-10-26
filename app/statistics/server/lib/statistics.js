@@ -23,6 +23,7 @@ import { getStatistics as federationGetStatistics } from '../../../federation/se
 import { NotificationQueue } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
+import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 
 const wizardFields = [
 	'Organization_Type',
@@ -176,6 +177,8 @@ export const statistics = {
 		};
 
 		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
+
+		statistics.enterprise = getEnterpriseStatistics();
 
 		return statistics;
 	},

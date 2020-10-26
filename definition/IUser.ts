@@ -28,6 +28,7 @@ export interface IUserEmailCode {
 }
 
 type LoginToken = ILoginToken & IPersonalAccessToken;
+export type Username = string;
 
 export interface IUserServices {
 	password?: {

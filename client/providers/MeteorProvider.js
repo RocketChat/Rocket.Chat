@@ -5,6 +5,7 @@ import AvatarUrlProvider from './AvatarUrlProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import ModalProvider from './ModalProvider';
+import OmniChannelProvider from './OmniChannelProvider';
 import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
 import SessionProvider from './SessionProvider';
@@ -28,9 +29,11 @@ function MeteorProvider({ children }) {
 										<CustomSoundProvider>
 											<UserProvider>
 												<AuthorizationProvider>
-													<ModalProvider>
-														{children}
-													</ModalProvider>
+													<OmniChannelProvider>
+														<ModalProvider>
+															{children}
+														</ModalProvider>
+													</OmniChannelProvider>
 												</AuthorizationProvider>
 											</UserProvider>
 										</CustomSoundProvider>
