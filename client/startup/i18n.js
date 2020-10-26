@@ -57,6 +57,7 @@ Meteor.startup(() => {
 			return;
 		}
 		document.documentElement.classList[isRtl(language) ? 'add' : 'remove']('rtl');
+		document.documentElement.setAttribute('dir', isRtl(language) ? 'rtl' : 'ltr');
 		document.querySelector('html').lang = language;
 
 		TAPi18n.setLanguage(language);

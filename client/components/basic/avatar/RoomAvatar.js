@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import BaseAvatar from './BaseAvatar';
 import { useRoomAvatarPath } from '../../../contexts/AvatarUrlContext';
@@ -9,4 +9,4 @@ function RoomAvatar({ room, ...rest }) {
 	return <BaseAvatar url={url} {...props}/>;
 }
 
-export default RoomAvatar;
+export default memo(RoomAvatar);

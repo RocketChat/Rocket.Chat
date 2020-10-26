@@ -1,4 +1,4 @@
-import { Box, Icon, Margins, Pagination, Select, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
+import { Box, Icon, Margins, Pagination, Select, Skeleton, Table, Tile, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
@@ -6,7 +6,6 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import Growth from '../../../../../../client/components/data/Growth';
 import { Section } from '../Section';
-import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 export function TableSection() {
@@ -86,7 +85,7 @@ export function TableSection() {
 		downloadCsvAs(data, `Channels_start_${ params.start }_end_${ params.end }`);
 	};
 
-	return <Section filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton mis='x16' disabled={!channels} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}>
+	return <Section filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton small mis='x16' disabled={!channels} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}>
 		<Box>
 			{channels && !channels.length && <Tile fontScale='p1' color='info' style={{ textAlign: 'center' }}>
 				{t('No_data_found')}
