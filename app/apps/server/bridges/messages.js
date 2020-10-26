@@ -83,4 +83,14 @@ export class AppMessageBridge {
 				Notifications.notifyUser(_id, 'message', rmsg),
 			);
 	}
+
+	async typing({ scope, id, username, isTyping }) {
+		switch (scope) {
+			case 'room':
+				Notifications.notifyRoom(id, 'typing', username, isTyping);
+				return;
+			default:
+				throw new Error('Unrecognized typing scope provided');
+		}
+	}
 }
