@@ -1,12 +1,12 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
-import { IUser, Username } from './IUser';
+import { IUser } from './IUser';
 import { ChannelName, RoomID } from './IRoom';
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
 	ts: Date;
-	mentions?: Array<Username> | {
+	mentions?: {
 		_id: string;
 		name?: string;
 	}[];

@@ -13,7 +13,7 @@ export interface ISubscription extends IRocketChatRecord {
 
 	name: string;
 
-	alert?: true;
+	alert?: boolean;
 	unread: number;
 	t: RoomType;
 	ls: Date;

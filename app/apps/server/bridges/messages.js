@@ -2,6 +2,7 @@ import { Messages, Users, Subscriptions } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { api } from '../../../../server/sdk/api';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 export class AppMessageBridge {
 	constructor(orch) {
@@ -80,7 +81,7 @@ export class AppMessageBridge {
 	async typing({ scope, id, username, isTyping }) {
 		switch (scope) {
 			case 'room':
-				Notifications.notifyRoom(id, 'typing', username, isTyping);
+				notifications.notifyRoom(id, 'typing', username, isTyping);
 				return;
 			default:
 				throw new Error('Unrecognized typing scope provided');

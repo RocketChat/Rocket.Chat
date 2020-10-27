@@ -54,6 +54,7 @@ interface IChange<T> {
 	id: string;
 	data?: T;
 	diff?: Record<string, any>;
+	unset?: Record<string, number>;
 }
 
 type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>) => void) => void;

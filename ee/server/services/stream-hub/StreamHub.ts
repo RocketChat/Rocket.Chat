@@ -81,7 +81,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 							}
 						}
 
-						const unset = {};
+						const unset: Record<string, number> = {};
 						if (event.updateDescription.removedFields) {
 							for (const key in event.updateDescription.removedFields) {
 								if (event.updateDescription.removedFields.hasOwnProperty(key)) {
