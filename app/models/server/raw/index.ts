@@ -52,6 +52,8 @@ import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
 import { LivechatBusinessHoursRaw } from './LivechatBusinessHours';
 import ServerEventModel from '../models/ServerEvents';
 import { ServerEventsRaw } from './ServerEvents';
+import OmnichannelQueueModel from '../models/OmnichannelQueue';
+import { OmnichannelQueueRaw } from './OmnichannelQueue';
 
 export const Permissions = new PermissionsRaw(PermissionsModel.model.rawCollection());
 export const Roles = new RolesRaw(RolesModel.model.rawCollection());
@@ -80,3 +82,4 @@ export const Statistics = new StatisticsRaw(StatisticsModel.model.rawCollection(
 export const NotificationQueue = new NotificationQueueRaw(NotificationQueueModel.model.rawCollection());
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection());
 export const ServerEvents = new ServerEventsRaw(ServerEventModel.model.rawCollection());
+export const OmnichannelQueue = new OmnichannelQueueRaw(OmnichannelQueueModel.model.rawCollection());

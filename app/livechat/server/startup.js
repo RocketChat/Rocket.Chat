@@ -8,7 +8,6 @@ import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
-import { createLivechatQueueView } from './lib/Helper';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
@@ -91,7 +90,6 @@ Meteor.startup(async () => {
 		return user;
 	}, callbacks.priority.LOW, 'cant-join-room');
 
-	createLivechatQueueView();
 
 	const monitor = new LivechatAgentActivityMonitor();
 
