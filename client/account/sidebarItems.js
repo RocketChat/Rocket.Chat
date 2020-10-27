@@ -3,7 +3,7 @@ import { HTML } from 'meteor/htmljs';
 import { hasPermission } from '../../app/authorization/client';
 import { createTemplateForComponent } from '../reactAdapters';
 import { settings } from '../../app/settings';
-import { createSidebarItems } from '../helpers/createSidebarItems';
+import { createSidebarItems } from '../lib/createSidebarItems';
 
 createTemplateForComponent('accountFlex', () => import('./AccountSidebar'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap

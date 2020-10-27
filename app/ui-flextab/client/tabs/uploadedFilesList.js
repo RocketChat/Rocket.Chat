@@ -10,6 +10,7 @@ import { canDeleteMessage, getURL, handleError, t, APIClient } from '../../../ut
 import { popover, modal } from '../../../ui-utils/client';
 import { Rooms, Messages } from '../../../models/client';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
+import { download } from '../../../../client/lib/download';
 
 const LIST_SIZE = 50;
 const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
@@ -255,13 +256,10 @@ Template.uploadedFilesList.events({
 									icon: 'download',
 									name: t('Download'),
 									action: () => {
-										const a = document.createElement('a');
-										a.href = getURL(this.file.url);
-										a.download = this.file.name;
-										document.body.appendChild(a);
-										a.click();
-										window.URL.revokeObjectURL(this.file.url);
-										a.remove();
+										const URL = window.webkitURL ?? window.URL;
+										const href = getURL(this.file.url);
+										download(href, this.file.name);
+										URL.revokeObjectURL(this.file.url);
 									},
 								},
 							],

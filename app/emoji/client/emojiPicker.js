@@ -4,12 +4,12 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
+import { escapeRegExp } from '../../../client/lib/escapeRegExp';
+import '../../theme/client/imports/components/emojiPicker.css';
 import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
-
 import './emojiPicker.html';
-import '../../theme/client/imports/components/emojiPicker.css';
 
 const ESCAPE = 27;
 
@@ -50,7 +50,7 @@ function getEmojisBySearchTerm(searchTerm) {
 
 	EmojiPicker.currentCategory.set('');
 
-	const searchRegExp = new RegExp(RegExp.escape(searchTerm.replace(/:/g, '')), 'i');
+	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
 
 	for (let current in emoji.list) {
 		if (!emoji.list.hasOwnProperty(current)) {

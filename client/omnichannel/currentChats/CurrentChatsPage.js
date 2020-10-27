@@ -170,7 +170,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 		</Box>}
 		{allCustomFields && <Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4'>{t('Custom_fields')}:</Label>
+				<Label mb='x4'>{t('Custom_Fields')}:</Label>
 				<MultiSelect options={customFieldsOptions} value={customFields} onChange={handleCustomFields} flexGrow={1} {...props}/>
 			</Box>
 		</Box>}

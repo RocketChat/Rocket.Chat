@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import s from 'underscore.string';
-import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
+import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from 'react';
 import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -61,8 +61,6 @@ export function withData(WrappedComponent) {
 			return new Promise((resolve) => { ref.current = resolve; });
 		}, []);
 
-		useEffect(() => () => Threads.current.remove({}, () => {}), [text, type]);
-
 		useEffect(() => {
 			if (state !== ENDPOINT_STATES.DONE || !data || !data.threads) {
 				return;
@@ -71,10 +69,8 @@ export function withData(WrappedComponent) {
 			data.threads.forEach(({ _id, ...message }) => {
 				Threads.current.upsert({ _id }, filterProps(message));
 			});
-
-			ref.current && ref.current();
-
 			setTotal(data.total);
+			ref.current && ref.current();
 		}, [data, state]);
 
 		useEffect(() => {
@@ -97,12 +93,18 @@ export function withData(WrappedComponent) {
 			const cursor = Tracker.autorun(() => {
 				const query = {
 					...type === 'subscribed' && { replies: { $in: [userId] } },
+					...type === 'unread' && { _id: { $in: subscription?.tunread } },
+					...text && {
+						$text: {
+							$search: text,
+						},
+					},
 				};
 				setThreads(Threads.current.find(query, { sort: { tlm: -1 } }).fetch().map(filterProps));
 			});
 
 			return () => cursor.stop();
-		}, [room._id, type, setThreads, userId]);
+		}, [room._id, type, setThreads, userId, subscription.tunread, text]);
 
 		const handleTextChange = useCallback((e) => {
 			setPagination({ skip: 0, count: LIST_SIZE });
@@ -153,6 +155,45 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 };
 
+const Row = memo(function Row({
+	data,
+	index,
+	style,
+	showRealNames,
+	unread,
+	unreadUser,
+	unreadGroup,
+	userId,
+	onClick,
+}) {
+	const t = useTranslation();
+	const formatDate = useTimeAgo();
+
+	if (!data[index]) {
+		return <Skeleton style={style}/>;
+	}
+	const thread = data[index];
+	const msg = normalizeThreadMessage(thread);
+
+	const { name = thread.u.username } = thread.u;
+
+	return <Thread
+		{ ...thread }
+		name={showRealNames ? name : thread.u.username }
+		username={ thread.u.username }
+		style={style}
+		unread={unread.includes(thread._id)}
+		mention={unreadUser.includes(thread._id)}
+		all={unreadGroup.includes(thread._id)}
+		following={thread.replies && thread.replies.includes(userId)}
+		data-id={thread._id}
+		msg={msg}
+		t={t}
+		formatDate={formatDate}
+		handleFollowButton={handleFollowButton} onClick={onClick}
+	/>;
+});
+
 export function ThreadList({ total = 10, threads = [], room, unread = [], unreadUser = [], unreadGroup = [], type, setType, loadMoreItems, loading, onClose, error, userId, text, setText }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const threadsRef = useRef();
@@ -169,39 +210,23 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 			rid: room._id,
 			name: room.name,
 		});
-	}, [room._id, room.name]);
+	}, [channelRoute, room._id, room.name]);
 
-	const formatDate = useTimeAgo();
-
-	const options = useMemo(() => [['all', t('All')], ['following', t('Following')], ['unread', t('Unread')]], []);
+	const options = useMemo(() => [['all', t('All')], ['following', t('Following')], ['unread', t('Unread')]], [t]);
 
 	threadsRef.current = threads;
 
-	const rowRenderer = useCallback(React.memo(function rowRenderer({ data, index, style }) {
-		if (!data[index]) {
-			return <Skeleton style={style}/>;
-		}
-		const thread = data[index];
-		const msg = normalizeThreadMessage(thread);
-
-		const { name = thread.u.username } = thread.u;
-
-		return <Thread
-			{ ...thread }
-			name={showRealNames ? name : thread.u.username }
-			username={ thread.u.username }
-			style={style}
-			unread={unread.includes(thread._id)}
-			mention={unreadUser.includes(thread._id)}
-			all={unreadGroup.includes(thread._id)}
-			following={thread.replies && thread.replies.includes(userId)}
-			data-id={thread._id}
-			msg={msg}
-			t={t}
-			formatDate={formatDate}
-			handleFollowButton={handleFollowButton} onClick={onClick}
-		/>;
-	}), [unread, unreadUser, unreadGroup, showRealNames]);
+	const rowRenderer = useCallback(({ data, index, style }) => <Row
+		data={data}
+		index={index}
+		style={style}
+		showRealNames={showRealNames}
+		unread={unread}
+		unreadUser={unreadUser}
+		unreadGroup={unreadGroup}
+		userId={userId}
+		onClick={onClick}
+	/>, [showRealNames, unread, unreadUser, unreadGroup, userId, onClick]);
 
 	const isItemLoaded = useCallback((index) => index < threadsRef.current.length, []);
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
