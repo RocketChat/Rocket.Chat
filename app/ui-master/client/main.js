@@ -17,6 +17,7 @@ import { hasRole } from '../../authorization';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
 import { isSyncReady } from '../../../client/lib/userData';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
 
 function executeCustomScript(script) {
 	eval(script);//eslint-disable-line
@@ -28,6 +29,8 @@ function customScriptsOnLogout() {
 		executeCustomScript(script);
 	}
 }
+
+createTemplateForComponent('accountSecurity', () => import('../../../client/account/security/AccountSecurityPage'));
 
 callbacks.add('afterLogoutCleanUp', () => customScriptsOnLogout(), callbacks.priority.LOW, 'custom-script-on-logout');
 

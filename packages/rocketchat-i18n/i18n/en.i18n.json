@@ -2476,6 +2476,8 @@
   "Message_AudioRecorderEnabled_Description": "Requires 'audio/mp3' files to be an accepted media type within 'File Upload' settings.",
   "Message_BadWordsFilterList": "Add Bad Words to the Blacklist",
   "Message_BadWordsFilterListDescription": "Add List of Comma-separated list of bad words to filter",
+  "Message_BadWordsWhitelist": "Remove words from the Blacklist",
+  "Message_BadWordsWhitelistDescription": "Add a comma-separated list of words to be removed from filter",
   "Message_Characther_Limit": "Message Characther Limit",
   "MessageBox_view_mode": "MessageBox View Mode",
   "message_counter": "__counter__ message",
