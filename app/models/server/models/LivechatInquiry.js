@@ -128,23 +128,6 @@ export class LivechatInquiry extends Base {
 		return this.findOne(query);
 	}
 
-	async getDistinctQueuedDepartments() {
-		const collectionObj = this.model.rawCollection();
-		const aggregate = [
-			{
-				$match: { status: 'queued' },
-			},
-			{
-				$group: { _id: '$department' },
-			},
-			{
-				$project: { _id: 1 },
-			},
-		];
-
-		return collectionObj.aggregate(aggregate).toArray();
-	}
-
 	async getCurrentSortedQueueAsync({ _id, department }) {
 		const collectionObj = this.model.rawCollection();
 		const aggregate = [

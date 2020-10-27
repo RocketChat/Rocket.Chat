@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { LivechatInquiry, OmnichannelQueue, Users } from '../../../../../app/models';
+import { Users } from '../../../../../app/models';
+import { LivechatInquiry, OmnichannelQueue } from '../../../../../app/models/server/raw';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
@@ -165,50 +166,49 @@ export const LivechatEnterprise = {
 };
 
 const RACE_TIMEOUT = 1000;
-const QUEUE_TIMEOUT = 5000;
 
 const queueWorker = {
 	running: false,
-	pool: [],
-	activeQueues: [],
-	start() {
+	queues: [],
+	async start() {
 		if (this.running) {
 			return;
 		}
 
-		this.getActiveQueues();
-		OmnichannelQueue.initQueue();
+		await this.getActiveQueues();
+		await OmnichannelQueue.initQueue();
 		this.running = true;
-		this.execute();
+		return this.execute();
 	},
-	stop() {
+	async stop() {
 		this.running = false;
-		OmnichannelQueue.stopQueue();
+		return OmnichannelQueue.stopQueue();
 	},
 	async getActiveQueues() {
-		this.activeQueues = (await LivechatInquiry.getDistinctQueuedDepartments()).map(({ _id }) => _id);
-		setTimeout(this.getActiveQueues.bind(this), QUEUE_TIMEOUT);
+		// undefined = public queue(without department)
+		return [undefined].concat(await LivechatInquiry.getDistinctQueuedDepartments());
 	},
-	nextQueue() {
-		if (!this.pool.length) {
-			this.pool = [...this.activeQueues];
+	async nextQueue() {
+		if (!this.queues.length) {
+			this.queues = await this.getActiveQueues();
+			console.log(this.queues);
 		}
 
-		return this.pool.shift();
+		return this.queues.shift();
 	},
-	execute() {
+	async execute() {
 		if (!this.running) {
 			return;
 		}
 
-		const queue = this.nextQueue();
+		const queue = await this.nextQueue();
 		setTimeout(this.checkQueue.bind(this, queue), RACE_TIMEOUT);
 	},
 
 	async checkQueue(queue) {
-		if (OmnichannelQueue.lockQueue()) {
+		if (await OmnichannelQueue.lockQueue()) {
 			await processWaitingQueue(queue);
-			OmnichannelQueue.unlockQueue();
+			await OmnichannelQueue.unlockQueue();
 		}
 
 		this.execute();

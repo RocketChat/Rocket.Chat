@@ -122,11 +122,17 @@ export class UsersRaw extends BaseRaw {
 			{ $lookup: {
 				from: 'rocketchat_subscription',
 				let: { id: '$_id' },
-				pipeline: [
-					{ $match: { $expr: { $eq: ['$u._id', '$$id'] } } },
-					{ $match: { $expr: { $eq: ['$open', true] } } },
-					{ ...department && { $match: { $expr: { $eq: ['$department', department] } } } },
-				],
+				pipeline: [{
+					$match: {
+						$expr: {
+							$and: [
+								{ $eq: ['$u._id', '$$id'] },
+								{ $eq: ['$open', true] },
+								{ ...department && { $eq: ['$department', department] } },
+							],
+						},
+					},
+				}],
 				as: 'subs' },
 			},
 			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
