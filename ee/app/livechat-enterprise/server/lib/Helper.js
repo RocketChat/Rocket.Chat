@@ -101,7 +101,7 @@ export const dispatchWaitingQueueStatus = async (department) => {
 	});
 };
 
-const processWaitingQueue = async (department) => {
+export const processWaitingQueue = async (department) => {
 	const inquiry = LivechatInquiry.getNextInquiryQueued(department);
 	if (!inquiry) {
 		return;
@@ -116,7 +116,6 @@ const processWaitingQueue = async (department) => {
 
 	if (room && room.servedBy) {
 		const { _id: rid, servedBy: { _id: agentId } } = room;
-
 		return setTimeout(() => {
 			propagateAgentDelegated(rid, agentId);
 		}, 1000);
@@ -124,19 +123,6 @@ const processWaitingQueue = async (department) => {
 
 	const { departmentId } = room || {};
 	await dispatchWaitingQueueStatus(departmentId);
-};
-
-export const checkWaitingQueue = async (department) => {
-	if (!settings.get('Livechat_waiting_queue')) {
-		return;
-	}
-
-	const departments = (department && [department]) || LivechatDepartment.findEnabledWithAgents().fetch().map((department) => department._id);
-	if (departments.length === 0) {
-		return processWaitingQueue();
-	}
-
-	return Promise.all(departments.map(async (department) => processWaitingQueue(department)));
 };
 
 export const allowAgentSkipQueue = (agent) => {
