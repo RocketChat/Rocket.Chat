@@ -53,7 +53,7 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 	const hint = useMemo(() => i18nDescription && <MarkdownText content={tApp(i18nDescription)} />, [i18nDescription, tApp]);
 
 	let translatedValues;
-	if (values) {
+	if (values?.length) {
 		translatedValues = values.map((selectFieldEntry) => {
 			const { key, i18nLabel } = selectFieldEntry;
 
