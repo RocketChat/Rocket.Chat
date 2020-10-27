@@ -45,7 +45,6 @@ rocketchat:streamer
 rocketchat:version
 
 konecty:multiple-instances-status
-konecty:user-presence
 
 deepwell:bootstrap-datepicker2
 dispatch:run-as-user

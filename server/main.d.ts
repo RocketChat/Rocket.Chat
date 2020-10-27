@@ -70,13 +70,6 @@ declare module 'meteor/meteor' {
 	}
 }
 
-declare module 'meteor/accounts' {
-	namespace Accounts {
-		function onLogin(callback: (login: {user: {_id: string}; connection: IConnection}) => void): void;
-		function onLogout(callback: (login: {user: {_id: string}; connection: IConnection}) => void): void;
-	}
-}
-
 declare module 'meteor/ddp-common' {
 	namespace DDPCommon {
 		function stringifyDDP(msg: import('meteor/ejson').EJSON): string;

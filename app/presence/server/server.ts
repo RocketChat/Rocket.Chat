@@ -1,6 +1,6 @@
 import 'colors';
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts';
+import { Accounts } from 'meteor/accounts-base';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check, Match } from 'meteor/check';
 
@@ -12,20 +12,11 @@ const allowedStatus = ['online', 'away', 'busy', 'offline'];
 
 let logEnable = process.env.ENABLE_PRESENCE_LOGS === 'true';
 
-const log = function(msg: string, color: 'red' | 'grey' | 'green' | 'yellow'): void {
+const log = function(...args: any[]): void {
 	if (logEnable) {
-		if (color) {
-			console.log(msg[color]);
-		} else {
-			console.log(msg);
-		}
+		console.log(...args);
 	}
 };
-
-const logRed = (...args: any[]): void => log(args.join(' '), 'red');
-const logGrey = (...args: any[]): void => log(args.join(' '), 'grey');
-const logGreen = (...args: any[]): void => log(args.join(' '), 'green');
-const logYellow = (...args: any[]): void => log(args.join(' '), 'yellow');
 
 const checkUser = function(id?: string | null, userId?: string | null): boolean {
 	if (!id || !userId || id === userId) {
@@ -39,19 +30,13 @@ const checkUser = function(id?: string | null, userId?: string | null): boolean 
 	return true;
 };
 
-// type Connection = {
-// 	id: string;
-// 	metadata?: Record<string, any>;
-// 	onClose(callback: (...args: any[]) => void): void;
-// }
-
 export const UserPresence = {
 	activeLogs(): void {
 		logEnable = true;
 	},
 
 	removeConnectionsByInstanceId(instanceId: string): void {
-		logRed('[user-presence] removeConnectionsByInstanceId', instanceId);
+		log('[user-presence] removeConnectionsByInstanceId', instanceId);
 		const update = {
 			$pull: {
 				connections: {
@@ -64,7 +49,7 @@ export const UserPresence = {
 	},
 
 	removeAllConnections(): void {
-		logRed('[user-presence] removeAllConnections');
+		log('[user-presence] removeAllConnections');
 		UsersSessions.remove({});
 	},
 
@@ -94,7 +79,7 @@ export const UserPresence = {
 
 		status = status || 'online';
 
-		logGreen('[user-presence] createConnection', userId, connection.id, status, metadata);
+		log('[user-presence] createConnection', userId, connection.id, status, metadata);
 
 		const query = {
 			_id: userId,
@@ -102,10 +87,7 @@ export const UserPresence = {
 
 		const now = new Date();
 
-		let instanceId = undefined;
-		// if (Package['konecty:multiple-instances-status']) {
-		instanceId = InstanceStatus.id();
-		// }
+		const instanceId = InstanceStatus.id();
 
 		const update: {
 			$push: any;
@@ -140,7 +122,7 @@ export const UserPresence = {
 			return;
 		}
 
-		logGrey('[user-presence] setConnection', userId, connection.id, status);
+		log('[user-presence] setConnection', userId, connection.id, status);
 
 		const query = {
 			_id: userId,
@@ -182,7 +164,7 @@ export const UserPresence = {
 			return;
 		}
 
-		logYellow('[user-presence] setDefaultStatus', userId, status);
+		log('[user-presence] setDefaultStatus', userId, status);
 
 		const update = Users.update({ _id: userId, statusDefault: { $ne: status } }, { $set: { statusDefault: status } });
 
@@ -192,7 +174,7 @@ export const UserPresence = {
 	},
 
 	removeConnection(connectionId: string): void {
-		logRed('[user-presence] removeConnection', connectionId);
+		log('[user-presence] removeConnection', connectionId);
 
 		const query = {
 			'connections.id': connectionId,
@@ -233,22 +215,16 @@ export const UserPresence = {
 		});
 
 		process.on('exit', Meteor.bindEnvironment(function() {
-			// if (Package['konecty:multiple-instances-status']) {
 			UserPresence.removeConnectionsByInstanceId(InstanceStatus.id());
-			// } else {
-			// 	UserPresence.removeAllConnections();
-			// }
 		}));
 
-		// if (Package['accounts-base']) {
-		Accounts.onLogin(function(login) {
+		Accounts.onLogin(function(login: {user: {_id: string}; connection: IConnection}) {
 			UserPresence.createConnection(login.user._id, login.connection);
 		});
 
 		Accounts.onLogout(function(login) {
 			UserPresence.removeConnection(login.connection.id);
 		});
-		// }
 
 		Meteor.publish(null, function() {
 			if (this.userId == null && this.connection && this.connection.id) {
