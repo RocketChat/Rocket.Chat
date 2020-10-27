@@ -17,7 +17,7 @@ callbacks.add('beforeSaveMessage', function(message) {
 		}
 		const filter = new Filter(options);
 
-		if (!!whiteList && whiteList.length) {
+		if (whiteList?.length) {
 			whiteList = whiteList.split(',').map((word) => word.trim());
 			filter.removeWords(...whiteList);
 		}
