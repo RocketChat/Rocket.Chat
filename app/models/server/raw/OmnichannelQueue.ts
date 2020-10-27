@@ -4,11 +4,11 @@ import {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { IQueue } from '../../../../definition/IOmnichannel';
+import { IOmnichannelQueueStatus } from '../../../../definition/IOmnichannel';
 
 const UNIQUE_QUEUE_ID = 'queue';
 export class OmnichannelQueueRaw extends BaseRaw {
-	public readonly col!: Collection<IQueue>;
+	public readonly col!: Collection<IOmnichannelQueueStatus>;
 
 	initQueue() {
 		return this.col.updateOne({
