@@ -86,12 +86,15 @@ const AccountProfilePage = () => {
 	const allowUserAvatarChange = useSetting('Accounts_AllowUserAvatarChange');
 	const allowDeleteOwnAccount = useSetting('Accounts_AllowDeleteOwnAccount');
 	const ldapEnabled = useSetting('LDAP_Enable');
+	const ldapUsernameField = useSetting('LDAP_Username_Field');
+	// whether the username is forced to match LDAP:
+	const ldapUsernameLinked = ldapEnabled && ldapUsernameField;
 	const requireName = useSetting('Accounts_RequireNameForSignUp');
 	const namesRegexSetting = useSetting('UTF8_Names_Validation');
 
 	const namesRegex = useMemo(() => new RegExp(`^${ namesRegexSetting }$`), [namesRegexSetting]);
 
-	const canChangeUsername = allowUsernameChange && !ldapEnabled;
+	const canChangeUsername = allowUsernameChange && !ldapUsernameLinked;
 
 	const settings = useMemo(() => ({
 		allowRealNameChange,
