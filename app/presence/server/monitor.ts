@@ -17,10 +17,6 @@ function monitorDeletedServers(): void {
 }
 
 function removeLostConnections(): void {
-	// if (!Package['konecty:multiple-instances-status']) {
-	// 	return UsersSessions.remove({});
-	// }
-
 	const ids = InstanceStatus.getCollection().find({}, { fields: { _id: 1 } }).fetch().map(function(id: {_id: string}) {
 		return id._id;
 	});
@@ -61,9 +57,7 @@ export const UserPresenceMonitor = {
 
 		removeLostConnections();
 
-		// if (Package['konecty:multiple-instances-status']) {
 		monitorDeletedServers();
-		// }
 	},
 
 	processUserSession(record: IUserSession, action: string): void {

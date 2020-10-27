@@ -21,6 +21,7 @@ import notifications from '../../../app/notifications/server/lib/Notifications';
 import { hasRole } from '../../../app/authorization/server';
 import { UserPresenceMonitor } from '../../../app/presence/server/monitor';
 import { UserPresence } from '../../../app/presence/server/server';
+import { USER_STATUS } from '../../../definition/UserStatus';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -132,23 +133,31 @@ export class MeteorService extends ServiceClass implements IMeteor {
 			setValue(setting._id, undefined);
 		});
 
-		this.onEvent('userpresence', ({ user }) => {
+		// this.onEvent('userpresence', ({ user }) => {
 
-		});
+		// });
 
 		// TODO: May need to merge with https://github.com/RocketChat/Rocket.Chat/blob/0ddc2831baf8340cbbbc432f88fc2cb97be70e9b/ee/server/services/Presence/Presence.ts#L28
 		if (!process.env.DISABLE_DB_WATCH) {
 			this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
+				if (!userSession._id) {
+					return;
+				}
+
 				if (clientAction === 'removed') {
 					UserPresenceMonitor.processUserSession({
 						_id: userSession._id,
 						connections: [{
-							fake: true,
+							id: 'fake',
+							instanceId: 'fake',
+							status: USER_STATUS.OFFLINE,
+							_createdAt: new Date(),
+							_updatedAt: new Date(),
 						}],
 					}, 'removed');
 				}
 
-				UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
+				UserPresenceMonitor.processUserSession({ ...userSession, _id: userSession._id }, minimongoChangeMap[clientAction]);
 			});
 
 			this.onEvent('watch.instanceStatus', async ({ clientAction, id, data }): Promise<void> => {
