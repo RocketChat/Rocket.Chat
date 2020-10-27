@@ -60,10 +60,17 @@ export function handleInstallError(apiError) {
 	toastr.error(message);
 }
 
+const shouldHandleErrorAsWarning = (message) => {
+	const warnings = [
+		'Could not reach the Marketplace',
+	];
+
+	return warnings.includes(message);
+};
+
 export const handleAPIError = (error) => {
-	console.error(error);
 	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
-	toastr.error(message);
+	shouldHandleErrorAsWarning(message) ? toastr.warning(message) : toastr.error(message);
 };
 
 export const warnStatusChange = (appName, status) => {

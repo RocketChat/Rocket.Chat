@@ -53,7 +53,7 @@ module.exports = async ({ config }) => {
 			require.resolve('./mocks/meteor.js'),
 		),
 		new webpack.NormalModuleReplacementPlugin(
-			/\/server(\/index.js)$/,
+			/(app)\/*.*\/(server)\/*/,
 			require.resolve('./mocks/empty.js'),
 		),
 	);
