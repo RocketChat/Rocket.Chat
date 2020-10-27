@@ -1,4 +1,4 @@
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -13,7 +13,7 @@ import { modal } from '../../ui-utils';
 import { ChatSubscription } from '../../models';
 import { WEB_RTC_EVENTS } from '..';
 
-class WebRTCTransportClass extends EventEmitter {
+class WebRTCTransportClass extends Emitter {
 	constructor(webrtcInstance) {
 		super();
 		this.debug = false;

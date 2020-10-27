@@ -1046,6 +1046,10 @@ settings.addGroup('Message', function() {
 		type: 'string',
 		public: true,
 	});
+	this.add('Message_BadWordsWhitelist', '', {
+		type: 'string',
+		public: true,
+	});
 	this.add('Message_KeepHistory', false, {
 		type: 'boolean',
 		public: true,
