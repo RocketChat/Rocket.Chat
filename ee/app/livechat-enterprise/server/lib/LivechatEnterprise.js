@@ -191,7 +191,6 @@ const queueWorker = {
 	async nextQueue() {
 		if (!this.queues.length) {
 			this.queues = await this.getActiveQueues();
-			console.log(this.queues);
 		}
 
 		return this.queues.shift();
