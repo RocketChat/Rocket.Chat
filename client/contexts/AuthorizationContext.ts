@@ -1,13 +1,13 @@
 import { createContext, useContext, useMemo, useCallback } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter, Handler } from '@rocket.chat/emitter';
 
 import { IRole } from '../../definition/IUser';
 
 type IRoles = { [_id: string]: IRole }
 
 
-export class RoleStore extends EventEmitter {
+export class RoleStore extends Emitter {
 	roles: IRoles = {};
 }
 
@@ -91,7 +91,7 @@ export const useRolesDescription = (): (ids: Array<string>) => [string] => {
 	const subscription = useMemo(
 		() => ({
 			getCurrentValue: (): IRoles => roleStore.roles,
-			subscribe: (callback: Function): () => void => {
+			subscribe: (callback: Handler): () => void => {
 				roleStore.on('change', callback);
 				return (): void => {
 					roleStore.off('change', callback);
