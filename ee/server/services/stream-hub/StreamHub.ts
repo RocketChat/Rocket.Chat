@@ -81,10 +81,12 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 							}
 						}
 
+						const unset = {};
 						if (event.updateDescription.removedFields) {
 							for (const key in event.updateDescription.removedFields) {
 								if (event.updateDescription.removedFields.hasOwnProperty(key)) {
 									diff[key] = undefined;
+									unset[key] = 1;
 								}
 							}
 						}
@@ -94,6 +96,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 							clientAction: 'updated',
 							id: event.documentKey._id,
 							diff,
+							unset,
 						});
 
 						break;

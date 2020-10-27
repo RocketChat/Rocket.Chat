@@ -214,10 +214,10 @@ export class ListenersModule {
 			notifications.streamRoomData.emitWithoutBroadcast(room._id, clientAction, room);
 		});
 
-		service.onEvent('watch.users', ({ clientAction, data, diff, id }): void => {
+		service.onEvent('watch.users', ({ clientAction, data, diff, unset, id }): void => {
 			switch (clientAction) {
 				case 'updated':
-					notifications.notifyUserInThisInstance(id, 'userData', { diff, type: clientAction });
+					notifications.notifyUserInThisInstance(id, 'userData', { diff, unset, type: clientAction });
 					break;
 				case 'inserted':
 					notifications.notifyUserInThisInstance(id, 'userData', { data, type: clientAction });

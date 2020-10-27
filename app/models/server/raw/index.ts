@@ -8,6 +8,8 @@ import SettingsModel from '../models/Settings';
 import { SettingsRaw } from './Settings';
 import UsersModel from '../models/Users';
 import { UsersRaw } from './Users';
+import SessionsModel from '../models/Sessions';
+import { SessionsRaw } from './Sessions';
 import RoomsModel from '../models/Rooms';
 import { RoomsRaw } from './Rooms';
 import LivechatCustomFieldModel from '../models/LivechatCustomField';
@@ -93,6 +95,7 @@ export const UsersSessions = new UsersSessionsRaw(UsersSessionsModel.model.rawCo
 export const LoginServiceConfiguration = new LoginServiceConfigurationRaw(LoginServiceConfigurationModel.model.rawCollection(), trashCollection);
 export const InstanceStatus = new InstanceStatusRaw(InstanceStatusModel.model.rawCollection(), trashCollection);
 export const IntegrationHistory = new IntegrationHistoryRaw(IntegrationHistoryModel.model.rawCollection(), trashCollection);
+export const Sessions = new SessionsRaw(SessionsModel.model.rawCollection(), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,

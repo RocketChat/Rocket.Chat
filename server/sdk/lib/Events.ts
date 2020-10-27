@@ -44,7 +44,7 @@ export type EventSignatures = {
 	'watch.userSessions'(data: { clientAction: string; userSession: Partial<IUserSession> }): void;
 	'watch.inquiries'(data: { clientAction: string; inquiry: IInquiry; diff?: Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: string; setting: ISetting }): void;
-	'watch.users'(data: { clientAction: string; data?: Partial<IUser>; diff?: Record<string, any>; id: string }): void;
+	'watch.users'(data: { clientAction: string; data?: Partial<IUser>; diff?: Record<string, any>; unset?: Record<string, number>; id: string }): void;
 	'watch.loginServiceConfiguration'(data: { clientAction: string; data: Partial<ILoginServiceConfiguration>; id: string }): void;
 	'watch.instanceStatus'(data: { clientAction: string; data?: Partial<IInstanceStatus>; diff?: Record<string, any>; id: string }): void;
 	'watch.integrationHistory'(data: { clientAction: string; data: Partial<IIntegrationHistory>; diff?: Record<string, any>; id: string }): void;

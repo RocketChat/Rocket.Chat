@@ -30,6 +30,7 @@ export interface IUserEmailCode {
 }
 
 type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
+export type Username = string;
 
 export interface IUserServices {
 	password?: {
@@ -132,5 +133,6 @@ export type IUserDataEvent = {
 	| ({
 		type: 'updated';
 		diff: Partial<IUser>;
+		unset: Record<keyof IUser, boolean | 0 | 1>;
 	})
 )

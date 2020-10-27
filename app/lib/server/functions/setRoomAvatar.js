@@ -12,6 +12,9 @@ export const setRoomAvatar = function(rid, dataURI, user) {
 
 	if (!dataURI) {
 		fileStore.deleteByRoomId(rid);
+		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
+		Notifications.notifyLogged('updateAvatar', { rid });
+
 		return Rooms.unsetAvatarData(rid);
 	}
 
@@ -27,6 +30,10 @@ export const setRoomAvatar = function(rid, dataURI, user) {
 	};
 
 	fileStore.insert(file, buffer, (err, result) => {
+		if (err) {
+			throw err;
+		}
+
 		Meteor.setTimeout(function() {
 			if (current) {
 				fileStore.deleteById(current._id);

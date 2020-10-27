@@ -169,7 +169,7 @@ class RFC2813 {
 		if (localCommandHandlers[command]) {
 			this.log(`Handling local command: ${ command }`);
 
-			localCommandHandlers[command].call(this, parameters);
+			localCommandHandlers[command].call(this, parameters, this);
 		} else {
 			this.log(`Unhandled local command: ${ JSON.stringify(command) }`);
 		}
