@@ -315,6 +315,7 @@ export class UsersRaw extends BaseRaw {
 			{
 				$match: {
 					createdAt: { $gte: start, $lte: end },
+					roles: { $ne: 'anonymous' },
 				},
 			},
 			{
@@ -516,5 +517,25 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	resetTOTPById(userId) {
+		return this.col.updateOne({
+			_id: userId,
+		}, {
+			$unset: {
+				'services.totp': 1,
+			},
+		});
+	}
+
+	removeResumeService(userId) {
+		return this.col.updateOne({
+			_id: userId,
+		}, {
+			$unset: {
+				'services.resume': 1,
+			},
+		});
 	}
 }

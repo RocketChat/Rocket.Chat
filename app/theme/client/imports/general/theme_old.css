@@ -82,14 +82,6 @@
 	background-color: var(--attention-color);
 }
 
-.tertiary-background-color {
-	background-color: var(--tertiary-background-color);
-}
-
-.border-tertiary-background-color {
-	border-color: var(--tertiary-background-color);
-}
-
 .color-tertiary-font-color {
 	color: var(--tertiary-font-color);
 }
@@ -418,16 +410,9 @@ i.status-online {
 	background-color: var(--rc-status-online);
 }
 
-.account-box .status-online .thumb::after,
-.account-box .status.online::after,
 .popup-user-status-online,
 .status-online::after {
 	background-color: var(--rc-status-online);
-}
-
-.account-box .status-offline .thumb::after,
-.account-box .status.offline::after {
-	background-color: var(--transparent-lighter);
 }
 
 i.status-away {
@@ -438,8 +423,6 @@ i.status-away {
 	background-color: var(--rc-status-away);
 }
 
-.account-box .status-away .thumb::after,
-.account-box .status.away::after,
 .popup-user-status-away,
 .status-away::after,
 .status-pending::after {
@@ -454,8 +437,6 @@ i.status-busy {
 	background-color: var(--rc-status-busy);
 }
 
-.account-box .status-busy .thumb::after,
-.account-box .status.busy::after,
 .popup-user-status-busy,
 .status-busy::after {
 	background-color: var(--rc-status-busy);
@@ -511,43 +492,4 @@ label.required::after {
 	to {
 		opacity: inherit;
 	}
-}
-
-.range-slider-range::-webkit-slider-thumb {
-	background-color: var(--button-primary-background);
-}
-
-.range-slider-range::-webkit-slider-thumb:hover {
-	opacity: 0.6;
-}
-
-.range-slider-range:active::-webkit-slider-thumb {
-	opacity: 0.9;
-}
-
-.range-slider-range::-moz-range-thumb {
-	background-color: var(--button-primary-background);
-}
-
-.range-slider-range::-moz-range-thumb:hover {
-	opacity: 0.6;
-}
-
-.range-slider-range:active::-moz-range-thumb {
-	opacity: 0.9;
-}
-
-.range-slider-range::-moz-range-track {
-	background-color: var(--tertiary-background-color);
-}
-
-.range-slider-value {
-	color: var(--button-primary-text-color);
-	background-color: var(--button-primary-background);
-}
-
-.range-slider-value::after {
-	border-top-color: transparent;
-	border-right-color: var(--rc-color-button-primary);
-	border-bottom-color: transparent;
 }

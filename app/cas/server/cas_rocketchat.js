@@ -13,6 +13,8 @@ Meteor.startup(function() {
 		this.add('CAS_login_url', '', { type: 'string', group: 'CAS', public: true });
 		this.add('CAS_version', '1.0', { type: 'select', values: [{ key: '1.0', i18nLabel: '1.0' }, { key: '2.0', i18nLabel: '2.0' }], group: 'CAS' });
 		this.add('CAS_trust_username', false, { type: 'boolean', group: 'CAS', public: true, i18nDescription: 'CAS_trust_username_description' });
+		// Enable/disable user creation
+		this.add('CAS_Creation_User_Enabled', true, { type: 'boolean', group: 'CAS' });
 
 		this.section('Attribute_handling', function() {
 			// Enable/disable sync

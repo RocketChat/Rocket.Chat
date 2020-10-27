@@ -41,7 +41,6 @@ Meteor.startup(() => {
 		<style>
 			body, body * {
 				animation: none !important;
-				transition: none !important;
 			}
 		</style>
 		<script>

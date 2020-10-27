@@ -1,5 +1,5 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
@@ -7,11 +7,7 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { Section } from '../Section';
-import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
-import { saveFile } from '../../../../../../client/lib/saveFile';
-
-const convertDataToCSV = (data) => `// date, newUsers
-${ data.map(({ date, newUsers }) => `${ date }, ${ newUsers }`).join('\n') }`;
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 export function NewUsersSection() {
 	const t = useTranslation();
@@ -87,12 +83,13 @@ export function NewUsersSection() {
 	}, [data, period]);
 
 	const downloadData = () => {
-		saveFile(convertDataToCSV(values), `NewUsersSection_start_${ params.start }_end_${ params.end }.csv`);
+		const data = values.map(({ data, newUsers }) => [data, newUsers]);
+		downloadCsvAs(data, `NewUsersSection_start_${ params.start }_end_${ params.end }`);
 	};
 
 	return <Section
 		title={t('New_users')}
-		filter={<><Select small options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton mis='x16' disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
+		filter={<><Select small options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton small mis='x16' disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
 	>
 		<CounterSet
 			counters={[

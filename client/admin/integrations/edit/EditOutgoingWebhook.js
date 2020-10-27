@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import {
 	Field,
 	Box,
@@ -7,7 +7,6 @@ import {
 	Button,
 } from '@rocket.chat/fuselage';
 
-import { SuccessModal, DeleteWarningModal } from './EditIntegrationsPage';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -17,15 +16,18 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useSetModal } from '../../../contexts/ModalContext';
 import OutgoingWebhookForm from '../OutgoiongWebhookForm';
 import { useForm } from '../../../hooks/useForm';
+import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
+import DeleteWarningModal from '../../../components/DeleteWarningModal';
 
 export default function EditOutgoingWebhookWithData({ integrationId, ...props }) {
 	const t = useTranslation();
-	const [cache, setCache] = useState();
 
-	// TODO: remove cache. Is necessary for data validation
-	const { data, state, error } = useEndpointDataExperimental('integrations.get', useMemo(() => ({ integrationId }), [integrationId, cache]));
+	const params = useMemo(() => ({ integrationId }), [integrationId]);
+	const { data, state, error, reload } = useEndpointDataExperimental('integrations.get', params);
 
-	const onChange = () => setCache(new Date());
+	const onChange = () => {
+		reload();
+	};
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box w='full' pb='x24' {...props}>
@@ -89,11 +91,20 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		const closeModal = () => setModal();
 		const onDelete = async () => {
 			const result = await deleteIntegration();
-			if (result.success) { setModal(<SuccessModal onClose={() => { closeModal(); router.push({}); }}/>); }
+			if (result.success) {
+				setModal(<DeleteSuccessModal
+					children={t('Your_entry_has_been_deleted')}
+					onClose={() => { closeModal(); router.push({}); }}
+				/>);
+			}
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDelete} onCancel={closeModal} />);
-	}, [deleteIntegration, router]);
+		setModal(<DeleteWarningModal
+			children={t('Integration_Delete_Warning')}
+			onDelete={onDelete}
+			onCancel={closeModal}
+		/>);
+	}, [deleteIntegration, router, setModal, t]);
 
 	const {
 		urls,

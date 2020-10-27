@@ -23,7 +23,7 @@ const RoomAutoComplete = React.memo((props) => {
 		renderSelected={({
 			value,
 			label,
-		}) => <><RoomAvatar size='x20' room={{ _id: value, ...label }} /> {label.name}</>}
+		}) => <><RoomAvatar size='x20' room={{ _id: value, ...label }} /> {label?.name}</>}
 		renderItem={({ value, label, ...props }) => <Option key={value} {...props} label={label.name} avatar={<Avatar value={value} {...label} />} />}
 		options={ options }
 	/>;

@@ -74,6 +74,9 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 
 	const message = new gcm.Message({
 		collapseKey: notification.from,
+		// Requires delivery of real-time messages to users while device is in Doze or app is in App Standby.
+		// https://developer.android.com/training/monitoring-device-state/doze-standby#exemption-cases
+		priority: 'high',
 		//    delayWhileIdle: true,
 		//    timeToLive: 4,
 		//    restricted_package_name: 'dk.gi2.app'

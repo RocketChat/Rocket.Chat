@@ -8,7 +8,9 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
+import { HTML } from 'meteor/htmljs';
 
+import { createTemplateForComponent } from '../../../../client/reactAdapters';
 import { messageArgs } from './messageArgs';
 import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
@@ -353,6 +355,28 @@ Meteor.startup(async function() {
 			return Boolean(subscription);
 		},
 		order: 17,
+		group: 'menu',
+	});
+
+	MessageAction.addButton({
+		id: 'reaction-list',
+		icon: 'emoji',
+		label: 'Reactions',
+		context: ['message', 'message-mobile', 'threads'],
+		action(_, roomInstance) {
+			const { msg: { reactions } } = messageArgs(this);
+
+			modal.open({
+				template: createTemplateForComponent('reactionList', () => import('./ReactionListContent'), {
+					renderContainerView: () => HTML.DIV({ style: 'margin: -16px; height: 100%; display: flex; flex-direction: column; overflow: hidden;' }), // eslint-disable-line new-cap
+				}),
+				data: { reactions, roomInstance, onClose: () => modal.close() },
+			});
+		},
+		condition({ msg: { reactions } }) {
+			return !!reactions;
+		},
+		order: 18,
 		group: 'menu',
 	});
 });

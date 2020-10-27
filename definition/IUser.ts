@@ -28,6 +28,7 @@ export interface IUserEmailCode {
 }
 
 type LoginToken = ILoginToken & IPersonalAccessToken;
+export type Username = string;
 
 export interface IUserServices {
 	password?: {
@@ -73,8 +74,18 @@ export interface IUserSettings {
 	};
 }
 
+export interface IRole {
+	description: string;
+	mandatory2fa?: boolean;
+	name: string;
+	protected: boolean;
+	scope?: string;
+	_id: string;
+}
+
 export interface IUser {
 	_id: string;
+	avatarETag: string;
 	createdAt: Date;
 	roles: string[];
 	type: string;
@@ -105,3 +116,20 @@ export interface IUser {
 	};
 	settings?: IUserSettings;
 }
+
+export type IUserDataEvent = {
+	id: unknown;
+}
+& (
+	({
+		type: 'inserted';
+	} & IUser)
+	| ({
+		type: 'removed';
+	})
+	| ({
+		type: 'updated';
+		diff: Partial<IUser>;
+		unset: Record<keyof IUser, boolean | 0 | 1>;
+	})
+)
