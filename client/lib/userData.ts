@@ -41,7 +41,7 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<unkn
 				break;
 
 			case 'updated':
-				Meteor.users.upsert({ _id: uid }, { $set: data.diff });
+				Meteor.users.upsert({ _id: uid }, { $set: data.diff, $unset: data.unset });
 				break;
 
 			case 'removed':
