@@ -40,15 +40,14 @@ const getPresence = (() => {
 	};
 
 	Presence.on('remove', (uid) => {
-		if (Presence._events[uid]?.length) {
+		if (Presence.has(uid)) {
 			return;
 		}
 		Statuses.delete(uid);
-		delete Presence._events[uid];
 	});
 
 	Presence.on('reset', () => {
-		Presence.once('restart', () => Object.keys(Presence._events).filter((e) => Boolean(e) && !['reset', 'restart', 'remove'].includes(e) && typeof e === 'string').forEach(get));
+		Presence.once('restart', () => { console.log('entrei'); return Presence.events().filter((e) => Boolean(e) && !['reset', 'restart', 'remove'].includes(e) && typeof e === 'string').forEach(get); });
 	});
 
 	return get;

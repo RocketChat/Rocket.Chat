@@ -52,7 +52,8 @@ const SidebarIcon = ({ room, small }) => {
 				return <Sidebar.Item.Icon aria-hidden='true' name='team'/>;
 			}
 			if (room.uids && room.uids.length > 0) {
-				return room.uids && room.uids.length && <Sidebar.Item.Icon><ReactiveUserStatus small={small && 'small'} uid={room.uids.filter((uid) => uid !== room.u._id)[0]} /></Sidebar.Item.Icon>;
+				// If the filter fn removes all ids, it's own direct message
+				return room.uids && room.uids.length && <Sidebar.Item.Icon><ReactiveUserStatus small={small && 'small'} uid={room.uids.filter((uid) => uid !== room.u._id)[0] || room.u._id} /></Sidebar.Item.Icon>;
 			}
 			return <Sidebar.Item.Icon aria-hidden='true' name={roomTypes.getIcon(room)}/>;
 		default:
