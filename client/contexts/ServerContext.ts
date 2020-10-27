@@ -85,7 +85,7 @@ export const useMethodData = <T>(methodName: string, args: any[] = []): [T | und
 				updateState(([data]) => [data, AsyncState.ERROR]);
 				console.error(error);
 			});
-	}, [getData, args]);
+	}, [getData, JSON.stringify(args)]);
 
 	useEffect(() => {
 		fetchData();
