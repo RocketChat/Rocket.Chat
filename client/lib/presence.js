@@ -47,7 +47,7 @@ const getPresence = (() => {
 	});
 
 	Presence.on('reset', () => {
-		Presence.once('restart', () => { console.log('entrei'); return Presence.events().filter((e) => Boolean(e) && !['reset', 'restart', 'remove'].includes(e) && typeof e === 'string').forEach(get); });
+		Presence.once('restart', () => Presence.events().filter((e) => Boolean(e) && !['reset', 'restart', 'remove'].includes(e) && typeof e === 'string').forEach(get));
 	});
 
 	return get;
