@@ -60,6 +60,27 @@ export class AppsRestApi {
 		const manager = this._manager;
 		const fileHandler = this._handleFile;
 
+		const handleError = (message, e) => {
+			// when there is no `response` field in the error, it means the request
+			// couldn't even make it to the server
+			if (!e.hasOwnProperty('response')) {
+				orchestrator.getRocketChatLogger().error(message, e.message);
+				return API.v1.internalError('Could not reach the Marketplace');
+			}
+
+			orchestrator.getRocketChatLogger().error(message, e.response.data);
+
+			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
+				return API.v1.internalError();
+			}
+
+			if (e.response.statusCode === 404) {
+				return API.v1.notFound();
+			}
+
+			return API.v1.failure();
+		};
+
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				const baseUrl = orchestrator.getMarketplaceUrl();
@@ -78,8 +99,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						orchestrator.getRocketChatLogger().error('Error getting the Apps:', e.response.data);
-						return API.v1.internalError();
+						return handleError('Error getting the App information from the Marketplace:', e);
 					}
 
 					if (!result || result.statusCode !== 200) {
@@ -318,20 +338,6 @@ export class AppsRestApi {
 				return API.v1.success({ apps: result.data });
 			},
 		});
-
-		const handleError = (message, e) => {
-			orchestrator.getRocketChatLogger().error(message, e.response.data);
-
-			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
-				return API.v1.internalError();
-			}
-
-			if (e.response.statusCode === 404) {
-				return API.v1.notFound();
-			}
-
-			return API.v1.failure();
-		};
 
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
