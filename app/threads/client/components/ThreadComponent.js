@@ -17,22 +17,35 @@ import ThreadView from './ThreadView';
 const useThreadMessage = (tmid) => {
 	const [message, setMessage] = useState(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', 'chat.getMessage');
+	const getMessageParsed = useCallback(async (params) => {
+		const { message } = await getMessage(params);
+		return {
+			...message,
+			_updatedAt: new Date(message._updatedAt),
+		};
+	}, [getMessage]);
 
 	useEffect(() => {
 		const computation = Tracker.autorun(async (computation) => {
-			const msg = ChatMessage.findOne({ _id: tmid }) || (await getMessage({ msgId: tmid })).message;
+			const msg = ChatMessage.findOne({ _id: tmid }) || await getMessageParsed({ msgId: tmid });
 
 			if (!msg || computation.stopped) {
 				return;
 			}
 
-			setMessage((prevMsg) => (prevMsg._updatedAt?.getTime() === msg._updatedAt?.getTime() ? prevMsg : msg));
+			setMessage((prevMsg) => {
+				if (!prevMsg || prevMsg._id !== msg._id || prevMsg._updatedAt?.getTime() !== msg._updatedAt?.getTime()) {
+					return msg;
+				}
+
+				return prevMsg;
+			});
 		});
 
 		return () => {
 			computation.stop();
 		};
-	}, [getMessage, tmid]);
+	}, [getMessageParsed, tmid]);
 
 	return message;
 };
