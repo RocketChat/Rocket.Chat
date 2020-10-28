@@ -283,15 +283,15 @@ export const copyFileSync = function(attachmentData, assetsPath) {
 
 		out.on('warning', function(err) {
 			if (err.code === 'ENOENT') {
-				console.log('copyFileSync warning: ' + err);
+				console.log(err);
 			} else {
 				// throw error
-				console.log('copyFileSync warning: ' + err);
+				console.log(err);
 			}
 		});
 
 		out.on('error', (err) => reject(err));
-		out.on("close", () => resolve('copyFileSync: done!'));
+		out.on('close', () => resolve('copyFileSync: done!'));
 
 		FileUpload.copyWithStream(file, out);
 	});
