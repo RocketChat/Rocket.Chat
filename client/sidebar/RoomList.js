@@ -10,7 +10,7 @@ import { filterMarkdown } from '../../app/markdown/lib/markdown';
 import { ReactiveUserStatus, colors } from '../components/basic/UserStatus';
 import { useTranslation } from '../contexts/TranslationContext';
 import { roomTypes } from '../../app/utils';
-import { useUserPreference } from '../contexts/UserContext';
+import { useUserPreference, useUserId } from '../contexts/UserContext';
 import RoomMenu from './RoomMenu';
 import { useSession } from '../contexts/SessionContext';
 import Omnichannel from './sections/Omnichannel';
@@ -61,7 +61,7 @@ const SidebarIcon = ({ room, small }) => {
 	}
 };
 
-export const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode) => ({
+export const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, isAnonymous) => ({
 	items,
 	extended,
 	t,
@@ -69,6 +69,7 @@ export const createItemData = memoize((items, extended, t, SideBarItemTemplate, 
 	AvatarTemplate,
 	openedRoom,
 	sidebarViewMode,
+	isAnonymous,
 }));
 
 export const Row = React.memo(({ data, index, style }) => {
@@ -110,12 +111,13 @@ export default () => {
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const avatarTemplate = useAvatarTemplate();
 	const extended = sidebarViewMode === 'extended';
+	const isAnonymous = !useUserId();
 
 	const t = useTranslation();
 
 	const itemSize = itemSizeMap(sidebarViewMode);
 	const roomsList = useRoomList();
-	const itemData = createItemData(roomsList, extended, t, sideBarItemTemplate, avatarTemplate, openedRoom, sidebarViewMode);
+	const itemData = createItemData(roomsList, extended, t, sideBarItemTemplate, avatarTemplate, openedRoom, sidebarViewMode, isAnonymous);
 
 	usePreventDefault(ref);
 	useShortcutOpenMenu(ref);
@@ -156,7 +158,7 @@ const getMessage = (room, lastMessage, t) => {
 	return `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeSidebarMessage(lastMessage) }`;
 };
 
-export const SideBarItemTemplateWithData = React.memo(function SideBarItemTemplateWithData({ room, id, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style, sidebarViewMode }) {
+export const SideBarItemTemplateWithData = React.memo(function SideBarItemTemplateWithData({ room, id, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style, sidebarViewMode, isAnonymous }) {
 	const title = roomTypes.getRoomName(room.t, room);
 	const icon = <SidebarIcon room={room} small={sidebarViewMode !== 'medium'}/>;
 	const href = roomTypes.getRouteLink(room.t, room);
@@ -174,6 +176,8 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 		t: type,
 		cl,
 	} = room;
+
+	const isQueued = room.status === 'queued';
 
 	const threadUnread = tunread.length > 0;
 	const message = extended && getMessage(room, lastMessage, t);
@@ -199,7 +203,7 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 		style={style}
 		badges={badges}
 		avatar={AvatarTemplate && <AvatarTemplate {...room}/>}
-		menu={() => <RoomMenu rid={rid} unread={!!unread} roomOpen={false} type={type} cl={cl} name={title} status={room.status}/>}
+		menu={!isAnonymous && !isQueued && (() => <RoomMenu rid={rid} unread={!!unread} roomOpen={false} type={type} cl={cl} name={title} status={room.status}/>)}
 	/>;
 }, (prevProps, nextProps) => {
 	if (['id', 'style', 'extended', 'selected', 'SideBarItemTemplate', 'AvatarTemplate', 't', 'sidebarViewMode'].some((key) => prevProps[key] !== nextProps[key])) {

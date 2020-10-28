@@ -9,7 +9,7 @@ import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
 import { useMethod } from '../contexts/ServerContext';
 import { roomTypes, UiTextContext } from '../../app/utils';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
-import { useUserSubscription, useUserId } from '../contexts/UserContext';
+import { useUserSubscription } from '../contexts/UserContext';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';
 import WarningModal from '../admin/apps/WarningModal';
@@ -20,12 +20,10 @@ const fields = {
 	name: 1,
 };
 
-const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '', status }) => {
+const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
-
-	const isAnonymous = !useUserId();
 
 	const closeModal = useMutableCallback(() => setModal());
 
@@ -43,8 +41,6 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '', statu
 
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
-
-	const isQueued = status === 'queued';
 
 	const canLeave = (() => {
 		if (type === 'c' && !canLeaveChannel) { return false; }
@@ -146,14 +142,14 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '', statu
 	}), [canFavorite, canLeave, handleHide, handleLeave, handleToggleFavorite, handleToggleRead, isFavorite, t, unread]);
 
 
-	return !isQueued && !isAnonymous ? <Menu
+	return <Menu
 		rcx-sidebar-item__menu
 		mini
 		aria-keyshortcuts='alt'
 		tabIndex={-1}
 		options={menuOptions}
 		renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>}
-	/> : null;
+	/>;
 });
 
 export default RoomMenu;
