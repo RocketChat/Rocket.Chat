@@ -11,7 +11,7 @@ import { settings } from '../../app/settings/server';
 import { Message } from '../../app/ui-utils/server';
 import {
 	exportRoomMessagesToFile,
-	copyFile,
+	copyFileSync,
 	getRoomData,
 	makeZipFile,
 	sendEmail,
@@ -154,9 +154,9 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 	await exportMessages();
 
-	fullFileList.forEach((attachmentData: any) => {
-		copyFile(attachmentData, assetsPath);
-	});
+	await Promise.all(fullFileList.map(async (attachmentData: any) => {
+	    await copyFileSync(attachmentData, assetsPath);
+    }));
 
 	const exportFile = `${ baseDir }-export.zip`;
 	await makeZipFile(exportPath, exportFile);

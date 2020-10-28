@@ -405,6 +405,18 @@ export const FileUpload = {
 		store.copy(file, buffer);
 	},
 
+	copyWithStream(file, out) {
+		const store = this.getStoreByName(file.store);
+		file = FileUpload.addExtensionTo(file);
+
+		if (store.copy) {
+			store.copy(file, out);
+			return true;
+		}
+
+		return false;
+	},
+
 	copy(file, targetFile) {
 		const store = this.getStoreByName(file.store);
 		const out = fs.createWriteStream(targetFile);
