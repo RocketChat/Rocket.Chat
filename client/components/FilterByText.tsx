@@ -30,7 +30,7 @@ const FilterByText: FC<FilterByTextProps> = ({
 	}, []);
 
 	return <Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='column' {...props}>
-		<TextInput placeholder={placeholder ?? t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleInputChange} value={text} />
+		<TextInput placeholder={placeholder ?? t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleInputChange} value={text} autoFocus/>
 	</Box>;
 };
 
