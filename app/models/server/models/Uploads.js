@@ -140,6 +140,12 @@ export class Uploads extends Base {
 		}
 		return this.remove({ _id: fileId });
 	}
+
+	findByRoomId(roomId) {
+		const query = { rid: roomId };
+
+		return this.find(query);
+	}
 }
 
 export default new Uploads();
