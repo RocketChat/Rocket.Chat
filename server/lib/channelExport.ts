@@ -155,8 +155,8 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	await exportMessages();
 
 	await Promise.all(fullFileList.map(async (attachmentData: any) => {
-	    await copyFileSync(attachmentData, assetsPath);
-    }));
+		await copyFileSync(attachmentData, assetsPath);
+	}));
 
 	const exportFile = `${ baseDir }-export.zip`;
 	await makeZipFile(exportPath, exportFile);

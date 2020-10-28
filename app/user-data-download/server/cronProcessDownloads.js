@@ -282,12 +282,12 @@ export const copyFileSync = function(attachmentData, assetsPath) {
 		const out = fs.createWriteStream(path.join(assetsPath, `${ attachmentData._id }-${ attachmentData.name }`));
 
 		out.on('warning', function(err) {
-		  if (err.code === 'ENOENT') {
-		    console.log("copyFileSync warning: " + err);
-		  } else {
-		    // throw error
-		    console.log("copyFileSync warning: " + err);
-		  }
+			if (err.code === 'ENOENT') {
+				console.log('copyFileSync warning: ' + err);
+			} else {
+				// throw error
+				console.log('copyFileSync warning: ' + err);
+			}
 		});
 
 		out.on('error', (err) => reject(err));
