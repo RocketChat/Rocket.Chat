@@ -1,7 +1,10 @@
+import '../ee/server/broker';
 import './importPackages';
 import '../imports/startup/server';
 
 import '../lib/RegExp';
+
+import './services/startup';
 
 import '../ee/server';
 import './lib/pushConfig';
@@ -72,6 +75,4 @@ import './publications/settings';
 import './publications/spotlight';
 import './publications/subscription';
 import './routes/avatar';
-import './stream/messages';
-import './stream/rooms';
 import './stream/streamBroadcast';

@@ -27,6 +27,15 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneAgentById(_id, options) {
+		const query = {
+			_id,
+			roles: 'livechat-agent',
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findUsersInRolesWithQuery(roles, query, options) {
 		roles = [].concat(roles);
 
@@ -43,6 +52,15 @@ export class UsersRaw extends BaseRaw {
 		const query = {
 			__rooms: rid,
 			username,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByIdAndLoginHashedToken(_id, token, options = {}) {
+		const query = {
+			_id,
+			'services.resume.loginTokens.hashedToken': token,
 		};
 
 		return this.findOne(query, options);

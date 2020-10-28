@@ -28,13 +28,13 @@ const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<s
 export const openBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
-	return Users.updateLivechatStatusBasedOnBusinessHours();
+	Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
 export const closeBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHour._id);
-	return Users.updateLivechatStatusBasedOnBusinessHours();
+	Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
 export const removeBusinessHourByAgentIds = async (agentIds: string[], businessHourId: string): Promise<void> => {
@@ -42,7 +42,7 @@ export const removeBusinessHourByAgentIds = async (agentIds: string[], businessH
 		return;
 	}
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
-	return Users.updateLivechatStatusBasedOnBusinessHours();
+	Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
 export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
@@ -54,6 +54,9 @@ export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
 			return;
 		}
 		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour({ fields: { _id: 1 } });
+		if (!defaultBusinessHour) {
+			return;
+		}
 		LivechatBusinessHours.update({ _id: defaultBusinessHour._id }, {
 			$set: {
 				timezone: {

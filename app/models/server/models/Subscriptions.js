@@ -453,7 +453,7 @@ export class Subscriptions extends Base {
 	}
 
 	// FIND ONE
-	findOneByRoomIdAndUserId(roomId, userId, options) {
+	findOneByRoomIdAndUserId(roomId, userId, options = {}) {
 		const query = {
 			rid: roomId,
 			'u._id': userId,
@@ -561,7 +561,7 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
-	findByRoomIdAndNotUserId(roomId, userId, options) {
+	findByRoomIdAndNotUserId(roomId, userId, options = {}) {
 		const query = {
 			rid: roomId,
 			'u._id': {

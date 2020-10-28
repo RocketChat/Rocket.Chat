@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { slashCommands } from '../../utils';
 import { Users, Subscriptions } from '../../models';
-import { Notifications } from '../../notifications';
+import { api } from '../../../server/sdk/api';
 
 /*
 * Unmute is a named function that will replace /unmute commands
@@ -22,10 +21,7 @@ slashCommands.add('unmute', function Unmute(command, params, item) {
 	const user = Meteor.users.findOne(Meteor.userId());
 	const unmutedUser = Users.findOneByUsernameIgnoringCase(username);
 	if (unmutedUser == null) {
-		return Notifications.notifyUser(Meteor.userId(), 'message', {
-			_id: Random.id(),
-			rid: item.rid,
-			ts: new Date(),
+		return api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [username],
@@ -35,10 +31,7 @@ slashCommands.add('unmute', function Unmute(command, params, item) {
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, unmutedUser._id, { fields: { _id: 1 } });
 	if (!subscription) {
-		return Notifications.notifyUser(Meteor.userId(), 'message', {
-			_id: Random.id(),
-			rid: item.rid,
-			ts: new Date(),
+		return api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Username_is_not_in_this_room', {
 				postProcess: 'sprintf',
 				sprintf: [username],
