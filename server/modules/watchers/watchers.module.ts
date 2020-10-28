@@ -279,8 +279,8 @@ export function initWatchers({
 
 	// TODO: Prevent flood from database on username change, what causes changes on all past messages from that user
 	// and most of those messages are not loaded by the clients.
-	watch<IUser>(Users, ({ clientAction, id, data, diff }) => {
-		api.broadcast('watch.users', { clientAction, data, diff, id });
+	watch<IUser>(Users, ({ clientAction, id, data, diff, unset }) => {
+		api.broadcast('watch.users', { clientAction, data, diff, unset, id });
 	});
 
 	watch<ILoginServiceConfiguration>(LoginServiceConfiguration, async ({ clientAction, id }) => {

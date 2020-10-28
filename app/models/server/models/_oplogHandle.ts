@@ -156,7 +156,10 @@ class CustomOplogHandle {
 							// o: event.fullDocument,
 							o: {
 								$set: event.updateDescription.updatedFields,
-								$unset: event.updateDescription.removedFields,
+								$unset: event.updateDescription.removedFields.reduce((obj, field) => {
+									obj[field as string] = true;
+									return obj;
+								}, {} as Record<string, true>),
 							},
 						},
 					});
