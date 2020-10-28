@@ -1,15 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import {
-	Collection,
-} from 'mongodb';
-
 import { BaseRaw } from './BaseRaw';
 import { IOmnichannelQueueStatus } from '../../../../definition/IOmnichannel';
 
 const UNIQUE_QUEUE_ID = 'queue';
-export class OmnichannelQueueRaw extends BaseRaw {
-	public readonly col!: Collection<IOmnichannelQueueStatus>;
-
+export class OmnichannelQueueRaw extends BaseRaw<IOmnichannelQueueStatus> {
 	initQueue() {
 		return this.col.updateOne({
 			_id: UNIQUE_QUEUE_ID,
