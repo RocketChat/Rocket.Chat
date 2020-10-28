@@ -490,8 +490,7 @@ jobs:
 
   services-image-build:
     runs-on: ubuntu-latest
-    # TODO uncomment 'needs' before merging!
-    # needs: deploy
+    needs: deploy
     if: github.event.pull_request.head.repo.full_name == github.repository
 
     strategy:
@@ -506,10 +505,13 @@ jobs:
       with:
         node-version: "12.18.4"
 
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
+
     - name: Build Docker images
-      env:
-        DOCKER_USER: ${{ secrets.DOCKER_USER }}
-        DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       run: |
         npm i
 
@@ -521,5 +523,4 @@ jobs:
 
         docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service .
 
-        docker login -u $DOCKER_USER -p $DOCKER_PASS
         docker push rocketchat/${{ matrix.service }}-service
