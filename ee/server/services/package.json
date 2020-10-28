@@ -24,7 +24,6 @@
 		"mem": "^6.1.0",
 		"moleculer": "^0.14.10",
 		"mongodb": "^3.6.1",
-		"msgpack5": "^4.2.1",
 		"nats": "^1.4.8",
 		"underscore.string": "^3.3.5",
 		"uuid": "^7.0.3",
@@ -33,7 +32,6 @@
 	"devDependencies": {
 		"@types/ejson": "^2.1.2",
 		"@types/node": "^14.6.4",
-		"@types/msgpack5": "^3.4.1",
 		"@types/ws": "^7.2.6",
 		"pm2": "^4.4.1",
 		"ts-node": "^9.0.0",
