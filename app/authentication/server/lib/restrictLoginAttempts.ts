@@ -18,10 +18,10 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 		return true;
 	}
 
-	const lastLogin = await Sessions.findLastLoginByIp(ip);
+	const lastLogin = await Sessions.findLastLoginByIp(ip) as {loginAt?: Date} | undefined;
 	let failedAttemptsSinceLastLogin;
 
-	if (!lastLogin) {
+	if (!lastLogin || !lastLogin.loginAt) {
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIp(ip);
 	} else {
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastLogin.loginAt));

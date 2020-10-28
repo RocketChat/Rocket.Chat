@@ -3,8 +3,8 @@ import _ from 'underscore';
 
 import { Users, Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { Notifications } from '../../../notifications/server';
 import { hasPermission } from '../functions/hasPermission';
+import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	'authorization:addUserToRole'(roleName, username, scope) {
@@ -50,7 +50,7 @@ Meteor.methods({
 		const add = Roles.addUserRoles(user._id, roleName, scope);
 
 		if (settings.get('UI_DisplayRoles')) {
-			Notifications.notifyLogged('roles-change', {
+			api.broadcast('user.roleUpdate', {
 				type: 'added',
 				_id: roleName,
 				u: {

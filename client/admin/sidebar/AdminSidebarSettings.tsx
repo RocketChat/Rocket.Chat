@@ -2,7 +2,7 @@ import { Box, Icon, SearchInput, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, useMemo, FC } from 'react';
 
-import { ISetting, SettingType } from '../../../definition/ISetting';
+import { ISetting } from '../../../definition/ISetting';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import Sidebar from '../../components/basic/Sidebar';
@@ -38,7 +38,7 @@ const useSettingsGroups = (filter: string): ISetting[] => {
 			settings
 				.filter(filterPredicate)
 				.map((setting) => {
-					if (setting.type === SettingType.GROUP) {
+					if (setting.type === 'group') {
 						return setting._id;
 					}
 
@@ -47,7 +47,7 @@ const useSettingsGroups = (filter: string): ISetting[] => {
 		));
 
 		return settings
-			.filter(({ type, group, _id }) => type === SettingType.GROUP && groupIds.includes(group || _id))
+			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
 			.sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)));
 	}, [settings, filterPredicate, t]);
 };

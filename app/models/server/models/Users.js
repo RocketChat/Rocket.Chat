@@ -608,7 +608,7 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneById(userId, options) {
+	findOneById(userId, options = {}) {
 		const query = { _id: userId };
 
 		return this.findOne(query, options);
