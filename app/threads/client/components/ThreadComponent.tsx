@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 'react';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { Tracker } from 'meteor/tracker';
@@ -13,11 +13,13 @@ import { useEndpoint, useMethod } from '../../../../client/contexts/ServerContex
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
+import { IMessage } from '../../../../definition/IMessage';
+import { IRoom } from '../../../../definition/IRoom';
 
-const useThreadMessage = (tmid) => {
-	const [message, setMessage] = useState(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
+const useThreadMessage = (tmid: string): IMessage => {
+	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', 'chat.getMessage');
-	const getMessageParsed = useCallback(async (params) => {
+	const getMessageParsed = useCallback<(params: Mongo.Query<IMessage>) => Promise<IMessage>>(async (params) => {
 		const { message } = await getMessage(params);
 		return {
 			...message,
@@ -42,7 +44,7 @@ const useThreadMessage = (tmid) => {
 			});
 		});
 
-		return () => {
+		return (): void => {
 			computation.stop();
 		};
 	}, [getMessageParsed, tmid]);
@@ -50,27 +52,32 @@ const useThreadMessage = (tmid) => {
 	return message;
 };
 
-function ThreadComponent({
+const ThreadComponent: FC<{
+	mid: string;
+	jump: unknown;
+	room: IRoom;
+	subscription: unknown;
+}> = ({
 	mid,
 	jump,
 	room,
 	subscription,
-}) {
+}) => {
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
 	const threadMessage = useThreadMessage(mid);
 
-	const ref = useRef();
+	const ref = useRef<Element>(null);
 	const uid = useUserId();
 
 	const headerTitle = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);
 	const [expanded, setExpand] = useLocalStorage('expand-threads', false);
-	const following = threadMessage?.replies?.includes(uid) ?? false;
+	const following = !uid ? false : threadMessage?.replies?.includes(uid) ?? false;
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const followMessage = useMethod('followMessage');
 	const unfollowMessage = useMethod('unfollowMessage');
 
-	const setFollowing = useCallback(async (following) => {
+	const setFollowing = useCallback<(following: boolean) => void>(async (following) => {
 		try {
 			if (following) {
 				await followMessage({ mid });
@@ -90,7 +97,12 @@ function ThreadComponent({
 		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name });
 	}, [channelRoute, room._id, room.t, room.name]);
 
-	const viewDataRef = useRef({});
+	const viewDataRef = useRef({
+		mainMessage: threadMessage,
+		jump,
+		following,
+		subscription,
+	});
 	viewDataRef.current.mainMessage = threadMessage;
 	viewDataRef.current.jump = jump;
 	viewDataRef.current.following = following;
@@ -103,7 +115,7 @@ function ThreadComponent({
 
 		const view = Blaze.renderWithData(Template.thread, viewDataRef.current, ref.current);
 
-		return () => {
+		return (): void => {
 			Blaze.remove(view);
 		};
 	}, [mid]);
@@ -117,10 +129,10 @@ function ThreadComponent({
 		title={headerTitle}
 		expanded={expanded}
 		following={following}
-		onToggleExpand={(expanded) => setExpand(!expanded)}
-		onToggleFollow={(following) => setFollowing(!following)}
+		onToggleExpand={(expanded): void => setExpand(!expanded)}
+		onToggleFollow={(following): void => setFollowing(!following)}
 		onClose={handleClose}
 	/>;
-}
+};
 
 export default ThreadComponent;
