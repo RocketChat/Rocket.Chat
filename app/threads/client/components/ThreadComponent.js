@@ -90,24 +90,14 @@ function ThreadComponent({
 		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name });
 	}, [channelRoute, room._id, room.t, room.name]);
 
-	const viewDataRef = useRef({
-		mainMessage: threadMessage,
-		jump,
-		following,
-		subscription,
-	});
+	const viewDataRef = useRef({});
+	viewDataRef.current.mainMessage = threadMessage;
+	viewDataRef.current.jump = jump;
+	viewDataRef.current.following = following;
+	viewDataRef.current.subscription = subscription;
 
 	useEffect(() => {
-		viewDataRef.mainMessage = threadMessage;
-		viewDataRef.jump = jump;
-		viewDataRef.following = following;
-		viewDataRef.subscription = subscription;
-	}, [following, jump, subscription, threadMessage]);
-
-	const hasThreadMessage = !!threadMessage;
-
-	useEffect(() => {
-		if (!ref.current || !hasThreadMessage) {
+		if (!ref.current || !viewDataRef.current.mainMessage) {
 			return;
 		}
 
@@ -116,7 +106,7 @@ function ThreadComponent({
 		return () => {
 			Blaze.remove(view);
 		};
-	}, [hasThreadMessage, mid]);
+	}, [mid]);
 
 	if (!threadMessage) {
 		return <ThreadSkeleton expanded={expanded} onClose={handleClose} />;
