@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
 import { IntegrationHistory, Integrations } from '../../../models';
-import { integrationHistoryStreamer } from '../streamer';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 Meteor.methods({
 	clearIntegrationHistory(integrationId) {
@@ -22,7 +22,7 @@ Meteor.methods({
 
 		IntegrationHistory.removeByIntegrationId(integrationId);
 
-		integrationHistoryStreamer.emit(integrationId, { type: 'removed' });
+		notifications.streamIntegrationHistory.emit(integrationId, { type: 'removed' });
 
 		return true;
 	},

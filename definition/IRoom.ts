@@ -21,6 +21,16 @@ export interface IRoom extends IRocketChatRecord {
 	lm?: Date;
 	usersCount: number;
 	// "jitsiTimeout" : Date
+
+	prid: string;
+	avatarETag?: string;
+	tokenpass?: {
+		require: string;
+		tokens: {
+			token: string;
+			balance: number;
+		}[];
+	};
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {

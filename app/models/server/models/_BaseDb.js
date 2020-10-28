@@ -48,6 +48,14 @@ export class BaseDb extends EventEmitter {
 
 		this.wrapModel();
 
+		if (!process.env.DISABLE_DB_WATCH) {
+			this.initDbWatch();
+		}
+
+		this.tryEnsureIndex({ _updatedAt: 1 }, options._updatedAtIndexOptions);
+	}
+
+	initDbWatch() {
 		const _oplogHandle = Promise.await(getOplogHandle());
 
 		// When someone start listening for changes we start oplog if available
@@ -85,8 +93,6 @@ export class BaseDb extends EventEmitter {
 		if (_oplogHandle) {
 			this.on('newListener', handleListener);
 		}
-
-		this.tryEnsureIndex({ _updatedAt: 1 }, options._updatedAtIndexOptions);
 	}
 
 	get baseName() {

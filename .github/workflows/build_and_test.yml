@@ -487,3 +487,40 @@ jobs:
 
         docker build -t ${IMAGE}:develop .
         docker push ${IMAGE}:develop
+
+  services-image-build:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.event.pull_request.head.repo.full_name == github.repository
+
+    strategy:
+      matrix:
+        service: ["account", "authorization", "ddp-streamer", "presence", "stream-hub"]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js 12.18.4
+      uses: actions/setup-node@v1
+      with:
+        node-version: "12.18.4"
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
+
+    - name: Build Docker images
+      run: |
+        npm i
+
+        cd ./ee/server/services
+        npm i
+        npm run build
+
+        echo "Building Docker image for service: ${{ matrix.service }}"
+
+        docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service .
+
+        docker push rocketchat/${{ matrix.service }}-service

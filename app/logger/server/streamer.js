@@ -6,7 +6,7 @@ import { EJSON } from 'meteor/ejson';
 import { Log } from 'meteor/logging';
 
 import { settings } from '../../settings';
-import { hasPermission } from '../../authorization/server';
+import notifications from '../../notifications/server/lib/Notifications';
 
 export const processString = function(string, date) {
 	let obj;
@@ -52,17 +52,17 @@ export const StdOut = new class extends EventEmitter {
 	}
 }();
 
-const stdoutStreamer = new Meteor.Streamer('stdout');
-stdoutStreamer.allowWrite('none');
-stdoutStreamer.allowRead(function() {
-	return this.userId ? hasPermission(this.userId, 'view-logs') : false;
-});
-
 Meteor.startup(() => {
 	const handler = (string, item) => {
-		stdoutStreamer.emitWithoutBroadcast('stdout', {
+		// TODO having this as 'emitWithoutBroadcast' will not sent this data to ddp-streamer, so this data
+		// won't be available when using micro services.
+		notifications.streamStdout.emitWithoutBroadcast('stdout', {
 			...item,
 		});
 	};
-	StdOut.on('write', handler);
+
+	// do not emit to StdOut if moleculer log level set to debug because it creates an infinite loop
+	if (String(process.env.MOLECULER_LOG_LEVEL).toLowerCase() !== 'debug') {
+		StdOut.on('write', handler);
+	}
 });
