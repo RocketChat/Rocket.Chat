@@ -37,12 +37,10 @@ export class Api {
 	}
 
 	async call(method: string, data: any): Promise<any> {
-		// console.log('api call', method, this.broker.constructor.name);
 		return this.broker.call(method, data);
 	}
 
 	async waitAndCall(method: string, data: any): Promise<any> {
-		// console.log('api call', method, this.broker.constructor.name);
 		return this.broker.waitAndCall(method, data);
 	}
 

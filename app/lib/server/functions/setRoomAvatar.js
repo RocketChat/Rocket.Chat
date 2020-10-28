@@ -4,7 +4,6 @@ import { RocketChatFile } from '../../../file';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Avatars, Messages } from '../../../models/server';
 import { api } from '../../../../server/sdk/api';
-import { notifications } from '../../../notifications/server';
 
 export const setRoomAvatar = function(rid, dataURI, user) {
 	const fileStore = FileUpload.getStore('Avatars');
@@ -14,7 +13,7 @@ export const setRoomAvatar = function(rid, dataURI, user) {
 	if (!dataURI) {
 		fileStore.deleteByRoomId(rid);
 		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
-		notifications.notifyLogged('updateAvatar', { rid });
+		api.broadcast('room.avatarUpdate', { rid });
 
 		return Rooms.unsetAvatarData(rid);
 	}

@@ -16,7 +16,7 @@ export const Account = proxifyWithWait<IAccount>('accounts');
 export const License = proxifyWithWait<ILicense>('license');
 export const MeteorService = proxifyWithWait<IMeteor>('meteor');
 
-// Calls without wait. Means that the service is optional and the result may be ane error
+// Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
 export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
 

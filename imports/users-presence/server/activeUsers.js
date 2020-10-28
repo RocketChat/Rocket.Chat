@@ -13,14 +13,14 @@ export const STATUS_MAP = {
 
 export const setUserStatus = (user, status/* , statusConnection*/) => {
 	const {
-		_id: uid,
+		_id,
 		username,
 		statusText,
 	} = user;
 
 	// since this callback can be called by only one instance in the cluster
 	// we need to broadcast the change to all instances
-	api.broadcast('userpresence', { user: { status, _id: uid, username, statusText } }); // remove username
+	api.broadcast('userpresence', { user: { status, _id, username, statusText } }); // remove username
 };
 
 let TroubleshootDisablePresenceBroadcast;
