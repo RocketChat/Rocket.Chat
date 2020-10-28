@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { settings } from '../../../../settings';
 
-class AudioEncoder extends EventEmitter {
+class AudioEncoder extends Emitter {
 	constructor(source, {
 		bufferLen = 4096,
 		numChannels = 1,

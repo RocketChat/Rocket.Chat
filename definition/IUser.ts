@@ -1,3 +1,5 @@
+import { USER_STATUS } from './UserStatus';
+
 export interface ILoginToken {
 	hashedToken: string;
 	twoFactorAuthorizedUntil?: Date;
@@ -27,7 +29,7 @@ export interface IUserEmailCode {
 	expire: Date;
 }
 
-type LoginToken = ILoginToken & IPersonalAccessToken;
+type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
 export type Username = string;
 
 export interface IUserServices {
@@ -85,7 +87,6 @@ export interface IRole {
 
 export interface IUser {
 	_id: string;
-	avatarETag: string;
 	createdAt: Date;
 	roles: string[];
 	type: string;
@@ -98,9 +99,11 @@ export interface IUser {
 	statusConnection?: string;
 	lastLogin?: Date;
 	avatarOrigin?: string;
+	avatarETag?: string;
 	utcOffset?: number;
 	language?: string;
-	statusDefault?: string;
+	statusDefault?: USER_STATUS;
+	statusText?: string;
 	oauth?: {
 		authorizedClients: string[];
 	};
@@ -130,5 +133,6 @@ export type IUserDataEvent = {
 	| ({
 		type: 'updated';
 		diff: Partial<IUser>;
+		unset: Record<keyof IUser, boolean | 0 | 1>;
 	})
 )
