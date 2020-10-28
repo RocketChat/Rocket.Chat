@@ -98,27 +98,30 @@ const ThreadComponent: FC<{
 	}, [channelRoute, room._id, room.t, room.name]);
 
 	const viewDataRef = useRef({
-		mainMessage: threadMessage,
 		jump,
 		following,
 		subscription,
 	});
-	viewDataRef.current.mainMessage = threadMessage;
 	viewDataRef.current.jump = jump;
 	viewDataRef.current.following = following;
 	viewDataRef.current.subscription = subscription;
 
 	useEffect(() => {
-		if (!ref.current || !viewDataRef.current.mainMessage) {
+		if (!ref.current || !threadMessage) {
 			return;
 		}
 
-		const view = Blaze.renderWithData(Template.thread, viewDataRef.current, ref.current);
+		const viewData = {
+			...viewDataRef.current,
+			mainMessage: threadMessage,
+		};
+
+		const view = Blaze.renderWithData(Template.thread, viewData, ref.current);
 
 		return (): void => {
 			Blaze.remove(view);
 		};
-	}, [mid]);
+	}, [mid, threadMessage]);
 
 	if (!threadMessage) {
 		return <ThreadSkeleton expanded={expanded} onClose={handleClose} />;
