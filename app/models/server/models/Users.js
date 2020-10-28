@@ -51,6 +51,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
 		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
+		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {

@@ -62,6 +62,8 @@ import { InstanceStatusRaw } from './InstanceStatus';
 import InstanceStatusModel from '../models/InstanceStatus';
 import { IntegrationHistoryRaw } from './IntegrationHistory';
 import IntegrationHistoryModel from '../models/IntegrationHistory';
+import OmnichannelQueueModel from '../models/OmnichannelQueue';
+import { OmnichannelQueueRaw } from './OmnichannelQueue';
 
 const trashCollection = trash.rawCollection();
 
@@ -96,6 +98,7 @@ export const LoginServiceConfiguration = new LoginServiceConfigurationRaw(LoginS
 export const InstanceStatus = new InstanceStatusRaw(InstanceStatusModel.model.rawCollection(), trashCollection);
 export const IntegrationHistory = new IntegrationHistoryRaw(IntegrationHistoryModel.model.rawCollection(), trashCollection);
 export const Sessions = new SessionsRaw(SessionsModel.model.rawCollection(), trashCollection);
+export const OmnichannelQueue = new OmnichannelQueueRaw(OmnichannelQueueModel.model.rawCollection(), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
