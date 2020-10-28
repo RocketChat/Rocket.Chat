@@ -50221,6 +50221,74 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "3.7.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.18.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19179",
+          "title": "[FIX] Adding missing custom fields translation in my account's profile",
+          "userLogin": "dougfabris",
+          "milestone": "3.7.1",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "19181",
+          "title": "[FIX] Performance issues when using new Oplog implementation",
+          "userLogin": "rodrigok",
+          "description": "A missing configuration was not limiting the new oplog tailing to pool the database frequently even when no data was available, leading to both node and mongodb process been consuming high CPU even with low usage. This case was happening for installations using `mmapv1` database engine or when no admin access was granted to the database user, both preventing the usage of the new [Change Streams](https://docs.mongodb.com/manual/changeStreams/) implementation and fallbacking to our custom oplog implementation in replacement to the Meteor's one what was able to be disabled and use the native implementation via the environmental variable `USE_NATIVE_OPLOG=true`.",
+          "milestone": "3.7.1",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19101",
+          "title": "[FIX] Admin Sidebar overflowing",
+          "userLogin": "gabriellsh",
+          "milestone": "3.7.1",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19133",
+          "title": "[FIX] VisitorAutoComplete component",
+          "userLogin": "renatobecker",
+          "milestone": "3.7.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "19134",
+          "title": "[FIX] Omnichannel: triggers page not rendering.",
+          "userLogin": "gabriellsh",
+          "milestone": "3.7.1",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19166",
+          "title": "[FIX] Missing \"Bio\" in user's profile view (#18821)",
+          "userLogin": "dougfabris",
+          "milestone": "3.7.1",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }
