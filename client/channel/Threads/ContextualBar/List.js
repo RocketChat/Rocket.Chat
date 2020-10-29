@@ -61,6 +61,8 @@ export function withData(WrappedComponent) {
 			return new Promise((resolve) => { ref.current = resolve; });
 		}, []);
 
+		useEffect(() => () => Threads.current.remove({}, () => {}), [text]);
+
 		useEffect(() => {
 			if (state !== ENDPOINT_STATES.DONE || !data || !data.threads) {
 				return;
@@ -93,7 +95,6 @@ export function withData(WrappedComponent) {
 			const cursor = Tracker.autorun(() => {
 				const query = {
 				};
-
 				setThreads(Threads.current.find(query, { sort: { tlm: -1 } }).fetch().map(filterProps));
 			});
 
