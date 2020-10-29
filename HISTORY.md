@@ -1,6 +1,26 @@
 
 # 3.8.0 (Under Release Candidate Process)
 
+## 3.8.0-rc.1
+`2020-10-29  ·  3 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Room item menu display delay ([#19401](https://github.com/RocketChat/Rocket.Chat/pull/19401))
+
+- Regression: Thread component not updating its message list ([#19390](https://github.com/RocketChat/Rocket.Chat/pull/19390))
+
+- Regression: Thread not showing for unloaded message ([#19402](https://github.com/RocketChat/Rocket.Chat/pull/19402))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.8.0-rc.0
 `2020-10-27  ·  13 🎉  ·  4 🚀  ·  36 🐛  ·  20 🔍  ·  29 👩‍💻👨‍💻`
 

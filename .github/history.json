@@ -51004,6 +51004,48 @@
           ]
         }
       ]
+    },
+    "3.8.0-rc.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0-alpha.4006",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19402",
+          "title": "Regression: Thread not showing for unloaded message",
+          "userLogin": "tassoevan",
+          "milestone": "3.8.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19401",
+          "title": "Regression: Room item menu display delay",
+          "userLogin": "gabriellsh",
+          "milestone": "3.8.0",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19390",
+          "title": "Regression: Thread component not updating its message list",
+          "userLogin": "tassoevan",
+          "milestone": "3.8.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   }
 }
