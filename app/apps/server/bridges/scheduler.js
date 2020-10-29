@@ -2,7 +2,7 @@ import Agenda from 'agenda';
 import { MongoInternals } from 'meteor/mongo';
 
 function _callProcessor(processor) {
-	return (job) => processor(job.attrs.data);
+	return (job) => processor(job);
 }
 
 export class AppSchedulerBridge {
@@ -10,14 +10,33 @@ export class AppSchedulerBridge {
 		this.orch = orch;
 		this.scheduler = new Agenda({
 			mongo: MongoInternals.defaultRemoteCollectionDriver().mongo.client.db(),
-			collection: 'rocketchat_agenda_jobs',
 		});
 		this.isConnected = false;
 	}
 
 	async registerProcessors(processors = [], appId) {
+		const runAfterRegister = [];
 		this.orch.debugLog(`The App ${ appId } is registering job processors`, processors);
-		processors.forEach(({ id, processor }) => this.scheduler.define(id, _callProcessor(processor)));
+		processors.forEach(({ id, processor, startupSetting }) => {
+			this.scheduler.define(id, _callProcessor(processor));
+
+			if (startupSetting) {
+				switch (startupSetting.type) {
+					case 'onetime':
+						runAfterRegister.push(this.scheduleOnce({ id, when: startupSetting.when }, appId));
+						break;
+					case 'recurring':
+						runAfterRegister.push(this.scheduleRecurring({ id, cron: startupSetting.cron }, appId));
+						break;
+					default:
+						break;
+				}
+			}
+		});
+
+		if (runAfterRegister.length) {
+			await Promise.all(runAfterRegister);
+		}
 	}
 
 	async scheduleOnce(job, appId) {
@@ -45,7 +64,7 @@ export class AppSchedulerBridge {
 	async cancelAllJobs(appId) {
 		this.orch.debugLog(`Canceling all jobs of App ${ appId }`);
 		await this.startScheduler();
-		const matcher = new RegExp(`^_${ appId }`);
+		const matcher = new RegExp(`_${ appId }$`);
 		try {
 			await this.scheduler.cancel({ name: { $regex: matcher } });
 		} catch (e) {
