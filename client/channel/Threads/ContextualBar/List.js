@@ -92,14 +92,8 @@ export function withData(WrappedComponent) {
 		useEffect(() => {
 			const cursor = Tracker.autorun(() => {
 				const query = {
-					...type === 'subscribed' && { replies: { $in: [userId] } },
-					...type === 'unread' && { _id: { $in: subscription?.tunread } },
-					...text && {
-						$text: {
-							$search: text,
-						},
-					},
 				};
+
 				setThreads(Threads.current.find(query, { sort: { tlm: -1 } }).fetch().map(filterProps));
 			});
 
