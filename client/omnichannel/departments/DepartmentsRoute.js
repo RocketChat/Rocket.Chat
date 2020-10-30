@@ -134,7 +134,7 @@ function DepartmentsRoute() {
 		reload={reload}
 		header={header}
 		renderRow={renderRow}
-		title={'Departments'}>
+		title={t('Departments')}>
 	</DepartmentsPage>;
 }
 
