@@ -63,7 +63,7 @@ export function EditDepartment({ data, id, title, reload }) {
 	const [tags, setTags] = useState((department && department.chatClosingTags) || []);
 	const [tagsText, setTagsText] = useState();
 
-	const { values, handlers } = useForm({
+	const { values, handlers, hasUnsavedChanges } = useForm({
 		name: (department && department.name) || '',
 		email: (department && department.email) || '',
 		description: (department && department.description) || '',
@@ -221,7 +221,7 @@ export function EditDepartment({ data, id, title, reload }) {
 	const handleReturn = useMutableCallback(() => {
 		router.push({});
 	});
-	const invalidForm = !name || !email || !isEmail(email) || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
+	const invalidForm = !name || !email || !isEmail(email) || !hasUnsavedChanges || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
 
