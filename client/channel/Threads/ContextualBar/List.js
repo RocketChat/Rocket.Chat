@@ -10,7 +10,6 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { call, renderMessageBody } from '../../../../app/ui-utils/client';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
-import { Messages } from '../../../../app/models/client';
 import { ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
@@ -50,7 +49,6 @@ export function withData(WrappedComponent) {
 		}, setState] = useState(() => ({
 			state: ENDPOINT_STATES.LOADING,
 			error: null,
-			data: {},
 			threads: [],
 			count: 0,
 		}));
@@ -83,15 +81,13 @@ export function withData(WrappedComponent) {
 				setState(({ threads }) => ({
 					state: ENDPOINT_STATES.DONE,
 					error: null,
-					data,
-					threads: mergeThreads(threads, data.threads.map(filterProps)),
+					threads: mergeThreads(offset === 0 ? [] : threads, data.threads.map(filterProps)),
 					count: data.total,
 				}));
 			} catch (error) {
-				setState(({ data, threads, count }) => ({
+				setState(({ threads, count }) => ({
 					state: ENDPOINT_STATES.ERROR,
 					error,
-					data,
 					threads,
 					count,
 				}));
@@ -108,49 +104,6 @@ export function withData(WrappedComponent) {
 				text: debouncedText,
 			});
 		}, [debouncedText, fetchThreads, room._id, type]);
-
-		useEffect(() => {
-			const cursor = Messages.find({
-				rid: room._id,
-				tcount: { $exists: true },
-				_hidden: { $ne: true },
-			}).observe({
-				added: (message) => {
-					setState((state) => ({
-						...state,
-						threads: mergeThreads(state.threads, [message]),
-					}));
-				},
-				changed: (message) => {
-					setState((state) => ({
-						...state,
-						threads: mergeThreads(state.threads, [message]),
-					}));
-				},
-				removed: ({ _id }) => {
-					setState((state) => ({
-						...state,
-						threads: state.threads.filter((thread) => thread._id !== _id),
-					}));
-				},
-			});
-
-			return () => {
-				cursor.stop();
-			};
-		}, [mergeThreads, room._id]);
-
-		const filteredThreads = threads.filter((thread) => {
-			if (type === 'following') {
-				return thread.replies?.includes(userId) ?? false;
-			}
-
-			if (type === 'unread') {
-				return subscription?.tunread?.includes(thread._id) ?? false;
-			}
-
-			return true;
-		});
 
 		const loadMoreItems = useCallback((start, end) => fetchThreads({
 			rid: room._id,
@@ -171,7 +124,7 @@ export function withData(WrappedComponent) {
 			unreadGroup={subscription?.tunreadGroup}
 			userId={userId}
 			error={error}
-			threads={filteredThreads}
+			threads={threads}
 			total={count}
 			loading={state === ENDPOINT_STATES.LOADING}
 			loadMoreItems={loadMoreItems}
