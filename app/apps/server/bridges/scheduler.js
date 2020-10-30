@@ -10,6 +10,7 @@ export class AppSchedulerBridge {
 		this.orch = orch;
 		this.scheduler = new Agenda({
 			mongo: MongoInternals.defaultRemoteCollectionDriver().mongo.client.db(),
+			defaultConcurrency: 1,
 		});
 		this.isConnected = false;
 	}
@@ -23,7 +24,7 @@ export class AppSchedulerBridge {
 			if (startupSetting) {
 				switch (startupSetting.type) {
 					case 'onetime':
-						runAfterRegister.push(this.scheduleOnce({ id, when: startupSetting.when }, appId));
+						runAfterRegister.push(this.scheduleOnceAfterRegister({ id, when: startupSetting.when }, appId));
 						break;
 					case 'recurring':
 						runAfterRegister.push(this.scheduleRecurring({ id, cron: startupSetting.cron }, appId));
@@ -43,6 +44,13 @@ export class AppSchedulerBridge {
 		this.orch.debugLog(`The App ${ appId } is scheduling an onetime job`, job);
 		await this.startScheduler();
 		await this.scheduler.schedule(job.when, job.id, job.data || {});
+	}
+
+	async scheduleOnceAfterRegister(job, appId) {
+		const scheduledJobs = await this.scheduler.jobs({ name: job.id, type: 'normal' });
+		if (!scheduledJobs.length) {
+			await this.scheduleOnce(job, appId);
+		}
 	}
 
 	async scheduleRecurring(job, appId) {
