@@ -229,7 +229,7 @@ export function EditDepartment({ data, id, title, reload }) {
 		<Page>
 			<Page.Header title={title}>
 				<ButtonGroup>
-					<Button onClick={handleReturn}>{t('Back')}</Button>
+					<Button onClick={handleReturn}><Icon name='back'/> {t('Back')}</Button>
 					<Button type='submit' form={formId} primary disabled={invalidForm}>{t('Save')}</Button>
 				</ButtonGroup>
 			</Page.Header>
