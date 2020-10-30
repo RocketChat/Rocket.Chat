@@ -16,7 +16,7 @@ import Page from '../../components/basic/Page';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 import { formsSubscription } from '../additionalForms';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
-
+import { isEmail } from '../../../app/utils';
 
 export default function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
@@ -148,6 +148,9 @@ export function EditDepartment({ data, id, title, reload }) {
 		setEmailError(!email ? t('The_field_is_required', 'email') : '');
 	}, [t, email]);
 	useComponentDidUpdate(() => {
+		setEmailError(!isEmail(email) ? t('Validate_email_address') : '');
+	}, [t, email]);
+	useComponentDidUpdate(() => {
 		setTagError(requestTagBeforeClosingChat && (!tags || tags.length === 0) ? t('The_field_is_required', 'name') : '');
 	}, [requestTagBeforeClosingChat, t, tags]);
 
@@ -160,6 +163,10 @@ export function EditDepartment({ data, id, title, reload }) {
 		}
 		if (!email) {
 			setEmailError(t('The_field_is_required', 'email'));
+			error = true;
+		}
+		if (!isEmail(email)) {
+			setEmailError(t('Validate_email_address'));
 			error = true;
 		}
 		if (requestTagBeforeClosingChat && (!tags || tags.length === 0)) {
@@ -203,7 +210,7 @@ export function EditDepartment({ data, id, title, reload }) {
 			} else {
 				await saveDepartmentInfo(id, payload, agentList);
 			}
-			dispatchToastMessage({ type: 'success', message: t('saved') });
+			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
 			agentsRoute.push({});
 		} catch (error) {
@@ -214,8 +221,7 @@ export function EditDepartment({ data, id, title, reload }) {
 	const handleReturn = useMutableCallback(() => {
 		router.push({});
 	});
-
-	const invalidForm = !name || !email || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
+	const invalidForm = !name || !email || !isEmail(email) || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
 
