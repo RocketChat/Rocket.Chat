@@ -211,7 +211,7 @@ export class ListenersModule {
 			// this emit will cause the user to receive a 'rooms-changed' event
 			notifications.streamUser.__emit(room._id, clientAction, room);
 
-			notifications.streamRoomData.emitWithoutBroadcast(room._id, clientAction, room);
+			notifications.streamRoomData.emitWithoutBroadcast(room._id, room);
 		});
 
 		service.onEvent('watch.users', ({ clientAction, data, diff, unset, id }): void => {
