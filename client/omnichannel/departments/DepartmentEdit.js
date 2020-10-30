@@ -283,11 +283,21 @@ export function EditDepartment({ data, id, title, reload }) {
 							<SelectFiltered flexGrow={1} options={channelOpts} value={offlineMessageChannelName} onChange={handleOfflineMessageChannelName} placeholder={t('Channel_name')}/>
 						</Field.Row>
 					</Field>
-					{MaxChats && <MaxChats value={maxNumberSimultaneousChat} handler={handleMaxNumberSimultaneousChat} label={'Max_number_of_chats_per_agent'} placeholder='Max_number_of_chats_per_agent_description' />}
-					{VisitorInactivity && <VisitorInactivity value={visitorInactivityTimeoutInSeconds} handler={handleVisitorInactivityTimeoutInSeconds} label={'How_long_to_wait_to_consider_visitor_abandonment_in_seconds'} placeholder='Number_in_seconds' />}
-					{AbandonedMessageInput && <AbandonedMessageInput value={abandonedRoomsCloseCustomMessage} handler={handleAbandonedRoomsCloseCustomMessage} label={'Livechat_abandoned_rooms_closed_custom_message'} placeholder='Enter_a_custom_message' />}
-					{WaitingQueueMessageInput && <WaitingQueueMessageInput value={waitingQueueMessage} handler={handleWaitingQueueMessage} label={'Waiting_queue_message'} />}
-					{DepartmentForwarding && <DepartmentForwarding value={departmentsAllowedToForward} handler={handleDepartmentsAllowedToForward} label={'List_of_departments_for_forward_description'} placeholder='Enter_a_department_name' />}
+					{MaxChats && <Field>
+						<MaxChats value={maxNumberSimultaneousChat} handler={handleMaxNumberSimultaneousChat} label={'Max_number_of_chats_per_agent'} placeholder='Max_number_of_chats_per_agent_description' />
+					</Field>}
+					{VisitorInactivity && <Field>
+						<VisitorInactivity value={visitorInactivityTimeoutInSeconds} handler={handleVisitorInactivityTimeoutInSeconds} label={'How_long_to_wait_to_consider_visitor_abandonment_in_seconds'} placeholder='Number_in_seconds' />
+					</Field>}
+					{AbandonedMessageInput && <Field>
+						<AbandonedMessageInput value={abandonedRoomsCloseCustomMessage} handler={handleAbandonedRoomsCloseCustomMessage} label={'Livechat_abandoned_rooms_closed_custom_message'} placeholder='Enter_a_custom_message' />
+					</Field>}
+					{WaitingQueueMessageInput && <Field>
+						<WaitingQueueMessageInput value={waitingQueueMessage} handler={handleWaitingQueueMessage} label={'Waiting_queue_message'} />
+					</Field>}
+					{DepartmentForwarding && <Field>
+						<DepartmentForwarding value={departmentsAllowedToForward} handler={handleDepartmentsAllowedToForward} label={'List_of_departments_for_forward_description'} placeholder='Enter_a_department_name' />
+					</Field>}
 					<Field>
 						<Box display='flex' flexDirection='row'>
 							<Field.Label>{t('Request_tag_before_closing_chat')}</Field.Label>
