@@ -1,6 +1,30 @@
 
 # 3.8.0 (Under Release Candidate Process)
 
+## 3.8.0-rc.2
+`2020-10-29  ·  4 🔍  ·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Agent Status leading to broken page ([#19409](https://github.com/RocketChat/Rocket.Chat/pull/19409))
+
+- Regression: Fix stream-room-data payload ([#19407](https://github.com/RocketChat/Rocket.Chat/pull/19407))
+
+- Regression: Fix visitor field missing on subscription payload ([#19412](https://github.com/RocketChat/Rocket.Chat/pull/19412))
+
+- Regression: Rocket.Chat Apps updates always fail ([#19411](https://github.com/RocketChat/Rocket.Chat/pull/19411))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@d-gubert](https://github.com/d-gubert)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.8.0-rc.1
 `2020-10-29  ·  3 🔍  ·  2 👩‍💻👨‍💻`
 

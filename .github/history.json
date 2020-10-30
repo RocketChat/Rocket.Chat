@@ -51046,6 +51046,53 @@
           ]
         }
       ]
+    },
+    "3.8.0-rc.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0-alpha.4006",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19409",
+          "title": "Regression: Agent Status leading to broken page",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19411",
+          "title": "Regression: Rocket.Chat Apps updates always fail",
+          "userLogin": "d-gubert",
+          "milestone": "3.8.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "19412",
+          "title": "Regression: Fix visitor field missing on subscription payload",
+          "userLogin": "renatobecker",
+          "milestone": "3.8.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "19407",
+          "title": "Regression: Fix stream-room-data payload",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
