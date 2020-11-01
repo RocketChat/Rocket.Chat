@@ -19,6 +19,11 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 			return true;
 		}
 
+		// allows inserts from omnichannel visitors
+		if (doc.visitorToken) {
+			return true;
+		}
+
 		// allow inserts from slackbridge (message_id = slack-timestamp-milli)
 		if (doc && doc.message_id && doc.message_id.indexOf('slack-') === 0) {
 			return true;
