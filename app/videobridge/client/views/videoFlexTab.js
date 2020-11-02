@@ -28,8 +28,8 @@ Template.videoFlexTab.onRendered(function() {
 
 	const rid = Session.get('openedRoom');
 
-	const width = 'auto';
-	const height = 1000;
+	const width = settings.get('Jitsi_Embedded_Frame_Width');
+	const height = settings.get('Jitsi_Embedded_Frame_Height');
 
 	const configOverwrite = {
 		desktopSharingChromeExtId: settings.get('Jitsi_Chrome_Extension'),

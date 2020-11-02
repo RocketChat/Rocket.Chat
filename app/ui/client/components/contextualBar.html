@@ -3,7 +3,7 @@
 		{{#if full}}
 			{{> Template.dynamic template=template data=flexData}}
 		{{else}}
-			<div class="contextual-bar">
+			<div class="contextual-bar" style="flex-basis: {{ flexData.width}}px">
 				<div class="contextual-bar-wrap">
 					<header class="contextual-bar__header">
 						{{#with headerData}}
