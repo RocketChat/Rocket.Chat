@@ -130,6 +130,16 @@ Meteor.startup(function() {
 				public: true,
 			});
 
+			this.add('Jitsi_Embedded_Frame_Width', 600, {
+				type: 'number',
+				enableQuery: {
+					_id: 'Jitsi_Enabled',
+					value: true,
+				},
+				i18nLabel: 'Jitsi_Embedded_Frame_Width',
+				public: true,
+			});
+
 			this.add('Jitsi_Enable_Channels', false, {
 				type: 'boolean',
 				enableQuery: {
@@ -180,7 +190,7 @@ Meteor.startup(function() {
 
 			this.add('Jitsi_Limit_Token_To_Room', true, {
 				type: 'boolean',
-				enableQuery: [
+				enableQuery: [	
 					{ _id: 'Jitsi_Enabled', value: true },
 					{ _id: 'Jitsi_Enabled_TokenAuth', value: true },
 				],

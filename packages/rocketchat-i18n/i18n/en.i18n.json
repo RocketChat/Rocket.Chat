@@ -2067,6 +2067,7 @@
   "Jitsi_Application_Secret": "Application Secret",
   "Jitsi_Enable_Channels": "Enable in Channels",
   "Jitsi_Limit_Token_To_Room": "Limit token to Jitsi Room",
+  "Jitsi_Embedded_Frame_Width": "Width of Jitsi frame when embedded",
   "Job_Title": "Job Title",
   "join": "Join",
   "join-without-join-code": "Join Without Join Code",

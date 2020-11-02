@@ -29,7 +29,7 @@ Template.videoFlexTab.onRendered(function() {
 	const rid = Session.get('openedRoom');
 
 	const width = 'auto';
-	const height = 500;
+	const height = 1000;
 
 	const configOverwrite = {
 		desktopSharingChromeExtId: settings.get('Jitsi_Chrome_Extension'),
