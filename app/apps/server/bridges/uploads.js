@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { FileUpload } from '../../../file-upload/server';
 import { determineFileType } from '../../lib/misc/determineFileType';
-import { Users } from '../../../models';
 
 export class AppUploadBridge {
 	constructor(orch) {
@@ -42,15 +41,10 @@ export class AppUploadBridge {
 			delete details.userId;
 		}
 
-		const appUser = Users.findOneByAppId(appId);
-		if (!appUser) {
-			throw new Error('Invalid app Id');
-		}
-
 		const fileStore = FileUpload.getStore('Uploads');
 		const insertSync = details.userId
 			? (...args) => Meteor.runAsUser(details.userId, () => fileStore.insertSync(...args))
-			: (...args) => Meteor.runAsUser(appUser._id, () => fileStore.insertSync(...args));
+			: Meteor.wrapAsync(fileStore.insert.bind(fileStore));
 
 		details.type = determineFileType(buffer, details);
 
