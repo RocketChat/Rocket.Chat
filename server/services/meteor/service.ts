@@ -114,6 +114,8 @@ if (disableOplog) {
 export class MeteorService extends ServiceClass implements IMeteor {
 	protected name = 'meteor';
 
+	protected internal = true;
+
 	constructor() {
 		super();
 
