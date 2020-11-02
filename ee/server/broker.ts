@@ -43,7 +43,7 @@ class NetworkBroker implements IBroker {
 	private internalOnly = ['true', 'yes'].includes(INTERNAL_SERVICES_ONLY.toLowerCase());
 
 	// list of allowed services to run - has precedence over `internalOnly`
-	private allowedList = new Set<string>(SERVICES_ALLOWED?.split(','));
+	private allowedList = new Set<string>(SERVICES_ALLOWED?.split(',').map((i) => i.trim()).filter((i) => i));
 
 	constructor(broker: ServiceBroker) {
 		this.broker = broker;
