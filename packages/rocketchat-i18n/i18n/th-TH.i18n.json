@@ -295,7 +295,6 @@
   "App_Information": "ข้อมูลแอป",
   "App_Installation": "การติดตั้งแอป",
   "App_status_auto_enabled": "เปิดการใช้งาน",
-  "App_status_compiler_error_disabled": "ปิดใช้งาน: ข้อผิดพลาดของคอมไพเลอร์",
   "App_status_constructed": "สร้าง",
   "App_status_disabled": "พิการ",
   "App_status_error_disabled": "ปิดใช้งาน: Uncaught Error",

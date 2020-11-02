@@ -295,7 +295,6 @@
   "App_Information": "App-Informationen",
   "App_Installation": "App-Installation",
   "App_status_auto_enabled": "aktiviert",
-  "App_status_compiler_error_disabled": "Deaktiviert: Compilerfehler",
   "App_status_constructed": "Konstruiert",
   "App_status_disabled": "Behindert",
   "App_status_error_disabled": "Deaktiviert: Nicht erfasster Fehler",

@@ -295,7 +295,6 @@
   "App_Information": "معلومات التطبيق",
   "App_Installation": "تثبيت التطبيق",
   "App_status_auto_enabled": "مُفعّل",
-  "App_status_compiler_error_disabled": "معطل: خطأ في المترجم",
   "App_status_constructed": "إنشاؤه",
   "App_status_disabled": "تعطيل",
   "App_status_error_disabled": "معطل: خطأ غير مسجل",

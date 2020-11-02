@@ -400,7 +400,6 @@
   "App_Information": "App 정보",
   "App_Installation": "App 설치",
   "App_status_auto_enabled": "활성화 됨",
-  "App_status_compiler_error_disabled": "비활성화 됨: 컴파일러 오류",
   "App_status_constructed": "구성됨",
   "App_status_disabled": "비활성화",
   "App_status_error_disabled": "사용 중지됨 : 잡히지 않은 오류",

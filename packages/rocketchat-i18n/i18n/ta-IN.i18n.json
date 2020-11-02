@@ -295,7 +295,6 @@
   "App_Information": "பயன்பாட்டுத் தகவல்",
   "App_Installation": "பயன்பாட்டு நிறுவல்",
   "App_status_auto_enabled": "இயக்கப்பட்டது",
-  "App_status_compiler_error_disabled": "முடக்கப்பட்டது: கம்பைலர் பிழை",
   "App_status_constructed": "கட்டப்பட்ட",
   "App_status_disabled": "முடக்கப்பட்டது",
   "App_status_error_disabled": "முடக்கப்பட்டுள்ளது: பிழையில்லாத பிழை",

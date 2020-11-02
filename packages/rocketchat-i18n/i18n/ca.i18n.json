@@ -346,7 +346,6 @@
   "App_Information": "Informació de l'aplicació",
   "App_Installation": "Instal·lació de l'aplicació",
   "App_status_auto_enabled": "Actiu",
-  "App_status_compiler_error_disabled": "Desactivat: error del compilador",
   "App_status_constructed": "Construït",
   "App_status_disabled": "Inactiu",
   "App_status_error_disabled": "Desactivat: error no capturat",

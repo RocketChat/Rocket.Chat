@@ -377,7 +377,6 @@
   "App_Information": "აპლიკაციიის ინფორმაცია",
   "App_Installation": "აპლიკაციის ინსტალაცია",
   "App_status_auto_enabled": "ჩართული",
-  "App_status_compiler_error_disabled": "გამორთულია: კომპილატორის შეცდომა",
   "App_status_constructed": "აწყობილია",
   "App_status_disabled": "გათიშული",
   "App_status_error_disabled": "გამორთულია: გაურკვეველი შეცდომა",

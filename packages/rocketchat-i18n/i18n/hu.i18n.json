@@ -349,7 +349,6 @@
   "App_Information": "Alkalmazásinformációk",
   "App_Installation": "Alkalmazás telepítése",
   "App_status_auto_enabled": "Engedélyezve",
-  "App_status_compiler_error_disabled": "Letiltva: fordítóhiba",
   "App_status_constructed": "Szerkesztett",
   "App_status_disabled": "Letiltva",
   "App_status_error_disabled": "Letiltva: nem elfogott hiba",

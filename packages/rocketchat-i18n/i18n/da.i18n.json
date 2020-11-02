@@ -402,7 +402,6 @@
   "App_Information": "App-information",
   "App_Installation": "App-installation",
   "App_status_auto_enabled": "Aktiveret",
-  "App_status_compiler_error_disabled": "Deaktiveret: Compiler Error",
   "App_status_constructed": "Konstrueret",
   "App_status_disabled": "Deaktiveret",
   "App_status_error_disabled": "Deaktiveret: Uncaught Error",

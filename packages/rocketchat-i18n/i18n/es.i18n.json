@@ -396,7 +396,6 @@
   "App_Information": "Información de la aplicación",
   "App_Installation": "Instalación de la aplicación",
   "App_status_auto_enabled": "Habilitado",
-  "App_status_compiler_error_disabled": "Deshabilitado: error del compilador",
   "App_status_constructed": "Construido",
   "App_status_disabled": "Deshabilitado",
   "App_status_error_disabled": "Deshabilitado: error no detectado",

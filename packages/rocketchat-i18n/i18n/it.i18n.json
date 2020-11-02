@@ -305,7 +305,6 @@
   "App_Information": "Informazioni sull'app",
   "App_Installation": "Installazione dell'app",
   "App_status_auto_enabled": "Abilitato",
-  "App_status_compiler_error_disabled": "Disabilitato: errore del compilatore",
   "App_status_constructed": "Costruito",
   "App_status_disabled": "Disabilitato",
   "App_status_error_disabled": "Disabilitato: errore non rilevato",

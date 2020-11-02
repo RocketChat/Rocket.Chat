@@ -309,7 +309,6 @@
   "App_Information": "应用信息",
   "App_Installation": "应用安装",
   "App_status_auto_enabled": "启用",
-  "App_status_compiler_error_disabled": "禁用：编译器错误",
   "App_status_constructed": "建",
   "App_status_disabled": "残",
   "App_status_error_disabled": "禁用：未捕获错误",

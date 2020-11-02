@@ -327,7 +327,6 @@
   "App_Information": "Informacije o aplikaciji",
   "App_Installation": "Instalacija aplikacije",
   "App_status_auto_enabled": "Omogućeno",
-  "App_status_compiler_error_disabled": "Onemogućeno: pogreška prevoditelja",
   "App_status_constructed": "konstruiran",
   "App_status_disabled": "onesposobljen",
   "App_status_error_disabled": "Onemogućeno: neozlijeđena pogreška",

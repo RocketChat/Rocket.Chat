@@ -295,7 +295,6 @@
   "App_Information": "Informasi Aplikasi",
   "App_Installation": "Instalasi Aplikasi",
   "App_status_auto_enabled": "Diaktifkan",
-  "App_status_compiler_error_disabled": "Dinonaktifkan: Kesalahan Kompiler",
   "App_status_constructed": "Dibangun",
   "App_status_disabled": "Cacat",
   "App_status_error_disabled": "Dinonaktifkan: Kesalahan Yang Tidak Terjadi",

@@ -295,7 +295,6 @@
   "App_Information": "Maklumat App",
   "App_Installation": "Pemasangan Aplikasi",
   "App_status_auto_enabled": "Dihidupkan",
-  "App_status_compiler_error_disabled": "Dinyahdayakan: Ralat Compiler",
   "App_status_constructed": "Dibina",
   "App_status_disabled": "Dilumpuhkan",
   "App_status_error_disabled": "Dinyahdayakan: Ralat Uncaught",

@@ -286,7 +286,6 @@
   "App_Information": "Thông tin ứng dụng",
   "App_Installation": "Cài đặt ứng dụng",
   "App_status_auto_enabled": "Đã bật",
-  "App_status_compiler_error_disabled": "Đã tắt: Lỗi trình biên dịch",
   "App_status_constructed": "Được khởi tạo",
   "App_status_disabled": "Đã tắt",
   "App_status_error_disabled": "Đã tắt: lỗi",

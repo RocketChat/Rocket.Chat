@@ -317,7 +317,6 @@
   "App_Information": "Appinformation",
   "App_Installation": "Appinstallation",
   "App_status_auto_enabled": "Aktiverad",
-  "App_status_compiler_error_disabled": "Inaktiverad: Kompilatorfel",
   "App_status_constructed": "Konstruerad",
   "App_status_disabled": "Avaktiverad",
   "App_status_error_disabled": "Inaktiverad: Okänt fel",

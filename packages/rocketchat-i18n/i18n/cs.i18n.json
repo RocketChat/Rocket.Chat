@@ -399,7 +399,6 @@
   "App_Information": "Informace o aplikaci",
   "App_Installation": "Instalace aplikace",
   "App_status_auto_enabled": "Povoleno",
-  "App_status_compiler_error_disabled": "Zakázáno: chyba kompilace",
   "App_status_constructed": "Vytvořeno",
   "App_status_disabled": "Zakázáno",
   "App_status_error_disabled": "Zakázáno: Nezachycená výjimka",

@@ -295,7 +295,6 @@
   "App_Information": "Informacija apie programą",
   "App_Installation": "Programos diegimas",
   "App_status_auto_enabled": "Įjungtas",
-  "App_status_compiler_error_disabled": "Neleidžiama: kompiliatoriaus klaida",
   "App_status_constructed": "Pastatytas",
   "App_status_disabled": "Neįgalus",
   "App_status_error_disabled": "Neleidžiama: nepavyko klaida",

@@ -200,7 +200,6 @@
   "App_Information": "Информације о апликацији",
   "App_Installation": "Инсталација апликације",
   "App_status_auto_enabled": "Омогућено",
-  "App_status_compiler_error_disabled": "Онемогућено: грешка компајлера",
   "App_status_constructed": "Израђено",
   "App_status_disabled": "Онемогућено",
   "App_status_initialized": "Иницијализовано",

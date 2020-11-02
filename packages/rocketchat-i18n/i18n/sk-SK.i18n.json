@@ -297,7 +297,6 @@
   "App_Information": "Informácie o aplikácií",
   "App_Installation": "Inštalácia aplikácie",
   "App_status_auto_enabled": "Povolené",
-  "App_status_compiler_error_disabled": "Nepovolené: Chyba kompilátora",
   "App_status_constructed": "Vytvorené",
   "App_status_disabled": "Nepovolené",
   "App_status_error_disabled": "Nepovolené: Nezachytená chyba",

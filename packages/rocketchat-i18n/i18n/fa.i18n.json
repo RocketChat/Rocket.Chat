@@ -357,7 +357,6 @@
   "App_Information": "اطلاعات برنامه",
   "App_Installation": "نصب برنامه",
   "App_status_auto_enabled": "فعال",
-  "App_status_compiler_error_disabled": "غیر فعال: خطای کامپایلر",
   "App_status_constructed": "ساخته شده",
   "App_status_disabled": "معلول",
   "App_status_error_disabled": "غیر فعال: خطای Uncaught",

@@ -403,7 +403,6 @@
   "App_Information": "アプリ情報",
   "App_Installation": "アプリのインストール",
   "App_status_auto_enabled": "使用可能",
-  "App_status_compiler_error_disabled": "無効: コンパイラエラー",
   "App_status_constructed": "構築済み",
   "App_status_disabled": "無効",
   "App_status_error_disabled": "無効: キャッチされていないエラー",

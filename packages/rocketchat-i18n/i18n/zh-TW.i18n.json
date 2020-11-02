@@ -404,7 +404,6 @@
   "App_Information": "應用資訊",
   "App_Installation": "應用安裝",
   "App_status_auto_enabled": "已啟用",
-  "App_status_compiler_error_disabled": "已停用：編譯器錯誤",
   "App_status_constructed": "建造",
   "App_status_disabled": "已停用",
   "App_status_error_disabled": "已停用：未找到錯誤",

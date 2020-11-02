@@ -304,7 +304,6 @@
   "App_Information": "інфармацыя аб дадатку",
   "App_Installation": "ўстаноўка App",
   "App_status_auto_enabled": "Уключана",
-  "App_status_compiler_error_disabled": "Адключана: Памылка кампілятара",
   "App_status_constructed": "пабудаваны",
   "App_status_disabled": "інвалід",
   "App_status_error_disabled": "Адключана: Uncaught Памылка",

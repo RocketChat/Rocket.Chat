@@ -295,7 +295,6 @@
   "App_Information": "Sovellustiedot",
   "App_Installation": "Sovelluksen asennus",
   "App_status_auto_enabled": "Käytössä",
-  "App_status_compiler_error_disabled": "Poissa käytöstä: kääntäjän virhe",
   "App_status_constructed": "rakennettu",
   "App_status_disabled": "Vammaiset",
   "App_status_error_disabled": "Poissa käytöstä: epäkelvottomat virheet",

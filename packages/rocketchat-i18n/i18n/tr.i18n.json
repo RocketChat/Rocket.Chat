@@ -341,7 +341,6 @@
   "App_Information": "Uygulama Bilgileri",
   "App_Installation": "Uygulama Yükleme",
   "App_status_auto_enabled": "Etkin",
-  "App_status_compiler_error_disabled": "Devre Dışı: Derleyici Hatası",
   "App_status_constructed": "inşa",
   "App_status_disabled": "engelli",
   "App_status_error_disabled": "Devre Dışı: Yakalanmayan Hata",

@@ -301,7 +301,6 @@
   "App_Information": "Πληροφορίες εφαρμογής",
   "App_Installation": "Εγκατάσταση εφαρμογών",
   "App_status_auto_enabled": "Ενεργοποιημένο",
-  "App_status_compiler_error_disabled": "Απενεργοποιημένο: Σφάλμα μεταγλωττιστή",
   "App_status_constructed": "Κατασκευασμένο",
   "App_status_disabled": "Απενεργοποιημένο",
   "App_status_error_disabled": "Απενεργοποιημένο: Uncaught Error",

@@ -361,7 +361,6 @@
   "App_Information": "Інформація про застосунок",
   "App_Installation": "Встановлення застосунку",
   "App_status_auto_enabled": "Увімкнено",
-  "App_status_compiler_error_disabled": "Вимкнено: помилка компілятора",
   "App_status_constructed": "Побудований",
   "App_status_disabled": "Вимкнено",
   "App_status_error_disabled": "Вимкнено: невідома помилка",

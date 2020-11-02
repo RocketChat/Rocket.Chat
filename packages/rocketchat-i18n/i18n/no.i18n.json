@@ -358,7 +358,6 @@
   "App_Information": "App Informasjon",
   "App_Installation": "App installasjon",
   "App_status_auto_enabled": "aktivert",
-  "App_status_compiler_error_disabled": "Deaktivert: Compiler Error",
   "App_status_constructed": "konstruert",
   "App_status_disabled": "Funksjonshemmet",
   "App_status_error_disabled": "Deaktivert: Uncaught Error",

@@ -295,7 +295,6 @@
   "App_Information": "Апп Мэдээлэл",
   "App_Installation": "Програм суулгах",
   "App_status_auto_enabled": "Идэвхжүүлсэн",
-  "App_status_compiler_error_disabled": "Хөгжлийн бэрхшээл: Compiler Error",
   "App_status_constructed": "Баригдсан",
   "App_status_disabled": "Хөгжлийн бэрхшээлтэй",
   "App_status_error_disabled": "Хөгжлийн бэрхшээлтэй: Uncaught Error",

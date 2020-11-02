@@ -305,7 +305,6 @@
   "App_Information": "ຂໍ້ມູນກ່ຽວກັບແອັບຯ",
   "App_Installation": "ການຕິດຕັ້ງແອັບຯ",
   "App_status_auto_enabled": "Enabled",
-  "App_status_compiler_error_disabled": "ປິດການໃຊ້ງານ: ຂໍ້ຜິດພາດຂອງຄອມພິວເຕີ້",
   "App_status_constructed": "ກໍ່ສ້າງ",
   "App_status_disabled": "ຖືກປິດໃຊ້ງານ",
   "App_status_error_disabled": "ປິດການໃຊ້ງານ: Uncaught Error",
