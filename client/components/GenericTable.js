@@ -15,7 +15,7 @@ function SortIcon({ direction }) {
 export function Th({ children, active, direction, sort, onClick, align, ...props }) {
 	const fn = useMemo(() => () => onClick && onClick(sort), [sort, onClick]);
 	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
-		<Box display='flex' alignItems='center' wrap='no-wrap'>{children}{sort && <SortIcon mod-active={active} direction={active && direction} />}</Box>
+		<Box display='flex' alignItems='center' wrap='no-wrap'>{children}{sort && <SortIcon direction={active && direction} />}</Box>
 	</Table.Cell>;
 }
 
@@ -39,12 +39,14 @@ const LoadingRow = ({ cols }) => <Table.Row>
 export const GenericTable = forwardRef(function GenericTable({
 	children,
 	results,
+	fixed = true,
 	total,
 	renderRow: RenderRow,
 	header,
 	setParams = () => { },
 	params: paramsDefault = '',
 	FilterComponent = () => null,
+	...props
 }, ref) {
 	const t = useTranslation();
 
@@ -70,7 +72,7 @@ export const GenericTable = forwardRef(function GenericTable({
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return <>
-		<FilterComponent setFilter={setFilter} />
+		<FilterComponent setFilter={setFilter} { ...props}/>
 		{results && !results.length
 			? <Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
 				{t('No_data_found')}
@@ -78,7 +80,7 @@ export const GenericTable = forwardRef(function GenericTable({
 			: <>
 				<Scrollable>
 					<Box mi='neg-x24' pi='x24' flexGrow={1} ref={ref}>
-						<Table fixed sticky>
+						<Table fixed={fixed} sticky>
 							{header && <Table.Head>
 								<Table.Row>
 									{header}

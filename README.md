@@ -13,7 +13,7 @@
 [![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
-* [**NEW!** Rocket.Chat Moving to a Single Codebase](#moving-to-a-single-codebase) 
+* [**NEW!** Rocket.Chat Moving to a Single Codebase](#moving-to-a-single-codebase)
 * [Community](#community)
 * [Mobile Apps](#mobile-apps)
 * [Desktop Apps](#desktop-apps)
@@ -60,7 +60,7 @@
 
 # Moving to a Single Codebase
 
-Rocket.Chat is moving to a single codebase. Get to know the reasons and how the community will benefit from it. Read the [details](https://rocket.chat/2020/03/28/moving-to-a-single-codebase/).
+Rocket.Chat is moving to a single codebase. Get to know the reasons and how the community will benefit from it. Read the [details](https://rocket.chat/rocket-chat-is-moving-to-a-single-codebase-get-to-know-the-reasons-and-how-the-community-will-benefit-from-it/).
 
 # Help Wanted
 
@@ -78,6 +78,12 @@ Join thousands of members worldwide 24/7 in our [community server](https://open.
 [![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=dev)](https://open.rocket.chat/channel/dev) for developers needing help from the community to developing new features.
 
 You can also join the conversation on [Twitter](https://twitter.com/RocketChat) and [Facebook](https://www.facebook.com/RocketChatApp).
+
+## Share your story
+We’d love to hear about [your experience](https://survey.zohopublic.com/zs/e4BUFG) and potentially feature it on our [Blog](https://rocket.chat/case-studies/?utm_source=github&utm_medium=readme&utm_campaign=community).
+
+## Subscribe for Updates
+Once a month our marketing team releases an email update with news about product releases, company related topics, events and use cases. [Sign Up!](https://rocket.chat/newsletter/?utm_source=github&utm_medium=readme&utm_campaign=community)
 
 # Desktop Apps
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
@@ -358,7 +364,7 @@ Prerequisites:
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [Meteor](https://www.meteor.com/install)
 
-> Meteor automatically installs a hidden [NodeJS v12](https://nodejs.org/download/release/v12.16.1/) and [MongoDB v4.2](https://docs.mongodb.com/manual/introduction/) to be used when you run your app in development mode using the `meteor` command.
+> Meteor automatically installs a hidden [NodeJS v12](https://nodejs.org/download/release/v12.18.4/) and [MongoDB v4.2](https://docs.mongodb.com/manual/introduction/) to be used when you run your app in development mode using the `meteor` command.
 
 Now just clone and start the app:
 

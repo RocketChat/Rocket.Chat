@@ -4,7 +4,7 @@ import { API } from '../../../../api/server';
 import { hasPermission } from '../../../../authorization';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models';
 import { Livechat } from '../../../server/lib/Livechat';
-import { findDepartments, findDepartmentById, findDepartmentsToAutocomplete, findDepartmentsBetweenIds } from '../../../server/api/lib/departments';
+import { findDepartments, findDepartmentById, findDepartmentsToAutocomplete, findDepartmentsBetweenIds, findDepartmentAgents } from '../../../server/api/lib/departments';
 
 API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
@@ -35,7 +35,8 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 				agents: Match.Maybe(Array),
 			});
 
-			const department = Livechat.saveDepartment(null, this.bodyParams.department, this.bodyParams.agents);
+			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
+			const department = Livechat.saveDepartment(null, this.bodyParams.department, agents);
 
 			if (department) {
 				return API.v1.success({
@@ -86,7 +87,6 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 			check(this.bodyParams, {
 				department: Object,
 				agents: Match.Maybe(Array),
-
 			});
 
 			const { _id } = this.urlParams;
@@ -94,11 +94,11 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 
 			let success;
 			if (permissionToSave) {
-				success = Livechat.saveDepartment(_id, department, agents);
+				success = Livechat.saveDepartment(_id, department);
 			}
 
 			if (success && agents && permissionToAddAgents) {
-				success = Livechat.saveDepartmentAgents(_id, agents);
+				success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
 			}
 
 			if (success) {
@@ -145,6 +145,43 @@ API.v1.addRoute('livechat/department.autocomplete', { authRequired: true }, {
 			uid: this.userId,
 			selector: JSON.parse(selector),
 		})));
+	},
+});
+
+API.v1.addRoute('livechat/department/:departmentId/agents', { authRequired: true }, {
+	get() {
+		check(this.urlParams, {
+			departmentId: String,
+		});
+
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+
+		const agents = Promise.await(findDepartmentAgents({
+			userId: this.userId,
+			departmentId: this.urlParams.departmentId,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
+		}));
+
+		return API.v1.success(agents);
+	},
+	post() {
+		if (!hasPermission(this.userId, 'manage-livechat-departments') || !hasPermission(this.userId, 'add-livechat-department-agents')) {
+			return API.v1.unauthorized();
+		}
+		check(this.urlParams, {
+			departmentId: String,
+		});
+
+		check(this.bodyParams, Match.ObjectIncluding({
+			upsert: Array,
+			remove: Array,
+		}));
+		Livechat.saveDepartmentAgents(this.urlParams.departmentId, this.bodyParams);
 	},
 });
 

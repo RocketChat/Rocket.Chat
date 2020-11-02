@@ -48,6 +48,20 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findDiscussionsByRoomAndText(rid, text, options) {
+		const query = {
+			rid,
+			drid: { $exists: true },
+			...text && {
+				$text: {
+					$search: text,
+				},
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	findAllNumberOfTransferredRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
 		const match = {
 			$match: {

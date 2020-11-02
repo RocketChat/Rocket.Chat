@@ -14,6 +14,7 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useSetModal } from '../../../contexts/ModalContext';
 import OutgoingWebhookForm from '../OutgoiongWebhookForm';
 import { useForm } from '../../../hooks/useForm';
 
@@ -75,7 +76,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { handlers: formHandlers, values: formValues, reset } = useForm(getInitialValue(data));
-	const [modal, setModal] = useState();
+	const setModal = useSetModal();
 
 	const saveIntegration = useMethod('updateOutgoingIntegration');
 
@@ -127,8 +128,5 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 	</Field>, [handleDeleteIntegration, handleSave, reset, t]);
 
 
-	return <>
-		<OutgoingWebhookForm formValues={formValues} formHandlers={formHandlers} append={actionButtons} {...props}/>
-		{ modal }
-	</>;
+	return <OutgoingWebhookForm formValues={formValues} formHandlers={formHandlers} append={actionButtons} {...props}/>;
 }

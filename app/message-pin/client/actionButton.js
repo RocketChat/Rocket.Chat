@@ -89,7 +89,7 @@ Meteor.startup(function() {
 			return !!subscription;
 		},
 		order: 100,
-		group: 'menu',
+		group: ['message', 'menu'],
 	});
 
 	MessageAction.addButton({
@@ -98,9 +98,10 @@ Meteor.startup(function() {
 		label: 'Get_link',
 		classes: 'clipboard',
 		context: ['pinned'],
-		async action(event) {
+		async action() {
 			const { msg: message } = messageArgs(this);
-			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
+			const permalink = await MessageAction.getPermaLink(message._id);
+			navigator.clipboard.writeText(permalink);
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition({ subscription }) {

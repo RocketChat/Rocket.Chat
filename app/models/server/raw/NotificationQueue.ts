@@ -18,6 +18,19 @@ export class NotificationQueueRaw extends BaseRaw {
 		});
 	}
 
+	setErrorById(_id: string, error: any) {
+		return this.col.updateOne({
+			_id,
+		}, {
+			$set: {
+				error,
+			},
+			$unset: {
+				sending: 1,
+			},
+		});
+	}
+
 	removeById(_id: string) {
 		return this.col.deleteOne({ _id });
 	}
@@ -55,6 +68,8 @@ export class NotificationQueueRaw extends BaseRaw {
 					{ schedule: { $exists: false } },
 					{ schedule: { $lte: now } },
 				],
+			}, {
+				error: { $exists: false },
 			}],
 		}, {
 			$set: {

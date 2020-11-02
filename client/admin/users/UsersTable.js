@@ -1,10 +1,11 @@
-import { Box, Table, Avatar, TextInput, Icon } from '@rocket.chat/fuselage';
+import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
-import { GenericTable, Th } from '../../components/GenericTable';
+import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import { GenericTable } from '../../components/GenericTable';
+import { capitalize } from '../../helpers/capitalize';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { getUserAvatarURL } from '../../../app/utils/client';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 
@@ -25,8 +26,34 @@ const FilterByText = ({ setFilter, ...props }) => {
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
+const UserRow = ({ emails, _id, username, name, roles, status, avatarETag, onClick, mediaQuery, active }) => {
+	const t = useTranslation();
+
+	const statusText = active ? t(capitalize(status)) : t('Disabled');
+	return <Table.Row onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
+		<Table.Cell style={style}>
+			<Box display='flex' alignItems='center'>
+				<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag}/>
+				<Box display='flex' style={style} mi='x8'>
+					<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
+						<Box fontScale='p2' style={style} color='default'>{name || username}</Box>
+						{!mediaQuery && name && <Box fontScale='p1' color='hint' style={style}> {`@${ username }`} </Box>}
+					</Box>
+				</Box>
+			</Box>
+		</Table.Cell>
+		{mediaQuery && <Table.Cell>
+			<Box fontScale='p2' style={style} color='hint'>{ username }</Box> <Box mi='x4'/>
+		</Table.Cell>}
+		<Table.Cell style={style}>{emails && emails.length && emails[0].address}</Table.Cell>
+		{mediaQuery && <Table.Cell style={style}>{roles && roles.join(', ')}</Table.Cell>}
+		<Table.Cell fontScale='p1' color='hint' style={style}>{statusText}</Table.Cell>
+	</Table.Row>;
+};
+
+
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
-	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1, avatarETag: 1 }),
+	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1, avatarETag: 1, active: 1 }),
 	query: JSON.stringify({
 		$or: [
 			{ 'emails.address': { $regex: text || '', $options: 'i' } },
@@ -70,39 +97,32 @@ export function UsersTable() {
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
-		mediaQuery && <Th key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>{t('Username')}</Th>,
-		<Th key={'email'} direction={sort[1]} active={sort[0] === 'emails.adress'} onClick={onHeaderClick} sort='emails.address' w='x120'>{t('Email')}</Th>,
-		mediaQuery && <Th key={'roles'} direction={sort[1]} active={sort[0] === 'roles'} onClick={onHeaderClick} sort='roles' w='x120'>{t('Roles')}</Th>,
-		<Th key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x100'>{t('Status')}</Th>,
-	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
-
-	const renderRow = useCallback(({ emails, _id, username, name, roles, status, avatarETag }) => {
-		const avatarUrl = getUserAvatarURL(username, avatarETag);
-
-		return <Table.Row key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<Table.Cell style={style}>
-				<Box display='flex' alignItems='center'>
-					<Avatar size={mediaQuery ? 'x28' : 'x40'} title={username} url={avatarUrl} />
-					<Box display='flex' style={style} mi='x8'>
-						<Box display='flex' flexDirection='column' alignSelf='center' style={style}>
-							<Box fontScale='p2' style={style} color='default'>{name || username}</Box>
-							{!mediaQuery && name && <Box fontScale='p1' color='hint' style={style}> {`@${ username }`} </Box>}
-						</Box>
-					</Box>
-				</Box>
-			</Table.Cell>
-			{mediaQuery && <Table.Cell>
-				<Box fontScale='p2' style={style} color='hint'>{ username }</Box> <Box mi='x4'/>
-			</Table.Cell>}
-			<Table.Cell style={style}>{emails && emails.length && emails[0].address}</Table.Cell>
-			{mediaQuery && <Table.Cell style={style}>{roles && roles.join(', ')}</Table.Cell>}
-			<Table.Cell fontScale='p1' color='hint' style={style}>{status}</Table.Cell>
-		</Table.Row>;
-	}, [mediaQuery, onClick]);
-
-	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.users} total={data.total} setParams={setParams} params={params} />;
+	return <GenericTable
+		FilterComponent={FilterByText}
+		header={<>
+			<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>
+				{t('Name')}
+			</GenericTable.HeaderCell>
+			{mediaQuery && <GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>
+				{t('Username')}
+			</GenericTable.HeaderCell>}
+			<GenericTable.HeaderCell key={'email'} direction={sort[1]} active={sort[0] === 'emails.adress'} onClick={onHeaderClick} sort='emails.address' w='x120'>
+				{t('Email')}
+			</GenericTable.HeaderCell>
+			{mediaQuery && <GenericTable.HeaderCell key={'roles'} direction={sort[1]} active={sort[0] === 'roles'} onClick={onHeaderClick} sort='roles' w='x120'>
+				{t('Roles')}
+			</GenericTable.HeaderCell>}
+			<GenericTable.HeaderCell key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x100'>
+				{t('Status')}
+			</GenericTable.HeaderCell>
+		</>}
+		results={data.users}
+		total={data.total}
+		setParams={setParams}
+		params={params}
+	>
+		{(props) => <UserRow key={props._id} onClick={onClick} mediaQuery={mediaQuery} {...props}/>}
+	</GenericTable>;
 }
 
 export default UsersTable;

@@ -3,7 +3,6 @@ import { HTTP } from 'meteor/http';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 import { saveRegistrationData } from './saveRegistrationData';
@@ -48,12 +47,6 @@ export function connectWorkspace(token) {
 	}
 
 	Promise.await(saveRegistrationData(data));
-
-	// Now that we have the client id and secret, let's get the access token
-	const accessToken = getWorkspaceAccessToken(true);
-	if (!accessToken) {
-		return false;
-	}
 
 	return true;
 }

@@ -76,6 +76,7 @@ Template.videoFlexTab.onRendered(function() {
 			if (!jitsiTimeout) {
 				return;
 			}
+			clearInterval(this.intervalHandler);
 			this.intervalHandler = setInterval(update, CONSTANTS.HEARTBEAT);
 			TabBar.updateButton('video', { class: 'red' });
 			return jitsiTimeout;
@@ -110,7 +111,14 @@ Template.videoFlexTab.onRendered(function() {
 			}
 
 			const domain = settings.get('Jitsi_Domain');
-			const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + rid + settings.get('Jitsi_URL_Room_Suffix');
+			let rname;
+			if (settings.get('Jitsi_URL_Room_Hash')) {
+				rname = settings.get('uniqueID') + rid;
+			} else {
+				const room = Rooms.findOne({ _id: rid });
+				rname = encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+			}
+			const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + rname + settings.get('Jitsi_URL_Room_Suffix');
 			const noSsl = !settings.get('Jitsi_SSL');
 			const isEnabledTokenAuth = settings.get('Jitsi_Enabled_TokenAuth');
 
@@ -127,10 +135,10 @@ Template.videoFlexTab.onRendered(function() {
 			jitsiRoomActive = jitsiRoom;
 
 			if (settings.get('Jitsi_Open_New_Window')) {
-				Tracker.nonreactive(async () => {
+				return Tracker.nonreactive(async () => {
 					await start();
 
-					const queryString = accessToken && `?jwt=${ accessToken }`;
+					const queryString = accessToken ? `?jwt=${ accessToken }` : '';
 
 					const newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }${ queryString }`, jitsiRoom);
 					if (newWindow) {
@@ -161,7 +169,7 @@ Template.videoFlexTab.onRendered(function() {
 						* postMessage converts to events in the jitsi meet iframe.
 						* For some reason those aren't working right.
 						*/
-						Meteor.setTimeout(() => this.api.executeCommand('displayName', [name]), 5000);
+						setTimeout(() => this.api.executeCommand('displayName', [name]), 5000);
 					});
 				}
 

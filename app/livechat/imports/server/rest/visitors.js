@@ -1,8 +1,8 @@
 
-import { check } from 'meteor/check';
+import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { findVisitorInfo, findVisitedPages, findChatHistory, searchChats, findVisitorsToAutocomplete } from '../../../server/api/lib/visitors';
+import { findVisitorInfo, findVisitedPages, findChatHistory, searchChats, findVisitorsToAutocomplete, findVisitorsByEmailOrPhoneOrNameOrUsername } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {
 	get() {
@@ -99,6 +99,27 @@ API.v1.addRoute('livechat/visitors.autocomplete', { authRequired: true }, {
 		return API.v1.success(Promise.await(findVisitorsToAutocomplete({
 			userId: this.userId,
 			selector: JSON.parse(selector),
+		})));
+	},
+});
+
+API.v1.addRoute('livechat/visitors.search', { authRequired: true }, {
+	get() {
+		const { term } = this.requestParams();
+
+		check(term, Match.Maybe(String));
+
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+
+		return API.v1.success(Promise.await(findVisitorsByEmailOrPhoneOrNameOrUsername({
+			userId: this.userId,
+			term,
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
 		})));
 	},
 });

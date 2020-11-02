@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -17,7 +18,6 @@ import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription }
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
-
 import { call } from '..';
 
 
@@ -178,6 +178,7 @@ export const RoomManager = new function() {
 				const openedRoom = openedRooms[key];
 				this.close(openedRoom.typeName);
 			});
+			Session.set('openedRoom');
 		}
 
 
