@@ -200,7 +200,7 @@ Meteor.startup(function() {
 
 			this.add('Jitsi_Limit_Token_To_Room', true, {
 				type: 'boolean',
-				enableQuery: [	
+				enableQuery: [
 					{ _id: 'Jitsi_Enabled', value: true },
 					{ _id: 'Jitsi_Enabled_TokenAuth', value: true },
 				],
