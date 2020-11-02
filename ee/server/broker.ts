@@ -208,11 +208,12 @@ const {
 	MS_METRICS = 'false',
 	MS_METRICS_PORT = '9458',
 	TRACING_ENABLED = 'false',
+	SKIP_PROCESS_EVENT_REGISTRATION = 'true',
 } = process.env;
 
 const network = new ServiceBroker({
 	// TODO: Reevaluate, without this setting it was preventing the process to stop
-	skipProcessEventRegistration: true,
+	skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
 	transporter: TRANSPORTER,
 	metrics: {
 		enabled: MS_METRICS === 'true',
