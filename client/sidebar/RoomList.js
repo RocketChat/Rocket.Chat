@@ -84,7 +84,7 @@ export const Row = React.memo(({ data, index, style }) => {
 
 export const normalizeSidebarMessage = ({ ...message }) => {
 	if (message.msg) {
-		return filterMarkdown(message.msg);
+		return s.escapeHTML(filterMarkdown(message.msg));
 	}
 
 	if (message.attachments) {
