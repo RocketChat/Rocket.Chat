@@ -3,7 +3,7 @@ import EJSON from 'ejson';
 
 import { asyncLocalStorage, License } from '../../server/sdk';
 import { api } from '../../server/sdk/api';
-import { IBroker, IBrokerNode } from '../../server/sdk/types/IBroker';
+import { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
 import { ServiceClass } from '../../server/sdk/types/ServiceClass';
 import { EventSignatures } from '../../server/sdk/lib/Events';
 import { LocalBroker } from '../../server/sdk/lib/LocalBroker';
@@ -45,10 +45,14 @@ class NetworkBroker implements IBroker {
 	// list of allowed services to run - has precedence over `internalOnly`
 	private allowedList = new Set<string>(SERVICES_ALLOWED?.split(',').map((i) => i.trim()).filter((i) => i));
 
+	metrics: IServiceMetrics;
+
 	constructor(broker: ServiceBroker) {
 		this.broker = broker;
 
 		api.setBroker(this);
+
+		this.metrics = broker.metrics;
 
 		this.started = this.broker.start();
 
