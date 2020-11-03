@@ -1,5 +1,4 @@
-import moment from 'moment';
-
+import { getDate } from '../../../../lib/rocketchat-dates';
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import { ICronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
@@ -114,7 +113,7 @@ export class BusinessHourManager {
 	private scheduleCronJob(items: string[], day: string, type: string, job: Function): void {
 		items.forEach((hour) => {
 			const jobName = `${ day }/${ hour }/${ type }`;
-			const time = moment(hour, 'HH:mm');
+			const time = getDate(hour, 'HH:mm');
 			const scheduleAt = `${ time.minutes() } ${ time.hours() } * * ${ cronJobDayDict[day] }`;
 			this.addToCache(jobName);
 			this.cronJobs.add(jobName, scheduleAt, job);

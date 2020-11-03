@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import moment from 'moment';
 
+import { getDateWithFormat, getDate } from '../../../lib/rocketchat-dates';
 import { settings } from '../../../app/settings';
 
 import './readReceipts.css';
@@ -16,7 +16,7 @@ Template.readReceipts.helpers({
 		return (settings.get('UI_Use_Real_Name') && this.user.name) || this.user.username;
 	},
 	time() {
-		return moment(this.ts).format('L LTS');
+		return getDateWithFormat(getDate(this.ts), 'L LTS');
 	},
 	isLoading() {
 		return Template.instance().loading.get();

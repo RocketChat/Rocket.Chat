@@ -5,10 +5,10 @@ import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import s from 'underscore.string';
-import moment from 'moment';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 
+import { getDate } from '../../../../lib/rocketchat-dates';
 import * as Models from '../../../models';
 import { settings } from '../../../settings';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib';
@@ -224,7 +224,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			_,
 			s,
 			console,
-			moment,
+			getDate,
 			Fiber,
 			Promise,
 			Store: {

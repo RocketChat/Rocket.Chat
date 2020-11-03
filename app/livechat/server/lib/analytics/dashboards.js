@@ -1,5 +1,4 @@
-import moment from 'moment';
-
+import { getDateWithFormat, getDate } from '../../../../../lib/rocketchat-dates';
 import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '../../../../models/server/raw';
 import { Livechat } from '../Livechat';
 import { secondsToHHMMSS } from '../../../../utils/server';
@@ -76,7 +75,7 @@ const getAgentsProductivityMetricsAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	const averageOfAvailableServiceTime = (await LivechatAgentActivity.findAllAverageAvailableServiceTime({
-		date: parseInt(moment(start).format('YYYYMMDD')),
+		date: parseInt(getDateWithFormat(getDate(start), 'YYYYMMDD')),
 		departmentId,
 	}))[0];
 	const averageOfServiceTime = await findAllAverageServiceTimeAsync({

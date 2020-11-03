@@ -1,8 +1,8 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Flex, Margins, Select, Skeleton } from '@rocket.chat/fuselage';
-import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
+import { subtractDate, setDate, getDate } from '../../../../../../lib/rocketchat-dates';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
@@ -10,9 +10,7 @@ import { Section } from '../Section';
 function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick }) {
 	const t = useTranslation();
 
-	const currentDate = useMemo(() =>
-		moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-			.subtract(1).subtract(displacement, 'days'), [displacement]);
+	const currentDate = useMemo(() => subtractDate(subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 1), displacement, 'days'), [displacement]);
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
 	const data = useEndpointData('engagement-dashboard/users/chat-busier/hourly-data', params);
 	const values = useMemo(() => {

@@ -7,9 +7,9 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import s from 'underscore.string';
-import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
+import { localeDate, getDate, getDateWithFormat } from '../../../../lib/rocketchat-dates';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
@@ -969,7 +969,7 @@ export const Livechat = {
 				author = showAgentInfo ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
 			}
 
-			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
+			const datetime = getDateWithFormat(localeDate(getDate(message.ts), userLanguage), 'LLL');
 			const singleMessage = `
 				<p><strong>${ author }</strong>  <em>${ datetime }</em></p>
 				<p>${ message.msg }</p>

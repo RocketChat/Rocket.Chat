@@ -1,12 +1,13 @@
-import moment from 'moment';
 import './contactChatHistoryItem.html';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+import { getDate, getDateWithFormat } from '../../../../../../lib/rocketchat-dates';
+
 Template.contactChatHistoryItem.helpers({
 	closedAt() {
 		const { closedAt } = Template.instance().room.get();
-		return moment(closedAt).format('lll');
+		return getDateWithFormat(getDate(closedAt), 'lll');
 	},
 	closingRoomMessage() {
 		const closingObj = Template.instance().closingRoomMessage.get();

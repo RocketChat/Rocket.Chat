@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
-import moment from 'moment';
 
-export const useTimeAgo = () => useCallback((time) => moment(time).calendar(null, { sameDay: 'LT', lastWeek: 'dddd LT', sameElse: 'LL' }), []);
+import { getDateCalendar, getDate } from '../../lib/rocketchat-dates';
 
-export const useShortTimeAgo = () => useCallback((time) => moment(time).calendar(null, {
+export const useTimeAgo = () => useCallback((time) => getDateCalendar(getDate(time), null, { sameDay: 'LT', lastWeek: 'dddd LT', sameElse: 'LL' }), []);
+
+export const useShortTimeAgo = () => useCallback((time) => getDateCalendar(getDate(time), null, {
 	sameDay: 'LT',
 	lastDay: '[Yesterday]',
 	lastWeek: 'dddd',

@@ -1,5 +1,4 @@
-import moment from 'moment';
-
+import { getNativeDate, subtractDate, cloneDate, getDate } from '../../../../../lib/rocketchat-dates';
 import AnalyticsRaw from '../../../../../app/models/server/raw/Analytics';
 import { roomTypes } from '../../../../../app/utils';
 import { Messages } from '../../../../../app/models/server/raw';
@@ -36,7 +35,7 @@ export const fillFirstDaysOfMessagesIfNeeded = async (date) => {
 		date: convertDateToInt(date),
 	}).toArray();
 	if (!messagesFromAnalytics.length) {
-		const startOfPeriod = moment(convertIntToDate(date)).subtract(90, 'days').toDate();
+		const startOfPeriod = getNativeDate(subtractDate(getDate(convertIntToDate(date)), 90, 'days'));
 		const messages = await Messages.getTotalOfMessagesSentByDate({
 			start: startOfPeriod,
 			end: date,
@@ -47,10 +46,10 @@ export const fillFirstDaysOfMessagesIfNeeded = async (date) => {
 
 export const findWeeklyMessagesSentData = async ({ start, end }) => {
 	const daysBetweenDates = diffBetweenDaysInclusive(end, start);
-	const endOfLastWeek = moment(start).clone().subtract(1, 'days').toDate();
-	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
+	const endOfLastWeek = getNativeDate(subtractDate(cloneDate(getDate(start)), 1, 'days'));
+	const startOfLastWeek = getNativeDate(subtractDate(cloneDate(getDate(endOfLastWeek)), daysBetweenDates, 'days'));
 	const today = convertDateToInt(end);
-	const yesterday = convertDateToInt(moment(end).clone().subtract(1, 'days').toDate());
+	const yesterday = convertDateToInt(getNativeDate(subtractDate(cloneDate(getDate(end)), 1, 'days')));
 	const currentPeriodMessages = await AnalyticsRaw.getMessagesSentTotalByDate({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),

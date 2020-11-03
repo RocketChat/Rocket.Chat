@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
-import moment from 'moment';
 
+import { getDateDiff, getDate } from '../../../../lib/rocketchat-dates';
 import { hasPermission } from '../../../authorization';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
@@ -12,7 +12,7 @@ import { Users } from '../../../models';
 callbacks.add('beforeSaveMessage', function(message) {
 	// If the message was edited, or is older than 60 seconds (imported)
 	// the notifications will be skipped, so we can also skip this validation
-	if (message.editedAt || (message.ts && Math.abs(moment(message.ts).diff()) > 60000)) {
+	if (message.editedAt || (message.ts && Math.abs(getDateDiff(getDate(message.ts))) > 60000)) {
 		return message;
 	}
 

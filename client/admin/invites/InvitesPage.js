@@ -6,8 +6,8 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
-import moment from 'moment';
 
+import { getDateFromNow, getDate } from '../../../lib/rocketchat-dates';
 import Page from '../../components/basic/Page';
 import { useModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -31,7 +31,7 @@ function InviteRow({ _id, createdAt, expires, days, uses, maxUses, onRemove }) {
 				return t('Expired');
 			}
 
-			return moment(expires).fromNow(true);
+			return getDateFromNow(getDate(expires), true);
 		}
 
 		return t('Never');

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import moment from 'moment';
 
+import { addDate, getNativeDate, getDate } from '../../../../../lib/rocketchat-dates';
 import { hasRole } from '../../../../../app/authorization';
 import {
 	LivechatDepartment,
@@ -163,7 +163,7 @@ export const setPredictedVisitorAbandonmentTime = (room) => {
 		return;
 	}
 
-	const willBeAbandonedAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
+	const willBeAbandonedAt = getNativeDate(addDate(getDate(room.v.lastMessageTs), Number(secondsToAdd), 'seconds'));
 	LivechatRooms.setPredictedVisitorAbandonment(room._id, willBeAbandonedAt);
 };
 

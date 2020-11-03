@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import moment from 'moment';
 
+import { getDate, getDateDiff } from '../../../../lib/rocketchat-dates';
 import { Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { hasPermission, canSendMessage } from '../../../authorization/server';
@@ -46,10 +46,10 @@ Meteor.methods({
 			let msgTs;
 
 			if (Match.test(originalMessage.ts, Number)) {
-				msgTs = moment(originalMessage.ts);
+				msgTs = getDate(originalMessage.ts);
 			}
 			if (msgTs) {
-				currentTsDiff = moment().diff(msgTs, 'minutes');
+				currentTsDiff = getDateDiff(getDate(), msgTs, 'minutes');
 			}
 			if (currentTsDiff > blockEditInMinutes) {
 				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', { method: 'updateMessage' });

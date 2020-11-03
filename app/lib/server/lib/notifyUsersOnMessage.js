@@ -1,6 +1,7 @@
 import s from 'underscore.string';
-import moment from 'moment';
 
+
+import { getDate, getDateDiff } from '../../../../lib/rocketchat-dates';
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
@@ -119,7 +120,7 @@ export function updateThreadUsersSubscriptions(message, room, replies) {
 export function notifyUsersOnMessage(message, room) {
 	// skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (message.editedAt) {
-		if (Math.abs(moment(message.editedAt).diff()) > 60000) {
+		if (Math.abs(getDateDiff(getDate(message.editedAt))) > 60000) {
 			// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
 			Rooms.incMsgCountById(message.rid, 1);
 			return message;
@@ -133,7 +134,7 @@ export function notifyUsersOnMessage(message, room) {
 		return message;
 	}
 
-	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
+	if (message.ts && Math.abs(getDateDiff(getDate(message.ts))) > 60000) {
 		Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	}

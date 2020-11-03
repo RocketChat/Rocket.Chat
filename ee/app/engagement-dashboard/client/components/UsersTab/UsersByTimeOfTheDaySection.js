@@ -1,8 +1,8 @@
 import { ResponsiveHeatMap } from '@nivo/heatmap';
 import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
-import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
+import { getPeriod } from '../../../../../../lib/rocketchat-dates';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
@@ -20,25 +20,7 @@ export function UsersByTimeOfTheDaySection() {
 	const [periodId, setPeriodId] = useState('last 7 days');
 
 	const period = useMemo(() => {
-		switch (periodId) {
-			case 'last 7 days':
-				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-
-			case 'last 30 days':
-				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-
-			case 'last 90 days':
-				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-		}
+		getPeriod(period);
 	}, [periodId]);
 
 	const handlePeriodChange = (periodId) => setPeriodId(periodId);

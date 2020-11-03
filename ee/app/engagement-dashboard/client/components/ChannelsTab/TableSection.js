@@ -1,7 +1,7 @@
 import { Box, Icon, Margins, Pagination, Select, Skeleton, Table, Tile, ActionButton } from '@rocket.chat/fuselage';
-import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
+import { subtractDate, setDate, getDate, getDateWithFormat } from '../../../../../../lib/rocketchat-dates';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import Growth from '../../../../../../client/components/data/Growth';
@@ -23,20 +23,20 @@ export function TableSection() {
 		switch (periodId) {
 			case 'last 7 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 7, 'days'),
+					end: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 1),
 				};
 
 			case 'last 30 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 30, 'days'),
+					end: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 1),
 				};
 
 			case 'last 90 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 90, 'days'),
+					end: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 1),
 				};
 		}
 	}, [periodId]);
@@ -114,10 +114,10 @@ export function TableSection() {
 								{name}
 							</Table.Cell>
 							<Table.Cell>
-								{moment(createdAt).format('L')}
+								{getDateWithFormat(getDate(createdAt), 'L')}
 							</Table.Cell>
 							<Table.Cell>
-								{moment(updatedAt).format('L')}
+								{getDateWithFormat(getDate(updatedAt, 'L'))}
 							</Table.Cell>
 							<Table.Cell>
 								{messagesCount} <Growth>{messagesVariation}</Growth>

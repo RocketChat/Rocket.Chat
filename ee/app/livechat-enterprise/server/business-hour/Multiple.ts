@@ -1,5 +1,4 @@
-import moment from 'moment';
-
+import { getDateWithUTC, getDateInstance, getDateWithFormat, getDate } from '../../../../../lib/rocketchat-dates';
 import {
 	AbstractBusinessHourBehavior,
 	IBusinessHourBehavior,
@@ -32,8 +31,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	async onStartBusinessHours(): Promise<void> {
 		await this.UsersRepository.removeBusinessHoursFromAllUsers();
 		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
-		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
-		const day = currentTime.format('dddd');
+		const currentTime = getDateWithUTC(getDateInstance(getDateWithFormat(getDateWithUTC(getDate()), 'dddd:HH:mm')), 'dddd:HH:mm');
+		const day = getDateWithFormat(currentTime, 'dddd');
 		const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
 			fields: {
 				workHours: 1,

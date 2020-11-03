@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo } from 'react';
 import { TextInput, Box, Icon, MultiSelect, Select, InputBox, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import moment from 'moment';
 import { useSubscription } from 'use-subscription';
 
+import { getDateWithUTC, getDateWithFormat, getDate } from '../../../lib/rocketchat-dates';
 import { formsSubscription } from '../additionalForms';
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -101,8 +101,8 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			servedBy,
 			status,
 			department,
-			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
-			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
+			from: from && getDateWithFormat(getDateWithUTC(getDate(new Date(from))), 'YYYY-MM-DDTHH:mm:ss'),
+			to: to && getDateWithFormat(getDateWithUTC(getDate(new Date(to))), 'YYYY-MM-DDTHH:mm:ss'),
 			tags,
 			customFields: customFields.reduce(reducer, {}),
 		});

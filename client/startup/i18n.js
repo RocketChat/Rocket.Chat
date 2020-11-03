@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import moment from 'moment';
 
+import { getDate, localeDate, getDateInstance } from '../../lib/rocketchat-dates';
 import { isRtl } from '../../app/utils';
 import { settings } from '../../app/settings';
 import { Users } from '../../app/models';
@@ -30,7 +30,7 @@ Meteor.startup(() => {
 	const getBrowserLanguage = () => filterLanguage(window.navigator.userLanguage || window.navigator.language);
 
 	const loadMomentLocale = (language) => new Promise((resolve, reject) => {
-		if (moment.locales().includes(language.toLowerCase())) {
+		if (localeDate(getDate()).includes(language.toLowerCase())) {
 			resolve(language);
 			return;
 		}
@@ -41,7 +41,7 @@ Meteor.startup(() => {
 				return;
 			}
 
-			Function(localeSrc).call({ moment });
+			Function(localeSrc).call({ getDate });
 			resolve(language);
 		});
 	});
@@ -62,9 +62,9 @@ Meteor.startup(() => {
 
 		TAPi18n.setLanguage(language);
 		loadMomentLocale(language)
-			.then((locale) => moment.locale(locale))
+			.then((locale) => localeDate(getDate(), locale))
 			.catch((error) => {
-				moment.locale('en');
+				localeDate(getDateInstance(), 'en');
 				console.error('Error loading moment locale:', error);
 			});
 	};

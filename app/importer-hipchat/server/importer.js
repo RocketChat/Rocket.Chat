@@ -2,7 +2,6 @@ import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
-import moment from 'moment';
 
 import {
 	RawImports,
@@ -15,8 +14,7 @@ import {
 import { RocketChatFile } from '../../file';
 import { Users, Rooms } from '../../models';
 import { sendMessage } from '../../lib';
-
-import 'moment-timezone';
+import { getDateWithFormat, timeZoneDate, getDate } from '../../../lib/rocketchat-dates';
 
 export class HipChatImporter extends Base {
 	constructor(info, importRecord) {
@@ -217,7 +215,7 @@ export class HipChatImporter extends Base {
 									joinDefaultChannelsSilenced: true,
 								});
 								Meteor.call('setAvatarFromService', user.photo_url, undefined, 'url');
-								return Meteor.call('userSetUtcOffset', parseInt(moment().tz(user.timezone).format('Z').toString().split(':')[0]));
+								return Meteor.call('userSetUtcOffset', parseInt(getDateWithFormat(timeZoneDate(getDate(), user.timezone), 'Z').toString().split(':')[0]));
 							});
 							if (user.name != null) {
 								Users.setName(userId, user.name);

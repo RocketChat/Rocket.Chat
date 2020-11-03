@@ -1,12 +1,12 @@
-import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
+import { getDate, getDateWithFormat, getDateDiff } from '../../../../lib/rocketchat-dates';
 import { callbacks } from '../../../callbacks/server';
 import { LivechatAgentActivity, Sessions, Users } from '../../../models/server';
 
 const formatDate = (dateTime = new Date()) => ({
-	date: parseInt(moment(dateTime).format('YYYYMMDD')),
+	date: parseInt(getDateWithFormat(getDate(dateTime), 'YYYYMMDD')),
 });
 
 export class LivechatAgentActivityMonitor {
@@ -62,13 +62,13 @@ export class LivechatAgentActivityMonitor {
 		if (!openLivechatAgentSessions.length) {
 			return;
 		}
-		const today = moment(new Date());
+		const today = getDate(new Date());
 		const startedAt = new Date(today.year(), today.month(), today.date());
 		for (const session of openLivechatAgentSessions) {
-			const startDate = moment(session.lastStartedAt);
+			const startDate = getDate(session.lastStartedAt);
 			const stoppedAt = new Date(startDate.year(), startDate.month(), startDate.date(), 23, 59, 59);
 			const data = { ...formatDate(startDate.toDate()), agentId: session.agentId };
-			const availableTime = moment(stoppedAt).diff(moment(new Date(session.lastStartedAt)), 'seconds');
+			const availableTime = getDateDiff(getDate(stoppedAt), getDate(new Date(session.lastStartedAt)), 'seconds');
 			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt });
 			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: session.lastStartedAt, stoppedAt } });
 			this._createOrUpdateSession(session.agentId, startedAt);
@@ -140,7 +140,7 @@ export class LivechatAgentActivityMonitor {
 		const livechatSession = LivechatAgentActivity.findOne(data);
 		if (livechatSession) {
 			const stoppedAt = new Date();
-			const availableTime = moment(stoppedAt).diff(moment(new Date(livechatSession.lastStartedAt)), 'seconds');
+			const availableTime = getDateDiff(getDate(stoppedAt), getDate(new Date(livechatSession.lastStartedAt)), 'seconds');
 			LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt });
 			LivechatAgentActivity.updateServiceHistory({ ...data, serviceHistory: { startedAt: livechatSession.lastStartedAt, stoppedAt } });
 		}

@@ -1,5 +1,12 @@
-import moment from 'moment';
-
+import {
+	getDateWithUTC,
+	getTimeZoneDate,
+	getDateWithFormat,
+	cloneDate,
+	utcOffsetDate,
+	getDate,
+	addDate,
+} from '../../../../lib/rocketchat-dates';
 import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
 import {
 	IWorkHoursCronJobsWrapper, LivechatBusinessHoursRaw,
@@ -64,13 +71,13 @@ export abstract class AbstractBusinessHourType {
 
 	private convertWorkHours(businessHourData: ILivechatBusinessHour): ILivechatBusinessHour {
 		businessHourData.workHours.forEach((hour: any) => {
-			const startUtc = moment.tz(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
-			const finishUtc = moment.tz(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
+			const startUtc = getDateWithUTC(getTimeZoneDate(`${ hour.day }:${ hour.start }`, 'dddd:HH:mm', businessHourData.timezone.name));
+			const finishUtc = getDateWithUTC(getTimeZoneDate(`${ hour.day }:${ hour.finish }`, 'dddd:HH:mm', businessHourData.timezone.name));
 			hour.start = {
 				time: hour.start,
 				utc: {
-					dayOfWeek: startUtc.clone().format('dddd'),
-					time: startUtc.clone().format('HH:mm'),
+					dayOfWeek: getDateWithFormat(cloneDate(startUtc), 'dddd'),
+					time: getDateWithFormat(cloneDate(startUtc), 'HH:mm'),
 				},
 				cron: {
 					dayOfWeek: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(startUtc, 'dddd'),
@@ -80,8 +87,8 @@ export abstract class AbstractBusinessHourType {
 			hour.finish = {
 				time: hour.finish,
 				utc: {
-					dayOfWeek: finishUtc.clone().format('dddd'),
-					time: finishUtc.clone().format('HH:mm'),
+					dayOfWeek: getDateWithFormat(cloneDate(finishUtc), 'dddd'),
+					time: getDateWithFormat(cloneDate(finishUtc), 'HH:mm'),
 				},
 				cron: {
 					dayOfWeek: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(finishUtc, 'dddd'),
@@ -94,12 +101,12 @@ export abstract class AbstractBusinessHourType {
 
 	protected getUTCFromTimezone(timezone?: string): string {
 		if (!timezone) {
-			return String(moment().utcOffset() / 60);
+			return String(utcOffsetDate(getDate()) / 60);
 		}
-		return moment.tz(timezone).format('Z');
+		return getDateWithFormat(getTimeZoneDate(timezone), 'Z');
 	}
 
 	private formatDayOfTheWeekFromServerTimezoneAndUtcHour(utc: any, format: string): string {
-		return moment(utc.format('dddd:HH:mm'), 'dddd:HH:mm').add(moment().utcOffset() / 60, 'hours').format(format);
+		return getDateWithFormat(addDate(getDate(getDateWithFormat(utc, 'dddd:HH:mm'), 'dddd:HH:mm'), utcOffsetDate(getDate()) / 60, 'hours'), format);
 	}
 }

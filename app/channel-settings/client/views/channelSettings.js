@@ -9,7 +9,7 @@ import { hasPermission, hasAllPermission } from '../../../authorization';
 import { roomTypes } from '../../../utils';
 import { ChannelSettings } from '../lib/ChannelSettings';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
-import { setRelativeTimeThreshold, durationDate, humanizeDate } from '../../../../lib/rocketchat-dates';
+import { relativeTimeThreshold, durationDate, humanizeDate } from '../../../../lib/rocketchat-dates';
 
 createTemplateForComponent('channelSettingsEditing', () => import('../../../../client/channel/ChannelInfo/EditChannel'));
 
@@ -206,12 +206,12 @@ Template.channelSettingsInfo.helpers({
 		return roomExcludePinned(Template.instance().room);
 	},
 	purgeTimeout() {
-		setRelativeTimeThreshold('s', 60);
-		setRelativeTimeThreshold('ss', 0);
-		setRelativeTimeThreshold('m', 60);
-		setRelativeTimeThreshold('h', 24);
-		setRelativeTimeThreshold('d', 31);
-		setRelativeTimeThreshold('M', 12);
+		relativeTimeThreshold('s', 60);
+		relativeTimeThreshold('ss', 0);
+		relativeTimeThreshold('m', 60);
+		relativeTimeThreshold('h', 24);
+		relativeTimeThreshold('d', 31);
+		relativeTimeThreshold('M', 12);
 
 		return humanizeDate(durationDate(roomMaxAge(Template.instance().room) * 1000 * 60 * 60 * 24));
 	},

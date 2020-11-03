@@ -1,12 +1,19 @@
-import moment from 'moment';
-
+import {
+	getDateDiff,
+	getDate,
+	cloneDate,
+	getDateStart,
+	getDateWithFormat,
+	addDate,
+	checkDateIsBefore,
+} from '../../../../lib/rocketchat-dates';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { LivechatRooms, Messages } from '../../../models/server';
 import { businessHourManager } from '../business-hour';
 import { LivechatBusinessHours, LivechatDepartment } from '../../../models/server/raw';
 
-const getSecondsWhenOfficeHoursIsDisabled = (room, agentLastMessage) => moment(new Date(room.closedAt)).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
+const getSecondsWhenOfficeHoursIsDisabled = (room, agentLastMessage) => getDateDiff(getDate(new Date(room.closedAt)), getDate(new Date(agentLastMessage.ts), 'seconds'));
 const parseDays = (acc, day) => {
 	acc[day.day] = {
 		start: { day: day.start.utc.dayOfWeek, time: day.start.utc.time },
@@ -29,28 +36,28 @@ const getSecondsSinceLastAgentResponse = async (room, agentLastMessage) => {
 		officeDays = (await businessHourManager.getBusinessHour()).workHours.reduce(parseDays, {});
 	}
 	let totalSeconds = 0;
-	const endOfConversation = moment(new Date(room.closedAt));
-	const startOfInactivity = moment(new Date(agentLastMessage.ts));
-	const daysOfInactivity = endOfConversation.clone().startOf('day').diff(startOfInactivity.clone().startOf('day'), 'days');
-	const inactivityDay = moment(new Date(agentLastMessage.ts));
+	const endOfConversation = getDate(new Date(room.closedAt));
+	const startOfInactivity = getDate(new Date(agentLastMessage.ts));
+	const daysOfInactivity = getDateDiff(getDateStart(cloneDate(endOfConversation), 'day'), getDateStart(cloneDate(startOfInactivity), 'day'), 'days');
+	const inactivityDay = getDate(new Date(agentLastMessage.ts));
 	for (let index = 0; index <= daysOfInactivity; index++) {
-		const today = inactivityDay.clone().format('dddd');
+		const today = getDateWithFormat(cloneDate(inactivityDay), 'dddd');
 		const officeDay = officeDays[today];
-		const startTodaysOfficeHour = moment(`${ officeDay.start.day }:${ officeDay.start.time }`, 'dddd:HH:mm').add(index, 'days');
-		const endTodaysOfficeHour = moment(`${ officeDay.finish.day }:${ officeDay.finish.time }`, 'dddd:HH:mm').add(index, 'days');
+		const startTodaysOfficeHour = addDate(getDate(`${ officeDay.start.day }:${ officeDay.start.time }`, 'dddd:HH:mm'), index, 'days');
+		const endTodaysOfficeHour = addDate(getDate(`${ officeDay.finish.day }:${ officeDay.finish.time }`, 'dddd:HH:mm'), index, 'days');
 		if (officeDays[today].open) {
-			const firstDayOfInactivity = startOfInactivity.clone().format('D') === inactivityDay.clone().format('D');
-			const lastDayOfInactivity = endOfConversation.clone().format('D') === inactivityDay.clone().format('D');
+			const firstDayOfInactivity = getDateWithFormat(cloneDate(startOfInactivity), 'D') === getDateWithFormat(cloneDate(inactivityDay), 'D');
+			const lastDayOfInactivity = getDateWithFormat(cloneDate(endOfConversation), 'D') === getDateWithFormat(cloneDate(inactivityDay), 'D');
 
 			if (!firstDayOfInactivity && !lastDayOfInactivity) {
-				totalSeconds += endTodaysOfficeHour.clone().diff(startTodaysOfficeHour, 'seconds');
+				totalSeconds += getDateDiff(cloneDate(endTodaysOfficeHour), startTodaysOfficeHour, 'seconds');
 			} else {
-				const end = endOfConversation.isBefore(endTodaysOfficeHour) ? endOfConversation : endTodaysOfficeHour;
+				const end = checkDateIsBefore(endOfConversation, endTodaysOfficeHour) ? endOfConversation : endTodaysOfficeHour;
 				const start = firstDayOfInactivity ? inactivityDay : startTodaysOfficeHour;
-				totalSeconds += end.clone().diff(start, 'seconds');
+				totalSeconds += getDateDiff(cloneDate(end), start, 'seconds');
 			}
 		}
-		inactivityDay.add(1, 'days');
+		addDate(inactivityDay, 1, 'days');
 	}
 	return totalSeconds;
 };

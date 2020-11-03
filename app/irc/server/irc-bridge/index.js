@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import Queue from 'queue-fifo';
-import moment from 'moment';
 import _ from 'underscore';
 
+import { getDate, getDateDiff } from '../../../../lib/rocketchat-dates';
 import * as peerCommandHandlers from './peerHandlers';
 import * as localCommandHandlers from './localHandlers';
 import { callbacks } from '../../../callbacks';
@@ -49,7 +49,7 @@ class Bridge {
 
 		const lastPing = Settings.findOneById('IRC_Bridge_Last_Ping');
 		if (lastPing) {
-			if (Math.abs(moment(lastPing.value).diff()) < 1000 * 30) {
+			if (Math.abs(getDateDiff(getDate(lastPing.value))) < 1000 * 30) {
 				this.log('Not trying to connect.');
 				this.remove();
 				return;

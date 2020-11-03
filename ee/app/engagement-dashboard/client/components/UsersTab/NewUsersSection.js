@@ -1,8 +1,8 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
-import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
+import { getPeriod, toISODate, getDateDiff, getDate, addDate, getDateWithFormat } from '../../../../../../lib/rocketchat-dates';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import CounterSet from '../../../../../../client/components/data/CounterSet';
@@ -21,32 +21,14 @@ export function NewUsersSection() {
 	const [periodId, setPeriodId] = useState('last 7 days');
 
 	const period = useMemo(() => {
-		switch (periodId) {
-			case 'last 7 days':
-				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-
-			case 'last 30 days':
-				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-
-			case 'last 90 days':
-				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-		}
+		getPeriod(period);
 	}, [periodId]);
 
 	const handlePeriodChange = (periodId) => setPeriodId(periodId);
 
 	const params = useMemo(() => ({
-		start: period.start.toISOString(),
-		end: period.end.toISOString(),
+		start: toISODate(period.start),
+		end: toISODate(period.end),
 	}), [period]);
 
 	const data = useEndpointData('engagement-dashboard/users/new-users', params);
@@ -62,12 +44,12 @@ export function NewUsersSection() {
 			return [];
 		}
 
-		const values = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => ({
-			date: moment(period.start).add(i, 'days').toISOString(),
+		const values = Array.from({ length: getDateDiff(getDate(period.end), period.start, 'days') + 1 }, (_, i) => ({
+			date: toISODate(addDate(getDate(period.start), i, 'days')),
 			newUsers: 0,
 		}));
 		for (const { day, users } of data.days) {
-			const i = moment(day).diff(period.start, 'days');
+			const i = getDateDiff(getDate(day), period.start, 'days');
 			if (i >= 0) {
 				values[i].newUsers += users;
 			}
@@ -134,7 +116,7 @@ export function NewUsersSection() {
 										// TODO: Get it from theme
 										tickPadding: 4,
 										tickRotation: 0,
-										format: (date) => moment(date).format('dddd'),
+										format: (date) => getDateWithFormat(getDate(date), 'dddd'),
 									}) || null }
 									axisLeft={null}
 									animate={true}

@@ -1,12 +1,12 @@
-import moment from 'moment';
+import { getDate, addDate, getDateDiff, getDateWithFormat, getDateStart } from '../../../../lib/rocketchat-dates';
 
 export const getMomentChartLabelsAndData = () => {
 	const timingLabels = [];
 	const initData = [];
-	const today = moment().startOf('day');
-	for (let m = today; m.diff(moment(), 'hours') < 0; m.add(1, 'hours')) {
-		const hour = m.format('H');
-		timingLabels.push(`${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour) + 1) % 24, ['H']).format('hA') }`);
+	const today = getDateStart(getDate(), 'day');
+	for (let m = today; getDateDiff(m, getDate(), 'hours') < 0; addDate(m, 1, 'hours')) {
+		const hour = getDateWithFormat(m, 'H');
+		timingLabels.push(`${ getDateWithFormat(getDate(hour, ['H']), 'hA') }-${ getDateWithFormat(getDate((parseInt(hour) + 1) % 24, ['H']), 'hA') }`);
 		initData.push(0);
 	}
 

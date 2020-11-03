@@ -1,5 +1,4 @@
 import _ from 'underscore';
-import moment from 'moment';
 import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -11,6 +10,14 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
+import {
+	getDateCalendar,
+	getDate,
+	relativeTimeThreshold,
+	getDateWithFormat,
+	durationDate,
+	humanizeDate,
+} from '../../../../../lib/rocketchat-dates';
 import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
@@ -239,7 +246,7 @@ async function createFileFromUrl(url) {
 	const metadata = {
 		type: data.type,
 	};
-	const file = new File([data], `File - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ mime.extension(data.type) }`, metadata);
+	const file = new File([data], `File - ${ getDateWithFormat(getDate(), settings.get('Message_TimeAndDateFormat')) }.${ mime.extension(data.type) }`, metadata);
 	return file;
 }
 
@@ -440,7 +447,7 @@ Template.room.helpers({
 			return;
 		}
 
-		return moment(this.since).calendar(null, { sameDay: 'LT' });
+		return getDateCalendar(getDate(this.since), null, { sameDay: 'LT' });
 	},
 
 	flexData() {
@@ -532,14 +539,14 @@ Template.room.helpers({
 	},
 	purgeTimeout() {
 		const { room } = Template.instance();
-		moment.relativeTimeThreshold('s', 60);
-		moment.relativeTimeThreshold('ss', 0);
-		moment.relativeTimeThreshold('m', 60);
-		moment.relativeTimeThreshold('h', 24);
-		moment.relativeTimeThreshold('d', 31);
-		moment.relativeTimeThreshold('M', 12);
+		relativeTimeThreshold('s', 60);
+		relativeTimeThreshold('ss', 0);
+		relativeTimeThreshold('m', 60);
+		relativeTimeThreshold('h', 24);
+		relativeTimeThreshold('d', 31);
+		relativeTimeThreshold('M', 12);
 
-		return moment.duration(roomMaxAge(room) * 1000 * 60 * 60 * 24).humanize();
+		return humanizeDate(durationDate(roomMaxAge(room) * 1000 * 60 * 60 * 24));
 	},
 	messageContext,
 	shouldCloseFlexTab() {

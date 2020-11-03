@@ -8,8 +8,8 @@ import Fiber from 'fibers';
 import Future from 'fibers/future';
 import _ from 'underscore';
 import s from 'underscore.string';
-import moment from 'moment';
 
+import { getDate } from '../../../../lib/rocketchat-dates';
 import { logger } from '../logger';
 import { processWebhookMessage } from '../../../lib';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
@@ -25,7 +25,7 @@ function buildSandbox(store = {}) {
 		_,
 		s,
 		console,
-		moment,
+		getDate,
 		Fiber,
 		Promise,
 		Livechat,

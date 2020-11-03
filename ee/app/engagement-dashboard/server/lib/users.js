@@ -1,5 +1,4 @@
-import moment from 'moment';
-
+import { getNativeDate, getDate, cloneDate, subtractDate } from '../../../../../lib/rocketchat-dates';
 import AnalyticsRaw from '../../../../../app/models/server/raw/Analytics';
 import Sessions from '../../../../../app/models/server/raw/Sessions';
 import { Users } from '../../../../../app/models/server/raw';
@@ -24,7 +23,7 @@ export const fillFirstDaysOfUsersIfNeeded = async (date) => {
 		date: convertDateToInt(date),
 	}).toArray();
 	if (!usersFromAnalytics.length) {
-		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
+		const startOfPeriod = getNativeDate(subtractDate(getDate(date), 90, 'days'));
 		const users = await Users.getTotalOfRegisteredUsersByDate({
 			start: startOfPeriod,
 			end: date,
@@ -35,10 +34,10 @@ export const fillFirstDaysOfUsersIfNeeded = async (date) => {
 
 export const findWeeklyUsersRegisteredData = async ({ start, end }) => {
 	const daysBetweenDates = diffBetweenDaysInclusive(end, start);
-	const endOfLastWeek = moment(start).clone().subtract(1, 'days').toDate();
-	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
+	const endOfLastWeek = getNativeDate(subtractDate(cloneDate(getDate(start)), 1, 'days'));
+	const startOfLastWeek = getNativeDate(subtractDate(cloneDate(getDate(endOfLastWeek)), daysBetweenDates, 'days'));
 	const today = convertDateToInt(end);
-	const yesterday = convertDateToInt(moment(end).clone().subtract(1, 'days').toDate());
+	const yesterday = convertDateToInt(getNativeDate(subtractDate(cloneDate(getDate(end)), 1, 'days')));
 	const currentPeriodUsers = await AnalyticsRaw.getTotalOfRegisteredUsersByDate({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
@@ -67,8 +66,8 @@ export const findWeeklyUsersRegisteredData = async ({ start, end }) => {
 };
 
 export const findActiveUsersMonthlyData = async ({ start, end }) => {
-	const startOfPeriod = moment(start);
-	const endOfPeriod = moment(end);
+	const startOfPeriod = getDate(start);
+	const endOfPeriod = getDate(end);
 
 	return {
 		month: await Sessions.getActiveUsersOfPeriodByDayBetweenDates({
@@ -87,19 +86,19 @@ export const findActiveUsersMonthlyData = async ({ start, end }) => {
 };
 
 export const findBusiestsChatsInADayByHours = async ({ start }) => {
-	const now = moment(start);
-	const yesterday = moment(now).clone().subtract(24, 'hours');
+	const now = getDate(start);
+	const yesterday = subtractDate(cloneDate(getDate(now)), 24, 'hours');
 	return {
 		hours: await Sessions.getBusiestTimeWithinHoursPeriod({
-			start: yesterday.toDate(),
-			end: now.toDate(),
+			start: getNativeDate(yesterday),
+			end: getNativeDate(now),
 		}),
 	};
 };
 
 export const findBusiestsChatsWithinAWeek = async ({ start }) => {
-	const today = moment(start);
-	const startOfCurrentWeek = moment(today).clone().subtract(7, 'days');
+	const today = getDate(start);
+	const startOfCurrentWeek = subtractDate(cloneDate(getDate(today)), 7, 'days');
 
 	return {
 		month: await Sessions.getTotalOfSessionsByDayBetweenDates({
@@ -118,8 +117,8 @@ export const findBusiestsChatsWithinAWeek = async ({ start }) => {
 };
 
 export const findUserSessionsByHourWithinAWeek = async ({ start, end }) => {
-	const startOfPeriod = moment(start);
-	const endOfPeriod = moment(end);
+	const startOfPeriod = getDate(start);
+	const endOfPeriod = getDate(end);
 
 	return {
 		week: await Sessions.getTotalOfSessionByHourAndDayBetweenDates({

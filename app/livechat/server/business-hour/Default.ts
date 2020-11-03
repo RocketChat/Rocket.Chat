@@ -1,5 +1,4 @@
-import moment from 'moment';
-
+import { guessTimeZoneDate } from '../../../../lib/rocketchat-dates';
 import { AbstractBusinessHourType, IBusinessHourType } from './AbstractBusinessHour';
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 
@@ -19,7 +18,7 @@ export class DefaultBusinessHour extends AbstractBusinessHourType implements IBu
 			return businessHourData;
 		}
 		businessHourData.timezone = {
-			name: businessHourData.timezoneName || moment.tz.guess(),
+			name: businessHourData.timezoneName || guessTimeZoneDate(),
 			utc: this.getUTCFromTimezone(businessHourData.timezoneName),
 		};
 		delete businessHourData.timezoneName;

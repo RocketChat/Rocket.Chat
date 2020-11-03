@@ -7,8 +7,8 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
-import moment from 'moment';
 
+import { getDateDiff, getDate } from '../../../lib/rocketchat-dates';
 import { settings } from '../../settings/server';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
 import { FileUpload } from '../../file-upload/server';
@@ -549,7 +549,7 @@ async function processDataDownloads() {
 
 	if (operation.status !== 'pending') {
 		// If the operation has started but was not updated in over a day, then skip it
-		if (operation._updatedAt && moment().diff(moment(operation._updatedAt), 'days') > 1) {
+		if (operation._updatedAt && getDateDiff(getDate(), getDate(operation._updatedAt), 'days') > 1) {
 			operation.status = 'skipped';
 			await ExportOperations.updateOperation(operation);
 			return processDataDownloads();

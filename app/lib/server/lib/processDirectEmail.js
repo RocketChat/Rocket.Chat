@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { EmailReplyParser as reply } from 'emailreplyparser';
-import moment from 'moment';
 
+import { getDate, getDateDiff } from '../../../../lib/rocketchat-dates';
 import { settings } from '../../../settings';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models';
 import { metrics } from '../../../metrics';
@@ -18,7 +18,7 @@ export const processDirectEmail = function(email) {
 		};
 
 		if (message.ts) {
-			const tsDiff = Math.abs(moment(message.ts).diff());
+			const tsDiff = Math.abs(getDateDiff(getDate(message.ts)));
 			if (tsDiff > 10000) {
 				message.ts = new Date();
 			}

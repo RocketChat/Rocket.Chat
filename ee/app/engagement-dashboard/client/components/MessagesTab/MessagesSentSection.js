@@ -1,8 +1,8 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
-import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
+import { subtractDate, setDate, getDate, toISODate, getDateDiff, addDate, getDateWithFormat } from '../../../../../../lib/rocketchat-dates';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import CounterSet from '../../../../../../client/components/data/CounterSet';
@@ -24,20 +24,20 @@ export function MessagesSentSection() {
 		switch (periodId) {
 			case 'last 7 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 7, 'days'),
+					end: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 1),
 				};
 
 			case 'last 30 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 30, 'days'),
+					end: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 1),
 				};
 
 			case 'last 90 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 90, 'days'),
+					end: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 1),
 				};
 		}
 	}, [periodId]);
@@ -45,8 +45,8 @@ export function MessagesSentSection() {
 	const handlePeriodChange = (periodId) => setPeriodId(periodId);
 
 	const params = useMemo(() => ({
-		start: period.start.toISOString(),
-		end: period.end.toISOString(),
+		start: toISODate(period.start),
+		end: toISODate(period.end),
 	}), [period]);
 
 	const data = useEndpointData('engagement-dashboard/messages/messages-sent', params);
@@ -62,12 +62,12 @@ export function MessagesSentSection() {
 			return [];
 		}
 
-		const values = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => ({
-			date: moment(period.start).add(i, 'days').toISOString(),
+		const values = Array.from({ length: getDateDiff(getDate(period.end), 'days') + 1 }, (_, i) => ({
+			date: toISODate(addDate((getDate(period.start), i, 'days'))),
 			newMessages: 0,
 		}));
 		for (const { day, messages } of data.days) {
-			const i = moment(day).diff(period.start, 'days');
+			const i = getDateDiff(getDate(day), period.start, 'days');
 			if (i >= 0) {
 				values[i].newMessages += messages;
 			}
@@ -134,7 +134,7 @@ export function MessagesSentSection() {
 										// TODO: Get it from theme
 										tickPadding: 4,
 										tickRotation: 0,
-										format: (date) => moment(date).format('dddd'),
+										format: (date) => getDateWithFormat(getDate(date), 'dddd'),
 									}) || null }
 									axisLeft={null}
 									animate={true}

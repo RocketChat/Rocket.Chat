@@ -1,5 +1,4 @@
-import moment from 'moment';
-
+import { getDate, checkDateIsSameOrAfter } from '../../../../lib/rocketchat-dates';
 import { ILoginAttempt } from '../ILoginAttempt';
 import { ServerEvents, Users } from '../../../models/server/raw';
 import { IServerEventType } from '../../../../definition/IServerEvent';
@@ -42,7 +41,7 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
 
-	return moment(new Date()).isSameOrAfter(willBeBlockedUntil);
+	return checkDateIsSameOrAfter(getDate(new Date()), willBeBlockedUntil);
 };
 
 export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolean> => {
@@ -80,7 +79,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
 
-	return moment(new Date()).isSameOrAfter(willBeBlockedUntil);
+	return checkDateIsSameOrAfter(getDate(new Date()), willBeBlockedUntil);
 };
 
 export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<void> => {

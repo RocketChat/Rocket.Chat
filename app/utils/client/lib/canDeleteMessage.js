@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
 
+import { getDateDiff, getDate } from '../../../../lib/rocketchat-dates';
 import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
 
@@ -28,11 +28,11 @@ export const canDeleteMessage = ({ rid, ts, uid }) => {
 	if (blockDeleteInMinutes != null && blockDeleteInMinutes !== 0) {
 		let msgTs;
 		if (ts != null) {
-			msgTs = moment(ts);
+			msgTs = getDate(ts);
 		}
 		let currentTsDiff;
 		if (msgTs != null) {
-			currentTsDiff = moment().diff(msgTs, 'minutes');
+			currentTsDiff = getDateDiff(getDate(), msgTs, 'minutes');
 		}
 		return currentTsDiff < blockDeleteInMinutes;
 	}

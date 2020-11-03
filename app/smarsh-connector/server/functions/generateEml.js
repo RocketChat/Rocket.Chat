@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
-import moment from 'moment';
 
 import { settings } from '../../../settings';
 import { Rooms, Messages, Users, SmarshHistory } from '../../../models';
 import { MessageTypes } from '../../../ui-utils';
 import { smarsh } from '../lib/rocketchat';
-import 'moment-timezone';
+import { getDate, getDateDiff, getDateWithFormat, timeZoneDate } from '../../../../lib/rocketchat-dates';
 
 const start = '<table style="width: 100%; border: 1px solid; border-collapse: collapse; table-layout: fixed; margin-top: 10px; font-size: 12px; word-break: break-word;"><tbody>';
 const end = '</tbody></table>';
@@ -45,7 +44,7 @@ smarsh.generateEml = () => {
 				users: [],
 				msgs: 0,
 				files: [],
-				time: smarshHistory ? moment(date).diff(moment(smarshHistory.lastRan), 'minutes') : moment(date).diff(moment(room.ts), 'minutes'),
+				time: smarshHistory ? getDateDiff(getDate(date), getDate(smarshHistory.lastRan), 'minutes') : getDateDiff(getDate(date), getDate(room.ts), 'minutes'),
 				room: room.name ? `#${ room.name }` : `Direct Message Between: ${ room.usernames.join(' & ') }`,
 			};
 
@@ -54,7 +53,7 @@ smarsh.generateEml = () => {
 
 				// The timestamp
 				rows.push(open20td);
-				rows.push(moment(message.ts).tz(timeZone).format('YYYY-MM-DD HH-mm-ss z'));
+				rows.push(getDateWithFormat(timeZoneDate(getDate(message.ts), timeZone), 'YYYY-MM-DD HH-mm-ss z'));
 				rows.push(closetd);
 
 				// The sender

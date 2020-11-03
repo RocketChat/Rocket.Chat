@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment-timezone';
 
+import { guessTimeZoneDate, utcOffsetDate, getDate } from '../../../../../lib/rocketchat-dates';
 import {
 	LivechatBusinessHours,
 	LivechatDepartment,
@@ -57,8 +57,8 @@ export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
 		LivechatBusinessHours.update({ _id: defaultBusinessHour._id }, {
 			$set: {
 				timezone: {
-					name: moment.tz.guess(),
-					utc: String(moment().utcOffset() / 60),
+					name: guessTimeZoneDate(),
+					utc: String(utcOffsetDate(getDate()) / 60),
 				},
 			},
 		});

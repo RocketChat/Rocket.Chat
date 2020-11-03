@@ -5,8 +5,8 @@ import { Mongo } from 'meteor/mongo';
 import { Log } from 'meteor/logging';
 import _ from 'underscore';
 import s from 'underscore.string';
-import moment from 'moment';
 
+import { getNativeDate, getDate, subtractDate } from '../../../lib/rocketchat-dates';
 import { Info } from '../../utils';
 /*
 	Adds migration capabilities. Migrations are defined like:
@@ -301,7 +301,7 @@ Migrations._migrateTo = function(version, rerun) {
 	// Returns true if lock was acquired.
 	function lock() {
 		const date = new Date();
-		const dateMinusInterval = moment(date).subtract(self.options.lockExpiration, 'minutes').toDate();
+		const dateMinusInterval = getNativeDate(subtractDate(getDate(date), self.options.lockExpiration, 'minutes'));
 		const build = Info ? Info.build.date : date;
 
 		// This is atomic. The selector ensures only one caller at a time will see
