@@ -51093,6 +51093,62 @@
           ]
         }
       ]
+    },
+    "3.8.0-rc.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0-alpha.4006",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19427",
+          "title": "Micro Services: Create internal services and allowed services list",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.0",
+          "contributors": [
+            "sampaiodiego",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "19435",
+          "title": "Micro Services: Prevent duplicated events",
+          "userLogin": "rodrigok",
+          "milestone": "3.8.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "19382",
+          "title": "Regression: Sidebar message preview escaping html",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19419",
+          "title": "Regression: unable to mark room as read",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19418",
+          "title": "Build micro services Docker images with correct tags",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }

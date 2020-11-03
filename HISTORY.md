@@ -1,6 +1,31 @@
 
 # 3.8.0 (Under Release Candidate Process)
 
+## 3.8.0-rc.3
+`2020-11-03  ·  5 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Build micro services Docker images with correct tags ([#19418](https://github.com/RocketChat/Rocket.Chat/pull/19418))
+
+- Micro Services: Create internal services and allowed services list ([#19427](https://github.com/RocketChat/Rocket.Chat/pull/19427))
+
+- Micro Services: Prevent duplicated events ([#19435](https://github.com/RocketChat/Rocket.Chat/pull/19435))
+
+- Regression: Sidebar message preview escaping html ([#19382](https://github.com/RocketChat/Rocket.Chat/pull/19382))
+
+- Regression: unable to mark room as read ([#19419](https://github.com/RocketChat/Rocket.Chat/pull/19419))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.8.0-rc.2
 `2020-10-29  ·  4 🔍  ·  4 👩‍💻👨‍💻`
 
