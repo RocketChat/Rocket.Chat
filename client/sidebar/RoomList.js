@@ -97,6 +97,8 @@ export const normalizeSidebarMessage = ({ ...message }) => {
 		if (attachment && attachment.title) {
 			return s.escapeHTML(attachment.title);
 		}
+
+		return 'sent atachment';
 	}
 };
 
