@@ -211,7 +211,7 @@ function AgentsRoute() {
 		reload={reload}
 		header={header}
 		renderRow={renderRow}
-		title={'Agents'}>
+		title={t('Agents')}>
 		<EditAgentsTab />
 	</AgentsPage>;
 }
