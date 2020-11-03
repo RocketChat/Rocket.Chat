@@ -134,31 +134,31 @@ export class DDPStreamer extends ServiceClass {
 		const { broker, nodeID } = this.context;
 
 		broker.metrics.register({
-			name: 'users.connected',
+			name: 'users_connected',
 			type: 'gauge',
 			labelNames: ['nodeID'],
 			description: 'Users connected by streamer',
 		});
 
 		broker.metrics.register({
-			name: 'users.logged',
+			name: 'users_logged',
 			type: 'gauge',
 			labelNames: ['nodeID'],
 			description: 'Users logged by streamer',
 		});
 
 		server.on(DDP_EVENTS.CONNECTED, () => {
-			broker.metrics.increment('users.connected', { nodeID }, 1);
+			broker.metrics.increment('users_connected', { nodeID }, 1);
 		});
 
 		server.on(DDP_EVENTS.LOGGED, () => {
-			broker.metrics.increment('users.logged', { nodeID }, 1);
+			broker.metrics.increment('users_logged', { nodeID }, 1);
 		});
 
 		server.on(DDP_EVENTS.DISCONNECTED, ({ userId }) => {
-			broker.metrics.decrement('users.connected', { nodeID }, 1);
+			broker.metrics.decrement('users_connected', { nodeID }, 1);
 			if (userId) {
-				broker.metrics.decrement('users.logged', { nodeID }, 1);
+				broker.metrics.decrement('users_logged', { nodeID }, 1);
 			}
 		});
 	}
