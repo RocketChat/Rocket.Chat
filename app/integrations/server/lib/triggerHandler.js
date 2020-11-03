@@ -23,26 +23,6 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		this.triggers = {};
 
 		Models.Integrations.find({ type: 'webhook-outgoing' }).fetch().forEach((data) => this.addIntegration(data));
-
-		Models.Integrations.on('change', ({ clientAction, id, data }) => {
-			switch (clientAction) {
-				case 'inserted':
-					if (data.type === 'webhook-outgoing') {
-						this.addIntegration(data);
-					}
-					break;
-				case 'updated':
-					data = data ?? Models.Integrations.findOneById(id);
-					if (data.type === 'webhook-outgoing') {
-						this.removeIntegration(data);
-						this.addIntegration(data);
-					}
-					break;
-				case 'removed':
-					this.removeIntegration({ _id: id });
-					break;
-			}
-		});
 	}
 
 	addIntegration(record) {
@@ -826,3 +806,5 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });
 	}
 }();
+
+export { integrations };

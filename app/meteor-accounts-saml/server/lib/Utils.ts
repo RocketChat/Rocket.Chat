@@ -393,7 +393,7 @@ export class SAMLUtils {
 		return mainValue;
 	}
 
-	public static convertArrayBufferToString(buffer: ArrayBuffer, encoding = 'utf8'): string {
+	public static convertArrayBufferToString(buffer: ArrayBuffer, encoding: BufferEncoding = 'utf8'): string {
 		return Buffer.from(buffer).toString(encoding);
 	}
 

@@ -1,3 +1,4 @@
+import './license.internalService';
 import './settings';
 import './methods';
 import './startup';

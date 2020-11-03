@@ -40,9 +40,6 @@ export function handleInstallError(apiError) {
 		case 'storage_error':
 			message = messages.join('');
 			break;
-		case 'compiler_error':
-			message = 'There has been compiler errors. App cannot be installed';
-			break;
 		case 'app_user_error':
 			message = messages.join('');
 			if (payload && payload.username) {

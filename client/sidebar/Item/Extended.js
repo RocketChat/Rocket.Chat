@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sidebar } from '@rocket.chat/fuselage';
+import { Sidebar, ActionButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
@@ -44,7 +44,7 @@ const Extended = React.memo(({
 					{ subtitle }
 				</Sidebar.Item.Subtitle>
 				<Sidebar.Item.Badge>{ badges }</Sidebar.Item.Badge>
-				<Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility && menu()}</Sidebar.Item.Menu>
+				{menu && <Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}</Sidebar.Item.Menu>}
 			</Sidebar.Item.Wrapper>
 		</Sidebar.Item.Content>
 		{ actions && <Sidebar.Item.Container>

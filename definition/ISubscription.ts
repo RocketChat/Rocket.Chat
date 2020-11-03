@@ -13,7 +13,7 @@ export interface ISubscription extends IRocketChatRecord {
 
 	name: string;
 
-	alert?: true;
+	alert?: boolean;
 	unread: number;
 	t: RoomType;
 	ls: Date;
@@ -29,6 +29,8 @@ export interface ISubscription extends IRocketChatRecord {
 	tunreadUser: Array<string>;
 
 	prid?: RoomID;
+
+	roles?: string[];
 }
 
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {

@@ -1,4 +1,4 @@
-import { Settings } from '../../models/server/models/Settings';
+import Settings from '../../models/server/models/Settings';
 
 const cache = new Map();
 
