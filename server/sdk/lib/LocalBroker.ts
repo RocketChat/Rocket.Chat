@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { IBroker, IBrokerNode, IServiceMetrics } from '../types/IBroker';
+import { IBroker, IBrokerNode } from '../types/IBroker';
 import { ServiceClass } from '../types/ServiceClass';
 import { asyncLocalStorage } from '..';
 import { EventSignatures } from './Events';
@@ -9,8 +9,6 @@ export class LocalBroker implements IBroker {
 	private methods = new Map<string, Function>();
 
 	private events = new EventEmitter();
-
-	metrics: IServiceMetrics;
 
 	async call(method: string, data: any): Promise<any> {
 		const result = await asyncLocalStorage.run({
