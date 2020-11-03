@@ -7,10 +7,11 @@ import WebSocket from 'ws';
 import { Client } from './Client';
 // import { STREAMER_EVENTS, STREAM_NAMES } from './constants';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
-import { events } from './configureServer';
+import { events, server } from './configureServer';
 import notifications from './streams/index';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { ListenersModule } from '../../../../server/modules/listeners/listeners.module';
+import { DDP_EVENTS } from './constants';
 
 const {
 	PORT: port = 4000,
@@ -81,24 +82,6 @@ wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket'));
 // 	},
 // };
 
-// broker.createService({
-// 	settings: {
-// 		port: PROMETHEUS_PORT,
-// 		metrics: {
-// 			streamer_users_connected: {
-// 				type: 'Gauge',
-// 				labelNames: ['nodeID'],
-// 				help: 'Users connecteds by streamer',
-// 			},
-// 			streamer_users_logged: {
-// 				type: 'Gauge',
-// 				labelNames: ['nodeID'],
-// 				help: 'Users logged by streamer',
-// 			},
-// 		},
-// 	},
-// 	mixins: PROMETHEUS_PORT !== 'false' ? [PromService] : [],
-
 export class DDPStreamer extends ServiceClass {
 	protected name = 'streamer';
 
@@ -140,6 +123,43 @@ export class DDPStreamer extends ServiceClass {
 				rid,
 				ts: new Date(),
 			});
+		});
+	}
+
+	async created(): Promise<void> {
+		if (!this.context) {
+			return;
+		}
+
+		const { broker, nodeID } = this.context;
+
+		broker.metrics.register({
+			name: 'users.connected',
+			type: 'gauge',
+			labelNames: ['nodeID'],
+			description: 'Users connected by streamer',
+		});
+
+		broker.metrics.register({
+			name: 'users.logged',
+			type: 'gauge',
+			labelNames: ['nodeID'],
+			description: 'Users logged by streamer',
+		});
+
+		server.on(DDP_EVENTS.CONNECTED, () => {
+			broker.metrics.increment('users.connected', { nodeID }, 1);
+		});
+
+		server.on(DDP_EVENTS.LOGGED, () => {
+			broker.metrics.increment('users.logged', { nodeID }, 1);
+		});
+
+		server.on(DDP_EVENTS.DISCONNECTED, ({ userId }) => {
+			broker.metrics.decrement('users.connected', { nodeID }, 1);
+			if (userId) {
+				broker.metrics.decrement('users.logged', { nodeID }, 1);
+			}
 		});
 	}
 }
