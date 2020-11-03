@@ -15,7 +15,7 @@ export class AppSchedulerBridge {
 		this.isConnected = false;
 	}
 
-	registerProcessors(processors = [], appId) {
+	async registerProcessors(processors = [], appId) {
 		const runAfterRegister = [];
 		this.orch.debugLog(`The App ${ appId } is registering job processors`, processors);
 		processors.forEach(({ id, processor, startupSetting }) => {
@@ -36,7 +36,7 @@ export class AppSchedulerBridge {
 		});
 
 		if (runAfterRegister.length) {
-			Promise.all(runAfterRegister);
+			await Promise.all(runAfterRegister);
 		}
 	}
 
