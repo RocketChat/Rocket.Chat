@@ -8,6 +8,8 @@ import { IUser } from '../../../definition/IUser';
 class AuthorizationTokenpass extends ServiceClass implements IAuthorizationTokenpass {
 	protected name = 'authorization-tokenpass';
 
+	protected internal = true;
+
 	async canAccessRoom(room: Partial<IRoom>, user: Pick<IUser, '_id'>): Promise<boolean> {
 		for (const validator of validators) {
 			if (validator(room, user)) {

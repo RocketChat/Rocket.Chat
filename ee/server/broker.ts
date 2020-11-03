@@ -20,6 +20,11 @@ const lifecycle: {[k: string]: string} = {
 	stopped: 'stopped',
 };
 
+const {
+	INTERNAL_SERVICES_ONLY = 'false',
+	SERVICES_ALLOWED = '',
+} = process.env;
+
 class NetworkBroker implements IBroker {
 	private broker: ServiceBroker;
 
@@ -33,6 +38,12 @@ class NetworkBroker implements IBroker {
 		events: ['license.module'],
 		actions: ['license.hasLicense'],
 	}
+
+	// wether only internal services are allowed to be registered
+	private internalOnly = ['true', 'yes'].includes(INTERNAL_SERVICES_ONLY.toLowerCase());
+
+	// list of allowed services to run - has precedence over `internalOnly`
+	private allowedList = new Set<string>(SERVICES_ALLOWED?.split(',').map((i) => i.trim()).filter((i) => i));
 
 	constructor(broker: ServiceBroker) {
 		this.broker = broker;
@@ -87,6 +98,10 @@ class NetworkBroker implements IBroker {
 	}
 
 	createService(instance: ServiceClass): void {
+		if (!this.isServiceAllowed(instance)) {
+			return;
+		}
+
 		this.localBroker.createService(instance);
 
 		const name = instance.getName();
@@ -172,6 +187,20 @@ class NetworkBroker implements IBroker {
 	async nodeList(): Promise<IBrokerNode[]> {
 		return this.broker.call('$node.list');
 	}
+
+	private isServiceAllowed(instance: ServiceClass): boolean {
+		// check if the service is in the list of allowed services if the list is not empty
+		if (this.allowedList.size > 0 && !this.allowedList.has(instance.getName())) {
+			return false;
+		}
+
+		// allow only internal services if internalOnly is true
+		if (this.internalOnly && !instance.isInternal()) {
+			return false;
+		}
+
+		return true;
+	}
 }
 
 const Base = Serializers.Base as unknown as new () => {};
@@ -208,11 +237,12 @@ const {
 	MS_METRICS = 'false',
 	MS_METRICS_PORT = '9458',
 	TRACING_ENABLED = 'false',
+	SKIP_PROCESS_EVENT_REGISTRATION = 'true',
 } = process.env;
 
 const network = new ServiceBroker({
 	// TODO: Reevaluate, without this setting it was preventing the process to stop
-	skipProcessEventRegistration: true,
+	skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
 	transporter: TRANSPORTER,
 	metrics: {
 		enabled: MS_METRICS === 'true',
