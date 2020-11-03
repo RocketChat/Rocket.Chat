@@ -2,7 +2,15 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Flex, Margins, Select, Skeleton } from '@rocket.chat/fuselage';
 import React, { useMemo, useState } from 'react';
 
-import { subtractDate, setDate, getDate } from '../../../../../../lib/rocketchat-dates';
+import {
+	subtractDate,
+	setDate,
+	getDate,
+	getDateWithFormat,
+	getDateWithUTC,
+	dateWithUTC,
+	getDateWitFormat,
+} from '../../../../../../lib/rocketchat-dates';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
@@ -72,7 +80,7 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 								tickPadding: 4,
 								tickRotation: 0,
 								tickValues: 'every 2 hours',
-								format: (hour) => moment().set({ hour, minute: 0, second: 0 }).format('LT'),
+								format: (hour) => getDateWithFormat(setDate(getDate(), { hour, minute: 0, second: 0 }), 'LT'),
 							}}
 							axisLeft={null}
 							animate={true}
@@ -113,7 +121,7 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 }
 
 function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) {
-	const currentDate = useMemo(() => moment.utc().subtract(displacement, 'weeks'), [displacement]);
+	const currentDate = useMemo(() => subtractDate(getDateWithUTC(getDate()), displacement, 'weeks'), [displacement]);
 	const formattedCurrentDate = useMemo(() => {
 		const startOfWeekDate = currentDate.clone().subtract(6, 'days');
 		return `${ startOfWeekDate.format('L') } - ${ currentDate.format('L') }`;
@@ -122,7 +130,7 @@ function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) 
 	const data = useEndpointData('engagement-dashboard/users/chat-busier/weekly-data', params);
 	const values = useMemo(() => (data ? data.month.map(({ users, day, month, year }) => ({
 		users,
-		day: String(moment.utc([year, month - 1, day, 0, 0, 0]).valueOf()),
+		day: String(dateWithUTC([year, month - 1, day, 0, 0, 0]).valueOf()),
 	})).sort(({ day: a }, { day: b }) => a - b) : []), [data]);
 
 	return <>
@@ -173,7 +181,7 @@ function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) 
 										tickPadding: 4,
 										tickRotation: 0,
 										tickValues: 'every 3 days',
-										format: (timestamp) => moment(parseInt(timestamp, 10)).format('L'),
+										format: (timestamp) => getDateWitFormat(getDate(parseInt(timestamp, 10)), 'L'),
 									}}
 									axisLeft={null}
 									animate={true}

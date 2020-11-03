@@ -2,7 +2,16 @@ import { ResponsiveHeatMap } from '@nivo/heatmap';
 import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
 import React, { useMemo, useState } from 'react';
 
-import { getPeriod } from '../../../../../../lib/rocketchat-dates';
+import {
+	getPeriod,
+	getDateWithFormat,
+	getDate,
+	toISODate,
+	addDate,
+	getDateDiff,
+	getDateFormat,
+	setDate,
+} from '../../../../../../lib/rocketchat-dates';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
@@ -20,14 +29,14 @@ export function UsersByTimeOfTheDaySection() {
 	const [periodId, setPeriodId] = useState('last 7 days');
 
 	const period = useMemo(() => {
-		getPeriod(period);
+		getPeriod(periodId);
 	}, [periodId]);
 
 	const handlePeriodChange = (periodId) => setPeriodId(periodId);
 
 	const params = useMemo(() => ({
-		start: period.start.toISOString(),
-		end: period.end.toISOString(),
+		start: toISODate(period.start),
+		end: toISODate(period.end),
 	}), [period]);
 
 	const data = useEndpointData('engagement-dashboard/users/users-by-time-of-the-day-in-a-week', params);
@@ -40,22 +49,22 @@ export function UsersByTimeOfTheDaySection() {
 			return [];
 		}
 
-		const dates = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 },
-			(_, i) => moment(period.start).add(i, 'days'));
+		const dates = Array.from({ length: getDateDiff(getDate(period.end), period.start, 'days') + 1 },
+			(_, i) => addDate(getDate(period.start), i, 'days'));
 
 		const values = Array.from({ length: 24 }, (_, hour) => ({
 			hour: String(hour),
-			...dates.map((date) => ({ [date.toISOString()]: 0 }))
+			...dates.map((date) => ({ [toISODate(date)]: 0 }))
 				.reduce((obj, elem) => ({ ...obj, ...elem }), {}),
 		}));
 
 		for (const { users, hour, day, month, year } of data.week) {
-			const date = moment([year, month - 1, day, 0, 0, 0, 0]).toISOString();
+			const date = toISODate(getDate([year, month - 1, day, 0, 0, 0, 0]));
 			values[hour][date] += users;
 		}
 
 		return [
-			dates.map((date) => date.toISOString()),
+			dates.map((date) => toISODate(date)),
 			values,
 		];
 	}, [data, period.end, period.start]);
@@ -68,11 +77,11 @@ export function UsersByTimeOfTheDaySection() {
 			month,
 			year,
 		}) => ({
-			date: moment([year, month - 1, day, hour, 0, 0, 0]),
+			date: getDate([year, month - 1, day, hour, 0, 0, 0]),
 			users,
 		}))
 			.sort((a, b) => a > b)
-			.map(({ date, users }) => [date.toISOString(), users]);
+			.map(({ date, users }) => [toISODate(date), users]);
 		downloadCsvAs(_data, `UsersByTimeOfTheDaySection_start_${ params.start }_end_${ params.end }`);
 	};
 	return <Section
@@ -113,14 +122,14 @@ export function UsersByTimeOfTheDaySection() {
 									tickSize: 0,
 									tickPadding: 4,
 									tickRotation: 0,
-									format: (isoString) => (dates.length === 7 ? moment(isoString).format('dddd') : ''),
+									format: (isoString) => (dates.length === 7 ? getDateFormat(getDate(isoString), 'dddd') : ''),
 								}}
 								axisLeft={{
 									// TODO: Get it from theme
 									tickSize: 0,
 									tickPadding: 4,
 									tickRotation: 0,
-									format: (hour) => moment().set({ hour: parseInt(hour, 10), minute: 0, second: 0 }).format('LT'),
+									format: (hour) => getDateWithFormat(setDate(getDate(), { hour: parseInt(hour, 10), minute: 0, second: 0 }), 'LT'),
 								}}
 								hoverTarget='cell'
 								animate={dates.length <= 7}

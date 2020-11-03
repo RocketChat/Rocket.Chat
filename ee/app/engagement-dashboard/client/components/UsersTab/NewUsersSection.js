@@ -21,7 +21,7 @@ export function NewUsersSection() {
 	const [periodId, setPeriodId] = useState('last 7 days');
 
 	const period = useMemo(() => {
-		getPeriod(period);
+		getPeriod(periodId);
 	}, [periodId]);
 
 	const handlePeriodChange = (periodId) => setPeriodId(periodId);
