@@ -90,7 +90,6 @@ export const normalizeSidebarMessage = (message, t) => {
 	if (message.attachments) {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
-		console.log(attachment);
 		if (attachment && attachment.description) {
 			return s.escapeHTML(attachment.description);
 		}
