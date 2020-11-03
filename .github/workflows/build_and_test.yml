@@ -487,3 +487,44 @@ jobs:
 
         docker build -t ${IMAGE}:develop .
         docker push ${IMAGE}:develop
+
+  services-image-build:
+    runs-on: ubuntu-latest
+    needs: deploy
+
+    strategy:
+      matrix:
+        service: ["account", "authorization", "ddp-streamer", "presence", "stream-hub"]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js 12.18.4
+      uses: actions/setup-node@v1
+      with:
+        node-version: "12.18.4"
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
+
+    - name: Build Docker images
+      run: |
+        # defines image tag
+        if [[ $GITHUB_REF == refs/tags/* ]]; then IMAGE_TAG="${GITHUB_REF#refs/tags/}"; else IMAGE_TAG="${GITHUB_REF#refs/heads/}"; fi
+
+        # first install repo dependencies
+        npm i
+
+        # then micro services dependencies
+        cd ./ee/server/services
+        npm i
+        npm run build
+
+        echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
+
+        docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} .
+
+        docker push rocketchat/${{ matrix.service }}-service

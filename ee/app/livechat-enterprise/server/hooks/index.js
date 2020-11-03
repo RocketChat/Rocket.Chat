@@ -12,7 +12,6 @@ import './beforeRoutingChat';
 import './checkAgentBeforeTakeInquiry';
 import './onCheckRoomParamsApi';
 import './onLoadConfigApi';
-import './onSetUserStatusLivechat';
 import './onCloseLivechat';
 import './onSaveVisitorInfo';
 import './onBusinessHourStart';

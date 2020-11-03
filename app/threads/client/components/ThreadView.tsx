@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, forwardRef, FC } from 'react';
+import React, { useCallback, useMemo, forwardRef } from 'react';
 import { Modal, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -13,7 +13,7 @@ type ThreadViewProps = {
 	onClose: () => void;
 };
 
-const ThreadView: FC<ThreadViewProps> = forwardRef<Element, ThreadViewProps>(({
+const ThreadView = forwardRef<Element, ThreadViewProps>(({
 	title,
 	expanded,
 	following,
