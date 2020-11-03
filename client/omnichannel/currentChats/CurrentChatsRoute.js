@@ -155,7 +155,7 @@ function CurrentChatsRoute() {
 		reload={reload}
 		header={header}
 		renderRow={renderRow}
-		title={'Current Chats'}>
+		title={t('Current_Chats')}>
 	</CurrentChatsPage>;
 }
 
