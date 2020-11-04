@@ -51149,6 +51149,63 @@
           ]
         }
       ]
+    },
+    "3.8.0-rc.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0-beta.4014",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19385",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "3.8.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19423",
+          "title": "Micro Services: Fix logout issue",
+          "userLogin": "rodrigok",
+          "milestone": "3.8.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "19449",
+          "title": "Regression: Sidebar reactivity when read last messages",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "19443",
+          "title": "Regression: Attachment without title or description show \"sent attachment\" in view mode extended ",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19448",
+          "title": "Micro Services: Add metrics capability to Services",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
