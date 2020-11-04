@@ -3,7 +3,7 @@ import { MongoInternals } from 'meteor/mongo';
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
 
 function _callProcessor(processor) {
-	return (job) => processor(job);
+	return (job) => processor(job?.attrs?.data || {});
 }
 
 export class AppSchedulerBridge {
