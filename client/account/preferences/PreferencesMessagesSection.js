@@ -82,11 +82,6 @@ const PreferencesMessagesSection = ({ onChange, ...props }) => {
 		[2, t('Compact')],
 	], [t]);
 
-
-	// <option value="0" selected="{{selected 'messageViewMode' 0}}">{{_ "Normal"}}</option>
-	// <option value="1" selected="{{selected 'messageViewMode' 1}}">{{_ "Cozy"}}</option>
-	// <option value="2" selected="{{selected 'messageViewMode' 2}}">{{_ "Compact"}}</option>
-
 	// TODO: Weird behaviour when saving clock mode, and then changing it.
 
 	return <Accordion.Item title={t('Messages')} {...props}>
