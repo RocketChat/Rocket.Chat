@@ -1,5 +1,6 @@
 import Agenda from 'agenda';
 import { MongoInternals } from 'meteor/mongo';
+import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
 
 function _callProcessor(processor) {
 	return (job) => processor(job);
@@ -23,11 +24,11 @@ export class AppSchedulerBridge {
 
 			if (startupSetting) {
 				switch (startupSetting.type) {
-					case 'onetime':
-						runAfterRegister.push(this.scheduleOnceAfterRegister({ id, when: startupSetting.when }, appId));
+					case StartupType.ONETIME:
+						runAfterRegister.push(this.scheduleOnceAfterRegister({ id, when: startupSetting.when, data: startupSetting.data }, appId));
 						break;
-					case 'recurring':
-						runAfterRegister.push(this.scheduleRecurring({ id, cron: startupSetting.cron }, appId));
+					case StartupType.RECURRING:
+						runAfterRegister.push(this.scheduleRecurring({ id, cron: startupSetting.cron, data: startupSetting.data }, appId));
 						break;
 					default:
 						break;
