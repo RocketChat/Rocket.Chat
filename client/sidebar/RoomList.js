@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useEffect } from 'react';
@@ -6,9 +5,9 @@ import { VariableSizeList as List, areEqual } from 'react-window';
 import memoize from 'memoize-one';
 
 import { usePreventDefault } from './hooks/usePreventDefault';
-import { filterMarkdown } from '../../app/markdown/lib/markdown';
 import { ReactiveUserStatus, colors } from '../components/basic/UserStatus';
 import { useTranslation } from '../contexts/TranslationContext';
+import { useSidebarMessage } from '../contexts/ParsersContext';
 import { roomTypes } from '../../app/utils';
 import { useUserPreference, useUserId } from '../contexts/UserContext';
 import RoomMenu from './RoomMenu';
@@ -82,23 +81,6 @@ export const Row = React.memo(({ data, index, style }) => {
 	return <SideBarItemTemplateWithData sidebarViewMode={sidebarViewMode} style={style} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 }, areEqual);
 
-export const normalizeSidebarMessage = ({ ...message }) => {
-	if (message.msg) {
-		return s.escapeHTML(filterMarkdown(message.msg));
-	}
-
-	if (message.attachments) {
-		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
-
-		if (attachment && attachment.description) {
-			return s.escapeHTML(attachment.description);
-		}
-
-		if (attachment && attachment.title) {
-			return s.escapeHTML(attachment.title);
-		}
-	}
-};
 
 export default () => {
 	useSidebarPaletteColor();
@@ -142,23 +124,8 @@ export default () => {
 	</Box>;
 };
 
-const getMessage = (room, lastMessage, t) => {
-	if (!lastMessage) {
-		return t('No_messages_yet');
-	}
-	if (!lastMessage.u) {
-		return normalizeSidebarMessage(lastMessage);
-	}
-	if (lastMessage.u?.username === room.u?.username) {
-		return `${ t('You') }: ${ normalizeSidebarMessage(lastMessage) }`;
-	}
-	if (room.t === 'd' && room.uids.length <= 2) {
-		return normalizeSidebarMessage(lastMessage);
-	}
-	return `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeSidebarMessage(lastMessage) }`;
-};
-
 export const SideBarItemTemplateWithData = React.memo(function SideBarItemTemplateWithData({ room, id, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style, sidebarViewMode, isAnonymous }) {
+	const normalizeSidebarMessage = useSidebarMessage();
 	const title = roomTypes.getRoomName(room.t, room);
 	const icon = <SidebarIcon room={room} small={sidebarViewMode !== 'medium'}/>;
 	const href = roomTypes.getRouteLink(room.t, room);
@@ -180,9 +147,9 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 	const isQueued = room.status === 'queued';
 
 	const threadUnread = tunread.length > 0;
-	const message = extended && getMessage(room, lastMessage, t);
+	const message = extended && normalizeSidebarMessage(lastMessage, room);
 
-	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }}/> : null;
+	const subtitle = message || null;
 	const variant = ((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
 	const badges = unread > 0 || threadUnread ? <Badge variant={ variant } flexShrink={0}>{unread + tunread?.length}</Badge> : null;
 
