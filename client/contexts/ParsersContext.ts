@@ -6,7 +6,7 @@ import { IRoom } from '../../definition/IRoom';
 export type ParsedMessage = FC | string | JSX.Element;
 
 export type ParsersContextValue = {
-	useThreadTitleMessage: (msg: IMessage, room: IRoom) => FC | string | JSX.Element;
+	useThreadTitleMessage: (msg: IMessage) => FC | string | JSX.Element;
 	useSidebarMessage: (msg: IMessage, room: IRoom) => FC | string | JSX.Element;
 };
 
@@ -16,6 +16,6 @@ export const ParsersContext = createContext<ParsersContextValue>({
 });
 
 
-export const useThreadTitleMessage = (): (msg: IMessage, room: IRoom) => ParsedMessage => useContext(ParsersContext).useThreadTitleMessage;
+export const useThreadTitleMessage = (): (msg: IMessage) => ParsedMessage => useContext(ParsersContext).useThreadTitleMessage;
 
 export const useSidebarMessage = (): (msg: IMessage, room: IRoom) => ParsedMessage => useContext(ParsersContext).useSidebarMessage;
