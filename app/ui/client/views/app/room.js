@@ -332,6 +332,10 @@ Template.room.helpers({
 		return RoomHistoryManager.hasMoreNext(this._id);
 	},
 
+	scrolled() {
+		return !Template.instance().atBottom.get();
+	},
+
 	isLoading() {
 		return RoomHistoryManager.isLoading(this._id);
 	},
@@ -857,7 +861,7 @@ Template.room.events({
 	}, 100),
 
 	'click .new-message'(event, instance) {
-		instance.atBottom = true;
+		instance.atBottom.set(true);
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
 	'click .message-actions__menu'(e, i) {
@@ -978,7 +982,7 @@ Template.room.events({
 
 	'click .jump-recent button'(e, template) {
 		e.preventDefault();
-		template.atBottom = true;
+		template.atBottom.set(true);
 		RoomHistoryManager.clear(template && template.data && template.data._id);
 	},
 
@@ -1115,7 +1119,7 @@ Template.room.onCreated(function() {
 	});
 
 	this.showUsersOffline = new ReactiveVar(false);
-	this.atBottom = !FlowRouter.getQueryParam('msg');
+	this.atBottom = new ReactiveVar(!FlowRouter.getQueryParam('msg'));
 	this.unreadCount = new ReactiveVar(0);
 
 	this.selectable = new ReactiveVar(false);
@@ -1216,7 +1220,7 @@ Template.room.onCreated(function() {
 	});
 
 	this.sendToBottomIfNecessary = () => {
-		if (this.atBottom === true) {
+		if (this.atBottom.get() === true) {
 			this.sendToBottom();
 		}
 	};
@@ -1272,7 +1276,7 @@ Template.room.onRendered(function() {
 	};
 
 	template.checkIfScrollIsAtBottom = function() {
-		template.atBottom = template.isAtBottom(100);
+		template.atBottom.set(template.isAtBottom(100));
 	};
 
 	template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 150);
@@ -1296,7 +1300,7 @@ Template.room.onRendered(function() {
 
 	wrapper.addEventListener('wheel', wheelHandler);
 
-	wrapper.addEventListener('touchstart', () => { template.atBottom = false; });
+	wrapper.addEventListener('touchstart', () => { template.atBottom.set(false); });
 
 	wrapper.addEventListener('touchend', function() {
 		template.checkIfScrollIsAtBottom();
