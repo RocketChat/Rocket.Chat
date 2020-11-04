@@ -20,11 +20,11 @@ const CustomNumericInput = ({ name, required, setState, state, className }) => {
 	}, [state, required, t]);
 
 	const validateNumericInput = (e) => {
-		const value = e.target.value;
+		const {value} = e.target;
 		if (!Number(value)) {
 			return;
 		}
-		setState(e.currentTarget.value);
+		setState(value);
 	}
 
 	return useMemo(() => <Field className={className}>
