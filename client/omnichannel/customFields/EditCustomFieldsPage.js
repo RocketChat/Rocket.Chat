@@ -15,6 +15,7 @@ import { useForm } from '../../hooks/useForm';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 
 const getInitialValues = (cf) => ({
+	id: cf._id,
 	field: cf._id,
 	label: cf.label,
 	scope: cf.scope,
@@ -68,7 +69,9 @@ const EditCustomFieldsPage = ({ customField, id, reload }) => {
 
 	const { hasError, data: additionalData, hasUnsavedChanges: additionalFormChanged } = additionalValues;
 
-	const canSave = !hasError && (additionalFormChanged || hasUnsavedChanges);
+	const { label, field } = values;
+
+	const canSave = !hasError && (label && field) && (additionalFormChanged || hasUnsavedChanges);
 
 	const handleSave = useMutableCallback(async () => {
 		try {

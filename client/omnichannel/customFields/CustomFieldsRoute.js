@@ -73,7 +73,7 @@ const CustomFieldsRoute = () => {
 	const canViewCustomFields = usePermission('view-livechat-customfields');
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['label', 'asc']);
+	const [sort, setSort] = useState(['field', 'asc']);
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);

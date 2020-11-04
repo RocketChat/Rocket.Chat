@@ -3010,6 +3010,7 @@
   "Requested_At": "Requested At",
   "Requested_By": "Requested By",
   "Require": "Require",
+  "Required": "Required",
   "Require_all_tokens": "Require all tokens",
   "Require_any_token": "Require any token",
   "Require_password_change": "Require password change",

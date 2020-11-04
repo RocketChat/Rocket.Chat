@@ -2639,6 +2639,7 @@
   "Requested_At": "Solicitado Em",
   "Requested_By": "Solicitado Por",
   "Require": "Exigir",
+  "Required": "Obrigatório",
   "Require_all_tokens": "Exigir todos os tokens",
   "Require_any_token": "Exigir qualquer token",
   "Require_password_change": "Exigir alteração de senha",

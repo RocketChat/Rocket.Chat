@@ -42,7 +42,9 @@ const NewCustomFieldsPage = ({ reload }) => {
 
 	const { hasError, data: additionalData, hasUnsavedChanges: additionalFormChanged } = additionalValues;
 
-	const canSave = !hasError && (additionalFormChanged || hasUnsavedChanges);
+	const { label, field } = values;
+
+	const canSave = !hasError && (label && field) && (additionalFormChanged || hasUnsavedChanges);
 
 	const handleSave = useMutableCallback(async () => {
 		try {
