@@ -87,8 +87,8 @@ const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...prop
 		...value,
 	};
 
-	console.log('CustomFieldsAssembler value', JSON.stringify(value));
-	console.log('isNumeric', value.type === 'numeric');
+	alert('CustomFieldsAssembler value', JSON.stringify(value));
+	alert('isNumeric', value.type === 'numeric');
 
 	if (value.type === 'select') {
 		return <CustomSelect {...extraProps} {...props}/>;
