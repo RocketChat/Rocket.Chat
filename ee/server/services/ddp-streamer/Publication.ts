@@ -55,7 +55,7 @@ export class Publication extends EventEmitter implements IPublication {
 		this.server.removed(this.client, collection, id);
 	}
 
-	get userId(): string {
+	get userId(): string | undefined {
 		return this.client.userId;
 	}
 }

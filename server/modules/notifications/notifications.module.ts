@@ -95,6 +95,10 @@ export class NotificationsModule {
 
 		this.streamRoomMessage.allowWrite('none');
 		this.streamRoomMessage.allowRead(async function(eventName /* , args*/) {
+			if (!this.userId) {
+				return false;
+			}
+
 			const room = await Rooms.findOneById(eventName);
 			if (!room) {
 				return false;
@@ -114,6 +118,10 @@ export class NotificationsModule {
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
 		this.streamRoomMessage.allowEmit('__my_messages__', async function(_eventName, { rid }) {
+			if (!this.userId) {
+				return false;
+			}
+
 			try {
 				const room = await Rooms.findOneById(rid);
 				if (!room) {
@@ -180,6 +188,10 @@ export class NotificationsModule {
 				return false;
 			}
 
+			if (!this.userId) {
+				return false;
+			}
+
 			try {
 				// TODO consider using something to cache settings
 				const key = await Settings.getValueById('UI_Use_Real_Name') ? 'name' : 'username';
@@ -209,6 +221,10 @@ export class NotificationsModule {
 
 		this.streamRoomUsers.allowRead('none');
 		this.streamRoomUsers.allowWrite(async function(eventName, ...args) {
+			if (!this.userId) {
+				return false;
+			}
+
 			const [roomId, e] = eventName.split('/');
 			if (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId) > 0) {
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, { projection: { 'u._id': 1, _id: 0 } }).toArray();
@@ -282,6 +298,10 @@ export class NotificationsModule {
 
 		this.streamRoomData.allowWrite('none');
 		this.streamRoomData.allowRead(async function(rid) {
+			if (!this.userId) {
+				return false;
+			}
+
 			try {
 				const room = await Rooms.findOneById(rid);
 				if (!room) {

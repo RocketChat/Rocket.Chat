@@ -82,7 +82,7 @@ export const Row = React.memo(({ data, index, style }) => {
 	return <SideBarItemTemplateWithData sidebarViewMode={sidebarViewMode} style={style} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 }, areEqual);
 
-export const normalizeSidebarMessage = ({ ...message }) => {
+export const normalizeSidebarMessage = (message, t) => {
 	if (message.msg) {
 		return s.escapeHTML(filterMarkdown(message.msg));
 	}
@@ -97,6 +97,8 @@ export const normalizeSidebarMessage = ({ ...message }) => {
 		if (attachment && attachment.title) {
 			return s.escapeHTML(attachment.title);
 		}
+
+		return t('Sent_an_attachment');
 	}
 };
 
@@ -147,15 +149,15 @@ const getMessage = (room, lastMessage, t) => {
 		return t('No_messages_yet');
 	}
 	if (!lastMessage.u) {
-		return normalizeSidebarMessage(lastMessage);
+		return normalizeSidebarMessage(lastMessage, t);
 	}
 	if (lastMessage.u?.username === room.u?.username) {
-		return `${ t('You') }: ${ normalizeSidebarMessage(lastMessage) }`;
+		return `${ t('You') }: ${ normalizeSidebarMessage(lastMessage, t) }`;
 	}
 	if (room.t === 'd' && room.uids.length <= 2) {
-		return normalizeSidebarMessage(lastMessage);
+		return normalizeSidebarMessage(lastMessage, t);
 	}
-	return `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeSidebarMessage(lastMessage) }`;
+	return `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeSidebarMessage(lastMessage, t) }`;
 };
 
 export const SideBarItemTemplateWithData = React.memo(function SideBarItemTemplateWithData({ room, id, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style, sidebarViewMode, isAnonymous }) {
@@ -223,5 +225,9 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 	if (prevProps.room.lastMessage?._updatedAt?.toISOString() !== nextProps.room.lastMessage?._updatedAt?.toISOString()) {
 		return false;
 	}
+	if (prevProps.room.alert !== nextProps.room.alert) {
+		return false;
+	}
+
 	return true;
 });
