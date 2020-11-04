@@ -1,6 +1,22 @@
 
 # 3.8.0 (Under Release Candidate Process)
 
+## 3.8.0-rc.5
+`2020-11-04  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Thread list misbehaving ([#19413](https://github.com/RocketChat/Rocket.Chat/pull/19413))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 ## 3.8.0-rc.4
 `2020-11-04  ·  5 🔍  ·  5 👩‍💻👨‍💻`
 
