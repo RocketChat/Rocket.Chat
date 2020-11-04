@@ -19,13 +19,13 @@ const CustomNumericInput = ({ name, required, setState, state, className }) => {
 		return errors.join(', ');
 	}, [state, required, t]);
 
-	const validateNumericInput = (e) => {
+	const validateNumericInput = (e) => { 
 		const {value} = e.target;
 		if (!Number(value)) {
 			return;
 		}
-		setState(value);
-	}
+		setState(value); 
+	};
 
 	return useMemo(() => <Field className={className}>
 		<Field.Label>{t(name)}</Field.Label>
