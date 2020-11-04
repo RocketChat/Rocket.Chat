@@ -22,7 +22,7 @@ const getInitialValues = (cf) => ({
 	regexp: cf.regexp,
 });
 
-const EditCustomFieldsPageContainer = () => {
+const EditCustomFieldsPageContainer = ({ reload }) => {
 	const t = useTranslation();
 	const id = useRouteParameter('id');
 
@@ -43,11 +43,11 @@ const EditCustomFieldsPageContainer = () => {
 		</Page>;
 	}
 
-	return <EditCustomFieldsPage customField={data.customField} id={id}/>;
+	return <EditCustomFieldsPage customField={data.customField} id={id} reload={reload}/>;
 };
 
 
-const EditCustomFieldsPage = ({ customField, id }) => {
+const EditCustomFieldsPage = ({ customField, id, reload }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -79,6 +79,7 @@ const EditCustomFieldsPage = ({ customField, id }) => {
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			reload();
 			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

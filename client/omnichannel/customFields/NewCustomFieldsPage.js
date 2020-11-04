@@ -21,7 +21,7 @@ const initialValues = {
 };
 
 
-const NewCustomFieldsPage = () => {
+const NewCustomFieldsPage = ({ reload }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -53,6 +53,7 @@ const NewCustomFieldsPage = () => {
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			reload();
 			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
