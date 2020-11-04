@@ -6,6 +6,38 @@ import { useForm } from '../hooks/useForm';
 import { useTranslation } from '../contexts/TranslationContext';
 import { capitalize } from '../lib/capitalize';
 
+const CustomNumericInput = ({ name, required, setState, state, className }) => {
+	const t = useTranslation();
+
+	const verify = useMemo(() => {
+		const errors = [];
+
+		if (!state && required) {
+			errors.push(t('Field_required'));
+		}
+
+		return errors.join(', ');
+	}, [state, required, minLength, t]);
+
+	const validateNumericInput = (e) => {
+		let value = e.target.value;
+
+        if (!Number(value)) {
+            return;
+		}
+		
+		setState(e.currentTarget.value);
+	}
+
+	return useMemo(() => <Field className={className}>
+		<Field.Label>{t(name)}</Field.Label>
+		<Field.Row>
+			<TextInput name={name} error={verify} flexGrow={1} value={state} required={required} onChange={validateNumericInput}/>
+		</Field.Row>
+		<Field.Error>{verify}</Field.Error>
+	</Field>, [className, t, name, verify, maxLength, state, required, setState]);
+};
+
 const CustomTextInput = ({ name, required, minLength, maxLength, setState, state, className }) => {
 	const t = useTranslation();
 
@@ -61,6 +93,10 @@ const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...prop
 
 	if (value.type === 'text') {
 		return <CustomTextInput {...extraProps} {...props}/>;
+	}
+
+	if (value.type === 'numeric') {
+		return <CustomNumericInput {...extraProps} {...props}/>;
 	}
 
 	return null;
