@@ -1,6 +1,7 @@
 <template name="room">
 	<div class="main-content-flex">
 		<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
+			{{> Header }}
 			{{# if showTopNavbar}}
 				{{# headerRoom}}
 					{{#with flexData}}

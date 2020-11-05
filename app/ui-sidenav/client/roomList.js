@@ -150,6 +150,10 @@ const mergeSubRoom = (subscription) => {
 			v: 1,
 			streamingOptions: 1,
 			usernames: 1,
+			topic: 1,
+			encrypted: 1,
+			autoTranslate: 1,
+			autoTranslateLanguage: 1,
 		},
 	};
 
@@ -171,6 +175,12 @@ const mergeSubRoom = (subscription) => {
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
 	subscription.streamingOptions = room.streamingOptions;
 
+	subscription.topic = room.topic;
+	subscription.encrypted = room.encrypted;
+
+	subscription.autoTranslate = room.autoTranslate;
+	subscription.autoTranslateLanguage = room.autoTranslateLanguage;
+
 	return Object.assign(subscription, getLowerCaseNames(subscription));
 };
 
@@ -184,6 +194,10 @@ const mergeRoomSub = (room) => {
 		rid: room._id,
 	}, {
 		$set: {
+			autoTranslate: room.autoTranslate,
+			autoTranslateLanguage: room.autoTranslateLanguage,
+			encrypted: room.encrypted,
+			...room.topic && { topic: room.topic },
 			...Array.isArray(room.uids) && { uids: room.uids },
 			...Array.isArray(room.uids) && { usernames: room.usernames },
 			...room.v && { v: room.v },

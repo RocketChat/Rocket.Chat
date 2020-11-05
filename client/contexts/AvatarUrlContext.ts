@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 
-const dummy = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=';
+const dummy = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg==';
 
 type AvatarContextValue = {
 	getUserPathAvatar: (uid: string, etag?: string) => string;

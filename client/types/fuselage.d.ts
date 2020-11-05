@@ -178,11 +178,21 @@ declare module '@rocket.chat/fuselage' {
 	};
 	export const Button: ForwardRefExoticComponent<ButtonProps>;
 
+	type ActionButtonProps = ButtonProps & {
+		icon: string;
+		mini?: boolean;
+		tiny?: boolean;
+	};
+
+	export const ActionButton: ForwardRefExoticComponent<ActionButtonProps>;
+
 	type ButtonGroupProps = BoxProps & {
 		align?: 'start' | 'center' | 'end';
 		stretch?: boolean;
 		wrap?: boolean;
 		vertical?: boolean;
+		small?: boolean;
+		medium?: boolean;
 	};
 	export const ButtonGroup: ForwardRefExoticComponent<ButtonGroupProps>;
 

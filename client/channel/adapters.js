@@ -2,6 +2,10 @@ import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from '../reactAdapters';
 
+createTemplateForComponent('Header', () => import('./Header'), {
+	renderContainerView: () => HTML.DIV(), // eslint-disable-line new-cap
+});
+
 createTemplateForComponent('DiscussionMessageList', () => import('./Discussions/ContextualBar/List'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
