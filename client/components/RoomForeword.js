@@ -45,7 +45,7 @@ const RoomForeword = ({ _id: rid }) => {
 						<Tag
 							className='mention-link'
 							data-username={username}
-							fontScale='p2'
+							medium
 						>
 							{username}
 						</Tag>
