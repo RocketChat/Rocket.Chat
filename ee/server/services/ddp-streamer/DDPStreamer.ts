@@ -115,7 +115,7 @@ export class DDPStreamer extends ServiceClass {
 			events.emit('meteor.autoUpdateClientVersionChanged', record);
 		});
 
-		this.onEvent('stream.ephemeralMessage', (uid, rid, message): void => {
+		this.onEvent('notify.ephemeralMessage', (uid, rid, message): void => {
 			notifications.notifyUser(uid, 'message', {
 				groupable: false,
 				...message,
