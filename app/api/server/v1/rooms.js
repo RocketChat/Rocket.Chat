@@ -365,7 +365,7 @@ API.v1.addRoute('rooms.export', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-params');
 		}
 
-		if (!hasPermission(this.userId, 'mail-messages')) {
+		if (!hasPermission(this.userId, 'mail-messages', rid)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
 		}
 

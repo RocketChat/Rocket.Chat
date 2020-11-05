@@ -11,7 +11,7 @@ import { UserInfo } from '../../components/basic/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../hooks/useForm';
-import { getUserEmailAddress } from '../../helpers/getUserEmailAddress';
+import { getUserEmailAddress } from '../../lib/getUserEmailAddress';
 import { useRoute } from '../../contexts/RouterContext';
 import { formsSubscription } from '../additionalForms';
 

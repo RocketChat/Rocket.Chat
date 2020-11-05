@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Scrollable, Icon } from '@rocket.chat/fuselage';
+import { Box, Scrollable, Icon, ActionButton } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath } from '../../contexts/RouterContext';
-import { ActionButton } from './Buttons/ActionButton';
 
 const Sidebar = ({ children, ...props }) => <Box display='flex' flexDirection='column' h='full' {...props}>
 	{children}
@@ -19,7 +18,7 @@ const Content = ({ children, ...props }) => <Scrollable {...props}>
 const Header = ({ title, onClose, children = undefined, ...props }) => <Box is='header' display='flex' flexDirection='column' pb='x16' {...props}>
 	{(title || onClose) && <Box display='flex' flexDirection='row' alignItems='center' pi='x24' justifyContent='space-between' flexGrow={1}>
 		{title && <Box color='neutral-800' fontSize='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{title}</Box>}
-		{onClose && <ActionButton icon='cross' onClick={onClose}/>}
+		{onClose && <ActionButton ghost small icon='cross' onClick={onClose}/>}
 	</Box>}
 	{children}
 </Box>;

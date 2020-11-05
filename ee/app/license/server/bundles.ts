@@ -11,6 +11,7 @@ const bundles: IBundle = {
 		'omnichannel-mobile-enterprise',
 		'engagement-dashboard',
 		'push-privacy',
+		'scalability',
 	],
 	pro: [
 	],

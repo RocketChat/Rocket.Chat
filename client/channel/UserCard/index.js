@@ -7,14 +7,15 @@ import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import UserCard from '../../components/basic/UserCard';
 import { Backdrop } from '../../components/basic/Backdrop';
-import * as UserStatus from '../../components/basic/UserStatus';
+import { ReactiveUserStatus } from '../../components/basic/UserStatus';
 import { LocalTime } from '../../components/basic/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
-import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
-import { useCurrentRoute } from '../../contexts/RouterContext';
+import { useRolesDescription } from '../../contexts/AuthorizationContext';
 
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
+
+	const getRoles = useRolesDescription();
 
 	const t = useTranslation();
 
@@ -26,12 +27,6 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 
 	ref.current = target;
 
-	const [route, params] = useCurrentRoute();
-
-	useComponentDidUpdate(() => {
-		onClose && onClose();
-	}, [route, JSON.stringify(params), onClose]);
-
 	const user = useMemo(() => {
 		const loading = state === ENDPOINT_STATES.LOADING;
 		const defaultValue = loading ? undefined : null;
@@ -42,7 +37,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			_id,
 			name = username,
 			roles = defaultValue,
-			status,
+			status = null,
 			statusText = status,
 			bio = defaultValue,
 			utcOffset = defaultValue,
@@ -54,7 +49,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			_id,
 			name: showRealNames ? name : username,
 			username,
-			roles: roles && roles.map((role, index) => (
+			roles: roles && getRoles(roles).map((role, index) => (
 				<UserCard.Role key={index}>{role}</UserCard.Role>
 			)),
 			bio,
@@ -62,11 +57,11 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			localTime: Number.isInteger(utcOffset) && (
 				<LocalTime utcOffset={utcOffset} />
 			),
-			status: UserStatus.getStatus(status),
+			status: status && <ReactiveUserStatus uid={_id} presence={status} />,
 			customStatus: statusText,
 			nickname,
 		};
-	}, [data, username, showRealNames, state]);
+	}, [data, username, showRealNames, state, getRoles]);
 
 	const handleOpen = useMutableCallback((e) => {
 		open && open(e);
@@ -75,9 +70,27 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions(user, rid));
 
-	const menu = menuOptions && <Menu flexShrink={0} mi='x2' key='menu' ghost={false} renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />} options={menuOptions}/>;
+	const menu = useMemo(() => {
+		if (!menuOptions) {
+			return null;
+		}
 
-	const actions = useMemo(() => [...actionsDefinition.map(([key, { label, icon, action }]) => <UserCard.Action key={key} title={label} aria-label={label} onClick={action} icon={icon}/>), menu].filter(Boolean), [actionsDefinition, menu]);
+		return <Menu
+			flexShrink={0}
+			mi='x2'
+			key='menu'
+			ghost={false}
+			renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
+			options={menuOptions}
+		/>;
+	}, [menuOptions]);
+
+	const actions = useMemo(() => {
+		const mapAction = ([key, { label, icon, action }]) =>
+			<UserCard.Action key={key} title={label} aria-label={label} onClick={action} icon={icon}/>;
+
+		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
+	}, [actionsDefinition, menu]);
 
 	return (<>
 		<Backdrop bg='transparent' onClick={onClose}/>

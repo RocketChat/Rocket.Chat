@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { MongoInternals } from 'meteor/mongo';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 
 import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment, LivechatDepartmentAgents } from '../../../models/server';
@@ -9,6 +8,7 @@ import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
 import { Apps, AppEvents } from '../../../apps/server';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
@@ -94,7 +94,7 @@ export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus
 	return LivechatInquiry.insert(inquiry);
 };
 
-export const createLivechatSubscription = (rid, name, guest, agent) => {
+export const createLivechatSubscription = (rid, name, guest, agent, department) => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({
@@ -131,42 +131,10 @@ export const createLivechatSubscription = (rid, name, guest, agent) => {
 			token,
 			status,
 		},
+		...department && { department },
 	};
 
 	return Subscriptions.insert(subscriptionData);
-};
-
-export const createLivechatQueueView = async () => {
-	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
-	// recreate the view on every startup
-	const list = await mongo.db.listCollections({ name: 'view_livechat_queue_status' }).toArray();
-	if (list.length > 0) {
-		await mongo.db.dropCollection('view_livechat_queue_status');
-	}
-
-	await mongo.db.createCollection('view_livechat_queue_status', { // name of the view to create
-		viewOn: 'rocketchat_room', // name of source collection from which to create the view
-		pipeline: [
-			{
-				$match: {
-					open: true,
-					servedBy: { $exists: true },
-				},
-			},
-			{
-				$group: {
-					_id: '$servedBy._id',
-					chats: { $sum: 1 },
-				},
-			},
-			{
-				$sort: {
-					chats: 1,
-				},
-			},
-		],
-	});
 };
 
 export const removeAgentFromSubscription = (rid, { _id, username }) => {
@@ -225,7 +193,7 @@ export const normalizeAgent = (agentId) => {
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = normalizeAgent(agentId);
 
-	Livechat.stream.emit(rid, {
+	notifications.streamLivechatRoom.emit(rid, {
 		type: 'agentData',
 		data: agent,
 	});
@@ -287,6 +255,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 export const updateChatDepartment = ({ rid, newDepartmentId, oldDepartmentId }) => {
 	LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
+	Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
 
 	Meteor.defer(() => {
 		Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {

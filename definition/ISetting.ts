@@ -1,42 +1,51 @@
+import { FilterQuery } from 'mongodb';
+
 export type SettingId = string;
 export type GroupId = SettingId;
 export type SectionName = string;
-
-export enum SettingType {
-	BOOLEAN = 'boolean',
-	STRING = 'string',
-	RELATIVE_URL = 'relativeUrl',
-	PASSWORD = 'password',
-	INT = 'int',
-	SELECT = 'select',
-	MULTI_SELECT = 'multiSelect',
-	LANGUAGE = 'language',
-	COLOR = 'color',
-	FONT = 'font',
-	CODE = 'code',
-	ACTION = 'action',
-	ASSET = 'asset',
-	ROOM_PICK = 'roomPick',
-	GROUP = 'group',
-}
 
 export enum SettingEditor {
 	COLOR = 'color',
 	EXPRESSION = 'expression'
 }
 
+export type SettingValueMultiSelect = Array<{key: string; i18nLabel: string}>
+export type SettingValueRoomPick = Array<{_id: string; name: string}> | string
+export type SettingValue = string | boolean | number | SettingValueMultiSelect | undefined;
+
+export interface ISettingSelectOption {
+	key: string;
+	i18nLabel: string;
+}
+
 export interface ISetting {
 	_id: SettingId;
-	type: SettingType;
+	type: 'boolean' | 'string' | 'relativeUrl' | 'password' | 'int' | 'select' | 'multiSelect' | 'language' | 'color' | 'font' | 'code' | 'action' | 'asset' | 'roomPick' | 'group' | 'date';
 	public: boolean;
+	env: boolean;
 	group?: GroupId;
 	section?: SectionName;
 	i18nLabel: string;
-	value: unknown;
-	packageValue: unknown;
+	value: SettingValue;
+	packageValue: SettingValue;
 	editor?: SettingEditor;
 	packageEditor?: SettingEditor;
 	blocked: boolean;
-	enableQuery?: string | Mongo.ObjectID | Mongo.Query<any> | Mongo.QueryWithModifiers<any>;
+	enableQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
 	sorter?: number;
+	properties?: unknown;
+	enterprise?: boolean;
+	requiredOnWizard?: boolean;
+	hidden?: boolean;
+	modules?: Array<string>;
+	invalidValue?: SettingValue;
+	valueSource?: string;
+	secret?: boolean;
+	i18nDescription?: string;
+	autocomplete?: boolean;
+	processEnvValue?: SettingValue;
+	meteorSettingsValue?: SettingValue;
+	ts?: Date;
+	multiline?: boolean;
+	values?: Array<ISettingSelectOption>;
 }

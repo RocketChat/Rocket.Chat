@@ -18,8 +18,8 @@ function CustomUserStatus({
 	const t = useTranslation();
 
 	const header = useMemo(() => [
-		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'presence'} direction={sort[1]} active={sort[0] === 'statusType'} onClick={onHeaderClick} sort='statusType'>{t('Presence')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key='name' direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key='presence' direction={sort[1]} active={sort[0] === 'statusType'} onClick={onHeaderClick} sort='statusType'>{t('Presence')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [onHeaderClick, sort, t]);
 
 	const renderRow = (status) => {
@@ -33,8 +33,8 @@ function CustomUserStatus({
 	return <GenericTable
 		header={header}
 		renderRow={renderRow}
-		results={data.statuses}
-		total={data.total}
+		results={data?.statuses ?? []}
+		total={data?.total ?? 0}
 		setParams={setParams}
 		params={params}
 		renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}

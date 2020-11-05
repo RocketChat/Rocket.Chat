@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { callbacks } from '../../../callbacks';
-import { Notifications } from '../../../notifications';
 import { Users } from '../../../models';
+import { api } from '../../../../server/sdk/api';
 
 callbacks.add('beforeSaveMessage', function(message) {
 	// If the message was edited, or is older than 60 seconds (imported)
@@ -26,10 +25,7 @@ callbacks.add('beforeSaveMessage', function(message) {
 
 			// Add a notification to the chat, informing the user that this
 			// action is not allowed.
-			Notifications.notifyUser(message.u._id, 'message', {
-				_id: Random.id(),
-				rid: message.rid,
-				ts: new Date(),
+			api.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
 				msg: TAPi18n.__('error-action-not-allowed', { action }, language),
 			});
 
