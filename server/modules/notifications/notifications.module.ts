@@ -94,20 +94,16 @@ export class NotificationsModule {
 		const notifyUser = this.notifyUser.bind(this);
 
 		this.streamRoomMessage.allowWrite('none');
-		this.streamRoomMessage.allowRead(async function(eventName /* , args*/) {
-			if (!this.userId) {
-				return false;
-			}
-
+		this.streamRoomMessage.allowRead(async function(eventName, extraData) {
 			const room = await Rooms.findOneById(eventName);
 			if (!room) {
 				return false;
 			}
 
-			const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId });
+			const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId || '' }, extraData);
 			if (!canAccess) {
 				// verify if can preview messages from public channels
-				if (room.t === 'c') {
+				if (room.t === 'c' && this.userId) {
 					return Authorization.hasPermission(this.userId, 'preview-c-room');
 				}
 				return false;
@@ -159,10 +155,6 @@ export class NotificationsModule {
 		this.streamLogged.allowRead('logged');
 
 		this.streamRoom.allowRead(async function(eventName, extraData) {
-			if (!this.userId) {
-				return false;
-			}
-
 			const [rid] = eventName.split('/');
 
 			// typing from livechat widget
@@ -170,6 +162,10 @@ export class NotificationsModule {
 				// TODO improve this to make a query 'v.token'
 				const room = await Rooms.findOneById(rid, { projection: { t: 1, 'v.token': 1 } });
 				return room && room.t === 'l' && room.v.token === extraData.token;
+			}
+
+			if (!this.userId) {
+				return false;
 			}
 
 			const subsCount = await Subscriptions.countByRoomIdAndUserId(rid, this.userId);
@@ -188,10 +184,6 @@ export class NotificationsModule {
 				return false;
 			}
 
-			if (!this.userId) {
-				return false;
-			}
-
 			try {
 				// TODO consider using something to cache settings
 				const key = await Settings.getValueById('UI_Use_Real_Name') ? 'name' : 'username';
@@ -201,6 +193,10 @@ export class NotificationsModule {
 					// TODO improve this to make a query 'v.token'
 					const room = await Rooms.findOneById(rid, { projection: { t: 1, 'v.token': 1 } });
 					return room && room.t === 'l' && room.v.token === extraData.token;
+				}
+
+				if (!this.userId) {
+					return false;
 				}
 
 				const user = await Users.findOneById(this.userId, {
