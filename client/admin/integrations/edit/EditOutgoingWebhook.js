@@ -54,7 +54,7 @@ const getInitialValue = (data) => {
 		event: data.event,
 		token: data.token,
 		urls: data.urls.join('\n') ?? '',
-		triggerWords: data.triggerWords?.join('; ') ?? '',
+		triggerWords: data.triggerWords?.join(',') ?? '',
 		targetRoom: data.targetRoom ?? '',
 		channel: data.channel.join(', ') ?? '',
 		username: data.username ?? '',

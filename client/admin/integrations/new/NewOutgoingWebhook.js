@@ -45,7 +45,7 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 	const params = useMemo(() => ({
 		...formValues,
 		urls: urls.split('\n'),
-		triggerWords: triggerWords.split(';'),
+		triggerWords: triggerWords.split(','),
 	}), [formValues, triggerWords, urls]);
 	const saveIntegration = useEndpointAction('POST', 'integrations.create', params, t('Integration_added'));
 
