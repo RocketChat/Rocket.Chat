@@ -1,5 +1,3 @@
-/* eslint no-multi-spaces: 0 */
-/* eslint comma-spacing: 0 */
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
@@ -19,6 +17,5 @@ Meteor.methods({
 		}
 
 		addOAuthService(name);
-
 	},
 });

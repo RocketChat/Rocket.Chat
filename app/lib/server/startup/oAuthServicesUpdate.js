@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
-import s from 'underscore.string';
 
 import { CustomOAuth } from '../../../custom-oauth';
 import { Logger } from '../../../logger';
@@ -151,7 +150,6 @@ function customOAuthServicesInit() {
 	// automatically added when they are defined in ENV variables
 	Object.keys(process.env).forEach((key) => {
 		if (/Accounts_OAuth_Custom_[a-zA-Z0-9_-]+$/.test(key)) {
-
 			// Most all shells actually prohibit the usage of - in environment variables
 			// So this will allow replacing - with _ and translate it back to the setting name
 			let name = key.replace('Accounts_OAuth_Custom_', '');
@@ -160,12 +158,12 @@ function customOAuthServicesInit() {
 				name = name.replace(name.substr(name.indexOf('_')), '');
 			}
 
-			const serviceKey = `Accounts_OAuth_Custom_${name}`;
+			const serviceKey = `Accounts_OAuth_Custom_${ name }`;
 
 			if (key === serviceKey) {
 				const values = {
-					enabled: process.env[`${serviceKey}`] === 'true',
-					clientId: process.env[`${serviceKey}_id`],
+					enabled: process.env[`${ serviceKey }`] === 'true',
+					clientId: process.env[`${ serviceKey }_id`],
 					clientSecret: process.env[`${ serviceKey }_secret`],
 					url: process.env[`${ serviceKey }_url`],
 					tokenPath: process.env[`${ serviceKey }_token_path`],
