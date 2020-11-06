@@ -10,7 +10,7 @@ class AuthorizationTokenpass extends ServiceClass implements IAuthorizationToken
 
 	protected internal = true;
 
-	async canAccessRoom(room: Partial<IRoom>, user: Pick<IUser, '_id'>): Promise<boolean> {
+	async canAccessRoom(room: Partial<IRoom>, user: Partial<IUser>): Promise<boolean> {
 		for (const validator of validators) {
 			if (validator(room, user)) {
 				return true;
