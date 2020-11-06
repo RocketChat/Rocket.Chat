@@ -11,6 +11,7 @@ export class AppSchedulerBridge {
 		this.orch = orch;
 		this.scheduler = new Agenda({
 			mongo: MongoInternals.defaultRemoteCollectionDriver().mongo.client.db(),
+			db: { collection: 'rocketchat_apps_scheduler' },
 			defaultConcurrency: 1,
 		});
 		this.isConnected = false;
