@@ -5,9 +5,15 @@ import { RoutingManager } from './lib/RoutingManager';
 
 export const validators = [
 	function(room, user) {
+		if (!user?._id) {
+			return false;
+		}
 		return hasPermission(user._id, 'view-livechat-rooms');
 	},
 	function(room, user) {
+		if (!user?._id) {
+			return false;
+		}
 		const { _id: userId } = user;
 		const { servedBy: { _id: agentId } = {} } = room;
 		return userId === agentId || (!room.open && hasPermission(user._id, 'view-livechat-room-closed-by-another-agent'));
@@ -19,6 +25,9 @@ export const validators = [
 		return extraData && extraData.visitorToken && room.v && room.v.token === extraData.visitorToken;
 	},
 	function(room, user) {
+		if (!user?._id) {
+			return false;
+		}
 		const { previewRoom } = RoutingManager.getConfig();
 		if (!previewRoom) {
 			return;
@@ -39,7 +48,7 @@ export const validators = [
 		return inquiry && inquiry.status === 'queued';
 	},
 	function(room, user) {
-		if (!room.departmentId || room.open) {
+		if (!room.departmentId || room.open || !user?._id) {
 			return;
 		}
 		const agentOfDepartment = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(user._id, room.departmentId);
