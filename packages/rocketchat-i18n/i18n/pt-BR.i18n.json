@@ -1289,6 +1289,7 @@
   "error-could-not-change-email": "Não foi possível mudar e-mail",
   "error-could-not-change-name": "Não foi possível mudar o nome",
   "error-could-not-change-username": "Não foi possível alterar o nome de usuário",
+  "error-custom-field-name-already-exists": "Nome do campo personalizado já existe",
   "error-delete-protected-role": "Não é possível remover um papel protegido",
   "error-department-not-found": "Departamento não encontrado",
   "error-direct-message-file-upload-not-allowed": "Compartilhamento de arquivos não está permitido em mensagens diretas",
