@@ -8,12 +8,7 @@ export async function findLivechatCustomFields({ userId, text, pagination: { off
 		throw new Error('error-not-authorized');
 	}
 
-	const query = { };
-
-	if (text) {
-		const filterReg = new RegExp(s.escapeRegExp(text), 'i');
-		Object.assign(query, { $or: [{ label: filterReg }, { _id: filterReg }] });
-	}
+	const query = { ...text && { $or: [{ label: new RegExp(s.escapeRegExp(text), 'i') }, { _id: new RegExp(s.escapeRegExp(text), 'i') }] } };
 
 	const cursor = await LivechatCustomField.find(query, {
 		sort: sort || { label: 1 },
