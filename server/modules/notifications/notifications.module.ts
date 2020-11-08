@@ -94,16 +94,16 @@ export class NotificationsModule {
 		const notifyUser = this.notifyUser.bind(this);
 
 		this.streamRoomMessage.allowWrite('none');
-		this.streamRoomMessage.allowRead(async function(eventName /* , args*/) {
+		this.streamRoomMessage.allowRead(async function(eventName, extraData) {
 			const room = await Rooms.findOneById(eventName);
 			if (!room) {
 				return false;
 			}
 
-			const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId });
+			const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId || '' }, extraData);
 			if (!canAccess) {
 				// verify if can preview messages from public channels
-				if (room.t === 'c') {
+				if (room.t === 'c' && this.userId) {
 					return Authorization.hasPermission(this.userId, 'preview-c-room');
 				}
 				return false;
@@ -114,6 +114,10 @@ export class NotificationsModule {
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
 		this.streamRoomMessage.allowEmit('__my_messages__', async function(_eventName, { rid }) {
+			if (!this.userId) {
+				return false;
+			}
+
 			try {
 				const room = await Rooms.findOneById(rid);
 				if (!room) {
@@ -151,10 +155,6 @@ export class NotificationsModule {
 		this.streamLogged.allowRead('logged');
 
 		this.streamRoom.allowRead(async function(eventName, extraData) {
-			if (!this.userId) {
-				return false;
-			}
-
 			const [rid] = eventName.split('/');
 
 			// typing from livechat widget
@@ -162,6 +162,10 @@ export class NotificationsModule {
 				// TODO improve this to make a query 'v.token'
 				const room = await Rooms.findOneById(rid, { projection: { t: 1, 'v.token': 1 } });
 				return room && room.t === 'l' && room.v.token === extraData.token;
+			}
+
+			if (!this.userId) {
+				return false;
 			}
 
 			const subsCount = await Subscriptions.countByRoomIdAndUserId(rid, this.userId);
@@ -191,6 +195,10 @@ export class NotificationsModule {
 					return room && room.t === 'l' && room.v.token === extraData.token;
 				}
 
+				if (!this.userId) {
+					return false;
+				}
+
 				const user = await Users.findOneById(this.userId, {
 					projection: {
 						[key]: 1,
@@ -209,6 +217,10 @@ export class NotificationsModule {
 
 		this.streamRoomUsers.allowRead('none');
 		this.streamRoomUsers.allowWrite(async function(eventName, ...args) {
+			if (!this.userId) {
+				return false;
+			}
+
 			const [roomId, e] = eventName.split('/');
 			if (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId) > 0) {
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, { projection: { 'u._id': 1, _id: 0 } }).toArray();
@@ -282,6 +294,10 @@ export class NotificationsModule {
 
 		this.streamRoomData.allowWrite('none');
 		this.streamRoomData.allowRead(async function(rid) {
+			if (!this.userId) {
+				return false;
+			}
+
 			try {
 				const room = await Rooms.findOneById(rid);
 				if (!room) {
