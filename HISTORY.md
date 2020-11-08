@@ -1,6 +1,27 @@
 
 # 3.8.0 (Under Release Candidate Process)
 
+## 3.8.0-rc.6
+`2020-11-07  ·  3 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: `Leave Room` modal not closing ([#19460](https://github.com/RocketChat/Rocket.Chat/pull/19460))
+
+- Regression: Fix livechat permission validations ([#19468](https://github.com/RocketChat/Rocket.Chat/pull/19468))
+
+- Unify ephemeral message events ([#19464](https://github.com/RocketChat/Rocket.Chat/pull/19464))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.8.0-rc.5
 `2020-11-04  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 

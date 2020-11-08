@@ -51229,6 +51229,46 @@
           ]
         }
       ]
+    },
+    "3.8.0-rc.6": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0-beta.4014",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19460",
+          "title": "Regression: `Leave Room` modal not closing",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19464",
+          "title": "Unify ephemeral message events",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19468",
+          "title": "Regression: Fix livechat permission validations",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
