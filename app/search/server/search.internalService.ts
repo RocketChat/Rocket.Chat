@@ -10,6 +10,8 @@ import { searchEventService } from './events/events';
 class Search extends ServiceClass {
 	protected name = 'search';
 
+	protected internal = true;
+
 	constructor() {
 		super();
 

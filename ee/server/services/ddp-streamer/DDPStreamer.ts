@@ -7,10 +7,11 @@ import WebSocket from 'ws';
 import { Client } from './Client';
 // import { STREAMER_EVENTS, STREAM_NAMES } from './constants';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
-import { events } from './configureServer';
+import { events, server } from './configureServer';
 import notifications from './streams/index';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { ListenersModule } from '../../../../server/modules/listeners/listeners.module';
+import { DDP_EVENTS } from './constants';
 
 const {
 	PORT: port = 4000,
@@ -81,24 +82,6 @@ wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket'));
 // 	},
 // };
 
-// broker.createService({
-// 	settings: {
-// 		port: PROMETHEUS_PORT,
-// 		metrics: {
-// 			streamer_users_connected: {
-// 				type: 'Gauge',
-// 				labelNames: ['nodeID'],
-// 				help: 'Users connecteds by streamer',
-// 			},
-// 			streamer_users_logged: {
-// 				type: 'Gauge',
-// 				labelNames: ['nodeID'],
-// 				help: 'Users logged by streamer',
-// 			},
-// 		},
-// 	},
-// 	mixins: PROMETHEUS_PORT !== 'false' ? [PromService] : [],
-
 export class DDPStreamer extends ServiceClass {
 	protected name = 'streamer';
 
@@ -131,15 +114,50 @@ export class DDPStreamer extends ServiceClass {
 		this.onEvent('meteor.autoUpdateClientVersionChanged', ({ record }): void => {
 			events.emit('meteor.autoUpdateClientVersionChanged', record);
 		});
+	}
 
-		this.onEvent('stream.ephemeralMessage', (uid, rid, message): void => {
-			notifications.notifyUser(uid, 'message', {
-				groupable: false,
-				...message,
-				_id: String(Date.now()),
-				rid,
-				ts: new Date(),
-			});
+	async created(): Promise<void> {
+		if (!this.context) {
+			return;
+		}
+
+		const { broker, nodeID } = this.context;
+		if (!broker) {
+			return;
+		}
+
+		const { metrics } = broker;
+		if (!metrics) {
+			return;
+		}
+
+		metrics.register({
+			name: 'users_connected',
+			type: 'gauge',
+			labelNames: ['nodeID'],
+			description: 'Users connected by streamer',
+		});
+
+		metrics.register({
+			name: 'users_logged',
+			type: 'gauge',
+			labelNames: ['nodeID'],
+			description: 'Users logged by streamer',
+		});
+
+		server.on(DDP_EVENTS.CONNECTED, () => {
+			metrics.increment('users_connected', { nodeID }, 1);
+		});
+
+		server.on(DDP_EVENTS.LOGGED, () => {
+			metrics.increment('users_logged', { nodeID }, 1);
+		});
+
+		server.on(DDP_EVENTS.DISCONNECTED, ({ userId }) => {
+			metrics.decrement('users_connected', { nodeID }, 1);
+			if (userId) {
+				metrics.decrement('users_logged', { nodeID }, 1);
+			}
 		});
 	}
 }
