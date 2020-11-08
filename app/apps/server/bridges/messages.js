@@ -51,7 +51,7 @@ export class AppMessageBridge {
 			return;
 		}
 
-		api.broadcast('stream.ephemeralMessage', user.id, msg.rid, {
+		api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
 			...msg,
 		});
 	}
@@ -72,7 +72,7 @@ export class AppMessageBridge {
 		Users.findByIds(users, { fields: { _id: 1 } })
 			.fetch()
 			.forEach(({ _id }) =>
-				api.broadcast('stream.ephemeralMessage', _id, room.id, {
+				api.broadcast('notify.ephemeralMessage', _id, room.id, {
 					...msg,
 				}),
 			);
