@@ -12,6 +12,7 @@ export class AppSchedulerBridge {
 		this.scheduler = new Agenda({
 			mongo: MongoInternals.defaultRemoteCollectionDriver().mongo.client.db(),
 			db: { collection: 'rocketchat_apps_scheduler' },
+                        // this ensures the same job doesn't get executed multiple times in a cluster 
 			defaultConcurrency: 1,
 		});
 		this.isConnected = false;
