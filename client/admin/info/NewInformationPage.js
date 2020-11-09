@@ -3,6 +3,7 @@ import React from 'react';
 
 import Page from '../../components/basic/Page';
 import DeploymentCard from './DeploymentCard';
+import UsageCard from './UsageCard';
 import { useTranslation } from '../../contexts/TranslationContext';
 // import RocketChatSection from './RocketChatSection';
 // import CommitSection from './CommitSection';
@@ -64,9 +65,10 @@ const InformationPage = React.memo(function InformationPage({
 					</Box>
 				</Callout>}
 
-				<Box w='full' h='full'>
+				<Box display='flex' flexDirection='row' w='full' h='full'>
 					<Margins all='x8'>
 						<DeploymentCard info={info} statistics={statistics} isLoading={isLoading}/>
+						<UsageCard statistics={statistics} isLoading={isLoading}/>
 					</Margins>
 				</Box>
 				{/* {canViewStatistics && <RocketChatSection info={info} statistics={statistics} isLoading={isLoading} />}

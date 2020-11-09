@@ -16,7 +16,7 @@ const DeploymentCard = React.memo(function DeploymentCard({ info, statistics, is
 	const appsEngineVersion = info && info.marketplaceApiVersion;
 
 	return <Card>
-		<Card.Title>Deployment</Card.Title>
+		<Card.Title>{t('Deployment')}</Card.Title>
 		<Card.Body>
 			<Card.Col>
 				<Card.Col.Section>
