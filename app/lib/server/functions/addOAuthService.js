@@ -4,7 +4,7 @@ import s from 'underscore.string';
 
 import { settings } from '../../../settings';
 
-export function addOAuthService(name, values) {
+export function addOAuthService(name, values = {}) {
 	name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
 	name = s.capitalize(name);
 	settings.add(`Accounts_OAuth_Custom-${ name }`                        , values.enabled || false             , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Enable', persistent: true });
