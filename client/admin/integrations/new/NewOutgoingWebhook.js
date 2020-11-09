@@ -7,6 +7,7 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useForm } from '../../../hooks/useForm';
 import OutgoingWebhookForm from '../OutgoiongWebhookForm';
+import { stringAsArray } from '../integrationsUtils.ts';
 
 const defaultData = {
 	type: 'webhook-outgoing',
@@ -31,6 +32,7 @@ const defaultData = {
 	runOnEdits: true,
 };
 
+
 export default function NewOutgoingWebhook({ data = defaultData, onChange, setSaveAction, ...props }) {
 	const t = useTranslation();
 	const router = useRoute('admin-integrations');
@@ -42,10 +44,11 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 		triggerWords,
 	} = formValues;
 
+
 	const params = useMemo(() => ({
 		...formValues,
 		urls: urls.split('\n'),
-		triggerWords: triggerWords.split(','),
+		triggerWords: stringAsArray(triggerWords),
 	}), [formValues, triggerWords, urls]);
 	const saveIntegration = useEndpointAction('POST', 'integrations.create', params, t('Integration_added'));
 

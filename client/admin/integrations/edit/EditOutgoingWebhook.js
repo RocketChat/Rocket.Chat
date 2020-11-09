@@ -18,6 +18,7 @@ import OutgoingWebhookForm from '../OutgoiongWebhookForm';
 import { useForm } from '../../../hooks/useForm';
 import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import { stringAsArray } from '../integrationsUtils.ts';
 
 export default function EditOutgoingWebhookWithData({ integrationId, ...props }) {
 	const t = useTranslation();
@@ -115,7 +116,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		try {
 			await saveIntegration(data._id, {
 				...formValues,
-				triggerWords: triggerWords.split(/\s*(?:;|$)\s*/),
+				triggerWords: stringAsArray(triggerWords),
 				urls: urls.split('\n'),
 			});
 
