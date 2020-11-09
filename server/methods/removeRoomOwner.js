@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { hasPermission, getUsersInRole } from 'meteor/rocketchat:authorization';
-import { Users, Subscriptions, Messages } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { Notifications } from 'meteor/rocketchat:notifications';
+
+import { hasPermission, getUsersInRole } from '../../app/authorization';
+import { Users, Subscriptions, Messages } from '../../app/models';
+import { settings } from '../../app/settings';
+import { api } from '../sdk/api';
 
 Meteor.methods({
 	removeRoomOwner(rid, userId) {
@@ -64,7 +65,7 @@ Meteor.methods({
 		});
 
 		if (settings.get('UI_DisplayRoles')) {
-			Notifications.notifyLogged('roles-change', {
+			api.broadcast('user.roleUpdate', {
 				type: 'removed',
 				_id: 'owner',
 				u: {

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Users, Subscriptions } from 'meteor/rocketchat:models';
+
+import { Users, Subscriptions } from '../../app/models';
 
 Meteor.methods({
 	saveUserPreferences(settings) {
@@ -21,14 +22,12 @@ Meteor.methods({
 			mobileNotifications: Match.Optional(String),
 			enableAutoAway: Match.Optional(Boolean),
 			highlights: Match.Optional([String]),
-			desktopNotificationDuration: Match.Optional(Number),
 			messageViewMode: Match.Optional(Number),
 			hideUsernames: Match.Optional(Boolean),
 			hideRoles: Match.Optional(Boolean),
 			hideAvatars: Match.Optional(Boolean),
 			hideFlexTab: Match.Optional(Boolean),
 			sendOnEnter: Match.Optional(String),
-			roomCounterSidebar: Match.Optional(Boolean),
 			idleTimeLimit: Match.Optional(Number),
 			sidebarShowFavorites: Match.Optional(Boolean),
 			sidebarShowUnread: Match.Optional(Boolean),
@@ -36,6 +35,7 @@ Meteor.methods({
 			sidebarViewMode: Match.Optional(String),
 			sidebarHideAvatar: Match.Optional(Boolean),
 			sidebarGroupByType: Match.Optional(Boolean),
+			sidebarShowDiscussion: Match.Optional(Boolean),
 			muteFocusedConversations: Match.Optional(Boolean),
 		};
 		check(settings, Match.ObjectIncluding(keys));

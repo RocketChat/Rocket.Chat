@@ -1,0 +1,219 @@
+.rc-button {
+	&:not([disabled]):hover {
+		opacity: 0.6;
+	}
+
+	&--icon > svg {
+		margin: 0 5px 0 -5px;
+
+		font-size: 20px;
+		fill: currentColor;
+
+		.rtl & {
+			margin: 0 -5px 0 5px;
+		}
+	}
+
+	position: relative;
+
+	display: flex;
+
+	height: 40px;
+
+	min-height: 40px;
+
+	padding: 0 1.5rem;
+
+	cursor: pointer;
+	transition: opacity 0.3s, background-color 0.3s, color 0.3s;
+	text-align: center;
+
+	color: #000000;
+
+	border-width: var(--button-border-width);
+	border-style: solid;
+	border-color: #000000;
+
+	border-radius: var(--button-border-radius);
+	background-color: transparent;
+
+	font-size: var(--button-text-size);
+	font-weight: 600;
+
+	align-items: center;
+	justify-content: center;
+
+	&:active,
+	&:focus:hover {
+		outline: none;
+	}
+
+	&:active {
+		transform: translateY(2px);
+
+		opacity: 0.9;
+	}
+
+	&:active::before {
+		top: -2px;
+	}
+
+	&:disabled {
+		cursor: default;
+
+		color: var(--button-disabled-text-color);
+		border: 0;
+		border-color: var(--button-disabled-background);
+		background-color: var(--button-disabled-background);
+	}
+
+	&--invisible {
+		visibility: hidden;
+	}
+
+	&--primary {
+		color: var(--button-primary-text-color);
+		border: 0;
+		background-color: var(--button-primary-background);
+	}
+
+	&--nude {
+		border: none;
+		background-color: inherit;
+
+		font-weight: 400;
+	}
+
+	&--primary.rc-button--nude {
+		color: var(--button-primary-background);
+	}
+
+	&--primary.rc-button--outline {
+		color: var(--button-primary-background);
+		border-color: var(--button-primary-background);
+	}
+
+	&--secondary {
+		color: var(--button-secondary-text-color);
+		border: 0;
+		border-color: var(--button-secondary-background);
+		background-color: var(--button-secondary-background);
+	}
+
+	&--secondary.rc-button--outline {
+		color: var(--button-secondary-background);
+		border-color: var(--button-secondary-background);
+	}
+
+	&--cancel {
+		color: var(--button-primary-text-color);
+		border: 0;
+		border-color: var(--button-cancel-color);
+		background-color: var(--button-cancel-color);
+	}
+
+	&--cancel.rc-button--outline {
+		color: var(--button-cancel-color);
+		border-color: var(--button-cancel-color);
+	}
+
+	&--small {
+		height: var(--button-height-small);
+		min-height: var(--button-height-small);
+		padding: var(--button-padding-small);
+
+		font-size: var(--button-text-size-small);
+	}
+
+	&--square {
+		display: flex;
+		flex: 0 0 var(--button-square-size);
+
+		margin: 0;
+		padding: 0;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&--outline {
+		border-width: 2px;
+		border-style: solid;
+		background: transparent;
+	}
+
+	&--stack {
+		width: 100%;
+	}
+
+	&--no-padding {
+		padding-right: 0;
+		padding-left: 0;
+	}
+
+	&.loading {
+		position: relative;
+
+		padding-right: calc(3 * 0.782rem);
+
+		transition: padding-right 0.3s;
+
+		&::before {
+			position: absolute;
+			top: 25%;
+			right: 0.782rem;
+
+			display: block;
+
+			width: 20px;
+			height: 20px;
+
+			content: "";
+			animation: spin 1s infinite cubic-bezier(0.14, 0.48, 0.45, 0.63);
+
+			border: 0.15rem solid rgba(127, 127, 127, 0.5);
+			border-top-color: white;
+			border-radius: 50%;
+		}
+	}
+
+	&__group {
+		display: flex;
+
+		flex-direction: row;
+
+		margin: 10px -5px;
+
+		justify-content: flex-end;
+
+		& > .rc-button {
+			margin: 0 5px;
+		}
+
+		&--wrap {
+			margin: 5px -5px;
+			flex-wrap: wrap;
+
+			& > .rc-button {
+				margin: 5px;
+			}
+		}
+
+		&--stretch {
+			justify-content: stretch;
+
+			& > .rc-button {
+				flex: 1 1;
+			}
+		}
+
+		&--vertical {
+			flex-direction: column;
+		}
+	}
+}
+
+@media (width < 780px) {
+	.rc-button--full {
+		width: 100%;
+	}
+}

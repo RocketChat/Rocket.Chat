@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Messages } from 'meteor/rocketchat:models';
-import { settings } from 'meteor/rocketchat:settings';
-import { composeMessageObjectWithUser } from 'meteor/rocketchat:utils';
+
+import { Messages } from '../../app/models';
+import { settings } from '../../app/settings';
+import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 Meteor.methods({
 	loadSurroundingMessages(message, limit = 50) {
@@ -31,7 +32,7 @@ Meteor.methods({
 			return false;
 		}
 
-		limit = limit - 1;
+		limit -= 1;
 
 		const options = {
 			sort: {
@@ -62,9 +63,10 @@ Meteor.methods({
 
 		const moreAfter = afterMessages.length === options.limit;
 
+		messages.push(...afterMessages);
+
 		return {
-			messages: messages.concat(afterMessages)
-				.map((message) => composeMessageObjectWithUser(message, fromId)),
+			messages: normalizeMessagesForUser(messages, fromId),
 			moreBefore,
 			moreAfter,
 		};

@@ -1,11 +1,11 @@
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Settings } from 'meteor/rocketchat:models';
+import { Migrations } from '../../../app/migrations';
+import { Settings } from '../../../app/models';
 
 const majorColors = {
 	'content-background-color': '#FFFFFF',
 	'primary-background-color': '#04436A',
 	'primary-font-color': '#444444',
-	'primary-action-color': '#13679A', // was action-buttons-color
+	'primary-action-color': '#1d74f5', // was action-buttons-color
 	'secondary-background-color': '#F4F4F4',
 	'secondary-font-color': '#A0A0A0',
 	'secondary-action-color': '#DDDDDD',
@@ -76,7 +76,7 @@ Migrations.add({
 					color.value = newvariables[color.value.replace('@', '')];
 				}
 				const id = `theme-color-${ key }`;
-				Settings.update({ _id: id }, { $set: { value : color.value, editor: /^#.+/.test(color.value) ? 'color' : 'expression' } });
+				Settings.update({ _id: id }, { $set: { value: color.value, editor: /^#.+/.test(color.value) ? 'color' : 'expression' } });
 				if (key === 'rc-color-primary') {
 					Settings.update({ _id: 'theme-color-rc-color-primary-darkest' }, { $set: { editor: 'color', value: lightenDarkenColor(color.value, -16) } });
 					Settings.update({ _id: 'theme-color-rc-color-primary-dark' }, { $set: { editor: 'color', value: lightenDarkenColor(color.value, 18) } });

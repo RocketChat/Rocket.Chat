@@ -1,0 +1,22 @@
+<template name="pinnedMessages">
+	{{#if Template.subscriptionsReady}}
+		{{#unless hasMessages}}
+			<div class="list-view pinned-messages-list flex-tab__header">
+					<h2>{{_ "No_pinned_messages"}}</h2>
+			</div>
+		{{/unless}}
+	{{/if}}
+	<div class="flex-tab__result pinned-messages-list js-list">
+		<ul class="list clearfix">
+			{{# with messageContext}}
+				{{#each msg in messages}}{{> message context="pinned" msg=msg room=room groupable=true subscription=subscription settings=settings u=u }}{{/each}}
+			{{/with}}
+		</ul>
+
+		{{#if hasMore}}
+			<div class="load-more">
+				{{> loading}}
+			</div>
+		{{/if}}
+	</div>
+</template>

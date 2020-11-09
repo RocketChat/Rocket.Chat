@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Uploads, Messages } from 'meteor/rocketchat:models';
+
+import { Migrations } from '../../../app/migrations';
+import { Uploads, Messages } from '../../../app/models';
 
 Migrations.add({
 	version: 15,
@@ -81,7 +82,7 @@ Migrations.add({
 				}],
 			}).forEach((message) => {
 				for (const urlsItem of message.urls) {
-					if (urlsItem.url === (`https://open.rocket.chat/cfs/files/Files/${ cfsRecord._id }`) || urlsItem.url === (`https://rocket.chat/cfs/files/Files/${ cfsRecord._id }`)) {
+					if (urlsItem.url === `https://open.rocket.chat/cfs/files/Files/${ cfsRecord._id }` || urlsItem.url === `https://rocket.chat/cfs/files/Files/${ cfsRecord._id }`) {
 						urlsItem.url = Meteor.absoluteUrl() + url;
 						if (urlsItem.parsedUrl && urlsItem.parsedUrl.pathname) {
 							urlsItem.parsedUrl.pathname = `/${ url }`;

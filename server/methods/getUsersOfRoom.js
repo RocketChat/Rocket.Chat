@@ -1,9 +1,34 @@
 import { Meteor } from 'meteor/meteor';
-import { Subscriptions } from 'meteor/rocketchat:models';
-import { hasPermission } from 'meteor/rocketchat:authorization';
+
+import { Subscriptions, Users } from '../../app/models/server';
+import { hasPermission } from '../../app/authorization';
+import { settings } from '../../app/settings';
+
+function findUsers({ rid, status, skip, limit, filter = '' }) {
+	const options = {
+		fields: {
+			name: 1,
+			username: 1,
+			nickname: 1,
+			status: 1,
+			avatarETag: 1,
+		},
+		sort: {
+			statusConnection: -1,
+			[settings.get('UI_Use_Real_Name') ? 'name' : 'username']: 1,
+		},
+		...skip > 0 && { skip },
+		...limit > 0 && { limit },
+	};
+
+	return Users.findByActiveUsersExcept(filter, undefined, options, undefined, [{
+		__rooms: rid,
+		...status && { status },
+	}]).fetch();
+}
 
 Meteor.methods({
-	async getUsersOfRoom(rid, showAll) {
+	async getUsersOfRoom(rid, showAll, { limit, skip } = {}, filter) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUsersOfRoom' });
@@ -18,38 +43,13 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(rid);
+		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
+
+		const users = await findUsers({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter });
 
 		return {
-			total: subscriptions.count(),
-			records: await Subscriptions.model.rawCollection().aggregate([
-				{ $match: { rid } },
-				{
-					$lookup:
-						{
-							from: 'users',
-							localField: 'u._id',
-							foreignField: '_id',
-							as: 'u',
-						},
-				},
-				{
-					$project: {
-						'u._id': 1,
-						'u.name': 1,
-						'u.username': 1,
-						'u.status': 1,
-					},
-				},
-				...(showAll ? [] : [{ $match: { 'u.status': { $in: ['online', 'away', 'busy'] } } }]),
-				{
-					$project: {
-						_id: { $arrayElemAt: ['$u._id', 0] },
-						name: { $arrayElemAt: ['$u.name', 0] },
-						username: { $arrayElemAt: ['$u.username', 0] },
-					},
-				},
-			]).toArray(),
+			total,
+			records: users,
 		};
 	},
 });

@@ -1,24 +1,40 @@
-FROM rocketchat/base:8
+FROM node:12.18.4-buster-slim
+
+LABEL maintainer="buildmaster@rocket.chat"
+
+# Install MongoDB and dependencies
+RUN set -x \
+    && apt-get update \
+    && apt-get install -y wget gnupg dirmngr pwgen \
+    && wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | apt-key add - \
+    && echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" | tee /etc/apt/sources.list.d/mongodb-org-4.2.list \
+    && apt-get update \
+    && apt-get install -y mongodb-org fontconfig \
+    && apt-get clean my room \
+    && groupadd -g 65533 -r rocketchat \
+    && useradd -u 65533 -r -g rocketchat rocketchat \
+    && mkdir -p /app/uploads \
+    && chown rocketchat:rocketchat /app/uploads
 
 ADD . /app
 ADD entrypoint.sh /app/bundle/
 
-MAINTAINER buildmaster@rocket.chat
-
-RUN set -x \
- && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5 \
- && echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.6 main" | tee /etc/apt/sources.list.d/mongodb-org-3.6.list \
- && apt-get update \
- && apt-get install -y --force-yes pwgen mongodb-org \
- && echo "mongodb-org hold" | dpkg --set-selections \
- && echo "mongodb-org-server hold" | dpkg --set-selections \
- && echo "mongodb-org-shell hold" | dpkg --set-selections \
- && echo "mongodb-org-mongos hold" | dpkg --set-selections \
- && echo "mongodb-org-tools hold" | dpkg --set-selections \
- && cd /app/bundle/programs/server \
- && npm install \
- && npm cache clear --force \
- && rm -rf /var/lib/apt/lists/*
+RUN aptMark="$(apt-mark showmanual)" \
+    && apt-get install -y --no-install-recommends g++ make python ca-certificates \
+    && cd /app/bundle/programs/server \
+    && npm install \
+    && apt-mark auto '.*' > /dev/null \
+    && apt-mark manual $aptMark > /dev/null \
+    && find /usr/local -type f -executable -exec ldd '{}' ';' \
+       | awk '/=>/ { print $(NF-1) }' \
+       | sort -u \
+       | xargs -r dpkg-query --search \
+       | cut -d: -f1 \
+       | sort -u \
+       | xargs -r apt-mark manual \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && npm cache clear --force \
+    && chown -R rocketchat:rocketchat /app
 
 VOLUME /app/uploads
 
@@ -28,6 +44,7 @@ WORKDIR /app/bundle
 ENV DEPLOY_METHOD=docker-preview \
     NODE_ENV=production \
     MONGO_URL=mongodb://localhost:27017/rocketchat \
+    MONGO_OPLOG_URL=mongodb://localhost:27017/local \
     HOME=/tmp \
     PORT=3000 \
     ROOT_URL=http://localhost:3000 \

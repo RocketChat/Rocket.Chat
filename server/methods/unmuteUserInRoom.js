@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { hasPermission } from 'meteor/rocketchat:authorization';
-import { Users, Subscriptions, Rooms, Messages } from 'meteor/rocketchat:models';
+
+import { hasPermission } from '../../app/authorization';
+import { callbacks } from '../../app/callbacks';
+import { Rooms, Subscriptions, Users, Messages } from '../../app/models';
+import { RoomMemberActions, roomTypes } from '../../app/utils/server';
 
 Meteor.methods({
 	unmuteUserInRoom(data) {
@@ -26,7 +29,7 @@ Meteor.methods({
 			});
 		}
 
-		if (['c', 'p'].includes(room.t) === false) {
+		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.MUTE)) {
 			throw new Meteor.Error('error-invalid-room-type', `${ room.t } is not a valid room type`, {
 				method: 'unmuteUserInRoom',
 				type: room.t,
@@ -40,17 +43,23 @@ Meteor.methods({
 			});
 		}
 
-		const unmutedUser = Users.findOneByUsername(data.username);
-
-		Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
+		const unmutedUser = Users.findOneByUsernameIgnoringCase(data.username);
 
 		const fromUser = Users.findOneById(fromId);
+
+		callbacks.run('beforeUnmuteUser', { unmutedUser, fromUser }, room);
+
+		Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
 
 		Messages.createUserUnmutedWithRoomIdAndUser(data.rid, unmutedUser, {
 			u: {
 				_id: fromUser._id,
 				username: fromUser.username,
 			},
+		});
+
+		Meteor.defer(function() {
+			callbacks.run('afterUnmuteUser', { unmutedUser, fromUser }, room);
 		});
 
 		return true;

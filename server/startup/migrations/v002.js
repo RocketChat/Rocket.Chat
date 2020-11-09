@@ -1,8 +1,8 @@
-import { RocketChatFile } from 'meteor/rocketchat:file';
-import { FileUpload } from 'meteor/rocketchat:file-upload';
-import { Migrations } from 'meteor/rocketchat:migrations';
-import { Users } from 'meteor/rocketchat:models';
-import { getAvatarSuggestionForUser } from 'meteor/rocketchat:lib';
+import { RocketChatFile } from '../../../app/file';
+import { FileUpload } from '../../../app/file-upload';
+import { Migrations } from '../../../app/migrations';
+import { Users } from '../../../app/models';
+import { getAvatarSuggestionForUser } from '../../../app/lib';
 
 Migrations.add({
 	version: 2,
@@ -38,7 +38,7 @@ Migrations.add({
 				type: contentType,
 			};
 
-			fileStore.insert(file, rs, () => Users.setAvatarOrigin(user._id, service));
+			fileStore.insert(file, rs, (err, result) => Users.setAvatarData(user._id, service, result.etag));
 		});
 	},
 });

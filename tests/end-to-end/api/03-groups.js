@@ -1,5 +1,11 @@
+import { expect } from 'chai';
+
 import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
-import { adminUsername } from '../../data/user';
+import { adminUsername, password } from '../../data/user.js';
+import { createUser, login } from '../../data/users.helper';
+import { updatePermission } from '../../data/permissions.helper';
+import { createRoom } from '../../data/rooms.helper';
+import { createIntegration, removeIntegration } from '../../data/integration.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
@@ -19,7 +25,7 @@ describe('[Groups]', function() {
 
 	before((done) => getCredentials(done));
 
-	it('/groups.create', (done) => {
+	before('/groups.create', (done) => {
 		request.post(api('groups.create'))
 			.set(credentials)
 			.send({
@@ -169,10 +175,10 @@ describe('[Groups]', function() {
 		});
 	});
 
-	it('/groups.invite', async(done) => {
+	it('/groups.invite', async () => {
 		const roomInfo = await getRoomInfo(group._id);
 
-		request.post(api('groups.invite'))
+		return request.post(api('groups.invite'))
 			.set(credentials)
 			.send({
 				roomId: group._id,
@@ -186,8 +192,7 @@ describe('[Groups]', function() {
 				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
 				expect(res.body).to.have.nested.property('group.t', 'p');
 				expect(res.body).to.have.nested.property('group.msgs', roomInfo.group.msgs + 1);
-			})
-			.end(done);
+			});
 	});
 
 	it('/groups.addModerator', (done) => {
@@ -295,10 +300,10 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.invite', async(done) => {
+	it('/groups.invite', async () => {
 		const roomInfo = await getRoomInfo(group._id);
 
-		request.post(api('groups.invite'))
+		return request.post(api('groups.invite'))
 			.set(credentials)
 			.send({
 				roomId: group._id,
@@ -312,8 +317,7 @@ describe('[Groups]', function() {
 				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
 				expect(res.body).to.have.nested.property('group.t', 'p');
 				expect(res.body).to.have.nested.property('group.msgs', roomInfo.group.msgs + 1);
-			})
-			.end(done);
+			});
 	});
 
 	it('/groups.addOwner', (done) => {
@@ -331,52 +335,104 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.setDescription', (done) => {
-		request.post(api('groups.setDescription'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-				description: 'this is a description for a channel for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('description', 'this is a description for a channel for api tests');
-			})
-			.end(done);
+	describe('/groups.setDescription', () => {
+		it('should set the description of the group with a string', (done) => {
+			request.post(api('groups.setDescription'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					description: 'this is a description for a channel for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('description', 'this is a description for a channel for api tests');
+				})
+				.end(done);
+		});
+		it('should set the description of the group with an empty string(remove the description)', (done) => {
+			request.post(api('groups.setDescription'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					description: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('description', '');
+				})
+				.end(done);
+		});
 	});
 
-	it('/groups.setTopic', (done) => {
-		request.post(api('groups.setTopic'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-				topic: 'this is a topic of a channel for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('topic', 'this is a topic of a channel for api tests');
-			})
-			.end(done);
+	describe('/groups.setTopic', () => {
+		it('should set the topic of the group with a string', (done) => {
+			request.post(api('groups.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					topic: 'this is a topic of a channel for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', 'this is a topic of a channel for api tests');
+				})
+				.end(done);
+		});
+		it('should set the topic of the group with an empty string(remove the topic)', (done) => {
+			request.post(api('groups.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					topic: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', '');
+				})
+				.end(done);
+		});
 	});
 
-	it('/groups.setPurpose', (done) => {
-		request.post(api('groups.setPurpose'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-				purpose: 'this is a purpose of a channel for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('purpose', 'this is a purpose of a channel for api tests');
-			})
-			.end(done);
+
+	describe('/groups.setPurpose', () => {
+		it('should set the purpose of the group with a string', (done) => {
+			request.post(api('groups.setPurpose'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					purpose: 'this is a purpose of a channel for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('purpose', 'this is a purpose of a channel for api tests');
+				})
+				.end(done);
+		});
+		it('should set the purpose of the group with an empty string(remove the purpose)', (done) => {
+			request.post(api('groups.setPurpose'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					purpose: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('purpose', '');
+				})
+				.end(done);
+		});
 	});
 
 	it('/groups.history', (done) => {
@@ -502,10 +558,10 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.rename', async(done) => {
+	it('/groups.rename', async () => {
 		const roomInfo = await getRoomInfo(group._id);
 
-		request.post(api('groups.rename'))
+		return request.post(api('groups.rename'))
 			.set(credentials)
 			.send({
 				roomId: group._id,
@@ -519,24 +575,111 @@ describe('[Groups]', function() {
 				expect(res.body).to.have.nested.property('group.name', `EDITED${ apiPrivateChannelName }`);
 				expect(res.body).to.have.nested.property('group.t', 'p');
 				expect(res.body).to.have.nested.property('group.msgs', roomInfo.group.msgs + 1);
-			})
-			.end(done);
+			});
 	});
 
-	it('/groups.getIntegrations', (done) => {
-		request.get(api('groups.getIntegrations'))
-			.set(credentials)
-			.query({
-				roomId: group._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count', 0);
-				expect(res.body).to.have.property('total', 0);
-			})
-			.end(done);
+	describe('/groups.getIntegrations', () => {
+		let integrationCreatedByAnUser;
+		let userCredentials;
+		let createdGroup;
+		before((done) => {
+			createRoom({ name: `test-integration-group-${ Date.now() }`, type: 'p' })
+				.end((err, res) => {
+					createdGroup = res.body.group;
+					createUser().then((createdUser) => {
+						const user = createdUser;
+						login(user.username, password).then((credentials) => {
+							userCredentials = credentials;
+							updatePermission('manage-incoming-integrations', ['user']).then(() => {
+								updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
+									createIntegration({
+										type: 'webhook-incoming',
+										name: 'Incoming test',
+										enabled: true,
+										alias: 'test',
+										username: 'rocket.cat',
+										scriptEnabled: false,
+										channel: `#${ createdGroup.name }`,
+									}, userCredentials).then((integration) => {
+										integrationCreatedByAnUser = integration;
+										done();
+									});
+								});
+							});
+						});
+					});
+				});
+		});
+
+		after((done) => {
+			removeIntegration(integrationCreatedByAnUser._id, 'incoming').then(done);
+		});
+
+		it('should return the list of integrations of create group and it should contain the integration created by user when the admin DOES have the permission', (done) => {
+			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+				request.get(api('groups.getIntegrations'))
+					.set(credentials)
+					.query({
+						roomId: createdGroup._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						const integrationCreated = res.body.integrations.find((createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id);
+						expect(integrationCreated).to.be.an('object');
+						expect(integrationCreated._id).to.be.equal(integrationCreatedByAnUser._id);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return the list of integrations created by the user only', (done) => {
+			updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
+				updatePermission('manage-incoming-integrations', []).then(() => {
+					request.get(api('groups.getIntegrations'))
+						.set(credentials)
+						.query({
+							roomId: createdGroup._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							const integrationCreated = res.body.integrations.find((createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id);
+							expect(integrationCreated).to.be.equal(undefined);
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('total');
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should return unauthorized error when the user does not have any integrations permissions', (done) => {
+			updatePermission('manage-incoming-integrations', []).then(() => {
+				updatePermission('manage-own-incoming-integrations', []).then(() => {
+					updatePermission('manage-outgoing-integrations', []).then(() => {
+						updatePermission('manage-own-outgoing-integrations', []).then(() => {
+							request.get(api('groups.getIntegrations'))
+								.set(credentials)
+								.query({
+									roomId: createdGroup._id,
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(403)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('error', 'unauthorized');
+								})
+								.end(done);
+						});
+					});
+				});
+			});
+		});
 	});
 
 	it('/groups.setReadOnly', (done) => {
@@ -568,41 +711,61 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.setAnnouncement', (done) => {
-		request.post(api('groups.setAnnouncement'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-				announcement: 'this is an announcement of a group for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a group for api tests');
-			})
-			.end(done);
+	describe('/groups.setAnnouncement', () => {
+		it('should set the announcement of the group with a string', (done) => {
+			request.post(api('groups.setAnnouncement'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					announcement: 'this is an announcement of a group for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a group for api tests');
+				})
+				.end(done);
+		});
+		it('should set the announcement of the group with an empty string(remove the announcement)', (done) => {
+			request.post(api('groups.setAnnouncement'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					announcement: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('announcement', '');
+				})
+				.end(done);
+		});
 	});
 
-	it('/groups.setType', (done) => {
-		request.post(api('groups.setType'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-				type: 'c',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
+	describe('/groups.setType', () => {
+		it('should change the type of the group to a channel', (done) => {
+			request.post(api('groups.setType'))
+				.set(credentials)
+				.send({
+					roomId: group._id,
+					type: 'c',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 	});
+
 
 	describe('/groups.setCustomFields:', () => {
 		let cfchannel;
 		it('create group with customFields', (done) => {
-			const customFields = { field0:'value0' };
+			const customFields = { field0: 'value0' };
 			request.post(api('groups.create'))
 				.set(credentials)
 				.send({
@@ -628,9 +791,9 @@ describe('[Groups]', function() {
 				})
 				.end(done);
 		});
-		it('change customFields', async(done) => {
-			const customFields = { field9:'value9' };
-			request.post(api('groups.setCustomFields'))
+		it('change customFields', async () => {
+			const customFields = { field9: 'value9' };
+			return request.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
 					roomId: cfchannel._id,
@@ -645,8 +808,7 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.customFields.field9', 'value9');
 					expect(res.body).to.have.not.nested.property('group.customFields.field0', 'value0');
-				})
-				.end(done);
+				});
 		});
 		it('get customFields using groups.info', (done) => {
 			request.get(api('groups.info'))
@@ -686,9 +848,9 @@ describe('[Groups]', function() {
 					done();
 				});
 		});
-		it('set customFields with one nested field', async(done) => {
-			const customFields = { field1:'value1' };
-			request.post(api('groups.setCustomFields'))
+		it('set customFields with one nested field', async () => {
+			const customFields = { field1: 'value1' };
+			return request.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
 					roomId: cfchannel._id,
@@ -702,13 +864,12 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.nested.property('group.name', cfchannel.name);
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.customFields.field1', 'value1');
-				})
-				.end(done);
+				});
 		});
-		it('set customFields with multiple nested fields', async(done) => {
-			const customFields = { field2:'value2', field3:'value3', field4:'value4' };
+		it('set customFields with multiple nested fields', async () => {
+			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
-			request.post(api('groups.setCustomFields'))
+			return request.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
 					roomName: cfchannel.name,
@@ -725,13 +886,12 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.nested.property('group.customFields.field3', 'value3');
 					expect(res.body).to.have.nested.property('group.customFields.field4', 'value4');
 					expect(res.body).to.have.not.nested.property('group.customFields.field1', 'value1');
-				})
-				.end(done);
+				});
 		});
-		it('set customFields to empty object', async(done) => {
+		it('set customFields to empty object', async () => {
 			const customFields = {};
 
-			request.post(api('groups.setCustomFields'))
+			return request.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
 					roomName: cfchannel.name,
@@ -747,10 +907,9 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.not.nested.property('group.customFields.field2', 'value2');
 					expect(res.body).to.have.not.nested.property('group.customFields.field3', 'value3');
 					expect(res.body).to.have.not.nested.property('group.customFields.field4', 'value4');
-				})
-				.end(done);
+				});
 		});
-		it('set customFields as a string -> should return 400', async(done) => {
+		it('set customFields as a string -> should return 400', (done) => {
 			const customFields = '';
 
 			request.post(api('groups.setCustomFields'))
@@ -836,7 +995,7 @@ describe('[Groups]', function() {
 					done();
 				});
 		});
-		it('/groups.invite', async(done) => {
+		it('/groups.invite', (done) => {
 			request.post(api('groups.invite'))
 				.set(credentials)
 				.send({
@@ -906,7 +1065,7 @@ describe('[Groups]', function() {
 					done();
 				});
 		});
-		it('/groups.invite', async(done) => {
+		it('/groups.invite', (done) => {
 			request.post(api('groups.invite'))
 				.set(credentials)
 				.send({
@@ -938,6 +1097,84 @@ describe('[Groups]', function() {
 					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
 				})
 				.end(done);
+		});
+	});
+
+	describe('/groups.setEncrypted', () => {
+		let testGroup;
+		it('/groups.create', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `group.encrypted.test.${ Date.now() }`,
+				})
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+
+		it('should return an error when passing no boolean param', (done) => {
+			request.post(api('groups.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					encrypted: 'no-boolean',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The bodyParam "encrypted" is required');
+				})
+				.end(done);
+		});
+
+		it('should set group as encrypted correctly and return the new data', (done) => {
+			request.post(api('groups.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					encrypted: true,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('group');
+					expect(res.body.group).to.have.property('_id', testGroup._id);
+					expect(res.body.group).to.have.property('encrypted', true);
+				})
+				.end(done);
+		});
+
+		it('should return the updated room encrypted', async () => {
+			const roomInfo = await getRoomInfo(testGroup._id);
+			expect(roomInfo).to.have.a.property('success', true);
+			expect(roomInfo.group).to.have.a.property('_id', testGroup._id);
+			expect(roomInfo.group).to.have.a.property('encrypted', true);
+		});
+
+		it('should set group as unencrypted correctly and return the new data', (done) => {
+			request.post(api('groups.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					encrypted: false,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('group');
+					expect(res.body.group).to.have.property('_id', testGroup._id);
+					expect(res.body.group).to.have.property('encrypted', false);
+				})
+				.end(done);
+		});
+
+		it('should return the updated room unencrypted', async () => {
+			const roomInfo = await getRoomInfo(testGroup._id);
+			expect(roomInfo).to.have.a.property('success', true);
+			expect(roomInfo.group).to.have.a.property('_id', testGroup._id);
+			expect(roomInfo.group).to.have.a.property('encrypted', false);
 		});
 	});
 });

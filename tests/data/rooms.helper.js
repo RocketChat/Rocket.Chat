@@ -1,6 +1,6 @@
 import { api, credentials, request } from './api-data';
 
-export const createRoom = ({ name, type, username }) => {
+export const createRoom = ({ name, type, username, members = [] }) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom" test helper');
 	}
@@ -13,12 +13,15 @@ export const createRoom = ({ name, type, username }) => {
 		d: 'im.create',
 	};
 	const params = type === 'd'
-		? ({ username })
-		: ({ name });
+		? { username }
+		: { name };
 
 	return request.post(api(endpoints[type]))
 		.set(credentials)
-		.send(params);
+		.send({
+			...params,
+			members,
+		});
 };
 
 export const closeRoom = ({ type, roomId }) => {

@@ -1,28 +1,40 @@
-import { t } from 'meteor/rocketchat:utils';
-import { modal, MessageAction } from 'meteor/rocketchat:ui-utils';
-import { settings } from 'meteor/rocketchat:settings';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
-MessageAction.addButton({
-	id: 'receipt-detail',
-	icon: 'info-circled',
-	label: 'Message_info',
-	context: ['starred', 'message', 'message-mobile'],
-	action() {
-		const message = this._arguments[1];
-		modal.open({
-			title: t('Message_info'),
-			content: 'readReceipts',
-			data: {
-				messageId: message._id,
+import { t } from '../../../app/utils';
+import { modal, MessageAction } from '../../../app/ui-utils';
+import { messageArgs } from '../../../app/ui-utils/client/lib/messageArgs';
+import { settings } from '../../../app/settings';
+
+
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		const enabled = settings.get('Message_Read_Receipt_Store_Users');
+
+		if (!enabled) {
+			return MessageAction.removeButton('receipt-detail');
+		}
+
+		MessageAction.addButton({
+			id: 'receipt-detail',
+			icon: 'info-circled',
+			label: 'Info',
+			context: ['starred', 'message', 'message-mobile', 'threads'],
+			action() {
+				const { msg: message } = messageArgs(this);
+				modal.open({
+					title: t('Info'),
+					content: 'readReceipts',
+					data: {
+						messageId: message._id,
+					},
+					showConfirmButton: true,
+					showCancelButton: false,
+					confirmButtonText: t('Close'),
+				});
 			},
-			showConfirmButton: true,
-			showCancelButton: false,
-			confirmButtonText: t('Close'),
+			order: 10,
+			group: 'menu',
 		});
-	},
-	condition() {
-		return settings.get('Message_Read_Receipt_Store_Users');
-	},
-	order: 1,
-	group: 'menu',
+	});
 });

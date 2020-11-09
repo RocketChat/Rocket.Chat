@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Subscriptions } from 'meteor/rocketchat:models';
+
+import { Subscriptions } from '../../app/models';
 
 Meteor.methods({
 	toggleFavorite(rid, f) {
@@ -17,7 +18,7 @@ Meteor.methods({
 		if (!userSubscription) {
 			throw new Meteor.Error('error-invalid-subscription',
 				'You must be part of a room to favorite it',
-				{ method: 'toggleFavorite' }
+				{ method: 'toggleFavorite' },
 			);
 		}
 
