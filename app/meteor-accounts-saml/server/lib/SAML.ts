@@ -73,7 +73,7 @@ export class SAML {
 	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
 		// @ts-ignore RegExp.escape is a meteor method
 		const escapeRegexp = (email: string): string => RegExp.escape(email);
-		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite } = SAMLUtils.globalSettings;
+		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate } = SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
@@ -145,7 +145,7 @@ export class SAML {
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Users.findOne(userId);
 
-			if (userObject.channels) {
+			if (userObject.channels && channelsAttributeUpdate !== true) {
 				SAML.subscribeToSAMLChannels(userObject.channels, user);
 			}
 		}
@@ -185,6 +185,10 @@ export class SAML {
 
 		if (roleAttributeSync) {
 			updateData.roles = globalRoles;
+		}
+
+		if (userObject.channels && channelsAttributeUpdate === true) {
+			SAML.subscribeToSAMLChannels(userObject.channels, user);
 		}
 
 		Users.update({
@@ -445,6 +449,7 @@ export class SAML {
 	}
 
 	private static subscribeToSAMLChannels(channels: Array<string>, user: IUser): void {
+		const { includePrivateChannelsInUpdate } = SAMLUtils.globalSettings;
 		try {
 			for (let roomName of channels) {
 				roomName = roomName.trim();
@@ -453,15 +458,24 @@ export class SAML {
 				}
 
 				const room = Rooms.findOneByNameAndType(roomName, 'c', {});
-				if (!room) {
+				const priv_room = Rooms.findOneByNameAndType(roomName, 'p', {});
+
+				if (priv_room && includePrivateChannelsInUpdate === true) {
+					addUserToRoom(priv_room._id, user);
+					continue;
+				}
+
+				if (room) {
+					addUserToRoom(room._id, user);
+					continue;
+				}
+
+				if (!room && !priv_room) {
 					// If the user doesn't have an username yet, we can't create new rooms for them
 					if (user.username) {
 						createRoom('c', roomName, user.username);
 					}
-					continue;
 				}
-
-				addUserToRoom(room._id, user);
 			}
 		} catch (err) {
 			console.error(err);

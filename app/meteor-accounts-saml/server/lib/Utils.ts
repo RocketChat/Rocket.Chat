@@ -27,6 +27,8 @@ const globalSettings: ISAMLGlobalSettings = {
 	roleAttributeSync: false,
 	userDataFieldMap: '{"username":"username", "email":"email", "cn": "name"}',
 	usernameNormalize: 'None',
+	channelsAttributeUpdate: false,
+	includePrivateChannelsInUpdate: false,
 };
 
 export class SAMLUtils {
@@ -73,6 +75,8 @@ export class SAMLUtils {
 		globalSettings.nameOverwrite = Boolean(samlConfigs.nameOverwrite);
 		globalSettings.mailOverwrite = Boolean(samlConfigs.mailOverwrite);
 		globalSettings.roleAttributeSync = Boolean(samlConfigs.roleAttributeSync);
+		globalSettings.channelsAttributeUpdate = Boolean(samlConfigs.channelsAttributeUpdate);
+		globalSettings.includePrivateChannelsInUpdate = Boolean(samlConfigs.includePrivateChannelsInUpdate);
 
 		if (samlConfigs.immutableProperty && typeof samlConfigs.immutableProperty === 'string') {
 			globalSettings.immutableProperty = samlConfigs.immutableProperty;
