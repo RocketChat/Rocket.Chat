@@ -12,7 +12,7 @@ export class AppSchedulerBridge {
 		this.scheduler = new Agenda({
 			mongo: MongoInternals.defaultRemoteCollectionDriver().mongo.client.db(),
 			db: { collection: 'rocketchat_apps_scheduler' },
-                        // this ensures the same job doesn't get executed multiple times in a cluster 
+			// this ensures the same job doesn't get executed multiple times in a cluster
 			defaultConcurrency: 1,
 		});
 		this.isConnected = false;
@@ -30,7 +30,7 @@ export class AppSchedulerBridge {
 						runAfterRegister.push(this.scheduleOnceAfterRegister({ id, when: startupSetting.when, data: startupSetting.data }, appId));
 						break;
 					case StartupType.RECURRING:
-						runAfterRegister.push(this.scheduleRecurring({ id, cron: startupSetting.cron, data: startupSetting.data }, appId));
+						runAfterRegister.push(this.scheduleRecurring({ id, interval: startupSetting.interval, data: startupSetting.data }, appId));
 						break;
 					default:
 						break;
@@ -59,7 +59,7 @@ export class AppSchedulerBridge {
 	async scheduleRecurring(job, appId) {
 		this.orch.debugLog(`The App ${ appId } is scheduling a recurring job`, job);
 		await this.startScheduler();
-		await this.scheduler.every(job.cron, job.id, job.data || {});
+		await this.scheduler.every(job.interval, job.id, job.data || {});
 	}
 
 	async cancelJob(jobId, appId) {
