@@ -63,7 +63,8 @@ export function withData(WrappedComponent) {
 						...newThreads.map((msg) => [msg._id, msg]),
 					]).values(),
 				)
-					.sort((a, b) => a.tlm.getTime() - b.tlm.getTime()),
+					.sort((a, b) => a.tlm.getTime() - b.tlm.getTime())
+					.reverse(),
 			[],
 		);
 
@@ -92,7 +93,7 @@ export function withData(WrappedComponent) {
 					count,
 				}));
 			}
-		}, [getThreadsList, mergeThreads]);
+		}, [getThreadsList, mergeThreads, threads]);
 
 		const debouncedText = useDebouncedValue(text, 400);
 		useEffect(() => {
