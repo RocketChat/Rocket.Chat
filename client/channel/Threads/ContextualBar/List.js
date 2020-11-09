@@ -63,8 +63,7 @@ export function withData(WrappedComponent) {
 						...newThreads.map((msg) => [msg._id, msg]),
 					]).values(),
 				)
-					.sort((a, b) => a.tlm.getTime() - b.tlm.getTime())
-					.reverse(),
+					.sort((a, b) => b.tlm.getTime() - a.tlm.getTime()),
 			[],
 		);
 
