@@ -11,7 +11,22 @@ export class TOTPCheck implements ICodeCheck {
 			return false;
 		}
 
+		// #ToDo: re-implement this code
+		const currentLoginIsByTwoFactor = false;
+		// const currentLoginIsByTwoFactor = login.methodArguments && login.methodArguments[0] && login.methodArguments[0].totp;
+		const twoFactorEnabledToUser = user.services?.totp?.enabled === true;
+		if (!settings.get('Accounts_TwoFactorAuthentication_Enabled') || (!currentLoginIsByTwoFactor && !twoFactorEnabledToUser)) {
+			return;
+		}
+
 		return user.services?.totp?.enabled === true;
+
+		// if (currentLoginIsByTwoFactor && !twoFactorEnabledToUser) {
+		// 	throw new Meteor.Error('totp-disabled', 'You do not have 2FA login enabled for your user');
+		// }
+		// if (login.type === 'password' && twoFactorEnabledToUser && !currentLoginIsByTwoFactor) {
+		// 	throw new Meteor.Error('totp-required', 'TOTP Required');
+		// }
 	}
 
 	public verify(user: IUser, code: string): boolean {

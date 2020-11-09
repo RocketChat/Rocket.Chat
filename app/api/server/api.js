@@ -432,6 +432,7 @@ export class APIClass extends Restivus {
 		const loginCompatibility = (bodyParams, request) => {
 			// Grab the username or email that the user is logging in with
 			const { user, username, email, password, code: bodyCode } = bodyParams;
+			let usernameToLDAPLogin = '';
 
 			if (password == null) {
 				return bodyParams;
@@ -449,10 +450,13 @@ export class APIClass extends Restivus {
 
 			if (typeof user === 'string') {
 				auth.user = user.includes('@') ? { email: user } : { username: user };
+				usernameToLDAPLogin = user;
 			} else if (username) {
 				auth.user = { username };
+				usernameToLDAPLogin = username;
 			} else if (email) {
 				auth.user = { email };
+				usernameToLDAPLogin = email;
 			}
 
 			if (auth.user == null) {
@@ -466,11 +470,21 @@ export class APIClass extends Restivus {
 				};
 			}
 
+			const objectToLDAPLogin = {
+				ldap: true,
+				username: usernameToLDAPLogin,
+				ldapPass: auth.password,
+				ldapOptions: {},
+			};
+			if (settings.get('LDAP_Enable') && !code) {
+				return objectToLDAPLogin;
+			}
+
 			if (code) {
 				return {
 					totp: {
 						code,
-						login: auth,
+						login: settings.get('LDAP_Enable') ? objectToLDAPLogin : auth,
 					},
 				};
 			}

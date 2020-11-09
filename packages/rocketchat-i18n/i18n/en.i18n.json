@@ -3616,6 +3616,8 @@
   "Total_visitors": "Total Visitors",
   "totp-invalid": "Code or password invalid",
   "TOTP Invalid [totp-invalid]": "Code or password invalid",
+  "totp-disabled": "You do not have 2FA login enabled for your user",
+  "totp-required": "TOTP Required",
   "Tourism": "Tourism",
   "Transcript": "Transcript",
   "Transcript_Enabled": "Ask Visitor if They Would Like a Transcript After Chat Closed",
