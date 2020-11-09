@@ -59,12 +59,14 @@ const NewTriggerPage = ({ onSave }) => {
 		}
 	});
 
+	const { name } = values;
+
 	return 	<>
 		<FieldGroup>
 			<TriggersForm values={values} handlers={handlers}/>
 		</FieldGroup>
 		<ButtonGroup align='end'>
-			<Button primary onClick={handleSave}>
+			<Button primary onClick={handleSave} disabled={!name}>
 				{t('Save')}
 			</Button>
 		</ButtonGroup>

@@ -72,7 +72,7 @@ const EditTriggerPage = ({ data, onSave }) => {
 
 	const save = useMethod('livechat:saveTrigger');
 
-	const { values, handlers } = useForm(getInitialValues(data));
+	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data));
 
 	const handleSave = useMutableCallback(async () => {
 		try {
@@ -98,12 +98,16 @@ const EditTriggerPage = ({ data, onSave }) => {
 		}
 	});
 
+	const { name } = values;
+
+	const canSave = name && hasUnsavedChanges;
+
 	return 	<>
 		<FieldGroup>
 			<TriggersForm values={values} handlers={handlers}/>
 		</FieldGroup>
 		<ButtonGroup align='end'>
-			<Button primary onClick={handleSave}>
+			<Button primary onClick={handleSave} disabled={!canSave}>
 				{t('Save')}
 			</Button>
 		</ButtonGroup>
