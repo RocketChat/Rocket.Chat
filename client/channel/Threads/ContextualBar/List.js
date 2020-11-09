@@ -93,7 +93,7 @@ export function withData(WrappedComponent) {
 					count,
 				}));
 			}
-		}, [getThreadsList, mergeThreads, threads]);
+		}, [getThreadsList, mergeThreads]);
 
 		const debouncedText = useDebouncedValue(text, 400);
 		useEffect(() => {
