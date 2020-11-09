@@ -51308,6 +51308,48 @@
           ]
         }
       ]
+    },
+    "3.8.0-rc.8": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0-beta.4086",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19416",
+          "title": "Regression: Allow apps to schedule jobs along with processor register",
+          "userLogin": "thassiov",
+          "milestone": "3.8.0",
+          "contributors": [
+            "thassiov",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19484",
+          "title": "Micro Services: Do not wait forever for a service. Fail after 10s or 10 minutes if whitelisted",
+          "userLogin": "rodrigok",
+          "milestone": "3.8.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "19472",
+          "title": "[FIX] OAuth create via environment variable",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.8.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
