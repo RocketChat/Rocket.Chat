@@ -1,6 +1,30 @@
 
 # 3.8.0 (Under Release Candidate Process)
 
+## 3.8.0-rc.7
+`2020-11-09  ·  1 🎉  ·  2 🔍  ·  3 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- Branding updated with new logos ([#19440](https://github.com/RocketChat/Rocket.Chat/pull/19440))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump Livechat widget  ([#19478](https://github.com/RocketChat/Rocket.Chat/pull/19478))
+
+- Regression: Fix setting value not being sent over websocket ([#19477](https://github.com/RocketChat/Rocket.Chat/pull/19477))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.8.0-rc.6
 `2020-11-07  ·  3 🔍  ·  3 👩‍💻👨‍💻`
 
