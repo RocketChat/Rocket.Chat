@@ -1,6 +1,31 @@
 
 # 3.8.0 (Under Release Candidate Process)
 
+## 3.8.0-rc.8
+`2020-11-09  ·  1 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- OAuth create via environment variable ([#19472](https://github.com/RocketChat/Rocket.Chat/pull/19472))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Micro Services: Do not wait forever for a service. Fail after 10s or 10 minutes if whitelisted ([#19484](https://github.com/RocketChat/Rocket.Chat/pull/19484))
+
+- Regression: Allow apps to schedule jobs along with processor register ([#19416](https://github.com/RocketChat/Rocket.Chat/pull/19416))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@rodrigok](https://github.com/rodrigok)
+- [@thassiov](https://github.com/thassiov)
+
 ## 3.8.0-rc.7
 `2020-11-09  ·  1 🎉  ·  2 🔍  ·  3 👩‍💻👨‍💻`
 
