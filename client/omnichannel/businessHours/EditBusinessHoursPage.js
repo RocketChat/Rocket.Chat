@@ -120,7 +120,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 			<BusinessHoursFormContainer
 				data={data.businessHour}
 				saveRef={saveData}
-				onChange={(value) => setHasUnsavedChanges(value)} />
+				onChange={(hasChanges) => setHasUnsavedChanges(hasChanges)} />
 		</Page.ScrollableContentWithShadow>
 	</Page>;
 };
