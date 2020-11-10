@@ -1,17 +1,17 @@
 import React, { useState, useMemo } from 'react';
-import { Button, Box, Callout } from '@rocket.chat/fuselage';
+import { Button, Box, Callout, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import MonitorsTable from './MonitorsTable';
-import Page from '../../../client/components/basic/Page';
-import NotAuthorizedPage from '../../../client/components/NotAuthorizedPage';
-import PageSkeleton from '../../../client/components/PageSkeleton';
-import { useHasLicense } from '../hooks/useHasLicense';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
-import { useMethod } from '../../../client/contexts/ServerContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../client/hooks/useEndpointDataExperimental';
-import { UserAutoComplete } from '../../../client/components/basic/AutoComplete';
+import Page from '../../../../client/components/basic/Page';
+import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
+import PageSkeleton from '../../../../client/components/PageSkeleton';
+import { useHasLicense } from '../../hooks/useHasLicense';
+import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { useMethod } from '../../../../client/contexts/ServerContext';
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
+import { UserAutoComplete } from '../../../../client/components/basic/AutoComplete';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -79,8 +79,13 @@ const MonitorsPage = () => {
 		<Page.Header title={t('Livechat_Monitors')} />
 		<Page.ScrollableContentWithShadow>
 			<Box display='flex' flexDirection='1'>
-				<UserAutoComplete value={username} onChange={setUsername}/>
-				<Button primary onClick={handleAdd} mis='x8'>{t('Add')}</Button>
+				<Field>
+					<Field.Label>{t('Username')}</Field.Label>
+					<Field.Row>
+						<UserAutoComplete value={username} onChange={setUsername}/>
+						<Button primary onClick={handleAdd} mis='x8'>{t('Add')}</Button>
+					</Field.Row>
+				</Field>
 			</Box>
 			<MonitorsTable
 				monitors={data?.monitors}
