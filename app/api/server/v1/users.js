@@ -720,7 +720,9 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user');
 		}
 
-		return API.v1.success(emailCheck.sendEmailCode(getUserForCheck(userId)));
+		emailCheck.sendEmailCode(getUserForCheck(userId));
+
+		return API.v1.success();
 	},
 });
 
