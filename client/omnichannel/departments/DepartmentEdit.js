@@ -16,13 +16,14 @@ import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 import { formsSubscription } from '../additionalForms';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 
 export default function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
 	const { value: data, phase: state, error } = useEndpointData(`livechat/department/${ id }`) || {};
 
-	if ([state].includes('loading')) {
+	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 

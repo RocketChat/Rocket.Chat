@@ -11,6 +11,7 @@ import { LocalTime } from '../../components/basic/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
 import { useRolesDescription } from '../../contexts/AuthorizationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
@@ -28,7 +29,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	ref.current = target;
 
 	const user = useMemo(() => {
-		const loading = state === 'loading';
+		const loading = state === AsyncStatePhase.LOADING;
 		const defaultValue = loading ? undefined : null;
 
 		const { user } = data || { user: {} };

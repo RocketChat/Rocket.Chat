@@ -23,6 +23,7 @@ import VerticalBar from '../../components/basic/VerticalBar';
 import DeleteSuccessModal from '../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 export default function EditOauthAppWithData({ _id, ...props }) {
 	const t = useTranslation();
@@ -34,7 +35,7 @@ export default function EditOauthAppWithData({ _id, ...props }) {
 		reload();
 	}, [reload]);
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <Box pb='x20' maxWidth='x600' w='full' alignSelf='center'>
 			<Skeleton mbs='x8'/>
 			<InputBox.Skeleton w='full'/>

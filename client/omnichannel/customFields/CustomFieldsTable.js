@@ -12,6 +12,7 @@ import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 export function RemoveCustomFieldButton({ _id, reload }) {
 	const removeChat = useMethod('livechat:removeCustomField');
@@ -120,7 +121,7 @@ const CustomFieldsTableContainer = () => {
 
 	const { value: data, phase: state, reload } = useEndpointData(`livechat/custom-fields?count=${ params.itemsPerPage }&offset=${ params.current }`);
 
-	if (state === 'rejected') {
+	if (state === AsyncStatePhase.REJECTED) {
 		return <Callout>
 			{t('Error')}: error
 		</Callout>;

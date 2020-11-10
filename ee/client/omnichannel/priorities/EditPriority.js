@@ -10,6 +10,7 @@ import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 
 
 export function PriorityEditWithData({ priorityId, reload }) {
@@ -18,7 +19,7 @@ export function PriorityEditWithData({ priorityId, reload }) {
 
 	const t = useTranslation();
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton/>;
 	}
 

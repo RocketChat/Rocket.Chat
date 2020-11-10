@@ -10,6 +10,7 @@ import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 
 
 export function UnitEditWithData({ unitId, reload, allUnits }) {
@@ -21,7 +22,7 @@ export function UnitEditWithData({ unitId, reload, allUnits }) {
 
 	const t = useTranslation();
 
-	if ([state, availableDepartmentsState, availableMonitorsState, unitMonitorsState].includes('loading')) {
+	if ([state, availableDepartmentsState, availableMonitorsState, unitMonitorsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 
@@ -47,7 +48,7 @@ export function UnitNew({ reload, allUnits }) {
 	const { value: availableDepartments, phase: availableDepartmentsState, error: availableDepartmentsError } = useEndpointData('livechat/department');
 	const { value: availableMonitors, phase: availableMonitorsState, error: availableMonitorsError } = useEndpointData('livechat/monitors.list');
 
-	if ([availableDepartmentsState, availableMonitorsState].includes('loading')) {
+	if ([availableDepartmentsState, availableMonitorsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 

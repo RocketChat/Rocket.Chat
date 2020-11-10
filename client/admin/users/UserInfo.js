@@ -12,6 +12,7 @@ import { UserInfoActions } from './UserInfoActions';
 import { FormSkeleton } from './Skeleton';
 import { getUserEmailAddress } from '../../lib/getUserEmailAddress';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 export function UserInfoWithData({ uid, username, ...props }) {
 	const t = useTranslation();
@@ -55,7 +56,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 		};
 	}, [approveManuallyUsers, data, showRealNames]);
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton/>;
 	}
 

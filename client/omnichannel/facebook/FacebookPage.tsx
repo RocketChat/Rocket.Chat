@@ -8,6 +8,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useMethodData } from '../../hooks/useMethodData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 type OnToggleProps = { onToggle: (id: string, isSubscribed: boolean, setSubscribed: Dispatch<boolean>) => void };
 
@@ -115,11 +116,11 @@ const FacebookPageContainer: FC = () => {
 		}
 	});
 
-	if (state === 'loading' || listState === 'loading') {
+	if (state === AsyncStatePhase.LOADING || listState === AsyncStatePhase.LOADING) {
 		return <PageSkeleton />;
 	}
 
-	if (state === 'rejected') {
+	if (state === AsyncStatePhase.REJECTED) {
 		return <Page>
 			<Page.Header title={t('Edit_Custom_Field')} />
 			<Page.ScrollableContentWithShadow>
@@ -130,7 +131,7 @@ const FacebookPageContainer: FC = () => {
 		</Page>;
 	}
 
-	if (enabled && hasToken && listState === 'rejected') {
+	if (enabled && hasToken && listState === AsyncStatePhase.REJECTED) {
 		onEnable();
 	}
 

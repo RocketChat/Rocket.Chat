@@ -10,13 +10,14 @@ import { useForm } from '../../hooks/useForm';
 import UserForm from './UserForm';
 import { FormSkeleton } from './Skeleton';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 export function EditUserWithData({ uid, ...props }) {
 	const t = useTranslation();
 	const { value: roleData, phase: roleState, error: roleError } = useEndpointData('roles.list', '');
 	const { value: data, phase: state, error } = useEndpointData('users.info', useMemo(() => ({ userId: uid }), [uid]));
 
-	if ([state, roleState].includes('loading')) {
+	if ([state, roleState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 

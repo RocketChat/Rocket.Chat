@@ -12,6 +12,7 @@ import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesC
 import { useMethod } from '../../../client/contexts/ServerContext';
 import { UserAutoComplete } from '../../../client/components/basic/AutoComplete';
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../client/hooks/useAsyncState';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -69,7 +70,7 @@ const MonitorsPage = () => {
 		}
 	});
 
-	if (state === 'rejected') {
+	if (state === AsyncStatePhase.REJECTED) {
 		return <Callout>
 			{t('Error')}
 		</Callout>;

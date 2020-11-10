@@ -14,6 +14,7 @@ import { getUserEmailAddress } from '../../lib/getUserEmailAddress';
 import { useRoute } from '../../contexts/RouterContext';
 import { formsSubscription } from '../additionalForms';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 
 export default function AgentEditWithData({ uid, reload }) {
@@ -22,7 +23,7 @@ export default function AgentEditWithData({ uid, reload }) {
 	const { value: userDepartments, phase: userDepartmentsState, error: userDepartmentsError } = useEndpointData(`livechat/agents/${ uid }/departments`);
 	const { value: availableDepartments, phase: availableDepartmentsState, error: availableDepartmentsError } = useEndpointData('livechat/department');
 
-	if ([state, availableDepartmentsState, userDepartmentsState].includes('loading')) {
+	if ([state, availableDepartmentsState, userDepartmentsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 

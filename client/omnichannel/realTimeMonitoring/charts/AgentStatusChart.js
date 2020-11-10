@@ -5,6 +5,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { drawDoughnutChart } from '../../../../app/livechat/client/lib/chartHandler';
 import { useUpdateChartData } from './useUpdateChartData';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 const labels = ['Available', 'Away', 'Busy', 'Offline'];
 
@@ -58,7 +59,7 @@ const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 	}, [t]);
 
 	useEffect(() => {
-		if (state === 'resolved') {
+		if (state === AsyncStatePhase.RESOLVED) {
 			updateChartData('Offline', [offline]);
 			updateChartData('Available', [available]);
 			updateChartData('Away', [away]);

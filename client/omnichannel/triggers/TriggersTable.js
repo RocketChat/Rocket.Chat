@@ -11,6 +11,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 const TriggersRow = memo(function TriggersRow(props) {
 	const {
@@ -102,7 +103,7 @@ const TriggersTableContainer = ({ reloadRef }) => {
 
 	reloadRef.current = reload;
 
-	if (state === 'rejected') {
+	if (state === AsyncStatePhase.REJECTED) {
 		return <Callout>
 			{t('Error')}: error
 		</Callout>;

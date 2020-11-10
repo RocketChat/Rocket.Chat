@@ -13,6 +13,7 @@ import { useMethod } from '../../contexts/ServerContext';
 import { formsSubscription } from '../additionalForms';
 import { useForm } from '../../hooks/useForm';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 const getInitialValues = (cf) => ({
 	field: cf._id,
@@ -28,7 +29,7 @@ const EditCustomFieldsPageContainer = () => {
 
 	const { value: data, phase: state, error } = useEndpointData(`livechat/custom-fields/${ id }`);
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <PageSkeleton />;
 	}
 

@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+export const enum AsyncStatePhase {
+	LOADING = 'loading',
+	RESOLVED = 'resolved',
+	REJECTED = 'rejected',
+}
+
 export type AsyncState<T> = (
-	{ phase: 'loading'; value: undefined; error: undefined } |
-	{ phase: 'loading'; value: T; error: undefined } |
-	{ phase: 'loading'; value: undefined; error: Error } |
-	{ phase: 'resolved'; value: T; error: undefined } |
-	{ phase: 'rejected'; value: undefined; error: Error }
+	{ phase: AsyncStatePhase.LOADING; value: undefined; error: undefined } |
+	{ phase: AsyncStatePhase.LOADING; value: T; error: undefined } |
+	{ phase: AsyncStatePhase.LOADING; value: undefined; error: Error } |
+	{ phase: AsyncStatePhase.RESOLVED; value: T; error: undefined } |
+	{ phase: AsyncStatePhase.REJECTED; value: undefined; error: Error }
 );
 
 type AsyncStateObject<T> = AsyncState<T> & {
@@ -18,14 +24,14 @@ export const useAsyncState = <T>(initialValue?: T | (() => T)): AsyncStateObject
 	const [state, setState] = useState<AsyncState<T>>(() => {
 		if (typeof initialValue === 'undefined') {
 			return {
-				phase: 'loading',
+				phase: AsyncStatePhase.LOADING,
 				value: undefined,
 				error: undefined,
 			};
 		}
 
 		return {
-			phase: 'resolved',
+			phase: AsyncStatePhase.RESOLVED,
 			value: typeof initialValue === 'function'
 				? (initialValue as () => T)()
 				: initialValue,
@@ -48,12 +54,12 @@ export const useAsyncState = <T>(initialValue?: T | (() => T)): AsyncStateObject
 		}
 
 		setState((state) => {
-			if (state.phase !== 'loading') {
+			if (state.phase !== AsyncStatePhase.LOADING) {
 				return state;
 			}
 
 			return {
-				phase: 'resolved',
+				phase: AsyncStatePhase.RESOLVED,
 				value: typeof value === 'function' ? (value as (prev: T | undefined) => T)(state.value) : value,
 				error: undefined,
 			};
@@ -66,12 +72,12 @@ export const useAsyncState = <T>(initialValue?: T | (() => T)): AsyncStateObject
 		}
 
 		setState((state) => {
-			if (state.phase !== 'loading') {
+			if (state.phase !== AsyncStatePhase.LOADING) {
 				return state;
 			}
 
 			return {
-				phase: 'rejected',
+				phase: AsyncStatePhase.REJECTED,
 				value: undefined,
 				error,
 			};
@@ -85,19 +91,19 @@ export const useAsyncState = <T>(initialValue?: T | (() => T)): AsyncStateObject
 
 		setState((state) => {
 			switch (state.phase) {
-				case 'loading':
+				case AsyncStatePhase.LOADING:
 					return state;
 
-				case 'resolved':
+				case AsyncStatePhase.RESOLVED:
 					return {
-						phase: 'loading',
+						phase: AsyncStatePhase.LOADING,
 						value: state.value,
 						error: state.error,
 					};
 
-				case 'rejected':
+				case AsyncStatePhase.REJECTED:
 					return {
-						phase: 'loading',
+						phase: AsyncStatePhase.LOADING,
 						value: undefined,
 						error: state.error,
 					};

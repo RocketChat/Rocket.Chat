@@ -4,6 +4,7 @@ import { Field, TextInput, ToggleSwitch, MultiSelectFiltered, Box, Skeleton } fr
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 
 const mapDepartments = (departments) => departments.map(({ _id }) => _id);
 
@@ -22,7 +23,7 @@ const BusinessHoursMultipleContainer = ({ onChange, data: initialData, className
 
 	const departmentList = useMemo(() => data && data.departments?.map(({ _id, name }) => [_id, name]), [data]);
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <>
 			<Skeleton />
 			<Skeleton />

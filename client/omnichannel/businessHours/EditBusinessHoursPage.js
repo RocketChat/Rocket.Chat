@@ -12,6 +12,7 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { mapBusinessHoursForm } from './mapBusinessHoursForm';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 const EditBusinessHoursPage = ({ id, type }) => {
 	const t = useTranslation();
@@ -28,7 +29,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 	const router = useRoute('omnichannel-businessHours');
 
 	const handleSave = useMutableCallback(async () => {
-		if (state !== 'resolved' || !data.success) {
+		if (state !== AsyncStatePhase.RESOLVED || !data.success) {
 			return;
 		}
 
@@ -81,11 +82,11 @@ const EditBusinessHoursPage = ({ id, type }) => {
 		router.push({});
 	});
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <PageSkeleton />;
 	}
 
-	if (state === 'rejected' || ('resolved' && !data.businessHour)) {
+	if (state === AsyncStatePhase.REJECTED || (AsyncStatePhase.RESOLVED && !data.businessHour)) {
 		return <Page>
 			<Page.Header title={t('Business_Hours')}>
 				<Button onClick={handleReturn}>

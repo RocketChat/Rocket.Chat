@@ -5,6 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import EditCustomEmoji from './EditCustomEmoji';
 import { EmojiDescriptor } from './types';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 type EditCustomEmojiWithDataProps = {
 	_id: string;
@@ -31,7 +32,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 		};
 	}>('emoji-custom.list', query);
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <Box pb='x20'>
 			<Skeleton mbs='x8'/>
 			<InputBox.Skeleton w='full'/>

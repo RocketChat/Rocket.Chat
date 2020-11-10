@@ -13,6 +13,7 @@ import PageSkeleton from '../../components/PageSkeleton';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { ISetting } from '../../../definition/ISetting';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 type LivechatAppearanceEndpointData = {
 	success: boolean;
@@ -60,7 +61,7 @@ const AppearancePageContainer: FC = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <PageSkeleton />;
 	}
 

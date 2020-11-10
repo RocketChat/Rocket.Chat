@@ -21,6 +21,7 @@ import { useSetting } from '../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
 import { clickableItem } from '../../helpers/clickableItem';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
@@ -63,7 +64,7 @@ export function withData(WrappedComponent) {
 		useEffect(() => () => Discussions.current.remove({}, () => {}), [text]);
 
 		useEffect(() => {
-			if (state !== 'resolved' || !data || !data.messages) {
+			if (state !== AsyncStatePhase.RESOLVED || !data || !data.messages) {
 				return;
 			}
 
@@ -115,7 +116,7 @@ export function withData(WrappedComponent) {
 			error={error}
 			discussions={discussions}
 			total={total}
-			loading={state === 'loading'}
+			loading={state === AsyncStatePhase.LOADING}
 			loadMoreItems={loadMoreItems}
 			room={room}
 			text={text}

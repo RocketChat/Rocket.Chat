@@ -4,6 +4,7 @@ import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.
 import { useTranslation } from '../../contexts/TranslationContext';
 import EditCustomUserStatus from './EditCustomUserStatus';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 type EditCustomUserStatusWithDataProps = {
 	_id: string;
@@ -19,7 +20,7 @@ export const EditCustomUserStatusWithData: FC<EditCustomUserStatusWithDataProps>
 		statuses: unknown[];
 	}>('custom-user-status.list', query);
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <Box pb='x20'>
 			<Skeleton mbs='x8'/>
 			<InputBox.Skeleton w='full'/>

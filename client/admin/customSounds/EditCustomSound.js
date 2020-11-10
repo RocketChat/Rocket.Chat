@@ -11,13 +11,14 @@ import VerticalBar from '../../components/basic/VerticalBar';
 import DeleteSuccessModal from '../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 function EditCustomSound({ _id, onChange, ...props }) {
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
 	const { value: data, phase: state, error, reload } = useEndpointData('custom-sounds.list', query);
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <Box pb='x20'>
 			<Skeleton mbs='x8'/>
 			<InputBox.Skeleton w='full'/>

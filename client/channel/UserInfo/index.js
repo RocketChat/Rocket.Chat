@@ -11,6 +11,7 @@ import VerticalBar from '../../components/basic/VerticalBar';
 import UserActions from './actions/UserActions';
 import { useRolesDescription } from '../../contexts/AuthorizationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClose, video, showBackButton, ...props }) {
 	const t = useTranslation();
@@ -72,7 +73,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 				(error && <VerticalBar.Content>
 					<Box mbs='x16'>{t('User_not_found')}</Box>
 				</VerticalBar.Content>)
-				|| (state === 'loading' && <VerticalBar.Content>
+				|| (state === AsyncStatePhase.LOADING && <VerticalBar.Content>
 					<FormSkeleton />
 				</VerticalBar.Content>)
 				|| <UserInfo

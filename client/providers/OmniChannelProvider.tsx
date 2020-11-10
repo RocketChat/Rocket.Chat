@@ -12,6 +12,7 @@ import { useSetting } from '../contexts/SettingsContext';
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { useMethodData } from '../hooks/useMethodData';
+import { AsyncStatePhase } from '../hooks/useAsyncState';
 
 const args = [] as any;
 
@@ -85,7 +86,7 @@ const OmnichannelEnabledProvider: FC = ({ children }) => {
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
 
 	useEffect(() => {
-		status !== 'loading' && reload();
+		status !== AsyncStatePhase.LOADING && reload();
 	}, [omnichannelRouting, reload]); // eslint-disable-line
 
 	useEffect(() => {

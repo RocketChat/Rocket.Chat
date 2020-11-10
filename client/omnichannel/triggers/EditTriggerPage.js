@@ -10,16 +10,17 @@ import { useForm } from '../../hooks/useForm';
 import { useRoute } from '../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 const EditTriggerPageContainer = ({ id, onSave }) => {
 	const t = useTranslation();
 	const { value: data, phase: state } = useEndpointData(`livechat/triggers/${ id }`);
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <PageSkeleton />;
 	}
 
-	if (state === 'rejected' || !data?.trigger) {
+	if (state === AsyncStatePhase.REJECTED || !data?.trigger) {
 		return <Callout>
 			{t('Error')}: error
 		</Callout>;

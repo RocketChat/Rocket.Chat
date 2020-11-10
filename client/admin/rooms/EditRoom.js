@@ -15,6 +15,7 @@ import { useMethod } from '../../contexts/ServerContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 const getInitialValues = (room) => ({
 	roomName: room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, { type: room.t, ...room }),
@@ -38,7 +39,7 @@ export function EditRoomContextBar({ rid }) {
 function EditRoomWithData({ rid }) {
 	const { value: data = {}, phase: state, error, reload } = useEndpointData('rooms.adminRooms.getRoom', useMemo(() => ({ rid }), [rid]));
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <Box w='full' pb='x24'>
 			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
@@ -49,7 +50,7 @@ function EditRoomWithData({ rid }) {
 		</Box>;
 	}
 
-	if (state === 'rejected') {
+	if (state === AsyncStatePhase.REJECTED) {
 		return error.message;
 	}
 

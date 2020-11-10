@@ -5,6 +5,7 @@ import { useUpdateChartData } from './useUpdateChartData';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 const initialData = {
 	departments: {},
@@ -51,7 +52,7 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 	}, [t]);
 
 	useEffect(() => {
-		if (state === 'resolved') {
+		if (state === AsyncStatePhase.RESOLVED) {
 			Object.entries(departments).forEach(([name, value]) => {
 				updateChartData(name, [value.open, value.closed]);
 			});

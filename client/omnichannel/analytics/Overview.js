@@ -5,6 +5,7 @@ import CounterItem from '../realTimeMonitoring/counter/CounterItem';
 import CounterRow from '../realTimeMonitoring/counter/CounterRow';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethodData } from '../../hooks/useMethodData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 const initialData = Array.from({ length: 3 }).map(() => ({ title: '', value: '' }));
 
@@ -31,7 +32,7 @@ const Overview = ({ type, dateRange, departmentId }) => {
 	}, [type]);
 
 	useEffect(() => {
-		if (phase === 'resolved') {
+		if (phase === AsyncStatePhase.RESOLVED) {
 			if (value?.length > 3) {
 				setDisplayData([value.slice(0, 3), value.slice(3)]);
 			} else if (value) {

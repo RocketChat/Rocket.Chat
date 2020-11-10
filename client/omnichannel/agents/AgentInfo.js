@@ -9,6 +9,7 @@ import { UserStatus } from '../../components/basic/UserStatus';
 import { FormSkeleton } from './Skeleton';
 import { formsSubscription } from '../additionalForms';
 import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 
 export const AgentInfo = React.memo(function AgentInfo({
@@ -26,7 +27,7 @@ export const AgentInfo = React.memo(function AgentInfo({
 
 	const MaxChats = useMaxChatsPerAgentDisplay();
 
-	if (state === 'loading') {
+	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton/>;
 	}
 

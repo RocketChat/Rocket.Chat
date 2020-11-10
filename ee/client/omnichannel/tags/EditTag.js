@@ -10,6 +10,7 @@ import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 
 
 export function TagEditWithData({ tagId, reload }) {
@@ -19,7 +20,7 @@ export function TagEditWithData({ tagId, reload }) {
 
 	const t = useTranslation();
 
-	if ([state, availableDepartmentsState].includes('loading')) {
+	if ([state, availableDepartmentsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 
@@ -35,7 +36,7 @@ export function TagNew({ reload }) {
 
 	const { value: availableDepartments, phase: availableDepartmentsState, error: availableDepartmentsError } = useEndpointData('livechat/department');
 
-	if (availableDepartmentsState === 'loading') {
+	if (availableDepartmentsState === AsyncStatePhase.LOADING) {
 		return <FormSkeleton/>;
 	}
 

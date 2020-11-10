@@ -18,6 +18,7 @@ import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../contexts/ServerContext';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -46,7 +47,7 @@ export function withData(WrappedComponent) {
 			threads,
 			count,
 		}, setState] = useState(() => ({
-			state: 'loading',
+			state: AsyncStatePhase.LOADING,
 			error: null,
 			threads: [],
 			count: 0,
@@ -78,14 +79,14 @@ export function withData(WrappedComponent) {
 				});
 
 				setState(({ threads }) => ({
-					state: 'resolved',
+					state: AsyncStatePhase.RESOLVED,
 					error: null,
 					threads: mergeThreads(offset === 0 ? [] : threads, data.threads.map(filterProps)),
 					count: data.total,
 				}));
 			} catch (error) {
 				setState(({ threads, count }) => ({
-					state: 'rejected',
+					state: AsyncStatePhase.REJECTED,
 					error,
 					threads,
 					count,
@@ -125,7 +126,7 @@ export function withData(WrappedComponent) {
 			error={error}
 			threads={threads}
 			total={count}
-			loading={state === 'loading'}
+			loading={state === AsyncStatePhase.LOADING}
 			loadMoreItems={loadMoreItems}
 			room={room}
 			text={text}

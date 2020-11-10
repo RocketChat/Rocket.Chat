@@ -7,6 +7,7 @@ import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler'
 import { getMomentChartLabelsAndData } from './getMomentChartLabelsAndData';
 import { getMomentCurrentLabel } from './getMomentCurrentLabel';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
 
@@ -59,7 +60,7 @@ const ChatDurationChart = ({ params, reloadRef, ...props }) => {
 	}, [t]);
 
 	useEffect(() => {
-		if (state === 'resolved') {
+		if (state === AsyncStatePhase.RESOLVED) {
 			const label = getMomentCurrentLabel();
 			updateChartData(label, [avg, longest]);
 		}
