@@ -51350,6 +51350,45 @@
           ]
         }
       ]
+    },
+    "3.8.0-rc.9": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19499",
+          "title": "Update Apps-Engine to latest release",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "19494",
+          "title": "Remove unecessary return at the send code api",
+          "userLogin": "rodrigok",
+          "milestone": "3.8.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "19486",
+          "title": "Regression: Fix Thread List order",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
