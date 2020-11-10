@@ -5,13 +5,13 @@ import { Table, Icon } from '@rocket.chat/fuselage';
 
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
 import EditDepartmentWithData from './DepartmentEdit';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 export function RemoveDepartmentButton({ _id, reload }) {
 	const deleteAction = useEndpointAction('DELETE', `livechat/department/${ _id }`);
@@ -67,7 +67,7 @@ function DepartmentsRoute() {
 		id,
 	}));
 
-	const { data, reload } = useEndpointDataExperimental('livechat/department', query) || {};
+	const { value: data = {}, reload } = useEndpointData('livechat/department', query);
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</GenericTable.HeaderCell>,

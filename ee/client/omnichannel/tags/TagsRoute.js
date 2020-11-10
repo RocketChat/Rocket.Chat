@@ -6,7 +6,6 @@ import { Table, Icon, Button } from '@rocket.chat/fuselage';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../../../client/hooks/useEndpointDataExperimental';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
@@ -17,6 +16,7 @@ import { TagEditWithData, TagNew } from './EditTag';
 import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
 import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
 export function RemoveTagButton({ _id, reload }) {
 	const removeTag = useMethod('livechat:removeTag');
@@ -96,7 +96,7 @@ function TagsRoute() {
 		id,
 	}));
 
-	const { data, reload } = useEndpointDataExperimental('livechat/tags.list', query) || {};
+	const { value: data = {}, reload } = useEndpointData('livechat/tags.list', query);
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</GenericTable.HeaderCell>,

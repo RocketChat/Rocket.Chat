@@ -2,8 +2,8 @@ import React, { useMemo, FC } from 'react';
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import EditCustomUserStatus from './EditCustomUserStatus';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 type EditCustomUserStatusWithDataProps = {
 	_id: string;
@@ -15,11 +15,11 @@ export const EditCustomUserStatusWithData: FC<EditCustomUserStatusWithDataProps>
 	const t = useTranslation();
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { data, state, error, reload } = useEndpointDataExperimental<{
+	const { value: data, phase: state, error, reload } = useEndpointData<{
 		statuses: unknown[];
 	}>('custom-user-status.list', query);
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === 'loading') {
 		return <Box pb='x20'>
 			<Skeleton mbs='x8'/>
 			<InputBox.Skeleton w='full'/>

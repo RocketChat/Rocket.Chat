@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useEndpointDataExperimental } from '../../../hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 import CounterContainer from '../counter/CounterContainer';
 
 const defaultValue = { title: '', value: '00:00:00' };
@@ -14,7 +14,7 @@ const initialData = [
 ];
 
 const ProductivityOverview = ({ params, reloadRef, ...props }) => {
-	const { data, state, reload } = useEndpointDataExperimental(
+	const { value: data, phase: state, reload } = useEndpointData(
 		'livechat/analytics/dashboards/productivity-totalizers',
 		params,
 	);

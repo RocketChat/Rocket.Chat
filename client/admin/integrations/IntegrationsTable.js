@@ -5,8 +5,8 @@ import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -74,7 +74,7 @@ export function IntegrationsTable({ type }) {
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery({ ...params, text: debouncedText, type }, debouncedSort);
 
-	const { data } = useEndpointDataExperimental('integrations.list', query);
+	const { value: data } = useEndpointData('integrations.list', query);
 
 	const router = useRoute('admin-integrations');
 

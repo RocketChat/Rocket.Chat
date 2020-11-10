@@ -4,11 +4,11 @@ import { useSubscription } from 'use-subscription';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from '../../components/basic/VerticalBar';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { UserInfo } from '../../components/basic/UserInfo';
 import { UserStatus } from '../../components/basic/UserStatus';
 import { FormSkeleton } from './Skeleton';
 import { formsSubscription } from '../additionalForms';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 
 export const AgentInfo = React.memo(function AgentInfo({
@@ -17,7 +17,7 @@ export const AgentInfo = React.memo(function AgentInfo({
 	...props
 }) {
 	const t = useTranslation();
-	const { data, state, error } = useEndpointDataExperimental(`livechat/users/agent/${ uid }`);
+	const { value: data, phase: state, error } = useEndpointData(`livechat/users/agent/${ uid }`);
 	const eeForms = useSubscription(formsSubscription);
 
 	const {
@@ -26,7 +26,7 @@ export const AgentInfo = React.memo(function AgentInfo({
 
 	const MaxChats = useMaxChatsPerAgentDisplay();
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === 'loading') {
 		return <FormSkeleton/>;
 	}
 

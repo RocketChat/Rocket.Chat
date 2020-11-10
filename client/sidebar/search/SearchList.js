@@ -10,12 +10,12 @@ import tinykeys from 'tinykeys';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useMethodData, AsyncState } from '../../contexts/ServerContext';
 import { roomTypes } from '../../../app/utils';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { itemSizeMap, SideBarItemTemplateWithData } from '../RoomList';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { useMethodData } from '../../hooks/useMethodData';
 
 const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended) => ({
 	items,
@@ -81,14 +81,14 @@ const useSpotlight = (filterText = '', usernames) => {
 	}, [searchForChannels, searchForDMs]);
 	const args = useMemo(() => [name, usernames, type], [type, name, usernames]);
 
-	const [data = { users: [], rooms: [] }, status] = useMethodData('spotlight', args);
+	const { value: data = { users: [], rooms: [] }, phase: status } = useMethodData('spotlight', args);
 
 	return useMemo(() => {
 		if (!data) {
-			return { data: { users: [], rooms: [] }, status: AsyncState.LOADING };
+			return { data: { users: [], rooms: [] }, status: 'loading' };
 		}
 		return { data, status };
-	}, [data]);
+	}, [data, status]);
 };
 
 const options = {
@@ -271,7 +271,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		<Sidebar.TopBar.Section role='search' is='form'>
 			<TextInput aria-owns={listId} data-qa='sidebar-search-input' ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
 		</Sidebar.TopBar.Section>
-		<Box aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncState.DONE}>
+		<Box aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== 'resolved'}>
 			<List
 				height={blockSize}
 				itemCount={items?.length}

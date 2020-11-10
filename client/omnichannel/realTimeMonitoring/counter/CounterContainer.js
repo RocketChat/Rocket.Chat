@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Skeleton } from '@rocket.chat/fuselage';
 
-import { ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import CounterRow from './CounterRow';
 import CounterItem from './CounterItem';
@@ -16,7 +15,7 @@ const CounterContainer = ({ data, state, initialData, ...props }) => {
 	} = data || { totalizers: initialData };
 
 	useEffect(() => {
-		if (state === ENDPOINT_STATES.DONE) {
+		if (state === 'resolved') {
 			setDisplayData(totalizers);
 		}
 	}, [state, t, totalizers]);

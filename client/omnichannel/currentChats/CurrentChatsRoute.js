@@ -9,7 +9,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useMethod } from '../../contexts/ServerContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
@@ -17,6 +16,7 @@ import CurrentChatsPage from './CurrentChatsPage';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 export function RemoveChatButton({ _id, reload }) {
 	const removeChat = useMethod('livechat:removeRoom');
@@ -120,7 +120,7 @@ function CurrentChatsRoute() {
 		// livechatRoomRoute.push({ id: _id });
 	});
 
-	const { data, reload } = useEndpointDataExperimental('livechat/rooms', query) || {};
+	const { value: data, reload } = useEndpointData('livechat/rooms', query) || {};
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</GenericTable.HeaderCell>,

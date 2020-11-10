@@ -3,8 +3,8 @@ import { Box, Skeleton } from '@rocket.chat/fuselage';
 
 import CounterItem from '../realTimeMonitoring/counter/CounterItem';
 import CounterRow from '../realTimeMonitoring/counter/CounterRow';
-import { useMethodData, AsyncState } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useMethodData } from '../../hooks/useMethodData';
 
 const initialData = Array.from({ length: 3 }).map(() => ({ title: '', value: '' }));
 
@@ -22,7 +22,7 @@ const Overview = ({ type, dateRange, departmentId }) => {
 		...departmentId && { departmentId },
 	}], [departmentId, end, start, type]);
 
-	const [data, state] = useMethodData('livechat:getAnalyticsOverviewData', params);
+	const { phase, value } = useMethodData('livechat:getAnalyticsOverviewData', params);
 
 	const [displayData, setDisplayData] = useState(conversationsInitialData);
 
@@ -31,14 +31,14 @@ const Overview = ({ type, dateRange, departmentId }) => {
 	}, [type]);
 
 	useEffect(() => {
-		if (state === AsyncState.DONE) {
-			if (data?.length > 3) {
-				setDisplayData([data.slice(0, 3), data.slice(3)]);
-			} else if (data) {
-				setDisplayData([data]);
+		if (phase === 'resolved') {
+			if (value?.length > 3) {
+				setDisplayData([value.slice(0, 3), value.slice(3)]);
+			} else if (value) {
+				setDisplayData([value]);
 			}
 		}
-	}, [data, state]);
+	}, [value, phase]);
 
 	return <Box
 		pb='x28'

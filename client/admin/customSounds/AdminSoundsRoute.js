@@ -8,10 +8,10 @@ import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import AdminSounds from './AdminSounds';
 import AddCustomSound from './AddCustomSound';
 import EditCustomSound from './EditCustomSound';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 function CustomSoundsRoute() {
 	const route = useRoute('custom-sounds');
@@ -33,7 +33,7 @@ function CustomSoundsRoute() {
 		...current && { offset: current },
 	}), [text, itemsPerPage, current, column, direction]);
 
-	const { data, reload } = useEndpointDataExperimental('custom-sounds.list', query);
+	const { value: data, reload } = useEndpointData('custom-sounds.list', query);
 
 	const handleItemClick = useCallback((_id) => () => {
 		route.push({

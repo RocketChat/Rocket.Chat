@@ -1,10 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 
 import Chart from './Chart';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { drawDoughnutChart } from '../../../../app/livechat/client/lib/chartHandler';
 import { useUpdateChartData } from './useUpdateChartData';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 
 const labels = [
 	'Open',
@@ -39,7 +39,7 @@ const ChatsChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { data, state, reload } = useEndpointDataExperimental(
+	const { value: data, phase: state, reload } = useEndpointData(
 		'livechat/analytics/dashboards/charts/chats',
 		params,
 	);
@@ -60,7 +60,7 @@ const ChatsChart = ({ params, reloadRef, ...props }) => {
 	}, [t]);
 
 	useEffect(() => {
-		if (state === ENDPOINT_STATES.DONE) {
+		if (state === 'resolved') {
 			updateChartData(t('Open'), [open]);
 			updateChartData(t('Closed'), [closed]);
 			updateChartData(t('Queued'), [queued]);

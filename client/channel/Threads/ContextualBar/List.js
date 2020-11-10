@@ -10,7 +10,6 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { call, renderMessageBody } from '../../../../app/ui-utils/client';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
-import { ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
@@ -47,7 +46,7 @@ export function withData(WrappedComponent) {
 			threads,
 			count,
 		}, setState] = useState(() => ({
-			state: ENDPOINT_STATES.LOADING,
+			state: 'loading',
 			error: null,
 			threads: [],
 			count: 0,
@@ -79,14 +78,14 @@ export function withData(WrappedComponent) {
 				});
 
 				setState(({ threads }) => ({
-					state: ENDPOINT_STATES.DONE,
+					state: 'resolved',
 					error: null,
 					threads: mergeThreads(offset === 0 ? [] : threads, data.threads.map(filterProps)),
 					count: data.total,
 				}));
 			} catch (error) {
 				setState(({ threads, count }) => ({
-					state: ENDPOINT_STATES.ERROR,
+					state: 'rejected',
 					error,
 					threads,
 					count,
@@ -126,7 +125,7 @@ export function withData(WrappedComponent) {
 			error={error}
 			threads={threads}
 			total={count}
-			loading={state === ENDPOINT_STATES.LOADING}
+			loading={state === 'loading'}
 			loadMoreItems={loadMoreItems}
 			room={room}
 			text={text}

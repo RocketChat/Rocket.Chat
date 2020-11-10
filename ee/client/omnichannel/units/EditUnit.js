@@ -6,22 +6,22 @@ import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useRoute } from '../../../../client/contexts/RouterContext';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
 
 export function UnitEditWithData({ unitId, reload, allUnits }) {
 	const query = useMemo(() => ({ unitId }), [unitId]);
-	const { data, state, error } = useEndpointDataExperimental('livechat/units.getOne', query);
-	const { data: availableDepartments, state: availableDepartmentsState, error: availableDepartmentsError } = useEndpointDataExperimental('livechat/department');
-	const { data: availableMonitors, state: availableMonitorsState, error: availableMonitorsError } = useEndpointDataExperimental('livechat/monitors.list');
-	const { data: unitMonitors, state: unitMonitorsState, error: unitMonitorsError } = useEndpointDataExperimental('livechat/unitMonitors.list', query);
+	const { value: data, phase: state, error } = useEndpointData('livechat/units.getOne', query);
+	const { value: availableDepartments, phase: availableDepartmentsState, error: availableDepartmentsError } = useEndpointData('livechat/department');
+	const { value: availableMonitors, phase: availableMonitorsState, error: availableMonitorsError } = useEndpointData('livechat/monitors.list');
+	const { value: unitMonitors, phase: unitMonitorsState, error: unitMonitorsError } = useEndpointData('livechat/unitMonitors.list', query);
 
 	const t = useTranslation();
 
-	if ([state, availableDepartmentsState, availableMonitorsState, unitMonitorsState].includes(ENDPOINT_STATES.LOADING)) {
+	if ([state, availableDepartmentsState, availableMonitorsState, unitMonitorsState].includes('loading')) {
 		return <FormSkeleton/>;
 	}
 
@@ -44,10 +44,10 @@ export function UnitEditWithData({ unitId, reload, allUnits }) {
 export function UnitNew({ reload, allUnits }) {
 	const t = useTranslation();
 
-	const { data: availableDepartments, state: availableDepartmentsState, error: availableDepartmentsError } = useEndpointDataExperimental('livechat/department');
-	const { data: availableMonitors, state: availableMonitorsState, error: availableMonitorsError } = useEndpointDataExperimental('livechat/monitors.list');
+	const { value: availableDepartments, phase: availableDepartmentsState, error: availableDepartmentsError } = useEndpointData('livechat/department');
+	const { value: availableMonitors, phase: availableMonitorsState, error: availableMonitorsError } = useEndpointData('livechat/monitors.list');
 
-	if ([availableDepartmentsState, availableMonitorsState].includes(ENDPOINT_STATES.LOADING)) {
+	if ([availableDepartmentsState, availableMonitorsState].includes('loading')) {
 		return <FormSkeleton/>;
 	}
 

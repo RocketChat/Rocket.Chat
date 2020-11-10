@@ -8,7 +8,6 @@ import {
 } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
@@ -18,18 +17,19 @@ import OutgoingWebhookForm from '../OutgoiongWebhookForm';
 import { useForm } from '../../../hooks/useForm';
 import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 
 export default function EditOutgoingWebhookWithData({ integrationId, ...props }) {
 	const t = useTranslation();
 
 	const params = useMemo(() => ({ integrationId }), [integrationId]);
-	const { data, state, error, reload } = useEndpointDataExperimental('integrations.get', params);
+	const { value: data, phase: state, error, reload } = useEndpointData('integrations.get', params);
 
 	const onChange = () => {
 		reload();
 	};
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === 'loading') {
 		return <Box w='full' pb='x24' {...props}>
 			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />

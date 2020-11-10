@@ -19,22 +19,22 @@ import { useMethod, useAbsoluteUrl } from '../../contexts/ServerContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import VerticalBar from '../../components/basic/VerticalBar';
 import DeleteSuccessModal from '../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 export default function EditOauthAppWithData({ _id, ...props }) {
 	const t = useTranslation();
 
 	const params = useMemo(() => ({ appId: _id }), [_id]);
-	const { data, state, error, reload } = useEndpointDataExperimental('oauth-apps.get', params);
+	const { value: data, phase: state, error, reload } = useEndpointData('oauth-apps.get', params);
 
 	const onChange = useCallback(() => {
 		reload();
 	}, [reload]);
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === 'loading') {
 		return <Box pb='x20' maxWidth='x600' w='full' alignSelf='center'>
 			<Skeleton mbs='x8'/>
 			<InputBox.Skeleton w='full'/>

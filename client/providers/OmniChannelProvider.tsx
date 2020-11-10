@@ -7,11 +7,11 @@ import { Notifications } from '../../app/notifications/client';
 import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useUser, useUserId } from '../contexts/UserContext';
-import { useMethodData, AsyncState } from '../contexts/ServerContext';
 import { usePermission, useRole } from '../contexts/AuthorizationContext';
 import { useSetting } from '../contexts/SettingsContext';
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
+import { useMethodData } from '../hooks/useMethodData';
 
 const args = [] as any;
 
@@ -80,12 +80,12 @@ const OmnichannelEnabledProvider: FC = ({ children }) => {
 	});
 
 	const user = useUser() as IOmnichannelAgent;
-	const [routeConfig, status, reload] = useMethodData<OmichannelRoutingConfig>('livechat:getRoutingConfig', args);
+	const { value: routeConfig, phase: status, reload } = useMethodData<OmichannelRoutingConfig>('livechat:getRoutingConfig', args);
 
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
 
 	useEffect(() => {
-		status !== AsyncState.LOADING && reload();
+		status !== 'loading' && reload();
 	}, [omnichannelRouting, reload]); // eslint-disable-line
 
 	useEffect(() => {

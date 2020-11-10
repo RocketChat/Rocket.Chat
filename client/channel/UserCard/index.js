@@ -2,7 +2,6 @@ import React, { useMemo, useRef } from 'react';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import UserCard from '../../components/basic/UserCard';
@@ -11,6 +10,7 @@ import { ReactiveUserStatus } from '../../components/basic/UserStatus';
 import { LocalTime } from '../../components/basic/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
 import { useRolesDescription } from '../../contexts/AuthorizationContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
@@ -23,12 +23,12 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 
 	const query = useMemo(() => ({ username }), [username]);
 
-	const { data, state } = useEndpointDataExperimental('users.info', query);
+	const { value: data, phase: state } = useEndpointData('users.info', query);
 
 	ref.current = target;
 
 	const user = useMemo(() => {
-		const loading = state === ENDPOINT_STATES.LOADING;
+		const loading = state === 'loading';
 		const defaultValue = loading ? undefined : null;
 
 		const { user } = data || { user: {} };

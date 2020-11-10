@@ -2,7 +2,6 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { Box, Field, Margins, Button, Callout } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { useRoute } from '../../contexts/RouterContext';
@@ -10,13 +9,14 @@ import UserAvatarEditor from '../../components/basic/avatar/UserAvatarEditor';
 import { useForm } from '../../hooks/useForm';
 import UserForm from './UserForm';
 import { FormSkeleton } from './Skeleton';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 export function EditUserWithData({ uid, ...props }) {
 	const t = useTranslation();
-	const { data: roleData, state: roleState, error: roleError } = useEndpointDataExperimental('roles.list', '') || {};
-	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId: uid }), [uid]));
+	const { value: roleData, phase: roleState, error: roleError } = useEndpointData('roles.list', '');
+	const { value: data, phase: state, error } = useEndpointData('users.info', useMemo(() => ({ userId: uid }), [uid]));
 
-	if ([state, roleState].includes(ENDPOINT_STATES.LOADING)) {
+	if ([state, roleState].includes('loading')) {
 		return <FormSkeleton/>;
 	}
 

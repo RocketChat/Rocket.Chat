@@ -3,20 +3,20 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import CounterSet from '../../components/data/CounterSet';
-import { usePolledMethodData, AsyncState } from '../../contexts/ServerContext';
+import { usePolledMethodData } from '../../hooks/usePolledMethodData';
 
 function OverviewSection() {
 	const t = useTranslation();
-	const [overviewData, overviewStatus] = usePolledMethodData('federation:getOverviewData', useMemo(() => [], []), 10000);
+	const { value: overviewData, phase: overviewStatus } = usePolledMethodData('federation:getOverviewData', useMemo(() => [], []), 10000);
 
-	const eventCount = (overviewStatus === AsyncState.LOADING && <Skeleton variant='text' />)
-		|| (overviewStatus === AsyncState.ERROR && <Box color='danger'>Error</Box>)
+	const eventCount = (overviewStatus === 'loading' && <Skeleton variant='text' />)
+		|| (overviewStatus === 'rejected' && <Box color='danger'>Error</Box>)
 		|| overviewData?.data[0]?.value;
-	const userCount = (overviewStatus === AsyncState.LOADING && <Skeleton variant='text' />)
-	|| (overviewStatus === AsyncState.ERROR && <Box color='danger'>Error</Box>)
+	const userCount = (overviewStatus === 'loading' && <Skeleton variant='text' />)
+	|| (overviewStatus === 'rejected' && <Box color='danger'>Error</Box>)
 		|| overviewData?.data[1]?.value;
-	const serverCount = (overviewStatus === AsyncState.LOADING && <Skeleton variant='text' />)
-	|| (overviewStatus === AsyncState.ERROR && <Box color='danger'>Error</Box>)
+	const serverCount = (overviewStatus === 'loading' && <Skeleton variant='text' />)
+	|| (overviewStatus === 'rejected' && <Box color='danger'>Error</Box>)
 		|| overviewData?.data[2]?.value;
 
 	return <CounterSet

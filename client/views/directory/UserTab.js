@@ -47,7 +47,7 @@ function UserTable({
 
 	const directRoute = useRoute('direct');
 
-	const data = useEndpointData('directory', query) || {};
+	const { value: data = {} } = useEndpointData('directory', query);
 
 	const onClick = useCallback((username) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {

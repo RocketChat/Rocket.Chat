@@ -8,10 +8,10 @@ import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import AddCustomEmoji from './AddCustomEmoji';
 import CustomEmoji from './CustomEmoji';
 import EditCustomEmojiWithData from './EditCustomEmojiWithData';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 function CustomEmojiRoute() {
 	const route = useRoute('emoji-custom');
@@ -33,7 +33,7 @@ function CustomEmojiRoute() {
 		...current && { offset: current },
 	}), [text, itemsPerPage, current, column, direction]);
 
-	const { data, reload } = useEndpointDataExperimental('emoji-custom.all', query);
+	const { value: data, reload } = useEndpointData('emoji-custom.all', query);
 
 	const handleItemClick = (_id) => () => {
 		route.push({

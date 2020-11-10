@@ -5,19 +5,19 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useFileInput } from '../../hooks/useFileInput';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { validate, createSoundData } from './lib';
 import { useSetModal } from '../../contexts/ModalContext';
 import VerticalBar from '../../components/basic/VerticalBar';
 import DeleteSuccessModal from '../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 function EditCustomSound({ _id, onChange, ...props }) {
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { data, state, error, reload } = useEndpointDataExperimental('custom-sounds.list', query);
+	const { value: data, phase: state, error, reload } = useEndpointData('custom-sounds.list', query);
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === 'loading') {
 		return <Box pb='x20'>
 			<Skeleton mbs='x8'/>
 			<InputBox.Skeleton w='full'/>

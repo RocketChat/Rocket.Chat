@@ -2,9 +2,9 @@ import React, { useMemo, FC } from 'react';
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import EditCustomEmoji from './EditCustomEmoji';
 import { EmojiDescriptor } from './types';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 type EditCustomEmojiWithDataProps = {
 	_id: string;
@@ -17,21 +17,21 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
 	const {
-		data = {
+		value: data = {
 			emojis: {
 				update: [],
 			},
 		},
-		state,
+		phase: state,
 		error,
 		reload,
-	} = useEndpointDataExperimental<{
+	} = useEndpointData<{
 		emojis?: {
 			update: EmojiDescriptor[];
 		};
 	}>('emoji-custom.list', query);
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === 'loading') {
 		return <Box pb='x20'>
 			<Skeleton mbs='x8'/>
 			<InputBox.Skeleton w='full'/>

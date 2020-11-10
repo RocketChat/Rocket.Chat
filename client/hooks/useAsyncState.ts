@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-type AsyncState<T> = (
+export type AsyncState<T> = (
 	{ phase: 'loading'; value: undefined; error: undefined } |
 	{ phase: 'loading'; value: T; error: undefined } |
 	{ phase: 'loading'; value: undefined; error: Error } |

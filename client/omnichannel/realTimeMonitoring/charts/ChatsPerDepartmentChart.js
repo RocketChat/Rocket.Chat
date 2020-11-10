@@ -2,9 +2,9 @@ import React, { useRef, useEffect } from 'react';
 
 import Chart from './Chart';
 import { useUpdateChartData } from './useUpdateChartData';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 
 const initialData = {
 	departments: {},
@@ -32,7 +32,7 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { data, state, reload } = useEndpointDataExperimental(
+	const { value: data, phase: state, reload } = useEndpointData(
 		'livechat/analytics/dashboards/charts/chats-per-department',
 		params,
 	);
@@ -51,7 +51,7 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 	}, [t]);
 
 	useEffect(() => {
-		if (state === ENDPOINT_STATES.DONE) {
+		if (state === 'resolved') {
 			Object.entries(departments).forEach(([name, value]) => {
 				updateChartData(name, [value.open, value.closed]);
 			});

@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { Field, TextInput, ToggleSwitch, MultiSelectFiltered, Box, Skeleton } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
 import { useForm } from '../../../../client/hooks/useForm';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
 const mapDepartments = (departments) => departments.map(({ _id }) => _id);
 
@@ -14,7 +14,7 @@ const getInitialData = (data = {}) => ({
 });
 
 const BusinessHoursMultipleContainer = ({ onChange, data: initialData, className }) => {
-	const { data, state } = useEndpointDataExperimental('livechat/department');
+	const { value: data, phase: state } = useEndpointData('livechat/department');
 
 	const { values, handlers } = useForm(getInitialData(initialData));
 
@@ -22,7 +22,7 @@ const BusinessHoursMultipleContainer = ({ onChange, data: initialData, className
 
 	const departmentList = useMemo(() => data && data.departments?.map(({ _id, name }) => [_id, name]), [data]);
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === 'loading') {
 		return <>
 			<Skeleton />
 			<Skeleton />

@@ -6,13 +6,13 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useMethod } from '../../contexts/ServerContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useForm } from '../../hooks/useForm';
 import Page from '../../components/basic/Page';
 import AppearanceForm from './AppearanceForm';
 import PageSkeleton from '../../components/PageSkeleton';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { ISetting } from '../../../definition/ISetting';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 type LivechatAppearanceEndpointData = {
 	success: boolean;
@@ -52,7 +52,7 @@ const reduceAppearance = (settings: LivechatAppearanceEndpointData['appearance']
 const AppearancePageContainer: FC = () => {
 	const t = useTranslation();
 
-	const { data, state, error } = useEndpointDataExperimental<LivechatAppearanceEndpointData>('livechat/appearance');
+	const { value: data, phase: state, error } = useEndpointData<LivechatAppearanceEndpointData>('livechat/appearance');
 
 	const canViewAppearance = usePermission('view-livechat-appearance');
 
@@ -60,7 +60,7 @@ const AppearancePageContainer: FC = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === 'loading') {
 		return <PageSkeleton />;
 	}
 

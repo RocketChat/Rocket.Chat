@@ -12,7 +12,7 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { formsSubscription } from '../additionalForms';
 import { useForm } from '../../hooks/useForm';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 const getInitialValues = (cf) => ({
 	field: cf._id,
@@ -26,9 +26,9 @@ const EditCustomFieldsPageContainer = () => {
 	const t = useTranslation();
 	const id = useRouteParameter('id');
 
-	const { data, state, error } = useEndpointDataExperimental(`livechat/custom-fields/${ id }`);
+	const { value: data, phase: state, error } = useEndpointData(`livechat/custom-fields/${ id }`);
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === 'loading') {
 		return <PageSkeleton />;
 	}
 

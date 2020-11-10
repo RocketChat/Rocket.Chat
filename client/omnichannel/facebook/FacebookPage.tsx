@@ -6,7 +6,8 @@ import Page from '../../components/basic/Page';
 import PageSkeleton from '../../components/PageSkeleton';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useMethodData, AsyncState, useMethod } from '../../contexts/ServerContext';
+import { useMethod } from '../../contexts/ServerContext';
+import { useMethodData } from '../../hooks/useMethodData';
 
 type OnToggleProps = { onToggle: (id: string, isSubscribed: boolean, setSubscribed: Dispatch<boolean>) => void };
 
@@ -54,9 +55,9 @@ const listPageArgs = [{
 const FacebookPageContainer: FC = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const [initialStateData, state, reloadInitial] = useMethodData<InitialStateData>('livechat:facebook', initialStateArgs);
+	const { value: initialStateData, phase: state, reload: reloadInitial } = useMethodData<InitialStateData>('livechat:facebook', initialStateArgs);
 
-	const [pagesData, listState, reloadData] = useMethodData<PageData>('livechat:facebook', listPageArgs);
+	const { value: pagesData, phase: listState, reload: reloadData } = useMethodData<PageData>('livechat:facebook', listPageArgs);
 
 	const { enabled, hasToken } = initialStateData || { enabled: false, hasToken: false };
 	const { pages } = pagesData || { pages: [] };
@@ -114,11 +115,11 @@ const FacebookPageContainer: FC = () => {
 		}
 	});
 
-	if (state === AsyncState.LOADING || listState === AsyncState.LOADING) {
+	if (state === 'loading' || listState === 'loading') {
 		return <PageSkeleton />;
 	}
 
-	if (state === AsyncState.ERROR) {
+	if (state === 'rejected') {
 		return <Page>
 			<Page.Header title={t('Edit_Custom_Field')} />
 			<Page.ScrollableContentWithShadow>
@@ -129,7 +130,7 @@ const FacebookPageContainer: FC = () => {
 		</Page>;
 	}
 
-	if (enabled && hasToken && listState === AsyncState.ERROR) {
+	if (enabled && hasToken && listState === 'rejected') {
 		onEnable();
 	}
 

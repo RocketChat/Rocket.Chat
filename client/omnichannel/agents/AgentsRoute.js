@@ -5,7 +5,6 @@ import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
 
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
@@ -18,6 +17,7 @@ import VerticalBar from '../../components/basic/VerticalBar';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 
 export function RemoveAgentButton({ _id, reload }) {
@@ -145,7 +145,7 @@ function AgentsRoute() {
 		id,
 	}));
 
-	const { data, reload } = useEndpointDataExperimental('livechat/users/agent', query) || {};
+	const { value: data, reload } = useEndpointData('livechat/users/agent', query) || {};
 
 
 	const header = useMemo(() => [

@@ -4,14 +4,14 @@ import React, { useMemo, useCallback } from 'react';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 export function OAuthAppsTable() {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const { data } = useEndpointDataExperimental('oauth-apps.list', useMemo(() => ({}), []));
+	const { value: data } = useEndpointData('oauth-apps.list', useMemo(() => ({}), []));
 
 	const router = useRoute('admin-oauth-apps');
 

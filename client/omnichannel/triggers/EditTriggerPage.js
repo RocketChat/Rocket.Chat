@@ -7,19 +7,19 @@ import PageSkeleton from '../../components/PageSkeleton';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useForm } from '../../hooks/useForm';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useRoute } from '../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 const EditTriggerPageContainer = ({ id, onSave }) => {
 	const t = useTranslation();
-	const { data, state } = useEndpointDataExperimental(`livechat/triggers/${ id }`);
+	const { value: data, phase: state } = useEndpointData(`livechat/triggers/${ id }`);
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === 'loading') {
 		return <PageSkeleton />;
 	}
 
-	if (state === ENDPOINT_STATES.ERROR || !data?.trigger) {
+	if (state === 'rejected' || !data?.trigger) {
 		return <Callout>
 			{t('Error')}: error
 		</Callout>;

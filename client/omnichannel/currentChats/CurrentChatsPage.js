@@ -7,7 +7,6 @@ import { useSubscription } from 'use-subscription';
 import { formsSubscription } from '../additionalForms';
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import GenericTable from '../../components/GenericTable';
 import { useMethod } from '../../contexts/ServerContext';
@@ -16,6 +15,7 @@ import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { AutoCompleteDepartment } from '../../components/basic/AutoCompleteDepartment';
 import { AutoCompleteAgent } from '../../components/basic/AutoCompleteAgent';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -48,7 +48,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const { data: allCustomFields } = useEndpointDataExperimental('livechat/custom-fields');
+	const { value: allCustomFields } = useEndpointData('livechat/custom-fields');
 	const statusOptions = [['all', t('All')], ['closed', t('Closed')], ['opened', t('Open')]];
 	const customFieldsOptions = useMemo(() => (allCustomFields && allCustomFields.customFields ? allCustomFields.customFields.map(({ _id, label }) => [_id, label]) : []), [allCustomFields]);
 

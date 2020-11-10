@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useEndpointDataExperimental } from '../../../hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 import CounterContainer from '../counter/CounterContainer';
 
 const overviewInitalValue = {
@@ -16,7 +16,7 @@ const initialData = [
 ];
 
 const ConversationOverview = ({ params, reloadRef, ...props }) => {
-	const { data, state, reload } = useEndpointDataExperimental(
+	const { value: data, phase: state, reload } = useEndpointData(
 		'livechat/analytics/dashboards/conversation-totalizers',
 		params,
 	);

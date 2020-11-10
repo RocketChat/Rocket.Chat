@@ -11,7 +11,7 @@ import { useMethod } from '../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../client/hooks/useResizeInlineBreakpoint';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../client/hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../../client/hooks/useEndpointData';
 
 export function RemoveBusinessHourButton({ _id, type, reload }) {
 	const removeBusinessHour = useMethod('livechat:removeBusinessHour');
@@ -122,9 +122,9 @@ const BusinessHoursTableContainer = () => {
 	const t = useTranslation();
 	const [params, setParams] = useState(() => ({ current: 0, itemsPerPage: 25, text: '' }));
 
-	const { data, state, reload } = useEndpointDataExperimental(`livechat/business-hours.list?count=${ params.itemsPerPage }&offset=${ params.current }&name=${ params.text }`);
+	const { value: data, phase: state, reload } = useEndpointData(`livechat/business-hours.list?count=${ params.itemsPerPage }&offset=${ params.current }&name=${ params.text }`);
 
-	if (state === ENDPOINT_STATES.ERROR) {
+	if (state === 'rejected') {
 		return <Callout>
 			{t('Error')}: error
 		</Callout>;

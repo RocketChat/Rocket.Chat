@@ -53,7 +53,7 @@ export function TableSection() {
 		count: itemsPerPage,
 	}), [period, current, itemsPerPage]);
 
-	const data = useEndpointData('engagement-dashboard/channels/list', params);
+	const { value: data } = useEndpointData('engagement-dashboard/channels/list', params);
 
 	const channels = useMemo(() => {
 		if (!data) {

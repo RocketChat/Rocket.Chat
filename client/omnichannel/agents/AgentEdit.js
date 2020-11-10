@@ -8,21 +8,21 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from '../../components/basic/VerticalBar';
 import { UserInfo } from '../../components/basic/UserInfo';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../hooks/useForm';
 import { getUserEmailAddress } from '../../lib/getUserEmailAddress';
 import { useRoute } from '../../contexts/RouterContext';
 import { formsSubscription } from '../additionalForms';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 
 export default function AgentEditWithData({ uid, reload }) {
 	const t = useTranslation();
-	const { data, state, error } = useEndpointDataExperimental(`livechat/users/agent/${ uid }`);
-	const { data: userDepartments, state: userDepartmentsState, error: userDepartmentsError } = useEndpointDataExperimental(`livechat/agents/${ uid }/departments`);
-	const { data: availableDepartments, state: availableDepartmentsState, error: availableDepartmentsError } = useEndpointDataExperimental('livechat/department');
+	const { value: data, phase: state, error } = useEndpointData(`livechat/users/agent/${ uid }`);
+	const { value: userDepartments, phase: userDepartmentsState, error: userDepartmentsError } = useEndpointData(`livechat/agents/${ uid }/departments`);
+	const { value: availableDepartments, phase: availableDepartmentsState, error: availableDepartmentsError } = useEndpointData('livechat/department');
 
-	if ([state, availableDepartmentsState, userDepartmentsState].includes(ENDPOINT_STATES.LOADING)) {
+	if ([state, availableDepartmentsState, userDepartmentsState].includes('loading')) {
 		return <FormSkeleton/>;
 	}
 

@@ -10,8 +10,8 @@ import { useHasLicense } from '../hooks/useHasLicense';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
 import { useMethod } from '../../../client/contexts/ServerContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../client/hooks/useEndpointDataExperimental';
 import { UserAutoComplete } from '../../../client/components/basic/AutoComplete';
+import { useEndpointData } from '../../../client/hooks/useEndpointData';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -44,7 +44,7 @@ const MonitorsPage = () => {
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [username, setUsername] = useState('');
 
-	const { data, state, reload } = useEndpointDataExperimental('livechat/monitors.list', useQuery(params, sort));
+	const { value: data, phase: state, reload } = useEndpointData('livechat/monitors.list', useQuery(params, sort));
 
 	const addMonitor = useMethod('livechat:addMonitor');
 
@@ -69,7 +69,7 @@ const MonitorsPage = () => {
 		}
 	});
 
-	if (state === ENDPOINT_STATES.ERROR) {
+	if (state === 'rejected') {
 		return <Callout>
 			{t('Error')}
 		</Callout>;

@@ -7,11 +7,11 @@ import GenericTable from '../../components/GenericTable';
 import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 export function RemoveCustomFieldButton({ _id, reload }) {
 	const removeChat = useMethod('livechat:removeCustomField');
@@ -118,9 +118,9 @@ const CustomFieldsTableContainer = () => {
 	const t = useTranslation();
 	const [params, setParams] = useState(() => ({ current: 0, itemsPerPage: 25 }));
 
-	const { data, state, reload } = useEndpointDataExperimental(`livechat/custom-fields?count=${ params.itemsPerPage }&offset=${ params.current }`);
+	const { value: data, phase: state, reload } = useEndpointData(`livechat/custom-fields?count=${ params.itemsPerPage }&offset=${ params.current }`);
 
-	if (state === ENDPOINT_STATES.ERROR) {
+	if (state === 'rejected') {
 		return <Callout>
 			{t('Error')}: error
 		</Callout>;

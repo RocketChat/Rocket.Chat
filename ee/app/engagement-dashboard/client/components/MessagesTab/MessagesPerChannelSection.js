@@ -49,8 +49,8 @@ export function MessagesPerChannelSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const pieData = useEndpointData('engagement-dashboard/messages/origin', params);
-	const tableData = useEndpointData('engagement-dashboard/messages/top-five-popular-channels', params);
+	const { value: pieData } = useEndpointData('engagement-dashboard/messages/origin', params);
+	const { value: tableData } = useEndpointData('engagement-dashboard/messages/top-five-popular-channels', params);
 
 	const [pie, table] = useMemo(() => {
 		if (!pieData || !tableData) {
