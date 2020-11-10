@@ -23,7 +23,12 @@ const lifecycle: {[k: string]: string} = {
 const {
 	INTERNAL_SERVICES_ONLY = 'false',
 	SERVICES_ALLOWED = '',
+	WAIT_FOR_SERVICES_TIMEOUT = '10000', // 10 seconds
+	WAIT_FOR_SERVICES_WHITELIST_TIMEOUT = '600000', // 10 minutes
 } = process.env;
+
+const waitForServicesTimeout = parseInt(WAIT_FOR_SERVICES_TIMEOUT, 10) || 10000;
+const waitForServicesWhitelistTimeout = parseInt(WAIT_FOR_SERVICES_WHITELIST_TIMEOUT, 10) || 600000;
 
 class NetworkBroker implements IBroker {
 	private broker: ServiceBroker;
@@ -85,7 +90,7 @@ class NetworkBroker implements IBroker {
 			return this.localBroker.call(method, data);
 		}
 
-		await this.broker.waitForServices(method.split('.')[0]);
+		await this.broker.waitForServices(method.split('.')[0], this.whitelist.actions.includes(method) ? waitForServicesWhitelistTimeout : waitForServicesTimeout);
 
 		const context = asyncLocalStorage.getStore();
 		if (context?.ctx?.call) {
