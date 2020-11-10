@@ -29,7 +29,9 @@ function UnitsPage({
 		<Page>
 			<Page.Header title={title}>
 				<ButtonGroup>
-					<Button small onClick={handleClick} title={t('New_Unit')}><Icon name='plus'/></Button>
+					<Button onClick={handleClick} title={t('New_Unit')}>
+						<Icon name='plus'/> {t('New')}
+					</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>
