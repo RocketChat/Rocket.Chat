@@ -75,28 +75,30 @@ const MonitorsPage = () => {
 		</Callout>;
 	}
 
-	return <Page>
-		<Page.Header title={t('Livechat_Monitors')} />
-		<Page.ScrollableContentWithShadow>
-			<Box display='flex' flexDirection='1'>
-				<Field>
-					<Field.Label>{t('Username')}</Field.Label>
-					<Field.Row>
-						<UserAutoComplete value={username} onChange={setUsername}/>
-						<Button primary onClick={handleAdd} mis='x8'>{t('Add')}</Button>
-					</Field.Row>
-				</Field>
-			</Box>
-			<MonitorsTable
-				monitors={data?.monitors}
-				totalMonitors={data?.total}
-				params={params}
-				onChangeParams={setParams}
-				onHeaderClick={onHeaderClick}
-				sort={sort}
-				onDelete={reload}
-			/>
-		</Page.ScrollableContentWithShadow>
+	return <Page flexDirection='row'>
+		<Page>
+			<Page.Header title={t('Livechat_Monitors')} />
+			<Page.Content>
+				<Box display='flex' flexDirection='1'>
+					<Field>
+						<Field.Label>{t('Username')}</Field.Label>
+						<Field.Row>
+							<UserAutoComplete value={username} onChange={setUsername}/>
+							<Button primary onClick={handleAdd} mis='x8'>{t('Add')}</Button>
+						</Field.Row>
+					</Field>
+				</Box>
+				<MonitorsTable
+					monitors={data?.monitors}
+					totalMonitors={data?.total}
+					params={params}
+					onChangeParams={setParams}
+					onHeaderClick={onHeaderClick}
+					sort={sort}
+					onDelete={reload}
+				/>
+			</Page.Content>
+		</Page>
 	</Page>;
 };
 
