@@ -458,10 +458,10 @@ export class SAML {
 				}
 
 				const room = Rooms.findOneByNameAndType(roomName, 'c', {});
-				const priv_room = Rooms.findOneByNameAndType(roomName, 'p', {});
+				const privRoom = Rooms.findOneByNameAndType(roomName, 'p', {});
 
-				if (priv_room && includePrivateChannelsInUpdate === true) {
-					addUserToRoom(priv_room._id, user);
+				if (privRoom && includePrivateChannelsInUpdate === true) {
+					addUserToRoom(privRoom._id, user);
 					continue;
 				}
 
@@ -470,7 +470,7 @@ export class SAML {
 					continue;
 				}
 
-				if (!room && !priv_room) {
+				if (!room && !privRoom) {
 					// If the user doesn't have an username yet, we can't create new rooms for them
 					if (user.username) {
 						createRoom('c', roomName, user.username);
