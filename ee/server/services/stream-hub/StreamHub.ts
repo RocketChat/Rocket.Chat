@@ -59,7 +59,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			Integrations,
 		};
 
-		initWatchers(models, api.broadcast, (model, fn) => {
+		initWatchers(models, api.broadcast.bind(api), (model, fn) => {
 			model.col.watch([]).on('change', (event) => {
 				switch (event.operationType) {
 					case 'insert':

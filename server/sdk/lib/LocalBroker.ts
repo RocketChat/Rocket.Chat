@@ -65,6 +65,7 @@ export class LocalBroker implements IBroker {
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		this.broadcastLocal(event, ...args);
+
 		StreamerCentral.emit('broadcast', 'local', 'broadcast', [{ eventName: event, args }]);
 	}
 

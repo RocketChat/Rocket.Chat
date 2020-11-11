@@ -136,7 +136,7 @@ if (!process.env.DISABLE_DB_WATCH) {
 		Integrations,
 	};
 
-	initWatchers(models, api.broadcastLocal, (model, fn) => {
+	initWatchers(models, api.broadcastLocal.bind(api), (model, fn) => {
 		const meteorModel = map[model.col.collectionName];
 		if (!meteorModel) {
 			return;
