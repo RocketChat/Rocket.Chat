@@ -146,7 +146,7 @@ function UnitsRoute() {
 		reload={reload}
 		header={header}
 		renderRow={renderRow}
-		title={'Units'}>
+		title={t('Units')}>
 		<EditUnitsTab />
 	</UnitsPage>;
 }
