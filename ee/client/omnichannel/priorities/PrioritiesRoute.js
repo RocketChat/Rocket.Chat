@@ -146,7 +146,7 @@ function PrioritiesRoute() {
 		reload={reload}
 		header={header}
 		renderRow={renderRow}
-		title={'Priorities'}>
+		title={t('Priorities')}>
 		<EditPrioritiesTab />
 	</PrioritiesPage>;
 }
