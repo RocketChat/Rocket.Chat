@@ -41,8 +41,6 @@ export function startRegisterWorkspace(resend = false) {
 		return false;
 	}
 
-	console.log('result from the start register workspace:', result);
-
 	const { data } = result;
 
 	if (!data) {
