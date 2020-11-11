@@ -7,7 +7,7 @@ on:
     branches: '**'
   push:
     branches:
-      - develop
+      - develop_pwa
 
 env:
   CI: true
@@ -258,115 +258,119 @@ jobs:
 #         commit: true
 #         token: ${{ secrets.GITHUB_TOKEN }}
 
-  build-image-pr:
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.head.repo.full_name == github.repository
+  # build-image-pr:
+  #   runs-on: ubuntu-latest
+  #   if: github.event.pull_request.head.repo.full_name == github.repository
 
-    steps:
-    - uses: actions/checkout@v2
+  #   steps:
+  #   - uses: actions/checkout@v2
 
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
-      with:
-        registry: ghcr.io
-        username: ${{ secrets.CR_USER }}
-        password: ${{ secrets.CR_PAT }}
+  #   - name: Free disk space
+  #     run: |
+  #       sudo swapoff -a
+  #       sudo rm -f /swapfile
+  #       sudo apt clean
+  #       docker rmi $(docker image ls -aq)
+  #       df -h
 
-    - name: Free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        docker rmi $(docker image ls -aq)
-        df -h
+  #   - name: Cache node modules
+  #     id: cache-nodemodules
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: node_modules
+  #       key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
-    - name: Cache node modules
-      id: cache-nodemodules
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+  #   - name: Cache meteor local
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: ./.meteor/local
+  #       key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
-    - name: Cache meteor local
-      uses: actions/cache@v1
-      with:
-        path: ./.meteor/local
-        key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+  #   - name: Cache meteor
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: ~/.meteor
+  #       key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
-    - name: Cache meteor
-      uses: actions/cache@v1
-      with:
-        path: ~/.meteor
-        key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+  #   - name: Use Node.js 12.16.1
+  #     uses: actions/setup-node@v1
+  #     with:
+  #       node-version: "12.16.1"
 
-    - name: Use Node.js 12.18.4
-      uses: actions/setup-node@v1
-      with:
-        node-version: "12.18.4"
+  #   - name: Install Meteor
+  #     run: |
+  #       # Restore bin from cache
+  #       set +e
+  #       METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
+  #       METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
+  #       set -e
+  #       LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
+  #       if [ -e $LAUNCHER ]
+  #       then
+  #         echo "Cached Meteor bin found, restoring it"
+  #         sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
+  #       else
+  #         echo "No cached Meteor bin found."
+  #       fi
 
-    - name: Install Meteor
-      run: |
-        # Restore bin from cache
-        set +e
-        METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
-        METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
-        set -e
-        LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
-        if [ -e $LAUNCHER ]
-        then
-          echo "Cached Meteor bin found, restoring it"
-          sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
-        else
-          echo "No cached Meteor bin found."
-        fi
+  #       # only install meteor if bin isn't found
+  #       command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
 
-        # only install meteor if bin isn't found
-        command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+  #   - name: Versions
+  #     run: |
+  #       npm --versions
+  #       node -v
+  #       meteor --version
+  #       meteor npm --versions
+  #       meteor node -v
+  #       git version
+  #       echo $GITHUB_REF
 
-    - name: Versions
-      run: |
-        npm --versions
-        node -v
-        meteor --version
-        meteor npm --versions
-        meteor node -v
-        git version
-        echo $GITHUB_REF
+  #   - name: npm install
+  #     if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+  #     run: |
+  #       meteor npm install
 
-    - name: npm install
-      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
-      run: |
-        meteor npm install
+  #   # To reduce memory need during actual build, build the packages solely first
+  #   # - name: Build a Meteor cache
+  #   #   run: |
+  #   #     # to do this we can clear the main files and it build the rest
+  #   #     echo "" > server/main.js
+  #   #     echo "" > client/main.js
+  #   #     sed -i.backup 's/rocketchat:livechat/#rocketchat:livechat/' .meteor/packages
+  #   #     meteor build --server-only --debug --directory /tmp/build-temp
+  #   #     git checkout -- server/main.js client/main.js .meteor/packages
 
-    # To reduce memory need during actual build, build the packages solely first
-    # - name: Build a Meteor cache
-    #   run: |
-    #     # to do this we can clear the main files and it build the rest
-    #     echo "" > server/main.js
-    #     echo "" > client/main.js
-    #     sed -i.backup 's/rocketchat:livechat/#rocketchat:livechat/' .meteor/packages
-    #     meteor build --server-only --debug --directory /tmp/build-temp
-    #     git checkout -- server/main.js client/main.js .meteor/packages
+  #   - name: Build Rocket.Chat
+  #     run: |
+  #       meteor build --server-only --directory /tmp/build-pr
 
-    - name: Build Rocket.Chat
-      run: |
-        meteor build --server-only --directory /tmp/build-pr
+  #   - name: Build Docker image for PRs
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       VERSION: pr-${{ github.event.number }}
+  #     run: |
+  #       cd /tmp/build-pr
 
-    - name: Build Docker image for PRs
-      run: |
-        cd /tmp/build-pr
+  #       docker login docker.pkg.github.com -u "${GITHUB_ACTOR}" -p "${GITHUB_TOKEN}"
 
-        LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-        IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:pr-${{ github.event.number }}"
+  #       cp $GITHUB_WORKSPACE/.docker/Dockerfile .
 
-        echo "Build official Docker image ${IMAGE_NAME}"
+  #       export LOWERCASE_REPOSITORY=$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")
 
-        docker build -f $GITHUB_WORKSPACE/.docker/Dockerfile -t $IMAGE_NAME .
-        docker push $IMAGE_NAME
+  #       export IMAGE_NAME="docker.pkg.github.com/${LOWERCASE_REPOSITORY}/rocket.chat:${VERSION}"
+
+  #       echo "Build official Docker image ${IMAGE_NAME}"
+
+  #       docker build -t $IMAGE_NAME .
+  #       docker push $IMAGE_NAME
 
   deploy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
+    # WideChat does not need this
+    if: github.event_name == 'DEACTIVATED'
+
+    # if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: test
 
     steps:
@@ -413,6 +417,8 @@ jobs:
 
   image-build:
     runs-on: ubuntu-latest
+    # EAR - WideChat uses Terranovax/aws-ecr-deploy@v1 to deploy to ecr
+    if: github.event_name == 'DEACTIVATED'
     needs: deploy
 
     strategy:
@@ -488,43 +494,70 @@ jobs:
         docker build -t ${IMAGE}:develop .
         docker push ${IMAGE}:develop
 
-  services-image-build:
+  # TODO: configure for merges to develop when ready; configure for PROD as needed
+  # NOTE: Right now it will only push on every merge into develop_pwa because we have a standing PR from it -> develop.
+  widechat-ecr-push:
     runs-on: ubuntu-latest
-    needs: deploy
-
-    strategy:
-      matrix:
-        service: ["account", "authorization", "ddp-streamer", "presence", "stream-hub"]
-
+    if: github.base_ref == 'develop'
+    needs: test
+      
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v1
 
-    - name: Use Node.js 12.18.4
-      uses: actions/setup-node@v1
-      with:
-        node-version: "12.18.4"
+    # - name: Install jq
+    #   run: |
+    #     sudo apt-get -y -qq update
+    #     sudo apt-get -y -qq install jq
 
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_PASS }}
+    - name: Parse for PR num
+      if: github.event_name == 'pull_request'
 
-    - name: Build Docker images
       run: |
-        # defines image tag
-        if [[ $GITHUB_REF == refs/tags/* ]]; then IMAGE_TAG="${GITHUB_REF#refs/tags/}"; else IMAGE_TAG="${GITHUB_REF#refs/heads/}"; fi
+        git_ref=${{ github.ref }}
+        arrRef=(${git_ref//\// })
+        pr_num=${arrRef[2]}
+        echo "pr_num is this: $pr_num"
+        echo ::set-env name=PR_TAG::pr-num-$pr_num
 
-        # first install repo dependencies
-        npm i
+    - name: Restore build
+      uses: actions/download-artifact@v1
+      with:
+        name: build
+        path: /tmp/build
 
-        # then micro services dependencies
-        cd ./ee/server/services
-        npm i
-        npm run build
+    - name: Unpack build
+      run: |
+        cd /tmp/build
+        tar xzf Rocket.Chat.tar.gz
+        rm Rocket.Chat.tar.gz
+        cp "${GITHUB_WORKSPACE}/.docker/Dockerfile" .
 
-        echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
+    - name: AWS Deploy to ECR in DEV
+      if: github.event_name == 'pull_request'
 
-        docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} .
+      uses: Terranovax/aws-ecr-deploy@v1
+      with:
+        access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+        region: us-east-1
+        dockerfile: /tmp/build/Dockerfile
+        path: /tmp/build
+        repo: widechat
+        tags: ${{ env.PR_TAG }}
 
-        docker push rocketchat/${{ matrix.service }}-service
+    ## Temporarily we will deploy the PR tags to PROD as well as DEV
+    - name: AWS Deploy to ECR in PROD
+      if: github.event_name == 'pull_request'
+
+      uses: Terranovax/aws-ecr-deploy@v1
+      with:
+        access_key_id: ${{ secrets.AWS_PROD_ACCESS_KEY_ID }}
+        secret_access_key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
+        account_id: ${{ secrets.AWS_PROD_ACCOUNT_ID }}
+        region: us-east-1
+        dockerfile: /tmp/build/Dockerfile
+        path: /tmp/build
+        repo: widechat
+        tags: ${{ env.PR_TAG }}
+

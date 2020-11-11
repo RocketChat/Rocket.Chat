@@ -183,6 +183,18 @@ const assets = {
 			height: undefined,
 		},
 	},
+	livechat_guest_default_avatar: {
+		label: 'Livechat_guest_default_avatar',
+		defaultUrl: 'avatar/guest',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		constraints: {
+			type: 'image',
+			extensions: ['svg', 'png', 'jpg', 'jpeg'],
+			width: undefined,
+			height: undefined,
+		},
+	},
 };
 
 export const RocketChatAssets = new class {
@@ -332,7 +344,8 @@ function addAssetToSetting(asset, value) {
 		defaultUrl: value.defaultUrl,
 	}, {
 		type: 'asset',
-		group: 'Assets',
+		group: value.group || 'Assets',
+		section: value.section,
 		fileConstraints: value.constraints,
 		i18nLabel: value.label,
 		asset,

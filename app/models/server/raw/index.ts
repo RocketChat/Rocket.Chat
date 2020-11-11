@@ -16,6 +16,8 @@ import LivechatCustomFieldModel from '../models/LivechatCustomField';
 import { LivechatCustomFieldRaw } from './LivechatCustomField';
 import LivechatTriggerModel from '../models/LivechatTrigger';
 import { LivechatTriggerRaw } from './LivechatTrigger';
+import LivechatFilterModel from '../models/LivechatFilter';
+import { LivechatFilterRaw } from './LivechatFilter';
 import LivechatDepartmentModel from '../models/LivechatDepartment';
 import { LivechatDepartmentRaw } from './LivechatDepartment';
 import LivechatDepartmentAgentsModel from '../models/LivechatDepartmentAgents';
@@ -74,6 +76,7 @@ export const Users = new UsersRaw(UsersModel.model.rawCollection(), trashCollect
 export const Rooms = new RoomsRaw(RoomsModel.model.rawCollection(), trashCollection);
 export const LivechatCustomField = new LivechatCustomFieldRaw(LivechatCustomFieldModel.model.rawCollection(), trashCollection);
 export const LivechatTrigger = new LivechatTriggerRaw(LivechatTriggerModel.model.rawCollection(), trashCollection);
+export const LivechatFilter = new LivechatFilterRaw(LivechatFilterModel.model.rawCollection());
 export const LivechatDepartment = new LivechatDepartmentRaw(LivechatDepartmentModel.model.rawCollection(), trashCollection);
 export const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(LivechatDepartmentAgentsModel.model.rawCollection(), trashCollection);
 export const LivechatRooms = new LivechatRoomsRaw(LivechatRoomsModel.model.rawCollection(), trashCollection);

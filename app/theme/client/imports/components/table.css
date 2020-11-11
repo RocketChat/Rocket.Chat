@@ -65,7 +65,7 @@
 
 		padding: 0.25rem 0;
 
-		white-space: nowrap;
+		white-space: pre-wrap;
 		text-overflow: ellipsis;
 
 		font-size: 0.9rem;

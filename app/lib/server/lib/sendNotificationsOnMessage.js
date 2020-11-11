@@ -8,7 +8,7 @@ import { Subscriptions, Users } from '../../../models/server';
 import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
-import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
+import { sendWebPush, getPushData, shouldNotifyMobile, getNotificationPayload } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
@@ -117,6 +117,13 @@ export const sendNotification = async ({
 			message,
 			room,
 		});
+		sendWebPush(getNotificationPayload({
+			notificationMessage,
+			userId: subscription.u._id,
+			user: sender,
+			message,
+			room,
+		}), 'desktop');
 	}
 
 	const queueItems = [];
@@ -143,6 +150,13 @@ export const sendNotification = async ({
 				receiver,
 			}),
 		});
+		sendWebPush(getNotificationPayload({
+			notificationMessage,
+			userId: subscription.u._id,
+			user: sender,
+			message,
+			room,
+		}), 'mobile');
 	}
 
 	if (receiver.emails && shouldNotifyEmail({

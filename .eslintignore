@@ -19,3 +19,5 @@ public/workers/**/*
 imports/client/
 !/.storybook/
 ee/server/services/dist/**
+app/utils/client/lib/sha1.js
+app/analytics/server/trackEvents.js

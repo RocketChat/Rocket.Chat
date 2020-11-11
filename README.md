@@ -1,3 +1,4 @@
+The WideChat repo is a fork of RocketChat for development of features to be merged upstream in coordination with the RocketChat team...
 ![](https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png)
 
 <h1 align="center">
