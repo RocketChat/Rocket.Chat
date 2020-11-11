@@ -11,7 +11,7 @@ callbacks.add('onCreateRoomTabBar', (info) => {
 		return info;
 	}
 
-	const button = tabBar.getButtons().find((button) => button.id === 'visitor-info');
+	const button = tabBar.getButtons({ room }).find((button) => button.id === 'visitor-info');
 	if (!button) {
 		return info;
 	}

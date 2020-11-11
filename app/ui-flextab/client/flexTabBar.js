@@ -47,9 +47,6 @@ function canShowAddUsersButton(rid) {
 	return true;
 }
 const filterButtons = (button, anonymous, rid) => {
-	if (!Meteor.userId() && !anonymous) {
-		return false;
-	}
 	if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
 		return false;
 	}
@@ -70,7 +67,11 @@ Template.flexTabBar.helpers({
 	},
 	...commonHelpers,
 	buttons() {
-		return TabBar.getButtons().filter((button) =>
+		const room = Session.get(`roomData${ Session.get('openedRoom') }`);
+		if (!room || (!Meteor.userId() && !this.anonymous)) {
+			return [];
+		}
+		return TabBar.getButtons({ room }).filter((button) =>
 			filterButtons(button, this.anonymous, this.data && this.data.rid),
 		);
 	},
@@ -188,7 +189,7 @@ Template.RoomsActionTab.events({
 	'click .js-more'(e, t) {
 		$(e.currentTarget).blur();
 		e.preventDefault();
-		const buttons = TabBar.getButtons().filter((button) => filterButtons(button, t.anonymous, t.data.rid));
+		const buttons = TabBar.getButtons({ room: Session.get(`roomData${ Session.get('openedRoom') }`) }).filter((button) => filterButtons(button, t.anonymous, t.data.rid));
 		const groups = [{ items: (t.small.get() ? buttons : buttons.slice(TabBar.size)).map((item) => ({
 			...item,
 			name: TAPi18n.__(item.i18nTitle),
@@ -244,7 +245,11 @@ Template.RoomsActionTab.helpers({
 		if (Template.instance().small.get()) {
 			return [];
 		}
-		const buttons = TabBar.getButtons()
+		const room = Session.get(`roomData${ Session.get('openedRoom') }`);
+		if (!room) {
+			return;
+		}
+		const buttons = TabBar.getButtons({ room })
 			.filter((button) => filterButtons(button, Template.instance().anonymous, Template.instance().data.rid));
 		return buttons.length <= TabBar.size ? buttons : buttons.slice(0, TabBar.size);
 	},
@@ -253,7 +258,11 @@ Template.RoomsActionTab.helpers({
 		if (Template.instance().small.get()) {
 			return true;
 		}
-		const buttons = TabBar.getButtons()
+		const room = Session.get(`roomData${ Session.get('openedRoom') }`);
+		if (!room) {
+			return;
+		}
+		const buttons = TabBar.getButtons({ room })
 			.filter((button) => filterButtons(button, Template.instance().anonymous, Template.instance().data.rid));
 		return buttons.length > TabBar.size;
 	},

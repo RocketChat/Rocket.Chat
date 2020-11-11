@@ -122,7 +122,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		if (!room || !room.v || room.v.username !== username) {
 			return false;
 		}
-		const button = instance.tabBar.getButtons().find((button) => button.id === 'visitor-info');
+		const button = instance.tabBar.getButtons({ room }).find((button) => button.id === 'visitor-info');
 		if (!button) {
 			return false;
 		}

@@ -44,6 +44,7 @@ Meteor.startup(function() {
 				groups: ['direct', 'group'],
 				id: 'video',
 				i18nTitle: 'Call',
+				title: 'Call',
 				icon: 'phone',
 				iconColor: 'red',
 				template: 'videoFlexTab',

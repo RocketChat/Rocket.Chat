@@ -45,8 +45,8 @@ export class RocketChatTabBar {
 		return this.data.get();
 	}
 
-	getButtons() {
-		return TabBar.getButtons();
+	getButtons(...args) {
+		return TabBar.getButtons(...args);
 	}
 
 	getState() {

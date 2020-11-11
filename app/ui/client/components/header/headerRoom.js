@@ -49,7 +49,9 @@ Template.headerRoom.helpers({
 		return roomTypes.getConfig(roomData.t).getAvatarPath(roomData);
 	},
 	buttons() {
-		return TabBar.getButtons();
+		const room = Session.get(`roomData${ this._id }`);
+		console.log('buttons')
+		return TabBar.getButtons({ room });
 	},
 
 	isTranslated() {

@@ -2,6 +2,8 @@ import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
+import { deleteAction, addAction } from '../../../../client/channel/lib/Toolbox';
+
 export const TABBAR_DEFAULT_VISIBLE_ICON_COUNT = 6;
 
 export const TabBar = new class TabBar {
@@ -32,6 +34,8 @@ export const TabBar = new class TabBar {
 			return false;
 		}
 
+		addAction(config.id, config);
+
 		const btns = this.buttons.curValue;
 		btns[config.id] = config;
 
@@ -53,6 +57,8 @@ export const TabBar = new class TabBar {
 	removeButton(id) {
 		const btns = this.buttons.curValue;
 
+		deleteAction(id);
+
 		// Here we decrease the shown count as your
 		// button is no longer present
 		if (btns[id] && btns[id].order === -1) {
@@ -72,8 +78,8 @@ export const TabBar = new class TabBar {
 		}
 	}
 
-	getButtons() {
-		const buttons = _.toArray(this.buttons.get()).filter((button) => !button.condition || button.condition());
+	getButtons(...args) {
+		const buttons = _.toArray(this.buttons.get()).filter((button) => !button.condition || button.condition(...args));
 
 		return _.sortBy(buttons, 'order');
 	}

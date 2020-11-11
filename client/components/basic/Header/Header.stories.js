@@ -58,11 +58,11 @@ export const ChatHeader = () => {
 					<Header.Subtitle>{room.name}</Header.Subtitle>
 				</Header.Content.Row>
 			</Header.Content>
-			<Header.Actions>
-				<Header.Action icon='magnifier'/>
-				<Header.Action icon='key'/>
-				<Header.Action icon='kebab'/>
-			</Header.Actions>
+			<Header.ToolBox>
+				<Header.ToolBoxAction icon='magnifier'/>
+				<Header.ToolBoxAction icon='key'/>
+				<Header.ToolBoxAction icon='kebab'/>
+			</Header.ToolBox>
 		</Header>
 	</SettingsContext.Provider>;
 };

@@ -1,20 +1,54 @@
 import React from 'react';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { ActionButton } from '@rocket.chat/fuselage';
 
 import Header from '../../components/basic/Header';
 import { useRoomIcon } from '../../hooks/useRoomIcon';
-import RoomAvatar from '../../components/basic/avatar/RoomAvatar';
 import { useUserSubscription } from '../../contexts/UserContext';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
-import ToolBox from './ToolBox';
 import Translate from './icons/Translate';
+import ToolBox from './ToolBox';
+import RoomAvatar from '../../components/basic/avatar/RoomAvatar';
+import { ToolboxProvider } from './ToolboxProvider';
+import { useLayout } from '../../contexts/LayoutContext';
+import Burger from './Burger';
+import { useTranslation } from '../../contexts/TranslationContext';
 
-export default React.memo(({ _id }) => {
-	const room = useUserSubscription(_id);
+export default React.memo(({ rid, tabBar }) => {
+	const room = useUserSubscription(rid);
 	room._id = room.rid;
+
+	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
+
+	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
+		return null;
+	}
+
+	return <ToolboxProvider room={room} tabBar={tabBar}>
+		<RoomHeader room={room} />
+	</ToolboxProvider>;
+});
+
+const BackToRoom = React.memo(({ small, prid }) => {
+	const t = useTranslation();
+	const onClick = useMutableCallback(() => {
+		FlowRouter.goToRoomById(prid);
+	});
+	return <ActionButton mie='x4' icon='back' ghost small={small} title={t('Back_to_room')} onClick={onClick}/>;
+});
+
+
+const RoomHeader = ({ room }) => {
 	const icon = useRoomIcon(room);
+	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room}/>;
 	return <Header>
+		<Header.ToolBox>
+			{ isMobile && <Burger/>}
+			{ room.prid && <BackToRoom small={!isMobile} prid={room.prid}/>}
+		</Header.ToolBox>
 		{ avatar && <Header.Avatar>{avatar}</Header.Avatar> }
 		<Header.Content>
 			<Header.Content.Row>
@@ -32,4 +66,4 @@ export default React.memo(({ _id }) => {
 			<ToolBox room={room}/>
 		</Header.ToolBox>
 	</Header>;
-});
+};

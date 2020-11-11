@@ -282,7 +282,9 @@ Template.room.helpers({
 			&& (state.get('autoTranslate') === true)
 			&& !!state.get('autoTranslateLanguage');
 	},
-
+	tabBar() {
+		return Template.instance().tabBar;
+	},
 	embeddedVersion() {
 		return Layout.isEmbedded();
 	},
@@ -1126,7 +1128,6 @@ Template.room.onCreated(function() {
 	this.flexTemplate = new ReactiveVar();
 
 	this.groupDetail = new ReactiveVar();
-
 	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	callbacks.run('onCreateRoomTabBar', {

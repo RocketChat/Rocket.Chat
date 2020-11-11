@@ -3,6 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import { settings } from '../../settings';
 import { hasAllPermission } from '../../authorization';
 import { AccountBox, TabBar, MessageTypes } from '../../ui-utils';
+import { addAction } from '../../../client/channel/lib/Toolbox';
 
 Tracker.autorun((c) => {
 	// import omnichannel tabbar templates right away if omnichannel enabled
@@ -21,19 +22,19 @@ AccountBox.addItem({
 	condition: () => settings.get('Livechat_enabled') && hasAllPermission('view-livechat-manager'),
 });
 
-TabBar.addButton({
+addAction('visitor-info', {
 	groups: ['live'],
 	id: 'visitor-info',
-	i18nTitle: 'Visitor_Info',
+	title: 'Visitor_Info',
 	icon: 'info-circled',
 	template: 'visitorInfo',
 	order: 0,
 });
 
-TabBar.addButton({
+addAction('contact-chat-history', {
 	groups: ['live'],
 	id: 'contact-chat-history',
-	i18nTitle: 'Contact_Chat_History',
+	title: 'Contact_Chat_History',
 	icon: 'clock',
 	template: 'contactChatHistory',
 	order: 11,

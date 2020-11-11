@@ -27,7 +27,7 @@ function VerticalBar({ children, ...props }) {
 
 function VerticalBarHeader({ children, ...props }) {
 	return <Box
-		pb='x24'
+		height='56px'
 		pi='x24'
 		height='64px'
 		display='flex'

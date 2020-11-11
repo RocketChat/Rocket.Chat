@@ -1,16 +1,7 @@
 <template name="room">
 	<div class="main-content-flex">
 		<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
-			{{> Header }}
-			{{# if showTopNavbar}}
-				{{# headerRoom}}
-					{{#with flexData}}
-						<div class="rc-header__block rc-header__block-action">
-							{{> RoomsActionTab}}
-						</div>
-					{{/with}}
-				{{/headerRoom}}
-			{{/if}}
+			{{> Header rid=_id tabBar=tabBar }}
 			<div class="messages-container-wrapper">
 				<div class="messages-container-main dropzone {{dragAndDrop}}">
 					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
