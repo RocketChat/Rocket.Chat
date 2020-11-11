@@ -66,21 +66,17 @@ export const RoomInfo = function RoomInfo({
 				</Margins>
 			</VerticalBar.ScrollableContent>
 
-			<Box p='x24'>
-				<Margins block='x12'>
-					<ButtonGroup stretch>
-						{ onClickHide && <Button onClick={onClickHide}><Box is='span' mie='x4'><Icon name='eye-off' size='x20' /></Box>{t('Hide')}</Button> }
-						{ onClickLeave && <Button onClick={onClickLeave} danger><Box is='span' mie='x4'><Icon name='sign-out' size='x20' /></Box>{t('Leave')}</Button> }
-					</ButtonGroup>
-					{ (onClickEdit || onClickDelete) && <Divider /> }
-					<ButtonGroup stretch>
-						{ onClickEdit && <Button onClick={onClickEdit}><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>{t('Edit')}</Button> }
-						{ onClickDelete && <Button onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Trash')}</Button>}
-					</ButtonGroup>
-				</Margins>
-			</Box>
-
-
+			<Margins block='x12'>
+				<ButtonGroup stretch>
+					{ onClickHide && <Button onClick={onClickHide}><Box is='span' mie='x4'><Icon name='eye-off' size='x20' /></Box>{t('Hide')}</Button> }
+					{ onClickLeave && <Button onClick={onClickLeave} danger><Box is='span' mie='x4'><Icon name='sign-out' size='x20' /></Box>{t('Leave')}</Button> }
+				</ButtonGroup>
+				{ (onClickEdit || onClickDelete) && <Divider /> }
+				<ButtonGroup stretch>
+					{ onClickEdit && <Button onClick={onClickEdit}><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>{t('Edit')}</Button> }
+					{ onClickDelete && <Button onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Trash')}</Button>}
+				</ButtonGroup>
+			</Margins>
 		</>
 	);
 };

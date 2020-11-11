@@ -12,6 +12,7 @@ import { ChannelSettings } from '../lib/ChannelSettings';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
 createTemplateForComponent('channelSettingsEditing', () => import('../../../../client/channel/ChannelInfo/EditChannel'));
+createTemplateForComponent('channelSettingsInfo', () => import('../../../../client/channel/ChannelInfo/RoomInfo'));
 
 const common = {
 	canLeaveRoom() {
