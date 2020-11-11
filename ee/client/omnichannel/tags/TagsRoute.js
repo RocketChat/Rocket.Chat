@@ -50,7 +50,7 @@ export function RemoveTagButton({ _id, reload }) {
 		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
 	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleDelete} withTruncatedText>
+	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>
 		<Button small ghost title={t('Remove')} onClick={handleDelete}>
 			<Icon name='trash' size='x16'/>
 		</Button>
@@ -100,7 +100,7 @@ function TagsRoute() {
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x200'>{t('Description')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x60'>{t('Description')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'remove'} w='x40'>{t('Remove')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
