@@ -77,7 +77,7 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('roles-change', update);
 		});
 
-		service.onEvent('userpresence', ({ user }) => {
+		service.onEvent('presence.status', ({ user }) => {
 			const {
 				_id, username, status, statusText,
 			} = user;
@@ -85,7 +85,7 @@ export class ListenersModule {
 				return;
 			}
 
-			notifications.notifyLogged('user-status', [_id, username, STATUS_MAP[status], statusText]);
+			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText]);
 		});
 
 		service.onEvent('user.updateCustomStatus', (userStatus) => {
