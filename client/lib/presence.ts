@@ -16,31 +16,40 @@ type UsersPresencePayload = {
 const isUid = (eventType: EventType): eventType is User['_id'] =>
 	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'restart', 'remove'].includes(eventType);
 
+const uids = new Set<User['_id']>();
 const getPresence = ((): ((uid: User['_id']) => void) => {
-	const uids = new Set<User['_id']>();
-
 	let timer: ReturnType<typeof setTimeout>;
 
-	const fetch = (): void => {
+	const fetch = (delay = 250): void => {
 		timer && clearTimeout(timer);
 		timer = setTimeout(async () => {
-			const params = {
-				ids: [...uids],
-			};
-
-			const { users } = await APIClient.v1.get('users.presence', params) as UsersPresencePayload;
-
-			users.forEach((user) => {
-				emitter.emit(user._id, user);
-				uids.delete(user._id);
-			});
-
-			[...uids].forEach((uid) => {
-				emitter.emit(uid, { uid });
-			});
-
+			const currentUids = new Set(uids);
 			uids.clear();
-		}, 50);
+			try {
+				const params = {
+					ids: [...currentUids],
+				};
+
+				const { users } = await APIClient.v1.get('users.presence', params) as UsersPresencePayload;
+
+				users.forEach((user) => {
+					if (!statuses.has(user._id)) {
+						emitter.emit(user._id, user);
+					}
+					currentUids.delete(user._id);
+				});
+
+				currentUids.forEach((uid) => {
+					emitter.emit(uid, { uid, status: 'offline' });
+				});
+
+				currentUids.clear();
+			} catch {
+				fetch(delay + delay);
+			} finally {
+				currentUids.forEach((item) => uids.add(item));
+			}
+		}, delay);
 	};
 
 	const get = (uid: User['_id']): void => {
@@ -57,12 +66,11 @@ const getPresence = ((): ((uid: User['_id']) => void) => {
 	});
 
 	emitter.on('reset', () => {
+		statuses.clear();
 		emitter.once('restart', () => {
 			emitter.events()
 				.filter(isUid)
-				.forEach((uid) => {
-					get(uid);
-				});
+				.forEach(get);
 		});
 	});
 
@@ -74,6 +82,7 @@ type PresenceUpdate = Partial<Pick<User, '_id' | 'username' | 'status' | 'status
 const update: Handler<PresenceUpdate> = (update) => {
 	if (update?._id) {
 		statuses.set(update._id, update.status);
+		uids.delete(update._id);
 	}
 };
 
@@ -97,7 +106,7 @@ const stop = (uid: User['_id'], handler: Handler<PresenceUpdate>): void => {
 };
 
 const reset = (): void => {
-	emitter.emit('reset', { status: 'offline' });
+	emitter.emit('reset', {});
 	statuses.clear();
 };
 
