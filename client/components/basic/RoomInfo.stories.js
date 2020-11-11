@@ -11,9 +11,18 @@ export default {
 
 const room = {
 	name: 'rocketchat-frontend-team',
-	description: 'https://jitsi.rocket.chat/testRoom',
-	announcement: 'https://jitsi.rocket.chat/testRoom',
-	topic: 'https://jitsi.rocket.chat/testRoom',
+	description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit libero',
+	announcement: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit libero',
+	topic: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit libero',
 };
 
-export const Default = () => <VerticalBar><RoomInfo roomName={room.name} description={room.description} announcement={room.announcement} topic={room.topic} /></VerticalBar>;
+export const Default = () => <VerticalBar>
+	<RoomInfo
+		{...room}
+		icon='lock'
+		onClickHide={alert}
+		onClickLeave={alert}
+		onClickEdit={alert}
+		onClickDelete={alert}
+	/>
+</VerticalBar>;

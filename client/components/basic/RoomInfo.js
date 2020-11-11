@@ -8,37 +8,28 @@ import UserCard from './UserCard';
 import VerticalBar from './VerticalBar';
 
 const wordBreak = css`
-	word-break: break-word;
+	word-break: break-word !important;
 `;
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
 
-const RoomInfoFooter = () => (
-	<Box p='x24'>
-		<Margins block='x12'>
-			<ButtonGroup stretch>
-				<Button><Box is='span' mie='x4'><Icon name='eye-off' size='x20' /></Box>Hide</Button>
-				<Button danger><Box is='span' mie='x4'><Icon name='sign-out' size='x20' /></Box> Leave</Button>
-			</ButtonGroup>
+export const RoomInfoIcon = ({ name }) => <Icon name={name} size='x22' />;
 
-			<Divider />
+export const Title = (props) => <UserCard.Username {...props}/>;
 
-			<ButtonGroup stretch>
-				<Button><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>Edit</Button>
-				<Button danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box> Trash</Button>
-			</ButtonGroup>
-		</Margins>
-	</Box>
-);
-
-export const RoomTitle = ({ roomName }, props) => <Box mbs='x16' fontScale='s2' color='default' {...props}><Icon name='lock' />{roomName}</Box>;
-
-export const RoomInfo = React.memo(function RoomInfo({
-	roomName,
+export const RoomInfo = function RoomInfo({
+	name,
 	description,
 	announcement,
 	topic,
+	type,
+	rid,
+	icon,
+	onClickHide,
+	onClickLeave,
+	onClickEdit,
+	onClickDelete,
 	...props
 }) {
 	const t = useTranslation();
@@ -46,37 +37,55 @@ export const RoomInfo = React.memo(function RoomInfo({
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='info-circled' />
-				{t('Room_Info')}
+				<VerticalBar.Icon name='info-circled'/>
+				<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
 				<VerticalBar.Close />
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24' {...props}>
 				<Margins block='x4'>
 					<Box pbe='x16'>
-						<RoomAvatar />
-						<RoomTitle roomName={roomName} />
+						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
+						<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
 					</Box>
 
 					{description && description !== '' && <Box pbe='x16'>
 						<Label>{t('Description')}</Label>
-						<Info>{description}</Info>
+						<Info withTruncatedText={false}>{description}</Info>
 					</Box>}
 
 					{announcement && announcement !== '' && <Box pbe='x16'>
 						<Label>{t('Announcement')}</Label>
-						<Info>{announcement}</Info>
+						<Info withTruncatedText={false}>{announcement}</Info>
 					</Box>}
 
 					{topic && topic !== '' && <Box pbe='x16'>
 						<Label>{t('Topic')}</Label>
-						<Info>{topic}</Info>
+						<Info withTruncatedText={false}>{topic}</Info>
 					</Box>}
 				</Margins>
 			</VerticalBar.ScrollableContent>
-			<RoomInfoFooter />
+
+			<Box p='x24'>
+				<Margins block='x12'>
+					<ButtonGroup stretch>
+						{ onClickHide && <Button onClick={onClickHide}><Box is='span' mie='x4'><Icon name='eye-off' size='x20' /></Box>{t('Hide')}</Button> }
+						{ onClickLeave && <Button onClick={onClickLeave} danger><Box is='span' mie='x4'><Icon name='sign-out' size='x20' /></Box>{t('Leave')}</Button> }
+					</ButtonGroup>
+					{ (onClickEdit || onClickDelete) && <Divider /> }
+					<ButtonGroup stretch>
+						{ onClickEdit && <Button onClick={onClickEdit}><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>{t('Edit')}</Button> }
+						{ onClickDelete && <Button onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Trash')}</Button>}
+					</ButtonGroup>
+				</Margins>
+			</Box>
+
+
 		</>
 	);
-});
+};
 
-export default RoomInfo;
+RoomInfo.Title = Title;
+RoomInfo.Icon = RoomInfoIcon;
+
+export default React.memo(RoomInfo);

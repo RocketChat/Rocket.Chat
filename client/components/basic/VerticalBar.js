@@ -27,6 +27,7 @@ function VerticalBar({ children, ...props }) {
 
 function VerticalBarHeader({ children, ...props }) {
 	return <Box
+		is='h3'
 		pb='x24'
 		pi='x24'
 		height='64px'
@@ -44,7 +45,7 @@ function VerticalBarHeader({ children, ...props }) {
 }
 
 function VerticalBarIcon(props) {
-	return <Icon {...props} size='x20'/>;
+	return <Icon {...props} size='x22'/>;
 }
 
 function VerticalBarClose(props) {
