@@ -55,7 +55,6 @@ import { UsersSessionsRaw } from './UsersSessions';
 import UsersSessionsModel from '../models/UsersSessions';
 import { ServerEventsRaw } from './ServerEvents';
 import { trash } from '../models/_BaseDb';
-import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 import LoginServiceConfigurationModel from '../models/LoginServiceConfiguration';
 import { LoginServiceConfigurationRaw } from './LoginServiceConfiguration';
 import { InstanceStatusRaw } from './InstanceStatus';
@@ -64,6 +63,8 @@ import { IntegrationHistoryRaw } from './IntegrationHistory';
 import IntegrationHistoryModel from '../models/IntegrationHistory';
 import OmnichannelQueueModel from '../models/OmnichannelQueue';
 import { OmnichannelQueueRaw } from './OmnichannelQueue';
+import { api } from '../../../../server/sdk/api';
+import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 
 const trashCollection = trash.rawCollection();
 
@@ -117,27 +118,30 @@ const map = {
 	[Integrations.col.collectionName]: IntegrationsModel,
 };
 
-!process.env.DISABLE_DB_WATCH && initWatchers({
-	Messages,
-	Users,
-	Subscriptions,
-	Settings,
-	LivechatInquiry,
-	LivechatDepartmentAgents,
-	UsersSessions,
-	Permissions,
-	Roles,
-	Rooms,
-	LoginServiceConfiguration,
-	InstanceStatus,
-	IntegrationHistory,
-	Integrations,
-}, (model, fn) => {
-	const meteorModel = map[model.col.collectionName];
+if (!process.env.DISABLE_DB_WATCH) {
+	const models = {
+		Messages,
+		Users,
+		Subscriptions,
+		Settings,
+		LivechatInquiry,
+		LivechatDepartmentAgents,
+		UsersSessions,
+		Permissions,
+		Roles,
+		Rooms,
+		LoginServiceConfiguration,
+		InstanceStatus,
+		IntegrationHistory,
+		Integrations,
+	};
 
-	if (!meteorModel) {
-		return;
-	}
+	initWatchers(models, api.broadcastLocal, (model, fn) => {
+		const meteorModel = map[model.col.collectionName];
+		if (!meteorModel) {
+			return;
+		}
 
-	meteorModel.on('change', fn);
-});
+		meteorModel.on('change', fn);
+	});
+}

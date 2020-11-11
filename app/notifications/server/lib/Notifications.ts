@@ -13,13 +13,13 @@ import {
 } from '../../../models/server/raw';
 
 // TODO: Replace this in favor of the api.broadcast
-StreamerCentral.on('broadcast', (name, eventName, args) => {
-	api.broadcast('stream', [
-		name,
-		eventName,
-		args,
-	]);
-});
+// StreamerCentral.on('broadcast', (name, eventName, args) => {
+// 	api.broadcast('stream', [
+// 		name,
+// 		eventName,
+// 		args,
+// 	]);
+// });
 
 export class Stream extends Streamer {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
@@ -49,6 +49,10 @@ notifications.configure({
 	Subscriptions: SubscriptionsRaw,
 	Users: UsersRaw,
 	Settings: SettingsRaw,
+});
+
+notifications.streamLocal.on('broadcast', ({ eventName, args }) => {
+	api.broadcastLocal(eventName, ...args);
 });
 
 export default notifications;

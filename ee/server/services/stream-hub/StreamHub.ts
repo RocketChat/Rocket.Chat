@@ -15,6 +15,7 @@ import { IntegrationHistoryRaw } from '../../../../app/models/server/raw/Integra
 import { LivechatDepartmentAgentsRaw } from '../../../app/models/server/raw/LivechatDepartmentAgents';
 import { IntegrationsRaw } from '../../../../app/models/server/raw/Integrations';
 import { PermissionsRaw } from '../../../../app/models/server/raw/Permissions';
+import { api } from '../../../../server/sdk/api';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
 	protected name = 'hub';
@@ -58,7 +59,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			Integrations,
 		};
 
-		initWatchers(models, (model, fn) => {
+		initWatchers(models, api.broadcast, (model, fn) => {
 			model.col.watch([]).on('change', (event) => {
 				switch (event.operationType) {
 					case 'insert':
