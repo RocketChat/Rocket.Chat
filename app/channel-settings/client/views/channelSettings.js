@@ -1,3 +1,4 @@
+import { HTML } from 'meteor/htmljs';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import moment from 'moment';
@@ -12,7 +13,9 @@ import { ChannelSettings } from '../lib/ChannelSettings';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
 createTemplateForComponent('channelSettingsEditing', () => import('../../../../client/channel/ChannelInfo/EditChannel'));
-createTemplateForComponent('channelSettingsInfo', () => import('../../../../client/channel/ChannelInfo/RoomInfo'));
+createTemplateForComponent('channelSettingsInfo', () => import('../../../../client/channel/ChannelInfo/RoomInfo'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
 
 const common = {
 	canLeaveRoom() {

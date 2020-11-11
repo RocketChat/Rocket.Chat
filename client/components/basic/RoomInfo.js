@@ -44,8 +44,11 @@ export const RoomInfo = function RoomInfo({
 
 			<VerticalBar.ScrollableContent p='x24' {...props}>
 				<Margins block='x4'>
-					<Box pbe='x16'>
+					<Box pbe='x24'>
 						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
+					</Box>
+
+					<Box pbe='x24'>
 						<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
 					</Box>
 
@@ -65,18 +68,17 @@ export const RoomInfo = function RoomInfo({
 					</Box>}
 				</Margins>
 			</VerticalBar.ScrollableContent>
-
-			<Margins block='x12'>
-				<ButtonGroup stretch>
+			<VerticalBar.Footer>
+				<ButtonGroup stretch marginBlockEnd={0}>
 					{ onClickHide && <Button onClick={onClickHide}><Box is='span' mie='x4'><Icon name='eye-off' size='x20' /></Box>{t('Hide')}</Button> }
 					{ onClickLeave && <Button onClick={onClickLeave} danger><Box is='span' mie='x4'><Icon name='sign-out' size='x20' /></Box>{t('Leave')}</Button> }
 				</ButtonGroup>
 				{ (onClickEdit || onClickDelete) && <Divider /> }
-				<ButtonGroup stretch>
+				<ButtonGroup stretch marginBlockEnd={0}>
 					{ onClickEdit && <Button onClick={onClickEdit}><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>{t('Edit')}</Button> }
 					{ onClickDelete && <Button onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Trash')}</Button>}
 				</ButtonGroup>
-			</Margins>
+			</VerticalBar.Footer>
 		</>
 	);
 };
