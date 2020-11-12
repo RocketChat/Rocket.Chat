@@ -42,8 +42,12 @@ export const saveUser = (user, force = false) => {
 
 Meteor.startup(function() {
 	Notifications.onLogged('user-status', ([_id, username, status, statusText]) => {
-		Presence.emit(_id, { _id, status: STATUS_MAP[status], statusText, username });
-		Presence.emit(username, { _id, status: STATUS_MAP[status], statusText, username });
+		Presence.notify({
+			_id,
+			username,
+			status: STATUS_MAP[status],
+			statusText,
+		});
 		if (!interestedUserIds.has(_id)) {
 			return;
 		}
