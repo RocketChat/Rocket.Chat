@@ -29,6 +29,7 @@ import { LivechatDepartmentAgentsRaw } from '../../../app/models/server/raw/Live
 import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartmentAgents';
 import { IIntegration } from '../../../definition/IIntegration';
 import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
+import { EventSignatures } from '../../sdk/lib/Events';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -58,8 +59,9 @@ interface IChange<T> {
 
 type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>) => void) => void;
 
-// TODO add typing to "broadcast"
-export function initWatchers(models: IModelsParam, broadcast: Function, watch: Watcher): void {
+type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
+
+export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
 	const {
 		Messages,
 		Users,
