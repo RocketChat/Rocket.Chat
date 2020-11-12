@@ -145,7 +145,7 @@ function AgentsRoute() {
 		id,
 	}));
 
-	const { value: data, reload } = useEndpointData('livechat/users/agent', query) || {};
+	const { value: data, reload } = useEndpointData('livechat/users/agent', query);
 
 
 	const header = useMemo(() => [

@@ -120,7 +120,7 @@ function CurrentChatsRoute() {
 		// livechatRoomRoute.push({ id: _id });
 	});
 
-	const { value: data, reload } = useEndpointData('livechat/rooms', query) || {};
+	const { value: data, reload } = useEndpointData('livechat/rooms', query);
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</GenericTable.HeaderCell>,

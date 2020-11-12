@@ -21,7 +21,7 @@ import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 export default function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`livechat/department/${ id }`) || {};
+	const { value: data, phase: state, error } = useEndpointData(`livechat/department/${ id }`);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
