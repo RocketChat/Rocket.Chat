@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import RoomInfo from '../../components/basic/RoomInfo';
+import { useSession } from '../../contexts/SessionContext';
+import { useUserSubscription } from '../../contexts/UserContext';
+import { useReactiveValue } from '../../hooks/useReactiveValue';
 
 const clickHide = () => console.log('hide');
 const clickLeave = () => console.log('leave');
@@ -20,4 +23,9 @@ const room = {
 	onClickDelete: clickDelete,
 };
 
-export default () => <RoomInfo icon='lock' {...room} />;
+export default () => {
+	const rid = useSession('openedRoom');
+	const room = useUserSubscription(rid);
+	room.type = room.t;
+	return <RoomInfo icon='lock' {...room} />;
+};
