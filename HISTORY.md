@@ -1,6 +1,29 @@
 
 # 3.8.0 (Under Release Candidate Process)
 
+## 3.8.0-rc.11
+`2020-11-12  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Cloud Register Allowing Empty Tokens ([#19501](https://github.com/RocketChat/Rocket.Chat/pull/19501))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix broadcast events when running as monolith ([#19498](https://github.com/RocketChat/Rocket.Chat/pull/19498))
+
+- Regression: Fix ephemeral message stream ([#19513](https://github.com/RocketChat/Rocket.Chat/pull/19513))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@graywolf336](https://github.com/graywolf336)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.8.0-rc.10
 `2020-11-11  ·  2 🔍  ·  3 👩‍💻👨‍💻`
 
