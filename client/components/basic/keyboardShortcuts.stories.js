@@ -1,0 +1,16 @@
+import React from 'react';
+import { Box } from '@rocket.chat/fuselage';
+
+import VerticalBar from './VerticalBar';
+import KeyboardShortcuts from './keyboardShortcuts';
+
+export default {
+	title: 'components/basic/KeyboardShortcut',
+	component: KeyboardShortcuts,
+};
+
+export const Default = () => <Box height='600px'>
+	<VerticalBar>
+		<KeyboardShortcuts />
+	</VerticalBar>
+</Box>;
