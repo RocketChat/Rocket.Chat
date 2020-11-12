@@ -1,33 +1,16 @@
-import { Modal, Box, ButtonGroup, Button, Scrollable, Callout } from '@rocket.chat/fuselage';
+import { Modal, Box, ButtonGroup, Button, Scrollable, Callout, Margins, Icon } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting, useSettingSetValue } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-// import CopyStep from './CopyStep';
-// import PasteStep from './PasteStep';
-
-// const Steps = {
-// 	COPY: 'copy',
-// 	PASTE: 'paste',
-// };
 
 const OfflineLicenseModal = ({ onClose, license, ...props }) => {
 	const t = useTranslation();
 
-	// const [step, setStep] = useState(Steps.COPY);
-
-	// const handleNextButtonClick = () => {
-	// 	setStep(Steps.PASTE);
-	// };
-
-	// const handleBackButtonClick = () => {
-	// 	setStep(Steps.COPY);
-	// };
-
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	// const [isLoading, setLoading] = useState(false);
 	const [newLicense, setNewLicense] = useState(license);
 	const [isUpdating, setIsUpdating] = useState(false);
 
@@ -35,12 +18,19 @@ const OfflineLicenseModal = ({ onClose, license, ...props }) => {
 		setNewLicense(e.currentTarget.value);
 	};
 
-	// const currentLicense = useSetting('Enterprise_License');
 	const licenseStatus = useSetting('Enterprise_License_Status');
 	const setLicense = useSettingSetValue('Enterprise_License');
 
 	const hasChanges = license !== newLicense;
-	// const registerManually = useEndpoint('POST', 'cloud.manualRegister');
+
+	const handlePaste = useMutableCallback(async () => {
+		try {
+			const text = await navigator.clipboard.readText();
+			setNewLicense(text);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: `${ t('Paste_error') }: ${ error }` });
+		}
+	});
 
 	console.log(licenseStatus);
 
@@ -75,36 +65,45 @@ const OfflineLicenseModal = ({ onClose, license, ...props }) => {
 				display='flex'
 				flexDirection='column'
 				alignItems='stretch'
-				padding='x16'
+				paddingInline='x16'
+				pb='x8'
 				flexGrow={1}
 				backgroundColor='neutral-800'
 				mb={!licenseStatus && 'x8'}
 			>
-				<Scrollable vertical>
-					<Box
-						is='textarea'
-						height='x108'
-						fontFamily='mono'
-						fontScale='p1'
-						color='alternative'
-						style={{ wordBreak: 'break-all', resize: 'none' }}
-						placeholder={t('Paste_here')}
-						disabled={isUpdating}
-						value={newLicense}
-						autoComplete='off'
-						autoCorrect='off'
-						autoCapitalize='off'
-						spellCheck='false'
-						onChange={handleNewLicense}
-					/>
-				</Scrollable>
+				<Margins block='x8'>
+					<Scrollable vertical>
+						<Box
+							is='textarea'
+							height='x108'
+							fontFamily='mono'
+							fontScale='p1'
+							color='alternative'
+							style={{ wordBreak: 'break-all', resize: 'none' }}
+							placeholder={t('Paste_here')}
+							disabled={isUpdating}
+							value={newLicense}
+							autoComplete='off'
+							autoCorrect='off'
+							autoCapitalize='off'
+							spellCheck='false'
+							onChange={handleNewLicense}
+						/>
+					</Scrollable>
+					<ButtonGroup align='start'>
+						<Button primary small disabled={isUpdating} onClick={handlePaste}>
+							<Icon name='clipboard' />
+							{t('Paste')}
+						</Button>
+					</ButtonGroup>
+				</Margins>
 			</Box>
 			{!licenseStatus && <Callout type='danger'>{t('Cloud_Invalid_license')}</Callout>}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				<Button primary disabled={!hasChanges || isUpdating} onClick={handleApplyLicense}>
-					{t('Finish Cloud_Apply_license')}
+					{t('Cloud_Apply_license')}
 				</Button>
 			</ButtonGroup>
 		</Modal.Footer>

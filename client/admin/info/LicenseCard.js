@@ -25,10 +25,6 @@ const LicenseCard = () => {
 
 	const isAirGapped = true;
 
-	// const onClickManual = useMutableCallback(() => {
-	// 	setModal(<OfflineLicenseModal onClose={() => setModal()}/>);
-	// });
-
 	const hasEngagement = useHasLicense('engagement-dashboard');
 	const hasOmnichannel = useHasLicense('livechat-enterprise');
 	const hasAuditing = useHasLicense('auditing');

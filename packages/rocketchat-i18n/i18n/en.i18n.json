@@ -2796,6 +2796,8 @@
   "Password_Policy": "Password Policy",
   "Past_Chats": "Past Chats",
   "Paste_here": "Paste here...",
+  "Paste": "Paste",
+  "Paste_error": "Error reading from clipboard",
   "Payload": "Payload",
   "Peer_Password": "Peer Password",
   "People": "People",
