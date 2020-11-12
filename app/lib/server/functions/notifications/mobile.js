@@ -50,7 +50,7 @@ export async function getPushData({ room, message, userId, senderUsername, sende
 	if (shouldOmitMessage && settings.get('Push_request_content_from_server')) {
 		messageText = TAPi18n.__('You_have_a_new_message', { lng });
 	} else if (!settings.get('Push_show_message')) {
-		messageText = ' ';
+		messageText = TAPi18n.__('You_have_a_new_message', { lng });
 	} else {
 		messageText = notificationMessage;
 	}
