@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Field, TextInput, Button, Box, MultiSelect, Callout, ButtonGroup } from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Box, MultiSelect, Callout, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useMethod } from '../../../../client/contexts/ServerContext';
@@ -118,9 +118,13 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 			</Field.Row>
 		</Field>
 
-		<ButtonGroup align='end'>
-			{!isNew && <Button type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>{t('Reset')}</Button>}
-			<Button primary mie='none' disabled={!hasUnsavedChanges || !canSave} onClick={handleSave}>{t('Save')}</Button>
-		</ButtonGroup>
+		<Field.Row>
+			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
+				<Margins inlineEnd='x4'>
+					{!isNew && <Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>{t('Reset')}</Button>}
+					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={handleSave}>{t('Save')}</Button>
+				</Margins>
+			</Box>
+		</Field.Row>
 	</VerticalBar.ScrollableContent>;
 }
