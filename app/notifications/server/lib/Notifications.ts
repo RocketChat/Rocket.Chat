@@ -3,7 +3,7 @@ import { Promise } from 'meteor/promise';
 import { DDPCommon } from 'meteor/ddp-common';
 
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
-import { Streamer, StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import { Streamer } from '../../../../server/modules/streamer/streamer.module';
 import { api } from '../../../../server/sdk/api';
 import {
 	Subscriptions as SubscriptionsRaw,
