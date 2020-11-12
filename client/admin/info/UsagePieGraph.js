@@ -5,7 +5,7 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 
 const graphColors = (color) => ({ used: color || colors.b500, free: colors.n300 });
 
-const UsageGraph = ({ used = 0, total = 0, label, color }) => {
+const UsageGraph = ({ used = 0, total = 0, label, color, size }) => {
 	const parsedData = useMemo(() => [{
 		id: 'used',
 		label: 'used',
@@ -19,15 +19,15 @@ const UsageGraph = ({ used = 0, total = 0, label, color }) => {
 	const getColor = useCallback((data) => graphColors(color)[data.id], [color]);
 
 	return <Box display='flex' flexDirection='column' alignItems='center'>
-		<Box size='x112'>
+		<Box size={`x${ size }`}>
 			<Box position='relative'>
 				<Pie
 					data={parsedData}
 					margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
 					innerRadius={0.8}
 					colors={getColor}
-					width={112}
-					height={112}
+					width={size}
+					height={size}
 					enableSlicesLabels={false}
 					enableRadialLabels={false}
 				/>

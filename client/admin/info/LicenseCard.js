@@ -49,8 +49,8 @@ const LicenseCard = () => {
 				<Card.Col.Section>
 					<Card.Col.Title>{t('Usage')}</Card.Col.Title>
 					<Box display='flex' flexDirection='row'>
-						<UsagePieGraph label={t('Users')} used={300} total={300} />
-						<UsagePieGraph label={t('Integrations')} used={200} total={300} />
+						<UsagePieGraph label={t('Users')} used={300} total={300} size={112}/>
+						<UsagePieGraph label={t('Integrations')} used={200} total={300} size={112} />
 					</Box>
 				</Card.Col.Section>
 			</Card.Col>

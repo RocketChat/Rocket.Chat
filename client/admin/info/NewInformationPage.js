@@ -5,6 +5,8 @@ import Page from '../../components/basic/Page';
 import DeploymentCard from './DeploymentCard';
 import UsageCard from './UsageCard';
 import LicenseCard from './LicenseCard';
+import InstancesCard from './InstancesCard';
+import PushCard from './PushCard';
 import { useTranslation } from '../../contexts/TranslationContext';
 // import RocketChatSection from './RocketChatSection';
 // import CommitSection from './CommitSection';
@@ -18,7 +20,7 @@ const InformationPage = React.memo(function InformationPage({
 	isLoading,
 	info,
 	statistics,
-	// instances,
+	instances,
 	onClickRefreshButton,
 	onClickDownloadInfo,
 }) {
@@ -66,11 +68,13 @@ const InformationPage = React.memo(function InformationPage({
 					</Box>
 				</Callout>}
 
-				<Box display='flex' flexDirection='row'>
+				<Box display='flex' flexDirection='row' w='full' flexWrap='wrap'>
 					<Margins all='x8'>
 						<DeploymentCard info={info} statistics={statistics} isLoading={isLoading}/>
 						<LicenseCard />
 						<UsageCard statistics={statistics} isLoading={isLoading}/>
+						<InstancesCard instances={instances}/>
+						<PushCard />
 					</Margins>
 				</Box>
 				{/* {canViewStatistics && <RocketChatSection info={info} statistics={statistics} isLoading={isLoading} />}
