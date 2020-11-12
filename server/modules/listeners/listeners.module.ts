@@ -30,7 +30,7 @@ export class ListenersModule {
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
-			notifications.notifyLoggedInThisInstance(`${ uid }/message`, {
+			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
 				...message,
 				_id: String(Date.now()),
