@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import moment from 'moment';
 import toastr from 'toastr';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
@@ -10,6 +9,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { HTML } from 'meteor/htmljs';
 
+import { getDate, getDateDiff } from '../../../../lib/rocketchat-dates';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 import { messageArgs } from './messageArgs';
 import { roomTypes, canDeleteMessage } from '../../../utils/client';
@@ -272,11 +272,11 @@ Meteor.startup(async function() {
 			if (blockEditInMinutes) {
 				let msgTs;
 				if (message.ts != null) {
-					msgTs = moment(message.ts);
+					msgTs = getDate(message.ts);
 				}
 				let currentTsDiff;
 				if (msgTs != null) {
-					currentTsDiff = moment().diff(msgTs, 'minutes');
+					currentTsDiff = getDateDiff(getDate(), msgTs, 'minutes');
 				}
 				return currentTsDiff < blockEditInMinutes;
 			}

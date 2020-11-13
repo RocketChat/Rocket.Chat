@@ -1,5 +1,4 @@
-import moment from 'moment-timezone';
-
+import { guessTimeZoneDate, getDate, utcOffsetDate } from '../../../lib/rocketchat-dates';
 import { Migrations } from '../../../app/migrations/server';
 import { LivechatBusinessHours } from '../../../app/models/server/raw';
 import { LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
@@ -20,8 +19,8 @@ const updateBusinessHours = async () => {
 		$set: {
 			type: LivechatBusinessHourTypes.DEFAULT,
 			timezone: {
-				name: moment.tz.guess(),
-				utc: String(moment().utcOffset() / 60),
+				name: guessTimeZoneDate(),
+				utc: String(utcOffsetDate(getDate()) / 60),
 			},
 		},
 	});

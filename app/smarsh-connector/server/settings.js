@@ -1,7 +1,5 @@
-import moment from 'moment';
-
 import { settings } from '../../settings';
-import 'moment-timezone';
+import { namesTimeZoneDate } from '../../../lib/rocketchat-dates';
 
 settings.addGroup('Smarsh', function addSettings() {
 	this.add('Smarsh_Enabled', false, {
@@ -27,7 +25,7 @@ settings.addGroup('Smarsh', function addSettings() {
 		placeholder: 'no-email@example.com',
 	});
 
-	const zoneValues = moment.tz.names().map(function _timeZonesToSettings(name) {
+	const zoneValues = namesTimeZoneDate().map(function _timeZonesToSettings(name) {
 		return {
 			key: name,
 			i18nLabel: name,

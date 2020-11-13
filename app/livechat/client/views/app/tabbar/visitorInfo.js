@@ -5,9 +5,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-import moment from 'moment';
 import UAParser from 'ua-parser-js';
 
+import { getDateWithFormat, getDate } from '../../../../../../lib/rocketchat-dates';
 import { modal } from '../../../../../ui-utils';
 import { Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
@@ -118,14 +118,14 @@ Template.visitorInfo.helpers({
 		if (!this.createdAt) {
 			return '';
 		}
-		return moment(this.createdAt).format('L LTS');
+		return getDateWithFormat(getDate(this.createdAt), 'L LTS');
 	},
 
 	lastLogin() {
 		if (!this.lastLogin) {
 			return '';
 		}
-		return moment(this.lastLogin).format('L LTS');
+		return getDateWithFormat(getDate(this.lastLogin), 'L LTS');
 	},
 
 	editing() {

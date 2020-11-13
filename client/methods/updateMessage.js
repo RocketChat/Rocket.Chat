@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import _ from 'underscore';
-import moment from 'moment';
 import toastr from 'toastr';
 
+import { getDateDiff, getDate } from '../../lib/rocketchat-dates';
 import { t } from '../../app/utils';
 import { ChatMessage } from '../../app/models';
 import { hasAtLeastOnePermission } from '../../app/authorization';
@@ -39,9 +39,9 @@ Meteor.methods({
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
 		if (_.isNumber(blockEditInMinutes) && blockEditInMinutes !== 0) {
 			if (originalMessage.ts) {
-				const msgTs = moment(originalMessage.ts);
+				const msgTs = getDate(originalMessage.ts);
 				if (msgTs) {
-					const currentTsDiff = moment().diff(msgTs, 'minutes');
+					const currentTsDiff = getDateDiff(getDate(), msgTs, 'minutes');
 					if (currentTsDiff > blockEditInMinutes) {
 						toastr.error(t('error-message-editing-blocked'));
 						return false;

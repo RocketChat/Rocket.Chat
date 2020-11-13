@@ -1,8 +1,8 @@
-import moment from 'moment';
+import { cloneDate, getDateWithFormat, getDate, getNativeDate, getDateDiff } from '../../../../../lib/rocketchat-dates';
 
-export const convertDateToInt = (date) => parseInt(moment(date).clone().format('YYYYMMDD'));
-export const convertIntToDate = (intValue) => moment(intValue, 'YYYYMMDD').clone().toDate();
-export const diffBetweenDays = (start, end) => moment(new Date(start)).clone().diff(new Date(end), 'days');
+export const convertDateToInt = (date) => parseInt(getDateWithFormat(cloneDate(getDate(date)), 'YYYYMMDD'));
+export const convertIntToDate = (intValue) => getNativeDate(cloneDate(getDate(intValue, 'YYYYMMDD')));
+export const diffBetweenDays = (start, end) => getDateDiff(cloneDate(getDate(new Date(start))), new Date(end), 'days');
 export const diffBetweenDaysInclusive = (start, end) => diffBetweenDays(start, end) + 1;
 
 export const getTotalOfWeekItems = (weekItems, property) => weekItems.reduce((acc, item) => {

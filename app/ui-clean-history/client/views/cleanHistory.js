@@ -3,8 +3,8 @@ import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import moment from 'moment';
 
+import { getDateWithFormat, getDate } from '../../../../lib/rocketchat-dates';
 import { ChatRoom } from '../../../models';
 import { t, roomTypes } from '../../../utils';
 import { settings } from '../../../settings';
@@ -198,17 +198,17 @@ Template.cleanHistory.onRendered(function() {
 		if (metaFromDate && metaToDate) {
 			this.warningBox.set(t('Prune_Warning_between', {
 				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
+				sprintf: [filesOrMessages, getRoomName(), getDateWithFormat(getDate(fromDate), 'L LT'), getDateWithFormat(getDate(toDate), 'L LT')],
 			}) + exceptPinned + ifFrom);
 		} else if (metaFromDate) {
 			this.warningBox.set(t('Prune_Warning_after', {
 				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, getRoomName(), moment(fromDate).format('L LT')],
+				sprintf: [filesOrMessages, getRoomName(), getDateWithFormat(getDate(fromDate), 'L LT')],
 			}) + exceptPinned + ifFrom);
 		} else if (metaToDate) {
 			this.warningBox.set(t('Prune_Warning_before', {
 				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, getRoomName(), moment(toDate).format('L LT')],
+				sprintf: [filesOrMessages, getRoomName(), getDateWithFormat(getDate(toDate), 'L LT')],
 			}) + exceptPinned + ifFrom);
 		} else {
 			this.warningBox.set(t('Prune_Warning_all', {

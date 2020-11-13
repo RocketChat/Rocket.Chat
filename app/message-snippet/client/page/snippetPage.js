@@ -1,8 +1,8 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import moment from 'moment';
 
+import { getDateWithFormat, getDate } from '../../../../lib/rocketchat-dates';
 import { DateFormat } from '../../../lib';
 import { settings } from '../../../settings';
 import { Markdown } from '../../../markdown/client';
@@ -24,7 +24,7 @@ Template.snippetPage.helpers({
 	date() {
 		const snippet = Template.instance().message.get();
 		if (snippet !== undefined) {
-			return moment(snippet.ts).format(settings.get('Message_DateFormat'));
+			return getDateWithFormat(getDate(snippet.ts, settings.get('Message_DateFormat')));
 		}
 	},
 	time() {

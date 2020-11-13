@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
-import moment from 'moment';
 
+import { getDate, getDateWithFormat } from '../../lib/rocketchat-dates';
 import { useSetting } from '../contexts/SettingsContext';
 
 export const useFormatDate = () => {
 	const format = useSetting('Message_DateFormat');
-	return useCallback((time) => moment(time).format(format), [format]);
+	return useCallback((time) => getDateWithFormat(getDate(time), format), [format]);
 };

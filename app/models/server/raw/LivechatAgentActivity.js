@@ -1,5 +1,4 @@
-import moment from 'moment';
-
+import { getDate, getDateWithFormat } from '../../../../lib/rocketchat-dates';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatAgentActivityRaw extends BaseRaw {
@@ -71,8 +70,8 @@ export class LivechatAgentActivityRaw extends BaseRaw {
 		const match = {
 			$match: {
 				date: {
-					$gte: parseInt(moment(start).format('YYYYMMDD')),
-					$lte: parseInt(moment(end).format('YYYYMMDD')),
+					$gte: parseInt(getDateWithFormat(getDate(start), 'YYYYMMDD')),
+					$lte: parseInt(getDateWithFormat(getDate(end), 'YYYYMMDD')),
 				},
 			},
 		};

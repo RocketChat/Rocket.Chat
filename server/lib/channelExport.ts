@@ -1,10 +1,10 @@
 import path from 'path';
 
-import moment from 'moment';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import mkdirp from 'mkdirp';
 
+import { localeDate, getDate, getDateWithFormat } from '../../lib/rocketchat-dates';
 import * as Mailer from '../../app/mailer';
 import { Messages, Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
@@ -75,20 +75,20 @@ export const sendViaEmail = (data: ExportEmail, user: IUser): ISentViaEmail => {
 	const email = user.emails?.[0]?.address;
 	const lang = data.language || user.language || 'en';
 
-	const localMoment = moment();
+	const localMoment = getDate();
 
 	if (lang !== 'en') {
 		const localeFn = getMomentLocale(lang);
 		if (localeFn) {
-			Function(localeFn).call({ moment });
-			localMoment.locale(lang);
+			Function(localeFn).call({ getDate });
+			localeDate(localMoment, lang);
 		}
 	}
 
 	const html = Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
 		sort: {	ts: 1 },
 	}).fetch().map(function(message: any) {
-		const dateTime = moment(message.ts).locale(lang).format('L LT');
+		const dateTime = getDateWithFormat(localeDate(getDate(message.ts), lang), 'L LT');
 		return `<p style='margin-bottom: 5px'><b>${ message.u.username }</b> <span style='color: #aaa; font-size: 12px'>${ dateTime }</span><br/>${ Message.parse(message, data.language) }</p>`;
 	}).join('');
 

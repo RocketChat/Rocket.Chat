@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import moment from 'moment';
 
+import { getDate, getDateDiff } from '../../../../lib/rocketchat-dates';
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
 import { settings } from '../../../settings';
@@ -28,7 +28,7 @@ export function executeSendMessage(uid, message) {
 	}
 
 	if (message.ts) {
-		const tsDiff = Math.abs(moment(message.ts).diff());
+		const tsDiff = Math.abs(getDateDiff(getDate(message.ts)));
 		if (tsDiff > 60000) {
 			throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
 				method: 'sendMessage',

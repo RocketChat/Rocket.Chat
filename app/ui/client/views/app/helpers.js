@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { getDateWithFormat, getDate } from '../../../../../lib/rocketchat-dates';
 
 export function timeAgo(time, t, now = new Date()) {
 	if (!time) {
@@ -11,9 +11,9 @@ export function timeAgo(time, t, now = new Date()) {
 	const isToday = time.getFullYear() >= today.getFullYear() && time.getMonth() >= today.getMonth() && time.getDate() >= today.getDate();
 	const wasYesterday = time.getFullYear() >= yesterday.getFullYear() && time.getMonth() >= yesterday.getMonth() && time.getDate() >= yesterday.getDate();
 
-	const todayFormatted = isToday && moment(time).format('LT');
+	const todayFormatted = isToday && getDateWithFormat(getDate(time), 'LT');
 	const yesterdayFormatted = wasYesterday && t('yesterday');
-	const beforeFormatted = moment(time).format('MMM D, YYYY');
+	const beforeFormatted = getDateWithFormat(getDate(time), 'MMM D, YYYY');
 
 	return todayFormatted || yesterdayFormatted || beforeFormatted;
 }

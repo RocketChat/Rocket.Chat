@@ -1,8 +1,8 @@
 import { ResponsivePie } from '@nivo/pie';
 import { Box, Flex, Icon, Margins, Select, Skeleton, Table, Tile, ActionButton } from '@rocket.chat/fuselage';
-import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
+import { subtractDate, setDate, getDate, toISODate } from '../../../../../../lib/rocketchat-dates';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { LegendSymbol } from '../data/LegendSymbol';
@@ -24,20 +24,20 @@ export function MessagesPerChannelSection() {
 		switch (periodId) {
 			case 'last 7 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 7, 'days'),
+					end: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 1),
 				};
 
 			case 'last 30 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 30, 'days'),
+					end: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 1),
 				};
 
 			case 'last 90 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 90, 'days'),
+					end: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 1),
 				};
 		}
 	}, [periodId]);
@@ -45,8 +45,8 @@ export function MessagesPerChannelSection() {
 	const handlePeriodChange = (periodId) => setPeriodId(periodId);
 
 	const params = useMemo(() => ({
-		start: period.start.toISOString(),
-		end: period.end.toISOString(),
+		start: toISODate(period.start),
+		end: toISODate(period.end),
 	}), [period]);
 
 	const pieData = useEndpointData('engagement-dashboard/messages/origin', params);

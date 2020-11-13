@@ -1,8 +1,8 @@
-import moment from 'moment';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { getDateWithFormat, getDateCalendar, getDate } from '../../../../lib/rocketchat-dates';
 import { getUserPreference, t } from '../../../utils';
 import { settings } from '../../../settings';
 
@@ -21,20 +21,20 @@ export const formatTime = (time) => {
 	switch (clockMode) {
 		case 1:
 		case 2:
-			return moment(time).format(sameDay);
+			return getDateWithFormat(getDate(time), sameDay);
 		default:
-			return moment(time).format(settings.get('Message_TimeFormat'));
+			return getDateWithFormat(getDate(time), settings.get('Message_TimeFormat'));
 	}
 };
 
 export const formatDateAndTime = (time) => {
 	switch (clockMode) {
 		case 1:
-			return moment(time).format('MMMM D, Y h:mm A');
+			return getDateWithFormat(getDate(time), 'MMMM D, Y h:mm A');
 		case 2:
-			return moment(time).format('MMMM D, Y H:mm');
+			return getDateWithFormat(getDate(time), 'MMMM D, Y H:mm');
 		default:
-			return moment(time).format(settings.get('Message_TimeAndDateFormat'));
+			return getDateWithFormat(getDate(time), settings.get('Message_TimeAndDateFormat'));
 	}
 };
 
@@ -43,11 +43,11 @@ const sameElse = function(now) {
 	return diff < 0 ? 'MMM D YYYY' : 'MMM D';
 };
 
-export const timeAgo = (date) => moment(date).calendar(null, {
+export const timeAgo = (date) => getDateCalendar(getDate(date), null, {
 	lastDay: `[${ lastDay }]`,
 	sameDay,
 	lastWeek: 'dddd',
 	sameElse,
 });
 
-export const formatDate = mem((time) => moment(time).format(settings.get('Message_DateFormat')), { maxAge: 5000 });
+export const formatDate = mem((time) => getDateWithFormat(getDate(time), settings.get('Message_DateFormat')), { maxAge: 5000 });

@@ -1,4 +1,3 @@
-import moment from 'moment';
 import toastr from 'toastr';
 import _ from 'underscore';
 import s from 'underscore.string';
@@ -8,6 +7,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
+import { getDate, getDateDiff } from '../../../../lib/rocketchat-dates';
 import { KonchatNotification } from './notification';
 import { MsgTyping } from './msgTyping';
 import { fileUpload } from './fileUpload';
@@ -195,10 +195,10 @@ export class ChatMessages {
 			let currentTsDiff;
 			let msgTs;
 			if (message.ts) {
-				msgTs = moment(message.ts);
+				msgTs = getDate(message.ts);
 			}
 			if (msgTs) {
-				currentTsDiff = moment().diff(msgTs, 'minutes');
+				currentTsDiff = getDateDiff(getDate(), msgTs, 'minutes');
 			}
 			if (currentTsDiff > blockEditInMinutes) {
 				return;
@@ -500,11 +500,11 @@ export class ChatMessages {
 		if (blockDeleteInMinutes && forceDelete === false) {
 			let msgTs;
 			if (ts) {
-				msgTs = moment(ts);
+				msgTs = getDate(ts);
 			}
 			let currentTsDiff;
 			if (msgTs) {
-				currentTsDiff = moment().diff(msgTs, 'minutes');
+				currentTsDiff = getDateDiff(getDate(), msgTs, 'minutes');
 			}
 			if (currentTsDiff > blockDeleteInMinutes) {
 				toastr.error(t('Message_deleting_blocked'));

@@ -1,8 +1,8 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import moment from 'moment';
 import _ from 'underscore';
 
+import { getDateWithFormat, getDate } from '../../../../../../lib/rocketchat-dates';
 import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import './visitorNavigation.html';
@@ -40,7 +40,7 @@ Template.visitorNavigation.helpers({
 	},
 
 	accessDateTime() {
-		return moment(this.ts).format('L LTS');
+		return getDateWithFormat(getDate(this.ts), 'L LTS');
 	},
 
 });

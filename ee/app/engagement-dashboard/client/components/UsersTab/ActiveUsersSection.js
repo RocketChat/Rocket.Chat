@@ -1,8 +1,20 @@
 import { ResponsiveLine } from '@nivo/line';
 import { Box, Flex, Skeleton, Tile, ActionButton } from '@rocket.chat/fuselage';
-import moment from 'moment';
 import React, { useMemo } from 'react';
 
+import {
+	subtractDate,
+	setDate,
+	getDate,
+	cloneDate,
+	toISODate,
+	getNativeDate,
+	addDate,
+	getDateDiff,
+	getDateWithUTC,
+	getDateInstance,
+	getDateWithFormat,
+} from '../../../../../../lib/rocketchat-dates';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import CounterSet from '../../../../../../client/components/data/CounterSet';
@@ -14,13 +26,13 @@ export function ActiveUsersSection() {
 	const t = useTranslation();
 
 	const period = useMemo(() => ({
-		start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-		end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+		start: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 30, 'days'),
+		end: subtractDate(setDate(getDate(), { hour: 0, minute: 0, second: 0, millisecond: 0 }), 1),
 	}), []);
 
 	const params = useMemo(() => ({
-		start: period.start.clone().subtract(30, 'days').toISOString(),
-		end: period.end.toISOString(),
+		start: toISODate(subtractDate(cloneDate(period.start), 30, 'days')),
+		end: toISODate(period.end),
 	}), [period]);
 
 	const data = useEndpointData('engagement-dashboard/users/active-users', params);
@@ -41,11 +53,11 @@ export function ActiveUsersSection() {
 		}
 
 		const createPoint = (i) => ({
-			x: moment(period.start).add(i, 'days').toDate(),
+			x: getNativeDate(addDate(getDate(period.start), i, 'days')),
 			y: 0,
 		});
 
-		const createPoints = () => Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => createPoint(i));
+		const createPoints = () => Array.from({ length: getDateDiff(getDate(period.end), period.start, 'days') + 1 }, (_, i) => createPoint(i));
 
 		const distributeValueOverPoints = (value, i, T, array, prev) => {
 			for (let j = 0; j < T; ++j) {
@@ -73,7 +85,7 @@ export function ActiveUsersSection() {
 		const prevMauValue = createPoint(-1);
 
 		for (const { users, day, month, year } of data.month) {
-			const i = moment.utc([year, month - 1, day, 0, 0, 0, 0]).diff(period.start, 'days');
+			const i = getDateDiff(getDateWithUTC(getDateInstance(), [year, month - 1, day, 0, 0, 0, 0]), period.start, 'days');
 			distributeValueOverPoints(users, i, 1, dauValues, prevDauValue);
 			distributeValueOverPoints(users, i, 7, wauValues, prevWauValue);
 			distributeValueOverPoints(users, i, 30, mauValues, prevMauValue);
@@ -192,7 +204,7 @@ export function ActiveUsersSection() {
 										tickPadding: 4,
 										tickRotation: 0,
 										tickValues: 'every 3 days',
-										format: (date) => moment(date).format(dauValues.length === 7 ? 'dddd' : 'L'),
+										format: (date) => getDateWithFormat(getDate(date), dauValues.length === 7 ? 'dddd' : 'L'),
 									}}
 									animate={true}
 									motionStiffness={90}

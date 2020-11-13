@@ -1,7 +1,7 @@
-import moment from 'moment-timezone';
 import { ObjectId } from 'mongodb';
 import { Mongo } from 'meteor/mongo';
 
+import { guessTimeZoneDate, getDateWithUTC, utcOffsetDate, getDate, getDateWithFormat } from '../../../lib/rocketchat-dates';
 import { Migrations } from '../../../app/migrations/server';
 import { Permissions, Settings } from '../../../app/models/server';
 import { LivechatBusinessHours } from '../../../app/models/server/raw';
@@ -32,31 +32,31 @@ const migrateCollection = () => {
 			start: {
 				time: officeHour.start,
 				utc: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').utc().format('HH:mm'),
+					dayOfWeek: getDateWithFormat(getDateWithUTC(getDate(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm')), 'dddd'),
+					time: getDateWithFormat(getDateWithUTC(getDate(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm')), 'HH:mm'),
 				},
 				cron: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').format('HH:mm'),
+					dayOfWeek: getDateWithFormat(getDate(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm'), 'dddd'),
+					time: getDateWithFormat(getDate(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm'), 'HH:mm'),
 				},
 			},
 			finish: {
 				time: officeHour.finish,
 				utc: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('HH:mm'),
+					dayOfWeek: getDateWithFormat(getDateWithUTC(getDate(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm')), 'dddd'),
+					time: getDateWithFormat(getDateWithUTC(getDate(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm')), 'HH:mm'),
 				},
 				cron: {
-					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').format('dddd'),
-					time: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').format('HH:mm'),
+					dayOfWeek: getDateWithFormat(getDate(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm'), 'dddd'),
+					time: getDateWithFormat(getDate(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm'), 'HH:mm'),
 				},
 			},
 			code: officeHour.code,
 			open: officeHour.open,
 		})),
 		timezone: {
-			name: moment.tz.guess(),
-			utc: moment().utcOffset() / 60,
+			name: guessTimeZoneDate(),
+			utc: utcOffsetDate(getDate()) / 60,
 		},
 	};
 	if (LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count() === 0) {

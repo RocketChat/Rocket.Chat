@@ -1,11 +1,11 @@
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import moment from 'moment';
 import { ReactiveVar } from 'meteor/reactive-var';
 import './contactChatHistory.html';
 import './contactChatHistoryItem.html';
 import _ from 'underscore';
 
+import { getDateWithFormat, getDate } from '../../../../../../lib/rocketchat-dates';
 import { t, APIClient } from '../../../../../utils/client';
 
 
@@ -124,7 +124,7 @@ Template.contactChatHistory.events({
 		const { _id: rid, v: { name, username } = { }, closedAt } = this;
 
 		const closedAtLabel = t('Closed_At');
-		const closedDay = moment(closedAt).format('MMM D YYYY');
+		const closedDay = getDateWithFormat(getDate(closedAt), 'MMM D YYYY');
 
 		instance.chatHistoryMessagesContext.set({
 			label: `${ name || username }, ${ closedAtLabel } ${ closedDay }`,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import moment from 'moment';
 
+import { utcOffsetDate, getDate } from '../../lib/rocketchat-dates';
 import { useFormatTime } from './useFormatTime';
 
 export const useTimezoneTime = (offset, interval = 1000) => {
@@ -10,7 +10,7 @@ export const useTimezoneTime = (offset, interval = 1000) => {
 		if (offset === undefined) {
 			return;
 		}
-		const update = () => setTime(moment().utcOffset(offset));
+		const update = () => setTime(utcOffsetDate(getDate(), offset));
 		const timer = setInterval(update, interval);
 		update();
 		return () => clearInterval(timer);

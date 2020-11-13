@@ -3,10 +3,9 @@
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
-import moment from 'moment';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-
+import { getDate, getDateWithFormat } from '../../../lib/rocketchat-dates';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
@@ -136,8 +135,8 @@ function CurrentChatsRoute() {
 		<Table.Cell withTruncatedText>{fname}</Table.Cell>
 		<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
 		<Table.Cell withTruncatedText>{servedBy && servedBy.username}</Table.Cell>
-		<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
-		<Table.Cell withTruncatedText>{moment(lm).format('L LTS')}</Table.Cell>
+		<Table.Cell withTruncatedText>{getDateWithFormat(getDate(ts), 'L LTS')}</Table.Cell>
+		<Table.Cell withTruncatedText>{getDateWithFormat(getDate(lm), 'L LTS')}</Table.Cell>
 		<Table.Cell withTruncatedText>{open ? t('Open') : t('Closed')}</Table.Cell>
 		{!open && <RemoveChatButton _id={_id} reload={reload}/>}
 	</Table.Row>, [onRowClick, reload, t]);

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
 
+import { getDate, getDateDiff } from '../../../../lib/rocketchat-dates';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks/server';
@@ -341,7 +341,7 @@ export async function sendAllNotifications(message, room) {
 		return message;
 	}
 
-	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
+	if (message.ts && Math.abs(getDateDiff(getDate(message.ts))) > 60000) {
 		return message;
 	}
 

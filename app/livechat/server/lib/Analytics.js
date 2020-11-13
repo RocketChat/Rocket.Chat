@@ -1,14 +1,13 @@
-import moment from 'moment';
-
+import { getDate, checkDateIsValid, getDateDiff, addDate, getDateWithFormat, getDateDayOfWeek } from '../../../../lib/rocketchat-dates';
 import { LivechatRooms } from '../../../models';
 import { secondsToHHMMSS } from '../../../utils/server';
 
 export const Analytics = {
 	getAgentOverviewData(options) {
-		const from = moment(options.daterange.from);
-		const to = moment(options.daterange.to);
+		const from = getDate(options.daterange.from);
+		const to = getDate(options.daterange.to);
 
-		if (!(moment(from).isValid() && moment(to).isValid())) {
+		if (!(checkDateIsValid(getDate(from)) && checkDateIsValid(getDate(to)))) {
 			console.log('livechat:getAgentOverviewData => Invalid dates');
 			return;
 		}
@@ -30,10 +29,10 @@ export const Analytics = {
 			return;
 		}
 
-		const from = moment(options.daterange.from);
-		const to = moment(options.daterange.to);
+		const from = getDate(options.daterange.from);
+		const to = getDate(options.daterange.to);
 
-		if (!(moment(from).isValid() && moment(to).isValid())) {
+		if (!(checkDateIsValid(getDate(from)) && checkDateIsValid(getDate(to)))) {
 			console.log('livechat:getAnalyticsChartData => Invalid dates');
 			return;
 		}
@@ -47,25 +46,25 @@ export const Analytics = {
 
 		const { departmentId } = options;
 
-		if (from.diff(to) === 0) {	// data for single day
-			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'hours')) {
-				const hour = m.format('H');
-				data.dataLabels.push(`${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour) + 1) % 24, ['H']).format('hA') }`);
+		if (getDateWithFormat(from, to) === 0) {	// data for single day
+			for (let m = getDate(from); getDateDiff(m, to, 'days') <= 0; addDate(m, 1, 'hours')) {
+				const hour = getDateWithFormat(m, 'H');
+				data.dataLabels.push(`${ getDateWithFormat(getDate(hour, ['H']), 'hA') }-${ getDateWithFormat(getDate((parseInt(hour) + 1) % 24, ['H']), 'hA') }`);
 
 				const date = {
 					gte: m,
-					lt: moment(m).add(1, 'hours'),
+					lt: addDate(getDate(m), 1, 'hours'),
 				};
 
 				data.dataPoints.push(this.ChartData[options.chartOptions.name](date, departmentId));
 			}
 		} else {
-			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'days')) {
-				data.dataLabels.push(m.format('M/D'));
+			for (let m = getDate(from); getDateDiff(m, to, 'days') <= 0; addDate(m, 1, 'days')) {
+				data.dataLabels.push(getDateWithFormat(m, 'M/D'));
 
 				const date = {
 					gte: m,
-					lt: moment(m).add(1, 'days'),
+					lt: addDate(getDate(m), 1, 'days'),
 				};
 
 				data.dataPoints.push(this.ChartData[options.chartOptions.name](date, departmentId));
@@ -76,11 +75,11 @@ export const Analytics = {
 	},
 
 	getAnalyticsOverviewData(options) {
-		const from = moment(options.daterange.from);
-		const to = moment(options.daterange.to);
+		const from = getDate(options.daterange.from);
+		const to = getDate(options.daterange.to);
 		const { departmentId } = options;
 
-		if (!(moment(from).isValid() && moment(to).isValid())) {
+		if (!(checkDateIsValid(getDate(from)) && checkDateIsValid(getDate(to)))) {
 			console.log('livechat:getAnalyticsOverviewData => Invalid dates');
 			return;
 		}
@@ -256,14 +255,14 @@ export const Analytics = {
 				}
 				totalMessages += msgs;
 
-				const weekday = m.format('dddd'); // @string: Monday, Tuesday ...
+				const weekday = getDateWithFormat(m, 'dddd'); // @string: Monday, Tuesday ...
 				totalMessagesOnWeekday.set(weekday, totalMessagesOnWeekday.has(weekday) ? totalMessagesOnWeekday.get(weekday) + msgs : msgs);
 			};
 
-			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'days')) {
+			for (let m = getDate(from); getDateDiff(m, to, 'days') <= 0; addDate(m, 'days')) {
 				const date = {
 					gte: m,
-					lt: moment(m).add(1, 'days'),
+					lt: addDate(getDate(m), 1, 'days'),
 				};
 
 				const result = Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray());
@@ -275,18 +274,18 @@ export const Analytics = {
 			const busiestDay = this.getKeyHavingMaxValue(totalMessagesOnWeekday, '-'); // returns key with max value
 
 			// iterate through all busiestDay in given date-range and find busiest hour
-			for (let m = moment(from).day(busiestDay); m <= to; m.add(7, 'days')) {
+			for (let m = getDateDayOfWeek(getDate(from), busiestDay); m <= to; addDate(m, 7, 'days')) {
 				if (m < from) { continue; }
 
-				for (let h = moment(m); h.diff(m, 'days') <= 0; h.add(1, 'hours')) {
+				for (let h = getDate(m); getDateDiff(h, m, 'days') <= 0; addDate(h, 1, 'hours')) {
 					const date = {
 						gte: h,
-						lt: moment(h).add(1, 'hours'),
+						lt: addDate(getDate(h), 'hours'),
 					};
 					Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray()).forEach(({
 						msgs,
 					}) => {
-						const dayHour = h.format('H');		// @int : 0, 1, ... 23
+						const dayHour = getDateWithFormat(h, 'H');		// @int : 0, 1, ... 23
 						totalMessagesInHour.set(dayHour, totalMessagesInHour.has(dayHour) ? totalMessagesInHour.get(dayHour) + msgs : msgs);
 					});
 				}
@@ -311,7 +310,7 @@ export const Analytics = {
 				value: (totalConversations / days).toFixed(2),
 			}, {
 				title: 'Busiest_time',
-				value: busiestHour > 0 ? `${ moment(busiestHour, ['H']).format('hA') }-${ moment((parseInt(busiestHour) + 1) % 24, ['H']).format('hA') }` : '-',
+				value: busiestHour > 0 ? `${ getDateWithFormat(getDate(busiestHour, ['H']), 'hA') }-${ getDateWithFormat(getDate((parseInt(busiestHour) + 1) % 24, ['H']), 'hA') }` : '-',
 			}];
 
 			return data;

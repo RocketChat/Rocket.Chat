@@ -4,8 +4,8 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import moment from 'moment';
 
+import { getDateWithFormat, getDate } from '../../../../lib/rocketchat-dates';
 import { setupAutogrow } from './messageBoxAutogrow';
 import {
 	formattingButtons,
@@ -386,7 +386,7 @@ Template.messageBox.events({
 			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
 			.map((item) => ({
 				file: item.getAsFile(),
-				name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }`,
+				name: `Clipboard - ${ getDateWithFormat(getDate(), settings.get('Message_TimeAndDateFormat')) }`,
 			}))
 			.filter(({ file }) => file !== null);
 

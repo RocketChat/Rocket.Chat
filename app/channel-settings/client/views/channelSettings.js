@@ -1,6 +1,5 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import moment from 'moment';
 import s from 'underscore.string';
 
 import { erase, hide, leave } from '../../../ui-utils';
@@ -10,6 +9,7 @@ import { hasPermission, hasAllPermission } from '../../../authorization';
 import { roomTypes } from '../../../utils';
 import { ChannelSettings } from '../lib/ChannelSettings';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
+import { relativeTimeThreshold, durationDate, humanizeDate } from '../../../../lib/rocketchat-dates';
 
 createTemplateForComponent('channelSettingsEditing', () => import('../../../../client/channel/ChannelInfo/EditChannel'));
 
@@ -206,13 +206,13 @@ Template.channelSettingsInfo.helpers({
 		return roomExcludePinned(Template.instance().room);
 	},
 	purgeTimeout() {
-		moment.relativeTimeThreshold('s', 60);
-		moment.relativeTimeThreshold('ss', 0);
-		moment.relativeTimeThreshold('m', 60);
-		moment.relativeTimeThreshold('h', 24);
-		moment.relativeTimeThreshold('d', 31);
-		moment.relativeTimeThreshold('M', 12);
+		relativeTimeThreshold('s', 60);
+		relativeTimeThreshold('ss', 0);
+		relativeTimeThreshold('m', 60);
+		relativeTimeThreshold('h', 24);
+		relativeTimeThreshold('d', 31);
+		relativeTimeThreshold('M', 12);
 
-		return moment.duration(roomMaxAge(Template.instance().room) * 1000 * 60 * 60 * 24).humanize();
+		return humanizeDate(durationDate(roomMaxAge(Template.instance().room) * 1000 * 60 * 60 * 24));
 	},
 });

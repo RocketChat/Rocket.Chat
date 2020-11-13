@@ -1,5 +1,13 @@
-import moment from 'moment';
-
+import {
+	getDateEnd,
+	getDateStart,
+	getDate,
+	checkDateIsSame,
+	checkDateIsAfter,
+	addDate,
+	subtractDate,
+	getDateWithFormat,
+} from '../../../../lib/rocketchat-dates';
 import { handleError } from '../../../utils';
 
 
@@ -12,22 +20,22 @@ import { handleError } from '../../../utils';
  * @returns {String} new value
  */
 export const checkDaterangeValue = (value, from, to) => {
-	if (moment().startOf('day').isSame(from) && moment().startOf('day').isSame(to)) {
+	if (checkDateIsSame(getDateStart(getDate(), 'day'), from) && checkDateIsSame(getDateStart(getDate(), 'day'), to)) {
 		return 'today';
 	}
-	if (moment().startOf('day').subtract(1, 'days').isSame(from) && moment().startOf('day').subtract(1, 'days').isSame(to)) {
+	if (checkDateIsSame(subtractDate(getDateStart(getDate(), 'day'), 1, 'days'), from) && checkDateIsSame(subtractDate(getDateStart(getDate(), 'day'), 1, 'days'), to)) {
 		return 'yesterday';
 	}
-	if (moment().startOf('week').isSame(from) && moment().endOf('week').isSame(to)) {
+	if (checkDateIsSame(getDateStart(getDate(), 'week'), from) && checkDateIsSame(getDateEnd(getDate(), 'week'), to)) {
 		return 'this-week';
 	}
-	if (moment().subtract(1, 'weeks').startOf('week').isSame(from) && moment().subtract(1, 'weeks').endOf('week').isSame(to)) {
+	if (checkDateIsSame(getDateStart(subtractDate(getDate(), 1, 'weeks'), 'week'), from) && checkDateIsSame(getDateEnd(subtractDate(getDate(), 1, 'weeks'), 'week'), to)) {
 		return 'prev-week';
 	}
-	if (moment().startOf('month').isSame(from) && moment().endOf('month').isSame(to)) {
+	if (checkDateIsSame(getDateStart(getDate(), 'month'), from) && checkDateIsSame(getDateEnd(getDate(), 'month'), to)) {
 		return 'this-month';
 	}
-	if (moment().subtract(1, 'months').startOf('month').isSame(from) && moment().subtract(1, 'months').endOf('month').isSame(to)) {
+	if (checkDateIsSame(getDateStart(subtractDate(getDate(), 1, 'months'), 'month'), from) && checkDateIsSame(getDateEnd(subtractDate(getDate(), 1, 'months'), 'month'), to)) {
 		return 'prev-month';
 	}
 	return value;
@@ -40,7 +48,7 @@ export const checkDaterangeValue = (value, from, to) => {
  * @param {Date} to
  */
 export const setDateRange = (value, from, to) => {
-	if (moment(from).isAfter(moment())) {
+	if (checkDateIsAfter(getDate(from), getDate())) {
 		return handleError({ details: { errorTitle: 'Invalid_dates' }, error: 'Start_date_incorrect' });
 	}
 
@@ -49,14 +57,14 @@ export const setDateRange = (value, from, to) => {
 
 		return {
 			value,
-			from: moment(from).format('MMM D YYYY'),
-			to: moment(to).format('MMM D YYYY'),
+			from: getDateWithFormat(getDate(from), 'MMM D YYYY'),
+			to: getDateWithFormat(getDate(to), 'MMM D YYYY'),
 		};
 	}
 	return {
 		value: 'this-week',
-		from: moment().startOf('week').format('MMM D YYYY'),
-		to: moment().endOf('week').format('MMM D YYYY'),
+		from: getDateWithFormat(getDateStart(getDate(), 'week'), 'MMM D YYYY'),
+		to: getDateWithFormat(getDateEnd(getDate(), 'week'), 'MMM D YYYY'),
 	};
 };
 
@@ -74,39 +82,36 @@ export const updateDateRange = (currentDaterange, order) => {
 		case 'day':
 			if (order === 1) {
 				return setDateRange('day',
-					moment(currentDaterange.from, 'MMM D YYYY').add(1, 'days').startOf('day'),
-					moment(currentDaterange.to, 'MMM D YYYY').add(1, 'days').startOf('day'));
+					getDateStart(addDate(getDate(currentDaterange.from, 'MMM D YYYY'), 1, 'days'), 'day'),
+					getDateStart(addDate(getDate(currentDaterange.to, 'MMM D YYYY'), 1, 'days'), 'day'));
 			}
 			return setDateRange('day',
-				moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'days').startOf('day'),
-				moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'days').startOf('day'));
-
+				getDateStart(subtractDate(getDate(currentDaterange.from, 'MMM D YYYY'), 1, 'days'), 'day'),
+				getDateStart(subtractDate(getDate(currentDaterange.to, 'MMM D YYYY'), 1, 'days'), 'day'));
 			// break;
 		case 'this-week':
 		case 'prev-week':
 		case 'week':
 			if (order === 1) {
 				return setDateRange('week',
-					moment(currentDaterange.from, 'MMM D YYYY').add(1, 'weeks').startOf('week'),
-					moment(currentDaterange.to, 'MMM D YYYY').add(1, 'weeks').endOf('week'));
+					getDateStart(addDate(getDate(currentDaterange.from, 'MMM D YYYY'), 1, 'weeks'), 'week'),
+					getDateEnd(addDate(getDate(currentDaterange.to, 'MMM D YYYY'), 1, 'weeks'), 'week'));
 			}
 			return setDateRange('week',
-				moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'weeks').startOf('week'),
-				moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'weeks').endOf('week'));
-
+				getDateStart(subtractDate(getDate(currentDaterange.from, 'MMM D YYYY'), 1, 'weeks'), 'week'),
+				getDateEnd(subtractDate(getDate(currentDaterange.to, 'MMM D YYYY'), 1, 'weeks'), 'week'));
 			// break;
 		case 'this-month':
 		case 'prev-month':
 		case 'month':
 			if (order === 1) {
 				return setDateRange('month',
-					moment(currentDaterange.from, 'MMM D YYYY').add(1, 'months').startOf('month'),
-					moment(currentDaterange.to, 'MMM D YYYY').add(1, 'months').endOf('month'));
+					getDateStart(addDate(getDate(currentDaterange.from, 'MMM D YYYY'), 1, 'months'), 'month'),
+					getDateEnd(addDate(getDate(currentDaterange.to, 'MMM D YYYY'), 1, 'months'), 'month'));
 			}
 			return setDateRange('month',
-				moment(currentDaterange.from, 'MMM D YYYY').subtract(1, 'months').startOf('month'),
-				moment(currentDaterange.to, 'MMM D YYYY').subtract(1, 'months').endOf('month'));
-
+				getDateStart(subtractDate(getDate(currentDaterange.from, 'MMM D YYYY'), 1, 'months'), 'month'),
+				getDateEnd(subtractDate(getDate(currentDaterange.to, 'MMM D YYYY'), 1, 'months'), 'month'));
 			// break;
 		case 'custom':
 			handleError({ details: { errorTitle: 'Navigation_didnot_work' }, error: 'You_have_selected_custom_dates' });

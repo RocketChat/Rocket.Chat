@@ -1,8 +1,8 @@
 
-import moment from 'moment';
+import { getDate, getDateWithFormat } from '../../../../lib/rocketchat-dates';
 
 export const getMomentCurrentLabel = () => {
-	const hour = moment(new Date()).format('H');
+	const hour = getDateWithFormat(getDate(new Date()), 'H');
 
-	return `${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour) + 1) % 24, ['H']).format('hA') }`;
+	return `${ getDateWithFormat(getDate(hour, ['H']), 'hA') }-${ getDateWithFormat(getDate((parseInt(hour) + 1) % 24, ['H']), 'hA') }`;
 };

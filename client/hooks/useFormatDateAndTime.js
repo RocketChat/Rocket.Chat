@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import moment from 'moment';
 
+import { getDateWithFormat, getDate } from '../../lib/rocketchat-dates';
 import { useUserPreference } from '../contexts/UserContext';
 import { useSetting } from '../contexts/SettingsContext';
 
@@ -11,11 +11,11 @@ export const useFormatDateAndTime = () => {
 	return useCallback((time) => {
 		switch (clockMode) {
 			case 1:
-				return moment(time).format('MMMM D, Y h:mm A');
+				return getDateWithFormat(getDate(time), 'MMMM D, Y h:mm A');
 			case 2:
-				return moment(time).format('MMMM D, Y H:mm');
+				return getDateWithFormat(getDate(time), 'MMMM D, Y H:mm');
 			default:
-				return moment(time).format(format);
+				return getDateWithFormat(getDate(time), format);
 		}
 	}, [clockMode, format]);
 };
