@@ -103,9 +103,6 @@
 	.sidebar {
 		position: absolute;
 
-		max-width: none;
-	}
-
 		user-select: none;
 		transform: translate3d(0, 0, 0);
 		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
