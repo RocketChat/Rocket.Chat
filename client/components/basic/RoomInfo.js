@@ -28,7 +28,7 @@ export const RoomInfo = function RoomInfo({
 	type,
 	rid,
 	icon,
-	retentionPolicy,
+	retentionPolicy = {},
 	onClickHide,
 	onClickClose,
 	onClickLeave,
@@ -70,6 +70,10 @@ export const RoomInfo = function RoomInfo({
 						<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
 					</Box>
 
+					{broadcast && broadcast !== '' && <Box pbe='x16'>
+						<Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</Label>
+					</Box>}
+
 					{description && description !== '' && <Box pbe='x16'>
 						<Label>{t('Description')}</Label>
 						<Info withTruncatedText={false}>{description}</Info>
@@ -83,10 +87,6 @@ export const RoomInfo = function RoomInfo({
 					{topic && topic !== '' && <Box pbe='x16'>
 						<Label>{t('Topic')}</Label>
 						<Info withTruncatedText={false}>{topic}</Info>
-					</Box>}
-
-					{broadcast && broadcast !== '' && <Box pbe='x16'>
-						<Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</Label>
 					</Box>}
 
 					{retentionPolicyEnabled && (

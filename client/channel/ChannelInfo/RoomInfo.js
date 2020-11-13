@@ -15,10 +15,16 @@ import { RoomManager } from '../../../app/ui-utils/client/lib/RoomManager';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import WarningModal from '../../admin/apps/WarningModal';
 
-const typeMap = {
-	c: 'Channels',
-	p: 'Groups',
-	d: 'DMs',
+const retentionPolicyMaxAge = {
+	c: 'RetentionPolicy_MaxAge_Channels',
+	p: 'RetentionPolicy_MaxAge_Groups',
+	d: 'RetentionPolicy_MaxAge_DMs',
+};
+
+const retentionPolicyAppliesTo = {
+	c: 'RetentionPolicy_AppliesToChannels',
+	p: 'RetentionPolicy_AppliesToGroups',
+	d: 'RetentionPolicy_AppliesToDMs',
 };
 
 export default ({
@@ -31,10 +37,11 @@ export default ({
 	room.type = room.t;
 	const { type, name, broadcast, archived } = room;
 
+	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
-		retentionPolicyEnabled: useSetting('RetentionPolicy_Enabled'),
-		maxAgeDefault: useSetting(`RetentionPolicy_MaxAge_${ typeMap[room.t] }`) || 30,
-		retentionEnabledDefault: useSetting(`RetentionPolicy_AppliesTo${ typeMap[room.t] }`),
+		retentionPolicyEnabled,
+		maxAgeDefault: useSetting(retentionPolicyMaxAge[room.t]) || 30,
+		retentionEnabledDefault: useSetting(retentionPolicyAppliesTo[room.t]),
 		excludePinnedDefault: useSetting('RetentionPolicy_DoNotPrunePinned'),
 		filesOnlyDefault: useSetting('RetentionPolicy_FilesOnly'),
 	};
@@ -47,23 +54,9 @@ export default ({
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const canDeleteChannel = usePermission('delete-c');
-	const canDeletePrivate = usePermission('delete-p');
+	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p');
 
-	const canLeaveChannel = usePermission('leave-c');
-	const canLeavePrivate = usePermission('leave-p');
-
-	const hasDeletePermission = (() => {
-		if (type === 'c' && !canDeleteChannel) { return false; }
-		if (type === 'p' && !canDeletePrivate) { return false; }
-		return true;
-	})();
-
-	const hasLeavePermission = (() => {
-		if (type === 'c' && !canLeaveChannel) { return false; }
-		if (type === 'p' && !canLeavePrivate) { return false; }
-		return true;
-	})();
+	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false;
 
 	const handleDelete = useMutableCallback(() => {
 		const onConfirm = async () => {
@@ -131,10 +124,10 @@ export default ({
 			archived={archived}
 			broadcast={broadcast}
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
-			retentionPolicy={retentionPolicy.retentionPolicyEnabled && retentionPolicy}
+			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickEdit={openEditing}
-			onClickDelete={hasDeletePermission && handleDelete}
-			onClickLeave={hasLeavePermission && handleLeave}
+			onClickDelete={canDelete && handleDelete}
+			onClickLeave={canLeave && handleLeave}
 			onClickHide={handleHide}
 			{...room}
 		/>

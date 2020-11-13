@@ -39,3 +39,16 @@ export const Archived = () => <VerticalBar>
 		archived
 	/>
 </VerticalBar>;
+
+
+export const Broadcast = () => <VerticalBar>
+	<RoomInfo
+		{...room}
+		icon='lock'
+		onClickHide={alert}
+		onClickLeave={alert}
+		onClickEdit={alert}
+		onClickDelete={alert}
+		broadcast
+	/>
+</VerticalBar>;
