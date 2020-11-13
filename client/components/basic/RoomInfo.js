@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Margins, Icon, Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
+import { Box, Margins, Icon, Button, ButtonGroup, Divider, Callout } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
 import RoomAvatar from './avatar/RoomAvatar';
@@ -21,6 +21,7 @@ export const Title = (props) => <UserCard.Username {...props}/>;
 export const RoomInfo = function RoomInfo({
 	name,
 	description,
+	archived,
 	announcement,
 	topic,
 	type,
@@ -48,6 +49,12 @@ export const RoomInfo = function RoomInfo({
 						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
 					</Box>
 
+					{ archived && <Box pbe='x24'>
+						<Callout type='warning'>
+							{t('Room_archived')}
+						</Callout>
+					</Box>}
+
 					<Box pbe='x24'>
 						<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
 					</Box>
@@ -69,14 +76,14 @@ export const RoomInfo = function RoomInfo({
 				</Margins>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
-				<ButtonGroup stretch marginBlockEnd={0}>
-					{ onClickHide && <Button onClick={onClickHide}><Box is='span' mie='x4'><Icon name='eye-off' size='x20' /></Box>{t('Hide')}</Button> }
-					{ onClickLeave && <Button onClick={onClickLeave} danger><Box is='span' mie='x4'><Icon name='sign-out' size='x20' /></Box>{t('Leave')}</Button> }
+				<ButtonGroup stretch>
+					{ onClickHide && <Button width='50%' onClick={onClickHide}><Box is='span' mie='x4'><Icon name='eye-off' size='x20' /></Box>{t('Hide')}</Button> }
+					{ onClickLeave && <Button width='50%' onClick={onClickLeave} danger><Box is='span' mie='x4'><Icon name='sign-out' size='x20' /></Box>{t('Leave')}</Button> }
 				</ButtonGroup>
 				{ (onClickEdit || onClickDelete) && <Divider /> }
-				<ButtonGroup stretch marginBlockEnd={0}>
-					{ onClickEdit && <Button onClick={onClickEdit}><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>{t('Edit')}</Button> }
-					{ onClickDelete && <Button onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Delete')}</Button>}
+				<ButtonGroup stretch>
+					{ onClickEdit && <Button width='50%' onClick={onClickEdit}><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>{t('Edit')}</Button> }
+					{ onClickDelete && <Button width='50%' onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Delete')}</Button>}
 				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>

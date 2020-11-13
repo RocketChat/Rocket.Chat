@@ -26,3 +26,16 @@ export const Default = () => <VerticalBar>
 		onClickDelete={alert}
 	/>
 </VerticalBar>;
+
+
+export const Archived = () => <VerticalBar>
+	<RoomInfo
+		{...room}
+		icon='lock'
+		onClickHide={alert}
+		onClickLeave={alert}
+		onClickEdit={alert}
+		onClickDelete={alert}
+		archived
+	/>
+</VerticalBar>;

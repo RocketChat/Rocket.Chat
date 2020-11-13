@@ -106,6 +106,7 @@ export default (props) => {
 
 	return (
 		<RoomInfo
+			archived={room.archived}
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
 			onClickEdit={openEditing}
 			onClickDelete={canDelete && handleDelete}
