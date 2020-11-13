@@ -16,5 +16,5 @@ export const useShortcutOpenMenu = (ref) => {
 		return () => {
 			unsubscribe();
 		};
-	}, []);
+	}, [ref]);
 };
