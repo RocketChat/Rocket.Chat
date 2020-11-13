@@ -1,6 +1,29 @@
 
 # 3.8.0 (Under Release Candidate Process)
 
+## 3.8.0-rc.12
+`2020-11-13  ·  2 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Channel creation not working on IE ([#19524](https://github.com/RocketChat/Rocket.Chat/pull/19524))
+
+- Custom Emojis PNGs on IE11 ([#19519](https://github.com/RocketChat/Rocket.Chat/pull/19519))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix presence request logic ([#19527](https://github.com/RocketChat/Rocket.Chat/pull/19527))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.8.0-rc.11
 `2020-11-12  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
