@@ -22,11 +22,13 @@ export const RoomInfo = function RoomInfo({
 	name,
 	description,
 	archived,
+	broadcast,
 	announcement,
 	topic,
 	type,
 	rid,
 	icon,
+	retentionPolicy,
 	onClickHide,
 	onClickClose,
 	onClickLeave,
@@ -34,6 +36,15 @@ export const RoomInfo = function RoomInfo({
 	onClickDelete,
 }) {
 	const t = useTranslation();
+
+	const {
+		retentionPolicyEnabled,
+		filesOnlyDefault,
+		excludePinnedDefault,
+		maxAgeDefault,
+	} = retentionPolicy;
+
+	const retentionIcon = <Icon name='warning' />;
 
 	return (
 		<>
@@ -73,6 +84,22 @@ export const RoomInfo = function RoomInfo({
 						<Label>{t('Topic')}</Label>
 						<Info withTruncatedText={false}>{topic}</Info>
 					</Box>}
+
+					{broadcast && broadcast !== '' && <Box pbe='x16'>
+						<Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</Label>
+					</Box>}
+
+					{retentionPolicyEnabled && (
+						<Box pbe='x16'>
+							{filesOnlyDefault && excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_FilesOnly', { max: maxAgeDefault })}</Label>}
+
+							{filesOnlyDefault && !excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { max: maxAgeDefault })}</Label>}
+
+							{!filesOnlyDefault && excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning', { max: maxAgeDefault })}</Label>}
+
+							{!filesOnlyDefault && !excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_Unpinned', { max: maxAgeDefault })}</Label>}
+						</Box>
+					)}
 				</Margins>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>

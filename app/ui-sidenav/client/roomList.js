@@ -179,6 +179,7 @@ const mergeSubRoom = (subscription) => {
 
 
 	subscription.description = room.description;
+	subscription.cl = room.cl;
 	subscription.topic = room.topic;
 	subscription.announcement = room.announcement;
 	subscription.broadcast = room.broadcast;
@@ -197,6 +198,7 @@ const mergeRoomSub = (room) => {
 	}, {
 		$set: {
 			description: room.description,
+			cl: room.cl,
 			topic: room.topic,
 			announcement: room.announcement,
 			broadcast: room.broadcast,

@@ -3,11 +3,11 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import RoomInfo from '../../components/basic/RoomInfo';
 import { useTranslation } from '../../contexts/TranslationContext';
-// import { useSession } from '../../contexts/SessionContext';
 import { useUserSubscription } from '../../contexts/UserContext';
 import { useMethod } from '../../contexts/ServerContext';
 import DeleteChannelWarning from '../../components/DeleteChannelWarning';
 import { useSetModal } from '../../contexts/ModalContext';
+import { useSetting } from '../../contexts/SettingsContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { roomTypes, UiTextContext } from '../../../app/utils';
@@ -15,14 +15,29 @@ import { RoomManager } from '../../../app/ui-utils/client/lib/RoomManager';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import WarningModal from '../../admin/apps/WarningModal';
 
-export default (props) => {
+const typeMap = {
+	c: 'Channels',
+	p: 'Groups',
+	d: 'DMs',
+};
+
+export default ({
+	openEditing,
+	rid,
+}) => {
 	const t = useTranslation();
 
-	const { openEditing, rid } = props;
-	// const rid = useSession('openedRoom');
 	const room = useUserSubscription(rid);
 	room.type = room.t;
-	const { type, name } = room;
+	const { type, name, broadcast, archived } = room;
+
+	const retentionPolicy = {
+		retentionPolicyEnabled: useSetting('RetentionPolicy_Enabled'),
+		maxAgeDefault: useSetting(`RetentionPolicy_MaxAge_${ typeMap[room.t] }`) || 30,
+		retentionEnabledDefault: useSetting(`RetentionPolicy_AppliesTo${ typeMap[room.t] }`),
+		excludePinnedDefault: useSetting('RetentionPolicy_DoNotPrunePinned'),
+		filesOnlyDefault: useSetting('RetentionPolicy_FilesOnly'),
+	};
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -32,18 +47,25 @@ export default (props) => {
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const canDelete = usePermission(`delete-${ room.t }`);
-	// const canLeaveChannel = usePermission('leave-c');
-	// const canLeavePrivate = usePermission('leave-p');
+	const canDeleteChannel = usePermission('delete-c');
+	const canDeletePrivate = usePermission('delete-p');
 
-	// const canLeave = (() => {
-	// 	if (type === 'c' && !canLeaveChannel) { return false; }
-	// 	if (type === 'p' && !canLeavePrivate) { return false; }
-	// 	return !(((cl != null) && !cl) || ['d', 'l'].includes(type));
-	// })();
+	const canLeaveChannel = usePermission('leave-c');
+	const canLeavePrivate = usePermission('leave-p');
+
+	const hasDeletePermission = (() => {
+		if (type === 'c' && !canDeleteChannel) { return false; }
+		if (type === 'p' && !canDeletePrivate) { return false; }
+		return true;
+	})();
+
+	const hasLeavePermission = (() => {
+		if (type === 'c' && !canLeaveChannel) { return false; }
+		if (type === 'p' && !canLeavePrivate) { return false; }
+		return true;
+	})();
 
 	const handleDelete = useMutableCallback(() => {
-		const onCancel = () => setModal(undefined);
 		const onConfirm = async () => {
 			try {
 				await deleteRoom(rid);
@@ -51,10 +73,10 @@ export default (props) => {
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
-			onCancel();
+			closeModal();
 		};
 
-		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
+		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={closeModal} />);
 	});
 
 	const handleLeave = useMutableCallback(() => {
@@ -106,11 +128,13 @@ export default (props) => {
 
 	return (
 		<RoomInfo
-			archived={room.archived}
+			archived={archived}
+			broadcast={broadcast}
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
+			retentionPolicy={retentionPolicy.retentionPolicyEnabled && retentionPolicy}
 			onClickEdit={openEditing}
-			onClickDelete={canDelete && handleDelete}
-			onClickLeave={handleLeave}
+			onClickDelete={hasDeletePermission && handleDelete}
+			onClickLeave={hasLeavePermission && handleLeave}
 			onClickHide={handleHide}
 			{...room}
 		/>
