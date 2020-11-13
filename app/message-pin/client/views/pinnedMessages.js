@@ -37,9 +37,6 @@ Template.pinnedMessages.onCreated(function() {
 			_hidden: { $ne: true },
 			pinned: true,
 			rid: this.data.rid,
-			_updatedAt: {
-				$gt: new Date(),
-			},
 		};
 
 		this.cursor && this.cursor.stop();
