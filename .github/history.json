@@ -51389,6 +51389,80 @@
           ]
         }
       ]
+    },
+    "3.8.0-rc.10": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19508",
+          "title": "Regression: Fix React warnings",
+          "userLogin": "ggazzo",
+          "milestone": "3.8.0",
+          "contributors": [
+            "ggazzo",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19474",
+          "title": "Regression: Fix presence status",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "3.8.0-rc.11": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19498",
+          "title": "Regression: Fix broadcast events when running as monolith",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.0",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19501",
+          "title": "[FIX] Cloud Register Allowing Empty Tokens",
+          "userLogin": "graywolf336",
+          "milestone": "3.8.0",
+          "contributors": [
+            "graywolf336",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19513",
+          "title": "Regression: Fix ephemeral message stream",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
