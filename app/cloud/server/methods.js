@@ -70,6 +70,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'cloud:connectServer' });
 		}
 
+		if (!token) {
+			throw new Meteor.Error('error-invalid-payload', 'Token is required.', { method: 'cloud:connectServer' });
+		}
+
 		return connectWorkspace(token);
 	},
 	'cloud:disconnectWorkspace'() {

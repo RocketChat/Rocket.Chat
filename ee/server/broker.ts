@@ -193,6 +193,10 @@ class NetworkBroker implements IBroker {
 		return this.broker.broadcast(event, args);
 	}
 
+	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		this.broker.broadcastLocal(event, args);
+	}
+
 	async nodeList(): Promise<IBrokerNode[]> {
 		return this.broker.call('$node.list');
 	}
