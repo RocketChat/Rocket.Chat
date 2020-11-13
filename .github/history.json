@@ -51463,6 +51463,45 @@
           ]
         }
       ]
+    },
+    "3.8.0-rc.12": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19527",
+          "title": "Regression: Fix presence request logic",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19519",
+          "title": "[FIX] Custom Emojis PNGs on IE11",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.7.2",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19524",
+          "title": "[FIX] Channel creation not working on IE",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.7.2",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
     }
   }
 }
