@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
 import VerticalBar from './VerticalBar';
-import KeyboardShortcuts from './keyboardShortcuts';
+import KeyboardShortcuts from './KeyboardShortcuts';
 
 export default {
 	title: 'components/basic/KeyboardShortcut',
