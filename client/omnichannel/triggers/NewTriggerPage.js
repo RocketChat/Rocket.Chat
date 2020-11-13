@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, FieldGroup, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, FieldGroup, Box, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import TriggersForm from './TriggersForm';
@@ -65,11 +65,13 @@ const NewTriggerPage = ({ onSave }) => {
 		<FieldGroup>
 			<TriggersForm values={values} handlers={handlers}/>
 		</FieldGroup>
-		<ButtonGroup align='end'>
-			<Button primary onClick={handleSave} disabled={!name}>
-				{t('Save')}
-			</Button>
-		</ButtonGroup>
+		<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
+			<Margins inlineEnd='x4'>
+				<Button flexGrow={1} primary onClick={handleSave} disabled={!name}>
+					{t('Save')}
+				</Button>
+			</Margins>
+		</Box>
 	</>;
 };
 
