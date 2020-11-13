@@ -6,9 +6,9 @@ import VerticalBar from './VerticalBar';
 
 const ShortcutSection = ({ title, command }) =>
 	<Box is='section' mb='x16'>
-		<Box fontSize='x16' fontWeight='700'>{title}</Box>
+		<Box fontScale='p2' fontWeight='700'>{title}</Box>
 		<Divider />
-		<Box dangerouslySetInnerHTML={{ __html: command }} />
+		<Box fontScale='p1'>{command}</Box>
 	</Box>;
 
 const KeyboardShortcuts = () => {
