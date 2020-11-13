@@ -2,10 +2,10 @@
 	{{#if editing}}
 		{{> channelSettingsEditing rid=rid }}
 	{{else}}
-		{{> channelSettingsInfo}}
+		{{> channelSettingsInfo channelData }}
 	{{/if}}
 </template>
-<!-- <template name="channelSettingsInfo">
+<template name="channelSettingsInfodsadasdas">
 	<section class="rc-user-info__scroll{{#if archived}} archived{{/if}}">
 		{{# with settings=settings}}
 			{{#unless isDirectMessage}}
@@ -94,4 +94,4 @@
 	{{#if canDeleteRoom}}
 	<button class="rc-button rc-button-outline rc-button-cancel js-delete rc-button--cancel rc-button--stack" title="{{_ 'Delete'}}">{{> icon icon='trash'}}{{_ 'Delete'}}</button>
 	{{/if}}
-</template> -->
+</template>

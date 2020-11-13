@@ -12,7 +12,10 @@ import { roomTypes } from '../../../utils';
 import { ChannelSettings } from '../lib/ChannelSettings';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
-createTemplateForComponent('channelSettingsEditing', () => import('../../../../client/channel/ChannelInfo/EditChannel'));
+createTemplateForComponent('channelSettingsEditing', () => import('../../../../client/channel/ChannelInfo/EditChannel'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
+
 createTemplateForComponent('channelSettingsInfo', () => import('../../../../client/channel/ChannelInfo/RoomInfo'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
@@ -120,6 +123,13 @@ function roomMaxAge(room) {
 }
 
 Template.channelSettings.helpers({
+	channelData() {
+		const { editing } = Template.instance();
+		return {
+			...Template.currentData(),
+			openEditing: () => editing.set(true),
+		};
+	},
 	rid() {
 		return Template.currentData().rid;
 	},
@@ -196,7 +206,6 @@ Template.channelSettingsInfo.helpers({
 	topic() {
 		return Template.instance().room.topic;
 	},
-
 	channelIcon() {
 		return roomTypes.getIcon(Template.instance().room);
 	},

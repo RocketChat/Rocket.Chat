@@ -27,10 +27,10 @@ export const RoomInfo = function RoomInfo({
 	rid,
 	icon,
 	onClickHide,
+	onClickClose,
 	onClickLeave,
 	onClickEdit,
 	onClickDelete,
-	...props
 }) {
 	const t = useTranslation();
 
@@ -39,10 +39,10 @@ export const RoomInfo = function RoomInfo({
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='info-circled'/>
 				<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
-				<VerticalBar.Close />
+				<VerticalBar.Close onClick={onClickClose} />
 			</VerticalBar.Header>
 
-			<VerticalBar.ScrollableContent p='x24' {...props}>
+			<VerticalBar.ScrollableContent p='x24'>
 				<Margins block='x4'>
 					<Box pbe='x24'>
 						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
@@ -76,7 +76,7 @@ export const RoomInfo = function RoomInfo({
 				{ (onClickEdit || onClickDelete) && <Divider /> }
 				<ButtonGroup stretch marginBlockEnd={0}>
 					{ onClickEdit && <Button onClick={onClickEdit}><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>{t('Edit')}</Button> }
-					{ onClickDelete && <Button onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Trash')}</Button>}
+					{ onClickDelete && <Button onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Delete')}</Button>}
 				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>
