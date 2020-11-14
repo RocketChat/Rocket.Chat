@@ -1,254 +1,12 @@
 
-# 3.8.0 (Under Release Candidate Process)
-
-## 3.8.0-rc.11
-`2020-11-12  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- Cloud Register Allowing Empty Tokens ([#19501](https://github.com/RocketChat/Rocket.Chat/pull/19501))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix broadcast events when running as monolith ([#19498](https://github.com/RocketChat/Rocket.Chat/pull/19498))
-
-- Regression: Fix ephemeral message stream ([#19513](https://github.com/RocketChat/Rocket.Chat/pull/19513))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@graywolf336](https://github.com/graywolf336)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.8.0-rc.10
-`2020-11-11  ·  2 🔍  ·  3 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix presence status ([#19474](https://github.com/RocketChat/Rocket.Chat/pull/19474))
-
-- Regression: Fix React warnings ([#19508](https://github.com/RocketChat/Rocket.Chat/pull/19508))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@dougfabris](https://github.com/dougfabris)
-- [@ggazzo](https://github.com/ggazzo)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 3.8.0-rc.9
-`2020-11-10  ·  3 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix Thread List order ([#19486](https://github.com/RocketChat/Rocket.Chat/pull/19486))
-
-- Remove unecessary return at the send code api ([#19494](https://github.com/RocketChat/Rocket.Chat/pull/19494))
-
-- Update Apps-Engine to latest release ([#19499](https://github.com/RocketChat/Rocket.Chat/pull/19499))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
-- [@rodrigok](https://github.com/rodrigok)
-
-## 3.8.0-rc.8
-`2020-11-09  ·  1 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- OAuth create via environment variable ([#19472](https://github.com/RocketChat/Rocket.Chat/pull/19472))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Micro Services: Do not wait forever for a service. Fail after 10s or 10 minutes if whitelisted ([#19484](https://github.com/RocketChat/Rocket.Chat/pull/19484))
-
-- Regression: Allow apps to schedule jobs along with processor register ([#19416](https://github.com/RocketChat/Rocket.Chat/pull/19416))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@geekgonecrazy](https://github.com/geekgonecrazy)
-- [@rodrigok](https://github.com/rodrigok)
-- [@thassiov](https://github.com/thassiov)
-
-## 3.8.0-rc.7
-`2020-11-09  ·  1 🎉  ·  2 🔍  ·  3 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-
-- Branding updated with new logos ([#19440](https://github.com/RocketChat/Rocket.Chat/pull/19440))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Bump Livechat widget  ([#19478](https://github.com/RocketChat/Rocket.Chat/pull/19478))
-
-- Regression: Fix setting value not being sent over websocket ([#19477](https://github.com/RocketChat/Rocket.Chat/pull/19477))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@renatobecker](https://github.com/renatobecker)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.8.0-rc.6
-`2020-11-07  ·  3 🔍  ·  3 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: `Leave Room` modal not closing ([#19460](https://github.com/RocketChat/Rocket.Chat/pull/19460))
-
-- Regression: Fix livechat permission validations ([#19468](https://github.com/RocketChat/Rocket.Chat/pull/19468))
-
-- Unify ephemeral message events ([#19464](https://github.com/RocketChat/Rocket.Chat/pull/19464))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 3.8.0-rc.5
-`2020-11-04  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Thread list misbehaving ([#19413](https://github.com/RocketChat/Rocket.Chat/pull/19413))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@tassoevan](https://github.com/tassoevan)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 3.8.0-rc.4
-`2020-11-04  ·  5 🔍  ·  5 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Micro Services: Add metrics capability to Services ([#19448](https://github.com/RocketChat/Rocket.Chat/pull/19448))
-
-- Micro Services: Fix logout issue ([#19423](https://github.com/RocketChat/Rocket.Chat/pull/19423))
-
-- Regression: Attachment without title or description show "sent attachment" in view mode extended  ([#19443](https://github.com/RocketChat/Rocket.Chat/pull/19443))
-
-- Regression: Sidebar reactivity when read last messages ([#19449](https://github.com/RocketChat/Rocket.Chat/pull/19449))
-
-- Update Apps-Engine version ([#19385](https://github.com/RocketChat/Rocket.Chat/pull/19385))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 3.8.0-rc.3
-`2020-11-03  ·  5 🔍  ·  3 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Build micro services Docker images with correct tags ([#19418](https://github.com/RocketChat/Rocket.Chat/pull/19418))
-
-- Micro Services: Create internal services and allowed services list ([#19427](https://github.com/RocketChat/Rocket.Chat/pull/19427))
-
-- Micro Services: Prevent duplicated events ([#19435](https://github.com/RocketChat/Rocket.Chat/pull/19435))
-
-- Regression: Sidebar message preview escaping html ([#19382](https://github.com/RocketChat/Rocket.Chat/pull/19382))
-
-- Regression: unable to mark room as read ([#19419](https://github.com/RocketChat/Rocket.Chat/pull/19419))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.8.0-rc.2
-`2020-10-29  ·  4 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Agent Status leading to broken page ([#19409](https://github.com/RocketChat/Rocket.Chat/pull/19409))
-
-- Regression: Fix stream-room-data payload ([#19407](https://github.com/RocketChat/Rocket.Chat/pull/19407))
-
-- Regression: Fix visitor field missing on subscription payload ([#19412](https://github.com/RocketChat/Rocket.Chat/pull/19412))
-
-- Regression: Rocket.Chat Apps updates always fail ([#19411](https://github.com/RocketChat/Rocket.Chat/pull/19411))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@d-gubert](https://github.com/d-gubert)
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.8.0-rc.1
-`2020-10-29  ·  3 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Room item menu display delay ([#19401](https://github.com/RocketChat/Rocket.Chat/pull/19401))
-
-- Regression: Thread component not updating its message list ([#19390](https://github.com/RocketChat/Rocket.Chat/pull/19390))
-
-- Regression: Thread not showing for unloaded message ([#19402](https://github.com/RocketChat/Rocket.Chat/pull/19402))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 3.8.0-rc.0
-`2020-10-27  ·  13 🎉  ·  4 🚀  ·  36 🐛  ·  20 🔍  ·  29 👩‍💻👨‍💻`
+# 3.8.0
+`2020-11-13  ·  14 🎉  ·  4 🚀  ·  40 🐛  ·  54 🔍  ·  30 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.19.0`
 
 ### 🎉 New features
 
@@ -270,6 +28,8 @@
 - Apps prometheus metrics ([#19320](https://github.com/RocketChat/Rocket.Chat/pull/19320))
 
 - Audits search by User ([#19275](https://github.com/RocketChat/Rocket.Chat/pull/19275))
+
+- Branding updated with new logos ([#19440](https://github.com/RocketChat/Rocket.Chat/pull/19440))
 
 - feat(CAS): Adding option to enable/disable user creation from CAS auth ([#17154](https://github.com/RocketChat/Rocket.Chat/pull/17154) by [@jgribonvald](https://github.com/jgribonvald))
 
@@ -313,6 +73,12 @@
 
 - Broken user info when a user don't have an email address ([#19339](https://github.com/RocketChat/Rocket.Chat/pull/19339))
 
+- Channel creation not working on IE ([#19524](https://github.com/RocketChat/Rocket.Chat/pull/19524))
+
+- Cloud Register Allowing Empty Tokens ([#19501](https://github.com/RocketChat/Rocket.Chat/pull/19501))
+
+- Custom Emojis PNGs on IE11 ([#19519](https://github.com/RocketChat/Rocket.Chat/pull/19519))
+
 - Don't send room name on notification ([#19247](https://github.com/RocketChat/Rocket.Chat/pull/19247))
 
 - Error preventing from removing users without a role ([#19204](https://github.com/RocketChat/Rocket.Chat/pull/19204) by [@RohitKumar-200](https://github.com/RohitKumar-200))
@@ -336,6 +102,8 @@
 - Non admin cannot add custom avatar to group ([#18960](https://github.com/RocketChat/Rocket.Chat/pull/18960) by [@FelipeParreira](https://github.com/FelipeParreira))
 
   Allow non-admins to change room avatar.
+
+- OAuth create via environment variable ([#19472](https://github.com/RocketChat/Rocket.Chat/pull/19472))
 
 - Omnichannel - typo error label at current chats page ([#19379](https://github.com/RocketChat/Rocket.Chat/pull/19379))
 
@@ -379,13 +147,27 @@
 <summary>🔍 Minor changes</summary>
 
 
+- Build micro services Docker images with correct tags ([#19418](https://github.com/RocketChat/Rocket.Chat/pull/19418))
+
 - Bump Livechat widget ([#19361](https://github.com/RocketChat/Rocket.Chat/pull/19361))
+
+- Bump Livechat widget  ([#19478](https://github.com/RocketChat/Rocket.Chat/pull/19478))
 
 - Bump object-path from 0.11.4 to 0.11.5 ([#19298](https://github.com/RocketChat/Rocket.Chat/pull/19298) by [@dependabot[bot]](https://github.com/dependabot[bot]))
 
 - Fix Indie Hosters install image ([#19192](https://github.com/RocketChat/Rocket.Chat/pull/19192) by [@aradhya-gupta](https://github.com/aradhya-gupta))
 
 - Merge master into develop & Set version to 3.8.0-develop ([#19060](https://github.com/RocketChat/Rocket.Chat/pull/19060))
+
+- Micro Services: Add metrics capability to Services ([#19448](https://github.com/RocketChat/Rocket.Chat/pull/19448))
+
+- Micro Services: Create internal services and allowed services list ([#19427](https://github.com/RocketChat/Rocket.Chat/pull/19427))
+
+- Micro Services: Do not wait forever for a service. Fail after 10s or 10 minutes if whitelisted ([#19484](https://github.com/RocketChat/Rocket.Chat/pull/19484))
+
+- Micro Services: Fix logout issue ([#19423](https://github.com/RocketChat/Rocket.Chat/pull/19423))
+
+- Micro Services: Prevent duplicated events ([#19435](https://github.com/RocketChat/Rocket.Chat/pull/19435))
 
 - Non-idiomatic React code ([#19303](https://github.com/RocketChat/Rocket.Chat/pull/19303))
 
@@ -395,11 +177,57 @@
 
 - Refactor: Omnichannel departments ([#18920](https://github.com/RocketChat/Rocket.Chat/pull/18920))
 
+- Regression: `Leave Room` modal not closing ([#19460](https://github.com/RocketChat/Rocket.Chat/pull/19460))
+
+- Regression: Agent Status leading to broken page ([#19409](https://github.com/RocketChat/Rocket.Chat/pull/19409))
+
+- Regression: Allow apps to schedule jobs along with processor register ([#19416](https://github.com/RocketChat/Rocket.Chat/pull/19416))
+
+- Regression: Attachment without title or description show "sent attachment" in view mode extended  ([#19443](https://github.com/RocketChat/Rocket.Chat/pull/19443))
+
+- Regression: Fix broadcast events when running as monolith ([#19498](https://github.com/RocketChat/Rocket.Chat/pull/19498))
+
+- Regression: Fix ephemeral message stream ([#19513](https://github.com/RocketChat/Rocket.Chat/pull/19513))
+
+- Regression: Fix livechat permission validations ([#19468](https://github.com/RocketChat/Rocket.Chat/pull/19468))
+
+- Regression: Fix presence request logic ([#19527](https://github.com/RocketChat/Rocket.Chat/pull/19527))
+
+- Regression: Fix presence status ([#19474](https://github.com/RocketChat/Rocket.Chat/pull/19474))
+
+- Regression: Fix React warnings ([#19508](https://github.com/RocketChat/Rocket.Chat/pull/19508))
+
+- Regression: Fix setting value not being sent over websocket ([#19477](https://github.com/RocketChat/Rocket.Chat/pull/19477))
+
+- Regression: Fix stream-room-data payload ([#19407](https://github.com/RocketChat/Rocket.Chat/pull/19407))
+
+- Regression: Fix Thread List order ([#19486](https://github.com/RocketChat/Rocket.Chat/pull/19486))
+
+- Regression: Fix visitor field missing on subscription payload ([#19412](https://github.com/RocketChat/Rocket.Chat/pull/19412))
+
 - Regression: GenericTable.HeaderCell does not accept on click anymore ([#19358](https://github.com/RocketChat/Rocket.Chat/pull/19358))
 
 - Regression: Pass `unset` parameter of updated `userData` notification ([#19380](https://github.com/RocketChat/Rocket.Chat/pull/19380))
 
+- Regression: Prevent network broker from starting when not needed ([#19532](https://github.com/RocketChat/Rocket.Chat/pull/19532))
+
 - Regression: Reassessment of client helpers 'XYZ key should not contain .' ([#19310](https://github.com/RocketChat/Rocket.Chat/pull/19310))
+
+- Regression: Rocket.Chat Apps updates always fail ([#19411](https://github.com/RocketChat/Rocket.Chat/pull/19411))
+
+- Regression: Room item menu display delay ([#19401](https://github.com/RocketChat/Rocket.Chat/pull/19401))
+
+- Regression: Sidebar message preview escaping html ([#19382](https://github.com/RocketChat/Rocket.Chat/pull/19382))
+
+- Regression: Sidebar reactivity when read last messages ([#19449](https://github.com/RocketChat/Rocket.Chat/pull/19449))
+
+- Regression: Thread component not updating its message list ([#19390](https://github.com/RocketChat/Rocket.Chat/pull/19390))
+
+- Regression: Thread list misbehaving ([#19413](https://github.com/RocketChat/Rocket.Chat/pull/19413))
+
+- Regression: Thread not showing for unloaded message ([#19402](https://github.com/RocketChat/Rocket.Chat/pull/19402))
+
+- Regression: unable to mark room as read ([#19419](https://github.com/RocketChat/Rocket.Chat/pull/19419))
 
 - Regression: User card closing ([#19322](https://github.com/RocketChat/Rocket.Chat/pull/19322))
 
@@ -407,9 +235,17 @@
 
 - Remove legacy slider ([#19255](https://github.com/RocketChat/Rocket.Chat/pull/19255))
 
+- Remove unecessary return at the send code api ([#19494](https://github.com/RocketChat/Rocket.Chat/pull/19494))
+
 - Remove WeDeploy from README ([#19342](https://github.com/RocketChat/Rocket.Chat/pull/19342) by [@lucas-andre](https://github.com/lucas-andre))
 
 - Rewrite: Reset Login Form ([#18237](https://github.com/RocketChat/Rocket.Chat/pull/18237))
+
+- Unify ephemeral message events ([#19464](https://github.com/RocketChat/Rocket.Chat/pull/19464))
+
+- Update Apps-Engine to latest release ([#19499](https://github.com/RocketChat/Rocket.Chat/pull/19499))
+
+- Update Apps-Engine version ([#19385](https://github.com/RocketChat/Rocket.Chat/pull/19385))
 
 - Update comment of "issue-close-app" ([#19078](https://github.com/RocketChat/Rocket.Chat/pull/19078))
 
@@ -446,6 +282,7 @@
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
+- [@graywolf336](https://github.com/graywolf336)
 - [@lolimay](https://github.com/lolimay)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rafaelblink](https://github.com/rafaelblink)
@@ -455,6 +292,41 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 3.7.2
+`2020-11-13  ·  4 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.18.0`
+
+### 🐛 Bug fixes
+
+
+- Admin not working on IE11 ([#19348](https://github.com/RocketChat/Rocket.Chat/pull/19348))
+
+- Channel creation not working on IE ([#19524](https://github.com/RocketChat/Rocket.Chat/pull/19524))
+
+- Custom Emojis PNGs on IE11 ([#19519](https://github.com/RocketChat/Rocket.Chat/pull/19519))
+
+- Update Polyfills and fix directory in IE ([#19525](https://github.com/RocketChat/Rocket.Chat/pull/19525))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.7.2 ([#19529](https://github.com/RocketChat/Rocket.Chat/pull/19529))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.7.1
 `2020-10-09  ·  6 🐛  ·  5 👩‍💻👨‍💻`
