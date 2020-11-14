@@ -1,6 +1,21 @@
 
 # 3.8.0 (Under Release Candidate Process)
 
+## 3.8.0-rc.14
+`2020-11-13  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Prevent network broker from starting when not needed ([#19532](https://github.com/RocketChat/Rocket.Chat/pull/19532))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.8.0-rc.13
 `2020-11-13  ·  `
 
