@@ -8,7 +8,7 @@ import { useFileInput } from '../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
 import VerticalBar from '../../components/basic/VerticalBar';
 
-export function AddCustomSound({ goToNew, close, onChange, ...props }) {
+function AddCustomSound({ goToNew, close, onChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -98,3 +98,5 @@ export function AddCustomSound({ goToNew, close, onChange, ...props }) {
 		</Field>
 	</VerticalBar.ScrollableContent>;
 }
+
+export default AddCustomSound;

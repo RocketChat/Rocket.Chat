@@ -113,7 +113,7 @@ const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 	return <Box mi='neg-x4' {...props}>
 		<Margins inline='x4'>
 			<InputBox type='date' onChange={handleStart} max={todayDate} value={start} flexGrow={1} h='x20'/>
-			<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} flexGrow={1} h='x20'/>
+			<InputBox type='date' onChange={handleEnd} max={todayDate} min={start} value={end} flexGrow={1} h='x20'/>
 			<Menu options={options} alignSelf='center'/>
 		</Margins>
 	</Box>;

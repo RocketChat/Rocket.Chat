@@ -6,14 +6,14 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { isEmail } from '../../app/utils/lib/isEmail.js';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useMethod } from '../contexts/ServerContext';
-import { getUserEmailAddress } from '../helpers/getUserEmailAddress';
+import { getUserEmailAddress } from '../lib/getUserEmailAddress';
 import { UserAvatarEditor } from '../components/basic/avatar/UserAvatarEditor';
 import CustomFieldsForm from '../components/CustomFieldsForm';
-import UserStatusMenu from '../components/basic/userStatus/UserStatusMenu';
+import UserStatusMenu from '../components/basic/UserStatusMenu';
 
 const STATUS_TEXT_MAX_LENGTH = 120;
 
-export default function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
+function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -245,3 +245,5 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 		<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields}/>
 	</FieldGroup>;
 }
+
+export default AccountProfileForm;

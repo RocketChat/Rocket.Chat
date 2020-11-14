@@ -85,5 +85,7 @@ const contextValue = {
 	queryCurrentRoute,
 };
 
-export const RouterProvider: FC = ({ children }) =>
+const RouterProvider: FC = ({ children }) =>
 	<RouterContext.Provider children={children} value={contextValue} />;
+
+export default RouterProvider;

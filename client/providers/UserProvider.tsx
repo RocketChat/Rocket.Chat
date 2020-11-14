@@ -5,7 +5,8 @@ import { getUserPreference } from '../../app/utils/client';
 import { UserContext } from '../contexts/UserContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
-import { Subscriptions } from '../../app/models/client';
+import { Subscriptions, Rooms } from '../../app/models/client';
+import { ISubscription } from '../../definition/ISubscription';
 
 const getUserId = (): string | null => Meteor.userId();
 
@@ -26,7 +27,6 @@ const loginWithPassword = (user: string | object, password: string): Promise<voi
 const UserProvider: FC = ({ children }) => {
 	const userId = useReactiveValue(getUserId);
 	const user = useReactiveValue(getUser);
-
 	const contextValue = useMemo(() => ({
 		userId,
 		user,
@@ -34,7 +34,8 @@ const UserProvider: FC = ({ children }) => {
 		queryPreference: createReactiveSubscriptionFactory(
 			(key, defaultValue) => getUserPreference(userId, key, defaultValue),
 		),
-		querySubscription: createReactiveSubscriptionFactory((query, fields) => Subscriptions.findOne(query, { fields })),
+		querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields) => Subscriptions.findOne(query, { fields })),
+		querySubscriptions: createReactiveSubscriptionFactory<Array<ISubscription> | []>((query, options) => (userId ? Subscriptions : Rooms).find(query, options).fetch()),
 	}), [userId, user]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;

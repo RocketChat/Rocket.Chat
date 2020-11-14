@@ -104,6 +104,14 @@ const validators = {
 			});
 		}
 	},
+	roomAvatar({ userId, rid }) {
+		if (!hasPermission(userId, 'edit-room-avatar', rid)) {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing a room avatar is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Editing_room',
+			});
+		}
+	},
 };
 
 const settingSavers = {

@@ -125,9 +125,10 @@ export class SAUMonitorClass {
 				return;
 			}
 
-			const userId = info.user._id;
+			const { roles, _id: userId } = info.user;
+
 			const loginAt = new Date();
-			const params = { userId, loginAt, ...getDateObj() };
+			const params = { userId, roles, loginAt, ...getDateObj() };
 			this._handleSession(info.connection, params);
 			this._updateConnectionInfo(info.connection.id, { loginAt });
 		});
