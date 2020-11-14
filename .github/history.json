@@ -50290,56 +50290,6 @@
         }
       ]
     },
-    "3.7.2": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.18.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": [
-        {
-          "pr": "19525",
-          "title": "[FIX] Update Polyfills and fix directory in IE",
-          "userLogin": "MartinSchoeler",
-          "milestone": "3.7.2",
-          "contributors": [
-            "MartinSchoeler"
-          ]
-        },
-        {
-          "pr": "19348",
-          "title": "[FIX] Admin not working on IE11",
-          "userLogin": "ggazzo",
-          "milestone": "3.7.2",
-          "contributors": [
-            "ggazzo",
-            "web-flow",
-            "dougfabris"
-          ]
-        },
-        {
-          "pr": "19524",
-          "title": "[FIX] Channel creation not working on IE",
-          "userLogin": "MartinSchoeler",
-          "milestone": "3.7.2",
-          "contributors": [
-            "MartinSchoeler"
-          ]
-        },
-        {
-          "pr": "19519",
-          "title": "[FIX] Custom Emojis PNGs on IE11",
-          "userLogin": "MartinSchoeler",
-          "milestone": "3.7.2",
-          "contributors": [
-            "MartinSchoeler"
-          ]
-        }
-      ]
-    },
     "3.8.0-rc.0": {
       "node_version": "12.18.4",
       "npm_version": "6.14.8",
@@ -51551,6 +51501,78 @@
             "MartinSchoeler"
           ]
         }
+      ]
+    },
+    "3.7.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.18.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19529",
+          "title": "Release 3.7.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "MartinSchoeler",
+            "sampaiodiego",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19525",
+          "title": "[FIX] Update Polyfills and fix directory in IE",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.7.2",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19348",
+          "title": "[FIX] Admin not working on IE11",
+          "userLogin": "ggazzo",
+          "milestone": "3.7.2",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "19524",
+          "title": "[FIX] Channel creation not working on IE",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.7.2",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19519",
+          "title": "[FIX] Custom Emojis PNGs on IE11",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.7.2",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "3.8.0-rc.13": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
       ]
     }
   }
