@@ -5,7 +5,7 @@ import { css } from '@rocket.chat/css-in-js';
 
 import Page from '../../components/basic/Page';
 import PermissionsContextBar from './PermissionsContextBar';
-import { GenericTable } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -143,7 +143,7 @@ const RoleHeader = React.memo(({ router, _id, description, ...props }) => {
 		});
 	});
 
-	return <GenericTable.HeaderCell clickable pi='x4' p='x8' onClick={onClick} {...props}>
+	return <GenericTable.HeaderCell clickable pi='x4' p='x8' {...props}>
 		<Box
 			className={css`white-space: nowrap`}
 			pb='x8'
@@ -153,6 +153,7 @@ const RoleHeader = React.memo(({ router, _id, description, ...props }) => {
 			borderWidth='x2'
 			borderRadius='x2'
 			borderColor='neutral-300'
+			onClick={onClick}
 		>
 			<Margins inline='x2'>
 				<span>{description || _id}</span>

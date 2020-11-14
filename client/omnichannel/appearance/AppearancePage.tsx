@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Callout, ButtonGroup, Button, Icon, Box } from '@rocket.chat/fuselage';
+import { Callout, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -86,7 +86,7 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const save: (settings: Pick<ISetting, '_id' | 'value'>[]) => Promise<void> = useMethod('livechat:saveAppearance');
+	const save: (settings: Pick<ISetting, '_id'>[] & {value: unknown}[]) => Promise<void> = useMethod('livechat:saveAppearance');
 
 	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(reduceAppearance(settings));
 
@@ -110,7 +110,7 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 		<Page.Header title={t('Appearance')}>
 			<ButtonGroup align='end'>
 				<Button onClick={handleResetButtonClick}>
-					<Icon size='x16' name='back'/>{t('Back')}
+					{t('Reset')}
 				</Button>
 				<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
 					{t('Save')}

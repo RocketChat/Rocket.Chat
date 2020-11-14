@@ -32,6 +32,7 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ autoTranslateLanguage: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ prid: 1 });
+		this.tryEnsureIndex({ 'u._id': 1, open: 1, department: 1 });
 	}
 
 	findByRoomIds(roomIds) {
@@ -281,6 +282,19 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
+	changeDepartmentByRoomId(rid, department) {
+		const query = {
+			rid,
+		};
+		const update = {
+			$set: {
+				department,
+			},
+		};
+
+		this.update(query, update);
+	}
+
 	findAlwaysNotifyAudioUsersByRoomId(roomId) {
 		const query = {
 			rid: roomId,
@@ -439,7 +453,7 @@ export class Subscriptions extends Base {
 	}
 
 	// FIND ONE
-	findOneByRoomIdAndUserId(roomId, userId, options) {
+	findOneByRoomIdAndUserId(roomId, userId, options = {}) {
 		const query = {
 			rid: roomId,
 			'u._id': userId,
@@ -547,7 +561,7 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
-	findByRoomIdAndNotUserId(roomId, userId, options) {
+	findByRoomIdAndNotUserId(roomId, userId, options = {}) {
 		const query = {
 			rid: roomId,
 			'u._id': {

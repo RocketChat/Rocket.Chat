@@ -1,19 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
-import { Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
-import { Notifications } from '../../../notifications';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
-
-// mirror of object in /imports/startup/client/listenActiveUsers.js - keep updated
-const STATUS_MAP = {
-	offline: 0,
-	online: 1,
-	away: 2,
-	busy: 3,
-};
+import { api } from '../../../../server/sdk/api';
 
 export const _setStatusTextPromise = async function(userId, statusText) {
 	if (!userId) { return false; }
@@ -28,12 +20,10 @@ export const _setStatusTextPromise = async function(userId, statusText) {
 
 	await UsersRaw.updateStatusText(user._id, statusText);
 
-	Notifications.notifyLogged('user-status', [
-		user._id,
-		user.username,
-		STATUS_MAP[user.status],
-		statusText,
-	]);
+	const { _id, username, status } = user;
+	api.broadcast('presence.status', {
+		user: { _id, username, status, statusText },
+	});
 
 	return true;
 };
@@ -59,12 +49,10 @@ export const _setStatusText = function(userId, statusText) {
 	Users.updateStatusText(user._id, statusText);
 	user.statusText = statusText;
 
-	Notifications.notifyLogged('user-status', [
-		user._id,
-		user.username,
-		STATUS_MAP[user.status],
-		statusText,
-	]);
+	const { _id, username, status } = user;
+	api.broadcast('presence.status', {
+		user: { _id, username, status, statusText },
+	});
 
 	return true;
 };

@@ -47,7 +47,6 @@ export const RoutingManager = {
 	},
 
 	async delegateInquiry(inquiry, agent) {
-		// return Room Object
 		const { department, rid } = inquiry;
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username))) {
 			agent = await this.getNextAgent(department);
@@ -66,8 +65,8 @@ export const RoutingManager = {
 			username: String,
 		}));
 
-		const { rid, name, v } = inquiry;
-		if (!createLivechatSubscription(rid, name, v, agent)) {
+		const { rid, name, v, department } = inquiry;
+		if (!createLivechatSubscription(rid, name, v, agent, department)) {
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 

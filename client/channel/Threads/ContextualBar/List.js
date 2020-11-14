@@ -1,19 +1,16 @@
-import { Mongo } from 'meteor/mongo';
-import { Tracker } from 'meteor/tracker';
 import s from 'underscore.string';
-import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
+import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from 'react';
 import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useDebouncedState, useResizeObserver, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useResizeObserver, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { call, renderMessageBody } from '../../../../app/ui-utils/client';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
-import { Messages } from '../../../../app/models/client';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
+import { ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
@@ -21,6 +18,7 @@ import { clickableItem } from '../../helpers/clickableItem';
 import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { getConfig } from '../../../../app/ui-utils/client/config';
+import { useEndpoint } from '../../../contexts/ServerContext';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -41,72 +39,82 @@ export function withData(WrappedComponent) {
 	return ({ rid, ...props }) => {
 		const room = useUserRoom(rid, roomFields);
 		const subscription = useUserSubscription(rid, subscriptionFields);
-
 		const userId = useUserId();
+
+		const [{
+			state,
+			error,
+			threads,
+			count,
+		}, setState] = useState(() => ({
+			state: ENDPOINT_STATES.LOADING,
+			error: null,
+			threads: [],
+			count: 0,
+		}));
 		const [type, setType] = useLocalStorage('thread-list-type', 'all');
 		const [text, setText] = useState('');
-		const [total, setTotal] = useState(LIST_SIZE);
-		const [threads, setThreads] = useDebouncedState([], 100);
-		const Threads = useRef(new Mongo.Collection(null));
-		const ref = useRef();
-		const [pagination, setPagination] = useState({ skip: 0, count: LIST_SIZE });
 
-		const params = useMemo(() => ({ rid: room._id, count: pagination.count, offset: pagination.skip, type, text }), [room._id, pagination.skip, pagination.count, type, text]);
+		const mergeThreads = useCallback(
+			(threads, newThreads) =>
+				Array.from(
+					new Map([
+						...threads.map((msg) => [msg._id, msg]),
+						...newThreads.map((msg) => [msg._id, msg]),
+					]).values(),
+				)
+					.sort((a, b) => b.tlm.getTime() - a.tlm.getTime()),
+			[],
+		);
 
-		const { data, state, error } = useEndpointDataExperimental('chat.getThreadsList', useDebouncedValue(params, 400));
+		const getThreadsList = useEndpoint('GET', 'chat.getThreadsList');
+		const fetchThreads = useCallback(async ({ rid, offset, limit, type, text }) => {
+			try {
+				const data = await getThreadsList({
+					rid,
+					offset,
+					count: limit,
+					type,
+					text,
+				});
 
-		const loadMoreItems = useCallback((skip, count) => {
-			setPagination({ skip, count: count - skip });
-
-			return new Promise((resolve) => { ref.current = resolve; });
-		}, []);
-
-		useEffect(() => () => Threads.current.remove({}, () => {}), [text, type]);
-
-		useEffect(() => {
-			if (state !== ENDPOINT_STATES.DONE || !data || !data.threads) {
-				return;
+				setState(({ threads }) => ({
+					state: ENDPOINT_STATES.DONE,
+					error: null,
+					threads: mergeThreads(offset === 0 ? [] : threads, data.threads.map(filterProps)),
+					count: data.total,
+				}));
+			} catch (error) {
+				setState(({ threads, count }) => ({
+					state: ENDPOINT_STATES.ERROR,
+					error,
+					threads,
+					count,
+				}));
 			}
+		}, [getThreadsList, mergeThreads]);
 
-			data.threads.forEach(({ _id, ...message }) => {
-				Threads.current.upsert({ _id }, filterProps(message));
-			});
-
-			ref.current && ref.current();
-
-			setTotal(data.total);
-		}, [data, state]);
-
+		const debouncedText = useDebouncedValue(text, 400);
 		useEffect(() => {
-			const cursor = Messages.find({ rid: room._id, tcount: { $exists: true }, _hidden: { $ne: true } }).observe({
-				added: ({ _id, ...message }) => {
-					Threads.current.upsert({ _id }, message);
-				}, // Update message to re-render DOM
-				changed: ({ _id, ...message }) => {
-					Threads.current.update({ _id }, message);
-				}, // Update message to re-render DOM
-				removed: ({ _id }) => {
-					Threads.current.remove(_id);
-				},
+			fetchThreads({
+				rid: room._id,
+				offset: 0,
+				limit: LIST_SIZE,
+				type,
+				text: debouncedText,
 			});
-			return () => cursor.stop();
-		}, [room._id]);
+		}, [debouncedText, fetchThreads, room._id, type]);
 
+		const loadMoreItems = useCallback((start, end) => fetchThreads({
+			rid: room._id,
+			offset: start,
+			limit: end - start,
+			type,
+			text,
+		}), [fetchThreads, room._id, type, text]);
 
-		useEffect(() => {
-			const cursor = Tracker.autorun(() => {
-				const query = {
-					...type === 'subscribed' && { replies: { $in: [userId] } },
-				};
-				setThreads(Threads.current.find(query, { sort: { tlm: -1 } }).fetch().map(filterProps));
-			});
-
-			return () => cursor.stop();
-		}, [room._id, type, setThreads, userId]);
-
-		const handleTextChange = useCallback((e) => {
-			setPagination({ skip: 0, count: LIST_SIZE });
-			setText(e.currentTarget.value);
+		const handleTextChange = useCallback((event) => {
+			setText(event.currentTarget.value);
 		}, []);
 
 		return <WrappedComponent
@@ -117,7 +125,7 @@ export function withData(WrappedComponent) {
 			userId={userId}
 			error={error}
 			threads={threads}
-			total={total}
+			total={count}
 			loading={state === ENDPOINT_STATES.LOADING}
 			loadMoreItems={loadMoreItems}
 			room={room}
@@ -153,6 +161,45 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 };
 
+const Row = memo(function Row({
+	data,
+	index,
+	style,
+	showRealNames,
+	unread,
+	unreadUser,
+	unreadGroup,
+	userId,
+	onClick,
+}) {
+	const t = useTranslation();
+	const formatDate = useTimeAgo();
+
+	if (!data[index]) {
+		return <Skeleton style={style}/>;
+	}
+	const thread = data[index];
+	const msg = normalizeThreadMessage(thread);
+
+	const { name = thread.u.username } = thread.u;
+
+	return <Thread
+		{ ...thread }
+		name={showRealNames ? name : thread.u.username }
+		username={ thread.u.username }
+		style={style}
+		unread={unread.includes(thread._id)}
+		mention={unreadUser.includes(thread._id)}
+		all={unreadGroup.includes(thread._id)}
+		following={thread.replies && thread.replies.includes(userId)}
+		data-id={thread._id}
+		msg={msg}
+		t={t}
+		formatDate={formatDate}
+		handleFollowButton={handleFollowButton} onClick={onClick}
+	/>;
+});
+
 export function ThreadList({ total = 10, threads = [], room, unread = [], unreadUser = [], unreadGroup = [], type, setType, loadMoreItems, loading, onClose, error, userId, text, setText }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const threadsRef = useRef();
@@ -169,42 +216,26 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 			rid: room._id,
 			name: room.name,
 		});
-	}, [room._id, room.name]);
+	}, [channelRoute, room._id, room.name]);
 
-	const formatDate = useTimeAgo();
-
-	const options = useMemo(() => [['all', t('All')], ['following', t('Following')], ['unread', t('Unread')]], []);
+	const options = useMemo(() => [['all', t('All')], ['following', t('Following')], ['unread', t('Unread')]], [t]);
 
 	threadsRef.current = threads;
 
-	const rowRenderer = useCallback(React.memo(function rowRenderer({ data, index, style }) {
-		if (!data[index]) {
-			return <Skeleton style={style}/>;
-		}
-		const thread = data[index];
-		const msg = normalizeThreadMessage(thread);
-
-		const { name = thread.u.username } = thread.u;
-
-		return <Thread
-			{ ...thread }
-			name={showRealNames ? name : thread.u.username }
-			username={ thread.u.username }
-			style={style}
-			unread={unread.includes(thread._id)}
-			mention={unreadUser.includes(thread._id)}
-			all={unreadGroup.includes(thread._id)}
-			following={thread.replies && thread.replies.includes(userId)}
-			data-id={thread._id}
-			msg={msg}
-			t={t}
-			formatDate={formatDate}
-			handleFollowButton={handleFollowButton} onClick={onClick}
-		/>;
-	}), [unread, unreadUser, unreadGroup, showRealNames]);
+	const rowRenderer = useCallback(({ data, index, style }) => <Row
+		data={data}
+		index={index}
+		style={style}
+		showRealNames={showRealNames}
+		unread={unread}
+		unreadUser={unreadUser}
+		unreadGroup={unreadGroup}
+		userId={userId}
+		onClick={onClick}
+	/>, [showRealNames, unread, unreadUser, unreadGroup, userId, onClick]);
 
 	const isItemLoaded = useCallback((index) => index < threadsRef.current.length, []);
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
 	return <VerticalBar>
 		<VerticalBar.Header>

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { Notifications } from '../../../app/notifications/client';
+import { Presence } from '../../../client/lib/presence';
 
 // mirror of object in /imports/users-presence/server/activeUsers.js - keep updated
 const STATUS_MAP = [
@@ -41,6 +42,12 @@ export const saveUser = (user, force = false) => {
 
 Meteor.startup(function() {
 	Notifications.onLogged('user-status', ([_id, username, status, statusText]) => {
+		Presence.notify({
+			_id,
+			username,
+			status: STATUS_MAP[status],
+			statusText,
+		});
 		if (!interestedUserIds.has(_id)) {
 			return;
 		}

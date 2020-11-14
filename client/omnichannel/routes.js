@@ -1,7 +1,7 @@
 import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from '../reactAdapters';
-import { createRouteGroup } from '../helpers/createRouteGroup';
+import { createRouteGroup } from '../lib/createRouteGroup';
 
 createTemplateForComponent('omnichannelFlex', () => import('./sidebar/OmnichannelSidebar'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
@@ -76,6 +76,11 @@ registerOmnichannelRoute('/facebook', {
 registerOmnichannelRoute('/current', {
 	name: 'omnichannel-current-chats',
 	lazyRouteComponent: () => import('./currentChats/CurrentChatsRoute'),
+});
+
+registerOmnichannelRoute('/departments/:context?/:id?', {
+	name: 'omnichannel-departments',
+	lazyRouteComponent: () => import('./departments/DepartmentsRoute'),
 });
 
 registerOmnichannelRoute('/realtime-monitoring', {

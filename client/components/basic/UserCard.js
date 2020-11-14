@@ -1,7 +1,6 @@
 import React, { forwardRef } from 'react';
-import { Box, Tag, Button, Icon, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Tag, ActionButton, Skeleton } from '@rocket.chat/fuselage';
 
-import { ActionButton } from './Buttons/ActionButton';
 import UserAvatar from './avatar/UserAvatar';
 import * as Status from './UserStatus';
 import MarkdownText from './MarkdownText';
@@ -14,10 +13,8 @@ const clampStyle = {
 	wordBreak: 'break-all',
 };
 
-export const Action = ({ icon, label, ...props }) => (
-	<Button title={label} {...props} small mi='x2'>
-		<Icon name={icon} size='x16' />
-	</Button>
+export const Action = ({ label, ...props }) => (
+	<ActionButton small title={label} {...props} mi='x2'/>
 );
 
 export const Info = (props) => (
@@ -81,7 +78,8 @@ const UserCard = forwardRef(({
 	</Box>
 	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
 		<Box withTruncatedText display='flex'>
-			<Username status={status} name={name} title={username !== name && username}/>{nickname && <Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText>({ nickname })</Box> }
+			<Username status={status} name={name} title={username !== name ? username : undefined} />
+			{nickname && <Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText>({ nickname })</Box>}
 		</Box>
 		{ customStatus && <Info>{customStatus}</Info> }
 		<Roles>{roles}</Roles>
@@ -89,7 +87,7 @@ const UserCard = forwardRef(({
 		{ bio && <Info withTruncatedText={false} style={clampStyle} height='x60'><MarkdownText content={bio}/></Info> }
 		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
-	{onClose && <Box><ActionButton icon='cross' onClick={onClose}/></Box>}
+	{onClose && <Box><ActionButton ghost icon='cross' onClick={onClose}/></Box>}
 </UserCardContainer>);
 
 
