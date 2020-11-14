@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "3.7.1",
+	"version": "3.7.2",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -134,7 +134,7 @@
 		"@rocket.chat/css-in-js": "^0.14.1",
 		"@rocket.chat/fuselage": "^0.14.1",
 		"@rocket.chat/fuselage-hooks": "^0.14.1",
-		"@rocket.chat/fuselage-polyfills": "^0.14.1",
+		"@rocket.chat/fuselage-polyfills": "^0.17.0",
 		"@rocket.chat/fuselage-ui-kit": "^0.14.1",
 		"@rocket.chat/icons": "^0.14.1",
 		"@rocket.chat/mp3-encoder": "^0.14.1",
