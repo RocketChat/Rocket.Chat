@@ -1,4 +1,30 @@
 
+# 3.7.2
+`2020-11-13  ·  4 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.18.0`
+
+### 🐛 Bug fixes
+
+
+- Admin not working on IE11 ([#19348](https://github.com/RocketChat/Rocket.Chat/pull/19348))
+
+- Channel creation not working on IE ([#19524](https://github.com/RocketChat/Rocket.Chat/pull/19524))
+
+- Custom Emojis PNGs on IE11 ([#19519](https://github.com/RocketChat/Rocket.Chat/pull/19519))
+
+- Update Polyfills and fix directory in IE ([#19525](https://github.com/RocketChat/Rocket.Chat/pull/19525))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+
 # 3.7.1
 `2020-10-09  ·  6 🐛  ·  5 👩‍💻👨‍💻`
 
