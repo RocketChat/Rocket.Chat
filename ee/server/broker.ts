@@ -254,7 +254,7 @@ const {
 } = process.env;
 
 // only starts network broker if transporter properly configured
-if (!TRANSPORTER.match(/^(?:nats|TCP)/)) {
+if (TRANSPORTER.match(/^(?:nats|TCP)/)) {
 	const network = new ServiceBroker({
 		// TODO: Reevaluate, without this setting it was preventing the process to stop
 		skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
