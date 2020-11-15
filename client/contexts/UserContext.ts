@@ -3,6 +3,7 @@ import { createContext, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
 import { ISubscription } from '../../definition/ISubscription';
+import { IUser } from '../../definition/IUser';
 
 type SubscriptionQuery = {
 	rid: string | Mongo.ObjectID;
@@ -27,7 +28,7 @@ type FindOptions = {
 
 type UserContextValue = {
 	userId: string | null;
-	user: Meteor.User | null;
+	user: Meteor.User | IUser | null;
 	loginWithPassword: (user: string | object, password: string) => Promise<void>;
 	queryPreference: <T>(key: string | Mongo.ObjectID, defaultValue?: T) => Subscription<T | undefined>;
 	querySubscription: (query: FilterQuery<ISubscription>, fields: Fields, sort?: Sort) => Subscription <ISubscription | undefined>;
@@ -55,7 +56,7 @@ export const UserContext = createContext<UserContextValue>({
 export const useUserId = (): string | null =>
 	useContext(UserContext).userId;
 
-export const useUser = (): Meteor.User | null =>
+export const useUser = (): Meteor.User | null | IUser =>
 	useContext(UserContext).user;
 
 export const useLoginWithPassword = (): ((user: string | object, password: string) => Promise<void>) =>

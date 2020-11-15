@@ -35,5 +35,6 @@ export interface IRoom extends IRocketChatRecord {
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
+	uids: Array<string>;
 	usernames: Array<Username>;
 }
