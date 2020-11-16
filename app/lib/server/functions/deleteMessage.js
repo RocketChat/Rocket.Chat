@@ -8,9 +8,10 @@ import { callbacks } from '../../../callbacks/server';
 import { Apps } from '../../../apps/server';
 
 export const deleteMessage = function(message, user) {
-	const keepHistory = settings.get('Message_KeepHistory');
-	const showDeletedStatus = settings.get('Message_ShowDeletedStatus');
 	const deletedMsg = Messages.findOneById(message._id);
+	const isThread = deletedMsg.tcount > 0;
+	const keepHistory = settings.get('Message_KeepHistory') || isThread;
+	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
 
 	if (deletedMsg && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg));
@@ -48,6 +49,9 @@ export const deleteMessage = function(message, user) {
 			Rooms.resetLastMessageById(message.rid, message._id);
 		}
 	}
+
+	// decrease message count
+	Rooms.decreaseMessageCountById(message.rid, 1);
 
 	if (showDeletedStatus) {
 		Messages.setAsDeletedByIdAndUser(message._id, user);

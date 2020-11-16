@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
     - name: Github Info
       run: |
         echo "GITHUB_ACTION: $GITHUB_ACTION"
@@ -29,12 +30,20 @@ jobs:
         echo "github.event_name: ${{ github.event_name }}"
         cat $GITHUB_EVENT_PATH
 
-    - name: Use Node.js 12.16.1
+    - name: Use Node.js 12.18.4
       uses: actions/setup-node@v1
       with:
-        node-version: "12.16.1"
+        node-version: "12.18.4"
 
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
 
     - name: check package-lock
       run: |
@@ -100,14 +109,18 @@ jobs:
       run: |
         meteor npm install
 
-    - run: npm run lint
+    - run: meteor npm run lint
+
+    - run: meteor npm run translation-check
 
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
         mongoDBVersion: "4.0"
 
-    - run: npm run testunit
+    - run: meteor npm run testunit
+
+    - run: meteor npm run typecheck
 
     # To reduce memory need during actual build, build the packages solely first
     # - name: Build a Meteor cache
@@ -164,7 +177,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ["12.16.1"]
+        node-version: ["12.18.4"]
         mongodb-version: ["3.4", "3.6", "4.0"]
 
     steps:
@@ -199,7 +212,7 @@ jobs:
         docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
         docker exec mongo mongo --eval 'rs.status()'
 
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     - name: Cache cypress
       id: cache-cypress
@@ -227,7 +240,9 @@ jobs:
         MONGO_URL: mongodb://localhost:27017/rocketchat
         MONGO_OPLOG_URL: mongodb://localhost:27017/local
       run: |
-        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && xvfb-run --auto-servernum npm test && s=0 && break || s=$? && sleep 1; done; (exit $s)
+        echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
+        Xvfb -screen 0 1024x768x24 :99 &
+        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
 #   notification:
 #     runs-on: ubuntu-latest
@@ -245,10 +260,25 @@ jobs:
 
   build-image-pr:
     runs-on: ubuntu-latest
-    if: github.event_name == 'DEACTIVATED-pull_request'
+    if: github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ secrets.CR_USER }}
+        password: ${{ secrets.CR_PAT }}
+
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
 
     - name: Cache node modules
       id: cache-nodemodules
@@ -269,10 +299,10 @@ jobs:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
-    - name: Use Node.js 12.16.1
+    - name: Use Node.js 12.18.4
       uses: actions/setup-node@v1
       with:
-        node-version: "12.16.1"
+        node-version: "12.18.4"
 
     - name: Install Meteor
       run: |
@@ -323,23 +353,15 @@ jobs:
         meteor build --server-only --directory /tmp/build-pr
 
     - name: Build Docker image for PRs
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        VERSION: pr-${{ github.event.number }}
       run: |
         cd /tmp/build-pr
 
-        docker login docker.pkg.github.com -u "${GITHUB_ACTOR}" -p "${GITHUB_TOKEN}"
-
-        cp $GITHUB_WORKSPACE/.docker/Dockerfile .
-
-        export LOWERCASE_REPOSITORY=$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")
-
-        export IMAGE_NAME="docker.pkg.github.com/${LOWERCASE_REPOSITORY}/rocket.chat:${VERSION}"
+        LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+        IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:pr-${{ github.event.number }}"
 
         echo "Build official Docker image ${IMAGE_NAME}"
 
-        docker build -t $IMAGE_NAME .
+        docker build -f $GITHUB_WORKSPACE/.docker/Dockerfile -t $IMAGE_NAME .
         docker push $IMAGE_NAME
 
   deploy:
@@ -348,7 +370,7 @@ jobs:
     needs: test
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     - name: Restore build
       uses: actions/download-artifact@v1
@@ -367,11 +389,12 @@ jobs:
       run: |
         if [[ '${{ github.event_name }}' = 'release' ]]; then
           export CIRCLE_TAG="${GITHUB_REF#*tags/}"
+          export CIRCLE_BRANCH=""
         else
+          export CIRCLE_TAG=""
           export CIRCLE_BRANCH="${GITHUB_REF#*heads/}"
         fi;
 
-        export CIRCLE_TAG=${CIRCLE_TAG:=}
         export CIRCLE_SHA1=$GITHUB_SHA
         export CIRCLE_BUILD_NUM=$GITHUB_SHA
 
@@ -400,7 +423,13 @@ jobs:
       IMAGE: "rocketchat/rocket.chat"
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
 
     - name: Restore build
       uses: actions/download-artifact@v1
@@ -409,17 +438,14 @@ jobs:
         path: /tmp/build
 
     - name: Unpack build
-      env:
-        DOCKER_USER: ${{ secrets.DOCKER_USER }}
-        DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       run: |
         cd /tmp/build
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
-        export DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
+        DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export DOCKER_PATH="${DOCKER_PATH}-mongo"
+          DOCKER_PATH="${DOCKER_PATH}-mongo"
         fi;
 
         echo "Build ${{ matrix.release }} Docker image"
@@ -428,25 +454,23 @@ jobs:
           cp ${DOCKER_PATH}/entrypoint.sh .
         fi;
 
-        docker login -u $DOCKER_USER -p $DOCKER_PASS
-
     - name: Build Docker image for tag
       if: github.event_name == 'release'
       run: |
         cd /tmp/build
-        export CIRCLE_TAG="${GITHUB_REF#*tags/}"
+        CIRCLE_TAG="${GITHUB_REF#*tags/}"
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export IMAGE="${IMAGE}.preview"
+          IMAGE="${IMAGE}.preview"
         fi;
 
         docker build -t ${IMAGE}:$CIRCLE_TAG .
         docker push ${IMAGE}:$CIRCLE_TAG
 
         if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-          export RELEASE="latest"
+          RELEASE="latest"
         elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-          export RELEASE="release-candidate"
+          RELEASE="release-candidate"
         fi
 
         docker tag ${IMAGE}:$CIRCLE_TAG ${IMAGE}:${RELEASE}
@@ -458,8 +482,49 @@ jobs:
         cd /tmp/build
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export IMAGE="${IMAGE}.preview"
+          IMAGE="${IMAGE}.preview"
         fi;
 
         docker build -t ${IMAGE}:develop .
         docker push ${IMAGE}:develop
+
+  services-image-build:
+    runs-on: ubuntu-latest
+    needs: deploy
+
+    strategy:
+      matrix:
+        service: ["account", "authorization", "ddp-streamer", "presence", "stream-hub"]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js 12.18.4
+      uses: actions/setup-node@v1
+      with:
+        node-version: "12.18.4"
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
+
+    - name: Build Docker images
+      run: |
+        # defines image tag
+        if [[ $GITHUB_REF == refs/tags/* ]]; then IMAGE_TAG="${GITHUB_REF#refs/tags/}"; else IMAGE_TAG="${GITHUB_REF#refs/heads/}"; fi
+
+        # first install repo dependencies
+        npm i
+
+        # then micro services dependencies
+        cd ./ee/server/services
+        npm i
+        npm run build
+
+        echo "Building Docker image for service: ${{ matrix.service }}:${IMAGE_TAG}"
+
+        docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} .
+
+        docker push rocketchat/${{ matrix.service }}-service

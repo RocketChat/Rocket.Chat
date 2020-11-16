@@ -1,9 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
-import { TOTP } from './lib/totp';
-import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
+import { checkCodeForUser } from './code/index';
 
 Accounts.registerLoginHandler('totp', function(options) {
 	if (!options.totp || !options.totp.code) {
@@ -14,26 +12,11 @@ Accounts.registerLoginHandler('totp', function(options) {
 });
 
 callbacks.add('onValidateLogin', (login) => {
-	if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+	if (login.type !== 'password') {
 		return;
 	}
 
-	if (login.type === 'password' && login.user.services && login.user.services.totp && login.user.services.totp.enabled === true) {
-		const { totp } = login.methodArguments[0];
+	const { totp } = login.methodArguments[0];
 
-		if (!totp || !totp.code) {
-			throw new Meteor.Error('totp-required', 'TOTP Required');
-		}
-
-		const verified = TOTP.verify({
-			secret: login.user.services.totp.secret,
-			token: totp.code,
-			userId: login.user._id,
-			backupTokens: login.user.services.totp.hashedBackup,
-		});
-
-		if (verified !== true) {
-			throw new Meteor.Error('totp-invalid', 'TOTP Invalid');
-		}
-	}
+	checkCodeForUser({ user: login.user, code: totp && totp.code, options: { disablePasswordFallback: true } });
 }, callbacks.priority.MEDIUM, '2fa');

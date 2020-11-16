@@ -1,23 +1,83 @@
+import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { LivechatRooms, LivechatVisitors } from '../../../../models';
-import { API } from '../../../../api';
+import { FileUpload } from '../../../../file-upload/server';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
+import { API } from '../../../../api/server';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
+
+const getUploadFile = (details, fileUrl) => {
+	const response = HTTP.get(fileUrl, { npmRequestOptions: { encoding: null } });
+	if (response.statusCode !== 200 || !response.content || response.content.length === 0) {
+		throw new Meteor.Error('error-invalid-file-uploaded', 'Invalid file uploaded');
+	}
+
+	const fileStore = FileUpload.getStore('Uploads');
+
+	const { content, content: { length: size } } = response;
+	return fileStore.insertSync({ ...details, size }, content);
+};
+
+const defineDepartment = (idOrName) => {
+	if (!idOrName || idOrName === '') {
+		return;
+	}
+
+	const department = LivechatDepartment.findOneByIdOrName(idOrName);
+	return department && department._id;
+};
+
+const defineVisitor = (smsNumber) => {
+	const visitor = LivechatVisitors.findOneVisitorByPhone(smsNumber);
+	let data = {
+		token: (visitor && visitor.token) || Random.id(),
+	};
+
+	if (!visitor) {
+		data = Object.assign(data, {
+			username: smsNumber.replace(/[^0-9]/g, ''),
+			phone: {
+				number: smsNumber,
+			},
+		});
+	}
+
+	const department = defineDepartment(SMS.department);
+	if (department) {
+		data.department = department;
+	}
+
+	const id = Livechat.registerGuest(data);
+	return LivechatVisitors.findOneById(id);
+};
+
+const normalizeLocationSharing = (payload) => {
+	const { extra: { fromLatitude: latitude, fromLongitude: longitude } = {} } = payload;
+	if (!latitude || !longitude) {
+		return;
+	}
+
+	return {
+		type: 'Point',
+		coordinates: [parseFloat(longitude), parseFloat(latitude)],
+	};
+};
 
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	post() {
 		const SMSService = SMS.getService(this.urlParams.service);
-
 		const sms = SMSService.parse(this.bodyParams);
 
-		let visitor = LivechatVisitors.findOneVisitorByPhone(sms.from);
+		const visitor = defineVisitor(sms.from);
+		const { token } = visitor;
+		const room = LivechatRooms.findOneOpenByVisitorToken(token);
+		const location = normalizeLocationSharing(sms);
+		const rid = (room && room._id) || Random.id();
 
 		const sendMessage = {
-			message: {
-				_id: Random.id(),
-			},
+			guest: visitor,
 			roomInfo: {
 				sms: {
 					from: sms.to,
@@ -25,57 +85,55 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			},
 		};
 
-		if (visitor) {
-			const rooms = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
+		let file;
+		let attachments;
 
-			if (rooms && rooms.length > 0) {
-				sendMessage.message.rid = rooms[0]._id;
-			} else {
-				sendMessage.message.rid = Random.id();
-			}
-			sendMessage.message.token = visitor.token;
-		} else {
-			sendMessage.message.rid = Random.id();
-			sendMessage.message.token = Random.id();
-
-			const visitorId = Livechat.registerGuest({
-				username: sms.from.replace(/[^0-9]/g, ''),
-				token: sendMessage.message.token,
-				phone: {
-					number: sms.from,
-				},
-			});
-
-			visitor = LivechatVisitors.findOneById(visitorId);
-		}
-
-		sendMessage.message.msg = sms.body;
-		sendMessage.guest = visitor;
-
-		sendMessage.message.attachments = sms.media.map((curr) => {
-			const attachment = {
-				message_link: curr.url,
+		const [media] = sms.media;
+		if (media) {
+			const { url: smsUrl, contentType } = media;
+			const details = {
+				name: 'Upload File',
+				type: contentType,
+				rid,
+				visitorToken: token,
 			};
 
-			const { contentType } = curr;
+			const uploadedFile = getUploadFile(details, smsUrl);
+			file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
+
+			const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+
+			const attachment = {
+				message_link: url,
+			};
+
 			switch (contentType.substr(0, contentType.indexOf('/'))) {
 				case 'image':
-					attachment.image_url = curr.url;
+					attachment.image_url = url;
 					break;
 				case 'video':
-					attachment.video_url = curr.url;
+					attachment.video_url = url;
 					break;
 				case 'audio':
-					attachment.audio_url = curr.url;
+					attachment.audio_url = url;
 					break;
 			}
 
-			return attachment;
-		});
+			attachments = [attachment];
+		}
+
+		sendMessage.message = {
+			_id: Random.id(),
+			rid,
+			token,
+			msg: sms.body,
+			...location && { location },
+			...attachments && { attachments },
+			...file && { file },
+		};
 
 		try {
-			const message = SMSService.response.call(this, Livechat.sendMessage(sendMessage));
-
+			const msg = SMSService.response.call(this, Promise.await(Livechat.sendMessage(sendMessage)));
 			Meteor.defer(() => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
@@ -90,7 +148,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				}
 			});
 
-			return message;
+			return msg;
 		} catch (e) {
 			return SMSService.error.call(this, e);
 		}

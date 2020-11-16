@@ -34,10 +34,10 @@
 				<ul class='list clearfix lines'>
 					{{#each users}}
 						<li class='rc-member-list__user'>
-							{{> avatar username=user.username}}
+							{{> avatar url=avatarUrl}}
 							<div class="rc-member-list__username">
 								{{# userPresence uid=user._id}}<div class="rc-member-list__status rc-member-list__status--{{status}}"></div>{{/userPresence}}
-								{{ignored}} {{displayName}} {{utcOffset}}
+								{{ignored}} {{displayName}}{{#if user.nickname}} ({{user.nickname}}){{/if}} {{utcOffset}}
 								</div>
 							{{> icon user=. block="rc-member-list__menu js-more" icon="menu" }}
 						</li>
@@ -51,16 +51,18 @@
 		<div class="rc-button__group rc-button__group--stretch">
 			{{#if canAddUser}}
 				<button class="rc-button rc-button--primary js-add">{{> icon block="rc-input__icon-svg" icon="plus"}}{{_ "Add_users"}}</button>
-			{{/if}}
 
-			{{#if canInviteUser}}
-				<button class="rc-button rc-button--primary js-invite">{{> icon block="rc-input__icon-svg" icon="user-plus"}}{{_ "Invite_Users"}}</button>
+				{{#if canInviteUser}}
+					<button class="rc-button rc-button--primary js-invite">{{> icon block="rc-input__icon-svg" icon="user-plus"}}{{_ "Invite_Users"}}</button>
+				{{/if}}
 			{{/if}}
 		</div>
 
 		{{/with}}
 	{{/if}}
+	{{#if userInfoDetail}}
 	<div class="rc-user-info-container flex-nav animated{{#unless showUserInfo}} animated-hidden{{/unless}}">
-		{{> userInfo (userInfoDetail)}}
+		{{> UserInfoWithData (userInfoDetail)}}
 	</div>
+	{{/if}}
 </template>

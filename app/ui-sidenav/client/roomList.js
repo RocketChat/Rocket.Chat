@@ -30,7 +30,7 @@ Template.roomList.helpers({
 			},
 		});
 
-		const sortBy = getUserPreference(user, 'sidebarSortby') || 'alphabetical';
+		const sortBy = getUserPreference(user, 'sidebarSortby') || 'activity';
 		const query = {
 			open: true,
 		};
@@ -128,7 +128,7 @@ Template.roomList.helpers({
 		if (instance.data.anonymous) {
 			return 'No_channels_yet';
 		}
-		return roomTypes.roomTypes[instance.data.identifier].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
+		return roomTypes.getConfig(instance.data.identifier).getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 });
 
@@ -136,16 +136,41 @@ const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
 	const name = room.name || nameDefault;
 	const fname = room.fname || fnameDefault || name;
 	return {
-		lowerCaseName: name.toLowerCase(),
-		lowerCaseFName: fname.toLowerCase(),
+		lowerCaseName: String(name).toLowerCase(),
+		lowerCaseFName: String(fname).toLowerCase(),
 	};
 };
 
 const mergeSubRoom = (subscription) => {
-	const room = Rooms.findOne(subscription.rid) || { _updatedAt: subscription.ts };
+	const options = {
+		fields: {
+			lm: 1,
+			lastMessage: 1,
+			uids: 1,
+			v: 1,
+			streamingOptions: 1,
+			usernames: 1,
+		},
+	};
+
+	const room = Rooms.findOne({ _id: subscription.rid }, options) || { };
+
+	const lastRoomUpdate = room.lm || subscription.ts || subscription._updatedAt;
+
+	if (room.uids) {
+		subscription.uids = room.uids;
+	}
+
+	if (room.v) {
+		subscription.v = room.v;
+	}
+
+	subscription.usernames = room.usernames;
+
 	subscription.lastMessage = room.lastMessage;
-	subscription.lm = room._updatedAt;
+	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
 	subscription.streamingOptions = room.streamingOptions;
+
 	return Object.assign(subscription, getLowerCaseNames(subscription));
 };
 
@@ -159,10 +184,21 @@ const mergeRoomSub = (room) => {
 		rid: room._id,
 	}, {
 		$set: {
+			...Array.isArray(room.uids) && { uids: room.uids },
+			...Array.isArray(room.uids) && { usernames: room.usernames },
+			...room.v && { v: room.v },
 			lastMessage: room.lastMessage,
-			lm: room._updatedAt,
 			streamingOptions: room.streamingOptions,
 			...getLowerCaseNames(room, sub.name, sub.fname),
+		},
+	});
+
+	Subscriptions.update({
+		rid: room._id,
+		lm: { $lt: room.lm },
+	}, {
+		$set: {
+			lm: room.lm,
 		},
 	});
 

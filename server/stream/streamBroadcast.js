@@ -10,7 +10,9 @@ import { Logger, LoggerManager } from '../../app/logger';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
-import { Users } from '../../app/models/server/models/Users';
+import { Users } from '../../app/models/server';
+import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
+import { StreamerCentral } from '../modules/streamer/streamer.module';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -56,26 +58,18 @@ function authorizeConnection(instance) {
 	return _authorizeConnection(instance);
 }
 
+const cache = new Map();
 const originalSetDefaultStatus = UserPresence.setDefaultStatus;
+export let matrixBroadCastActions;
 function startMatrixBroadcast() {
 	if (!startMonitor) {
 		UserPresence.setDefaultStatus = originalSetDefaultStatus;
 	}
 
-	const query = {
-		'extraInformation.port': {
-			$exists: true,
-		},
-	};
-
-	const options = {
-		sort: {
-			_createdAt: -1,
-		},
-	};
-
-	return InstanceStatus.getCollection().find(query, options).observe({
+	matrixBroadCastActions = {
 		added(record) {
+			cache.set(record._id, record);
+
 			const subPath = getURL('', { cdn: false, full: false });
 			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
 
@@ -111,7 +105,13 @@ function startMatrixBroadcast() {
 			};
 		},
 
-		removed(record) {
+		removed(id) {
+			const record = cache.get(id);
+			if (!record) {
+				return;
+			}
+			cache.delete(id);
+
 			const subPath = getURL('', { cdn: false, full: false });
 			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
 
@@ -130,7 +130,21 @@ function startMatrixBroadcast() {
 				return delete connections[instance];
 			}
 		},
-	});
+	};
+
+	const query = {
+		'extraInformation.port': {
+			$exists: true,
+		},
+	};
+
+	const options = {
+		sort: {
+			_createdAt: -1,
+		},
+	};
+
+	InstanceStatusModel.find(query, options).fetch().forEach(matrixBroadCastActions.added);
 }
 
 Meteor.methods({
@@ -158,16 +172,15 @@ Meteor.methods({
 			return 'not-authorized';
 		}
 
-		const instance = Meteor.StreamerCentral.instances[streamName];
+		const instance = StreamerCentral.instances[streamName];
 		if (!instance) {
 			return 'stream-not-exists';
 		}
 
 		if (instance.serverOnly) {
-			const scope = {};
-			instance.emitWithScope(eventName, scope, ...args);
+			instance.__emit(eventName, ...args);
 		} else {
-			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
+			StreamerCentral.instances[streamName]._emit(eventName, args);
 		}
 	},
 });
@@ -189,6 +202,7 @@ function startStreamCastBroadcast(value) {
 
 	connections[instance] = connection;
 	connection.instanceId = instance;
+	connection.instanceRecord = {};
 	connection.onReconnect = function() {
 		return authorizeConnection(instance);
 	};
@@ -209,16 +223,15 @@ function startStreamCastBroadcast(value) {
 			return 'not-authorized';
 		}
 
-		const instance = Meteor.StreamerCentral.instances[streamName];
+		const instance = StreamerCentral.instances[streamName];
 		if (!instance) {
 			return 'stream-not-exists';
 		}
 
 		if (instance.serverOnly) {
-			const scope = {};
-			return instance.emitWithScope(eventName, scope, args);
+			return instance.__emit(eventName, ...args);
 		}
-		return instance.emitWithoutBroadcast(eventName, args);
+		return instance._emit(eventName, args);
 	});
 
 	return connection.subscribe('stream');
@@ -286,8 +299,18 @@ function startStreamBroadcast() {
 		return results;
 	}
 
-	return Meteor.StreamerCentral.on('broadcast', function(streamName, eventName, args) {
-		return broadcast(streamName, eventName, args);
+	const onBroadcast = Meteor.bindEnvironment(broadcast);
+
+	let TroubleshootDisableInstanceBroadcast;
+	settings.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
+		if (TroubleshootDisableInstanceBroadcast === value) { return; }
+		TroubleshootDisableInstanceBroadcast = value;
+
+		if (value) {
+			return StreamerCentral.removeListener('broadcast', onBroadcast);
+		}
+
+		StreamerCentral.on('broadcast', onBroadcast);
 	});
 }
 

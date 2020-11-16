@@ -1,12 +1,20 @@
 import { MongoInternals } from 'meteor/mongo';
 
+import { getOplogHandle } from '../../../models/server/models/_oplogHandle';
+
+export function getOplogInfo() {
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+
+	const oplogEnabled = !!Promise.await(getOplogHandle());
+
+	return { oplogEnabled, mongo };
+}
+
 function fallbackMongoInfo() {
 	let mongoVersion;
 	let mongoStorageEngine;
 
-	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
-	const oplogEnabled = Boolean(mongo._oplogHandle && mongo._oplogHandle.onOplogEntry);
+	const { oplogEnabled, mongo } = getOplogInfo();
 
 	try {
 		const { version } = Promise.await(mongo.db.command({ buildinfo: 1 }));
@@ -27,16 +35,14 @@ function fallbackMongoInfo() {
 		console.error('==================================');
 	}
 
-	return { oplogEnabled, mongoVersion, mongoStorageEngine };
+	return { oplogEnabled, mongoVersion, mongoStorageEngine, mongo };
 }
 
 export function getMongoInfo() {
 	let mongoVersion;
 	let mongoStorageEngine;
 
-	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
-	const oplogEnabled = Boolean(mongo._oplogHandle && mongo._oplogHandle.onOplogEntry);
+	const { oplogEnabled, mongo } = getOplogInfo();
 
 	try {
 		const { version, storageEngine } = Promise.await(mongo.db.command({ serverStatus: 1 }));
@@ -47,5 +53,5 @@ export function getMongoInfo() {
 		return fallbackMongoInfo();
 	}
 
-	return { oplogEnabled, mongoVersion, mongoStorageEngine };
+	return { oplogEnabled, mongoVersion, mongoStorageEngine, mongo };
 }

@@ -45,16 +45,28 @@ function cleanupOEmbedCache() {
 	return Meteor.call('OEmbedCacheCleanup');
 }
 
+const name = 'Generate and save statistics';
+
 Meteor.startup(function() {
 	return Meteor.defer(function() {
-		generateStatistics();
+		let TroubleshootDisableStatisticsGenerator;
+		settings.get('Troubleshoot_Disable_Statistics_Generator', (key, value) => {
+			if (TroubleshootDisableStatisticsGenerator === value) { return; }
+			TroubleshootDisableStatisticsGenerator = value;
 
-		SyncedCron.add({
-			name: 'Generate and save statistics',
-			schedule(parser) {
-				return parser.cron('12 * * * *');
-			},
-			job: generateStatistics,
+			if (value) {
+				return SyncedCron.remove(name);
+			}
+
+			generateStatistics();
+
+			SyncedCron.add({
+				name,
+				schedule(parser) {
+					return parser.cron('12 * * * *');
+				},
+				job: generateStatistics,
+			});
 		});
 
 		SyncedCron.add({

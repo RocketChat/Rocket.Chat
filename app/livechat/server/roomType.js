@@ -17,7 +17,7 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 	 * @return {object} Notification details
 	 */
 	getNotificationDetails(room, user, notificationMessage) {
-		const title = `[livechat] ${ this.roomName(room) }`;
+		const title = `[Omnichannel] ${ this.roomName(room) }`;
 		const text = notificationMessage;
 
 		return { title, text };
@@ -30,10 +30,6 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 	getReadReceiptsExtraData(message) {
 		const { token } = message;
 		return { token };
-	}
-
-	isEmitAllowed() {
-		return true;
 	}
 }
 

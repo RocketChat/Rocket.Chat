@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { HTML } from 'meteor/htmljs';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
@@ -7,6 +9,10 @@ import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { roomTypes, getUserPreference } from '../../utils';
 import { Users } from '../../models';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
+
+createTemplateForComponent('sidebarHeader', () => import('../../../client/sidebar/header'));
+createTemplateForComponent('sidebarChats', () => import('../../../client/sidebar/RoomList'), { renderContainerView: () => HTML.DIV({ style: 'display: flex; flex: 1 1 auto;' }) });// eslint-disable-line new-cap
 
 Template.sideNav.helpers({
 	flexTemplate() {
@@ -79,13 +85,28 @@ Template.sideNav.events({
 });
 
 const redirectToDefaultChannelIfNeeded = () => {
-	const currentRouteState = FlowRouter.current();
-	const needToBeRedirect = ['/', '/home'];
-	const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
-	const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
-	if (room && room._id && needToBeRedirect.includes(currentRouteState.path)) {
+	const needToBeRedirect = () => ['/', '/home'].includes(FlowRouter.current().path);
+
+	Tracker.autorun((c) => {
+		const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
+
+		if (!needToBeRedirect()) {
+			return c.stop();
+		}
+
+		if (!firstChannelAfterLogin) {
+			return c.stop();
+		}
+
+		const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
+
+		if (!room) {
+			return;
+		}
+
+		c.stop();
 		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
-	}
+	});
 };
 
 Template.sideNav.onRendered(function() {

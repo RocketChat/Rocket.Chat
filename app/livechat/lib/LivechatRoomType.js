@@ -5,12 +5,12 @@ import { ChatRoom } from '../../models';
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization';
 import { openRoom } from '../../ui-utils';
-import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
+import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
 import { getAvatarURL } from '../../utils/lib/getAvatarURL';
 
-let getLivechatInquiryCollection;
+let LivechatInquiry;
 if (Meteor.isClient) {
-	({ getLivechatInquiryCollection } = require('../client/collections/LivechatInquiry'));
+	({ LivechatInquiry } = require('../client/collections/LivechatInquiry'));
 }
 
 class LivechatRoomRoute extends RoomTypeRouteConfig {
@@ -72,7 +72,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		if (room) {
 			return room.v && room.v.status;
 		}
-		const inquiry = getLivechatInquiryCollection().findOne({ rid });
+		const inquiry = LivechatInquiry.findOne({ rid });
 		return inquiry && inquiry.v && inquiry.v.status;
 	}
 
@@ -83,6 +83,10 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			default:
 				return true;
 		}
+	}
+
+	allowMemberAction(room, action) {
+		return [RoomMemberActions.INVITE, RoomMemberActions.JOIN].includes(action);
 	}
 
 	getUiText(context) {
@@ -102,7 +106,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			return true;
 		}
 
-		const inquiry = getLivechatInquiryCollection().findOne({ rid }, { fields: { status: 1 } });
+		const inquiry = LivechatInquiry.findOne({ rid }, { fields: { status: 1 } });
 		if (inquiry && inquiry.status === 'queued') {
 			return true;
 		}

@@ -13,6 +13,23 @@ API.v1.addRoute('roles.list', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('roles.sync', { authRequired: true }, {
+	get() {
+		const { updatedSince } = this.queryParams;
+
+		if (isNaN(Date.parse(updatedSince))) {
+			throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+		}
+
+		return API.v1.success({
+			roles: {
+				update: Roles.findByUpdatedDate(new Date(updatedSince), { fields: API.v1.defaultFieldsToExclude }).fetch(),
+				remove: Roles.trashFindDeletedAfter(new Date(updatedSince)).fetch(),
+			},
+		});
+	},
+});
+
 API.v1.addRoute('roles.create', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
@@ -66,6 +83,7 @@ API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 			name: 1,
 			username: 1,
 			emails: 1,
+			avatarETag: 1,
 		};
 
 		if (!role) {
@@ -82,7 +100,7 @@ API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 			sort: { username: 1 },
 			skip: offset,
 			fields,
-		}).fetch();
-		return API.v1.success({ users });
+		});
+		return API.v1.success({ users: users.fetch(), total: users.count() });
 	},
 });

@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-// import { ReactiveVar } from 'meteor/reactive-var';
+import { Accounts } from 'meteor/accounts-base';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import mem from 'mem';
 
 import { APIClient } from '../../utils/client';
-import { saveUser } from '../../../imports/startup/client/listenActiveUsers';
+import { saveUser, interestedUserIds } from '../../../imports/startup/client/listenActiveUsers';
+import { Presence } from '../../../client/lib/presence';
 
 import './userPresence.html';
 
@@ -42,9 +43,10 @@ const getAll = _.debounce(async function getAll() {
 			reject();
 		});
 	}
-}, 1000);
+}, 100);
 
-const get = mem(function get(id) {
+export const get = mem(function get(id) {
+	interestedUserIds.add(id);
 	const promise = pending.get(id) || new Promise((resolve, reject) => {
 		promises.set(id, { resolve, reject });
 	});
@@ -71,11 +73,20 @@ const featureExists = !!window.IntersectionObserver;
 
 const observer = featureExists && new IntersectionObserver(handleEntries, options);
 
+let wasConnected = Meteor.status().connected;
+
 Tracker.autorun(() => {
-	if (!Meteor.userId() || !Meteor.status().connected) {
-		return Meteor.users.update({}, { $unset: { status: '' } }, { multi: true });
+	// Only clear statuses on disconnect, prevent process it on reconnect again
+	const isConnected = Meteor.status().connected;
+	if (!Meteor.userId() || (wasConnected && !isConnected)) {
+		wasConnected = isConnected;
+		Presence.reset();
+		return Meteor.users.update({ status: { $exists: true } }, { $unset: { status: true } }, { multi: true });
 	}
 	mem.clear(get);
+	wasConnected = isConnected;
+
+	Presence.restart();
 
 	if (featureExists) {
 		for (const node of data.keys()) {
@@ -84,15 +95,22 @@ Tracker.autorun(() => {
 		}
 		return;
 	}
+
+
 	getAll();
+
+	Accounts.onLogout(() => {
+		Presence.reset();
+		interestedUserIds.clear();
+	});
 });
 
 Template.userPresence.onRendered(function() {
+	if (!this.data || !this.data.uid) {
+		return;
+	}
 	data.set(this.firstNode, this.data);
 	if (featureExists) {
 		return observer.observe(this.firstNode);
 	}
-
-	get(this.data.uid);
-	getAll();
 });

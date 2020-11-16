@@ -1,8 +1,8 @@
 import { Random } from 'meteor/random';
 
-import { setUserAvatar, checkUsernameAvailability, deleteUser } from '../../../lib/server/functions';
-import { Users } from '../../../models';
-
+import { setUserAvatar, checkUsernameAvailability, deleteUser, _setStatusTextPromise } from '../../../lib/server/functions';
+import { Users } from '../../../models/server';
+import { Users as UsersRaw } from '../../../models/server/raw';
 
 export class AppUserBridge {
 	constructor(orch) {
@@ -24,7 +24,7 @@ export class AppUserBridge {
 	async getAppUser(appId) {
 		this.orch.debugLog(`The App ${ appId } is getting its assigned user`);
 
-		const user = Users.findOne({ appId });
+		const user = Users.findOneByAppId(appId);
 
 		return this.orch.getConverters().get('users').convertToApp(user);
 	}
@@ -75,6 +75,27 @@ export class AppUserBridge {
 		} catch (err) {
 			throw new Error(`Errors occurred while deleting an app user: ${ err }`);
 		}
+
+		return true;
+	}
+
+	async update(user, fields, appId) {
+		this.orch.debugLog(`The App ${ appId } is updating a user`);
+
+		if (!user) {
+			throw new Error('User not provided');
+		}
+
+		if (typeof fields.statusText === 'string') {
+			await _setStatusTextPromise(user.id, fields.statusText);
+			delete fields.statusText;
+		}
+
+		if (!Object.keys(fields).length) {
+			return true;
+		}
+
+		await UsersRaw.update({ _id: user.id }, { $set: fields });
 
 		return true;
 	}

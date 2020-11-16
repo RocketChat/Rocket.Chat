@@ -1,4 +1,4 @@
-![](https://user-images.githubusercontent.com/551004/43643393-884b00a4-9701-11e8-94d8-14c46d1f3660.png)
+![](https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png)
 
 <h1 align="center">
   The Ultimate Open Source WebChat Platform
@@ -13,8 +13,7 @@
 [![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
 
-
-* [**NEW!** Help Wanted](#help-wanted)
+* [**NEW!** Rocket.Chat Moving to a Single Codebase](#moving-to-a-single-codebase)
 * [Community](#community)
 * [Mobile Apps](#mobile-apps)
 * [Desktop Apps](#desktop-apps)
@@ -24,7 +23,6 @@
    * [RocketChatLauncher](#rocketchatlauncher)
    * [Layershift](#layershift)
    * [Yunohost.org](#yunohostorg)
-   * [DPlatform](#dplatform)
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
    * [Cloudron.io](#cloudronio)
@@ -34,11 +32,9 @@
   * [Sloppy.io](#sloppyio)
   * [Docker](#docker)
   * [Ansible](#ansible)
-  * [Raspberry Pi 2](#raspberry-pi-2)
+  * [Raspberry Pi 4](#raspberry-pi-4)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
-  * [Hyper.sh](#hypersh)
-  * [WeDeploy](#wedeploy)
   * [D2C.io](#d2cio)
   * [Syncloud.org](#syncloudorg)
 * [About Rocket.Chat](#about-rocketchat)
@@ -58,11 +54,16 @@
   * [Translations](#translations)
   * [How to Contribute](#how-to-contribute)
 * [Credits](#credits)
+* [Help Wanted](#help-wanted)
 * [Donate](#donate)
+
+# Moving to a Single Codebase
+
+Rocket.Chat is moving to a single codebase. Get to know the reasons and how the community will benefit from it. Read the [details](https://rocket.chat/rocket-chat-is-moving-to-a-single-codebase-get-to-know-the-reasons-and-how-the-community-will-benefit-from-it/).
 
 # Help Wanted
 
-At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github  community.
+At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our GitHub  community.
 
 If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
 
@@ -76,6 +77,12 @@ Join thousands of members worldwide 24/7 in our [community server](https://open.
 [![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=dev)](https://open.rocket.chat/channel/dev) for developers needing help from the community to developing new features.
 
 You can also join the conversation on [Twitter](https://twitter.com/RocketChat) and [Facebook](https://www.facebook.com/RocketChatApp).
+
+## Share your story
+We’d love to hear about [your experience](https://survey.zohopublic.com/zs/e4BUFG) and potentially feature it on our [Blog](https://rocket.chat/case-studies/?utm_source=github&utm_medium=readme&utm_campaign=community).
+
+## Subscribe for Updates
+Once a month our marketing team releases an email update with news about product releases, company related topics, events and use cases. [Sign Up!](https://rocket.chat/newsletter/?utm_source=github&utm_medium=readme&utm_campaign=community)
 
 # Desktop Apps
 Download the Native Cross-Platform Desktop Application at [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron/releases)
@@ -123,16 +130,11 @@ Host your own Rocket.Chat server in a few seconds.
 
 [![Install RocketChat with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=rocketchat)
 
-## DPlatform
-
-The easiest way to install a ready-to-run Rocket.Chat server on a Linux machine, VM, or VPS.
-
-[![DP deploy](https://raw.githubusercontent.com/DFabric/DPlatform-ShellCore/images/logo.png)](https://dfabric.github.io/DPlatform-ShellCore)
-
 ## IndieHosters
 Get your Rocket.Chat instance hosted in an "as a Service" style. You register and we manage it for you! (updates, backup...).
 
-[![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
+<!-- [![Rocket.Chat on IndieHosters](https://indiehosters.net/img/generated/logo-indiehosters-horizontal-681-4b587b638.png)](https://indiehosters.net/shop/product/rocket-chat-21) -->
+<a href="https://indiehosters.net/shop/product/rocket-chat-21"><img src="https://indiehosters.net/img/generated/logo-indiehosters-horizontal-681-4b587b638.png" alt="Rocket.Chat on IndieHosters" width="200" height="30"></a>
 
 ## Cloudron.io
 
@@ -185,10 +187,10 @@ Automated production-grade deployment in minutes, for RHEL / CentOS 7 or Ubuntu 
 
 [![Ansible deployment](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/ansible.png)](https://rocket.chat/docs/installation/automation-tools/ansible/)
 
-## Raspberry Pi 2
-Run Rocket.Chat on this world famous $30 quad-core server.
+## Raspberry Pi 4
+Run Rocket.Chat on this world famous $35 quad-core server.
 
-[![Raspberry Pi 2](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
+[![Raspberry Pi 4](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/pitiny.png)](https://github.com/RocketChat/Rocket.Chat.RaspberryPi)
 
 ## Koozali SME
 
@@ -198,14 +200,6 @@ Add Rocket.Chat to this world famous time tested small enterprise server today.
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/).
-
-## Hyper.sh
-Follow their [deployment instructions](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/) to install a per-second billed Rocket.Chat instance on [Hyper.sh](https://rocket.chat/docs/installation/paas-deployments/hyper-sh/).
-
-## WeDeploy
-Install Rocket.Chat on [WeDeploy](https://wedeploy.com):
-
-[![Deploy](https://cdn.wedeploy.com/images/deploy.svg)](https://console.wedeploy.com/deploy?repo=https://github.com/wedeploy-examples/rocketchat-example)
 
 ## D2C.io
 Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with a single click, check live logs and metrics:
@@ -320,11 +314,12 @@ Read about [how it all started](https://www.synopsys.com/blogs/software-security
 
 ## Issues
 
-[Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs and tasks on the roadmap.
+[GitHub Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs and tasks on the roadmap.
 
 ## Feature Requests
 
-[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) are used to suggest, discuss and upvote feature suggestions.
+[RocketChat/feature-requests](https://github.com/RocketChat/feature-requests) is used to track Rocket.Chat feature requests and discussions. Click [here](https://github.com/RocketChat/feature-requests/issues/new?template=feature_request.md) to open a new feature request.
+[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) stores the historical archives of old feature requests (up to 2018).
 
 ### Stack Overflow
 
@@ -365,7 +360,7 @@ Prerequisites:
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [Meteor](https://www.meteor.com/install)
 
-> Meteor automatically installs a hidden [NodeJS v8](https://nodejs.org/download/release/v8.9.3/), [Python v2.7](https://www.python.org/downloads/release/python-270/) and [MongoDB v3.6](https://www.mongodb.com/mongodb-3.6) to be used when you run your app in development mode using the `meteor` command.
+> Meteor automatically installs a hidden [NodeJS v12](https://nodejs.org/download/release/v12.18.4/) and [MongoDB v4.2](https://docs.mongodb.com/manual/introduction/) to be used when you run your app in development mode using the `meteor` command.
 
 Now just clone and start the app:
 
@@ -375,6 +370,7 @@ cd Rocket.Chat
 meteor npm install
 meteor npm start
 ```
+For more detailed step-by-step, see our [quick start for developers](https://docs.rocket.chat/guides/developer/quick-start) docs.
 
 To debug the server part, use [meteor debugging](https://docs.meteor.com/commandline.html#meteordebug). You should use Chrome for best debugging experience:
 

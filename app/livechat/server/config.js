@@ -27,6 +27,20 @@ Meteor.startup(function() {
 		public: true,
 	});
 
+	settings.add('Livechat_enable_message_character_limit', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+	});
+
+	settings.add('Livechat_message_character_limit', 0, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+	});
+
 	settings.add('Livechat_display_offline_form', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
@@ -192,11 +206,39 @@ Meteor.startup(function() {
 		secret: true,
 	});
 
+	settings.add('Livechat_webhook_on_start', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_chat_start',
+	});
+
 	settings.add('Livechat_webhook_on_close', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'CRM_Integration',
 		i18nLabel: 'Send_request_on_chat_close',
+	});
+
+	settings.add('Livechat_webhook_on_chat_taken', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_chat_taken',
+	});
+
+	settings.add('Livechat_webhook_on_chat_queued', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_chat_queued',
+	});
+
+	settings.add('Livechat_webhook_on_forward', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'CRM_Integration',
+		i18nLabel: 'Send_request_on_forwarding',
 	});
 
 	settings.add('Livechat_webhook_on_offline_msg', false, {
@@ -250,31 +292,6 @@ Meteor.startup(function() {
 		i18nLabel: 'Lead_capture_phone_regex',
 	});
 
-	settings.add('Livechat_Knowledge_Enabled', false, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		section: 'Knowledge_Base',
-		public: true,
-		i18nLabel: 'Enabled',
-	});
-
-	settings.add('Livechat_Knowledge_Apiai_Key', '', {
-		type: 'string',
-		group: 'Omnichannel',
-		section: 'Knowledge_Base',
-		public: true,
-		i18nLabel: 'Apiai_Key',
-		secret: true,
-	});
-
-	settings.add('Livechat_Knowledge_Apiai_Language', 'en', {
-		type: 'string',
-		group: 'Omnichannel',
-		section: 'Knowledge_Base',
-		public: true,
-		i18nLabel: 'Apiai_Language',
-	});
-
 	settings.add('Livechat_history_monitor_type', 'url', {
 		type: 'select',
 		group: 'Omnichannel',
@@ -294,19 +311,15 @@ Meteor.startup(function() {
 		i18nLabel: 'Send_Visitor_navigation_history_as_a_message',
 	});
 
-	settings.add('Livechat_enable_office_hours', false, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		public: true,
-		i18nLabel: 'Office_hours_enabled',
-	});
-
-	settings.add('Livechat_allow_online_agents_outside_office_hours', true, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		public: true,
-		i18nLabel: 'Allow_Online_Agents_Outside_Office_Hours',
-		enableQuery: { _id: 'Livechat_enable_office_hours', value: true },
+	settings.addGroup('Omnichannel', function() {
+		this.section('Business_Hours', function() {
+			this.add('Livechat_enable_business_hours', false, {
+				type: 'boolean',
+				group: 'Omnichannel',
+				public: true,
+				i18nLabel: 'Business_hours_enabled',
+			});
+		});
 	});
 
 	settings.add('Livechat_continuous_sound_notification_new_livechat_room', false, {
@@ -364,6 +377,22 @@ Meteor.startup(function() {
 		public: true,
 		i18nLabel: 'Livechat_AllowedDomainsList',
 		i18nDescription: 'Domains_allowed_to_embed_the_livechat_widget',
+	});
+
+	settings.add('Livechat_OfflineMessageToChannel_enabled', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+	});
+
+	settings.add('Livechat_OfflineMessageToChannel_channel_name', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+		enableQuery: { _id: 'Livechat_OfflineMessageToChannel_enabled', value: true },
+		i18nLabel: 'Channel_name',
 	});
 
 	settings.add('Livechat_Facebook_Enabled', false, {
@@ -525,14 +554,5 @@ Meteor.startup(function() {
 		section: 'Sessions',
 		i18nLabel: 'How_long_to_wait_to_consider_visitor_abandonment',
 		i18nDescription: 'Time_in_seconds',
-	});
-
-	settings.add('Livechat_enable_inquiry_fetch_by_stream', true, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		section: 'Routing',
-		public: true,
-		i18nLabel: 'Enable_inquiry_fetch_by_stream',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: 'Manual_Selection' },
 	});
 });

@@ -6,11 +6,13 @@ import { UserPresence } from 'meteor/konecty:user-presence';
 import { Accounts } from 'meteor/accounts-base';
 import toastr from 'toastr';
 
+
 import hljs from '../../app/markdown/lib/hljs';
-import { fireGlobalEvent } from '../../app/ui-utils';
-import { getUserPreference } from '../../app/utils';
+import { fireGlobalEvent, alerts } from '../../app/ui-utils';
+import { getUserPreference, t } from '../../app/utils';
+import { hasPermission } from '../../app/authorization/client';
 import 'highlight.js/styles/github.css';
-import { syncUserdata } from '../lib/userData';
+import { synchronizeUserData } from '../lib/userData';
 
 hljs.initHighlightingOnLoad();
 
@@ -41,7 +43,7 @@ Meteor.startup(function() {
 			return;
 		}
 
-		const user = await syncUserdata(uid);
+		const user = await synchronizeUserData(uid);
 		if (!user) {
 			return;
 		}
@@ -60,5 +62,33 @@ Meteor.startup(function() {
 			status = user.status;
 			fireGlobalEvent('status-changed', status);
 		}
+	});
+
+	const autoRunHandler = Tracker.autorun(async function() {
+		const uid = Meteor.userId();
+		if (!uid) {
+			return;
+		}
+
+		if (!hasPermission('manage-cloud')) {
+			return;
+		}
+
+		Meteor.call('cloud:checkRegisterStatus', (err, data) => {
+			if (err) {
+				console.log(err);
+				return;
+			}
+
+			autoRunHandler.stop();
+			const { connectToCloud = false, workspaceRegistered = false } = data;
+			if (connectToCloud === true && workspaceRegistered !== true) {
+				alerts.open({
+					title: t('Cloud_registration_pending_title'),
+					html: t('Cloud_registration_pending_html'),
+					modifiers: ['large', 'danger'],
+				});
+			}
+		});
 	});
 });

@@ -21,7 +21,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 
 	try {
 		// Get the domains after removal
-		const domainsAfterRemoval = users.map((u) => u.federation.origin);
+		const domainsAfterRemoval = [...new Set(users.map((u) => u.federation.origin))];
 
 		//
 		// Normalize the room's federation status
@@ -30,7 +30,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		usersBeforeRemoval.push(removedUser);
 
 		// Get the users domains
-		const domainsBeforeRemoval = usersBeforeRemoval.map((u) => u.federation.origin);
+		const domainsBeforeRemoval = [...new Set(usersBeforeRemoval.map((u) => u.federation.origin))];
 
 		//
 		// Create the user remove event
@@ -42,7 +42,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		// Dispatch the events
 		dispatchEvent(domainsBeforeRemoval, removeUserEvent);
 	} catch (err) {
-		logger.client.error('afterRemoveFromRoom => Could not add user:', err);
+		logger.client.error('afterRemoveFromRoom => Could not remove user:', err);
 	}
 
 	return involvedUsers;

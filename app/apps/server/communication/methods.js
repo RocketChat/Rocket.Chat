@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings';
-import { hasPermission } from '../../../authorization';
+import { settings } from '../../../settings/server';
+import { hasPermission } from '../../../authorization/server';
+import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 
 const waitToLoad = function(orch) {
 	return new Promise((resolve) => {
@@ -54,7 +55,7 @@ export class AppMethods {
 				return instance.isLoaded();
 			},
 
-			'apps/go-enable'() {
+			'apps/go-enable': twoFactorRequired(function _appsGoEnable() {
 				if (!Meteor.userId()) {
 					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 						method: 'apps/go-enable',
@@ -70,9 +71,9 @@ export class AppMethods {
 				settings.set('Apps_Framework_enabled', true);
 
 				Promise.await(waitToLoad(instance._orch));
-			},
+			}),
 
-			'apps/go-disable'() {
+			'apps/go-disable': twoFactorRequired(function _appsGoDisable() {
 				if (!Meteor.userId()) {
 					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 						method: 'apps/go-enable',
@@ -88,7 +89,7 @@ export class AppMethods {
 				settings.set('Apps_Framework_enabled', false);
 
 				Promise.await(waitToUnload(instance._orch));
-			},
+			}),
 		});
 	}
 }

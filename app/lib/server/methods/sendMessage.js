@@ -1,21 +1,26 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
 import { settings } from '../../../settings';
-import { Notifications } from '../../../notifications';
 import { messageProperties } from '../../../ui-utils';
 import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';
+import { api } from '../../../../server/sdk/api';
 
 export function executeSendMessage(uid, message) {
+	if (message.tshow && !message.tmid) {
+		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
+			method: 'sendMessage',
+		});
+	}
+
 	if (message.tmid && !settings.get('Threads_enabled')) {
 		throw new Meteor.Error('error-not-allowed', 'not-allowed', {
 			method: 'sendMessage',
@@ -51,7 +56,6 @@ export function executeSendMessage(uid, message) {
 		fields: {
 			username: 1,
 			type: 1,
-			...!!settings.get('Message_SetNameToAliasEnabled') && { name: 1 },
 		},
 	});
 	let { rid } = message;
@@ -69,25 +73,22 @@ export function executeSendMessage(uid, message) {
 
 	try {
 		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
-		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
-			message.alias = user.name;
-		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);
 	} catch (error) {
-		if (error === 'error-not-allowed') {
-			throw new Meteor.Error('error-not-allowed');
-		}
-
 		SystemLogger.error('Error sending message:', error);
 
-		Notifications.notifyUser(uid, 'message', {
-			_id: Random.id(),
-			rid: message.rid,
-			ts: new Date(),
-			msg: TAPi18n.__(error, {}, user.language),
+		const errorMessage = typeof error === 'string' ? error : error.error || error.message;
+		api.broadcast('notify.ephemeralMessage', uid, message.rid, {
+			msg: TAPi18n.__(errorMessage, {}, user.language),
 		});
+
+		if (typeof error === 'string') {
+			throw new Error(error);
+		}
+
+		throw error;
 	}
 }
 
@@ -102,7 +103,15 @@ Meteor.methods({
 			});
 		}
 
-		return executeSendMessage(uid, message);
+		try {
+			return executeSendMessage(uid, message);
+		} catch (error) {
+			if ((error.error || error.message) === 'error-not-allowed') {
+				throw new Meteor.Error(error.error || error.message, error.reason, {
+					method: 'sendMessage',
+				});
+			}
+		}
 	},
 });
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second

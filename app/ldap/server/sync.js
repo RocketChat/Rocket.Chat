@@ -8,13 +8,13 @@ import LDAP from './ldap';
 import { callbacks } from '../../callbacks/server';
 import { RocketChatFile } from '../../file';
 import { settings } from '../../settings';
-import { Notifications } from '../../notifications';
 import { Users, Roles, Rooms, Subscriptions } from '../../models';
 import { Logger } from '../../logger';
 import { _setRealName, _setUsername } from '../../lib';
 import { templateVarHandler } from '../../utils';
 import { FileUpload } from '../../file-upload';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/functions';
+import { api } from '../../../server/sdk/api';
 
 
 export const logger = new Logger('LDAPSync', {});
@@ -28,7 +28,7 @@ export function isUserInLDAPGroup(ldap, ldapUser, user, ldapGroup) {
 		return false;
 	}
 	const searchOptions = {
-		filter: syncUserRolesFilter.replace(/#{username}/g, user.username).replace(/#{groupName}/g, ldapGroup),
+		filter: syncUserRolesFilter.replace(/#{username}/g, user.username).replace(/#{groupName}/g, ldapGroup).replace(/#{userdn}/g, ldapUser.dn),
 		scope: 'sub',
 	};
 
@@ -123,12 +123,14 @@ export function getDataToSyncUserData(ldapUser, user) {
 						return;
 					}
 
+					const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+
 					if (_.isObject(ldapUser[ldapField])) {
 						_.map(ldapUser[ldapField], function(item) {
-							emailList.push({ address: item, verified: true });
+							emailList.push({ address: item, verified });
 						});
 					} else {
-						emailList.push({ address: ldapUser[ldapField], verified: true });
+						emailList.push({ address: ldapUser[ldapField], verified });
 					}
 					break;
 
@@ -208,6 +210,7 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 	const syncUserRolesFieldMap = settings.get('LDAP_Sync_User_Data_GroupsMap').trim();
 
 	if (!syncUserRoles || !syncUserRolesFieldMap) {
+		logger.debug('not syncing user roles');
 		return [];
 	}
 
@@ -261,7 +264,7 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 
 		const del = Roles.removeUserRoles(user._id, roleName);
 		if (settings.get('UI_DisplayRoles') && del) {
-			Notifications.notifyLogged('roles-change', {
+			api.broadcast('user.roleUpdate', {
 				type: 'removed',
 				_id: roleName,
 				u: {
@@ -294,6 +297,7 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 
 	const userChannels = [];
 	if (!syncUserRoles || !syncUserRolesAutoChannels || !syncUserRolesChannelFieldMap) {
+		logger.debug('not syncing groups to channels');
 		return [];
 	}
 
@@ -315,7 +319,7 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 		}
 
 		for (const channel of channels) {
-			let room = Rooms.findOneByName(channel);
+			let room = Rooms.findOneByNonValidatedName(channel);
 			if (!room) {
 				room = createRoomForSync(channel);
 			}
@@ -331,6 +335,41 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 	});
 
 	return userChannels;
+}
+
+function syncUserAvatar(user, ldapUser) {
+	if (!user?._id || settings.get('LDAP_Sync_User_Avatar') !== true) {
+		return;
+	}
+
+	const avatarField = (settings.get('LDAP_Avatar_Field') || 'thumbnailPhoto').trim();
+	const avatar = ldapUser._raw[avatarField] || ldapUser._raw.thumbnailPhoto || ldapUser._raw.jpegPhoto;
+	if (!avatar) {
+		return;
+	}
+
+	logger.info('Syncing user avatar');
+
+	Meteor.defer(() => {
+		const rs = RocketChatFile.bufferToStream(avatar);
+		const fileStore = FileUpload.getStore('Avatars');
+		fileStore.deleteByName(user.username);
+
+		const file = {
+			userId: user._id,
+			type: 'image/jpeg',
+			size: avatar.length,
+		};
+
+		Meteor.runAsUser(user._id, () => {
+			fileStore.insert(file, rs, (err, result) => {
+				Meteor.setTimeout(function() {
+					Users.setAvatarData(user._id, 'ldap', result.etag);
+					api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: result.etag });
+				}, 500);
+			});
+		});
+	});
 }
 
 export function syncUserData(user, ldapUser, ldap) {
@@ -354,6 +393,9 @@ export function syncUserData(user, ldapUser, ldap) {
 			_setRealName(user._id, userData.name);
 			delete userData.name;
 		}
+		userData.customFields = {
+			...user.customFields, ...userData.customFields,
+		};
 		Meteor.users.update(user._id, { $set: userData });
 		user = Meteor.users.findOne({ _id: user._id });
 	}
@@ -370,7 +412,7 @@ export function syncUserData(user, ldapUser, ldap) {
 		for (const roleName of userRoles) {
 			const add = Roles.addUserRoles(user._id, roleName);
 			if (settings.get('UI_DisplayRoles') && add) {
-				Notifications.notifyLogged('roles-change', {
+				api.broadcast('user.roleUpdate', {
 					type: 'added',
 					_id: roleName,
 					u: {
@@ -390,30 +432,7 @@ export function syncUserData(user, ldapUser, ldap) {
 		}
 	}
 
-	if (user && user._id && settings.get('LDAP_Sync_User_Avatar') === true) {
-		const avatar = ldapUser._raw.thumbnailPhoto || ldapUser._raw.jpegPhoto;
-		if (avatar) {
-			logger.info('Syncing user avatar');
-
-			const rs = RocketChatFile.bufferToStream(avatar);
-			const fileStore = FileUpload.getStore('Avatars');
-			fileStore.deleteByName(user.username);
-
-			const file = {
-				userId: user._id,
-				type: 'image/jpeg',
-			};
-
-			Meteor.runAsUser(user._id, () => {
-				fileStore.insert(file, rs, () => {
-					Meteor.setTimeout(function() {
-						Users.setAvatarOrigin(user._id, 'ldap');
-						Notifications.notifyLogged('updateAvatar', { username: user.username });
-					}, 500);
-				});
-			});
-		}
-	}
+	syncUserAvatar(user, ldapUser);
 }
 
 export function addLdapUser(ldapUser, username, password, ldap) {

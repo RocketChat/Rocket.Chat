@@ -1,9 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-
-import { getUserPreference } from '../../utils';
+import s from 'underscore.string';
 
 const getTitle = function(self) {
 	if (self.meta == null) {
@@ -20,14 +18,14 @@ const getDescription = function(self) {
 	if (description == null) {
 		return;
 	}
-	return _.unescape(description.replace(/(^[“\s]*)|([”\s]*$)/g, ''));
+	return s.unescapeHTML(description.replace(/(^[“\s]*)|([”\s]*$)/g, ''));
 };
 
 Template.oembedUrlWidget.helpers({
 	description() {
 		const description = getDescription(this);
 		if (_.isString(description)) {
-			return Blaze._escape(description);
+			return description;
 		}
 	},
 	title() {
@@ -53,20 +51,10 @@ Template.oembedUrlWidget.helpers({
 		if (url == null) {
 			return;
 		}
-		if (url.indexOf('//') === 0) {
-			url = `${ this.parsedUrl.protocol }${ url }`;
-		} else if (url.indexOf('/') === 0 && (this.parsedUrl && this.parsedUrl.host)) {
-			url = `${ this.parsedUrl.protocol }//${ this.parsedUrl.host }${ url }`;
-		}
+		url = new URL(url, `${ this.parsedUrl.protocol }//${ this.parsedUrl.host }`).href;
 		return url;
 	},
 	show() {
 		return (getDescription(this) != null) || (getTitle(this) != null);
-	},
-	collapsed() {
-		if (this.collapsed != null) {
-			return this.collapsed;
-		}
-		return getUserPreference(Meteor.userId(), 'collapseMediaByDefault') === true;
 	},
 });

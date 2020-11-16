@@ -6,8 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { SystemLogger } from '../../app/logger';
-import { settings } from '../../app/settings';
-import { Info, getMongoInfo } from '../../app/utils';
+import { settings } from '../../app/settings/server';
+import { Info, getMongoInfo } from '../../app/utils/server';
 import { Users } from '../../app/models/server';
 import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 
@@ -47,7 +47,7 @@ Meteor.startup(function() {
 
 		msg = msg.join('\n');
 
-		if (!oplogEnabled) {
+		if (!process.env.DISABLE_DB_WATCH && !oplogEnabled) {
 			msg += ['', '', 'OPLOG / REPLICASET IS REQUIRED TO RUN ROCKET.CHAT, MORE INFORMATION AT:', 'https://go.rocket.chat/i/oplog-required'].join('\n');
 			SystemLogger.error_box(msg, 'SERVER ERROR');
 

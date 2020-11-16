@@ -19,8 +19,11 @@ import {
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
-import { Apps } from '../../../apps/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
+import { NotificationQueue } from '../../../models/server/raw';
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
+import { getAppsStatistics } from './getAppsStatistics';
+import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 
 const wizardFields = [
 	'Organization_Type',
@@ -34,6 +37,8 @@ const wizardFields = [
 
 export const statistics = {
 	get: function _getStatistics() {
+		const readPreference = readSecondaryPreferred(Uploads.model.rawDatabase());
+
 		const statistics = {};
 
 		// Setup Wizard
@@ -61,6 +66,7 @@ export const statistics = {
 		// User statistics
 		statistics.totalUsers = Users.find().count();
 		statistics.activeUsers = Users.getActiveLocalUserCount();
+		statistics.activeGuests = Users.getActiveLocalGuestCount();
 		statistics.nonActiveUsers = Users.find({ active: false }).count();
 		statistics.appUsers = Users.find({ type: 'app' }).count();
 		statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
@@ -87,11 +93,11 @@ export const statistics = {
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
 
 		// Message statistics
-		statistics.totalMessages = Messages.find().count();
 		statistics.totalChannelMessages = _.reduce(Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
 		statistics.totalPrivateGroupMessages = _.reduce(Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
 		statistics.totalDirectMessages = _.reduce(Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(), function _countDirectMessages(num, room) { return num + room.msgs; }, 0);
 		statistics.totalLivechatMessages = _.reduce(Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(), function _countLivechatMessages(num, room) { return num + room.msgs; }, 0);
+		statistics.totalMessages = statistics.totalChannelMessages + statistics.totalPrivateGroupMessages + statistics.totalDirectMessages + statistics.totalLivechatMessages;
 
 		// Federation statistics
 		const federationOverviewData = federationGetStatistics();
@@ -126,8 +132,12 @@ export const statistics = {
 			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
 
+		statistics.enterpriseReady = true;
+
 		statistics.uploadsTotal = Uploads.find().count();
-		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
+		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{
+			$group: { _id: 'total', total: { $sum: '$size' } },
+		}], { readPreference }).toArray());
 		statistics.uploadsTotalSize = result ? result.total : 0;
 
 		statistics.migration = Migrations._getControl();
@@ -145,14 +155,17 @@ export const statistics = {
 		statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 		statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
-		statistics.apps = {
-			engineVersion: Info.marketplaceApiVersion,
-			enabled: Apps.isEnabled(),
-			totalInstalled: Apps.isInitialized() && Apps.getManager().get().length,
-			totalActive: Apps.isInitialized() && Apps.getManager().get({ enabled: true }).length,
-		};
+		statistics.apps = getAppsStatistics();
 
-		const integrations = Integrations.find().fetch();
+		const integrations = Promise.await(Integrations.model.rawCollection().find({}, {
+			projection: {
+				_id: 0,
+				type: 1,
+				enabled: 1,
+				scriptEnabled: 1,
+			},
+			readPreference,
+		}).toArray());
 
 		statistics.integrations = {
 			totalIntegrations: integrations.length,
@@ -162,6 +175,10 @@ export const statistics = {
 			totalOutgoingActive: integrations.filter((integration) => integration.enabled === true && integration.type === 'webhook-outgoing').length,
 			totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
 		};
+
+		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
+
+		statistics.enterprise = getEnterpriseStatistics();
 
 		return statistics;
 	},

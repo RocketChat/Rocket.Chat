@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -176,6 +177,12 @@ Template.RocketSearch.onRendered(function() {
 		// if (e.target.id !== 'rocket-search-suggestions' && !$(e.target).parents('#rocket-search-suggestions').length) {
 		this.suggestions.set();
 		// }
+	});
+	Tracker.autorun((c) => {
+		if (this.isActive.get() === true) {
+			Tracker.afterFlush(() => { document.querySelector('#message-search').focus(); });
+			c.stop();
+		}
 	});
 });
 

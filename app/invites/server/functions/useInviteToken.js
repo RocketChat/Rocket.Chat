@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Invites, Users, Subscriptions } from '../../../models/server';
 import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
 export const useInviteToken = (userId, token) => {
 	if (!userId) {
@@ -14,6 +15,10 @@ export const useInviteToken = (userId, token) => {
 	}
 
 	const { inviteData, room } = validateInviteToken(token);
+
+	if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.INVITE)) {
+		throw new Meteor.Error('error-room-type-not-allowed', 'Can\'t join room of this type via invite', { method: 'useInviteToken', field: 'token' });
+	}
 
 	const user = Users.findOneById(userId);
 	Users.updateInviteToken(user._id, token);

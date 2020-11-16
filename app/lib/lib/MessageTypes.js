@@ -190,10 +190,10 @@ export const MessageTypesValues = [
 		key: 'rm',
 		i18nLabel: 'Message_HideType_rm',
 	}, {
-		key: 'subscription_role_added',
+		key: 'subscription-role-added',
 		i18nLabel: 'Message_HideType_subscription_role_added',
 	}, {
-		key: 'subscription_role_removed',
+		key: 'subscription-role-removed',
 		i18nLabel: 'Message_HideType_subscription_role_removed',
 	}, {
 		key: 'room_archived',
@@ -201,5 +201,13 @@ export const MessageTypesValues = [
 	}, {
 		key: 'room_unarchived',
 		i18nLabel: 'Message_HideType_room_unarchived',
+	},
+	{
+		key: 'room_changed_privacy',
+		i18nLabel: 'Message_HideType_room_changed_privacy',
+	},
+	{
+		key: 'room_changed_avatar',
+		i18nLabel: 'Message_HideType_room_changed_avatar',
 	},
 ];

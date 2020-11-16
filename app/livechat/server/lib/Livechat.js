@@ -1,6 +1,5 @@
 import dns from 'dns';
 
-import { AppInterface } from '@rocket.chat/apps-engine/server/compiler';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
@@ -27,18 +26,19 @@ import {
 	LivechatDepartment,
 	LivechatCustomField,
 	LivechatVisitors,
-	LivechatOfficeHour,
 	LivechatInquiry,
 } from '../../../models';
 import { Logger } from '../../../logger';
-import { addUserRoles, hasRole, removeUserFromRoles } from '../../../authorization';
+import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
 import * as Mailer from '../../../mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
-import { normalizeTransferredByData } from './Helper';
-import { Apps } from '../../../apps/server';
+import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
+import { Apps, AppEvents } from '../../../apps/server';
+import { businessHourManager } from '../business-hour';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 export const Livechat = {
 	Analytics,
@@ -72,6 +72,7 @@ export const Livechat = {
 
 	getAgents(department) {
 		if (department) {
+			// TODO: This and all others should get the user's info as well
 			return LivechatDepartmentAgents.findByDepartmentId(department);
 		}
 		return Users.findAgents();
@@ -107,7 +108,7 @@ export const Livechat = {
 		});
 	},
 
-	async getRoom(guest, message, roomInfo, agent) {
+	async getRoom(guest, message, roomInfo, agent, extraData) {
 		let room = LivechatRooms.findOneById(message.rid);
 		let newRoom = false;
 
@@ -117,8 +118,9 @@ export const Livechat = {
 		}
 
 		if (room == null) {
+			const defaultAgent = callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
 			// if no department selected verify if there is at least one active and pick the first
-			if (!agent && !guest.department) {
+			if (!defaultAgent && !guest.department) {
 				const department = this.getRequiredDepartment();
 
 				if (department) {
@@ -127,7 +129,7 @@ export const Livechat = {
 			}
 
 			// delegate room creation to QueueManager
-			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent });
+			room = await QueueManager.requestRoom({ guest, message, roomInfo, agent: defaultAgent, extraData });
 			newRoom = true;
 		}
 
@@ -276,7 +278,7 @@ export const Livechat = {
 		return false;
 	},
 
-	saveGuest({ _id, name, email, phone, livechatData = {} }) {
+	saveGuest({ _id, name, email, phone, livechatData = {} }, userId) {
 		const updateData = {};
 
 		if (name) {
@@ -291,41 +293,50 @@ export const Livechat = {
 
 		const customFields = {};
 		const fields = LivechatCustomField.find({ scope: 'visitor' });
-		fields.forEach((field) => {
-			if (!livechatData.hasOwnProperty(field._id)) {
-				return;
-			}
-			const value = s.trim(livechatData[field._id]);
-			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
-				const regexp = new RegExp(field.regexp);
-				if (!regexp.test(value)) {
-					throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+
+		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
+			fields.forEach((field) => {
+				if (!livechatData.hasOwnProperty(field._id)) {
+					return;
 				}
-			}
-			customFields[field._id] = value;
-		});
-		updateData.livechatData = customFields;
+				const value = s.trim(livechatData[field._id]);
+				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
+					const regexp = new RegExp(field.regexp);
+					if (!regexp.test(value)) {
+						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+					}
+				}
+				customFields[field._id] = value;
+			});
+			updateData.livechatData = customFields;
+		}
 		const ret = LivechatVisitors.saveGuestById(_id, updateData);
 
 		Meteor.defer(() => {
+			Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
 			callbacks.run('livechat.saveGuest', updateData);
 		});
 
 		return ret;
 	},
 
-	closeRoom({ user, visitor, room, comment }) {
+	closeRoom({ user, visitor, room, comment, options = {} }) {
 		if (!room || room.t !== 'l' || !room.open) {
 			return false;
 		}
 
-		callbacks.run('livechat.beforeCloseRoom', room);
+		const params = callbacks.run('livechat.beforeCloseRoom', { room, options });
+		const { extraData } = params;
 
 		const now = new Date();
+		const { _id: rid, servedBy, transcriptRequest } = room;
+		const serviceTimeDuration = servedBy && (now.getTime() - servedBy.ts) / 1000;
 
 		const closeData = {
 			closedAt: now,
 			chatDuration: (now.getTime() - room.ts) / 1000,
+			...serviceTimeDuration && { serviceTimeDuration },
+			...extraData,
 		};
 
 		if (user) {
@@ -342,7 +353,6 @@ export const Livechat = {
 			};
 		}
 
-		const { _id: rid, servedBy } = room;
 		LivechatRooms.closeByRoomId(rid, closeData);
 		LivechatInquiry.removeByRoomId(rid);
 
@@ -350,6 +360,7 @@ export const Livechat = {
 			t: 'livechat-close',
 			msg: comment,
 			groupable: false,
+			transcriptRequested: !!transcriptRequest,
 		};
 
 		// Retreive the closed room
@@ -363,8 +374,13 @@ export const Livechat = {
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
 		Meteor.defer(() => {
-			Apps.getBridges().getListenerBridge().livechatEvent(AppInterface.ILivechatRoomClosedHandler, room);
-			callbacks.run('livechat.closeRoom', room);
+			/**
+			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
+			 * in the next major version of the Apps-Engine
+			 */
+			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
+			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
+			callbacks.runAsync('livechat.closeRoom', room);
 		});
 
 		return true;
@@ -414,6 +430,9 @@ export const Livechat = {
 		Settings.findNotHiddenPublic([
 			'Livechat_title',
 			'Livechat_title_color',
+			'Livechat_enable_message_character_limit',
+			'Livechat_message_character_limit',
+			'Message_MaxAllowedSize',
 			'Livechat_enabled',
 			'Livechat_registration_form',
 			'Livechat_allow_switching_departments',
@@ -451,36 +470,45 @@ export const Livechat = {
 		return rcSettings;
 	},
 
-	saveRoomInfo(roomData, guestData) {
+	saveRoomInfo(roomData, guestData, userId) {
 		const { livechatData = {} } = roomData;
 		const customFields = {};
 
-		const fields = LivechatCustomField.find({ scope: 'room' });
-		fields.forEach((field) => {
-			if (!livechatData.hasOwnProperty(field._id)) {
-				return;
-			}
-			const value = s.trim(livechatData[field._id]);
-			if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
-				const regexp = new RegExp(field.regexp);
-				if (!regexp.test(value)) {
-					throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+		if (!userId || hasPermission(userId, 'edit-livechat-room-customfields')) {
+			const fields = LivechatCustomField.find({ scope: 'room' });
+			fields.forEach((field) => {
+				if (!livechatData.hasOwnProperty(field._id)) {
+					return;
 				}
-			}
-			customFields[field._id] = value;
-		});
-		roomData.livechatData = customFields;
+				const value = s.trim(livechatData[field._id]);
+				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
+					const regexp = new RegExp(field.regexp);
+					if (!regexp.test(value)) {
+						throw new Meteor.Error(TAPi18n.__('error-invalid-custom-field-value', { field: field.label }));
+					}
+				}
+				customFields[field._id] = value;
+			});
+			roomData.livechatData = customFields;
+		}
 
 		if (!LivechatRooms.saveRoomById(roomData)) {
 			return false;
 		}
 
 		Meteor.defer(() => {
+			Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 			callbacks.run('livechat.saveRoom', roomData);
 		});
 
 		if (!_.isEmpty(guestData.name)) {
-			return Rooms.setFnameById(roomData._id, guestData.name) && Subscriptions.updateDisplayNameByRoomId(roomData._id, guestData.name);
+			const { _id: rid } = roomData;
+			const { name } = guestData;
+			return Rooms.setFnameById(rid, name)
+				&& LivechatInquiry.setNameByRoomId(rid, name)
+				// This one needs to be the last since the agent may not have the subscription
+				// when the conversation is in the queue, then the result will be 0(zero)
+				&& Subscriptions.updateDisplayNameByRoomId(rid, name);
 		}
 	},
 
@@ -530,7 +558,7 @@ export const Livechat = {
 
 	saveTransferHistory(room, transferData) {
 		const { departmentId: previousDepartment } = room;
-		const { department: nextDepartment, transferredBy, transferredTo, scope } = transferData;
+		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
 
 		check(transferredBy, Match.ObjectIncluding({
 			_id: String,
@@ -546,6 +574,7 @@ export const Livechat = {
 				transferredBy,
 				ts: new Date(),
 				scope: scope || (nextDepartment ? 'department' : 'agent'),
+				comment,
 				...previousDepartment && { previousDepartment },
 				...nextDepartment && { nextDepartment },
 				...transferredTo && { transferredTo },
@@ -587,9 +616,19 @@ export const Livechat = {
 		if (!inquiry) {
 			return false;
 		}
+
 		const transferredBy = normalizeTransferredByData(user, room);
 		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy };
-		return this.saveTransferHistory(room, transferData) && RoutingManager.unassignAgent(inquiry, departmentId);
+		try {
+			this.saveTransferHistory(room, transferData);
+			RoutingManager.unassignAgent(inquiry, departmentId);
+			Meteor.defer(() => callbacks.run('livechat.chatQueued', LivechatRooms.findOneById(rid)));
+		} catch (e) {
+			console.error(e);
+			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
+		}
+
+		return true;
 	},
 
 	sendRequest(postData, callback, trying = 1) {
@@ -644,11 +683,14 @@ export const Livechat = {
 		};
 
 		if (agent) {
+			const customFields = parseAgentCustomFields(agent.customFields);
+
 			postData.agent = {
 				_id: agent._id,
 				username: agent.username,
 				name: agent.name,
 				email: null,
+				...customFields && { customFields },
 			};
 
 			if (agent.emails && agent.emails.length > 0) {
@@ -776,19 +818,31 @@ export const Livechat = {
 
 	saveDepartmentAgents(_id, departmentAgents) {
 		check(_id, String);
-		check(departmentAgents, [
-			Match.ObjectIncluding({
-				agentId: String,
-				username: String,
-			}),
-		]);
+		check(departmentAgents, {
+			upsert: Match.Maybe([
+				Match.ObjectIncluding({
+					agentId: String,
+					username: String,
+					count: Match.Maybe(Match.Integer),
+					order: Match.Maybe(Match.Integer),
+				}),
+			]),
+			remove: Match.Maybe([
+				Match.ObjectIncluding({
+					agentId: String,
+					username: Match.Maybe(String),
+					count: Match.Maybe(Match.Integer),
+					order: Match.Maybe(Match.Integer),
+				}),
+			]),
+		});
 
 		const department = LivechatDepartment.findOneById(_id);
 		if (!department) {
 			throw new Meteor.Error('error-department-not-found', 'Department not found', { method: 'livechat:saveDepartmentAgents' });
 		}
 
-		return LivechatDepartment.createOrUpdateDepartment(_id, department, departmentAgents);
+		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	},
 
 	saveDepartment(_id, departmentData, departmentAgents) {
@@ -801,6 +855,8 @@ export const Livechat = {
 			showOnRegistration: Boolean,
 			email: String,
 			showOnOfflineForm: Boolean,
+			requestTagBeforeClosingChat: Match.Optional(Boolean),
+			chatClosingTags: Match.Optional([String]),
 		};
 
 		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
@@ -811,13 +867,15 @@ export const Livechat = {
 		});
 
 		check(departmentData, defaultValidations);
+		check(departmentAgents, Match.Maybe({
+			upsert: Match.Maybe(Array),
+			remove: Match.Maybe(Array),
+		}));
 
-		check(departmentAgents, Match.Maybe([
-			Match.ObjectIncluding({
-				agentId: String,
-				username: String,
-			}),
-		]));
+		const { requestTagBeforeClosingChat, chatClosingTags } = departmentData;
+		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
+			throw new Meteor.Error('error-validating-department-chat-closing-tags', 'At least one closing tag is required when the department requires tag(s) on closing conversations.', { method: 'livechat:saveDepartment' });
+		}
 
 		if (_id) {
 			const department = LivechatDepartment.findOneById(_id);
@@ -826,7 +884,12 @@ export const Livechat = {
 			}
 		}
 
-		return LivechatDepartment.createOrUpdateDepartment(_id, departmentData, departmentAgents);
+		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
+		if (departmentDB && departmentAgents) {
+			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+		}
+
+		return departmentDB;
 	},
 
 	saveAgentInfo(_id, agentData, agentDepartments) {
@@ -854,8 +917,15 @@ export const Livechat = {
 		if (!department) {
 			throw new Meteor.Error('department-not-found', 'Department not found', { method: 'livechat:removeDepartment' });
 		}
-
-		return LivechatDepartment.removeById(_id);
+		const ret = LivechatDepartment.removeById(_id);
+		const agentsIds = LivechatDepartmentAgents.findByDepartmentId(_id).fetch().map((agent) => agent.agentId);
+		LivechatDepartmentAgents.removeByDepartmentId(_id);
+		if (ret) {
+			Meteor.defer(() => {
+				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
+			});
+		}
+		return ret;
 	},
 
 	showConnecting() {
@@ -873,13 +943,13 @@ export const Livechat = {
 		});
 	},
 
-	sendTranscript({ token, rid, email }) {
+	sendTranscript({ token, rid, email, subject, user }) {
 		check(rid, String);
 		check(email, String);
 
 		const room = LivechatRooms.findOneById(rid);
 
-		const visitor = LivechatVisitors.getVisitorByToken(token);
+		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1, token: 1, language: 1, username: 1, name: 1 } });
 		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
 
 		// allow to only user to send transcripts from their own chats
@@ -887,19 +957,17 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
-		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ['livechat_navigation_history'], { sort: { ts: 1 } });
+		const showAgentInfo = settings.get('Livechat_show_agent_info');
+		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat_video_call'];
+		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } });
 
 		let html = '<div> <hr>';
 		messages.forEach((message) => {
-			if (message.t && ['command', 'livechat-close', 'livechat_video_call'].indexOf(message.t) !== -1) {
-				return;
-			}
-
 			let author;
 			if (message.u._id === visitor._id) {
 				author = TAPi18n.__('You', { lng: userLanguage });
 			} else {
-				author = message.u.username;
+				author = showAgentInfo ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
 			}
 
 			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
@@ -920,14 +988,57 @@ export const Livechat = {
 			fromEmail = settings.get('From_Email');
 		}
 
-		const subject = TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
+		const mailSubject = subject || TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
 
-		this.sendEmail(fromEmail, email, fromEmail, subject, html);
+		this.sendEmail(fromEmail, email, fromEmail, mailSubject, html);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.sendTranscript', messages, email);
 		});
 
+		let type = 'user';
+		if (!user) {
+			user = Users.findOneById('rocket.cat', { fields: { _id: 1, username: 1, name: 1 } });
+			type = 'visitor';
+		}
+
+		Messages.createTranscriptHistoryWithRoomIdMessageAndUser(room._id, '', user, { requestData: { type, visitor, user } });
+		return true;
+	},
+
+	requestTranscript({ rid, email, subject, user }) {
+		check(rid, String);
+		check(email, String);
+		check(subject, String);
+		check(user, Match.ObjectIncluding({
+			_id: String,
+			username: String,
+			name: Match.Maybe(String),
+		}));
+
+		const room = LivechatRooms.findOneById(rid, { _id: 1, open: 1, transcriptRequest: 1 });
+
+		if (!room || !room.open) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		}
+
+		if (room.transcriptRequest) {
+			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
+		}
+
+		const { _id, username, name } = user;
+		const transcriptRequest = {
+			requestedAt: new Date(),
+			requestedBy: {
+				_id,
+				username,
+				name,
+			},
+			email,
+			subject,
+		};
+
+		LivechatRooms.requestTranscriptByRoomId(rid, transcriptRequest);
 		return true;
 	},
 
@@ -941,13 +1052,18 @@ export const Livechat = {
 			return false;
 		}
 
-		const message = `${ data.message }`.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
+		const { message, name, email, department, host } = data;
+		const emailMessage = `${ message }`.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
 
-		const html = `
-			<h1>New livechat message</h1>
-			<p><strong>Visitor name:</strong> ${ data.name }</p>
-			<p><strong>Visitor email:</strong> ${ data.email }</p>
-			<p><strong>Message:</strong><br>${ message }</p>`;
+		let html = '<h1>New livechat message</h1>';
+		if (host && host !== '') {
+			html = html.concat(`<p><strong>Sent from:</strong><a href='${ host }'> ${ host }</a></p>`);
+		}
+		html = html.concat(`
+			<p><strong>Visitor name:</strong> ${ name }</p>
+			<p><strong>Visitor email:</strong> ${ email }</p>
+			<p><strong>Message:</strong><br>${ emailMessage }</p>`,
+		);
 
 		let fromEmail = settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
 
@@ -958,7 +1074,7 @@ export const Livechat = {
 		}
 
 		if (settings.get('Livechat_validate_offline_email')) {
-			const emailDomain = data.email.substr(data.email.lastIndexOf('@') + 1);
+			const emailDomain = email.substr(email.lastIndexOf('@') + 1);
 
 			try {
 				Meteor.wrapAsync(dns.resolveMx)(emailDomain);
@@ -968,15 +1084,14 @@ export const Livechat = {
 		}
 
 		let emailTo = settings.get('Livechat_offline_email');
-		if (data.department) {
-			const dep = LivechatDepartment.findOneByIdOrName(data.department);
+		if (department && department !== '') {
+			const dep = LivechatDepartment.findOneByIdOrName(department);
 			emailTo = dep.email || emailTo;
 		}
 
-		const from = `${ data.name } - ${ data.email } <${ fromEmail }>`;
-		const replyTo = `${ data.name } <${ data.email }>`;
-		const subject = `Livechat offline message from ${ data.name }: ${ `${ data.message }`.substring(0, 20) }`;
-
+		const from = `${ name } - ${ email } <${ fromEmail }>`;
+		const replyTo = `${ name } <${ email }>`;
+		const subject = `Livechat offline message from ${ name }: ${ `${ emailMessage }`.substring(0, 20) }`;
 		this.sendEmail(from, emailTo, replyTo, subject, html);
 
 		Meteor.defer(() => {
@@ -993,45 +1108,54 @@ export const Livechat = {
 		}
 
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			Livechat.stream.emit(room._id, {
+			notifications.streamLivechatRoom.emit(room._id, {
 				type: 'agentStatus',
 				status,
 			});
 		});
 	},
 
-	allowAgentChangeServiceStatus(statusLivechat) {
-		if (!settings.get('Livechat_enable_office_hours')) {
-			return true;
-		}
-
-		if (settings.get('Livechat_allow_online_agents_outside_office_hours')) {
-			return true;
-		}
-
+	allowAgentChangeServiceStatus(statusLivechat, agentId) {
 		if (statusLivechat !== 'available') {
 			return true;
 		}
 
-		return LivechatOfficeHour.isNowWithinHours();
+		return Promise.await(businessHourManager.allowAgentChangeServiceStatus(agentId));
+	},
+
+	notifyRoomVisitorChange(roomId, visitor) {
+		notifications.streamLivechatRoom.emit(roomId, {
+			type: 'visitorData',
+			visitor,
+		});
+	},
+
+	changeRoomVisitor(userId, roomId, visitor) {
+		const user = Promise.await(Users.findOneById(userId));
+		if (!user) {
+			throw new Error('error-user-not-found');
+		}
+
+		if (!hasPermission(userId, 'change-livechat-room-visitor')) {
+			throw new Error('error-not-authorized');
+		}
+
+		const room = Promise.await(LivechatRooms.findOneById(roomId, { _id: 1, t: 1 }));
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		if (!canAccessRoom(room, user)) {
+			throw new Error('error-not-allowed');
+		}
+
+		LivechatRooms.changeVisitorByRoomId(room._id, visitor);
+
+		Livechat.notifyRoomVisitorChange(room._id, visitor);
+
+		return LivechatRooms.findOneById(roomId);
 	},
 };
-
-Livechat.stream = new Meteor.Streamer('livechat-room');
-
-Livechat.stream.allowRead((roomId, extraData) => {
-	const room = LivechatRooms.findOneById(roomId);
-
-	if (!room) {
-		console.warn(`Invalid eventName: "${ roomId }"`);
-		return false;
-	}
-
-	if (room.t === 'l' && extraData && extraData.visitorToken && room.v.token === extraData.visitorToken) {
-		return true;
-	}
-	return false;
-});
 
 settings.get('Livechat_history_monitor_type', (key, value) => {
 	Livechat.historyMonitorType = value;

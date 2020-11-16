@@ -1,5 +1,6 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
+import { Match } from 'meteor/check';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
@@ -8,7 +9,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
-function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
+export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
@@ -816,6 +817,22 @@ API.v1.addRoute('groups.moderators', { authRequired: true }, {
 
 		return API.v1.success({
 			moderators,
+		});
+	},
+});
+
+API.v1.addRoute('groups.setEncrypted', { authRequired: true }, {
+	post() {
+		if (!Match.test(this.bodyParams, Match.ObjectIncluding({ encrypted: Boolean }))) {
+			return API.v1.failure('The bodyParam "encrypted" is required');
+		}
+
+		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
+
+		Meteor.call('saveRoomSettings', findResult.rid, 'encrypted', this.bodyParams.encrypted);
+
+		return API.v1.success({
+			group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 		});
 	},
 });

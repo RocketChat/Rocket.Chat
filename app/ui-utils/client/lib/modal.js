@@ -70,6 +70,9 @@ const createModal = (config = {}, fn, onCancel) => {
 		},
 
 		close: () => {
+			if (onCancel) {
+				onCancel.call(instance);
+			}
 			instance.destroy();
 			modalStack = modalStack.filter((modal) => modal !== instance);
 			if (modalStack.length) {
@@ -89,9 +92,6 @@ const createModal = (config = {}, fn, onCancel) => {
 		},
 
 		cancel: () => {
-			if (onCancel) {
-				onCancel.call(instance);
-			}
 			instance.close();
 		},
 
@@ -232,6 +232,10 @@ Template.rc_modal.events({
 		!this.action || this.action.call(instance.data.data, event, instance);
 		event.stopPropagation();
 		this.close();
+	},
+	'click .js-input-action'(e, instance) {
+		!this.inputAction || this.inputAction.call(instance.data.data, e, instance);
+		e.stopPropagation();
 	},
 	'click .js-close'(e) {
 		e.preventDefault();

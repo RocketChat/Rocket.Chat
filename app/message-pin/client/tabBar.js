@@ -13,7 +13,7 @@ Meteor.startup(function() {
 				i18nTitle: 'Pinned_Messages',
 				icon: 'pin',
 				template: 'pinnedMessages',
-				order: 10,
+				order: 11,
 			});
 		} else {
 			TabBar.removeButton('pinned-messages');

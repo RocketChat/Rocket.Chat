@@ -66,7 +66,7 @@ export function findOpenRoom(token, departmentId) {
 	return room;
 }
 
-export function getRoom({ guest, rid, roomInfo, agent }) {
+export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
 	const token = guest && guest.token;
 
 	const message = {
@@ -77,7 +77,7 @@ export function getRoom({ guest, rid, roomInfo, agent }) {
 		ts: new Date(),
 	};
 
-	return Livechat.getRoom(guest, message, roomInfo, agent);
+	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
 export function findAgent(agentId) {
@@ -94,7 +94,6 @@ export function settings() {
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
 	const emojis = Meteor.call('listEmojiCustom');
-
 	return {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
@@ -111,6 +110,8 @@ export function settings() {
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
 			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
+			limitTextLength: initSettings.Livechat_enable_message_character_limit
+			&& (initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
 		},
 		theme: {
 			title: initSettings.Livechat_title,
@@ -146,5 +147,9 @@ export function settings() {
 }
 
 export async function getExtraConfigInfo(room) {
-	return callbacks.run('livechat.onLoadConfigApi', room);
+	return callbacks.run('livechat.onLoadConfigApi', { room });
+}
+
+export function onCheckRoomParams(params) {
+	return callbacks.run('livechat.onCheckRoomApiParams', params);
 }

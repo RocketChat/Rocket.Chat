@@ -1,12 +1,14 @@
+import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
 import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 
-import { AppWebsocketReceiver } from './communication';
-import { APIClient } from '../../utils';
-import { AdminBox } from '../../ui-utils';
-import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
+import { settings } from '../../settings/client';
+import { CachedCollectionManager } from '../../ui-cached-collection';
+import { APIClient } from '../../utils';
+import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
+import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
 const createDeferredValue = () => {
 	let resolve;
@@ -21,6 +23,8 @@ const createDeferredValue = () => {
 
 class AppClientOrchestrator {
 	constructor() {
+		this._appClientUIHost = new RealAppsEngineUIHost();
+		this._manager = new AppClientManager(this._appClientUIHost);
 		this.isLoaded = false;
 		[this.deferredIsEnabled, this.setEnabled] = createDeferredValue();
 	}
@@ -28,7 +32,6 @@ class AppClientOrchestrator {
 	load = async (isEnabled) => {
 		if (!this.isLoaded) {
 			this.ws = new AppWebsocketReceiver();
-			this.registerAdminMenuItems();
 			this.isLoaded = true;
 		}
 
@@ -42,23 +45,9 @@ class AppClientOrchestrator {
 		this.setEnabled(isEnabled);
 	}
 
-	getWsListener = () => this.ws
+	getWsListener = () => this.ws;
 
-	registerAdminMenuItems = () => {
-		AdminBox.addOption({
-			icon: 'cube',
-			href: 'apps',
-			i18nLabel: 'Apps',
-			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
-		});
-
-		AdminBox.addOption({
-			icon: 'cube',
-			href: 'marketplace',
-			i18nLabel: 'Marketplace',
-			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
-		});
-	}
+	getAppClientManager = () => this._manager;
 
 	handleError = (error) => {
 		console.error(error);
@@ -179,6 +168,8 @@ class AppClientOrchestrator {
 		const categories = await APIClient.get('apps', { categories: 'true' });
 		return categories;
 	}
+
+	getUIHost = () => this._appClientUIHost;
 }
 
 export const Apps = new AppClientOrchestrator();
@@ -191,7 +182,12 @@ Meteor.startup(() => {
 				return;
 			}
 
+			Apps.getAppClientManager().initialize();
 			Apps.load(isEnabled);
 		});
+	});
+
+	settings.get('Apps_Framework_enabled', (isEnabled) => {
+		Apps.load(isEnabled);
 	});
 });

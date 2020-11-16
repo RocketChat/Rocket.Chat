@@ -28,18 +28,30 @@ export class Users extends Base {
 	constructor(...args) {
 		super(...args);
 
+		this.defaultFields = {
+			__rooms: 0,
+		};
+
+		this.tryEnsureIndex({ __rooms: 1 }, { sparse: 1 });
+
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ bio: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ nickname: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
 		this.tryEnsureIndex({ statusText: 1 });
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ appId: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
 		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
+		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
+		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -122,16 +134,25 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentByUsername(username) {
+	findOneOnlineAgentByUsername(username, options) {
 		const query = queryStatusAgentOnline({ username });
 
-		return this.findOne(query);
+		return this.findOne(query, options);
 	}
 
 	findOneOnlineAgentById(_id) {
 		const query = queryStatusAgentOnline({ _id });
 
 		return this.findOne(query);
+	}
+
+	findOneAgentById(_id, options) {
+		const query = {
+			_id,
+			roles: 'livechat-agent',
+		};
+
+		return this.findOne(query, options);
 	}
 
 	findAgents() {
@@ -208,20 +229,6 @@ export class Users extends Base {
 			};
 		}
 		return null;
-	}
-
-	setLastRoutingTime(userId) {
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$set: {
-				lastRoutingTime: new Date(),
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setLivechatStatus(userId, status) {
@@ -388,12 +395,80 @@ export class Users extends Base {
 		});
 	}
 
+	addRoomByUserId(_id, rid) {
+		return this.update({
+			_id,
+			__rooms: { $ne: rid },
+		}, {
+			$addToSet: { __rooms: rid },
+		});
+	}
+
+	removeRoomByUserId(_id, rid) {
+		return this.update({
+			_id,
+			__rooms: rid,
+		}, {
+			$pull: { __rooms: rid },
+		});
+	}
+
+	removeAllRoomsByUserId(_id) {
+		return this.update({
+			_id,
+		}, {
+			$set: { __rooms: [] },
+		});
+	}
+
+	removeRoomByRoomId(rid) {
+		return this.update({
+			__rooms: rid,
+		}, {
+			$pull: { __rooms: rid },
+		}, { multi: true });
+	}
+
+	removeRoomByRoomIds(rids) {
+		return this.update({
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
+	}
+
 	update2FABackupCodesByUserId(userId, backupCodes) {
 		return this.update({
 			_id: userId,
 		}, {
 			$set: {
 				'services.totp.hashedBackup': backupCodes,
+			},
+		});
+	}
+
+	enableEmail2FAByUserId(userId) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.email2fa': {
+					enabled: true,
+					changedAt: new Date(),
+				},
+			},
+		});
+	}
+
+	disableEmail2FAByUserId(userId) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.email2fa': {
+					enabled: false,
+					changedAt: new Date(),
+				},
 			},
 		});
 	}
@@ -415,6 +490,40 @@ export class Users extends Base {
 		this.update({ _id: userId }, {
 			$unset: {
 				e2e: '',
+			},
+		});
+	}
+
+	removeExpiredEmailCodesOfUserId(userId) {
+		this.update({ _id: userId }, {
+			$pull: {
+				'services.emailCode': {
+					expire: { $lt: new Date() },
+				},
+			},
+		});
+	}
+
+	removeEmailCodeByUserIdAndCode(userId, code) {
+		this.update({ _id: userId }, {
+			$pull: {
+				'services.emailCode': {
+					code,
+				},
+			},
+		});
+	}
+
+	addEmailCodeByUserId(userId, code, expire) {
+		this.update({ _id: userId }, {
+			$push: {
+				'services.emailCode': {
+					$each: [{
+						code,
+						expire,
+					}],
+					$slice: -5,
+				},
 			},
 		});
 	}
@@ -449,6 +558,19 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+		}
+
+		const query = {
+			__rooms: rid,
+			username,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
@@ -466,7 +588,7 @@ export class Users extends Base {
 	}
 
 	findOneByEmailAddress(emailAddress, options) {
-		const query = { 'emails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i') };
+		const query = { 'emails.address': String(emailAddress).trim().toLowerCase() };
 
 		return this.findOne(query, options);
 	}
@@ -486,8 +608,29 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneById(userId, options) {
+	findOneById(userId, options = {}) {
 		const query = { _id: userId };
+
+		return this.findOne(query, options);
+	}
+
+	findOneActiveById(userId, options) {
+		const query = {
+			_id: userId,
+			active: true,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByIdOrUsername(idOrUsername, options) {
+		const query = {
+			$or: [{
+				_id: idOrUsername,
+			}, {
+				username: idOrUsername,
+			}],
+		};
 
 		return this.findOne(query, options);
 	}
@@ -554,44 +697,33 @@ export class Users extends Base {
 		return this.find({
 			active: true,
 			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
 		}, options);
 	}
 
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
-		if (exceptions == null) { exceptions = []; }
-		if (conditions == null) { conditions = {}; }
-		if (options == null) { options = {}; }
-		if (!_.isArray(exceptions)) {
-			exceptions = [exceptions];
-		}
-
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+	findActiveLocalGuests(idExceptions = [], options = {}) {
 		const query = {
-			$or: [{
-				username: termRegex,
-			}, {
-				name: termRegex,
-			}],
 			active: true,
-			type: {
-				$in: ['user', 'bot'],
+			type: { $nin: ['app'] },
+			roles: {
+				$eq: 'guest',
+				$size: 1,
 			},
-			$and: [{
-				username: {
-					$exists: true,
-				},
-			}, {
-				username: {
-					$nin: exceptions,
-				},
-			}],
-			...conditions,
+			isRemote: { $ne: true },
 		};
+
+		if (idExceptions) {
+			if (!_.isArray(idExceptions)) {
+				idExceptions = [idExceptions];
+			}
+
+			query._id = { $nin: idExceptions };
+		}
 
 		return this.find(query, options);
 	}
 
-	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = []) {
+	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
 		if (!_.isArray(exceptions)) {
@@ -613,7 +745,7 @@ export class Users extends Base {
 			return this._db.find(query, options);
 		}
 
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+		const termRegex = new RegExp((startsWith ? '^' : '') + s.escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
 		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
@@ -621,14 +753,13 @@ export class Users extends Base {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
+
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: orStmt,
-				},
-				{
 					username: { $exists: true, $nin: exceptions },
+					$or: orStmt,
 				},
 				...extraQuery,
 			],
@@ -704,13 +835,11 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	getLastLogin(options) {
-		if (options == null) { options = {}; }
-		const query = { lastLogin: { $exists: 1 } };
+	getLastLogin(options = { fields: { _id: 0, lastLogin: 1 } }) {
 		options.sort = { lastLogin: -1 };
 		options.limit = 1;
-		const [user] = this.find(query, options).fetch();
-		return user && user.lastLogin;
+		const [user] = this.find({}, options).fetch();
+		return user?.lastLogin;
 	}
 
 	findUsersByUsernames(usernames, options) {
@@ -783,7 +912,11 @@ export class Users extends Base {
 	}
 
 	findActiveRemote(options = {}) {
-		return this.find({ active: true, isRemote: true }, options);
+		return this.find({
+			active: true,
+			isRemote: true,
+			roles: { $ne: ['guest'] },
+		}, options);
 	}
 
 	getSAMLByIdAndSAMLProvider(_id, provider) {
@@ -792,6 +925,21 @@ export class Users extends Base {
 			'services.saml.provider': provider,
 		}, {
 			'services.saml': 1,
+		});
+	}
+
+	findBySAMLNameIdOrIdpSession(nameID, idpSession) {
+		return this.find({
+			$or: [
+				{ 'services.saml.nameID': nameID },
+				{ 'services.saml.idpSession': idpSession },
+			],
+		});
+	}
+
+	findBySAMLInResponseTo(inResponseTo) {
+		return this.find({
+			'services.saml.inResponseTo': inResponseTo,
 		});
 	}
 
@@ -932,20 +1080,22 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
-	setAvatarOrigin(_id, origin) {
+	setAvatarData(_id, origin, etag) {
 		const update = {
 			$set: {
 				avatarOrigin: origin,
+				avatarETag: etag,
 			},
 		};
 
 		return this.update(_id, update);
 	}
 
-	unsetAvatarOrigin(_id) {
+	unsetAvatarData(_id) {
 		const update = {
 			$unset: {
 				avatarOrigin: 1,
+				avatarETag: 1,
 			},
 		};
 
@@ -971,6 +1121,25 @@ export class Users extends Base {
 		};
 
 		return this.update({}, update, { multi: true });
+	}
+
+	setActiveNotLoggedInAfterWithRole(latestLastLoginDate, role = 'user', active = false) {
+		const neverActive = { lastLogin: { $exists: 0 }, createdAt: { $lte: latestLastLoginDate } };
+		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };
+
+		const query = {
+			$or: [neverActive, idleTooLong],
+			active: true,
+			roles: role,
+		};
+
+		const update = {
+			$set: {
+				active,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 
 	unsetLoginTokens(_id) {
@@ -1028,6 +1197,36 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
+	setBio(_id, bio = '') {
+		const update = {
+			...bio.trim() ? {
+				$set: {
+					bio,
+				},
+			} : {
+				$unset: {
+					bio: 1,
+				},
+			},
+		};
+		return this.update(_id, update);
+	}
+
+	setNickname(_id, nickname = '') {
+		const update = {
+			...nickname.trim() ? {
+				$set: {
+					nickname,
+				},
+			} : {
+				$unset: {
+					nickname: 1,
+				},
+			},
+		};
+		return this.update(_id, update);
+	}
+
 	clearSettings(_id) {
 		const update = {
 			$set: {
@@ -1053,6 +1252,18 @@ export class Users extends Base {
 		}
 
 		return this.update(_id, update);
+	}
+
+	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(_id, token, hash, until) {
+		return this.update({
+			_id,
+			'services.resume.loginTokens.hashedToken': token,
+		}, {
+			$set: {
+				'services.resume.loginTokens.$.twoFactorAuthorizedHash': hash,
+				'services.resume.loginTokens.$.twoFactorAuthorizedUntil': until,
+			},
+		});
 	}
 
 	setUtcOffset(_id, utcOffset) {
@@ -1195,6 +1406,16 @@ export class Users extends Base {
 		return this.update({ _id }, update);
 	}
 
+	removeSamlServiceSession(_id) {
+		const update = {
+			$unset: {
+				'services.saml.idpSession': '',
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
 	updateDefaultStatus(_id, statusDefault) {
 		return this.update({
 			_id,
@@ -1202,6 +1423,16 @@ export class Users extends Base {
 		}, {
 			$set: {
 				statusDefault,
+			},
+		});
+	}
+
+	setSamlInResponseTo(_id, inResponseTo) {
+		this.update({
+			_id,
+		}, {
+			$set: {
+				'services.saml.inResponseTo': inResponseTo,
 			},
 		});
 	}
@@ -1273,6 +1504,10 @@ Find users to send a message by email if:
 
 	getActiveLocalUserCount() {
 		return this.findActive().count() - this.findActiveRemote().count();
+	}
+
+	getActiveLocalGuestCount(idExceptions = []) {
+		return this.findActiveLocalGuests(idExceptions).count();
 	}
 
 	removeOlderResumeTokensByUserId(userId, fromDate) {

@@ -10,7 +10,6 @@ import { Template } from 'meteor/templating';
 import { t, getUserPreference } from '../../utils/client';
 import { chatMessages } from '../../ui';
 import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
-import { toolbarSearch } from '../../ui-sidenav';
 import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
@@ -18,6 +17,7 @@ import { hasRole } from '../../authorization';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
 import { isSyncReady } from '../../../client/lib/userData';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
 
 function executeCustomScript(script) {
 	eval(script);//eslint-disable-line
@@ -30,7 +30,7 @@ function customScriptsOnLogout() {
 	}
 }
 
-settings.collection.find({ _id: /theme-color-rc/i }, { fields: { value: 1 } }).observe({ changed: () => { DynamicCss.run(true, settings); } });
+createTemplateForComponent('accountSecurity', () => import('../../../client/account/security/AccountSecurityPage'));
 
 callbacks.add('afterLogoutCleanUp', () => customScriptsOnLogout(), callbacks.priority.LOW, 'custom-script-on-logout');
 
@@ -38,11 +38,6 @@ Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
 
 	$(document.body).on('keydown', function(e) {
-		if ((e.keyCode === 80 || e.keyCode === 75) && (e.ctrlKey === true || e.metaKey === true) && e.shiftKey === false) {
-			e.preventDefault();
-			e.stopPropagation();
-			toolbarSearch.show(true);
-		}
 		const unread = Session.get('unread');
 		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && (unread != null) && unread !== '') {
 			e.preventDefault();
@@ -107,23 +102,22 @@ Template.body.onRendered(function() {
 		inputMessage.focus();
 	});
 
-	$(document.body).on('click', function(e) {
-		if (e.target.tagName === 'A') {
-			const link = e.currentTarget;
-			if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
-				e.preventDefault();
-				e.stopPropagation();
-				if (Layout.isEmbedded()) {
-					return fireGlobalEvent('click-message-link', {
-						link: link.pathname + link.search,
-					});
-				}
-				return FlowRouter.go(link.pathname + link.search, null, FlowRouter.current().queryParams);
-			}
+	const handleMessageLinkClick = (event) => {
+		const link = event.currentTarget;
+		if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
+			fireGlobalEvent('click-message-link', { link: link.pathname + link.search });
+		}
+	};
+
+	this.autorun(() => {
+		if (Layout.isEmbedded()) {
+			$(document.body).on('click', 'a', handleMessageLinkClick);
+		} else {
+			$(document.body).off('click', 'a', handleMessageLinkClick);
 		}
 	});
 
-	Tracker.autorun(function(c) {
+	this.autorun(function(c) {
 		const w = window;
 		const d = document;
 		const script = 'script';

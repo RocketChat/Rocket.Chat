@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../../../app/authorization';
 import { Users } from '../../../../../app/models';
+import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 
 Meteor.methods({
-	'personalAccessTokens:removeToken'({ tokenName }) {
+	'personalAccessTokens:removeToken': twoFactorRequired(function({ tokenName }) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'personalAccessTokens:removeToken' });
 		}
@@ -25,5 +26,5 @@ Meteor.methods({
 				name: tokenName,
 			},
 		});
-	},
+	}),
 });

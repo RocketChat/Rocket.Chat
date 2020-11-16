@@ -33,7 +33,7 @@ settings.addGroup('LDAP', function() {
 	];
 
 	this.add('LDAP_Enable', false, { type: 'boolean', public: true });
-	this.add('LDAP_Login_Fallback', true, { type: 'boolean', enableQuery });
+	this.add('LDAP_Login_Fallback', false, { type: 'boolean', enableQuery: null });
 	this.add('LDAP_Find_User_After_Login', true, { type: 'boolean', enableQuery });
 	this.add('LDAP_Host', '', { type: 'string', enableQuery });
 	this.add('LDAP_Port', '389', { type: 'string', enableQuery });
@@ -117,6 +117,7 @@ settings.addGroup('LDAP', function() {
 		this.add('LDAP_Sync_User_Data_Groups_Enforce_AutoChannels', false, { type: 'boolean', enableQuery: syncGroupsChannelsQuery });
 
 		this.add('LDAP_Sync_User_Avatar', true, { type: 'boolean', enableQuery });
+		this.add('LDAP_Avatar_Field', '', { type: 'string', enableQuery });
 
 		this.add('LDAP_Background_Sync', false, { type: 'boolean', enableQuery });
 		this.add('LDAP_Background_Sync_Interval', 'Every 24 hours', { type: 'string', enableQuery: backgroundSyncQuery });
