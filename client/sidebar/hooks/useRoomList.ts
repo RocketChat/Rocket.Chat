@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 
 import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
@@ -8,6 +9,8 @@ import { ISubscription } from '../../../definition/ISubscription';
 const query = { open: { $ne: false } };
 
 export const useRoomList = (): Array<ISubscription> => {
+	const [roomList, setRoomList] = useDebouncedState<ISubscription[]>([], 50);
+
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
@@ -20,7 +23,7 @@ export const useRoomList = (): Array<ISubscription> => {
 
 	const inquiries = useQueuedInquiries();
 
-	return useMemo(() => {
+	const memoizedRoomList = useMemo(() => {
 		const favorite = new Set();
 		const omnichannel = new Set();
 		const unread = new Set();
@@ -77,4 +80,8 @@ export const useRoomList = (): Array<ISubscription> => {
 		return [...groups.entries()].flatMap(([key, group]) => [key, ...group]);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [rooms, showOmnichannel, inquiries.enabled, inquiries.enabled && inquiries.queue, sidebarShowUnread, favoritesEnabled, showDiscussion, sidebarGroupByType]);
+
+	useEffect(() => setRoomList(memoizedRoomList), [setRoomList, memoizedRoomList]);
+
+	return roomList;
 };
