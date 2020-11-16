@@ -23,11 +23,10 @@ function PlanTag() {
 	}, [getTags, setPlans]);
 
 	return plans.map(({ plan, background }) => (
-		<Box marginInline='x4' key={plan}>
+		<Box marginInline='x4' display='inline-block' verticalAlign='middle' key={plan}>
 			<Tag
 				style={{
 					color: '#fff',
-					verticalAlign: 'middle',
 					backgroundColor: background,
 					textTransform: 'capitalize',
 				}}
