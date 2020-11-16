@@ -95,7 +95,7 @@ export interface IUser {
 	name?: string;
 	services?: IUserServices;
 	emails?: IUserEmail[];
-	status?: string;
+	status?: USER_STATUS;
 	statusConnection?: string;
 	lastLogin?: Date;
 	avatarOrigin?: string;
