@@ -871,14 +871,14 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	incUnreadForRoomIdExcludingUserId(roomId, userId, inc) {
+	incUnreadForRoomIdExcludingUserIds(roomId, userIds, inc) {
 		if (inc == null) {
 			inc = 1;
 		}
 		const query = {
 			rid: roomId,
 			'u._id': {
-				$ne: userId,
+				$nin: userIds,
 			},
 		};
 
@@ -917,7 +917,7 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	incUserMentionsForRoomIdAndUserIds(roomId, userIds, incUser = 1) {
+	incUserMentionsAndUnreadForRoomIdAndUserIds(roomId, userIds, incUser = 1, incUnread = 1) {
 		const query = {
 			rid: roomId,
 			'u._id': {
@@ -931,6 +931,7 @@ export class Subscriptions extends Base {
 				open: true,
 			},
 			$inc: {
+				unread: incUnread,
 				userMentions: incUser,
 			},
 		};
