@@ -73,7 +73,7 @@ const InformationPage = React.memo(function InformationPage({
 						<DeploymentCard info={info} statistics={statistics} isLoading={isLoading}/>
 						<LicenseCard />
 						<UsageCard statistics={statistics} isLoading={isLoading}/>
-						<InstancesCard instances={instances}/>
+						{!!instances.length && <InstancesCard instances={instances}/>}
 						<PushCard />
 					</Margins>
 				</Box>

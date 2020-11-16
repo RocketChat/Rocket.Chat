@@ -1,21 +1,19 @@
 import React from 'react';
 import { Box, ButtonGroup, Button } from '@rocket.chat/fuselage';
-// import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Card from '../../components/basic/Card/Card';
 import { useTranslation } from '../../contexts/TranslationContext';
 import UsagePieGraph from './UsagePieGraph';
-// import { useSetModal } from '../../contexts/ModalContext';
-// import PlanTag from '../../components/basic/PlanTag';
-// import { useSetting } from '../../contexts/SettingsContext';
-// import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
-// import OfflineLicenseModal from './OfflineLicenseModal';
+import InstancesModal from './InstancesModal';
+import { useSetModal } from '../../contexts/ModalContext';
 
 const InstancesCard = ({ instances }) => {
 	const t = useTranslation();
 
-	// const setModal = useSetModal();
-	console.log(instances);
+	const setModal = useSetModal();
+
+	const handleModal = useMutableCallback(() => { setModal(<InstancesModal instances={instances} onClose={() => setModal()}/>); });
 
 	return <Card alignSelf='flex-start'>
 		<Card.Title>{t('Instances')}</Card.Title>
@@ -30,7 +28,7 @@ const InstancesCard = ({ instances }) => {
 		</Card.Body>
 		<Card.Footer>
 			<ButtonGroup align='end'>
-				<Button small>{t('Details')}</Button>
+				<Button small onClick={handleModal}>{t('Details')}</Button>
 			</ButtonGroup>
 		</Card.Footer>
 	</Card>;
