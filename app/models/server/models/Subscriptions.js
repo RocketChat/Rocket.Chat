@@ -871,14 +871,14 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	incUnreadForRoomIdExcludingUserId(roomId, userId, inc) {
+	incUnreadForRoomIdExcludingUserIds(roomId, userIds, inc) {
 		if (inc == null) {
 			inc = 1;
 		}
 		const query = {
 			rid: roomId,
 			'u._id': {
-				$ne: userId,
+				$nin: userIds,
 			},
 		};
 
