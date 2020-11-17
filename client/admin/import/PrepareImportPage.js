@@ -191,9 +191,9 @@ function PrepareImportPage() {
 			<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
 				<Box is='h2' fontScale='p2'>{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}</Box>
 				{!isPreparing && <Tabs flexShrink={0} >
-					<Tabs.Item disabled={usersCount === 0} selected={tab === 'users'} onClick={handleTabClick('users')}>{t('Users')} <Badge is='span'>{usersCount}</Badge></Tabs.Item>
-					<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>{t('Channels')} <Badge is='span'>{channelsCount}</Badge></Tabs.Item>
-					<Tabs.Item disabled>{t('Messages')}<Badge is='span'>{messageCount}</Badge></Tabs.Item>
+					<Tabs.Item disabled={usersCount === 0} selected={tab === 'users'} onClick={handleTabClick('users')}>{t('Users')} <Badge>{usersCount}</Badge></Tabs.Item>
+					<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>{t('Channels')} <Badge>{channelsCount}</Badge></Tabs.Item>
+					<Tabs.Item disabled>{t('Messages')}<Badge>{messageCount}</Badge></Tabs.Item>
 				</Tabs>}
 				<Margins block='x24'>
 					{isPreparing && <>

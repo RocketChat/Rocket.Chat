@@ -18,19 +18,19 @@ export class ListenersModule {
 		notifications: NotificationsModule,
 	) {
 		service.onEvent('emoji.deleteCustom', (emoji) => {
-			notifications.notifyLogged('deleteEmojiCustom', {
+			notifications.notifyLoggedInThisInstance('deleteEmojiCustom', {
 				emojiData: emoji,
 			});
 		});
 
 		service.onEvent('emoji.updateCustom', (emoji) => {
-			notifications.notifyLogged('updateEmojiCustom', {
+			notifications.notifyLoggedInThisInstance('updateEmojiCustom', {
 				emojiData: emoji,
 			});
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
-			notifications.notifyLogged(`${ uid }/message`, {
+			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
 				...message,
 				_id: String(Date.now()),
@@ -40,44 +40,44 @@ export class ListenersModule {
 		});
 
 		service.onEvent('permission.changed', ({ clientAction, data }) => {
-			notifications.notifyLogged('permissions-changed', clientAction, data);
+			notifications.notifyLoggedInThisInstance('permissions-changed', clientAction, data);
 		});
 
 		service.onEvent('room.avatarUpdate', ({ _id: rid, avatarETag: etag }) => {
-			notifications.notifyLogged('updateAvatar', {
+			notifications.notifyLoggedInThisInstance('updateAvatar', {
 				rid,
 				etag,
 			});
 		});
 
 		service.onEvent('user.avatarUpdate', ({ username, avatarETag: etag }) => {
-			notifications.notifyLogged('updateAvatar', {
+			notifications.notifyLoggedInThisInstance('updateAvatar', {
 				username,
 				etag,
 			});
 		});
 
 		service.onEvent('user.deleted', ({ _id: userId }) => {
-			notifications.notifyLogged('Users:Deleted', {
+			notifications.notifyLoggedInThisInstance('Users:Deleted', {
 				userId,
 			});
 		});
 
 		service.onEvent('user.deleteCustomStatus', (userStatus) => {
-			notifications.notifyLogged('deleteCustomUserStatus', {
+			notifications.notifyLoggedInThisInstance('deleteCustomUserStatus', {
 				userStatusData: userStatus,
 			});
 		});
 
 		service.onEvent('user.nameChanged', (user) => {
-			notifications.notifyLogged('Users:NameChanged', user);
+			notifications.notifyLoggedInThisInstance('Users:NameChanged', user);
 		});
 
 		service.onEvent('user.roleUpdate', (update) => {
-			notifications.notifyLogged('roles-change', update);
+			notifications.notifyLoggedInThisInstance('roles-change', update);
 		});
 
-		service.onEvent('userpresence', ({ user }) => {
+		service.onEvent('presence.status', ({ user }) => {
 			const {
 				_id, username, status, statusText,
 			} = user;
@@ -89,7 +89,7 @@ export class ListenersModule {
 		});
 
 		service.onEvent('user.updateCustomStatus', (userStatus) => {
-			notifications.notifyLogged('updateCustomUserStatus', {
+			notifications.notifyLoggedInThisInstance('updateCustomUserStatus', {
 				userStatusData: userStatus,
 			});
 		});
@@ -132,7 +132,7 @@ export class ListenersModule {
 				type: clientAction,
 				...role,
 			};
-			notifications.streamRoles.emit('roles', payload);
+			notifications.streamRoles.emitWithoutBroadcast('roles', payload);
 		});
 
 		let autoAssignAgent: IRoutingManagerConfig | undefined;
@@ -181,15 +181,14 @@ export class ListenersModule {
 
 			if (clientAction !== 'removed') {
 				const result = await EnterpriseSettings.changeSettingValue(setting);
-				if (!(result instanceof Error)) {
-					setting.value = result?.value;
+				if (result && !(result instanceof Error) && result.hasOwnProperty('value')) {
+					setting.value = result.value;
 				}
 			}
 
 			if (setting.hidden) {
 				return;
 			}
-
 
 			const value = {
 				_id: setting._id,
@@ -204,7 +203,7 @@ export class ListenersModule {
 				notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
 			}
 
-			notifications.notifyLogged('private-settings-changed', clientAction, value);
+			notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, value);
 		});
 
 		service.onEvent('watch.rooms', ({ clientAction, room }): void => {
@@ -234,11 +233,11 @@ export class ListenersModule {
 			}
 			switch (clientAction) {
 				case 'updated': {
-					notifications.streamIntegrationHistory.emit(data.integration._id, { id, diff, type: clientAction });
+					notifications.streamIntegrationHistory.emitWithoutBroadcast(data.integration._id, { id, diff, type: clientAction });
 					break;
 				}
 				case 'inserted': {
-					notifications.streamIntegrationHistory.emit(data.integration._id, { data, type: clientAction });
+					notifications.streamIntegrationHistory.emitWithoutBroadcast(data.integration._id, { data, type: clientAction });
 					break;
 				}
 			}
