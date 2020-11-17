@@ -275,6 +275,7 @@ export default class LDAP {
 		const searchOptions = {
 			filter,
 			scope: 'sub',
+			attributes: ['*','+']
 		};
 
 		logger.search.info('Searching by id', id);
