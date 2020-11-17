@@ -23,4 +23,5 @@ export const useOmnichannelRouteConfig = (): OmichannelRoutingConfig | undefined
 export const useOmnichannelAgentAvailable = (): boolean => useOmnichannel().agentAvailable;
 export const useQueuedInquiries = (): Inquiries => useOmnichannel().inquiries;
 export const useOmnichannelQueueLink = (): string => '/livechat-queue';
+export const useOmnichannelDirectoryLink = (): string => '/omnichannel-directory';
 export const useOmnichannelEnabled = (): boolean => useOmnichannel().enabled;

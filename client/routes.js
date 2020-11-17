@@ -103,6 +103,16 @@ FlowRouter.route('/directory/:tab?', {
 	}],
 });
 
+FlowRouter.route('/omnichannel-directory/:tab?', {
+	name: 'omnichannel-directory',
+	action: () => {
+		renderRouteComponent(() => import('./omnichannel/directory/OmnichannelDirectoryPage'), { template: 'main', region: 'center' });
+	},
+	triggersExit: [function() {
+		$('.main-content').addClass('rc-old');
+	}],
+});
+
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
