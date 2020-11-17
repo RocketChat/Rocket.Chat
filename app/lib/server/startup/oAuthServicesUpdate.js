@@ -168,7 +168,7 @@ function customOAuthServicesInit() {
 					url: process.env[`${ serviceKey }_url`],
 					tokenPath: process.env[`${ serviceKey }_token_path`],
 					identityPath: process.env[`${ serviceKey }_identity_path`],
-					authorizationPath: process.env[`${ serviceKey }_authorize_path`],
+					authorizePath: process.env[`${ serviceKey }_authorize_path`],
 					scope: process.env[`${ serviceKey }_scope`],
 					accessTokenParam: process.env[`${ serviceKey }_access_token_param`],
 					buttonLabelText: process.env[`${ serviceKey }_button_label_text`],
