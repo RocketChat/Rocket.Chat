@@ -1,12 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import PhotoSwipe from 'photoswipe';
-import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
-import 'photoswipe/dist/photoswipe.css';
 import s from 'underscore.string';
 
 Meteor.startup(() => {
 	let currentGallery = null;
-	const initGallery = (items, options) => {
+	const initGallery = async (items, options) => {
+		const [PhotoSwipe, PhotoSwipeUI_Default] = await Promise.all([import('photoswipe'), import('photoswipe/dist/photoswipe-ui-default'), import('photoswipe/dist/photoswipe.css')]);
 		if (!currentGallery) {
 			currentGallery = new PhotoSwipe(document.getElementById('pswp'), PhotoSwipeUI_Default, items, options);
 			currentGallery.listen('destroy', () => {
@@ -84,5 +82,4 @@ Meteor.startup(() => {
 	};
 
 	$(document).on('click', '.gallery-item', createEventListenerFor('.gallery-item'));
-	$(document).on('click', '.room-files-image', createEventListenerFor('.room-files-image'));
 });
