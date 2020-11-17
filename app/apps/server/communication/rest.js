@@ -466,20 +466,27 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.update(buff.toString('base64')));
+				const aff = Promise.await(manager.update(buff));
 				const info = aff.getAppInfo();
 
-				// Should the updated version have compiler errors, no App will be returned
-				if (aff.getApp()) {
-					info.status = aff.getApp().getStatus();
-				} else {
-					info.status = 'compiler_error';
+				if (aff.hasStorageError()) {
+					return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
 				}
+
+				if (aff.hasAppUserError()) {
+					return API.v1.failure({
+						status: 'app_user_error',
+						messages: [aff.getAppUserError().message],
+						payload: { username: aff.getAppUserError().username },
+					});
+				}
+
+				info.status = aff.getApp().getStatus();
 
 				return API.v1.success({
 					app: info,
 					implemented: aff.getImplementedInferfaces(),
-					compilerErrors: aff.getCompilerErrors(),
+					licenseValidation: aff.getLicenseValidationResult(),
 				});
 			},
 			delete() {
