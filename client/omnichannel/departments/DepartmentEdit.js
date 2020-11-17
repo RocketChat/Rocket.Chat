@@ -296,7 +296,7 @@ export function EditDepartment({ data, id, title, reload }) {
 						<WaitingQueueMessageInput value={waitingQueueMessage} handler={handleWaitingQueueMessage} label={'Waiting_queue_message'} />
 					</Field>}
 					{DepartmentForwarding && <Field>
-						<DepartmentForwarding value={departmentsAllowedToForward} handler={handleDepartmentsAllowedToForward} label={'List_of_departments_for_forward_description'} placeholder='Enter_a_department_name' />
+						<DepartmentForwarding value={departmentsAllowedToForward} handler={handleDepartmentsAllowedToForward} label={'List_of_departments_for_forward'} placeholder='Enter_a_department_name' />
 					</Field>}
 					<Field>
 						<Box display='flex' flexDirection='row'>
