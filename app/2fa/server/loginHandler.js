@@ -13,10 +13,12 @@ Accounts.registerLoginHandler('totp', function(options) {
 
 callbacks.add('onValidateLogin', (login) => {
 	if (login.type === 'resume' || login.type === 'proxy') {
-		return true;
+		return login;
 	}
 
 	const { totp } = login.methodArguments[0];
 
 	checkCodeForUser({ user: login.user, code: totp && totp.code, options: { disablePasswordFallback: true } });
+
+	return login;
 }, callbacks.priority.MEDIUM, '2fa');

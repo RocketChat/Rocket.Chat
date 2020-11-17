@@ -1,38 +1,32 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Random } from 'meteor/random';
 
 import { Utils2fa } from './lib/2fa';
+import '../../meteor-accounts-saml/client/saml_client';
 
-Meteor.loginWithSamlAndTOTP = function(options, code, callback) {
-	// support a callback without options
-	if (!callback && typeof options === 'function') {
-		callback = options;
-		options = null;
-	}
-
-	if (!options) {
-		options = {};
-		options.credentialToken = `id-${ Random.id() }`;
-	}
-	const { credentialToken } = options;
-
-	Accounts.saml.initiateLogin(options, function(/* error, result */) {
-		Accounts.callLoginMethod({
-			methodArguments: [{
-				saml: true,
-				credentialToken,
-				totp: {
-					code,
+Meteor.loginWithSamlTokenAndTOTP = function(credentialToken, code, callback) {
+	Accounts.callLoginMethod({
+		methodArguments: [{
+			totp: {
+				login: {
+					saml: true,
+					credentialToken,
 				},
-			}],
-			userCallback: callback,
-		});
+				code,
+			},
+		}],
+		userCallback(error) {
+			if (error) {
+				Utils2fa.reportError(error, callback);
+			} else {
+				callback && callback();
+			}
+		},
 	});
 };
 
-const { loginWithSaml } = Meteor;
+const { loginWithSamlToken } = Meteor;
 
-Meteor.loginWithSaml = function(options, callback) {
-	Utils2fa.overrideLoginMethod(loginWithSaml, [options], callback, Meteor.loginWithSamlAndTOTP);
+Meteor.loginWithSamlToken = function(options, callback) {
+	Utils2fa.overrideLoginMethod(loginWithSamlToken, [options], callback, Meteor.loginWithSamlTokenAndTOTP);
 };

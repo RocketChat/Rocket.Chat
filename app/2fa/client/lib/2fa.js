@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 import s from 'underscore.string';
-import { modal } from 'meteor/rocketchat:ui-utils';
-import { t } from 'meteor/rocketchat:utils';
 import { Accounts } from 'meteor/accounts-base';
-import { CustomOAuth } from 'meteor/rocketchat:custom-oauth';
+
+import { CustomOAuth } from '../../../custom-oauth';
+import { modal } from '../../../ui-utils/client';
+import { t } from '../../../utils/client';
 
 export class Utils2fa {
 	static reportError(error, callback) {
