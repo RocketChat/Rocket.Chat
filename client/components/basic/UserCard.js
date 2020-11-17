@@ -36,11 +36,11 @@ const Roles = ({ children }) => <Info rcx-user-card__roles m='neg-x2' flexWrap='
 	{children}
 </Info>;
 
-const Role = ({ children }) => (
-	<Box pb={0}	m='x2'>
-		<Tag disabled small children={children}/>
-	</Box>
-);
+const Role = ({ children }) => <Box m='x2'><Tag
+	disabled
+	fontScale='c2'
+	children={children}
+/></Box>;
 
 const UserCardContainer = forwardRef((props, ref) => <Box rcx-user-card bg='surface' elevation='2' p='x24' display='flex' borderRadius='x2' width='439px' {...props} ref={ref}/>);
 const UserCard = forwardRef(({
