@@ -3,8 +3,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { Facebook } from 'meteor/facebook-oauth';
 import { Github } from 'meteor/github-oauth';
 import { Twitter } from 'meteor/twitter-oauth';
-import { LinkedIn } from 'meteor/linkedin-oauth';
 import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
+import { Linkedin } from 'meteor/pauli:linkedin-oauth';
 import { OAuth } from 'meteor/oauth';
 
 import { Utils2fa } from './lib/2fa';
@@ -65,7 +65,7 @@ Meteor.loginWithTwitter = function(options, cb) {
 	Utils2fa.overrideLoginMethod(loginWithTwitter, [options], cb, loginWithTwitterAndTOTP);
 };
 
-const loginWithLinkedinAndTOTP = Utils2fa.createOAuthTotpLoginMethod(() => LinkedIn);
+const loginWithLinkedinAndTOTP = Utils2fa.createOAuthTotpLoginMethod(() => Linkedin);
 const { loginWithLinkedin } = Meteor;
 Meteor.loginWithLinkedin = function(options, cb) {
 	Utils2fa.overrideLoginMethod(loginWithLinkedin, [options], cb, loginWithLinkedinAndTOTP);
