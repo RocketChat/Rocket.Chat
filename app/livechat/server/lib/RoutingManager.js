@@ -6,6 +6,7 @@ import { createLivechatSubscription,
 	dispatchAgentDelegated,
 	forwardRoomToAgent,
 	forwardRoomToDepartment,
+	forwardRoomToAgentInDepartment,
 	removeAgentFromSubscription,
 	updateChatDepartment,
 } from './Helper';
@@ -150,6 +151,10 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
+		if (transferData.userId && transferData.departmentId) {
+			return forwardRoomToAgentInDepartment(room, guest, transferData);
+		}
+
 		if (transferData.userId) {
 			return forwardRoomToAgent(room, transferData);
 		}

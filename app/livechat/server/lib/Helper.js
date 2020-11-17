@@ -321,6 +321,72 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	return true;
 };
 
+export const forwardRoomToAgentInDepartment = async (room, guest, transferData) => {
+	if (!room || !room.open) {
+		return false;
+	}
+
+	callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
+	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
+
+	const { userId: agentId } = transferData;
+	const user = Users.findOneOnlineAgentById(agentId);
+	if (!user) {
+		throw new Meteor.Error('error-user-is-offline', 'User is offline', { function: 'forwardRoomToAgent' });
+	}
+
+	const inquiry = LivechatInquiry.findOneByRoomId(rid);
+	if (!inquiry) {
+		throw new Meteor.Error('error-invalid-inquiry', 'Invalid inquiry', { function: 'forwardRoomToAgent' });
+	}
+	
+	if (oldServedBy && agentId === oldServedBy._id) {
+		throw new Meteor.Error('error-selected-agent-room-agent-are-same', 'The selected agent and the room agent are the same', { function: 'forwardRoomToAgent' });
+	}
+
+	const { departmentId } = transferData;
+
+	if (oldDepartmentId === departmentId) {
+		throw new Meteor.Error('error-forwarding-chat-same-department', 'The selected department and the current room department are the same', { function: 'forwardRoomToDepartment' });
+	}
+
+	const { username } = user;
+	const agent = { agentId, username };
+	// There are some Enterprise features that may interrupt the fowarding process
+	// Due to that we need to check whether the agent has been changed or not
+	const roomTaken = await RoutingManager.takeInquiry(inquiry, agent);
+	if (!roomTaken) {
+		return false;
+	}
+
+	Livechat.saveTransferHistory(room, transferData);
+
+	const { servedBy } = roomTaken;
+	if (servedBy) {
+		if (oldServedBy && servedBy._id !== oldServedBy._id) {
+			removeAgentFromSubscription(rid, oldServedBy);
+		}
+		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
+
+		updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
+
+		const { token } = guest;
+		Livechat.setDepartmentForGuest({ token, department: departmentId });
+
+		Meteor.defer(() => {
+			Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+				type: LivechatTransferEventType.AGENT,
+				room: rid,
+				from: oldServedBy?._id,
+				to: servedBy._id,
+			});
+		});
+	}
+
+	callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
+	return true;
+};
+
 export const normalizeTransferredByData = (transferredBy, room) => {
 	if (!transferredBy || !room) {
 		throw new Error('You must provide "transferredBy" and "room" params to "getTransferredByData"');
