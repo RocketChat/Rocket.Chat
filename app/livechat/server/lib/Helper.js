@@ -325,7 +325,6 @@ export const forwardRoomToAgentInDepartment = async (room, guest, transferData) 
 	if (!room || !room.open) {
 		return false;
 	}
-
 	callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
 
@@ -339,17 +338,13 @@ export const forwardRoomToAgentInDepartment = async (room, guest, transferData) 
 	if (!inquiry) {
 		throw new Meteor.Error('error-invalid-inquiry', 'Invalid inquiry', { function: 'forwardRoomToAgent' });
 	}
-	
 	if (oldServedBy && agentId === oldServedBy._id) {
 		throw new Meteor.Error('error-selected-agent-room-agent-are-same', 'The selected agent and the room agent are the same', { function: 'forwardRoomToAgent' });
 	}
-
 	const { departmentId } = transferData;
-
 	if (oldDepartmentId === departmentId) {
 		throw new Meteor.Error('error-forwarding-chat-same-department', 'The selected department and the current room department are the same', { function: 'forwardRoomToDepartment' });
 	}
-
 	const { username } = user;
 	const agent = { agentId, username };
 	// There are some Enterprise features that may interrupt the fowarding process
