@@ -42,6 +42,8 @@ export abstract class ServiceClass implements IServiceClass {
 
 	protected events = new EventEmitter();
 
+	protected internal = false;
+
 	constructor() {
 		this.emit = this.emit.bind(this);
 	}
@@ -52,6 +54,10 @@ export abstract class ServiceClass implements IServiceClass {
 
 	getName(): string {
 		return this.name;
+	}
+
+	isInternal(): boolean {
+		return this.internal;
 	}
 
 	get context(): IServiceContext | undefined {
