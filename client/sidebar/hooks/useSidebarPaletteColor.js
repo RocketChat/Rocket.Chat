@@ -155,9 +155,10 @@ const getStyle = ((selector) => (colors) => `
 			--rcx-button-colors-secondary-hover-border-color: ${ toVar(colors.n900) };
 			--rcx-sidebar-item-background-color-hover: ${ toVar(colors.n900) };
 			--rcx-sidebar-item-background-color-selected: ${ h2r(toVar(colors.n700 || colors.n800), 0.3) };
+			--rcx-badge-colors-ghost-background-color: ${ toVar(colors.n700) };
 			--rcx-tag-colors-ghost-background-color: ${ toVar(colors.n700) };
 			--rcx-color-surface: ${ toVar(colors.n900) };
-			
+
 			--rcx-divider-color: ${ h2r(toVar(colors.n900), 0.4) };
 			--rcx-color-foreground-alternative: ${ toVar(colors.n100) };
 			--rcx-color-foreground-hint: ${ toVar(colors.n600) };

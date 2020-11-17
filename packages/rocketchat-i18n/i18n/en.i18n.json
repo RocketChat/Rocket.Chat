@@ -408,7 +408,6 @@
   "App_Information": "App Information",
   "App_Installation": "App Installation",
   "App_status_auto_enabled": "Enabled",
-  "App_status_compiler_error_disabled": "Disabled: Compiler Error",
   "App_status_constructed": "Constructed",
   "App_status_disabled": "Disabled",
   "App_status_error_disabled": "Disabled: Uncaught Error",

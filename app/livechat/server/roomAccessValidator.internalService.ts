@@ -8,7 +8,9 @@ import { IUser } from '../../../definition/IUser';
 class AuthorizationLivechat extends ServiceClass implements IAuthorizationLivechat {
 	protected name = 'authorization-livechat';
 
-	async canAccessRoom(room: Partial<IRoom>, user: Pick<IUser, '_id'>, extraData?: object): Promise<boolean> {
+	protected internal = true;
+
+	async canAccessRoom(room: Partial<IRoom>, user: Partial<IUser>, extraData?: object): Promise<boolean> {
 		for (const validator of validators) {
 			if (validator(room, user, extraData)) {
 				return true;
