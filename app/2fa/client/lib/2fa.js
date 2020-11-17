@@ -4,8 +4,8 @@ import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 
 import { CustomOAuth } from '../../../custom-oauth';
-import { modal } from '../../../ui-utils/client';
 import { t } from '../../../utils/client';
+import { process2faReturn } from '../callWithTwoFactorRequired';
 
 export class Utils2fa {
 	static reportError(error, callback) {
@@ -30,30 +30,21 @@ export class Utils2fa {
 				return cb(error);
 			}
 
-			modal.open({
-				title: t('Two-factor_authentication'),
-				text: t('Open_your_authentication_app_and_enter_the_code'),
-				type: 'input',
-				inputType: 'text',
-				showCancelButton: true,
-				closeOnConfirm: true,
-				confirmButtonText: t('Verify'),
-				cancelButtonText: t('Cancel'),
-			}, (code) => {
-				if (code === false) {
-					return cb();
-				}
-
-				loginMethodTOTP && loginMethodTOTP.apply(this, loginArgs.concat([code, (error) => {
-					console.log('failed');
-					console.log(error);
-					if (error && error.error === 'totp-invalid') {
-						toastr.error(t('Invalid_two_factor_code'));
-						cb();
-					} else {
-						cb(error);
-					}
-				}]));
+			process2faReturn({
+				error,
+				originalCallback: cb,
+				onCode: (code) => {
+					loginMethodTOTP && loginMethodTOTP.apply(this, loginArgs.concat([code, (error) => {
+						console.log('failed');
+						console.log(error);
+						if (error && error.error === 'totp-invalid') {
+							toastr.error(t('Invalid_two_factor_code'));
+							cb();
+						} else {
+							cb(error);
+						}
+					}]));
+				},
 			});
 		}]));
 	}
