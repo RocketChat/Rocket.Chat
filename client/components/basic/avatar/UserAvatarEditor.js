@@ -12,9 +12,18 @@ function UserAvatarSuggestions({ suggestions, setAvatarObj, setNewAvatarSource, 
 	}, [setAvatarObj, setNewAvatarSource]);
 
 	return <Margins inline='x4' {...props}>
-		{Object.values(suggestions).map((suggestion) => <Button key={suggestion.service} disabled={disabled} square onClick={handleClick(suggestion)}>
-			<Avatar title={suggestion.service} size='x36' url={suggestion.blob} mie='x4'/>
-		</Button>)}
+		{Object.values(suggestions)
+			.map((suggestion) =>
+				<Button
+					key={suggestion.service}
+					disabled={disabled}
+					square
+					onClick={handleClick(suggestion)}
+				>
+					<Box mie='x4'>
+						<Avatar title={suggestion.service} url={suggestion.blob} />
+					</Box>
+				</Button>)}
 	</Margins>;
 }
 
@@ -52,7 +61,9 @@ export function UserAvatarEditor({ username, setAvatarObj, suggestions, disabled
 			<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
 				<Box display='flex' flexDirection='row' mbs='none'>
 					<Margins inline='x4'>
-						<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4'><Avatar size='x36' url={`/avatar/%40${ username }`}/></Button>
+						<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4'>
+							<Avatar url={`/avatar/%40${ username }`}/>
+						</Button>
 						<Button square onClick={clickUpload} disabled={disabled}><Icon name='upload' size='x20'/></Button>
 						<Button square mie='none' onClick={clickUrl} disabled={disabled}><Icon name='permalink' size='x20'/></Button>
 						{suggestions && <UserAvatarSuggestions suggestions={suggestions} setAvatarObj={setAvatarObj} setNewAvatarSource={setNewAvatarSource} disabled={disabled}/>}
