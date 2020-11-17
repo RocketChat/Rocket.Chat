@@ -11,7 +11,7 @@ const ShortcutSection = ({ title, command }) =>
 		<Box fontScale='p1'>{command}</Box>
 	</Box>;
 
-const KeyboardShortcuts = () => {
+const KeyboardShortcuts = ({ handleClose }) => {
 	const t = useTranslation();
 
 	return (
@@ -19,7 +19,7 @@ const KeyboardShortcuts = () => {
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='keyboard'/>
 				<VerticalBar.Text>{t('Keyboard_Shortcuts_Title')}</VerticalBar.Text>
-				<VerticalBar.Close />
+				{handleClose && <VerticalBar.Close onClick={handleClose}/>}
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>
 				<ShortcutSection
