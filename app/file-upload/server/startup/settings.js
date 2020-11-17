@@ -166,14 +166,14 @@ settings.addGroup('FileUpload', function() {
 			},
 		});
 		this.add('FileUpload_S3_SSECustomerAlgorithm', false, {
-			type: 'boolean',
+			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'AmazonS3',
 			},
 		});
 		this.add('FileUpload_S3_SSECustomerKey', false, {
-			type: 'boolean',
+			type: 'string',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'AmazonS3',
