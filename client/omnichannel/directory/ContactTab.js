@@ -33,7 +33,7 @@ function ContactTable() {
 		setSort([id, 'asc']);
 	});
 
-	const { data, reload } = useEndpointDataExperimental('livechat/visitors.search', query) || {};
+	const { data } = useEndpointDataExperimental('livechat/visitors.search', query) || {};
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>{t('Username')}</GenericTable.HeaderCell>,
