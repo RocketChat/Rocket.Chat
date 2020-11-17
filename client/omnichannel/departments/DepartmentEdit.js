@@ -319,7 +319,9 @@ export function EditDepartment({ data, id, title, reload }) {
 							{tags.map((tag, i) => <Chip key={i} onClick={handleTagChipClick(tag)} mie='x8'>{tag}</Chip>)}
 						</Field.Row>}
 					</Field>}
-					{DepartmentBusinessHours && <DepartmentBusinessHours bhId={department && department.businessHourId}/>}
+					{DepartmentBusinessHours && <Field>
+						<DepartmentBusinessHours bhId={department && department.businessHourId}/>
+					</Field>}
 					<Divider mb='x16' />
 					<Field>
 						<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
