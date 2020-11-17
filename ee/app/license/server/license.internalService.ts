@@ -9,6 +9,8 @@ import { guestPermissions } from '../../authorization/lib/guestPermissions';
 class LicenseService extends ServiceClass implements ILicense {
 	protected name = 'license';
 
+	protected internal = true;
+
 	constructor() {
 		super();
 
