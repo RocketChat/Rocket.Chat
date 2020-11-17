@@ -55,10 +55,8 @@ export class AmazonS3Store extends UploadFS.Store {
 			};
 
 			if (classOptions.SSECustomerAlgorithm && classOptions.SSECustomerKey) {
-
 				params.SSECustomerAlgorithm = classOptions.SSECustomerAlgorithm;
 				params.SSECustomerKey = classOptions.SSECustomerKey;
-
 			}
 
 			return s3.getSignedUrl('getObject', params, callback);
@@ -122,10 +120,8 @@ export class AmazonS3Store extends UploadFS.Store {
 			}
 
 			if (classOptions.SSECustomerAlgorithm && classOptions.SSECustomerKey) {
-
 				params.SSECustomerAlgorithm = classOptions.SSECustomerAlgorithm;
 				params.SSECustomerKey = classOptions.SSECustomerKey;
-
 			}
 
 			return s3.getObject(params).createReadStream();
@@ -158,10 +154,8 @@ export class AmazonS3Store extends UploadFS.Store {
 			};
 
 			if (classOptions.SSECustomerAlgorithm && classOptions.SSECustomerKey) {
-
 				params.SSECustomerAlgorithm = classOptions.SSECustomerAlgorithm;
 				params.SSECustomerKey = classOptions.SSECustomerKey;
-
 			}
 
 			s3.putObject(params, (error) => {
