@@ -193,6 +193,10 @@ class NetworkBroker implements IBroker {
 		return this.broker.broadcast(event, args);
 	}
 
+	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		this.broker.broadcastLocal(event, args);
+	}
+
 	async nodeList(): Promise<IBrokerNode[]> {
 		return this.broker.call('$node.list');
 	}
@@ -225,7 +229,7 @@ class EJSONSerializer extends Base {
 }
 
 const {
-	TRANSPORTER = 'TCP',
+	TRANSPORTER = '',
 	CACHE = 'Memory',
 	// SERIALIZER = 'MsgPack',
 	SERIALIZER = 'EJSON',
@@ -249,90 +253,93 @@ const {
 	SKIP_PROCESS_EVENT_REGISTRATION = 'true',
 } = process.env;
 
-const network = new ServiceBroker({
-	// TODO: Reevaluate, without this setting it was preventing the process to stop
-	skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
-	transporter: TRANSPORTER,
-	metrics: {
-		enabled: MS_METRICS === 'true',
-		reporter: [{
-			type: 'Prometheus',
-			options: {
-				port: MS_METRICS_PORT,
-			},
-		}],
-	},
-	cacher: CACHE,
-	serializer: SERIALIZER === 'EJSON' ? new EJSONSerializer() : SERIALIZER,
-	logLevel: MOLECULER_LOG_LEVEL as any,
-	// logLevel: {
-	// 	// "TRACING": "trace",
-	// 	// "TRANS*": "warn",
-	// 	BROKER: 'debug',
-	// 	TRANSIT: 'debug',
-	// 	'**': 'info',
-	// },
-	logger: {
-		type: 'Console',
-		options: {
-			formatter: 'short',
-		},
-	},
-	registry: {
-		strategy: BALANCE_STRATEGY,
-		preferLocal: BALANCE_PREFER_LOCAL !== 'false',
-	},
-
-	requestTimeout: parseInt(REQUEST_TIMEOUT) * 1000,
-	retryPolicy: {
-		enabled: RETRY_ENABLED === 'true',
-		retries: parseInt(RETRY_RETRIES),
-		delay: parseInt(RETRY_DELAY),
-		maxDelay: parseInt(RETRY_MAX_DELAY),
-		factor: parseInt(RETRY_FACTOR),
-		check: (err: any): boolean => err && !!err.retryable,
-	},
-
-	maxCallLevel: 100,
-	heartbeatInterval: parseInt(HEARTBEAT_INTERVAL),
-	heartbeatTimeout: parseInt(HEARTBEAT_TIMEOUT),
-
-	// circuitBreaker: {
-	// 	enabled: false,
-	// 	threshold: 0.5,
-	// 	windowTime: 60,
-	// 	minRequestCount: 20,
-	// 	halfOpenTime: 10 * 1000,
-	// 	check: (err: any): boolean => err && err.code >= 500,
-	// },
-
-	bulkhead: {
-		enabled: BULKHEAD_ENABLED === 'true',
-		concurrency: parseInt(BULKHEAD_CONCURRENCY),
-		maxQueueSize: parseInt(BULKHEAD_MAX_QUEUE_SIZE),
-	},
-
-	tracing: {
-		enabled: TRACING_ENABLED === 'true',
-		exporter: {
-			type: 'Jaeger',
-			options: {
-				endpoint: null,
-				host: 'jaeger',
-				port: 6832,
-				sampler: {
-					// Sampler type. More info: https://www.jaegertracing.io/docs/1.14/sampling/#client-sampling-configuration
-					type: 'Const',
-					// Sampler specific options.
-					options: {},
+// only starts network broker if transporter properly configured
+if (TRANSPORTER.match(/^(?:nats|TCP)/)) {
+	const network = new ServiceBroker({
+		// TODO: Reevaluate, without this setting it was preventing the process to stop
+		skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',
+		transporter: TRANSPORTER,
+		metrics: {
+			enabled: MS_METRICS === 'true',
+			reporter: [{
+				type: 'Prometheus',
+				options: {
+					port: MS_METRICS_PORT,
 				},
-				// Additional options for `Jaeger.Tracer`
-				tracerOptions: {},
-				// Default tags. They will be added into all span tags.
-				defaultTags: null,
+			}],
+		},
+		cacher: CACHE,
+		serializer: SERIALIZER === 'EJSON' ? new EJSONSerializer() : SERIALIZER,
+		logLevel: MOLECULER_LOG_LEVEL as any,
+		// logLevel: {
+		// 	// "TRACING": "trace",
+		// 	// "TRANS*": "warn",
+		// 	BROKER: 'debug',
+		// 	TRANSIT: 'debug',
+		// 	'**': 'info',
+		// },
+		logger: {
+			type: 'Console',
+			options: {
+				formatter: 'short',
 			},
 		},
-	},
-});
+		registry: {
+			strategy: BALANCE_STRATEGY,
+			preferLocal: BALANCE_PREFER_LOCAL !== 'false',
+		},
 
-new NetworkBroker(network);
+		requestTimeout: parseInt(REQUEST_TIMEOUT) * 1000,
+		retryPolicy: {
+			enabled: RETRY_ENABLED === 'true',
+			retries: parseInt(RETRY_RETRIES),
+			delay: parseInt(RETRY_DELAY),
+			maxDelay: parseInt(RETRY_MAX_DELAY),
+			factor: parseInt(RETRY_FACTOR),
+			check: (err: any): boolean => err && !!err.retryable,
+		},
+
+		maxCallLevel: 100,
+		heartbeatInterval: parseInt(HEARTBEAT_INTERVAL),
+		heartbeatTimeout: parseInt(HEARTBEAT_TIMEOUT),
+
+		// circuitBreaker: {
+		// 	enabled: false,
+		// 	threshold: 0.5,
+		// 	windowTime: 60,
+		// 	minRequestCount: 20,
+		// 	halfOpenTime: 10 * 1000,
+		// 	check: (err: any): boolean => err && err.code >= 500,
+		// },
+
+		bulkhead: {
+			enabled: BULKHEAD_ENABLED === 'true',
+			concurrency: parseInt(BULKHEAD_CONCURRENCY),
+			maxQueueSize: parseInt(BULKHEAD_MAX_QUEUE_SIZE),
+		},
+
+		tracing: {
+			enabled: TRACING_ENABLED === 'true',
+			exporter: {
+				type: 'Jaeger',
+				options: {
+					endpoint: null,
+					host: 'jaeger',
+					port: 6832,
+					sampler: {
+						// Sampler type. More info: https://www.jaegertracing.io/docs/1.14/sampling/#client-sampling-configuration
+						type: 'Const',
+						// Sampler specific options.
+						options: {},
+					},
+					// Additional options for `Jaeger.Tracer`
+					tracerOptions: {},
+					// Default tags. They will be added into all span tags.
+					defaultTags: null,
+				},
+			},
+		},
+	});
+
+	new NetworkBroker(network);
+}

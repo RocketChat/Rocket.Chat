@@ -28,8 +28,7 @@ function VerticalBar({ children, ...props }) {
 function VerticalBarHeader({ children, ...props }) {
 	return <Box
 		height='56px'
-		pi='x24'
-		height='64px'
+		is='h3'
 		display='flex'
 		alignItems='center'
 		justifyContent='space-between'
@@ -44,7 +43,7 @@ function VerticalBarHeader({ children, ...props }) {
 }
 
 function VerticalBarIcon(props) {
-	return <Icon {...props} size='x20'/>;
+	return <Icon {...props} size='x22'/>;
 }
 
 function VerticalBarClose(props) {
@@ -60,6 +59,12 @@ const VerticalBarScrollableContent = React.forwardRef(function VerticalBarScroll
 	return <Page.ScrollableContent p='x24' {...props} ref={ref}>
 		<Margins blockEnd='x16'>{children}</Margins>
 	</Page.ScrollableContent>;
+});
+
+const VerticalBarFooter = React.forwardRef(function VerticalBarScrollableContent({ children, ...props }, ref) {
+	return <Box is='footer' p='x24' {...props} ref={ref}>
+		<Margins blockEnd='x16'>{children}</Margins>
+	</Box>;
 });
 
 function VerticalBarButton(props) {
@@ -85,6 +90,7 @@ function VerticalBarText(props) {
 }
 
 VerticalBar.Icon = React.memo(VerticalBarIcon);
+VerticalBar.Footer = React.memo(VerticalBarFooter);
 VerticalBar.Text = React.memo(VerticalBarText);
 VerticalBar.Action = React.memo(VerticalBarAction);
 VerticalBar.Header = React.memo(VerticalBarHeader);
