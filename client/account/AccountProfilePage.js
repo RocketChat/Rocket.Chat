@@ -49,7 +49,6 @@ const AccountProfilePage = () => {
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	const localPassword = Boolean(user?.services?.password?.bcrypt?.trim());
-	const requirePasswordConfirmation = (values.email !== getUserEmailAddress(user) || !!values.password) && localPassword;
 
 	const erasureType = useSetting('Message_ErasureType');
 	const allowRealNameChange = useSetting('Accounts_AllowRealNameChange');
@@ -109,8 +108,6 @@ const AccountProfilePage = () => {
 	const onSave = useCallback(async () => {
 		const save = async (typedPassword) => {
 			try {
-				const avatarResult = await updateAvatar();
-				if (avatarResult) { handleAvatar(''); }
 				await saveFn({
 					...allowRealNameChange && { realname },
 					...allowEmailChange && getUserEmailAddress(user) !== email && { email },
@@ -124,22 +121,14 @@ const AccountProfilePage = () => {
 				}, customFields);
 				handlePassword('');
 				handleConfirmationPassword('');
+				const avatarResult = await updateAvatar();
+				if (avatarResult) { handleAvatar(''); }
 				commit();
 				dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
-
-		if (requirePasswordConfirmation) {
-			return setModal(() => <ActionConfirmModal
-				onSave={save}
-				onCancel={closeModal}
-				title={t('Please_enter_your_password')}
-				text={t('For_your_security_you_must_enter_your_current_password_to_continue')}
-				isPassword
-			/>);
-		}
 
 		save();
 	}, [
@@ -158,13 +147,10 @@ const AccountProfilePage = () => {
 		user,
 		updateAvatar,
 		handleAvatar,
-		closeModal,
-		requirePasswordConfirmation,
 		dispatchToastMessage,
 		t,
 		customFields,
 		statusType,
-		setModal,
 		commit,
 		nickname,
 		handlePassword,
