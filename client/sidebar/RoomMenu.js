@@ -20,7 +20,7 @@ const fields = {
 	name: 1,
 };
 
-const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => {
+const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '' }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -38,6 +38,8 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => 
 	const unreadMessages = useMethod('unreadMessages');
 	const toggleFavorite = useMethod('toggleFavorite');
 	const leaveRoom = useMethod('leaveRoom');
+
+	const isUnread = alert || unread || threadUnread;
 
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
@@ -59,6 +61,7 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => 
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
+			closeModal();
 		};
 
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.LEAVE_WARNING);
@@ -98,7 +101,7 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => 
 
 	const handleToggleRead = useMutableCallback(async () => {
 		try {
-			if (unread) {
+			if (isUnread) {
 				await readMessages(rid);
 				return;
 			}
@@ -128,7 +131,7 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => 
 			action: handleHide,
 		},
 		toggleRead: {
-			label: { label: unread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
+			label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
 			action: handleToggleRead,
 		},
 		...canFavorite && { toggleFavorite: {
@@ -139,7 +142,7 @@ const RoomMenu = React.memo(({ rid, unread, roomOpen, type, cl, name = '' }) => 
 			label: { label: t('Leave_room'), icon: 'sign-out' },
 			action: handleLeave,
 		} },
-	}), [canFavorite, canLeave, handleHide, handleLeave, handleToggleFavorite, handleToggleRead, isFavorite, t, unread]);
+	}), [t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave]);
 
 
 	return <Menu

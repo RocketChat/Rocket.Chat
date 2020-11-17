@@ -1,14 +1,17 @@
 import { Meteor } from 'meteor/meteor';
-import PhotoSwipe from 'photoswipe';
-import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
-import 'photoswipe/dist/photoswipe.css';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
 import s from 'underscore.string';
 
 Meteor.startup(() => {
 	let currentGallery = null;
-	const initGallery = (items, options) => {
+	const initGallery = async (items, options) => {
+		Blaze.render(Template.photoswipeContent, document.body);
+		const [PhotoSwipeImport, PhotoSwipeUI_DefaultImport] = await Promise.all([import('photoswipe'), import('photoswipe/dist/photoswipe-ui-default'), import('photoswipe/dist/photoswipe.css'), import('./photoswipe-content.html')]);
 		if (!currentGallery) {
-			currentGallery = new PhotoSwipe(document.getElementById('pswp'), PhotoSwipeUI_Default, items, options);
+			const PhotoSwipe = PhotoSwipeImport.default;
+			const PhotoSwipeUI_Default = PhotoSwipeUI_DefaultImport.default;
+			currentGallery = await new PhotoSwipe(document.getElementById('pswp'), PhotoSwipeUI_Default, items, options);
 			currentGallery.listen('destroy', () => {
 				currentGallery = null;
 			});
@@ -84,5 +87,4 @@ Meteor.startup(() => {
 	};
 
 	$(document).on('click', '.gallery-item', createEventListenerFor('.gallery-item'));
-	$(document).on('click', '.room-files-image', createEventListenerFor('.room-files-image'));
 });
