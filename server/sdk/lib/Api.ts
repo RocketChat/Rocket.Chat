@@ -47,4 +47,8 @@ export class Api {
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		return this.broker.broadcast(event, ...args);
 	}
+
+	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		return this.broker.broadcastLocal(event, ...args);
+	}
 }
