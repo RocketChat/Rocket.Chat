@@ -54,6 +54,13 @@ export class AmazonS3Store extends UploadFS.Store {
 				ResponseContentDisposition: `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(file.name) }"`,
 			};
 
+			if (classOptions.SSECustomerAlgorithm && classOptions.SSECustomerKey) {
+
+				params.SSECustomerAlgorithm = classOptions.SSECustomerAlgorithm;
+				params.SSECustomerKey = classOptions.SSECustomerKey;
+
+			}
+
 			return s3.getSignedUrl('getObject', params, callback);
 		};
 
@@ -114,6 +121,13 @@ export class AmazonS3Store extends UploadFS.Store {
 				params.Range = `${ options.start } - ${ options.end }`;
 			}
 
+			if (classOptions.SSECustomerAlgorithm && classOptions.SSECustomerKey) {
+
+				params.SSECustomerAlgorithm = classOptions.SSECustomerAlgorithm;
+				params.SSECustomerKey = classOptions.SSECustomerKey;
+
+			}
+
 			return s3.getObject(params).createReadStream();
 		};
 
@@ -137,12 +151,20 @@ export class AmazonS3Store extends UploadFS.Store {
 				}
 			});
 
-			s3.putObject({
+			const params = {
 				Key: this.getPath(file),
 				Body: writeStream,
 				ContentType: file.type,
+			};
 
-			}, (error) => {
+			if (classOptions.SSECustomerAlgorithm && classOptions.SSECustomerKey) {
+
+				params.SSECustomerAlgorithm = classOptions.SSECustomerAlgorithm;
+				params.SSECustomerKey = classOptions.SSECustomerKey;
+
+			}
+
+			s3.putObject(params, (error) => {
 				if (error) {
 					console.error(error);
 				}

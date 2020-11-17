@@ -165,6 +165,20 @@ settings.addGroup('FileUpload', function() {
 				value: 'AmazonS3',
 			},
 		});
+		this.add('FileUpload_S3_SSECustomerAlgorithm', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'AmazonS3',
+			},
+		});
+		this.add('FileUpload_S3_SSECustomerKey', false, {
+			type: 'boolean',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'AmazonS3',
+			},
+		});
 	});
 
 	this.section('Google Cloud Storage', function() {

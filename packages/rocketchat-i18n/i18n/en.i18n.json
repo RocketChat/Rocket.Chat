@@ -1691,6 +1691,8 @@
   "FileUpload_S3_URLExpiryTimeSpan": "URLs Expiration Timespan",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Time after which Amazon S3 generated URLs will no longer be valid (in seconds). If set to less than 5 seconds, this field will be ignored.",
   "FileUpload_Storage_Type": "Storage Type",
+  "FileUpload_S3_SSECustomerAlgorithm": "Server-Side Encryption Algorithm",
+  "FileUpload_S3_SSECustomerKey": "Server-Side Encryption Key",
   "FileUpload_Webdav_Upload_Folder_Path": "Upload Folder Path",
   "FileUpload_Webdav_Upload_Folder_Path_Description": "WebDAV folder path which the files should be uploaded to",
   "FileUpload_Webdav_Server_URL": "WebDAV Server Access URL",
