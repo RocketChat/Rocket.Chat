@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import RoomInfo from '../../components/basic/RoomInfo';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useUserSubscription } from '../../contexts/UserContext';
+import { useUserRoom } from '../../contexts/UserContext';
 import { useMethod } from '../../contexts/ServerContext';
 import DeleteChannelWarning from '../../components/DeleteChannelWarning';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -14,6 +14,7 @@ import { roomTypes, UiTextContext } from '../../../app/utils';
 import { RoomManager } from '../../../app/ui-utils/client/lib/RoomManager';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import WarningModal from '../../admin/apps/WarningModal';
+import MarkdownText from '../../components/basic/MarkdownText';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -30,12 +31,15 @@ const retentionPolicyAppliesTo = {
 export default ({
 	openEditing,
 	rid,
+	tabBar,
 }) => {
+	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
 	const t = useTranslation();
 
-	const room = useUserSubscription(rid);
+	const room = useUserRoom(rid);
 	room.type = room.t;
-	const { type, name, broadcast, archived } = room;
+	room.rid = rid;
+	const { type, name, broadcast, archived, joined = true } = room; // TODO implement joined
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
@@ -54,9 +58,11 @@ export default ({
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p');
+	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
 
-	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false;
+	const canEdit = usePermission('edit-room', rid);
+
+	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
 	const handleDelete = useMutableCallback(() => {
 		const onConfirm = async () => {
@@ -125,11 +131,15 @@ export default ({
 			broadcast={broadcast}
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
-			onClickEdit={openEditing}
+			onClickEdit={canEdit && openEditing}
+			onClickClose={onClickClose}
 			onClickDelete={canDelete && handleDelete}
 			onClickLeave={canLeave && handleLeave}
-			onClickHide={handleHide}
+			onClickHide={joined && handleHide}
 			{...room}
+			announcement={room.announcement && <MarkdownText content={room.announcement}/>}
+			description={room.description && <MarkdownText content={room.description}/>}
+			topic={room.topic && <MarkdownText content={room.topic}/>}
 		/>
 	);
 };

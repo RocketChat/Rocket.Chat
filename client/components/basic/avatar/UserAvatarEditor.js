@@ -48,7 +48,7 @@ export function UserAvatarEditor({ username, setAvatarObj, suggestions, disabled
 	return <Box display='flex' flexDirection='column' fontScale='p2'>
 		{t('Profile_picture')}
 		<Box display='flex' flexDirection='row' mbs='x4'>
-			<UserAvatar size='x120' url={url} username={username} etag={etag} style={{ objectFit: 'contain' }} mie='x4'/>
+			<UserAvatar size='x124' url={url} username={username} etag={etag} style={{ objectFit: 'contain' }} mie='x4'/>
 			<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
 				<Box display='flex' flexDirection='row' mbs='none'>
 					<Margins inline='x4'>

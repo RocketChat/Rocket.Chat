@@ -51,7 +51,7 @@ export const RoomInfo = function RoomInfo({
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='info-circled'/>
 				<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={onClickClose} />
+				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24'>
@@ -107,11 +107,13 @@ export const RoomInfo = function RoomInfo({
 					{ onClickHide && <Button width='50%' onClick={onClickHide}><Box is='span' mie='x4'><Icon name='eye-off' size='x20' /></Box>{t('Hide')}</Button> }
 					{ onClickLeave && <Button width='50%' onClick={onClickLeave} danger><Box is='span' mie='x4'><Icon name='sign-out' size='x20' /></Box>{t('Leave')}</Button> }
 				</ButtonGroup>
-				{ (onClickEdit || onClickDelete) && <Divider /> }
-				<ButtonGroup stretch>
-					{ onClickEdit && <Button width='50%' onClick={onClickEdit}><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>{t('Edit')}</Button> }
-					{ onClickDelete && <Button width='50%' onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Delete')}</Button>}
-				</ButtonGroup>
+				{ (onClickEdit || onClickDelete) && <>
+					<Divider />
+					<ButtonGroup stretch>
+						{ onClickEdit && <Button width='50%' onClick={onClickEdit}><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>{t('Edit')}</Button> }
+						{ onClickDelete && <Button width='50%' onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Delete')}</Button>}
+					</ButtonGroup>
+				</>}
 			</VerticalBar.Footer>
 		</>
 	);
