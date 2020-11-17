@@ -1,4 +1,5 @@
 import { Box, Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/fuselage';
+import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import Page from '../../components/basic/Page';
@@ -7,6 +8,7 @@ import UsageCard from './UsageCard';
 import LicenseCard from './LicenseCard';
 import InstancesCard from './InstancesCard';
 import PushCard from './PushCard';
+import { DOUBLE_COLUMN_CARD_WIDTH } from '../../components/basic/Card/Card';
 import { useTranslation } from '../../contexts/TranslationContext';
 // import RocketChatSection from './RocketChatSection';
 // import CommitSection from './CommitSection';
@@ -25,6 +27,10 @@ const InformationPage = React.memo(function InformationPage({
 	onClickDownloadInfo,
 }) {
 	const t = useTranslation();
+
+	const { ref, contentBoxSize: { inlineSize = DOUBLE_COLUMN_CARD_WIDTH } = {} } = useResizeObserver();
+
+	const isSmall = inlineSize < DOUBLE_COLUMN_CARD_WIDTH;
 
 	if (!info) {
 		return null;
@@ -68,11 +74,11 @@ const InformationPage = React.memo(function InformationPage({
 					</Box>
 				</Callout>}
 
-				<Box display='flex' flexDirection='row' w='full' flexWrap='wrap'>
+				<Box display='flex' flexDirection='row' w='full' flexWrap='wrap' justifyContent={isSmall ? 'center' : 'flex-start'} ref={ref}>
 					<Margins all='x8'>
 						<DeploymentCard info={info} statistics={statistics} isLoading={isLoading}/>
 						<LicenseCard />
-						<UsageCard statistics={statistics} isLoading={isLoading}/>
+						<UsageCard vertical={isSmall} statistics={statistics} isLoading={isLoading}/>
 						{!!instances.length && <InstancesCard instances={instances}/>}
 						<PushCard />
 					</Margins>

@@ -16,7 +16,7 @@ const TextSeparator = ({ label, value }) => <Box display='flex' flexDirection='r
 	<span>{value}</span>
 </Box>;
 
-const UsageCard = React.memo(function UsageCard({ statistics, isLoading }) {
+const UsageCard = React.memo(function UsageCard({ statistics, isLoading, vertical }) {
 	const s = (fn) => (isLoading ? <Skeleton width='x40' /> : fn());
 	const t = useTranslation();
 	const formatMemorySize = useFormatMemorySize();
@@ -31,7 +31,7 @@ const UsageCard = React.memo(function UsageCard({ statistics, isLoading }) {
 
 	return <Card>
 		<Card.Title>{t('Usage')}</Card.Title>
-		<Card.Body>
+		<Card.Body flexDirection={vertical ? 'column' : 'row' }>
 			<Card.Col>
 				<Card.Col.Section>
 					<Card.Col.Title>{t('Users')}</Card.Col.Title>
