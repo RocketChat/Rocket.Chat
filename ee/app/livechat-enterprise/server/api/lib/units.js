@@ -8,8 +8,9 @@ export async function findUnits({ userId, text, pagination: { offset, count, sor
 	if (!await hasPermissionAsync(userId, 'manage-livechat-units')) {
 		throw new Error('error-not-authorized');
 	}
+	const filter = new RegExp(s.escapeRegExp(text), 'i');
 
-	const query = { ...text && { $or: [{ name: new RegExp(s.escapeRegExp(text), 'i') }, { _id: new RegExp(s.escapeRegExp(text), 'i') }] } };
+	const query = { ...text && { $or: [{ name: filter }] } };
 
 	const cursor = LivechatUnit.find(query, {
 		sort: sort || { name: 1 },
