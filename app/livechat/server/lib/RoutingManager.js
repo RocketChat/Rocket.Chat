@@ -163,6 +163,6 @@ export const RoutingManager = {
 	},
 };
 
-settings.get('Livechat_Routing_Method', function (key, value) {
+settings.get('Livechat_Routing_Method', function(key, value) {
 	RoutingManager.setMethodName(value);
 });

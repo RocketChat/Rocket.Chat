@@ -293,12 +293,12 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		if (!user) {
 			throw new Meteor.Error('error-user-is-offline', 'User is offline', { function: 'forwardRoomToAgent' });
 		}
-		user = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId,departmentId);
-		if(!user){
+		user = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId);
+		if (!user) {
 			throw new Meteor.Error('error-user-not-belong-to-department', 'The selected user does not belong to this department', { function: 'forwardRoomToDepartment' });
 		}
 		const { username } = user;
-		agent = { agentId, username};
+		agent = { agentId, username };
 	}
 
 	if (!RoutingManager.getConfig().autoAssignAgent) {
