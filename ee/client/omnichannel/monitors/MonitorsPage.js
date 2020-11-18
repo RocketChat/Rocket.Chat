@@ -84,7 +84,7 @@ const MonitorsPage = () => {
 						<Field.Label>{t('Username')}</Field.Label>
 						<Field.Row>
 							<UserAutoComplete value={username} onChange={setUsername}/>
-							<Button primary onClick={handleAdd} mis='x8'>{t('Add')}</Button>
+							<Button primary disabled={!username} onClick={handleAdd} mis='x8'>{t('Add')}</Button>
 						</Field.Row>
 					</Field>
 				</Box>
