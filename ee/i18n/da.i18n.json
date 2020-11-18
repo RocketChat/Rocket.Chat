@@ -1,7 +1,5 @@
 {
   "error-canned-response-not-found": "Der blev ikke fundet et opbevaret svar",
-  "Default_value": "Standardværdi",
-  "LDAP_Default_Role_To_User": "Standardrolle for bruger",
   "error-forwarding-department-target-not-allowed": "Videresendelsen til afdelingen er ikke tilladt.",
   "error-guests-cant-have-other-roles": "Gæstebrugere kan ikke have nogen anden rolle.",
   "error-invalid-priority": "Ugyldig prioritet",
@@ -16,6 +14,7 @@
   "Canned_Response_Removed": "Opbevaret svar blev fjernet",
   "Canned_Responses_Enable": "Aktivér opbevarede svar",
   "Closed_automatically": "Blev automatisk lukket af systemet",
+  "Default_value": "Standardværdi",
   "Edit_Business_Hour": "Redigér kontortid",
   "Edit_Tag": "Redigér mærke",
   "Edit_Unit": "Redigér enhed",
@@ -30,6 +29,7 @@
   "Invalid Canned Response": "Ikke gyldigt opbevaret svar",
   "Invalid_Department": "Ugyldig afdeling",
   "LDAP_Advanced_Sync": "Avanceret synkronisering",
+  "LDAP_Default_Role_To_User": "Standardrolle for bruger",
   "LDAP_Default_Role_To_User_Description": "Standard RC-rolle der skal tildeles en bruger, hvis brugeren har en LDAP-rolle der ikke er knyttet til noget",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "Aktivér rolletilknytning fra LDAP til Rocket.Chat",
   "LDAP_Query_To_Get_User_Groups": "LDAP-forespørgsel for at hente brugergrupper",
