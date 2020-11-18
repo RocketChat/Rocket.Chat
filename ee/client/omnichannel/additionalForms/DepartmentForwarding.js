@@ -11,7 +11,7 @@ export const DepartmentForwarding = ({ value, handler, label, placeholder }) => 
 
 	const options = useMemo(() => (data && [...data.departments.map((department) => [department._id, department.name])]) || [], [data]);
 
-	return <Field mbe='x16'>
+	return <Field>
 		<Field.Label>{t(label)}</Field.Label>
 		<Field.Row>
 			<MultiSelectFiltered value={value} options={options} onChange={handler} disabled={!options} placeholder={t(placeholder)} flexGrow={1} />

@@ -25,6 +25,7 @@ const PreferencesMessagesSection = ({ onChange, ...props }) => {
 		hideAvatars: useUserPreference('hideAvatars'),
 		clockMode: useUserPreference('clockMode') ?? 0,
 		sendOnEnter: useUserPreference('sendOnEnter'),
+		messageViewMode: useUserPreference('messageViewMode'),
 	};
 
 	const { values, handlers } = useForm(settings, onChange);
@@ -43,6 +44,7 @@ const PreferencesMessagesSection = ({ onChange, ...props }) => {
 		hideAvatars,
 		clockMode,
 		sendOnEnter,
+		messageViewMode,
 	} = values;
 
 	const {
@@ -59,6 +61,7 @@ const PreferencesMessagesSection = ({ onChange, ...props }) => {
 		handleHideAvatars,
 		handleClockMode,
 		handleSendOnEnter,
+		handleMessageViewMode,
 	} = handlers;
 
 	const timeFormatOptions = useMemo(() => [
@@ -71,6 +74,12 @@ const PreferencesMessagesSection = ({ onChange, ...props }) => {
 		['normal', t('Enter_Normal')],
 		['alternative', t('Enter_Alternative')],
 		['desktop', t('Only_On_Desktop')],
+	], [t]);
+
+	const messageViewModeOptions = useMemo(() => [
+		[0, t('Normal')],
+		[1, t('Cozy')],
+		[2, t('Compact')],
 	], [t]);
 
 	// TODO: Weird behaviour when saving clock mode, and then changing it.
@@ -158,6 +167,15 @@ const PreferencesMessagesSection = ({ onChange, ...props }) => {
 					{t('Enter_Behaviour_Description')}
 				</Field.Hint>
 			</Field>, [handleSendOnEnter, sendOnEnter, sendOnEnterOptions, t])}
+			{useMemo(() => <Field>
+				<Field.Label>{t('View_mode')}</Field.Label>
+				<Field.Row>
+					<Select value={messageViewMode} onChange={handleMessageViewMode} options={messageViewModeOptions} />
+				</Field.Row>
+				<Field.Hint>
+					{t('Message_view_mode_info')}
+				</Field.Hint>
+			</Field>, [handleMessageViewMode, messageViewMode, messageViewModeOptions, t])}
 		</FieldGroup>
 	</Accordion.Item>;
 };
