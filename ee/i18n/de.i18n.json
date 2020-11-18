@@ -1,5 +1,4 @@
 {
-  "Default_value": "Standardwert",
   "error-guests-cant-have-other-roles": "Gastbenutzer können keine andere Rolle haben.",
   "error-invalid-priority": "Ungültige Priorität",
   "error-max-guests-number-reached": "Sie haben die maximale Anzahl von Gastbenutzern erreicht, die durch Ihre Lizenz erlaubt ist. Kontaktieren Sie sale@rocket.chat für eine neue Lizenz.",
@@ -9,6 +8,7 @@
   "Business_Hour": "Öffnungszeiten",
   "Business_Hour_Removed": "Teil der Öffnungszeiten entfernt",
   "Closed_automatically": "Vom System automatisch geschlossen",
+  "Default_value": "Standardwert",
   "Edit_Business_Hour": "Teil der Öffnungszeiten bearbeiten",
   "LDAP_Query_To_Get_User_Groups_Description": "LDAP-Abfrage, um die LDAP-Gruppen zu erhalten, zu denen der Benutzer gehört.",
   "LDAP_Roles_To_Rocket_Chat_Roles": "Rollenzuordnung von LDAP zu Rocket.Chat.",

@@ -1,7 +1,5 @@
 {
   "error-canned-response-not-found": "Zakonzervovaná odpověď nenalezena",
-  "Default_value": "Výchozí hodnota",
-  "LDAP_Default_Role_To_User": "Výchozí role pro uživatele",
   "error-forwarding-department-target-not-allowed": "Přesměrování do tohoto oddělení není povoleno",
   "error-guests-cant-have-other-roles": "Hosté nemůžou mít žádné další role.",
   "error-invalid-priority": "Neplatná priorita",
@@ -16,6 +14,7 @@
   "Canned_Response_Removed": "Zakonzervované odpovědi odstraněny",
   "Canned_Responses_Enable": "Povolit zakonzervované odpovědi",
   "Closed_automatically": "Uzavřeno automaticky",
+  "Default_value": "Výchozí hodnota",
   "Edit_Business_Hour": "Upravit otevírací dobu",
   "Edit_Tag": "Upravit štítek",
   "Edit_Unit": "Upravit skupinu",
@@ -30,6 +29,7 @@
   "Invalid Canned Response": "Nevalidní zakonzervovaná odpověď",
   "Invalid_Department": "Neplatné oddělení",
   "LDAP_Advanced_Sync": "Pokročilá synchronizace",
+  "LDAP_Default_Role_To_User": "Výchozí role pro uživatele",
   "LDAP_Default_Role_To_User_Description": "Výchozí role přidaná uživateli v případě že LDAP role není namapovaná",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "Povolit mapování rolí z LDAP do Rocket.Chat",
   "LDAP_Query_To_Get_User_Groups": "LDAP query pro získání uživatelských skupin",
