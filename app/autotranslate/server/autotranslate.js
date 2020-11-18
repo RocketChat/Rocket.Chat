@@ -40,11 +40,11 @@ export class TranslationProviderRegistry {
 	}
 
 	static getSupportedLanguages(...args) {
-		return TranslationProviderRegistry.enabled && TranslationProviderRegistry[Providers][TranslationProviderRegistry[Provider]].getSupportedLanguages(...args);
+		return TranslationProviderRegistry.enabled && TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(...args);
 	}
 
 	static translateMessage(...args) {
-		return TranslationProviderRegistry.enabled && TranslationProviderRegistry[Providers][TranslationProviderRegistry[Provider]].translateMessage(...args);
+		return TranslationProviderRegistry.enabled && TranslationProviderRegistry.getActiveProvider()?.translateMessage(...args);
 	}
 
 	static getProviders() {
