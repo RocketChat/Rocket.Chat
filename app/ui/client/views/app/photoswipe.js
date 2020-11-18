@@ -1,12 +1,17 @@
 import { Meteor } from 'meteor/meteor';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
 import s from 'underscore.string';
 
 Meteor.startup(() => {
 	let currentGallery = null;
 	const initGallery = async (items, options) => {
-		const [PhotoSwipe, PhotoSwipeUI_Default] = await Promise.all([import('photoswipe'), import('photoswipe/dist/photoswipe-ui-default'), import('photoswipe/dist/photoswipe.css')]);
+		Blaze.render(Template.photoswipeContent, document.body);
+		const [PhotoSwipeImport, PhotoSwipeUI_DefaultImport] = await Promise.all([import('photoswipe'), import('photoswipe/dist/photoswipe-ui-default'), import('photoswipe/dist/photoswipe.css')]);
 		if (!currentGallery) {
-			currentGallery = new PhotoSwipe(document.getElementById('pswp'), PhotoSwipeUI_Default, items, options);
+			const PhotoSwipe = PhotoSwipeImport.default;
+			const PhotoSwipeUI_Default = PhotoSwipeUI_DefaultImport.default;
+			currentGallery = await new PhotoSwipe(document.getElementById('pswp'), PhotoSwipeUI_Default, items, options);
 			currentGallery.listen('destroy', () => {
 				currentGallery = null;
 			});
