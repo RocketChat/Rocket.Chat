@@ -44,8 +44,6 @@ export const RoomInfo = function RoomInfo({
 		maxAgeDefault,
 	} = retentionPolicy;
 
-	const retentionIcon = <Icon name='warning' />;
-
 	return (
 		<>
 			<VerticalBar.Header>
@@ -90,15 +88,12 @@ export const RoomInfo = function RoomInfo({
 					</Box>}
 
 					{retentionPolicyEnabled && (
-						<Box pbe='x16'>
-							{filesOnlyDefault && excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</Label>}
-
-							{filesOnlyDefault && !excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</Label>}
-
-							{!filesOnlyDefault && excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning', { time: maxAgeDefault })}</Label>}
-
-							{!filesOnlyDefault && !excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_Unpinned', { time: maxAgeDefault })}</Label>}
-						</Box>
+						<Callout type='warning'>
+							{filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</p>}
+							{filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</p>}
+							{!filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning', { time: maxAgeDefault })}</p>}
+							{!filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_Unpinned', { time: maxAgeDefault })}</p>}
+						</Callout>
 					)}
 				</Margins>
 			</VerticalBar.ScrollableContent>
