@@ -19,10 +19,10 @@ Template.channelSettings.helpers({
 		return {
 			...Template.currentData(),
 			openEditing: () => editing.set(true),
-			editing() {
-				return Template.instance().editing.get();
-			},
 		};
+	},
+	editing() {
+		return Template.instance().editing.get();
 	},
 });
 
