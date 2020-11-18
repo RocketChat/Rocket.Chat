@@ -23,7 +23,7 @@ export function RemovePriorityButton({ _id, reload }) {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
-
+	const prioritiesRoute = useRoute('omnichannel-priorities');
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		try {
@@ -40,6 +40,7 @@ export function RemovePriorityButton({ _id, reload }) {
 			try {
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Priority_removed') });
+				prioritiesRoute.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
