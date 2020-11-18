@@ -66,7 +66,7 @@ Meteor.methods({
 		if (typeof emojiData.extension === 'undefined') {
 			throw new Meteor.Error('error-the-field-is-required', 'The custom emoji file is required', { method: 'insertOrUpdateEmoji' });
 		}
-		
+
 		if (!emojiData._id) {
 			// insert emoji
 			const createEmoji = {
