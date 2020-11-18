@@ -1,7 +1,7 @@
 
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
-import { Table, Icon } from '@rocket.chat/fuselage';
+import { Table, Icon, Button } from '@rocket.chat/fuselage';
 
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -12,20 +12,47 @@ import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
 import EditDepartmentWithData from './DepartmentEdit';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
+import { useSetModal } from '../../contexts/ModalContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
 export function RemoveDepartmentButton({ _id, reload }) {
 	const deleteAction = useEndpointAction('DELETE', `livechat/department/${ _id }`);
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const t = useTranslation();
 
-	const handleRemoveClick = useMutableCallback(async (e) => {
-		e.preventDefault();
-		e.stopPropagation();
+	const handleRemoveClick = useMutableCallback(async () => {
 		const result = await deleteAction();
 		if (result.success === true) {
 			reload();
 		}
 	});
 
-	return <Table.Cell fontScale='p1' color='hint' onClick={handleRemoveClick} withTruncatedText><Icon name='trash' size='x20'/></Table.Cell>;
+	const handleDelete = useMutableCallback((e) => {
+		e.stopPropagation();
+		const onDeleteAgent = async () => {
+			try {
+				await handleRemoveClick();
+				dispatchToastMessage({ type: 'success', message: t('Department_removed') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			setModal();
+		};
+
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteAgent}
+			onCancel={() => setModal()}
+		/>);
+	});
+
+
+	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		<Button small ghost title={t('Remove')} onClick={handleDelete}>
+			<Icon name='trash' size='x16'/>
+		</Button>
+	</Table.Cell>;
 }
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
@@ -107,7 +134,7 @@ function DepartmentsRoute() {
 		reload={reload}
 		header={header}
 		renderRow={renderRow}
-		title={'Departments'}>
+		title={t('Departments')}>
 	</DepartmentsPage>;
 }
 

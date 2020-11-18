@@ -31,8 +31,7 @@ export async function updateUserPresence(uid: string): Promise<void> {
 	});
 
 	if (result.modifiedCount > 0) {
-		api.broadcast('userpresence', {
-			action: 'updated',
+		api.broadcast('presence.status', {
 			user: { _id: uid, username: user.username, status, statusText: user.statusText },
 		});
 	}
