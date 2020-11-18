@@ -1,5 +1,7 @@
 {
   "error-canned-response-not-found": "შენაკული პასუხი ვერ მოიძებნა",
+  "Default_value": "ნაგულისხმევი მნიშვნელობა",
+  "LDAP_Default_Role_To_User": "ნაგულისხმევი(default) როლი მომხმარებლისთვის",
   "error-forwarding-department-target-not-allowed": "სამიზნე განყოფილებაში გაგზავნა არ არის დაშვებული ",
   "error-guests-cant-have-other-roles": "სტუმარ მომხმარებლებს არ შეიძლება ჰქონდეთ სხვა როლი",
   "error-invalid-priority": "არასწორი პრიორიტეტი",
@@ -14,7 +16,6 @@
   "Canned_Response_Removed": "შენახული პასუხი ამოღებულია",
   "Canned_Responses_Enable": "შენახული პასუხების ჩართვა",
   "Closed_automatically": "დაიხურა ავტომატურად სისტემის მიერ",
-  "Default_value": "ნაგულისხმევი მნიშვნელობა",
   "Edit_Business_Hour": "სამუშაო საათების რედაქტირება",
   "Edit_Tag": "ტეგის რედაქტირება",
   "Edit_Unit": "იუნიტის რედაქტირება",
@@ -29,7 +30,6 @@
   "Invalid Canned Response": "არასწორი შენახული პასუხი",
   "Invalid_Department": "არასწორი დეპარტამენტი",
   "LDAP_Advanced_Sync": "დამატებითი სინქრონიზაცია",
-  "LDAP_Default_Role_To_User": "ნაგულისხმევი(default) როლი მომხმარებლისთვის",
   "LDAP_Default_Role_To_User_Description": "RC– ის ნაგულისხმევი როლი უნდა იქნას გამოყენებული მომხმარებლისთვის, თუ მომხმარებელს აქვს LDAP– ის გარკვეული როლი, რომელიც არ არის მიბმული.",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "ჩართეთ როლის მიბმა LDAP- დან Rocket.Chat-ში",
   "LDAP_Query_To_Get_User_Groups": "LDAP მოთხოვნა, რომ მიიღოთ მომხმარებელთა ჯგუფები",
