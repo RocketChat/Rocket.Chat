@@ -1,7 +1,5 @@
 {
   "error-canned-response-not-found": "예상 답변을 찾을 수 없음",
-  "Default_value": "기본값",
-  "LDAP_Default_Role_To_User": "사용자의 기본 역할",
   "error-forwarding-department-target-not-allowed": "지정된 부서로 전달하도록 허용할 수 없습니다..",
   "error-guests-cant-have-other-roles": "게스트 사용자는 다른 역할을 할 수 없습니다.",
   "error-invalid-priority": "우선순위가 지정이 잘못되었습니다. ",
@@ -16,6 +14,7 @@
   "Canned_Response_Removed": "예상 답변 제거",
   "Canned_Responses_Enable": " 답변 사용",
   "Closed_automatically": "시스템에 의해 자동으로 종료됩니다.",
+  "Default_value": "기본값",
   "Edit_Business_Hour": "영업 시간 편집",
   "Edit_Tag": "태그 편집",
   "Edit_Unit": "단위 편집",
@@ -30,6 +29,7 @@
   "Invalid Canned Response": "예상 답변이 불일치합니다.",
   "Invalid_Department": "유효하지 않은 부서",
   "LDAP_Advanced_Sync": "고급 동기화",
+  "LDAP_Default_Role_To_User": "사용자의 기본 역할",
   "LDAP_Default_Role_To_User_Description": "사용자에게 매핑되지 않은 LDAP 역할이 있는 경우, 사용자에게 적용 되는 기본 RC역할.",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "LDAP에서 Rocket으로 역할 맵핑  사용",
   "LDAP_Query_To_Get_User_Groups": "사용자 그룹을 가져오기 위한 LDAP 쿼리",
