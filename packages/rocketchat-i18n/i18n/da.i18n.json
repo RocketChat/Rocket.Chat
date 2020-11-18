@@ -1751,7 +1751,6 @@
   "get-password-policy-forbidRepeatingCharacters": "Adgangskoden bør ikke indeholde gentagne tegn",
   "get-password-policy-forbidRepeatingCharactersCount": "Adgangskoden bør ikke indeholde mere end __forbidRepeatingCharactersCount__ gentagne tegn",
   "get-password-policy-maxLength": "Adgangskoden skal maksimalt være __maxLength__ tegn lang",
-  "get-password-policy-minLength": "Adgangskoden skal mindst være __maxLength__ tegn lang",
   "get-password-policy-mustContainAtLeastOneLowercase": "Adgangskoden skal indeholde mindst et lille bogstav",
   "get-password-policy-mustContainAtLeastOneNumber": "Adgangskoden skal indeholde mindst et tal",
   "get-password-policy-mustContainAtLeastOneSpecialCharacter": "Adgangskoden skal indeholde mindst én specialtegn",
