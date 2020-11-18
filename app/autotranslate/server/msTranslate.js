@@ -70,17 +70,18 @@ class MsAutoTranslate extends AutoTranslate {
 	 * @returns {object} code : value pair
 	 */
 	getSupportedLanguages(target) {
-		if (this.autoTranslateEnabled && this.apiKey) {
-			if (this.supportedLanguages[target]) {
-				return this.supportedLanguages[target];
-			}
-			const languages = HTTP.get(this.apiGetLanguages);
-			this.supportedLanguages[target] = Object.keys(languages.data.translation).map((language) => ({
-				language,
-				name: languages.data.translation[language].name,
-			}));
-			return this.supportedLanguages[target || 'en'];
+		if (!this.apiKey) {
+			return;
 		}
+		if (this.supportedLanguages[target]) {
+			return this.supportedLanguages[target];
+		}
+		const languages = HTTP.get(this.apiGetLanguages);
+		this.supportedLanguages[target] = Object.keys(languages.data.translation).map((language) => ({
+			language,
+			name: languages.data.translation[language].name,
+		}));
+		return this.supportedLanguages[target || 'en'];
 	}
 
 	/**
