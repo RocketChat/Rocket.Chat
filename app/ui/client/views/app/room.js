@@ -637,14 +637,11 @@ export const dropzoneEvents = {
 			const transferData = e.dataTransfer.getData('text') || e.dataTransfer.getData('url');
 
 			if (e.dataTransfer.types.includes('text/uri-list')) {
-				const dropContext = document.createDocumentFragment();
-				const dropContextContent = document.createElement('div');
-				dropContextContent.innerHTML = e.dataTransfer.getData('text/html');
-				dropContext.appendChild(dropContextContent);
-				const imgURL = dropContext.querySelector('img').src;
+				const url = e.dataTransfer.getData('text/html').match('\<img.+src\=(?:\"|\')(.+?)(?:\"|\')(?:.+?)\>');
+				const imgURL = url && url[1];
 
 				if (!imgURL) {
-					return addToInput(dropContext.querySelector('a').href);
+					return;
 				}
 
 				const file = await createFileFromUrl(imgURL);
