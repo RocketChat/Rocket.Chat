@@ -650,7 +650,7 @@ export const dropzoneEvents = {
 				}
 				files = [file];
 			}
-			if (e.dataTransfer.types.includes('text/plain')) {
+			if (e.dataTransfer.types.includes('text/plain') && !e.dataTransfer.types.includes('text/x-moz-url')) {
 				return addToInput(transferData.trim());
 			}
 		}
