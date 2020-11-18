@@ -91,13 +91,13 @@ export const RoomInfo = function RoomInfo({
 
 					{retentionPolicyEnabled && (
 						<Box pbe='x16'>
-							{filesOnlyDefault && excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_FilesOnly', { max: maxAgeDefault })}</Label>}
+							{filesOnlyDefault && excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</Label>}
 
-							{filesOnlyDefault && !excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { max: maxAgeDefault })}</Label>}
+							{filesOnlyDefault && !excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</Label>}
 
-							{!filesOnlyDefault && excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning', { max: maxAgeDefault })}</Label>}
+							{!filesOnlyDefault && excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning', { time: maxAgeDefault })}</Label>}
 
-							{!filesOnlyDefault && !excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_Unpinned', { max: maxAgeDefault })}</Label>}
+							{!filesOnlyDefault && !excludePinnedDefault && <Label>{retentionIcon} {t('RetentionPolicy_RoomWarning_Unpinned', { time: maxAgeDefault })}</Label>}
 						</Box>
 					)}
 				</Margins>
