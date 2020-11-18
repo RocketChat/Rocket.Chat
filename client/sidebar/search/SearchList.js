@@ -88,7 +88,7 @@ const useSpotlight = (filterText = '', usernames) => {
 			return { data: { users: [], rooms: [] }, status: AsyncState.LOADING };
 		}
 		return { data, status };
-	}, [data]);
+	}, [data, status]);
 };
 
 const options = {
@@ -144,6 +144,7 @@ const useSearchItems = (filterText) => {
 		resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
 
 		return { data: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])), status };
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [localRooms, name, spotlight]);
 };
 
