@@ -8,7 +8,7 @@ import {
 	TextInput,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSessionDispatch } from '../../../contexts/SessionContext';
@@ -60,28 +60,20 @@ function AdminUserInformationStep({ step, title, active }) {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 
-	const [isNameValid, validateName] = useState(true);
 	const [isUsernameValid, validateUsername] = useState(true);
 	const [isEmailValid, validateEmail] = useState(true);
-	const [isPasswordValid, validatePassword] = useState(true);
 
 	const isContinueEnabled = useMemo(() => name && username && email && password, [name, username, email, password]);
 
 	const [commiting, setCommiting] = useState(false);
 
-	const validate = () => {
-		const isNameValid = !!name;
-		const isUsernameValid = !!username && usernameRegExp.test(username);
-		const isEmailValid = !!email && emailRegExp.test(email);
-		const isPasswordValid = !!password;
+	useEffect(() => {
+		validateUsername(username && usernameRegExp.test(username));
+	}, [username, usernameRegExp]);
 
-		validateName(isNameValid);
-		validateUsername(isUsernameValid);
-		validateEmail(isEmailValid);
-		validatePassword(isPasswordValid);
-
-		return isNameValid && isUsernameValid && isEmailValid && isPasswordValid;
-	};
+	useEffect(() => {
+		validateEmail(email && emailRegExp.test(email));
+	}, [email, emailRegExp]);
 
 	const t = useTranslation();
 
@@ -90,9 +82,7 @@ function AdminUserInformationStep({ step, title, active }) {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		const canRegisterAdminUser = validate();
-
-		if (!canRegisterAdminUser) {
+		if (!name || !username || !email || !password) {
 			return;
 		}
 
@@ -135,7 +125,6 @@ function AdminUserInformationStep({ step, title, active }) {
 							placeholder={t('Type_your_name')}
 							value={name}
 							onChange={({ currentTarget: { value } }) => setName(value)}
-							error={!isNameValid ? 'error' : ''}
 						/>
 					</Field.Row>
 				</Field>
@@ -148,7 +137,7 @@ function AdminUserInformationStep({ step, title, active }) {
 							placeholder={t('Type_your_username')}
 							value={username}
 							onChange={({ currentTarget: { value } }) => setUsername(value)}
-							error={!isUsernameValid ? 'error' : ''}
+							error={username && !usernameRegExp.test(username) ? 'error' : ''}
 						/>
 					</Field.Row>
 					{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
@@ -176,7 +165,6 @@ function AdminUserInformationStep({ step, title, active }) {
 							placeholder={t('Type_your_password')}
 							value={password}
 							onChange={({ currentTarget: { value } }) => setPassword(value)}
-							error={!isPasswordValid ? 'error' : ''}
 						/>
 					</Field.Row>
 				</Field>

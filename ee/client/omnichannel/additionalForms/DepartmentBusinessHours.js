@@ -11,7 +11,7 @@ export const DepartmentBusinessHours = ({ bhId }) => {
 
 	const name = data && data.businessHour && data.businessHour.name;
 
-	return <Field mbe='x16'>
+	return <Field>
 		<Field.Label>{t('Business_Hour')}</Field.Label>
 		<Field.Row>
 			<TextInput disabled value={name || ''}/>
