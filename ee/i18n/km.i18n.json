@@ -1,7 +1,5 @@
 {
   "error-canned-response-not-found": "ការឆ្លើយតបដែលបានថតទុកមិនត្រូវបានរកឃើញទេ",
-  "Default_value": "តម្លៃ​លំនាំដើម",
-  "LDAP_Default_Role_To_User": "តួនាទីលំនាំដើមសម្រាប់អ្នកប្រើប្រាស់",
   "error-forwarding-department-target-not-allowed": "មិនអនុញ្ញាតឱ្យបញ្ជូនបន្តទៅផ្នែកគោលដៅទេ។",
   "error-guests-cant-have-other-roles": "អ្នកប្រើប្រាស់ភ្ញៀវមិនអាចមានតួនាទីអ្វីផ្សេងបានទេ។",
   "error-invalid-priority": "អាទិភាពមិនត្រឹមត្រូវ",
@@ -15,6 +13,7 @@
   "Canned_Response_Removed": "ការឆ្លើយតបដែលបានថតទុកមិនត្រូវបានរកឃើញទេ",
   "Canned_Responses_Enable": "បើកការឆ្លើយតបដែលអាចប្រើបាន",
   "Closed_automatically": "បានបិទដោយស្វ័យប្រវត្តិដោយប្រព័ន្ធ",
+  "Default_value": "តម្លៃ​លំនាំដើម",
   "Edit_Business_Hour": "កែសម្រួលម៉ោងធ្វើការ",
   "Edit_Tag": "កែសម្រួលស្លាក",
   "Edit_Unit": "កែ​សម្រួល",
@@ -25,6 +24,7 @@
   "Failed_to_add_monitor": "បានបរាជ័យក្នុងការបន្ថែមម៉ូនីទ័រ",
   "Invalid Canned Response": "ការឆ្លើយតបមិនត្រឹមត្រូវ",
   "Invalid_Department": "នាយកដ្ឋានមិនត្រឹមត្រូវ",
+  "LDAP_Default_Role_To_User": "តួនាទីលំនាំដើមសម្រាប់អ្នកប្រើប្រាស់",
   "LDAP_Default_Role_To_User_Description": "តួនាទី RC លំនាំដើមដែលត្រូវអនុវត្តចំពោះអ្នកប្រើប្រាស់ប្រសិនបើអ្នកប្រើប្រាស់មានតួនាទី LDAP មួយចំនួនដែលមិនត្រូវបានគូស។",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "បើកដំណើរការគូសផែនទីពី LDAP ទៅ Rocket.Chat",
   "LDAP_Query_To_Get_User_Groups": "សំណួរ LDAP ដើម្បីទទួលបានក្រុមអ្នកប្រើប្រាស់",

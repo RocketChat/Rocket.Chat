@@ -1,7 +1,5 @@
 {
   "error-canned-response-not-found": "No s'ha trobat la resposta de conserva",
-  "Default_value": "Valor per defecte",
-  "LDAP_Default_Role_To_User": "Funció predeterminada de l'usuari",
   "error-forwarding-department-target-not-allowed": "El reenviament al departament objectiu no està permès.",
   "error-guests-cant-have-other-roles": "Els usuaris convidats no poden tenir cap altre paper.",
   "error-invalid-priority": "Prioritat no vàlida",
@@ -15,6 +13,7 @@
   "Canned_Response_Removed": "S'ha eliminat la resposta enllaçada",
   "Canned_Responses_Enable": "Activa les respostes enllaçades",
   "Closed_automatically": "Tancat automàticament pel sistema",
+  "Default_value": "Valor per defecte",
   "Edit_Business_Hour": "Edita l'horari comercial",
   "Edit_Tag": "Edita l’etiqueta",
   "Edit_Unit": "Edita la unitat",
@@ -28,6 +27,7 @@
   "Invalid Canned Response": "Resposta enllaunada no vàlida",
   "Invalid_Department": "Departament no vàlid",
   "LDAP_Advanced_Sync": "Sincronització avançada",
+  "LDAP_Default_Role_To_User": "Funció predeterminada de l'usuari",
   "LDAP_Default_Role_To_User_Description": "El rol RC predeterminat que s’aplicarà a l’usuari si l’usuari té algun rol LDAP que no es troba mapejat.",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "Activa el mapatge de rols des de LDAP a Rocket.Chat",
   "LDAP_Query_To_Get_User_Groups": "Consulta LDAP per obtenir grups d’usuaris",
