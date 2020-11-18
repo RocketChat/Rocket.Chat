@@ -1672,7 +1672,6 @@
   "Invite_user_to_join_channel_all_to": "Pozvat všechny uživatele v této místnosti do [#channel]",
   "Invite_Users": "Pozvat uživatele",
   "error-cannot-delete-app-user": "Odstranění uživatele aplikace není povoleno, odinstalujte příslušnou aplikaci pro odstranění.",
-  "error-duplicate-channel-name": "Místnost s názvem ' %s' již existuje",
   "is_also_typing": "také píše",
   "is_also_typing_female": "také píše",
   "is_also_typing_male": "také píše",

@@ -1617,7 +1617,6 @@
   "Invite_user_to_join_channel_all_from": "Hívja meg a [#channel] összes felhasználóját, hogy csatlakozzon ehhez a csatornához",
   "Invite_user_to_join_channel_all_to": "A csatornáról minden felhasználó meghívja a [#channel]",
   "Invite_Users": "Felhasználók meghívása",
-  "error-duplicate-channel-name": "A csatorna névvel ' %s' létezik",
   "is_also_typing": "is ír",
   "is_also_typing_female": "is ír",
   "is_also_typing_male": "is ír",

@@ -2687,7 +2687,6 @@
   "UserDataDownload_EmailBody": "Il tuo file di dati è ora pronto per il download. Fai clic su <a href=\"__download_link__\">qui</a>per scaricarlo.",
   "UserDataDownload_EmailSubject": "Il tuo file di dati è pronto per il download",
   "UserDataDownload_Requested": "Scarica il file richiesto",
-  "UserDataDownload_RequestExisted_Text": "Il tuo file di dati è già stato generato. Quando sarà pronto, un link per scaricarlo verrà inviato al tuo indirizzo email.",
   "Username": "Nome utente",
   "Username_already_exist": "Il nome utente esiste già. Si prega di provare un altro nome utente.",
   "Username_and_message_must_not_be_empty": "Utente e messaggio non devono essere vuoti",

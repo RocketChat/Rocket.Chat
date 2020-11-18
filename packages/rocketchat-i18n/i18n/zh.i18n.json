@@ -3158,7 +3158,6 @@
   "Number_of_federated_servers": "联合服务器数",
   "UserDataDownload_EmailSubject": "您的数据文件已准备好下载",
   "UserDataDownload_Requested": "下载要求的文件",
-  "UserDataDownload_RequestExisted_Text": "您的数据文件已经生成。准备好后，下载它的链接将发送到您的电子邮件地址。在您之前，队列中有<strong>__pending_operations __ </strong>个操作要运行。",
   "OAuth Apps": "OAuth 应用",
   "Username": "用户名",
   "Username_already_exist": "此用户名已存在。请尝试其他用户名。",

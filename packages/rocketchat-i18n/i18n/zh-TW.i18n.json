@@ -3156,7 +3156,6 @@
   "Number_of_federated_servers": "聯盟伺服器數量",
   "UserDataDownload_EmailSubject": "您的資料檔案已準備好下載",
   "UserDataDownload_Requested": "下載要求的檔案",
-  "UserDataDownload_RequestExisted_Text": "您的資料檔案將被產生。準備好後，下載它的連結將發送到您的電子郵件地址。 <strong>__pending_operations __ </strong> 在您之前已操作佇列。",
   "OAuth Apps": "OAuth 應用程式",
   "Username": "使用者名稱",
   "Username_already_exist": "此使用者名稱已存在。請嘗試其他使用者名稱。",

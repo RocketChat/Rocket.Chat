@@ -2656,7 +2656,6 @@
   "UserDataDownload_EmailBody": "Tiedostosi on nyt valmis ladattavaksi. Voit ladata sen napsauttamalla <a href=\"__download_link__\" _ LH_HTML_END \"täältä</a>.",
   "UserDataDownload_EmailSubject": "Tietosi on valmis lataamaan",
   "UserDataDownload_Requested": "Lataa pyydetty tiedosto",
-  "UserDataDownload_RequestExisted_Text": "Tiedostosi on jo luotu. Lataava linkki lähetetään sähköpostiosoitteeseesi, kun se on valmis.",
   "Username": "Käyttäjänimi",
   "Username_already_exist": "Käyttäjätunnus on jo olemassa. Yritä toista käyttäjätunnusta.",
   "Username_and_message_must_not_be_empty": "Käyttäjätunnus ja viesti eivät saa olla tyhjiä.",

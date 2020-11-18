@@ -3017,7 +3017,6 @@
   "UserDataDownload_EmailBody": "Seu arquivo de dados está pronto para download. Clique em <a href=\"__download_link__\">aqui</a>para fazer o download.",
   "UserDataDownload_EmailSubject": "Seu arquivo de dados está pronto para download",
   "UserDataDownload_Requested": "Download do arquivo solicitado",
-  "UserDataDownload_RequestExisted_Text": "Seu arquivo de dados já está sendo gerado. Um link para baixá-lo será enviado para o seu endereço de e-mail quando estiver pronto.",
   "OAuth Apps": "Apps OAuth",
   "Username": "Nome de usuário",
   "Username_already_exist": "O nome de usuário já existe. Por favor, tente outro nome de usuário.",

@@ -2656,7 +2656,6 @@
   "UserDataDownload_EmailBody": "Məlumat faylınız artıq yüklənməyə hazırdır. Yükləmək üçün <a href=\"__download_link__\">burada</a>vurun.",
   "UserDataDownload_EmailSubject": "Sizin Data Faylınız Yükləməyə Hazırdır",
   "UserDataDownload_Requested": "İstənilən faylı yükləyin",
-  "UserDataDownload_RequestExisted_Text": "Məlumat faylınız artıq yaradılıb. Hazır olduğunuzda onu yükləmək üçün bir link e-poçt ünvanınıza göndəriləcək.",
   "Username": "İstifadəçi adı",
   "Username_already_exist": "İstifadəçi adı artıq mövcuddur. Başqa bir istifadəçi adı cəhd edin.",
   "Username_and_message_must_not_be_empty": "İstifadəçi adı və mesajı boş olmamalıdır.",

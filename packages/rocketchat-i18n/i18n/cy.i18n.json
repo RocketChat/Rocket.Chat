@@ -2653,7 +2653,6 @@
   "UserDataDownload_EmailBody": "Mae eich ffeil ddata bellach yn barod i'w lawrlwytho. Cliciwch <a href = \"__download_link__\">yma</a>i'w lawrlwytho.",
   "UserDataDownload_EmailSubject": "Mae'ch Ffeil Ddata yn barod i'w Lawrlwytho",
   "UserDataDownload_Requested": "Lawrlwythwch Ffeil Gofynnwyd",
-  "UserDataDownload_RequestExisted_Text": "Mae eich ffeil ddata eisoes yn cael ei gynhyrchu. Anfonir dolen i'w lawrlwytho at eich cyfeiriad e-bost wrth baratoi.",
   "Username": "Enw Defnyddiwr",
   "Username_already_exist": "Mae enw defnyddiwr eisoes yn bodoli. Rhowch gynnig ar enw defnyddiwr arall.",
   "Username_and_message_must_not_be_empty": "Ni ddylai enw defnyddiwr a neges fod yn wag.",
