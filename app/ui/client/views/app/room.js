@@ -36,8 +36,9 @@ import { hasAllPermission, hasRole } from '../../../../authorization';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
-import { mime } from '../../../../utils/lib/mimeTypes';
 import { openUserCard } from '../../lib/UserCard';
+
+import './room.html';
 
 export const chatMessages = {};
 
@@ -72,7 +73,7 @@ const openProfileTab = (e, instance, username) => {
 	instance.tabBar.open('members-list');
 };
 
-const openProfileTabOrOpenDM = (e, instance, username) => {
+export const openProfileTabOrOpenDM = (e, instance, username) => {
 	// if (settings.get('UI_Click_Direct_Message')) {
 	// 	Meteor.call('createDirectMessage', username, (error, result) => {
 	// 		if (error) {
@@ -239,6 +240,7 @@ async function createFileFromUrl(url) {
 	const metadata = {
 		type: data.type,
 	};
+	const { mime } = await import('../../../../utils/lib/mimeTypes');
 	const file = new File([data], `File - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ mime.extension(data.type) }`, metadata);
 	return file;
 }
@@ -655,7 +657,7 @@ export const dropzoneEvents = {
 				return addToInput(transferData.trim());
 			}
 		}
-
+		const { mime } = await import('../../../../utils/lib/mimeTypes');
 		const filesToUpload = Array.from(files).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
 			return {

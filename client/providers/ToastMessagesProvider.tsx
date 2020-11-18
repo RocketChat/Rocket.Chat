@@ -21,5 +21,7 @@ const contextValue = {
 	dispatch,
 };
 
-export const ToastMessagesProvider: FC = ({ children }) =>
+const ToastMessagesProvider: FC = ({ children }) =>
 	<ToastMessagesContext.Provider children={children} value={contextValue} />;
+
+export default ToastMessagesProvider;

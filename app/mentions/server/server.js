@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
 import MentionsServer from './Mentions';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
-import { Notifications } from '../../notifications';
 import { Users, Subscriptions, Rooms } from '../../models';
+import { api } from '../../../server/sdk/api';
 
 const mention = new MentionsServer({
 	pattern: () => settings.get('UTF8_Names_Validation'),
@@ -21,12 +20,8 @@ const mention = new MentionsServer({
 		const { language } = this.getUser(sender._id);
 		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
 
-		Notifications.notifyUser(sender._id, 'message', {
-			_id: Random.id(),
-			rid,
-			ts: new Date(),
+		api.broadcast('notify.ephemeralMessage', sender._id, rid, {
 			msg,
-			groupable: false,
 		});
 
 		// Also throw to stop propagation of 'sendMessage'.

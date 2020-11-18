@@ -5,6 +5,7 @@ import _ from 'underscore';
 import { CustomOAuth } from '../../../custom-oauth';
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
+import { addOAuthService } from '../functions/addOAuthService';
 
 const logger = new Logger('rocketchat:lib', {
 	methods: {
@@ -25,11 +26,13 @@ function _OAuthServicesUpdate() {
 		if (/Accounts_OAuth_Custom-/.test(service.key)) {
 			serviceName = service.key.replace('Accounts_OAuth_Custom-', '');
 		}
+
 		if (service.value === true) {
 			const data = {
 				clientId: settings.get(`${ service.key }_id`),
 				secret: settings.get(`${ service.key }_secret`),
 			};
+
 			if (/Accounts_OAuth_Custom-/.test(service.key)) {
 				data.custom = true;
 				data.clientId = settings.get(`${ service.key }-id`);
@@ -51,9 +54,14 @@ function _OAuthServicesUpdate() {
 				data.nameField = settings.get(`${ service.key }-name_field`);
 				data.avatarField = settings.get(`${ service.key }-avatar_field`);
 				data.rolesClaim = settings.get(`${ service.key }-roles_claim`);
+				data.groupsClaim = settings.get(`${ service.key }-groups_claim`);
+				data.channelsMap = settings.get(`${ service.key }-groups_channel_map`);
+				data.channelsAdmin = settings.get(`${ service.key }-channels_admin`);
 				data.mergeUsers = settings.get(`${ service.key }-merge_users`);
+				data.mapChannels = settings.get(`${ service.key }-map_channels`);
 				data.mergeRoles = settings.get(`${ service.key }-merge_roles`);
 				data.showButton = settings.get(`${ service.key }-show_button`);
+
 				new CustomOAuth(serviceName.toLowerCase(), {
 					serverURL: data.serverURL,
 					tokenPath: data.tokenPath,
@@ -68,6 +76,10 @@ function _OAuthServicesUpdate() {
 					nameField: data.nameField,
 					avatarField: data.avatarField,
 					rolesClaim: data.rolesClaim,
+					groupsClaim: data.groupsClaim,
+					mapChannels: data.mapChannels,
+					channelsMap: data.channelsMap,
+					channelsAdmin: data.channelsAdmin,
 					mergeUsers: data.mergeUsers,
 					mergeRoles: data.mergeRoles,
 					accessTokenParam: data.accessTokenParam,
@@ -137,8 +149,50 @@ function customOAuthServicesInit() {
 	// Add settings for custom OAuth providers to the settings so they get
 	// automatically added when they are defined in ENV variables
 	Object.keys(process.env).forEach((key) => {
-		if (/Accounts_OAuth_Custom-[a-zA-Z0-9_-]+$/.test(key)) {
-			settings.add(key, process.env[key]);
+		if (/Accounts_OAuth_Custom_[a-zA-Z0-9_-]+$/.test(key)) {
+			// Most all shells actually prohibit the usage of - in environment variables
+			// So this will allow replacing - with _ and translate it back to the setting name
+			let name = key.replace('Accounts_OAuth_Custom_', '');
+
+			if (name.indexOf('_') > -1) {
+				name = name.replace(name.substr(name.indexOf('_')), '');
+			}
+
+			const serviceKey = `Accounts_OAuth_Custom_${ name }`;
+
+			if (key === serviceKey) {
+				const values = {
+					enabled: process.env[`${ serviceKey }`] === 'true',
+					clientId: process.env[`${ serviceKey }_id`],
+					clientSecret: process.env[`${ serviceKey }_secret`],
+					url: process.env[`${ serviceKey }_url`],
+					tokenPath: process.env[`${ serviceKey }_token_path`],
+					identityPath: process.env[`${ serviceKey }_identity_path`],
+					authorizationPath: process.env[`${ serviceKey }_authorize_path`],
+					scope: process.env[`${ serviceKey }_scope`],
+					accessTokenParam: process.env[`${ serviceKey }_access_token_param`],
+					buttonLabelText: process.env[`${ serviceKey }_button_label_text`],
+					buttonLabelColor: process.env[`${ serviceKey }_button_label_color`],
+					loginStyle: process.env[`${ serviceKey }_login_style`],
+					buttonColor: process.env[`${ serviceKey }_button_color`],
+					tokenSentVia: process.env[`${ serviceKey }_token_sent_via`],
+					identityTokenSentVia: process.env[`${ serviceKey }_identity_token_sent_via`],
+					usernameField: process.env[`${ serviceKey }_username_field`],
+					nameField: process.env[`${ serviceKey }_name_field`],
+					emailField: process.env[`${ serviceKey }_email_field`],
+					rolesClaim: process.env[`${ serviceKey }_roles_claim`],
+					groupsClaim: process.env[`${ serviceKey }_groups_claim`],
+					channelsMap: process.env[`${ serviceKey }_groups_channel_map`],
+					channelsAdmin: process.env[`${ serviceKey }_channels_admin`],
+					mergeUsers: process.env[`${ serviceKey }_merge_users`],
+					mapChannels: process.env[`${ serviceKey }_map_channels`],
+					mergeRoles: process.env[`${ serviceKey }_merge_roles`],
+					showButton: process.env[`${ serviceKey }_show_button`],
+					avatarField: process.env[`${ serviceKey }_avatar_field`],
+				};
+
+				addOAuthService(name, values);
+			}
 		}
 	});
 }

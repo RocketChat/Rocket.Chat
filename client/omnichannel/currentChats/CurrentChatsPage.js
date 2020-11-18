@@ -9,7 +9,7 @@ import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { usePermission } from '../../contexts/AuthorizationContext';
-import { GenericTable } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useMethod } from '../../contexts/ServerContext';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
@@ -126,34 +126,37 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAll} onCancel={() => setModal()}/>);
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteAll}
+			onCancel={() => setModal()}
+		/>);
 	});
 
 
 	return <Box mb='x16' is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
 		<Box display='flex' flexDirection='row' flexWrap='wrap' {...props}>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4' >{t('Guest')}:</Label>
+				<Label mb='x4' >{t('Guest')}</Label>
 				<TextInput flexShrink={0} placeholder={t('Guest')} onChange={handleGuest} value={guest} />
 			</Box>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4'>{t('Served_By')}:</Label>
+				<Label mb='x4'>{t('Served_By')}</Label>
 				<AutoCompleteAgent value={servedBy} onChange={handleServedBy}/>
 			</Box>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4'>{t('Department')}:</Label>
+				<Label mb='x4'>{t('Department')}</Label>
 				<AutoCompleteDepartment value={department} onChange={handleDepartment}/>
 			</Box>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4'>{t('Status')}:</Label>
+				<Label mb='x4'>{t('Status')}</Label>
 				<Select flexShrink={0} options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')}/>
 			</Box>
 			<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
-				<Label mb='x4'>{t('From')}:</Label>
+				<Label mb='x4'>{t('From')}</Label>
 				<InputBox type='date' flexShrink={0} placeholder={t('From')} onChange={handleFrom} value={from} />
 			</Box>
 			<Box display='flex' mie='x8' flexGrow={0} flexDirection='column'>
-				<Label mb='x4'>{t('To')}:</Label>
+				<Label mb='x4'>{t('To')}</Label>
 				<InputBox type='date' flexShrink={0} placeholder={t('To')} onChange={handleTo} value={to} />
 			</Box>
 
@@ -161,13 +164,13 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 		</Box>
 		{Tags && <Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4'>{t('Tags')}:</Label>
+				<Label mb='x4'>{t('Tags')}</Label>
 				<Tags value={tags} handler={handleTags} />
 			</Box>
 		</Box>}
 		{allCustomFields && <Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4'>{t('Custom_fields')}:</Label>
+				<Label mb='x4'>{t('Custom_Fields')}</Label>
 				<MultiSelect options={customFieldsOptions} value={customFields} onChange={handleCustomFields} flexGrow={1} {...props}/>
 			</Box>
 		</Box>}
@@ -189,7 +192,16 @@ function CurrentChatsPage({
 		<Page>
 			<Page.Header title={title} />
 			<Page.Content>
-				<GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data && data.rooms} total={data && data.total} setParams={setParams} params={params} reload={reload}/>
+				<GenericTable
+					header={header}
+					renderRow={renderRow}
+					results={data && data.rooms}
+					total={data && data.total}
+					setParams={setParams}
+					params={params}
+					reload={reload}
+					renderFilter={({ onChange, ...props }) => <FilterByText setFilter={onChange} {...props} />}
+				/>
 			</Page.Content>
 		</Page>
 		{children}

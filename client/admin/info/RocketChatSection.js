@@ -5,9 +5,9 @@ import Subtitle from '../../components/basic/Subtitle';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../hooks/useFormatDuration';
-import { DescriptionList } from './DescriptionList';
+import DescriptionList from './DescriptionList';
 
-export const RocketChatSection = React.memo(function RocketChatSection({ info, statistics, isLoading }) {
+const RocketChatSection = React.memo(function RocketChatSection({ info, statistics, isLoading }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const formatDuration = useFormatDuration();
@@ -32,3 +32,5 @@ export const RocketChatSection = React.memo(function RocketChatSection({ info, s
 		<DescriptionList.Entry label={t('OpLog')}>{s(() => (statistics.oplogEnabled ? t('Enabled') : t('Disabled')))}</DescriptionList.Entry>
 	</DescriptionList>;
 });
+
+export default RocketChatSection;

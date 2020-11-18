@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { Roles, Permissions, Settings } from '../../models/server';
 import { settings } from '../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../lib';
-import { clearCache } from './functions/hasPermission';
 
 Meteor.startup(function() {
 	// Note:
@@ -43,6 +42,7 @@ Meteor.startup(function() {
 		{ _id: 'edit-other-user-password',           roles: ['admin'] },
 		{ _id: 'edit-other-user-avatar',             roles: ['admin'] },
 		{ _id: 'edit-other-user-e2ee',               roles: ['admin'] },
+		{ _id: 'edit-other-user-totp',               roles: ['admin'] },
 		{ _id: 'edit-privileged-setting',            roles: ['admin'] },
 		{ _id: 'edit-room',                          roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'edit-room-avatar',                   roles: ['admin', 'owner', 'moderator'] },
@@ -223,12 +223,4 @@ Meteor.startup(function() {
 	};
 
 	settings.onload('*', createPermissionForAddedSetting);
-
-	Roles.on('change', ({ diff }) => {
-		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
-			// avoid useless changes
-			return;
-		}
-		clearCache();
-	});
 });

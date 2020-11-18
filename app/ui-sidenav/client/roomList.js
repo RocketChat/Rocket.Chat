@@ -146,7 +146,16 @@ const mergeSubRoom = (subscription) => {
 		fields: {
 			lm: 1,
 			lastMessage: 1,
+			uids: 1,
+			v: 1,
 			streamingOptions: 1,
+			usernames: 1,
+			description: 1,
+			topic: 1,
+			announcement: 1,
+			broadcast: 1,
+			archived: 1,
+			retention: 1,
 		},
 	};
 
@@ -154,10 +163,28 @@ const mergeSubRoom = (subscription) => {
 
 	const lastRoomUpdate = room.lm || subscription.ts || subscription._updatedAt;
 
+	if (room.uids) {
+		subscription.uids = room.uids;
+	}
+
+	if (room.v) {
+		subscription.v = room.v;
+	}
+
+	subscription.usernames = room.usernames;
+
 	subscription.lastMessage = room.lastMessage;
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
 	subscription.streamingOptions = room.streamingOptions;
 
+
+	subscription.description = room.description;
+	subscription.cl = room.cl;
+	subscription.topic = room.topic;
+	subscription.announcement = room.announcement;
+	subscription.broadcast = room.broadcast;
+	subscription.archived = room.archived;
+	subscription.retention = room.retention;
 	return Object.assign(subscription, getLowerCaseNames(subscription));
 };
 
@@ -166,11 +193,20 @@ const mergeRoomSub = (room) => {
 	if (!sub) {
 		return room;
 	}
-
 	Subscriptions.update({
 		rid: room._id,
 	}, {
 		$set: {
+			description: room.description,
+			cl: room.cl,
+			topic: room.topic,
+			announcement: room.announcement,
+			broadcast: room.broadcast,
+			archived: room.archived,
+			retention: room.retention,
+			...Array.isArray(room.uids) && { uids: room.uids },
+			...Array.isArray(room.uids) && { usernames: room.usernames },
+			...room.v && { v: room.v },
 			lastMessage: room.lastMessage,
 			streamingOptions: room.streamingOptions,
 			...getLowerCaseNames(room, sub.name, sub.fname),

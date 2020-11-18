@@ -1,4 +1,4 @@
-import { ButtonGroup, Button, Box, Icon, PasswordInput, TextInput, Modal } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Box, Icon } from '@rocket.chat/fuselage';
 import { SHA256 } from 'meteor/sha';
 import React, { useMemo, useState, useCallback } from 'react';
 
@@ -13,34 +13,8 @@ import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useMethod } from '../contexts/ServerContext';
 import { useSetModal } from '../contexts/ModalContext';
 import { useUpdateAvatar } from '../hooks/useUpdateAvatar';
-import { getUserEmailAddress } from '../helpers/getUserEmailAddress';
-
-const ActionConfirmModal = ({ onSave, onCancel, title, text, isPassword, ...props }) => {
-	const t = useTranslation();
-	const [inputText, setInputText] = useState('');
-
-	const handleChange = useCallback((e) => setInputText(e.currentTarget.value), [setInputText]);
-	const handleSave = useCallback(() => { onSave(inputText); onCancel(); }, [inputText, onSave, onCancel]);
-
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='danger' name='modal-warning' size={20}/>
-			<Modal.Title>{title}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			<Box mb='x8'>{text}</Box>
-			{isPassword && <PasswordInput w='full' value={inputText} onChange={handleChange}/>}
-			{!isPassword && <TextInput w='full' value={inputText} onChange={handleChange}/>}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary danger onClick={handleSave}>{t('Continue')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
-};
+import { getUserEmailAddress } from '../lib/getUserEmailAddress';
+import ActionConfirmModal from './ActionConfirmModal';
 
 const getInitialValues = (user) => ({
 	realname: user.name ?? '',
@@ -75,7 +49,6 @@ const AccountProfilePage = () => {
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	const localPassword = Boolean(user?.services?.password?.bcrypt?.trim());
-	const requirePasswordConfirmation = (values.email !== getUserEmailAddress(user) || !!values.password) && localPassword;
 
 	const erasureType = useSetting('Message_ErasureType');
 	const allowRealNameChange = useSetting('Accounts_AllowRealNameChange');
@@ -135,8 +108,6 @@ const AccountProfilePage = () => {
 	const onSave = useCallback(async () => {
 		const save = async (typedPassword) => {
 			try {
-				const avatarResult = await updateAvatar();
-				if (avatarResult) { handleAvatar(''); }
 				await saveFn({
 					...allowRealNameChange && { realname },
 					...allowEmailChange && getUserEmailAddress(user) !== email && { email },
@@ -150,22 +121,14 @@ const AccountProfilePage = () => {
 				}, customFields);
 				handlePassword('');
 				handleConfirmationPassword('');
+				const avatarResult = await updateAvatar();
+				if (avatarResult) { handleAvatar(''); }
 				commit();
 				dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
-
-		if (requirePasswordConfirmation) {
-			return setModal(() => <ActionConfirmModal
-				onSave={save}
-				onCancel={closeModal}
-				title={t('Please_enter_your_password')}
-				text={t('For_your_security_you_must_enter_your_current_password_to_continue')}
-				isPassword
-			/>);
-		}
 
 		save();
 	}, [
@@ -184,13 +147,10 @@ const AccountProfilePage = () => {
 		user,
 		updateAvatar,
 		handleAvatar,
-		closeModal,
-		requirePasswordConfirmation,
 		dispatchToastMessage,
 		t,
 		customFields,
 		statusType,
-		setModal,
 		commit,
 		nickname,
 		handlePassword,

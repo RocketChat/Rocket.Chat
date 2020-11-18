@@ -11,7 +11,7 @@ export async function markRoomAsRead(rid: string, uid: string): Promise<void> {
 	}
 
 	// do not mark room as read if there are still unread threads
-	const alert = sub.alert && sub.tunread?.length > 0;
+	const alert = sub.alert && sub.tunread && sub.tunread.length > 0;
 
 	await Subscriptions.setAsReadByRoomIdAndUserId(rid, uid, alert);
 

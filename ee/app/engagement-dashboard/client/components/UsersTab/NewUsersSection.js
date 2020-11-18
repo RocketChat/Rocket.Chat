@@ -1,17 +1,17 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
+import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { Section } from '../Section';
-import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
-import { saveFile } from '../../../../../../client/lib/saveFile';
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-const convertDataToCSV = (data) => `// date, newUsers
-${ data.map(({ date, newUsers }) => `${ date }, ${ newUsers }`).join('\n') }`;
+const TICK_WIDTH = 45;
 
 export function NewUsersSection() {
 	const t = useTranslation();
@@ -23,6 +23,8 @@ export function NewUsersSection() {
 	], [t]);
 
 	const [periodId, setPeriodId] = useState('last 7 days');
+
+	const formatDate = useFormatDate();
 
 	const period = useMemo(() => {
 		switch (periodId) {
@@ -54,6 +56,26 @@ export function NewUsersSection() {
 	}), [period]);
 
 	const data = useEndpointData('engagement-dashboard/users/new-users', params);
+
+	const { ref: sizeRef, contentBoxSize: { inlineSize = 600 } = {} } = useResizeObserver();
+
+	const maxTicks = Math.ceil(inlineSize / TICK_WIDTH);
+
+	const tickValues = useMemo(() => {
+		const arrayLength = moment(period.end).diff(period.start, 'days') + 1;
+		if (arrayLength <= maxTicks || !maxTicks) {
+			return null;
+		}
+
+		const values = Array.from({ length: arrayLength }, (_, i) => moment(period.start).add(i, 'days').toISOString());
+
+		const relation = Math.ceil(values.length / maxTicks);
+
+		return values.reduce((acc, cur, i) => {
+			if ((i + 1) % relation === 0) { acc = [...acc, cur]; }
+			return acc;
+		}, []);
+	}, [period, maxTicks]);
 
 	const [
 		countFromPeriod,
@@ -87,12 +109,13 @@ export function NewUsersSection() {
 	}, [data, period]);
 
 	const downloadData = () => {
-		saveFile(convertDataToCSV(values), `NewUsersSection_start_${ params.start }_end_${ params.end }.csv`);
+		const data = values.map(({ data, newUsers }) => [data, newUsers]);
+		downloadCsvAs(data, `NewUsersSection_start_${ params.start }_end_${ params.end }`);
 	};
 
 	return <Section
 		title={t('New_users')}
-		filter={<><Select small options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton mis='x16' disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
+		filter={<><Select small options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton small mis='x16' disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
 	>
 		<CounterSet
 			counters={[
@@ -112,7 +135,7 @@ export function NewUsersSection() {
 			{data
 				? <Box style={{ height: 240 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
-						<Box style={{ position: 'relative' }}>
+						<Box style={{ position: 'relative' }} ref={sizeRef}>
 							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
 								<ResponsiveBar
 									data={values}
@@ -121,30 +144,38 @@ export function NewUsersSection() {
 									groupMode='grouped'
 									padding={0.25}
 									margin={{
-										// TODO: Get it from theme
+									// TODO: Get it from theme
 										bottom: 20,
+										left: 20,
+										top: 20,
 									}}
 									colors={[
-										// TODO: Get it from theme
+									// TODO: Get it from theme
 										'#1d74f5',
 									]}
 									enableLabel={false}
 									enableGridY={false}
 									axisTop={null}
 									axisRight={null}
-									axisBottom={(values.length === 7 && {
+									axisBottom={{
 										tickSize: 0,
 										// TODO: Get it from theme
 										tickPadding: 4,
 										tickRotation: 0,
-										format: (date) => moment(date).format('dddd'),
-									}) || null }
-									axisLeft={null}
+										tickValues,
+										format: (date) => moment(date).format(values.length === 7 ? 'dddd' : 'DD/MM'),
+									}}
+									axisLeft={{
+										tickSize: 0,
+										// TODO: Get it from theme
+										tickPadding: 4,
+										tickRotation: 0,
+									}}
 									animate={true}
 									motionStiffness={90}
 									motionDamping={15}
 									theme={{
-										// TODO: Get it from theme
+									// TODO: Get it from theme
 										axis: {
 											ticks: {
 												text: {
@@ -166,15 +197,15 @@ export function NewUsersSection() {
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
-										{t('Value_users', { value })}
+									tooltip={({ value, indexValue }) => <Box fontScale='p2' color='alternative'>
+										{t('Value_users', { value })}, {formatDate(indexValue)}
 									</Box>}
 								/>
 							</Box>
 						</Box>
 					</Flex.Item>
 				</Box>
-				: <Skeleton variant='rect' height={240} />}
+				: <Box ref={sizeRef}><Skeleton variant='rect' height={240}/></Box>}
 		</Flex.Container>
 	</Section>;
 }
