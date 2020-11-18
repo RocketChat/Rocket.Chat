@@ -1,5 +1,7 @@
 {
   "error-canned-response-not-found": "Canned Response Not Found",
+  "Default_value": "Default value",
+  "LDAP_Default_Role_To_User": "Default role to user",
   "error-forwarding-department-target-not-allowed": "The forwarding to the target department is not allowed.",
   "error-guests-cant-have-other-roles": "Guest users can't have any other role.",
   "error-invalid-priority": "Invalid priority",
@@ -14,7 +16,6 @@
   "Canned_Response_Removed": "Canned Response Removed",
   "Canned_Responses_Enable": "Enable Canned Responses",
   "Closed_automatically": "Closed automatically by the system",
-  "Default_value": "Default value",
   "Edit_Business_Hour": "Edit Business Hour",
   "Edit_Tag": "Edit Tag",
   "Edit_Unit": "Edit Unit",
@@ -29,7 +30,6 @@
   "Invalid Canned Response": "Invalid Canned Response",
   "Invalid_Department": "Invalid Department",
   "LDAP_Advanced_Sync": "Advanced Sync",
-  "LDAP_Default_Role_To_User": "Default role to user",
   "LDAP_Default_Role_To_User_Description": "The default RC role to be applied to user if the user has some LDAP role that is not mapped.",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "Enable role mapping from LDAP to Rocket.Chat",
   "LDAP_Query_To_Get_User_Groups": "LDAP query to get user groups",

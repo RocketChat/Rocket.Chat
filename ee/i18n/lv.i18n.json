@@ -1,5 +1,6 @@
 {
   "error-canned-response-not-found": "Konteinerota atbilde nav atrasta",
+  "LDAP_Default_Role_To_User": "Lietotāja loma pēc noklusējuma",
   "error-forwarding-department-target-not-allowed": "Pārsūtīšana mērķa (saņēmēja) departamentam nav atļauta.",
   "error-guests-cant-have-other-roles": "Vieslietotājiem nevar būt citas lomas.",
   "error-invalid-priority": "Nederīga prioritāte",
@@ -22,6 +23,5 @@
   "Failed_to_add_monitor": "Neizdevās pievienot monitoru/pieskatītāju",
   "Invalid Canned Response": "Nederīga konteinerotā atbilde",
   "Invalid_Department": "Nederīgs departaments",
-  "LDAP_Default_Role_To_User": "Lietotāja loma pēc noklusējuma",
   "LDAP_Default_Role_To_User_Description": "Noklusētā RC loma, kas tiks piešķirta lietotājam, ja lietotājam ir kāda LDAP loma, kas nav kartēta."
 }
