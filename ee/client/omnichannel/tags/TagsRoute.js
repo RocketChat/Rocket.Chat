@@ -100,7 +100,7 @@ function TagsRoute() {
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x60'>{t('Description')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x200'>{t('Description')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'remove'} w='x40'>{t('Remove')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
