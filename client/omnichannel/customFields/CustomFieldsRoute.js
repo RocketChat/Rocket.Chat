@@ -100,7 +100,7 @@ const CustomFieldsRoute = () => {
 	const { data, reload } = useEndpointDataExperimental('livechat/custom-fields', query);
 
 	const header = useMemo(() => [
-		<GenericTable.HeaderCell key={'field'} direction={sort[1]} active={sort[0] === 'field'} onClick={onHeaderClick} sort='field' w='x200'>{t('Field')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'field'} direction={sort[1]} active={sort[0] === '_id'} onClick={onHeaderClick} sort='_id' w='x200'>{t('Field')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'label'} direction={sort[1]} active={sort[0] === 'label'} onClick={onHeaderClick} sort='label' w='x200'>{t('Label')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'scope'} direction={sort[1]} active={sort[0] === 'scope'} onClick={onHeaderClick} sort='scope' w='x80'>{t('Scope')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'visibility'} direction={sort[1]} active={sort[0] === 'visibility'} onClick={onHeaderClick} sort='visibility' w='x80'>{t('Visibility')}</GenericTable.HeaderCell>,
