@@ -4,6 +4,7 @@ addAction('channel-settings', {
 	groups: ['channel', 'group'],
 	id: 'channel-settings',
 	// anonymous: true,
+	full: true,
 	title: 'Room_Info',
 	icon: 'info-circled',
 	template: 'channelSettings',

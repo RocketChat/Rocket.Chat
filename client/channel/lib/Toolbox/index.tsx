@@ -10,6 +10,7 @@ export type ToolboxActionConfig = {
 	icon: string;
 	title: string;
 	renderAction?: FC;
+	full?: true;
 	renderOption?: FC;
 	order?: number;
 	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple'>;

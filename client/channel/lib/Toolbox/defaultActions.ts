@@ -57,6 +57,6 @@ addAction('keyboard-shortcut-list', {
 	id: 'keyboard-shortcut-list',
 	title: 'Keyboard_Shortcuts_Title',
 	icon: 'keyboard',
-	template: 'keyboardShortcuts',
+	template: 'KeyboardShortcuts',
 	order: 99,
 });

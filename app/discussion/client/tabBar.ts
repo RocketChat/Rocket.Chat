@@ -12,6 +12,7 @@ addAction('discussions', () => {
 		title: 'Discussions',
 		icon: 'discussion',
 		template: 'discussionsTabbar',
+		full: true,
 		order: 1,
 	} : null), [discussionEnabled]);
 });
