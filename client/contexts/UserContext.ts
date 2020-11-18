@@ -3,6 +3,7 @@ import { createContext, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
 import { ISubscription } from '../../definition/ISubscription';
+import { IRoom } from '../../definition/IRoom';
 
 type SubscriptionQuery = {
 	rid: string | Mongo.ObjectID;
@@ -31,6 +32,7 @@ type UserContextValue = {
 	loginWithPassword: (user: string | object, password: string) => Promise<void>;
 	queryPreference: <T>(key: string | Mongo.ObjectID, defaultValue?: T) => Subscription<T | undefined>;
 	querySubscription: (query: FilterQuery<ISubscription>, fields: Fields, sort?: Sort) => Subscription <ISubscription | undefined>;
+	queryRoom: (query: FilterQuery<IRoom>, fields: Fields, sort?: Sort) => Subscription <IRoom | undefined>;
 	querySubscriptions: (query: SubscriptionQuery, options?: FindOptions) => Subscription <Array<ISubscription> | []>;
 };
 
@@ -43,6 +45,10 @@ export const UserContext = createContext<UserContextValue>({
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
 	querySubscription: () => ({
+		getCurrentValue: (): undefined => undefined,
+		subscribe: (): Unsubscribe => (): void => undefined,
+	}),
+	queryRoom: () => ({
 		getCurrentValue: (): undefined => undefined,
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
@@ -70,6 +76,12 @@ export const useUserPreference = <T>(key: string, defaultValue?: T): T | undefin
 export const useUserSubscription = (rid: string, fields: Fields): ISubscription | undefined => {
 	const { querySubscription } = useContext(UserContext);
 	const subscription = useMemo(() => querySubscription({ rid }, fields), [querySubscription, rid, fields]);
+	return useSubscription(subscription);
+};
+
+export const useUserRoom = (rid: string, fields: Fields): IRoom | undefined => {
+	const { queryRoom } = useContext(UserContext);
+	const subscription = useMemo(() => queryRoom({ _id: rid }, fields), [queryRoom, rid, fields]);
 	return useSubscription(subscription);
 };
 
