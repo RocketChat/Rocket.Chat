@@ -62,7 +62,9 @@ Meteor.methods({
 		if (matchingResults.length > 0) {
 			throw new Meteor.Error('Custom_Emoji_Error_Name_Or_Alias_Already_In_Use', 'The custom emoji or one of its aliases is already in use', { method: 'insertOrUpdateEmoji' });
 		}
-
+		if (emojiData.extension===undefined) {
+			throw new Meteor.Error('error-the-field-is-required', 'The custom emoji file is required', { method: 'insertOrUpdateEmoji' });
+		}
 		if (!emojiData._id) {
 			// insert emoji
 			const createEmoji = {
