@@ -1,5 +1,7 @@
 {
   "error-canned-response-not-found": "Predefiniowana odpowiedź nie odnaleziona",
+  "Default_value": "Domyślna wartość",
+  "LDAP_Default_Role_To_User": "Domyślna rola dla użytkownika",
   "error-forwarding-department-target-not-allowed": "Przekazywanie do docelowego działu nie jest dozwolone.",
   "error-guests-cant-have-other-roles": "Goście nie mogą mieć żadnych innych ról.",
   "error-invalid-priority": "Niepoprawny priorytet",
@@ -14,7 +16,6 @@
   "Canned_Response_Removed": "Predefiniowana odpowiedź usunięta",
   "Canned_Responses_Enable": "Włącz predefiniowane odpowiedzi",
   "Closed_automatically": "Automatycznie zamknięte przez system",
-  "Default_value": "Domyślna wartość",
   "Edit_Business_Hour": "Edycja godzin pracy",
   "Edit_Tag": "Edytuj tag",
   "Edit_Unit": "Edycja jednostki",
@@ -29,7 +30,6 @@
   "Invalid Canned Response": "Niepoprawna predefiniowana odpowiedź",
   "Invalid_Department": "Błędny oddział",
   "LDAP_Advanced_Sync": "Zaawansowana synchronizacja",
-  "LDAP_Default_Role_To_User": "Domyślna rola dla użytkownika",
   "LDAP_Default_Role_To_User_Description": "Zostanie użyta domyślna rola RC jeżeli użytkownik ma jakąś rolę LDAP która nie jest zamapowana.",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "Włącz mapowanie ról z LDAP do Rocket.Chat",
   "LDAP_Query_To_Get_User_Groups": "Zapytanie LDAP do pobrania grup użytkownika",

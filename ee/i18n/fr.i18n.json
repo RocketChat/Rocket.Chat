@@ -1,5 +1,7 @@
 {
   "error-canned-response-not-found": "Modèle de réponse non trouvé",
+  "Default_value": "Valeur par défaut",
+  "LDAP_Default_Role_To_User": "Rôle par défaut de l'utilisateur",
   "error-forwarding-department-target-not-allowed": "La redirection vers le service cible n'est pas autorisée.",
   "error-guests-cant-have-other-roles": "Les invités ne peuvent pas avoir d'autre rôle.",
   "error-invalid-priority": "Priorité non valable",
@@ -12,7 +14,6 @@
   "Canned_Response_Removed": "Modèle de réponse supprimé",
   "Canned_Responses_Enable": "Activer les modèles de réponse",
   "Closed_automatically": "Fermé automatiquement par le système",
-  "Default_value": "Valeur par défaut",
   "Edit_Business_Hour": "Modifier les heures d'ouverture",
   "Edit_Tag": "Modifier le tag",
   "Edit_Unit": "Modifier l'unité",
@@ -25,7 +26,6 @@
   "Invalid Canned Response": "Modèle de réponse invalide",
   "Invalid_Department": "Servcie invalide",
   "LDAP_Advanced_Sync": "Synchro. avancée",
-  "LDAP_Default_Role_To_User": "Rôle par défaut de l'utilisateur",
   "LDAP_Default_Role_To_User_Description": "Rôle RC à donner à l'utilisateur si l'uitlisateur à des rôles LDAP qui ne sont pas mappés.",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "Autoriser le mapping de LDAP vers Rocket.Chat",
   "LDAP_Query_To_Get_User_Groups": "Requête LDAP pour récupérer les groupes d'utilisateurs",

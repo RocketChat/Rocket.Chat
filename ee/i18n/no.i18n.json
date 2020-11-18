@@ -1,4 +1,5 @@
 {
+  "LDAP_Default_Role_To_User": "Standardrolle for bruker",
   "error-max-number-simultaneous-chats-reached": "Det maksimale antallet samtidige chatter per agent er nådd.",
   "Available_departments": "Tilgjengelige avdelinger",
   "Edit_Tag": "Endre tagg",
@@ -6,7 +7,6 @@
   "Enterprise_License": "Enterpriselisens",
   "Enterprise_License_Description": "Hvis arbeidsområdet ditt er registrert og lisensen er levert av Rocket.Chat Cloud trenger du ikke å oppdatere lisensen manuelt her.",
   "Invalid_Department": "Ugyldig avdeling",
-  "LDAP_Default_Role_To_User": "Standardrolle for bruker",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "Aktivér rolletilknytning gjennom LDAP til Rocket.Chat",
   "LDAP_Query_To_Get_User_Groups": "LDAP-spørring for å få brukergrupper",
   "LDAP_Query_To_Get_User_Groups_Description": "LDAP-spørring for å få LDAP-gruppene en bruker er med i.",
