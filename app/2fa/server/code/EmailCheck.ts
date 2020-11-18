@@ -94,7 +94,7 @@ ${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }
 		return !!valid;
 	}
 
-	public sendEmailCode(user: IUser): string[] {
+	public sendEmailCode(user: IUser): void {
 		const emails = this.getUserVerifiedEmails(user);
 		const random = Random._randomString(6, '0123456789');
 		const encryptedRandom = bcrypt.hashSync(random, Accounts._bcryptRounds());
@@ -108,8 +108,6 @@ ${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }
 		for (const address of emails) {
 			this.send2FAEmail(address, random, user);
 		}
-
-		return emails;
 	}
 
 	public processInvalidCode(user: IUser): IProcessInvalidCodeResult {

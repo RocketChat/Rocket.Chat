@@ -13,3 +13,7 @@ createTemplateForComponent('ThreadsList', () => import('./Threads/ContextualBar/
 createTemplateForComponent('ExportMessages', () => import('./ExportMessages'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
+
+createTemplateForComponent('KeyboardShortcuts', () => import('./KeyboardShortcuts'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});

@@ -127,8 +127,8 @@ function CurrentChatsRoute() {
 		<GenericTable.HeaderCell key={'departmentId'} direction={sort[1]} active={sort[0] === 'departmentId'} onClick={onHeaderClick} sort='departmentId' w='x200'>{t('Department')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'servedBy'} direction={sort[1]} active={sort[0] === 'servedBy'} onClick={onHeaderClick} sort='servedBy' w='x120'>{t('Served_By')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'ts'} direction={sort[1]} active={sort[0] === 'ts'} onClick={onHeaderClick} sort='ts' w='x120'>{t('Started_At')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'lm'} direction={sort[1]} active={sort[0] === 'lm'} onClick={onHeaderClick} sort='visibility' w='x120'>{t('Last_Message')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x120'>{t('Status')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'lm'} direction={sort[1]} active={sort[0] === 'lm'} onClick={onHeaderClick} sort='lm' w='x120'>{t('Last_Message')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x60'>{t('Status')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'remove'} w='x40'>{t('Remove')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
@@ -155,7 +155,7 @@ function CurrentChatsRoute() {
 		reload={reload}
 		header={header}
 		renderRow={renderRow}
-		title={'Current Chats'}>
+		title={t('Current_Chats')}>
 	</CurrentChatsPage>;
 }
 
