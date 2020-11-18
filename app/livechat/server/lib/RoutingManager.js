@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { settings } from '../../../settings/server';
-import { createLivechatSubscription,
+import {
+	createLivechatSubscription,
 	dispatchAgentDelegated,
 	forwardRoomToAgent,
 	forwardRoomToDepartment,
-	forwardRoomToAgentInDepartment,
 	removeAgentFromSubscription,
 	updateChatDepartment,
 } from './Helper';
@@ -151,22 +151,18 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		if (transferData.userId && transferData.departmentId) {
-			return forwardRoomToAgentInDepartment(room, guest, transferData);
+		if (transferData.departmentId) {
+			return forwardRoomToDepartment(room, guest, transferData);
 		}
 
 		if (transferData.userId) {
 			return forwardRoomToAgent(room, transferData);
 		}
 
-		if (transferData.departmentId) {
-			return forwardRoomToDepartment(room, guest, transferData);
-		}
-
 		return false;
 	},
 };
 
-settings.get('Livechat_Routing_Method', function(key, value) {
+settings.get('Livechat_Routing_Method', function (key, value) {
 	RoutingManager.setMethodName(value);
 });
