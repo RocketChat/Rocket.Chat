@@ -1,5 +1,7 @@
 {
   "error-canned-response-not-found": "پاسخ آماده پیدا نشد",
+  "Default_value": "مقدار پیش فرض",
+  "LDAP_Default_Role_To_User": "نقش پیشفرض کاربر",
   "error-forwarding-department-target-not-allowed": "ارسال به بخش مورد نظر اجازه داده نشده است.",
   "error-guests-cant-have-other-roles": "کاربران میهمان نمیتوانند نقش دیگری داشته باشند.",
   "error-invalid-priority": "اولویت نامعتبر است",
@@ -13,7 +15,6 @@
   "Canned_Response_Removed": "پاسخ آماده پاک شد",
   "Canned_Responses_Enable": "فعال کردن پاسخ های آماده",
   "Closed_automatically": "به طور خودکار توسط سیستم بسته شد",
-  "Default_value": "مقدار پیش فرض",
   "Edit_Business_Hour": "تنظیم ساعت کاری",
   "Edit_Tag": "ویرایش برچسب",
   "Edit_Unit": "ویرایش واحد",
@@ -26,7 +27,6 @@
   "Invalid Canned Response": "پاسخ آماده نامعتبر",
   "Invalid_Department": "گروه نامعتبر",
   "LDAP_Advanced_Sync": "همگام سازی پیشرفته",
-  "LDAP_Default_Role_To_User": "نقش پیشفرض کاربر",
   "LDAP_Query_To_Get_User_Groups": "کوئری LDAP برای به دست آوردن گروه های کاربر",
   "LDAP_Query_To_Get_User_Groups_Description": "کوئری LDAP برای به دست آوردن گروهای LDAP  که کاربر عضوی از آن است",
   "LDAP_Sync_User_Active_State": "همگام سازی حالت فعال کاربر",
