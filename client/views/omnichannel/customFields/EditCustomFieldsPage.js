@@ -15,6 +15,7 @@ import { useForm } from '../../../hooks/useForm';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 
 const getInitialValues = (cf) => ({
+	id: cf._id,
 	field: cf._id,
 	label: cf.label,
 	scope: cf.scope,
@@ -22,7 +23,7 @@ const getInitialValues = (cf) => ({
 	regexp: cf.regexp,
 });
 
-const EditCustomFieldsPageContainer = () => {
+const EditCustomFieldsPageContainer = ({ reload }) => {
 	const t = useTranslation();
 	const id = useRouteParameter('id');
 
@@ -43,11 +44,11 @@ const EditCustomFieldsPageContainer = () => {
 		</Page>;
 	}
 
-	return <EditCustomFieldsPage customField={data.customField} id={id}/>;
+	return <EditCustomFieldsPage customField={data.customField} id={id} reload={reload}/>;
 };
 
 
-const EditCustomFieldsPage = ({ customField, id }) => {
+const EditCustomFieldsPage = ({ customField, id, reload }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -68,7 +69,9 @@ const EditCustomFieldsPage = ({ customField, id }) => {
 
 	const { hasError, data: additionalData, hasUnsavedChanges: additionalFormChanged } = additionalValues;
 
-	const canSave = !hasError && (additionalFormChanged || hasUnsavedChanges);
+	const { label, field } = values;
+
+	const canSave = !hasError && (label && field) && (additionalFormChanged || hasUnsavedChanges);
 
 	const handleSave = useMutableCallback(async () => {
 		try {
@@ -79,6 +82,7 @@ const EditCustomFieldsPage = ({ customField, id }) => {
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			reload();
 			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

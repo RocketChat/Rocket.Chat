@@ -7,6 +7,7 @@ const CustomFieldsForm = ({ values = {}, handlers = {}, className }) => {
 	const t = useTranslation();
 
 	const {
+		id,
 		field,
 		label,
 		scope,
@@ -29,13 +30,13 @@ const CustomFieldsForm = ({ values = {}, handlers = {}, className }) => {
 
 	return <>
 		<Field className={className}>
-			<Field.Label>{t('Field')}</Field.Label>
+			<Field.Label>{t('Field')}*</Field.Label>
 			<Field.Row>
-				<TextInput value={field} onChange={handleField} placeholder={t('Field')}/>
+				<TextInput disabled={id} value={field} onChange={handleField} placeholder={t('Field')}/>
 			</Field.Row>
 		</Field>
 		<Field className={className}>
-			<Field.Label>{t('Label')}</Field.Label>
+			<Field.Label>{t('Label')}*</Field.Label>
 			<Field.Row>
 				<TextInput value={label} onChange={handleLabel} placeholder={t('Label')}/>
 			</Field.Row>
