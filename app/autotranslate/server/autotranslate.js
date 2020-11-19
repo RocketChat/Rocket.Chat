@@ -16,7 +16,7 @@ const Provider = Symbol('Provider');
  * register,load and also returns the active provider.
  */
 export class TranslationProviderRegistry {
-	[Providers] = {};
+	static [Providers] = {};
 
 	static enabled = false;
 
@@ -36,19 +36,19 @@ export class TranslationProviderRegistry {
 	 * Return the active Translation provider
 	 */
 	static getActiveProvider() {
-		return TranslationProviderRegistry.enabled && TranslationProviderRegistry[Providers][TranslationProviderRegistry[Provider]];
+		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry[Providers][TranslationProviderRegistry[Provider]] : undefined;
 	}
 
 	static getSupportedLanguages(...args) {
-		return TranslationProviderRegistry.enabled && TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(...args);
+		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(...args) : undefined;
 	}
 
 	static translateMessage(...args) {
-		return TranslationProviderRegistry.enabled && TranslationProviderRegistry.getActiveProvider()?.translateMessage(...args);
+		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.translateMessage(...args) : undefined;
 	}
 
 	static getProviders() {
-		return Object.entries(TranslationProviderRegistry[Providers]);
+		return Object.values(TranslationProviderRegistry[Providers]);
 	}
 
 	static setCurrentProvider(provider) {
