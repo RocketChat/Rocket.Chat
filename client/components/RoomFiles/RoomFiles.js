@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useResizeObserver, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 
 import FileItem from './FileItem';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -19,7 +19,7 @@ import VerticalBar from '../basic/VerticalBar';
 
 const LOADING = 1;
 const LOADED = 2;
-let itemStatusMap = {};
+const itemStatusMap = {};
 
 export const RoomFiles = function RoomFiles({
 	loading,
@@ -28,13 +28,13 @@ export const RoomFiles = function RoomFiles({
 }) {
 	const t = useTranslation();
 
-	const isItemLoaded = index => !!itemStatusMap[index];
+	const isItemLoaded = (index) => !!itemStatusMap[index];
 
 	const loadMoreItems = (startIndex, stopIndex) => {
 		for (let index = startIndex; index <= stopIndex; index++) {
 			itemStatusMap[index] = LOADING;
 		}
-		return new Promise(resolve =>
+		return new Promise((resolve) =>
 			setTimeout(() => {
 				for (let index = startIndex; index <= stopIndex; index++) {
 					itemStatusMap[index] = LOADED;
