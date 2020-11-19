@@ -1,17 +1,17 @@
 import React from 'react';
 
 import { RoomFiles } from './RoomFiles';
-import VerticalBar from './VerticalBar';
+import VerticalBar from '../basic/VerticalBar';
 
 export default {
 	title: 'components/RoomFiles',
 	component: RoomFiles,
 };
 
-const filesData = [
+const filesItems = [
 	{
 		fileName: 'filexsauensauneua senas eka smdka e ase ase ase ase ase ms',
-		imgUrl: 'https://open.rocket.chat/ufs/AmazonS3:Uploads/jJxug7hSKS5GiQZRv/Clipboard%20-%20October%2014,%202020%206:47%20PM',
+		imgUrl: 'https://open.rocket.chat/file-upload/J8oxik4NHLJ288E5G/1424480348915.gif',
 		fileUrl: '#',
 		uploadedAt: '17 de Novembro de 2020 às 19:13',
 		userName: 'dougfabris',
@@ -19,21 +19,21 @@ const filesData = [
 	},
 	{
 		fileName: 'filex',
-		imgUrl: 'https://open.rocket.chat/ufs/AmazonS3:Uploads/jJxug7hSKS5GiQZRv/Clipboard%20-%20October%2014,%202020%206:47%20PM',
+		imgUrl: 'https://open.rocket.chat/file-upload/J8oxik4NHLJ288E5G/1424480348915.gif',
 		fileUrl: '#',
 		uploadedAt: '17 de Novembro de 2020 às 19:13',
 		userName: 'dougfabris',
 	},
 	{
 		fileName: 'filex',
-		imgUrl: 'https://open.rocket.chat/ufs/AmazonS3:Uploads/jJxug7hSKS5GiQZRv/Clipboard%20-%20October%2014,%202020%206:47%20PM',
+		imgUrl: 'https://open.rocket.chat/file-upload/J8oxik4NHLJ288E5G/1424480348915.gif',
 		fileUrl: '#',
 		uploadedAt: '17 de Novembro de 2020 às 19:13',
 		userName: 'dougfabris',
 	},
 	{
 		fileName: 'filex',
-		imgUrl: 'https://open.rocket.chat/ufs/AmazonS3:Uploads/jJxug7hSKS5GiQZRv/Clipboard%20-%20October%2014,%202020%206:47%20PM',
+		imgUrl: 'https://open.rocket.chat/file-upload/J8oxik4NHLJ288E5G/1424480348915.gif',
 		fileUrl: '#',
 		uploadedAt: '17 de Novembro de 2020 às 19:13',
 		userName: 'dougfabris',
@@ -53,7 +53,7 @@ export const Default = () => <VerticalBar>
 	<RoomFiles
 		icon='lock'
 		options={options}
-		filesData={filesData}
+		filesItems={filesItems}
 		onClickHide={alert}
 		onClickLeave={alert}
 		onClickEdit={alert}
@@ -70,7 +70,7 @@ export const Loading = () => <VerticalBar>
 
 export const Empty = () => <VerticalBar>
 	<RoomFiles
-		filesData={[]}
+		filesItems={[]}
 		options={options}
 	/>
 </VerticalBar>;
