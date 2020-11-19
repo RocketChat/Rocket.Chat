@@ -101,7 +101,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
-		this.supportedLanguages[target || 'en'] = result && result.data && result.data.data && result.data.data.languages;
+		this.supportedLanguages[target || 'en'] = result?.data?.data?.languages;
 		return this.supportedLanguages[target || 'en'];
 	}
 
