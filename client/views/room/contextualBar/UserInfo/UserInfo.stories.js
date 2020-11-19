@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { UserInfo } from './UserInfo';
-import VerticalBar from '../VerticalBar';
+import { UserInfo } from './UserInfo/UserInfo';
+import VerticalBar from '../../../../components/VerticalBar';
 
 export default {
 	title: 'components/UserInfo',

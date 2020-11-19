@@ -7,7 +7,7 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import VerticalBar from '../../../components/VerticalBar';
-import { UserInfo } from '../../../components/UserInfo/UserInfo';
+import { UserInfo } from '../../room/contextualBar/UserInfo/UserInfo/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../../hooks/useForm';

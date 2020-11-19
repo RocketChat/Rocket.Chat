@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { UserInfo } from '../UserInfo/UserInfo';
+import { UserInfo } from '../UserInfo/UserInfo/UserInfo';
 import { RoomInfo } from './RoomInfo';
-import VerticalBar from '../VerticalBar';
+import VerticalBar from '../../../../components/VerticalBar';
 
 export default {
 	title: 'components/RoomInfo',

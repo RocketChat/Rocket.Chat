@@ -5,7 +5,7 @@ import { useSubscription } from 'use-subscription';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import VerticalBar from '../../../components/VerticalBar';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
-import { UserInfo } from '../../../components/UserInfo/UserInfo';
+import { UserInfo } from '../../room/contextualBar/UserInfo/UserInfo/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { FormSkeleton } from './Skeleton';
 import { formsSubscription } from '../additionalForms';

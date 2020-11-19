@@ -1,6 +1,5 @@
 import { HTML } from 'meteor/htmljs';
 
-
 import { createRouteGroup } from '../lib/createRouteGroup';
 import { createTemplateForComponent } from '../reactAdapters';
 
@@ -31,7 +30,7 @@ registerOmnichannelRoute('/webhooks', {
 
 registerOmnichannelRoute('/customfields/:context?/:id?', {
 	name: 'omnichannel-customfields',
-	lazyRouteComponent: () => import('./customFields/CustomFieldsRoute'),
+	lazyRouteComponent: () => import('../views/omnichannel/customFields/CustomFieldsRoute'),
 });
 
 registerOmnichannelRoute('/appearance', {

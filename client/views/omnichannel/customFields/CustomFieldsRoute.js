@@ -5,16 +5,16 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import CustomFieldsPage from './CustomFieldsPage';
 import NewCustomFieldsPage from './NewCustomFieldsPage';
 import EditCustomFieldsPage from './EditCustomFieldsPage';
-import { usePermission } from '../../contexts/AuthorizationContext';
-import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
-import GenericTable from '../../components/GenericTable';
-import { useSetModal } from '../../contexts/ModalContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import DeleteWarningModal from '../../components/DeleteWarningModal';
-import { useMethod } from '../../contexts/ServerContext';
+import { usePermission } from '../../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
+import { useEndpointDataExperimental } from '../../../hooks/useEndpointDataExperimental';
+import GenericTable from '../../../components/GenericTable';
+import { useSetModal } from '../../../contexts/ModalContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import { useMethod } from '../../../contexts/ServerContext';
 
 export function RemoveCustomFieldButton({ _id, reload }) {
 	const removeCustomField = useMethod('livechat:removeCustomField');

@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { UserInfo } from '../../../components/UserInfo/UserInfo';
+import { UserInfo } from '../../room/contextualBar/UserInfo/UserInfo/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
