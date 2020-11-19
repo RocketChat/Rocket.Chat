@@ -41,7 +41,10 @@ export const fillFirstDaysOfMessagesIfNeeded = async (date) => {
 			start: startOfPeriod,
 			end: date,
 		});
-		messages.forEach((message) => Analytics.insert(message));
+		messages.forEach((message) => Analytics.insert({
+			...message,
+			date: parseInt(message.date),
+		}));
 	}
 };
 
