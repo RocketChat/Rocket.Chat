@@ -126,6 +126,7 @@
   "Accounts_OAuth_Custom_Email_Field": "Pole e-mail",
   "Accounts_OAuth_Custom_Name_Field": "Pole Nazwa",
   "Accounts_OAuth_Custom_Roles_Claim": "Nazwa pola Role / Grupy",
+  "Accounts_OAuth_Custom_Channel_Admin": "User Data Group Map",
   "Accounts_OAuth_Custom_Merge_Roles": "Przenieś role z SSO",
   "Accounts_OAuth_Drupal": "Logowanie Drupal jest włączone",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 Przekierowanie URI",

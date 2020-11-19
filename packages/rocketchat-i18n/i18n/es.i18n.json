@@ -1702,6 +1702,7 @@
   "How_knowledgeable_was_the_chat_agent": "Cuánto sabía el agente de chat?",
   "How_long_to_wait_after_agent_goes_offline": "Cuánto tiempo esperar después de que el agente se desconecta",
   "How_long_to_wait_to_consider_visitor_abandonment": "¿Cuánto tiempo hay que esperar para considerar el abandono de visitantes?",
+  "How_long_to_wait_to_consider_visitor_abandonment_in_seconds": "¿Cuánto tiempo hay que esperar para considerar el abandono de visitantes?",
   "How_responsive_was_the_chat_agent": "Cómo de rápido ha respondido nuestro agente de chat?",
   "How_satisfied_were_you_with_this_chat": "Cómo de satisfecho está con esta conversación?",
   "How_to_handle_open_sessions_when_agent_goes_offline": "Cómo manejar las sesiones abiertas cuando el agente se desconecta",

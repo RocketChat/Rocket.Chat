@@ -127,6 +127,7 @@
   "Accounts_OAuth_Custom_Email_Field": "メールフィールド",
   "Accounts_OAuth_Custom_Name_Field": "名前フィールド",
   "Accounts_OAuth_Custom_Roles_Claim": "ロール/グループのフィールド名",
+  "Accounts_OAuth_Custom_Channel_Admin": "ユーザーデータグループマップ",
   "Accounts_OAuth_Custom_Merge_Roles": "SSOからロールのマージ",
   "Accounts_OAuth_Drupal": "Drupalログインを有効にする",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2リダイレクトURI",

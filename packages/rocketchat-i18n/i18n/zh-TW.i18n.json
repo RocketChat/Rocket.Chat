@@ -127,6 +127,7 @@
   "Accounts_OAuth_Custom_Email_Field": "電子郵件欄位",
   "Accounts_OAuth_Custom_Name_Field": "名稱欄位",
   "Accounts_OAuth_Custom_Roles_Claim": "角色/群組欄位名稱",
+  "Accounts_OAuth_Custom_Channel_Admin": "使用者資料群組對應",
   "Accounts_OAuth_Custom_Merge_Roles": "從 SSO 整合身份",
   "Accounts_OAuth_Drupal": "啟用Drupal登錄",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2重定向URI",

@@ -125,6 +125,7 @@
   "Accounts_OAuth_Custom_Email_Field": "Felt til e-mail",
   "Accounts_OAuth_Custom_Name_Field": "Navnefelt",
   "Accounts_OAuth_Custom_Roles_Claim": "Feltnavn for Roller/Grupper",
+  "Accounts_OAuth_Custom_Channel_Admin": "Brugerdata-gruppeoversigt",
   "Accounts_OAuth_Custom_Merge_Roles": "Flet roller fra SSO",
   "Accounts_OAuth_Drupal": "Drupal-login aktiveret",
   "Accounts_OAuth_Drupal_callback_url": "Omdirigerings-URI for Drupals oAuth2",
