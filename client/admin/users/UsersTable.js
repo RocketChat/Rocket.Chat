@@ -2,7 +2,7 @@ import { Box, Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
 
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import UserAvatar from '../../components/avatar/UserAvatar';
 import GenericTable from '../../components/GenericTable';
 import { capitalize } from '../../lib/capitalize';
 import { useTranslation } from '../../contexts/TranslationContext';

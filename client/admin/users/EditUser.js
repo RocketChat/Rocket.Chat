@@ -6,7 +6,7 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { useRoute } from '../../contexts/RouterContext';
-import UserAvatarEditor from '../../components/basic/avatar/UserAvatarEditor';
+import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
 import { useForm } from '../../hooks/useForm';
 import UserForm from './UserForm';
 import { FormSkeleton } from './Skeleton';

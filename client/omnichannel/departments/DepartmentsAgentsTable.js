@@ -6,11 +6,11 @@ import { Box, Table, Icon, Button, NumberInput } from '@rocket.chat/fuselage';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import UserAvatar from '../../components/avatar/UserAvatar';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { AutoCompleteAgent } from '../../components/basic/AutoCompleteAgent';
+import { AutoCompleteAgent } from '../../components/AutoCompleteAgent';
 
 function AddAgent({ agentList, setAgentList, ...props }) {
 	const t = useTranslation();

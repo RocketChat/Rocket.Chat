@@ -8,7 +8,7 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useForm } from '../../hooks/useForm';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import AppearanceForm from './AppearanceForm';
 import PageSkeleton from '../../components/PageSkeleton';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';

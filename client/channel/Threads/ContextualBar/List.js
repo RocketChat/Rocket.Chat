@@ -5,7 +5,7 @@ import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { useDebouncedValue, useResizeObserver, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 
-import VerticalBar from '../../../components/basic/VerticalBar';
+import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { call, renderMessageBody } from '../../../../app/ui-utils/client';

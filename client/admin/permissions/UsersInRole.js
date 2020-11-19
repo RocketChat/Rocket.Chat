@@ -2,10 +2,10 @@ import React, { useState, useRef } from 'react';
 import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import UsersInRoleTable from './UsersInRoleTable';
-import RoomAutoComplete from '../../components/basic/RoomAutoComplete';
-import { UserAutoComplete } from '../../components/basic/AutoComplete';
+import RoomAutoComplete from '../../components/RoomAutoComplete';
+import { UserAutoComplete } from '../../components/AutoComplete';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';

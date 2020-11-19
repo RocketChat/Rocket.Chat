@@ -3,7 +3,7 @@ import { Box, Accordion } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import TwoFactorTOTP from './TwoFactorTOTP';
 import TwoFactorEmail from './TwoFactorEmail';

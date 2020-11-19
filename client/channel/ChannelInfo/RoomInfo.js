@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import RoomInfo from '../../components/basic/RoomInfo';
+import RoomInfo from '../../components/RoomInfo/RoomInfo';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserRoom } from '../../contexts/UserContext';
 import { useMethod } from '../../contexts/ServerContext';
@@ -14,7 +14,7 @@ import { roomTypes, UiTextContext } from '../../../app/utils';
 import { RoomManager } from '../../../app/ui-utils/client/lib/RoomManager';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import WarningModal from '../../admin/apps/WarningModal';
-import MarkdownText from '../../components/basic/MarkdownText';
+import MarkdownText from '../../components/MarkdownText';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',

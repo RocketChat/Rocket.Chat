@@ -8,7 +8,7 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpoint } from '../../contexts/ServerContext';

@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 import NewRolePage from './NewRolePage';
 import EditRolePage from './EditRolePage';
 

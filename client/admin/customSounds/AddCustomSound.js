@@ -6,7 +6,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useFileInput } from '../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 
 function AddCustomSound({ goToNew, close, onChange, ...props }) {
 	const t = useTranslation();

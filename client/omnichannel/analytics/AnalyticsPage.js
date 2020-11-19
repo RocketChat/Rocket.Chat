@@ -5,7 +5,7 @@ import DepartmentAutoComplete from '../DepartmentAutoComplete';
 import DateRangePicker from './DateRangePicker';
 import Overview from './Overview';
 import AgentOverview from './AgentOverview';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import InterchangeableChart from './InterchangeableChart';
 import { useTranslation } from '../../contexts/TranslationContext';
 

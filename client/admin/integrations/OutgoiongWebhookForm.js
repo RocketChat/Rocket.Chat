@@ -15,7 +15,7 @@ import React, { useMemo, useCallback } from 'react';
 import { useHighlightedCode } from '../../hooks/useHighlightedCode';
 import { useExampleData } from './exampleIncomingData';
 import { useTranslation } from '../../contexts/TranslationContext';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { integrations as eventList } from '../../../app/integrations/lib/rocketchat';
 
 const { outgoingEvents } = eventList;

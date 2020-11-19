@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Icon, Skeleton, Box, Accordion, Field, FieldGroup,
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
-import Page from '../../../components/basic/Page';
+import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useHighlightedCode } from '../../../hooks/useHighlightedCode';
 import { integrations as eventList } from '../../../../app/integrations/lib/rocketchat';

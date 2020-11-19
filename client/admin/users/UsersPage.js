@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import Page from '../../components/basic/Page';
-import VerticalBar from '../../components/basic/VerticalBar';
+import Page from '../../components/Page';
+import VerticalBar from '../../components/VerticalBar';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import { UserInfoWithData } from './UserInfo';

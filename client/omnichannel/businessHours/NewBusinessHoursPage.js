@@ -3,7 +3,7 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import BusinessHoursFormContainer from './BusinessHoursFormContainer';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';

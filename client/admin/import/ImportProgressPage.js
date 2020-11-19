@@ -9,7 +9,7 @@ import { ProgressStep, ImportingStartedStates } from '../../../app/importer/lib/
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useRoute } from '../../contexts/RouterContext';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useErrorHandler } from './useErrorHandler';
 
 function ImportProgressPage() {

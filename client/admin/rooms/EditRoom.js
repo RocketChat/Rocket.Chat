@@ -3,9 +3,9 @@ import { Box, Skeleton, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Ico
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import RoomAvatarEditor from '../../components/basic/avatar/RoomAvatarEditor';
+import RoomAvatarEditor from '../../components/avatar/RoomAvatarEditor';
 import DeleteChannelWarning from '../../components/DeleteChannelWarning';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';

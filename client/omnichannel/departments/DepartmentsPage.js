@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import { useRoute } from '../../contexts/RouterContext';

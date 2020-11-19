@@ -3,7 +3,7 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import Subtitle from '../../components/basic/Subtitle';
+import Subtitle from '../../components/Subtitle';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { statusPageUrl } from './constants';

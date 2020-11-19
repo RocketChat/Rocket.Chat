@@ -3,10 +3,10 @@ import { Box, Margins, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useSubscription } from 'use-subscription';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
-import { UserInfo } from '../../components/basic/UserInfo';
-import { UserStatus } from '../../components/basic/UserStatus';
+import { UserInfo } from '../../components/UserInfo/UserInfo';
+import { UserStatus } from '../../components/UserStatus';
 import { FormSkeleton } from './Skeleton';
 import { formsSubscription } from '../additionalForms';
 

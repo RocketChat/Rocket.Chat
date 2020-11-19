@@ -3,9 +3,9 @@ import { Box } from '@rocket.chat/fuselage';
 
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import Page from '../../components/basic/Page';
-import RawText from '../../components/basic/RawText';
-import TextCopy from '../../components/basic/TextCopy';
+import Page from '../../components/Page';
+import RawText from '../../components/RawText';
+import TextCopy from '../../components/TextCopy';
 
 const Wrapper = (text) => <Box
 	fontFamily='mono'

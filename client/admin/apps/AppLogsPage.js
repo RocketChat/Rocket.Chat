@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup, Icon, Accordion, Pagination } from '@rocket.c
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, useEffect } from 'react';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';

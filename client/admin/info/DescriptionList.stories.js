@@ -1,7 +1,7 @@
 import React from 'react';
 
 import DescriptionList from './DescriptionList';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 
 export default {
 	title: 'admin/info/DescriptionList',

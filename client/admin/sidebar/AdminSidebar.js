@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useEffect, memo } from 'react';
 
 import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
-import PlanTag from '../../components/basic/PlanTag';
-import Sidebar from '../../components/basic/Sidebar';
+import PlanTag from '../../components/PlanTag';
+import Sidebar from '../../components/Sidebar';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';

@@ -5,7 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 
 export function InviteUsers({ data, ...props }) {
 	const t = useTranslation();

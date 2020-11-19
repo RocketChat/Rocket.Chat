@@ -2,7 +2,7 @@ import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { Box, Select, Field, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import ChatsChart from './charts/ChatsChart';
 import ChatsPerAgentChart from './charts/ChatsPerAgentChart';
 import AgentStatusChart from './charts/AgentStatusChart';

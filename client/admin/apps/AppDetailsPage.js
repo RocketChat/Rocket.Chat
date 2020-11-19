@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { Button, ButtonGroup, Icon, Box, Throbber } from '@rocket.chat/fuselage';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useRoute, useCurrentRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useAppInfo } from './hooks/useAppInfo';

@@ -4,7 +4,7 @@ import { Button, ButtonGroup, TextInput, Field, Select } from '@rocket.chat/fuse
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 
 function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
 	const t = useTranslation();

@@ -2,7 +2,7 @@ import { Accordion, Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuse
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, memo } from 'react';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useEditableSettingsDispatch, useEditableSettings } from '../../contexts/EditableSettingsContext';
 import { useSettingsDispatch, useSettings } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';

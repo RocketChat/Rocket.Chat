@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Subtitle from '../../components/basic/Subtitle';
+import Subtitle from '../../components/Subtitle';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import DescriptionList from './DescriptionList';

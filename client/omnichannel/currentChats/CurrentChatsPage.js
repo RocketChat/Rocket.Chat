@@ -5,7 +5,7 @@ import moment from 'moment';
 import { useSubscription } from 'use-subscription';
 
 import { formsSubscription } from '../additionalForms';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { usePermission } from '../../contexts/AuthorizationContext';
@@ -14,8 +14,8 @@ import { useMethod } from '../../contexts/ServerContext';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { AutoCompleteDepartment } from '../../components/basic/AutoCompleteDepartment';
-import { AutoCompleteAgent } from '../../components/basic/AutoCompleteAgent';
+import { AutoCompleteDepartment } from '../../components/AutoCompleteDepartment';
+import { AutoCompleteAgent } from '../../components/AutoCompleteAgent';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 

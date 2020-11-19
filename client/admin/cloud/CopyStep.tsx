@@ -5,7 +5,7 @@ import React, { useEffect, useState, useRef, FC } from 'react';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import MarkdownText from '../../components/basic/MarkdownText';
+import MarkdownText from '../../components/MarkdownText';
 import { cloudConsoleUrl } from './constants';
 
 type CopyStepProps = {

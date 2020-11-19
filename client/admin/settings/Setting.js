@@ -2,7 +2,7 @@ import { Callout, Field, Flex, InputBox, Margins, Skeleton } from '@rocket.chat/
 import React, { memo, useEffect, useMemo, useState, useCallback } from 'react';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 
-import MarkdownText from '../../components/basic/MarkdownText';
+import MarkdownText from '../../components/MarkdownText';
 import { useEditableSetting, useEditableSettingsDispatch } from '../../contexts/EditableSettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { GenericSettingInput } from './inputs/GenericSettingInput';

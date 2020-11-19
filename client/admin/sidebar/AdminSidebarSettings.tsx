@@ -5,7 +5,7 @@ import React, { useCallback, useState, useMemo, FC } from 'react';
 import { ISetting } from '../../../definition/ISetting';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import Sidebar from '../../components/basic/Sidebar';
+import Sidebar from '../../components/Sidebar';
 
 const useSettingsGroups = (filter: string): ISetting[] => {
 	const settings = useSettings();

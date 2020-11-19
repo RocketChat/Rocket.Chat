@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import React, { memo, FC } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import Sidebar from '../../components/basic/Sidebar';
+import Sidebar from '../../components/Sidebar';
 import { itemsSubscription } from '../sidebarItems';
 
 type AdminSidebarPagesProps = {

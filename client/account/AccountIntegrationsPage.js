@@ -7,7 +7,7 @@ import { useMethod } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { WebdavAccounts } from '../../app/models';
 import { useForm } from '../hooks/useForm';
-import Page from '../components/basic/Page';
+import Page from '../components/Page';
 
 const getWebdavAccounts = () => WebdavAccounts.find().fetch();
 

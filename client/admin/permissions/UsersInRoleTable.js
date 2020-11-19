@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Box, Table, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import UserAvatar from '../../components/avatar/UserAvatar';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { useMethod } from '../../contexts/ServerContext';
 import GenericTable from '../../components/GenericTable';

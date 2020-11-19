@@ -8,7 +8,7 @@ import { useFileInput } from '../../hooks/useFileInput';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { validate, createSoundData } from './lib';
 import { useSetModal } from '../../contexts/ModalContext';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 import DeleteSuccessModal from '../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 

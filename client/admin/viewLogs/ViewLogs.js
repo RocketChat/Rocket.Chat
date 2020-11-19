@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';

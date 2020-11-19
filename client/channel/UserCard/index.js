@@ -5,10 +5,10 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import UserCard from '../../components/basic/UserCard';
-import { Backdrop } from '../../components/basic/Backdrop';
-import { ReactiveUserStatus } from '../../components/basic/UserStatus';
-import { LocalTime } from '../../components/basic/UTCClock';
+import UserCard from '../../components/UserCard';
+import { Backdrop } from '../../components/Backdrop';
+import { ReactiveUserStatus } from '../../components/UserStatus';
+import { LocalTime } from '../../components/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
 import { useRolesDescription } from '../../contexts/AuthorizationContext';
 

@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Box, Button, Icon, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import TextCopy from '../../components/basic/TextCopy';
+import TextCopy from '../../components/TextCopy';
 
 type BackupCodesModalProps = {
 	codes: string[];

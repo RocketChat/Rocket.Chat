@@ -2,7 +2,7 @@ import { ButtonGroup, Button, Box, Icon } from '@rocket.chat/fuselage';
 import { SHA256 } from 'meteor/sha';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import Page from '../components/basic/Page';
+import Page from '../components/Page';
 import AccountProfileForm from './AccountProfileForm';
 import ConfirmOwnerChangeWarningModal from '../components/ConfirmOwnerChangeWarningModal';
 import { useTranslation } from '../contexts/TranslationContext';

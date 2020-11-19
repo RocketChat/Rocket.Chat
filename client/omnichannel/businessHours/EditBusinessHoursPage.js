@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import BusinessHoursFormContainer from './BusinessHoursFormContainer';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import PageSkeleton from '../../components/PageSkeleton';
 import { useIsSingleBusinessHours } from './BusinessHoursRouter';
 import { useRoute } from '../../contexts/RouterContext';

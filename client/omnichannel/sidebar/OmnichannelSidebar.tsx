@@ -5,7 +5,7 @@ import { useSubscription } from 'use-subscription';
 import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
-import Sidebar from '../../components/basic/Sidebar';
+import Sidebar from '../../components/Sidebar';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { itemsSubscription } from '../sidebarItems';
 

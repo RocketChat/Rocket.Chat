@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Table } from '@rocket.chat/fuselage';
 import { useMediaQuery, useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect, useMemo } from 'react';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useRoute } from '../../contexts/RouterContext';

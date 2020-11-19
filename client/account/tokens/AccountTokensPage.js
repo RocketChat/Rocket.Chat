@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import AccountTokensTable from './AccountTokensTable';
 import AddToken from './AddToken';
 

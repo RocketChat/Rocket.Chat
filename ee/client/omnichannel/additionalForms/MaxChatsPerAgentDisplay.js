@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import UserInfo from '../../../../client/components/basic/UserInfo';
+import UserInfo from '../../../../client/components/UserInfo/UserInfo';
 
 const MaxChatsPerAgentDisplay = ({ data: { livechat: { maxNumberSimultaneousChat = '' } = {} } = {} }) => {
 	const t = useTranslation();

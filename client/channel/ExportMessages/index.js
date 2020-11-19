@@ -3,8 +3,8 @@ import { Field, TextInput, Select, ButtonGroup, Button, Box, Icon, Callout, Fiel
 import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import VerticalBar from '../../components/basic/VerticalBar';
-import { UserAutoComplete } from '../../components/basic/AutoComplete';
+import VerticalBar from '../../components/VerticalBar';
+import { UserAutoComplete } from '../../components/AutoComplete';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useUserRoom } from '../hooks/useUserRoom';

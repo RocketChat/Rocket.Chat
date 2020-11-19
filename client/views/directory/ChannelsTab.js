@@ -2,7 +2,7 @@ import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import MarkdownText from '../../components/basic/MarkdownText';
+import MarkdownText from '../../components/MarkdownText';
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';

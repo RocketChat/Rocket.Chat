@@ -3,7 +3,7 @@ import { TextInput, Table, Margins, Box, Icon, CheckBox, Throbber, Tabs, Button 
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { css } from '@rocket.chat/css-in-js';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import PermissionsContextBar from './PermissionsContextBar';
 import GenericTable from '../../components/GenericTable';
 import { useReactiveValue } from '../../hooks/useReactiveValue';

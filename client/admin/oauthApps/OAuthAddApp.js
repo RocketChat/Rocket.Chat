@@ -13,7 +13,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 
 
 export default function OAuthAddApp(props) {

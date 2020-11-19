@@ -2,8 +2,8 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
-import Page from '../../components/basic/Page';
-import VerticalBar from '../../components/basic/VerticalBar';
+import Page from '../../components/Page';
+import VerticalBar from '../../components/VerticalBar';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';

@@ -3,7 +3,7 @@ import { Button, Box, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import MonitorsTable from './MonitorsTable';
-import Page from '../../../client/components/basic/Page';
+import Page from '../../../client/components/Page';
 import NotAuthorizedPage from '../../../client/components/NotAuthorizedPage';
 import PageSkeleton from '../../../client/components/PageSkeleton';
 import { useHasLicense } from '../hooks/useHasLicense';
@@ -11,7 +11,7 @@ import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
 import { useMethod } from '../../../client/contexts/ServerContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../client/hooks/useEndpointDataExperimental';
-import { UserAutoComplete } from '../../../client/components/basic/AutoComplete';
+import { UserAutoComplete } from '../../../client/components/AutoComplete';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 

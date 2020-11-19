@@ -13,7 +13,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import {
 	ProgressStep,

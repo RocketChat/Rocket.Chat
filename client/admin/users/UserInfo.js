@@ -3,12 +3,12 @@ import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { UserInfo } from '../../components/basic/UserInfo';
+import { UserInfo } from '../../components/UserInfo/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { UserStatus } from '../../components/basic/UserStatus';
-import UserCard from '../../components/basic/UserCard';
+import { UserStatus } from '../../components/UserStatus';
+import UserCard from '../../components/UserCard';
 import { UserInfoActions } from './UserInfoActions';
 import { FormSkeleton } from './Skeleton';
 import { getUserEmailAddress } from '../../lib/getUserEmailAddress';

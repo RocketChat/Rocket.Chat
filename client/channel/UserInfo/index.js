@@ -1,17 +1,17 @@
 import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
-import { UserInfo } from '../../components/basic/UserInfo';
+import { UserInfo } from '../../components/UserInfo/UserInfo';
 import {
 	useEndpointDataExperimental,
 	ENDPOINT_STATES,
 } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { ReactiveUserStatus } from '../../components/basic/UserStatus';
-import UserCard from '../../components/basic/UserCard';
+import { ReactiveUserStatus } from '../../components/UserStatus';
+import UserCard from '../../components/UserCard';
 import { FormSkeleton } from '../../admin/users/Skeleton';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 import UserActions from './actions/UserActions';
 import { useRolesDescription } from '../../contexts/AuthorizationContext';
 

@@ -11,7 +11,7 @@ import { useMethod } from '../../../../client/contexts/ServerContext';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
-import VerticalBar from '../../../../client/components/basic/VerticalBar';
+import VerticalBar from '../../../../client/components/VerticalBar';
 import PrioritiesPage from './PrioritiesPage';
 import { PriorityEditWithData, PriorityNew } from './EditPriority';
 import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';

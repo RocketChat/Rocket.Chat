@@ -7,7 +7,7 @@ import { useFileInput } from '../../hooks/useFileInput';
 import { useEndpointUpload } from '../../hooks/useEndpointUpload';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 import DeleteSuccessModal from '../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 import { EmojiDescriptor } from './types';

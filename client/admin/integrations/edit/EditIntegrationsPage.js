@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
-import Page from '../../../components/basic/Page';
+import Page from '../../../components/Page';
 import EditIncomingWebhookWithData from './EditIncomingWebhook';
 import EditOutgoingWebhookWithData from './EditOutgoingWebhook';
 import { useTranslation } from '../../../contexts/TranslationContext';

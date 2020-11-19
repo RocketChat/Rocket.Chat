@@ -4,7 +4,7 @@ import { useSubscription } from 'use-subscription';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import CustomFieldsForm from './CustomFieldsForm';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import PageSkeleton from '../../components/PageSkeleton';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';

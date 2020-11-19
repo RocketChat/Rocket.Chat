@@ -9,7 +9,7 @@ import { useSetModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useMethod } from '../../contexts/ServerContext';
-import TextCopy from '../../components/basic/TextCopy';
+import TextCopy from '../../components/TextCopy';
 import BackupCodesModal from './BackupCodesModal';
 import VerifyCodeModal from './VerifyCodeModal';
 

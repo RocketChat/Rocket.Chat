@@ -4,7 +4,7 @@ import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rock
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFileInput } from '../../hooks/useFileInput';
 import { useEndpointUpload } from '../../hooks/useEndpointUpload';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 
 function AddCustomEmoji({ close, onChange, ...props }) {
 	const t = useTranslation();

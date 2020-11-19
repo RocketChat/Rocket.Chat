@@ -2,7 +2,7 @@ import React, { FC, useState, Dispatch } from 'react';
 import { Box, Button, ButtonGroup, Field, FieldGroup, ToggleSwitch, BoxClassName, Callout, Divider } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import PageSkeleton from '../../components/PageSkeleton';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';

@@ -5,7 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useAbsoluteUrl } from '../../contexts/ServerContext';
 import { useHighlightedCode } from '../../hooks/useHighlightedCode';
 import { useExampleData } from './exampleIncomingData';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 
 export default function IncomingWebhookForm({ formValues, formHandlers, extraData = {}, append, ...props }) {
 	const t = useTranslation();

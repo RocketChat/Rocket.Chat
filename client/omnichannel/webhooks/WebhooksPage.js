@@ -8,8 +8,8 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useForm } from '../../hooks/useForm';
-import Page from '../../components/basic/Page';
-import ExternalLink from '../../components/basic/ExternalLink';
+import Page from '../../components/Page';
+import ExternalLink from '../../components/ExternalLink';
 import PageSkeleton from '../../components/PageSkeleton';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 

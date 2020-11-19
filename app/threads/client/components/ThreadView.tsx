@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, forwardRef } from 'react';
 import { Modal, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import VerticalBar from '../../../../client/components/basic/VerticalBar';
+import VerticalBar from '../../../../client/components/VerticalBar';
 
 type ThreadViewProps = {
 	title: string;

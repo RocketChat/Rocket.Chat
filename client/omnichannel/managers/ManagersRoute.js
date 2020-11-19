@@ -10,7 +10,7 @@ import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import ManagersPage from './ManagersPage';
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import UserAvatar from '../../components/avatar/UserAvatar';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import DeleteWarningModal from '../../components/DeleteWarningModal';

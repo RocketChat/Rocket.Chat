@@ -1,7 +1,7 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import Subtitle from '../../components/basic/Subtitle';
+import Subtitle from '../../components/Subtitle';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
 import DescriptionList from './DescriptionList';

@@ -3,7 +3,7 @@ import { Field, TextInput, TextAreaInput, PasswordInput, MultiSelectFiltered, Bo
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 
 export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, ...props }) {

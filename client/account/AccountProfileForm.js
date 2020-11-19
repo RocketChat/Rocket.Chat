@@ -7,9 +7,9 @@ import { isEmail } from '../../app/utils/lib/isEmail.js';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useMethod } from '../contexts/ServerContext';
 import { getUserEmailAddress } from '../lib/getUserEmailAddress';
-import { UserAvatarEditor } from '../components/basic/avatar/UserAvatarEditor';
+import { UserAvatarEditor } from '../components/avatar/UserAvatarEditor';
 import CustomFieldsForm from '../components/CustomFieldsForm';
-import UserStatusMenu from '../components/basic/UserStatusMenu';
+import UserStatusMenu from '../components/UserStatusMenu';
 
 const STATUS_TEXT_MAX_LENGTH = 120;
 

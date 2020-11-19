@@ -11,7 +11,7 @@ import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket
 import { renderMessageBody } from '../../../../app/ui-utils/client';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { Messages } from '../../../../app/models/client';
-import VerticalBar from '../../../components/basic/VerticalBar';
+import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';

@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup, Throbber, Callout } from '@rocket.chat/fusela
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
-import Subtitle from '../../components/basic/Subtitle';
+import Subtitle from '../../components/Subtitle';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';

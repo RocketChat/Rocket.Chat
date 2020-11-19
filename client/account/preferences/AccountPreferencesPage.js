@@ -5,7 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useMethod } from '../../contexts/ServerContext';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import PreferencesLocalizationSection from './PreferencesLocalizationSection';
 import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
 import PreferencesNotificationsSection from './PreferencesNotificationsSection';

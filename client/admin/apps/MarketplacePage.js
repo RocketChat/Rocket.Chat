@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Icon, Skeleton } from '@rocket.chat/fuselage';
 import React, { useState, useEffect } from 'react';
 
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';

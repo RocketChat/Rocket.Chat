@@ -4,7 +4,7 @@ import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
-import RoomAvatar from '../../components/basic/avatar/RoomAvatar';
+import RoomAvatar from '../../components/avatar/RoomAvatar';
 import { roomTypes } from '../../../app/utils/client';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useRoute } from '../../contexts/RouterContext';

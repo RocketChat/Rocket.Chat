@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { Box, Chip, Divider, Margins } from '@rocket.chat/fuselage';
 
-import AppAvatar from '../../components/basic/avatar/AppAvatar';
-import ExternalLink from '../../components/basic/ExternalLink';
+import AppAvatar from '../../components/avatar/AppAvatar';
+import ExternalLink from '../../components/ExternalLink';
 import PriceDisplay from './PriceDisplay';
 import AppStatus from './AppStatus';
 import AppMenu from './AppMenu';

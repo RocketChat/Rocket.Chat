@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
-import UserAvatar from '../../../../components/basic/avatar/UserAvatar';
-import RawText from '../../../../components/basic/RawText';
+import UserAvatar from '../../../../components/avatar/UserAvatar';
+import RawText from '../../../../components/RawText';
 import * as MessageTemplate from '../../../components/Message';
 import * as NotificationStatus from '../../../components/NotificationStatus';
 

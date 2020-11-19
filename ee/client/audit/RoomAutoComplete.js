@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { AutoComplete, Option, Options } from '@rocket.chat/fuselage';
 
 import { useEndpointDataExperimental } from '../../../client/hooks/useEndpointDataExperimental';
-import RoomAvatar from '../../../client/components/basic/avatar/RoomAvatar';
+import RoomAvatar from '../../../client/components/avatar/RoomAvatar';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 

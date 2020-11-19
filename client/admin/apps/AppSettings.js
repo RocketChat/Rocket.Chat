@@ -5,7 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { MemoizedSetting } from '../settings/Setting';
 import { capitalize } from '../../lib/capitalize';
 import { useRouteParameter } from '../../contexts/RouterContext';
-import MarkdownText from '../../components/basic/MarkdownText';
+import MarkdownText from '../../components/MarkdownText';
 
 export const AppSettingsAssembler = ({ settings, values, handlers }) => <Box>
 	{Object.values(settings).map((current) => {

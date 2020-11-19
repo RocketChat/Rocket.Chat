@@ -16,9 +16,9 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import VerticalBar from '../../components/basic/VerticalBar';
-import RawText from '../../components/basic/RawText';
-import RoomAvatarEditor from '../../components/basic/avatar/RoomAvatarEditor';
+import VerticalBar from '../../components/VerticalBar';
+import RawText from '../../components/RawText';
+import RoomAvatarEditor from '../../components/avatar/RoomAvatarEditor';
 import DeleteChannelWarning from '../../components/DeleteChannelWarning';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';

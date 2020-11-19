@@ -12,7 +12,7 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../hooks/useForm';
 import { useRoute } from '../../contexts/RouterContext';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 import { formsSubscription } from '../additionalForms';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
