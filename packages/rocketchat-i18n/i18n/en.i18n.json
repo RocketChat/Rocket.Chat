@@ -1540,6 +1540,7 @@
   "error-user-is-offline": "User if offline",
   "error-user-limit-exceeded": "The number of users you are trying to invite to #channel_name exceeds the limit set by the administrator",
   "error-user-not-in-room": "User is not in this room",
+  "error-user-not-belong-to-department": "User does not belong to this department",
   "error-logged-user-not-in-room": "You are not in the room `%s`",
   "error-user-registration-disabled": "User registration is disabled",
   "error-user-registration-secret": "User registration is only allowed via Secret URL",
