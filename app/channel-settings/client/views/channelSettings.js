@@ -21,6 +21,9 @@ Template.channelSettings.helpers({
 			openEditing: () => editing.set(true),
 		};
 	},
+	editing() {
+		return Template.instance().editing.get();
+	},
 });
 
 Template.channelSettings.onCreated(function() {

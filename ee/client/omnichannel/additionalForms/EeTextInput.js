@@ -7,7 +7,7 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 export const EeTextInput = ({ value, handler, label, placeholder }) => {
 	const t = useTranslation();
 
-	return <Field mbe='x16'>
+	return <Field>
 		<Field.Label>{t(label)}</Field.Label>
 		<Field.Row>
 			<TextInput flexGrow={1} value={value} onChange={handler} placeholder={t(placeholder)} />

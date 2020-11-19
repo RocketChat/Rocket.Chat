@@ -1,1 +1,4 @@
-{ }
+{
+  "Default_value": "Standaardwaarde",
+  "LDAP_Default_Role_To_User": "Standaardrol voor gebruiker"
+}
