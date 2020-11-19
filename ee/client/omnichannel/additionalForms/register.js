@@ -1,7 +1,7 @@
 import { useMemo, lazy } from 'react';
 
 import { hasLicense } from '../../../app/license/client';
-import { registerForm } from '../../../../client/omnichannel/additionalForms';
+import { registerForm } from '../../../../client/views/omnichannel/additionalForms';
 
 hasLicense('livechat-enterprise').then((enabled) => {
 	if (!enabled) {

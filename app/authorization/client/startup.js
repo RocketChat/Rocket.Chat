@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+
 import { hasAtLeastOnePermission } from './hasPermission';
-import { registerAdminSidebarItem } from '../../../client/admin';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { APIClient } from '../../utils/client';
 import { Roles } from '../../models/client';
 import { rolesStreamer } from './lib/streamer';
+import { registerAdminSidebarItem } from '../../../client/views/admin';
 
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(async () => {
