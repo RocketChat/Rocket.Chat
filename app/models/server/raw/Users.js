@@ -367,9 +367,7 @@ export class UsersRaw extends BaseRaw {
 			},
 			{
 				$group: {
-					_id: {
-						$toInt: '$_id',
-					},
+					_id: '$_id',
 					users: { $sum: '$users' },
 				},
 			},
