@@ -65,7 +65,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 	 */
 	getSupportedLanguages(target) {
 		if (!this.apiKey) {
-			return {};
+			return [];
 		}
 
 		if (this.supportedLanguages[target]) {
