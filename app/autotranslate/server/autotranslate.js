@@ -264,7 +264,7 @@ export class AutoTranslate {
 
 				const translations = this._translateMessage(targetMessage, targetLanguages);
 				if (!_.isEmpty(translations)) {
-					Messages.addTranslations(message._id, translations, TranslationProviderRegistry._activeProvider);
+					Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider]);
 				}
 			});
 		}
