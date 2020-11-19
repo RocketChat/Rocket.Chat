@@ -2,12 +2,10 @@
   "error-guests-cant-have-other-roles": "Gastbenutzer können keine andere Rolle haben.",
   "error-invalid-priority": "Ungültige Priorität",
   "error-max-guests-number-reached": "Sie haben die maximale Anzahl von Gastbenutzern erreicht, die durch Ihre Lizenz erlaubt ist. Kontaktieren Sie sale@rocket.chat für eine neue Lizenz.",
-  "error-max-number-simultaneous-chats-reached": "Die maximale Anzahl gleichzeitiger Chats pro Agent ist erreicht.",
   "Add_monitor": "Monitor hinzufügen",
   "Available_departments": "Verfügbare Abteilungen",
   "Business_Hour": "Öffnungszeiten",
   "Business_Hour_Removed": "Teil der Öffnungszeiten entfernt",
-  "Closed_automatically": "Vom System automatisch geschlossen",
   "Default_value": "Standardwert",
   "Edit_Business_Hour": "Teil der Öffnungszeiten bearbeiten",
   "LDAP_Query_To_Get_User_Groups_Description": "LDAP-Abfrage, um die LDAP-Gruppen zu erhalten, zu denen der Benutzer gehört.",
@@ -20,11 +18,6 @@
   "LDAP_Sync_User_Active_State_Both": "Aktivieren und Deaktivieren von Benutzern",
   "LDAP_Validate_Roles_For_Each_Login": "Validierung der Zuordnung für jede Anmeldung",
   "LDAP_Validate_Roles_For_Each_Login_Description": "Wenn die Validierung für jede Anmeldung erfolgen soll (Seien Sie vorsichtig mit dieser Einstellung, weil dadurch die Benutzerrollen bei jeder Anmeldung überschrieben werden, andernfalls wird diese nur beim Anlegen des Benutzers validiert).",
-  "List_of_departments_to_apply_this_business_hour": "Liste der Abteilungen, die diese Geschäftszeiten einhalten müssen",
-  "List_of_departments_for_forward": "Liste der zur Weiterleitung zugelassenen Abteilungen (Optional)",
-  "List_of_departments_for_forward_description": "Sie können eine eingeschränkte Liste von Abteilungen festlegen, die Chats von dieser Abteilung empfangen können.",
   "Livechat_Monitors": "Moniitore",
-  "Monitors": "Moniitore",
-  "New_Business_Hour": "Neue Öffnungszeiten",
-  "New_Tag": "Neues Tag"
+  "Monitors": "Moniitore"
 }
