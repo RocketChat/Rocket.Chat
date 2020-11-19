@@ -1,7 +1,5 @@
 {
   "error-canned-response-not-found": "ບໍ່ພົບການຕອບກັບສໍາລັບຮູບ",
-  "Default_value": "ຄ່າເລີ່ມຕົ້ນ",
-  "LDAP_Default_Role_To_User": "ຄ່າເລີ່ມຕົ້ນຂອງຜູ້ໃຊ້",
   "error-forwarding-department-target-not-allowed": "ການສົ່ງຕໍ່ຫາພາກສ່ວນເປົ້າໝາຍແມ່ນບໍ່ໄດ້ຮັບອະນຸຍາດ.",
   "error-guests-cant-have-other-roles": "ຜູ້ໃຊ້ປະເພດແຂກບໍ່ສາມາດມີບົດບາດໃດໄດ້.",
   "error-invalid-priority": "ລຳດັບຄວາມສຳຄັນບໍ່ຖືກຕ້ອງ",
@@ -15,6 +13,7 @@
   "Canned_Response_Removed": "ຮູບມີການຕອບສະໜອງຖືກລືບອອກ",
   "Canned_Responses_Enable": "ເປີດໃຊ້ງານຮູບມີການຕອບສະໜອງ",
   "Closed_automatically": "ປິດໂດຍອັດຕະໂນມັດດ້ວຍລະບົບ",
+  "Default_value": "ຄ່າເລີ່ມຕົ້ນ",
   "Edit_Business_Hour": "ແກ້ໄຂເວລາເຮັດວຽກ",
   "Edit_Tag": "ແກ້ໄຂແທັກ",
   "Edit_Unit": "ແກ້ໄຂຫົວໜ່ວຍ",
@@ -28,6 +27,7 @@
   "Invalid Canned Response": "ຮູບມີການຕອບສະໜອງບໍ່ຖືກຕ້ອງ",
   "Invalid_Department": "ພາກສ່ວນບໍ່ຖືກຕ້ອງ",
   "LDAP_Advanced_Sync": "ຊິງຂັ້ນສູງ",
+  "LDAP_Default_Role_To_User": "ຄ່າເລີ່ມຕົ້ນຂອງຜູ້ໃຊ້",
   "LDAP_Default_Role_To_User_Description": "ຄ່າເລີ່ມຕົ້ນສິດທິຂອງ RC ທີ່ຈະໃຊ້ກັບຜູ້ໃຊ້ ຖ້າຜຸ້ໃຊ້ມີສິດທິ LDAP ບາງຕົວທີ່ບໍ່ຖືກລວມເຂົ້າກັນ",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "ເປີດການໃຊ້ງານບົດບາດການເຊື່ອມເຂົ້າກັນຈາກ LDAP ໄປຍັງ Rocket.Chat"
 }

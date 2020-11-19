@@ -89,7 +89,7 @@ const checkFiles = async (path, source, fix = false) => {
 		await checkFiles('./packages/rocketchat-i18n', '/i18n/en.i18n.json', process.argv[2] === '--fix');
 		await checkFiles('./ee', '/i18n/en.i18n.json', process.argv[2] === '--fix');
 	} catch (e) {
-		console.error(e);
+		console.error(e.reason);
 		process.exit(1);
 	}
 })();
