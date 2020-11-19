@@ -1,6 +1,4 @@
 {
-  "Default_value": "Default value",
-  "LDAP_Default_Role_To_User": "Papel padrão para o usuário",
   "error-forwarding-department-target-not-allowed": "O encaminhamento para o departamento selecionado não é permitido.",
   "error-invalid-priority": "Prioridade inválida",
   "error-max-number-simultaneous-chats-reached": "O número máximo de bate-papos simultâneos por agente foi atingido.",
@@ -9,6 +7,7 @@
   "Business_Hour": "Horário de expediente",
   "Business_Hour_Removed": "Horário de expediente removido",
   "Closed_automatically": "Fechado automaticamente pelo sistema",
+  "Default_value": "Default value",
   "Edit_Business_Hour": "Editar horário de expediente",
   "Edit_Tag": "Editar Tag",
   "Edit_Unit": "Editar Unidade",
@@ -19,6 +18,7 @@
   "Enterprise_License_Description": "Se você registrou seu workspace e a licença foi fornecida pelo Rocket.Chat Cloud você não precisa atualizar a licença manualmente aqui.",
   "Estimated_due_time": "Tempo estimado(tempo em minutos)",
   "Invalid_Department": "Departamento inválido",
+  "LDAP_Default_Role_To_User": "Papel padrão para o usuário",
   "LDAP_Default_Role_To_User_Description": "Papel padrão par ser aplicado ao usuário, caso ele tenha algum papel do LDAP que não esteja mapeado.",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "Habilitar o mapeamento de papéis do LDAP para o Rocket.Chat",
   "LDAP_Query_To_Get_User_Groups": "Consulta LDAP para pegar os grupos de usuários",

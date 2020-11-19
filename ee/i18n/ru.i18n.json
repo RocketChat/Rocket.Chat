@@ -1,7 +1,5 @@
 {
   "error-canned-response-not-found": "Заготовленный ответ не найден",
-  "Default_value": "Значение по умолчанию",
-  "LDAP_Default_Role_To_User": "Роль по умолчанию для пользователя",
   "error-forwarding-department-target-not-allowed": "Переадресация в целевой отдел не допускается.",
   "error-guests-cant-have-other-roles": "Гостевые пользователи не могут иметь других ролей.",
   "error-invalid-priority": "Некорректный приоритет",
@@ -16,6 +14,7 @@
   "Canned_Response_Removed": "Заготовленный ответ удален",
   "Canned_Responses_Enable": "Включить заготовленные ответы",
   "Closed_automatically": "Автоматически закрыто системой",
+  "Default_value": "Значение по умолчанию",
   "Edit_Business_Hour": "Редактировать рабочие часы",
   "Edit_Tag": "Редактировать метку",
   "Edit_Unit": "Редактировать юнит",
@@ -30,6 +29,7 @@
   "Invalid Canned Response": "Некорректный заготовленный ответ",
   "Invalid_Department": "Некорректный отдел",
   "LDAP_Advanced_Sync": "Расширенная синхронизация",
+  "LDAP_Default_Role_To_User": "Роль по умолчанию для пользователя",
   "LDAP_Default_Role_To_User_Description": "Роль RC по умолчанию, которая будет применяться к пользователю, если у пользователя есть какая-то не сопоставленная LDAP роль.",
   "LDAP_Enable_LDAP_Roles_To_RC_Roles": "Включение сопоставления ролей из LDAP в Rocket.Chat",
   "LDAP_Query_To_Get_User_Groups": "LDAP запрос для получения групп пользователей",
