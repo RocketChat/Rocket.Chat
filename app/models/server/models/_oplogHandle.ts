@@ -164,6 +164,15 @@ class CustomOplogHandle {
 						},
 					});
 					break;
+				case 'replace':
+					callback({
+						id: event.documentKey._id,
+						op: {
+							op: 'u',
+							o: event.fullDocument,
+						},
+					});
+					break;
 				case 'delete':
 					callback({
 						id: event.documentKey._id,
