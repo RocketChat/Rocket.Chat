@@ -25,7 +25,15 @@ const title = <Box display='flex' flexDirection='row' w='full' alignItems='cente
 
 const subtitle = <Box display='flex' flexDirection='row' w='full' alignItems='center'>
 	<Box flexGrow='1' withTruncatedText>John Doe: test 123</Box>
-	<Badge bg='neutral-700' color='surface' flexShrink={0}>99</Badge>
+	<Badge
+		style={{
+			backgroundColor: '#6c727a',
+			color: 'var(--rcx-color-surface, white)',
+			flexShrink: 0,
+		}}
+	>
+		99
+	</Badge>
 </Box>;
 
 const avatar = <UserAvatar size='x36' url='https://via.placeholder.com/16' />;

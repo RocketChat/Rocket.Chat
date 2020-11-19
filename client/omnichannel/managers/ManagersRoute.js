@@ -11,10 +11,15 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import ManagersPage from './ManagersPage';
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import { useSetModal } from '../../contexts/ModalContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import DeleteWarningModal from '../../components/DeleteWarningModal';
 
 export function RemoveManagerButton({ _id, reload }) {
 	const t = useTranslation();
 	const deleteAction = useEndpointAction('DELETE', `livechat/users/manager/${ _id }`);
+	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		const result = await deleteAction();
@@ -22,8 +27,26 @@ export function RemoveManagerButton({ _id, reload }) {
 			reload();
 		}
 	});
-	return <Table.Cell fontScale='p1' clickable={true} color='hint' onClick={handleRemoveClick} withTruncatedText>
-		<Button small ghost title={t('Remove')} onClick={handleRemoveClick}>
+	const handleDelete = useMutableCallback((e) => {
+		e.stopPropagation();
+		const onDeleteManager = async () => {
+			try {
+				await handleRemoveClick();
+				dispatchToastMessage({ type: 'success', message: t('Manager_removed') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			setModal();
+		};
+
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteManager}
+			onCancel={() => setModal()}
+		/>);
+	});
+
+	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>
+		<Button small ghost title={t('Remove')} onClick={handleDelete}>
 			<Icon name='trash' size='x16'/>
 		</Button>
 	</Table.Cell>;
@@ -70,7 +93,7 @@ export function ManagersRoute() {
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</GenericTable.HeaderCell>,
 		mediaQuery && <GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>{t('Username')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'email'} direction={sort[1]} active={sort[0] === 'emails.adress'} onClick={onHeaderClick} sort='emails.address' w='x120'>{t('Email')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'email'} direction={sort[1]} active={sort[0] === 'emails.address'} onClick={onHeaderClick} sort='emails.address' w='x120'>{t('Email')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'remove'} w='x40'>{t('Remove')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
