@@ -261,7 +261,7 @@
 		"use-subscription": "^1.4.1",
 		"uuid": "^3.4.0",
 		"webdav": "^2.10.2",
-		"xml-crypto": "^1.5.3",
+		"xml-crypto": "^2.0.0",
 		"xml-encryption": "0.11.2",
 		"xml2js": "0.4.19",
 		"xmldom": "^0.1.31",
