@@ -7,7 +7,7 @@ import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { actionLinks } from './lib/actionLinks';
 
 
-Template.room.events({
+Template.roomOld.events({
 	'click [data-actionlink]'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();

@@ -17,3 +17,7 @@ createTemplateForComponent('ExportMessages', () => import('./ExportMessages'), {
 createTemplateForComponent('KeyboardShortcuts', () => import('./KeyboardShortcuts'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
+
+createTemplateForComponent('room', () => import('../views/room'), {
+	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
+});

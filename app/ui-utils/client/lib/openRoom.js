@@ -103,7 +103,7 @@ export const openRoom = async function(type, name) {
 			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
 			if (mainNode) {
-				if (roomDom.classList.contains('room-container')) {
+				if (roomDom.classList.contains('room-container .messages-box > .wrapper')) {
 					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop;
 				}
 			}
@@ -143,6 +143,7 @@ export const openRoom = async function(type, name) {
 					return FlowRouter.go('direct', { rid: result._id }, FlowRouter.current().queryParams);
 				}
 			}
+			console.log(error);
 			Session.set('roomNotFound', { type, name, error });
 			return BlazeLayout.render('main', { center: 'roomNotFound' });
 		}
