@@ -275,6 +275,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 	callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
+	let agent = null;
 
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
@@ -282,9 +283,22 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { departmentId } = transferData;
-
 	if (oldDepartmentId === departmentId) {
 		throw new Meteor.Error('error-forwarding-chat-same-department', 'The selected department and the current room department are the same', { function: 'forwardRoomToDepartment' });
+	}
+
+	const { userId: agentId } = transferData;
+	if (agentId) {
+		let user = Users.findOneOnlineAgentById(agentId);
+		if (!user) {
+			throw new Meteor.Error('error-user-is-offline', 'User is offline', { function: 'forwardRoomToAgent' });
+		}
+		user = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId);
+		if (!user) {
+			throw new Meteor.Error('error-user-not-belong-to-department', 'The selected user does not belong to this department', { function: 'forwardRoomToDepartment' });
+		}
+		const { username } = user;
+		agent = { agentId, username };
 	}
 
 	if (!RoutingManager.getConfig().autoAssignAgent) {
@@ -295,7 +309,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	// Fake the department to forward the inquiry - Case the forward process does not success
 	// the inquiry will stay in the same original department
 	inquiry.department = departmentId;
-	const roomTaken = await RoutingManager.delegateInquiry(inquiry);
+	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent);
 	if (!roomTaken) {
 		return false;
 	}
