@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
@@ -23,7 +23,7 @@ const getInitalData = ({ workHours }) => ({
 
 const cleanFunc = () => {};
 
-const BusinessHoursFormContainer = ({ data, saveRef }) => {
+const BusinessHoursFormContainer = ({ data, saveRef, onChange }) => {
 	const forms = useSubscription(formsSubscription);
 
 	const {
@@ -40,9 +40,13 @@ const BusinessHoursFormContainer = ({ data, saveRef }) => {
 	const onChangeTimezone = useChangeHandler('timezone', saveRef);
 	const onChangeMultipleBHForm = useChangeHandler('multiple', saveRef);
 
-	const { values, handlers } = useForm(getInitalData(data));
+	const { values, handlers, hasUnsavedChanges } = useForm(getInitalData(data));
 
 	saveRef.current.form = values;
+
+	useEffect(() => {
+		onChange(hasUnsavedChanges);
+	});
 
 	return <Box maxWidth='600px' w='full' alignSelf='center'>
 		<FieldGroup>

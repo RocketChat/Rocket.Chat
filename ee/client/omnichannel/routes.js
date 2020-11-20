@@ -2,7 +2,7 @@ import { registerOmnichannelRoute } from '../../../client/views/omnichannel/rout
 
 registerOmnichannelRoute('/monitors', {
 	name: 'omnichannel-monitors',
-	lazyRouteComponent: () => import('./MonitorsPage'),
+	lazyRouteComponent: () => import('./monitors/MonitorsPage'),
 });
 
 registerOmnichannelRoute('/priorities/:context?/:id?', {
