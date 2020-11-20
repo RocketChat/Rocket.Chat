@@ -2,7 +2,8 @@ import React, { useMemo } from 'react';
 import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
 
 import { useUserInfoActions, useUserInfoActionsSpread } from '../../../hooks/useUserInfoActions';
-import UserInfo from '../UserInfo';
+import { UserInfo } from '..';
+
 
 const UserActions = ({ user, rid }) => {
 	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions(user, rid));

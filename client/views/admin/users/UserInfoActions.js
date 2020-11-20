@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import { useUserInfoActionsSpread } from '../../room/hooks/useUserInfoActions';
 import ConfirmOwnerChangeWarningModal from '../../../components/ConfirmOwnerChangeWarningModal';
-import UserInfo from '../../room/contextualBar/UserInfo/UserInfo/UserInfo';
+import UserInfo from '../../room/contextualBar/UserInfo';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';

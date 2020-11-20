@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { UserInfo } from '../UserInfo/UserInfo/UserInfo';
+import { UserInfo } from '../UserInfo';
 import { RoomInfo } from './RoomInfo';
 import VerticalBar from '../../../../components/VerticalBar';
 
