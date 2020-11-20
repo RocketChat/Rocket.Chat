@@ -10,33 +10,20 @@ export default {
 
 const filesItems = [
 	{
-		fileName: 'filexsauensauneua senas eka smdka e ase ase ase ase ase ms',
-		imgUrl: 'https://open.rocket.chat/file-upload/J8oxik4NHLJ288E5G/1424480348915.gif',
-		fileUrl: '#',
-		uploadedAt: '17 de Novembro de 2020 às 19:13',
-		userName: 'dougfabris',
-		isMine: true,
+		name: 'Lorem Ipsum Indolor Dolor',
+		url: '#',
+		uploadedAt: 'May 02, 2020 01:00 PM',
+		user: {
+			username: 'loremIpsum',
+		},
 	},
 	{
-		fileName: 'filex',
-		imgUrl: 'https://open.rocket.chat/file-upload/J8oxik4NHLJ288E5G/1424480348915.gif',
-		fileUrl: '#',
-		uploadedAt: '17 de Novembro de 2020 às 19:13',
-		userName: 'dougfabris',
-	},
-	{
-		fileName: 'filex',
-		imgUrl: 'https://open.rocket.chat/file-upload/J8oxik4NHLJ288E5G/1424480348915.gif',
-		fileUrl: '#',
-		uploadedAt: '17 de Novembro de 2020 às 19:13',
-		userName: 'dougfabris',
-	},
-	{
-		fileName: 'filex',
-		imgUrl: 'https://open.rocket.chat/file-upload/J8oxik4NHLJ288E5G/1424480348915.gif',
-		fileUrl: '#',
-		uploadedAt: '17 de Novembro de 2020 às 19:13',
-		userName: 'dougfabris',
+		name: 'Lorem Ipsum Indolor Dolor',
+		url: '#',
+		uploadedAt: 'May 02, 2020 01:00 PM',
+		user: {
+			username: 'loremIpsum',
+		},
 	},
 ];
 
