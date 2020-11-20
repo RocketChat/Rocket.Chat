@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useResizeObserver, useUniqueId } from '@rocket.chat/fuselage-hooks';
 
 import FileItem from './FileItem';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -69,6 +69,8 @@ export const RoomFiles = function RoomFiles({
 
 	const { ref, contentBoxSize: { blockSize = 200 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
+	const searchId = useUniqueId();
+
 	return (
 		<>
 			<VerticalBar.Header>
@@ -83,9 +85,9 @@ export const RoomFiles = function RoomFiles({
 						<Box flexDirection='row' alignItems='flex-end' display='flex' justifyContent='stretch'>
 							<Box flexGrow={2} flexBasis='80%' mi='x4'>
 								<Field>
-									<Field.Label htmlFor='searchMessages' flexGrow={0}>{t('Search_by_file_name')}</Field.Label>
+									<Field.Label htmlFor={searchId} flexGrow={0}>{t('Search_by_file_name')}</Field.Label>
 									<Field.Row>
-										<TextInput id='searchMessages' placeholder={t('Search_Files')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+										<TextInput data-qa-files-search id={searchId} placeholder={t('Search_Files')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 									</Field.Row>
 								</Field>
 							</Box>
