@@ -45,25 +45,25 @@ Room.Body = Body;
 Room.Footer = Footer;
 Room.Aside = Aside;
 
-const RoomBlazeTemplate = ({ children, ...props }) => {
+const BlazeTemplate = ({ name, children, ...props }) => {
 	const ref = useRef();
 	useEffect(() => {
 		if (!ref.current) {
 			return;
 		}
 
-		const view = Blaze.renderWithData(Template.roomOld, props, ref.current);
+		const view = Blaze.renderWithData(Template[name], props, ref.current);
 
 		return () => {
 			Blaze.remove(view);
 		};
-	}, [props]);
+	}, [props, name]);
 	return <Box display='flex' flexDirection='column' flexGrow={1} ref={ref}/>;
 };
 
 export default (props) => {
 	const t = useTranslation();
 	return <Room aria-label={t('Channel')} data-qa-rc-room={props._id}>
-		<Room.Body><RoomBlazeTemplate {...props} /></Room.Body>
+		<Room.Body><BlazeTemplate name='roomOld' {...props} /></Room.Body>
 	</Room>;
 };
