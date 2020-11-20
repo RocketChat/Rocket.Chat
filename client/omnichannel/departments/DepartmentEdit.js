@@ -57,6 +57,8 @@ export function EditDepartment({ data, id, title, reload }) {
 	const DepartmentForwarding = useDepartmentForwarding();
 	const DepartmentBusinessHours = useDepartmentBusinessHours();
 	const [agentList, setAgentList] = useState([]);
+	const [agentsRemoved, setAgentsRemoved] = useState([]);
+	const [agentsAdded, setAgentsAdded] = useState([]);
 
 	const { department } = data || { department: {} };
 
@@ -221,6 +223,19 @@ export function EditDepartment({ data, id, title, reload }) {
 	const handleReturn = useMutableCallback(() => {
 		router.push({});
 	});
+	const agentsHaveChanged = () => {
+		let hasChanges = false;
+		if (agentList.length !== initialAgents.current.length) { hasChanges = true; }
+		if (agentsAdded.length > 0 && agentsRemoved.length > 0) { hasChanges = true; }
+		agentList.forEach((agent) => {
+			const existingAgent = initialAgents.current.find((initial) => initial.agentId === agent.agentId);
+			if (agent.count && agent.count !== existingAgent.count) { hasChanges = true; }
+			if (agent.order && agent.order !== existingAgent.order) { hasChanges = true; }
+		});
+
+		return hasChanges;
+	};
+
 	const invalidForm = !name || !email || !isEmail(email) || !hasUnsavedChanges || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
@@ -230,7 +245,7 @@ export function EditDepartment({ data, id, title, reload }) {
 			<Page.Header title={title}>
 				<ButtonGroup>
 					<Button onClick={handleReturn}><Icon name='back'/> {t('Back')}</Button>
-					<Button type='submit' form={formId} primary disabled={invalidForm}>{t('Save')}</Button>
+					<Button type='submit' form={formId} primary disabled={invalidForm && !(id && agentsHaveChanged())}>{t('Save')}</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
@@ -325,7 +340,7 @@ export function EditDepartment({ data, id, title, reload }) {
 					<Divider mb='x16' />
 					<Field>
 						<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
-						<DepartmentsAgentsTable agents={data && data.agents} setAgentListFinal={setAgentList}/>
+						<DepartmentsAgentsTable agents={data && data.agents} setAgentListFinal={setAgentList} setAgentsAdded={setAgentsAdded} setAgentsRemoved={setAgentsRemoved} />
 					</Field>
 				</FieldGroup>
 			</Page.ScrollableContentWithShadow>

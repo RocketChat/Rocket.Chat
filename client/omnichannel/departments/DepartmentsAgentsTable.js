@@ -12,7 +12,7 @@ import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { AutoCompleteAgent } from '../../components/basic/AutoCompleteAgent';
 
-function AddAgent({ agentList, setAgentList, ...props }) {
+function AddAgent({ agentList, setAgentsAdded, setAgentList, ...props }) {
 	const t = useTranslation();
 	const [userId, setUserId] = useState();
 	const getAgent = useEndpointAction('GET', `livechat/users/agent/${ userId }`);
@@ -29,6 +29,7 @@ function AddAgent({ agentList, setAgentList, ...props }) {
 		if (agentList.filter((e) => e.agentId === user._id).length === 0) {
 			setAgentList([{ ...user, agentId: user._id }, ...agentList]);
 			setUserId();
+			setAgentsAdded((agents) => [...agents, { agentId: user._id }]);
 		} else {
 			dispatchToastMessage({ type: 'error', message: t('This_agent_was_already_selected') });
 		}
@@ -39,7 +40,7 @@ function AddAgent({ agentList, setAgentList, ...props }) {
 	</Box>;
 }
 
-export function RemoveAgentButton({ agentId, setAgentList, agentList }) {
+export function RemoveAgentButton({ agentId, setAgentList, agentList, setAgentsRemoved }) {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
@@ -51,6 +52,7 @@ export function RemoveAgentButton({ agentId, setAgentList, agentList }) {
 			setAgentList(newList);
 			dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
 			setModal();
+			setAgentsRemoved((agents) => [...agents, { agentId }]);
 		};
 
 		setModal(<DeleteWarningModal
@@ -98,7 +100,7 @@ export function Order({ agentId, setAgentList, agentList }) {
 	return <Box display='flex'><NumberInput flexShrink={1} key={`${ agentId }-order`} title={t('Order')} value={agentOrder} onChange={handleOrder} /></Box>;
 }
 
-const AgentRow = React.memo(({ agentId, username, name, avatarETag, mediaQuery, agentList, setAgentList }) => <Table.Row key={agentId} tabIndex={0} role='link' action qa-user-id={agentId}>
+const AgentRow = React.memo(({ agentId, username, name, avatarETag, mediaQuery, agentList, setAgentList, setAgentsRemoved }) => <Table.Row key={agentId} tabIndex={0} role='link' action qa-user-id={agentId}>
 	<Table.Cell withTruncatedText>
 		<Box display='flex' alignItems='center'>
 			<UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag}/>
@@ -117,11 +119,11 @@ const AgentRow = React.memo(({ agentId, username, name, avatarETag, mediaQuery, 
 		<Order agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
 	</Table.Cell>
 	<Table.Cell fontScale='p1' color='hint'>
-		<RemoveAgentButton agentId={agentId} agentList={agentList} setAgentList={setAgentList}/>
+		<RemoveAgentButton agentId={agentId} agentList={agentList} setAgentList={setAgentList} setAgentsRemoved={setAgentsRemoved} />
 	</Table.Cell>
 </Table.Row>);
 
-function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
+function DepartmentsAgentsTable({ agents, setAgentListFinal, setAgentsAdded, setAgentsRemoved }) {
 	const t = useTranslation();
 	const [agentList, setAgentList] = useState((agents && JSON.parse(JSON.stringify(agents))) || []);
 
@@ -130,7 +132,7 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	return <>
-		<AddAgent agentList={agentList} setAgentList={setAgentList}/>
+		<AddAgent agentList={agentList} setAgentList={setAgentList} setAgentsAdded={setAgentsAdded} />
 		<GenericTable
 			header={<>
 				<GenericTable.HeaderCell key={'name'} w='x200'>{t('Name')}</GenericTable.HeaderCell>
@@ -142,7 +144,7 @@ function DepartmentsAgentsTable({ agents, setAgentListFinal }) {
 			total={agentList?.length}
 			pi='x24'
 		>
-			{(props) => <AgentRow key={props._id} mediaQuery={mediaQuery} agentList={agentList} setAgentList={setAgentList} {...props}/>}
+			{(props) => <AgentRow key={props._id} mediaQuery={mediaQuery} agentList={agentList} setAgentList={setAgentList} setAgentsRemoved={setAgentsRemoved} {...props}/>}
 		</GenericTable>
 	</>;
 }
