@@ -76,6 +76,7 @@ TabBar.addButton({
 	icon: 'clip',
 	template: 'uploadedFilesList',
 	order: 6,
+	full: true,
 });
 
 TabBar.addButton({

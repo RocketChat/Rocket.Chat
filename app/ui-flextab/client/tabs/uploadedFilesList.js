@@ -4,6 +4,7 @@ import { Template } from 'meteor/templating';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { HTML } from 'meteor/htmljs';
 
 import { DateFormat } from '../../../lib/client';
 import { canDeleteMessage, getURL, handleError, t, APIClient } from '../../../utils/client';
@@ -11,6 +12,11 @@ import { popover, modal } from '../../../ui-utils/client';
 import { Rooms, Messages } from '../../../models/client';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { download } from '../../../../client/lib/download';
+import { createTemplateForComponent } from '../../../../client/reactAdapters';
+
+createTemplateForComponent('channelFilesList', () => import('../../../../client/channel/RoomFiles/RoomFiles'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
 
 const LIST_SIZE = 50;
 const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
@@ -132,6 +138,10 @@ Template.mentionsFlexTab.onDestroyed(function() {
 });
 
 Template.uploadedFilesList.helpers({
+	getFilesData() {
+		return Template.currentData();
+	},
+
 	files() {
 		const instance = Template.instance();
 		return instance.files.find({}, { limit: instance.state.get('limit') });
