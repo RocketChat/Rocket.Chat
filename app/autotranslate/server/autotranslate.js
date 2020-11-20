@@ -56,15 +56,29 @@ export class TranslationProviderRegistry {
 			return;
 		}
 
-		TranslationProviderRegistry.getActiveProvider()?.unRegisterAfterSaveMsgCallBack();
-
 		TranslationProviderRegistry[Provider] = provider;
 
-		if (!TranslationProviderRegistry.getActiveProvider()) {
+		TranslationProviderRegistry.registerCallbacks();
+	}
+
+	static setEnable(enabled) {
+		TranslationProviderRegistry.enabled = enabled;
+
+		TranslationProviderRegistry.registerCallbacks();
+	}
+
+	static registerCallbacks() {
+		if (!TranslationProviderRegistry.enabled) {
+			callbacks.remove('afterSaveMessage', 'autotranslate');
 			return;
 		}
 
-		TranslationProviderRegistry.getActiveProvider().registerAfterSaveMsgCallBack();
+		const provider = TranslationProviderRegistry.getActiveProvider();
+		if (!provider) {
+			return;
+		}
+
+		callbacks.add('afterSaveMessage', provider.translateMessage.bind(provider), callbacks.priority.MEDIUM, 'autotranslate');
 	}
 
 	/**
@@ -81,7 +95,7 @@ export class TranslationProviderRegistry {
 
 		// Get Auto Translate Active flag
 		settings.get('AutoTranslate_Enabled', (key, value) => {
-			TranslationProviderRegistry.enabled = value;
+			TranslationProviderRegistry.setEnable(value);
 		});
 	}
 }
@@ -285,24 +299,6 @@ export class AutoTranslate {
 			});
 		}
 		return Messages.findOneById(message._id);
-	}
-
-	/**
-	 * On changing the service provider, the callback in which the translation
-	 * is being requested needs to be switched to the new provider
-	 * @protected
-	 */
-	registerAfterSaveMsgCallBack() {
-		callbacks.add('afterSaveMessage', this.translateMessage.bind(this), callbacks.priority.MEDIUM, this.name);
-	}
-
-	/**
-	 * On changing the service provider, the callback in which the translation
-	 * is being requested needs to be deactivated for the all other translation providers
-	 * @protected
-	 */
-	unRegisterAfterSaveMsgCallBack() {
-		callbacks.remove('afterSaveMessage', this.name);
 	}
 
 	/**
