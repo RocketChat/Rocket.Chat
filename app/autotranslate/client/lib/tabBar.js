@@ -13,7 +13,8 @@ Meteor.startup(function() {
 				id: 'autotranslate',
 				i18nTitle: 'Auto_Translate',
 				icon: 'language',
-				template: 'autoTranslateFlexTab',
+				template: 'AutoTranslate',
+				full: true,
 				order: 20,
 			});
 		}
