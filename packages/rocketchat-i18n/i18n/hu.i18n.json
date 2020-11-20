@@ -101,6 +101,7 @@
   "Accounts_OAuth_Custom_Username_Field": "Felhasználónév mező",
   "Accounts_OAuth_Custom_Name_Field": "Név mező",
   "Accounts_OAuth_Custom_Roles_Claim": "Szerepek vagy csoportok mezőjének neve",
+  "Accounts_OAuth_Custom_Channel_Admin": "Felhasználói adatcsoport térkép",
   "Accounts_OAuth_Custom_Merge_Roles": "Szerepek egyesítése SSO-ból",
   "Accounts_OAuth_Drupal": "Drupal bejelentkezés engedélyezve",
   "Accounts_OAuth_Drupal_callback_url": "Drupal oAuth2 átirányítási URI",

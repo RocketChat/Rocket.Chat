@@ -1664,6 +1664,7 @@
   "How_knowledgeable_was_the_chat_agent": "Наскільки обізнаний був агент чату?",
   "How_long_to_wait_after_agent_goes_offline": "Як довго чекати, коли агент переходить в автономний режим",
   "How_long_to_wait_to_consider_visitor_abandonment": "Як довго чекати, щоб розглянути можливість відмови від відвідувачів?",
+  "How_long_to_wait_to_consider_visitor_abandonment_in_seconds": "Як довго чекати, щоб розглянути можливість відмови від відвідувачів?",
   "How_responsive_was_the_chat_agent": "Наскільки чуйним був предствник?",
   "How_satisfied_were_you_with_this_chat": "Наскільки ви були задоволені цим чатом?",
   "How_to_handle_open_sessions_when_agent_goes_offline": "Як керувати відкритими сеансами, коли агент переходить у режимі офлайн",

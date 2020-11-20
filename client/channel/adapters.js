@@ -21,3 +21,7 @@ createTemplateForComponent('KeyboardShortcuts', () => import('./KeyboardShortcut
 createTemplateForComponent('room', () => import('../views/room'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
 });
+
+createTemplateForComponent('AutoTranslate', () => import('./AutoTranslate'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
