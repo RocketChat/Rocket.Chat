@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Field, TextInput, Button, Margins, Box, MultiSelect, Callout, Select } from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Box, MultiSelect, Callout, Select, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useMethod } from '../../../../client/contexts/ServerContext';
@@ -106,7 +106,7 @@ export function UnitEdit({ data, unitId, isNew, availableDepartments, availableM
 		reload();
 	});
 
-	const canSave = useMemo(() => !nameError && !visibilityError && !departmentError, [nameError, visibilityError, departmentError]);
+	const canSave = useMemo(() => !nameError && !visibilityError && !departmentError && !unitMonitorsError, [nameError, visibilityError, departmentError, unitMonitorsError]);
 
 	const handleSave = useMutableCallback(async () => {
 		const unitData = { name, visibility };
@@ -122,7 +122,7 @@ export function UnitEdit({ data, unitId, isNew, availableDepartments, availableM
 
 		try {
 			await saveUnit(unitId, unitData, monitorsData, departmentsData);
-			dispatchToastMessage({ type: 'success', message: t('saved') });
+			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
 			unitsRoute.push({});
 		} catch (error) {
@@ -132,25 +132,25 @@ export function UnitEdit({ data, unitId, isNew, availableDepartments, availableM
 
 	return <VerticalBar.ScrollableContent is='form' { ...props }>
 		<Field>
-			<Field.Label>{t('Name')}</Field.Label>
+			<Field.Label>{t('Name')}*</Field.Label>
 			<Field.Row>
-				<TextInput flexGrow={1} value={name} onChange={handleName} error={hasUnsavedChanges && nameError}/>
+				<TextInput placeholder={t('Name')} flexGrow={1} value={name} onChange={handleName} error={hasUnsavedChanges && nameError}/>
 			</Field.Row>
 		</Field>
 		<Field>
-			<Field.Label>{t('Visibility')}</Field.Label>
+			<Field.Label>{t('Visibility')}*</Field.Label>
 			<Field.Row>
-				<Select options={visibilityOpts} value={visibility} error={hasUnsavedChanges && unitMonitorsError} placeholder={t('Select_an_option')} onChange={handleVisibility} flexGrow={1}/>
+				<Select options={visibilityOpts} value={visibility} error={hasUnsavedChanges && visibilityError} placeholder={t('Select_an_option')} onChange={handleVisibility} flexGrow={1}/>
 			</Field.Row>
 		</Field>
 		<Field>
-			<Field.Label>{t('Departments')}</Field.Label>
+			<Field.Label>{t('Departments')}*</Field.Label>
 			<Field.Row>
 				<MultiSelect options={depOptions} value={departments} error={hasUnsavedChanges && departmentError} maxWidth='100%' placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
 			</Field.Row>
 		</Field>
 		<Field>
-			<Field.Label>{t('Monitors')}</Field.Label>
+			<Field.Label>{t('Monitors')}*</Field.Label>
 			<Field.Row>
 				<MultiSelect options={monOptions} value={monitors} error={hasUnsavedChanges && unitMonitorsError} maxWidth='100%' placeholder={t('Select_an_option')} onChange={handleMonitors} flexGrow={1}/>
 			</Field.Row>
@@ -160,7 +160,7 @@ export function UnitEdit({ data, unitId, isNew, availableDepartments, availableM
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 				<Margins inlineEnd='x4'>
 					{!isNew && <Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>{t('Reset')}</Button>}
-					<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges && !canSave} onClick={handleSave}>{t('Save')}</Button>
+					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={handleSave}>{t('Save')}</Button>
 				</Margins>
 			</Box>
 		</Field.Row>
