@@ -149,11 +149,11 @@ function AgentsRoute() {
 
 
 	const header = useMemo(() => [
-		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</GenericTable.HeaderCell>,
-		mediaQuery && <GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>{t('Username')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'email'} direction={sort[1]} active={sort[0] === 'emails.adress'} onClick={onHeaderClick} sort='emails.address' w='x120'>{t('Email')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x120'>{t('Livechat_status')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'remove'} w='x40'>{t('Remove')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
+		mediaQuery && <GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username'>{t('Username')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'email'} direction={sort[1]} active={sort[0] === 'emails.address'} onClick={onHeaderClick} sort='emails.address'>{t('Email')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status'>{t('Livechat_status')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'remove'} w='x60'>{t('Remove')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const renderRow = useCallback(({ emails, _id, username, name, avatarETag, statusLivechat }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
@@ -211,7 +211,7 @@ function AgentsRoute() {
 		reload={reload}
 		header={header}
 		renderRow={renderRow}
-		title={'Agents'}>
+		title={t('Agents')}>
 		<EditAgentsTab />
 	</AgentsPage>;
 }

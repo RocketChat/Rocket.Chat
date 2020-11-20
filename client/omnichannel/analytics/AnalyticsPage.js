@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Box, Select, Margins } from '@rocket.chat/fuselage';
+import { Box, Select, Margins, Field } from '@rocket.chat/fuselage';
 
 import DepartmentAutoComplete from '../DepartmentAutoComplete';
 import DateRangePicker from './DateRangePicker';
@@ -52,15 +52,38 @@ const AnalyticsPage = () => {
 			<Margins block='x4'>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' flexWrap='wrap' mi='neg-x4' mb='neg-x4'>
 					<Box display='flex' flexWrap='nowrap' flexGrow={1} flexShrink={1} justifyContent='stretch' mb='x4'>
-						<Margins inline='x4'>
-							<Select options={typeOptions} value={type} onChange={setType} />
-							<DepartmentAutoComplete placeholder={t('Departments')} value={departmentId} onChange={setDepartmentId}/>
+						<Margins inline='x2'>
+							<Field>
+								<Field.Label>{t('Type')}</Field.Label>
+								<Field.Row>
+									<Select options={typeOptions} value={type} onChange={setType} />
+								</Field.Row>
+							</Field>
+						</Margins>
+						<Margins inline='x2'>
+							<Field>
+								<Field.Label>{t('Departments')}</Field.Label>
+								<Field.Row>
+									<DepartmentAutoComplete placeholder={t('All')} value={departmentId} onChange={setDepartmentId}/>
+								</Field.Row>
+							</Field>
 						</Margins>
 					</Box>
 					<DateRangePicker mi='none' mb='x4' flexWrap='nowrap' display='flex' flexGrow={1} flexShrink={1} justifyContent='stretch' onChange={setDateRange}/>
 				</Box>
-				<Overview type={type} dateRange={dateRange} departmentId={departmentId}/>
-				<Select options={graphOptions} value={chartName} onChange={setChartName} flexGrow={0}/>
+				<Box>
+					<Overview type={type} dateRange={dateRange} departmentId={departmentId}/>
+				</Box>
+				<Box display='flex' flexDirection='row'>
+					<Margins inline='x2'>
+						<Field>
+							<Field.Label>{t('Chart')}</Field.Label>
+							<Field.Row>
+								<Select options={graphOptions} value={chartName} onChange={setChartName}/>
+							</Field.Row>
+						</Field>
+					</Margins>
+				</Box>
 				<Box display='flex' flexDirection='row' flexGrow={1} flexShrink={1}>
 					<InterchangeableChart flexShrink={1} w='66%' h='100%' chartName={chartName} departmentId={departmentId} dateRange={dateRange} alignSelf='stretch'/>
 					<Box

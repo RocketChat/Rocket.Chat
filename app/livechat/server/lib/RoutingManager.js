@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { settings } from '../../../settings/server';
-import { createLivechatSubscription,
+import {
+	createLivechatSubscription,
 	dispatchAgentDelegated,
 	forwardRoomToAgent,
 	forwardRoomToDepartment,
@@ -47,7 +48,6 @@ export const RoutingManager = {
 	},
 
 	async delegateInquiry(inquiry, agent) {
-		// return Room Object
 		const { department, rid } = inquiry;
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username))) {
 			agent = await this.getNextAgent(department);
@@ -66,8 +66,8 @@ export const RoutingManager = {
 			username: String,
 		}));
 
-		const { rid, name, v } = inquiry;
-		if (!createLivechatSubscription(rid, name, v, agent)) {
+		const { rid, name, v, department } = inquiry;
+		if (!createLivechatSubscription(rid, name, v, agent, department)) {
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
@@ -151,12 +151,12 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		if (transferData.userId) {
-			return forwardRoomToAgent(room, transferData);
-		}
-
 		if (transferData.departmentId) {
 			return forwardRoomToDepartment(room, guest, transferData);
+		}
+
+		if (transferData.userId) {
+			return forwardRoomToAgent(room, transferData);
 		}
 
 		return false;

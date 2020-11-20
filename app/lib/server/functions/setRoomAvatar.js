@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { RocketChatFile } from '../../../file';
 import { FileUpload } from '../../../file-upload';
-import { Notifications } from '../../../notifications';
 import { Rooms, Avatars, Messages } from '../../../models/server';
+import { api } from '../../../../server/sdk/api';
 
 export const setRoomAvatar = function(rid, dataURI, user) {
 	const fileStore = FileUpload.getStore('Avatars');
@@ -13,7 +13,7 @@ export const setRoomAvatar = function(rid, dataURI, user) {
 	if (!dataURI) {
 		fileStore.deleteByRoomId(rid);
 		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
-		Notifications.notifyLogged('updateAvatar', { rid });
+		api.broadcast('room.avatarUpdate', { rid });
 
 		return Rooms.unsetAvatarData(rid);
 	}
@@ -40,7 +40,7 @@ export const setRoomAvatar = function(rid, dataURI, user) {
 			}
 			Rooms.setAvatarData(rid, 'upload', result.etag);
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
-			Notifications.notifyLogged('updateAvatar', { rid, etag: result.etag });
+			api.broadcast('room.avatarUpdate', { rid, avatarETag: result.etag });
 		}, 500);
 	});
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sidebar } from '@rocket.chat/fuselage';
+import { Sidebar, ActionButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 const Medium = React.memo(({
@@ -28,7 +28,7 @@ const Medium = React.memo(({
 			{ icon }
 			<Sidebar.Item.Title data-qa='sidebar-item-title' className={unread && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title>
 			{badges}
-			<Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility && menu()}</Sidebar.Item.Menu>
+			{menu && <Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}</Sidebar.Item.Menu>}
 		</Sidebar.Item.Content>
 		{ actions && <Sidebar.Item.Container>
 			{<Sidebar.Item.Actions>

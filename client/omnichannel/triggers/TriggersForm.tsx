@@ -1,8 +1,9 @@
-import React, { FC, FormEvent, useMemo } from 'react';
+import React, { FC, FormEvent, useMemo, useState } from 'react';
 import { Box, Field, TextInput, ToggleSwitch, BoxClassName, Select, TextAreaInput, SelectOptions } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 
 type TriggerConditions = {
 	name: string;
@@ -41,6 +42,7 @@ type TriggersFormProps = {
 }
 
 const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) => {
+	const [nameError, setNameError] = useState('');
 	const t = useTranslation();
 	const {
 		name,
@@ -126,6 +128,9 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 			},
 		});
 	});
+	useComponentDidUpdate(() => {
+		setNameError(!name ? t('The_field_is_required', 'name') : '');
+	}, [t, name]);
 	return <>
 		<Field className={className}>
 			<Box display='flex' flexDirection='row'>
@@ -144,9 +149,9 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 			</Box>
 		</Field>
 		<Field className={className}>
-			<Field.Label>{t('Name')}</Field.Label>
+			<Field.Label>{t('Name')}*</Field.Label>
 			<Field.Row>
-				<TextInput value={name} onChange={handleName} placeholder={t('Name')}/>
+				<TextInput value={name} error={nameError} onChange={handleName} placeholder={t('Name')}/>
 			</Field.Row>
 		</Field>
 		<Field className={className}>
