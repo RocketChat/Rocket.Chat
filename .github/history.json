@@ -51605,6 +51605,55 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "3.8.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19561",
+          "title": "[FIX] IE11 - Update ui kit and fuselage bundle",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.8.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19570",
+          "title": "[FIX] Typo in custom oauth from environment variable",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.8.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19616",
+          "title": "[FIX] Engagement dashboard on old Mongo versions",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19627",
+          "title": "Fix Docker preview image build",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
