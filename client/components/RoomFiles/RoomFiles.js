@@ -74,11 +74,11 @@ export const RoomFiles = function RoomFiles({
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='attachment'/>
 				<VerticalBar.Text>{t('Files')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={onClickClose} />
+				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>
 
 			<VerticalBar.Content p='x12'>
-				<Box width='full' p='x12' mi='neg-x4'>
+				<Box width='full' pb='x12' mi='neg-x4'>
 					<FieldGroup>
 						<Box flexDirection='row' alignItems='flex-end' display='flex' justifyContent='stretch'>
 							<Box flexGrow={2} flexBasis='80%' mi='x4'>

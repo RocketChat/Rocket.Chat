@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useMutableCallback, useLocalStorage, useDebouncedState } from '@rocket.chat/fuselage-hooks';
 
 import { ENDPOINT_STATES, useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useUserId, useUserRoom } from '../../contexts/UserContext';
@@ -12,7 +12,6 @@ import { useMethod } from '../../contexts/ServerContext';
 export default ({ rid, tabBar }) => {
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
 	const userId = useUserId();
-
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
@@ -25,11 +24,20 @@ export default ({ rid, tabBar }) => {
 	const [type, setType] = useLocalStorage('file-list-type', 'all');
 	const [text, setText] = useState('');
 
+	const [query, setQuery] = useDebouncedState({
+		roomId: rid,
+		query: JSON.stringify({
+			...type !== 'all' && {
+				typeGroup: type,
+			},
+		}),
+	}, 500);
+
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const query = useMemo(() => ({
+	useEffect(() => setQuery({
 		roomId: rid,
 		query: JSON.stringify({
 			name: { $regex: text || '', $options: 'i' },
@@ -37,7 +45,7 @@ export default ({ rid, tabBar }) => {
 				typeGroup: type,
 			},
 		}),
-	}), [rid, text, type]);
+	}), [rid, text, type, setQuery]);
 
 	const { data, state, reload } = useEndpointDataExperimental(room.type === 'c' ? 'channels.files' : 'groups.files', query);
 

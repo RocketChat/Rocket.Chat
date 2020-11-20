@@ -14,10 +14,6 @@ import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManag
 import { download } from '../../../../client/lib/download';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
-createTemplateForComponent('channelFilesList', () => import('../../../../client/channel/RoomFiles/RoomFiles'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
-});
-
 const LIST_SIZE = 50;
 const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 
@@ -87,19 +83,6 @@ Template.uploadedFilesList.onCreated(function() {
 		},
 	});
 
-	const loadFiles = _.debounce(async (query, limit) => {
-		this.state.set('loading', true);
-
-		const { files } = await APIClient.v1.get(`${ roomTypes[room.t] }.files?roomId=${ query.rid }&limit=${ limit }&query=${ JSON.stringify(query) }&fields=${ JSON.stringify(fields) }`);
-
-		upsertMessageBulk({ msgs: files }, this.files);
-
-		this.state.set({
-			hasMore: this.state.get('limit') <= files.length,
-			loading: false,
-		});
-	}, DEBOUNCE_TIME_TO_SEARCH_IN_MS);
-
 	const query = {
 		rid,
 		complete: true,
@@ -133,15 +116,7 @@ Template.uploadedFilesList.onCreated(function() {
 	});
 });
 
-Template.mentionsFlexTab.onDestroyed(function() {
-	this.cursor.stop();
-});
-
 Template.uploadedFilesList.helpers({
-	getFilesData() {
-		return Template.currentData();
-	},
-
 	files() {
 		const instance = Template.instance();
 		return instance.files.find({}, { limit: instance.state.get('limit') });
@@ -166,12 +141,6 @@ Template.uploadedFilesList.helpers({
 
 	escapeCssUrl: (url) => url.replace(/(['"])/g, '\\$1'),
 
-	limit() {
-		return Template.instance().state.get('limit');
-	},
-	format(timestamp) {
-		return DateFormat.formatDateAndTime(timestamp);
-	},
 	fileTypeIcon() {
 		const [, extension] = this.name.match(/.*?\.(.*)$/);
 
@@ -215,113 +184,4 @@ Template.uploadedFilesList.helpers({
 		};
 	},
 
-	formatTimestamp(timestamp) {
-		return DateFormat.formatDateAndTime(timestamp);
-	},
-
-	isLoading() {
-		return Template.instance().state.get('loading');
-	},
-});
-
-Template.uploadedFilesList.events({
-	'submit .search-form'(e) {
-		e.preventDefault();
-	},
-
-	'input .uploaded-files-list__search-input'(e, t) {
-		t.searchText.set(e.target.value.trim());
-		t.state.set('hasMore', true);
-	},
-
-	'scroll .flex-tab__result': _.throttle(function(e, t) {
-		if (e.target.scrollTop >= (e.target.scrollHeight - e.target.clientHeight)) {
-			if (!t.state.get('hasMore')) {
-				return;
-			}
-			return t.state.set('limit', t.state.get('limit') + LIST_SIZE);
-		}
-	}, 200),
-
-	'change .js-type'(e, t) {
-		t.showFileType.set(e.currentTarget.value);
-	},
-
-	'click .js-action'(e) {
-		e.currentTarget.parentElement.classList.add('active');
-
-		const canDelete = canDeleteMessage({
-			rid: this.rid,
-			ts: this.file.uploadedAt,
-			uid: this.file.userId,
-		});
-
-		const config = {
-			columns: [
-				{
-					groups: [
-						{
-							items: [
-								{
-									icon: 'download',
-									name: t('Download'),
-									action: () => {
-										const URL = window.webkitURL ?? window.URL;
-										const href = getURL(this.file.url);
-										download(href, this.file.name);
-										URL.revokeObjectURL(this.file.url);
-									},
-								},
-							],
-						},
-						...canDelete ? [{
-							items: [
-								{
-									icon: 'trash',
-									name: t('Delete'),
-									modifier: 'alert',
-									action: () => {
-										modal.open({
-											title: t('Are_you_sure'),
-											text: t('You_will_not_be_able_to_recover_file'),
-											type: 'warning',
-											showCancelButton: true,
-											confirmButtonColor: '#DD6B55',
-											confirmButtonText: t('Yes_delete_it'),
-											cancelButtonText: t('Cancel'),
-											html: false,
-										}, () => {
-											Meteor.call('deleteFileMessage', this.file._id, (error) => {
-												if (error) {
-													handleError(error);
-												} else {
-													modal.open({
-														title: t('Deleted'),
-														text: t('Your_entry_has_been_deleted'),
-														type: 'success',
-														timer: 1000,
-														showConfirmButton: false,
-													});
-												}
-											});
-										});
-									},
-								},
-							],
-						}] : [],
-					],
-				},
-			],
-			currentTarget: e.currentTarget,
-			onDestroyed: () => {
-				e.currentTarget.parentElement.classList.remove('active');
-			},
-		};
-
-		popover.open(config);
-	},
-});
-
-Template.uploadedFilesList.onRendered(function() {
-	this.firstNode.querySelector('[name="file-search"]').focus();
 });

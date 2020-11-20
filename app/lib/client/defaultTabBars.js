@@ -74,7 +74,7 @@ TabBar.addButton({
 	id: 'uploaded-files-list',
 	i18nTitle: 'Files',
 	icon: 'clip',
-	template: 'uploadedFilesList',
+	template: 'channelFilesList',
 	order: 6,
 	full: true,
 });
