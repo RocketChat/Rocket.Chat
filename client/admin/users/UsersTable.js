@@ -4,7 +4,7 @@ import React, { useMemo, useCallback, useState } from 'react';
 
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
 import GenericTable from '../../components/GenericTable';
-import { capitalize } from '../../helpers/capitalize';
+import { capitalize } from '../../lib/capitalize';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';

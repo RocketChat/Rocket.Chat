@@ -83,6 +83,7 @@ TabBar.addButton({
 	id: 'keyboard-shortcut-list',
 	i18nTitle: 'Keyboard_Shortcuts_Title',
 	icon: 'keyboard',
-	template: 'keyboardShortcuts',
+	template: 'KeyboardShortcuts',
+	full: true,
 	order: 99,
 });

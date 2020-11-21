@@ -7,6 +7,7 @@ import { RoomManager } from '../../../ui-utils/client';
 import { emoji, EmojiPicker } from '../../../emoji/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { APIClient } from '../../../utils/client';
+import { escapeRegExp } from '../../../../client/lib/escapeRegExp';
 
 export const getEmojiUrlFromName = function(name, extension) {
 	Session.get;
@@ -126,7 +127,7 @@ export const updateEmojiCustom = function(emojiData) {
 };
 
 const customRender = (html) => {
-	const emojisMatchGroup = emoji.packages.emojiCustom.list.map(RegExp.escape).join('|');
+	const emojisMatchGroup = emoji.packages.emojiCustom.list.map(escapeRegExp).join('|');
 	if (emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
 		emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
 		emoji.packages.emojiCustom._regexp = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ emojisMatchGroup })`, 'gi');

@@ -12,12 +12,10 @@ import VerticalBar from '../../components/basic/VerticalBar';
 import DeleteSuccessModal from '../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../components/DeleteWarningModal';
 
-function EditCustomSound({ _id, cache, ...props }) {
-	const query = useMemo(() => ({
-		query: JSON.stringify({ _id }),
-	}), [_id]);
+function EditCustomSound({ _id, onChange, ...props }) {
+	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { data, state, error } = useEndpointDataExperimental('custom-sounds.list', query);
+	const { data, state, error, reload } = useEndpointDataExperimental('custom-sounds.list', query);
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <Box pb='x20'>
@@ -39,19 +37,24 @@ function EditCustomSound({ _id, cache, ...props }) {
 		return <Box fontScale='h1' pb='x20'>{error}</Box>;
 	}
 
-	return <EditSound data={data.sounds[0]} {...props}/>;
+	const handleChange = () => {
+		onChange && onChange();
+		reload && reload();
+	};
+
+	return <EditSound data={data.sounds[0]} onChange={handleChange} {...props}/>;
 }
 
 function EditSound({ close, onChange, data, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const setModal = useSetModal();
 
 	const { _id, name: previousName } = data || {};
-	const previousSound = data || {};
+	const previousSound = useMemo(() => data || {}, [data]);
 
-	const [name, setName] = useState('');
-	const [sound, setSound] = useState();
-	const setModal = useSetModal();
+	const [name, setName] = useState(() => data?.name ?? '');
+	const [sound, setSound] = useState(() => data ?? {});
 
 	useEffect(() => {
 		setName(previousName || '');
@@ -106,24 +109,36 @@ function EditSound({ close, onChange, data, ...props }) {
 		onChange();
 	}, [saveAction, sound, onChange]);
 
-	const onDeleteConfirm = useCallback(async () => {
-		try {
-			await deleteCustomSound(_id);
-			setModal(() => <DeleteSuccessModal
-				children={t('Custom_Sound_Has_Been_Deleted')}
-				onClose={() => { setModal(undefined); close(); onChange(); }}
-			/>);
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+	const handleDeleteButtonClick = useCallback(() => {
+		const handleClose = () => {
+			setModal(null);
+			close();
 			onChange();
-		}
-	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange]);
+		};
 
-	const openConfirmDelete = () => setModal(() => <DeleteWarningModal
-		children={t('Custom_Sound_Delete_Warning')}
-		onDelete={onDeleteConfirm}
-		onCancel={() => setModal(undefined)}
-	/>);
+		const handleDelete = async () => {
+			try {
+				await deleteCustomSound(_id);
+				setModal(() => <DeleteSuccessModal
+					children={t('Custom_Sound_Has_Been_Deleted')}
+					onClose={handleClose}
+				/>);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				onChange();
+			}
+		};
+
+		const handleCancel = () => {
+			setModal(null);
+		};
+
+		setModal(() => <DeleteWarningModal
+			children={t('Custom_Sound_Delete_Warning')}
+			onDelete={handleDelete}
+			onCancel={handleCancel}
+		/>);
+	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
 
 	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
 
@@ -156,7 +171,9 @@ function EditSound({ close, onChange, data, ...props }) {
 		<Field>
 			<Field.Row>
 				<ButtonGroup stretch w='full'>
-					<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
+					<Button primary danger onClick={handleDeleteButtonClick}>
+						<Icon name='trash' mie='x4'/>{t('Delete')}
+					</Button>
 				</ButtonGroup>
 			</Field.Row>
 		</Field>

@@ -1,39 +1,63 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 
 import { createEphemeralPortal } from '../../../../client/reactAdapters';
 
 const Dep = new Tracker.Dependency();
-let state;
-let dom;
+
+let container;
+let routeComputation;
+let props;
 let unregister;
-const createAchor = () => {
+
+const createContainer = () => {
 	const div = document.createElement('div');
 	div.id = 'react-user-card';
 	document.body.appendChild(div);
 	return div;
 };
 
-
 export const closeUserCard = () => {
-	if (!dom) {
+	if (!container) {
 		return;
 	}
+
+	if (routeComputation) {
+		routeComputation.stop();
+		routeComputation = undefined;
+	}
+
 	Tracker.afterFlush(() => {
-		unregister = unregister && unregister();
+		if (unregister) {
+			unregister();
+			unregister = undefined;
+		}
 	});
 };
 
-const props = () => {
-	Dep.depend();
-	return state;
-};
-
-export const openUserCard = async ({ ...args }) => {
-	dom = dom || createAchor();
-	state = {
-		onClose: closeUserCard,
+export const openUserCard = async (args) => {
+	props = {
 		...args,
+		onClose: closeUserCard,
 	};
+
 	Dep.changed();
-	unregister = unregister || await createEphemeralPortal(() => import('../../../../client/channel/UserCard'), props, dom);
+
+	container = container || createContainer();
+
+	unregister = unregister || await createEphemeralPortal(
+		() => import('../../../../client/channel/UserCard'), () => {
+			Dep.depend();
+			return props;
+		},
+		container,
+	);
+
+	routeComputation = routeComputation || Tracker.autorun((c) => {
+		FlowRouter.watchPathChange();
+
+		if (!c.firstRun) {
+			closeUserCard();
+		}
+	});
 };

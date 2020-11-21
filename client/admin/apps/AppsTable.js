@@ -1,13 +1,20 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState } from 'react';
 
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
 import { useFilteredApps } from './hooks/useFilteredApps';
-import { AppDataContext } from './AppProvider';
 import AppRow from './AppRow';
 import FilterByText from '../../components/FilterByText';
+
+const filterFunction = (text) => {
+	if (!text) {
+		return (app) => app.installed;
+	}
+
+	return (app) => app.installed && app.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+};
 
 function AppsTable() {
 	const t = useTranslation();
@@ -18,17 +25,13 @@ function AppsTable() {
 	const [sort, setSort] = useState(() => ['name', 'asc']);
 
 	const { text, current, itemsPerPage } = params;
-	const { data, dataCache } = useContext(AppDataContext);
+
 	const [filteredApps, filteredAppsCount] = useFilteredApps({
+		filterFunction,
 		text: useDebouncedValue(text, 500),
 		current,
 		itemsPerPage,
 		sort: useDebouncedValue(sort, 200),
-		data: useMemo(
-			() => (data.length ? data.filter((current) => current.installed) : null),
-			[dataCache],
-		),
-		dataCache,
 	});
 
 	const [sortBy, sortDirection] = sort;

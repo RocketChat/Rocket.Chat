@@ -125,10 +125,10 @@
 						{{> tokenpass extensionsConfig}}
 					{{/if}}
 				{{/if}}
+				<div class="create-channel__inputs">
+					<input form='create-channel' class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}} value="{{_ "Create"}}" />
+				</div>
 			</form>
-			<div class="create-channel__inputs">
-				<input form='create-channel' class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}} value="{{_ "Create"}}" />
-			</div>
 		</div>
 		{{#each roomType in roomTypesAfterStandard}}
 			<div class="room-type-creation">

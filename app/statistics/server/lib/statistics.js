@@ -19,10 +19,11 @@ import {
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
-import { Apps } from '../../../apps/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import { NotificationQueue } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
+import { getAppsStatistics } from './getAppsStatistics';
+import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 
 const wizardFields = [
 	'Organization_Type',
@@ -154,12 +155,7 @@ export const statistics = {
 		statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
 		statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
-		statistics.apps = {
-			engineVersion: Info.marketplaceApiVersion,
-			enabled: Apps.isEnabled(),
-			totalInstalled: Apps.isInitialized() && Apps.getManager().get().length,
-			totalActive: Apps.isInitialized() && Apps.getManager().get({ enabled: true }).length,
-		};
+		statistics.apps = getAppsStatistics();
 
 		const integrations = Promise.await(Integrations.model.rawCollection().find({}, {
 			projection: {
@@ -181,6 +177,8 @@ export const statistics = {
 		};
 
 		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
+
+		statistics.enterprise = getEnterpriseStatistics();
 
 		return statistics;
 	},

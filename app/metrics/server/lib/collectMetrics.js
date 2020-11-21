@@ -12,6 +12,7 @@ import { Migrations } from '../../../migrations';
 import { settings } from '../../../settings';
 import { Statistics } from '../../../models';
 import { metrics } from './metrics';
+import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
 
 Facts.incrementServerFact = function(pkg, fact, increment) {
 	metrics.meteorFacts.inc({ pkg, fact }, increment);
@@ -61,6 +62,13 @@ const setPrometheusData = async () => {
 	metrics.totalPrivateGroupMessages.set(statistics.totalPrivateGroupMessages);
 	metrics.totalDirectMessages.set(statistics.totalDirectMessages);
 	metrics.totalLivechatMessages.set(statistics.totalLivechatMessages);
+
+	// Apps metrics
+	const { totalInstalled, totalActive, totalFailed } = getAppsStatistics();
+
+	metrics.totalAppsInstalled.set(totalInstalled || 0);
+	metrics.totalAppsEnabled.set(totalActive || 0);
+	metrics.totalAppsFailed.set(totalFailed || 0);
 
 	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
 	metrics.oplogQueue.set(oplogQueue);

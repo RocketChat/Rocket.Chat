@@ -229,7 +229,6 @@ const code = {
 	'```javascript\nvar a = \'log\';\nconsole.log(a);```': codeWrapper('<span class="hljs-keyword">var</span> a = <span class="hljs-string">\'log\'</span>;\n<span class="hljs-built_in">console</span>.log(a);', 'javascript'),
 	'```*code*```': codeWrapper('<span class="hljs-emphasis">*code*</span>', 'markdown'),
 	'```**code**```': codeWrapper('<span class="hljs-strong">**code**</span>', 'markdown'),
-	'```_code_```': codeWrapper('<span class="hljs-variable">_code_</span>', 'sqf'),
 	'```__code__```': codeWrapper('<span class="hljs-strong">__code__</span>', 'markdown'),
 };
 

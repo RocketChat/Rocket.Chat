@@ -7,19 +7,15 @@ import EditCustomUserStatus from './EditCustomUserStatus';
 
 type EditCustomUserStatusWithDataProps = {
 	_id: string;
-	cache: unknown;
 	close: () => void;
 	onChange: () => void;
 };
 
-export const EditCustomUserStatusWithData: FC<EditCustomUserStatusWithDataProps> = ({ _id, cache, ...props }) => {
+export const EditCustomUserStatusWithData: FC<EditCustomUserStatusWithDataProps> = ({ _id, onChange, ...props }) => {
 	const t = useTranslation();
-	const query = useMemo(() => ({
-		query: JSON.stringify({ _id }),
-		// TODO: remove cache. Is necessary for data invalidation
-	}), [_id, cache]);
+	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { data, state, error } = useEndpointDataExperimental<{
+	const { data, state, error, reload } = useEndpointDataExperimental<{
 		statuses: unknown[];
 	}>('custom-user-status.list', query);
 
@@ -43,7 +39,12 @@ export const EditCustomUserStatusWithData: FC<EditCustomUserStatusWithDataProps>
 		return <Box fontScale='h1' pb='x20'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Box>;
 	}
 
-	return <EditCustomUserStatus data={data.statuses[0]} {...props}/>;
+	const handleChange = (): void => {
+		onChange && onChange();
+		reload && reload();
+	};
+
+	return <EditCustomUserStatus data={data.statuses[0]} onChange={handleChange} {...props}/>;
 };
 
 export default EditCustomUserStatusWithData;

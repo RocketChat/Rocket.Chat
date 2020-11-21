@@ -8,7 +8,7 @@ let state;
 let dom;
 let unregister;
 
-const createAchor = () => {
+const createAnchor = () => {
 	const div = document.createElement('div');
 	div.id = 'react-tooltip';
 	document.body.appendChild(div);
@@ -29,7 +29,7 @@ export const closeTooltip = () => {
 };
 
 export const openToolTip = async (title, anchor) => {
-	dom = dom || createAchor();
+	dom = dom || createAnchor();
 	state = {
 		title,
 		anchor,

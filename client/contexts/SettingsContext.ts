@@ -60,7 +60,7 @@ export const useSettings = (query?: SettingsContextQuery): ISetting[] => {
 export const useSettingsDispatch = (): ((changes: Partial<ISetting>[]) => Promise<void>) =>
 	useContext(SettingsContext).dispatch;
 
-export const useSettingSetValue = <T>(_id: SettingId): ((value: T) => Promise<void>) => {
+export const useSettingSetValue = <T extends ISetting['value']>(_id: SettingId): ((value: T) => Promise<void>) => {
 	const dispatch = useSettingsDispatch();
 	return useCallback((value: T) => dispatch([{ _id, value }]), [dispatch, _id]);
 };

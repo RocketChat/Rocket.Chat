@@ -137,7 +137,7 @@ export class LivechatRooms extends Base {
 		return this.find(query, options);
 	}
 
-	findOneById(_id, fields) {
+	findOneById(_id, fields = {}) {
 		const options = {};
 
 		if (fields) {

@@ -12,12 +12,12 @@ import DeleteWarningModal from '../../components/DeleteWarningModal';
 export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const setModal = useSetModal();
 
 	const { _id, name: previousName, statusType: previousStatusType } = data || {};
 
-	const [name, setName] = useState('');
-	const [statusType, setStatusType] = useState('');
-	const setModal = useSetModal();
+	const [name, setName] = useState(() => data?.name ?? '');
+	const [statusType, setStatusType] = useState(() => data?.statusType ?? '');
 
 	useEffect(() => {
 		setName(previousName || '');
@@ -44,24 +44,36 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		}
 	}, [saveStatus, _id, previousName, previousStatusType, name, statusType, dispatchToastMessage, t, onChange]);
 
-	const onDeleteConfirm = useCallback(async () => {
-		try {
-			await deleteStatus(_id);
-			setModal(() => <DeleteSuccessModal
-				children={t('Custom_User_Status_Has_Been_Deleted')}
-				onClose={() => { setModal(undefined); close(); onChange(); }}
-			/>);
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+	const handleDeleteButtonClick = useCallback(() => {
+		const handleClose = () => {
+			setModal(null);
+			close();
 			onChange();
-		}
-	}, [_id, close, deleteStatus, dispatchToastMessage, onChange]);
+		};
 
-	const openConfirmDelete = () => setModal(() => <DeleteWarningModal
-		children={t('Custom_User_Status_Delete_Warning')}
-		onDelete={onDeleteConfirm}
-		onCancel={() => setModal(undefined)}
-	/>);
+		const handleDelete = async () => {
+			try {
+				await deleteStatus(_id);
+				setModal(() => <DeleteSuccessModal
+					children={t('Custom_User_Status_Has_Been_Deleted')}
+					onClose={handleClose}
+				/>);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				onChange();
+			}
+		};
+
+		const handleCancel = () => {
+			setModal(null);
+		};
+
+		setModal(() => <DeleteWarningModal
+			children={t('Custom_User_Status_Delete_Warning')}
+			onDelete={handleDelete}
+			onCancel={handleCancel}
+		/>);
+	}, [_id, close, deleteStatus, dispatchToastMessage, onChange, setModal, t]);
 
 	const presenceOptions = [
 		['online', t('Online')],
@@ -94,7 +106,9 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		<Field>
 			<Field.Row>
 				<ButtonGroup stretch w='full'>
-					<Button primary danger onClick={openConfirmDelete}><Icon name='trash' mie='x4'/>{t('Delete')}</Button>
+					<Button primary danger onClick={handleDeleteButtonClick}>
+						<Icon name='trash' mie='x4'/>{t('Delete')}
+					</Button>
 				</ButtonGroup>
 			</Field.Row>
 		</Field>

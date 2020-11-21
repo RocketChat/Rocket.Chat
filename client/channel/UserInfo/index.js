@@ -8,7 +8,7 @@ import {
 } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import * as UserStatus from '../../components/basic/UserStatus';
+import { ReactiveUserStatus } from '../../components/basic/UserStatus';
 import UserCard from '../../components/basic/UserCard';
 import { FormSkeleton } from '../../admin/users/Skeleton';
 import VerticalBar from '../../components/basic/VerticalBar';
@@ -33,10 +33,11 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 	const user = useMemo(() => {
 		const { user } = data || { user: {} };
 		const {
+			_id,
 			name,
 			username,
 			roles = [],
-			status,
+			status = null,
 			statusText,
 			bio,
 			utcOffset,
@@ -57,7 +58,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			utcOffset,
 			createdAt: user.createdAt,
 			// localTime: <LocalTime offset={utcOffset} />,
-			status: UserStatus.getStatus(status),
+			status: status && <ReactiveUserStatus uid={_id} presence={status} />,
 			customStatus: statusText,
 			nickname,
 		};

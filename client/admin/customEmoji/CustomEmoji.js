@@ -16,8 +16,8 @@ function CustomEmoji({
 	const t = useTranslation();
 
 	const header = useMemo(() => [
-		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'aliases'} w='x200'>{t('Aliases')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key='name' direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key='aliases' w='x200'>{t('Aliases')}</GenericTable.HeaderCell>,
 	], [onHeaderClick, sort, t]);
 
 	const renderRow = (emojis) => {
@@ -31,8 +31,8 @@ function CustomEmoji({
 	return <GenericTable
 		header={header}
 		renderRow={renderRow}
-		results={data.emojis}
-		total={data.total}
+		results={data?.emojis ?? []}
+		total={data?.total ?? 0}
 		setParams={setParams}
 		params={params}
 		renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}

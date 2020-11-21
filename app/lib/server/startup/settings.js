@@ -61,6 +61,10 @@ settings.addGroup('Accounts', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Accounts_AllowPasswordChangeForOAuthUsers', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.add('Accounts_AllowEmailNotifications', true, {
 		type: 'boolean',
 		public: true,
@@ -1043,6 +1047,10 @@ settings.addGroup('Message', function() {
 		public: true,
 	});
 	this.add('Message_BadWordsFilterList', '', {
+		type: 'string',
+		public: true,
+	});
+	this.add('Message_BadWordsWhitelist', '', {
 		type: 'string',
 		public: true,
 	});

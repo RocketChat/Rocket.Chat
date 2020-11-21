@@ -5,73 +5,18 @@ import { roomTypes } from '../../../app/utils';
 import { hasPermission } from '../../../app/authorization';
 import { Rooms } from '../../../app/models';
 import { settings } from '../../../app/settings';
-import './emitter';
-
-export const fields = {
-	_id: 1,
-	name: 1,
-	fname: 1,
-	t: 1,
-	cl: 1,
-	u: 1,
-	lm: 1,
-	// usernames: 1,
-	topic: 1,
-	announcement: 1,
-	announcementDetails: 1,
-	muted: 1,
-	unmuted: 1,
-	_updatedAt: 1,
-	archived: 1,
-	jitsiTimeout: 1,
-	description: 1,
-	default: 1,
-	customFields: 1,
-	lastMessage: 1,
-	retention: 1,
-	prid: 1,
-	avatarETag: 1,
-	usersCount: 1,
-
-	// @TODO create an API to register this fields based on room type
-	livechatData: 1,
-	tags: 1,
-	sms: 1,
-	facebook: 1,
-	code: 1,
-	joinCodeRequired: 1,
-	open: 1,
-	v: 1,
-	label: 1,
-	ro: 1,
-	reactWhenReadOnly: 1,
-	sysMes: 1,
-	sentiment: 1,
-	tokenpass: 1,
-	streamingOptions: 1,
-	broadcast: 1,
-	encrypted: 1,
-	e2eKeyId: 1,
-	departmentId: 1,
-	servedBy: 1,
-	priorityId: 1,
-	transcriptRequest: 1,
-
-	// fields used by DMs
-	usernames: 1,
-	uids: 1,
-};
+import { roomFields } from '../../modules/watchers/publishFields';
 
 const roomMap = (record) => {
 	if (record) {
-		return _.pick(record, ...Object.keys(fields));
+		return _.pick(record, ...Object.keys(roomFields));
 	}
 	return {};
 };
 
 Meteor.methods({
 	'rooms/get'(updatedAt) {
-		const options = { fields };
+		const options = { fields: roomFields };
 
 		if (!Meteor.userId()) {
 			if (settings.get('Accounts_AllowAnonymousRead') === true) {

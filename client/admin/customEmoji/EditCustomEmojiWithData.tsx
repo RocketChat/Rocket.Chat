@@ -8,17 +8,13 @@ import { EmojiDescriptor } from './types';
 
 type EditCustomEmojiWithDataProps = {
 	_id: string;
-	cache: unknown;
 	close: () => void;
 	onChange: () => void;
 };
 
-const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, cache, onChange, ...props }) => {
+const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChange, ...props }) => {
 	const t = useTranslation();
-	const query = useMemo(() => ({
-		query: JSON.stringify({ _id }),
-	// TODO: remove cache. Is necessary for data invalidation
-	}), [_id, cache]);
+	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
 	const {
 		data = {
@@ -28,6 +24,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, cache,
 		},
 		state,
 		error,
+		reload,
 	} = useEndpointDataExperimental<{
 		emojis?: {
 			update: EmojiDescriptor[];
@@ -54,7 +51,12 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, cache,
 		return <Box fontScale='h1' pb='x20'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Box>;
 	}
 
-	return <EditCustomEmoji data={data.emojis.update[0]} onChange={onChange} {...props}/>;
+	const handleChange = (): void => {
+		onChange && onChange();
+		reload && reload();
+	};
+
+	return <EditCustomEmoji data={data.emojis.update[0]} onChange={handleChange} {...props}/>;
 };
 
 export default EditCustomEmojiWithData;

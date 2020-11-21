@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Tag } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 
 import { useMethod } from '../../contexts/ServerContext';
@@ -10,13 +10,31 @@ function PlanTag() {
 	const getTags = useMethod('license:getTags');
 
 	useEffect(() => {
-		(async () => {
-			const tags = await getTags();
-			setPlans([process.env.NODE_ENV === 'development' && { name: 'development', color: 'primary-600' }, ...tags].filter(Boolean).map((plan) => ({ plan: plan.name, background: plan.color })));
-		})();
-	}, []);
+		const developmentTag = process.env.NODE_ENV === 'development'
+			? { name: 'development', color: '#095ad2' }
+			: null;
 
-	return plans.map(({ plan, background }) => <Tag key={plan} verticalAlign='middle' backgroundColor={background} marginInline='x4' color='#fff' textTransform='capitalize'>{plan}</Tag>);
+		const fetchTags = async () => {
+			const tags = await getTags();
+			setPlans([developmentTag, ...tags].filter(Boolean).map((plan) => ({ plan: plan.name, background: plan.color })));
+		};
+
+		fetchTags();
+	}, [getTags, setPlans]);
+
+	return plans.map(({ plan, background }) => (
+		<Box marginInline='x4' display='inline-block' verticalAlign='middle' key={plan}>
+			<Tag
+				style={{
+					color: '#fff',
+					backgroundColor: background,
+					textTransform: 'capitalize',
+				}}
+			>
+				{plan}
+			</Tag>
+		</Box>
+	));
 }
 
 export default PlanTag;

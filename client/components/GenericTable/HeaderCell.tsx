@@ -6,8 +6,8 @@ import SortIcon from './SortIcon';
 type HeaderCellProps = {
 	active?: boolean;
 	direction?: 'asc' | 'desc';
-	sort?: boolean;
-	onClick?: (sort: boolean) => void;
+	sort?: string;
+	onClick?: (sort: string) => void;
 };
 
 const HeaderCell: FC<HeaderCellProps> = ({
@@ -18,7 +18,7 @@ const HeaderCell: FC<HeaderCellProps> = ({
 	onClick,
 	...props
 }) => {
-	const fn = useCallback(() => onClick && onClick(!!sort), [sort, onClick]);
+	const fn = useCallback(() => onClick && sort && onClick(sort), [sort, onClick]);
 	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
 		<Box display='flex' alignItems='center' wrap='no-wrap'>
 			{children}

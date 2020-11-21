@@ -1,14 +1,14 @@
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { isRtl } from '../../../utils';
 
 const sideNavW = 280;
 const map = (x, in_min, in_max, out_min, out_max) => (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 
-export const menu = new class extends EventEmitter {
+export const menu = new class extends Emitter {
 	constructor() {
 		super();
 		this._open = false;

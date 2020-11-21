@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 
 import { PublicSettingsCachedCollection } from '../../../../client/lib/settings/PublicSettingsCachedCollection';
-import { SettingsBase, SettingValue } from '../../lib/settings';
+import { SettingsBase } from '../../lib/settings';
+import { SettingValue } from '../../../../definition/ISetting';
 
 class Settings extends SettingsBase {
 	cachedCollection = PublicSettingsCachedCollection.get()

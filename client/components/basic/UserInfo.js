@@ -46,7 +46,9 @@ export const UserInfo = React.memo(function UserInfo({
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
-		<Avatar size={'x332'} username={username}/>
+		<Box>
+			<Avatar size={'x332'} username={username} etag={data?.avatarETag}/>
+		</Box>
 
 		{actions}
 

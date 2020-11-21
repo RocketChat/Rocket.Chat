@@ -100,14 +100,6 @@
 		}
 	}
 
-	& .account-box .options {
-		direction: ltr;
-
-		& > .wrapper {
-			direction: rtl;
-		}
-	}
-
 	& .flex-tab-container {
 		border-width: 0 1px 0 0;
 	}

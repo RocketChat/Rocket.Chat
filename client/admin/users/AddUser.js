@@ -14,7 +14,7 @@ export function AddUser({ roles, ...props }) {
 
 	const router = useRoute('admin-users');
 
-	const roleData = useEndpointData('roles.list', '') || {};
+	const roleData = useEndpointData('roles.list', '');
 
 	const {
 		values,
@@ -43,10 +43,7 @@ export function AddUser({ roles, ...props }) {
 		id,
 	}), [router]);
 
-	// TODO: remove JSON.stringify. Is used to keep useEndpointAction from rerendering the page indefinitely.
-	const saveQuery = useMemo(() => values, [JSON.stringify(values)]);
-
-	const saveAction = useEndpointAction('POST', 'users.create', saveQuery, t('User_created_successfully'));
+	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully'));
 
 	const handleSave = useCallback(async () => {
 		const result = await saveAction();
@@ -55,7 +52,7 @@ export function AddUser({ roles, ...props }) {
 		}
 	}, [goToUser, saveAction]);
 
-	const availableRoles = useMemo(() => (roleData && roleData.roles ? roleData.roles.map(({ _id, description }) => [_id, description || _id]) : []), [roleData]);
+	const availableRoles = useMemo(() => roleData?.roles?.map(({ _id, description }) => [_id, description || _id]) ?? [], [roleData]);
 
 	const append = useMemo(() => <Field>
 		<Field.Row>

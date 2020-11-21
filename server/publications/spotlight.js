@@ -130,7 +130,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 		return users;
 	}
 
-	const canListOutsiders = hasAllPermission(userId, 'view-outside-room', 'view-d-room');
+	const canListOutsiders = hasAllPermission(userId, ['view-outside-room', 'view-d-room']);
 	const canListInsiders = canListOutsiders || (rid && canAccessRoom(room, { _id: userId }));
 
 	// If can't list outsiders and, wither, the rid was not passed or the user has no access to the room, return

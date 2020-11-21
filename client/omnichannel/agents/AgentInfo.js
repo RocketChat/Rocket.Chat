@@ -6,7 +6,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from '../../components/basic/VerticalBar';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { UserInfo } from '../../components/basic/UserInfo';
-import * as UserStatus from '../../components/basic/UserStatus';
+import { UserStatus } from '../../components/basic/UserStatus';
 import { FormSkeleton } from './Skeleton';
 import { formsSubscription } from '../additionalForms';
 
@@ -41,8 +41,6 @@ export const AgentInfo = React.memo(function AgentInfo({
 		status: userStatus,
 	} = user;
 
-	const status = UserStatus.getStatus(userStatus);
-
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
 		<UserInfo.Avatar size={'x332'} username={username}/>
@@ -52,7 +50,7 @@ export const AgentInfo = React.memo(function AgentInfo({
 		</ButtonGroup>
 
 		<Margins block='x4'>
-			<UserInfo.Username name={username} status={status} />
+			<UserInfo.Username name={username} status={<UserStatus status={userStatus} />} />
 
 			{statusLivechat && <>
 				<UserInfo.Label>{t('Livechat_status')}</UserInfo.Label>
