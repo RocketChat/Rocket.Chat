@@ -14,7 +14,7 @@ const options = {
 function MarkdownText({ content, preserveHtml = false, ...props }) {
 	const __html = useMemo(() => content && marked(preserveHtml ? content : s.escapeHTML(content), options), [content, preserveHtml]);
 
-	return <Box dangerouslySetInnerHTML={{ __html }} withRichContent {...props} />;
+	return __html ? <Box dangerouslySetInnerHTML={{ __html }} withRichContent {...props} /> : null;
 }
 
 export default MarkdownText;

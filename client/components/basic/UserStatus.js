@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBullet } from '@rocket.chat/fuselage';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { Presence } from '../../lib/presence';
@@ -34,7 +35,7 @@ export const colors = {
 };
 
 export const usePresence = (uid, presence) => {
-	const [status, setStatus] = useState(presence);
+	const [status, setStatus] = useSafely(useState(presence));
 	useEffect(() => {
 		const handle = ({ status = 'loading' }) => {
 			setStatus(status);
@@ -43,7 +44,7 @@ export const usePresence = (uid, presence) => {
 		return () => {
 			Presence.stop(uid, handle);
 		};
-	}, [uid]);
+	}, [setStatus, uid]);
 
 	return status;
 };

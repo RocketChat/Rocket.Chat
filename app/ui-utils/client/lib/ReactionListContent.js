@@ -45,7 +45,11 @@ export function Username({ username, displayName, roomInstance, onClose }) {
 		},
 	}));
 
-	return <Tag onClick={handleUserCard} marginInlineEnd='x4' key={displayName}>{displayName}</Tag>;
+	return (
+		<Box marginInlineEnd='x4' onClick={handleUserCard} key={displayName}>
+			<Tag>{displayName}</Tag>
+		</Box>
+	);
 }
 
 export default function ReactionListContent({ reactions, roomInstance, onClose }) {

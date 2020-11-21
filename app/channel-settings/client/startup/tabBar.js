@@ -11,5 +11,6 @@ Meteor.startup(() => {
 		icon: 'info-circled',
 		template: 'channelSettings',
 		order: 7,
+		full: true,
 	});
 });
