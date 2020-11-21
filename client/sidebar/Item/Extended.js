@@ -30,6 +30,8 @@ const Extended = React.memo(({
 		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
 	});
 
+	const handleMenuEvent = { [isReduceMotionEnabled ? 'onTransitionEnd' : 'onMouseEnter']: handleMenu };
+
 	return <Sidebar.Item aria-selected={selected} selected={selected} highlighted={unread} {...props} href={href} clickable={!!href}>
 		{ avatar && <Sidebar.Item.Avatar>
 			{ avatar }
@@ -47,7 +49,7 @@ const Extended = React.memo(({
 					{ subtitle }
 				</Sidebar.Item.Subtitle>
 				<Sidebar.Item.Badge>{ badges }</Sidebar.Item.Badge>
-				{menu && <Sidebar.Item.Menu onTransitionEnd={isReduceMotionEnabled ? undefined : handleMenu} onMouseEnter={isReduceMotionEnabled ? handleMenu : undefined}>{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}</Sidebar.Item.Menu>}
+				{menu && <Sidebar.Item.Menu {...handleMenuEvent}>{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}</Sidebar.Item.Menu>}
 			</Sidebar.Item.Wrapper>
 		</Sidebar.Item.Content>
 		{ actions && <Sidebar.Item.Container>

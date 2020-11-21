@@ -24,6 +24,8 @@ const Medium = React.memo(({
 	const handleMenu = useMutableCallback((e) => {
 		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
 	});
+	const handleMenuEvent = { [isReduceMotionEnabled ? 'onTransitionEnd' : 'onMouseEnter']: handleMenu };
+
 	return <Sidebar.Item {...props} href={href} clickable={!!href}>
 		{avatar && <Sidebar.Item.Avatar>
 			{ avatar }
@@ -32,7 +34,7 @@ const Medium = React.memo(({
 			{ icon }
 			<Sidebar.Item.Title data-qa='sidebar-item-title' className={unread && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title>
 			{badges}
-			{menu && <Sidebar.Item.Menu onTransitionEnd={isReduceMotionEnabled ? undefined : handleMenu} onMouseEnter={isReduceMotionEnabled ? handleMenu : undefined}>{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}</Sidebar.Item.Menu>}
+			{menu && <Sidebar.Item.Menu {...handleMenuEvent}>{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}</Sidebar.Item.Menu>}
 		</Sidebar.Item.Content>
 		{ actions && <Sidebar.Item.Container>
 			{<Sidebar.Item.Actions>
