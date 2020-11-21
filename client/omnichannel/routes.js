@@ -30,7 +30,7 @@ registerOmnichannelRoute('/webhooks', {
 
 registerOmnichannelRoute('/customfields/:context?/:id?', {
 	name: 'omnichannel-customfields',
-	lazyRouteComponent: () => import('./customFields/CustomFieldsRouter'),
+	lazyRouteComponent: () => import('./customFields/CustomFieldsRoute'),
 });
 
 registerOmnichannelRoute('/appearance', {

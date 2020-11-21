@@ -15,5 +15,6 @@ addAction('autotranslate', () => {
 		icon: 'language',
 		template: 'autoTranslateFlexTab',
 		order: 20,
+		full: true,
 	} : null), [autoTranslateEnabled, hasPermission]);
 });

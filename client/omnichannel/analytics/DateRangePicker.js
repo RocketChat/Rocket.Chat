@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Box, InputBox, Menu, Margins } from '@rocket.chat/fuselage';
+import { Box, InputBox, Menu, Margins, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -112,9 +112,19 @@ const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 
 	return <Box mi='neg-x4' {...props}>
 		<Margins inline='x4'>
-			<InputBox type='date' onChange={handleStart} max={todayDate} value={start}/>
-			<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end}/>
-			<Menu options={options}/>
+			<Field>
+				<Field.Label>{t('Start')}</Field.Label>
+				<Field.Row>
+					<InputBox type='date' onChange={handleStart} max={todayDate} value={start}/>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('End')}</Field.Label>
+				<Field.Row>
+					<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end}/>
+					<Menu options={options}/>
+				</Field.Row>
+			</Field>
 		</Margins>
 	</Box>;
 };
