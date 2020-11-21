@@ -1,20 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useMediaQueries } from '@rocket.chat/fuselage-hooks';
 
-const QUERY = '(prefers-reduced-motion: no-preference)';
-
-const getInitialState = () => !window.matchMedia(QUERY).matches;
 
 export const usePrefersReducedMotion = () => {
-	const [prefersReducedMotion, setPrefersReducedMotion] = useState(getInitialState);
-	useEffect(() => {
-		const mediaQueryList = window.matchMedia(QUERY);
-		const listener = (event) => {
-			setPrefersReducedMotion(!event.matches);
-		};
-		mediaQueryList.addEventListener('change', listener);
-		return () => {
-			mediaQueryList.addEventListener('change', listener);
-		};
-	}, []);
-	return prefersReducedMotion;
+	console.log(useMediaQueries('(prefers-reduced-motion: reduce)')[0]);
+	return useMediaQueries('(prefers-reduced-motion: reduce)')[0];
 };

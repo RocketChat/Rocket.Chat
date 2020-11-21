@@ -30,7 +30,7 @@ const Extended = React.memo(({
 		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
 	});
 
-	const handleMenuEvent = { [isReduceMotionEnabled ? 'onTransitionEnd' : 'onMouseEnter']: handleMenu };
+	const handleMenuEvent = { [isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: handleMenu };
 
 	return <Sidebar.Item aria-selected={selected} selected={selected} highlighted={unread} {...props} href={href} clickable={!!href}>
 		{ avatar && <Sidebar.Item.Avatar>

@@ -24,7 +24,7 @@ const Condensed = React.memo(({
 	const handleMenu = useMutableCallback((e) => {
 		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
 	});
-	const handleMenuEvent = { [isReduceMotionEnabled ? 'onTransitionEnd' : 'onMouseEnter']: handleMenu };
+	const handleMenuEvent = { [isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: handleMenu };
 
 	return <Sidebar.Item {...props} href={href} clickable={!!href}>
 		{avatar && <Sidebar.Item.Avatar>
