@@ -276,7 +276,7 @@ export const dropzoneHelpers = {
 	},
 };
 
-Template.room.helpers({
+Template.roomOld.helpers({
 	...dropzoneHelpers,
 	isTranslated() {
 		const { state } = Template.instance();
@@ -667,7 +667,7 @@ export const dropzoneEvents = {
 	},
 };
 
-Template.room.events({
+Template.roomOld.events({
 	...dropzoneEvents,
 	'click [data-message-action]'(event, template) {
 		const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
@@ -1062,7 +1062,7 @@ Template.room.events({
 });
 
 
-Template.room.onCreated(function() {
+Template.roomOld.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
 	const rid = this.data._id;
@@ -1223,7 +1223,7 @@ Template.room.onCreated(function() {
 	this.sendToBottomIfNecessaryDebounced = () => {};
 }); // Update message to re-render DOM
 
-Template.room.onDestroyed(function() {
+Template.roomOld.onDestroyed(function() {
 	if (this.rolesObserve) {
 		this.rolesObserve.stop();
 	}
@@ -1240,7 +1240,7 @@ Template.room.onDestroyed(function() {
 	callbacks.remove('streamNewMessage', this.data._id);
 });
 
-Template.room.onRendered(function() {
+Template.roomOld.onRendered(function() {
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {
