@@ -2375,7 +2375,7 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('token').and.to.be.a('string');
-					expect(res.body).to.have.property('tokenExpires').and.to.be.a('date');
+					expect(res.body).to.have.property('tokenExpires').and.to.be.a('string');
 				})
 				.then(tryAuthentication);
 		});
