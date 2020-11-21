@@ -20,7 +20,7 @@ const OmnichannelSection = React.memo((props) => {
 	};
 
 	const directoryIcon = {
-		title: t('Omnichannel_Directory'),
+		title: t('Directory'),
 		icon: 'contact',
 	};
 
