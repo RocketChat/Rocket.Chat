@@ -7,7 +7,7 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useForm } from '../../../hooks/useForm';
 import OutgoingWebhookForm from '../OutgoiongWebhookForm';
-import { stringAsArray } from '../integrationsUtils.ts';
+import { triggerWordsToArray } from '../helpers/triggerWords.ts';
 
 const defaultData = {
 	type: 'webhook-outgoing',
@@ -48,7 +48,7 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 	const params = useMemo(() => ({
 		...formValues,
 		urls: urls.split('\n'),
-		triggerWords: stringAsArray(triggerWords),
+		triggerWords: triggerWordsToArray(triggerWords),
 	}), [formValues, triggerWords, urls]);
 	const saveIntegration = useEndpointAction('POST', 'integrations.create', params, t('Integration_added'));
 
