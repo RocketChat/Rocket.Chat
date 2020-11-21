@@ -1068,6 +1068,7 @@ Template.roomOld.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
 	const rid = this.data._id;
+	this.tabBar = this.data.tabBar;
 
 	this.onFile = (filesToUpload) => {
 		fileUpload(filesToUpload, chatMessages[rid].input, { rid });
@@ -1127,7 +1128,6 @@ Template.roomOld.onCreated(function() {
 	this.flexTemplate = new ReactiveVar();
 
 	this.groupDetail = new ReactiveVar();
-	this.tabBar = new RocketChatTabBar();
 	this.tabBar.showGroup(FlowRouter.current().route.name);
 	callbacks.run('onCreateRoomTabBar', {
 		tabBar: this.tabBar,

@@ -2,10 +2,10 @@ import React, { memo } from 'react';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { useMethod } from '../../../contexts/ServerContext';
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import Header from '../../../components/basic/Header';
+import { useMethod } from '../../../../contexts/ServerContext';
+import { useSetting } from '../../../../contexts/SettingsContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import Header from '../../../../components/basic/Header';
 
 const Encrypted = ({ room }) => {
 	const t = useTranslation();

@@ -2,11 +2,11 @@ import { HTML } from 'meteor/htmljs';
 
 import { createTemplateForComponent } from '../reactAdapters';
 
-createTemplateForComponent('Header', () => import('./Header'), {
-	renderContainerView: () => HTML.DIV(), // eslint-disable-line new-cap
-});
+// createTemplateForComponent('Header', () => import('../views/room/Header'), {
+// 	renderContainerView: () => HTML.DIV(), // eslint-disable-line new-cap
+// });
 
-createTemplateForComponent('Burger', () => import('./Header/Burger'), {
+createTemplateForComponent('Burger', () => import('../views/room/Header/Burger'), {
 	renderContainerView: () => HTML.DIV(), // eslint-disable-line new-cap
 });
 

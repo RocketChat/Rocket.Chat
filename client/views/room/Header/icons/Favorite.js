@@ -2,11 +2,11 @@ import React, { memo } from 'react';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUserSubscription } from '../../../contexts/UserContext';
-import { useSetting } from '../../../contexts/SettingsContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import Header from '../../../components/basic/Header';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useUserSubscription } from '../../../../contexts/UserContext';
+import { useSetting } from '../../../../contexts/SettingsContext';
+import { useMethod } from '../../../../contexts/ServerContext';
+import Header from '../../../../components/basic/Header';
 
 const Favorite = ({ room: { _id, f: favorited = false } }) => {
 	const t = useTranslation();

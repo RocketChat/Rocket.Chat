@@ -1,16 +1,16 @@
 import React, { memo, useCallback, useContext, useEffect } from 'react';
 import { Menu, Option } from '@rocket.chat/fuselage';
-import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
 
-import Header from '../../../components/basic/Header';
-import { ToolboxContext } from '../../lib/Toolbox/ToolboxContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { ToolboxActionConfig } from '../../lib/Toolbox';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { useLayout } from '../../../contexts/LayoutContext';
+import Header from '../../../../components/basic/Header';
+import { ToolboxContext } from '../../../../channel/lib/Toolbox/ToolboxContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { ToolboxActionConfig } from '../../../../channel/lib/Toolbox';
+import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useLayout } from '../../../../contexts/LayoutContext';
 
 const ToolBox = (): JSX.Element => {
 	const { isMobile } = useLayout();
@@ -46,7 +46,7 @@ const ToolBox = (): JSX.Element => {
 		};
 	}, [visibleActions.length, open]);
 
-	const enabled = useReactiveValue(useCallback(() => tabBar.getId(), [tabBar]));
+	const enabled = useReactiveValue(useCallback(() => tabBar?.getId(), [tabBar]));
 
 	return <>
 		{ visibleActions.map(({ id, icon, title, action = actionDefault }, index) => <Header.ToolBoxAction primary={id === enabled} data-toolbox={index} onClick={action} title={t(title)} key={id} icon={icon}/>)}

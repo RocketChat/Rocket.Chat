@@ -2,9 +2,9 @@ import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
 import { useDebouncedState, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Handler } from '@rocket.chat/emitter';
 
-import { ToolboxContext } from '../lib/Toolbox/ToolboxContext';
-import { ToolboxAction, ActionsStore } from '../lib/Toolbox/index';
-import { IRoom } from '../../../definition/IRoom';
+import { ToolboxContext } from '../../../channel/lib/Toolbox/ToolboxContext';
+import { ToolboxAction, ActionsStore } from '../../../channel/lib/Toolbox/index';
+import { IRoom } from '../../../../definition/IRoom';
 
 const groupsDict = {
 	l: 'live',
