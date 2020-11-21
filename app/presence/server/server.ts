@@ -3,10 +3,12 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check, Match } from 'meteor/check';
+import { Promise } from 'meteor/promise';
 
 import { UserPresenceEvents, UserPresenceMonitor } from './monitor';
 import UsersSessions from '../../models/server/models/UsersSessions';
-import Users from '../../models/server/models/Users';
+import { Users } from '../../models/server/raw';
+import { handleUserPresenceAndStatus } from '../../../server/modules/presence/presence.module';
 
 const allowedStatus = ['online', 'away', 'busy', 'offline'];
 
@@ -22,7 +24,7 @@ const checkUser = function(id?: string | null, userId?: string | null): boolean 
 	if (!id || !userId || id === userId) {
 		return true;
 	}
-	const user = Users.findOne(id, { fields: { _id: 1 } });
+	const user = Promise.await(Users.findOne(id, { fields: { _id: 1 } }));
 	if (user) {
 		throw new Meteor.Error('cannot-change-other-users-status');
 	}
@@ -149,9 +151,9 @@ export const UserPresence = {
 		}
 
 		if (status === 'online') {
-			Users.update({ _id: userId, statusDefault: 'online', status: { $ne: 'online' } }, { $set: { status: 'online' } });
+			Promise.await(Users.update({ _id: userId, statusDefault: 'online', status: { $ne: 'online' } }, { $set: { status: 'online' } }));
 		} else if (status === 'away') {
-			Users.update({ _id: userId, statusDefault: 'online', status: { $ne: 'away' } }, { $set: { status: 'away' } });
+			Promise.await(Users.update({ _id: userId, statusDefault: 'online', status: { $ne: 'away' } }, { $set: { status: 'away' } }));
 		}
 	},
 
@@ -166,7 +168,9 @@ export const UserPresence = {
 
 		log('[user-presence] setDefaultStatus', userId, status);
 
-		const update = Users.update({ _id: userId, statusDefault: { $ne: status } }, { $set: { statusDefault: status } });
+		const update = Promise.await(Users.update({ _id: userId, statusDefault: { $ne: status } }, { $set: { statusDefault: status } }));
+		// TODO: this used to notify the frontend, how to do it differently?
+		// const update = UsersOld.update({ _id: userId, statusDefault: { $ne: status } }, { $set: { statusDefault: status } });
 
 		if (update > 0) {
 			UserPresenceMonitor.processUser(userId, { statusDefault: status });
@@ -238,37 +242,17 @@ export const UserPresence = {
 		});
 
 		UserPresenceEvents.on('setStatus', function(userId, status) {
-			const user = Users.findOne(userId);
-			const statusConnection = status;
-
-			if (!user) {
-				return;
-			}
-
-			if (user.statusDefault != null && status !== 'offline' && user.statusDefault !== 'online') {
-				status = user.statusDefault;
-			}
-
-			const query = {
-				_id: userId,
-				$or: [
-					{ status: { $ne: status } },
-					{ statusConnection: { $ne: statusConnection } },
-				],
-			};
-
-			const update = {
-				$set: {
-					status,
-					statusConnection,
+			const { user, result } = Promise.await(handleUserPresenceAndStatus({
+				models: {
+					Users,
 				},
-			};
-
-			const result = Users.update(query, update);
+				userId,
+				status,
+			}));
 
 			// if nothing updated, do not emit anything
 			if (result) {
-				UserPresenceEvents.emit('setUserStatus', user, status, statusConnection);
+				UserPresenceEvents.emit('setUserStatus', user, status, status);
 			}
 		});
 

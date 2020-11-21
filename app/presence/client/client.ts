@@ -25,7 +25,7 @@ class UserPresenceClass {
 	// status;
 
 	constructor() {
-		this.setUserPresenceDebounced = debounce(this.setUserPresence, 1000);
+		this.setUserPresenceDebounced = debounce(this.setUserPresence.bind(this), 1000);
 	}
 
 	/**
@@ -103,9 +103,9 @@ class UserPresenceClass {
 		});
 
 		['mousemove', 'mousedown', 'touchend', 'keydown']
-			.forEach((key) => document.addEventListener(key, this.setOnline));
+			.forEach((key) => document.addEventListener(key, this.setOnline.bind(this)));
 
-		window.addEventListener('focus', this.setOnline);
+		window.addEventListener('focus', this.setOnline.bind(this));
 
 		if (this.awayOnWindowBlur === true) {
 			window.addEventListener('blur', this.setAway);
