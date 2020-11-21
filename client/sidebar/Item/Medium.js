@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Sidebar, ActionButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+
 const Medium = React.memo(({
 	icon,
 	title = '',
@@ -17,6 +19,8 @@ const Medium = React.memo(({
 }) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
+	const isReduceMotionEnabled = usePrefersReducedMotion();
+
 	const handleMenu = useMutableCallback((e) => {
 		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
 	});
@@ -28,7 +32,7 @@ const Medium = React.memo(({
 			{ icon }
 			<Sidebar.Item.Title data-qa='sidebar-item-title' className={unread && 'rcx-sidebar-item--highlighted'}>{title}</Sidebar.Item.Title>
 			{badges}
-			{menu && <Sidebar.Item.Menu onMouseEnter={handleMenu}>{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}</Sidebar.Item.Menu>}
+			{menu && <Sidebar.Item.Menu onTransitionEnd={isReduceMotionEnabled ? undefined : handleMenu} onMouseEnter={isReduceMotionEnabled ? handleMenu : undefined}>{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}</Sidebar.Item.Menu>}
 		</Sidebar.Item.Content>
 		{ actions && <Sidebar.Item.Container>
 			{<Sidebar.Item.Actions>
