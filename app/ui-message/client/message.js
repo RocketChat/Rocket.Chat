@@ -441,8 +441,8 @@ Template.message.helpers({
 		return threadMsg;
 	},
 	showStar() {
-		const { msg } = this;
-		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
+		const { msg, u } = this;
+		return msg.starred && msg.starred.find((by) => by._id === u._id) && !(msg.actionContext === 'starred' || this.context === 'starred');
 	},
 });
 
