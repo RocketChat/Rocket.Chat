@@ -143,7 +143,6 @@ export const openRoom = async function(type, name) {
 					return FlowRouter.go('direct', { rid: result._id }, FlowRouter.current().queryParams);
 				}
 			}
-			console.log(error);
 			Session.set('roomNotFound', { type, name, error });
 			return BlazeLayout.render('main', { center: 'roomNotFound' });
 		}
