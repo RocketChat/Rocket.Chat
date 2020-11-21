@@ -33,8 +33,7 @@ export async function setStatus(uid: string, statusDefault: USER_STATUS, statusT
 
 	if (result.modifiedCount > 0) {
 		const user = await User.findOne<IUser>(query, { projection: { username: 1 } });
-		api.broadcast('userpresence', {
-			action: 'updated',
+		api.broadcast('presence.status', {
 			user: { _id: uid, username: user?.username, status, statusText },
 		});
 	}

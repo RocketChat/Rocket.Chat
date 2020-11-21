@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { DDP_EVENTS } from './constants';
+import { DDP_EVENTS, WS_ERRORS } from './constants';
 import { Account, Presence, MeteorService } from '../../../../server/sdk';
 import { USER_STATUS } from '../../../../definition/UserStatus';
 import { Server } from './Server';
@@ -73,7 +73,7 @@ server.methods({
 		}
 
 		this.userId = result.uid;
-		this.userToken = result.token;
+		this.userToken = result.hashedToken;
 
 		this.emit(DDP_EVENTS.LOGGED);
 
@@ -86,20 +86,50 @@ server.methods({
 			type: result.type,
 		};
 	},
+	async logout() {
+		if (this.userToken && this.userId) {
+			await Account.logout({ userId: this.userId, token: this.userToken });
+		}
+
+		// TODO: run the handles on monolith to track SAU correctly
+		// accounts._successfulLogout(this.connection, this.userId);
+		this.userToken = undefined;
+		this.userId = undefined;
+
+		// Close connection after return success to the method call.
+		// This ensures all the subscriptions will be closed, meteor makes it manually
+		// here https://github.com/meteor/meteor/blob/2377ebe879d9b965d699f599392d4e8047eb7d78/packages/ddp-server/livedata_server.js#L781
+		// re doing the default subscriptions.
+		setTimeout(() => {
+			this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
+		}, 1);
+	},
 	'UserPresence:setDefaultStatus'(status) {
 		const { userId } = this;
+		if (!userId) {
+			return;
+		}
 		return Presence.setStatus(userId, status);
 	},
 	'UserPresence:online'() {
 		const { userId, session } = this;
+		if (!userId) {
+			return;
+		}
 		return Presence.setConnectionStatus(userId, USER_STATUS.ONLINE, session);
 	},
 	'UserPresence:away'() {
 		const { userId, session } = this;
+		if (!userId) {
+			return;
+		}
 		return Presence.setConnectionStatus(userId, USER_STATUS.AWAY, session);
 	},
 	'setUserStatus'(status, statusText) {
 		const { userId } = this;
+		if (!userId) {
+			return;
+		}
 		return Presence.setStatus(userId, status, statusText);
 	},
 	// Copied from /app/livechat/server/methods/setUpConnection.js

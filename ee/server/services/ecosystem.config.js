@@ -18,6 +18,8 @@ module.exports = {
 		instances: 1,
 		env: {
 			MOLECULER_LOG_LEVEL: 'info',
+			TRANSPORTER: 'nats://localhost:4222',
+			MONGO_URL: 'mongodb://localhost:3001/meteor',
 		},
 	})),
 };

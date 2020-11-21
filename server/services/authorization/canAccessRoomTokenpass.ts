@@ -5,7 +5,7 @@ import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 export const AuthorizationTokenpass = proxifyWithWait<IAuthorizationTokenpass>('authorization-tokenpass');
 
 export const canAccessRoomTokenpass: RoomAccessValidator = async (room, user): Promise<boolean> => {
-	if (!room.tokenpass) {
+	if (!room?.tokenpass) {
 		return false;
 	}
 

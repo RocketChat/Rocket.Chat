@@ -32,7 +32,7 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...prop
 	const defaultUrl = room.prid ? getAvatarURL({ roomId: room.prid }) : getAvatarURL({ username: `@${ room.name }` }); // Discussions inherit avatars from the parent room
 
 	return <Box borderRadius='x2' maxWidth='x332' w='full' position='relative' {...props}>
-		<RoomAvatar { ...roomAvatar !== undefined && { url: roomAvatar === null ? defaultUrl : roomAvatar } } room={room} size='332px' maxWidth='100%'/>
+		<RoomAvatar { ...roomAvatar !== undefined && { url: roomAvatar === null ? defaultUrl : roomAvatar } } room={room} size='x332' />
 		<Box className={[css`bottom: 0; right: 0;`]} position='absolute' m='x12'>
 			<ButtonGroup>
 				<Button small title={t('Upload_user_avatar')} onClick={clickUpload}>

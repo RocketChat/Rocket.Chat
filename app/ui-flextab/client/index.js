@@ -8,4 +8,3 @@ import './tabs/inviteUsers';
 import './tabs/createInviteLink';
 import './tabs/membersList';
 import './tabs/uploadedFilesList';
-import './tabs/keyboardShortcuts.html';

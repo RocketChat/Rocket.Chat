@@ -30,7 +30,7 @@ export class ListenersModule {
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
-			notifications.notifyLoggedInThisInstance(`${ uid }/message`, {
+			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
 				...message,
 				_id: String(Date.now()),
@@ -77,7 +77,7 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('roles-change', update);
 		});
 
-		service.onEvent('userpresence', ({ user }) => {
+		service.onEvent('presence.status', ({ user }) => {
 			const {
 				_id, username, status, statusText,
 			} = user;
@@ -181,15 +181,14 @@ export class ListenersModule {
 
 			if (clientAction !== 'removed') {
 				const result = await EnterpriseSettings.changeSettingValue(setting);
-				if (!(result instanceof Error)) {
-					setting.value = result?.value;
+				if (result && !(result instanceof Error) && result.hasOwnProperty('value')) {
+					setting.value = result.value;
 				}
 			}
 
 			if (setting.hidden) {
 				return;
 			}
-
 
 			const value = {
 				_id: setting._id,

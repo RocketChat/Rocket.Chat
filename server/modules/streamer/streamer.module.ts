@@ -13,7 +13,7 @@ export const StreamerCentral = new StreamerCentralClass();
 export type Client = {
 	meteorClient: boolean;
 	ws: any;
-	userId: string;
+	userId?: string;
 	send: Function;
 }
 
@@ -23,13 +23,13 @@ export interface IPublication {
 	connection: Connection;
 	_session: {
 		sendAdded(publicationName: string, id: string, fields: Record<string, any>): void;
-		userId: string;
+		userId?: string;
 		socket?: {
 			send: Function;
 		};
 	};
 	ready: Function;
-	userId: string;
+	userId: string | undefined;
 	client: Client;
 }
 
