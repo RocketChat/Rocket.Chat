@@ -38,8 +38,6 @@ export class Roles extends Base {
 		};
 
 		this.upsert({ _id: name }, { $set: queryData });
-
-		return queryData;
 	}
 
 	addUserRoles(userId, roles, scope) {
