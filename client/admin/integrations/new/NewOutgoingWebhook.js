@@ -7,7 +7,7 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useForm } from '../../../hooks/useForm';
 import OutgoingWebhookForm from '../OutgoiongWebhookForm';
-import { triggerWordsToArray } from '../helpers/triggerWords.ts';
+import { triggerWordsToArray } from '../helpers/triggerWords';
 
 const defaultData = {
 	type: 'webhook-outgoing',
