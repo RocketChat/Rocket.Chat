@@ -3,8 +3,8 @@ import _ from 'underscore';
 
 import { Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { Notifications } from '../../../notifications/server';
 import { hasPermission } from '../functions/hasPermission';
+import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	'authorization:removeUserFromRole'(roleName, username, scope) {
@@ -55,7 +55,7 @@ Meteor.methods({
 
 		const remove = Roles.removeUserRoles(user._id, roleName, scope);
 		if (settings.get('UI_DisplayRoles')) {
-			Notifications.notifyLogged('roles-change', {
+			api.broadcast('user.roleUpdate', {
 				type: 'removed',
 				_id: roleName,
 				u: {

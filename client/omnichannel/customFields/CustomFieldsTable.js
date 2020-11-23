@@ -40,7 +40,10 @@ export function RemoveCustomFieldButton({ _id, reload }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()}/>);
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteAgent}
+			onCancel={() => setModal()}
+		/>);
 	});
 
 	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>

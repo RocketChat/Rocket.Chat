@@ -2,7 +2,7 @@ import { Box, Table, Icon, TextInput, Field, CheckBox, Margins } from '@rocket.c
 import { useMediaQuery, useUniqueId, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
-import { GenericTable, Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import RoomAvatar from '../../components/basic/avatar/RoomAvatar';
 import { roomTypes } from '../../../app/utils/client';
@@ -128,12 +128,12 @@ function RoomsTable() {
 	}
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</Th>,
-		<Th key={'type'} direction={sort[1]} active={sort[0] === 't'} onClick={onHeaderClick} sort='t' w='x100'>{t('Type')}</Th>,
-		<Th key={'users'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount' w='x80'>{t('Users')}</Th>,
-		mediaQuery && <Th key={'messages'} direction={sort[1]} active={sort[0] === 'msgs'} onClick={onHeaderClick} sort='msgs' w='x80'>{t('Msgs')}</Th>,
-		mediaQuery && <Th key={'default'} direction={sort[1]} active={sort[0] === 'default'} onClick={onHeaderClick} sort='default' w='x80' >{t('Default')}</Th>,
-		mediaQuery && <Th key={'featured'} direction={sort[1]} active={sort[0] === 'featured'} onClick={onHeaderClick} sort='featured' w='x80'>{t('Featured')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x200'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'type'} direction={sort[1]} active={sort[0] === 't'} onClick={onHeaderClick} sort='t' w='x100'>{t('Type')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'users'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount' w='x80'>{t('Users')}</GenericTable.HeaderCell>,
+		mediaQuery && <GenericTable.HeaderCell key={'messages'} direction={sort[1]} active={sort[0] === 'msgs'} onClick={onHeaderClick} sort='msgs' w='x80'>{t('Msgs')}</GenericTable.HeaderCell>,
+		mediaQuery && <GenericTable.HeaderCell key={'default'} direction={sort[1]} active={sort[0] === 'default'} onClick={onHeaderClick} sort='default' w='x80' >{t('Default')}</GenericTable.HeaderCell>,
+		mediaQuery && <GenericTable.HeaderCell key={'featured'} direction={sort[1]} active={sort[0] === 'featured'} onClick={onHeaderClick} sort='featured' w='x80'>{t('Featured')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const renderRow = useCallback(({ _id, name, t: type, usersCount, msgs, default: isDefault, featured, usernames, ...args }) => {
@@ -162,7 +162,15 @@ function RoomsTable() {
 		</Table.Row>;
 	}, [mediaQuery, onClick, t]);
 
-	return <GenericTable FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data.rooms} total={data.total} setParams={setParams} params={params}/>;
+	return <GenericTable
+		header={header}
+		renderRow={renderRow}
+		results={data.rooms}
+		total={data.total}
+		setParams={setParams}
+		params={params}
+		renderFilter={({ onChange, ...props }) => <FilterByTypeAndText setFilter={onChange} {...props} />}
+	/>;
 }
 
 export default RoomsTable;

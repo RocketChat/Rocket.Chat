@@ -1,6 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-
-import { RoomTypeConfig, roomTypes, getUserPreference } from '../../utils';
+import { RoomTypeConfig, roomTypes } from '../../utils';
 
 export class DiscussionRoomType extends RoomTypeConfig {
 	constructor() {
@@ -9,13 +7,6 @@ export class DiscussionRoomType extends RoomTypeConfig {
 			order: 25,
 			label: 'Discussion',
 		});
-
-		// we need a custom template in order to have a custom query showing the subscriptions to discussions
-		this.customTemplate = 'DiscussionList';
-	}
-
-	condition() {
-		return getUserPreference(Meteor.userId(), 'sidebarShowDiscussion');
 	}
 }
 

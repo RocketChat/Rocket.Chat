@@ -38,6 +38,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Apps, AppEvents, LivechatNotifications } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 const rooms = {};
 
@@ -1129,7 +1130,7 @@ export const Livechat = {
 		}
 
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			Livechat.stream.emit(room._id, {
+			notifications.streamLivechatRoom.emit(room._id, {
 				type: 'agentStatus',
 				status,
 			});
@@ -1145,7 +1146,7 @@ export const Livechat = {
 	},
 
 	notifyRoomVisitorChange(roomId, visitor) {
-		Livechat.stream.emit(roomId, {
+		notifications.streamLivechatRoom.emit(roomId, {
 			type: 'visitorData',
 			visitor,
 		});
@@ -1177,22 +1178,6 @@ export const Livechat = {
 		return LivechatRooms.findOneById(roomId);
 	},
 };
-
-Livechat.stream = new Meteor.Streamer('livechat-room');
-
-Livechat.stream.allowRead((roomId, extraData) => {
-	const room = LivechatRooms.findOneById(roomId);
-
-	if (!room) {
-		console.warn(`Invalid eventName: "${ roomId }"`);
-		return false;
-	}
-
-	if (room.t === 'l' && extraData && extraData.visitorToken && room.v.token === extraData.visitorToken) {
-		return true;
-	}
-	return false;
-});
 
 settings.get('Livechat_history_monitor_type', (key, value) => {
 	Livechat.historyMonitorType = value;

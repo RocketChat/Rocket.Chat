@@ -20,7 +20,7 @@ const formatPriceAndPurchaseType = (purchaseType, pricingPlans, price) => {
 	return { type: 'Free', price: '-' };
 };
 
-export default function PriceDisplay({ purchaseType, pricingPlans, price, showType = true, ...props }) {
+function PriceDisplay({ purchaseType, pricingPlans, price, showType = true, ...props }) {
 	const t = useTranslation();
 
 	const { type, price: formatedPrice } = useMemo(() => formatPriceAndPurchaseType(purchaseType, pricingPlans, price), [purchaseType, pricingPlans, price]);
@@ -29,3 +29,5 @@ export default function PriceDisplay({ purchaseType, pricingPlans, price, showTy
 		<Box color='hint' withTruncatedText>{!showType && type === 'Free' ? t(type) : formatedPrice}</Box>
 	</Box>;
 }
+
+export default PriceDisplay;

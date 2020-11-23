@@ -54,7 +54,7 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 
 	const options = useMemo(() => (availableDepartments && availableDepartments.departments ? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id]) : []), [availableDepartments]);
 
-	const { values, handlers, hasUnsavedChanges } = useForm({ name: tag.name, description: tag.description, departments: tag.departments });
+	const { values, handlers, hasUnsavedChanges } = useForm({ name: tag.name, description: tag.description, departments: tag.departments && tag.departments[0] === '' ? [] : tag.departments });
 
 	const {
 		handleName,
@@ -68,8 +68,6 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 	} = values;
 
 	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined), [name, t]);
-	const descriptionError = useMemo(() => (!description || description.length === 0 ? t('The_field_is_required', 'description') : undefined), [description, t]);
-	const departmentError = useMemo(() => (!departments || departments.length === 0 ? t('The_field_is_required', 'departments') : undefined), [departments, t]);
 
 	const saveTag = useMethod('livechat:saveTag');
 
@@ -79,7 +77,7 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 		reload();
 	});
 
-	const canSave = useMemo(() => !nameError && !descriptionError && !departmentError, [nameError, descriptionError, departmentError]);
+	const canSave = useMemo(() => !nameError, [nameError]);
 
 	const handleSave = useMutableCallback(async () => {
 		const tagData = { name, description };
@@ -88,8 +86,10 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
 		}
 
+		const finalDepartments = departments || [''];
+
 		try {
-			await saveTag(tagId, tagData, departments);
+			await saveTag(tagId, tagData, finalDepartments);
 			dispatchToastMessage({ type: 'success', message: t('saved') });
 			reload();
 			tagsRoute.push({});
@@ -108,13 +108,13 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 		<Field>
 			<Field.Label>{t('Description')}</Field.Label>
 			<Field.Row>
-				<TextInput flexGrow={1} value={description} onChange={handleDescription} error={hasUnsavedChanges && descriptionError} />
+				<TextInput flexGrow={1} value={description} onChange={handleDescription} />
 			</Field.Row>
 		</Field>
 		<Field>
 			<Field.Label>{t('Departments')}</Field.Label>
 			<Field.Row>
-				<MultiSelect options={options} value={departments} error={hasUnsavedChanges && departmentError} maxWidth='100%' placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
+				<MultiSelect options={options} value={departments} maxWidth='100%' placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
 			</Field.Row>
 		</Field>
 

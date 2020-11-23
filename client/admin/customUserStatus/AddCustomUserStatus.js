@@ -6,7 +6,7 @@ import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import VerticalBar from '../../components/basic/VerticalBar';
 
-export function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
+function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -58,3 +58,5 @@ export function AddCustomUserStatus({ goToNew, close, onChange, ...props }) {
 		</Field>
 	</VerticalBar.ScrollableContent>;
 }
+
+export default AddCustomUserStatus;

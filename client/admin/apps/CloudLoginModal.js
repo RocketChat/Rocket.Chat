@@ -5,7 +5,7 @@ import { useSetModal } from '../../contexts/ModalContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 
-export const CloudLoginModal = (props) => {
+const CloudLoginModal = (props) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const cloudRoute = useRoute('cloud');
@@ -40,3 +40,5 @@ export const CloudLoginModal = (props) => {
 		</Modal.Footer>
 	</Modal>;
 };
+
+export default CloudLoginModal;

@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
-import { MongoInternals } from 'meteor/mongo';
+import { MongoInternals, OplogHandle } from 'meteor/mongo';
 import semver from 'semver';
 import s from 'underscore.string';
 import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
 
 import { urlParser } from './_oplogUrlParser';
 
-class OplogHandle {
+class CustomOplogHandle {
 	dbName: string;
 
 	client: MongoClient;
@@ -43,7 +43,7 @@ class OplogHandle {
 		return true;
 	}
 
-	async start(): Promise<OplogHandle> {
+	async start(): Promise<CustomOplogHandle> {
 		this.usingChangeStream = await this.isChangeStreamAvailable();
 		const oplogUrl = this.usingChangeStream ? process.env.MONGO_URL : process.env.MONGO_OPLOG_URL;
 
@@ -70,7 +70,7 @@ class OplogHandle {
 		this.client = new MongoClient(oplogUrl, {
 			useUnifiedTopology: true,
 			useNewUrlParser: true,
-			...!this.usingChangeStream && { poolSize: 1 },
+			poolSize: this.usingChangeStream ? 15 : 1,
 		});
 
 		await this.client.connect();
@@ -81,6 +81,10 @@ class OplogHandle {
 		}
 
 		return this;
+	}
+
+	async stop(): Promise<void> {
+		return this.client?.close();
 	}
 
 	async startOplog(): Promise<void> {
@@ -152,7 +156,10 @@ class OplogHandle {
 							// o: event.fullDocument,
 							o: {
 								$set: event.updateDescription.updatedFields,
-								$unset: event.updateDescription.removedFields,
+								$unset: event.updateDescription.removedFields.reduce((obj, field) => {
+									obj[field as string] = true;
+									return obj;
+								}, {} as Record<string, true>),
 							},
 						},
 					});
@@ -174,25 +181,32 @@ class OplogHandle {
 	}
 }
 
-let oplogHandle: Promise<OplogHandle>;
+let oplogHandle: Promise<CustomOplogHandle>;
 
-// @ts-ignore
-// eslint-disable-next-line no-undef
-if (Package['disable-oplog']) {
-	try {
-		oplogHandle = Promise.await(new OplogHandle().start());
-	} catch (e) {
-		console.error(e.message);
+if (!process.env.DISABLE_DB_WATCH) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	if (Package['disable-oplog']) {
+		try {
+			oplogHandle = Promise.await(new CustomOplogHandle().start());
+		} catch (e) {
+			console.error(e.message);
+		}
 	}
 }
 
-export const getOplogHandle = async (): Promise<OplogHandle | undefined> => {
+export const getOplogHandle = async (): Promise<OplogHandle | CustomOplogHandle | undefined> => {
+	if (process.env.DISABLE_DB_WATCH) {
+		return;
+	}
+
 	if (oplogHandle) {
 		return oplogHandle;
 	}
 
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-	if (mongo._oplogHandle?.onOplogEntry) {
-		return mongo._oplogHandle;
+	if (!mongo._oplogHandle?.onOplogEntry) {
+		return;
 	}
+	return mongo._oplogHandle;
 };

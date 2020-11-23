@@ -2,102 +2,93 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { Button, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
-import { usePermission } from '../../contexts/AuthorizationContext';
-import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/basic/Page';
-import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import { CustomEmoji } from './CustomEmoji';
-import { EditCustomEmojiWithData } from './EditCustomEmoji';
-import { AddCustomEmoji } from './AddCustomEmoji';
-import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
-import { useEndpointData } from '../../hooks/useEndpointData';
 import VerticalBar from '../../components/basic/VerticalBar';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
+import AddCustomEmoji from './AddCustomEmoji';
+import CustomEmoji from './CustomEmoji';
+import EditCustomEmojiWithData from './EditCustomEmojiWithData';
 
-const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
-
-export const useQuery = ({ text, itemsPerPage, current }, [column, direction], cache) => useMemo(() => ({
-	query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
-	sort: JSON.stringify({ [column]: sortDir(direction) }),
-	...itemsPerPage && { count: itemsPerPage },
-	...current && { offset: current },
-// TODO: remove cache. Is necessary for data invalidation
-}), [text, itemsPerPage, current, column, direction, cache]);
-
-export default function CustomEmojiRoute({ props }) {
-	const t = useTranslation();
-	const canManageEmoji = usePermission('manage-emoji');
-
-	const routeName = 'emoji-custom';
-
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['name', 'asc']);
-	const [cache, setCache] = useState();
-
-	const debouncedParams = useDebouncedValue(params, 500);
-	const debouncedSort = useDebouncedValue(sort, 500);
-
-	const query = useQuery(debouncedParams, debouncedSort, cache);
-
-	const data = useEndpointData('emoji-custom.all', query) || { emojis: { } };
-
-	const router = useRoute(routeName);
-
+function CustomEmojiRoute() {
+	const route = useRoute('emoji-custom');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
+	const canManageEmoji = usePermission('manage-emoji');
 
-	const onClick = (_id) => () => {
-		router.push({
+	const t = useTranslation();
+
+	const [params, setParams] = useState(() => ({ text: '', current: 0, itemsPerPage: 25 }));
+	const [sort, setSort] = useState(() => ['name', 'asc']);
+
+	const { text, itemsPerPage, current } = useDebouncedValue(params, 500);
+	const [column, direction] = useDebouncedValue(sort, 500);
+	const query = useMemo(() => ({
+		query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
+		sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
+		...itemsPerPage && { count: itemsPerPage },
+		...current && { offset: current },
+	}), [text, itemsPerPage, current, column, direction]);
+
+	const { data, reload } = useEndpointDataExperimental('emoji-custom.all', query);
+
+	const handleItemClick = (_id) => () => {
+		route.push({
 			context: 'edit',
 			id: _id,
 		});
 	};
 
-	const onHeaderClick = (id) => {
-		const [sortBy, sortDirection] = sort;
+	const handleHeaderClick = (id) => {
+		setSort(([sortBy, sortDirection]) => {
+			if (sortBy === id) {
+				return [id, sortDirection === 'asc' ? 'desc' : 'asc'];
+			}
 
-		if (sortBy === id) {
-			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
-			return;
-		}
-		setSort([id, 'asc']);
+			return [id, 'asc'];
+		});
 	};
 
-	const handleHeaderButtonClick = useCallback((context) => () => {
-		router.push({ context });
-	}, [router]);
+	const handleNewButtonClick = useCallback(() => {
+		route.push({ context: 'new' });
+	}, [route]);
 
-	const close = () => {
-		router.push({});
+	const handleClose = () => {
+		route.push({});
 	};
 
-	const onChange = useCallback(() => {
-		setCache(new Date());
-	}, []);
+	const handleChange = useCallback(() => {
+		reload();
+	}, [reload]);
 
 	if (!canManageEmoji) {
 		return <NotAuthorizedPage />;
 	}
 
-	return <Page {...props} flexDirection='row'>
+	return <Page flexDirection='row'>
 		<Page name='admin-emoji-custom'>
 			<Page.Header title={t('Custom_Emoji')}>
-				<Button small onClick={handleHeaderButtonClick('new')} aria-label={t('New')}>
+				<Button small onClick={handleNewButtonClick} aria-label={t('New')}>
 					<Icon name='plus'/>
 				</Button>
 			</Page.Header>
 			<Page.Content>
-				<CustomEmoji setParams={setParams} params={params} onHeaderClick={onHeaderClick} data={data} onClick={onClick} sort={sort}/>
+				<CustomEmoji setParams={setParams} params={params} onHeaderClick={handleHeaderClick} data={data} onClick={handleItemClick} sort={sort}/>
 			</Page.Content>
 		</Page>
-		{ context
-			&& <VerticalBar className='contextual-bar' width='x380' qa-context-name={`admin-user-and-room-context-${ context }`} flexShrink={0}>
-				<VerticalBar.Header>
-					{ context === 'edit' && t('Custom_Emoji_Info') }
-					{ context === 'new' && t('Custom_Emoji_Add') }
-					<VerticalBar.Close onClick={close}/>
-				</VerticalBar.Header>
-				{context === 'edit' && <EditCustomEmojiWithData _id={id} close={close} onChange={onChange} cache={cache}/>}
-				{context === 'new' && <AddCustomEmoji close={close} onChange={onChange}/>}
-			</VerticalBar>}
+		{context && <VerticalBar className='contextual-bar' width='x380' flexShrink={0}>
+			<VerticalBar.Header>
+				{context === 'edit' && t('Custom_Emoji_Info')}
+				{context === 'new' && t('Custom_Emoji_Add')}
+				<VerticalBar.Close onClick={handleClose}/>
+			</VerticalBar.Header>
+			{context === 'edit' && <EditCustomEmojiWithData _id={id} close={handleClose} onChange={handleChange} />}
+			{context === 'new' && <AddCustomEmoji close={handleClose} onChange={handleChange}/>}
+		</VerticalBar>}
 	</Page>;
 }
+
+export default CustomEmojiRoute;

@@ -8,13 +8,13 @@ import LDAP from './ldap';
 import { callbacks } from '../../callbacks/server';
 import { RocketChatFile } from '../../file';
 import { settings } from '../../settings';
-import { Notifications } from '../../notifications';
 import { Users, Roles, Rooms, Subscriptions } from '../../models';
 import { Logger } from '../../logger';
 import { _setRealName, _setUsername } from '../../lib';
 import { templateVarHandler } from '../../utils';
 import { FileUpload } from '../../file-upload';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/functions';
+import { api } from '../../../server/sdk/api';
 
 
 export const logger = new Logger('LDAPSync', {});
@@ -264,7 +264,7 @@ export function mapLdapGroupsToUserRoles(ldap, ldapUser, user) {
 
 		const del = Roles.removeUserRoles(user._id, roleName);
 		if (settings.get('UI_DisplayRoles') && del) {
-			Notifications.notifyLogged('roles-change', {
+			api.broadcast('user.roleUpdate', {
 				type: 'removed',
 				_id: roleName,
 				u: {
@@ -365,7 +365,7 @@ function syncUserAvatar(user, ldapUser) {
 			fileStore.insert(file, rs, (err, result) => {
 				Meteor.setTimeout(function() {
 					Users.setAvatarData(user._id, 'ldap', result.etag);
-					Notifications.notifyLogged('updateAvatar', { username: user.username, etag: result.etag });
+					api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: result.etag });
 				}, 500);
 			});
 		});
@@ -412,7 +412,7 @@ export function syncUserData(user, ldapUser, ldap) {
 		for (const roleName of userRoles) {
 			const add = Roles.addUserRoles(user._id, roleName);
 			if (settings.get('UI_DisplayRoles') && add) {
-				Notifications.notifyLogged('roles-change', {
+				api.broadcast('user.roleUpdate', {
 					type: 'added',
 					_id: roleName,
 					u: {

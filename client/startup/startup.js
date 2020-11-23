@@ -10,8 +10,9 @@ import toastr from 'toastr';
 import hljs from '../../app/markdown/lib/hljs';
 import { fireGlobalEvent, alerts } from '../../app/ui-utils';
 import { getUserPreference, t } from '../../app/utils';
+import { hasPermission } from '../../app/authorization/client';
 import 'highlight.js/styles/github.css';
-import { syncUserdata } from '../lib/userData';
+import { synchronizeUserData } from '../lib/userData';
 
 hljs.initHighlightingOnLoad();
 
@@ -39,7 +40,7 @@ Meteor.startup(function() {
 			return;
 		}
 
-		const user = await syncUserdata(uid);
+		const user = await synchronizeUserData(uid);
 		if (!user) {
 			return;
 		}
@@ -63,6 +64,10 @@ Meteor.startup(function() {
 	const autoRunHandler = Tracker.autorun(async function() {
 		const uid = Meteor.userId();
 		if (!uid) {
+			return;
+		}
+
+		if (!hasPermission('manage-cloud')) {
 			return;
 		}
 

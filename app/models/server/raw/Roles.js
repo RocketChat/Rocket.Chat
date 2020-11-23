@@ -1,8 +1,12 @@
 import { BaseRaw } from './BaseRaw';
 
-import * as Models from './index';
-
 export class RolesRaw extends BaseRaw {
+	constructor(col, trash, models) {
+		super(col, trash);
+
+		this.models = models;
+	}
+
 	async isUserInRoles(userId, roles, scope) {
 		roles = [].concat(roles);
 
@@ -12,7 +16,7 @@ export class RolesRaw extends BaseRaw {
 			// eslint-disable-next-line no-await-in-loop
 			const role = await this.findOne({ _id: roleName });
 			const roleScope = (role && role.scope) || 'Users';
-			const model = Models[roleScope];
+			const model = this.models[roleScope];
 
 			// eslint-disable-next-line no-await-in-loop
 			const permitted = await (model && model.isUserInRole && model.isUserInRole(userId, roleName, scope));

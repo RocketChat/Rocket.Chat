@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { dummyDate } from '../../../.storybook/helpers';
-import { BuildEnvironmentSection } from './BuildEnvironmentSection';
+import BuildEnvironmentSection from './BuildEnvironmentSection';
 
 export default {
 	title: 'admin/info/BuildEnvironmentSection',

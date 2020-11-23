@@ -8,7 +8,7 @@ import _ from 'underscore';
 
 import { callbacks } from '../../callbacks';
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { mapRolesFromSSO, updateRolesFromSSO } from './oauth_helpers';
+import { mapRolesFromSSO, mapSSOGroupsToChannels, updateRolesFromSSO } from './oauth_helpers';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
 import { isURL } from '../../utils/lib/isURL';
@@ -82,8 +82,21 @@ export class CustomOAuth {
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
 		this.mergeRoles = options.mergeRoles || false;
+		this.mapChannels = options.mapChannels || false;
 		this.rolesClaim = options.rolesClaim || 'roles';
+		this.groupsClaim = options.groupsClaim || 'groups';
 		this.accessTokenParam = options.accessTokenParam;
+		this.channelsAdmin = options.channelsAdmin || 'rocket.cat';
+
+		if (this.mapChannels) {
+			const channelsMap = (options.channelsMap || '{}').trim();
+			try {
+				this.channelsMap = JSON.parse(channelsMap);
+			} catch (err) {
+				logger.error(`Unexpected error : ${ err.message }`);
+			}
+		}
+
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
@@ -336,6 +349,10 @@ export class CustomOAuth {
 					updateRolesFromSSO(user, serviceData, this.rolesClaim);
 				}
 
+				if (this.mapChannels) {
+					mapSSOGroupsToChannels(user, serviceData, this.groupsClaim, this.channelsMap, this.channelsAdmin);
+				}
+
 				// User already created or merged and has identical name as before
 				if (user.services && user.services[serviceName] && user.services[serviceName].id === serviceData.id && user.name === serviceData.name) {
 					return;
@@ -376,6 +393,10 @@ export class CustomOAuth {
 
 			if (this.mergeRoles) {
 				user.roles = mapRolesFromSSO(user.services[this.name], this.rolesClaim);
+			}
+
+			if (this.mapChannels) {
+				mapSSOGroupsToChannels(user, user.services[this.name], this.groupsClaim, this.channelsMap, this.channelsAdmin);
 			}
 
 			return true;

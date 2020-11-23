@@ -1,30 +1,15 @@
-import { Table, Box, TextInput, Icon, Button } from '@rocket.chat/fuselage';
+import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, memo, useEffect } from 'react';
+import React, { memo } from 'react';
 
-import GenericTable from '../../../client/components/GenericTable';
 import DeleteWarningModal from '../../../client/components/DeleteWarningModal';
+import FilterByText from '../../../client/components/FilterByText';
+import GenericTable from '../../../client/components/GenericTable';
 import { useSetModal } from '../../../client/contexts/ModalContext';
 import { useMethod } from '../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../client/hooks/useResizeInlineBreakpoint';
-
-const FilterByText = memo(({ setFilter, ...props }) => {
-	const t = useTranslation();
-
-	const [text, setText] = useState('');
-
-	const handleChange = useMutableCallback((event) => setText(event.currentTarget.value), []);
-
-	useEffect(() => {
-		setFilter({ text });
-	}, [setFilter, text]);
-
-	return <Box mb='x16' is='form' onSubmit={useMutableCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
-		<TextInput placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-	</Box>;
-});
 
 const MonitorsRow = memo(function MonitorsRow(props) {
 	const {
@@ -110,7 +95,7 @@ export function MonitorsTable({ monitors, totalMonitors, params, sort, onHeaderC
 		total={totalMonitors}
 		params={params}
 		setParams={onChangeParams}
-		FilterComponent={FilterByText}
+		renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
 	>
 		{(props) => <MonitorsRow key={props._id} medium={onMediumBreakpoint} onDelete={onDelete} {...props} />}
 	</GenericTable>;

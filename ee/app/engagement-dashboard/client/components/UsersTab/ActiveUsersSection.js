@@ -1,5 +1,5 @@
 import { ResponsiveLine } from '@nivo/line';
-import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton, Tile, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo } from 'react';
 
@@ -8,11 +8,7 @@ import { useEndpointData } from '../../../../../../client/hooks/useEndpointData'
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
-import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
-import { saveFile } from '../../../../../../client/lib/saveFile';
-
-const convertDataToCSV = ({ countDailyActiveUsers, diffDailyActiveUsers, countWeeklyActiveUsers, diffWeeklyActiveUsers, countMonthlyActiveUsers, diffMonthlyActiveUsers, dauValues, wauValues, mauValues }) => `// countDailyActiveUsers, diffDailyActiveUsers, countWeeklyActiveUsers, diffWeeklyActiveUsers, countMonthlyActiveUsers, diffMonthlyActiveUsers, dauValues, wauValues, mauValues
-${ countDailyActiveUsers }, ${ diffDailyActiveUsers }, ${ countWeeklyActiveUsers }, ${ diffWeeklyActiveUsers }, ${ countMonthlyActiveUsers }, ${ diffMonthlyActiveUsers }, ${ dauValues }, ${ wauValues }, ${ mauValues }`;
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 export function ActiveUsersSection() {
 	const t = useTranslation();
@@ -97,7 +93,7 @@ export function ActiveUsersSection() {
 	}, [period, data]);
 
 	const downloadData = () => {
-		saveFile(convertDataToCSV({
+		const data = [{
 			countDailyActiveUsers,
 			diffDailyActiveUsers,
 			countWeeklyActiveUsers,
@@ -107,11 +103,12 @@ export function ActiveUsersSection() {
 			dauValues,
 			wauValues,
 			mauValues,
-		}), `ActiveUsersSection_start_${ params.start }_end_${ params.end }.csv`);
+		}];
+		downloadCsvAs(data, `ActiveUsersSection_start_${ params.start }_end_${ params.end }`);
 	};
 
 
-	return <Section title={t('Active_users')} filter={<ActionButton disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/>}>
+	return <Section title={t('Active_users')} filter={<ActionButton small disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/>}>
 		<CounterSet
 			counters={[
 				{

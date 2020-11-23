@@ -3,9 +3,9 @@ import React from 'react';
 import Subtitle from '../../components/basic/Subtitle';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
-import { DescriptionList } from './DescriptionList';
+import DescriptionList from './DescriptionList';
 
-export function InstancesSection({ instances }) {
+function InstancesSection({ instances }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
@@ -29,3 +29,5 @@ export function InstancesSection({ instances }) {
 		)}
 	</>;
 }
+
+export default InstancesSection;

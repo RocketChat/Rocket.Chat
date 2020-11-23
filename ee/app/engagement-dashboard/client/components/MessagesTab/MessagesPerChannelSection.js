@@ -1,5 +1,5 @@
 import { ResponsivePie } from '@nivo/pie';
-import { Box, Flex, Icon, Margins, Select, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
+import { Box, Flex, Icon, Margins, Select, Skeleton, Table, Tile, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
@@ -7,11 +7,7 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
-import { ActionButton } from '../../../../../../client/components/basic/Buttons/ActionButton';
-import { saveFile } from '../../../../../../client/lib/saveFile';
-
-const convertDataToCSV = (data) => `// type, messagesSent
-${ data.map(({ t, messages }) => `${ t }, ${ messages }`).join('\n') }`;
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 export function MessagesPerChannelSection() {
 	const t = useTranslation();
@@ -67,16 +63,17 @@ export function MessagesPerChannelSection() {
 			[...entries, { i, t, name: name || usernames.join(' × '), messages }], []);
 
 		return [pie, table];
-	}, [period, pieData, tableData]);
+	}, [pieData, tableData]);
 
 	const downloadData = () => {
-		saveFile(convertDataToCSV(pieData.origins), `MessagesPerChannelSection_start_${ params.start }_end_${ params.end }.csv`);
+		const data = pieData.origins.map(({ t, messages }) => [t, messages]);
+		downloadCsvAs(data, `MessagesPerChannelSection_start_${ params.start }_end_${ params.end }`);
 	};
 
 
 	return <Section
 		title={t('Where_are_the_messages_being_sent?')}
-		filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton mis='x16' disabled={!pieData} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
+		filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton small mis='x16' disabled={!pieData} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
 	>
 		<Flex.Container>
 			<Margins inline='neg-x12'>

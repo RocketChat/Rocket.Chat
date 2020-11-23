@@ -10,13 +10,13 @@ import { Template } from 'meteor/templating';
 import { t, getUserPreference } from '../../utils/client';
 import { chatMessages } from '../../ui';
 import { mainReady, Layout, iframeLogin, modal, popover, menu, fireGlobalEvent, RoomManager } from '../../ui-utils';
-import { toolbarSearch } from '../../ui-sidenav';
 import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, ChatSubscription, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasRole } from '../../authorization';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
 
 function executeCustomScript(script) {
 	eval(script);//eslint-disable-line
@@ -29,17 +29,14 @@ function customScriptsOnLogout() {
 	}
 }
 
+createTemplateForComponent('accountSecurity', () => import('../../../client/account/security/AccountSecurityPage'));
+
 callbacks.add('afterLogoutCleanUp', () => customScriptsOnLogout(), callbacks.priority.LOW, 'custom-script-on-logout');
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
 
 	$(document.body).on('keydown', function(e) {
-		if ((e.keyCode === 80 || e.keyCode === 75) && (e.ctrlKey === true || e.metaKey === true) && e.shiftKey === false) {
-			e.preventDefault();
-			e.stopPropagation();
-			toolbarSearch.show(true);
-		}
 		const unread = Session.get('unread');
 		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && (unread != null) && unread !== '') {
 			e.preventDefault();
@@ -119,7 +116,7 @@ Template.body.onRendered(function() {
 		}
 	});
 
-	Tracker.autorun(function(c) {
+	this.autorun(function(c) {
 		const w = window;
 		const d = document;
 		const script = 'script';

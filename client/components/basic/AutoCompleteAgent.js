@@ -9,7 +9,8 @@ export const AutoCompleteAgent = React.memo((props) => {
 	const [filter, setFilter] = useState('');
 	const { data } = useEndpointDataExperimental('livechat/users/agent', useMemo(() => ({ text: filter }), [filter]));
 
-	const options = useMemo(() => (data && [{ value: 'all', label: t('All') }, ...data.users.map((user) => ({ value: user._id, label: user.name }))]) || [{ value: 'all', label: t('All') }], [data, t]);
+	const options = useMemo(() => (data && [...data.users.map((user) => ({ value: user._id, label: user.name }))]) || [], [data]);
+	const optionsWithAll = useMemo(() => (data && [{ value: 'all', label: t('All') }, ...data.users.map((user) => ({ value: user._id, label: user.name }))]) || [{ value: 'all', label: t('All') }], [data, t]);
 
 	return <AutoComplete
 		{...props}
@@ -17,6 +18,6 @@ export const AutoCompleteAgent = React.memo((props) => {
 		setFilter={setFilter}
 		renderSelected={({ label }) => <>{label}</>}
 		renderItem={({ value, ...props }) => <Option key={value} {...props} />}
-		options={ options }
+		options={ props.empty ? options : optionsWithAll }
 	/>;
 });

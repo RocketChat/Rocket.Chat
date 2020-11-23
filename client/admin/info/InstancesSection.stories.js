@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { dummyDate } from '../../../.storybook/helpers';
-import { InstancesSection } from './InstancesSection';
+import InstancesSection from './InstancesSection';
 
 export default {
 	title: 'admin/info/InstancesSection',

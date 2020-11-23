@@ -6,6 +6,7 @@ import { APIClient } from '../../app/utils/client';
 
 const bypassMethods: string[] = [
 	'setUserStatus',
+	'logout',
 ];
 
 function shouldBypass({ method, params }: Meteor.IDDPMessage): boolean {

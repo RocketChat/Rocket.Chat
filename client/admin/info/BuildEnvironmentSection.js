@@ -3,9 +3,9 @@ import React from 'react';
 import Subtitle from '../../components/basic/Subtitle';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
-import { DescriptionList } from './DescriptionList';
+import DescriptionList from './DescriptionList';
 
-export const BuildEnvironmentSection = React.memo(function BuildEnvironmentSection({ info }) {
+const BuildEnvironmentSection = React.memo(function BuildEnvironmentSection({ info }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const build = info && (info.compile || info.build);
@@ -21,3 +21,5 @@ export const BuildEnvironmentSection = React.memo(function BuildEnvironmentSecti
 		<DescriptionList.Entry label={t('Date')}>{formatDateAndTime(build.date)}</DescriptionList.Entry>
 	</DescriptionList>;
 });
+
+export default BuildEnvironmentSection;

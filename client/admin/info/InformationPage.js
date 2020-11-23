@@ -3,14 +3,14 @@ import React from 'react';
 
 import Page from '../../components/basic/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { RocketChatSection } from './RocketChatSection';
-import { CommitSection } from './CommitSection';
-import { RuntimeEnvironmentSection } from './RuntimeEnvironmentSection';
-import { BuildEnvironmentSection } from './BuildEnvironmentSection';
-import { UsageSection } from './UsageSection';
-import { InstancesSection } from './InstancesSection';
+import RocketChatSection from './RocketChatSection';
+import CommitSection from './CommitSection';
+import RuntimeEnvironmentSection from './RuntimeEnvironmentSection';
+import BuildEnvironmentSection from './BuildEnvironmentSection';
+import UsageSection from './UsageSection';
+import InstancesSection from './InstancesSection';
 
-export const InformationPage = React.memo(function InformationPage({
+const InformationPage = React.memo(function InformationPage({
 	canViewStatistics,
 	isLoading,
 	info,
@@ -73,3 +73,5 @@ export const InformationPage = React.memo(function InformationPage({
 		</Page.ScrollableContentWithShadow>
 	</Page>;
 });
+
+export default InformationPage;

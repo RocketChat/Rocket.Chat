@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { UsageSection } from './UsageSection';
+import UsageSection from './UsageSection';
 
 export default {
 	title: 'admin/info/UsageSection',

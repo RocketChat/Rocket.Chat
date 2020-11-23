@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Box, Table } from '@rocket.chat/fuselage';
 
 import UserAvatar from '../../../client/components/basic/avatar/UserAvatar';
-import { GenericTable } from '../../../client/components/GenericTable';
+import GenericTable from '../../../client/components/GenericTable';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../client/hooks/useFormatDateAndTime';
 import { useFormatDate } from '../../../client/hooks/useFormatDate';

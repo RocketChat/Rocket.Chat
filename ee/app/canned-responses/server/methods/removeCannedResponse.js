@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { hasPermission } from '../../../../../app/authorization';
 import CannedResponse from '../../../models/server/models/CannedResponse';
-import { cannedResponsesStreamer } from '../streamer';
+import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 Meteor.methods({
 	'removeCannedResponse'(_id) {
@@ -18,7 +18,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-canned-response-not-found', 'Canned Response not found', { method: 'removeCannedResponse' });
 		}
 
-		cannedResponsesStreamer.emit('canned-responses', { type: 'removed', _id });
+		notifications.streamCannedResponses.emit('canned-responses', { type: 'removed', _id });
 
 		return CannedResponse.removeById(_id);
 	},

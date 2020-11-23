@@ -22,7 +22,7 @@ export function PriorityEditWithData({ priorityId, reload }) {
 		return <FormSkeleton/>;
 	}
 
-	if (error || !data || !data.priorities) {
+	if (error || !data) {
 		return <Callout m='x16' type='danger'>{t('Not_Available')}</Callout>;
 	}
 
@@ -53,7 +53,6 @@ export function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 	} = values;
 
 	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined), [name, t]);
-	const descriptionError = useMemo(() => (!description || description.length === 0 ? t('The_field_is_required', 'description') : undefined), [description, t]);
 	const dueTimeInMinutesError = useMemo(() => (!dueTimeInMinutes || dueTimeInMinutes <= 0 ? t('The_field_is_required', 'Estimated_due_time_in_minutes') : undefined), [dueTimeInMinutes, t]);
 
 	const savePriority = useMethod('livechat:savePriority');
@@ -64,7 +63,7 @@ export function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 		reload();
 	});
 
-	const canSave = useMemo(() => !nameError && !descriptionError && !dueTimeInMinutesError, [nameError, descriptionError, dueTimeInMinutesError]);
+	const canSave = useMemo(() => !nameError && !dueTimeInMinutesError, [nameError, dueTimeInMinutesError]);
 
 	const handleSave = useMutableCallback(async () => {
 		const payload = { name, description, dueTimeInMinutes: `${ dueTimeInMinutes }` };
@@ -93,7 +92,7 @@ export function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 		<Field>
 			<Field.Label>{t('Description')}</Field.Label>
 			<Field.Row>
-				<TextInput flexGrow={1} value={description} onChange={handleDescription} error={hasUnsavedChanges && descriptionError} />
+				<TextInput flexGrow={1} value={description} onChange={handleDescription} />
 			</Field.Row>
 		</Field>
 		<Field>

@@ -13,7 +13,7 @@ const loadMessages = async function({ rid, users, startDate, endDate = new Date(
 	this.loading = this.loading || new ReactiveVar(true);
 	try {
 		this.loading.set(true);
-		const messages = await call('auditGetMessages', { rid, users, startDate, endDate, msg, type, visitor, agent });
+		const messages = type === 'l' ? await call('auditGetOmnichannelMessages', { rid, users, startDate, endDate, msg, type, visitor, agent }) : await call('auditGetMessages', { rid, users, startDate, endDate, msg, type, visitor, agent });
 		this.messagesContext.set({
 			...messageContext({ rid }),
 			messages,

@@ -13,7 +13,7 @@ import { useModal } from '../../contexts/ModalContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { GenericTable } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 
 

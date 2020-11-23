@@ -26,8 +26,8 @@ export default function NewIncomingWebhook(props) {
 
 	const { values: formValues, handlers: formHandlers, reset } = useForm(initialState);
 
-	// TODO: remove JSON.stringify. Is used to keep useEndpointAction from rerendering the page indefinitely.
-	const saveAction = useEndpointAction('POST', 'integrations.create', useMemo(() => ({ ...formValues, type: 'webhook-incoming' }), [JSON.stringify(formValues)]), t('Integration_added'));
+	const params = useMemo(() => ({ ...formValues, type: 'webhook-incoming' }), [formValues]);
+	const saveAction = useEndpointAction('POST', 'integrations.create', params, t('Integration_added'));
 
 	const handleSave = useCallback(async () => {
 		const result = await saveAction();

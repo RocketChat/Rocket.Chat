@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { DescriptionList } from './DescriptionList';
+import DescriptionList from './DescriptionList';
 import Page from '../../components/basic/Page';
 
 export default {

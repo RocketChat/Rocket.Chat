@@ -56,9 +56,9 @@ export enum AsyncState {
 	ERROR = 'error',
 }
 
-export const useMethodData = <T>(methodName: string, args: any[] = []): [T | null, AsyncState, () => void] => {
+export const useMethodData = <T>(methodName: string, args: any[] = []): [T | undefined, AsyncState, () => void] => {
 	const getData: (...args: unknown[]) => Promise<T> = useMethod(methodName);
-	const [[data, state], updateState] = useState<[T | null, AsyncState]>([null, AsyncState.LOADING]);
+	const [[data, state], updateState] = useState<[T | undefined, AsyncState]>([undefined, AsyncState.LOADING]);
 
 	const isMountedRef = useRef(true);
 
@@ -94,7 +94,7 @@ export const useMethodData = <T>(methodName: string, args: any[] = []): [T | nul
 	return [data, state, fetchData];
 };
 
-export const usePolledMethodData = <T>(methodName: string, args: any[] = [], intervalMs: number): [T | null, AsyncState, () => void] => {
+export const usePolledMethodData = <T>(methodName: string, args: any[] = [], intervalMs: number): [T | undefined, AsyncState, () => void] => {
 	const [data, state, fetchData] = useMethodData<T>(methodName, args);
 
 	useEffect(() => {

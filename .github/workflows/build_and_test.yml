@@ -431,6 +431,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
+
     - name: Restore build
       uses: actions/download-artifact@v1
       with:
@@ -438,17 +444,14 @@ jobs:
         path: /tmp/build
 
     - name: Unpack build
-      env:
-        DOCKER_USER: ${{ secrets.DOCKER_USER }}
-        DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       run: |
         cd /tmp/build
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
-        export DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
+        DOCKER_PATH="${GITHUB_WORKSPACE}/.docker"
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export DOCKER_PATH="${DOCKER_PATH}-mongo"
+          DOCKER_PATH="${DOCKER_PATH}-mongo"
         fi;
 
         echo "Build ${{ matrix.release }} Docker image"
@@ -457,25 +460,23 @@ jobs:
           cp ${DOCKER_PATH}/entrypoint.sh .
         fi;
 
-        docker login -u $DOCKER_USER -p $DOCKER_PASS
-
     - name: Build Docker image for tag
       if: github.event_name == 'release'
       run: |
         cd /tmp/build
-        export CIRCLE_TAG="${GITHUB_REF#*tags/}"
+        CIRCLE_TAG="${GITHUB_REF#*tags/}"
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export IMAGE="${IMAGE}.preview"
+          IMAGE="${IMAGE}.preview"
         fi;
 
         docker build -t ${IMAGE}:$CIRCLE_TAG .
         docker push ${IMAGE}:$CIRCLE_TAG
 
         if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
-          export RELEASE="latest"
+          RELEASE="latest"
         elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
-          export RELEASE="release-candidate"
+          RELEASE="release-candidate"
         fi
 
         docker tag ${IMAGE}:$CIRCLE_TAG ${IMAGE}:${RELEASE}
@@ -487,7 +488,7 @@ jobs:
         cd /tmp/build
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
-          export IMAGE="${IMAGE}.preview"
+          IMAGE="${IMAGE}.preview"
         fi;
 
         docker build -t ${IMAGE}:develop .

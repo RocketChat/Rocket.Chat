@@ -2,9 +2,9 @@ import React from 'react';
 
 import Subtitle from '../../components/basic/Subtitle';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { DescriptionList } from './DescriptionList';
+import DescriptionList from './DescriptionList';
 
-export const CommitSection = React.memo(function CommitSection({ info }) {
+const CommitSection = React.memo(function CommitSection({ info }) {
 	const t = useTranslation();
 	const { commit = {} } = info;
 
@@ -20,3 +20,5 @@ export const CommitSection = React.memo(function CommitSection({ info }) {
 		<DescriptionList.Entry label={t('Subject')}>{commit.subject}</DescriptionList.Entry>
 	</DescriptionList>;
 });
+
+export default CommitSection;

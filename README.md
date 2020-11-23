@@ -1,6 +1,5 @@
 The WideChat repo is a fork of RocketChat for development of features to be merged upstream in coordination with the RocketChat team...
-
-![Rocket.Chat logo](https://upload.wikimedia.org/wikipedia/commons/1/12/Rocket.Chat_Logo.svg)
+![](https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png)
 
 <h1 align="center">
   The Ultimate Open Source WebChat Platform
@@ -37,7 +36,6 @@ The WideChat repo is a fork of RocketChat for development of features to be merg
   * [Raspberry Pi 4](#raspberry-pi-4)
   * [Koozali SME](#koozali-sme)
   * [Ubuntu VPS](#ubuntu-vps)
-  * [WeDeploy](#wedeploy)
   * [D2C.io](#d2cio)
   * [Syncloud.org](#syncloudorg)
 * [About Rocket.Chat](#about-rocketchat)
@@ -66,7 +64,7 @@ Rocket.Chat is moving to a single codebase. Get to know the reasons and how the 
 
 # Help Wanted
 
-At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our Github  community.
+At Rocket.Chat, our community drives *everything* we do. The Rocket.Chat team is expanding, and we know no better place to find qualified new team members than *right here* - in our GitHub  community.
 
 If you are passionate about our project, want to work with a world-leading open source team, and enjoy working remotely at a location of your choice, then we want to talk to you!
 
@@ -136,7 +134,8 @@ Host your own Rocket.Chat server in a few seconds.
 ## IndieHosters
 Get your Rocket.Chat instance hosted in an "as a Service" style. You register and we manage it for you! (updates, backup...).
 
-[![Rocket.Chat on IndieHosters](https://indie.host/signup.png)](https://indiehosters.net/shop/product/rocket-chat-21)
+<!-- [![Rocket.Chat on IndieHosters](https://indiehosters.net/img/generated/logo-indiehosters-horizontal-681-4b587b638.png)](https://indiehosters.net/shop/product/rocket-chat-21) -->
+<a href="https://indiehosters.net/shop/product/rocket-chat-21"><img src="https://indiehosters.net/img/generated/logo-indiehosters-horizontal-681-4b587b638.png" alt="Rocket.Chat on IndieHosters" width="200" height="30"></a>
 
 ## Cloudron.io
 
@@ -202,11 +201,6 @@ Add Rocket.Chat to this world famous time tested small enterprise server today.
 
 ## Ubuntu VPS
 Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/).
-
-## WeDeploy
-Install Rocket.Chat on [WeDeploy](https://wedeploy.com):
-
-[![Deploy](https://cdn.wedeploy.com/images/deploy.svg)](https://console.wedeploy.com/deploy?repo=https://github.com/wedeploy-examples/rocketchat-example)
 
 ## D2C.io
 Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with a single click, check live logs and metrics:
@@ -321,11 +315,12 @@ Read about [how it all started](https://www.synopsys.com/blogs/software-security
 
 ## Issues
 
-[Github Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs and tasks on the roadmap.
+[GitHub Issues](https://github.com/RocketChat/Rocket.Chat/issues) are used to track bugs and tasks on the roadmap.
 
 ## Feature Requests
 
-[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) are used to suggest, discuss and upvote feature suggestions.
+[RocketChat/feature-requests](https://github.com/RocketChat/feature-requests) is used to track Rocket.Chat feature requests and discussions. Click [here](https://github.com/RocketChat/feature-requests/issues/new?template=feature_request.md) to open a new feature request.
+[Feature Request Forums](https://forums.rocket.chat/c/feature-requests) stores the historical archives of old feature requests (up to 2018).
 
 ### Stack Overflow
 

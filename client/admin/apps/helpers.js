@@ -40,9 +40,6 @@ export function handleInstallError(apiError) {
 		case 'storage_error':
 			message = messages.join('');
 			break;
-		case 'compiler_error':
-			message = 'There has been compiler errors. App cannot be installed';
-			break;
 		case 'app_user_error':
 			message = messages.join('');
 			if (payload && payload.username) {
@@ -60,10 +57,17 @@ export function handleInstallError(apiError) {
 	toastr.error(message);
 }
 
+const shouldHandleErrorAsWarning = (message) => {
+	const warnings = [
+		'Could not reach the Marketplace',
+	];
+
+	return warnings.includes(message);
+};
+
 export const handleAPIError = (error) => {
-	console.error(error);
 	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
-	toastr.error(message);
+	shouldHandleErrorAsWarning(message) ? toastr.warning(message) : toastr.error(message);
 };
 
 export const warnStatusChange = (appName, status) => {

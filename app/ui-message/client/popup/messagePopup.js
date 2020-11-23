@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { toolbarSearch } from '../../../ui-sidenav';
 import { isMobile } from '../../../utils/client';
 import './messagePopup.html';
 
@@ -161,7 +160,6 @@ Template.messagePopup.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
-			toolbarSearch.close();
 			event.preventDefault();
 			event.stopPropagation();
 			return;

@@ -42,14 +42,12 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 		triggerWords,
 	} = formValues;
 
-	const query = useMemo(() => ({
+	const params = useMemo(() => ({
 		...formValues,
 		urls: urls.split('\n'),
 		triggerWords: triggerWords.split(';'),
-		// TODO: remove JSON.stringify. Is used to keep useEndpointAction from rerendering the page indefinitely.
-	}), [JSON.stringify(formValues)]);
-
-	const saveIntegration = useEndpointAction('POST', 'integrations.create', query, t('Integration_added'));
+	}), [formValues, triggerWords, urls]);
+	const saveIntegration = useEndpointAction('POST', 'integrations.create', params, t('Integration_added'));
 
 	const handleSave = useCallback(async () => {
 		const result = await saveIntegration();

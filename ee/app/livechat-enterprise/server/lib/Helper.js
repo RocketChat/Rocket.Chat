@@ -13,9 +13,9 @@ import {
 } from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
-import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
+import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
 	if (agentId) {
@@ -82,7 +82,7 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 	const { position, department } = inquiry;
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
 	const propagateInquiryPosition = Meteor.bindEnvironment((inquiry) => {
-		Livechat.stream.emit(inquiry.rid, {
+		notifications.streamLivechatRoom.emit(inquiry.rid, {
 			type: 'queueData',
 			data,
 		});
@@ -101,7 +101,7 @@ export const dispatchWaitingQueueStatus = async (department) => {
 	});
 };
 
-const processWaitingQueue = async (department) => {
+export const processWaitingQueue = async (department) => {
 	const inquiry = LivechatInquiry.getNextInquiryQueued(department);
 	if (!inquiry) {
 		return;
@@ -116,7 +116,6 @@ const processWaitingQueue = async (department) => {
 
 	if (room && room.servedBy) {
 		const { _id: rid, servedBy: { _id: agentId } } = room;
-
 		return setTimeout(() => {
 			propagateAgentDelegated(rid, agentId);
 		}, 1000);
@@ -124,19 +123,6 @@ const processWaitingQueue = async (department) => {
 
 	const { departmentId } = room || {};
 	await dispatchWaitingQueueStatus(departmentId);
-};
-
-export const checkWaitingQueue = async (department) => {
-	if (!settings.get('Livechat_waiting_queue')) {
-		return;
-	}
-
-	const departments = (department && [department]) || LivechatDepartment.findEnabledWithAgents().fetch().map((department) => department._id);
-	if (departments.length === 0) {
-		return processWaitingQueue();
-	}
-
-	return Promise.all(departments.map(async (department) => processWaitingQueue(department)));
 };
 
 export const allowAgentSkipQueue = (agent) => {

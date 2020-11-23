@@ -73,7 +73,7 @@ export function ModalBlock({
 			const element = ref.current.querySelector(focusableElementsString);
 			element && element.focus();
 		}
-	}, [ref.current, errors]);
+	}, [errors]);
 	// save focus to restore after close
 	const previousFocus = useMemo(() => document.activeElement, []);
 	// restore the focus after the component unmount
@@ -183,7 +183,7 @@ const useActionManagerState = (initialState) => {
 		const handleUpdate = ({ type, ...data }) => {
 			if (type === 'errors') {
 				const { errors } = data;
-				setState({ ...state, errors });
+				setState((state) => ({ ...state, errors }));
 				return;
 			}
 

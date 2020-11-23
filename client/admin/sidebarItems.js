@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission, hasRole } from '../../app/authorization/client';
 import { createTemplateForComponent } from '../reactAdapters';
-import { createSidebarItems } from '../helpers/createSidebarItems';
+import { createSidebarItems } from '../lib/createSidebarItems';
 
 createTemplateForComponent('adminFlex', () => import('./sidebar/AdminSidebar'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap

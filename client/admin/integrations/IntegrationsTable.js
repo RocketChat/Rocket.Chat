@@ -2,7 +2,7 @@ import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
-import { GenericTable, Th } from '../../components/GenericTable';
+import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
@@ -95,16 +95,25 @@ export function IntegrationsTable({ type }) {
 	}, [sort]);
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w={isBig ? 'x280' : 'x240'}>{t('Name')}</Th>,
-		<Th key={'channel'} direction={sort[1]} active={sort[0] === 'channel'} onClick={onHeaderClick} sort='channel'>{t('Post_to')}</Th>,
-		<Th key={'_createdBy'} direction={sort[1]} active={sort[0] === '_createdBy'} onClick={onHeaderClick} sort='_createdBy'>{t('Created_by')}</Th>,
-		isBig && <Th key={'_createdAt'} direction={sort[1]} active={sort[0] === '_createdAt'} onClick={onHeaderClick} sort='_createdAt'>{t('Created_at')}</Th>,
-		<Th key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username'>{t('Post_as')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w={isBig ? 'x280' : 'x240'}>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'channel'} direction={sort[1]} active={sort[0] === 'channel'} onClick={onHeaderClick} sort='channel'>{t('Post_to')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'_createdBy'} direction={sort[1]} active={sort[0] === '_createdBy'} onClick={onHeaderClick} sort='_createdBy'>{t('Created_by')}</GenericTable.HeaderCell>,
+		isBig && <GenericTable.HeaderCell key={'_createdAt'} direction={sort[1]} active={sort[0] === '_createdAt'} onClick={onHeaderClick} sort='_createdAt'>{t('Created_at')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username'>{t('Post_as')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, isBig, t]);
 
 	const renderRow = useCallback((props) => <IntegrationRow {...props} isBig={isBig} onClick={onClick} />, [isBig, onClick]);
 
-	return <GenericTable ref={ref} FilterComponent={FilterByTypeAndText} header={header} renderRow={renderRow} results={data && data.integrations} total={data && data.total} setParams={setParams} params={params} />;
+	return <GenericTable
+		ref={ref}
+		header={header}
+		renderRow={renderRow}
+		results={data && data.integrations}
+		total={data && data.total}
+		setParams={setParams}
+		params={params}
+		renderFilter={({ onChange, ...props }) => <FilterByTypeAndText setFilter={onChange} {...props} />}
+	/>;
 }
 
 export default IntegrationsTable;

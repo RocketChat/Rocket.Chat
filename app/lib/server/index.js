@@ -6,7 +6,6 @@ import './startup/settings';
 import './startup/settingsOnLoadCdnPrefix';
 import './startup/settingsOnLoadDirectReply';
 import './startup/settingsOnLoadSMTP';
-import './startup/userDataStream';
 import '../lib/MessageTypes';
 import '../startup';
 import '../startup/defaultRoomTypes';

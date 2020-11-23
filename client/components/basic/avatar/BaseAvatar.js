@@ -8,7 +8,7 @@ function BaseAvatar(props) {
 		return <Skeleton variant='rect' {...props} />;
 	}
 
-	return <Avatar onError={setError} loading='lazy' {...props}/>;
+	return <Avatar onError={setError} {...props}/>;
 }
 
 export default BaseAvatar;

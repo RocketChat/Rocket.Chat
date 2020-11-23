@@ -60,6 +60,27 @@ export class AppsRestApi {
 		const manager = this._manager;
 		const fileHandler = this._handleFile;
 
+		const handleError = (message, e) => {
+			// when there is no `response` field in the error, it means the request
+			// couldn't even make it to the server
+			if (!e.hasOwnProperty('response')) {
+				orchestrator.getRocketChatLogger().error(message, e.message);
+				return API.v1.internalError('Could not reach the Marketplace');
+			}
+
+			orchestrator.getRocketChatLogger().error(message, e.response.data);
+
+			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
+				return API.v1.internalError();
+			}
+
+			if (e.response.statusCode === 404) {
+				return API.v1.notFound();
+			}
+
+			return API.v1.failure();
+		};
+
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				const baseUrl = orchestrator.getMarketplaceUrl();
@@ -78,8 +99,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						orchestrator.getRocketChatLogger().error('Error getting the Apps:', e.response.data);
-						return API.v1.internalError();
+						return handleError('Error getting the App information from the Marketplace:', e);
 					}
 
 					if (!result || result.statusCode !== 200) {
@@ -178,7 +198,7 @@ export class AppsRestApi {
 					const downloadPromise = new Promise((resolve, reject) => {
 						const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
 
-						HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
+						HTTP.get(`${ baseUrl }/v2/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
 							headers,
 							npmRequestOptions: { encoding: null },
 						}, (error, result) => {
@@ -228,15 +248,11 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff.toString('base64'), true, marketplaceInfo));
+				const aff = Promise.await(manager.add(buff, true, marketplaceInfo));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
 					return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
-				}
-
-				if (aff.getCompilerErrors().length) {
-					return API.v1.failure({ status: 'compiler_error', messages: aff.getCompilerErrors() });
 				}
 
 				if (aff.hasAppUserError()) {
@@ -322,20 +338,6 @@ export class AppsRestApi {
 				return API.v1.success({ apps: result.data });
 			},
 		});
-
-		const handleError = (message, e) => {
-			orchestrator.getRocketChatLogger().error(message, e.response.data);
-
-			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
-				return API.v1.internalError();
-			}
-
-			if (e.response.statusCode === 404) {
-				return API.v1.notFound();
-			}
-
-			return API.v1.failure();
-		};
 
 		this.api.addRoute(':id', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
@@ -433,7 +435,7 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
+						result = HTTP.get(`${ baseUrl }/v2/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
 							headers,
 							npmRequestOptions: { encoding: null },
 						});
@@ -464,20 +466,27 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.update(buff.toString('base64')));
+				const aff = Promise.await(manager.update(buff));
 				const info = aff.getAppInfo();
 
-				// Should the updated version have compiler errors, no App will be returned
-				if (aff.getApp()) {
-					info.status = aff.getApp().getStatus();
-				} else {
-					info.status = 'compiler_error';
+				if (aff.hasStorageError()) {
+					return API.v1.failure({ status: 'storage_error', messages: [aff.getStorageError()] });
 				}
+
+				if (aff.hasAppUserError()) {
+					return API.v1.failure({
+						status: 'app_user_error',
+						messages: [aff.getAppUserError().message],
+						payload: { username: aff.getAppUserError().username },
+					});
+				}
+
+				info.status = aff.getApp().getStatus();
 
 				return API.v1.success({
 					app: info,
 					implemented: aff.getImplementedInferfaces(),
-					compilerErrors: aff.getCompilerErrors(),
+					licenseValidation: aff.getLicenseValidationResult(),
 				});
 			},
 			delete() {

@@ -1,37 +1,18 @@
-import { Table, Button, ButtonGroup, Icon, Box } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback, useState } from 'react';
 
-import { GenericTable, Th } from '../../components/GenericTable';
-import { useSetModal } from '../../contexts/ModalContext';
+import GenericTable from '../../components/GenericTable';
 import { useMethod } from '../../contexts/ServerContext';
+import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
+import { useSetModal } from '../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
-import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
-import InfoModal from './InfoModal';
 import { useUserId } from '../../contexts/UserContext';
+import InfoModal from './InfoModal';
+import AccountTokensRow from './AccountTokensRow';
 
-const TokenRow = ({ lastTokenPart, name, createdAt, bypassTwoFactor, formatDateAndTime, onRegenerate, onRemove, t, isMedium }) => {
-	const handleRegenerate = useCallback(() => onRegenerate(name), [name, onRegenerate]);
-	const handleRemove = useCallback(() => onRemove(name), [name, onRemove]);
-
-	return <Table.Row key={name} tabIndex={0} role='link' action qa-token-name={name}>
-		<Table.Cell withTruncatedText color='default' fontScale='p2'>{name}</Table.Cell>
-		{isMedium && <Table.Cell withTruncatedText>{formatDateAndTime(createdAt)}</Table.Cell>}
-		<Table.Cell withTruncatedText>...{lastTokenPart}</Table.Cell>
-		<Table.Cell withTruncatedText>{bypassTwoFactor ? t('Ignore') : t('Require')}</Table.Cell>
-		<Table.Cell withTruncatedText>
-			<ButtonGroup>
-				<Button onClick={handleRegenerate} small><Icon name='refresh' size='x16'/></Button>
-				<Button onClick={handleRemove} small><Icon name='trash' size='x16'/></Button>
-			</ButtonGroup>
-		</Table.Cell>
-	</Table.Row>;
-};
-
-export function AccountTokensTable({ data, reload }) {
+const AccountTokensTable = ({ data, reload }) => {
 	const t = useTranslation();
-	const formatDateAndTime = useFormatDateAndTime();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
@@ -58,11 +39,11 @@ export function AccountTokensTable({ data, reload }) {
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	const header = useMemo(() => [
-		<Th key={'name'}>{t('API_Personal_Access_Token_Name')}</Th>,
-		isMedium && <Th key={'createdAt'}>{t('Created_at')}</Th>,
-		<Th key={'lastTokenPart'}>{t('Last_token_part')}</Th>,
-		<Th key={'2fa'}>{t('Two Factor Authentication')}</Th>,
-		<Th key={'actions'} />,
+		<GenericTable.HeaderCell key={'name'}>{t('API_Personal_Access_Token_Name')}</GenericTable.HeaderCell>,
+		isMedium && <GenericTable.HeaderCell key={'createdAt'}>{t('Created_at')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'lastTokenPart'}>{t('Last_token_part')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'2fa'}>{t('Two Factor Authentication')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'actions'} />,
 	].filter(Boolean), [isMedium, t]);
 
 	const onRegenerate = useCallback((name) => {
@@ -117,15 +98,13 @@ export function AccountTokensTable({ data, reload }) {
 	}, [closeModal, dispatchToastMessage, reload, removeToken, setModal, t]);
 
 	return <GenericTable ref={ref} header={header} results={tokens} total={tokensTotal} setParams={setParams} params={params}>
-		{useCallback((props) => <TokenRow
+		{useCallback((props) => <AccountTokensRow
 			onRegenerate={onRegenerate}
 			onRemove={onRemove}
-			t={t}
-			formatDateAndTime={formatDateAndTime}
 			isMedium={isMedium}
 			{...props}
-		/>, [formatDateAndTime, isMedium, onRegenerate, onRemove, t])}
+		/>, [isMedium, onRegenerate, onRemove])}
 	</GenericTable>;
-}
+};
 
 export default AccountTokensTable;

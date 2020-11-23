@@ -236,7 +236,7 @@ Template.message.helpers({
 	translationProvider() {
 		const instance = Template.instance();
 		const { translationProvider } = instance.data.msg;
-		return translationProvider && AutoTranslate.providersMetadata[translationProvider].displayName;
+		return translationProvider && AutoTranslate.providersMetadata[translationProvider]?.displayName;
 	},
 	edited() {
 		const { msg } = this;

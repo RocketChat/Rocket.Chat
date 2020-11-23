@@ -20,20 +20,6 @@
 
 	background-color: var(--sidebar-background);
 
-	&-light {
-		position: absolute;
-
-		display: flex;
-
-		flex-direction: column;
-
-		width: 100%;
-
-		height: 100%;
-
-		background-color: var(--sidebar-background-light);
-	}
-
 	&-wrap {
 		position: absolute;
 		z-index: 1;
@@ -117,10 +103,6 @@
 	.sidebar {
 		position: absolute;
 
-		max-width: none;
-	}
-
-	.sidebar:not(.sidebar-light) {
 		user-select: none;
 		transform: translate3d(0, 0, 0);
 		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -153,5 +135,14 @@
 
 	.rtl .sidebar {
 		transform: translate3d(200%, 0, 0);
+	}
+}
+
+@media (min-width: 1372px) { /* 1440px -68px (eletron menu) */
+	.sidebar {
+		flex: 0 0 20%;
+
+		width: 20%;
+		max-width: 20%;
 	}
 }

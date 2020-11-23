@@ -12,7 +12,7 @@ const iframeMsgListener = (confirm, cancel) => (e) => {
 	data.result ? confirm(data) : cancel();
 };
 
-export const IframeModal = ({ url, confirm, cancel, ...props }) => {
+const IframeModal = ({ url, confirm, cancel, ...props }) => {
 	useEffect(() => {
 		const listener = iframeMsgListener(confirm, cancel);
 
@@ -29,3 +29,5 @@ export const IframeModal = ({ url, confirm, cancel, ...props }) => {
 		</Box>
 	</Modal>;
 };
+
+export default IframeModal;

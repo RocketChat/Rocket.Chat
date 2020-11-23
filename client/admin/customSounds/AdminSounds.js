@@ -1,24 +1,12 @@
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
-import { Box, Table, TextInput, Icon, Button } from '@rocket.chat/fuselage';
+import React, { useMemo, useCallback } from 'react';
+import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../contexts/TranslationContext';
-import { GenericTable, Th } from '../../components/GenericTable';
+import FilterByText from '../../components/FilterByText';
+import GenericTable from '../../components/GenericTable';
 import { useCustomSound } from '../../contexts/CustomSoundContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 
-const FilterByText = ({ setFilter, ...props }) => {
-	const t = useTranslation();
-	const [text, setText] = useState('');
-	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
-
-	useEffect(() => {
-		setFilter({ text });
-	}, [text]);
-	return <Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
-		<TextInput flexShrink={0} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-	</Box>;
-};
-
-export function AdminSounds({
+function AdminSounds({
 	data,
 	sort,
 	onClick,
@@ -29,15 +17,15 @@ export function AdminSounds({
 	const t = useTranslation();
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</Th>,
-		<Th w='x40' key='action'></Th>,
-	], [sort]);
+		<GenericTable.HeaderCell key='name' direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell w='x40' key='action' />,
+	], [onHeaderClick, sort, t]);
 
 	const customSound = useCustomSound();
 
 	const handlePlay = useCallback((sound) => {
 		customSound.play(sound);
-	}, []);
+	}, [customSound]);
 
 	const renderRow = (sound) => {
 		const { _id, name } = sound;
@@ -52,5 +40,15 @@ export function AdminSounds({
 		</Table.Row>;
 	};
 
-	return <GenericTable FilterComponent={FilterByText} header={header} renderRow={renderRow} results={data.sounds} total={data.total} setParams={setParams} params={params} />;
+	return <GenericTable
+		header={header}
+		renderRow={renderRow}
+		results={data?.sounds ?? []}
+		total={data?.total ?? 0}
+		setParams={setParams}
+		params={params}
+		renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
+	/>;
 }
+
+export default AdminSounds;

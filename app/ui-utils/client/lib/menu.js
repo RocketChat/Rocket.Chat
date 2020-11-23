@@ -2,13 +2,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { isRtl } from '../../../utils';
 
 const sideNavW = 280;
 
-export const menu = new class extends EventEmitter {
+export const menu = new class extends Emitter {
 	constructor() {
 		super();
 		this._open = false;

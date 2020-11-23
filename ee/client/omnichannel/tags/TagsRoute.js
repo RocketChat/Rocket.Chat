@@ -4,7 +4,7 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import React, { useMemo, useCallback, useState } from 'react';
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 
-import { Th } from '../../../../client/components/GenericTable';
+import GenericTable from '../../../../client/components/GenericTable';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../../../client/hooks/useEndpointDataExperimental';
 import { useMethod } from '../../../../client/contexts/ServerContext';
@@ -99,9 +99,9 @@ function TagsRoute() {
 	const { data, reload } = useEndpointDataExperimental('livechat/tags.list', query) || {};
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</Th>,
-		<Th key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x200'>{t('Description')}</Th>,
-		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'description'} direction={sort[1]} active={sort[0] === 'description'} onClick={onHeaderClick} sort='description' w='x200'>{t('Description')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'remove'} w='x40'>{t('Remove')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
 	const renderRow = useCallback(({ _id, name, description }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>

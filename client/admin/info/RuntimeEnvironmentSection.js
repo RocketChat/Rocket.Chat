@@ -6,7 +6,7 @@ import Subtitle from '../../components/basic/Subtitle';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
 import { useFormatDuration } from '../../hooks/useFormatDuration';
-import { DescriptionList } from './DescriptionList';
+import DescriptionList from './DescriptionList';
 
 const formatCPULoad = (load) => {
 	if (!load) {
@@ -17,7 +17,7 @@ const formatCPULoad = (load) => {
 	return `${ s.numberFormat(oneMinute, 2) }, ${ s.numberFormat(fiveMinutes, 2) }, ${ s.numberFormat(fifteenMinutes, 2) }`;
 };
 
-export const RuntimeEnvironmentSection = React.memo(function RuntimeEnvironmentSection({ statistics, isLoading }) {
+const RuntimeEnvironmentSection = React.memo(function RuntimeEnvironmentSection({ statistics, isLoading }) {
 	const s = (fn) => (isLoading ? <Skeleton width='50%' /> : fn());
 	const t = useTranslation();
 	const formatMemorySize = useFormatMemorySize();
@@ -41,3 +41,5 @@ export const RuntimeEnvironmentSection = React.memo(function RuntimeEnvironmentS
 		<DescriptionList.Entry label={t('OS_Cpus')}>{s(() => statistics.os.cpus.length)}</DescriptionList.Entry>
 	</DescriptionList>;
 });
+
+export default RuntimeEnvironmentSection;

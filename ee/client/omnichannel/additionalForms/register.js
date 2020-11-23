@@ -11,6 +11,11 @@ hasLicense('livechat-enterprise').then((enabled) => {
 	registerForm({ useCustomFieldsAdditionalForm: () => useMemo(() => lazy(() => import('./CustomFieldsAdditionalForm')), []) });
 	registerForm({ useMaxChatsPerAgent: () => useMemo(() => lazy(() => import('./MaxChatsPerAgent')), []) });
 	registerForm({ useMaxChatsPerAgentDisplay: () => useMemo(() => lazy(() => import('./MaxChatsPerAgentDisplay')), []) });
+	registerForm({ useEeNumberInput: () => useMemo(() => lazy(() => import('./EeNumberInput')), []) });
+	registerForm({ useEeTextAreaInput: () => useMemo(() => lazy(() => import('./EeTextAreaInput')), []) });
+	registerForm({ useEeTextInput: () => useMemo(() => lazy(() => import('./EeTextInput')), []) });
+	registerForm({ useDepartmentForwarding: () => useMemo(() => lazy(() => import('./DepartmentForwarding')), []) });
+	registerForm({ useDepartmentBusinessHours: () => useMemo(() => lazy(() => import('./DepartmentBusinessHours')), []) });
 	registerForm({ useCustomFieldsAdditionalForm: () => useMemo(() => lazy(() => import('./CustomFieldsAdditionalForm')), []) });
 	registerForm({ useBusinessHoursTimeZone: () => useMemo(() => lazy(() => import('./BusinessHoursTimeZone')), []) });
 	registerForm({ useBusinessHoursMultiple: () => useMemo(() => lazy(() => import('./BusinessHoursMultiple')), []) });
