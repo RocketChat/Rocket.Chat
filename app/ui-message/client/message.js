@@ -1,5 +1,4 @@
 import _ from 'underscore';
-import s from 'underscore.string';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
@@ -16,6 +15,7 @@ import { t, roomTypes } from '../../utils';
 import './message.html';
 import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
+import { escapeHTML } from '../../../lib/escapeHTML';
 
 
 const renderBody = (msg, settings) => {
@@ -28,7 +28,7 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.template) {
 		// render template
 	} else if (messageType.message) {
-		msg.msg = s.escapeHTML(msg.msg);
+		msg.msg = escapeHTML(msg.msg);
 		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;

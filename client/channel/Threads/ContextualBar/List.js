@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from 'react';
 import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
@@ -19,6 +18,7 @@ import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../contexts/ServerContext';
+import { escapeHTML } from '../../../../lib/escapeHTML';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -152,11 +152,11 @@ export const normalizeThreadMessage = ({ ...message }) => {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
 		if (attachment && attachment.description) {
-			return s.escapeHTML(attachment.description);
+			return escapeHTML(attachment.description);
 		}
 
 		if (attachment && attachment.title) {
-			return s.escapeHTML(attachment.title);
+			return escapeHTML(attachment.title);
 		}
 	}
 };

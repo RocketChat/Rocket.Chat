@@ -1,5 +1,6 @@
 import s from 'underscore.string';
 
+import { escapeHTML } from '../../../../lib/escapeHTML';
 import { callbacks } from '../../../callbacks';
 
 // const generateKeyDefault = (...args) => args.map((item) => JSON.stringify(item)).join('-');
@@ -26,7 +27,7 @@ import { callbacks } from '../../../callbacks';
 // };
 
 export const renderMessageBody = (message) => {
-	message.html = s.trim(message.msg) ? s.escapeHTML(message.msg) : '';
+	message.html = s.trim(message.msg) ? escapeHTML(message.msg) : '';
 
 	const { tokens, html } = callbacks.run('renderMessage', message);
 

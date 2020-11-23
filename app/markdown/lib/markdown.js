@@ -6,12 +6,13 @@ import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 
-import { marked } from './parser/marked/marked.js';
-import { original } from './parser/original/original.js';
-import { filtered } from './parser/filtered/filtered.js';
-import { code } from './parser/original/code.js';
+import { marked } from './parser/marked/marked';
+import { original } from './parser/original/original';
+import { filtered } from './parser/filtered/filtered';
+import { code } from './parser/original/code';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
+import { escapeHTML } from '../../../lib/escapeHTML';
 
 const parsers = {
 	original,
@@ -22,7 +23,7 @@ const parsers = {
 class MarkdownClass {
 	parse(text) {
 		const message = {
-			html: s.escapeHTML(text),
+			html: escapeHTML(text),
 		};
 		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
