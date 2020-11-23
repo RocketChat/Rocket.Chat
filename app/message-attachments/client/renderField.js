@@ -33,7 +33,7 @@ export function registerFieldTemplate(fieldType, templateName, events) {
 					});
 			}
 		}
-		Template.room.events(uniqueEvents);
+		Template.roomOld.events(uniqueEvents);
 	}
 }
 

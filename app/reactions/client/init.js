@@ -9,7 +9,7 @@ import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { EmojiPicker } from '../../emoji';
 import { tooltip } from '../../ui/client/components/tooltip';
 
-Template.room.events({
+Template.roomOld.events({
 	'click .add-reaction'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
