@@ -27,5 +27,5 @@ createTemplateForComponent('AutoTranslate', () => import('./AutoTranslate'), {
 });
 
 createTemplateForComponent('channelFilesList', () => import('./RoomFiles/RoomFiles'), {
-  renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
