@@ -17,3 +17,7 @@ createTemplateForComponent('ExportMessages', () => import('./ExportMessages'), {
 createTemplateForComponent('KeyboardShortcuts', () => import('./KeyboardShortcuts'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
+
+createTemplateForComponent('NotificationsPreferences', () => import('./NotificationPreferences'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
