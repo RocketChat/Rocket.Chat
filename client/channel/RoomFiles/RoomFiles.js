@@ -9,6 +9,13 @@ import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useSetModal } from '../../contexts/ModalContext';
 import { useMethod } from '../../contexts/ServerContext';
 
+const roomTypes = {
+	c: 'channels',
+	l: 'channels',
+	d: 'im',
+	p: 'groups',
+};
+
 export default ({ rid, tabBar }) => {
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
 	const userId = useUserId();
@@ -47,7 +54,7 @@ export default ({ rid, tabBar }) => {
 		}),
 	}), [rid, text, type, setQuery]);
 
-	const { data, state, reload } = useEndpointDataExperimental(room.type === 'c' ? 'channels.files' : 'groups.files', query);
+	const { data, state, reload } = useEndpointDataExperimental(`${ roomTypes[room.type] }.files`, query);
 
 	const handleDelete = useMutableCallback((_id) => {
 		const onConfirm = async () => {
