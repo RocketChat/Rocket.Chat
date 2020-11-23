@@ -168,9 +168,7 @@ export const UserPresence = {
 
 		log('[user-presence] setDefaultStatus', userId, status);
 
-		const update = Promise.await(Users.update({ _id: userId, statusDefault: { $ne: status } }, { $set: { statusDefault: status } }));
-		// TODO: this used to notify the frontend, how to do it differently?
-		// const update = UsersOld.update({ _id: userId, statusDefault: { $ne: status } }, { $set: { statusDefault: status } });
+		const { result: { n: update } } = Promise.await(Users.update({ _id: userId, statusDefault: { $ne: status } }, { $set: { statusDefault: status } }));
 
 		if (update > 0) {
 			UserPresenceMonitor.processUser(userId, { statusDefault: status });
