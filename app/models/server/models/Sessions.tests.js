@@ -47,6 +47,7 @@ const DATA = {
 		loginAt: new Date('2019-04-30T00:11:34.047Z'),
 		type: 'session',
 		userId: 'xPZXw9xqM3kKshsse',
+		mostImportantRole: 'user',
 		lastActivityAt: new Date('2019-04-30T00:16:20.349Z'),
 		closedAt: new Date('2019-04-30T00:16:20.349Z'),
 	}, {
@@ -73,6 +74,7 @@ const DATA = {
 		loginAt: new Date('2019-05-03T00:11:34.047Z'),
 		type: 'session',
 		userId: 'xPZXw9xqM3kKshsse',
+		mostImportantRole: 'user',
 		lastActivityAt: new Date('2019-05-03T00:16:20.349Z'),
 		closedAt: new Date('2019-05-03T00:16:20.349Z'),
 	}, {
@@ -99,6 +101,7 @@ const DATA = {
 		loginAt: new Date('2019-05-03T00:16:21.846Z'),
 		type: 'session',
 		userId: 'xPZXw9xqM3kKshsse',
+		mostImportantRole: 'user',
 		lastActivityAt: new Date('2019-05-03T00:17:21.081Z'),
 		closedAt: new Date('2019-05-03T00:17:21.081Z'),
 	}, {
@@ -125,6 +128,7 @@ const DATA = {
 		loginAt: new Date('2019-05-03T00:17:22.375Z'),
 		type: 'session',
 		userId: 'xPZXw9xqM3kKshsse',
+		mostImportantRole: 'user',
 		lastActivityAt: new Date('2019-05-03T01:48:31.695Z'),
 		closedAt: new Date('2019-05-03T01:48:31.695Z'),
 	}, {
@@ -151,6 +155,7 @@ const DATA = {
 		loginAt: new Date('2019-05-03T01:48:43.521Z'),
 		type: 'session',
 		userId: 'xPZXw9xqM3kKshsse',
+		mostImportantRole: 'user',
 		closedAt: new Date('2019-05-03T01:48:43.761Z'),
 		lastActivityAt: new Date('2019-05-03T01:48:43.761Z'),
 	}, {
@@ -177,6 +182,7 @@ const DATA = {
 		loginAt: new Date('2019-05-03T01:48:45.064Z'),
 		type: 'session',
 		userId: 'xPZXw9xqM3kKshsse',
+		mostImportantRole: 'user',
 	}, {
 		_id: 'CJwfxASo62FHDgqog',
 		day: 2,
@@ -201,6 +207,7 @@ const DATA = {
 		loginAt: new Date('2019-05-03T01:50:31.092Z'),
 		type: 'session',
 		userId: 'xPZXw9xqM3kKshsse',
+		mostImportantRole: 'user',
 		closedAt: new Date('2019-05-03T01:50:31.355Z'),
 		lastActivityAt: new Date('2019-05-03T01:50:31.355Z'),
 	}, {
@@ -227,12 +234,13 @@ const DATA = {
 		loginAt: new Date('2019-05-03T01:50:32.765Z'),
 		type: 'session',
 		userId: 'xPZXw9xqM3kKshsse2',
+		mostImportantRole: 'admin',
 		lastActivityAt: new Date('2019-05-03T02:59:59.999Z'),
 	}],
 	sessions_dates,
 }; // require('./fixtures/testData.json')
 
-describe('Sessions Aggregates', () => {
+describe.only('Sessions Aggregates', () => {
 	let db;
 
 	if (!process.env.MONGO_URL) {
@@ -651,6 +659,7 @@ describe('Sessions Aggregates', () => {
 					month: 5,
 					year: 2019,
 					userId: 'xPZXw9xqM3kKshsse',
+					mostImportantRole: 'user',
 				}, {
 					_id: 'xPZXw9xqM3kKshsse-2019-4-30',
 					day: 30,
@@ -674,6 +683,7 @@ describe('Sessions Aggregates', () => {
 					type: 'user_daily',
 					_computedAt: docs[1]._computedAt,
 					userId: 'xPZXw9xqM3kKshsse',
+					mostImportantRole: 'user',
 					year: 2019,
 				}, {
 					_id: 'xPZXw9xqM3kKshsse2-2019-5-1',
@@ -699,6 +709,7 @@ describe('Sessions Aggregates', () => {
 					month: 5,
 					year: 2019,
 					userId: 'xPZXw9xqM3kKshsse2',
+					mostImportantRole: 'admin',
 				}]);
 
 				return collection.insertMany(docs);
@@ -712,6 +723,17 @@ describe('Sessions Aggregates', () => {
 				assert.equal(docs.length, 1);
 				assert.deepEqual(docs, [{
 					count: 2,
+					roles: [{
+						count: 1,
+						role: 'user',
+						sessions: 3,
+						time: 5814,
+					}, {
+						count: 1,
+						role: 'admin',
+						sessions: 1,
+						time: 4167,
+					}],
 					sessions: 4,
 					time: 9981,
 				}]);
@@ -725,6 +747,12 @@ describe('Sessions Aggregates', () => {
 				assert.equal(docs.length, 1);
 				assert.deepEqual(docs, [{
 					count: 1,
+					roles: [{
+						count: 1,
+						role: 'admin',
+						sessions: 1,
+						time: 4167,
+					}],
 					sessions: 1,
 					time: 4167,
 				}]);
@@ -738,6 +766,12 @@ describe('Sessions Aggregates', () => {
 				assert.equal(docs.length, 1);
 				assert.deepEqual(docs, [{
 					count: 1,
+					roles: [{
+						count: 1,
+						role: 'user',
+						sessions: 3,
+						time: 5814,
+					}],
 					sessions: 3,
 					time: 5814,
 				}]);

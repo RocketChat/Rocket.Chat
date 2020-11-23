@@ -8,7 +8,6 @@ export const aggregates = {
 				userId: { $exists: true },
 				lastActivityAt: { $exists: true },
 				device: { $exists: true },
-				roles: { $ne: 'anonymous' },
 				type: 'session',
 				$or: [{
 					year: { $lt: year },
@@ -32,6 +31,7 @@ export const aggregates = {
 				day: 1,
 				month: 1,
 				year: 1,
+				mostImportantRole: 1,
 				time: { $trunc: { $divide: [{ $subtract: ['$lastActivityAt', '$loginAt'] }, 1000] } },
 			},
 		}, {
@@ -47,6 +47,7 @@ export const aggregates = {
 					month: '$month',
 					year: '$year',
 				},
+				mostImportantRole: { $first: '$mostImportantRole' },
 				time: { $sum: '$time' },
 				sessions: { $sum: 1 },
 			},
@@ -58,6 +59,7 @@ export const aggregates = {
 					month: '$_id.month',
 					year: '$_id.year',
 				},
+				mostImportantRole: { $first: '$mostImportantRole' },
 				time: { $sum: '$time' },
 				sessions: { $sum: '$sessions' },
 				devices: {
@@ -77,6 +79,7 @@ export const aggregates = {
 				month: '$_id.month',
 				year: '$_id.year',
 				userId: '$_id.userId',
+				mostImportantRole: 1,
 				time: 1,
 				sessions: 1,
 				devices: 1,
@@ -98,9 +101,35 @@ export const aggregates = {
 					day: '$day',
 					month: '$month',
 					year: '$year',
+					mostImportantRole: '$mostImportantRole',
 				},
 				count: {
 					$sum: 1,
+				},
+				sessions: {
+					$sum: '$sessions',
+				},
+				time: {
+					$sum: '$time',
+				},
+			},
+		}, {
+			$group: {
+				_id: {
+					day: '$day',
+					month: '$month',
+					year: '$year',
+				},
+				roles: {
+					$push: {
+						role: '$_id.mostImportantRole',
+						count: '$count',
+						sessions: '$sessions',
+						time: '$time',
+					},
+				},
+				count: {
+					$sum: '$count',
 				},
 				sessions: {
 					$sum: '$sessions',
@@ -115,6 +144,7 @@ export const aggregates = {
 				count: 1,
 				sessions: 1,
 				time: 1,
+				roles: 1,
 			},
 		}]).toArray();
 	},
@@ -130,6 +160,22 @@ export const aggregates = {
 				_id: {
 					userId: '$userId',
 				},
+				mostImportantRole: { $first: '$mostImportantRole' },
+				sessions: {
+					$sum: '$sessions',
+				},
+				time: {
+					$sum: '$time',
+				},
+			},
+		}, {
+			$group: {
+				_id: {
+					mostImportantRole: '$mostImportantRole',
+				},
+				count: {
+					$sum: 1,
+				},
 				sessions: {
 					$sum: '$sessions',
 				},
@@ -140,8 +186,16 @@ export const aggregates = {
 		}, {
 			$group: {
 				_id: 1,
+				roles: {
+					$push: {
+						role: '$_id.mostImportantRole',
+						count: '$count',
+						sessions: '$sessions',
+						time: '$time',
+					},
+				},
 				count: {
-					$sum: 1,
+					$sum: '$count',
 				},
 				sessions: {
 					$sum: '$sessions',
@@ -154,6 +208,7 @@ export const aggregates = {
 			$project: {
 				_id: 0,
 				count: 1,
+				roles: 1,
 				sessions: 1,
 				time: 1,
 			},
