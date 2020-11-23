@@ -72,8 +72,6 @@ export class SAML {
 	}
 
 	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
-		// @ts-ignore RegExp.escape is a meteor method
-		const escapeRegexp = (email: string): string => escapeRegExp(email);
 		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite } = SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
@@ -95,7 +93,7 @@ export class SAML {
 
 		// Second, try searching by username or email (according to the immutableProperty setting)
 		if (!user) {
-			const expression = userObject.emailList.map((email) => `^${ escapeRegexp(email) }$`).join('|');
+			const expression = userObject.emailList.map((email) => `^${ escapeRegExp(email) }$`).join('|');
 			const emailRegex = new RegExp(expression, 'i');
 
 			user = SAML.findUser(userObject.username, emailRegex);
