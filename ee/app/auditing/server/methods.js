@@ -7,6 +7,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import AuditLog from './auditLog';
 import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
 import { hasAllPermission } from '../../../../app/authorization/server';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const getValue = (room) => room && { rids: [room._id], name: room.name };
 
@@ -55,7 +56,7 @@ Meteor.methods({
 		};
 
 		if (msg) {
-			const regex = new RegExp(s.trim(s.escapeRegExp(msg)), 'i');
+			const regex = new RegExp(s.trim(escapeRegExp(msg)), 'i');
 			query.msg = regex;
 		}
 		const messages = Messages.find(query).fetch();
@@ -100,7 +101,7 @@ Meteor.methods({
 		}
 
 		if (msg) {
-			const regex = new RegExp(s.trim(s.escapeRegExp(msg)), 'i');
+			const regex = new RegExp(s.trim(escapeRegExp(msg)), 'i');
 			query.msg = regex;
 		}
 

@@ -1,7 +1,6 @@
-export const escapeRegExp = (input: string): string => {
-	if (typeof input !== 'string') {
-		throw new TypeError('string expected');
-	}
+const toString = (object: unknown): string =>
+	(object ? `${ object }` : '');
 
-	return input.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-};
+export const escapeRegExp = (input: string): string =>
+	toString(input)
+		.replace(/[-.*+?^=!:${}()|[\]\/\\]/g, '\\$&');

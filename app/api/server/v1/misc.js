@@ -128,7 +128,7 @@ API.v1.addRoute('shield.svg', { authRequired: false, rateLimiterOptions: { numRe
 		const width = leftSize + rightSize;
 		const height = 20;
 
-		channel =	escapeHTML(channel);
+		channel = escapeHTML(channel);
 		text = escapeHTML(text);
 		name = escapeHTML(name);
 
