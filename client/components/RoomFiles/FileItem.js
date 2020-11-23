@@ -6,6 +6,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { getURL } from '../../../app/utils/client';
 import { download } from '../../lib/download';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
+import FileItemIcon from './FileItemIcon';
 
 const hoverClass = css`
 	&:hover{
@@ -34,11 +35,14 @@ const MenuItem = ({ _id, name, url, onClickDelete }) => {
 	return <Menu options={menuOptions} />;
 };
 
-export const FileItem = ({ fileData: { _id, name, url, uploadedAt, user }, style, userId, onClickDelete, className }) => {
+export const FileItem = ({ fileData: { _id, name, url, uploadedAt, user, type, typeGroup }, style, userId, onClickDelete, className }) => {
 	const format = useFormatDateAndTime();
 	return <Box display='flex' p='x12' style={style} className={[className, hoverClass]}>
 		<Box is='a' download rel='noopener noreferrer' target='_blank' title={name} display='flex' width='100%' href={url} >
-			<Avatar size='x48' url={url} />
+			{ typeGroup === 'image' && <Avatar size='x48' url={url} /> }
+			{ typeGroup === 'audio' && <FileItemIcon type='audio' /> }
+			{ typeGroup === 'video' && <FileItemIcon type='video' /> }
+			{ (typeGroup === 'application' || typeGroup === 'text') && <FileItemIcon type={type} /> }
 
 			<Box mis='x8'>
 				<Box withTruncatedText maxWidth='x240' color={colors.n800} fontScale='p2'>{name}</Box>
