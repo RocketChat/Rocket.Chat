@@ -80,7 +80,7 @@ export const RoomFiles = function RoomFiles({
 			</VerticalBar.Header>
 
 			<VerticalBar.Content p='x12'>
-				<Box width='full' pb='x12' mi='neg-x4'>
+				<Box width='full' pi='x12' pb='x12' mi='neg-x4'>
 					<FieldGroup>
 						<Box flexDirection='row' alignItems='flex-end' display='flex' justifyContent='stretch'>
 							<Box flexGrow={2} flexBasis='80%' mi='x4'>
