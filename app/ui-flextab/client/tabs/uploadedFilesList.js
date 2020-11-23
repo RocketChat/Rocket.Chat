@@ -1,21 +1,12 @@
-import _ from 'underscore';
-import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { HTML } from 'meteor/htmljs';
 
-import { DateFormat } from '../../../lib/client';
-import { canDeleteMessage, getURL, handleError, t, APIClient } from '../../../utils/client';
-import { popover, modal } from '../../../ui-utils/client';
-import { Rooms, Messages } from '../../../models/client';
-import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
-import { download } from '../../../../client/lib/download';
-import { createTemplateForComponent } from '../../../../client/reactAdapters';
+import { getURL } from '../../../utils/client';
+import { Messages } from '../../../models/client';
 
 const LIST_SIZE = 50;
-const DEBOUNCE_TIME_TO_SEARCH_IN_MS = 500;
 
 const getFileUrl = (attachments) => {
 	if (!attachments || !attachments.length) {
@@ -33,27 +24,8 @@ const mountFileObject = (message) => ({
 	_updatedAt: message.attachments && message.attachments[0].ts,
 });
 
-const roomTypes = {
-	c: 'channels',
-	l: 'channels',
-	d: 'im',
-	p: 'groups',
-};
-
-const fields = {
-	_id: 1,
-	userId: 1,
-	rid: 1,
-	name: 1,
-	description: 1,
-	type: 1,
-	url: 1,
-	uploadedAt: 1,
-};
-
 Template.uploadedFilesList.onCreated(function() {
 	const { rid } = Template.currentData();
-	const room = Rooms.findOne({ _id: rid });
 	this.searchText = new ReactiveVar(null);
 
 	this.showFileType = new ReactiveVar('all');
@@ -83,36 +55,9 @@ Template.uploadedFilesList.onCreated(function() {
 		},
 	});
 
-	const query = {
-		rid,
-		complete: true,
-		uploading: false,
-		_hidden: {
-			$ne: true,
-		},
-	};
-
 	this.autorun(() => {
 		this.searchText.get();
 		this.state.set('limit', LIST_SIZE);
-	});
-
-	this.autorun(() => {
-		if (this.showFileType.get() === 'all') {
-			delete query.typeGroup;
-		} else {
-			this.files.remove({});
-			query.typeGroup = this.showFileType.get();
-		}
-
-		const limit = this.state.get('limit');
-		const searchText = this.searchText.get();
-		if (!searchText) {
-			return loadFiles(query, limit);
-		}
-		this.files.remove({});
-		const regex = { $regex: searchText, $options: 'i' };
-		return loadFiles({ ...query, name: regex }, limit);
 	});
 });
 
