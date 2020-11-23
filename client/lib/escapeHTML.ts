@@ -1,4 +1,4 @@
-const escapeChars = {
+const characterToHtmlEntityCode = {
 	'¢': 'cent',
 	'£': 'pound',
 	'¥': 'yen',
@@ -12,16 +12,16 @@ const escapeChars = {
 	'\'': '#39',
 } as const;
 
-const regex = new RegExp(`[${ Object.keys(escapeChars).join('') }]`, 'g');
+const regex = new RegExp(`[${ Object.keys(characterToHtmlEntityCode).join('') }]`, 'g');
 
 const toString = (object: unknown): string =>
 	(object ? `${ object }` : '');
 
-const isEscapable = (char: string): char is keyof typeof escapeChars =>
-	char in escapeChars;
+const isEscapable = (char: string): char is keyof typeof characterToHtmlEntityCode =>
+	char in characterToHtmlEntityCode;
 
 const escapeChar = (char: string): string =>
-	(isEscapable(char) ? `&${ escapeChars[char] };` : '');
+	(isEscapable(char) ? `&${ characterToHtmlEntityCode[char] };` : '');
 
 export const escapeHTML = (str: string): string =>
 	toString(str).replace(regex, escapeChar);
