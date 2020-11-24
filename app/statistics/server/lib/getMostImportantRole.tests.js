@@ -13,6 +13,8 @@ describe('getMostImportantRole', () => {
 		expect(getMostImportantRole(['user'])).to.be.eq('user');
 		expect(getMostImportantRole(['guest'])).to.be.eq('guest');
 		expect(getMostImportantRole(['anonymous'])).to.be.eq('anonymous');
+		expect(getMostImportantRole(['app'])).to.be.eq('app');
+		expect(getMostImportantRole(['bot'])).to.be.eq('bot');
 	});
 
 	it('should return custom roles as `custom-role`', () => {
@@ -22,8 +24,6 @@ describe('getMostImportantRole', () => {
 	it('should return auditor, app and bot as `user`', () => {
 		expect(getMostImportantRole(['auditor'])).to.be.eq('user');
 		expect(getMostImportantRole(['auditor-log'])).to.be.eq('user');
-		expect(getMostImportantRole(['app'])).to.be.eq('user');
-		expect(getMostImportantRole(['bot'])).to.be.eq('user');
 	});
 
 	it('should return `no-role` if no one exists', () => {
@@ -40,6 +40,6 @@ describe('getMostImportantRole', () => {
 		expect(getMostImportantRole(['custom2', 'user', 'custom1'])).to.be.eq('custom-role');
 		expect(getMostImportantRole(['custom2', 'admin', 'custom1'])).to.be.eq('admin');
 		expect(getMostImportantRole(['custom2', 'app'])).to.be.eq('custom-role');
-		expect(getMostImportantRole(['anonymous', 'app'])).to.be.eq('user');
+		expect(getMostImportantRole(['anonymous', 'app'])).to.be.eq('app');
 	});
 });

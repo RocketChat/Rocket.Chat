@@ -5,6 +5,8 @@ const order = [
 	'livechat-agent',
 	'custom-role',
 	'user',
+	'app',
+	'bot',
 	'guest',
 	'anonymous',
 ];
@@ -12,8 +14,6 @@ const order = [
 const rolesToConsiderAsUser = [
 	'auditor',
 	'auditor-log',
-	'app',
-	'bot',
 ];
 
 export function getMostImportantRole(roles = []) {
