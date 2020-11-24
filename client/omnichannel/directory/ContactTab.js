@@ -6,6 +6,8 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import GenericTable from '../../components/GenericTable';
 import FilterByText from '../../components/FilterByText';
+import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
+import VerticalBar from '../../components/basic/VerticalBar';
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
 	term: text,
@@ -22,6 +24,8 @@ function ContactTable() {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
+	const directoryRoute = useRoute('omnichannel-directory');
+	const context = useRouteParameter('context');
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -33,21 +37,50 @@ function ContactTable() {
 		setSort([id, 'asc']);
 	});
 
+	const onButtonNewClick = useMutableCallback(() => {
+		console.log('new contact');
+	});
+
+
+	const onRowClick = useMutableCallback((id) => () => {
+		console.log(id);
+	});
+
 	const { data } = useEndpointDataExperimental('livechat/visitors.search', query) || {};
 
+	// eslint-disable-next-line no-unused-vars
+	const ContactProfile = useCallback(() => {
+		if (!context) {
+			return '';
+		}
+		const handleVerticalBarCloseButtonClick = () => {
+			directoryRoute.push({});
+		};
+
+		return <VerticalBar className={'contextual-bar'}>
+			<VerticalBar.Header>
+				{context === 'info' && t('User_Info')}
+				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
+			</VerticalBar.Header>
+
+		</VerticalBar>;
+	}, [t, context]);
+
 	const header = useMemo(() => [
-		<GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>{t('Username')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x140'>{t('Name')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'phone'} direction={sort[1]} active={sort[0] === 'phone'} onClick={onHeaderClick} sort='phone' w='x140'>{t('Phone')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'email'} direction={sort[1]} active={sort[0] === 'visitorEmails.address'} onClick={onHeaderClick} sort='visitorEmails.address' w='x140'>{t('Email')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username'>{t('Username')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'phone'} direction={sort[1]} active={sort[0] === 'phone'} onClick={onHeaderClick} sort='phone'>{t('Phone')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'email'} direction={sort[1]} active={sort[0] === 'visitorEmails.address'} onClick={onHeaderClick} sort='visitorEmails.address'>{t('Email')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'lastchat'} direction={sort[1]} active={sort[0] === 'lastchat'} onClick={onHeaderClick} sort='visitorEmails.address'>{t('Last_Chat')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
 
-	const renderRow = useCallback(({ _id, username, name, visitorEmails, phone }) => <Table.Row key={_id} tabIndex={0} role='link' action qa-user-id={_id}>
+	const renderRow = useCallback(({ _id, username, name, visitorEmails, phone }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 		<Table.Cell withTruncatedText>{username}</Table.Cell>
 		<Table.Cell withTruncatedText>{name}</Table.Cell>
 		<Table.Cell withTruncatedText>{phone && phone.length && phone[0].phoneNumber}</Table.Cell>
 		<Table.Cell withTruncatedText>{visitorEmails && visitorEmails.length && visitorEmails[0].address}</Table.Cell>
+		<Table.Cell withTruncatedText>November 12, 2020</Table.Cell>
 	</Table.Row>, []);
 
 	return <GenericTable
@@ -57,7 +90,7 @@ function ContactTable() {
 		total={data && data.total}
 		setParams={setParams}
 		params={params}
-		renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText displayButton={true} textButton={t('New_Contact')} onButtonClick={onButtonNewClick} onChange={onChange} {...props} />}
 	/>;
 }
 
