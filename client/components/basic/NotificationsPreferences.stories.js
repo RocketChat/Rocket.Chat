@@ -55,6 +55,13 @@ export const Default = () => <Box height='600px'>
 			handleSwitch={handleSwitch}
 			handleOptions={handleOptions}
 			handleSelect={handleSelect}
+			handleChangeOption={{
+				desktopAlert: () => {},
+				desktopAudio: () => {},
+				mobileAlert: () => {},
+				emailAlert: () => {},
+			}}
+			handleSoundChange={{ desktopSound: () => {} }}
 		/>
 	</VerticalBar>
 </Box>;
