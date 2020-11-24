@@ -1,9 +1,9 @@
 import React from 'react';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import KeyboardShortcuts from '../../components/basic/KeyboardShortcuts';
+import { useTabBarClose } from '../../views/room/providers/ToolboxProvider';
 
-export default React.memo(({ tabBar }) => {
-	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
-	return <KeyboardShortcuts handleClose={handleClose}/>;
+export default React.memo(() => {
+	const close = useTabBarClose();
+	return <KeyboardShortcuts handleClose={close}/>;
 });

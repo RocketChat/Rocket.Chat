@@ -54,7 +54,7 @@ export const RoomInfo = function RoomInfo({
 
 			<VerticalBar.ScrollableContent p='x24'>
 				<Margins block='x4'>
-					<Box pbe='x24'>
+					<Box pbe='x24' display='flex' justifyContent='center'>
 						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
 					</Box>
 
@@ -88,7 +88,7 @@ export const RoomInfo = function RoomInfo({
 					</Box>}
 
 					{retentionPolicyEnabled && (
-						<Callout type='warning'>
+						<Callout type='warning' flexShrink={1}>
 							{filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</p>}
 							{filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</p>}
 							{!filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning', { time: maxAgeDefault })}</p>}

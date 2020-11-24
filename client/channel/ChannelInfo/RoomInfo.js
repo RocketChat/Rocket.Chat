@@ -15,6 +15,7 @@ import { RoomManager } from '../../../app/ui-utils/client/lib/RoomManager';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import WarningModal from '../../admin/apps/WarningModal';
 import MarkdownText from '../../components/basic/MarkdownText';
+import { useTabBarClose } from '../../views/room/providers/ToolboxProvider';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -31,9 +32,8 @@ const retentionPolicyAppliesTo = {
 export default ({
 	openEditing,
 	rid,
-	tabBar,
 }) => {
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const close = useTabBarClose();
 	const t = useTranslation();
 
 	const room = useUserRoom(rid);
@@ -132,7 +132,7 @@ export default ({
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickEdit={canEdit && openEditing}
-			onClickClose={onClickClose}
+			onClickClose={close}
 			onClickDelete={canDelete && handleDelete}
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}

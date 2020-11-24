@@ -136,14 +136,6 @@
 						{{> messageBox messageboxData}}
 					</footer>
 				</div>
-				{{# with openedThread}}
-					{{> ThreadComponent}}
-				{{/with}}
-				{{# unless shouldCloseFlexTab}}
-					{{#with flexData}}
-						{{> contextualBar}}
-					{{/with}}
-				{{/unless}}
 			</div>
 		</section>
 	</div>

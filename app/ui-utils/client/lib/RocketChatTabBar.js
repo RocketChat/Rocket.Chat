@@ -55,9 +55,6 @@ export class RocketChatTabBar {
 
 	open(button) {
 		this.state.set('opened');
-		Tracker.afterFlush(() => {
-			$('.contextual-bar__container').scrollTop(0).find('input[type=text]:first').focus();
-		});
 
 		const current = FlowRouter.current();
 		FlowRouter.go(current.route.name, { ...current.params, tab: null, context: null });

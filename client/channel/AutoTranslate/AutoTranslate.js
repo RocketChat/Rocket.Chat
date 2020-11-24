@@ -6,8 +6,10 @@ import { useLanguage } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import AutoTranslate from '../../components/basic/AutoTranslate';
+import { useTabBarClose } from '../../views/room/providers/ToolboxProvider';
 
-export default React.memo(({ tabBar, rid }) => {
+export default React.memo(({ rid }) => {
+	const close = useTabBarClose();
 	const userLanguage = useLanguage();
 	const subscription = useUserSubscription(rid);
 
@@ -44,8 +46,6 @@ export default React.memo(({ tabBar, rid }) => {
 		});
 	});
 
-	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
-
 	useEffect(() => {
 		if (!subscription.autoTranslate) {
 			return;
@@ -62,6 +62,6 @@ export default React.memo(({ tabBar, rid }) => {
 		handleSwitch={ handleSwitch }
 		handleChangeLanguage={ handleChangeLanguage }
 		translateEnable={ !!subscription.autoTranslate }
-		handleClose={ handleClose }
+		handleClose={ close }
 	/>;
 });

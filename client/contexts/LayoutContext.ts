@@ -1,10 +1,18 @@
 import { createContext, useContext } from 'react';
 
+export type SizeLayout = {
+	sidebar: string;
+	contextualBar: string;
+}
+
 type LayoutContextValue = {
 	isEmbedded: boolean;
 	showTopNavbarEmbeddedLayout: boolean;
 	isMobile: boolean;
 	sidebar: any;
+	size: SizeLayout;
+	contextualBarExpanded: boolean;
+	contextualBarPosition: 'absolute' | 'relative';
 }
 
 export const LayoutContext = createContext<LayoutContextValue>({
@@ -12,6 +20,12 @@ export const LayoutContext = createContext<LayoutContextValue>({
 	showTopNavbarEmbeddedLayout: false,
 	isMobile: false,
 	sidebar: {},
+	size: {
+		sidebar: '380px',
+		contextualBar: '380px',
+	},
+	contextualBarPosition: 'relative',
+	contextualBarExpanded: false,
 });
 
 export const useLayout = (): LayoutContextValue =>

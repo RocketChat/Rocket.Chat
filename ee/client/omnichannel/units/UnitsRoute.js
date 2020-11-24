@@ -120,7 +120,7 @@ function UnitsRoute() {
 			unitsRoute.push({});
 		};
 
-		return <VerticalBar className={'contextual-bar'}>
+		return <VerticalBar>
 			<VerticalBar.Header>
 				{context === 'edit' && t('Edit_Unit')}
 				{context === 'new' && t('New_Unit')}

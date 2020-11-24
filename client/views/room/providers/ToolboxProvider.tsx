@@ -1,9 +1,9 @@
-import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
+import React, { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { useDebouncedState, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Handler } from '@rocket.chat/emitter';
 
 import { ToolboxContext } from '../../../channel/lib/Toolbox/ToolboxContext';
-import { ToolboxAction, ActionsStore } from '../../../channel/lib/Toolbox/index';
+import { ToolboxAction, ActionsStore, ToolboxActionConfig } from '../../../channel/lib/Toolbox/index';
 import { IRoom } from '../../../../definition/IRoom';
 
 const groupsDict = {
@@ -47,12 +47,36 @@ const useToolboxActions = (room: IRoom): { listen: (handler: Handler<any>) => Fu
 };
 
 
-export const ToolboxProvider = ({ children, room, tabBar }: { children: FC; room: IRoom; tabBar: any }): JSX.Element => {
+export const ToolboxProvider = ({ children, room, tabBar }: { children: ReactNode; room: IRoom; tabBar: any }): JSX.Element => {
+	const [activeTabBar, setActiveTabBar] = useState<ToolboxActionConfig|undefined>();
 	const [list, setList] = useDebouncedState<ActionsStore>(new Map(), 5);
 	const handleChange = useMutableCallback((fn) => { fn(list); setList((list) => new Map(list)); });
 	const { listen, actions } = useToolboxActions(room);
-	return <ToolboxContext.Provider value={useMemo(() => ({ listen, tabBar, actions: new Map(list) }), [listen, list, tabBar])}>
+
+
+	const open = useMutableCallback((actionId) => {
+		setActiveTabBar(list.get(actionId) as ToolboxActionConfig);
+	});
+
+	const close = useMutableCallback(() => {
+		setActiveTabBar(undefined);
+	});
+
+	const context = useMemo(() => ({
+		listen,
+		tabBar,
+		actions: new Map(list),
+		activeTabBar,
+		open,
+		close,
+	}), [listen, tabBar, list, activeTabBar, open, close]);
+
+	return <ToolboxContext.Provider value={context}>
 		{ actions.map(([id, item]) => <VirtualAction action={item} room={room} id={id} key={id} handleChange={handleChange} />) }
 		{children}
 	</ToolboxContext.Provider>;
 };
+
+export const useTab = (): ToolboxActionConfig | undefined => useContext(ToolboxContext).activeTabBar;
+export const useTabBarOpen = (): Function => useContext(ToolboxContext).open;
+export const useTabBarClose = (): Function => useContext(ToolboxContext).close;

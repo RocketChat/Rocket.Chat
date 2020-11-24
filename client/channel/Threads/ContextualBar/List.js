@@ -3,11 +3,11 @@ import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from '
 import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useResizeObserver, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useResizeObserver, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
+import { useRoute, useCurrentRoute, useRouteParameter, useQueryStringParameter } from '../../../contexts/RouterContext';
 import { call, renderMessageBody } from '../../../../app/ui-utils/client';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
@@ -19,6 +19,8 @@ import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../contexts/ServerContext';
+import { useTabBarClose } from '../../../views/room/providers/ToolboxProvider';
+import ThreadComponent from '../../../../app/threads/client/components/ThreadComponent';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -37,6 +39,7 @@ const roomFields = { t: 1, name: 1 };
 
 export function withData(WrappedComponent) {
 	return ({ rid, ...props }) => {
+		const onClose = useTabBarClose();
 		const room = useUserRoom(rid, roomFields);
 		const subscription = useUserSubscription(rid, subscriptionFields);
 		const userId = useUserId();
@@ -133,6 +136,7 @@ export function withData(WrappedComponent) {
 			setText={handleTextChange}
 			type={type}
 			setType={setType}
+			onClose={onClose}
 		/>;
 	};
 }
@@ -208,7 +212,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 
 	const [name] = useCurrentRoute();
 	const channelRoute = useRoute(name);
-	const onClick = useCallback((e) => {
+	const onClick = useMutableCallback((e) => {
 		const { id: context } = e.currentTarget.dataset;
 		channelRoute.push({
 			tab: 'thread',
@@ -216,7 +220,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 			rid: room._id,
 			name: room.name,
 		});
-	}, [channelRoute, room._id, room.name]);
+	});
 
 	const options = useMemo(() => [['all', t('All')], ['following', t('Following')], ['unread', t('Unread')]], [t]);
 
@@ -234,10 +238,13 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 		onClick={onClick}
 	/>, [showRealNames, unread, unreadUser, unreadGroup, userId, onClick]);
 
-	const isItemLoaded = useCallback((index) => index < threadsRef.current.length, []);
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({ debounceDelay: 100 });
+	const isItemLoaded = useMutableCallback((index) => index < threadsRef.current.length);
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({ debounceDelay: 200 });
 
-	return <VerticalBar>
+	const mid = useRouteParameter('context');
+	const jump = useQueryStringParameter('jump');
+
+	return <>
 		<VerticalBar.Header>
 			<Icon name='thread' size='x20'/>
 			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Threads')}</Box>
@@ -252,10 +259,10 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 					</Margins>
 				</Box>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} ref={ref}>
+			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
-				<InfiniteLoader
+				{ total > 0 && <InfiniteLoader
 					isItemLoaded={isItemLoaded}
 					itemCount={total}
 					loadMoreItems={ loading ? () => {} : loadMoreItems}
@@ -271,10 +278,11 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 						onItemsRendered={onItemsRendered}
 					>{rowRenderer}</List>
 					)}
-				</InfiniteLoader>
+				</InfiniteLoader> }
 			</Box>
 		</VerticalBar.Content>
-	</VerticalBar>;
+		{ mid && <Box position='absolute' width='full' height='full' display='flex'><ThreadComponent mid={mid} jump={jump} room={room}/></Box> }
+	</>;
 }
 
 export default withData(ThreadList);

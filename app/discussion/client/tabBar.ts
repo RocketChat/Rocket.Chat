@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, lazy} from 'react';
 
 import { addAction } from '../../../client/channel/lib/Toolbox';
 import { useSetting } from '../../../client/contexts/SettingsContext';
@@ -11,7 +11,7 @@ addAction('discussions', () => {
 		id: 'discussions',
 		title: 'Discussions',
 		icon: 'discussion',
-		template: 'discussionsTabbar',
+		template: lazy(() => import('../../../client/channel/Discussions/ContextualBar/List')),
 		full: true,
 		order: 1,
 	} : null), [discussionEnabled]);

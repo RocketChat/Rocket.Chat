@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, lazy } from 'react';
 
 import { addAction } from '../../../../client/channel/lib/Toolbox';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
@@ -11,7 +11,7 @@ addAction('thread', () => {
 		full: true,
 		title: 'Threads',
 		icon: 'thread',
-		template: 'threads',
+		template: lazy(() => import('../../../../client/channel/Threads/ContextualBar/List')),
 		// badge: () => {
 		// 	const subscription = Subscriptions.findOne({ rid: Session.get('openedRoom') }, { fields: { tunread: 1, tunreadUser: 1, tunreadGroup: 1 } });
 		// 	if (!subscription?.tunread?.length) {

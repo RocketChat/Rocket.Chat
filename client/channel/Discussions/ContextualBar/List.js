@@ -21,6 +21,7 @@ import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
 import { clickableItem } from '../../helpers/clickableItem';
+import { useTabBarClose } from '../../../views/room/providers/ToolboxProvider';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
@@ -42,6 +43,7 @@ export function withData(WrappedComponent) {
 		const room = useUserRoom(rid, roomFields);
 		const subscription = useUserSubscription(rid, subscriptionFields);
 		const userId = useUserId();
+		const onClose = useTabBarClose();
 
 		const [text, setText] = useState('');
 		const [total, setTotal] = useState(LIST_SIZE);
@@ -108,6 +110,7 @@ export function withData(WrappedComponent) {
 
 		return <WrappedComponent
 			{...props}
+			onClose={onClose}
 			unread={subscription?.tunread}
 			unreadUser={subscription?.tunreadUser}
 			unreadGroup={subscription?.tunreadGroup}
@@ -200,7 +203,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 	const isItemLoaded = useCallback((index) => index < discussionsRef.current.length, []);
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver();
 
-	return <VerticalBar>
+	return <>
 		<VerticalBar.Header>
 			<VerticalBar.Icon name='discussion'/>
 			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Discussions')}</Box>
@@ -232,7 +235,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 				</InfiniteLoader>
 			</Box>
 		</VerticalBar.Content>
-	</VerticalBar>;
+	</>;
 }
 
 export default withData(DiscussionList);

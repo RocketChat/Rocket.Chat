@@ -21,13 +21,13 @@ const ThreadSkeleton: FC<ThreadSkeletonProps> = ({ expanded, onClose }) => {
 
 	return <>
 		{expanded && <Modal.Backdrop onClick={onClose} />}
-		<Box width='380px' flexGrow={1} position={expanded ? 'static' : 'relative'}>
+		<Box flexGrow={1} position={expanded ? 'static' : 'relative'}>
 			<VerticalBar.Skeleton
 				className='rcx-thread-view'
 				position='absolute'
 				display='flex'
 				flexDirection='column'
-				width={expanded ? 'full' : 380}
+				width={'full'}
 				maxWidth={855}
 				overflow='hidden'
 				zIndex={100}

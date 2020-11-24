@@ -1,24 +1,29 @@
 import { Box, Button, Icon, Margins, Skeleton } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useLayoutContextualBarPosition, useLayoutSizes } from '../../providers/LayoutProvider';
 import Page from './Page';
 
-function VerticalBar({ children, ...props }) {
-	const mobile = useDebouncedValue(useMediaQuery('(max-width: 500px)'), 50);
-	const small = useDebouncedValue(useMediaQuery('(max-width: 780px)'), 50);
 
+function VerticalBar({ children, ...props }) {
+	const sizes = useLayoutSizes();
+	const position = useLayoutContextualBarPosition();
 	return <Box
 		rcx-vertical-bar
 		backgroundColor='surface'
 		display='flex'
 		flexDirection='column'
 		flexShrink={0}
-		width={mobile ? 'full' : 'x380'}
+		width={sizes.contextualBar}
+		borderInlineStartWidth='2px'
+		borderInlineStartColor='neutral-300'
+		borderInlineStartStyle='solid'
 		height='full'
-		position={small ? 'absolute' : undefined}
-		insetInlineEnd={small ? 'none' : undefined}
+		position={position}
+		zIndex={5}
+		insetInlineEnd={'none'}
+		insetBlockStart={'none'}
 		{...props}
 	>
 		{children}

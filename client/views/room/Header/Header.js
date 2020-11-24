@@ -5,30 +5,21 @@ import { ActionButton } from '@rocket.chat/fuselage';
 
 import Header from '../../../components/basic/Header';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
-import { useUserSubscription } from '../../../contexts/UserContext';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
 import ToolBox from './ToolBox';
 import RoomAvatar from '../../../components/basic/avatar/RoomAvatar';
-import { ToolboxProvider } from './ToolboxProvider';
 import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-export default React.memo(({ rid, tabBar }) => {
-	const room = useUserSubscription(rid);
-	room._id = room.rid;
-
+export default React.memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
-
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
 		return null;
 	}
-
-	return <ToolboxProvider room={room} tabBar={tabBar}>
-		<RoomHeader room={room} />
-	</ToolboxProvider>;
+	return <RoomHeader room={room}/>;
 });
 
 const BackToRoom = React.memo(({ small, prid }) => {

@@ -47,7 +47,7 @@ function UsersPage() {
 				<UsersTable />
 			</Page.Content>
 		</Page>
-		{context && <VerticalBar className={'contextual-bar'}>
+		{context && <VerticalBar>
 			<VerticalBar.Header>
 				{context === 'info' && t('User_Info')}
 				{context === 'edit' && t('Edit_User')}

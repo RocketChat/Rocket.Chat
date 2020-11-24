@@ -79,7 +79,7 @@ function CustomUserStatusRoute() {
 				<CustomUserStatus setParams={setParams} params={params} onHeaderClick={handleHeaderClick} data={data} onClick={handleItemClick} sort={sort}/>
 			</Page.Content>
 		</Page>
-		{context && <VerticalBar className='contextual-bar' width='x380' flexShrink={0}>
+		{context && <VerticalBar flexShrink={0}>
 			<VerticalBar.Header>
 				{context === 'edit' && t('Custom_User_Status_Edit')}
 				{context === 'new' && t('Custom_User_Status_Add')}

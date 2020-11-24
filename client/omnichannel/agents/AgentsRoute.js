@@ -185,7 +185,7 @@ function AgentsRoute() {
 			agentsRoute.push({});
 		};
 
-		return <VerticalBar className={'contextual-bar'}>
+		return <VerticalBar>
 			<VerticalBar.Header>
 				{context === 'edit' && t('Edit_User')}
 				{context === 'info' && t('User_Info')}

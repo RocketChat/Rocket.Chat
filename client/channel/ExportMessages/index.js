@@ -11,6 +11,7 @@ import { useUserRoom } from '../hooks/useUserRoom';
 import { useEndpoint } from '../../contexts/ServerContext';
 import { roomTypes, isEmail } from '../../../app/utils/client';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useTabBarClose } from '../../views/room/providers/ToolboxProvider';
 
 const clickable = css`
 	cursor: pointer;
@@ -245,8 +246,9 @@ const MailExportForm = ({ onCancel, rid }) => {
 	);
 };
 
-export const ExportMessages = function ExportMessages({ rid, tabBar }) {
+export const ExportMessages = function ExportMessages({ rid }) {
 	const t = useTranslation();
+	const close = useTabBarClose();
 
 	const [type, setType] = useState('email');
 
@@ -255,25 +257,24 @@ export const ExportMessages = function ExportMessages({ rid, tabBar }) {
 		['file', t('Export_as_file')],
 	], [t]);
 
-	return (
-		<VerticalBar>
-			<VerticalBar.Header>
-				{t('Export_Messages')}
-				<VerticalBar.Close onClick={() => tabBar.close()} />
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent>
-				<FieldGroup>
-					<Field>
-						<Field.Label>{t('Method')}</Field.Label>
-						<Field.Row>
-							<Select value={type} onChange={(value) => setType(value)} placeholder={t('Type')} options={exportOptions}/>
-						</Field.Row>
-					</Field>
-				</FieldGroup>
-				{type && type === 'file' && <FileExport rid={rid} onCancel={() => tabBar.close()} />}
-				{type && type === 'email' && <MailExportForm rid={rid} onCancel={() => tabBar.close()} />}
-			</VerticalBar.ScrollableContent>
-		</VerticalBar>
+	return (<>
+		<VerticalBar.Header>
+			{t('Export_Messages')}
+			<VerticalBar.Close onClick={close} />
+		</VerticalBar.Header>
+		<VerticalBar.ScrollableContent>
+			<FieldGroup>
+				<Field>
+					<Field.Label>{t('Method')}</Field.Label>
+					<Field.Row>
+						<Select value={type} onChange={(value) => setType(value)} placeholder={t('Type')} options={exportOptions}/>
+					</Field.Row>
+				</Field>
+			</FieldGroup>
+			{type && type === 'file' && <FileExport rid={rid} onCancel={close} />}
+			{type && type === 'email' && <MailExportForm rid={rid} onCancel={close} />}
+		</VerticalBar.ScrollableContent>
+	</>
 	);
 };
 

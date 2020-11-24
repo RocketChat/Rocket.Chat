@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, lazy } from 'react';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
 
@@ -57,6 +57,6 @@ addAction('keyboard-shortcut-list', {
 	id: 'keyboard-shortcut-list',
 	title: 'Keyboard_Shortcuts_Title',
 	icon: 'keyboard',
-	template: 'KeyboardShortcuts',
+	template: lazy(() => import('../../KeyboardShortcuts')),
 	order: 99,
 });

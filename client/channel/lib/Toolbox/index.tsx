@@ -16,7 +16,7 @@ export type ToolboxActionConfig = {
 	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple'>;
 	hotkey?: string;
 	action?: Function;
-	template?: string;
+	template?: string | FC | JSX.Element;
 }
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;

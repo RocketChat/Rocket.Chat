@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, forwardRef } from 'react';
 import { Modal, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import { useLayoutContextualBarExpanded } from '../../../../client/providers/LayoutProvider';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
 
 type ThreadViewProps = {
@@ -21,6 +22,8 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 	onToggleFollow,
 	onClose,
 }, ref) => {
+	const hasExpand = useLayoutContextualBarExpanded();
+
 	const style = useMemo(() => (document.dir === 'rtl'
 		? {
 			left: 0,
@@ -48,15 +51,15 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 	}, [following, onToggleFollow]);
 
 	return <>
-		{expanded && <Modal.Backdrop onClick={onClose}/>}
+		{hasExpand && expanded && <Modal.Backdrop onClick={onClose}/>}
 
-		<Box width='380px' flexGrow={1} position={expanded ? 'static' : 'relative'}>
+		<Box flexGrow={1} position={expanded ? 'static' : 'relative'}>
 			<VerticalBar
 				className='rcx-thread-view'
-				position='absolute'
+				position={hasExpand && expanded ? 'fixed' : 'absolute'}
 				display='flex'
 				flexDirection='column'
-				width={expanded ? 'full' : 380}
+				width={'full'}
 				maxWidth={855}
 				overflow='hidden'
 				zIndex={100}
@@ -68,7 +71,7 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 				<VerticalBar.Header>
 					<VerticalBar.Icon name='thread' />
 					<VerticalBar.Text dangerouslySetInnerHTML={{ __html: title }} />
-					<VerticalBar.Action aria-label={expandLabel} name={expandIcon} onClick={handleExpandActionClick} />
+					{hasExpand && <VerticalBar.Action aria-label={expandLabel} name={expandIcon} onClick={handleExpandActionClick} />}
 					<VerticalBar.Action aria-label={followLabel} name={followIcon} onClick={handleFollowActionClick} />
 					<VerticalBar.Close onClick={onClose} />
 				</VerticalBar.Header>

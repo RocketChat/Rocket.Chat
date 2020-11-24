@@ -23,7 +23,6 @@ import {
 	modal,
 	Layout,
 	MessageAction,
-	RocketChatTabBar,
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { renderMessageBody } from '../../../../ui-utils/client/lib/renderMessageBody';

@@ -119,7 +119,7 @@ function TagsRoute() {
 			tagsRoute.push({});
 		};
 
-		return <VerticalBar className={'contextual-bar'}>
+		return <VerticalBar>
 			<VerticalBar.Header>
 				{context === 'edit' && t('Edit_Tag')}
 				{context === 'new' && t('New_Tag')}

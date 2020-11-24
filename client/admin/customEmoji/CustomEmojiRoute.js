@@ -79,7 +79,7 @@ function CustomEmojiRoute() {
 				<CustomEmoji setParams={setParams} params={params} onHeaderClick={handleHeaderClick} data={data} onClick={handleItemClick} sort={sort}/>
 			</Page.Content>
 		</Page>
-		{context && <VerticalBar className='contextual-bar' width='x380' flexShrink={0}>
+		{context && <VerticalBar flexShrink={0}>
 			<VerticalBar.Header>
 				{context === 'edit' && t('Custom_Emoji_Info')}
 				{context === 'new' && t('Custom_Emoji_Add')}

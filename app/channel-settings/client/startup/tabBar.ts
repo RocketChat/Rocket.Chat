@@ -1,3 +1,4 @@
+import { lazy } from 'react';
 import { addAction } from '../../../../client/channel/lib/Toolbox';
 
 addAction('channel-settings', {
@@ -7,6 +8,6 @@ addAction('channel-settings', {
 	full: true,
 	title: 'Room_Info',
 	icon: 'info-circled',
-	template: 'channelSettings',
+	template: lazy(() => import('../../../../client/channel/ChannelInfo')),
 	order: 7,
 });

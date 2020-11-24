@@ -30,6 +30,7 @@ import { useSetting } from '../../contexts/SettingsContext';
 import { usePermission, useAtLeastOnePermission, useRole } from '../../contexts/AuthorizationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import { useUserRoom } from '../hooks/useUserRoom';
+import { useTabBarClose } from '../../views/room/providers/ToolboxProvider';
 
 const typeMap = {
 	c: 'Channels',
@@ -106,11 +107,11 @@ const useInitialValues = (room, settings) => {
 	]);
 };
 
-function EditChannelWithData({ rid, tabBar }) {
+function EditChannelWithData({ rid }) {
 	const room = useUserRoom(rid);
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const close = useTabBarClose();
 
-	return <EditChannel onClickClose={onClickClose} room={{ type: room?.t, ...room }}/>;
+	return <EditChannel onClickClose={close} room={{ type: room?.t, ...room }}/>;
 }
 
 const getCanChangeType = (room, canCreateChannel, canCreateGroup, isAdmin) => (!room.default || isAdmin) && ((room.t === 'p' && canCreateChannel) || (room.t === 'c' && canCreateGroup));
@@ -273,7 +274,9 @@ function EditChannel({ room, onClickClose }) {
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())} >
-				<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar}/>
+				<Box display='flex' justifyContent='center'>
+					<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar}/>
+				</Box>
 				<Field>
 					<Field.Label>{t('Name')}</Field.Label>
 					<Field.Row>
