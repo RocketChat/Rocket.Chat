@@ -51,5 +51,7 @@ export async function handleUserPresenceAndStatus({ models: { Users }, userId, s
 	return {
 		user,
 		result,
+		status: processedStatus,
+		statusConnection,
 	};
 }
