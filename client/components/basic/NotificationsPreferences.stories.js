@@ -9,8 +9,52 @@ export default {
 	component: NotificationsPreferences,
 };
 
+const handleOn = {
+	turnOn: true,
+	muteGroupMentions: false,
+	showCounter: true,
+};
+
+const handleSwitch = {
+	turnOn: () => {},
+	muteGroupMentions: () => {},
+	showCounter: () => {},
+};
+
+const defaultOption = [
+	['default', 'Default'],
+	['all', 'All_messages'],
+	['mentions', 'Mentions'],
+	['nothing', 'Nothing'],
+];
+
+const handleOptions = {
+	alerts: defaultOption,
+	audio: defaultOption,
+	sound: [
+		['none None', 'None'],
+		['0 default', 'Default'],
+		['chime', 'Chime'],
+	],
+};
+
+const handleSelect = { desktop: {}, mobile: {}, email: {} };
+
+handleSelect.desktop.alert = 'default';
+handleSelect.desktop.audio = 'default';
+handleSelect.desktop.sound = 'chime';
+
+handleSelect.mobile.alert = 'mentions';
+
+handleSelect.email.alert = 'nothing';
+
 export const Default = () => <Box height='600px'>
 	<VerticalBar>
-		<NotificationsPreferences handleOn={() => {}} handleOptions={() => {}}/>
+		<NotificationsPreferences
+			handleOn={handleOn}
+			handleSwitch={handleSwitch}
+			handleOptions={handleOptions}
+			handleSelect={handleSelect}
+		/>
 	</VerticalBar>
 </Box>;
