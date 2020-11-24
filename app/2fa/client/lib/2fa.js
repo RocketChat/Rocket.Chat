@@ -24,7 +24,7 @@ export class Utils2fa {
 		return err;
 	}
 
-	static overrideLoginMethod(loginMethod, loginArgs, cb, loginMethodTOTP) {
+	static overrideLoginMethod(loginMethod, loginArgs, cb, loginMethodTOTP, emailOrUsername = undefined) {
 		loginMethod.apply(this, loginArgs.concat([(error) => {
 			if (!error || error.error !== 'totp-required') {
 				return cb(error);
@@ -32,6 +32,7 @@ export class Utils2fa {
 
 			process2faReturn({
 				error,
+				emailOrUsername,
 				originalCallback: cb,
 				onCode: (code) => {
 					loginMethodTOTP && loginMethodTOTP.apply(this, loginArgs.concat([code, (error) => {

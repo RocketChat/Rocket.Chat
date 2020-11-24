@@ -47,5 +47,5 @@ const { loginWithLDAP } = Meteor;
 Meteor.loginWithLDAP = function(...args) {
 	const callback = typeof args[args.length - 1] === 'function' ? args.pop() : null;
 
-	Utils2fa.overrideLoginMethod(loginWithLDAP, args, callback, Meteor.loginWithLDAPAndTOTP);
+	Utils2fa.overrideLoginMethod(loginWithLDAP, args, callback, Meteor.loginWithLDAPAndTOTP, args[0]);
 };
