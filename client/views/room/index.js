@@ -28,11 +28,11 @@ export const Room = ({ children, ...props }) => {
 	const footer = c.filter((child) => child.type === Footer);
 	const aside = c.filter((child) => child.type === Aside);
 
-	return <Box is='main' h='full' display='flex' flexDirection='column' {...props}>
+	return <Box is='main' h='full' display='flex' flexDirection='column' overflow='hidden' {...props}>
 		{ header.length > 0 && <Box is='header'>{header}</Box> }
-		<Box display='flex' flexGrow='1'>
-			<Box display='flex' flexDirection='column' flexGrow='1'>
-				<Box is='div' display='flex' flexDirection='column' flexGrow='1'>{body}</Box>
+		<Box display='flex' flexGrow='1' overflow='hidden' flexShrink={1} overflow='hidden'>
+			<Box display='flex' flexDirection='column' flexShrink={1} flexGrow='1' overflow='hidden'>
+				<Box is='div' display='flex' flexDirection='column' flexShrink={1} flexGrow='1' overflow='hidden'>{body}</Box>
 				{ footer.length > 0 && <Box is='footer'>{footer}</Box> }
 			</Box>
 			{ aside.length > 0 && <Box is='aside'>{aside}</Box>}
@@ -58,7 +58,7 @@ const BlazeTemplate = ({ name, children, ...props }) => {
 			Blaze.remove(view);
 		};
 	}, [props, name]);
-	return <Box display='flex' flexDirection='column' flexGrow={1} ref={ref}/>;
+	return <Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} overflow='hidden' ref={ref}/>;
 };
 
 export default (props) => {
