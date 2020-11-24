@@ -517,7 +517,7 @@ jobs:
         arrRef=(${git_ref//\// })
         pr_num=${arrRef[2]}
         echo "pr_num is this: $pr_num"
-        echo ::set-env name=PR_TAG::pr-num-$pr_num
+        echo "PR_TAG=pr-num-$pr_num" >> $GITHUB_ENV
 
     - name: Restore build
       uses: actions/download-artifact@v1
