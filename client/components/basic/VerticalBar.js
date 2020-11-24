@@ -70,7 +70,7 @@ const VerticalBarFooter = React.forwardRef(function VerticalBarScrollableContent
 });
 
 function VerticalBarButton(props) {
-	return <Button small square flexShrink={0} ghost {...props}/>;
+	return <Button flexGrow={1} {...props}/>;
 }
 
 function VerticalBarAction({ name, ...props }) {
