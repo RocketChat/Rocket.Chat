@@ -5,6 +5,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/basic/Page';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import ContactTab from './ContactTab';
+import ChatTab from './ChatTab';
 
 
 const OmnichannelDirectoryPage = () => {
@@ -31,6 +32,7 @@ const OmnichannelDirectoryPage = () => {
 		<Page.Content>
 			{
 				(tab === 'contacts' && <ContactTab />)
+				|| (tab === 'chats' && <ChatTab />)
 			}
 		</Page.Content>
 	</Page>;
