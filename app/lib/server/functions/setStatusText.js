@@ -21,7 +21,9 @@ export const _setStatusTextPromise = async function(userId, statusText) {
 	await UsersRaw.updateStatusText(user._id, statusText);
 
 	const { _id, username, status } = user;
-	api.broadcast('userpresence', { user: { _id, username, status, statusText } });
+	api.broadcast('presence.status', {
+		user: { _id, username, status, statusText },
+	});
 
 	return true;
 };
@@ -48,7 +50,9 @@ export const _setStatusText = function(userId, statusText) {
 	user.statusText = statusText;
 
 	const { _id, username, status } = user;
-	api.broadcast('userpresence', { user: { _id, username, status, statusText } });
+	api.broadcast('presence.status', {
+		user: { _id, username, status, statusText },
+	});
 
 	return true;
 };

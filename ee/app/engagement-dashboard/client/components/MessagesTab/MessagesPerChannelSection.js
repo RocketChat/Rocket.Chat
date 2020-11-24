@@ -92,7 +92,7 @@ export function MessagesPerChannelSection() {
 																data={[
 																	{
 																		id: 'd',
-																		label: t('Private_Chats'),
+																		label: t('Direct_Messages'),
 																		value: pie.d,
 																		color: '#FFD031',
 																	},

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Field, TextInput, Button, Margins, Box, MultiSelect, Callout } from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Box, MultiSelect, Callout, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useMethod } from '../../../../client/contexts/ServerContext';
@@ -90,7 +90,7 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 
 		try {
 			await saveTag(tagId, tagData, finalDepartments);
-			dispatchToastMessage({ type: 'success', message: t('saved') });
+			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
 			tagsRoute.push({});
 		} catch (error) {
@@ -100,15 +100,15 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 
 	return <VerticalBar.ScrollableContent is='form' { ...props }>
 		<Field>
-			<Field.Label>{t('Name')}</Field.Label>
+			<Field.Label>{t('Name')}*</Field.Label>
 			<Field.Row>
-				<TextInput flexGrow={1} value={name} onChange={handleName} error={hasUnsavedChanges && nameError}/>
+				<TextInput placeholder={t('Name')} flexGrow={1} value={name} onChange={handleName} error={hasUnsavedChanges && nameError}/>
 			</Field.Row>
 		</Field>
 		<Field>
 			<Field.Label>{t('Description')}</Field.Label>
 			<Field.Row>
-				<TextInput flexGrow={1} value={description} onChange={handleDescription} />
+				<TextInput placeholder={t('Description')} flexGrow={1} value={description} onChange={handleDescription} />
 			</Field.Row>
 		</Field>
 		<Field>
@@ -122,7 +122,7 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 				<Margins inlineEnd='x4'>
 					{!isNew && <Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>{t('Reset')}</Button>}
-					<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges && !canSave} onClick={handleSave}>{t('Save')}</Button>
+					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={handleSave}>{t('Save')}</Button>
 				</Margins>
 			</Box>
 		</Field.Row>

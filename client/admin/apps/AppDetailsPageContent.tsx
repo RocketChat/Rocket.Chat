@@ -33,7 +33,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 
 	return <>
 		<Box display='flex' flexDirection='row' mbe='x20' w='full'>
-			<AppAvatar size='x120' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData}/>
+			<AppAvatar size='x124' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData}/>
 			<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
 				<Box fontScale='h1'>{name}</Box>
 				<Box display='flex' flexDirection='row' color='hint' alignItems='center'>

@@ -720,7 +720,9 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user');
 		}
 
-		return API.v1.success(emailCheck.sendEmailCode(getUserForCheck(userId)));
+		emailCheck.sendEmailCode(getUserForCheck(userId));
+
+		return API.v1.success();
 	},
 });
 
@@ -774,6 +776,18 @@ API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
 			requested: result.requested,
 			exportOperation: result.exportOperation,
 		});
+	},
+});
+
+API.v1.addRoute('users.logoutOtherClients', { authRequired: true }, {
+	post() {
+		try {
+			const result = Meteor.call('logoutOtherClients');
+
+			return API.v1.success(result);
+		} catch (error) {
+			return API.v1.failure(error);
+		}
 	},
 });
 

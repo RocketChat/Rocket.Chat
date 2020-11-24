@@ -78,7 +78,11 @@ const AppRow: FC<AppRowProps> = ({
 			<Box display='flex' flexDirection='column'>
 				<Box color='default' withTruncatedText>{description}</Box>
 				{categories && <Box color='hint' display='flex' flex-direction='row' withTruncatedText>
-					{categories.map((current) => <Tag disabled key={current} mie='x4'>{current}</Tag>)}
+					{categories.map((current) => (
+						<Box mie='x4' key={current}>
+							<Tag disabled>{current}</Tag>
+						</Box>
+					))};
 				</Box>}
 			</Box>
 		</Table.Cell>}

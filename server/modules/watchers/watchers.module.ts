@@ -11,7 +11,6 @@ import { IRole } from '../../../definition/IRole';
 import { IRoom } from '../../../definition/IRoom';
 import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInquiry';
-import { api } from '../../sdk/api';
 import { IBaseData } from '../../../definition/IBaseData';
 import { IPermission } from '../../../definition/IPermission';
 import { ISetting } from '../../../definition/ISetting';
@@ -30,6 +29,7 @@ import { LivechatDepartmentAgentsRaw } from '../../../app/models/server/raw/Live
 import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartmentAgents';
 import { IIntegration } from '../../../definition/IIntegration';
 import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
+import { EventSignatures } from '../../sdk/lib/Events';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -59,22 +59,26 @@ interface IChange<T> {
 
 type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>) => void) => void;
 
-export function initWatchers({
-	Messages,
-	Users,
-	Settings,
-	Subscriptions,
-	UsersSessions,
-	Roles,
-	Permissions,
-	LivechatInquiry,
-	LivechatDepartmentAgents,
-	Rooms,
-	LoginServiceConfiguration,
-	InstanceStatus,
-	IntegrationHistory,
-	Integrations,
-}: IModelsParam, watch: Watcher): void {
+type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
+
+export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
+	const {
+		Messages,
+		Users,
+		Settings,
+		Subscriptions,
+		UsersSessions,
+		Roles,
+		Permissions,
+		LivechatInquiry,
+		LivechatDepartmentAgents,
+		Rooms,
+		LoginServiceConfiguration,
+		InstanceStatus,
+		IntegrationHistory,
+		Integrations,
+	} = models;
+
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
 			case 'inserted':
@@ -101,7 +105,7 @@ export function initWatchers({
 						}
 					}
 
-					api.broadcast('watch.messages', { clientAction, message });
+					broadcast('watch.messages', { clientAction, message });
 				}
 				break;
 		}
@@ -116,14 +120,14 @@ export function initWatchers({
 				if (!subscription) {
 					return;
 				}
-				api.broadcast('watch.subscriptions', { clientAction, subscription });
+				broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
 			}
 
 			case 'removed': {
 				const trash = await Subscriptions.trashFindOneById(id, { projection: { u: 1, rid: 1 } });
 				const subscription = trash || { _id: id };
-				api.broadcast('watch.subscriptions', { clientAction, subscription });
+				broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
 			}
 		}
@@ -143,7 +147,7 @@ export function initWatchers({
 			return;
 		}
 
-		api.broadcast('watch.roles', {
+		broadcast('watch.roles', {
 			clientAction: clientAction !== 'removed' ? 'changed' : clientAction,
 			role,
 		});
@@ -158,10 +162,10 @@ export function initWatchers({
 					return;
 				}
 
-				api.broadcast('watch.userSessions', { clientAction, userSession: data });
+				broadcast('watch.userSessions', { clientAction, userSession: data });
 				break;
 			case 'removed':
-				api.broadcast('watch.userSessions', { clientAction, userSession: { _id: id } });
+				broadcast('watch.userSessions', { clientAction, userSession: { _id: id } });
 				break;
 		}
 	});
@@ -182,7 +186,7 @@ export function initWatchers({
 			return;
 		}
 
-		api.broadcast('watch.inquiries', { clientAction, inquiry: data, diff });
+		broadcast('watch.inquiries', { clientAction, inquiry: data, diff });
 	});
 
 	watch<ILivechatDepartmentAgents>(LivechatDepartmentAgents, async ({ clientAction, id, data, diff }) => {
@@ -191,7 +195,7 @@ export function initWatchers({
 			if (!data) {
 				return;
 			}
-			api.broadcast('watch.livechatDepartmentAgents', { clientAction, id, data, diff });
+			broadcast('watch.livechatDepartmentAgents', { clientAction, id, data, diff });
 			return;
 		}
 
@@ -199,7 +203,7 @@ export function initWatchers({
 		if (!data) {
 			return;
 		}
-		api.broadcast('watch.livechatDepartmentAgents', { clientAction, id, data, diff });
+		broadcast('watch.livechatDepartmentAgents', { clientAction, id, data, diff });
 	});
 
 
@@ -223,7 +227,7 @@ export function initWatchers({
 			return;
 		}
 
-		api.broadcast('permission.changed', { clientAction, data });
+		broadcast('permission.changed', { clientAction, data });
 
 		if (data.level === 'settings' && data.settingId) {
 			// if the permission changes, the effect on the visible settings depends on the role affected.
@@ -233,7 +237,7 @@ export function initWatchers({
 			if (!setting) {
 				return;
 			}
-			api.broadcast('watch.settings', { clientAction: 'updated', setting });
+			broadcast('watch.settings', { clientAction: 'updated', setting });
 		}
 	});
 
@@ -260,12 +264,12 @@ export function initWatchers({
 			return;
 		}
 
-		api.broadcast('watch.settings', { clientAction, setting });
+		broadcast('watch.settings', { clientAction, setting });
 	});
 
 	watch<IRoom>(Rooms, async ({ clientAction, id, data }) => {
 		if (clientAction === 'removed') {
-			api.broadcast('watch.rooms', { clientAction, room: { _id: id } });
+			broadcast('watch.rooms', { clientAction, room: { _id: id } });
 			return;
 		}
 
@@ -274,13 +278,13 @@ export function initWatchers({
 			return;
 		}
 
-		api.broadcast('watch.rooms', { clientAction, room });
+		broadcast('watch.rooms', { clientAction, room });
 	});
 
 	// TODO: Prevent flood from database on username change, what causes changes on all past messages from that user
 	// and most of those messages are not loaded by the clients.
 	watch<IUser>(Users, ({ clientAction, id, data, diff, unset }) => {
-		api.broadcast('watch.users', { clientAction, data, diff, unset, id });
+		broadcast('watch.users', { clientAction, data, diff, unset, id });
 	});
 
 	watch<ILoginServiceConfiguration>(LoginServiceConfiguration, async ({ clientAction, id }) => {
@@ -289,11 +293,11 @@ export function initWatchers({
 			return;
 		}
 
-		api.broadcast('watch.loginServiceConfiguration', { clientAction, data, id });
+		broadcast('watch.loginServiceConfiguration', { clientAction, data, id });
 	});
 
 	watch<IInstanceStatus>(InstanceStatus, ({ clientAction, id, data, diff }) => {
-		api.broadcast('watch.instanceStatus', { clientAction, data, diff, id });
+		broadcast('watch.instanceStatus', { clientAction, data, diff, id });
 	});
 
 	watch<IIntegrationHistory>(IntegrationHistory, async ({ clientAction, id, data, diff }) => {
@@ -304,14 +308,14 @@ export function initWatchers({
 					return;
 				}
 				data = history;
-				api.broadcast('watch.integrationHistory', { clientAction, data, diff, id });
+				broadcast('watch.integrationHistory', { clientAction, data, diff, id });
 				break;
 			}
 			case 'inserted': {
 				if (!data) {
 					return;
 				}
-				api.broadcast('watch.integrationHistory', { clientAction, data, diff, id });
+				broadcast('watch.integrationHistory', { clientAction, data, diff, id });
 				break;
 			}
 		}
@@ -319,7 +323,7 @@ export function initWatchers({
 
 	watch<IIntegration>(Integrations, async ({ clientAction, id, data }) => {
 		if (clientAction === 'removed') {
-			api.broadcast('watch.integrations', { clientAction, id, data: { _id: id } });
+			broadcast('watch.integrations', { clientAction, id, data: { _id: id } });
 			return;
 		}
 
@@ -328,6 +332,6 @@ export function initWatchers({
 			return;
 		}
 
-		api.broadcast('watch.integrations', { clientAction, data, id });
+		broadcast('watch.integrations', { clientAction, data, id });
 	});
 }

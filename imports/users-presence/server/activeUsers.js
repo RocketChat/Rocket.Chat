@@ -20,7 +20,9 @@ export const setUserStatus = (user, status/* , statusConnection*/) => {
 
 	// since this callback can be called by only one instance in the cluster
 	// we need to broadcast the change to all instances
-	api.broadcast('userpresence', { user: { status, _id, username, statusText } }); // remove username
+	api.broadcast('presence.status', {
+		user: { status, _id, username, statusText }, // TODO remove username
+	});
 };
 
 let TroubleshootDisablePresenceBroadcast;
