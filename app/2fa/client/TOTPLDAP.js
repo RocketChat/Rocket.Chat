@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { Utils2fa } from './lib/2fa';
+import '../../ldap/client/loginHelper';
 
 Meteor.loginWithLDAPAndTOTP = function(...args) {
 	// Pull username and password
