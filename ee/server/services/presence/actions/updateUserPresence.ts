@@ -37,7 +37,7 @@ export async function updateUserPresence(uid: string): Promise<void> {
 	// 	return;
 	// }
 
-	const result = await handleUserPresenceAndStatus({
+	const { result, status } = await handleUserPresenceAndStatus({
 		models: {
 			Users,
 		},
