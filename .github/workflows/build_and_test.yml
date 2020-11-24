@@ -500,6 +500,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.base_ref == 'develop'
     needs: test
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       
     steps:
     - uses: actions/checkout@v1
