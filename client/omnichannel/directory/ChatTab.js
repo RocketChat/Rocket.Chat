@@ -3,6 +3,7 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import { Table } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
@@ -37,6 +38,12 @@ const ChatTable = () => {
 		setSort([id, 'asc']);
 	});
 
+	const onRowClick = useMutableCallback((_id) => {
+		FlowRouter.go('live', { id: _id });
+		// routing this way causes a 404 that only goes away with a refresh, need to fix in review
+		// livechatRoomRoute.push({ id: _id });
+	});
+
 	const { data } = useEndpointDataExperimental('livechat/rooms', query) || {};
 
 	const header = useMemo(() => [
@@ -47,7 +54,7 @@ const ChatTable = () => {
 		<GenericTable.HeaderCell key={'closedAt'} direction={sort[1]} active={sort[0] === 'closedAt'} onClick={onHeaderClick} sort='closedAt'>{t('Closed_At')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
-	const renderRow = useCallback(({ _id, fname, ts, closedAt, department }) => <Table.Row key={_id} tabIndex={0} role='link' action qa-user-id={_id}>
+	const renderRow = useCallback(({ _id, fname, ts, closedAt, department }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
 		<Table.Cell withTruncatedText>{fname}</Table.Cell>
 		<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
 		<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
