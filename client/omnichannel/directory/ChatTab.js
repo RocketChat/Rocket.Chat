@@ -2,34 +2,30 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Table } from '@rocket.chat/fuselage';
 import moment from 'moment';
+import { Meteor } from 'meteor/meteor';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import GenericTable from '../../components/GenericTable';
 import FilterByText from '../../components/FilterByText';
 
-const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
-
-const useQuery = ({ guest, servedBy, department, from, to, tags, customFields, itemsPerPage, current }, [column, direction]) => useMemo(() => {
-	const query = {
-		...guest && { roomName: guest },
-		sort: JSON.stringify({ [column]: sortDir(direction), ts: column === 'ts' ? sortDir(direction) : undefined }),
-		open: false,
-		...itemsPerPage && { count: itemsPerPage },
-		...current && { offset: current },
-	};
-
-	return query;
-}, [guest, column, direction, itemsPerPage, current, from, to, servedBy, department, tags, customFields]);
+const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLoggedIn) => useMemo(() => ({
+	sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
+	open: false,
+	roomName: text,
+	agents: [userIdLoggedIn],
+	...itemsPerPage && { count: itemsPerPage },
+	...current && { offset: current },
+}), [column, current, direction, itemsPerPage, userIdLoggedIn, text]);
 
 const ChatTable = () => {
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['username', 'asc']);
+	const [sort, setSort] = useState(['name', 'desc']);
 	const t = useTranslation();
-
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery(debouncedParams, debouncedSort);
+	const userIdLoggedIn = Meteor.userId();
+	const query = useQuery(debouncedParams, debouncedSort, userIdLoggedIn);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -44,20 +40,20 @@ const ChatTable = () => {
 	const { data } = useEndpointDataExperimental('livechat/rooms', query) || {};
 
 	const header = useMemo(() => [
-		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'departmentId'} direction={sort[1]} active={sort[0] === 'departmentId'} onClick={onHeaderClick} sort='departmentId'>{t('Department')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'servedBy'} direction={sort[1]} active={sort[0] === 'servedBy'} onClick={onHeaderClick} sort='servedBy'>{t('Served_By')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'fname'} direction={sort[1]} active={sort[0] === 'fname'} onClick={onHeaderClick} sort='fname'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'department'} direction={sort[1]} active={sort[0] === 'department'} onClick={onHeaderClick} sort='department'>{t('Department')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'ts'} direction={sort[1]} active={sort[0] === 'ts'} onClick={onHeaderClick} sort='ts'>{t('Started_At')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'lm'} direction={sort[1]} active={sort[0] === 'lm'} onClick={onHeaderClick} sort='lm'>{t('Last_Message')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'chatDuration'} direction={sort[1]} active={sort[0] === 'chatDuration'} onClick={onHeaderClick} sort='chatDuration'>{t('Chat_Duration')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'closedAt'} direction={sort[1]} active={sort[0] === 'closedAt'} onClick={onHeaderClick} sort='closedAt'>{t('Closed_At')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
-	const renderRow = useCallback(({ _id, fname, servedBy, ts, lm, department }) => <Table.Row key={_id} tabIndex={0} role='link' action qa-user-id={_id}>
+	const renderRow = useCallback(({ _id, fname, ts, closedAt, department }) => <Table.Row key={_id} tabIndex={0} role='link' action qa-user-id={_id}>
 		<Table.Cell withTruncatedText>{fname}</Table.Cell>
 		<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
-		<Table.Cell withTruncatedText>{servedBy && servedBy.username}</Table.Cell>
 		<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
-		<Table.Cell withTruncatedText>{moment(lm).format('L LTS')}</Table.Cell>
-	</Table.Row>, []);
+		<Table.Cell withTruncatedText>{moment(closedAt).diff(moment(ts), 'minutes')} {t('Minutes')}</Table.Cell>
+		<Table.Cell withTruncatedText>{moment(closedAt).format('L LTS')}</Table.Cell>
+	</Table.Row>, [t]);
 
 	return <GenericTable
 		header={header}
