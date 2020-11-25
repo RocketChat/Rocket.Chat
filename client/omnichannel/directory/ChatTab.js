@@ -47,7 +47,7 @@ const ChatTable = () => {
 	const { data } = useEndpointDataExperimental('livechat/rooms', query) || {};
 
 	const header = useMemo(() => [
-		<GenericTable.HeaderCell key={'fname'} direction={sort[1]} active={sort[0] === 'fname'} onClick={onHeaderClick} sort='fname'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'fname'} direction={sort[1]} active={sort[0] === 'fname'} onClick={onHeaderClick} sort='fname'>{t('Contact_Name')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'department'} direction={sort[1]} active={sort[0] === 'department'} onClick={onHeaderClick} sort='department'>{t('Department')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'ts'} direction={sort[1]} active={sort[0] === 'ts'} onClick={onHeaderClick} sort='ts'>{t('Started_At')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'chatDuration'} direction={sort[1]} active={sort[0] === 'chatDuration'} onClick={onHeaderClick} sort='chatDuration'>{t('Chat_Duration')}</GenericTable.HeaderCell>,
