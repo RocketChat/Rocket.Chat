@@ -3,6 +3,8 @@ import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import s from 'underscore.string';
 
+import { escapeHTML } from '../../../lib/escapeHTML';
+import { unescapeHTML } from '../../../lib/unescapeHTML';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 
@@ -109,7 +111,7 @@ class Katex {
 		const before = str.substr(0, match.outer.start);
 		const after = str.substr(match.outer.end);
 		let latex = match.inner.extract(str);
-		latex = s.unescapeHTML(latex);
+		latex = unescapeHTML(latex);
 		return {
 			before,
 			latex,
@@ -129,7 +131,7 @@ class Katex {
 			});
 		} catch ({ message }) {
 			return `<div class="katex-error katex-${ displayMode ? 'block' : 'inline' }-error">`
-				+ `${ s.escapeHTML(message) }</div>`;
+				+ `${ escapeHTML(message) }</div>`;
 		}
 	}
 

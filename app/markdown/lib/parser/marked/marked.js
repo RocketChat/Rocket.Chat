@@ -1,10 +1,11 @@
 import { Random } from 'meteor/random';
 import _ from 'underscore';
-import s from 'underscore.string';
 import _marked from 'marked';
 
 import hljs from '../../hljs';
 import { settings } from '../../../../settings';
+import { escapeHTML } from '../../../../../lib/escapeHTML';
+import { unescapeHTML } from '../../../../../lib/unescapeHTML';
 
 const renderer = new _marked.Renderer();
 
@@ -22,9 +23,9 @@ renderer.code = function(code, lang, escaped) {
 	let text = null;
 
 	if (!lang) {
-		text = `<pre><code class="code-colors hljs">${ escaped ? code : s.escapeHTML(code, true) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs">${ escaped ? code : escapeHTML(code) }</code></pre>`;
 	} else {
-		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ escaped ? code : s.escapeHTML(code, true) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ escaped ? code : escapeHTML(code) }</code></pre>`;
 	}
 
 	if (_.isString(msg)) {
@@ -99,7 +100,7 @@ export const marked = (message) => {
 	if (smartLists == null) { smartLists = settings.get('Markdown_Marked_SmartLists'); }
 	if (smartypants == null) { smartypants = settings.get('Markdown_Marked_Smartypants'); }
 
-	msg.html = _marked(s.unescapeHTML(msg.html), {
+	msg.html = _marked(unescapeHTML(msg.html), {
 		gfm,
 		tables,
 		breaks,

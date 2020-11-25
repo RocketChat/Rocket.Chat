@@ -7,7 +7,7 @@ import Autolinker from 'autolinker';
 
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
-import { escapeRegExp } from '../../../client/lib/escapeRegExp';
+import { escapeRegExp } from '../../../lib/escapeRegExp';
 
 let config;
 

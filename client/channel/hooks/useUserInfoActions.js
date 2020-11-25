@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Button, ButtonGroup, Icon, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import s from 'underscore.string';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
@@ -16,6 +15,7 @@ import { RoomRoles } from '../../../app/models/client';
 import { roomTypes, RoomMemberActions } from '../../../app/utils';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import { useUserRoom } from './useUserRoom';
+import { escapeHTML } from '../../../lib/escapeHTML';
 
 
 const useUserHasRoomRole = (uid, rid, role) => useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role }), [uid, rid, role]));
@@ -148,7 +148,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 		],
 	];
 
-	const roomName = room && room.t && s.escapeHTML(roomTypes.getRoomName(room.t, room));
+	const roomName = room && room.t && escapeHTML(roomTypes.getRoomName(room.t, room));
 
 	const userCanSetOwner = usePermission('set-owner', rid);
 	const userCanSetLeader = usePermission('set-leader', rid);

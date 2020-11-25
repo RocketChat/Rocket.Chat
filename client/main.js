@@ -4,8 +4,6 @@ import './lib/meteorCallWrapper';
 import './importPackages';
 import '../imports/startup/client';
 
-import '../lib/RegExp';
-
 import '../ee/client';
 import './templateHelpers';
 import './methods/deleteMessage';
