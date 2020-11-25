@@ -6,8 +6,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import GenericTable from '../../components/GenericTable';
 import FilterByText from '../../components/FilterByText';
-import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
-import VerticalBar from '../../components/basic/VerticalBar';
+import { useRoute } from '../../contexts/RouterContext';
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
 	term: text,
@@ -25,7 +24,6 @@ function ContactTable() {
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
 	const directoryRoute = useRoute('omnichannel-directory');
-	const context = useRouteParameter('context');
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -37,34 +35,19 @@ function ContactTable() {
 		setSort([id, 'asc']);
 	});
 
-	const onButtonNewClick = useMutableCallback(() => {
-		console.log('new contact');
-	});
+	const onButtonNewClick = useMutableCallback(() => directoryRoute.push({
+		tab: 'contacts',
+		context: 'new',
+	}));
 
 
-	const onRowClick = useMutableCallback((id) => () => {
-		console.log(id);
-	});
+	const onRowClick = useMutableCallback((id) => () => directoryRoute.push({
+		tab: 'contacts',
+		context: 'info',
+		id,
+	}));
 
 	const { data } = useEndpointDataExperimental('livechat/visitors.search', query) || {};
-
-	// eslint-disable-next-line no-unused-vars
-	const ContactProfile = useCallback(() => {
-		if (!context) {
-			return '';
-		}
-		const handleVerticalBarCloseButtonClick = () => {
-			directoryRoute.push({});
-		};
-
-		return <VerticalBar className={'contextual-bar'}>
-			<VerticalBar.Header>
-				{context === 'info' && t('User_Info')}
-				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
-			</VerticalBar.Header>
-
-		</VerticalBar>;
-	}, [t, context]);
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username'>{t('Username')}</GenericTable.HeaderCell>,
@@ -81,7 +64,7 @@ function ContactTable() {
 		<Table.Cell withTruncatedText>{phone && phone.length && phone[0].phoneNumber}</Table.Cell>
 		<Table.Cell withTruncatedText>{visitorEmails && visitorEmails.length && visitorEmails[0].address}</Table.Cell>
 		<Table.Cell withTruncatedText>November 12, 2020</Table.Cell>
-	</Table.Row>, []);
+	</Table.Row>, [onRowClick]);
 
 	return <GenericTable
 		header={header}
