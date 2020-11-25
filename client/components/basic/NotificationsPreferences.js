@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Divider, FieldGroup, Field, Icon, Select, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, FieldGroup, Field, Icon, Select, ToggleSwitch, Accordion } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from './VerticalBar';
@@ -30,7 +30,7 @@ const NotificationsPreferences = ({
 		const onChangeEvent = content.name === t('Sound') ? handleSoundChange : handleChangeOption;
 
 		return (
-			<Box key={content.name} display='flex' flexDirection='column' alignItems='center' justifyContent='space-between' mbe='x12' mi='x16'>
+			<Box key={content.name} display='flex' flexDirection='column' alignItems='center' justifyContent='space-between' mbe='x12'>
 				<Field.Label fontScale='p1' mie='8px'>
 					{content.name}
 				</Field.Label>
@@ -40,13 +40,12 @@ const NotificationsPreferences = ({
 	};
 
 	const NotificationByDevice = ({ content, children }) => (
-		<Box mbe='x16'>
-			<Box display='flex' alignItems='center' mbe='x16'>
-				<Icon name={content.icon} size='x18' />
-				<Box mis='x16' fontScale='p2'>{content.device}</Box>
-			</Box>
+		<Accordion.Item title={<Box display='flex' alignItems='center'>
+			<Icon name={content.icon} size='x18' />
+			<Box fontScale='p2' mi='x16'>{content.device}</Box>
+		</Box>}>
 			{children}
-		</Box>
+		</Accordion.Item>
 	);
 
 	return <>
@@ -67,7 +66,6 @@ const NotificationsPreferences = ({
 					<ToggleSwitch onChange={handleSwitch.showCounter} defaultChecked={handleOn.showCounter} />
 				</NotificationToogle>
 			</FieldGroup>
-			<Divider />
 			<FieldGroup>
 				<NotificationByDevice content={{ device: t('Desktop'), icon: 'computer' }}>
 					<Preferences content={{ id: 'desktopAlert', name: t('Alerts'), options: handleOptions.alerts, optionDefault: handleSelect.desktop.alert }} />
@@ -83,10 +81,10 @@ const NotificationsPreferences = ({
 			</FieldGroup>
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
-			<Box display='flex' justifyContent='space-between'>
-				<VerticalBar.Button mie='x8' onClick={handleClose}>{t('Cancel')}</VerticalBar.Button>
-				<VerticalBar.Button primary onClick={handleSaveButton}>{t('Save')}</VerticalBar.Button>
-			</Box>
+			<ButtonGroup stretch>
+				<Button onClick={handleClose}>{t('Cancel')}</Button>
+				<Button primary onClick={handleSaveButton}>{t('Save')}</Button>
+			</ButtonGroup>
 		</VerticalBar.Footer>
 	</>;
 };
