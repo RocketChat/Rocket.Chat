@@ -26,6 +26,6 @@ createTemplateForComponent('AutoTranslate', () => import('./AutoTranslate'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 
-createTemplateForComponent('OTR', () => import('./OTR/OTR'), {
+createTemplateForComponent('OTR', () => import('../views/room/ContextualBar/OTR'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });

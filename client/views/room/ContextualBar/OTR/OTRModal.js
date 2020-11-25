@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Box, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 
 export default ({
 	onCancel,
