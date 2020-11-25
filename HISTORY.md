@@ -1,6 +1,23 @@
 
 # 3.9.0 (Under Release Candidate Process)
 
+## 3.9.0-rc.1
+`2020-11-24  ·  2 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Collapsed messages container in safari ([#19668](https://github.com/RocketChat/Rocket.Chat/pull/19668))
+
+- Regression: Verticalbar size ([#19670](https://github.com/RocketChat/Rocket.Chat/pull/19670))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+
 ## 3.9.0-rc.0
 `2020-11-21  ·  5 🎉  ·  13 🚀  ·  27 🐛  ·  18 🔍  ·  20 👩‍💻👨‍💻`
 
