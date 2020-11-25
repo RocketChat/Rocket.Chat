@@ -77,7 +77,7 @@ export default ({
 			return closeModal();
 		}
 
-		if (!isEstablished && !isEstablishing) {
+		if (!isEstablishing) {
 			return;
 		}
 
