@@ -9,7 +9,7 @@ import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
 
-const createAutolinker = (config) =>
+const createAutolinkerMessageRenderer = (config) =>
 	(message) => {
 		if (!s.trim(message.html)) {
 			return message;
@@ -60,7 +60,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const config = {
+		const renderMessage = createAutolinkerMessageRenderer({
 			stripPrefix: settings.get('AutoLinker_StripPrefix'),
 			urls: {
 				schemeMatches: settings.get('AutoLinker_Urls_Scheme'),
@@ -71,8 +71,8 @@ Meteor.startup(() => {
 			phone: settings.get('AutoLinker_Phone'),
 			twitter: false,
 			stripTrailingSlash: false,
-		};
+		});
 
-		callbacks.add('renderMessage', createAutolinker(config), callbacks.priority.MEDIUM, 'autolinker');
+		callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'autolinker');
 	});
 });
