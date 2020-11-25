@@ -702,6 +702,7 @@
   "Chatpal_Current_Room_Only": "Same room",
   "Chatpal_Default_Result_Type": "Default Result Type",
   "Chatpal_Default_Result_Type_Description": "Defines which result type is shown by result. All means that an overview for all types is provided.",
+  "Chat_Duration": "Chat Duration",
   "Chatpal_Email_Address": "Email Address",
   "Chatpal_ERROR_Email_must_be_set": "Email must be set",
   "Chatpal_ERROR_Email_must_be_valid": "Email must be valid",
