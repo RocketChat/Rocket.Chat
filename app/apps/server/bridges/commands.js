@@ -146,11 +146,31 @@ export class AppCommandsBridge {
 		}
 	}
 
+	_splitParameters(parameters) {
+		if (parameters.length === 0 || parameters === ' ') {
+			return [];
+		}
+
+		const match = parameters.match(/((["'])(?:(?=(\\?))\3.)*?\2)/g);
+		let line = parameters;
+
+		if (match) {
+			match.forEach((item) => {
+				const newItem = item.replace(/(^['"]|['"]$)/g, '').replace(/ +/g, '\u2008');
+				line = line.replace(item, newItem);
+			});
+
+			return line.split(' ').map((item) => item.replace(/\u2008/g, ' ').replace(/\\\"/g, '"'));
+		}
+
+		return line.split(' ');
+	}
+
 	_appCommandExecutor(command, parameters, message, triggerId) {
 		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
-		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
+		const params = this._splitParameters(parameters);
 
 		const context = new SlashCommandContext(
 			Object.freeze(user),
@@ -167,7 +187,7 @@ export class AppCommandsBridge {
 		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
-		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
+		const params = this._splitParameters(parameters);
 
 		const context = new SlashCommandContext(
 			Object.freeze(user),
@@ -182,7 +202,7 @@ export class AppCommandsBridge {
 		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
 		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
-		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
+		const params = this._splitParameters(parameters);
 
 		const context = new SlashCommandContext(
 			Object.freeze(user),
