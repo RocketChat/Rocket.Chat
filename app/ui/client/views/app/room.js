@@ -26,7 +26,7 @@ import {
 	RocketChatTabBar,
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
-import { renderMessageBody } from '../../../../ui-utils/client/lib/renderMessageBody';
+import { renderMessageBody } from '../../../../../client/lib/renderMessageBody';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
 import { call } from '../../../../ui-utils/client/lib/callMethod';
 import { settings } from '../../../../settings';

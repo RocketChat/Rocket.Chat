@@ -11,7 +11,6 @@ export { readMessage } from './lib/readMessages';
 export { RoomManager } from './lib/RoomManager';
 export { upsertMessage, RoomHistoryManager, normalizeThreadMessage } from './lib/RoomHistoryManager';
 export { mainReady } from './lib/mainReady';
-export { renderMessageBody } from './lib/renderMessageBody';
 export { Layout } from './lib/Layout';
 export { IframeLogin, iframeLogin } from './lib/IframeLogin';
 export { fireGlobalEvent } from './lib/fireGlobalEvent';

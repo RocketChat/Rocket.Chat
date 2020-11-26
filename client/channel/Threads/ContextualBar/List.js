@@ -7,7 +7,7 @@ import { useDebouncedValue, useResizeObserver, useLocalStorage } from '@rocket.c
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
-import { call, renderMessageBody } from '../../../../app/ui-utils/client';
+import { call } from '../../../../app/ui-utils/client';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useUserRoom } from '../../hooks/useUserRoom';
@@ -19,6 +19,7 @@ import ThreadListMessage from './components/Message';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { escapeHTML } from '../../../../lib/escapeHTML';
+import { renderMessageBody } from '../../../lib/renderMessageBody';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
