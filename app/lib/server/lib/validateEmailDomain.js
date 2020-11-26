@@ -12,14 +12,14 @@ let useDNSDomainCheck = false;
 
 settings.get('Accounts_BlockedDomainsList', function(key, value) {
 	if (!value) {
-		emailDomainBlackList = [];
+		return;
 	}
 
 	emailDomainBlackList = value.split(',').filter(Boolean).map((domain) => domain.trim());
 });
 settings.get('Accounts_AllowedDomainsList', function(key, value) {
 	if (!value) {
-		emailDomainWhiteList = [];
+		return;
 	}
 
 	emailDomainWhiteList = value.split(',').filter(Boolean).map((domain) => domain.trim());
