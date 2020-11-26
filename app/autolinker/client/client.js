@@ -1,9 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Tracker } from 'meteor/tracker';
-import s from 'underscore.string';
 import Autolinker from 'autolinker';
-
 
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
@@ -11,7 +9,7 @@ import { escapeRegExp } from '../../../lib/escapeRegExp';
 
 const createAutolinkerMessageRenderer = (config) =>
 	(message) => {
-		if (!s.trim(message.html)) {
+		if (!message.html?.trim()) {
 			return message;
 		}
 
