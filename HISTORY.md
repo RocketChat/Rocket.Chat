@@ -1,4 +1,32 @@
 
+# Next
+`2020-11-26  ·  3 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.20.0-alpha.4149`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Fix permission duplicated error on startup causing CI to halt ([#19653](https://github.com/RocketChat/Rocket.Chat/pull/19653))
+
+- Regression: Fix LDAP 2FA not working when Login Fallback is off ([#19659](https://github.com/RocketChat/Rocket.Chat/pull/19659))
+
+- Regression: URL preview problem ([#19685](https://github.com/RocketChat/Rocket.Chat/pull/19685))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@g-thome](https://github.com/g-thome)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 # 3.9.0 (Under Release Candidate Process)
 
 ## 3.9.0-rc.2
@@ -41,7 +69,7 @@
 - [@gabriellsh](https://github.com/gabriellsh)
 
 ## 3.9.0-rc.0
-`2020-11-21  ·  5 🎉  ·  13 🚀  ·  27 🐛  ·  18 🔍  ·  20 👩‍💻👨‍💻`
+`2020-11-21  ·  2 🎉  ·  16 🚀  ·  27 🐛  ·  18 🔍  ·  20 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
@@ -49,12 +77,6 @@
 - 2 Factor Authentication when using OAuth and SAML ([#11726](https://github.com/RocketChat/Rocket.Chat/pull/11726) by [@Hudell](https://github.com/Hudell) & [@MarcosSpessatto](https://github.com/MarcosSpessatto))
 
 - Added setting to disable password changes for users who log in using SSO ([#10391](https://github.com/RocketChat/Rocket.Chat/pull/10391) by [@Hudell](https://github.com/Hudell))
-
-- Remove Box dependence from Tag and Badge components ([#19467](https://github.com/RocketChat/Rocket.Chat/pull/19467))
-
-- Remove Box props from Avatar component ([#19491](https://github.com/RocketChat/Rocket.Chat/pull/19491))
-
-- Rewrite Auto-Translate as a React component  ([#19633](https://github.com/RocketChat/Rocket.Chat/pull/19633))
 
 ### 🚀 Improvements
 
@@ -69,7 +91,7 @@
 
 - Add support to `replace` operation when using Change Stream ([#19579](https://github.com/RocketChat/Rocket.Chat/pull/19579))
 
-- Bundle Size ([#19533](https://github.com/RocketChat/Rocket.Chat/pull/19533))
+- Bundle Size Client ([#19533](https://github.com/RocketChat/Rocket.Chat/pull/19533))
 
   temporarily removes some codeblock languages
   Moved some libraries to dynamic imports
@@ -78,6 +100,12 @@
 - Forward Omnichannel room to agent in another department ([#19576](https://github.com/RocketChat/Rocket.Chat/pull/19576) by [@mrfigueiredo](https://github.com/mrfigueiredo))
 
 - KeyboardShortcuts as React component ([#19518](https://github.com/RocketChat/Rocket.Chat/pull/19518))
+
+- Remove Box dependence from Tag and Badge components ([#19467](https://github.com/RocketChat/Rocket.Chat/pull/19467))
+
+- Remove Box props from Avatar component ([#19491](https://github.com/RocketChat/Rocket.Chat/pull/19491))
+
+- Rewrite Auto-Translate as a React component  ([#19633](https://github.com/RocketChat/Rocket.Chat/pull/19633))
 
 - Rewrite Room Info ([#19511](https://github.com/RocketChat/Rocket.Chat/pull/19511))
 
