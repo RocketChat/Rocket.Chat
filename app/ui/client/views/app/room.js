@@ -46,8 +46,7 @@ const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteo
 const openMembersListTab = (instance, group) => {
 	instance.userDetail.set(null);
 	instance.groupDetail.set(group);
-	instance.tabBar.setTemplate('membersList');
-	instance.tabBar.open();
+	instance.tabBar.open('members-list');
 };
 
 const openProfileTab = (e, instance, username) => {
@@ -67,9 +66,9 @@ const openProfileTab = (e, instance, username) => {
 		return;
 	}
 	instance.groupDetail.set(null);
-	instance.tabBar.setTemplate('membersList');
-	instance.tabBar.setData({});
-	instance.tabBar.open('members-list');
+	// instance.tabBar.setTemplate('membersList');
+	// instance.tabBar.setData({});
+	instance.tabBar.open('members-list', instance.userDetail.get());
 };
 
 export const openProfileTabOrOpenDM = (e, instance, username) => {
@@ -446,19 +445,19 @@ Template.roomOld.helpers({
 		return moment(this.since).calendar(null, { sameDay: 'LT' });
 	},
 
-	flexData() {
-		const flexData = {
-			tabBar: Template.instance().tabBar,
-			data: {
-				rid: this._id,
-				userDetail: Template.instance().userDetail.get(),
-				groupDetail: Template.instance().groupDetail.get(),
-				clearUserDetail: Template.instance().clearUserDetail,
-			},
-			...Template.instance().tabBar.getData(),
-		};
-		return flexData;
-	},
+	// flexData() {
+	// 	const flexData = {
+	// 		tabBar: Template.instance().tabBar,
+	// 		data: {
+	// 			rid: this._id,
+	// 			userDetail: Template.instance().userDetail.get(),
+	// 			groupDetail: Template.instance().groupDetail.get(),
+	// 			clearUserDetail: Template.instance().clearUserDetail,
+	// 		},
+	// 		...Template.instance().tabBar.getData(),
+	// 	};
+	// 	return flexData;
+	// },
 
 	adminClass() {
 		if (hasRole(Meteor.userId(), 'admin')) { return 'admin'; }
@@ -545,14 +544,14 @@ Template.roomOld.helpers({
 		return moment.duration(roomMaxAge(room) * 1000 * 60 * 60 * 24).humanize();
 	},
 	messageContext,
-	shouldCloseFlexTab() {
-		FlowRouter.watchPathChange();
-		const tab = FlowRouter.getParam('tab');
-		const { tabBar } = Template.instance();
-		if (tab === 'thread' && tabBar.template.get() !== 'threads') {
-			return true;
-		}
-	},
+	// shouldCloseFlexTab() {
+	// 	FlowRouter.watchPathChange();
+	// 	const tab = FlowRouter.getParam('tab');
+	// 	const { tabBar } = Template.instance();
+	// 	if (tab === 'thread' && tabBar.template.get() !== 'threads') {
+	// 		return true;
+	// 	}
+	// },
 	openedThread() {
 		FlowRouter.watchPathChange();
 		const tab = FlowRouter.getParam('tab');
@@ -713,7 +712,7 @@ Template.roomOld.events({
 	},
 
 	'click .messages-container-main'() {
-		if (Template.instance().tabBar.getState() === 'opened' && getUserPreference(Meteor.userId(), 'hideFlexTab')) {
+		if (!!Template.instance().tabBar.template && getUserPreference(Meteor.userId(), 'hideFlexTab')) {
 			Template.instance().tabBar.close();
 		}
 	},
@@ -1127,11 +1126,11 @@ Template.roomOld.onCreated(function() {
 	this.flexTemplate = new ReactiveVar();
 
 	this.groupDetail = new ReactiveVar();
-	this.tabBar.showGroup(FlowRouter.current().route.name);
-	callbacks.run('onCreateRoomTabBar', {
-		tabBar: this.tabBar,
-		room: Rooms.findOne(rid, { fields: { t: 1 } }),
-	});
+	// this.tabBar.showGroup(FlowRouter.current().route.name);
+	// callbacks.run('onCreateRoomTabBar', {
+	// 	tabBar: this.tabBar,
+	// 	room: Rooms.findOne(rid, { fields: { t: 1 } }),
+	// });
 
 	this.hideLeaderHeader = new ReactiveVar(false);
 
@@ -1406,13 +1405,11 @@ Template.roomOld.onRendered(function() {
 		this.autorun(() => {
 			const remoteItems = webrtc.remoteItems.get();
 			if (remoteItems && remoteItems.length > 0) {
-				this.tabBar.setTemplate('membersList');
-				this.tabBar.open();
+				this.tabBar.open('members-list');
 			}
 
 			if (webrtc.localUrl.get()) {
-				this.tabBar.setTemplate('membersList');
-				this.tabBar.open();
+				this.tabBar.open('members-list');
 			}
 		});
 	}

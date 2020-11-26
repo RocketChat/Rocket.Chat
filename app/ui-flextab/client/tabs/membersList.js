@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { HTML } from 'meteor/htmljs';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { getActions } from './userActions';
 import { RoomManager, popover } from '../../../ui-utils/client';
@@ -319,7 +320,9 @@ Template.membersList.onCreated(function() {
 	this.clearRoomUserDetail = this.data.clearUserDetail;
 
 	this.autorun(() => {
-		const { userDetail, groupDetail } = Template.currentData();
+		const { groupDetail } = Template.currentData();
+
+		const userDetail = FlowRouter.getParam('context');
 
 		this.showUserDetail(userDetail, groupDetail);
 	});
