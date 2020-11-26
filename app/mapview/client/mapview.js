@@ -1,29 +1,43 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
-/*
- * MapView is a named function that will replace geolocation in messages with a Google Static Map
- * @param {Object} message - The message object
- */
 
-function MapView(message) {
-	// get MapView settings
-	const mv_googlekey = settings.get('MapView_GMapsAPIKey');
+const createMapViewMessageRenderer = ({ googleMapsApiKey }) => {
+	const renderMap = (latitude, longitude) => {
+		const altText = TAPi18n.__('Shared_Location');
 
-	if (message.location) {
-		// GeoJSON is reversed - ie. [lng, lat]
+		if (!googleMapsApiKey) {
+			return altText;
+		}
+
+		const imgUrl = `https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ googleMapsApiKey }`;
+
+		return `<img src="${ imgUrl }" alt="${ altText }" />`;
+	};
+
+	return (message) => {
+		if (!message.location) {
+			return message;
+		}
+
 		const [longitude, latitude] = message.location.coordinates;
 
-		// confirm we have an api key set, and generate the html required for the mapview
-		if (mv_googlekey && mv_googlekey.length) {
-			message.html = `<a href="https://maps.google.com/maps?daddr=${ latitude },${ longitude }" target="_blank"><img src="https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ mv_googlekey }" /></a>`;
-		} else {
-			message.html = `<a href="https://maps.google.com/maps?daddr=${ latitude },${ longitude }" target="_blank">${ TAPi18n.__('Shared_Location') }</a>`;
-		}
-	}
+		const mapUrl = `https://maps.google.com/maps?daddr=${ latitude },${ longitude }`;
+		message.html = `<a href="${ mapUrl }" target="_blank">${ renderMap(latitude, longitude)	}</a>`;
 
-	return message;
-}
+		return message;
+	};
+};
 
-callbacks.add('renderMessage', MapView, callbacks.priority.HIGH, 'mapview');
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		const renderMessage = createMapViewMessageRenderer({
+			googleMapsApiKey: settings.get('MapView_GMapsAPIKey'),
+		});
+
+		callbacks.add('renderMessage', renderMessage, callbacks.priority.HIGH, 'mapview');
+	});
+});
