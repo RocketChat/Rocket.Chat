@@ -159,10 +159,11 @@ Template.membersList.events({
 	},
 	'click .js-invite'() {
 		const { tabBar } = Template.currentData();
-		tabBar.setTemplate('createInviteLink');
+		tabBar.setTemplate('InviteUsers');
 		tabBar.setData({
 			label: 'Invite_Users',
 			icon: 'user-plus',
+			full: 1,
 		});
 
 		tabBar.open();
