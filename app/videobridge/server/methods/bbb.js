@@ -4,9 +4,10 @@ import xml2js from 'xml2js';
 
 import BigBlueButtonApi from '../../../bigbluebutton/server';
 import { settings } from '../../../settings';
-import { Rooms, Users } from '../../../models';
+import { Rooms } from '../../../models';
 import { saveStreamingOptions } from '../../../channel-settings';
 import { API } from '../../../api/server';
+import { hasAllPermission } from '../../../authorization/server/functions/hasPermission';
 
 const parser = new xml2js.Parser({
 	explicitRoot: true,
@@ -21,18 +22,28 @@ const getBBBAPI = () => {
 	return { api, url };
 };
 
+const getPermissions = (userId, rid) =>
+	hasAllPermission(userId, ['call-management'])
+	|| hasAllPermission(userId, ['call-management'], rid);
+
 Meteor.methods({
 	bbbJoin({ rid }) {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbJoin' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'bbbJoin',
+			});
 		}
 
 		if (!Meteor.call('canAccessRoom', rid, this.userId)) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbJoin' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'bbbJoin',
+			});
 		}
 
 		if (!settings.get('bigbluebutton_Enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'bbbJoin' });
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed', {
+				method: 'bbbJoin',
+			});
 		}
 
 		const { api } = getBBBAPI();
@@ -55,11 +66,13 @@ Meteor.methods({
 		const doc = parseString(createResult.content);
 
 		if (doc.response.returncode[0]) {
-			const user = Users.findOneById(this.userId);
+			const user = Meteor.user();
 
 			const hookApi = api.urlFor('hooks/create', {
 				meetingID,
-				callbackURL: Meteor.absoluteUrl(`api/v1/videoconference.bbb.update/${ meetingID }`),
+				callbackURL: Meteor.absoluteUrl(
+					`api/v1/videoconference.bbb.update/${ meetingID }`,
+				),
 			});
 
 			const hookResult = HTTP.get(hookApi);
@@ -73,10 +86,9 @@ Meteor.methods({
 			saveStreamingOptions(rid, {
 				type: 'call',
 			});
-
 			return {
 				url: api.urlFor('join', {
-					password: 'mp', // mp if moderator ap if attendee
+					password: getPermissions(user._id, rid) ? 'mp' : 'ap', // mp if moderator ap if attendee
 					meetingID,
 					fullName: user.username,
 					userID: user._id,
@@ -90,22 +102,28 @@ Meteor.methods({
 
 	bbbEnd({ rid }) {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbEnd' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'bbbEnd',
+			});
 		}
 
 		if (!Meteor.call('canAccessRoom', rid, this.userId)) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbEnd' });
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'bbbEnd',
+			});
 		}
 
 		if (!settings.get('bigbluebutton_Enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'bbbEnd' });
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed', {
+				method: 'bbbEnd',
+			});
 		}
 
 		const { api } = getBBBAPI();
 		const meetingID = settings.get('uniqueID') + rid;
 		const endApi = api.urlFor('end', {
 			meetingID,
-			password: 'mp', // mp if moderator ap if attendee
+			password: 'mp', // mp if moderator ap if attendee, must be moderator to use the hooks
 		});
 
 		const endApiResult = HTTP.get(endApi);
@@ -124,40 +142,44 @@ Meteor.methods({
 	},
 });
 
-API.v1.addRoute('videoconference.bbb.update/:id', { authRequired: false }, {
-	post() {
-		// TODO check checksum
-		const event = JSON.parse(this.bodyParams.event)[0];
-		const eventType = event.data.id;
-		const meetingID = event.data.attributes.meeting['external-meeting-id'];
-		const rid = meetingID.replace(settings.get('uniqueID'), '');
+API.v1.addRoute(
+	'videoconference.bbb.update/:id',
+	{ authRequired: false },
+	{
+		post() {
+			// TODO check checksum
+			const event = JSON.parse(this.bodyParams.event)[0];
+			const eventType = event.data.id;
+			const meetingID =				event.data.attributes.meeting['external-meeting-id'];
+			const rid = meetingID.replace(settings.get('uniqueID'), '');
 
-		console.log(eventType, rid);
+			console.log(eventType, rid);
 
-		if (eventType === 'meeting-ended') {
-			saveStreamingOptions(rid, {});
-		}
+			if (eventType === 'meeting-ended') {
+				saveStreamingOptions(rid, {});
+			}
 
-		// if (eventType === 'user-left') {
-		// 	const { api } = getBBBAPI();
+			// if (eventType === 'user-left') {
+			// 	const { api } = getBBBAPI();
 
-		// 	const getMeetingInfoApi = api.urlFor('getMeetingInfo', {
-		// 		meetingID
-		// 	});
+			// 	const getMeetingInfoApi = api.urlFor('getMeetingInfo', {
+			// 		meetingID
+			// 	});
 
-		// 	const getMeetingInfoResult = HTTP.get(getMeetingInfoApi);
+			// 	const getMeetingInfoResult = HTTP.get(getMeetingInfoApi);
 
-		// 	if (getMeetingInfoResult.statusCode !== 200) {
-		// 		// TODO improve error logging
-		// 		console.log({ getMeetingInfoResult });
-		// 	}
+			// 	if (getMeetingInfoResult.statusCode !== 200) {
+			// 		// TODO improve error logging
+			// 		console.log({ getMeetingInfoResult });
+			// 	}
 
-		// 	const doc = parseString(getMeetingInfoResult.content);
+			// 	const doc = parseString(getMeetingInfoResult.content);
 
-		// 	if (doc.response.returncode[0]) {
-		// 		const participantCount = parseInt(doc.response.participantCount[0]);
-		// 		console.log(participantCount);
-		// 	}
-		// }
+			// 	if (doc.response.returncode[0]) {
+			// 		const participantCount = parseInt(doc.response.participantCount[0]);
+			// 		console.log(participantCount);
+			// 	}
+			// }
+		},
 	},
-});
+);
