@@ -1,6 +1,28 @@
 
 # 3.9.0 (Under Release Candidate Process)
 
+## 3.9.0-rc.2
+`2020-11-25  ·  3 🔍  ·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix multiple react blazed template rendering at the same time ([#19679](https://github.com/RocketChat/Rocket.Chat/pull/19679))
+
+- Regression: Issues with Safari ([#19671](https://github.com/RocketChat/Rocket.Chat/pull/19671))
+
+- Report DAU and MAU by role ([#19657](https://github.com/RocketChat/Rocket.Chat/pull/19657))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.9.0-rc.1
 `2020-11-24  ·  2 🔍  ·  1 👩‍💻👨‍💻`
 
