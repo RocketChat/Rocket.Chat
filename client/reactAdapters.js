@@ -118,6 +118,8 @@ export const createEphemeralPortal = async (importFn, propsFn, node) => {
 	return registerPortal(node, portal);
 };
 
+const unregister = Symbol('unregister');
+
 export const createTemplateForComponent = (
 	name,
 	importFn,
@@ -130,7 +132,6 @@ export const createTemplateForComponent = (
 	}
 
 	const template = new Blaze.Template(name, renderContainerView);
-	let unregister;
 	template.onRendered(async function() {
 		const props = new ReactiveVar(this.data);
 		this.autorun(() => {
@@ -143,11 +144,11 @@ export const createTemplateForComponent = (
 			return;
 		}
 
-		unregister = await registerPortal(this, portal);
+		this[unregister] = await registerPortal(this, portal);
 	});
 
 	template.onDestroyed(function() {
-		unregister && unregister();
+		this[unregister]?.();
 	});
 
 	Template[name] = template;
