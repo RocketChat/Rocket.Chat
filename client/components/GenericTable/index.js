@@ -1,4 +1,4 @@
-import { Box, Pagination, Table, Tile, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Pagination, Table, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect, useCallback, forwardRef } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
@@ -6,6 +6,7 @@ import flattenChildren from 'react-keyed-flatten-children';
 import { useTranslation } from '../../contexts/TranslationContext';
 import HeaderCell from './HeaderCell';
 import LoadingRow from './LoadingRow';
+import ScrollableContentWrapper from '../basic/ScrollableContentWrapper';
 
 const GenericTable = ({
 	children,
@@ -49,7 +50,7 @@ const GenericTable = ({
 				{t('No_data_found')}
 			</Tile>
 			: <>
-				<Scrollable>
+				<ScrollableContentWrapper>
 					<Box mi='neg-x24' pi='x24' flexGrow={1} ref={ref}>
 						<Table fixed={fixed} sticky>
 							{header && <Table.Head>
@@ -67,7 +68,7 @@ const GenericTable = ({
 							</Table.Body>
 						</Table>
 					</Box>
-				</Scrollable>
+				</ScrollableContentWrapper>
 				<Pagination
 					divider
 					current={current}
