@@ -47,19 +47,4 @@ export class Utils2fa {
 			});
 		}]));
 	}
-
-	static createOAuthTotpLoginMethod(credentialProvider) {
-		return function(options, code, callback) {
-			// support a callback without options
-			if (!callback && typeof options === 'function') {
-				callback = options;
-				options = null;
-			}
-
-			const provider = credentialProvider();
-
-			const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
-			provider.requestCredential(options, credentialRequestCompleteCallback);
-		};
-	}
 }

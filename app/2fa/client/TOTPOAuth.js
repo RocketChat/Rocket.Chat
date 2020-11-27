@@ -50,31 +50,52 @@ Accounts.oauth.credentialRequestCompleteHandler = function(callback, totpCode) {
 	};
 };
 
-const loginWithFacebookAndTOTP = Utils2fa.createOAuthTotpLoginMethod(() => Facebook);
+const createOAuthTotpLoginMethod = (credentialProvider) => (options, code, callback) => {
+	// support a callback without options
+	if (!callback && typeof options === 'function') {
+		callback = options;
+		options = null;
+	}
+
+	if (lastCredentialToken && lastCredentialSecret) {
+		Accounts.oauth.tryLoginAfterPopupClosed(lastCredentialToken, callback, code, lastCredentialSecret);
+	} else {
+		const provider = (credentialProvider && credentialProvider()) || this;
+		const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
+		provider.requestCredential(options, credentialRequestCompleteCallback);
+	}
+
+	lastCredentialToken = null;
+	lastCredentialSecret = null;
+};
+
+const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod();
+
+const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(() => Facebook);
 const { loginWithFacebook } = Meteor;
 Meteor.loginWithFacebook = function(options, cb) {
 	Utils2fa.overrideLoginMethod(loginWithFacebook, [options], cb, loginWithFacebookAndTOTP);
 };
 
-const loginWithGithubAndTOTP = Utils2fa.createOAuthTotpLoginMethod(() => Github);
+const loginWithGithubAndTOTP = createOAuthTotpLoginMethod(() => Github);
 const { loginWithGithub } = Meteor;
 Meteor.loginWithGithub = function(options, cb) {
 	Utils2fa.overrideLoginMethod(loginWithGithub, [options], cb, loginWithGithubAndTOTP);
 };
 
-const loginWithMeteorDeveloperAccountAndTOTP = Utils2fa.createOAuthTotpLoginMethod(() => MeteorDeveloperAccounts);
+const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod(() => MeteorDeveloperAccounts);
 const { loginWithMeteorDeveloperAccount } = Meteor;
 Meteor.loginWithMeteorDeveloperAccount = function(options, cb) {
 	Utils2fa.overrideLoginMethod(loginWithMeteorDeveloperAccount, [options], cb, loginWithMeteorDeveloperAccountAndTOTP);
 };
 
-const loginWithTwitterAndTOTP = Utils2fa.createOAuthTotpLoginMethod(() => Twitter);
+const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod(() => Twitter);
 const { loginWithTwitter } = Meteor;
 Meteor.loginWithTwitter = function(options, cb) {
 	Utils2fa.overrideLoginMethod(loginWithTwitter, [options], cb, loginWithTwitterAndTOTP);
 };
 
-const loginWithLinkedinAndTOTP = Utils2fa.createOAuthTotpLoginMethod(() => Linkedin);
+const loginWithLinkedinAndTOTP = createOAuthTotpLoginMethod(() => Linkedin);
 const { loginWithLinkedin } = Meteor;
 Meteor.loginWithLinkedin = function(options, cb) {
 	Utils2fa.overrideLoginMethod(loginWithLinkedin, [options], cb, loginWithLinkedinAndTOTP);
@@ -110,25 +131,8 @@ CustomOAuth.prototype.configureLogin = function(...args) {
 	oldConfigureLogin.apply(this, args);
 
 	const oldMethod = Meteor[loginWithService];
-	const newMethod = (options, code, callback) => {
-		// support a callback without options
-		if (!callback && typeof options === 'function') {
-			callback = options;
-			options = null;
-		}
-
-		if (lastCredentialToken && lastCredentialSecret) {
-			Accounts.oauth.tryLoginAfterPopupClosed(lastCredentialToken, callback, code, lastCredentialSecret);
-		} else {
-			const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
-			this.requestCredential(options, credentialRequestCompleteCallback);
-		}
-
-		lastCredentialToken = null;
-		lastCredentialSecret = null;
-	};
 
 	Meteor[loginWithService] = function(options, cb) {
-		Utils2fa.overrideLoginMethod(oldMethod, [options], cb, newMethod);
+		Utils2fa.overrideLoginMethod(oldMethod, [options], cb, loginWithOAuthTokenAndTOTP);
 	};
 };

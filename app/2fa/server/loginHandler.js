@@ -55,27 +55,24 @@ OAuth._retrievePendingCredential = function(key, ...args) {
 		return;
 	}
 
-	if (pendingCredential.credential?.serviceData?._OAuthCustom && !pendingCredential.credential.error) {
-		// Work-around to make the credentials reusable for 2FA
-		const future = new Date();
-		future.setMinutes(future.getMinutes() + 2);
-
-		OAuth._pendingCredentials.update({
-			_id: pendingCredential._id,
-		}, {
-			$set: {
-				_createdAt: future,
-			},
-		});
-	} else {
+	if (pendingCredential.credential.error) {
 		OAuth._pendingCredentials.remove({
 			_id: pendingCredential._id,
 		});
-	}
-
-	if (pendingCredential.credential.error) {
 		return recreateError(pendingCredential.credential.error);
 	}
+
+	// Work-around to make the credentials reusable for 2FA
+	const future = new Date();
+	future.setMinutes(future.getMinutes() + 2);
+
+	OAuth._pendingCredentials.update({
+		_id: pendingCredential._id,
+	}, {
+		$set: {
+			createdAt: future,
+		},
+	});
 
 	return OAuth.openSecret(pendingCredential.credential);
 };
