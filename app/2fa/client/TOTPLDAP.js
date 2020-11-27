@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { Utils2fa } from './lib/2fa';
+import '../../ldap/client/loginHelper';
 
 Meteor.loginWithLDAPAndTOTP = function(...args) {
 	// Pull username and password
@@ -46,5 +47,5 @@ const { loginWithLDAP } = Meteor;
 Meteor.loginWithLDAP = function(...args) {
 	const callback = typeof args[args.length - 1] === 'function' ? args.pop() : null;
 
-	Utils2fa.overrideLoginMethod(loginWithLDAP, args, callback, Meteor.loginWithLDAPAndTOTP);
+	Utils2fa.overrideLoginMethod(loginWithLDAP, args, callback, Meteor.loginWithLDAPAndTOTP, args[0]);
 };
