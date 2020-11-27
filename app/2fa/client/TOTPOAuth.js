@@ -8,9 +8,10 @@ import { Linkedin } from 'meteor/pauli:linkedin-oauth';
 import { OAuth } from 'meteor/oauth';
 
 import { Utils2fa } from './lib/2fa';
+import { process2faReturn } from './callWithTwoFactorRequired';
 
-Accounts.oauth.tryLoginAfterPopupClosed = function(credentialToken, callback, totpCode) {
-	const credentialSecret = OAuth._retrieveCredentialSecret(credentialToken) || null;
+Accounts.oauth.tryLoginAfterPopupClosed = function(credentialToken, callback, totpCode, credentialSecret = null) {
+	credentialSecret = credentialSecret || OAuth._retrieveCredentialSecret(credentialToken) || null;
 	const methodArgument = {
 		oauth: {
 			credentialToken,
@@ -70,3 +71,26 @@ const { loginWithLinkedin } = Meteor;
 Meteor.loginWithLinkedin = function(options, cb) {
 	Utils2fa.overrideLoginMethod(loginWithLinkedin, [options], cb, loginWithLinkedinAndTOTP);
 };
+
+Accounts.onPageLoadLogin((loginAttempt) => {
+	if (loginAttempt?.error?.error !== 'totp-required') {
+		return;
+	}
+
+	const { methodArguments } = loginAttempt;
+	if (!methodArguments?.length) {
+		return;
+	}
+
+	const oAuthArgs = methodArguments.find((arg) => arg.oauth);
+	const { credentialToken, credentialSecret } = oAuthArgs.oauth;
+	const cb = loginAttempt.userCallback;
+
+	process2faReturn({
+		error: loginAttempt.error,
+		originalCallback: cb,
+		onCode: (code) => {
+			Accounts.oauth.tryLoginAfterPopupClosed(credentialToken, cb, code, credentialSecret);
+		},
+	});
+});
