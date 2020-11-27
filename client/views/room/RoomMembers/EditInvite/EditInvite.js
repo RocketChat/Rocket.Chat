@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, Field, Select, Button, InputBox } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../components/basic/VerticalBar';
 
@@ -42,69 +41,50 @@ export const EditInvite = ({
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
-			<VerticalBar.Content p='x12'>
-				<Box width='full' pi='x12' pb='x12'>
-					<Field>
-						<Field.Label flexGrow={0}>{t('Expiration_(Days)')}</Field.Label>
-						<Field.Row>
-							{days === undefined ? <InputBox.Skeleton /> : <Select value={days} onChange={setDays} options={daysOptions} />}
-						</Field.Row>
-					</Field>
+			<VerticalBar.ScrollableContent>
+				<Field>
+					<Field.Label flexGrow={0}>{t('Expiration_(Days)')}</Field.Label>
+					<Field.Row>
+						{days === undefined ? <InputBox.Skeleton /> : <Select value={days} onChange={setDays} options={daysOptions} />}
+					</Field.Row>
+				</Field>
 
-					<Field pb='x16'>
-						<Field.Label flexGrow={0}>{t('Max_number_of_uses')}</Field.Label>
-						<Field.Row>
-							{maxUses === undefined ? <InputBox.Skeleton /> : <Select value={maxUses} onChange={setMaxUses} options={maxUsesOptions} />}
-						</Field.Row>
-					</Field>
+				<Field pb='x16'>
+					<Field.Label flexGrow={0}>{t('Max_number_of_uses')}</Field.Label>
+					<Field.Row>
+						{maxUses === undefined ? <InputBox.Skeleton /> : <Select value={maxUses} onChange={setMaxUses} options={maxUsesOptions} />}
+					</Field.Row>
+				</Field>
 
-					<Box pb='x16'>
-						<Button onClick={onClickNewLink}>{t('Generate_New_Link')}</Button>
-					</Box>
+				<Box pb='x16'>
+					<Button primary onClick={onClickNewLink}>{t('Generate_New_Link')}</Button>
 				</Box>
-			</VerticalBar.Content>
+			</VerticalBar.ScrollableContent>
 		</>
 	);
 };
 
 export default ({
-	rid,
 	tabBar,
+	onClickBack,
+	setParams,
+	linkText,
+	captionText,
+	days: _days,
+	maxUses: _maxUses,
+
 }) => {
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
-	const onClickBack = useMutableCallback(() => tabBar.setTemplate('InviteUsers'));
-	const buildInviteLink = useEndpoint('POST', 'findOrCreateInvite');
 
-	const [days, setDays] = useState();
-	const [maxUses, setMaxUses] = useState();
+	const [days, setDays] = useState(_days);
+	const [maxUses, setMaxUses] = useState(_maxUses);
 
-	const handleInviteLink = useCallback(async (days, maxUses) => {
-		try {
-			const data = await buildInviteLink({
-				rid,
-				days,
-				maxUses,
-			});
-			setMaxUses(data.maxUses);
-			setDays(data.days);
-			return data;
-		} catch (error) {
-			console.log(error);
-		}
-	}, [buildInviteLink, rid]);
-
-	const generateLink = useCallback(() => {
-		const result = handleInviteLink(days, maxUses);
-		result.then((data) => {
-			data.success && onClickBack();
-		}).catch((error) => {
-			console.log(error);
+	const generateLink = useMutableCallback(() => {
+		setParams({
+			days,
+			maxUses,
 		});
-	}, [onClickBack, handleInviteLink, days, maxUses]);
-
-	useEffect(() => {
-		handleInviteLink();
-	}, [handleInviteLink]);
+	});
 
 	return (
 		<EditInvite
@@ -113,8 +93,11 @@ export default ({
 			onClickNewLink={generateLink}
 			days={days}
 			setDays={setDays}
+			days={days}
 			maxUses={maxUses}
 			setMaxUses={setMaxUses}
+			linkText={linkText}
+			captionText={captionText}
 		/>
 	);
 };
