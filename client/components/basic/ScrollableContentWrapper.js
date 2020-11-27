@@ -1,3 +1,4 @@
+import React from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar/src/simplebar.css';
 
