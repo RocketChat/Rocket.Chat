@@ -712,7 +712,7 @@ Template.roomOld.events({
 	},
 
 	'click .messages-container-main'() {
-		if (!!Template.instance().tabBar.template && getUserPreference(Meteor.userId(), 'hideFlexTab')) {
+		if (!!Template.instance().tabBar.isOpen() && getUserPreference(Meteor.userId(), 'hideFlexTab')) {
 			Template.instance().tabBar.close();
 		}
 	},
