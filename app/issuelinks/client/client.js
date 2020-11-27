@@ -1,10 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
-
-const createIssueLinksMessageRenderer = ({ template }) => (message) => {
+export const createIssueLinksMessageRenderer = ({ template }) => (message) => {
 	if (!message.html?.trim()) {
 		return message;
 	}
@@ -16,20 +10,3 @@ const createIssueLinksMessageRenderer = ({ template }) => (message) => {
 
 	return message;
 };
-
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const isEnabled = settings.get('IssueLinks_Enabled');
-
-		if (!isEnabled) {
-			callbacks.remove('renderMessage', 'issuelink');
-			return;
-		}
-
-		const renderMessage = createIssueLinksMessageRenderer({
-			template: settings.get('IssueLinks_Template'),
-		});
-
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'issuelink');
-	});
-});

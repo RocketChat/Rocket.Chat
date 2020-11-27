@@ -1,9 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-
-import { getUserPreference } from '../../utils';
 import { isIE11 } from '../../ui-utils/client/lib/isIE11';
-import { callbacks } from '../../callbacks';
 import { emoji } from '../lib/rocketchat';
 
 /*
@@ -80,19 +75,4 @@ const emojiParser = (message) => {
 
 export { emojiParser };
 
-const createEmojiMessageRenderer = () => emojiParser;
-
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const isEnabled = getUserPreference(Meteor.userId(), 'useEmojis');
-
-		if (!isEnabled) {
-			callbacks.remove('renderMessage', 'emoji');
-			return;
-		}
-
-		const renderMessage = createEmojiMessageRenderer();
-
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.LOW, 'emoji');
-	});
-});
+export const createEmojiMessageRenderer = () => emojiParser;

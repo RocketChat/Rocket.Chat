@@ -1,13 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { Tracker } from 'meteor/tracker';
 import Autolinker from 'autolinker';
 
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
 
-const createAutolinkerMessageRenderer = (config) =>
+export const createAutolinkerMessageRenderer = (config) =>
 	(message) => {
 		if (!message.html?.trim()) {
 			return message;
@@ -29,6 +26,7 @@ const createAutolinkerMessageRenderer = (config) =>
 				}
 				return Autolinker.link(msgPart, {
 					...config,
+					stripTrailingSlash: false,
 					replaceFn: (match) => {
 						const token = `=!=${ Random.id() }=!=`;
 						const tag = match.buildTag();
@@ -48,29 +46,3 @@ const createAutolinkerMessageRenderer = (config) =>
 
 		return message;
 	};
-
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const isEnabled = settings.get('AutoLinker') === true;
-
-		if (!isEnabled) {
-			callbacks.remove('renderMessage', 'autolinker');
-			return;
-		}
-
-		const renderMessage = createAutolinkerMessageRenderer({
-			stripPrefix: settings.get('AutoLinker_StripPrefix'),
-			urls: {
-				schemeMatches: settings.get('AutoLinker_Urls_Scheme'),
-				wwwMatches: settings.get('AutoLinker_Urls_www'),
-				tldMatches: settings.get('AutoLinker_Urls_TLD'),
-			},
-			email: settings.get('AutoLinker_Email'),
-			phone: settings.get('AutoLinker_Phone'),
-			twitter: false,
-			stripTrailingSlash: false,
-		});
-
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'autolinker');
-	});
-});

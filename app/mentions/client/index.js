@@ -1,2 +1,3 @@
-import './client';
 import './mentionLink.css';
+
+export { createMentionsMessageRenderer } from './client';

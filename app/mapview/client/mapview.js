@@ -1,11 +1,6 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
-
-const createMapViewMessageRenderer = ({ googleMapsApiKey }) => {
+export const createMapViewMessageRenderer = ({ googleMapsApiKey }) => {
 	const renderMap = (latitude, longitude) => {
 		const altText = TAPi18n.__('Shared_Location');
 
@@ -31,13 +26,3 @@ const createMapViewMessageRenderer = ({ googleMapsApiKey }) => {
 		return message;
 	};
 };
-
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const renderMessage = createMapViewMessageRenderer({
-			googleMapsApiKey: settings.get('MapView_GMapsAPIKey'),
-		});
-
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.HIGH, 'mapview');
-	});
-});
