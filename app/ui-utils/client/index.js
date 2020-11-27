@@ -28,3 +28,4 @@ export * from './lib/rtl';
 export * from './lib/keyCodes';
 export * from './lib/prependReplies';
 export * from './lib/collapseArrow';
+export * from './lib/messageArgs';

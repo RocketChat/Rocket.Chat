@@ -9,3 +9,4 @@ import './unread';
 import './userSetUtcOffset';
 import './usersObserve';
 import './renderMessage';
+import './streamMessage';
