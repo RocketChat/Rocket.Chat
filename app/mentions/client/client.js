@@ -1,4 +1,5 @@
 import { MentionsParser } from '../lib/MentionsParser';
+import './mentionLink.css';
 
 export let instance = new MentionsParser({
 	me: () => undefined,
