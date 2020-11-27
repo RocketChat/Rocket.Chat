@@ -252,10 +252,10 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 					</Margins>
 				</Box>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} ref={ref}>
+			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
-				<InfiniteLoader
+				{!error && total > 0 && <InfiniteLoader
 					isItemLoaded={isItemLoaded}
 					itemCount={total}
 					loadMoreItems={ loading ? () => {} : loadMoreItems}
@@ -271,7 +271,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 						onItemsRendered={onItemsRendered}
 					>{rowRenderer}</List>
 					)}
-				</InfiniteLoader>
+				</InfiniteLoader>}
 			</Box>
 		</VerticalBar.Content>
 	</VerticalBar>;
