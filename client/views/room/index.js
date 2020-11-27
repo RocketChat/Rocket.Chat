@@ -6,7 +6,7 @@ import Header from './Header';
 import BlazeTemplate from './components/BlazeTemplate';
 import RoomProvider, { useRoom } from './providers/RoomProvider';
 import { RoomTemplate } from './components/RoomTemplate';
-import { useTab, useTabBarOpen, useTabBarClose } from './providers/ToolboxProvider';
+import { useTab, useTabBarOpen, useTabBarClose, useTabBarOpenUserInfo } from './providers/ToolboxProvider';
 import VerticalBarOldActions from './components/VerticalBarOldActions';
 
 const LazyComponent = ({ template: TabbarTemplate, ...props }) => <Suspense fallback={<div>Loading...</div>}><TabbarTemplate {...props}/></Suspense>;
@@ -17,10 +17,11 @@ const Room = () => {
 	const tab = useTab();
 	const open = useTabBarOpen();
 	const close = useTabBarClose();
+	const openUserInfo = useTabBarOpenUserInfo();
 
-	const isOpen = useMutableCallback(!(tab && tab.template));
+	const isOpen = useMutableCallback(() => !(tab && tab.template));
 
-	const tabBar = useMemo(() => ({ open, close, isOpen }), [open, close, isOpen]);
+	const tabBar = useMemo(() => ({ open, close, isOpen, openUserInfo }), [open, close, isOpen, openUserInfo]);
 
 	return <RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
 		<RoomTemplate.Header><Header room={room} rid={room._id}/></RoomTemplate.Header>

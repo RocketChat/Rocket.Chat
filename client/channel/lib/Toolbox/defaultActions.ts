@@ -18,7 +18,7 @@ addAction('user-info', {
 	id: 'user-info',
 	title: 'User_Info',
 	icon: 'user',
-	template: 'membersList',
+	template: lazy(() => import('../../../views/room/MemberListRouter')),
 	order: 5,
 });
 
@@ -27,7 +27,7 @@ addAction('user-info-group', {
 	id: 'user-info-group',
 	title: 'Members',
 	icon: 'team',
-	template: 'membersList',
+	template: lazy(() => import('../../../views/room/MemberListRouter')),
 	order: 5,
 });
 
@@ -38,7 +38,7 @@ addAction('members-list', ({ room }) => {
 		id: 'members-list',
 		title: 'Members',
 		icon: 'team',
-		template: 'membersList',
+		template: lazy(() => import('../../../views/room/MemberListRouter')),
 		order: 5,
 	} : null), [hasPermission, room.broadcast]);
 });

@@ -13,6 +13,7 @@ import { t, isRtl, handleError, roomTypes, getUserAvatarURL } from '../../../uti
 import { WebRTC } from '../../../webrtc/client';
 import { hasPermission } from '../../../authorization/client';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
+import { openProfileTab } from '../../../ui/client/views/app/room';
 
 createTemplateForComponent('UserInfoWithData', () => import('../../../../client/channel/UserInfo'), {
 	// eslint-disable-next-line new-cap
@@ -266,6 +267,12 @@ Template.membersList.events({
 		});
 
 		usersLimit.set(usersLimit.get() + 100);
+	},
+	'click .rc-member-list__user'(e, instance) {
+		if (!Meteor.userId()) {
+			return;
+		}
+		openProfileTab(e, instance, this.userDetail);
 	},
 });
 

@@ -10,6 +10,7 @@ export type ChannelContextValue = {
 	listen: (handler: Handler) => Function;
 	tabBar?: any;
 	open: Function;
+	openUserInfo: Function;
 	close: Function;
 	activeTabBar?: ToolboxActionConfig;
 }
@@ -18,5 +19,6 @@ export const ToolboxContext = createContext<ChannelContextValue>({
 	actions,
 	listen,
 	open: () => null,
+	openUserInfo: () => null,
 	close: () => null,
 });

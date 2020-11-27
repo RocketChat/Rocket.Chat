@@ -15,7 +15,7 @@ import VerticalBar from '../../components/basic/VerticalBar';
 import UserActions from './actions/UserActions';
 import { useRolesDescription } from '../../contexts/AuthorizationContext';
 
-export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClose, video, showBackButton, ...props }) {
+export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, rid, onClose, video, showBackButton, ...props }) {
 	const t = useTranslation();
 
 	const getRoles = useRolesDescription();

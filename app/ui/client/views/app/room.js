@@ -49,48 +49,38 @@ const openMembersListTab = (instance, group) => {
 	instance.tabBar.open('members-list');
 };
 
-const openProfileTab = (e, instance, username) => {
+export const openProfileTab = (e, instance, username) => {
+	e.stopPropagation();
+
 	if (Layout.isEmbedded()) {
 		fireGlobalEvent('click-user-card-message', { username });
 		e.preventDefault();
-		e.stopPropagation();
 		return;
 	}
 
-	const roomData = Session.get(`roomData${ RoomManager.openedRoom }`);
-	if (roomTypes.getConfig(roomData.t).enableMembersListProfile()) {
-		instance.userDetail.set(username);
-	}
-
-	if (roomTypes.roomTypes[roomData.t].openCustomProfileTab(instance, roomData, username)) {
-		return;
-	}
-	instance.groupDetail.set(null);
-	// instance.tabBar.setTemplate('membersList');
-	// instance.tabBar.setData({});
-	instance.tabBar.open('members-list', instance.userDetail.get());
+	instance.tabBar.openUserInfo(username);
 };
 
-export const openProfileTabOrOpenDM = (e, instance, username) => {
-	// if (settings.get('UI_Click_Direct_Message')) {
-	// 	Meteor.call('createDirectMessage', username, (error, result) => {
-	// 		if (error) {
-	// 			if (error.isClientSafe) {
-	// 				openProfileTab(e, instance, username);
-	// 			} else {
-	// 				handleError(error);
-	// 			}
-	// 		}
+// export const openProfileTab = (e, instance, username) => {
+// 	// if (settings.get('UI_Click_Direct_Message')) {
+// 	// 	Meteor.call('createDirectMessage', username, (error, result) => {
+// 	// 		if (error) {
+// 	// 			if (error.isClientSafe) {
+// 	// 				openProfileTab(e, instance, username);
+// 	// 			} else {
+// 	// 				handleError(error);
+// 	// 			}
+// 	// 		}
 
-	// 		if (result && result.rid) {
-	// 			FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
-	// 		}
-	// 	});
-	// } else {
-	openProfileTab(e, instance, username);
-	// }
-	e.stopPropagation();
-};
+// 	// 		if (result && result.rid) {
+// 	// 			FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
+// 	// 		}
+// 	// 	});
+// 	// } else {
+// 	openProfileTab(e, instance, username);
+// 	// }
+// 	e.stopPropagation();
+// };
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');
@@ -823,14 +813,6 @@ Template.roomOld.events({
 		});
 	},
 
-	'click .rc-member-list__user'(e, instance) {
-		if (!Meteor.userId()) {
-			return;
-		}
-
-		openProfileTabOrOpenDM(e, instance, this.user.username);
-	},
-
 	'scroll .wrapper': _.throttle(function(e, t) {
 		const $roomLeader = $('.room-leader');
 		if ($roomLeader.length) {
@@ -933,7 +915,7 @@ Template.roomOld.events({
 				target: e.currentTarget,
 				open: (e) => {
 					e.preventDefault();
-					openProfileTabOrOpenDM(e, instance, username);
+					openProfileTab(e, instance, username);
 				},
 			});
 		}
@@ -955,7 +937,7 @@ Template.roomOld.events({
 				target: e.currentTarget,
 				open: (e) => {
 					e.preventDefault();
-					openProfileTabOrOpenDM(e, instance, username);
+					openProfileTab(e, instance, username);
 				},
 			});
 		}
