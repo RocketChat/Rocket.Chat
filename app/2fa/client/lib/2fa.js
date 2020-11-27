@@ -1,9 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
-import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 
-import { CustomOAuth } from '../../../custom-oauth';
 import { t } from '../../../utils/client';
 import { process2faReturn } from '../callWithTwoFactorRequired';
 
@@ -35,8 +33,9 @@ export class Utils2fa {
 				originalCallback: cb,
 				onCode: (code) => {
 					loginMethodTOTP && loginMethodTOTP.apply(this, loginArgs.concat([code, (error) => {
-						console.log('failed');
-						console.log(error);
+						if (error) {
+							console.log(error);
+						}
 						if (error && error.error === 'totp-invalid') {
 							toastr.error(t('Invalid_two_factor_code'));
 							cb();
@@ -64,26 +63,3 @@ export class Utils2fa {
 		};
 	}
 }
-
-const oldConfigureLogin = CustomOAuth.prototype.configureLogin;
-CustomOAuth.prototype.configureLogin = function(...args) {
-	const loginWithService = `loginWith${ s.capitalize(this.name) }`;
-
-	oldConfigureLogin.apply(this, args);
-
-	const oldMethod = Meteor[loginWithService];
-	const newMethod = (options, code, callback) => {
-		// support a callback without options
-		if (!callback && typeof options === 'function') {
-			callback = options;
-			options = null;
-		}
-
-		const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
-		this.requestCredential(options, credentialRequestCompleteCallback);
-	};
-
-	Meteor[loginWithService] = function(options, cb) {
-		Utils2fa.overrideLoginMethod(oldMethod, [options], cb, newMethod);
-	};
-};

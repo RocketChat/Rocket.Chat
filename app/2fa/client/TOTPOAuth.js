@@ -6,9 +6,14 @@ import { Twitter } from 'meteor/twitter-oauth';
 import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
 import { Linkedin } from 'meteor/pauli:linkedin-oauth';
 import { OAuth } from 'meteor/oauth';
+import s from 'underscore.string';
 
 import { Utils2fa } from './lib/2fa';
 import { process2faReturn } from './callWithTwoFactorRequired';
+import { CustomOAuth } from '../../custom-oauth';
+
+let lastCredentialToken = null;
+let lastCredentialSecret = null;
 
 Accounts.oauth.tryLoginAfterPopupClosed = function(credentialToken, callback, totpCode, credentialSecret = null) {
 	credentialSecret = credentialSecret || OAuth._retrieveCredentialSecret(credentialToken) || null;
@@ -18,6 +23,9 @@ Accounts.oauth.tryLoginAfterPopupClosed = function(credentialToken, callback, to
 			credentialSecret,
 		},
 	};
+
+	lastCredentialToken = credentialToken;
+	lastCredentialSecret = credentialSecret;
 
 	if (totpCode && typeof totpCode === 'string') {
 		methodArgument.totp = {
@@ -94,3 +102,33 @@ Accounts.onPageLoadLogin((loginAttempt) => {
 		},
 	});
 });
+
+const oldConfigureLogin = CustomOAuth.prototype.configureLogin;
+CustomOAuth.prototype.configureLogin = function(...args) {
+	const loginWithService = `loginWith${ s.capitalize(this.name) }`;
+
+	oldConfigureLogin.apply(this, args);
+
+	const oldMethod = Meteor[loginWithService];
+	const newMethod = (options, code, callback) => {
+		// support a callback without options
+		if (!callback && typeof options === 'function') {
+			callback = options;
+			options = null;
+		}
+
+		if (lastCredentialToken && lastCredentialSecret) {
+			Accounts.oauth.tryLoginAfterPopupClosed(lastCredentialToken, callback, code, lastCredentialSecret);
+		} else {
+			const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback, code);
+			this.requestCredential(options, credentialRequestCompleteCallback);
+		}
+
+		lastCredentialToken = null;
+		lastCredentialSecret = null;
+	};
+
+	Meteor[loginWithService] = function(options, cb) {
+		Utils2fa.overrideLoginMethod(oldMethod, [options], cb, newMethod);
+	};
+};

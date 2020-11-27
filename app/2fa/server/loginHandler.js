@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
 import { check } from 'meteor/check';
@@ -25,7 +26,22 @@ callbacks.add('onValidateLogin', (login) => {
 	return login;
 }, callbacks.priority.MEDIUM, '2fa');
 
-const defaultRetrieveMethod = OAuth._retrievePendingCredential;
+const recreateError = (errorDoc) => {
+	let error;
+
+	if (errorDoc.meteorError) {
+		error = new Meteor.Error();
+		delete errorDoc.meteorError;
+	} else {
+		error = new Error();
+	}
+
+	Object.getOwnPropertyNames(errorDoc).forEach((key) => {
+		error[key] = errorDoc[key];
+	});
+	return error;
+};
+
 OAuth._retrievePendingCredential = function(key, ...args) {
 	const credentialSecret = args.length > 0 && args[0] !== undefined ? args[0] : null;
 	check(key, String);
@@ -35,17 +51,31 @@ OAuth._retrievePendingCredential = function(key, ...args) {
 		credentialSecret,
 	});
 
-	const result = defaultRetrieveMethod(key, ...args);
-
-	if (pendingCredential?.credential?.serviceData?._OAuthCustom) {
-		// Keep OAuth pending credentials alive for two extra minutes so they can be re-used in case of 2FA
-		OAuth._storePendingCredential(key, pendingCredential.credential, pendingCredential.credentialSecret);
-		setTimeout(() => {
-			OAuth._pendingCredentials.remove({
-				key,
-			});
-		}, 2 * 60 * 1000);
+	if (!pendingCredential) {
+		return;
 	}
 
-	return result;
+	if (pendingCredential.credential?.serviceData?._OAuthCustom && !pendingCredential.credential.error) {
+		// Work-around to make the credentials reusable for 2FA
+		const future = new Date();
+		future.setMinutes(future.getMinutes() + 2);
+
+		OAuth._pendingCredentials.update({
+			_id: pendingCredential._id,
+		}, {
+			$set: {
+				_createdAt: future,
+			},
+		});
+	} else {
+		OAuth._pendingCredentials.remove({
+			_id: pendingCredential._id,
+		});
+	}
+
+	if (pendingCredential.credential.error) {
+		return recreateError(pendingCredential.credential.error);
+	}
+
+	return OAuth.openSecret(pendingCredential.credential);
 };
