@@ -38,7 +38,6 @@ OAuth._retrievePendingCredential = function(key, ...args) {
 	const result = defaultRetrieveMethod(key, ...args);
 
 	if (pendingCredential?.credential?.serviceData?._OAuthCustom) {
-		console.log(pendingCredential);
 		// Keep OAuth pending credentials alive for two extra minutes so they can be re-used in case of 2FA
 		OAuth._storePendingCredential(key, pendingCredential.credential, pendingCredential.credentialSecret);
 		setTimeout(() => {
