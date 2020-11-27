@@ -5,7 +5,7 @@ import { settings } from '../../../app/settings';
 import { callbacks } from '../../../app/callbacks';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
+	Tracker.autorun(() => {
 		const isEnabled = settings.get('HexColorPreview_Enabled') === true;
 
 		if (!isEnabled) {
@@ -13,10 +13,9 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const { createHexColorPreviewMessageRenderer } = await import('../../../app/colors/client');
-
-		const renderMessage = createHexColorPreviewMessageRenderer();
-
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'hexcolor');
+		import('../../../app/colors/client').then(({ createHexColorPreviewMessageRenderer }) => {
+			const renderMessage = createHexColorPreviewMessageRenderer();
+			callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'hexcolor');
+		});
 	});
 });

@@ -5,7 +5,7 @@ import { callbacks } from '../../../app/callbacks';
 import { settings } from '../../../app/settings';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
+	Tracker.autorun(() => {
 		const isEnabled = settings.get('Katex_Enabled');
 
 		if (!isEnabled) {
@@ -13,13 +13,14 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const { createKatexMessageRendering } = await import('../../../app/katex/client');
-
-		const renderMessage = createKatexMessageRendering({
+		const options = {
 			dollarSyntax: settings.get('Katex_Dollar_Syntax'),
 			parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
-		});
+		};
 
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.HIGH + 1, 'katex');
+		import('../../../app/katex/client').then(({ createKatexMessageRendering }) => {
+			const renderMessage = createKatexMessageRendering(options);
+			callbacks.add('renderMessage', renderMessage, callbacks.priority.HIGH + 1, 'katex');
+		});
 	});
 });

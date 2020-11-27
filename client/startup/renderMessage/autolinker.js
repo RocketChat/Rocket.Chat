@@ -5,7 +5,7 @@ import { settings } from '../../../app/settings';
 import { callbacks } from '../../../app/callbacks';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
+	Tracker.autorun(() => {
 		const isEnabled = settings.get('AutoLinker') === true;
 
 		if (!isEnabled) {
@@ -13,9 +13,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const { createAutolinkerMessageRenderer } = await import('../../../app/autolinker/client');
-
-		const renderMessage = createAutolinkerMessageRenderer({
+		const options = {
 			stripPrefix: settings.get('AutoLinker_StripPrefix'),
 			urls: {
 				schemeMatches: settings.get('AutoLinker_Urls_Scheme'),
@@ -24,8 +22,11 @@ Meteor.startup(() => {
 			},
 			email: settings.get('AutoLinker_Email'),
 			phone: settings.get('AutoLinker_Phone'),
-		});
+		};
 
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'autolinker');
+		import('../../../app/autolinker/client').then(({ createAutolinkerMessageRenderer }) => {
+			const renderMessage = createAutolinkerMessageRenderer(options);
+			callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'autolinker');
+		});
 	});
 });

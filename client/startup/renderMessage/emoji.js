@@ -5,7 +5,7 @@ import { getUserPreference } from '../../../app/utils';
 import { callbacks } from '../../../app/callbacks';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
+	Tracker.autorun(() => {
 		const isEnabled = getUserPreference(Meteor.userId(), 'useEmojis');
 
 		if (!isEnabled) {
@@ -13,10 +13,9 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const { createEmojiMessageRenderer } = await import('../../../app/emoji/client');
-
-		const renderMessage = createEmojiMessageRenderer();
-
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.LOW, 'emoji');
+		import('../../../app/emoji/client').then(({ createEmojiMessageRenderer }) => {
+			const renderMessage = createEmojiMessageRenderer();
+			callbacks.add('renderMessage', renderMessage, callbacks.priority.LOW, 'emoji');
+		});
 	});
 });

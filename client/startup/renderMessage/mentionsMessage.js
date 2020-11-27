@@ -6,16 +6,18 @@ import { settings } from '../../../app/settings';
 import { Users } from '../../../app/models/client';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
-		const { createMentionsMessageRenderer } = await import('../../../app/mentions/client');
-
+	Tracker.autorun(() => {
 		const uid = Meteor.userId();
-		const renderMessage = createMentionsMessageRenderer({
+		const options = {
 			me: uid && (Users.findOne(uid, { fields: { username: 1 } }) || {}).username,
 			pattern: settings.get('UTF8_Names_Validation'),
 			useRealName: settings.get('UI_Use_Real_Name'),
-		});
+		};
 
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'mentions-message');
+		import('../../../app/mentions/client').then(({ createMentionsMessageRenderer }) => {
+			const renderMessage = createMentionsMessageRenderer(options);
+
+			callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'mentions-message');
+		});
 	});
 });

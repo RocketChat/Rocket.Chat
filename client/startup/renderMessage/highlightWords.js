@@ -5,7 +5,7 @@ import { callbacks } from '../../../app/callbacks';
 import { getUserPreference } from '../../../app/utils';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
+	Tracker.autorun(() => {
 		const isEnabled = getUserPreference(Meteor.userId(), 'highlights')?.some((highlight) => highlight?.trim()) ?? false;
 
 		if (!isEnabled) {
@@ -13,13 +13,14 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const { createHighlightWordsMessageRenderer } = await import('../../../app/highlight-words');
-
-		const renderMessage = createHighlightWordsMessageRenderer({
+		const options = {
 			wordsToHighlight: getUserPreference(Meteor.userId(), 'highlights')
 				.filter((highlight) => highlight?.trim()),
-		});
+		};
 
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM + 1, 'highlight-words');
+		import('../../../app/highlight-words').then(({ createHighlightWordsMessageRenderer }) => {
+			const renderMessage = createHighlightWordsMessageRenderer(options);
+			callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM + 1, 'highlight-words');
+		});
 	});
 });

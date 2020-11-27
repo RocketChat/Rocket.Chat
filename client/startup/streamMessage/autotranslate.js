@@ -6,7 +6,7 @@ import { callbacks } from '../../../app/callbacks';
 import { hasPermission } from '../../../app/authorization';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
+	Tracker.autorun(() => {
 		const isEnabled = settings.get('AutoTranslate_Enabled') && hasPermission('auto-translate');
 
 		if (!isEnabled) {
@@ -14,10 +14,9 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const { createAutoTranslateMessageStreamHandler } = await import('../../../app/autotranslate/client');
-
-		const streamMessage = createAutoTranslateMessageStreamHandler();
-
-		callbacks.add('streamMessage', streamMessage, callbacks.priority.HIGH - 3, 'autotranslate-stream');
+		import('../../../app/autotranslate/client').then(({ createAutoTranslateMessageStreamHandler }) => {
+			const streamMessage = createAutoTranslateMessageStreamHandler();
+			callbacks.add('streamMessage', streamMessage, callbacks.priority.HIGH - 3, 'autotranslate-stream');
+		});
 	});
 });

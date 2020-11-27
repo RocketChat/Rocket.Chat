@@ -5,7 +5,7 @@ import { settings } from '../../../app/settings';
 import { callbacks } from '../../../app/callbacks';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
+	Tracker.autorun(() => {
 		const isEnabled = settings.get('IssueLinks_Enabled');
 
 		if (!isEnabled) {
@@ -13,12 +13,13 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const { createIssueLinksMessageRenderer } = await import('../../../app/issuelinks/client');
-
-		const renderMessage = createIssueLinksMessageRenderer({
+		const options = {
 			template: settings.get('IssueLinks_Template'),
-		});
+		};
 
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'issuelink');
+		import('../../../app/issuelinks/client').then(({ createIssueLinksMessageRenderer }) => {
+			const renderMessage = createIssueLinksMessageRenderer(options);
+			callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'issuelink');
+		});
 	});
 });

@@ -5,7 +5,7 @@ import { settings } from '../../../app/settings';
 import { callbacks } from '../../../app/callbacks';
 
 Meteor.startup(() => {
-	Tracker.autorun(async () => {
+	Tracker.autorun(() => {
 		const isEnabled = settings.get('GoogleVision_Enable');
 
 		if (!isEnabled) {
@@ -13,10 +13,9 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const { createGoogleVisionMessageRenderer } = await import('../../../app/google-vision/client');
-
-		const renderMessage = createGoogleVisionMessageRenderer();
-
-		callbacks.add('renderMessage', renderMessage, callbacks.priority.HIGH - 3, 'googlevision');
+		import('../../../app/google-vision/client').then(({ createGoogleVisionMessageRenderer }) => {
+			const renderMessage = createGoogleVisionMessageRenderer();
+			callbacks.add('renderMessage', renderMessage, callbacks.priority.HIGH - 3, 'googlevision');
+		});
 	});
 });
