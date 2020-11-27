@@ -36,7 +36,7 @@ export const EditInvite = ({
 	return (
 		<>
 			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Action onClick={onClickBack} name='arrow-back' />}
+				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
 				<VerticalBar.Text>{t('Invite_Users')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
