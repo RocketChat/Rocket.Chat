@@ -8,3 +8,4 @@ import './issuelink';
 import './katex';
 import './mapview';
 import './mentionsMessage';
+import './spotify';
