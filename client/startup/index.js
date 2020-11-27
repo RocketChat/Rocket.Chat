@@ -4,6 +4,7 @@ import './emailVerification';
 import './i18n';
 import './loginViaQuery';
 import './renderMessage';
+import './renderNotification';
 import './roomObserve';
 import './startup';
 import './streamMessage';

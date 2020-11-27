@@ -7,5 +7,6 @@ import './highlightWords';
 import './issuelink';
 import './katex';
 import './mapview';
+import './markdown';
 import './mentionsMessage';
 import './spotify';

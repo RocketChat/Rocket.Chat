@@ -2,15 +2,10 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {Object} message - The message object
  */
-import s from 'underscore.string';
-import { Meteor } from 'meteor/meteor';
-import { Blaze } from 'meteor/blaze';
-
 import { marked } from './parser/marked/marked';
 import { original } from './parser/original/original';
 import { filtered } from './parser/filtered/filtered';
 import { code } from './parser/original/code';
-import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { escapeHTML } from '../../../lib/escapeHTML';
 
@@ -87,25 +82,22 @@ class MarkdownClass {
 
 export const Markdown = new MarkdownClass();
 
-// renderMessage already did html escape
-const MarkdownMessage = (message) => {
-	if (s.trim(message != null ? message.html : undefined)) {
-		message = Markdown.parseMessageNotEscaped(message);
-	}
-
-	return message;
-};
-
 export const filterMarkdown = (message) => Markdown.filterMarkdownFromMessage(message);
 
-callbacks.add('renderMessage', MarkdownMessage, callbacks.priority.HIGH, 'markdown');
-callbacks.add('renderNotification', filterMarkdown, callbacks.priority.HIGH, 'filter-markdown');
+export const createMarkdownMessageRenderer = ({ parser }) => {
+	const parse = (parser === 'disabled' && ((message) => message))
+		|| (parser === 'function' && parsers[parser])
+		|| parsers.original;
 
-if (Meteor.isClient) {
-	Blaze.registerHelper('RocketChatMarkdown', (text) => Markdown.parse(text));
-	Blaze.registerHelper('RocketChatMarkdownUnescape', (text) => Markdown.parseNotEscaped(text));
-	Blaze.registerHelper('RocketChatMarkdownInline', (text) => {
-		const output = Markdown.parse(text);
-		return output.replace(/^<p>/, '').replace(/<\/p>$/, '');
-	});
-}
+	return (message) => {
+		if (!message?.html?.trim()) {
+			return message;
+		}
+
+		return parse(message);
+	};
+};
+
+export const createMarkdownNotificationRenderer = () =>
+	(message) =>
+		parsers.filtered(message);
