@@ -17,7 +17,7 @@ const Room = () => {
 	const open = useTabBarOpen();
 	const close = useTabBarClose();
 
-	const template = tab && tab.template;
+	const template = !(tab && tab.template);
 
 	const tabBar = useMemo(() => ({ open, close, template }), [open, close, template]);
 

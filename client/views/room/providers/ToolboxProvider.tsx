@@ -6,6 +6,7 @@ import { ToolboxContext } from '../../../channel/lib/Toolbox/ToolboxContext';
 import { ToolboxAction, ActionsStore, ToolboxActionConfig } from '../../../channel/lib/Toolbox/index';
 import { IRoom } from '../../../../definition/IRoom';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
+import { useSession } from '../../../contexts/SessionContext';
 
 const groupsDict = {
 	l: 'live',
@@ -57,6 +58,9 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 	const [routeName, params] = useCurrentRoute();
 	const router = useRoute(routeName || '');
 
+	// console.log(room._id);
+	const currentRoom = useSession('openedRoom');
+
 	const { tab } = params;
 
 	console.log(params);
@@ -79,7 +83,7 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 		// setActiveTabBar(undefined);
 	});
 
-	useEffect(() => setActiveTabBar(list.get(tab) as ToolboxActionConfig), [tab, list]);
+	useEffect(() => { currentRoom === room._id && setActiveTabBar(list.get(tab) as ToolboxActionConfig); }, [tab, list, currentRoom, room._id]);
 
 	const context = useMemo(() => ({
 		listen,
