@@ -51655,6 +51655,36 @@
         }
       ]
     },
+    "3.8.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19684",
+          "title": "[FIX] Room avatar update event doesn't properly broadcast room id",
+          "userLogin": "g-thome",
+          "milestone": "3.8.2",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "19683",
+          "title": "[FIX] Server crash while reading settings for allowed and blocked email domain lists",
+          "userLogin": "g-thome",
+          "milestone": "3.8.2",
+          "contributors": [
+            "g-thome"
+          ]
+        }
+      ]
+    },
     "3.9.0-rc.0": {
       "node_version": "12.18.4",
       "npm_version": "6.14.8",
