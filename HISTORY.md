@@ -1,12 +1,29 @@
 
-# Next
-`2020-11-26  ·  3 🔍  ·  4 👩‍💻👨‍💻`
+# 3.9.0 (Under Release Candidate Process)
 
-### Engine versions
-- Node: `12.18.4`
-- NPM: `6.14.8`
-- MongoDB: `3.4, 3.6, 4.0`
-- Apps-Engine: `1.20.0-alpha.4149`
+## 3.9.0-rc.4
+`2020-11-27  ·  3 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Improve performance of migration 211 (adding mostImportantRole to sessions) ([#19700](https://github.com/RocketChat/Rocket.Chat/pull/19700))
+
+- Regression: Fix Custom OAuth 2FA ([#19691](https://github.com/RocketChat/Rocket.Chat/pull/19691))
+
+- Update Apps-Engine version ([#19702](https://github.com/RocketChat/Rocket.Chat/pull/19702))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rodrigok](https://github.com/rodrigok)
+
+## 3.9.0-rc.3
+`2020-11-26  ·  3 🔍  ·  4 👩‍💻👨‍💻`
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -26,8 +43,6 @@
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tiagoevanp](https://github.com/tiagoevanp)
-
-# 3.9.0 (Under Release Candidate Process)
 
 ## 3.9.0-rc.2
 `2020-11-25  ·  3 🔍  ·  4 👩‍💻👨‍💻`

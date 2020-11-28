@@ -15363,45 +15363,7 @@
       ]
     },
     "HEAD": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.20.0-alpha.4149",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": [
-        {
-          "pr": "19685",
-          "title": "Regression: URL preview problem",
-          "userLogin": "tiagoevanp",
-          "milestone": "3.9.0",
-          "contributors": [
-            "tiagoevanp"
-          ]
-        },
-        {
-          "pr": "19659",
-          "title": "Regression: Fix LDAP 2FA not working when Login Fallback is off",
-          "userLogin": "pierre-lehnen-rc",
-          "milestone": "3.9.0",
-          "contributors": [
-            "pierre-lehnen-rc",
-            "sampaiodiego",
-            "web-flow"
-          ]
-        },
-        {
-          "pr": "19653",
-          "title": "Fix permission duplicated error on startup causing CI to halt",
-          "userLogin": "sampaiodiego",
-          "contributors": [
-            "sampaiodiego",
-            "g-thome"
-          ]
-        }
-      ]
+      "pull_requests": []
     },
     "0.66.0-rc.0": {
       "node_version": "8.11.1",
@@ -52388,6 +52350,84 @@
           "contributors": [
             "MartinSchoeler",
             "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.9.0-rc.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.20.0-alpha.4149",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19685",
+          "title": "Regression: URL preview problem",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.9.0",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "19659",
+          "title": "Regression: Fix LDAP 2FA not working when Login Fallback is off",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.9.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19653",
+          "title": "Fix permission duplicated error on startup causing CI to halt",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "g-thome"
+          ]
+        }
+      ]
+    },
+    "3.9.0-rc.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.20.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19691",
+          "title": "Regression: Fix Custom OAuth 2FA",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "19702",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "19700",
+          "title": "Improve performance of migration 211 (adding mostImportantRole to sessions)",
+          "userLogin": "rodrigok",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rodrigok"
           ]
         }
       ]
