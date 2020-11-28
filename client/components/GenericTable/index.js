@@ -50,8 +50,8 @@ const GenericTable = ({
 				{t('No_data_found')}
 			</Tile>
 			: <>
-				<ScrollableContentWrapper>
-					<Box mi='neg-x24' pi='x24' flexGrow={1} ref={ref}>
+				<Box mi='neg-x24' pi='x24' flexShrink={1} flexGrow={1} ref={ref} overflow='hidden'>
+					<ScrollableContentWrapper>
 						<Table fixed={fixed} sticky>
 							{header && <Table.Head>
 								<Table.Row>
@@ -67,8 +67,8 @@ const GenericTable = ({
 								{children && (results ? results.map(children) : <Loading />)}
 							</Table.Body>
 						</Table>
-					</Box>
-				</ScrollableContentWrapper>
+					</ScrollableContentWrapper>
+				</Box>
 				<Pagination
 					divider
 					current={current}
