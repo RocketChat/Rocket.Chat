@@ -2,6 +2,8 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {Object} message - The message object
  */
+import { Meteor } from 'meteor/meteor';
+
 import { marked } from './parser/marked/marked';
 import { original } from './parser/original/original';
 import { filtered } from './parser/filtered/filtered';
@@ -37,10 +39,23 @@ class MarkdownClass {
 			return message;
 		}
 
-		if (typeof parsers[parser] === 'function') {
-			return parsers[parser](message);
-		}
-		return parsers.original(message);
+		const options = {
+			supportSchemesForLink: settings.get('Markdown_SupportSchemesForLink'),
+			headers: settings.get('Markdown_Headers'),
+			rootUrl: Meteor.absoluteUrl(),
+			marked: {
+				gfm: settings.get('Markdown_Marked_GFM'),
+				tables: settings.get('Markdown_Marked_Tables'),
+				breaks: settings.get('Markdown_Marked_Breaks'),
+				pedantic: settings.get('Markdown_Marked_Pedantic'),
+				smartLists: settings.get('Markdown_Marked_SmartLists'),
+				smartypants: settings.get('Markdown_Marked_Smartypants'),
+			},
+		};
+
+		const parse = typeof parsers[parser] === 'function' ? parsers[parser] : parsers.original;
+
+		return parse(message, options);
 	}
 
 	mountTokensBackRecursively(message, tokenList, useHtml = true) {
@@ -76,7 +91,9 @@ class MarkdownClass {
 	}
 
 	filterMarkdownFromMessage(message) {
-		return parsers.filtered(message);
+		return parsers.filtered(message, {
+			supportSchemesForLink: settings.get('Markdown_SupportSchemesForLink'),
+		});
 	}
 }
 
@@ -84,7 +101,7 @@ export const Markdown = new MarkdownClass();
 
 export const filterMarkdown = (message) => Markdown.filterMarkdownFromMessage(message);
 
-export const createMarkdownMessageRenderer = ({ parser }) => {
+export const createMarkdownMessageRenderer = ({ parser, ...options }) => {
 	if (!parser || parser === 'disabled') {
 		return (message) => message;
 	}
@@ -96,10 +113,10 @@ export const createMarkdownMessageRenderer = ({ parser }) => {
 			return message;
 		}
 
-		return parse(message);
+		return parse(message, options);
 	};
 };
 
-export const createMarkdownNotificationRenderer = () =>
+export const createMarkdownNotificationRenderer = (options) =>
 	(message) =>
-		parsers.filtered(message);
+		parsers.filtered(message, options);
