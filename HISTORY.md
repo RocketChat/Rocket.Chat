@@ -1,110 +1,12 @@
 
-# 3.9.0 (Under Release Candidate Process)
+# 3.9.0
+`2020-11-28  ·  2 🎉  ·  16 🚀  ·  27 🐛  ·  31 🔍  ·  21 👩‍💻👨‍💻`
 
-## 3.9.0-rc.5
-`2020-11-28  ·  2 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: object-fit for image element and Box margin in AppAvatar component ([#19698](https://github.com/RocketChat/Rocket.Chat/pull/19698))
-
-- Release 3.8.2 ([#19705](https://github.com/RocketChat/Rocket.Chat/pull/19705))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@g-thome](https://github.com/g-thome)
-- [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 3.9.0-rc.4
-`2020-11-27  ·  3 🔍  ·  3 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Improve performance of migration 211 (adding mostImportantRole to sessions) ([#19700](https://github.com/RocketChat/Rocket.Chat/pull/19700))
-
-- Regression: Fix Custom OAuth 2FA ([#19691](https://github.com/RocketChat/Rocket.Chat/pull/19691))
-
-- Update Apps-Engine version ([#19702](https://github.com/RocketChat/Rocket.Chat/pull/19702))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@rodrigok](https://github.com/rodrigok)
-
-## 3.9.0-rc.3
-`2020-11-26  ·  3 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Fix permission duplicated error on startup causing CI to halt ([#19653](https://github.com/RocketChat/Rocket.Chat/pull/19653))
-
-- Regression: Fix LDAP 2FA not working when Login Fallback is off ([#19659](https://github.com/RocketChat/Rocket.Chat/pull/19659))
-
-- Regression: URL preview problem ([#19685](https://github.com/RocketChat/Rocket.Chat/pull/19685))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@g-thome](https://github.com/g-thome)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 3.9.0-rc.2
-`2020-11-25  ·  3 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix multiple react blazed template rendering at the same time ([#19679](https://github.com/RocketChat/Rocket.Chat/pull/19679))
-
-- Regression: Issues with Safari ([#19671](https://github.com/RocketChat/Rocket.Chat/pull/19671))
-
-- Report DAU and MAU by role ([#19657](https://github.com/RocketChat/Rocket.Chat/pull/19657))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@ggazzo](https://github.com/ggazzo)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.9.0-rc.1
-`2020-11-24  ·  2 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Collapsed messages container in safari ([#19668](https://github.com/RocketChat/Rocket.Chat/pull/19668))
-
-- Regression: Verticalbar size ([#19670](https://github.com/RocketChat/Rocket.Chat/pull/19670))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@gabriellsh](https://github.com/gabriellsh)
-
-## 3.9.0-rc.0
-`2020-11-21  ·  2 🎉  ·  16 🚀  ·  27 🐛  ·  18 🔍  ·  20 👩‍💻👨‍💻`
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.20.0`
 
 ### 🎉 New features
 
@@ -233,6 +135,10 @@
 
 - Fix Docker preview image build ([#19627](https://github.com/RocketChat/Rocket.Chat/pull/19627))
 
+- Fix permission duplicated error on startup causing CI to halt ([#19653](https://github.com/RocketChat/Rocket.Chat/pull/19653))
+
+- Improve performance of migration 211 (adding mostImportantRole to sessions) ([#19700](https://github.com/RocketChat/Rocket.Chat/pull/19700))
+
 - Improve REST endpoint to log user out from other clients ([#19642](https://github.com/RocketChat/Rocket.Chat/pull/19642))
 
 - LingoHub based on develop ([#19592](https://github.com/RocketChat/Rocket.Chat/pull/19592))
@@ -245,9 +151,21 @@
 
 - React Room Container ([#19634](https://github.com/RocketChat/Rocket.Chat/pull/19634))
 
+- Regression: Collapsed messages container in safari ([#19668](https://github.com/RocketChat/Rocket.Chat/pull/19668))
+
 - Regression: Fix Avatar x40 ([#19564](https://github.com/RocketChat/Rocket.Chat/pull/19564))
 
+- Regression: Fix Custom OAuth 2FA ([#19691](https://github.com/RocketChat/Rocket.Chat/pull/19691))
+
+- Regression: Fix LDAP 2FA not working when Login Fallback is off ([#19659](https://github.com/RocketChat/Rocket.Chat/pull/19659))
+
+- Regression: Fix multiple react blazed template rendering at the same time ([#19679](https://github.com/RocketChat/Rocket.Chat/pull/19679))
+
 - Regression: Fix wrong template on photoswipe ([#19575](https://github.com/RocketChat/Rocket.Chat/pull/19575))
+
+- Regression: Issues with Safari ([#19671](https://github.com/RocketChat/Rocket.Chat/pull/19671))
+
+- Regression: object-fit for image element and Box margin in AppAvatar component ([#19698](https://github.com/RocketChat/Rocket.Chat/pull/19698))
 
 - REGRESSION: Photoswipe not working  ([#19569](https://github.com/RocketChat/Rocket.Chat/pull/19569))
 
@@ -255,7 +173,17 @@
 
 - Regression: Room Info maxAgeDefault variable ([#19582](https://github.com/RocketChat/Rocket.Chat/pull/19582))
 
+- Regression: URL preview problem ([#19685](https://github.com/RocketChat/Rocket.Chat/pull/19685))
+
+- Regression: Verticalbar size ([#19670](https://github.com/RocketChat/Rocket.Chat/pull/19670))
+
+- Release 3.8.2 ([#19705](https://github.com/RocketChat/Rocket.Chat/pull/19705))
+
+- Report DAU and MAU by role ([#19657](https://github.com/RocketChat/Rocket.Chat/pull/19657))
+
 - Update Apps-Engine version ([#19639](https://github.com/RocketChat/Rocket.Chat/pull/19639))
+
+- Update Apps-Engine version ([#19702](https://github.com/RocketChat/Rocket.Chat/pull/19702))
 
 </details>
 
@@ -282,6 +210,7 @@
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 
