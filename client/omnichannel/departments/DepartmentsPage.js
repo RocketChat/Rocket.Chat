@@ -6,6 +6,7 @@ import Page from '../../components/basic/Page';
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import { useRoute } from '../../contexts/RouterContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 
 function DepartmentsPage({
 	data,
@@ -18,14 +19,16 @@ function DepartmentsPage({
 }) {
 	const departmentsRoute = useRoute('omnichannel-departments');
 
+	const t = useTranslation();
+
 	const onAddNew = useMutableCallback(() => departmentsRoute.push({
 		context: 'new',
 	}));
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={title}>
-				<Button small onClick={onAddNew}>
-					<Icon name='plus' size='x16'/>
+				<Button onClick={onAddNew}>
+					<Icon name='plus' /> {t('New')}
 				</Button>
 			</Page.Header>
 			<Page.Content>

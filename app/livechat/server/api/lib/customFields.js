@@ -1,12 +1,16 @@
+import s from 'underscore.string';
+
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatCustomField } from '../../../../models/server/raw';
 
-export async function findLivechatCustomFields({ userId, pagination: { offset, count, sort } }) {
+export async function findLivechatCustomFields({ userId, text, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
 
-	const cursor = await LivechatCustomField.find({}, {
+	const query = { ...text && { $or: [{ label: new RegExp(s.escapeRegExp(text), 'i') }, { _id: new RegExp(s.escapeRegExp(text), 'i') }] } };
+
+	const cursor = await LivechatCustomField.find(query, {
 		sort: sort || { label: 1 },
 		skip: offset,
 		limit: count,
