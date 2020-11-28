@@ -2,14 +2,14 @@ import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
-import DeleteWarningModal from '../../../client/components/DeleteWarningModal';
-import FilterByText from '../../../client/components/FilterByText';
-import GenericTable from '../../../client/components/GenericTable';
-import { useSetModal } from '../../../client/contexts/ModalContext';
-import { useMethod } from '../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
-import { useResizeInlineBreakpoint } from '../../../client/hooks/useResizeInlineBreakpoint';
+import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
+import FilterByText from '../../../../client/components/FilterByText';
+import GenericTable from '../../../../client/components/GenericTable';
+import { useSetModal } from '../../../../client/contexts/ModalContext';
+import { useMethod } from '../../../../client/contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import { useResizeInlineBreakpoint } from '../../../../client/hooks/useResizeInlineBreakpoint';
 
 const MonitorsRow = memo(function MonitorsRow(props) {
 	const {

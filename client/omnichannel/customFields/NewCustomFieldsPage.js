@@ -21,7 +21,7 @@ const initialValues = {
 };
 
 
-const NewCustomFieldsPage = () => {
+const NewCustomFieldsPage = ({ reload }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -42,7 +42,9 @@ const NewCustomFieldsPage = () => {
 
 	const { hasError, data: additionalData, hasUnsavedChanges: additionalFormChanged } = additionalValues;
 
-	const canSave = !hasError && (additionalFormChanged || hasUnsavedChanges);
+	const { label, field } = values;
+
+	const canSave = !hasError && (label && field) && (additionalFormChanged || hasUnsavedChanges);
 
 	const handleSave = useMutableCallback(async () => {
 		try {
@@ -53,6 +55,7 @@ const NewCustomFieldsPage = () => {
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			reload();
 			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

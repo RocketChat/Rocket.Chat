@@ -51655,6 +51655,783 @@
         }
       ]
     },
+    "3.9.0-rc.0": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.20.0-alpha.4149",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19488",
+          "title": "[FIX] Outgoing integrations without trigger words or with multiple commas",
+          "userLogin": "g-thome",
+          "contributors": [
+            "g-thome",
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19236",
+          "title": "[FIX] Role description not updating",
+          "userLogin": "dougfabris",
+          "milestone": "3.9.0",
+          "contributors": [
+            "ggazzo",
+            null,
+            "dougfabris",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19642",
+          "title": "Improve REST endpoint to log user out from other clients",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19638",
+          "title": "[FIX] Channel actions not working when reduce motion is active",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.9.0",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19338",
+          "title": "[IMPROVE] SlackBridge threads performance improvement",
+          "userLogin": "antkaz",
+          "contributors": [
+            "antkaz"
+          ]
+        },
+        {
+          "pr": "19571",
+          "title": "[FIX] LDAP Unique Identifier Field can not use operational attributes",
+          "userLogin": "truongtx8",
+          "contributors": [
+            "truongtx8",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19628",
+          "title": "[FIX] Settings may not update internal cache immediately",
+          "userLogin": "g-thome",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "11726",
+          "title": "[NEW] 2 Factor Authentication when using OAuth and SAML",
+          "userLogin": "Hudell",
+          "milestone": "3.9.0",
+          "contributors": [
+            "Hudell",
+            "pierre-lehnen-rc",
+            "web-flow",
+            "MarcosSpessatto"
+          ]
+        },
+        {
+          "pr": "19634",
+          "title": "React Room Container",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19381",
+          "title": "[FIX] Allow username change if LDAP is enabled but their username is not linked to an LDAP field",
+          "userLogin": "robertfromont",
+          "description": "LDAP users can change their username if the LDAP_Username_Field setting is blank.",
+          "milestone": "3.9.0",
+          "contributors": [
+            "robertfromont",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19599",
+          "title": "[FIX] Auto Translate",
+          "userLogin": "ggazzo",
+          "milestone": "3.9.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19620",
+          "title": "Manual LingoHub update",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19596",
+          "title": "[FIX] Prevent headerRoom's click to open room/direct info",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "10391",
+          "title": "[NEW] Added setting to disable password changes for users who log in using SSO",
+          "userLogin": "Hudell",
+          "milestone": "3.9.0",
+          "contributors": [
+            "Hudell",
+            "web-flow",
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19633",
+          "title": "[IMPROVE] Rewrite Auto-Translate as a React component ",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "19514",
+          "title": "[FIX] Size of embed Youtube on threads for small screens",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.9.0",
+          "contributors": [
+            "tiagoevanp",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19593",
+          "title": "[FIX] Issue with drag and drop",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19639",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "3.9.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "19500",
+          "title": "[IMPROVE][ENTERPRISE] UI/UX enhancements in Omnichannel Units page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19400",
+          "title": "[FIX] Omnichannel Analytics page doesn't have field labels",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19487",
+          "title": "[FIX] Wrong margin of description field in Omnichannel Webhooks page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "19485",
+          "title": "[IMPROVE] UI/UX enhancements in Omnichannel Triggers page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19601",
+          "title": "[FIX] Column width was not following the design system in Omnichannel Departments page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19512",
+          "title": "[IMPROVE][ENTERPRISE] UI/UX enhancements in Omnichannel Priorities page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19493",
+          "title": "[FIX] Save button enabled by default in Omnichannel Business Hours Form",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19495",
+          "title": "[IMPROVE][ENTERPRISE] UI/UX enhancements in Omnichannel Monitors page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19624",
+          "title": "[FIX] The width of list columns was not following the design system in Omnichannel Managers page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19625",
+          "title": "[FIX] The width of list columns was not following the design system in Omnichannel Agents page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19627",
+          "title": "Fix Docker preview image build",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19473",
+          "title": "[IMPROVES] Omnichannel - Custom Fields pages.",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19510",
+          "title": "[IMPROVE][ENTERPRISE] UI/UX enhancements in Omnichannel Tags page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19616",
+          "title": "[FIX] Engagement dashboard on old Mongo versions",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.8.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19576",
+          "title": "[IMPROVE] Forward Omnichannel room to agent in another department",
+          "userLogin": "mrfigueiredo",
+          "milestone": "3.9.0",
+          "contributors": [
+            "mrfigueiredo",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "19570",
+          "title": "[FIX] Typo in custom oauth from environment variable",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.8.1",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19383",
+          "title": "Bump xml-crypto from 1.5.3 to 2.0.0",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19592",
+          "title": "LingoHub based on develop",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19387",
+          "title": "Bump bcrypt from 4.0.1 to 5.0.0 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19590",
+          "title": "chore: Debounce sidebar list",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19543",
+          "title": "Bump systeminformation from 4.27.3 to 4.30.1 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19131",
+          "title": "LingoHub based on develop",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            "sampaiodiego",
+            null
+          ]
+        },
+        {
+          "pr": "19579",
+          "title": "[IMPROVE] Add support to `replace` operation when using Change Stream",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.9.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19582",
+          "title": "Regression: Room Info maxAgeDefault variable",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19581",
+          "title": "Regression: Room Info Edit action",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "19421",
+          "title": "[IMPROVE] UI/UX enhancements in department pages following the design system",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19511",
+          "title": "[IMPROVE] Rewrite Room Info",
+          "userLogin": "dougfabris",
+          "milestone": "3.9.0",
+          "contributors": [
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19518",
+          "title": "[IMPROVE] KeyboardShortcuts as React component",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.9.0",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19577",
+          "title": "[FIX] Regex was not working properly on visitors.search endpoint",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19575",
+          "title": "Regression: Fix wrong template on photoswipe",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19410",
+          "title": "[FIX] UI/UX issues on Omnichannel Managers page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19414",
+          "title": "[FIX] Input without label and email ordering missing on Omnichannel Agents page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19569",
+          "title": "REGRESSION: Photoswipe not working ",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19397",
+          "title": "[IMPROVE] UI/UX enhancements in Omnichannnel Current Chats page",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19564",
+          "title": "Regression: Fix Avatar x40",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19491",
+          "title": "[IMPROVE] Remove Box props from Avatar component",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19467",
+          "title": "[IMPROVE] Remove Box dependence from Tag and Badge components",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19561",
+          "title": "[FIX] IE11 - Update ui kit and fuselage bundle",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.8.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "16884",
+          "title": "[FIX] Unread count for all messages when mentioning an user",
+          "userLogin": "subham103",
+          "contributors": [
+            "subham103",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19509",
+          "title": "[FIX] Setup Wizard User Creation Locking up",
+          "userLogin": "MartinSchoeler",
+          "description": "[FIX] Setup Wizard User Creation Locking up",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19458",
+          "title": "[FIX] Restore Message View Mode Preference",
+          "userLogin": "MartinSchoeler",
+          "description": "[FIX] Restore Message View Mode Preference",
+          "milestone": "3.9.0",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19475",
+          "title": "[FIX] TOTP Being ignored when changing our own avatar",
+          "userLogin": "MartinSchoeler",
+          "description": "[FIX] TOTP Being ignored when changing our own avatar",
+          "milestone": "3.9.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19450",
+          "title": "[FIX] Engagement dashboard: graphs adjustment",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19533",
+          "title": "[IMPROVE] Bundle Size Client",
+          "userLogin": "ggazzo",
+          "description": "temporarily removes some codeblock languages\r\nMoved some libraries to dynamic imports\r\nRemoved some shared code not used on the client side",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19534",
+          "title": "Merge master into develop & Set version to 3.9.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.9.0-rc.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.20.0-alpha.4149",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19670",
+          "title": "Regression: Verticalbar size",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19668",
+          "title": "Regression: Collapsed messages container in safari",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
+    },
+    "3.9.0-rc.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.20.0-alpha.4149",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19657",
+          "title": "Report DAU and MAU by role",
+          "userLogin": "rodrigok",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "19679",
+          "title": "Regression: Fix multiple react blazed template rendering at the same time",
+          "userLogin": "ggazzo",
+          "milestone": "3.9.0",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19671",
+          "title": "Regression: Issues with Safari",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.9.0-rc.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.20.0-alpha.4149",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19685",
+          "title": "Regression: URL preview problem",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.9.0",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "19659",
+          "title": "Regression: Fix LDAP 2FA not working when Login Fallback is off",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.9.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19653",
+          "title": "Fix permission duplicated error on startup causing CI to halt",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "g-thome"
+          ]
+        }
+      ]
+    },
+    "3.9.0-rc.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.20.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19691",
+          "title": "Regression: Fix Custom OAuth 2FA",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "19702",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "19700",
+          "title": "Improve performance of migration 211 (adding mostImportantRole to sessions)",
+          "userLogin": "rodrigok",
+          "milestone": "3.9.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
     "3.8.2": {
       "node_version": "12.18.4",
       "npm_version": "6.14.8",
@@ -51665,6 +52442,15 @@
         "4.0"
       ],
       "pull_requests": [
+        {
+          "pr": "19705",
+          "title": "Release 3.8.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "g-thome",
+            "sampaiodiego"
+          ]
+        },
         {
           "pr": "19684",
           "title": "[FIX] Room avatar update event doesn't properly broadcast room id",
@@ -51684,6 +52470,83 @@
           ]
         }
       ]
+    },
+    "3.9.0-rc.5": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.20.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19698",
+          "title": "Regression: object-fit for image element and Box margin in AppAvatar component",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "19705",
+          "title": "Release 3.8.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "g-thome",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19684",
+          "title": "[FIX] Room avatar update event doesn't properly broadcast room id",
+          "userLogin": "g-thome",
+          "milestone": "3.8.2",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "19683",
+          "title": "[FIX] Server crash while reading settings for allowed and blocked email domain lists",
+          "userLogin": "g-thome",
+          "milestone": "3.8.2",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "19683",
+          "title": "[FIX] Server crash while reading settings for allowed and blocked email domain lists",
+          "userLogin": "g-thome",
+          "milestone": "3.8.2",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "19684",
+          "title": "[FIX] Room avatar update event doesn't properly broadcast room id",
+          "userLogin": "g-thome",
+          "milestone": "3.8.2",
+          "contributors": [
+            "g-thome"
+          ]
+        }
+      ]
+    },
+    "3.9.0": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.20.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
     }
   }
 }

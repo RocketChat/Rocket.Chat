@@ -36,8 +36,9 @@ import { hasAllPermission, hasRole } from '../../../../authorization';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
-import { mime } from '../../../../utils/lib/mimeTypes';
 import { openUserCard } from '../../lib/UserCard';
+
+import './room.html';
 
 export const chatMessages = {};
 
@@ -239,6 +240,7 @@ async function createFileFromUrl(url) {
 	const metadata = {
 		type: data.type,
 	};
+	const { mime } = await import('../../../../utils/lib/mimeTypes');
 	const file = new File([data], `File - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ mime.extension(data.type) }`, metadata);
 	return file;
 }
@@ -274,7 +276,7 @@ export const dropzoneHelpers = {
 	},
 };
 
-Template.room.helpers({
+Template.roomOld.helpers({
 	...dropzoneHelpers,
 	isTranslated() {
 		const { state } = Template.instance();
@@ -635,14 +637,11 @@ export const dropzoneEvents = {
 			const transferData = e.dataTransfer.getData('text') || e.dataTransfer.getData('url');
 
 			if (e.dataTransfer.types.includes('text/uri-list')) {
-				const dropContext = document.createDocumentFragment();
-				const dropContextContent = document.createElement('div');
-				dropContextContent.innerHTML = e.dataTransfer.getData('text/html');
-				dropContext.appendChild(dropContextContent);
-				const imgURL = dropContext.querySelector('img').src;
+				const url = e.dataTransfer.getData('text/html').match('\<img.+src\=(?:\"|\')(.+?)(?:\"|\')(?:.+?)\>');
+				const imgURL = url && url[1];
 
 				if (!imgURL) {
-					return addToInput(dropContext.querySelector('a').href);
+					return;
 				}
 
 				const file = await createFileFromUrl(imgURL);
@@ -651,11 +650,11 @@ export const dropzoneEvents = {
 				}
 				files = [file];
 			}
-			if (e.dataTransfer.types.includes('text/plain')) {
+			if (e.dataTransfer.types.includes('text/plain') && !e.dataTransfer.types.includes('text/x-moz-url')) {
 				return addToInput(transferData.trim());
 			}
 		}
-
+		const { mime } = await import('../../../../utils/lib/mimeTypes');
 		const filesToUpload = Array.from(files).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
 			return {
@@ -668,7 +667,7 @@ export const dropzoneEvents = {
 	},
 };
 
-Template.room.events({
+Template.roomOld.events({
 	...dropzoneEvents,
 	'click [data-message-action]'(event, template) {
 		const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
@@ -1063,7 +1062,7 @@ Template.room.events({
 });
 
 
-Template.room.onCreated(function() {
+Template.roomOld.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
 	const rid = this.data._id;
@@ -1224,7 +1223,7 @@ Template.room.onCreated(function() {
 	this.sendToBottomIfNecessaryDebounced = () => {};
 }); // Update message to re-render DOM
 
-Template.room.onDestroyed(function() {
+Template.roomOld.onDestroyed(function() {
 	if (this.rolesObserve) {
 		this.rolesObserve.stop();
 	}
@@ -1241,7 +1240,7 @@ Template.room.onDestroyed(function() {
 	callbacks.remove('streamNewMessage', this.data._id);
 });
 
-Template.room.onRendered(function() {
+Template.roomOld.onRendered(function() {
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {

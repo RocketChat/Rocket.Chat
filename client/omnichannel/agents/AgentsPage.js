@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Box } from '@rocket.chat/fuselage';
+import { Button, Box, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { UserAutoComplete } from '../../components/basic/AutoComplete';
@@ -27,8 +27,13 @@ function AddAgent({ reload, ...props }) {
 		setUsername();
 	});
 	return <Box display='flex' alignItems='center' {...props}>
-		<UserAutoComplete value={username} onChange={setUsername}/>
-		<Button disabled={!username} onClick={handleSave} mis='x8' primary>{t('Add')}</Button>
+		<Field>
+			<Field.Label>{t('Username')}</Field.Label>
+			<Field.Row>
+				<UserAutoComplete value={username} onChange={setUsername}/>
+				<Button disabled={!username} onClick={handleSave} mis='x8' primary>{t('Add')}</Button>
+			</Field.Row>
+		</Field>
 	</Box>;
 }
 
