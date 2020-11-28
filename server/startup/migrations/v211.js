@@ -28,8 +28,21 @@ async function migrateSessions() {
 		$match: { 'user.roles.0': { $exists: 1 } },
 	}]);
 
+	let actions = [];
 	for await (const session of cursor) {
-		await Sessions.col.updateMany({ userId: session._id }, { $set: { mostImportantRole: getMostImportantRole(session.user.roles) } });
+		actions.push({
+			updateMany: {
+				filter: { userId: session._id },
+				update: { $set: { mostImportantRole: getMostImportantRole(session.user.roles) } },
+			},
+		});
+		if (actions.length === 100) {
+			await Sessions.col.bulkWrite(actions, { ordered: false });
+			actions = [];
+		}
+	}
+	if (actions.length) {
+		await Sessions.col.bulkWrite(actions, { ordered: false });
 	}
 }
 
