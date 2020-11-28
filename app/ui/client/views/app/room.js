@@ -37,6 +37,7 @@ import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
 import { openUserCard } from '../../lib/UserCard';
+import { Markdown } from '../../../../markdown/client';
 
 import './room.html';
 
@@ -365,7 +366,8 @@ Template.roomOld.helpers({
 	},
 
 	announcement() {
-		return Template.instance().state.get('announcement');
+		const announcement = Template.instance().state.get('announcement');
+		return announcement ? Markdown.parse(announcement).replace(/^<p>|<\/p>$/, '') : undefined;
 	},
 
 	messageboxData() {

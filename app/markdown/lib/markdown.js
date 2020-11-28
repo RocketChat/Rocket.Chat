@@ -85,9 +85,11 @@ export const Markdown = new MarkdownClass();
 export const filterMarkdown = (message) => Markdown.filterMarkdownFromMessage(message);
 
 export const createMarkdownMessageRenderer = ({ parser }) => {
-	const parse = (parser === 'disabled' && ((message) => message))
-		|| (parser === 'function' && parsers[parser])
-		|| parsers.original;
+	if (!parser || parser === 'disabled') {
+		return (message) => message;
+	}
+
+	const parse = typeof parsers[parser] === 'function' ? parsers[parser] : parsers.original;
 
 	return (message) => {
 		if (!message?.html?.trim()) {
