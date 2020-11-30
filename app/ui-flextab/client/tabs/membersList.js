@@ -264,7 +264,6 @@ Template.membersList.events({
 		usersLimit.set(usersLimit.get() + 100);
 	},
 	'click .rc-member-list__user'(e, instance) {
-		console.log(e.currentTarget.dataset.username);
 		if (!Meteor.userId()) {
 			return;
 		}

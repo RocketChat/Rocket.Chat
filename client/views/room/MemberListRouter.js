@@ -20,8 +20,6 @@ const MemberListRouter = ({ tabBar, rid }) => {
 
 	const tab = useTab();
 
-	console.log(room);
-
 	if ((tab.id === 'members-list' || tab.id === 'user-info-group') && !username) {
 		return <VerticalBarOldActions {...tab} name={'membersList'} template={'membersList'} tabBar={tabBar} rid={rid} _id={rid} />;
 	}
