@@ -15,8 +15,9 @@ Meteor.startup(function() {
 				id: 'otr',
 				i18nTitle: 'OTR',
 				icon: 'key',
-				template: 'otrFlexTab',
+				template: 'OTR',
 				order: 13,
+				full: true,
 			});
 		} else {
 			OTR.enabled.set(false);
