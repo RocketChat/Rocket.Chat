@@ -65,7 +65,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 	}, [data, showRealNames, getRoles]);
 
 	return (
-		<VerticalBar>
+		<>
 			<VerticalBar.Header>
 				{t('User_Info')}
 				{onClose && <VerticalBar.Close onClick={onClose} />}
@@ -87,7 +87,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 					p='x24'
 				/>
 			}
-		</VerticalBar>
+		</>
 	);
 });
 

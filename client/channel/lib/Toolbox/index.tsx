@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, LazyExoticComponent } from 'react';
 import { Emitter, Handler } from '@rocket.chat/emitter';
 
 import { IRoom } from '../../../../definition/IRoom';
@@ -16,7 +16,7 @@ export type ToolboxActionConfig = {
 	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple'>;
 	hotkey?: string;
 	action?: Function;
-	template?: string | FC | JSX.Element;
+	template?: string | FC | JSX.Element | LazyExoticComponent<FC>;
 }
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;
