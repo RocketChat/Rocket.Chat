@@ -91,16 +91,7 @@ const PageScrollableContent: FC<PageScrollableContentProps> = ({ ...props }) => 
 	</ScrollableContentWrapper>
 </Box>;
 
-const PageScrollableContentWithShadow: FC<PageScrollableContentProps> = ({ onScrollContent, ...props }) => {
-	// const [, setBorder] = useContext(PageContext);
-	return <PageScrollableContent
-		// onScrollContent={({ top, ...args }): void => {
-		// 	setBorder(!top);
-		// 	onScrollContent && onScrollContent({ top, ...args });
-		// }}
-		{ ...props }
-	/>;
-};
+const PageScrollableContentWithShadow: FC<PageScrollableContentProps> = ({ ...props }) => <PageScrollableContent { ...props }/>;
 
 export default Object.assign(Page, {
 	Header: PageHeader,
