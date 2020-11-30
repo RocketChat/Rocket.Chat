@@ -3326,4 +3326,6 @@
   "Your_question": "Sorunuz",
   "Your_server_link": "Sunucu bağlantınız",
   "Your_workspace_is_ready": "Çalışma alanınız kullanılmaya hazır 🎉"
+,  "error-canned-response-not-found": "Hazır Yanıt Bulunamadı",
+  "error-invalid-priority": "Geçersiz öncelik"
 }

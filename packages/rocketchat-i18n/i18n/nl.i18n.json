@@ -3195,4 +3195,12 @@
   "Your_push_was_sent_to_s_devices": "Je push werd verzonden naar %s apparaten",
   "Your_server_link": "Uw serverlink",
   "Your_workspace_is_ready": "Uw werkruimte is klaar voor gebruik 🎉"
+,  "Default_value": "Standaardwaarde",
+  "LDAP_Default_Role_To_User": "Standaardrol voor gebruiker",
+  "Closed_automatically": "Automatisch gesloten door het systeem",
+  "Estimated_due_time": "Geschatte tijd",
+  "New_Business_Hour": "Nieuwe zakenuur",
+  "New_Tag": "Nieuwe tag",
+  "New_Unit": "Nieuwe eenheid",
+  "New_Priority": "Nieuwe prioriteit"
 }

@@ -2842,4 +2842,14 @@
   "Your_push_was_sent_to_s_devices": "Posun bol odoslaný na zariadenia%s",
   "Your_server_link": "Váš odkaz na server",
   "Your_workspace_is_ready": "Váš pracovný priestor je pripravený na použitie 🎉"
+,  "error-canned-response-not-found": "Zakonzervovaná odpoveď sa nenašla",
+  "error-max-number-simultaneous-chats-reached": "Bol dosiahnutý maximálny počet súbežných konverzácií na operátora.",
+  "Add_monitor": "Pridať vedúceho",
+  "Available_departments": "Dostupné oddelenia",
+  "Canned Responses": "Zakonzervované odpovede",
+  "Canned_Response_Removed": "Zakonzervované odpovede odstránené",
+  "Canned_Responses_Enable": "Povoliť zakonzervované odpovede",
+  "Edit_Tag": "Upraviť štítok",
+  "Edit_Unit": "Upraviť skupinu",
+  "Enterprise_License": "Enterprise licencia"
 }

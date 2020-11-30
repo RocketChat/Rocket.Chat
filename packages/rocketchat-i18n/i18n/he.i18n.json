@@ -1548,4 +1548,6 @@
   "Your_password_is_wrong": "הסיסמה שלך שגויה!",
   "Your_push_was_sent_to_s_devices": "הודעת ה-push נשלח בהצלחה ל-%s מכשירים",
   "Your_question": "השאלה שלך"
+,  "Default_value": "ערך ברירת מחדל",
+  "Me": "אני"
 }
