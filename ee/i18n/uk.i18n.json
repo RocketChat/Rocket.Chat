@@ -1,5 +1,7 @@
 {
   "error-canned-response-not-found": "Зафіксована відповідь не знайдена",
+  "Default_value": "Значення за замовчуванням",
+  "LDAP_Default_Role_To_User": "Роль користувача за замовчуванням",
   "error-forwarding-department-target-not-allowed": "Пересилання в цільовий відділ не допускається.",
   "error-guests-cant-have-other-roles": "Гостьові користувачі не можуть мати іншої ролі.",
   "error-invalid-priority": "Недійсний пріоритет",
@@ -13,7 +15,6 @@
   "Canned_Response_Removed": "Зафіксована відповідь вилучена",
   "Canned_Responses_Enable": "Увімкнути зафіксовані відповіді",
   "Closed_automatically": "Закрито системою автоматично ",
-  "Default_value": "Значення за замовчуванням",
   "Edit_Business_Hour": "Редагування час роботи",
   "Edit_Tag": "Редагувати тег",
   "Edit_Unit": "Редагувати блок",
@@ -21,7 +22,6 @@
   "Enterprise_License": "Ліцензія підприємства",
   "Invalid Canned Response": "Недійсна зафіксована відповідь",
   "Invalid_Department": "Недійсний відділ",
-  "LDAP_Default_Role_To_User": "Роль користувача за замовчуванням",
   "Livechat_Monitors": "Монітори",
   "Max_number_of_chats_per_agent": "Макс. кількість одночасних чатів",
   "Max_number_of_chats_per_agent_description": "Макс. кількість одночасних чатів, які агенти можуть відвідувати",
