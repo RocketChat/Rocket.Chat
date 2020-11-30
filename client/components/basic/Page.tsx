@@ -86,7 +86,7 @@ type PageScrollableContentProps = {
 };
 
 const PageScrollableContent: FC<PageScrollableContentProps> = ({ ...props }) => <Box display='flex' flexShrink={1} flexGrow={1} overflow='hidden'>
-	<ScrollableContentWrapper style={{ flexGrow: 1, maxHeight: '100%' }}>
+	<ScrollableContentWrapper>
 		<Box p='x16' display='flex' flexDirection='column' flexGrow={1} {...props} />
 	</ScrollableContentWrapper>
 </Box>;

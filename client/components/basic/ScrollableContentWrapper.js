@@ -4,7 +4,11 @@ import 'simplebar/src/simplebar.css';
 
 import { useDir } from '../../hooks/useDir';
 
-const CustomScrollbars = ({ onScroll, forwardedRef, children }) => {
+const style = {
+	maxHeight: '100%', flexGrow: 1,
+};
+
+const CustomScrollbars = React.memo(({ onScroll, forwardedRef, children }) => {
 	const dir = useDir();
 
 	const refSetter = useCallback((scrollbarsRef) => {
@@ -15,10 +19,10 @@ const CustomScrollbars = ({ onScroll, forwardedRef, children }) => {
 		}
 	}, []);
 
-	return <SimpleBar timeout={500} data-simplebar-direction={dir} direction={dir} ref={refSetter} style={{ direction: dir, maxHeight: '100%', flexGrow: 1 }} scrollableNodeProps={{ ref: forwardedRef, onScroll }} children={children}/>;
-};
+	return <SimpleBar timeout={1000} data-simplebar-direction={dir} direction={dir} ref={refSetter} style={style} scrollableNodeProps={{ ref: forwardedRef, onScroll }} children={children}/>;
+});
 
 
-const ScrollableContentWrapper = React.memo(React.forwardRef((props, ref) => <CustomScrollbars {...props} forwardedRef={ref} />));
+const ScrollableContentWrapper = React.forwardRef((props, ref) => <CustomScrollbars {...props} forwardedRef={ref} />);
 
 export default ScrollableContentWrapper;
