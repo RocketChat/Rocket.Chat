@@ -65,4 +65,13 @@
 		{{> UserInfoWithData (userInfoDetail)}}
 	</div>
 	{{/if}}
+
+
+	{{#if innerTab}}
+		<div class="rc-user-info-container flex-nav animated">
+			{{> Template.dynamic template=innerTab data=innerTabData }}
+		</div>
+	{{/if}}
+
+
 </template>
