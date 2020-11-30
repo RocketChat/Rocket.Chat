@@ -91,7 +91,6 @@ export default ({
 			onClickBack={onClickBack}
 			onClickClose={onClickClose}
 			onClickNewLink={generateLink}
-			days={days}
 			setDays={setDays}
 			days={days}
 			maxUses={maxUses}
