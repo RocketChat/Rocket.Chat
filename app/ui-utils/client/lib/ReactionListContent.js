@@ -1,18 +1,19 @@
 import React from 'react';
-import { Box, Tag, Modal, ButtonGroup, Button, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Tag, Modal, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
 import { useSession } from '../../../../client/contexts/SessionContext';
 import Emoji from '../../../../client/components/basic/Emoji';
+import ScrollableContentWrapper from '../../../../client/components/basic/ScrollableContentWrapper';
 import { openUserCard } from '../../../ui/client/lib/UserCard';
 import { openProfileTabOrOpenDM } from '../../../ui/client/views/app/room';
 
 export function Reactions({ reactions, roomInstance, onClose }) {
 	const useRealName = useSetting('UI_Use_Real_Name');
 
-	return <Scrollable>
+	return <ScrollableContentWrapper>
 		<Box>
 			{Object.entries(reactions).map(([reaction, { names = [], usernames }]) => <Box key={reaction}>
 				<Box display='flex' flexWrap='wrap' overflowX='hidden' mb='x8'>
@@ -29,7 +30,7 @@ export function Reactions({ reactions, roomInstance, onClose }) {
 				</Box>
 			</Box>)}
 		</Box>
-	</Scrollable>;
+	</ScrollableContentWrapper>;
 }
 
 export function Username({ username, displayName, roomInstance, onClose }) {
