@@ -29,3 +29,7 @@ createTemplateForComponent('AutoTranslate', () => import('./AutoTranslate'), {
 createTemplateForComponent('NotificationsPreferences', () => import('./NotificationPreferences'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
+
+createTemplateForComponent('OTR', () => import('../views/room/ContextualBar/OTR'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
