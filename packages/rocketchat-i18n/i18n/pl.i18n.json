@@ -3861,7 +3861,6 @@
   "UserDataDownload_EmailBody": "Twój plik danych jest teraz gotowy do pobrania. Kliknij <a href=\"__download_link__\">tutaj</a>, aby go pobrać.",
   "UserDataDownload_EmailSubject": "Twój plik danych jest gotowy do pobrania",
   "UserDataDownload_Requested": "Pobierz żądany plik",
-  "UserDataDownload_RequestExisted_Text": "Twój plik danych zostanie wygenerowany. Link do pobrania zostanie wysłany na Twój adres e-mail, gdy będzie gotowy. Istnieją <strong>__poprawne_operacje__ </strong>operacje w kolejce do uruchomienia przed twoimi.",
   "Username": "Nazwa użytkownika",
   "Username_already_exist": "Nazwa użytkownika już istnieje. Spróbuj użyć innej nazwy użytkownika.",
   "Username_and_message_must_not_be_empty": "Nazwa użytkownika i wiadomość nie może być pusta.",

@@ -2930,7 +2930,6 @@
   "UserDataDownload_EmailBody": "El fitxer de dades ja està preparat per baixar. Feu clic a <a href=\"__download_link__\">aquí</a>per baixar-lo.",
   "UserDataDownload_EmailSubject": "El vostre fitxer de dades està preparat per baixar",
   "UserDataDownload_Requested": "Descarregar el fitxer sol·licitat",
-  "UserDataDownload_RequestExisted_Text": "El vostre fitxer de dades ja s'està generant. Un enllaçde descàrrega s'enviarà a la vostra adreça de correu electrònic quan estigui llest. Hi ha <strong>operacions pendents</strong> en cua d'execució abans que la vostra.",
   "Username": "Nom d'usuari",
   "Username_already_exist": "El nom d'usuari ja existeix. Proveu un altre nom d'usuari.",
   "Username_and_message_must_not_be_empty": "El nom d'usuari i el missatge no han d'estar buits.",

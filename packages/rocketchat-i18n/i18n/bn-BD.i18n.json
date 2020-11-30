@@ -1,7 +1,6 @@
 {
   "403": "নিষিদ্ধ",
   "500": "অভ্যন্তরীণ সার্ভারের ত্রুটি",
-  "__username__is_no_longer__role__defined_by__user_by_": "_ইউজারনেইম_আর_ব্যবহারকারীর_দ্বারা_ব্যবহৃত_হয় না",
   "@username": "@ইউজারনেইম",
   "@username_message": "@ইউজারনেইম<message>",
   "#channel": "#channel",

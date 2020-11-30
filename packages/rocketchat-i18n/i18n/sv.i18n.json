@@ -2774,7 +2774,6 @@
   "UserDataDownload_EmailBody": "Din datafil är nu klar att ladda ner. Klicka på <a href=\"__download_link__\">här</a>för att ladda ner det.",
   "UserDataDownload_EmailSubject": "Din datafil är redo att ladda ner",
   "UserDataDownload_Requested": "Hämta fil som begärs",
-  "UserDataDownload_RequestExisted_Text": "Din datafil genereras redan. En länk för att ladda ner den skickas till din e-postadress när du är klar.",
   "Username": "Användarnamn",
   "Username_already_exist": "Användarnamn existerar redan. Vänligen försök med ett annat användarnamn.",
   "Username_and_message_must_not_be_empty": "Användarnamn och meddelande får inte vara tomma",

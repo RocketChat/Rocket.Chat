@@ -2683,7 +2683,6 @@
   "UserDataDownload_EmailBody": "Файлът с данни вече е готов за изтегляне. Кликнете върху <a href=\"__download_link__\">тук</a>, за да го изтеглите.",
   "UserDataDownload_EmailSubject": "Вашият файл с данни е готов за изтегляне",
   "UserDataDownload_Requested": "Изтегляне на файла",
-  "UserDataDownload_RequestExisted_Text": "Файлът с данни вече се генерира. Връзка за изтеглянето ще бъде изпратена на вашия имейл адрес, когато сте готови.",
   "Username": "Потребителско име",
   "Username_already_exist": "Потребителското име вече съществува. Моля, опитайте с друго потребителско име.",
   "Username_and_message_must_not_be_empty": "Потребителското име и съобщението не трябва да бъдат празни.",

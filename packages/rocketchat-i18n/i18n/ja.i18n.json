@@ -3151,7 +3151,7 @@
   "Room_archivation_state_true": "アーカイブ",
   "Room_archived": "ルームをアーカイブしました",
   "room_changed_announcement": "<em>__user_by__</em>がルームのアナウンスを<em>__room_announcement__</em>へ変更しました。",
-  "room_changed_avatar": "ルームアバターが <em>__user_by __</em> によって変更されました",
+  "room_changed_avatar": "ルームアバターが <em>__user_by__</em> によって変更されました",
   "room_changed_description": "<em>__user_by__</em>がルームの概要を<em>__room_description__</em>へ変更しました。",
   "room_changed_privacy": "<em>__user_by__</em>がルームの種類を<em>__room_type__</em>へ変更しました。",
   "room_changed_topic": "<em>__user_by__</em>がルームのトピックを<em>__room_topic__</em>へ変更しました。",

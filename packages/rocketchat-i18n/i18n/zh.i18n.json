@@ -3400,7 +3400,7 @@
   "UserDataDownload_EmailBody": "您的数据文件现在已准备好下载。点击<a href=\"__download_link__\">这里</a>下载它。",
   "UserDataDownload_EmailSubject": "您的数据文件已准备好下载",
   "UserDataDownload_Requested": "下载要求的文件",
-  "UserDataDownload_RequestExisted_Text": "您的数据文件已经生成。准备好后，下载它的链接将发送到您的电子邮件地址。在您之前，队列中有<strong>__pending_operations __ </strong>个操作要运行。",
+  "UserDataDownload_RequestExisted_Text": "您的数据文件已经生成。准备好后，下载它的链接将发送到您的电子邮件地址。在您之前，队列中有<strong>__pending_operations__</strong>个操作要运行。",
   "Username": "用户名",
   "Username_already_exist": "此用户名已存在。请尝试其他用户名。",
   "Username_and_message_must_not_be_empty": "用户名和消息内容不能为空。",

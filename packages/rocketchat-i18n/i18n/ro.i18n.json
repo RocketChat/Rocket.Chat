@@ -2680,7 +2680,6 @@
   "UserDataDownload_EmailBody": "Fișierul dvs. de date este acum disponibil pentru descărcare. Faceți clic pe <a href=\"__download_link__\">aici</a>pentru al descărca.",
   "UserDataDownload_EmailSubject": "Fișierul dvs. de date este gata de descărcare",
   "UserDataDownload_Requested": "Descărcați fișierul solicitat",
-  "UserDataDownload_RequestExisted_Text": "Fișierul de date este deja generat. Un link spre descărcare va fi trimis la adresa de e-mail atunci când este gata.",
   "Username": "Nume de ultilizator",
   "Username_already_exist": "Nume de utilizator deja existent. Încercați un alt nume de utilizator.",
   "Username_and_message_must_not_be_empty": "Câmpurile \"utilizator\" și \"mesaj\" nu pot fi goale",

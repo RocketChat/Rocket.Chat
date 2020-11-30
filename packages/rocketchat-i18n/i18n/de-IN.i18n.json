@@ -3064,7 +3064,6 @@
   "UserDataDownload_EmailBody": "Deine Datendatei ist jetzt zum Herunterladen bereit. Klicke <a href = \"__download_link__\">hier</a>, um sie herunterzuladen.",
   "UserDataDownload_EmailSubject": "Deine Datendatei ist bereit zum Herunterladen",
   "UserDataDownload_Requested": "Datei herunterladen angefordert",
-  "UserDataDownload_RequestExisted_Text": "Deine Datendatei wird bereits generiert. Ein Link zum Herunterladen wird an Deine E-Mail-Adresse gesendet, wenn sie fertig ist.",
   "Username": "Benutzername",
   "Username_already_exist": "Benutzername existiert bereits. Bitte versuche es mit einem anderen Benutzernamen.",
   "Username_and_message_must_not_be_empty": "Benutzername und Nachricht müssen eingegeben werden",

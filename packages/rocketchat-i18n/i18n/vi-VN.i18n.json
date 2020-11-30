@@ -2682,7 +2682,6 @@
   "UserDataDownload_EmailBody": "Tệp dữ liệu của bạn hiện đã sẵn sàng để tải xuống. Nhấp vào <a href=\"__download_link__\">tại đây</a> để tải xuống.",
   "UserDataDownload_EmailSubject": "Tệp dữ liệu của bạn đã sẵn sàng để tải xuống",
   "UserDataDownload_Requested": "Tải xuống tệp được yêu cầu",
-  "UserDataDownload_RequestExisted_Text": "Tệp dữ liệu của bạn đã được tạo. Một liên kết để tải xuống sẽ được gửi đến địa chỉ email của bạn khi sẵn sàng.",
   "Username": "Tên đăng nhập",
   "Username_already_exist": "Tên này đã có người dùng. Vui lòng thử tên người dùng khác.",
   "Username_and_message_must_not_be_empty": "Tên người dùng và tin nhắn không được để trống.",

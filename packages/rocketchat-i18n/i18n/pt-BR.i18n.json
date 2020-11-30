@@ -3371,7 +3371,7 @@
   "UserDataDownload_EmailSubject": "Seu arquivo de dados está pronto para download",
   "UserDataDownload_Requested": "Download do arquivo solicitado",
   "UserDataDownload_Requested_Text": "Seu arquivo de dados será gerado. Um link para baixá-lo será enviado para o seu endereço de e-mail quando estiver pronto. Há <strong>__pending_operations__</strong> operações na fila antes da sua.",
-  "UserDataDownload_RequestExisted_Text": "Seu arquivo de dados já está sendo gerado. Um link para baixá-lo será enviado para o seu endereço de e-mail quando estiver pronto.",
+  "UserDataDownload_RequestExisted_Text": "Seu arquivo de dados já está sendo gerado. Um link para baixá-lo será enviado para o seu endereço de e-mail quando estiver pronto. Há <strong>__pending_operations__</strong> operações na fila antes da sua.",
   "Username": "Nome de usuário",
   "Username_already_exist": "O nome de usuário já existe. Por favor, tente outro nome de usuário.",
   "Username_and_message_must_not_be_empty": "Usuário e mensagem não devem estar vazios.",

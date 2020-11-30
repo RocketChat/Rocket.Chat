@@ -3322,7 +3322,7 @@
   "Your_entry_has_been_deleted": "Ce message a été supprimé.",
   "Your_file_has_been_deleted": "Votre fichier a été supprimé.",
   "Your_invite_link_will_expire_after__usesLeft__uses": "Votre lien d'invitation expirera après __usesLeft__ utilisations.",
-  "Your_invite_link_will_expire_on__date__": "Votre lien d'invitation expirera le _date__.",
+  "Your_invite_link_will_expire_on__date__": "Votre lien d'invitation expirera le __date__.",
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "Votre lien d'invitation expirera le __date__ ou après __usesLeft__ utilisations.",
   "Your_invite_link_will_never_expire": "Votre lien d'invitation n'expirera jamais.",
   "Your_mail_was_sent_to_s": "Votre e-mail a été envoyé à %s",
