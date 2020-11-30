@@ -1,4 +1,10 @@
 {
+  "Closed_automatically": "Automatisch gesloten door het systeem",
   "Default_value": "Standaardwaarde",
-  "LDAP_Default_Role_To_User": "Standaardrol voor gebruiker"
+  "Estimated_due_time": "Geschatte tijd",
+  "LDAP_Default_Role_To_User": "Standaardrol voor gebruiker",
+  "New_Business_Hour": "Nieuwe zakenuur",
+  "New_Tag": "Nieuwe tag",
+  "New_Unit": "Nieuwe eenheid",
+  "New_Priority": "Nieuwe prioriteit"
 }

@@ -13,7 +13,6 @@
   "LDAP_Roles_To_Rocket_Chat_Roles": "Kobling for roller fra LDAP til Rocket.Chat.",
   "Max_number_of_chats_per_agent": "Maks antall samtidige chatter",
   "Max_number_of_chats_per_agent_description": "Maks antall samtidige chatter en agent kan delta i",
-  "Me": "Meg",
   "New_Tag": "Ny tagg",
   "New_Unit": "Ny enhet",
   "Number_of_most_recent_chats_estimate_wait_time": "Antall nylige chatter for å beregne estimert ventetid",
