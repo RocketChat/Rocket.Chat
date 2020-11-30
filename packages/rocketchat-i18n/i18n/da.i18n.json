@@ -1664,7 +1664,7 @@
   "files_pruned": "filer beskåret",
   "FileSize_Bytes": "__fileSize__ Bytes",
   "FileSize_KB": "__fileSize__ KB",
-  "FileSize_MB": "__filSize__ MB",
+  "FileSize_MB": "__fileSize__ MB",
   "FileUpload": "Fil-upload",
   "FileUpload_Disabled": "Filoverførsler er deaktiveret.",
   "FileUpload_Enable_json_web_token_for_files": "Aktivér Json Web Tokens-beskyttelse til fil-uploads",
