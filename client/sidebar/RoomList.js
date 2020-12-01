@@ -19,6 +19,7 @@ import { useShortcutOpenMenu } from './hooks/useShortcutOpenMenu';
 import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 import { useRoomList } from './hooks/useRoomList';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
+import ScrollableContentWrapper from '../components/basic/ScrollableContentWrapper';
 
 const sections = {
 	Omnichannel,
@@ -130,6 +131,7 @@ export default () => {
 
 	return <Box h='full' w='full' ref={ref}>
 		<List
+			outerElementType={ScrollableContentWrapper}
 			height={blockSize}
 			itemCount={roomsList.length}
 			itemSize={(index) => (typeof roomsList[index] === 'string' ? (sections[roomsList[index]] && sections[roomsList[index]].size) || 40 : itemSize)}
@@ -154,7 +156,7 @@ const getMessage = (room, lastMessage, t) => {
 	if (lastMessage.u?.username === room.u?.username) {
 		return `${ t('You') }: ${ normalizeSidebarMessage(lastMessage, t) }`;
 	}
-	if (room.t === 'd' && room.uids.length <= 2) {
+	if (room.t === 'd' && room.uids && room.uids.length <= 2) {
 		return normalizeSidebarMessage(lastMessage, t);
 	}
 	return `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeSidebarMessage(lastMessage, t) }`;

@@ -21,6 +21,7 @@ import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
 import { clickableItem } from '../../helpers/clickableItem';
+import ScrollableContentWrapper from '../../../components/basic/ScrollableContentWrapper';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
@@ -219,6 +220,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 					loadMoreItems={ loading ? () => {} : loadMoreItems}
 				>
 					{({ onItemsRendered, ref }) => (<List
+						outerElementType={ScrollableContentWrapper}
 						height={blockSize}
 						width={inlineSize}
 						itemCount={total}
