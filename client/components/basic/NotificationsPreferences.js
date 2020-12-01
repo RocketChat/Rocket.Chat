@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Divider, FieldGroup, Field, Icon, Select, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, FieldGroup, Field, Icon, Select, ToggleSwitch, Accordion } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from './VerticalBar';
@@ -39,13 +39,12 @@ const NotificationsPreferences = ({
 	);
 
 	const NotificationByDevice = ({ content, children }) => (
-		<Box mbe='x16'>
-			<Box display='flex' alignItems='center' mbe='x16'>
-				<Icon name={content.icon} size='x18' />
-				<Box mis='x16' fontScale='p2'>{content.device}</Box>
-			</Box>
+		<Accordion.Item title={<Box display='flex' alignItems='center'>
+			<Icon name={content.icon} size='x18' />
+			<Box fontScale='p2' mi='x16'>{content.device}</Box>
+		</Box>}>
 			{children}
-		</Box>
+		</Accordion.Item>
 	);
 
 	return <>
@@ -66,7 +65,6 @@ const NotificationsPreferences = ({
 					<ToggleSwitch onChange={formHandlers.handleShowCounter} defaultChecked={formValues.showCounter} />
 				</NotificationToogle>
 			</FieldGroup>
-			<Divider />
 			<FieldGroup>
 				<NotificationByDevice content={{ device: t('Desktop'), icon: 'computer' }}>
 					<Preferences content={{ id: 'DesktopAlert', name: t('Alerts'), options: handleOptions.alerts, optionDefault: formValues.desktopAlert }} />
@@ -86,10 +84,10 @@ const NotificationsPreferences = ({
 			</FieldGroup>
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
-			<Box display='flex' justifyContent='space-between'>
-				<VerticalBar.Button mie='x8' onClick={handleCancelButton}>{t('Cancel')}</VerticalBar.Button>
-				<VerticalBar.Button primary disabled={!formHasUnsavedChanges} onClick={handleSaveButton}>{t('Save')}</VerticalBar.Button>
-			</Box>
+			<ButtonGroup stretch>
+				<Button onClick={handleCancelButton}>{t('Cancel')}</Button>
+				<Button primary disabled={!formHasUnsavedChanges} onClick={handleSaveButton}>{t('Save')}</Button>
+			</ButtonGroup>
 		</VerticalBar.Footer>
 	</>;
 };
