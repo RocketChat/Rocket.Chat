@@ -50,7 +50,6 @@ Template.headerRoom.helpers({
 	},
 	buttons() {
 		const room = Session.get(`roomData${ this._id }`);
-		console.log('buttons')
 		return TabBar.getButtons({ room });
 	},
 

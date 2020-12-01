@@ -1,4 +1,4 @@
-import { useMemo, lazy } from 'react';
+import { useMemo, lazy, LazyExoticComponent, FC } from 'react';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
 
@@ -18,7 +18,7 @@ addAction('user-info', {
 	id: 'user-info',
 	title: 'User_Info',
 	icon: 'user',
-	template: lazy(() => import('../../../views/room/MemberListRouter')),
+	template: lazy(() => import('../../../views/room/MemberListRouter')) as LazyExoticComponent<FC>,
 	order: 5,
 });
 
@@ -27,7 +27,7 @@ addAction('user-info-group', {
 	id: 'user-info-group',
 	title: 'Members',
 	icon: 'team',
-	template: lazy(() => import('../../../views/room/MemberListRouter')),
+	template: lazy(() => import('../../../views/room/MemberListRouter')) as LazyExoticComponent<FC>,
 	order: 5,
 });
 
@@ -38,7 +38,7 @@ addAction('members-list', ({ room }) => {
 		id: 'members-list',
 		title: 'Members',
 		icon: 'team',
-		template: lazy(() => import('../../../views/room/MemberListRouter')),
+		template: lazy(() => import('../../../views/room/MemberListRouter')) as LazyExoticComponent<FC>,
 		order: 5,
 	} : null), [hasPermission, room.broadcast]);
 });

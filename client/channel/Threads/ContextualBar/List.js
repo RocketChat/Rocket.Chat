@@ -280,7 +280,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 						onItemsRendered={onItemsRendered}
 					>{rowRenderer}</List>
 					)}
-				</InfiniteLoader> }
+				</InfiniteLoader>}
 			</Box>
 		</VerticalBar.Content>
 		{ mid && <Box position='absolute' width='full' height='full' display='flex'><ThreadComponent mid={mid} jump={jump} room={room}/></Box> }
