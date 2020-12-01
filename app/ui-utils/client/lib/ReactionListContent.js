@@ -8,7 +8,7 @@ import { useSession } from '../../../../client/contexts/SessionContext';
 import Emoji from '../../../../client/components/basic/Emoji';
 import ScrollableContentWrapper from '../../../../client/components/basic/ScrollableContentWrapper';
 import { openUserCard } from '../../../ui/client/lib/UserCard';
-import { openProfileTabOrOpenDM } from '../../../ui/client/views/app/room';
+import { openProfileTab } from '../../../ui/client/views/app/room';
 
 export function Reactions({ reactions, roomInstance, onClose }) {
 	const useRealName = useSetting('UI_Use_Real_Name');
@@ -42,7 +42,7 @@ export function Username({ username, displayName, roomInstance, onClose }) {
 		open: (e) => {
 			e.preventDefault();
 			onClose();
-			openProfileTabOrOpenDM(e, roomInstance, username);
+			openProfileTab(e, roomInstance, username);
 		},
 	}));
 

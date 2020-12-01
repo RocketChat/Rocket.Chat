@@ -127,14 +127,14 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			return false;
 		}
 
-		const { template, i18nTitle: label, icon } = button;
-		instance.tabBar.setTemplate(template);
-		instance.tabBar.setData({
-			label,
-			icon,
-		});
+		// const { template, i18nTitle: label, icon } = button;
+		// instance.tabBar.setTemplate(template);
+		// instance.tabBar.setData({
+		// 	label,
+		// 	icon,
+		// });
 
-		instance.tabBar.open();
+		instance.tabBar.openUserInfo();
 		return true;
 	}
 }

@@ -1,10 +1,12 @@
-import React, { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import React, { ReactNode, useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import { useDebouncedState, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Handler } from '@rocket.chat/emitter';
 
 import { ToolboxContext } from '../../../channel/lib/Toolbox/ToolboxContext';
 import { ToolboxAction, ActionsStore, ToolboxActionConfig } from '../../../channel/lib/Toolbox/index';
 import { IRoom } from '../../../../definition/IRoom';
+import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
+import { useSession } from '../../../contexts/SessionContext';
 
 const groupsDict = {
 	l: 'live',
@@ -47,29 +49,71 @@ const useToolboxActions = (room: IRoom): { listen: (handler: Handler<any>) => Fu
 };
 
 
-export const ToolboxProvider = ({ children, room, tabBar }: { children: ReactNode; room: IRoom; tabBar: any }): JSX.Element => {
+export const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
 	const [activeTabBar, setActiveTabBar] = useState<ToolboxActionConfig|undefined>();
 	const [list, setList] = useDebouncedState<ActionsStore>(new Map(), 5);
 	const handleChange = useMutableCallback((fn) => { fn(list); setList((list) => new Map(list)); });
 	const { listen, actions } = useToolboxActions(room);
 
+	const [routeName, params] = useCurrentRoute();
+	const router = useRoute(routeName || '');
 
-	const open = useMutableCallback((actionId) => {
-		setActiveTabBar(list.get(actionId) as ToolboxActionConfig);
+	const currentRoom = useSession('openedRoom');
+
+	const tab = params?.tab;
+
+	console.log(params);
+
+	const open = useMutableCallback((actionId, context) => {
+		router.push({
+			...params,
+			tab: actionId,
+			context,
+		});
 	});
 
 	const close = useMutableCallback(() => {
-		setActiveTabBar(undefined);
+		router.push({
+			...params,
+			tab: '',
+			context: '',
+		});
 	});
+
+	const openUserInfo = useCallback((username) => {
+		switch (room.t) {
+			case 'l':
+				open('visitor-info', username);
+				break;
+			case 'd':
+				open('user-info', username);
+				break;
+			default:
+				open('members-list', username);
+				break;
+		}
+	}, [room.t, open]);
+
+	useEffect(() => {
+		if (!(currentRoom === room._id)) {
+			return;
+		}
+
+		if (!tab) {
+			setActiveTabBar(undefined);
+		}
+
+		setActiveTabBar(list.get(tab as string) as ToolboxActionConfig);
+	}, [tab, list, currentRoom, room._id]);
 
 	const context = useMemo(() => ({
 		listen,
-		tabBar,
 		actions: new Map(list),
 		activeTabBar,
 		open,
 		close,
-	}), [listen, tabBar, list, activeTabBar, open, close]);
+		openUserInfo,
+	}), [listen, list, activeTabBar, open, close, openUserInfo]);
 
 	return <ToolboxContext.Provider value={context}>
 		{ actions.map(([id, item]) => <VirtualAction action={item} room={room} id={id} key={id} handleChange={handleChange} />) }
@@ -80,3 +124,4 @@ export const ToolboxProvider = ({ children, room, tabBar }: { children: ReactNod
 export const useTab = (): ToolboxActionConfig | undefined => useContext(ToolboxContext).activeTabBar;
 export const useTabBarOpen = (): Function => useContext(ToolboxContext).open;
 export const useTabBarClose = (): Function => useContext(ToolboxContext).close;
+export const useTabBarOpenUserInfo = (): Function => useContext(ToolboxContext).openUserInfo;

@@ -10,10 +10,9 @@ const fields = {};
 export type Props = {
 	children: ReactNode;
 	rid: IRoom['_id'];
-	tabBar: any;
 };
 
-const RoomProvider = ({ rid, tabBar, children }: Props): JSX.Element => {
+const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 	const room = useUserSubscription(rid, fields) as unknown as IRoom;
 	room._id = rid;
 	const context = useMemo(() => ({
@@ -26,9 +25,9 @@ const RoomProvider = ({ rid, tabBar, children }: Props): JSX.Element => {
 	}
 
 	return <RoomContext.Provider value={context}>
-		<ToolboxProvider room={room} tabBar={tabBar}>
+		<ToolboxProvider room={room}>
 			{children}
-		</ToolboxProvider>;
+		</ToolboxProvider>
 	</RoomContext.Provider>;
 };
 

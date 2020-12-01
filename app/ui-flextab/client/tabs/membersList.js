@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { HTML } from 'meteor/htmljs';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { getActions } from './userActions';
 import { RoomManager, popover } from '../../../ui-utils/client';
@@ -12,6 +13,7 @@ import { t, isRtl, handleError, roomTypes, getUserAvatarURL } from '../../../uti
 import { WebRTC } from '../../../webrtc/client';
 import { hasPermission } from '../../../authorization/client';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
+import { openProfileTab } from '../../../ui/client/views/app/room';
 
 createTemplateForComponent('UserInfoWithData', () => import('../../../../client/channel/UserInfo'), {
 	// eslint-disable-next-line new-cap
@@ -261,6 +263,12 @@ Template.membersList.events({
 
 		usersLimit.set(usersLimit.get() + 100);
 	},
+	'click .rc-member-list__user'(e, instance) {
+		if (!Meteor.userId()) {
+			return;
+		}
+		openProfileTab(e, instance, this.userDetail);
+	},
 });
 
 Template.membersList.onCreated(function() {
@@ -317,7 +325,9 @@ Template.membersList.onCreated(function() {
 	this.clearRoomUserDetail = this.data.clearUserDetail;
 
 	this.autorun(() => {
-		const { userDetail, groupDetail } = Template.currentData();
+		const { groupDetail } = Template.currentData();
+
+		const userDetail = FlowRouter.getParam('context');
 
 		this.showUserDetail(userDetail, groupDetail);
 	});
