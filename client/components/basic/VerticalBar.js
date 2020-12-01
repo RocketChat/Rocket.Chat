@@ -77,6 +77,10 @@ function VerticalBarAction({ name, ...props }) {
 	return <VerticalBarButton small square flexShrink={0} ghost {...props}><VerticalBarIcon name={name}/></VerticalBarButton>;
 }
 
+function VerticalBarActionBack(props) {
+	return <VerticalBarAction {...props} name='arrow-back' />;
+}
+
 function VerticalBarSkeleton(props) {
 	return <VerticalBar { ...props }>
 		<VerticalBarHeader><Skeleton width='100%'/></VerticalBarHeader>
@@ -101,5 +105,7 @@ VerticalBar.Content = React.memo(VerticalBarContent);
 VerticalBar.ScrollableContent = React.memo(VerticalBarScrollableContent);
 VerticalBar.Skeleton = React.memo(VerticalBarSkeleton);
 VerticalBar.Button = React.memo(VerticalBarButton);
+VerticalBar.Back = React.memo(VerticalBarActionBack);
+
 
 export default VerticalBar;

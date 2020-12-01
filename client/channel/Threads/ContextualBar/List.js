@@ -19,6 +19,7 @@ import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../contexts/ServerContext';
+import ScrollableContentWrapper from '../../../components/basic/ScrollableContentWrapper';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -261,6 +262,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 					loadMoreItems={ loading ? () => {} : loadMoreItems}
 				>
 					{({ onItemsRendered, ref }) => (<List
+						outerElementType={ScrollableContentWrapper}
 						height={blockSize}
 						width={inlineSize}
 						itemCount={total}
