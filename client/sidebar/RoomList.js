@@ -19,6 +19,7 @@ import { useShortcutOpenMenu } from './hooks/useShortcutOpenMenu';
 import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 import { useRoomList } from './hooks/useRoomList';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
+import ScrollableContentWrapper from '../components/basic/ScrollableContentWrapper';
 
 const sections = {
 	Omnichannel,
@@ -130,6 +131,7 @@ export default () => {
 
 	return <Box h='full' w='full' ref={ref}>
 		<List
+			outerElementType={ScrollableContentWrapper}
 			height={blockSize}
 			itemCount={roomsList.length}
 			itemSize={(index) => (typeof roomsList[index] === 'string' ? (sections[roomsList[index]] && sections[roomsList[index]].size) || 40 : itemSize)}

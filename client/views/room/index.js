@@ -31,3 +31,21 @@ export default (props) => {
 		<Room tabBar={tabBar}/>
 	</RoomProvider>;
 };
+
+
+function Body({ children }) {
+	return children;
+}
+
+function Footer({ children }) {
+	return children;
+}
+
+function Aside({ children }) {
+	return children;
+}
+
+Room.Header = Header;
+Room.Body = Body;
+Room.Footer = Footer;
+Room.Aside = Aside;

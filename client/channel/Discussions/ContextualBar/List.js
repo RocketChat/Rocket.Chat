@@ -22,6 +22,7 @@ import { useSetting } from '../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
 import { clickableItem } from '../../helpers/clickableItem';
 import { useTabBarClose } from '../../../views/room/providers/ToolboxProvider';
+import ScrollableContentWrapper from '../../../components/basic/ScrollableContentWrapper';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
@@ -201,7 +202,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 	/>, [onClick, showRealNames, userId]);
 
 	const isItemLoaded = useCallback((index) => index < discussionsRef.current.length, []);
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver();
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
 	return <>
 		<VerticalBar.Header>
@@ -213,15 +214,16 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
 				<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} ref={ref}>
+			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Discussions_found')}</Box>}
-				<InfiniteLoader
+				{!error && total > 0 && <InfiniteLoader
 					isItemLoaded={isItemLoaded}
 					itemCount={total}
 					loadMoreItems={ loading ? () => {} : loadMoreItems}
 				>
 					{({ onItemsRendered, ref }) => (<List
+						outerElementType={ScrollableContentWrapper}
 						height={blockSize}
 						width={inlineSize}
 						itemCount={total}
@@ -232,7 +234,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 						onItemsRendered={onItemsRendered}
 					>{rowRenderer}</List>
 					)}
-				</InfiniteLoader>
+				</InfiniteLoader>}
 			</Box>
 		</VerticalBar.Content>
 	</>;
