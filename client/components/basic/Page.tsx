@@ -1,7 +1,8 @@
-import { Box, Scrollable, ScrollableProps } from '@rocket.chat/fuselage';
+import { Box, ScrollableProps } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { createContext, useContext, useState, FC, Dispatch, SetStateAction } from 'react';
 
+import ScrollableContentWrapper from './ScrollableContentWrapper';
 import { useSidebar } from '../../contexts/SidebarContext';
 import BurgerMenuButton from './burger/BurgerMenuButton';
 import { useSession } from '../../contexts/SessionContext';
@@ -84,10 +85,9 @@ type PageScrollableContentProps = {
 	onScrollContent?: ScrollableProps['onScrollContent'];
 };
 
-const PageScrollableContent: FC<PageScrollableContentProps> = ({ onScrollContent, ...props }) =>
-	<Scrollable onScrollContent={onScrollContent} >
-		<Box p='x16' display='flex' flexDirection='column' flexGrow={1} {...props} />
-	</Scrollable>;
+const PageScrollableContent: FC<PageScrollableContentProps> = React.forwardRef(({ onScrollContent, ...props }, ref) => <Box display='flex' flexShrink={1} flexGrow={1} overflow='hidden'>
+	<ScrollableContentWrapper onScroll={onScrollContent} ref={ref}><Box p='x16' display='flex' flexDirection='column' flexGrow={1} {...props} /></ScrollableContentWrapper>
+</Box>);
 
 const PageScrollableContentWithShadow: FC<PageScrollableContentProps> = ({ onScrollContent, ...props }) => {
 	const [, setBorder] = useContext(PageContext);
