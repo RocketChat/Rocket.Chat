@@ -36,3 +36,20 @@ const Room = () => {
 export default (props) => <RoomProvider rid={props._id}>
 	<Room />
 </RoomProvider>;
+
+function Body({ children }) {
+	return children;
+}
+
+function Footer({ children }) {
+	return children;
+}
+
+function Aside({ children }) {
+	return children;
+}
+
+Room.Header = Header;
+Room.Body = Body;
+Room.Footer = Footer;
+Room.Aside = Aside;

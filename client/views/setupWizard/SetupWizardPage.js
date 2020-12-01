@@ -1,10 +1,11 @@
-import { Box, Margins, Scrollable, Tile } from '@rocket.chat/fuselage';
+import { Box, Margins, Tile } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import ConnectionStatusAlert from '../../components/connectionStatus/ConnectionStatusAlert';
+import ScrollableContentWrapper from '../../components/basic/ScrollableContentWrapper';
 import { finalStep } from './SetupWizardState';
 import FinalStep from './steps/FinalStep';
 import SideBar from './SideBar';
@@ -59,7 +60,7 @@ function SetupWizardPage({ currentStep = 1 }) {
 					display='flex'
 					flexDirection='column'
 				>
-					<Scrollable>
+					<ScrollableContentWrapper>
 						<Margins all='x16'>
 							<Tile is='section' flexGrow={1} flexShrink={1}>
 								<AdminUserInformationStep step={1} title={t('Admin_Info')} active={currentStep === 1} />
@@ -68,7 +69,7 @@ function SetupWizardPage({ currentStep = 1 }) {
 								<RegisterServerStep step={4} title={t('Register_Server')} active={currentStep === 4} />
 							</Tile>
 						</Margins>
-					</Scrollable>
+					</ScrollableContentWrapper>
 				</Box>
 			</>}
 		</Box>

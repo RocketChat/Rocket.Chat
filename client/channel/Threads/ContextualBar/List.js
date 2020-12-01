@@ -21,6 +21,7 @@ import { getConfig } from '../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTabBarClose } from '../../../views/room/providers/ToolboxProvider';
 import ThreadComponent from '../../../../app/threads/client/components/ThreadComponent';
+import ScrollableContentWrapper from '../../../components/basic/ScrollableContentWrapper';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -262,12 +263,13 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
-				{ total > 0 && <InfiniteLoader
+				{!error && total > 0 && <InfiniteLoader
 					isItemLoaded={isItemLoaded}
 					itemCount={total}
 					loadMoreItems={ loading ? () => {} : loadMoreItems}
 				>
 					{({ onItemsRendered, ref }) => (<List
+						outerElementType={ScrollableContentWrapper}
 						height={blockSize}
 						width={inlineSize}
 						itemCount={total}

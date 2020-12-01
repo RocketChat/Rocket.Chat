@@ -1,10 +1,11 @@
-import { Box, Margins, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Margins } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import Logo from '../../components/basic/Logo';
 import './SideBar.css';
+import ScrollableContentWrapper from '../../components/basic/ScrollableContentWrapper';
 
 function SideBar({
 	logoSrc = 'images/logo/logo.svg',
@@ -60,7 +61,7 @@ function SideBar({
 			</Box>
 		</Box>
 
-		{!small && <Scrollable>
+		{!small && <ScrollableContentWrapper>
 			<Box
 				flexGrow={1}
 				marginBlockEnd='x16'
@@ -96,7 +97,7 @@ function SideBar({
 					)}
 				</Box>
 			</Box>
-		</Scrollable>}
+		</ScrollableContentWrapper>}
 	</Box>;
 }
 

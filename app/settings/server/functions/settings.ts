@@ -210,6 +210,20 @@ class Settings extends SettingsBase {
 		SettingsModel.upsert({
 			_id,
 		}, updateOperations);
+
+		const record = {
+			_id,
+			value,
+			type: options.type || 'string',
+			env: options.env || false,
+			i18nLabel: options.i18nLabel,
+			public: options.public || false,
+			packageValue: options.packageValue,
+			blocked: options.blocked,
+		};
+
+		this.storeSettingValue(record, this.initialLoad);
+
 		return true;
 	}
 
@@ -307,10 +321,11 @@ class Settings extends SettingsBase {
 	/*
 	* Update options of a setting by id
 	*/
-	updateOptionsById(_id: string, options: object): boolean {
+	updateOptionsById(_id: string, options: ISettingAddOptions): boolean {
 		if (!_id || options == null) {
 			return false;
 		}
+
 		return SettingsModel.updateOptionsById(_id, options);
 	}
 
