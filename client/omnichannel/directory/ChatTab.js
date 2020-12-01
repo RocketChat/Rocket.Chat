@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Table } from '@rocket.chat/fuselage';
+import { Table, Tag, Box } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -21,7 +21,7 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLo
 
 const ChatTable = () => {
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['name', 'desc']);
+	const [sort, setSort] = useState(['closedAt', 'desc']);
 	const t = useTranslation();
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
@@ -47,20 +47,31 @@ const ChatTable = () => {
 	const { data } = useEndpointDataExperimental('livechat/rooms', query) || {};
 
 	const header = useMemo(() => [
-		<GenericTable.HeaderCell key={'fname'} direction={sort[1]} active={sort[0] === 'fname'} onClick={onHeaderClick} sort='fname'>{t('Contact_Name')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'department'} direction={sort[1]} active={sort[0] === 'department'} onClick={onHeaderClick} sort='department'>{t('Department')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'ts'} direction={sort[1]} active={sort[0] === 'ts'} onClick={onHeaderClick} sort='ts'>{t('Started_At')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'chatDuration'} direction={sort[1]} active={sort[0] === 'chatDuration'} onClick={onHeaderClick} sort='chatDuration'>{t('Chat_Duration')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'closedAt'} direction={sort[1]} active={sort[0] === 'closedAt'} onClick={onHeaderClick} sort='closedAt'>{t('Closed_At')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'fname'} direction={sort[1]} active={sort[0] === 'fname'} onClick={onHeaderClick} sort='fname' w='x400'>{t('Contact_Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'department'} direction={sort[1]} active={sort[0] === 'department'} onClick={onHeaderClick} sort='department' w='x200'>{t('Department')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'ts'} direction={sort[1]} active={sort[0] === 'ts'} onClick={onHeaderClick} sort='ts' w='x200'>{t('Started_At')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'chatDuration'} direction={sort[1]} active={sort[0] === 'chatDuration'} onClick={onHeaderClick} sort='chatDuration' w='x120'>{t('Chat_Duration')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'closedAt'} direction={sort[1]} active={sort[0] === 'closedAt'} onClick={onHeaderClick} sort='closedAt' w='x200'>{t('Closed_At')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
-	const renderRow = useCallback(({ _id, fname, ts, closedAt, department }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
-		<Table.Cell withTruncatedText>{fname}</Table.Cell>
+	const renderRow = useCallback(({ _id, fname, ts, closedAt, department, tags }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
+		<Table.Cell withTruncatedText>
+			<Box display='flex' flexDirection='column'>
+				<Box color='default' withTruncatedText>{fname}</Box>
+				{tags && <Box color='hint' display='flex' flex-direction='row' withTruncatedText>
+					{tags.map((tag) => (
+						<Box style={{ marginTop: 4 }} key={tag} mie='x4'>
+							<Tag disabled>{tag}</Tag>
+						</Box>
+					))}
+				</Box>}
+			</Box>
+		</Table.Cell>
 		<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
 		<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
-		<Table.Cell withTruncatedText>{moment(closedAt).diff(moment(ts), 'minutes')} {t('Minutes')}</Table.Cell>
+		<Table.Cell withTruncatedText>{moment(closedAt).from(moment(ts), true)}</Table.Cell>
 		<Table.Cell withTruncatedText>{moment(closedAt).format('L LTS')}</Table.Cell>
-	</Table.Row>, [t]);
+	</Table.Row>, [onRowClick]);
 
 	return <GenericTable
 		header={header}
