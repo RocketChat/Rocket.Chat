@@ -1,4 +1,5 @@
-import { lazy } from 'react';
+import { FC, lazy, LazyExoticComponent } from 'react';
+
 import { addAction } from '../../../../client/channel/lib/Toolbox';
 
 addAction('channel-settings', {
@@ -8,6 +9,6 @@ addAction('channel-settings', {
 	full: true,
 	title: 'Room_Info',
 	icon: 'info-circled',
-	template: lazy(() => import('../../../../client/channel/ChannelInfo')),
+	template: lazy(() => import('../../../../client/channel/ChannelInfo')) as LazyExoticComponent<FC>,
 	order: 7,
 });

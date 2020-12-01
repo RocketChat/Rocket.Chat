@@ -62,8 +62,6 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 
 	const tab = params?.tab;
 
-	console.log(params);
-
 	const open = useMutableCallback((actionId, context) => {
 		router.push({
 			...params,

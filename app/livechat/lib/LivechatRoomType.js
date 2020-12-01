@@ -17,7 +17,7 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'live',
-			path: '/live/:id',
+			path: '/live/:id/:tab?/:context?',
 		});
 	}
 

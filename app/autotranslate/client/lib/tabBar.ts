@@ -1,9 +1,8 @@
-import { useMemo } from 'react';
+import { lazy, useMemo } from 'react';
 
 import { addAction } from '../../../../client/channel/lib/Toolbox';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
-
 
 addAction('autotranslate', () => {
 	const hasPermission = usePermission('auto-translate');
@@ -13,7 +12,7 @@ addAction('autotranslate', () => {
 		id: 'autotranslate',
 		title: 'Auto_Translate',
 		icon: 'language',
-		template: 'autoTranslateFlexTab',
+		template: lazy(() => import('../../../../client/channel/AutoTranslate')),
 		order: 20,
 		full: true,
 	} : null), [autoTranslateEnabled, hasPermission]);
