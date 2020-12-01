@@ -14,6 +14,7 @@ import { FormSkeleton } from '../../admin/users/Skeleton';
 import VerticalBar from '../../components/basic/VerticalBar';
 import UserActions from './actions/UserActions';
 import { useRolesDescription } from '../../contexts/AuthorizationContext';
+import { getUserEmailAddress } from '../../lib/getUserEmailAddress';
 
 export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClose, video, showBackButton, ...props }) {
 	const t = useTranslation();
@@ -54,7 +55,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			bio,
 			phone: user.phone,
 			customFields: user.customFields,
-			email: user.emails?.find(({ address }) => !!address),
+			email: getUserEmailAddress(user),
 			utcOffset,
 			createdAt: user.createdAt,
 			// localTime: <LocalTime offset={utcOffset} />,
