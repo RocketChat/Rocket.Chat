@@ -17,6 +17,7 @@ import { itemSizeMap, SideBarItemTemplateWithData } from '../RoomList';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
+import ScrollableContentWrapper from '../../components/basic/ScrollableContentWrapper';
 
 const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended) => ({
 	items,
@@ -275,6 +276,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		</Sidebar.TopBar.Section>
 		<Box aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncState.DONE}>
 			<List
+				outerElementType={ScrollableContentWrapper}
 				height={blockSize}
 				itemCount={items?.length}
 				itemSize={itemSize}
