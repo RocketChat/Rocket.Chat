@@ -267,7 +267,7 @@ Template.membersList.events({
 		if (!Meteor.userId()) {
 			return;
 		}
-		openProfileTab(e, instance, this.userDetail);
+		openProfileTab(e, instance, e.currentTarget.getAttribute('data-username'));
 	},
 });
 
