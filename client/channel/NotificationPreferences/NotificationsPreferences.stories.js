@@ -1,8 +1,9 @@
 import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
-import VerticalBar from './VerticalBar';
-import NotificationsPreferences from './NotificationsPreferences';
+import VerticalBar from '../../components/basic/VerticalBar';
+
+import { NotificationsPreferences } from '.';
 
 export default {
 	title: 'components/basic/NotificationsPreferences',
