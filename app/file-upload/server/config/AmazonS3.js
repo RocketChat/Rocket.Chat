@@ -73,6 +73,8 @@ const configure = _.debounce(function() {
 	const ForcePathStyle = settings.get('FileUpload_S3_ForcePathStyle');
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
 	const BucketURL = settings.get('FileUpload_S3_BucketURL');
+	const SSECustomerAlgorithm = settings.get('FileUpload_S3_SSECustomerAlgorithm');
+	const SSECustomerKey = settings.get('FileUpload_S3_SSECustomerKey');
 
 	if (!Bucket) {
 		return;
@@ -89,6 +91,8 @@ const configure = _.debounce(function() {
 			region: Region,
 		},
 		URLExpiryTimeSpan,
+		SSECustomerAlgorithm,
+		SSECustomerKey,
 	};
 
 	if (AWSAccessKeyId) {
