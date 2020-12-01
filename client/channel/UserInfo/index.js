@@ -10,7 +10,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { ReactiveUserStatus } from '../../components/basic/UserStatus';
 import UserCard from '../../components/basic/UserCard';
-import { FormSkeleton } from '../../admin/users/Skeleton';
+import { FormSkeleton } from '../../components/Skeleton';
 import VerticalBar from '../../components/basic/VerticalBar';
 import UserActions from './actions/UserActions';
 import { useRolesDescription } from '../../contexts/AuthorizationContext';

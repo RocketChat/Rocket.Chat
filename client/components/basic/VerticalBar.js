@@ -87,7 +87,7 @@ function VerticalBarActionBack(props) {
 }
 
 function VerticalBarSkeleton(props) {
-	return <VerticalBar { ...props }>
+	return <VerticalBar { ...props } width='100%'>
 		<VerticalBarHeader><Skeleton width='100%'/></VerticalBarHeader>
 		<Box p='x24'>
 			<Skeleton width='32px' height='32px' variant='rect'/> <Skeleton />
