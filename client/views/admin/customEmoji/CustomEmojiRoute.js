@@ -9,6 +9,9 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import EditCustomEmojiWithData from './EditCustomEmojiWithData';
+import AddCustomEmoji from './AddCustomEmoji';
+import CustomEmoji from './CustomEmoji';
 
 function CustomEmojiRoute() {
 	const route = useRoute('emoji-custom');

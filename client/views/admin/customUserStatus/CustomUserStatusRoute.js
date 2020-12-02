@@ -9,6 +9,9 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import EditCustomUserStatusWithData from './EditCustomUserStatusWithData';
+import AddCustomUserStatus from './AddCustomUserStatus';
+import CustomUserStatus from './CustomUserStatus';
 
 function CustomUserStatusRoute() {
 	const route = useRoute('custom-user-status');

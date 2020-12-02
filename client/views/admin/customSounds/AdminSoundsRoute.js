@@ -9,6 +9,9 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import AdminSounds from './AdminSounds';
+import EditCustomSound from './EditCustomSound';
+import AddCustomSound from './AddCustomSound';
 
 function CustomSoundsRoute() {
 	const route = useRoute('custom-sounds');

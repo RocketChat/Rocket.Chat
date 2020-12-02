@@ -1,6 +1,6 @@
 import React from 'react';
 
-import VerticalBar from '../../../../components/basic/VerticalBar';
+import VerticalBar from '../../../../components/VerticalBar';
 import { OTR } from './OTR';
 
 export default {

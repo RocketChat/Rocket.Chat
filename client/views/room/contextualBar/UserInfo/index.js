@@ -2,10 +2,6 @@ import React, { useMemo } from 'react';
 import { Box, Margins, Tag, Button, Icon } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
-import {
-	useEndpointDataExperimental,
-	ENDPOINT_STATES,
-} from '../../../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
@@ -18,6 +14,8 @@ import { UTCClock } from '../../../../components/UTCClock';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MarkdownText from '../../../../components/MarkdownText';
 import UserActions from './actions/UserActions';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -148,7 +146,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
-	const { data, state, error } = useEndpointDataExperimental(
+	const { data, phase: state, error } = useEndpointData(
 		'users.info',
 		useMemo(
 			() => ({ ...uid && { userId: uid }, ...username && { username } }),
@@ -201,7 +199,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 				(error && <VerticalBar.Content>
 					<Box mbs='x16'>{t('User_not_found')}</Box>
 				</VerticalBar.Content>)
-				|| (state === ENDPOINT_STATES.LOADING && <VerticalBar.Content>
+				|| (state === AsyncStatePhase.LOADING && <VerticalBar.Content>
 					<FormSkeleton />
 				</VerticalBar.Content>)
 				|| <UserInfo
