@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Table } from '@rocket.chat/fuselage';
 
-import { useMethodData, AsyncState } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useMethodData } from '../../hooks/useMethodData';
 
 const style = { width: '100%' };
 
@@ -16,15 +16,7 @@ const AgentOverview = ({ type, dateRange, departmentId }) => {
 		...departmentId && { departmentId },
 	}], [departmentId, end, start, type]);
 
-	const [data, state] = useMethodData('livechat:getAgentOverviewData', params);
-
-	const [displayData, setDisplayData] = useState();
-
-	useEffect(() => {
-		if (state === AsyncState.DONE) {
-			setDisplayData(data);
-		}
-	}, [data, state]);
+	const { value: displayData } = useMethodData('livechat:getAgentOverviewData', params);
 
 	return <Table style={style} fixed>
 		<Table.Head>

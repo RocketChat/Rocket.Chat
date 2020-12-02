@@ -14,13 +14,14 @@ import { Messages } from '../../../../app/models/client';
 import VerticalBar from '../../../components/basic/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { MessageSkeleton } from '../../components/Message';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
 import { clickableItem } from '../../helpers/clickableItem';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../../components/basic/ScrollableContentWrapper';
 
 function mapProps(WrappedComponent) {
@@ -53,7 +54,7 @@ export function withData(WrappedComponent) {
 
 		const params = useMemo(() => ({ roomId: room._id, count: pagination.count, offset: pagination.skip, text }), [room._id, pagination.skip, pagination.count, text]);
 
-		const { data, state, error } = useEndpointDataExperimental('chat.getDiscussions', useDebouncedValue(params, 400));
+		const { value: data, phase: state, error } = useEndpointData('chat.getDiscussions', useDebouncedValue(params, 400));
 
 		const loadMoreItems = useCallback((skip, count) => {
 			setPagination({ skip, count: count - skip });
@@ -64,7 +65,7 @@ export function withData(WrappedComponent) {
 		useEffect(() => () => Discussions.current.remove({}, () => {}), [text]);
 
 		useEffect(() => {
-			if (state !== ENDPOINT_STATES.DONE || !data || !data.messages) {
+			if (state !== AsyncStatePhase.RESOLVED || !data || !data.messages) {
 				return;
 			}
 
@@ -116,7 +117,7 @@ export function withData(WrappedComponent) {
 			error={error}
 			discussions={discussions}
 			total={total}
-			loading={state === ENDPOINT_STATES.LOADING}
+			loading={state === AsyncStatePhase.LOADING}
 			loadMoreItems={loadMoreItems}
 			room={room}
 			text={text}
