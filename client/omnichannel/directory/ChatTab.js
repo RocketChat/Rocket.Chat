@@ -58,10 +58,10 @@ const ChatTable = () => {
 		<Table.Cell withTruncatedText>
 			<Box display='flex' flexDirection='column'>
 				<Box color='default' withTruncatedText>{fname}</Box>
-				{tags && <Box color='hint' display='flex' flex-direction='row' withTruncatedText>
+				{tags && <Box color='hint' display='flex' flex-direction='row'>
 					{tags.map((tag) => (
-						<Box style={{ marginTop: 4 }} key={tag} mie='x4'>
-							<Tag disabled>{tag}</Tag>
+						<Box style={{ marginTop: 4, whiteSpace: 'nowrap', overflow: tag.length > 10 ? 'hidden' : 'visible', textOverflow: 'ellipsis' }} key={tag} mie='x4'>
+							<Tag style={{ display: 'inline' }} disabled>{tag}</Tag>
 						</Box>
 					))}
 				</Box>}
