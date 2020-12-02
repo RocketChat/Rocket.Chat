@@ -161,7 +161,7 @@ const WebhooksPage = ({ settings }) => {
 				<p>
 					<ExternalLink to={integrationsUrl}>{t('Click_here')}</ExternalLink> {t('to_see_more_details_on_how_to_integrate')}
 				</p>
-				<FieldGroup>
+				<FieldGroup style={{ marginTop: '1.5rem' }}>
 					<Field>
 						<Field.Label>
 							{t('Webhook_URL')}

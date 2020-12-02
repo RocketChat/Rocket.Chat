@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import { Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -22,6 +22,8 @@ const EditBusinessHoursPage = ({ id, type }) => {
 	const { value: data, phase: state } = useEndpointData('livechat/business-hour', useMemo(() => ({ _id: id, type }), [id, type]));
 
 	const saveData = useRef({ form: {} });
+
+	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
 	const save = useMethod('livechat:saveBusinessHour');
 	const deleteBH = useMethod('livechat:removeBusinessHour');
@@ -110,13 +112,16 @@ const EditBusinessHoursPage = ({ id, type }) => {
 				{type === 'custom' && <Button primary danger onClick={handleDelete}>
 					{t('Delete')}
 				</Button>}
-				<Button primary onClick={handleSave}>
+				<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
 					{t('Save')}
 				</Button>
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>
-			<BusinessHoursFormContainer data={data.businessHour} saveRef={saveData}/>
+			<BusinessHoursFormContainer
+				data={data.businessHour}
+				saveRef={saveData}
+				onChange={(hasChanges) => setHasUnsavedChanges(hasChanges)} />
 		</Page.ScrollableContentWithShadow>
 	</Page>;
 };

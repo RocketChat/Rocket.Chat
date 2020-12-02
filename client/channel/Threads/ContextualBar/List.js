@@ -19,6 +19,7 @@ import ThreadListMessage from './components/Message';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import ScrollableContentWrapper from '../../../components/basic/ScrollableContentWrapper';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -252,15 +253,16 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 					</Margins>
 				</Box>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} ref={ref}>
+			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
-				<InfiniteLoader
+				{!error && total > 0 && <InfiniteLoader
 					isItemLoaded={isItemLoaded}
 					itemCount={total}
 					loadMoreItems={ loading ? () => {} : loadMoreItems}
 				>
 					{({ onItemsRendered, ref }) => (<List
+						outerElementType={ScrollableContentWrapper}
 						height={blockSize}
 						width={inlineSize}
 						itemCount={total}
@@ -271,7 +273,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 						onItemsRendered={onItemsRendered}
 					>{rowRenderer}</List>
 					)}
-				</InfiniteLoader>
+				</InfiniteLoader>}
 			</Box>
 		</VerticalBar.Content>
 	</VerticalBar>;
