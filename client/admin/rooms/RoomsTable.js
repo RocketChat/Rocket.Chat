@@ -98,7 +98,7 @@ function RoomsTable() {
 
 	const query = useQuery(debouncedParams, debouncedSort);
 
-	const data = useEndpointData('rooms.adminRooms', query) || {};
+	const { value: data = {} } = useEndpointData('rooms.adminRooms', query);
 
 	const router = useRoute(routeName);
 

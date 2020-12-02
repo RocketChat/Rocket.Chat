@@ -5,8 +5,9 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUser } from '../../contexts/UserContext';
-import { useMethodData, useMethod } from '../../contexts/ServerContext';
+import { useMethod } from '../../contexts/ServerContext';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
+import { useMethodData } from '../../hooks/useMethodData';
 
 const getChangePasswordReason = ({
 	requirePasswordChange,
@@ -25,7 +26,7 @@ const ResetPassword = () => {
 		token,
 	}], [token]);
 
-	const [{ enabled: policyEnabled, policy: policies } = {}] = useMethodData('getPasswordPolicy', params);
+	const { value: { enabled: policyEnabled, policy: policies } = {} } = useMethodData('getPasswordPolicy', params);
 
 	const router = useRoute('home');
 

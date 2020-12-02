@@ -23,7 +23,7 @@ export function ActiveUsersSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('engagement-dashboard/users/active-users', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/active-users', params);
 
 	const [
 		countDailyActiveUsers,

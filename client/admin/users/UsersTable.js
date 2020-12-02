@@ -68,7 +68,7 @@ export function UsersTable() {
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
 
-	const data = useEndpointData('users.list', query) || {};
+	const { value: data = {} } = useEndpointData('users.list', query);
 
 	const usersRoute = useRoute('admin-users');
 
