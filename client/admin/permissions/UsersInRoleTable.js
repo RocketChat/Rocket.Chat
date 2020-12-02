@@ -9,7 +9,7 @@ import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useSetModal } from '../../contexts/ModalContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 
 const UserRow = React.memo(({ _id, username, name, avatarETag, emails, onRemove }) => {
@@ -100,7 +100,7 @@ const UsersInRoleTableContainer = ({ rid, roleName, reloadRef }) => {
 		...debouncedParams.current && { offset: debouncedParams.current },
 	}), [debouncedParams, rid, roleName]);
 
-	const { data = {}, reload } = useEndpointDataExperimental('roles.getUsersInRole', query);
+	const { value: data = {}, reload } = useEndpointData('roles.getUsersInRole', query);
 
 	reloadRef.current = reload;
 

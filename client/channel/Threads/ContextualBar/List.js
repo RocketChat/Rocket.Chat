@@ -10,7 +10,6 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { call, renderMessageBody } from '../../../../app/ui-utils/client';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
-import { ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
@@ -19,6 +18,7 @@ import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../contexts/ServerContext';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../../components/basic/ScrollableContentWrapper';
 
 function mapProps(WrappedComponent) {
@@ -48,7 +48,7 @@ export function withData(WrappedComponent) {
 			threads,
 			count,
 		}, setState] = useState(() => ({
-			state: ENDPOINT_STATES.LOADING,
+			state: AsyncStatePhase.LOADING,
 			error: null,
 			threads: [],
 			count: 0,
@@ -80,14 +80,14 @@ export function withData(WrappedComponent) {
 				});
 
 				setState(({ threads }) => ({
-					state: ENDPOINT_STATES.DONE,
+					state: AsyncStatePhase.RESOLVED,
 					error: null,
 					threads: mergeThreads(offset === 0 ? [] : threads, data.threads.map(filterProps)),
 					count: data.total,
 				}));
 			} catch (error) {
 				setState(({ threads, count }) => ({
-					state: ENDPOINT_STATES.ERROR,
+					state: AsyncStatePhase.REJECTED,
 					error,
 					threads,
 					count,
@@ -127,7 +127,7 @@ export function withData(WrappedComponent) {
 			error={error}
 			threads={threads}
 			total={count}
-			loading={state === ENDPOINT_STATES.LOADING}
+			loading={state === AsyncStatePhase.LOADING}
 			loadMoreItems={loadMoreItems}
 			room={room}
 			text={text}

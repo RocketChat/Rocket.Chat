@@ -2,8 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { AutoComplete, Option, Options, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { useEndpointDataExperimental } from '../../../client/hooks/useEndpointDataExperimental';
 import UserAvatar from '../../../client/components/basic/avatar/UserAvatar';
+import { useEndpointData } from '../../../client/hooks/useEndpointData';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
@@ -11,7 +11,7 @@ const Avatar = ({ value, ...props }) => <UserAvatar size={Options.AvatarSize} us
 
 const UserAutoCompleteMultiple = React.memo((props) => {
 	const [filter, setFilter] = useState('');
-	const { data } = useEndpointDataExperimental('users.autocomplete', useMemo(() => query(filter), [filter]));
+	const { value: data } = useEndpointData('users.autocomplete', useMemo(() => query(filter), [filter]));
 	const options = useMemo(() => (data && data.items.map((user) => ({ value: user.username, label: user.name }))) || [], [data]);
 	const onClickRemove = useMutableCallback((e) => {
 		e.stopPropagation();

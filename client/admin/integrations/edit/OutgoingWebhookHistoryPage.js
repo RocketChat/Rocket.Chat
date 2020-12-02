@@ -7,11 +7,12 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useHighlightedCode } from '../../../hooks/useHighlightedCode';
 import { integrations as eventList } from '../../../../app/integrations/lib/rocketchat';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { integrationHistoryStreamer } from '../../../../app/integrations/client/streamer';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 function HistoryItem({ data, ...props }) {
 	const t = useTranslation();
@@ -177,7 +178,7 @@ function HistoryItem({ data, ...props }) {
 function HistoryContent({ data, state, onChange, ...props }) {
 	const t = useTranslation();
 
-	if (!data || state === ENDPOINT_STATES.LOADING) {
+	if (!data || state === AsyncStatePhase.LOADING) {
 		return <Box w='full' pb='x24' {...props}>
 			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
@@ -225,7 +226,7 @@ function OutgoingWebhookHistoryPage(props) {
 		offset: current,
 	}), [id, itemsPerPage, current]);
 
-	const { data, state, reload } = useEndpointDataExperimental('integrations.history', query);
+	const { value: data, phase: state, reload } = useEndpointData('integrations.history', query);
 
 	const handleClearHistory = async () => {
 		try {
@@ -264,7 +265,7 @@ function OutgoingWebhookHistoryPage(props) {
 	});
 
 	useEffect(() => {
-		if (state === ENDPOINT_STATES.DONE && !mounted) {
+		if (state === AsyncStatePhase.RESOLVED && !mounted) {
 			setCurrentData(data.history);
 			setTotal(data.total);
 			setMounted(true);
