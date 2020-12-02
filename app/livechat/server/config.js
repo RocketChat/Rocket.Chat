@@ -111,10 +111,22 @@ Meteor.startup(function() {
 		i18nLabel: 'Allow_switching_departments',
 	});
 
-	settings.add('Livechat_show_agent_info', true, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		section: 'Livechat',
+	settings.add('Livechat_show_agent_info', 'name', {
+		type: 'select',
+		values: [
+			{
+				key: 'name',
+				i18nLabel: 'Name',
+			},
+			{
+				key: 'nickname',
+				i18nLabel: 'Nickname',
+			},
+			{
+				key: 'none',
+				i18nLabel: 'None',
+			},
+		],
 		public: true,
 		i18nLabel: 'Show_agent_info',
 	});
@@ -124,7 +136,7 @@ Meteor.startup(function() {
 		group: 'Omnichannel',
 		section: 'Livechat',
 		public: true,
-		enableQuery: { _id: 'Livechat_show_agent_info', value: true },
+		enableQuery: { _id: 'Livechat_show_agent_info', value: { $ne: 'none' } },
 		i18nLabel: 'Show_agent_email',
 	});
 
