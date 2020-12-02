@@ -6,11 +6,11 @@ import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
+import { FormSkeleton } from '../../../../client/components/Skeleton';
 
 
 export function PriorityEditWithData({ priorityId, reload }) {

@@ -1,12 +1,46 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useEffect } from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { FieldGroup, Field, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import { useEndpointData } from '../../hooks/useEndpointData';
-import { useLanguage } from '../../contexts/TranslationContext';
+import { useLanguage, useTranslation } from '../../contexts/TranslationContext';
 import { useUserSubscription } from '../../contexts/UserContext';
-import AutoTranslate from '../../components/basic/AutoTranslate';
 import { useTabBarClose } from '../../views/room/providers/ToolboxProvider';
+import VerticalBar from '../../components/basic/VerticalBar';
+
+export const AutoTranslate = ({
+	language,
+	languages,
+	handleSwitch,
+	translateEnable,
+	handleChangeLanguage,
+	handleClose,
+}) => {
+	const t = useTranslation();
+
+	return <>
+		<VerticalBar.Header>
+			<VerticalBar.Icon name='language'/>
+			<VerticalBar.Text>{ t('Auto_Translate') }</VerticalBar.Text>
+			{handleClose && <VerticalBar.Close onClick={handleClose}/>}
+		</VerticalBar.Header>
+
+		<VerticalBar.ScrollableContent>
+			<FieldGroup>
+				<Field.Label htmlFor='automatic-translation'>{ t('Automatic_Translation') }</Field.Label>
+				<Field.Row>
+					<ToggleSwitch id='automatic-translation' onChange={handleSwitch} defaultChecked={translateEnable}/>
+				</Field.Row>
+
+				<Field.Label htmlFor='language'>{ t('Language') }</Field.Label>
+				<Field.Row verticalAlign='middle'>
+					<Select id='language' value={language} disabled={!translateEnable} onChange={handleChangeLanguage} options={languages} />
+				</Field.Row>
+			</FieldGroup>
+		</VerticalBar.ScrollableContent>
+	</>;
+};
 
 export default React.memo(({ rid }) => {
 	const close = useTabBarClose();

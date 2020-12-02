@@ -8,8 +8,9 @@ import RoomProvider, { useRoom } from './providers/RoomProvider';
 import { RoomTemplate } from './components/RoomTemplate';
 import { useTab, useTabBarOpen, useTabBarClose, useTabBarOpenUserInfo } from './providers/ToolboxProvider';
 import VerticalBarOldActions from './components/VerticalBarOldActions';
+import VerticalBar from '../../components/basic/VerticalBar';
 
-const LazyComponent = ({ template: TabbarTemplate, ...props }) => <Suspense fallback={<div>Loading...</div>}><TabbarTemplate {...props}/></Suspense>;
+const LazyComponent = ({ template: TabbarTemplate, ...props }) => <Suspense fallback={<VerticalBar.Skeleton/>}><TabbarTemplate {...props}/></Suspense>;
 
 const Room = () => {
 	const t = useTranslation();

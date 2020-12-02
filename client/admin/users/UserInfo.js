@@ -9,7 +9,7 @@ import { useSetting } from '../../contexts/SettingsContext';
 import { UserStatus } from '../../components/basic/UserStatus';
 import UserCard from '../../components/basic/UserCard';
 import { UserInfoActions } from './UserInfoActions';
-import { FormSkeleton } from './Skeleton';
+import { FormSkeleton } from '../../components/Skeleton';
 import { getUserEmailAddress } from '../../lib/getUserEmailAddress';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
