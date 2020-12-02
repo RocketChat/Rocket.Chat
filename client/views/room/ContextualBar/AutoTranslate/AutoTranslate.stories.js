@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
-import VerticalBar from './VerticalBar';
-import AutoTranslate from './AutoTranslate';
+import { AutoTranslate } from './AutoTranslate';
+import VerticalBar from '../../../../components/VerticalBar';
 
 export default {
 	title: 'components/basic/AutoTranslate',
