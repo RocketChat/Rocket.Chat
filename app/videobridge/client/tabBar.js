@@ -47,7 +47,7 @@ Meteor.startup(function() {
 				icon: 'phone',
 				iconColor: 'red',
 				template: 'videoFlexTab',
-				width: 600,
+				width: settings.get('Jitsi_Embedded_Frame_Width'),
 				order: 0,
 			});
 		} else {

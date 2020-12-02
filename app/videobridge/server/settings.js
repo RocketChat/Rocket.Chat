@@ -130,6 +130,26 @@ Meteor.startup(function() {
 				public: true,
 			});
 
+			this.add('Jitsi_Embedded_Frame_Width', 600, {
+				type: 'number',
+				enableQuery: {
+					_id: 'Jitsi_Enabled',
+					value: true,
+				},
+				i18nLabel: 'Jitsi_Embedded_Frame_Width',
+				public: true,
+			});
+
+			this.add('Jitsi_Embedded_Frame_Height', 500, {
+				type: 'number',
+				enableQuery: {
+					_id: 'Jitsi_Enabled',
+					value: true,
+				},
+				i18nLabel: 'Jitsi_Embedded_Frame_Height',
+				public: true,
+			});
+
 			this.add('Jitsi_Enable_Channels', false, {
 				type: 'boolean',
 				enableQuery: {
