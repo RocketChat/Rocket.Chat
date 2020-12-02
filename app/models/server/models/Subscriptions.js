@@ -151,11 +151,13 @@ export class Subscriptions extends Base {
 			_id,
 		};
 
-		const update = {
-			$set: {
-				audioNotificationValue,
-			},
-		};
+		const update = {};
+
+		if (audioNotificationValue === 'default') {
+			update.$unset = { audioNotificationValue: 1 };
+		} else {
+			update.$set = { audioNotificationValue };
+		}
 
 		return this.update(query, update);
 	}

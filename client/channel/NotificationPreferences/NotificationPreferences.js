@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Button, ButtonGroup, FieldGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -31,30 +31,30 @@ export const NotificationPreferences = ({
 			{handleClose && <VerticalBar.Close onClick={handleClose}/>}
 		</VerticalBar.Header>
 		<VerticalBar.ScrollableContent>
-			<NotificationToogle label={t('Turn_ON')} description={t('Receive_alerts')} onChange={formHandlers.handleTurnOn} defaultChecked={formValues.turnOn}/>
-			<NotificationToogle label={t('Mute_Group_Mentions')} onChange={formHandlers.handleMuteGroupMentions} defaultChecked={formValues.muteGroupMentions}/>
-			<NotificationToogle label={t('Show_counter')} description={t('Display_unread_counter')} onChange={formHandlers.handleShowCounter} defaultChecked={formValues.showCounter} />
+			<NotificationToogle label={t('Turn_ON')} description={t('Receive_alerts')} onChange={formHandlers.handleTurnOn} checked={formValues.turnOn}/>
+			<NotificationToogle label={t('Mute_Group_Mentions')} onChange={formHandlers.handleMuteGroupMentions} checked={formValues.muteGroupMentions}/>
+			<NotificationToogle label={t('Show_counter')} description={t('Display_unread_counter')} onChange={formHandlers.handleShowCounter} checked={formValues.showCounter} />
 			<FieldGroup>
 				<NotificationByDevice device={t('Desktop')} icon={'computer'}>
-					<Preferences id={'DesktopAlert'} onChange={formHandlers.handleDesktopAlert} name={t('Alerts')} options={handleOptions.alerts} optionDefault={formValues.desktopAlert} />
-					<Preferences id={'DesktopAudio'} onChange={formHandlers.handleDesktopAudio} name={t('Audio')} options={handleOptions.audio} optionDefault={formValues.desktopAudio} />
-					<Preferences id={'DesktopSound'} onChange={formHandlers.handleDesktopSound} name={t('Sound')} options={handleOptions.sound} optionDefault={formValues.desktopSound}>
+					<Preferences id={'DesktopAlert'} onChange={formHandlers.handleDesktopAlert} name={t('Alerts')} options={handleOptions.desktopAlerts} optionDefault={formValues.desktopAlert} />
+					<Preferences id={'DesktopAudio'} onChange={formHandlers.handleDesktopAudio} name={t('Audio')} options={handleOptions.desktopAudios} optionDefault={formValues.desktopAudio} />
+					<Preferences id={'DesktopSound'} onChange={formHandlers.handleDesktopSound} name={t('Sound')} options={handleOptions.desktopSounds} optionDefault={formValues.desktopSound}>
 						<Button mis='x4' square ghost onClick={handlePlaySound}>
 							<Icon name='play' size='x18' />
 						</Button>
 					</Preferences>
 				</NotificationByDevice>
 				<NotificationByDevice device={t('Mobile')} icon={'mobile'}>
-					<Preferences id={'MobileAlert'} onChange={formHandlers.handleMobileAlert} name={t('Alerts')} options={handleOptions.alerts} optionDefault={formValues.mobileAlert} />
+					<Preferences id={'MobileAlert'} onChange={formHandlers.handleMobileAlert} name={t('Alerts')} options={handleOptions.mobileAlerts} optionDefault={formValues.mobileAlert} />
 				</NotificationByDevice>
 				<NotificationByDevice device={t('Email')} icon={'mail'}>
-					<Preferences id={'EmailAlert'} onChange={formHandlers.handleEmailAlert} name={t('Alerts')} options={handleOptions.alerts} optionDefault={formValues.emailAlert} />
+					<Preferences id={'EmailAlert'} onChange={formHandlers.handleEmailAlert} name={t('Alerts')} options={handleOptions.emailAlerts} optionDefault={formValues.emailAlert} />
 				</NotificationByDevice>
 			</FieldGroup>
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
-				<Button onClick={handleCancelButton}>{t('Cancel')}</Button>
+				<Button disabled={!formHasUnsavedChanges} onClick={handleCancelButton}>{t('Cancel')}</Button>
 				<Button primary disabled={!formHasUnsavedChanges} onClick={handleSaveButton}>{t('Save')}</Button>
 			</ButtonGroup>
 		</VerticalBar.Footer>
@@ -77,35 +77,51 @@ export default React.memo(({ tabBar, rid }) => {
 			turnOn: !subscription.disableNotifications,
 			muteGroupMentions: subscription.muteGroupMentions,
 			showCounter: !subscription.hideUnreadStatus,
-			desktopAlert: subscription.desktopNotifications || userSettingsPreferences.desktopNotifications,
-			desktopAudio: subscription.audioNotifications || userSettingsPreferences.audioNotifications,
-			desktopSound: subscription.audioNotificationValue || userSettingsPreferences.newMessageNotification,
-			mobileAlert: subscription.mobilePushNotifications || userSettingsPreferences.mobileNotifications,
-			emailAlert: subscription.emailNotifications || userSettingsPreferences.emailNotificationMode,
+			desktopAlert: subscription.desktopNotifications || 'default',
+			desktopAudio: subscription.audioNotifications || 'default',
+			desktopSound: subscription.audioNotificationValue || 'default',
+			mobileAlert: subscription.mobilePushNotifications || 'default',
+			emailAlert: subscription.emailNotifications || 'default',
 		},
 	);
 
+	const getOptions = useCallback((defaultConfig) => {
+		const configDict = {
+			all: t('All_messages'),
+			mentions: t('Mentions'),
+			nothing: t('Nothing'),
+		};
 
-	const defaultOption = [
-		['default', t('Default')],
-		['all', t('All_messages')],
-		['mentions', t('Mentions')],
-		['nothing', t('Nothing')],
-	];
+		const options = [
+			['all', configDict.all],
+			['mentions', configDict.mentions],
+			['nothing', configDict.nothing],
+		];
+
+		if (defaultConfig === 'default') {
+			options.splice(0, 0, ['default', t('Default')]);
+		} else {
+			options.splice(0, 0, ['default', `${ t('Default') } (${ configDict[defaultConfig] })`]);
+		}
+
+		return options;
+	}, [t]);
 
 	const customSoundAsset = Object.entries(customSound.list.get()).map((value) => [value[0], value[1].name]);
 
 	const handleOptions = {
-		alerts: defaultOption,
-		audio: defaultOption,
-		sound: [
-			['none None', t('None')],
-			['0 default', t('Default')],
+		desktopAlerts: getOptions(userSettingsPreferences.desktopNotifications),
+		desktopAudios: getOptions(userSettingsPreferences.audioNotifications),
+		desktopSounds: [
+			['none', t('None')],
+			['default', `${ t('Default') } (${ userSettingsPreferences.newMessageNotification })`],
 			...customSoundAsset,
 		],
+		mobileAlerts: getOptions(userSettingsPreferences.mobileNotifications),
+		emailAlerts: getOptions(userSettingsPreferences.emailNotificationMode),
 	};
 
-	const handlePlaySound = () => customSound.play(values.desktopSound);
+	const handlePlaySound = () => customSound.play(values.desktopSound === 'default' ? userSettingsPreferences.newMessageNotification : values.desktopSound);
 
 	const handleSaveButton = useMutableCallback(() => {
 		const notifications = {};
