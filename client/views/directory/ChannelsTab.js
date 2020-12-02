@@ -54,7 +54,7 @@ function ChannelsTable() {
 
 	const channelRoute = useRoute('channel');
 
-	const data = useEndpointData('directory', query) || { result: [] };
+	const { value: data = { result: [] } } = useEndpointData('directory', query);
 
 	const onClick = useMemo(() => (name) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {

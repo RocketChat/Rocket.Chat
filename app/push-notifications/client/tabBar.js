@@ -8,7 +8,8 @@ Meteor.startup(function() {
 		id: 'push-notifications',
 		i18nTitle: 'Notifications_Preferences',
 		icon: 'bell',
-		template: 'pushNotificationsFlexTab',
+		template: 'NotificationsPreferences',
+		full: true,
 		order: 8,
 	});
 });

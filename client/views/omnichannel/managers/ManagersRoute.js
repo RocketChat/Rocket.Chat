@@ -1,11 +1,9 @@
-
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
 import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
 
 import GenericTable from '../../../components/GenericTable';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
@@ -14,6 +12,7 @@ import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 
 export function RemoveManagerButton({ _id, reload }) {
 	const t = useTranslation();
@@ -87,7 +86,7 @@ export function ManagersRoute() {
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
 
-	const { data, reload } = useEndpointDataExperimental('livechat/users/manager', query) || {};
+	const { value: data = {}, reload } = useEndpointData('livechat/users/manager', query);
 
 
 	const header = useMemo(() => [

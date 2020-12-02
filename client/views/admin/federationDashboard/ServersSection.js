@@ -1,12 +1,13 @@
 import { Box, Throbber } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
-import { usePolledMethodData, AsyncState } from '../../../contexts/ServerContext';
+import { usePolledMethodData } from '../../../contexts/ServerContext';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 function ServersSection() {
-	const [serversData, serversStatus] = usePolledMethodData('federation:getServers', useMemo(() => [], []), 10000);
+	const { value: serversData, phase: serversStatus } = usePolledMethodData('federation:getServers', useMemo(() => [], []), 10000);
 
-	if (serversStatus === AsyncState.LOADING) {
+	if (serversStatus === AsyncStatePhase.LOADING) {
 		return <Throbber align='center' />;
 	}
 

@@ -10,7 +10,6 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useRoute, useCurrentRoute } from '../../../../contexts/RouterContext';
 import { call, renderMessageBody } from '../../../../../app/ui-utils/client';
 import { useUserId, useUserSubscription } from '../../../../contexts/UserContext';
-import { ENDPOINT_STATES } from '../../../../hooks/useEndpointDataExperimental';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
@@ -19,6 +18,8 @@ import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../../contexts/ServerContext';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -47,7 +48,7 @@ export function withData(WrappedComponent) {
 			threads,
 			count,
 		}, setState] = useState(() => ({
-			state: ENDPOINT_STATES.LOADING,
+			state: AsyncStatePhase.LOADING,
 			error: null,
 			threads: [],
 			count: 0,
@@ -79,14 +80,14 @@ export function withData(WrappedComponent) {
 				});
 
 				setState(({ threads }) => ({
-					state: ENDPOINT_STATES.DONE,
+					state: AsyncStatePhase.RESOLVED,
 					error: null,
 					threads: mergeThreads(offset === 0 ? [] : threads, data.threads.map(filterProps)),
 					count: data.total,
 				}));
 			} catch (error) {
 				setState(({ threads, count }) => ({
-					state: ENDPOINT_STATES.ERROR,
+					state: AsyncStatePhase.REJECTED,
 					error,
 					threads,
 					count,
@@ -126,7 +127,7 @@ export function withData(WrappedComponent) {
 			error={error}
 			threads={threads}
 			total={count}
-			loading={state === ENDPOINT_STATES.LOADING}
+			loading={state === AsyncStatePhase.LOADING}
 			loadMoreItems={loadMoreItems}
 			room={room}
 			text={text}
@@ -252,15 +253,16 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 					</Margins>
 				</Box>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} ref={ref}>
+			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
-				<InfiniteLoader
+				{!error && total > 0 && <InfiniteLoader
 					isItemLoaded={isItemLoaded}
 					itemCount={total}
 					loadMoreItems={ loading ? () => {} : loadMoreItems}
 				>
 					{({ onItemsRendered, ref }) => (<List
+						outerElementType={ScrollableContentWrapper}
 						height={blockSize}
 						width={inlineSize}
 						itemCount={total}
@@ -271,7 +273,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 						onItemsRendered={onItemsRendered}
 					>{rowRenderer}</List>
 					)}
-				</InfiniteLoader>
+				</InfiniteLoader>}
 			</Box>
 		</VerticalBar.Content>
 	</VerticalBar>;

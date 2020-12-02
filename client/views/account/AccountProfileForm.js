@@ -133,7 +133,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 			<UserAvatarEditor etag={user.avatarETag} username={username} setAvatarObj={handleAvatar} disabled={!allowUserAvatarChange} suggestions={avatarSuggestions}/>
 		</Field>, [username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user.avatarETag])}
 		<Box display='flex' flexDirection='row' justifyContent='space-between'>
-			{useMemo(() => <Field mie='x8'>
+			{useMemo(() => <Field mie='x8' flexShrink={1}>
 				<Field.Label flexGrow={0}>{t('Name')}</Field.Label>
 				<Field.Row>
 					<TextInput error={nameError} disabled={!allowRealNameChange} flexGrow={1} value={realname} onChange={handleRealname}/>
@@ -145,7 +145,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 					{nameError}
 				</Field.Error>
 			</Field>, [t, realname, handleRealname, allowRealNameChange, nameError])}
-			{useMemo(() => <Field mis='x8' >
+			{useMemo(() => <Field mis='x8' flexShrink={1}>
 				<Field.Label flexGrow={0}>{t('Username')}</Field.Label>
 				<Field.Row>
 					<TextInput error={usernameError} disabled={!canChangeUsername} flexGrow={1} value={username} onChange={handleUsername} addon={<Icon name='at' size='x20'/>}/>

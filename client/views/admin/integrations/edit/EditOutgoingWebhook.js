@@ -8,7 +8,6 @@ import {
 } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../hooks/useEndpointDataExperimental';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useRoute } from '../../../../contexts/RouterContext';
 import { useMethod } from '../../../../contexts/ServerContext';
@@ -18,18 +17,22 @@ import OutgoingWebhookForm from '../OutgoiongWebhookForm';
 import { useForm } from '../../../../hooks/useForm';
 import DeleteSuccessModal from '../../../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../../../components/DeleteWarningModal';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { triggerWordsToArray, triggerWordsToString } from '../helpers/triggerWords';
+
 
 export default function EditOutgoingWebhookWithData({ integrationId, ...props }) {
 	const t = useTranslation();
 
 	const params = useMemo(() => ({ integrationId }), [integrationId]);
-	const { data, state, error, reload } = useEndpointDataExperimental('integrations.get', params);
+	const { value: data, phase: state, error, reload } = useEndpointData('integrations.get', params);
 
 	const onChange = () => {
 		reload();
 	};
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === AsyncStatePhase.LOADING) {
 		return <Box w='full' pb='x24' {...props}>
 			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
@@ -54,7 +57,7 @@ const getInitialValue = (data) => {
 		event: data.event,
 		token: data.token,
 		urls: data.urls.join('\n') ?? '',
-		triggerWords: data.triggerWords?.join('; ') ?? '',
+		triggerWords: triggerWordsToString(data.triggerWords),
 		targetRoom: data.targetRoom ?? '',
 		channel: data.channel.join(', ') ?? '',
 		username: data.username ?? '',
@@ -115,7 +118,7 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		try {
 			await saveIntegration(data._id, {
 				...formValues,
-				triggerWords: triggerWords.split(/\s*(?:;|$)\s*/),
+				triggerWords: triggerWordsToArray(triggerWords),
 				urls: urls.split('\n'),
 			});
 

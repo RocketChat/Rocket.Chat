@@ -1,6 +1,6 @@
-import React, { useMemo, useCallback, useState } from 'react';
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useCallback, useState } from 'react';
 
 import CustomFieldsPage from './CustomFieldsPage';
 import NewCustomFieldsPage from './NewCustomFieldsPage';
@@ -9,12 +9,12 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-import { useEndpointDataExperimental } from '../../../hooks/useEndpointDataExperimental';
 import GenericTable from '../../../components/GenericTable';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
 import { useMethod } from '../../../contexts/ServerContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 
 export function RemoveCustomFieldButton({ _id, reload }) {
 	const removeCustomField = useMethod('livechat:removeCustomField');
@@ -97,7 +97,7 @@ const CustomFieldsRoute = () => {
 		id,
 	}));
 
-	const { data, reload } = useEndpointDataExperimental('livechat/custom-fields', query);
+	const { value: data, reload } = useEndpointData('livechat/custom-fields', query);
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'field'} direction={sort[1]} active={sort[0] === '_id'} onClick={onHeaderClick} sort='_id'>{t('Field')}</GenericTable.HeaderCell>,

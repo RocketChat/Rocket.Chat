@@ -6,12 +6,13 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useForm } from '../../../hooks/useForm';
 import Page from '../../../components/Page';
 import ExternalLink from '../../../components/ExternalLink';
 import PageSkeleton from '../../../components/PageSkeleton';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 const reduceSettings = (settings) => settings.reduce((acc, { _id, value }) => {
 	acc = { ...acc, [_id]: value };
@@ -28,7 +29,7 @@ const integrationsUrl = 'https://rocket.chat/docs/administrator-guides/livechat/
 const WebhooksPageContainer = () => {
 	const t = useTranslation();
 
-	const { data, state, error } = useEndpointDataExperimental('livechat/integrations.settings');
+	const { value: data, phase: state, error } = useEndpointData('livechat/integrations.settings');
 
 	const canViewLivechatWebhooks = usePermission('view-livechat-webhooks');
 
@@ -36,7 +37,7 @@ const WebhooksPageContainer = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === AsyncStatePhase.LOADING) {
 		return <PageSkeleton />;
 	}
 
@@ -160,7 +161,7 @@ const WebhooksPage = ({ settings }) => {
 				<p>
 					<ExternalLink to={integrationsUrl}>{t('Click_here')}</ExternalLink> {t('to_see_more_details_on_how_to_integrate')}
 				</p>
-				<FieldGroup>
+				<FieldGroup style={{ marginTop: '1.5rem' }}>
 					<Field>
 						<Field.Label>
 							{t('Webhook_URL')}

@@ -8,7 +8,6 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../../hooks/useForm';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -17,12 +16,14 @@ import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 import { formsSubscription } from '../additionalForms';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { isEmail } from '../../../../app/utils';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 export default function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
-	const { data, state, error } = useEndpointDataExperimental(`livechat/department/${ id }`) || {};
+	const { value: data, phase: state, error } = useEndpointData(`livechat/department/${ id }`);
 
-	if ([state].includes(ENDPOINT_STATES.LOADING)) {
+	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 
@@ -126,7 +127,7 @@ export function EditDepartment({ data, id, title, reload }) {
 
 	const query = useQuery({ offlineMessageChannelName });
 
-	const { data: autoCompleteChannels } = useEndpointDataExperimental('rooms.autocomplete.channelAndPrivate', query) || {};
+	const { value: autoCompleteChannels = {} } = useEndpointData('rooms.autocomplete.channelAndPrivate', query);
 
 	const channelOpts = useMemo(() => (autoCompleteChannels && autoCompleteChannels.items ? autoCompleteChannels.items.map(({ name }) => [name, name]) : []), [autoCompleteChannels]);
 

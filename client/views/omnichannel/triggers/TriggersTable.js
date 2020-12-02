@@ -10,7 +10,8 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 const TriggersRow = memo(function TriggersRow(props) {
 	const {
@@ -98,11 +99,11 @@ const TriggersTableContainer = ({ reloadRef }) => {
 		itemsPerPage,
 	} = params;
 
-	const { data, state, reload } = useEndpointDataExperimental('livechat/triggers', useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]));
+	const { value: data, phase: state, reload } = useEndpointData('livechat/triggers', useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]));
 
 	reloadRef.current = reload;
 
-	if (state === ENDPOINT_STATES.ERROR) {
+	if (state === AsyncStatePhase.REJECTED) {
 		return <Callout>
 			{t('Error')}: error
 		</Callout>;

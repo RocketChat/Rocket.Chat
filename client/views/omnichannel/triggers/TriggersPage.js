@@ -39,8 +39,8 @@ const MonitorsPage = () => {
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={t('Livechat_Triggers')} >
-				<Button small onClick={handleAdd}>
-					<Icon name='plus' size='x16' />
+				<Button onClick={handleAdd}>
+					<Icon name='plus' /> {t('New')}
 				</Button>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>

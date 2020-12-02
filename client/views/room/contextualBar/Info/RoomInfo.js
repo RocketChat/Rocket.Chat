@@ -78,49 +78,51 @@ export const RoomInfo = function RoomInfo({
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24'>
-				<Margins block='x4'>
-					<Box pbe='x24'>
-						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
-					</Box>
+				<Box flexGrow={1}>
+					<Margins block='x4'>
+						<Box pbe='x24'>
+							<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
+						</Box>
 
-					{ archived && <Box pbe='x24'>
-						<Callout type='warning'>
-							{t('Room_archived')}
-						</Callout>
-					</Box>}
+						{ archived && <Box pbe='x24'>
+							<Callout type='warning'>
+								{t('Room_archived')}
+							</Callout>
+						</Box>}
 
-					<Box pbe='x24'>
-						<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
-					</Box>
+						<Box pbe='x24'>
+							<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
+						</Box>
 
-					{broadcast && broadcast !== '' && <Box pbe='x16'>
-						<Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</Label>
-					</Box>}
+						{broadcast && broadcast !== '' && <Box pbe='x16'>
+							<Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</Label>
+						</Box>}
 
-					{description && description !== '' && <Box pbe='x16'>
-						<Label>{t('Description')}</Label>
-						<Info withTruncatedText={false}>{description}</Info>
-					</Box>}
+						{description && description !== '' && <Box pbe='x16'>
+							<Label>{t('Description')}</Label>
+							<Info withTruncatedText={false}>{description}</Info>
+						</Box>}
 
-					{announcement && announcement !== '' && <Box pbe='x16'>
-						<Label>{t('Announcement')}</Label>
-						<Info withTruncatedText={false}>{announcement}</Info>
-					</Box>}
+						{announcement && announcement !== '' && <Box pbe='x16'>
+							<Label>{t('Announcement')}</Label>
+							<Info withTruncatedText={false}>{announcement}</Info>
+						</Box>}
 
-					{topic && topic !== '' && <Box pbe='x16'>
-						<Label>{t('Topic')}</Label>
-						<Info withTruncatedText={false}>{topic}</Info>
-					</Box>}
+						{topic && topic !== '' && <Box pbe='x16'>
+							<Label>{t('Topic')}</Label>
+							<Info withTruncatedText={false}>{topic}</Info>
+						</Box>}
 
-					{retentionPolicyEnabled && (
-						<Callout type='warning'>
-							{filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</p>}
-							{filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</p>}
-							{!filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning', { time: maxAgeDefault })}</p>}
-							{!filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_Unpinned', { time: maxAgeDefault })}</p>}
-						</Callout>
-					)}
-				</Margins>
+						{retentionPolicyEnabled && (
+							<Callout type='warning'>
+								{filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</p>}
+								{filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</p>}
+								{!filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning', { time: maxAgeDefault })}</p>}
+								{!filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_Unpinned', { time: maxAgeDefault })}</p>}
+							</Callout>
+						)}
+					</Margins>
+				</Box>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>

@@ -1,10 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 
 import Chart from './Chart';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { useUpdateChartData } from './useUpdateChartData';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 
 const labels = ['Available', 'Away', 'Busy', 'Offline'];
 
@@ -36,7 +37,7 @@ const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { data, state, reload } = useEndpointDataExperimental(
+	const { value: data, phase: state, reload } = useEndpointData(
 		'livechat/analytics/dashboards/charts/agents-status',
 		params,
 	);
@@ -58,7 +59,7 @@ const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 	}, [t]);
 
 	useEffect(() => {
-		if (state === ENDPOINT_STATES.DONE) {
+		if (state === AsyncStatePhase.RESOLVED) {
 			updateChartData('Offline', [offline]);
 			updateChartData('Available', [available]);
 			updateChartData('Away', [away]);

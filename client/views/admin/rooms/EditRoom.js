@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { Box, Skeleton, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, Callout, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-
 import VerticalBar from '../../../components/VerticalBar';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
@@ -10,11 +9,12 @@ import DeleteChannelWarning from '../../../components/DeleteChannelWarning';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { roomTypes, RoomSettingsEnum } from '../../../../app/utils/client';
 import { useMethod } from '../../../contexts/ServerContext';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 const getInitialValues = (room) => ({
 	roomName: room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, { type: room.t, ...room }),
@@ -36,9 +36,9 @@ export function EditRoomContextBar({ rid }) {
 }
 
 function EditRoomWithData({ rid }) {
-	const { data = {}, state, error, reload } = useEndpointDataExperimental('rooms.adminRooms.getRoom', useMemo(() => ({ rid }), [rid]));
+	const { value: data = {}, phase: state, error, reload } = useEndpointData('rooms.adminRooms.getRoom', useMemo(() => ({ rid }), [rid]));
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === AsyncStatePhase.LOADING) {
 		return <Box w='full' pb='x24'>
 			<Skeleton mbe='x4'/>
 			<Skeleton mbe='x8' />
@@ -49,7 +49,7 @@ function EditRoomWithData({ rid }) {
 		</Box>;
 	}
 
-	if (state === ENDPOINT_STATES.ERROR) {
+	if (state === AsyncStatePhase.REJECTED) {
 		return error.message;
 	}
 

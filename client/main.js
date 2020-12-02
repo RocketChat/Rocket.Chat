@@ -31,4 +31,4 @@ import './startup/userSetUtcOffset';
 import './startup/usersObserve';
 import './views/admin';
 import './views/login';
-import './views/room';
+import './views/room/adapters';
