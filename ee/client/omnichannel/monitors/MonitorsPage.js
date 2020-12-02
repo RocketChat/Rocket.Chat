@@ -2,16 +2,17 @@ import React, { useState, useMemo } from 'react';
 import { Button, Box, Callout, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import MonitorsTable from './MonitorsTable';
-import Page from '../../../../client/components/basic/Page';
-import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
-import PageSkeleton from '../../../../client/components/PageSkeleton';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useHasLicense } from '../../hooks/useHasLicense';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
 import { UserAutoComplete } from '../../../../client/components/basic/AutoComplete';
+import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import MonitorsTable from './MonitorsTable';
+import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
+import Page from '../../../../client/components/basic/Page';
+import PageSkeleton from '../../../../client/components/PageSkeleton';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -44,7 +45,7 @@ const MonitorsPage = () => {
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [username, setUsername] = useState('');
 
-	const { data, state, reload } = useEndpointDataExperimental('livechat/monitors.list', useQuery(params, sort));
+	const { value: data, phase: state, reload } = useEndpointData('livechat/monitors.list', useQuery(params, sort));
 
 	const addMonitor = useMethod('livechat:addMonitor');
 
@@ -69,7 +70,7 @@ const MonitorsPage = () => {
 		}
 	});
 
-	if (state === ENDPOINT_STATES.ERROR) {
+	if (state === AsyncStatePhase.REJECTED) {
 		return <Callout>
 			{t('Error')}
 		</Callout>;

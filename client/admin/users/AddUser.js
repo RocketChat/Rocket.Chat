@@ -14,7 +14,7 @@ export function AddUser({ roles, ...props }) {
 
 	const router = useRoute('admin-users');
 
-	const roleData = useEndpointData('roles.list', '');
+	const { value: roleData } = useEndpointData('roles.list', '');
 
 	const {
 		values,

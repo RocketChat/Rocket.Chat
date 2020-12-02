@@ -1,10 +1,10 @@
-import React, { useMemo, useState, useEffect } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useState, useEffect } from 'react';
 
-import { useUserSubscription } from '../../contexts/UserContext';
-import { useLanguage } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
+import { useEndpointData } from '../../hooks/useEndpointData';
+import { useLanguage } from '../../contexts/TranslationContext';
+import { useUserSubscription } from '../../contexts/UserContext';
 import AutoTranslate from '../../components/basic/AutoTranslate';
 import { useTabBarClose } from '../../views/room/providers/ToolboxProvider';
 
@@ -13,7 +13,7 @@ export default React.memo(({ rid }) => {
 	const userLanguage = useLanguage();
 	const subscription = useUserSubscription(rid);
 
-	const { data } = useEndpointDataExperimental(
+	const { value: data } = useEndpointData(
 		'autotranslate.getSupportedLanguages',
 		useMemo(
 			() => ({ targetLanguage: userLanguage }),
