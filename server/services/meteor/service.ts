@@ -135,7 +135,7 @@ export class MeteorService extends ServiceClass implements IMeteor {
 			setValue(setting._id, undefined);
 		});
 
-		// this.onEvent('userpresence', ({ user }) => {
+		// this.onEvent('presence.status', ({ user }) => {
 
 		// });
 
