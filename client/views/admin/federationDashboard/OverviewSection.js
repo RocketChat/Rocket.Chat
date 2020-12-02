@@ -3,8 +3,8 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import CounterSet from '../../../components/data/CounterSet';
-import { usePolledMethodData } from '../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { usePolledMethodData } from '../../../hooks/usePolledMethodData';
 
 function OverviewSection() {
 	const t = useTranslation();
