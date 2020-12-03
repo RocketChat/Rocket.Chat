@@ -699,6 +699,75 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 
+		it('should embed an youtube preview if message has a youtube url', async () => {
+			message._id = `id-${ Date.now() }`;
+			await request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						_id: message._id,
+						rid: 'GENERAL',
+						msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			this.timeout(100);
+			request.get(api('chat.getMessage'))
+				.set(credentials)
+				.query({
+					msgId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const msgMetadataUrl = res.body.message.urls[0].meta;
+					const expectedOembedHtml = '<iframe style="max-width: 100%" width="267" height="200" src="https://www.youtube.com/embed/T2v29gK8fP4?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+
+					expect(msgMetadataUrl).to.have.property('oembedHtml', expectedOembedHtml);
+				});
+		});
+
+		it('should embed an image preview if message has an image url', async () => {
+			message._id = `id-${ Date.now() }`;
+			await request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						_id: message._id,
+						rid: 'GENERAL',
+						msg: 'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+						attachments: [],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+				});
+
+			this.timeout(100);
+			request.get(api('chat.getMessage'))
+				.set(credentials)
+				.query({
+					msgId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const msgHeaders = res.body.message.urls[0].headers;
+					const expectedContentType = 'image/jpeg';
+
+					expect(msgHeaders).to.have.property('headers', expectedContentType);
+				});
+		});
+
 		describe('Read only channel', () => {
 			let readOnlyChannel;
 
