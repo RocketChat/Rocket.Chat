@@ -28,15 +28,6 @@ export async function updateUserPresence(uid: string): Promise<void> {
 
 	const userSessions = await UserSession.findOne(query) || { connections: [], metadata: undefined };
 
-	// if (userSessions.metadata?.visitor) {
-	// 	api.broadcast('visitopresence', {
-	// 		action: 'updated',
-	// 		// user: { _id: uid, username: user.username, status, statusText: user.statusText },
-	// 		metadata: userSessions.metadata,
-	// 	});
-	// 	return;
-	// }
-
 	const { result, status } = await handleUserPresenceAndStatus({
 		models: {
 			Users,
