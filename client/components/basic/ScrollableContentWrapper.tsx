@@ -15,7 +15,7 @@ type CustomScrollbarsProps = {
 
 const ScrollableContentWrapper: FC<CustomScrollbarsProps> = React.memo(React.forwardRef(({ onScroll, children }, ref) => {
 	const dir = useDir();
-	return <SimpleBar data-simplebar-direction={dir} direction={dir} style={style} scrollableNodeProps={{ ref, onScroll }} children={children}/>;
+	return <SimpleBar data-simplebar-direction={dir} style={style} scrollableNodeProps={{ ref, onScroll }} children={children}/>;
 }));
 
 export default ScrollableContentWrapper;
