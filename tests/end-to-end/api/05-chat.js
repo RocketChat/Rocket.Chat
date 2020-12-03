@@ -748,9 +748,7 @@ describe('[Chat]', function() {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-				});
+				.expect(200);
 
 			this.timeout(100);
 			request.get(api('chat.getMessage'))
