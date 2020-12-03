@@ -84,7 +84,7 @@ Template.uploadedFilesList.onCreated(function() {
 	const loadFiles = _.debounce(async (query, limit) => {
 		this.state.set('loading', true);
 
-		const { files } = await APIClient.v1.get(`${ roomTypes[room.t] }.files?roomId=${ query.rid }&limit=${ limit }&query=${ JSON.stringify(query) }&fields=${ JSON.stringify(fields) }&sort=${ JSON.stringify({ uploadedAt: -1 }) }`);
+		const { files } = await APIClient.v1.get(`${ roomTypes[room.t] }.files?roomId=${ query.rid }&limit=${ limit }&query=${ JSON.stringify(query) }&fields=${ JSON.stringify(fields) }&sort=${ JSON.stringify({ uploadedAt: 1 }) }`);
 		upsertMessageBulk({ msgs: files }, this.files);
 
 		this.state.set({
