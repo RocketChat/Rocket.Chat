@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import ConnectionStatusAlert from '../../components/connectionStatus/ConnectionStatusAlert';
-import ScrollableContentWrapper from '../../components/basic/ScrollableContentWrapper';
+import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
 import { finalStep } from './SetupWizardState';
 import FinalStep from './steps/FinalStep';
 import SideBar from './SideBar';
