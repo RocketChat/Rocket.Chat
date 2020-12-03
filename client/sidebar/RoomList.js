@@ -7,7 +7,7 @@ import memoize from 'memoize-one';
 
 import { usePreventDefault } from './hooks/usePreventDefault';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
-import { ReactiveUserStatus, colors } from '../components/basic/UserStatus';
+import { ReactiveUserStatus, colors } from '../components/UserStatus';
 import { useTranslation } from '../contexts/TranslationContext';
 import { roomTypes } from '../../app/utils';
 import { useUserPreference, useUserId } from '../contexts/UserContext';
@@ -19,7 +19,7 @@ import { useShortcutOpenMenu } from './hooks/useShortcutOpenMenu';
 import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 import { useRoomList } from './hooks/useRoomList';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
-import ScrollableContentWrapper from '../components/basic/ScrollableContentWrapper';
+import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
 
 const sections = {
 	Omnichannel,
