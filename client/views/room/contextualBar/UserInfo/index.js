@@ -16,6 +16,7 @@ import MarkdownText from '../../../../components/MarkdownText';
 import UserActions from './actions/UserActions';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -178,7 +179,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			bio,
 			phone: user.phone,
 			customFields: user.customFields,
-			email: user.emails?.find(({ address }) => !!address),
+			email: getUserEmailAddress(user),
 			utcOffset,
 			createdAt: user.createdAt,
 			// localTime: <LocalTime offset={utcOffset} />,
