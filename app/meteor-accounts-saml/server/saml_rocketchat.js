@@ -15,175 +15,173 @@ const logger = new Logger('steffo:meteor-accounts-saml', {
 
 settings.addGroup('SAML');
 
-Meteor.methods({
-	addSamlService(name) {
-		settings.add(`SAML_Custom_${ name }`, false, {
-			type: 'boolean',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'Accounts_OAuth_Custom_Enable',
-		});
-		settings.add(`SAML_Custom_${ name }_provider`, 'provider-name', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Provider',
-		});
-		settings.add(`SAML_Custom_${ name }_entry_point`, 'https://example.com/simplesaml/saml2/idp/SSOService.php', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Entry_point',
-		});
-		settings.add(`SAML_Custom_${ name }_idp_slo_redirect_url`, 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL',
-		});
-		settings.add(`SAML_Custom_${ name }_issuer`, 'https://your-rocket-chat/_saml/metadata/provider-name', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Issuer',
-		});
-		settings.add(`SAML_Custom_${ name }_cert`, '', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Cert',
-			multiline: true,
-			secret: true,
-		});
-		settings.add(`SAML_Custom_${ name }_public_cert`, '', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			multiline: true,
-			i18nLabel: 'SAML_Custom_Public_Cert',
-		});
-		settings.add(`SAML_Custom_${ name }_private_key`, '', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			multiline: true,
-			i18nLabel: 'SAML_Custom_Private_Key',
-			secret: true,
-		});
-		settings.add(`SAML_Custom_${ name }_button_label_text`, '', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text',
-		});
-		settings.add(`SAML_Custom_${ name }_button_label_color`, '#FFFFFF', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
-		});
-		settings.add(`SAML_Custom_${ name }_button_color`, '#1d74f5', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
-		});
-		settings.add(`SAML_Custom_${ name }_generate_username`, false, {
-			type: 'boolean',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Generate_Username',
-		});
-		settings.add(`SAML_Custom_${ name }_username_normalize`, 'None', {
-			type: 'select',
-			values: [
-				{ key: 'None', i18nLabel: 'SAML_Custom_Username_Normalize_None' },
-				{ key: 'Lowercase', i18nLabel: 'SAML_Custom_Username_Normalize_Lowercase' },
-			],
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Username_Normalize',
-		});
-		settings.add(`SAML_Custom_${ name }_immutable_property`, 'EMail', {
-			type: 'select',
-			values: [
-				{ key: 'Username', i18nLabel: 'SAML_Custom_Immutable_Property_Username' },
-				{ key: 'EMail', i18nLabel: 'SAML_Custom_Immutable_Property_EMail' },
-			],
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Immutable_Property',
-		});
-		settings.add(`SAML_Custom_${ name }_debug`, false, {
-			type: 'boolean',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Debug',
-		});
-		settings.add(`SAML_Custom_${ name }_name_overwrite`, false, {
-			type: 'boolean',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_name_overwrite',
-		});
-		settings.add(`SAML_Custom_${ name }_mail_overwrite`, false, {
-			type: 'boolean',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_mail_overwrite',
-		});
-		settings.add(`SAML_Custom_${ name }_logout_behaviour`, 'SAML', {
-			type: 'select',
-			values: [
-				{ key: 'SAML', i18nLabel: 'SAML_Custom_Logout_Behaviour_Terminate_SAML_Session' },
-				{ key: 'Local', i18nLabel: 'SAML_Custom_Logout_Behaviour_End_Only_RocketChat' },
-			],
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Logout_Behaviour',
-		});
-		settings.add(`SAML_Custom_${ name }_custom_authn_context`, 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Authn_Context',
-		});
-		settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "cn": "name"}', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_user_data_fieldmap',
-			i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
-		});
-		settings.add(`SAML_Custom_${ name }_authn_context_comparison`, 'exact', {
-			type: 'select',
-			values: [
-				{ key: 'better', i18nLabel: 'Better' },
-				{ key: 'exact', i18nLabel: 'Exact' },
-				{ key: 'maximum', i18nLabel: 'Maximum' },
-				{ key: 'minimum', i18nLabel: 'Minimum' },
-			],
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Custom_Authn_Context_Comparison',
-		});
+function addSamlService(name) {
+	settings.add(`SAML_Custom_${ name }`, false, {
+		type: 'boolean',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'Accounts_OAuth_Custom_Enable',
+	});
+	settings.add(`SAML_Custom_${ name }_provider`, 'provider-name', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_Provider',
+	});
+	settings.add(`SAML_Custom_${ name }_entry_point`, 'https://example.com/simplesaml/saml2/idp/SSOService.php', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_Entry_point',
+	});
+	settings.add(`SAML_Custom_${ name }_idp_slo_redirect_url`, 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL',
+	});
+	settings.add(`SAML_Custom_${ name }_issuer`, 'https://your-rocket-chat/_saml/metadata/provider-name', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_Issuer',
+	});
+	settings.add(`SAML_Custom_${ name }_cert`, '', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_Cert',
+		multiline: true,
+		secret: true,
+	});
+	settings.add(`SAML_Custom_${ name }_public_cert`, '', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		multiline: true,
+		i18nLabel: 'SAML_Custom_Public_Cert',
+	});
+	settings.add(`SAML_Custom_${ name }_private_key`, '', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		multiline: true,
+		i18nLabel: 'SAML_Custom_Private_Key',
+		secret: true,
+	});
+	settings.add(`SAML_Custom_${ name }_button_label_text`, '', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text',
+	});
+	settings.add(`SAML_Custom_${ name }_button_label_color`, '#FFFFFF', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
+	});
+	settings.add(`SAML_Custom_${ name }_button_color`, '#1d74f5', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
+	});
+	settings.add(`SAML_Custom_${ name }_generate_username`, false, {
+		type: 'boolean',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_Generate_Username',
+	});
+	settings.add(`SAML_Custom_${ name }_username_normalize`, 'None', {
+		type: 'select',
+		values: [
+			{ key: 'None', i18nLabel: 'SAML_Custom_Username_Normalize_None' },
+			{ key: 'Lowercase', i18nLabel: 'SAML_Custom_Username_Normalize_Lowercase' },
+		],
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_Username_Normalize',
+	});
+	settings.add(`SAML_Custom_${ name }_immutable_property`, 'EMail', {
+		type: 'select',
+		values: [
+			{ key: 'Username', i18nLabel: 'SAML_Custom_Immutable_Property_Username' },
+			{ key: 'EMail', i18nLabel: 'SAML_Custom_Immutable_Property_EMail' },
+		],
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_Immutable_Property',
+	});
+	settings.add(`SAML_Custom_${ name }_debug`, false, {
+		type: 'boolean',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_Debug',
+	});
+	settings.add(`SAML_Custom_${ name }_name_overwrite`, false, {
+		type: 'boolean',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_name_overwrite',
+	});
+	settings.add(`SAML_Custom_${ name }_mail_overwrite`, false, {
+		type: 'boolean',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_mail_overwrite',
+	});
+	settings.add(`SAML_Custom_${ name }_logout_behaviour`, 'SAML', {
+		type: 'select',
+		values: [
+			{ key: 'SAML', i18nLabel: 'SAML_Custom_Logout_Behaviour_Terminate_SAML_Session' },
+			{ key: 'Local', i18nLabel: 'SAML_Custom_Logout_Behaviour_End_Only_RocketChat' },
+		],
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_Logout_Behaviour',
+	});
+	settings.add(`SAML_Custom_${ name }_custom_authn_context`, 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_Authn_Context',
+	});
+	settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "cn": "name"}', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_user_data_fieldmap',
+		i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
+	});
+	settings.add(`SAML_Custom_${ name }_authn_context_comparison`, 'exact', {
+		type: 'select',
+		values: [
+			{ key: 'better', i18nLabel: 'Better' },
+			{ key: 'exact', i18nLabel: 'Exact' },
+			{ key: 'maximum', i18nLabel: 'Maximum' },
+			{ key: 'minimum', i18nLabel: 'Minimum' },
+		],
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Custom_Authn_Context_Comparison',
+	});
 
-		settings.add(`SAML_Custom_${ name }_default_user_role`, 'user', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Default_User_Role',
-			i18nDescription: 'SAML_Default_User_Role_Description',
-		});
-		settings.add(`SAML_Custom_${ name }_role_attribute_name`, '', {
-			type: 'string',
-			group: 'SAML',
-			section: name,
-			i18nLabel: 'SAML_Role_Attribute_Name',
-			i18nDescription: 'SAML_Role_Attribute_Name_Description',
-		});
-	},
-});
+	settings.add(`SAML_Custom_${ name }_default_user_role`, 'user', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Default_User_Role',
+		i18nDescription: 'SAML_Default_User_Role_Description',
+	});
+	settings.add(`SAML_Custom_${ name }_role_attribute_name`, '', {
+		type: 'string',
+		group: 'SAML',
+		section: name,
+		i18nLabel: 'SAML_Role_Attribute_Name',
+		i18nDescription: 'SAML_Role_Attribute_Name_Description',
+	});
+}
 
 const normalizeCert = function(cert) {
 	if (typeof cert === 'string') {
@@ -294,7 +292,7 @@ const updateServices = debounce(() => {
 
 settings.get(/^SAML_.+/, updateServices);
 
-Meteor.startup(() => Meteor.call('addSamlService', 'Default'));
+Meteor.startup(() => addSamlService('Default'));
 
 export {
 	updateServices,
