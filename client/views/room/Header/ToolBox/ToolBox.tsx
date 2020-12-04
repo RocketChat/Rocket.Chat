@@ -12,6 +12,19 @@ import { ToolboxActionConfig } from '../../../../channel/lib/Toolbox';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
 
+const renderHeaderAction: ToolboxActionConfig['renderAction'] = (
+	{ id, icon, title, action, className, tabId },
+	index,
+) => <Header.ToolBoxAction
+	className={className}
+	primary={id === tabId}
+	data-toolbox={index}
+	onClick={action}
+	title={title}
+	key={id}
+	icon={icon}
+/>;
+
 const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Element => {
 	const tab = useTab();
 	const openTabBar = useTabBarOpen();
@@ -50,7 +63,7 @@ const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Eleme
 
 
 	return <>
-		{ visibleActions.map(({ id, icon, title, action = actionDefault }, index) => <Header.ToolBoxAction className={className} primary={id === tab?.id} data-toolbox={index} onClick={action} title={t(title)} key={id} icon={icon}/>)}
+		{ visibleActions.map(({ renderAction = renderHeaderAction, title, ...action }, index) => renderAction({ action: actionDefault, ...action, className, tabId: tab?.id, title: t(title) }, index)) }
 		{ actions.length > 6 && <Menu
 			small={!isMobile}
 			className={className}

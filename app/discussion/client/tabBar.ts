@@ -1,4 +1,4 @@
-import { useMemo, lazy, LazyExoticComponent, FC} from 'react';
+import { useMemo, lazy, LazyExoticComponent, FC } from 'react';
 
 import { addAction } from '../../../client/channel/lib/Toolbox';
 import { useSetting } from '../../../client/contexts/SettingsContext';
