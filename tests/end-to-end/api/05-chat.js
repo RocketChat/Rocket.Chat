@@ -699,73 +699,80 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 
-		it.only('should embed an youtube preview if message has a youtube url', async () => {
-			message._id = `id-${ Date.now() }`;
-			await request.post(api('chat.sendMessage'))
-				.set(credentials)
-				.send({
-					message: {
-						_id: message._id,
-						rid: 'GENERAL',
-						msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
-						alias: 'Gruggy',
-						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+		describe('oembed', () => {
+			let ytEmbedMsgId;
+			let imgUrlMsgId;
 
-			setTimeout(() => {
-				request.get(api('chat.getMessage'))
+			before(async () => {
+				const ytEmbedMsgPayload = {
+					_id: `id-${ Date.now() }`,
+					rid: 'GENERAL',
+					msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
+					alias: 'Gruggy',
+					emoji: ':smirk:',
+					avatar: 'http://res.guggy.com/logo_128.png',
+				};
+
+				const imgUrlMsgPayload = {
+					_id: `id-${ Date.now() }1`,
+					rid: 'GENERAL',
+					msg: 'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
+					alias: 'Gruggy',
+					emoji: ':smirk:',
+					avatar: 'http://res.guggy.com/logo_128.png',
+				};
+
+				const ytPostResponse = await request.post(api('chat.sendMessage'))
 					.set(credentials)
-					.query({
-						msgId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						const msgMetadataUrl = res.body.message.urls[0].meta;
-						const expectedOembedHtml = '<iframe style="max-width: 100%" width="267" height="200" src="https://www.youtube.com/embed/T2v29gK8fP4?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+					.send({ message: ytEmbedMsgPayload });
 
-						expect(msgMetadataUrl).to.have.property('oembedHtml', expectedOembedHtml);
-					});
-			}, 100);
-		});
 
-		it.only('should embed an image preview if message has an image url', async () => {
-			message._id = `id-${ Date.now() }`;
-			await request.post(api('chat.sendMessage'))
-				.set(credentials)
-				.send({
-					message: {
-						_id: message._id,
-						rid: 'GENERAL',
-						msg: 'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
-						alias: 'Gruggy',
-						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
-						attachments: [],
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			setTimeout(() => {
-				request.get(api('chat.getMessage'))
+				const imgUrlResponse = await request.post(api('chat.sendMessage'))
 					.set(credentials)
-					.query({
-						msgId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						const msgHeaders = res.body.message.urls[0].headers;
-						const expectedContentType = 'image/jpeg';
+					.send({ message: imgUrlMsgPayload });
 
-						expect(msgHeaders).to.have.property('headers', expectedContentType);
-					});
-			}, 100);
+				ytEmbedMsgId = ytPostResponse.body.message._id;
+				imgUrlMsgId = imgUrlResponse.body.message._id;
+			});
+
+			it('should embed an youtube preview if message has a youtube url', (done) => {
+				setTimeout(() => {
+					request.get(api('chat.getMessage'))
+						.set(credentials)
+						.query({
+							msgId: ytEmbedMsgId,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							const msgMetadataUrl = res.body.message.urls[0].meta;
+							const expectedOembedHtml = '<iframe style="max-width: 100%" width="267" height="200" src="https://www.youtube.com/embed/T2v29gK8fP4?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+
+							expect(msgMetadataUrl).to.have.property('oembedHtml', expectedOembedHtml);
+						})
+						.end(done);
+				}, 200);
+			});
+
+			it('should embed an image preview if message has an image url', (done) => {
+				setTimeout(() => {
+					request.get(api('chat.getMessage'))
+						.set(credentials)
+						.query({
+							msgId: imgUrlMsgId,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							const msgHeaders = res.body.message.urls[0].headers;
+							console.log('msg urls object: ');
+							const expectedContentType = 'image/jpeg';
+
+							expect(msgHeaders).to.have.property('contentType', expectedContentType);
+						})
+						.end(done);
+				}, 200);
+			});
 		});
 
 		describe('Read only channel', () => {
