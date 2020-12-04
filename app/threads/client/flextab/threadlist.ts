@@ -1,4 +1,4 @@
-import { useMemo, lazy } from 'react';
+import { useMemo, lazy, LazyExoticComponent, FC } from 'react';
 
 import { addAction } from '../../../../client/channel/lib/Toolbox';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
@@ -11,7 +11,7 @@ addAction('thread', () => {
 		full: true,
 		title: 'Threads',
 		icon: 'thread',
-		template: lazy(() => import('../../../../client/channel/Threads/ContextualBar/List')),
+		template: lazy(() => import('../../../../client/channel/Threads/ContextualBar/List')) as LazyExoticComponent<FC>,
 		// badge: () => {
 		// 	const subscription = Subscriptions.findOne({ rid: Session.get('openedRoom') }, { fields: { tunread: 1, tunreadUser: 1, tunreadGroup: 1 } });
 		// 	if (!subscription?.tunread?.length) {

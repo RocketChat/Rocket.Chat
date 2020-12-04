@@ -1,5 +1,6 @@
 declare module '@rocket.chat/fuselage' {
 	import { css } from '@rocket.chat/css-in-js';
+	import { Placements } from '@rocket.chat/fuselage-hooks';
 	import {
 		AllHTMLAttributes,
 		Context,
@@ -12,6 +13,7 @@ declare module '@rocket.chat/fuselage' {
 		RefAttributes,
 		SetStateAction,
 		SVGAttributes,
+		FC,
 	} from 'react';
 
 	type CssClassName = ReturnType<typeof css>;
@@ -353,4 +355,28 @@ declare module '@rocket.chat/fuselage' {
 	export const Select: ForwardRefExoticComponent<SelectProps>;
 
 	export const Divider: ForwardRefExoticComponent<BoxProps>;
+
+	type OptionProps = {
+		id?: string;
+		avatar?: typeof Avatar;
+		label?: string;
+		focus?: boolean;
+		selected?: boolean;
+		icon?: string;
+		className?: BoxProps['className'];
+		title?: string;
+	};
+
+	export const Option: ForwardRefExoticComponent<OptionProps>;
+
+	type MenuProps = Omit<ActionButtonProps, 'icon'> & {
+		icon?: string;
+		options: any;
+		optionWidth?: BoxProps['width'];
+		placement?: Placements;
+		renderItem: Function;
+	}
+
+	export const Menu: ForwardRefExoticComponent<MenuProps>;
+
 }

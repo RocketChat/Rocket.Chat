@@ -1,4 +1,4 @@
-import { useMemo, lazy } from 'react';
+import { useMemo, lazy, LazyExoticComponent, FC } from 'react';
 
 import { addAction } from '../../channel/lib/Toolbox';
 import { usePermission } from '../../contexts/AuthorizationContext';
@@ -11,7 +11,8 @@ addAction('export-messages', ({ room }) => {
 		anonymous: true,
 		title: 'Export_Messages',
 		icon: 'mail',
-		template: lazy(() => import('../../channel/ExportMessages')),
+		template: lazy(() => import('../../channel/ExportMessages')) as LazyExoticComponent<FC>,
 		full: true,
-		order: 12 } : null), [hasPermission]);
+		order: 12,
+	} : null), [hasPermission]);
 });

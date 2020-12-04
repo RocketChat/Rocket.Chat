@@ -1,7 +1,7 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useContext, useMemo } from 'react';
 
-import { LayoutContext, SizeLayout } from '../contexts/LayoutContext';
+import { LayoutContext, SizeLayout, LayoutContextValue } from '../contexts/LayoutContext';
 import { useQueryStringParameter } from '../contexts/RouterContext';
 import { useSetting } from '../contexts/SettingsContext';
 import { menu } from '../../app/ui-utils/client';
@@ -34,4 +34,4 @@ export default LayoutProvider;
 
 export const useLayoutSizes = (): SizeLayout => useContext(LayoutContext).size;
 export const useLayoutContextualBarExpanded = (): boolean => useContext(LayoutContext).contextualBarExpanded;
-export const useLayoutContextualBarPosition = (): 'relative' | 'absolute' => useContext(LayoutContext).contextualBarPosition;
+export const useLayoutContextualBarPosition = (): LayoutContextValue['contextualBarPosition'] => useContext(LayoutContext).contextualBarPosition;

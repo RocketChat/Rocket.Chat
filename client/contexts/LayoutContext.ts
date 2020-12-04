@@ -5,14 +5,14 @@ export type SizeLayout = {
 	contextualBar: string;
 }
 
-type LayoutContextValue = {
+export type LayoutContextValue = {
 	isEmbedded: boolean;
 	showTopNavbarEmbeddedLayout: boolean;
 	isMobile: boolean;
 	sidebar: any;
 	size: SizeLayout;
 	contextualBarExpanded: boolean;
-	contextualBarPosition: 'absolute' | 'relative';
+	contextualBarPosition: 'absolute' | 'relative' | 'fixed';
 }
 
 export const LayoutContext = createContext<LayoutContextValue>({

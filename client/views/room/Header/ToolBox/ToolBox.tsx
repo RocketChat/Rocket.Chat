@@ -1,5 +1,5 @@
-import React, { memo, useContext, useEffect } from 'react';
-import { Menu, Option } from '@rocket.chat/fuselage';
+import React, { memo, useContext, useEffect, ReactNode } from 'react';
+import { Menu, Option, BoxProps } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import tinykeys from 'tinykeys';
 
@@ -12,7 +12,7 @@ import { ToolboxActionConfig } from '../../../../channel/lib/Toolbox';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
 
-const ToolBox = ({ className }): JSX.Element => {
+const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Element => {
 	const tab = useTab();
 	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();
@@ -57,7 +57,7 @@ const ToolBox = ({ className }): JSX.Element => {
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={hiddenActions}
-			renderItem={({ label: { label, icon }, ...props }: { label: any }): JSX.Element => <Option label={t(label)} title={t(label)} icon={icon} {...props}/>}
+			renderItem={({ label: { label, icon }, ...props }: { label: any }): ReactNode => <Option label={t(label)} title={t(label)} icon={icon} {...props}/>}
 		/>}
 	</>;
 };
