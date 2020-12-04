@@ -46,7 +46,7 @@ export const openUserCard = async (args) => {
 	container = container || createContainer();
 
 	unregister = unregister || await createEphemeralPortal(
-		() => import('../../../../client/channel/UserCard'), () => {
+		() => import('../../../../client/views/room/UserCard'), () => {
 			Dep.depend();
 			return props;
 		},

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Field } from '@rocket.chat/fuselage';
 
-import Page from '../../../client/components/basic/Page';
+import Page from '../../../client/components/Page';
 import DateRangePicker from './DateRangePicker';
 import AuditLogTable from './AuditLogTable';
 import { useTranslation } from '../../../client/contexts/TranslationContext';

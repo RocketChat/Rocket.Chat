@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { AutoComplete, Option, Options, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import UserAvatar from '../../../client/components/basic/avatar/UserAvatar';
+import UserAvatar from '../../../client/components/avatar/UserAvatar';
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
