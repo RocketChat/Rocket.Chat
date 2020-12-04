@@ -699,7 +699,7 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 
-		it('should embed an youtube preview if message has a youtube url', async () => {
+		it.only('should embed an youtube preview if message has a youtube url', async () => {
 			message._id = `id-${ Date.now() }`;
 			await request.post(api('chat.sendMessage'))
 				.set(credentials)
@@ -716,23 +716,24 @@ describe('[Chat]', function() {
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 
-			this.timeout(100);
-			request.get(api('chat.getMessage'))
-				.set(credentials)
-				.query({
-					msgId: message._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					const msgMetadataUrl = res.body.message.urls[0].meta;
-					const expectedOembedHtml = '<iframe style="max-width: 100%" width="267" height="200" src="https://www.youtube.com/embed/T2v29gK8fP4?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+			setTimeout(() => {
+				request.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						const msgMetadataUrl = res.body.message.urls[0].meta;
+						const expectedOembedHtml = '<iframe style="max-width: 100%" width="267" height="200" src="https://www.youtube.com/embed/T2v29gK8fP4?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
 
-					expect(msgMetadataUrl).to.have.property('oembedHtml', expectedOembedHtml);
-				});
+						expect(msgMetadataUrl).to.have.property('oembedHtml', expectedOembedHtml);
+					});
+			}, 100);
 		});
 
-		it('should embed an image preview if message has an image url', async () => {
+		it.only('should embed an image preview if message has an image url', async () => {
 			message._id = `id-${ Date.now() }`;
 			await request.post(api('chat.sendMessage'))
 				.set(credentials)
@@ -750,20 +751,21 @@ describe('[Chat]', function() {
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 
-			this.timeout(100);
-			request.get(api('chat.getMessage'))
-				.set(credentials)
-				.query({
-					msgId: message._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					const msgHeaders = res.body.message.urls[0].headers;
-					const expectedContentType = 'image/jpeg';
+			setTimeout(() => {
+				request.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						const msgHeaders = res.body.message.urls[0].headers;
+						const expectedContentType = 'image/jpeg';
 
-					expect(msgHeaders).to.have.property('headers', expectedContentType);
-				});
+						expect(msgHeaders).to.have.property('headers', expectedContentType);
+					});
+			}, 100);
 		});
 
 		describe('Read only channel', () => {
