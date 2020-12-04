@@ -16,5 +16,10 @@
 		"title": "[BREAK] Support for Cordova (Rocket.Chat Legacy app) has reached End-of-life, support has been discontinued",
 		"userLogin": "sampaiodiego",
 		"contributors": []
+	}],
+	"0.74.4": [{
+		"title": "[FIX] Exception on certain login cases including SAML",
+		"userLogin": "sampaiodiego",
+		"contributors": []
 	}]
 }
