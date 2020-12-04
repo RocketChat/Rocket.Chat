@@ -32,6 +32,7 @@ Meteor.startup(function() {
 			icon: 'phone',
 			iconColor: 'red',
 			template: 'videoFlexTabBbb',
+			full: true,
 			width: 600,
 			order: live ? -1 : 0,
 			class: () => live && 'live',
@@ -46,7 +47,8 @@ Meteor.startup(function() {
 				i18nTitle: 'Call',
 				icon: 'phone',
 				iconColor: 'red',
-				template: 'videoFlexTab',
+				template: 'CallJitsi',
+				full: true,
 				width: 600,
 				order: 0,
 			});

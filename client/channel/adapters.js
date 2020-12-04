@@ -41,3 +41,11 @@ createTemplateForComponent('EditInvite', () => import('../views/room/RoomMembers
 createTemplateForComponent('OTR', () => import('../views/room/ContextualBar/OTR'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
+
+createTemplateForComponent('CallJitsi', () => import('./Call/Jitsi'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
+
+// createTemplateForComponent('CallBbb', () => import('./Call/Bbb'), {
+// 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+// });
