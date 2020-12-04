@@ -2,11 +2,12 @@ import React, { useRef, useEffect } from 'react';
 
 import Chart from './Chart';
 import { useUpdateChartData } from './useUpdateChartData';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
 import { getMomentChartLabelsAndData } from './getMomentChartLabelsAndData';
 import { getMomentCurrentLabel } from './getMomentCurrentLabel';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
 
@@ -32,7 +33,7 @@ const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { data, state, reload } = useEndpointDataExperimental(
+	const { value: data, phase: state, reload } = useEndpointData(
 		'livechat/analytics/dashboards/charts/timings',
 		params,
 	);
@@ -67,7 +68,7 @@ const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
 	}, [t]);
 
 	useEffect(() => {
-		if (state === ENDPOINT_STATES.DONE) {
+		if (state === AsyncStatePhase.RESOLVED) {
 			const label = getMomentCurrentLabel();
 			updateChartData(label, [reactionAvg, reactionLongest, responseAvg, responseLongest]);
 		}

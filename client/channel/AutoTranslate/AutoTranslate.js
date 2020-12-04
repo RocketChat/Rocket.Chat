@@ -4,8 +4,8 @@ import { FieldGroup, Field, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 
 import { useUserSubscription } from '../../contexts/UserContext';
 import { useLanguage, useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import { useTabBarClose } from '../../views/room/providers/ToolboxProvider';
 import VerticalBar from '../../components/basic/VerticalBar';
 
@@ -47,7 +47,7 @@ export default React.memo(({ rid }) => {
 	const userLanguage = useLanguage();
 	const subscription = useUserSubscription(rid);
 
-	const { data } = useEndpointDataExperimental(
+	const { value: data } = useEndpointData(
 		'autotranslate.getSupportedLanguages',
 		useMemo(
 			() => ({ targetLanguage: userLanguage }),

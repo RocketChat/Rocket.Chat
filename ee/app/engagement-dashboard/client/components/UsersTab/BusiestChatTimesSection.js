@@ -14,7 +14,7 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 		moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
 			.subtract(1).subtract(displacement, 'days'), [displacement]);
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
-	const data = useEndpointData('engagement-dashboard/users/chat-busier/hourly-data', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/chat-busier/hourly-data', params);
 	const values = useMemo(() => {
 		if (!data) {
 			return [];
@@ -121,7 +121,7 @@ function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) 
 		return `${ startOfWeekDate.format('L') } - ${ currentDate.format('L') }`;
 	}, [currentDate]);
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
-	const data = useEndpointData('engagement-dashboard/users/chat-busier/weekly-data', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/chat-busier/weekly-data', params);
 	const values = useMemo(() => (data ? data.month.map(({ users, day, month, year }) => ({
 		users,
 		day: String(moment.utc([year, month - 1, day, 0, 0, 0]).valueOf()),

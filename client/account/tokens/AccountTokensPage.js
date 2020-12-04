@@ -1,14 +1,14 @@
 import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import Page from '../../components/basic/Page';
 import AccountTokensTable from './AccountTokensTable';
 import AddToken from './AddToken';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 const AccountTokensPage = () => {
 	const t = useTranslation();
-	const { data, reload } = useEndpointDataExperimental('users.getPersonalAccessTokens');
+	const { value: data, reload } = useEndpointData('users.getPersonalAccessTokens');
 
 	return <Page>
 		<Page.Header title={t('Personal_Access_Tokens')}/>

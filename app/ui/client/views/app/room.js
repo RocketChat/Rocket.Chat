@@ -61,27 +61,6 @@ export const openProfileTab = (e, instance, username) => {
 	instance.tabBar.openUserInfo(username);
 };
 
-// export const openProfileTab = (e, instance, username) => {
-// 	// if (settings.get('UI_Click_Direct_Message')) {
-// 	// 	Meteor.call('createDirectMessage', username, (error, result) => {
-// 	// 		if (error) {
-// 	// 			if (error.isClientSafe) {
-// 	// 				openProfileTab(e, instance, username);
-// 	// 			} else {
-// 	// 				handleError(error);
-// 	// 			}
-// 	// 		}
-
-// 	// 		if (result && result.rid) {
-// 	// 			FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
-// 	// 		}
-// 	// 	});
-// 	// } else {
-// 	openProfileTab(e, instance, username);
-// 	// }
-// 	e.stopPropagation();
-// };
-
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');
 	if (!context) {
@@ -435,20 +414,6 @@ Template.roomOld.helpers({
 		return moment(this.since).calendar(null, { sameDay: 'LT' });
 	},
 
-	// flexData() {
-	// 	const flexData = {
-	// 		tabBar: Template.instance().tabBar,
-	// 		data: {
-	// 			rid: this._id,
-	// 			userDetail: Template.instance().userDetail.get(),
-	// 			groupDetail: Template.instance().groupDetail.get(),
-	// 			clearUserDetail: Template.instance().clearUserDetail,
-	// 		},
-	// 		...Template.instance().tabBar.getData(),
-	// 	};
-	// 	return flexData;
-	// },
-
 	adminClass() {
 		if (hasRole(Meteor.userId(), 'admin')) { return 'admin'; }
 	},
@@ -534,14 +499,6 @@ Template.roomOld.helpers({
 		return moment.duration(roomMaxAge(room) * 1000 * 60 * 60 * 24).humanize();
 	},
 	messageContext,
-	// shouldCloseFlexTab() {
-	// 	FlowRouter.watchPathChange();
-	// 	const tab = FlowRouter.getParam('tab');
-	// 	const { tabBar } = Template.instance();
-	// 	if (tab === 'thread' && tabBar.template.get() !== 'threads') {
-	// 		return true;
-	// 	}
-	// },
 	openedThread() {
 		FlowRouter.watchPathChange();
 		const tab = FlowRouter.getParam('tab');
@@ -1108,11 +1065,6 @@ Template.roomOld.onCreated(function() {
 	this.flexTemplate = new ReactiveVar();
 
 	this.groupDetail = new ReactiveVar();
-	// this.tabBar.showGroup(FlowRouter.current().route.name);
-	// callbacks.run('onCreateRoomTabBar', {
-	// 	tabBar: this.tabBar,
-	// 	room: Rooms.findOne(rid, { fields: { t: 1 } }),
-	// });
 
 	this.hideLeaderHeader = new ReactiveVar(false);
 
