@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import AuditLog from './auditLog';
 import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
-import { hasAllPermission } from '../../../../app/authorization/server';
+import { hasPermission } from '../../../../app/authorization/server';
 
 const getValue = (room) => room && { rids: [room._id], name: room.name };
 
@@ -37,7 +37,7 @@ Meteor.methods({
 		check(endDate, Date);
 
 		const user = Meteor.user();
-		if (!hasAllPermission(user._id, 'can-audit')) {
+		if (!hasPermission(user._id, 'can-audit')) {
 			throw new Meteor.Error('Not allowed');
 		}
 
@@ -71,7 +71,7 @@ Meteor.methods({
 		check(endDate, Date);
 
 		const user = Meteor.user();
-		if (!hasAllPermission(user._id, 'can-audit')) {
+		if (!hasPermission(user._id, 'can-audit')) {
 			throw new Meteor.Error('Not allowed');
 		}
 
@@ -115,7 +115,7 @@ Meteor.methods({
 	auditGetAuditions({ startDate, endDate }) {
 		check(startDate, Date);
 		check(endDate, Date);
-		if (!hasAllPermission(Meteor.userId(), 'can-audit-log')) {
+		if (!hasPermission(Meteor.userId(), 'can-audit-log')) {
 			throw new Meteor.Error('Not allowed');
 		}
 		return AuditLog.find({
