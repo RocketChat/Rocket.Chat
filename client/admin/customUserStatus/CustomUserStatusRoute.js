@@ -8,10 +8,10 @@ import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import AddCustomUserStatus from './AddCustomUserStatus';
 import CustomUserStatus from './CustomUserStatus';
 import EditCustomUserStatusWithData from './EditCustomUserStatusWithData';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 function CustomUserStatusRoute() {
 	const route = useRoute('custom-user-status');
@@ -33,7 +33,7 @@ function CustomUserStatusRoute() {
 		...current && { offset: current },
 	}), [text, itemsPerPage, current, column, direction]);
 
-	const { data, reload } = useEndpointDataExperimental('custom-user-status.list', query);
+	const { value: data, reload } = useEndpointData('custom-user-status.list', query);
 
 	const handleItemClick = (_id) => () => {
 		route.push({

@@ -12,19 +12,20 @@ const MemberListRouter = ({ tabBar, rid }) => {
 	const username = useRouteParameter('context');
 	const room = useRoom();
 	const ownUserId = useUserId();
+	const tab = useTab();
 
 	const [currentRoute, params] = useCurrentRoute();
 	const router = useRoute(currentRoute);
 
-	const onClose = useMutableCallback(() => router.push({ ...params, tab: 'members-list', context: '' }));
+	const isMembersList = tab.id === 'members-list' || tab.id === 'user-info-group';
 
-	const tab = useTab();
+	const onClose = useMutableCallback(() => router.push({ ...params, tab: isMembersList ? tab.id : '', context: '' }));
 
-	if ((tab.id === 'members-list' || tab.id === 'user-info-group') && !username) {
+	if (isMembersList && !username) {
 		return <VerticalBarOldActions {...tab} name={'membersList'} template={'membersList'} tabBar={tabBar} rid={rid} _id={rid} />;
 	}
 
-	return <UserInfo {...username ? { username, onClose } : { uid: room.uids.filter((uid) => uid !== ownUserId).shift() }} rid={rid}/>;
+	return <UserInfo {...username ? { username } : { uid: room.uids.filter((uid) => uid !== ownUserId).shift() }} onClose={onClose} rid={rid}/>;
 };
 
 export default MemberListRouter;

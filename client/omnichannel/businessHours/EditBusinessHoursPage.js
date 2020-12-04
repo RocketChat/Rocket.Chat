@@ -10,15 +10,16 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { mapBusinessHoursForm } from './mapBusinessHoursForm';
+import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 const EditBusinessHoursPage = ({ id, type }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isSingleBH = useIsSingleBusinessHours();
 
-	const { data, state } = useEndpointDataExperimental('livechat/business-hour', useMemo(() => ({ _id: id, type }), [id, type]));
+	const { value: data, phase: state } = useEndpointData('livechat/business-hour', useMemo(() => ({ _id: id, type }), [id, type]));
 
 	const saveData = useRef({ form: {} });
 
@@ -30,7 +31,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 	const router = useRoute('omnichannel-businessHours');
 
 	const handleSave = useMutableCallback(async () => {
-		if (state !== ENDPOINT_STATES.DONE || !data.success) {
+		if (state !== AsyncStatePhase.RESOLVED || !data.success) {
 			return;
 		}
 
@@ -83,11 +84,11 @@ const EditBusinessHoursPage = ({ id, type }) => {
 		router.push({});
 	});
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === AsyncStatePhase.LOADING) {
 		return <PageSkeleton />;
 	}
 
-	if (state === ENDPOINT_STATES.ERROR || (ENDPOINT_STATES.DONE && !data.businessHour)) {
+	if (state === AsyncStatePhase.REJECTED || (AsyncStatePhase.RESOLVED && !data.businessHour)) {
 		return <Page>
 			<Page.Header title={t('Business_Hours')}>
 				<Button onClick={handleReturn}>

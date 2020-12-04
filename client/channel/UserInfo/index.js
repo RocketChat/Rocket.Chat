@@ -2,18 +2,16 @@ import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
 import { UserInfo } from '../../components/basic/UserInfo';
-import {
-	useEndpointDataExperimental,
-	ENDPOINT_STATES,
-} from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { ReactiveUserStatus } from '../../components/basic/UserStatus';
 import UserCard from '../../components/basic/UserCard';
-import { FormSkeleton } from '../../admin/users/Skeleton';
+import { FormSkeleton } from '../../components/Skeleton';
 import VerticalBar from '../../components/basic/VerticalBar';
 import UserActions from './actions/UserActions';
 import { useRolesDescription } from '../../contexts/AuthorizationContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, rid, onClose, video, showBackButton, ...props }) {
 	const t = useTranslation();
@@ -22,7 +20,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
-	const { data, state, error } = useEndpointDataExperimental(
+	const { value: data, phase: state, error } = useEndpointData(
 		'users.info',
 		useMemo(
 			() => ({ ...uid && { userId: uid }, ...username && { username } }),
@@ -75,7 +73,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 				(error && <VerticalBar.Content>
 					<Box mbs='x16'>{t('User_not_found')}</Box>
 				</VerticalBar.Content>)
-				|| (state === ENDPOINT_STATES.LOADING && <VerticalBar.Content>
+				|| (state === AsyncStatePhase.LOADING && <VerticalBar.Content>
 					<FormSkeleton />
 				</VerticalBar.Content>)
 				|| <UserInfo

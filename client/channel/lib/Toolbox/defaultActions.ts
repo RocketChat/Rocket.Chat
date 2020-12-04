@@ -5,7 +5,7 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { addAction } from '.';
 
 addAction('rocket-search', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live'],
 	id: 'rocket-search',
 	title: 'Search_Messages',
 	icon: 'magnifier',
@@ -44,7 +44,7 @@ addAction('members-list', ({ room }) => {
 });
 
 addAction('uploaded-files-list', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live'],
 	id: 'uploaded-files-list',
 	title: 'Files',
 	icon: 'clip',

@@ -3,11 +3,11 @@ import { Field, MultiSelectFiltered } from '@rocket.chat/fuselage';
 // import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../../../client/hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
 export const DepartmentForwarding = ({ value, handler, label, placeholder }) => {
 	const t = useTranslation();
-	const { data } = useEndpointDataExperimental('livechat/department');
+	const { value: data } = useEndpointData('livechat/department');
 
 	const options = useMemo(() => (data && [...data.departments.map((department) => [department._id, department.name])]) || [], [data]);
 

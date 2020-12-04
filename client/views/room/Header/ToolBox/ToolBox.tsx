@@ -12,7 +12,7 @@ import { ToolboxActionConfig } from '../../../../channel/lib/Toolbox';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
 
-const ToolBox = (): JSX.Element => {
+const ToolBox = ({ className }): JSX.Element => {
 	const tab = useTab();
 	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();
@@ -50,9 +50,10 @@ const ToolBox = (): JSX.Element => {
 
 
 	return <>
-		{ visibleActions.map(({ id, icon, title, action = actionDefault }, index) => <Header.ToolBoxAction primary={id === tab?.id} data-toolbox={index} onClick={action} title={t(title)} key={id} icon={icon}/>)}
+		{ visibleActions.map(({ id, icon, title, action = actionDefault }, index) => <Header.ToolBoxAction className={className} primary={id === tab?.id} data-toolbox={index} onClick={action} title={t(title)} key={id} icon={icon}/>)}
 		{ actions.length > 6 && <Menu
 			small={!isMobile}
+			className={className}
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={hiddenActions}

@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { AutoComplete, Option, Options } from '@rocket.chat/fuselage';
 
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import RoomAvatar from './avatar/RoomAvatar';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 const query = (term = '') => ({ selector: JSON.stringify({ name: term }) });
 
@@ -10,7 +10,7 @@ const Avatar = ({ value, type, avatarETag, ...props }) => <RoomAvatar size={Opti
 
 const RoomAutoComplete = React.memo((props) => {
 	const [filter, setFilter] = useState('');
-	const { data } = useEndpointDataExperimental('rooms.autocomplete.channelAndPrivate', useMemo(() => query(filter), [filter]));
+	const { value: data } = useEndpointData('rooms.autocomplete.channelAndPrivate', useMemo(() => query(filter), [filter]));
 	const options = useMemo(() => (data && data.items.map(({ name, _id, avatarETag, t }) => ({
 		value: _id,
 		label: { name, avatarETag, type: t },
