@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, ActionButton, Badge } from '@rocket.chat/fuselage';
 
 import Extended from './Extended';
-import * as Status from '../../components/basic/UserStatus';
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import * as Status from '../../components/UserStatus';
+import UserAvatar from '../../components/avatar/UserAvatar';
 
 
 export default {
