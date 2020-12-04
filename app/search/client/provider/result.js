@@ -19,6 +19,13 @@ Meteor.startup(function() {
 		context: ['search'],
 		action() {
 			const { msg: message } = messageArgs(this);
+			if (Session.get('openSearchPage')) {
+				Session.set('openSearchPage', false);
+				window.setTimeout(() => {
+					RoomHistoryManager.getSurroundingMessages(message, 50);
+				}, 400);
+				return;
+			}
 			if (message.tmid) {
 				return FlowRouter.go(FlowRouter.getRouteName(), {
 					tab: 'thread',
@@ -38,7 +45,7 @@ Meteor.startup(function() {
 			// RocketChat.MessageAction.hideDropDown();
 
 			if (window.matchMedia('(max-width: 500px)').matches) {
-				Template.instance().tabBar.close();
+				Template.currentData().instance.tabBar.close();
 			}
 
 			window.setTimeout(() => {

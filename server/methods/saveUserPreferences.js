@@ -37,6 +37,7 @@ Meteor.methods({
 			sidebarGroupByType: Match.Optional(Boolean),
 			sidebarShowDiscussion: Match.Optional(Boolean),
 			muteFocusedConversations: Match.Optional(Boolean),
+			discoverability: Match.Optional(String),
 		};
 		check(settings, Match.ObjectIncluding(keys));
 		const user = Meteor.user();
