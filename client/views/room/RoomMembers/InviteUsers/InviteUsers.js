@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Field, UrlInput, Icon, Button, InputBox, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import useClipboard from '../../../../hooks/useClipboard';
+import useClipboardWithToast from '../../../../hooks/useClipboardWithToast';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
@@ -19,7 +19,7 @@ export const InviteUsers = ({
 }) => {
 	const t = useTranslation();
 
-	const onClickCopy = useClipboard(linkText);
+	const { copy } = useClipboardWithToast(linkText);
 
 	return (
 		<>
@@ -33,7 +33,7 @@ export const InviteUsers = ({
 				<Field>
 					<Field.Label flexGrow={0}>{t('Invite_Link')}</Field.Label>
 					<Field.Row>
-						{linkText === undefined ? <InputBox.Skeleton /> : <UrlInput value={linkText} addon={<Icon onClick={onClickCopy} name='copy' size='x16'/>}/>}
+						{linkText === undefined ? <InputBox.Skeleton /> : <UrlInput value={linkText} addon={<Icon onClick={copy} name='copy' size='x16'/>}/>}
 					</Field.Row>
 				</Field>
 
