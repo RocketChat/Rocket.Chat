@@ -24,7 +24,7 @@ addAction('otr', () => {
 			id: 'otr',
 			title: 'OTR',
 			icon: 'key',
-			template: lazy(() => import('../../../client/views/room/ContextualBar/OTR')) as LazyExoticComponent<FC>,
+			template: lazy(() => import('../../../client/views/room/contextualBar/OTR')) as LazyExoticComponent<FC>,
 			order: 13,
 			full: true,
 		} : null), [shouldAddAction]);
