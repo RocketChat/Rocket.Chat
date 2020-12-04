@@ -4,11 +4,11 @@ import { Migrations } from '../../../app/migrations';
 
 Migrations.add({
 	version: 212,
-	async up() {
+	up() {
 		const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 		const apps = mongo.db.collection('rocketchat_apps');
 
-		await apps.update({
+		Promise.await(apps.update({
 			status: 'initialized',
 		}, {
 			$set: {
@@ -16,6 +16,6 @@ Migrations.add({
 			},
 		}, {
 			multi: true,
-		});
+		}));
 	},
 });
