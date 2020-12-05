@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Box, Field, UrlInput, Icon, Button, InputBox, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import useClipboard from '../../../../hooks/useClipboard';
-import VerticalBar from '../../../../components/VerticalBar';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import useClipboard from '../../../../../hooks/useClipboard';
+import VerticalBar from '../../../../../components/VerticalBar';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useEndpoint } from '../../../../../contexts/ServerContext';
+import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import EditInvite from '../EditInvite';
 
 export const InviteUsers = ({

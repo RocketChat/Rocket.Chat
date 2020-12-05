@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
-import VerticalBar from '../../../components/VerticalBar';
+import VerticalBar from '../../../../components/VerticalBar';
 
 import { NotificationsPreferences } from '.';
 
