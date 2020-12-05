@@ -1,4 +1,18 @@
 
+# 3.7.3
+`2020-12-05  ·  1 🐛`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.18.0`
+
+### 🐛 Bug fixes
+
+
+- Exception on certain login cases including SAML
+
 # 3.7.2
 `2020-11-13  ·  4 🐛  ·  3 👩‍💻👨‍💻`
 
