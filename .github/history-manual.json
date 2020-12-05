@@ -28,5 +28,19 @@
 		"userLogin": "rodrigok",
 		"contributors": [],
 		"description": "Requires the 2FA password fallback enforcement enabled to work"
+	}],
+	"3.7.3": [{
+		"title": "[FIX] Exception on certain login cases including SAML",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
+	}],
+	"3.8.3": [{
+		"title": "[FIX] Exception on certain login cases including SAML",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
 	}]
 }
