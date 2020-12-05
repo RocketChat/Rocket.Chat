@@ -154,7 +154,7 @@ const getMessage = (room, lastMessage, t) => {
 	if (lastMessage.u?.username === room.u?.username) {
 		return `${ t('You') }: ${ normalizeSidebarMessage(lastMessage, t) }`;
 	}
-	if (room.t === 'd' && room.uids.length <= 2) {
+	if (room.t === 'd' && room.uids && room.uids.length <= 2) {
 		return normalizeSidebarMessage(lastMessage, t);
 	}
 	return `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeSidebarMessage(lastMessage, t) }`;
@@ -226,6 +226,9 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 		return false;
 	}
 	if (prevProps.room.alert !== nextProps.room.alert) {
+		return false;
+	}
+	if (prevProps.room.v?.status !== nextProps.room.v?.status) {
 		return false;
 	}
 
