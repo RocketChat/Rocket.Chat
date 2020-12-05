@@ -2,8 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { Box, Field, Select, Button, InputBox } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import VerticalBar from '../../../../components/VerticalBar';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import VerticalBar from '../../../../../components/VerticalBar';
 
 export const EditInvite = ({
 	onClickBack,
