@@ -5,12 +5,12 @@ import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
 
-import Header from '../../../../components/basic/Header';
-import { ToolboxContext } from '../../../../channel/lib/Toolbox/ToolboxContext';
+import Header from '../../../../components/Header';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { ToolboxActionConfig } from '../../../../channel/lib/Toolbox';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
+import { ToolboxContext } from '../../lib/Toolbox/ToolboxContext';
+import { ToolboxActionConfig } from '../../lib/Toolbox';
 
 const ToolBox = ({ className }): JSX.Element => {
 	const tab = useTab();

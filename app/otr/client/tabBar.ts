@@ -2,7 +2,7 @@ import { useMemo, lazy, LazyExoticComponent, FC, useEffect } from 'react';
 
 import { OTR } from './rocketchat.otr';
 import { useSetting } from '../../../client/contexts/SettingsContext';
-import { addAction } from '../../../client/channel/lib/Toolbox';
+import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 addAction('otr', () => {
 	const enabled = useSetting('OTR_Enable');

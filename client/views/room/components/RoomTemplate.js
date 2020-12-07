@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
-import VerticalBar from '../../../components/basic/VerticalBar';
+import VerticalBar from '../../../components/VerticalBar';
 
 export const RoomTemplate = ({ children, ...props }) => {
 	const c = React.Children.toArray(children);

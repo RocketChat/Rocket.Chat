@@ -1,6 +1,6 @@
 import { useMemo, lazy } from 'react';
 
-import { addAction } from '../../channel/lib/Toolbox';
+import { addAction } from '../../views/room/lib/Toolbox';
 import { usePermission } from '../../contexts/AuthorizationContext';
 
 addAction('export-messages', ({ room }) => {
@@ -11,7 +11,7 @@ addAction('export-messages', ({ room }) => {
 		anonymous: true,
 		title: 'Export_Messages',
 		icon: 'mail',
-		template: lazy(() => import('../../channel/ExportMessages')),
+		template: lazy(() => import('../../views/room/contextualBar/ExportMessages')),
 		full: true,
 		order: 12 } : null), [hasPermission]);
 });

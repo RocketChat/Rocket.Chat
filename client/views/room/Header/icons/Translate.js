@@ -3,7 +3,7 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import Header from '../../../../components/basic/Header';
+import Header from '../../../../components/Header';
 
 
 const Translate = ({ room: { autoTranslateLanguage, autoTranslate } }) => {

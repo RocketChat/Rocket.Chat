@@ -281,7 +281,9 @@ OEmbed.rocketUrlParser = function(message) {
 				}
 				if (data.meta != null) {
 					item.meta = getRelevantMetaTags(data.meta);
-					item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml);
+					if (item.meta && item.meta.oembedHtml) {
+						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml);
+					}
 				}
 				if (data.headers != null) {
 					item.headers = getRelevantHeaders(data.headers);

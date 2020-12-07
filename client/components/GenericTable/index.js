@@ -6,7 +6,7 @@ import flattenChildren from 'react-keyed-flatten-children';
 import { useTranslation } from '../../contexts/TranslationContext';
 import HeaderCell from './HeaderCell';
 import LoadingRow from './LoadingRow';
-import ScrollableContentWrapper from '../basic/ScrollableContentWrapper';
+import ScrollableContentWrapper from '../ScrollableContentWrapper';
 
 const GenericTable = ({
 	children,

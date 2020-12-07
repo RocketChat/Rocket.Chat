@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import UserInfo from '../../channel/UserInfo';
+import UserInfo from './contextualBar/UserInfo';
 import VerticalBarOldActions from './components/VerticalBarOldActions';
 import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
 import { useUserId } from '../../contexts/UserContext';

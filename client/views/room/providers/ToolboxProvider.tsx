@@ -1,9 +1,9 @@
-import React, { ReactNode, useContext, useEffect, useMemo, useState, useCallback } from 'react';
+import React, { ReactNode, useContext, useEffect, useMemo, useState, useCallback, useLayoutEffect } from 'react';
 import { useDebouncedState, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Handler } from '@rocket.chat/emitter';
 
-import { ToolboxContext } from '../../../channel/lib/Toolbox/ToolboxContext';
-import { ToolboxAction, ActionsStore, ToolboxActionConfig } from '../../../channel/lib/Toolbox/index';
+import { ToolboxContext } from '../lib/Toolbox/ToolboxContext';
+import { ToolboxAction, ActionsStore, ToolboxActionConfig } from '../lib/Toolbox/index';
 import { IRoom } from '../../../../definition/IRoom';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSession } from '../../../contexts/SessionContext';
@@ -22,7 +22,7 @@ const VirtualAction = React.memo(({ handleChange, room, action, id }: { id: stri
 	const group = groupsDict[room.t];
 	const visible = config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		handleChange((list: ActionsStore) => {
 			visible && config ? list.get(id) !== config && list.set(id, config) : list.delete(id);
 		});
@@ -38,7 +38,7 @@ const useToolboxActions = (room: IRoom): { listen: (handler: Handler<any>) => Fu
 	const { listen, actions } = useContext(ToolboxContext);
 	const [state, setState] = useState<Array<[string, ToolboxAction]>>(Array.from(actions.entries()));
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		const stop = listen((actions) => {
 			setState(Array.from(actions.entries()));
 		});

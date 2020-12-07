@@ -2,8 +2,8 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { Box, Table, Flex } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
-import MarkdownText from '../../components/basic/MarkdownText';
+import UserAvatar from '../../components/avatar/UserAvatar';
+import MarkdownText from '../../components/MarkdownText';
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';

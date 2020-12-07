@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { IRoom, IOmnichannelRoom, IDirectMessageRoom } from '../../definition/IRoom';
-import { ReactiveUserStatus } from '../components/basic/UserStatus';
+import { ReactiveUserStatus } from '../components/UserStatus';
 
 
 export const colors = {

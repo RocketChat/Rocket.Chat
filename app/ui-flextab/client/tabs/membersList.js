@@ -15,7 +15,7 @@ import { hasPermission } from '../../../authorization/client';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 import { openProfileTab } from '../../../ui/client/views/app/room';
 
-createTemplateForComponent('UserInfoWithData', () => import('../../../../client/channel/UserInfo'), {
+createTemplateForComponent('UserInfoWithData', () => import('../../../../client/views/room/UserInfo'), {
 	// eslint-disable-next-line new-cap
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar', style: 'flex-grow: 1;' }),
 });
@@ -159,7 +159,7 @@ Template.membersList.helpers({
 
 Template.membersList.events({
 	'click .js-add'(e, instance) {
-		instance.innerTab.set('inviteUsers');
+		instance.tabBar.setTemplate('inviteUsers');
 	},
 	'click .js-invite'(e, instance) {
 		instance.innerTab.set('InviteUsers');
