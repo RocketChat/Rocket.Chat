@@ -1,8 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
+import { CallModal } from './components/CallModal';
+import { useSetModal } from '../../../contexts/ModalContext';
 import { useUserSubscription } from '../../../contexts/UserContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useSettings } from '../../../contexts/SettingsContext';
@@ -41,6 +43,8 @@ export const CallJitsi = ({
 
 export default React.memo(({ tabBar, rid }) => {
 	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
+	const setModal = useSetModal();
+	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	const ref = useRef();
 	const settings = useSettings({
@@ -76,16 +80,18 @@ export default React.memo(({ tabBar, rid }) => {
 	const jitsiRoom = settings.Jitsi_URL_Room_Prefix + rname + settings.Jitsi_URL_Room_Suffix;
 	const width = 'auto';
 	const height = 500;
-	const configOverwrite = {
-		desktopSharingChromeExtId: settings.Jitsi_Chrome_Extension,
-	};
-	const interfaceConfigOverwrite = {};
 	const noSsl = !settings.Jitsi_SSL;
 	const isEnabledTokenAuth = settings.Jitsi_Enabled_TokenAuth;
 	const accessToken = isEnabledTokenAuth && Meteor.call('jitsi:generateAccessToken', rid);
 
+	const handleYes = useCallback(() => {
+		closeModal();
 
-	useEffect(() => {
+		const configOverwrite = {
+			desktopSharingChromeExtId: settings.Jitsi_Chrome_Extension,
+		};
+		const interfaceConfigOverwrite = {};
+
 		if (isOpenNewWindow) {
 			const queryString = accessToken ? `?jwt=${ accessToken }` : '';
 			const newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }${ queryString }`, jitsiRoom);
@@ -107,6 +113,30 @@ export default React.memo(({ tabBar, rid }) => {
 			const api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, ref.current, configOverwrite, interfaceConfigOverwrite, noSsl, accessToken); // eslint-disable-line no-undef
 			api.executeCommand('displayName', [rname]);
 		}
+	}, [
+		accessToken,
+		domain,
+		jitsiRoom,
+		noSsl,
+		rname,
+		isOpenNewWindow,
+		tabBar,
+		settings.Jitsi_Chrome_Extension,
+		closeModal,
+	]);
+
+	const handleCancel = useCallback(() => {
+		closeModal();
+		tabBar.close();
+	}, [closeModal, tabBar]);
+
+	useEffect(() => {
+		setModal(() =>
+			<CallModal
+				handleYes={handleYes}
+				handleCancel={handleCancel}
+			/>,
+		);
 	});
 
 	return (
