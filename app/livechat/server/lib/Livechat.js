@@ -857,6 +857,7 @@ export const Livechat = {
 			showOnOfflineForm: Boolean,
 			requestTagBeforeClosingChat: Match.Optional(Boolean),
 			chatClosingTags: Match.Optional([String]),
+			departmentsAllowedToForward: Match.Optional([String]),
 		};
 
 		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating

@@ -193,7 +193,7 @@ export function EditDepartment({ data, id, title, reload }) {
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
-			departmentsAllowedToForward: departmentsAllowedToForward && departmentsAllowedToForward[0],
+			departmentsAllowedToForward,
 		};
 
 		const agentListPayload = {
