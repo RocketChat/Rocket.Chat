@@ -8,7 +8,7 @@ export const NotificationToogle = React.memo(({ label, description, onChange, de
 	return <FieldGroup>
 		<Box display='flex' justifyContent='space-between' alignItems='start'>
 			<Box display='flex' flexDirection='column'>
-				<Field.Label for={id}>{label}</Field.Label>
+				<Field.Label htmlFor={id}>{label}</Field.Label>
 				<Field.Description>{description}</Field.Description>
 			</Box>
 			<ToggleSwitch id={id} onChange={onChange} defaultChecked={defaultChecked} />

@@ -2,12 +2,12 @@ import React from 'react';
 import { Button, ButtonGroup, FieldGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { useForm } from '../../../hooks/useForm';
-import { useUserSubscription, useUser } from '../../../contexts/UserContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useCustomSound } from '../../../contexts/CustomSoundContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
-import VerticalBar from '../../../components/VerticalBar';
+import { useForm } from '../../../../hooks/useForm';
+import { useUserSubscription, useUser } from '../../../../contexts/UserContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useCustomSound } from '../../../../contexts/CustomSoundContext';
+import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
+import VerticalBar from '../../../../components/VerticalBar';
 import { Preferences } from './components/Preferences';
 import { NotificationByDevice } from './components/NotificationByDevice';
 import { NotificationToogle } from './components/NotificationToogle';
