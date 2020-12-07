@@ -30,9 +30,18 @@ export const updateGroupDMsName = (user) => {
 		const members = getMembers(room.uids);
 		const sortedMembers = members.sort((u1, u2) => (u1.name || u1.username).localeCompare(u2.name || u2.username));
 
+		console.log('members: ', members);
+		console.log('sorted members: ', sortedMembers);
+
 		const subs = Subscriptions.findByRoomId(room._id, { fields: { _id: 1, 'u._id': 1 } });
+		console.log('subscriptions: ', subs);
 		subs.forEach((sub) => {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
+			otherMembers.push({ _id: user._id, username: user.username });
+
+			console.log('other members: ', otherMembers);
+			console.log('updating names: ', getName(otherMembers));
+			console.log('updating fNames: ', getFname(otherMembers));
 
 			Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
 		});
