@@ -5,17 +5,17 @@ const fg = require('fast-glob');
 const checkFiles = async (path, source, fix = false) => {
 	const sourceFile = JSON.parse(fs.readFileSync(`${ path }${ source }`, 'utf8'));
 
-	const regexVar = /__([a-zA-Z_]+?)__/g;
+	const regexVar = /__[a-zA-Z_]+__/g;
 
 	const usedKeys = Object.entries(sourceFile)
-		.filter(([, value]) => regexVar.exec(value))
 		.map(([key, value]) => {
 			const replaces = value.match(regexVar);
 			return {
 				key,
 				replaces,
 			};
-		});
+		})
+		.filter(({ replaces }) => !!replaces);
 
 	const validateKeys = (json) =>
 		usedKeys
@@ -87,7 +87,6 @@ const checkFiles = async (path, source, fix = false) => {
 (async () => {
 	try {
 		await checkFiles('./packages/rocketchat-i18n', '/i18n/en.i18n.json', process.argv[2] === '--fix');
-		await checkFiles('./ee', '/i18n/en.i18n.json', process.argv[2] === '--fix');
 	} catch (e) {
 		console.error(e);
 		process.exit(1);

@@ -5,11 +5,11 @@ import { Template } from 'meteor/templating';
 import { ChatRoom } from '../../../models';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
-createTemplateForComponent('channelSettingsEditing', () => import('../../../../client/channel/ChannelInfo/EditChannel'), {
+createTemplateForComponent('channelSettingsEditing', () => import('../../../../client/views/room/contextualBar/Info/EditChannel'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 
-createTemplateForComponent('channelSettingsInfo', () => import('../../../../client/channel/ChannelInfo/RoomInfo'), {
+createTemplateForComponent('channelSettingsInfo', () => import('../../../../client/views/room/contextualBar/Info/RoomInfo'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 
