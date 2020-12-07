@@ -3,22 +3,22 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Box, Margins, Icon, Button, ButtonGroup, Divider, Callout } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
-import RoomAvatar from '../../../../components/avatar/RoomAvatar';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import UserCard from '../../../../components/UserCard';
-import VerticalBar from '../../../../components/VerticalBar';
-import { useUserRoom } from '../../../../contexts/UserContext';
-import { useMethod } from '../../../../contexts/ServerContext';
-import DeleteChannelWarning from '../../../../components/DeleteChannelWarning';
-import { useSetModal } from '../../../../contexts/ModalContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { roomTypes, UiTextContext } from '../../../../../app/utils';
-import { RoomManager } from '../../../../../app/ui-utils/client/lib/RoomManager';
-import { usePermission } from '../../../../contexts/AuthorizationContext';
-import WarningModal from '../../../admin/apps/WarningModal';
-import MarkdownText from '../../../../components/MarkdownText';
+import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import UserCard from '../../../../../components/UserCard';
+import VerticalBar from '../../../../../components/VerticalBar';
+import { useUserRoom } from '../../../../../contexts/UserContext';
+import { useMethod } from '../../../../../contexts/ServerContext';
+import DeleteChannelWarning from '../../../../../components/DeleteChannelWarning';
+import { useSetModal } from '../../../../../contexts/ModalContext';
+import { useSetting } from '../../../../../contexts/SettingsContext';
+import { useRoute } from '../../../../../contexts/RouterContext';
+import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
+import { roomTypes, UiTextContext } from '../../../../../../app/utils';
+import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
+import { usePermission } from '../../../../../contexts/AuthorizationContext';
+import WarningModal from '../../../../admin/apps/WarningModal';
+import MarkdownText from '../../../../../components/MarkdownText';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -145,11 +145,11 @@ RoomInfo.Title = Title;
 RoomInfo.Icon = RoomInfoIcon;
 
 export default ({
-	openEditing,
 	rid,
 	tabBar,
 }) => {
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const openEditing = useMutableCallback(() => tabBar && tabBar.setTemplate('EditRoomInfo'));
 	const t = useTranslation();
 
 	const room = useUserRoom(rid);
