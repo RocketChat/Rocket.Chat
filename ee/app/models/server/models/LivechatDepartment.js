@@ -32,6 +32,9 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 		if (args.length > 2 && !args[1].type) {
 			args[1].type = 'd';
 		}
+		if (args[1] && args[1].departmentsAllowedToForward) {
+			args[1].departmentsAllowedToForward = args[1].departmentsAllowedToForward.split(',');
+		}
 
 		return originalFn.apply(this, args);
 	},
