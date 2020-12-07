@@ -38,6 +38,10 @@ createTemplateForComponent('EditInvite', () => import('./contextualBar/RoomMembe
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 
+createTemplateForComponent('AddUsers', () => import('./contextualBar/RoomMembers/AddUsers'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
+
 createTemplateForComponent('OTR', () => import('./contextualBar/OTR'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
