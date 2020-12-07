@@ -1,4 +1,4 @@
-import { FC, LazyExoticComponent, ReactNode } from 'react';
+import { FC, LazyExoticComponent, ReactNode, MouseEvent } from 'react';
 import { Emitter, Handler } from '@rocket.chat/emitter';
 import { BoxProps } from '@rocket.chat/fuselage';
 
@@ -6,24 +6,24 @@ import { IRoom } from '../../../../definition/IRoom';
 
 type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null
 
-type RendererProps = Omit<ToolboxActionConfig, 'renderAction'> & {
+type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction'> & {
 	className: BoxProps['className'];
 	tabId: ToolboxActionConfig['id'] | undefined;
 }
 
-type Renderer = (props: RendererProps, index: number) => ReactNode;
+export type ActionRenderer = (props: ActionRendererProps, index: number) => ReactNode;
 
 export type ToolboxActionConfig = {
 	id: string;
 	icon: string;
 	title: string;
-	renderAction?: Renderer;
+	renderAction?: ActionRenderer;
 	full?: true;
 	renderOption?: FC;
 	order?: number;
 	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple'>;
 	hotkey?: string;
-	action?: Function;
+	action?: (e: MouseEvent<HTMLElement>) => void;
 	template?: string | FC | JSX.Element | LazyExoticComponent<FC>;
 }
 

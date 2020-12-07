@@ -4,7 +4,7 @@ import { SettingsContext } from '../../../contexts/SettingsContext';
 import Header from './Header';
 import RoomAvatar from '../avatar/RoomAvatar';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
-import ToolBox from '../../../views/room/Header/ToolBox';
+import ToolBox, { createHeaderActionRenderer } from '../../../views/room/Header/ToolBox';
 import { ToolboxProvider } from '../../../views/room/providers/ToolboxProvider';
 import { addAction } from '../../../channel/lib/Toolbox';
 
@@ -77,28 +77,39 @@ const toolboxRoom = {
 	usersCount: 2,
 };
 
-const renderAction = (
-	{ id, icon, title, action, className, tabId },
-	index,
-) => <Header.ToolBoxAction
-	className={className}
-	primary={id === tabId}
-	data-toolbox={index}
-	onClick={action}
-	title={title}
-	key={id}
-	icon={icon}
-	color='primary-500'
-/>;
+const renderWithBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='primary'>1</Header.ToolBoxAction.Badge>);
+const renderWithRedBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='danger'>2</Header.ToolBoxAction.Badge>);
+const renderWithOrangeBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='warning'>99</Header.ToolBoxAction.Badge>);
 
-addAction('render-action-example', {
+addAction('render-action-example-badge', {
 	groups: ['channel'],
 	id: 'render-action-example',
 	title: 'Example',
 	icon: 'phone',
-	template: lazy(() => import('../../../views/room/MemberListRouter')),
+	template: 'b',
 	order: 1,
-	renderAction,
+	renderAction: renderWithBadge,
+});
+
+addAction('render-action-example-badge-warning', {
+	groups: ['channel'],
+	id: 'render-action-example',
+	title: 'Example',
+	icon: 'thread',
+	template: 'a',
+	order: 1,
+	renderAction: renderWithOrangeBadge,
+});
+
+
+addAction('render-action-example-badge-danger', {
+	groups: ['channel'],
+	id: 'render-action-example',
+	title: 'Example',
+	icon: 'discussion',
+	template: 'c',
+	order: 1,
+	renderAction: renderWithRedBadge,
 });
 
 export const WithToolboxContext = () => {

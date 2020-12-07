@@ -8,14 +8,14 @@ import tinykeys from 'tinykeys';
 import Header from '../../../../components/basic/Header';
 import { ToolboxContext } from '../../../../channel/lib/Toolbox/ToolboxContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { ToolboxActionConfig } from '../../../../channel/lib/Toolbox';
+import { ToolboxActionConfig, ActionRenderer } from '../../../../channel/lib/Toolbox';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
 
-const renderHeaderAction: ToolboxActionConfig['renderAction'] = (
+export const createHeaderActionRenderer = (badge?: JSX.Element): ActionRenderer => (
 	{ id, icon, title, action, className, tabId },
 	index,
-) => <Header.ToolBoxAction
+): ReactNode => <Header.ToolBoxAction
 	className={className}
 	primary={id === tabId}
 	data-toolbox={index}
@@ -23,7 +23,12 @@ const renderHeaderAction: ToolboxActionConfig['renderAction'] = (
 	title={title}
 	key={id}
 	icon={icon}
-/>;
+	position={'relative'}
+>
+	{badge}
+</Header.ToolBoxAction>;
+
+const headerActionRenderer = createHeaderActionRenderer();
 
 const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Element => {
 	const tab = useTab();
@@ -63,7 +68,7 @@ const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Eleme
 
 
 	return <>
-		{ visibleActions.map(({ renderAction = renderHeaderAction, title, ...action }, index) => renderAction({ action: actionDefault, ...action, className, tabId: tab?.id, title: t(title) }, index)) }
+		{ visibleActions.map(({ renderAction = headerActionRenderer, title, ...action }, index) => renderAction({ action: actionDefault, ...action, className, tabId: tab?.id, title: t(title) }, index)) }
 		{ actions.length > 6 && <Menu
 			small={!isMobile}
 			className={className}
@@ -74,5 +79,7 @@ const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Eleme
 		/>}
 	</>;
 };
+
+ToolBox.createHeaderActionRenderer = createHeaderActionRenderer;
 
 export default memo(ToolBox);

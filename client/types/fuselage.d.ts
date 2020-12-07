@@ -379,4 +379,13 @@ declare module '@rocket.chat/fuselage' {
 
 	export const Menu: ForwardRefExoticComponent<MenuProps>;
 
+	type BadgeProps = {
+		is: ElementType;
+		variant?: 'primary' | 'danger' | 'warning';
+		disabled: boolean;
+		className: BoxClassName;
+	}
+
+	export const Badge: ForwardRefExoticComponent<BadgeProps>;
+
 }

@@ -1,5 +1,6 @@
-import React from 'react';
-import { Box, Icon, Divider, ButtonGroup, ActionButton } from '@rocket.chat/fuselage';
+import React, { FC } from 'react';
+import { Box, Icon, Divider, ButtonGroup, ActionButton, ActionButtonProps, Badge, BadgeProps } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
 
 const Title = (props: any): JSX.Element => <Box color='default' mi='x4' fontScale='s2' withTruncatedText {...props}/>;
 const Subtitle = (props: any): JSX.Element => <Box color='hint' fontScale='p1' withTruncatedText {...props}/>;
@@ -10,7 +11,9 @@ const HeaderIcon = ({ icon }: { icon: JSX.Element | { name: string; color?: stri
 
 const ToolBox = (props: any): JSX.Element => <ButtonGroup small {...props}/>;
 
-const ToolBoxAction = (props: any): JSX.Element => <ActionButton ghost small {...props}/>;
+const ToolBoxAction: FC<ActionButtonProps> = (props) => <ActionButton ghost small overflow='visible' {...props}/>;
+
+const ToolBoxActionBadge: FC<BadgeProps> = (props) => <Box position='absolute' zIndex={99} className={css`top: 0; right: 0; transform: translate(30%, -30%);`}><Badge {...props}/></Box>;
 
 const State = (props: any): JSX.Element => (props.onClick ? <ActionButton ghost mini {...props}/> : <Icon size={16} name={props.icon} {...props}/>);
 
@@ -30,6 +33,10 @@ export default Header;
 
 Object.assign(Content, {
 	Row,
+});
+
+Object.assign(ToolBoxAction, {
+	Badge: ToolBoxActionBadge,
 });
 
 Object.assign(Header, {
