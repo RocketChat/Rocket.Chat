@@ -8,7 +8,6 @@ app/katex/client/katex/katex.min.js
 packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 packages/rocketchat-livechat/assets/rocket-livechat.js
 app/theme/client/vendor/
-app/ui/client/lib/Modernizr.js
 public/packages/rocketchat_videobridge/client/public/external_api.js
 packages/tap-i18n/lib/tap_i18next/tap_i18next-1.7.3.js
 private/moment-locales/

@@ -779,6 +779,18 @@ API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('users.logoutOtherClients', { authRequired: true }, {
+	post() {
+		try {
+			const result = Meteor.call('logoutOtherClients');
+
+			return API.v1.success(result);
+		} catch (error) {
+			return API.v1.failure(error);
+		}
+	},
+});
+
 API.v1.addRoute('users.autocomplete', { authRequired: true }, {
 	get() {
 		const { selector } = this.queryParams;

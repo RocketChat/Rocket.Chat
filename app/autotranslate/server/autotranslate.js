@@ -8,11 +8,20 @@ import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
 import { Logger } from '../../logger';
 
+const Providers = Symbol('Providers');
+const Provider = Symbol('Provider');
+
 /**
  * This class allows translation providers to
  * register,load and also returns the active provider.
  */
 export class TranslationProviderRegistry {
+	static [Providers] = {};
+
+	static enabled = false;
+
+	static [Provider] = null;
+
 	/**
 	 * Registers the translation provider into the registry.
 	 * @param {*} provider
@@ -20,25 +29,73 @@ export class TranslationProviderRegistry {
 	static registerProvider(provider) {
 		// get provider information
 		const metadata = provider._getProviderMetadata();
-		if (!TranslationProviderRegistry._providers) {
-			TranslationProviderRegistry._providers = {};
-		}
-		TranslationProviderRegistry._providers[metadata.name] = provider;
+		TranslationProviderRegistry[Providers][metadata.name] = provider;
 	}
 
 	/**
 	 * Return the active Translation provider
 	 */
 	static getActiveProvider() {
-		return TranslationProviderRegistry._providers[TranslationProviderRegistry._activeProvider];
+		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry[Providers][TranslationProviderRegistry[Provider]] : undefined;
+	}
+
+	static getSupportedLanguages(...args) {
+		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(...args) : undefined;
+	}
+
+	static translateMessage(...args) {
+		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.translateMessage(...args) : undefined;
+	}
+
+	static getProviders() {
+		return Object.values(TranslationProviderRegistry[Providers]);
+	}
+
+	static setCurrentProvider(provider) {
+		if (provider === TranslationProviderRegistry[Provider]) {
+			return;
+		}
+
+		TranslationProviderRegistry[Provider] = provider;
+
+		TranslationProviderRegistry.registerCallbacks();
+	}
+
+	static setEnable(enabled) {
+		TranslationProviderRegistry.enabled = enabled;
+
+		TranslationProviderRegistry.registerCallbacks();
+	}
+
+	static registerCallbacks() {
+		if (!TranslationProviderRegistry.enabled) {
+			callbacks.remove('afterSaveMessage', 'autotranslate');
+			return;
+		}
+
+		const provider = TranslationProviderRegistry.getActiveProvider();
+		if (!provider) {
+			return;
+		}
+
+		callbacks.add('afterSaveMessage', provider.translateMessage.bind(provider), callbacks.priority.MEDIUM, 'autotranslate');
 	}
 
 	/**
 	 * Make the activated provider by setting as the active.
 	 */
 	static loadActiveServiceProvider() {
-		settings.get('AutoTranslate_ServiceProvider', (key, value) => {
-			TranslationProviderRegistry._activeProvider = value;
+		/** Register the active service provider on the 'AfterSaveMessage' callback.
+		 *  So the registered provider will be invoked when a message is saved.
+		 *  All the other inactive service provider must be deactivated.
+		 */
+		settings.get('AutoTranslate_ServiceProvider', (key, providerName) => {
+			TranslationProviderRegistry.setCurrentProvider(providerName);
+		});
+
+		// Get Auto Translate Active flag
+		settings.get('AutoTranslate_Enabled', (key, value) => {
+			TranslationProviderRegistry.setEnable(value);
 		});
 	}
 }
@@ -59,23 +116,6 @@ export class AutoTranslate {
 		this.name = '';
 		this.languages = [];
 		this.supportedLanguages = {};
-
-		// Get Auto Translate Active flag
-		settings.get('AutoTranslate_Enabled', (key, value) => {
-			this.autoTranslateEnabled = value;
-		});
-
-		/** Register the active service provider on the 'AfterSaveMessage' callback.
-		 *  So the registered provider will be invoked when a message is saved.
-		 *  All the other inactive service provider must be deactivated.
-		 */
-		settings.get('AutoTranslate_ServiceProvider', (key, value) => {
-			if (this.name === value) {
-				this.registerAfterSaveMsgCallBack(this.name);
-			} else {
-				this.unRegisterAfterSaveMsgCallBack(this.name);
-			}
-		});
 	}
 
 	/**
@@ -224,63 +264,41 @@ export class AutoTranslate {
 	 * @returns {object} unmodified message object.
 	 */
 	translateMessage(message, room, targetLanguage) {
-		if (this.autoTranslateEnabled && this.apiKey) {
-			let targetLanguages;
-			if (targetLanguage) {
-				targetLanguages = [targetLanguage];
-			} else {
-				targetLanguages = Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
-			}
-			if (message.msg) {
-				Meteor.defer(() => {
-					let targetMessage = Object.assign({}, message);
-					targetMessage.html = s.escapeHTML(String(targetMessage.msg));
-					targetMessage = this.tokenize(targetMessage);
+		let targetLanguages;
+		if (targetLanguage) {
+			targetLanguages = [targetLanguage];
+		} else {
+			targetLanguages = Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u && message.u._id);
+		}
+		if (message.msg) {
+			Meteor.defer(() => {
+				let targetMessage = Object.assign({}, message);
+				targetMessage.html = s.escapeHTML(String(targetMessage.msg));
+				targetMessage = this.tokenize(targetMessage);
 
-					const translations = this._translateMessage(targetMessage, targetLanguages);
-					if (!_.isEmpty(translations)) {
-						Messages.addTranslations(message._id, translations, TranslationProviderRegistry._activeProvider);
-					}
-				});
-			}
+				const translations = this._translateMessage(targetMessage, targetLanguages);
+				if (!_.isEmpty(translations)) {
+					Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider]);
+				}
+			});
+		}
 
-			if (message.attachments && message.attachments.length > 0) {
-				Meteor.defer(() => {
-					for (const index in message.attachments) {
-						if (message.attachments.hasOwnProperty(index)) {
-							const attachment = message.attachments[index];
-							if (attachment.description || attachment.text) {
-								const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
-								if (!_.isEmpty(translations)) {
-									Messages.addAttachmentTranslations(message._id, index, translations);
-								}
+		if (message.attachments && message.attachments.length > 0) {
+			Meteor.defer(() => {
+				for (const index in message.attachments) {
+					if (message.attachments.hasOwnProperty(index)) {
+						const attachment = message.attachments[index];
+						if (attachment.description || attachment.text) {
+							const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
+							if (!_.isEmpty(translations)) {
+								Messages.addAttachmentTranslations(message._id, index, translations);
 							}
 						}
 					}
-				});
-			}
+				}
+			});
 		}
 		return Messages.findOneById(message._id);
-	}
-
-	/**
-	 * On changing the service provider, the callback in which the translation
-	 * is being requested needs to be switched to the new provider
-	 * @protected
-	 * @param {string} provider
-	 */
-	registerAfterSaveMsgCallBack(provider) {
-		callbacks.add('afterSaveMessage', this.translateMessage.bind(this), callbacks.priority.MEDIUM, provider);
-	}
-
-	/**
-	 * On changing the service provider, the callback in which the translation
-	 * is being requested needs to be deactivated for the all other translation providers
-	 * @protected
-	 * @param {string} provider
-	 */
-	unRegisterAfterSaveMsgCallBack(provider) {
-		callbacks.remove('afterSaveMessage', provider);
 	}
 
 	/**

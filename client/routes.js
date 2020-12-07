@@ -1,6 +1,5 @@
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
@@ -71,25 +70,26 @@ FlowRouter.route('/home', {
 	action(params, queryParams) {
 		// KonchatNotification.getDesktopPermission();
 		if (queryParams.saml_idp_credentialToken !== undefined) {
-			Accounts.callLoginMethod({
-				methodArguments: [{
-					saml: true,
-					credentialToken: queryParams.saml_idp_credentialToken,
-				}],
-				userCallback(error) {
-					if (error) {
-						if (error.reason) {
-							toastr.error(error.reason);
-						} else {
-							handleError(error);
-						}
-					}
-					BlazeLayout.render('main', { center: 'home' });
-				},
+			const token = queryParams.saml_idp_credentialToken;
+			FlowRouter.setQueryParams({
+				saml_idp_credentialToken: null,
 			});
-		} else {
-			BlazeLayout.render('main', { center: 'home' });
+			Meteor.loginWithSamlToken(token, (error) => {
+				if (error) {
+					if (error.reason) {
+						toastr.error(error.reason);
+					} else {
+						handleError(error);
+					}
+				}
+
+				BlazeLayout.render('main', { center: 'home' });
+			});
+
+			return;
 		}
+
+		BlazeLayout.render('main', { center: 'home' });
 	},
 });
 
