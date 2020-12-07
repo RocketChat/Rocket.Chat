@@ -10,7 +10,11 @@ export const BlazeTemplate = ({ name, children, ...props }) => {
 			return;
 		}
 
-		const view = Blaze.renderWithData(Template[name], props, ref.current);
+		let view;
+
+		setTimeout(() => {
+			view = Blaze.renderWithData(Template[name], props, ref.current);
+		}, 50);
 
 		return () => {
 			Blaze.remove(view);

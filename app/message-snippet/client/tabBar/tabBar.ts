@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { addAction } from '../../../../client/channel/lib/Toolbox';
+import { addAction } from '../../../../client/views/room/lib/Toolbox';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
 
 addAction('snippeted-messages', () => {

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 
 import { useSetting } from '../../../client/contexts/SettingsContext';
-import { addAction, ToolboxActionConfig } from '../../../client/channel/lib/Toolbox';
+import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 
 addAction('bbb_video', ({ room }) => {
 	const enabled = useSetting('bigbluebutton_Enabled');

@@ -1,4 +1,4 @@
-import { addAction } from '../../../client/channel/lib/Toolbox';
+import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 addAction('visitor-info', {
 	groups: ['live'],

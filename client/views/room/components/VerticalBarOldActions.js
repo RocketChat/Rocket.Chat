@@ -1,6 +1,6 @@
 import React from 'react';
 
-import VerticalBar from '../../../components/basic/VerticalBar';
+import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useTabBarClose } from '../providers/ToolboxProvider';
 import { BlazeTemplate } from './BlazeTemplate';

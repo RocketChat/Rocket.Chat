@@ -3,13 +3,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { ActionButton } from '@rocket.chat/fuselage';
 
-import Header from '../../../components/basic/Header';
+import Header from '../../../components/Header';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
 import ToolBox from './ToolBox';
-import RoomAvatar from '../../../components/basic/avatar/RoomAvatar';
+import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';
 import { useTranslation } from '../../../contexts/TranslationContext';

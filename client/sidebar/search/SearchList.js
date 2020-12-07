@@ -17,7 +17,7 @@ import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useMethodData } from '../../hooks/useMethodData';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
-import ScrollableContentWrapper from '../../components/basic/ScrollableContentWrapper';
+import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
 
 const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended) => ({
 	items,

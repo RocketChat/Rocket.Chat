@@ -1,6 +1,6 @@
 import { useMemo, lazy, LazyExoticComponent, FC } from 'react';
 
-import { addAction } from '../../../client/channel/lib/Toolbox';
+import { addAction } from '../../../client/views/room/lib/Toolbox';
 import { useSetting } from '../../../client/contexts/SettingsContext';
 
 addAction('discussions', () => {
@@ -11,7 +11,7 @@ addAction('discussions', () => {
 		id: 'discussions',
 		title: 'Discussions',
 		icon: 'discussion',
-		template: lazy(() => import('../../../client/channel/Discussions/ContextualBar/List')) as LazyExoticComponent<FC>,
+		template: lazy(() => import('../../../client/views/room/ContextualBar/Discussions')) as LazyExoticComponent<FC>,
 		full: true,
 		order: 1,
 	} : null), [discussionEnabled]);

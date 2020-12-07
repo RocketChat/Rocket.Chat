@@ -1,7 +1,7 @@
 
 import { useMemo } from 'react';
 
-import { addAction } from '../../../../client/channel/lib/Toolbox';
+import { addAction } from '../../../../client/views/room/lib/Toolbox';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 
 addAction('clean-history', ({ room }) => {

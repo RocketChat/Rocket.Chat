@@ -3,7 +3,7 @@ import { Modal, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useLayoutContextualBarExpanded } from '../../../../client/providers/LayoutProvider';
-import VerticalBar from '../../../../client/components/basic/VerticalBar';
+import VerticalBar from '../../../../client/components/VerticalBar';
 
 type ThreadViewProps = {
 	title: string;
