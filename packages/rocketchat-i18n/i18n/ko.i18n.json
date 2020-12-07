@@ -4,6 +4,7 @@
   "__count__empty_rooms_will_be_removed_automatically": "__count__ 빈 대화방은 자동으로 제거됩니다.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ 빈 대화방은 자동으로 제거됩니다 : <br/> __rooms__.",
   "__username__is_no_longer__role__defined_by__user_by_": "__user_by__님이 __username__님을 __role__ 역할에서 제외시켰습니다.",
+  "__username__was_set__role__by__user_by_": "__ 사용자에게 __사용자가 __역할을__ 설정하였습니다",
   "@username": "@사용자명",
   "@username_message": "@사용자이름 <message>",
   "#channel": "#채널",
