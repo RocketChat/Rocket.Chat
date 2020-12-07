@@ -1,11 +1,12 @@
-import React, { useEffect, useCallback } from 'react';
-import { Tabs } from '@rocket.chat/fuselage';
+import React, { useEffect, useCallback, useState } from 'react';
+import { Tabs, Icon, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/basic/Page';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import ContactTab from './ContactTab';
 import VerticalBar from '../../components/basic/VerticalBar';
+import { ContactNew } from './ContactNew';
 
 
 const OmnichannelDirectoryPage = () => {
@@ -16,9 +17,11 @@ const OmnichannelDirectoryPage = () => {
 	const tab = useRouteParameter('tab');
 	const directoryRoute = useRoute('omnichannel-directory');
 	const context = useRouteParameter('context');
-	const id = useRouteParameter('id');
+	// const id = useRouteParameter('id');
 
 	const handleTabClick = useCallback((tab) => () => directoryRoute.push({ tab }), [directoryRoute]);
+
+	const [contactReload, setContactReload] = useState();
 
 	useEffect(() => {
 		if (!tab) {
@@ -26,7 +29,7 @@ const OmnichannelDirectoryPage = () => {
 		}
 	}, [directoryRoute, tab, defaultTab]);
 
-	const ContactProfile = useCallback(() => {
+	const ContactContextualBar = useCallback(() => {
 		if (!context) {
 			return '';
 		}
@@ -36,15 +39,16 @@ const OmnichannelDirectoryPage = () => {
 
 		return <VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
-				{context === 'info' && t('Contact_Profile')}
-				{context === 'new' && t('New_Contact')}
+				<Icon name='user' size='x20' />
+				{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Contact_Profile')}</Box>}
+				{context === 'new' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('New_Contact')}</Box>}
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
 
-			<h1>{id}</h1>
+			{context === 'new' && <ContactNew reload={contactReload} close={handleVerticalBarCloseButtonClick} />}
 
 		</VerticalBar>;
-	}, [context, id, t, directoryRoute]);
+	}, [context, t, contactReload, directoryRoute]);
 
 	return <Page flexDirection='row'>
 		<Page>
@@ -55,11 +59,11 @@ const OmnichannelDirectoryPage = () => {
 			</Tabs>
 			<Page.Content>
 				{
-					(tab === 'contacts' && <ContactTab />)
+					(tab === 'contacts' && <ContactTab setContactReload={setContactReload} />)
 				}
 			</Page.Content>
 		</Page>
-		<ContactProfile />
+		<ContactContextualBar />
 	</Page>;
 };
 

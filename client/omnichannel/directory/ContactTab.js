@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Table } from '@rocket.chat/fuselage';
 
@@ -15,7 +15,7 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMe
 	...current && { offset: current },
 }), [column, current, direction, itemsPerPage, text]);
 
-function ContactTable() {
+function ContactTable({ setContactReload }) {
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['username', 'asc']);
 	const t = useTranslation();
@@ -47,7 +47,12 @@ function ContactTable() {
 		id,
 	}));
 
-	const { data } = useEndpointDataExperimental('livechat/visitors.search', query) || {};
+	const { data, reload } = useEndpointDataExperimental('livechat/visitors.search', query) || {};
+
+	useEffect(() => {
+		setContactReload(() => reload);
+	}, [reload, setContactReload]);
+
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username'>{t('Username')}</GenericTable.HeaderCell>,
