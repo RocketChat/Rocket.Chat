@@ -12,5 +12,18 @@ export const Default = () => <VerticalBar>
 	<AddUsers
 		onClickBack={alert}
 		onClickClose={alert}
+		onClickSave={alert}
+		value={[]}
+		errors={{}}
+	/>
+</VerticalBar>;
+
+export const Error = () => <VerticalBar>
+	<AddUsers
+		onClickBack={alert}
+		onClickClose={alert}
+		onClickSave={alert}
+		value={[]}
+		errors={{ users: 'With Test Error' }}
 	/>
 </VerticalBar>;
