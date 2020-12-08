@@ -1,8 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
+import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
-
-import { useIsReducedMotionPreferred } from '../../hooks/useIsReducedMotionPreferred';
 
 const Wrapper = ({ children }) =>
 	<Box
@@ -56,7 +55,7 @@ const Line = ({ animated, moved }) =>
 	/>;
 
 function BurgerIcon({ children, open }) {
-	const isReducedMotionPreferred = useIsReducedMotionPreferred();
+	const isReducedMotionPreferred = usePrefersReducedMotion();
 
 	return <Wrapper>
 		<Line animated={!isReducedMotionPreferred} moved={open} />

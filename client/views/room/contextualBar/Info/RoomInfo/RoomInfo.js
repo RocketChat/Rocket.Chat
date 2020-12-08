@@ -1,24 +1,24 @@
 import React from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Box, Margins, Icon, Button, ButtonGroup, Divider, Callout } from '@rocket.chat/fuselage';
+import { Box, Icon, Button, ButtonGroup, Divider, Callout } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
-import RoomAvatar from '../../../../components/avatar/RoomAvatar';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import UserCard from '../../../../components/UserCard';
-import VerticalBar from '../../../../components/VerticalBar';
-import { useUserRoom } from '../../../../contexts/UserContext';
-import { useMethod } from '../../../../contexts/ServerContext';
-import DeleteChannelWarning from '../../../../components/DeleteChannelWarning';
-import { useSetModal } from '../../../../contexts/ModalContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { roomTypes, UiTextContext } from '../../../../../app/utils';
-import { RoomManager } from '../../../../../app/ui-utils/client/lib/RoomManager';
-import { usePermission } from '../../../../contexts/AuthorizationContext';
-import WarningModal from '../../../admin/apps/WarningModal';
-import MarkdownText from '../../../../components/MarkdownText';
+import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import UserCard from '../../../../../components/UserCard';
+import VerticalBar from '../../../../../components/VerticalBar';
+import { useUserRoom } from '../../../../../contexts/UserContext';
+import { useMethod } from '../../../../../contexts/ServerContext';
+import DeleteChannelWarning from '../../../../../components/DeleteChannelWarning';
+import { useSetModal } from '../../../../../contexts/ModalContext';
+import { useSetting } from '../../../../../contexts/SettingsContext';
+import { useRoute } from '../../../../../contexts/RouterContext';
+import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
+import { roomTypes, UiTextContext } from '../../../../../../app/utils';
+import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
+import { usePermission } from '../../../../../contexts/AuthorizationContext';
+import WarningModal from '../../../../admin/apps/WarningModal';
+import MarkdownText from '../../../../../components/MarkdownText';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -79,49 +79,47 @@ export const RoomInfo = function RoomInfo({
 
 			<VerticalBar.ScrollableContent p='x24'>
 				<Box flexGrow={1}>
-					<Margins block='x4'>
-						<Box pbe='x24'>
-							<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
-						</Box>
+					<Box pbe='x24'>
+						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
+					</Box>
 
-						{ archived && <Box pbe='x24'>
-							<Callout type='warning'>
-								{t('Room_archived')}
-							</Callout>
-						</Box>}
+					{ archived && <Box pbe='x24'>
+						<Callout type='warning'>
+							{t('Room_archived')}
+						</Callout>
+					</Box>}
 
-						<Box pbe='x24'>
-							<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
-						</Box>
+					<Box pbe='x24'>
+						<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
+					</Box>
 
-						{broadcast && broadcast !== '' && <Box pbe='x16'>
-							<Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</Label>
-						</Box>}
+					{broadcast && broadcast !== '' && <Box pbe='x16'>
+						<Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</Label>
+					</Box>}
 
-						{description && description !== '' && <Box pbe='x16'>
-							<Label>{t('Description')}</Label>
-							<Info withTruncatedText={false}>{description}</Info>
-						</Box>}
+					{description && description !== '' && <Box pbe='x16'>
+						<Label>{t('Description')}</Label>
+						<Info withTruncatedText={false}>{description}</Info>
+					</Box>}
 
-						{announcement && announcement !== '' && <Box pbe='x16'>
-							<Label>{t('Announcement')}</Label>
-							<Info withTruncatedText={false}>{announcement}</Info>
-						</Box>}
+					{announcement && announcement !== '' && <Box pbe='x16'>
+						<Label>{t('Announcement')}</Label>
+						<Info withTruncatedText={false}>{announcement}</Info>
+					</Box>}
 
-						{topic && topic !== '' && <Box pbe='x16'>
-							<Label>{t('Topic')}</Label>
-							<Info withTruncatedText={false}>{topic}</Info>
-						</Box>}
+					{topic && topic !== '' && <Box pbe='x16'>
+						<Label>{t('Topic')}</Label>
+						<Info withTruncatedText={false}>{topic}</Info>
+					</Box>}
 
-						{retentionPolicyEnabled && (
-							<Callout type='warning'>
-								{filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</p>}
-								{filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</p>}
-								{!filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning', { time: maxAgeDefault })}</p>}
-								{!filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_Unpinned', { time: maxAgeDefault })}</p>}
-							</Callout>
-						)}
-					</Margins>
+					{retentionPolicyEnabled && (
+						<Callout type='warning'>
+							{filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</p>}
+							{filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</p>}
+							{!filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning', { time: maxAgeDefault })}</p>}
+							{!filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_Unpinned', { time: maxAgeDefault })}</p>}
+						</Callout>
+					)}
 				</Box>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
@@ -145,11 +143,11 @@ RoomInfo.Title = Title;
 RoomInfo.Icon = RoomInfoIcon;
 
 export default ({
-	openEditing,
 	rid,
 	tabBar,
 }) => {
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const openEditing = useMutableCallback(() => tabBar && tabBar.setTemplate('EditRoomInfo'));
 	const t = useTranslation();
 
 	const room = useUserRoom(rid);
