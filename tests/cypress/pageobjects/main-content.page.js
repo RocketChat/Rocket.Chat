@@ -15,6 +15,10 @@ class MainContent extends Page {
 
 	get sendBtn() { return browser.element('.rc-message-box__icon.js-send'); }
 
+	get plusBtn() { return browser.element('.rc-message-box__icon.js-plus'); }
+
+	get fileUploadBtn() { return browser.element('.rc-popover__item[data-id="file-upload"]'); }
+
 	get messageBoxActions() { return browser.element('.rc-message-box__icon'); }
 
 	get recordBtn() { return browser.element('.js-audio-message-record'); }
@@ -38,7 +42,7 @@ class MainContent extends Page {
 
 	get lastMessage() { return browser.element('.message:last-child'); }
 
-	get lastMessageDesc() { return browser.element('.message:last-child .body .attachment-description'); }
+	get lastMessageDesc() { return browser.element('.message:last-child .attachment-image .attachment-description'); }
 
 	get lastMessageRoleAdded() { return browser.element('.message:last-child.subscription-role-added .body'); }
 
@@ -118,6 +122,8 @@ class MainContent extends Page {
 	// Popover
 	get popoverWrapper() { return browser.element('.rc-popover'); }
 
+	get warningAlert() { return browser.element('.alert-warning'); }
+
 	// Sends a message and wait for the message to equal the text sent
 	sendMessage(text) {
 		this.setTextToInput(text);
@@ -139,10 +145,11 @@ class MainContent extends Page {
 		}
 	}
 
-	// uploads a file in the given filepath (url).
-	fileUpload(filePath) {
-		this.sendMessage('Prepare for the file');
-		this.fileAttachment.chooseFile(filePath);
+	// uploads a file in the given fileName (url).
+	fileUpload(fileName) {
+		this.plusBtn.click();
+		this.fileUploadBtn.click();
+		cy.get('[id="fileupload-input"]').attachFile(fileName, { force: true });
 	}
 
 	waitForLastMessageEqualsText(text) {

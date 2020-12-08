@@ -1,8 +1,9 @@
-import { Mongo } from 'meteor/mongo';
-
+import { CachedCollection } from '../../../ui-cached-collection';
 import * as Models from '..';
 
-const Roles = new Mongo.Collection(null);
+const CachedRoles = new CachedCollection({ name: 'roles' });
+
+const Roles = CachedRoles.collection;
 
 Object.assign(Roles, {
 	findUsersInRole(name, scope, options) {

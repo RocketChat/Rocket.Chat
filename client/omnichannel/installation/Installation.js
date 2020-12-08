@@ -31,7 +31,7 @@ const Installation = () => {
 	const installString = `<!-- Start of Rocket.Chat Livechat Script -->
 	<script type="text/javascript">
 	(function(w, d, s, u) {
-		w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
+		w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u; w.RocketChat.parentURL = w.location.href;
 		var h = d.getElementsByTagName(s)[0], j = d.createElement(s);
 		j.async = true; j.src = '${ siteUrl }/livechat/rocketchat-livechat.min.js?_=201903270000';
 		h.parentNode.insertBefore(j, h);

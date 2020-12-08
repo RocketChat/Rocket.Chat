@@ -42,7 +42,13 @@ const openPopover = (e, accountBoxItems, t, adminOption) => popover.open({
 							sideNav: item.sideNav,
 							action,
 						};
-					}).concat([adminOption]),
+					}).concat([adminOption])
+						// WIDE CHAT
+						.concat([{
+							name: t('Share'),
+							icon: 'share',
+							type: 'share-action',
+						}]),
 				},
 			],
 		},

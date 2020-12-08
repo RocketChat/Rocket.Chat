@@ -9,6 +9,7 @@ import { hasAllPermission } from '../../authorization';
 import { popover, TabBar, Layout } from '../../ui-utils';
 import { t } from '../../utils';
 import { settings } from '../../settings';
+import { isMobile } from '../../utils/client';
 
 const commonHelpers = {
 	title() {
@@ -51,6 +52,9 @@ const filterButtons = (button, anonymous, rid) => {
 		return false;
 	}
 	if (button.groups.indexOf(Template.instance().tabBar.currentGroup()) === -1) {
+		return false;
+	}
+	if (button.id === 'rocket-search' && isMobile()) {
 		return false;
 	}
 	if (button.id === 'addUsers' && !canShowAddUsersButton(rid)) {
