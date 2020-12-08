@@ -276,7 +276,7 @@ export const dropzoneHelpers = {
 	},
 };
 
-Template.room.helpers({
+Template.roomOld.helpers({
 	...dropzoneHelpers,
 	isTranslated() {
 		const { state } = Template.instance();
@@ -637,14 +637,11 @@ export const dropzoneEvents = {
 			const transferData = e.dataTransfer.getData('text') || e.dataTransfer.getData('url');
 
 			if (e.dataTransfer.types.includes('text/uri-list')) {
-				const dropContext = document.createDocumentFragment();
-				const dropContextContent = document.createElement('div');
-				dropContextContent.innerHTML = e.dataTransfer.getData('text/html');
-				dropContext.appendChild(dropContextContent);
-				const imgURL = dropContext.querySelector('img').src;
+				const url = e.dataTransfer.getData('text/html').match('\<img.+src\=(?:\"|\')(.+?)(?:\"|\')(?:.+?)\>');
+				const imgURL = url && url[1];
 
 				if (!imgURL) {
-					return addToInput(dropContext.querySelector('a').href);
+					return;
 				}
 
 				const file = await createFileFromUrl(imgURL);
@@ -653,7 +650,7 @@ export const dropzoneEvents = {
 				}
 				files = [file];
 			}
-			if (e.dataTransfer.types.includes('text/plain')) {
+			if (e.dataTransfer.types.includes('text/plain') && !e.dataTransfer.types.includes('text/x-moz-url')) {
 				return addToInput(transferData.trim());
 			}
 		}
@@ -670,7 +667,7 @@ export const dropzoneEvents = {
 	},
 };
 
-Template.room.events({
+Template.roomOld.events({
 	...dropzoneEvents,
 	'click [data-message-action]'(event, template) {
 		const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
@@ -1065,7 +1062,7 @@ Template.room.events({
 });
 
 
-Template.room.onCreated(function() {
+Template.roomOld.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
 	const rid = this.data._id;
@@ -1226,7 +1223,7 @@ Template.room.onCreated(function() {
 	this.sendToBottomIfNecessaryDebounced = () => {};
 }); // Update message to re-render DOM
 
-Template.room.onDestroyed(function() {
+Template.roomOld.onDestroyed(function() {
 	if (this.rolesObserve) {
 		this.rolesObserve.stop();
 	}
@@ -1243,7 +1240,7 @@ Template.room.onDestroyed(function() {
 	callbacks.remove('streamNewMessage', this.data._id);
 });
 
-Template.room.onRendered(function() {
+Template.roomOld.onRendered(function() {
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {

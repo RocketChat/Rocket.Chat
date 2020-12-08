@@ -138,34 +138,29 @@ Template.membersList.helpers({
 	loadingMore() {
 		return Template.instance().loadingMore.get();
 	},
-
 	avatarUrl() {
 		const { user: { username, avatarETag } } = this;
 		return getUserAvatarURL(username, avatarETag);
 	},
+	innerTab() {
+		return Template.instance().innerTab.get();
+	},
+	innerTabData() {
+		const { tabBar, innerTab } = Template.instance();
+		return {
+			rid: this.rid,
+			tabBar,
+			onClickBack: () => innerTab.set(),
+		};
+	},
 });
 
 Template.membersList.events({
-	'click .js-add'() {
-		const { tabBar } = Template.currentData();
-
-		tabBar.setTemplate('inviteUsers');
-		tabBar.setData({
-			label: 'Add_users',
-			icon: 'user',
-		});
-
-		tabBar.open();
+	'click .js-add'(e, instance) {
+		instance.tabBar.setTemplate('inviteUsers');
 	},
-	'click .js-invite'() {
-		const { tabBar } = Template.currentData();
-		tabBar.setTemplate('createInviteLink');
-		tabBar.setData({
-			label: 'Invite_Users',
-			icon: 'user-plus',
-		});
-
-		tabBar.open();
+	'click .js-invite'(e, instance) {
+		instance.innerTab.set('InviteUsers');
 	},
 	'submit .js-search-form'(event) {
 		event.preventDefault();
@@ -274,6 +269,9 @@ Template.membersList.onCreated(function() {
 	this.userDetail = new ReactiveVar();
 	this.showDetail = new ReactiveVar(false);
 	this.filter = new ReactiveVar('');
+
+
+	this.innerTab = new ReactiveVar();
 
 
 	this.users = new ReactiveVar([]);
