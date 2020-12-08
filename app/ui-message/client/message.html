@@ -20,7 +20,7 @@
 				{{else}}
 					<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
 						<div class="avatar">
-							<div class="avatar-image" style="background-image:url({{encodeURI msg.avatar}})"></div>
+							{{> avatar url=avatarFromMessage}}
 						</div>
 					</button>
 				{{/if}}
