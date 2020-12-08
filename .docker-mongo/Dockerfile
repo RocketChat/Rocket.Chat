@@ -25,6 +25,7 @@ RUN set -x \
     && mkdir -p /app/uploads \
     && chown rocketchat:rocketchat /app/uploads
 
+# --chown requires Docker 17.12 and works only on Linux
 ADD --chown=rocketchat:rocketchat . /app
 ADD --chown=rocketchat:rocketchat entrypoint.sh /app/bundle/
 
