@@ -16,20 +16,20 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import VerticalBar from '../../../../components/VerticalBar';
-import RawText from '../../../../components/RawText';
-import RoomAvatarEditor from '../../../../components/avatar/RoomAvatarEditor';
-import DeleteChannelWarning from '../../../../components/DeleteChannelWarning';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useForm } from '../../../../hooks/useForm';
-import { roomTypes, RoomSettingsEnum } from '../../../../../app/utils/client';
-import { MessageTypesValues } from '../../../../../app/lib/lib/MessageTypes';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { useSetModal } from '../../../../contexts/ModalContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
-import { usePermission, useAtLeastOnePermission, useRole } from '../../../../contexts/AuthorizationContext';
-import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
-import { useUserRoom } from '../../hooks/useUserRoom';
+import VerticalBar from '../../../../../components/VerticalBar';
+import RawText from '../../../../../components/RawText';
+import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
+import DeleteChannelWarning from '../../../../../components/DeleteChannelWarning';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useForm } from '../../../../../hooks/useForm';
+import { roomTypes, RoomSettingsEnum } from '../../../../../../app/utils/client';
+import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
+import { useMethod } from '../../../../../contexts/ServerContext';
+import { useSetModal } from '../../../../../contexts/ModalContext';
+import { useSetting } from '../../../../../contexts/SettingsContext';
+import { usePermission, useAtLeastOnePermission, useRole } from '../../../../../contexts/AuthorizationContext';
+import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
+import { useUserRoom } from '../../../hooks/useUserRoom';
 
 const typeMap = {
 	c: 'Channels',
@@ -109,13 +109,20 @@ const useInitialValues = (room, settings) => {
 function EditChannelWithData({ rid, tabBar }) {
 	const room = useUserRoom(rid);
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const onClickBack = useMutableCallback(() => tabBar && tabBar.setTemplate('RoomInfo'));
 
-	return <EditChannel onClickClose={onClickClose} room={{ type: room?.t, ...room }}/>;
+	return (
+		<EditChannel
+			onClickClose={onClickClose}
+			onClickBack={onClickBack}
+			room={{ type: room?.t, ...room }}
+		/>
+	);
 }
 
 const getCanChangeType = (room, canCreateChannel, canCreateGroup, isAdmin) => (!room.default || isAdmin) && ((room.t === 'p' && canCreateChannel) || (room.t === 'c' && canCreateGroup));
 
-function EditChannel({ room, onClickClose }) {
+function EditChannel({ room, onClickClose, onClickBack }) {
 	const t = useTranslation();
 
 	const setModal = useSetModal();
@@ -267,7 +274,7 @@ function EditChannel({ room, onClickClose }) {
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='edit'/>
+				{ onClickBack && <VerticalBar.Back onClick={onClickBack} /> }
 				<VerticalBar.Text>{t('edit-room')}</VerticalBar.Text>
 				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>

@@ -9,7 +9,7 @@ Meteor.startup(() => {
 		anonymous: true,
 		i18nTitle: 'Room_Info',
 		icon: 'info-circled',
-		template: 'channelSettings',
+		template: 'RoomInfo',
 		order: 7,
 		full: true,
 	});
