@@ -1,12 +1,14 @@
 import React from 'react';
 import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../components/basic/VerticalBar';
 import UserCard from '../../components/basic/UserCard';
 import { FormSkeleton } from './Skeleton';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useRoute } from '../../contexts/RouterContext';
 
 
 const wordBreak = css`
@@ -17,6 +19,13 @@ const Info = ({ className, ...props }) => <UserCard.Info className={[className, 
 
 export function ContactInfo({ id }) {
 	const t = useTranslation();
+	const directoryRoute = useRoute('omnichannel-directory');
+
+	const onEditButtonClick = useMutableCallback(() => directoryRoute.push({
+		tab: 'contacts',
+		context: 'edit',
+		id,
+	}));
 
 	const { data, state, error } = useEndpointDataExperimental(`contact?contactId=${ id }`);
 	if (state === ENDPOINT_STATES.LOADING) {
@@ -55,7 +64,7 @@ export function ContactInfo({ id }) {
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
 				<Button><Icon name='history' size='x20'/> {t('Chat_History')}</Button>
-				<Button><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
+				<Button onClick={onEditButtonClick}><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
 			</ButtonGroup>
 		</VerticalBar.Footer>
 	</>;

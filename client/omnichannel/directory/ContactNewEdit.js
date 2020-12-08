@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Field, TextInput, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Field, TextInput, Icon, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 
@@ -10,7 +10,8 @@ import { isEmail } from '../../../app/utils';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-
+import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import { FormSkeleton } from './Skeleton';
 
 const initialValues = {
 	name: '',
@@ -18,9 +19,40 @@ const initialValues = {
 	phone: '',
 };
 
-export function ContactNew({ reload, close }) {
+const getInitialValues = (data) => {
+	if (!data) {
+		return initialValues;
+	}
+
+	const { contact } = data;
+	const { name, phone, visitorEmails } = contact;
+
+	return {
+		name: name ?? '',
+		email: visitorEmails ? visitorEmails[0].address : '',
+		phone: phone ? phone[0].phoneNumber : '',
+	};
+};
+
+export function ContactEditWithData({ id, reload, close }) {
 	const t = useTranslation();
-	const { values, handlers } = useForm(initialValues);
+	const { data, state, error } = useEndpointDataExperimental(`contact?contactId=${ id }`);
+
+	if ([state].includes(ENDPOINT_STATES.LOADING)) {
+		return <FormSkeleton/>;
+	}
+
+	if (error || !data || !data.contact) {
+		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
+	}
+
+	return <ContactNewEdit id={id} data={data} reload={reload} close={close} />;
+}
+
+export function ContactNewEdit({ id, data, reload, close }) {
+	const t = useTranslation();
+
+	const { values, handlers } = useForm(getInitialValues(data));
 
 	const {
 		handleName,
@@ -32,10 +64,6 @@ export function ContactNew({ reload, close }) {
 		email,
 		phone,
 	} = values;
-
-	const handleCancel = useMutableCallback(() => {
-
-	});
 
 	const [nameError, setNameError] = useState();
 	const [emailError, setEmailError] = useState();
@@ -72,6 +100,8 @@ export function ContactNew({ reload, close }) {
 			email,
 			phone,
 		};
+
+		if (id) { payload._id = id; }
 
 		try {
 			await saveContact(payload);
@@ -114,7 +144,7 @@ export function ContactNew({ reload, close }) {
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
-				<Button flexGrow={1} type='reset' onClick={handleCancel}>{t('Cancel')}</Button>
+				<Button flexGrow={1} type='reset'>{t('Cancel')}</Button>
 				<Button mie='none' flexGrow={1} onClick={handleSave} disabled={!formIsValid} primary>{t('Save')}</Button>
 			</ButtonGroup>
 		</VerticalBar.Footer>

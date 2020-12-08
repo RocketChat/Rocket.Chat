@@ -1361,6 +1361,7 @@
   "edit-room_description": "Permission to edit a room's name, topic, type (private or public status) and status (active or archived)",
   "edit-room-retention-policy": "Edit Room's Retention Policy",
   "edit-room-retention-policy_description": "Permission to edit a room’s retention policy, to automatically delete messages in it",
+  "Edit_Contact_Profile": "Edit Contact Profile",
   "Edit_Custom_Field": "Edit Custom Field",
   "Edit_Department": "Edit Department",
   "Edit_previous_message": "`%s` - Edit previous message",

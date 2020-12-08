@@ -6,7 +6,7 @@ import Page from '../../components/basic/Page';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import ContactTab from './ContactTab';
 import VerticalBar from '../../components/basic/VerticalBar';
-import { ContactNew } from './ContactNew';
+import { ContactNewEdit, ContactEditWithData } from './ContactNewEdit';
 import { ContactInfo } from './ContactInfo';
 
 
@@ -40,14 +40,15 @@ const OmnichannelDirectoryPage = () => {
 
 		return <VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
-				<Icon name='user' size='x20' />
-				{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Contact_Profile')}</Box>}
-				{context === 'new' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('New_Contact')}</Box>}
+				{context === 'new' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('New_Contact')}</Box>}
+				{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Profile')}</Box>}
+				{context === 'edit' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='pencil' size='x20' /> {t('Edit_Contact_Profile')}</Box>}
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
 
-			{context === 'new' && <ContactNew reload={contactReload} close={handleVerticalBarCloseButtonClick} />}
+			{context === 'new' && <ContactNewEdit reload={contactReload} close={handleVerticalBarCloseButtonClick} />}
 			{context === 'info' && <ContactInfo reload={contactReload} id={id} />}
+			{context === 'edit' && <ContactEditWithData id={id} reload={contactReload} close={handleVerticalBarCloseButtonClick} />}
 
 		</VerticalBar>;
 	}, [context, t, contactReload, directoryRoute, id]);
