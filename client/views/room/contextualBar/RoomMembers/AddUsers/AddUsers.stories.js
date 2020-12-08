@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { AddUsers } from './AddUsers';
-import VerticalBar from '../../../../components/VerticalBar';
+import VerticalBar from '../../../../../components/VerticalBar';
 
 export default {
 	title: 'components/RoomMembers/AddUsers',

@@ -1,26 +1,23 @@
-import React, { useMemo, useState } from 'react';
-import { Box, Field, MultiSelectFiltered, Button, Callout, Chip } from '@rocket.chat/fuselage';
+import React, { useState } from 'react';
+import { Box, Field, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import UserAutoCompleteMultiple from '../../../../../../ee/client/audit/UserAutoCompleteMultiple';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
-// import { useEndpoint } from '../../../../contexts/ServerContext';
-// import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useForm } from '../../../../../hooks/useForm';
+import { useMethod } from '../../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 
 export const AddUsers = ({
-	onClickBack,
 	onClickClose,
-	onClickEdit,
-	error,
-	userList,
+	onClickBack,
+	onClickSave,
+	value,
+	onChange,
+	errors,
 }) => {
 	const t = useTranslation();
-
-	console.log(userList);
-
-	const options = useMemo(() => userList && userList?.map(({ _id, name, username }) => [_id, <Chip key={_id}><Box is='span' m='none' mie='x4'><UserAvatar size='x20' username={username} /></Box>{name}</Chip>]), [userList]);
 
 	return (
 		<>
@@ -31,53 +28,76 @@ export const AddUsers = ({
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent>
-				<Box width='100%'>
+				<Box>
 					<Field >
 						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-						<Field.Row>
-							<MultiSelectFiltered options={options} placeholder={t('Choose_users')} />
-						</Field.Row>
+						<UserAutoCompleteMultiple errors={errors.users} value={value} onChange={onChange} placeholder={t('Choose_users')} />
+						{errors.users && <Field.Error>
+							{errors.users}
+						</Field.Error>}
 					</Field>
 				</Box>
 
-				{ error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
-
-				<Box pb='x16'><Button primary onClick={onClickEdit}>{t('Add_users')}</Button></Box>
+				<Box pb='x16'>
+					<Button primary onClick={onClickSave}>{t('Add_users')}</Button>
+				</Box>
 			</VerticalBar.ScrollableContent>
 		</>
 	);
 };
 
-// const query = (term = '') => ({ selector: JSON.stringify({ term }) });
-
 export default ({
+	rid,
 	tabBar,
 	onClickBack,
-	...props
 }) => {
-	console.log(props);
-
-	const userId = 'rehxTAXYS36NM4gj2';
-
-	const query = useMemo(() => ({
-		userId,
-	}), []);
+	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const [errors, setErrors] = useState({});
 
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
-	const { value } = useEndpointData('users.list');
-	const avatar = useEndpointData('users.getAvatar', query);
+	const saveAction = useMethod('addUsersToRoom');
 
-	console.log(avatar);
+	const { values, handlers } = useForm({ users: [] });
+	const { users } = values;
+	const { handleUsers } = handlers;
 
-	console.log(value);
+	const onChangeUsers = useMutableCallback((value, action) => {
+		if (!action) {
+			if (users.includes(value)) {
+				return;
+			}
+			return handleUsers([...users, value]);
+		}
+		handleUsers(users.filter((current) => current !== value));
+	});
 
-	// console.log(usersList);
+	const handleSave = useMutableCallback(async () => {
+		if (users.length < 1) {
+			return setErrors({
+				users: t('Select_at_least_one_user'),
+			});
+		}
+
+		try {
+			await saveAction({ rid, users });
+			dispatchToastMessage({ type: 'success', message: t('Users_added') });
+			onClickBack();
+		} catch (e) {
+			dispatchToastMessage({ type: 'error', message: e });
+		}
+
+		setErrors({});
+	});
 
 	return (
 		<AddUsers
 			onClickClose={onClickClose}
 			onClickBack={onClickBack}
-			userList={value && value.users}
+			onClickSave={handleSave}
+			value={users}
+			onChange={onChangeUsers}
+			errors={errors}
 		/>
 	);
 };
