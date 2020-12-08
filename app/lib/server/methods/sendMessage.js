@@ -55,6 +55,7 @@ export function executeSendMessage(uid, message) {
 	const user = Users.findOneById(uid, {
 		fields: {
 			username: 1,
+			name: 1,
 			type: 1,
 		},
 	});
