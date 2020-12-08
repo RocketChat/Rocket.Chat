@@ -11,7 +11,7 @@ addAction('discussions', () => {
 		id: 'discussions',
 		title: 'Discussions',
 		icon: 'discussion',
-		template: lazy(() => import('../../../client/views/room/ContextualBar/Discussions')) as LazyExoticComponent<FC>,
+		template: lazy(() => import('../../../client/views/room/contextualBar/Discussions')) as LazyExoticComponent<FC>,
 		full: true,
 		order: 1,
 	} : null), [discussionEnabled]);

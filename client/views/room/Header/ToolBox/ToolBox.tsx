@@ -1,50 +1,45 @@
-import React, { memo, useContext, useEffect, ReactNode } from 'react';
-import { Menu, Option, BoxProps } from '@rocket.chat/fuselage';
+import React, { memo, useContext, useEffect, ReactNode, useRef } from 'react';
+import { Menu, Option, BoxProps, MenuProps } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
-
 import Header from '../../../../components/Header';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { ToolboxActionConfig, ActionRenderer } from '../../lib/Toolbox';
+import { ToolboxActionConfig, ActionRenderer, OptionRenderer } from '../../lib/Toolbox';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
 import { ToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 
-export const createHeaderActionRenderer = (badge?: JSX.Element): ActionRenderer => (
-	{ id, icon, title, action, className, tabId },
-	index,
-): ReactNode => <Header.ToolBoxAction
-	className={className}
-	primary={id === tabId}
-	data-toolbox={index}
-	onClick={action}
-	title={title}
-	key={id}
-	icon={icon}
-	position={'relative'}
->
-	{badge}
-</Header.ToolBoxAction>;
+const headerActionRenderer: ActionRenderer = (props) => <Header.ToolBoxAction {...props} />;
 
-const headerActionRenderer = createHeaderActionRenderer();
+const renderMenuOption: OptionRenderer = (
+	{ label: { title, icon }, ...props }: any,
+): ReactNode =>
+	<Option label={title} title={title} icon={icon} {...props}/>;
 
 const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Element => {
 	const tab = useTab();
 	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();
 	const t = useTranslation();
+	const hiddenActionRenderers = useRef<{[key: string]: OptionRenderer}>({});
+
 	const { actions: mapActions } = useContext(ToolboxContext);
 	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
-	const hiddenActions = Object.fromEntries((isMobile ? actions : actions.slice(6)).map((item) => [item.id, {
-		label: { label: item.title, icon: item.icon },
-		// ...item,
-		action: (): void => {
-			openTabBar(item.id);
-		},
-	}]));
+
+
+	const hiddenActions: MenuProps['options'] = Object.fromEntries((isMobile ? actions : actions.slice(6)).map((item) => {
+		hiddenActionRenderers.current = { ...hiddenActionRenderers.current, [item.id]: item.renderOption || renderMenuOption };
+		return [item.id, {
+			label: { title: t(item.title), icon: item.icon },
+			// ...item,
+			action: (): void => {
+				openTabBar(item.id);
+			},
+		}];
+	}));
 
 	const actionDefault = useMutableCallback((e) => {
 		const index = e.currentTarget.getAttribute('data-toolbox');
@@ -66,20 +61,17 @@ const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Eleme
 		};
 	}, [visibleActions.length, open]);
 
-
 	return <>
-		{ visibleActions.map(({ renderAction = headerActionRenderer, title, ...action }, index) => renderAction({ action: actionDefault, ...action, className, tabId: tab?.id, title: t(title) }, index)) }
+		{ visibleActions.map(({ renderAction = headerActionRenderer, title, ...action }, index) => renderAction({ action: actionDefault, ...action, className, tabId: tab?.id, title: t(title), index })) }
 		{ actions.length > 6 && <Menu
 			small={!isMobile}
 			className={className}
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={hiddenActions}
-			renderItem={({ label: { label, icon }, ...props }: { label: any }): ReactNode => <Option label={t(label)} title={t(label)} icon={icon} {...props}/>}
+			renderItem={({ value, ...props }): ReactNode => hiddenActionRenderers.current[value](props)}
 		/>}
 	</>;
 };
-
-ToolBox.createHeaderActionRenderer = createHeaderActionRenderer;
 
 export default memo(ToolBox);

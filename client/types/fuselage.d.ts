@@ -365,16 +365,25 @@ declare module '@rocket.chat/fuselage' {
 		icon?: string;
 		className?: BoxProps['className'];
 		title?: string;
+		value?: any;
 	};
 
 	export const Option: ForwardRefExoticComponent<OptionProps>;
 
-	type MenuProps = Omit<ActionButtonProps, 'icon'> & {
+	export type MenuProps = Omit<ActionButtonProps, 'icon'> & {
 		icon?: string;
-		options: any;
+		options: {
+			[id: string]: {
+				label: {
+					title: string;
+					icon: string;
+				};
+				action: Function;
+			};
+		};
 		optionWidth?: BoxProps['width'];
 		placement?: Placements;
-		renderItem: Function;
+		renderItem?: (props: OptionProps) => ReactNode;
 	}
 
 	export const Menu: ForwardRefExoticComponent<MenuProps>;

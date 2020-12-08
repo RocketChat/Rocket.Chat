@@ -3,7 +3,7 @@ import React from 'react';
 import { SettingsContext } from '../../contexts/SettingsContext';
 import Header from './Header';
 import RoomAvatar from '../avatar/RoomAvatar';
-import ToolBox, { createHeaderActionRenderer } from '../../views/room/Header/ToolBox';
+import ToolBox from '../../views/room/Header/ToolBox';
 import { ToolboxProvider } from '../../views/room/providers/ToolboxProvider';
 import { addAction } from '../../views/room/lib/Toolbox';
 import { useRoomIcon } from '../../hooks/useRoomIcon';
@@ -77,9 +77,22 @@ const toolboxRoom = {
 	usersCount: 2,
 };
 
-const renderWithBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='primary'>1</Header.ToolBoxAction.Badge>);
-const renderWithRedBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='danger'>2</Header.ToolBoxAction.Badge>);
-const renderWithOrangeBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='warning'>99</Header.ToolBoxAction.Badge>);
+// const renderWithBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='primary'>1</Header.ToolBoxAction.Badge>);
+// const renderWithRedBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='danger'>2</Header.ToolBoxAction.Badge>);
+// const renderWithOrangeBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='warning'>99</Header.ToolBoxAction.Badge>);
+
+const renderWithBadge = (props, index) => <Header.ToolBoxAction index={index} {...props} >
+	<Header.ToolBoxAction.Badge variant='primary'>1</Header.ToolBoxAction.Badge>
+</Header.ToolBoxAction>;
+
+const renderWithRedBadge = (props, index) => <Header.ToolBoxAction index={index} {...props} >
+	<Header.ToolBoxAction.Badge variant='danger'>2</Header.ToolBoxAction.Badge>
+</Header.ToolBoxAction>;
+
+const renderWithOrangeBadge = (props, index) => <Header.ToolBoxAction index={index} {...props} >
+	<Header.ToolBoxAction.Badge variant='warning'>99</Header.ToolBoxAction.Badge>
+</Header.ToolBoxAction>;
+
 
 addAction('render-action-example-badge', {
 	groups: ['channel'],
@@ -87,7 +100,7 @@ addAction('render-action-example-badge', {
 	title: 'Example',
 	icon: 'phone',
 	template: 'b',
-	order: 1,
+	order: 0,
 	renderAction: renderWithBadge,
 });
 
@@ -108,7 +121,7 @@ addAction('render-action-example-badge-danger', {
 	title: 'Example',
 	icon: 'discussion',
 	template: 'c',
-	order: 1,
+	order: 2,
 	renderAction: renderWithRedBadge,
 });
 

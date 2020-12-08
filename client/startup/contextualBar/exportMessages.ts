@@ -11,7 +11,7 @@ addAction('export-messages', ({ room }) => {
 		anonymous: true,
 		title: 'Export_Messages',
 		icon: 'mail',
-		template: lazy(() => import('../../views/room/ContextualBar/ExportMessages')) as LazyExoticComponent<FC>,
+		template: lazy(() => import('../../views/room/contextualBar/ExportMessages')) as LazyExoticComponent<FC>,
 		full: true,
 		order: 12,
 	} : null), [hasPermission]);

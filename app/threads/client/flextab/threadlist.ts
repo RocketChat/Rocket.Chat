@@ -11,7 +11,7 @@ addAction('thread', () => {
 		full: true,
 		title: 'Threads',
 		icon: 'thread',
-		template: lazy(() => import('../../../../client/views/room/ContextualBar/Threads')) as LazyExoticComponent<FC>,
+		template: lazy(() => import('../../../../client/views/room/contextualBar/Threads')) as LazyExoticComponent<FC>,
 		// badge: () => {
 		// 	const subscription = Subscriptions.findOne({ rid: Session.get('openedRoom') }, { fields: { tunread: 1, tunreadUser: 1, tunreadGroup: 1 } });
 		// 	if (!subscription?.tunread?.length) {
