@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Field, TextInput, Icon, Box, Margins, Button } from '@rocket.chat/fuselage';
+import { Field, TextInput, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 
@@ -85,38 +85,38 @@ export function ContactNew({ reload, close }) {
 
 	const formIsValid = name;
 
-	return <VerticalBar.ScrollableContent is='form'>
-		<Field>
-			<Field.Label>{t('Name')}</Field.Label>
-			<Field.Row>
-				<TextInput error={nameError} flexGrow={1} value={name} onChange={handleName} placeholder={t('Insert_Contact_Name')} />
-			</Field.Row>
-			<Field.Error>
-				{nameError}
-			</Field.Error>
-		</Field>
-		<Field>
-			<Field.Label>{t('Email')}</Field.Label>
-			<Field.Row>
-				<TextInput error={emailError} flexGrow={1} value={email} onChange={handleEmail} placeholder='example@domain.com' addon={<Icon name='mail' size='x20'/>}/>
-			</Field.Row>
-			<Field.Error>
-				{t(emailError)}
-			</Field.Error>
-		</Field>
-		<Field>
-			<Field.Label>{t('Phone')}</Field.Label>
-			<Field.Row>
-				<TextInput flexGrow={1} value={phone} onChange={handlePhone} />
-			</Field.Row>
-		</Field>
-		<Field.Row>
-			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-				<Margins inlineEnd='x4'>
-					<Button flexGrow={1} type='reset' onClick={handleCancel}>{t('Cancel')}</Button>
-					<Button mie='none' flexGrow={1} onClick={handleSave} disabled={!formIsValid} primary>{t('Save')}</Button>
-				</Margins>
-			</Box>
-		</Field.Row>
-	</VerticalBar.ScrollableContent>;
+	return <>
+		<VerticalBar.ScrollableContent is='form'>
+			<Field>
+				<Field.Label>{t('Name')}</Field.Label>
+				<Field.Row>
+					<TextInput error={nameError} flexGrow={1} value={name} onChange={handleName} placeholder={t('Insert_Contact_Name')} />
+				</Field.Row>
+				<Field.Error>
+					{nameError}
+				</Field.Error>
+			</Field>
+			<Field>
+				<Field.Label>{t('Email')}</Field.Label>
+				<Field.Row>
+					<TextInput error={emailError} flexGrow={1} value={email} onChange={handleEmail} placeholder='example@domain.com' addon={<Icon name='mail' size='x20'/>}/>
+				</Field.Row>
+				<Field.Error>
+					{t(emailError)}
+				</Field.Error>
+			</Field>
+			<Field>
+				<Field.Label>{t('Phone')}</Field.Label>
+				<Field.Row>
+					<TextInput flexGrow={1} value={phone} onChange={handlePhone} />
+				</Field.Row>
+			</Field>
+		</VerticalBar.ScrollableContent>
+		<VerticalBar.Footer>
+			<ButtonGroup stretch>
+				<Button flexGrow={1} type='reset' onClick={handleCancel}>{t('Cancel')}</Button>
+				<Button mie='none' flexGrow={1} onClick={handleSave} disabled={!formIsValid} primary>{t('Save')}</Button>
+			</ButtonGroup>
+		</VerticalBar.Footer>
+	</>;
 }

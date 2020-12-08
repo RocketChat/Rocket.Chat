@@ -7,6 +7,7 @@ import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import ContactTab from './ContactTab';
 import VerticalBar from '../../components/basic/VerticalBar';
 import { ContactNew } from './ContactNew';
+import { ContactInfo } from './ContactInfo';
 
 
 const OmnichannelDirectoryPage = () => {
@@ -17,7 +18,7 @@ const OmnichannelDirectoryPage = () => {
 	const tab = useRouteParameter('tab');
 	const directoryRoute = useRoute('omnichannel-directory');
 	const context = useRouteParameter('context');
-	// const id = useRouteParameter('id');
+	const id = useRouteParameter('id');
 
 	const handleTabClick = useCallback((tab) => () => directoryRoute.push({ tab }), [directoryRoute]);
 
@@ -46,9 +47,10 @@ const OmnichannelDirectoryPage = () => {
 			</VerticalBar.Header>
 
 			{context === 'new' && <ContactNew reload={contactReload} close={handleVerticalBarCloseButtonClick} />}
+			{context === 'info' && <ContactInfo reload={contactReload} id={id} />}
 
 		</VerticalBar>;
-	}, [context, t, contactReload, directoryRoute]);
+	}, [context, t, contactReload, directoryRoute, id]);
 
 	return <Page flexDirection='row'>
 		<Page>
