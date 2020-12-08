@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Field, Button } from '@rocket.chat/fuselage';
+import { Field, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import UserAutoCompleteMultiple from '../../../../../../ee/client/audit/UserAutoCompleteMultiple';
@@ -26,22 +26,18 @@ export const AddUsers = ({
 				<VerticalBar.Text>{t('Add_users')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
-
 			<VerticalBar.ScrollableContent>
-				<Box>
-					<Field >
-						<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-						<UserAutoCompleteMultiple errors={errors.users} value={value} onChange={onChange} placeholder={t('Choose_users')} />
-						{errors.users && <Field.Error>
-							{errors.users}
-						</Field.Error>}
-					</Field>
-				</Box>
-
-				<Box pb='x16'>
-					<Button primary onClick={onClickSave}>{t('Add_users')}</Button>
-				</Box>
+				<Field >
+					<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
+					<UserAutoCompleteMultiple errors={errors.users} value={value} onChange={onChange} placeholder={t('Choose_users')} />
+					{errors.users && <Field.Error>
+						{errors.users}
+					</Field.Error>}
+				</Field>
 			</VerticalBar.ScrollableContent>
+			<VerticalBar.Footer>
+				<Button primary disabled={!value || value.length === 0} onClick={onClickSave}>{t('Add_users')}</Button>
+			</VerticalBar.Footer>
 		</>
 	);
 };
