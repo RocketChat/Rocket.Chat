@@ -36,9 +36,10 @@ import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
-import { Apps, AppEvents, LivechatNotifications } from '../../../apps/server';
+import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { Notifications } from '../../../notifications';
 
 const rooms = {};
 
@@ -57,12 +58,12 @@ export const Livechat = {
 			return;
 		}
 		rooms[rid] = callback;
-		return LivechatNotifications.onRoom(rid, 'typing', rooms[rid]);
+		return Notifications.onRoom(rid, 'typing', rooms[rid]);
 	},
 
 	removeTypingListener(rid) {
 		if (rooms[rid]) {
-			LivechatNotifications.unRoom(rid, 'typing', rooms[rid]);
+			Notifications.unRoom(rid, 'typing', rooms[rid]);
 			delete rooms[rid];
 		}
 	},

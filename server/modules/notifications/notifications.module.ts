@@ -406,6 +406,22 @@ export class NotificationsModule {
 		return this.streamRoom.emit(`${ room }/${ eventName }`, ...args);
 	}
 
+	onRoom(room: string, eventName: string, callback: () => {}): void {
+		if (this.debug === true) {
+			this.streamRoom.on(room, function() {
+				return console.log(`onRoom ${ room }`, [room, eventName, callback]);
+			});
+		}
+		return this.streamRoom.on(`${ room }/${ eventName }`, callback);
+	}
+
+	unRoom(room: string, eventName: string, callback: () => {}): void {
+		if (this.debug === true) {
+			console.log(`unRoom ${ room }`, [room, eventName, callback]);
+		}
+		return this.streamRoom.removeListener(`${ room }/${ eventName }`, callback);
+	}
+
 	notifyUser(userId: string, eventName: string, ...args: any[]): void {
 		if (this.debug === true) {
 			console.log('notifyUser', [userId, eventName, ...args]);
