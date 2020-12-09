@@ -1,12 +1,11 @@
 import React from 'react';
 
-import { UserInfo } from '../UserInfo';
 import { RoomInfo } from './RoomInfo';
-import VerticalBar from '../../../../components/VerticalBar';
+import VerticalBar from '../../../../../components/VerticalBar';
 
 export default {
 	title: 'components/RoomInfo',
-	component: UserInfo,
+	component: RoomInfo,
 };
 
 const room = {

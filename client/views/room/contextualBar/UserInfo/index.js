@@ -205,9 +205,9 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 				</VerticalBar.Content>)
 				|| <UserInfo
 					{...user}
-					// data={data.user}
+					data={user}
 					// onChange={onChange}
-					actions={data && <UserActions user={data.user} rid={rid}/>}
+					actions={<UserActions user={user} rid={rid}/>}
 					{...props}
 					p='x24'
 				/>

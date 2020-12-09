@@ -50,7 +50,7 @@ function VerticalBarHeader({ children, ...props }) {
 }
 
 function VerticalBarIcon(props) {
-	return <Icon {...props} size='x22'/>;
+	return <Icon {...props} size='x24'/>;
 }
 
 function VerticalBarClose(props) {
@@ -83,7 +83,7 @@ function VerticalBarAction({ name, ...props }) {
 }
 
 function VerticalBarActionBack(props) {
-	return <VerticalBarAction {...props} name='arrow-back' />;
+	return <VerticalBarAction {...props} tiny name='arrow-back' />;
 }
 
 function VerticalBarSkeleton(props) {

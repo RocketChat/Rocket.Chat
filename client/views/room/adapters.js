@@ -64,3 +64,11 @@ createTemplateForComponent('EditInvite', () => import('./contextualBar/RoomMembe
 createTemplateForComponent('OTR', () => import('./contextualBar/OTR'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
+
+createTemplateForComponent('EditRoomInfo', () => import('./contextualBar/Info/EditRoomInfo'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
+
+createTemplateForComponent('RoomInfo', () => import('./contextualBar/Info/RoomInfo'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
