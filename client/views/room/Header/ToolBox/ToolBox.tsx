@@ -6,12 +6,10 @@ import tinykeys from 'tinykeys';
 // used to open the menu option by keyboard
 import Header from '../../../../components/Header';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { ToolboxActionConfig, ActionRenderer, OptionRenderer } from '../../lib/Toolbox';
+import { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
 import { ToolboxContext } from '../../lib/Toolbox/ToolboxContext';
-
-const headerActionRenderer: ActionRenderer = (props) => <Header.ToolBoxAction {...props} />;
 
 const renderMenuOption: OptionRenderer = (
 	{ label: { title, icon }, ...props }: any,
@@ -62,7 +60,25 @@ const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Eleme
 	}, [visibleActions.length, open]);
 
 	return <>
-		{ visibleActions.map(({ renderAction = headerActionRenderer, title, ...action }, index) => renderAction({ action: actionDefault, ...action, className, tabId: tab?.id, title: t(title), index })) }
+		{ visibleActions.map(({ renderAction, id, icon, title, action = actionDefault }, index) => {
+			const props = {
+				id,
+				icon,
+				title: t(title),
+				className,
+				tabId: id,
+				index,
+				primary: id === tab?.id,
+				'data-toolbox': index,
+				action,
+				key: id,
+			};
+
+			if (renderAction) {
+				return renderAction(props);
+			}
+			return <Header.ToolBoxAction {...props} />;
+		})}
 		{ actions.length > 6 && <Menu
 			small={!isMobile}
 			className={className}

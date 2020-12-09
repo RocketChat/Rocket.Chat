@@ -6,7 +6,7 @@ import { IRoom } from '../../../../../definition/IRoom';
 
 type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null
 
-type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction'> & {
+type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups'> & {
 	className: BoxProps['className'];
 	tabId: ToolboxActionConfig['id'] | undefined;
 	index: number;

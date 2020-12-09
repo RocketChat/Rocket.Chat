@@ -3,7 +3,7 @@ import { Blaze } from 'meteor/blaze';
 import React, { useEffect, useRef } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
-export const BlazeTemplate = ({ name, children, ...props }) => {
+export const BlazeTemplate = React.memo(({ name, children, ...props }) => {
 	const ref = useRef();
 	useEffect(() => {
 		if (!ref.current || !Template[name]) {
@@ -17,10 +17,11 @@ export const BlazeTemplate = ({ name, children, ...props }) => {
 		}, 50);
 
 		return () => {
-			Blaze.remove(view);
+			view && Blaze.remove(view);
 		};
-	}, [props, name]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [name]);
 	return <Box display='flex' flexDirection='column' flexGrow={1} ref={ref}/>;
-};
+});
 
 export default React.memo(BlazeTemplate);
