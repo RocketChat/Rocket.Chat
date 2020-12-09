@@ -140,7 +140,7 @@ UserInfo.Label = Label;
 UserInfo.Username = Username;
 
 
-export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClose, video, showBackButton, ...props }) {
+export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClose, video, showBackButton, width, ...props }) {
 	const t = useTranslation();
 
 	const getRoles = useRolesDescription();
@@ -190,7 +190,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 	}, [data, showRealNames, getRoles]);
 
 	return (
-		<VerticalBar>
+		<VerticalBar width={width}>
 			<VerticalBar.Header>
 				{t('User_Info')}
 				{onClose && <VerticalBar.Close onClick={onClose} />}

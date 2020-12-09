@@ -25,7 +25,7 @@ const MemberListRouter = ({ tabBar, rid }) => {
 		return <VerticalBarOldActions {...tab} name={'membersList'} template={'membersList'} tabBar={tabBar} rid={rid} _id={rid} />;
 	}
 
-	return <UserInfo {...username ? { username } : { uid: room.uids.filter((uid) => uid !== ownUserId).shift() }} onClose={onClose} rid={rid}/>;
+	return <UserInfo width='100%' {...username ? { username } : { uid: room.uids.filter((uid) => uid !== ownUserId).shift() }} onClose={onClose} rid={rid}/>;
 };
 
 export default MemberListRouter;
