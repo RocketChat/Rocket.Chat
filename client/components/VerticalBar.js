@@ -50,7 +50,7 @@ function VerticalBarHeader({ children, ...props }) {
 }
 
 function VerticalBarIcon(props) {
-	return <Icon {...props} size='x24'/>;
+	return <Icon {...props} pi='x2' size='x24'/>;
 }
 
 function VerticalBarClose(props) {
