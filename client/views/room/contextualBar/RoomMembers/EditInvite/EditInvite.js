@@ -72,7 +72,6 @@ export default ({
 	captionText,
 	days: _days,
 	maxUses: _maxUses,
-
 }) => {
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
 
