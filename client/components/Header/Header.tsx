@@ -11,11 +11,7 @@ const HeaderIcon = ({ icon }: { icon: JSX.Element | { name: string; color?: stri
 
 const ToolBox = (props: any): JSX.Element => <ButtonGroup small {...props}/>;
 
-const ToolBoxAction: FC<Omit<ActionButtonProps, 'action'> & {
-	tabId?: string;
-	action?: (e: React.MouseEvent<HTMLElement>) => void;
-	index: number;
-}> = ({ id, icon, title, action, className, tabId, index, ...props }) => <ActionButton
+const ToolBoxAction: any = ({ id, icon, title, action, className, tabId, index, ...props }: any): JSX.Element => <ActionButton
 	className={className}
 	primary={tabId === id}
 	onClick={action}
@@ -46,6 +42,7 @@ const Header = (props: any): JSX.Element => <Box rcx-room-header is='header' hei
 	<HeaderDivider/>
 </Box>;
 Header.ToolBoxAction = ToolBoxAction;
+Header.ToolBoxAction.Badge = ToolBoxActionBadge;
 export default Header;
 
 Object.assign(Content, {
