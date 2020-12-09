@@ -157,7 +157,7 @@ Template.membersList.helpers({
 
 Template.membersList.events({
 	'click .js-add'(e, instance) {
-		instance.tabBar.setTemplate('inviteUsers');
+		instance.innerTab.set('AddUsers');
 	},
 	'click .js-invite'(e, instance) {
 		instance.innerTab.set('InviteUsers');
