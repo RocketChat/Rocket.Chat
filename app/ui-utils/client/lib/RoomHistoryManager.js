@@ -6,7 +6,7 @@ import { Blaze } from 'meteor/blaze';
 import { promises } from '../../../promises/client';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
-import { renderMessageBody } from './renderMessageBody';
+import { renderMessageBody } from '../../../../client/lib/renderMessageBody';
 import { getConfig } from '../config';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { call } from './callMethod';

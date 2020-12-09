@@ -1,12 +1,11 @@
 import { Random } from 'meteor/random';
-import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
-import s from 'underscore.string';
+import katex from 'katex';
 
 import { escapeHTML } from '../../../lib/escapeHTML';
 import { unescapeHTML } from '../../../lib/unescapeHTML';
-import { callbacks } from '../../callbacks';
-import { settings } from '../../settings';
+
+import 'katex/dist/katex.min.css';
+import './style.css';
 
 class Boundary {
 	length() {
@@ -19,29 +18,29 @@ class Boundary {
 }
 
 class Katex {
-	constructor(katex) {
+	constructor(katex, { dollarSyntax, parenthesisSyntax }) {
 		this.katex = katex;
 		this.delimitersMap = [
 			{
 				opener: '\\[',
 				closer: '\\]',
 				displayMode: true,
-				enabled: () => this.isParenthesisSyntaxEnabled(),
+				enabled: () => parenthesisSyntax,
 			}, {
 				opener: '\\(',
 				closer: '\\)',
 				displayMode: false,
-				enabled: () => this.isParenthesisSyntaxEnabled(),
+				enabled: () => parenthesisSyntax,
 			}, {
 				opener: '$$',
 				closer: '$$',
 				displayMode: true,
-				enabled: () => this.isDollarSyntaxEnabled(),
+				enabled: () => dollarSyntax,
 			}, {
 				opener: '$',
 				closer: '$',
 				displayMode: false,
-				enabled: () => this.isDollarSyntaxEnabled(),
+				enabled: () => dollarSyntax,
 			},
 		];
 	}
@@ -60,7 +59,7 @@ class Katex {
 		}
 
 		// Take the first delimiter found
-		const minPos = Math.min.apply(Math, positions);
+		const minPos = Math.min(...positions);
 
 		const matchIndex = matches.findIndex(({ pos }) => pos === minPos);
 
@@ -155,15 +154,15 @@ class Katex {
 	}
 
 	renderMessage = (message) => {
-		if (_.isString(message)) {
+		if (typeof message === 'string') {
 			return this.render(message, this.renderLatex);
 		}
 
-		if (!s.trim(message.html)) {
+		if (!message.html?.trim()) {
 			return message;
 		}
 
-		if (message.tokens == null) {
+		if (!message.tokens) {
 			message.tokens = [];
 		}
 
@@ -178,31 +177,9 @@ class Katex {
 
 		return message;
 	}
-
-	isEnabled = () => settings.get('Katex_Enabled')
-
-	isDollarSyntaxEnabled = () => settings.get('Katex_Dollar_Syntax')
-
-	isParenthesisSyntaxEnabled = () => settings.get('Katex_Parenthesis_Syntax')
 }
 
-
-Tracker.autorun(async () => {
-	if (!settings.get('Katex_Enabled')) {
-		return callbacks.remove('renderMessage', 'katex');
-	}
-
-
-	const [katex] = await Promise.all([import('katex'), import('./style.css'), import('../katex.min.css')]);
-	const instance = new Katex(katex);
-
-	callbacks.add('renderMessage', instance.renderMessage, callbacks.priority.HIGH + 1, 'katex');
-});
-
-export default {
-	isEnabled: () => settings.get('Katex_Enabled'),
-
-	isDollarSyntaxEnabled: () => settings.get('Katex_Dollar_Syntax'),
-
-	isParenthesisSyntaxEnabled: () => settings.get('Katex_Parenthesis_Syntax'),
+export const createKatexMessageRendering = (options) => {
+	const instance = new Katex(katex, options);
+	return (message) => instance.renderMessage(message);
 };

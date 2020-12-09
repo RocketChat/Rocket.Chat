@@ -2,12 +2,9 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {String} msg - The message html
  */
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { settings } from '../../../../settings';
-
-const addAsToken = function(message, html) {
+const addAsToken = (message, html) => {
 	const token = `=!=${ Random.id() }=!=`;
 	message.tokens.push({
 		token,
@@ -16,8 +13,6 @@ const addAsToken = function(message, html) {
 
 	return token;
 };
-
-const URL = global.URL || require('url').URL || require('url').Url;
 
 const validateUrl = (url) => {
 	try {
@@ -28,14 +23,19 @@ const validateUrl = (url) => {
 	}
 };
 
-const parseNotEscaped = function(msg, message) {
-	if (message && message.tokens == null) {
+const parseNotEscaped = (message, {
+	supportSchemesForLink,
+	headers,
+	rootUrl,
+}) => {
+	let msg = message.html;
+	if (!message.tokens) {
 		message.tokens = [];
 	}
 
-	const schemes = (settings.get('Markdown_SupportSchemesForLink') || '').split(',').join('|');
+	const schemes = (supportSchemesForLink || '').split(',').join('|');
 
-	if (settings.get('Markdown_Headers')) {
+	if (headers) {
 		// Support # Text for h1
 		msg = msg.replace(/^# (([\S\w\d-_\/\*\.,\\][ \u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]?)+)/gm, '<h1>$1</h1>');
 
@@ -79,7 +79,7 @@ const parseNotEscaped = function(msg, message) {
 		if (!validateUrl(url)) {
 			return match;
 		}
-		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
+		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
 		return addAsToken(message, `<a href="${ url }" title="${ title }" target="${ target }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ url });"></div></a>`);
 	});
 
@@ -88,7 +88,7 @@ const parseNotEscaped = function(msg, message) {
 		if (!validateUrl(url)) {
 			return match;
 		}
-		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
+		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
 		title = title.replace(/&amp;/g, '&');
 
 		let escapedUrl = url;
@@ -102,14 +102,14 @@ const parseNotEscaped = function(msg, message) {
 		if (!validateUrl(url)) {
 			return match;
 		}
-		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
+		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
 		return addAsToken(message, `<a href="${ url }" target="${ target }" rel="noopener noreferrer">${ title }</a>`);
 	});
 
 	return msg;
 };
 
-export const markdown = function(message) {
-	message.html = parseNotEscaped(message.html, message);
+export const markdown = (message, options) => {
+	message.html = parseNotEscaped(message, options);
 	return message;
 };

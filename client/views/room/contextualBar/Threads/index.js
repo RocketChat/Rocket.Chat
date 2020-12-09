@@ -7,7 +7,7 @@ import { useDebouncedValue, useResizeObserver, useLocalStorage } from '@rocket.c
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useRoute, useCurrentRoute } from '../../../../contexts/RouterContext';
-import { call, renderMessageBody } from '../../../../../app/ui-utils/client';
+import { call } from '../../../../../app/ui-utils/client';
 import { useUserId, useUserSubscription } from '../../../../contexts/UserContext';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
@@ -15,6 +15,7 @@ import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../helpers/clickableItem';
 import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
+import { renderMessageBody } from '../../../../lib/renderMessageBody';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../../contexts/ServerContext';

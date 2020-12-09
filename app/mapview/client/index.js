@@ -1,1 +1,1 @@
-import './mapview';
+export { createMapViewMessageRenderer } from './mapview';

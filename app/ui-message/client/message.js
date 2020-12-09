@@ -7,16 +7,16 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
-import { renderMessageBody, MessageTypes, MessageAction } from '../../ui-utils/client';
+import { MessageTypes, MessageAction } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles } from '../../models/client';
-import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes } from '../../utils';
 import './message.html';
 import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
 import { escapeHTML } from '../../../lib/escapeHTML';
-
+import { renderMentions } from '../../mentions/client/client';
+import { renderMessageBody } from '../../../client/lib/renderMessageBody';
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
@@ -32,7 +32,7 @@ const renderBody = (msg, settings) => {
 		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
-		msg = callbacks.run('renderMentions', msg);
+		msg = renderMentions(msg);
 		msg = msg.html;
 	} else {
 		msg = renderMessageBody(msg);

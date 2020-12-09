@@ -7,7 +7,6 @@ import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 
-import { renderMessageBody } from '../../../../../app/ui-utils/client';
 import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { Messages } from '../../../../../app/models/client';
 import VerticalBar from '../../../../components/VerticalBar';
@@ -23,6 +22,7 @@ import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { renderMessageBody } from '../../../../lib/renderMessageBody';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
