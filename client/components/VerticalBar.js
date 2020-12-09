@@ -30,6 +30,18 @@ function VerticalBar({ children, ...props }) {
 	</Box>;
 }
 
+function VerticalBarInnerContent(props) {
+	return <Box
+		rcx-vertical-bar--inner-content
+		position='absolute'
+		width='full'
+		height='full'
+		display='flex'
+		mis='neg-x2'
+		{...props}
+	/>;
+}
+
 function VerticalBarHeader({ children, ...props }) {
 	return <Box
 		minHeight='56px'
@@ -100,6 +112,7 @@ function VerticalBarText(props) {
 	return <Box flexShrink={1} flexGrow={1} withTruncatedText {...props}/>;
 }
 
+VerticalBar.InnerContent = React.memo(VerticalBarInnerContent);
 VerticalBar.Icon = React.memo(VerticalBarIcon);
 VerticalBar.Footer = React.memo(VerticalBarFooter);
 VerticalBar.Text = React.memo(VerticalBarText);

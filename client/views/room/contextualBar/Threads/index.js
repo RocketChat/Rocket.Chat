@@ -38,6 +38,15 @@ const filterProps = ({ msg, u, replies, mentions, tcount, ts, _id, tlm, attachme
 const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
 const roomFields = { t: 1, name: 1 };
 
+const mergeThreads = (threads, newThreads) =>
+	Array.from(
+		new Map([
+			...threads.map((msg) => [msg._id, msg]),
+			...newThreads.map((msg) => [msg._id, msg]),
+		]).values(),
+	)
+		.sort((a, b) => b.tlm.getTime() - a.tlm.getTime());
+
 export function withData(WrappedComponent) {
 	return ({ rid, ...props }) => {
 		const onClose = useTabBarClose();
@@ -59,20 +68,8 @@ export function withData(WrappedComponent) {
 		const [type, setType] = useLocalStorage('thread-list-type', 'all');
 		const [text, setText] = useState('');
 
-		const mergeThreads = useCallback(
-			(threads, newThreads) =>
-				Array.from(
-					new Map([
-						...threads.map((msg) => [msg._id, msg]),
-						...newThreads.map((msg) => [msg._id, msg]),
-					]).values(),
-				)
-					.sort((a, b) => b.tlm.getTime() - a.tlm.getTime()),
-			[],
-		);
-
 		const getThreadsList = useEndpoint('GET', 'chat.getThreadsList');
-		const fetchThreads = useCallback(async ({ rid, offset, limit, type, text }) => {
+		const fetchThreads = useMutableCallback(async ({ rid, offset, limit, type, text }) => {
 			try {
 				const data = await getThreadsList({
 					rid,
@@ -96,7 +93,7 @@ export function withData(WrappedComponent) {
 					count,
 				}));
 			}
-		}, [getThreadsList, mergeThreads]);
+		});
 
 		const debouncedText = useDebouncedValue(text, 400);
 		useEffect(() => {
@@ -247,8 +244,8 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 
 	return <>
 		<VerticalBar.Header>
-			<Icon name='thread' size='x20'/>
-			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Threads')}</Box>
+			<VerticalBar.Icon name='thread'/>
+			<VerticalBar.Text>{t('Threads')}</VerticalBar.Text>
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>
@@ -283,7 +280,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 				</InfiniteLoader>}
 			</Box>
 		</VerticalBar.Content>
-		{ mid && <Box position='absolute' width='full' height='full' display='flex'><ThreadComponent mid={mid} jump={jump} room={room}/></Box> }
+		{ mid && <VerticalBar.InnerContent><ThreadComponent mid={mid} jump={jump} room={room}/></VerticalBar.InnerContent> }
 	</>;
 }
 

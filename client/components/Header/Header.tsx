@@ -15,7 +15,7 @@ const ToolBoxAction: FC<Omit<ActionButtonProps, 'action'> & {
 	tabId?: string;
 	action?: (e: React.MouseEvent<HTMLElement>) => void;
 	index: number;
-}> = ({ id, icon, title, action, className, tabId, index, ...props }) => <ActionButton
+}> = React.memo(({ id, icon, title, action, className, tabId, index, ...props }) => <ActionButton
 	className={className}
 	primary={tabId === id}
 	onClick={action}
@@ -28,7 +28,7 @@ const ToolBoxAction: FC<Omit<ActionButtonProps, 'action'> & {
 	small
 	overflow='visible'
 	{...props}
-/>;
+/>);
 
 const ToolBoxActionBadge: FC<BadgeProps> = (props) => <Box position='absolute' zIndex={99} className={css`top: 0; right: 0; transform: translate(30%, -30%);`}><Badge {...props}/></Box>;
 
