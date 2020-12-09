@@ -145,7 +145,6 @@ RoomInfo.Icon = RoomInfoIcon;
 
 export default ({
 	rid,
-	tabBar,
 	openEditing,
 }) => {
 	const onClickClose = useTabBarClose();

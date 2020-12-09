@@ -124,7 +124,6 @@ const ThreadComponent: FC<{
 		if (!ref.current || !viewData.mainMessage) {
 			return;
 		}
-  
 		const view = Blaze.renderWithData(Template.thread, viewData, ref.current);
 
 		return (): void => {
