@@ -6,7 +6,7 @@ import memoize from 'memoize-one';
 
 import { usePreventDefault } from './hooks/usePreventDefault';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
-import { ReactiveUserStatus, colors } from '../components/basic/UserStatus';
+import { ReactiveUserStatus, colors } from '../components/UserStatus';
 import { useTranslation } from '../contexts/TranslationContext';
 import { roomTypes } from '../../app/utils';
 import { useUserPreference, useUserId } from '../contexts/UserContext';
@@ -19,6 +19,7 @@ import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 import { useRoomList } from './hooks/useRoomList';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
 import { escapeHTML } from '../../lib/escapeHTML';
+import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
 
 const sections = {
 	Omnichannel,
@@ -130,6 +131,7 @@ export default () => {
 
 	return <Box h='full' w='full' ref={ref}>
 		<List
+			outerElementType={ScrollableContentWrapper}
 			height={blockSize}
 			itemCount={roomsList.length}
 			itemSize={(index) => (typeof roomsList[index] === 'string' ? (sections[roomsList[index]] && sections[roomsList[index]].size) || 40 : itemSize)}
@@ -154,7 +156,7 @@ const getMessage = (room, lastMessage, t) => {
 	if (lastMessage.u?.username === room.u?.username) {
 		return `${ t('You') }: ${ normalizeSidebarMessage(lastMessage, t) }`;
 	}
-	if (room.t === 'd' && room.uids.length <= 2) {
+	if (room.t === 'd' && room.uids && room.uids.length <= 2) {
 		return normalizeSidebarMessage(lastMessage, t);
 	}
 	return `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeSidebarMessage(lastMessage, t) }`;
@@ -226,6 +228,9 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 		return false;
 	}
 	if (prevProps.room.alert !== nextProps.room.alert) {
+		return false;
+	}
+	if (prevProps.room.v?.status !== nextProps.room.v?.status) {
 		return false;
 	}
 
