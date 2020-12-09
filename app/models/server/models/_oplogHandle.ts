@@ -54,7 +54,7 @@ class CustomOplogHandle {
 			throw Error(`Error parsing database URL (${ oplogUrl })`);
 		}
 
-		if (!this.usingChangeStream && (!oplogUrl || urlParsed.dbName !== 'local')) {
+		if (!this.usingChangeStream && (!oplogUrl || urlParsed.defaultDatabase !== 'local')) {
 			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
 		}
 
@@ -64,7 +64,7 @@ class CustomOplogHandle {
 
 		if (process.env.MONGO_OPLOG_URL) {
 			const urlParsed = await urlParser(process.env.MONGO_URL);
-			this.dbName = urlParsed.dbName;
+			this.dbName = urlParsed.defaultDatabase;
 		}
 
 		this.client = new MongoClient(oplogUrl, {

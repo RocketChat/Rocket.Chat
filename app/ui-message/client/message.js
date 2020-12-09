@@ -137,6 +137,13 @@ Template.message.helpers({
 			return msg.avatar.replace(/^@/, '');
 		}
 	},
+	avatarFromMessage() {
+		const { msg } = this;
+		if (msg && msg.avatar) {
+			return encodeURI(msg.avatar);
+		}
+		return '';
+	},
 	getStatus() {
 		const { msg } = this;
 		return Session.get(`user_${ msg.u.username }_status_text`);
