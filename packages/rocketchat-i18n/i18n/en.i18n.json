@@ -1345,6 +1345,7 @@
   "E2E_Reset_Other_Key_Warning": "Reset the current E2E key will log out the user. When the user login again, Rocket.Chat will generate a new key and restore the user access to any encrypted room that has one or more members online. Due to the nature of the E2E encryption, Rocket.Chat will not be able to restore access to any encrypted room that has no member online.",
   "Edit": "Edit",
   "Edit_Business_Hour": "Edit Business Hour",
+  "Edit_Canned_Responses": "Edit Canned Responses",
   "Edit_Custom_Field": "Edit Custom Field",
   "Edit_Department": "Edit Department",
   "Edit_Invite": "Edit Invite",

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
-import CannedResponseDetails from './CannedResponseDetails';
+import { CannedResponseDetails } from './CannedResponseDetails';
 
 export default {
 	title: 'omnichannel/CannedResponseDetails',

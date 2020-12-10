@@ -8,9 +8,10 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useSetting } from '../../../contexts/SettingsContext';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../../hooks/useForm';
-import { useRoute } from '../../../contexts/RouterContext';
+import { useRoute, useRouteParameter, useCurrentRoute } from '../../../contexts/RouterContext';
 import Page from '../../../components/Page';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 import { formsSubscription } from '../additionalForms';
@@ -18,6 +19,8 @@ import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { isEmail } from '../../../../app/utils';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
+import CannedResponsesRouter from '../../../../ee/client/omnichannel/cannedResponses';
 
 export default function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
@@ -42,6 +45,7 @@ export function EditDepartment({ data, id, title, reload }) {
 	const initialAgents = useRef((data && data.agents) || []);
 
 	const router = useRoute('omnichannel-departments');
+	const [, params] = useCurrentRoute();
 
 	const {
 		useEeNumberInput = () => {},
@@ -226,10 +230,24 @@ export function EditDepartment({ data, id, title, reload }) {
 
 	const formId = useUniqueId();
 
+	const tab = useRouteParameter('tab');
+	const hasCannedResponsesLicense = useHasLicense('canned-responses');
+	const cannedResponsesEnabled = useSetting('Canned_Responses_Enable');
+	const showCanned = hasCannedResponsesLicense && cannedResponsesEnabled && tab === 'canned-responses';
+
+	const handleOpenCannedResponses = useMutableCallback(() => {
+		router.push({ ...params, tab: 'canned-responses' });
+	});
+
+	const handleCloseCannedResponses = useMutableCallback(() => {
+		router.push({ ...params, tab: '' });
+	});
+
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={title}>
 				<ButtonGroup>
+					{hasCannedResponsesLicense && cannedResponsesEnabled && <Button onClick={handleOpenCannedResponses} title={t('Canned Responses')}><Icon name='baloon-exclamation' size='x16'/></Button>}
 					<Button onClick={handleReturn}><Icon name='back'/> {t('Back')}</Button>
 					<Button type='submit' form={formId} primary disabled={invalidForm}>{t('Save')}</Button>
 				</ButtonGroup>
@@ -331,5 +349,6 @@ export function EditDepartment({ data, id, title, reload }) {
 				</FieldGroup>
 			</Page.ScrollableContentWithShadow>
 		</Page>
+		{showCanned && <CannedResponsesRouter departmentId={id} onClose={handleCloseCannedResponses}/>}
 	</Page>;
 }
