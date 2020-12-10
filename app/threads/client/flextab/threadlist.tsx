@@ -3,30 +3,9 @@ import React, { useMemo, lazy, LazyExoticComponent, FC } from 'react';
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
 import Header from '../../../../client/components/Header';
-import { IRoom } from '../../../../definition/IRoom';
-import { ISubscription } from '/definition/ISubscription';
-// badge: () => {
-// 	const subscription = Subscriptions.findOne({ rid: Session.get('openedRoom') }, { fields: { tunread: 1, tunreadUser: 1, tunreadGroup: 1 } });
-// 	if (!subscription?.tunread?.length) {
-// 		return;
-// 	}
+import { ISubscription } from '../../../../definition/ISubscription';
 
-// 	const badgeClass = (() => {
-// 		if (subscription.tunreadUser?.length > 0) {
-// 			return 'rc-badge--user-mentions';
-// 		}
-// 		if (subscription.tunreadGroup?.length > 0) {
-// 			return 'rc-badge--group-mentions';
-// 		}
-// 	})();
-
-// 	return {
-// 		body: subscription.tunread.length > 99 ? '99+' : subscription.tunread.length,
-// 		class: badgeClass,
-// 	};
-// },
-
-const getVariant = (room: ISubscription) => {
+const getVariant = (room: ISubscription): string => {
 	if (room.tunreadUser?.length > 0) {
 		return 'danger';
 	}

@@ -4,6 +4,7 @@ import { IRoom } from '../../../../definition/IRoom';
 import { useUserSubscription } from '../../../contexts/UserContext';
 import { RoomContext } from '../contexts/RoomContext';
 import { ToolboxProvider } from './ToolboxProvider';
+import { roomTypes } from '../../../../app/utils/client';
 
 const fields = {};
 
@@ -17,7 +18,7 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 	room._id = rid;
 	const context = useMemo(() => ({
 		rid,
-		room,
+		room: { ...room, name: roomTypes.getRoomName(room.t, room) },
 	}), [room, rid]);
 
 	if (!room) {

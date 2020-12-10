@@ -80,7 +80,7 @@ export const RoomInfo = function RoomInfo({
 
 			<VerticalBar.ScrollableContent p='x24'>
 				<Box flexGrow={1}>
-					<Box pbe='x24'>
+					<Box pbe='x24' display='flex' justifyContent='center'>
 						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
 					</Box>
 

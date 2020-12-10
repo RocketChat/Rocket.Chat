@@ -312,10 +312,6 @@ textarea {
 	}
 }
 
-.toggle-favorite {
-	color: var(--component-color);
-}
-
 .upload-progress-progress {
 	background-color: var(--success-background);
 }
