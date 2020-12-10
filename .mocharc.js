@@ -3,12 +3,11 @@
 module.exports = {
 	require: [
 		'ts-node/register',
-		'babel-mocha-es6-compiler',
-		'babel-polyfill',
+		'@babel/register',
 	],
 	reporter: 'spec',
 	ui: 'bdd',
-	extension: 'js,ts',
+	extension: ['js', 'ts'],
 	spec: [
 		'app/**/*.tests.js',
 		'app/**/*.tests.ts',

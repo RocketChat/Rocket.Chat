@@ -1,5 +1,4 @@
-import s from 'underscore.string';
-
+import { escapeRegExp } from '../../../../../lib/escapeRegExp';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatCustomField } from '../../../../models/server/raw';
 
@@ -8,7 +7,7 @@ export async function findLivechatCustomFields({ userId, text, pagination: { off
 		throw new Error('error-not-authorized');
 	}
 
-	const query = { ...text && { $or: [{ label: new RegExp(s.escapeRegExp(text), 'i') }, { _id: new RegExp(s.escapeRegExp(text), 'i') }] } };
+	const query = { ...text && { $or: [{ label: new RegExp(escapeRegExp(text), 'i') }, { _id: new RegExp(escapeRegExp(text), 'i') }] } };
 
 	const cursor = await LivechatCustomField.find(query, {
 		sort: sort || { label: 1 },

@@ -3,28 +3,22 @@
  * @param {Object} message - The message object
  */
 import _ from 'underscore';
-import s from 'underscore.string';
 
-import { callbacks } from '../../callbacks';
+const process = (message, source, callback) => {
+	if (!source?.trim()) {
+		return;
+	}
 
-const process = function(message, source, callback) {
-	if (s.trim(source)) {
-		// Separate text in code blocks and non code blocks
-		const msgParts = source.split(/(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)/);
-
-		for (let index = 0; index < msgParts.length; index++) {
-			// Verify if this part is code
-			const part = msgParts[index];
-
-			if ((part != null ? part.length > 0 : undefined) != null) {
-				const codeMatch = part.match(/(?:```(\w*)[\n ]?([\s\S]*?)```+?)|(?:`(?:[^`]+)`)/);
-				if (codeMatch == null) {
-					callback(message, msgParts, index, part);
-				}
-			}
+	// Separate text in code blocks and non code blocks
+	const msgParts = source.split(/(```\w*[\n ]?[\s\S]*?```+?)|(`(?:[^`]+)`)/);
+	for (let index = 0; index < msgParts.length; index++) {
+		const part = msgParts[index];
+		if (!/(?:```(\w*)[\n ]?([\s\S]*?)```+?)|(?:`(?:[^`]+)`)/.test(part)) {
+			callback(message, msgParts, index, part);
 		}
 	}
 };
+
 class Spotify {
 	static transform(message) {
 		let urls = [];
@@ -74,5 +68,6 @@ class Spotify {
 	}
 }
 
-callbacks.add('beforeSaveMessage', Spotify.transform, callbacks.priority.LOW, 'spotify-save');
-callbacks.add('renderMessage', Spotify.render, callbacks.priority.MEDIUM, 'spotify-render');
+export const createSpotifyMessageRenderer = () => Spotify.render;
+
+export const createSpotifyBeforeSaveMessageHandler = () => Spotify.transform;

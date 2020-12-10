@@ -1,5 +1,4 @@
-import s from 'underscore.string';
-
+import { escapeRegExp } from '../../../../../lib/escapeRegExp';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
 
@@ -9,7 +8,7 @@ export async function findDepartments({ userId, text, pagination: { offset, coun
 	}
 
 	const query = {
-		...text && { name: new RegExp(s.escapeRegExp(text), 'i') },
+		...text && { name: new RegExp(escapeRegExp(text), 'i') },
 	};
 
 	const cursor = LivechatDepartment.find(query, {
