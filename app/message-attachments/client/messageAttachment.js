@@ -3,7 +3,8 @@ import { Template } from 'meteor/templating';
 
 import { DateFormat } from '../../lib';
 import { getURL } from '../../utils/client';
-import { renderMessageBody, createCollapseable } from '../../ui-utils';
+import { createCollapseable } from '../../ui-utils';
+import { renderMessageBody } from '../../../client/lib/renderMessageBody';
 
 const colors = {
 	good: '#35AC19',

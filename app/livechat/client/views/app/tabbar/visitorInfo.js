@@ -18,6 +18,7 @@ import { APIClient } from '../../../../../utils/client';
 import { RoomManager } from '../../../../../ui-utils/client';
 import { DateFormat } from '../../../../../lib/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
+import { Markdown } from '../../../../../markdown/client';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -243,6 +244,10 @@ Template.visitorInfo.helpers({
 	transcriptRequestedDateTime() {
 		const { requestedAt } = this;
 		return DateFormat.formatDateAndTime(requestedAt);
+	},
+
+	markdown(text) {
+		return Markdown.parse(text);
 	},
 });
 

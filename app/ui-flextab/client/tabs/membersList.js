@@ -13,7 +13,7 @@ import { WebRTC } from '../../../webrtc/client';
 import { hasPermission } from '../../../authorization/client';
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
-createTemplateForComponent('UserInfoWithData', () => import('../../../../client/channel/UserInfo'), {
+createTemplateForComponent('UserInfoWithData', () => import('../../../../client/views/room/contextualBar/UserInfo'), {
 	// eslint-disable-next-line new-cap
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar', style: 'flex-grow: 1;' }),
 });
@@ -157,7 +157,7 @@ Template.membersList.helpers({
 
 Template.membersList.events({
 	'click .js-add'(e, instance) {
-		instance.tabBar.setTemplate('inviteUsers');
+		instance.innerTab.set('AddUsers');
 	},
 	'click .js-invite'(e, instance) {
 		instance.innerTab.set('InviteUsers');

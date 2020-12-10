@@ -8,12 +8,12 @@
         {{#if field.short}}
             <div class="attachment-field attachment-field-short">
                 <div class="attachment-field-title">{{field.title}}</div>
-                {{{RocketChatMarkdown field.value}}}
+                {{{markdown field.value}}}
             </div>
         {{else}}
             <div class="attachment-field">
                 <div class="attachment-field-title">{{field.title}}</div>
-                {{{RocketChatMarkdown field.value}}}
+                {{{markdown field.value}}}
             </div>
         {{/if}}
     {{/if}}

@@ -1,5 +1,4 @@
-import s from 'underscore.string';
-
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
@@ -34,7 +33,7 @@ export class RoomsRaw extends BaseRaw {
 	}
 
 	findByNameContainingAndTypes(name, types, discussion = false, options = {}) {
-		const nameRegex = new RegExp(s.escapeRegExp(name).trim(), 'i');
+		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 		const query = {
 			t: {
 				$in: types,
@@ -62,7 +61,7 @@ export class RoomsRaw extends BaseRaw {
 	}
 
 	findByNameContaining(name, discussion = false, options = {}) {
-		const nameRegex = new RegExp(s.escapeRegExp(name).trim(), 'i');
+		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const query = {
 			prid: { $exists: discussion },
@@ -78,7 +77,7 @@ export class RoomsRaw extends BaseRaw {
 	}
 
 	findChannelAndPrivateByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${ s.escapeRegExp(name).trim() }`, 'i');
+		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
 		const query = {
 			t: {

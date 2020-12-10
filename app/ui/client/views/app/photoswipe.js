@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import s from 'underscore.string';
+
+import { escapeHTML } from '../../../../../lib/escapeHTML';
 
 Meteor.startup(() => {
 	let currentGallery = null;
@@ -38,7 +39,7 @@ Meteor.startup(() => {
 			...defaultGalleryOptions,
 			index: 0,
 			addCaptionHTMLFn(item, captionEl) {
-				captionEl.children[0].innerHTML =					`${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small>`;
+				captionEl.children[0].innerHTML =					`${ escapeHTML(item.title) }<br/><small>${ escapeHTML(item.description) }</small>`;
 				return true;
 			},
 		};

@@ -5,11 +5,12 @@ import { Field, MultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
-export const DepartmentForwarding = ({ value, handler, label, placeholder }) => {
+export const DepartmentForwarding = ({ departmentId, value, handler, label, placeholder }) => {
 	const t = useTranslation();
 	const { value: data } = useEndpointData('livechat/department');
 
-	const options = useMemo(() => (data && [...data.departments.map((department) => [department._id, department.name])]) || [], [data]);
+	const options = useMemo(() => (data && [...data.departments.filter((department) => department._id !== departmentId).map((department) => [department._id, department.name])]) || [], [data, departmentId]);
+
 
 	return <Field>
 		<Field.Label>{t(label)}</Field.Label>

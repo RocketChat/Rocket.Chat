@@ -1,2 +1,0 @@
-import './log';
-import './pathFor';
