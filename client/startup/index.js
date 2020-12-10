@@ -1,4 +1,3 @@
-import './beforeSaveMessage';
 import './contextualBar';
 import './emailVerification';
 import './i18n';
