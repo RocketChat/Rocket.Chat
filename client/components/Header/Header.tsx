@@ -11,11 +11,7 @@ const HeaderIcon = ({ icon }: { icon: JSX.Element | { name: string; color?: stri
 
 const ToolBox = (props: any): JSX.Element => <ButtonGroup small {...props}/>;
 
-const ToolBoxAction: FC<Omit<ActionButtonProps, 'action'> & {
-	tabId?: string;
-	action?: (e: React.MouseEvent<HTMLElement>) => void;
-	index: number;
-}> = React.memo(({ id, icon, title, action, className, tabId, index, ...props }) => <ActionButton
+const ToolBoxAction: any = ({ id, icon, title, action, className, tabId, index, ...props }: any): JSX.Element => <ActionButton
 	className={className}
 	primary={tabId === id}
 	onClick={action}
@@ -28,7 +24,7 @@ const ToolBoxAction: FC<Omit<ActionButtonProps, 'action'> & {
 	small
 	overflow='visible'
 	{...props}
-/>);
+/>;
 
 const ToolBoxActionBadge: FC<BadgeProps> = (props) => <Box position='absolute' zIndex={99} className={css`top: 0; right: 0; transform: translate(30%, -30%);`}><Badge {...props}/></Box>;
 
@@ -46,6 +42,7 @@ const Header = (props: any): JSX.Element => <Box rcx-room-header is='header' hei
 	<HeaderDivider/>
 </Box>;
 Header.ToolBoxAction = ToolBoxAction;
+Header.ToolBoxAction.Badge = ToolBoxActionBadge;
 export default Header;
 
 Object.assign(Content, {

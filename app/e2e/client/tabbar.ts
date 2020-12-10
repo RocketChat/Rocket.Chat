@@ -15,14 +15,14 @@ addAction('e2e', ({ room }) => {
 		toggleE2E(room._id, 'encrypted', !room.encrypted);
 	});
 
-	// class: () => (ChatRoom.findOne(Session.get('openedRoom')) || {}).encrypted && 'enabled', todo add render
+	const enabledOnRoom = !!room.encrypted;
 
 	return useMemo(() => (e2eEnabled && hasPermission ? {
 		groups: ['direct', 'group'],
 		id: 'e2e',
-		title: 'E2E',
+		title: enabledOnRoom ? 'E2E_disable' : 'E2E_enable',
 		icon: 'key',
 		order: 13,
 		action,
-	} : null), [action, e2eEnabled, hasPermission]);
+	} : null), [action, e2eEnabled, enabledOnRoom, hasPermission]);
 });
