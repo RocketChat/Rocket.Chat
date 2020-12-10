@@ -6,17 +6,17 @@ import { Table, Icon, Button } from '@rocket.chat/fuselage';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../../../client/hooks/useEndpointDataExperimental';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
-import VerticalBar from '../../../../client/components/basic/VerticalBar';
+import VerticalBar from '../../../../client/components/VerticalBar';
 import PrioritiesPage from './PrioritiesPage';
 import { PriorityEditWithData, PriorityNew } from './EditPriority';
 import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
 import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
 export function RemovePriorityButton({ _id, reload }) {
 	const removePriority = useMethod('livechat:removePriority');
@@ -96,7 +96,7 @@ function PrioritiesRoute() {
 		id,
 	}));
 
-	const { data, reload } = useEndpointDataExperimental('livechat/priorities.list', query) || {};
+	const { value: data = {}, reload } = useEndpointData('livechat/priorities.list', query);
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,

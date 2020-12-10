@@ -1,0 +1,2 @@
+import './autotranslate';
+import './googlevision';

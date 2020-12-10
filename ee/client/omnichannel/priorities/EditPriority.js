@@ -5,20 +5,21 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
+import VerticalBar from '../../../../client/components/VerticalBar';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useRoute } from '../../../../client/contexts/RouterContext';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 
 
 export function PriorityEditWithData({ priorityId, reload }) {
 	const query = useMemo(() => ({ priorityId }), [priorityId]);
-	const { data, state, error } = useEndpointDataExperimental('livechat/priorities.getOne', query);
+	const { value: data, phase: state, error } = useEndpointData('livechat/priorities.getOne', query);
 
 	const t = useTranslation();
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton/>;
 	}
 

@@ -1,4 +1,4 @@
-import s from 'underscore.string';
+import { escapeHTML } from '../../../lib/escapeHTML';
 
 const userTemplateDefault = ({ prefix, className, mention, title, label, type = 'username' }) => `${ prefix }<a class="${ className }" data-${ type }="${ mention }"${ title ? ` title="${ title }"` : '' }>${ label }</a>`;
 const roomTemplateDefault = ({ prefix, reference, mention }) => `${ prefix }<a class="mention-link mention-link--room" data-channel="${ reference }">${ `#${ mention }` }</a>`;
@@ -67,11 +67,11 @@ export class MentionsParser {
 			}
 
 			const label = temp
-				? mention && s.escapeHTML(mention)
+				? mention && escapeHTML(mention)
 				: (mentions || [])
 					.filter(({ username }) => username === mention)
 					.map(({ name, username }) => (this.useRealName ? name : username))
-					.map((label) => label && s.escapeHTML(label))[0];
+					.map((label) => label && escapeHTML(label))[0];
 
 			if (!label) {
 				return match;

@@ -2,13 +2,13 @@ import React, { useRef, useState } from 'react';
 import { Box, Field, TextInput, ButtonGroup, Button, Margins, Tabs } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import Page from '../../../client/components/basic/Page';
+import Page from '../../../client/components/Page';
 import DateRangePicker from './DateRangePicker';
 import RoomAutoComplete from './RoomAutoComplete';
 import UserAutoCompleteMultiple from './UserAutoCompleteMultiple';
 import VisitorAutoComplete from './VisitorAutoComplete';
 import Result from './Result';
-import { AutoCompleteAgent } from '../../../client/components/basic/AutoCompleteAgent';
+import { AutoCompleteAgent } from '../../../client/components/AutoCompleteAgent';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useForm } from '../../../client/hooks/useForm';
 

@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -7,11 +6,12 @@ import { Blaze } from 'meteor/blaze';
 import { promises } from '../../../promises/client';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
-import { renderMessageBody } from './renderMessageBody';
+import { renderMessageBody } from '../../../../client/lib/renderMessageBody';
 import { getConfig } from '../config';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { call } from './callMethod';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
+import { escapeHTML } from '../../../../lib/escapeHTML';
 
 export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {
@@ -24,11 +24,11 @@ export const normalizeThreadMessage = ({ ...message }) => {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
 		if (attachment && attachment.description) {
-			return s.escapeHTML(attachment.description);
+			return escapeHTML(attachment.description);
 		}
 
 		if (attachment && attachment.title) {
-			return s.escapeHTML(attachment.title);
+			return escapeHTML(attachment.title);
 		}
 	}
 };
