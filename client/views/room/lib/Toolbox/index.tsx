@@ -1,8 +1,9 @@
 import { FC, LazyExoticComponent, ReactNode, MouseEvent } from 'react';
-import { Emitter, Handler } from '@rocket.chat/emitter';
 import { BoxProps, OptionProps } from '@rocket.chat/fuselage';
 
 import { IRoom } from '../../../../../definition/IRoom';
+import { generator } from './generator';
+
 
 type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null
 
@@ -34,22 +35,6 @@ export type ToolboxActionConfig = {
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;
 
-const ev = new Emitter();
+const { listen, add: addAction, remove: deleteAction, store: actions } = generator<ToolboxAction>();
 
-export type ActionsStore = Map<string, ToolboxAction>;
-
-export const actions: ActionsStore = new Map();
-
-export const addAction = (id: ToolboxActionConfig['id'], action: ToolboxAction): ActionsStore => {
-	actions.set(id, action);
-	ev.emit('change', actions);
-	return actions;
-};
-
-export const deleteAction = (id: ToolboxActionConfig['id']): boolean => {
-	const result = actions.delete(id);
-	ev.emit('change', actions);
-	return result;
-};
-
-export const listen = (handler: Handler): Function => ev.on('change', handler);
+export { listen, addAction, deleteAction, actions };
