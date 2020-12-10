@@ -1,3 +1,4 @@
-import '../lib/client/widget';
-import '../lib/client/oembedSpotifyWidget.html';
-import '../lib/spotify';
+import './oembedSpotifyWidget';
+import './oembedSpotifyWidget.html';
+
+export { createSpotifyMessageRenderer, createSpotifyBeforeSaveMessageHandler } from '../lib/spotify';

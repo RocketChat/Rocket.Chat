@@ -17,7 +17,7 @@ import { customMessagePopups } from './customMessagePopups';
 import './messagePopupConfig.html';
 import './messagePopupSlashCommand.html';
 import './messagePopupUser.html';
-import { escapeRegExp } from '../../../../client/lib/escapeRegExp';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const reloadUsersFromRoomMessages = (rid, template) => {
 	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });

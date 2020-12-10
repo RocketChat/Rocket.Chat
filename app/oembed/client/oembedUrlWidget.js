@@ -1,7 +1,8 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-import s from 'underscore.string';
+
+import { unescapeHTML } from '../../../lib/unescapeHTML';
 
 const getTitle = function(self) {
 	if (self.meta == null) {
@@ -18,7 +19,7 @@ const getDescription = function(self) {
 	if (description == null) {
 		return;
 	}
-	return s.unescapeHTML(description.replace(/(^[“\s]*)|([”\s]*$)/g, ''));
+	return unescapeHTML(description.replace(/(^[“\s]*)|([”\s]*$)/g, ''));
 };
 
 Template.oembedUrlWidget.helpers({
