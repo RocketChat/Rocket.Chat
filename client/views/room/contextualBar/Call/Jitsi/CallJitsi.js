@@ -53,7 +53,7 @@ const querySettings = {
 	],
 };
 
-export default React.memo(({ tabBar, rid }) => {
+const CallJitsWithData = ({ tabBar, rid }) => {
 	const user = useUser();
 	const { connected } = useConnectionStatus();
 	const [accessToken, setAccessToken] = useSafely(useState());
@@ -98,7 +98,7 @@ export default React.memo(({ tabBar, rid }) => {
 		return () => { ignore = true; };
 	}, [generateAccessToken, isEnabledTokenAuth, rid, setAccessToken]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (!connected) {
 			handleClose();
 		}
@@ -175,4 +175,6 @@ export default React.memo(({ tabBar, rid }) => {
 			{!accepted && <Skeleton/>}
 		</CallJitsi>
 	);
-});
+};
+
+export default React.memo(CallJitsWithData);
