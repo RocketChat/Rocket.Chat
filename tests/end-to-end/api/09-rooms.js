@@ -6,6 +6,7 @@ import { closeRoom, createRoom } from '../../data/rooms.helper';
 import { imgURL } from '../../data/interactions.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
+import { createUser } from '../../data/users.helper';
 
 describe('[Rooms]', function() {
 	this.retries(0);
@@ -931,6 +932,48 @@ describe('[Rooms]', function() {
 					expect(res.body).to.have.property('count');
 				})
 				.end(done);
+		});
+	});
+
+	describe.only('update group dms name', () => {
+		before(async () => {
+			const testUser = await createUser();
+			const admin = 'rocketchat.internal.admin.test';
+			const rocketcat = 'rocket.cat';
+			const usernames = [testUser.username, admin, rocketcat].join(',');
+
+			request.post(api('dm.create'))
+				.set(credentials)
+				.send({
+					usernames,
+				})
+				.end((err, res) => {
+					this.roomId = res.body.room.rid;
+					this.testUser = testUser;
+				});
+		});
+
+		it('should update group name', (done) => {
+			setTimeout(() => {
+				request.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: this.testUser._id,
+						data: {
+							username: `changed.${ this.testUser.username }`,
+						},
+					})
+					.end(() => {
+						request.get(api('rooms.info'))
+							.set(credentials)
+							.query({ roomId: this.roomId })
+							.end((err, res) => {
+								const { room } = res.body;
+								expect(room.usernames.includes(`changed.${ this.testUser.username }`)).to.be.true;
+								done();
+							});
+					});
+			}, 200);
 		});
 	});
 });
