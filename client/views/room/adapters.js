@@ -42,7 +42,7 @@ createTemplateForComponent('OTR', () => import('./contextualBar/OTR'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 
-createTemplateForComponent('CallJitsi', () => import('./Call/Jitsi'), {
+createTemplateForComponent('CallJitsi', () => import('./contextualBar/Call/Jitsi'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 

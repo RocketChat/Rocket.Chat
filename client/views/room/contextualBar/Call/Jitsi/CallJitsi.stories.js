@@ -3,6 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 
 import VerticalBar from '../../../../../components/VerticalBar';
 import { CallJitsi } from './CallJitsi';
+import { CallModal } from './components/CallModal';
 
 export default {
 	title: 'components/basic/CallJitsi',
@@ -11,6 +12,10 @@ export default {
 
 export const Default = () => <Box height='600px'>
 	<VerticalBar>
-		<CallJitsi handleWindow={true}/>
+		<CallJitsi openNewWindow={true}/>
 	</VerticalBar>
+</Box>;
+
+export const Modal = () => <Box height='600px'>
+	<CallModal/>
 </Box>;
