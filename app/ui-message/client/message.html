@@ -101,7 +101,9 @@
 					{{else}}
 						{{{body}}}
 					{{/if}}
-					{{> messageLocation message=msg}}
+					{{#if msg.location}}
+						{{> messageLocation location=msg.location}}
+					{{/if}}
 				</div>
 			</div>
 
