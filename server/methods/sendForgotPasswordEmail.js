@@ -27,10 +27,7 @@ Meteor.methods({
 			Accounts.sendResetPasswordEmail(user._id, email);
 			return true;
 		} catch (error) {
-			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
-				method: 'registerUser',
-				message: error.message,
-			});
+			console.error(error);
 		}
 	},
 });
