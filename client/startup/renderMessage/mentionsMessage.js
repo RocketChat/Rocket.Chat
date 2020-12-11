@@ -16,6 +16,7 @@ Meteor.startup(() => {
 
 		import('../../../app/mentions/client').then(({ createMentionsMessageRenderer }) => {
 			const renderMessage = createMentionsMessageRenderer(options);
+			callbacks.remove('renderMessage', 'mentions-message');
 			callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'mentions-message');
 		});
 	});
