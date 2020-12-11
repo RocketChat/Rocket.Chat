@@ -615,10 +615,8 @@ API.v1.addRoute('users.forgotPassword', { authRequired: false }, {
 		}
 
 		const emailSent = Meteor.call('sendForgotPasswordEmail', email);
-		if (emailSent) {
-			return API.v1.success();
-		}
-		return API.v1.failure('User not found');
+
+		return API.v1.success();
 	},
 });
 
