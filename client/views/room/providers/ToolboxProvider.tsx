@@ -8,6 +8,8 @@ import { IRoom } from '../../../../definition/IRoom';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSession } from '../../../contexts/SessionContext';
 import { Store } from '../lib/Toolbox/generator';
+import { useSetting } from '../../../contexts/SettingsContext';
+import { useUserId } from '../../../contexts/UserContext';
 
 const groupsDict = {
 	l: 'live',
@@ -51,6 +53,8 @@ const useToolboxActions = (room: IRoom): { listen: (handler: Handler<any>) => Fu
 
 
 export const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
+	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
+	const uid = useUserId();
 	const [activeTabBar, setActiveTabBar] = useState<ToolboxActionConfig|undefined>();
 	const [list, setList] = useDebouncedState<Store<ToolboxAction>>(new Map(), 5);
 	const handleChange = useMutableCallback((fn) => { fn(list); setList((list) => new Map(list)); });
@@ -115,7 +119,7 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 	}), [listen, list, activeTabBar, open, close, openUserInfo]);
 
 	return <ToolboxContext.Provider value={context}>
-		{ actions.map(([id, item]) => <VirtualAction action={item} room={room} id={id} key={id} handleChange={handleChange} />) }
+		{ actions.filter(([, action]) => uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && (action as ToolboxActionConfig).anonymous)).map(([id, item]) => <VirtualAction action={item} room={room} id={id} key={id} handleChange={handleChange} />) }
 		{children}
 	</ToolboxContext.Provider>;
 };

@@ -23,6 +23,7 @@ export type ToolboxActionConfig = {
 	id: string;
 	icon: string;
 	title: string;
+	anonymous?: boolean;
 	renderAction?: ActionRenderer;
 	full?: true;
 	renderOption?: OptionRenderer;
