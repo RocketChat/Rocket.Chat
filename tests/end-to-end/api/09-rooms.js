@@ -935,7 +935,7 @@ describe('[Rooms]', function() {
 		});
 	});
 
-	describe.only('update group dms name', () => {
+	describe('update group dms name', () => {
 		before(async () => {
 			const testUser = await createUser();
 			const admin = 'rocketchat.internal.admin.test';
