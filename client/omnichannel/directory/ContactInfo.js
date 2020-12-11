@@ -9,7 +9,7 @@ import { FormSkeleton } from './Skeleton';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
-
+import { hasPermission } from '../../../app/authorization';
 
 const wordBreak = css`
 	word-break: break-word;
@@ -20,6 +20,8 @@ const Info = ({ className, ...props }) => <UserCard.Info className={[className, 
 export function ContactInfo({ id }) {
 	const t = useTranslation();
 	const directoryRoute = useRoute('omnichannel-directory');
+
+	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 
 	const onEditButtonClick = useMutableCallback(() => directoryRoute.push({
 		tab: 'contacts',
@@ -37,8 +39,7 @@ export function ContactInfo({ id }) {
 	}
 	const { contact } = data;
 
-	const { name, username, visitorEmails, phone } = contact;
-
+	const { name, username, visitorEmails, phone, livechatData } = contact;
 	return <>
 		<VerticalBar.ScrollableContent p='x24'>
 			<Margins block='x4'>
@@ -59,6 +60,12 @@ export function ContactInfo({ id }) {
 
 				<Label>{t('LastChat')}</Label>
 				<Info>November 12, 2020</Info>
+
+				{ canViewCustomFields() && livechatData && Object.keys(livechatData).map((key) => <Box key={key}>
+					<Label>{key}</Label>
+					<Info>{livechatData[key]}</Info>
+				</Box>)
+				}
 			</Margins>
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
