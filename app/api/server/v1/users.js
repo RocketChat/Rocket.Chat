@@ -615,6 +615,7 @@ API.v1.addRoute('users.forgotPassword', { authRequired: false }, {
 		}
 
 		Meteor.call('sendForgotPasswordEmail', email);
+		return API.v1.success();
 	},
 });
 
