@@ -1,10 +1,11 @@
 import React, { ReactNode, useContext, useMemo } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
-import { useUserSubscription } from '../../../contexts/UserContext';
+import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { RoomContext } from '../contexts/RoomContext';
 import { ToolboxProvider } from './ToolboxProvider';
 import { roomTypes } from '../../../../app/utils/client';
+import { useUserRoom } from '../hooks/useUserRoom';
 
 const fields = {};
 
@@ -14,7 +15,11 @@ export type Props = {
 };
 
 const RoomProvider = ({ rid, children }: Props): JSX.Element => {
-	const room = useUserSubscription(rid, fields) as unknown as IRoom;
+	const uid = useUserId();
+	const subscription = useUserSubscription(rid, fields) as unknown as IRoom;
+	const _room = useUserRoom(rid, fields) as unknown as IRoom;
+
+	const room = uid ? subscription : _room;
 	room._id = rid;
 	const context = useMemo(() => ({
 		rid,
