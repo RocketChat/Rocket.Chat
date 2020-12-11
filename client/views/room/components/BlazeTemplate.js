@@ -3,7 +3,7 @@ import { Blaze } from 'meteor/blaze';
 import React, { useLayoutEffect, useRef } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 
-export const BlazeTemplate = React.memo(({ name, children, ...props }) => {
+export const BlazeTemplate = React.memo(({ name, onClick, children, ...props }) => {
 	const ref = useRef();
 	useLayoutEffect(() => {
 		if (!ref.current || !Template[name]) {
@@ -22,7 +22,7 @@ export const BlazeTemplate = React.memo(({ name, children, ...props }) => {
 		};
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [name]);
-	return <Box display='flex' flexDirection='column' flexGrow={1} ref={ref}/>;
+	return <Box display='flex' onClick={onClick} flexDirection='column' flexGrow={1} ref={ref}/>;
 });
 
 export default React.memo(BlazeTemplate);

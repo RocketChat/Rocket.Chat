@@ -92,7 +92,7 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 		}
 	}, [room.t, open]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (!(currentRoom === room._id)) {
 			return;
 		}

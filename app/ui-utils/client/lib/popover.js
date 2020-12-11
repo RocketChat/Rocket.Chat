@@ -174,55 +174,11 @@ Template.popover.events({
 	'click [data-type="message-action"]'(e, t) {
 		const button = MessageAction.getButtonById(e.currentTarget.dataset.id);
 		if ((button != null ? button.action : undefined) != null) {
-			button.action.call(t.data.data, e, t.data.instance);
+			e.stopPropagation();
+			e.preventDefault();
+			const { tabBar, rid } = t.data.instance;
+			button.action.call(t.data.data, e, { tabBar, rid });
 			popover.close();
-			return false;
-		}
-	},
-	'click [data-type="sidebar-item"]'(e, instance) {
-		popover.close();
-		const { rid, name, template } = instance.data.data;
-		const action = e.currentTarget.dataset.id;
-
-		if (action === 'hide') {
-			hide(template, rid, name);
-		}
-
-		if (action === 'leave') {
-			leave(template, rid, name);
-		}
-
-		if (action === 'read') {
-			Meteor.call('readMessages', rid);
-			return false;
-		}
-
-		if (action === 'unread') {
-			Meteor.call('unreadMessages', null, rid, function(error) {
-				if (error) {
-					return handleError(error);
-				}
-
-				const subscription = ChatSubscription.findOne({ rid });
-				if (subscription == null) {
-					return;
-				}
-				RoomManager.close(subscription.t + subscription.name);
-
-				FlowRouter.go('home');
-			});
-
-			return false;
-		}
-
-		if (action === 'favorite') {
-			Meteor.call('toggleFavorite', rid, !$(e.currentTarget).hasClass('rc-popover__item--star-filled'), function(err) {
-				popover.close();
-				if (err) {
-					handleError(err);
-				}
-			});
-
 			return false;
 		}
 	},

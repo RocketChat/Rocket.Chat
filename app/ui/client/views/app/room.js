@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import moment from 'moment';
-import Clipboard from 'clipboard';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
@@ -11,7 +10,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils';
+import { t, roomTypes, getUserPreference, handleError } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
@@ -19,37 +18,26 @@ import {
 	RoomHistoryManager,
 	RoomManager,
 	readMessage,
-	popover,
 	modal,
 	Layout,
-	MessageAction,
-} from '../../../../ui-utils';
+} from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { renderMessageBody } from '../../../../ui-utils/client/lib/renderMessageBody';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
-import { call } from '../../../../ui-utils/client/lib/callMethod';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
-import { promises } from '../../../../promises/client';
 import { hasAllPermission, hasRole } from '../../../../authorization';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
-import { isURL } from '../../../../utils/lib/isURL';
-import { openUserCard } from '../../lib/UserCard';
-
 import './room.html';
+import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 
 export const chatMessages = {};
 
 const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 
-const openMembersListTab = (instance, group) => {
-	instance.userDetail.set(null);
-	instance.groupDetail.set(group);
-	instance.tabBar.open('members-list');
-};
 
-export const openProfileTab = (e, instance, username) => {
+export const openProfileTab = (e, tabBar, username) => {
 	e.stopPropagation();
 
 	if (Layout.isEmbedded()) {
@@ -58,58 +46,7 @@ export const openProfileTab = (e, instance, username) => {
 		return;
 	}
 
-	instance.tabBar.openUserInfo(username);
-};
-
-const mountPopover = (e, i, outerContext) => {
-	let context = $(e.target).parents('.message').data('context');
-	if (!context) {
-		context = 'message';
-	}
-
-	const messageContext = messageArgs(outerContext);
-
-	let menuItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
-		icon: item.icon,
-		name: t(item.label),
-		type: 'message-action',
-		id: item.id,
-		modifier: item.color,
-	}));
-
-	if (window.matchMedia('(max-width: 500px)').matches) {
-		const messageItems = MessageAction.getButtons(messageContext, context, 'message').map((item) => ({
-			icon: item.icon,
-			name: t(item.label),
-			type: 'message-action',
-			id: item.id,
-			modifier: item.color,
-		}));
-
-		menuItems = menuItems.concat(messageItems);
-	}
-
-	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
-	const groups = [{ items }];
-
-	if (deleteItem.length) {
-		groups.push({ items: deleteItem });
-	}
-
-	const config = {
-		columns: [
-			{
-				groups,
-			},
-		],
-		instance: i,
-		currentTarget: e.currentTarget,
-		data: outerContext,
-		activeElement: $(e.currentTarget).parents('.message')[0],
-		onRendered: () => new Clipboard('.rc-popover__item'),
-	};
-
-	popover.open(config);
+	tabBar.openUserInfo(username);
 };
 
 const wipeFailedUploads = () => {
@@ -410,16 +347,6 @@ Template.roomOld.helpers({
 	hideAvatar() {
 		return getUserPreference(Meteor.userId(), 'hideAvatars') ? 'hide-avatars' : undefined;
 	},
-
-	toolbarButtons() {
-		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
-		const buttons = Object.keys(toolbar.buttons).map((key) => ({
-			id: key,
-			...toolbar.buttons[key],
-		}));
-		return { buttons };
-	},
-
 	canPreview() {
 		const { room, state } = Template.instance();
 
@@ -500,11 +427,8 @@ Template.roomOld.helpers({
 	},
 });
 
-let isSocialSharingOpen = false;
-let touchMoved = false;
-let lastTouchX = null;
-let lastTouchY = null;
 let lastScrollTop;
+
 
 export const dropzoneEvents = {
 	'dragenter .dropzone'(e) {
@@ -585,299 +509,27 @@ export const dropzoneEvents = {
 };
 Meteor.startup(() => {
 	Template.roomOld.events({
+		...getCommonRoomEvents(),
 		...dropzoneEvents,
-		'click [data-message-action]'(event, template) {
-			const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
-			if ((button != null ? button.action : undefined) != null) {
-				button.action.call(this, event, template);
+		'click .announcement'() {
+			const roomData = Session.get(`roomData${ this._id }`);
+			if (!roomData) { return false; }
+			if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
+				return callbacks.run(roomData.announcementDetails.callback, this._id);
 			}
-		},
-		'click .js-follow-thread'(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			const { msg } = messageArgs(this);
-			call('followMessage', { mid: msg._id });
-		},
-		'click .js-unfollow-thread'(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			const { msg } = messageArgs(this);
-			call('unfollowMessage', { mid: msg._id });
-		},
-		'click .js-open-thread'(event) {
-			event.preventDefault();
-			event.stopPropagation();
 
-			const { msg: { rid, _id, tmid } } = messageArgs(this);
-			const room = Rooms.findOne({ _id: rid });
-
-			FlowRouter.go(FlowRouter.getRouteName(), {
-				rid,
-				name: room.name,
-				tab: 'thread',
-				context: tmid || _id,
-			}, {
-				jump: tmid && tmid !== _id && _id && _id,
+			modal.open({
+				title: t('Announcement'),
+				text: renderMessageBody({ msg: roomData.announcement }),
+				html: true,
+				showConfirmButton: false,
+				showCancelButton: true,
+				cancelButtonText: t('Close'),
 			});
 		},
-		'click .js-reply-broadcast'() {
-			const msg = messageArgs(this);
-			roomTypes.openRouteLink('d', { name: msg.u.username }, { ...FlowRouter.current().queryParams, reply: msg._id });
-		},
-		'click, touchend'(e, t) {
-			setTimeout(() => t.sendToBottomIfNecessaryDebounced && t.sendToBottomIfNecessaryDebounced(), 100);
-		},
-
-		'click .messages-container-main'() {
-			if (!!Template.instance().tabBar.isOpen() && getUserPreference(Meteor.userId(), 'hideFlexTab')) {
-				Template.instance().tabBar.close();
-			}
-		},
-
-		'touchstart .message'(e, t) {
-			const { touches } = e.originalEvent;
-			if (touches && touches.length) {
-				lastTouchX = touches[0].pageX;
-				lastTouchY = touches[0].pagey;
-			}
-			touchMoved = false;
-			isSocialSharingOpen = false;
-			if (e.originalEvent.touches.length !== 1) {
-				return;
-			}
-
-			if ($(e.currentTarget).hasClass('system')) {
-				return;
-			}
-
-			if (e.target && (e.target.nodeName === 'AUDIO')) {
-				return;
-			}
-
-			if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
-				e.preventDefault();
-				e.stopPropagation();
-			}
-
-			const doLongTouch = () => {
-				mountPopover(e, t, this);
-			};
-
-			clearTimeout(t.touchtime);
-			t.touchtime = setTimeout(doLongTouch, 500);
-		},
-
-		'click .message img'(e, t) {
-			clearTimeout(t.touchtime);
-			if ((isSocialSharingOpen === true) || (touchMoved === true)) {
-				e.preventDefault();
-				e.stopPropagation();
-			}
-		},
-
-		'touchend .message'(e, t) {
-			clearTimeout(t.touchtime);
-			if (isSocialSharingOpen === true) {
-				e.preventDefault();
-				e.stopPropagation();
-				return;
-			}
-
-			if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
-				if (touchMoved === true) {
-					e.preventDefault();
-					e.stopPropagation();
-					return;
-				}
-
-				window.open(e.target.href);
-			}
-		},
-
-		'touchmove .message'(e, t) {
-			const { touches } = e.originalEvent;
-			if (touches && touches.length) {
-				const deltaX = Math.abs(lastTouchX - touches[0].pageX);
-				const deltaY = Math.abs(lastTouchY - touches[0].pageY);
-				if (deltaX > 5 || deltaY > 5) {
-					touchMoved = true;
-				}
-			}
-			clearTimeout(t.touchtime);
-		},
-
-		'touchcancel .message'(e, t) {
-			clearTimeout(t.touchtime);
-		},
-
-		'click .upload-progress-close'(e) {
-			e.preventDefault();
-			Session.set(`uploading-cancel-${ this.id }`, true);
-		},
-
-		'click .unread-bar > button.mark-read'(e, t) {
-			readMessage.readNow(t.data._id);
-		},
-
-		'click .unread-bar > button.jump-to'(e, t) {
-			const { _id } = t.data;
-			const room = RoomHistoryManager.getRoom(_id);
-			let message = room && room.firstUnread.get();
-			if (!message) {
-				const subscription = Subscriptions.findOne({ rid: _id });
-				message = ChatMessage.find({ rid: _id, ts: { $gt: subscription != null ? subscription.ls : undefined } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
-			}
-			RoomHistoryManager.getSurroundingMessages(message, 50);
-		},
-
-		'scroll .wrapper': _.throttle(function(e, t) {
-			const $roomLeader = $('.room-leader');
-			if ($roomLeader.length) {
-				if (e.target.scrollTop < lastScrollTop) {
-					t.hideLeaderHeader.set(false);
-				} else if (t.isAtBottom(100) === false && e.target.scrollTop > $roomLeader.height()) {
-					t.hideLeaderHeader.set(true);
-				}
-			}
-			lastScrollTop = e.target.scrollTop;
-			const height = e.target.clientHeight;
-			const isLoading = RoomHistoryManager.isLoading(this._id);
-			const hasMore = RoomHistoryManager.hasMore(this._id);
-			const hasMoreNext = RoomHistoryManager.hasMoreNext(this._id);
-
-			if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
-				if (hasMore === true && lastScrollTop <= height / 3) {
-					RoomHistoryManager.getMore(this._id);
-				} else if (hasMoreNext === true && Math.ceil(lastScrollTop) >= e.target.scrollHeight - height) {
-					RoomHistoryManager.getMoreNext(this._id);
-				}
-			}
-		}, 100),
-
-		'click .new-message'(event, instance) {
-			instance.atBottom = true;
-			chatMessages[RoomManager.openedRoom].input.focus();
-		},
-		'click .message-actions__menu'(e, i) {
-			const messageContext = messageArgs(this);
-			const { msg: message, context: ctx } = messageContext;
-			const context = ctx || message.context || message.actionContext || 'message';
-
-			const allItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
-				icon: item.icon,
-				name: t(item.label),
-				type: 'message-action',
-				id: item.id,
-				modifier: item.color,
-			}));
-
-			const itemsBelowDivider = [
-				'delete-message',
-				'report-message',
-			];
-			const [items, alertsItem] = allItems.reduce((result, value) => { result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value); return result; }, [[], []]);
-			const groups = [{ items }];
-
-			if (alertsItem.length) {
-				groups.push({ items: alertsItem });
-			}
-			const config = {
-				columns: [
-					{
-						groups,
-					},
-				],
-				instance: i,
-				data: this,
-				currentTarget: e.currentTarget,
-				activeElement: $(e.currentTarget).parents('.message')[0],
-				onRendered: () => new Clipboard('.rc-popover__item'),
-			};
-
-			popover.open(config);
-		},
-		'click .time a'(e) {
-			e.preventDefault();
-			const { msg } = messageArgs(this);
-			const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
-			FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
-		},
-		'click .mention-link'(e, instance) {
-			e.stopPropagation();
-			e.preventDefault();
-
-			if (!Meteor.userId()) {
-				return;
-			}
-
-			const { currentTarget: { dataset: { channel, group, username } } } = e;
-
-			if (channel) {
-				if (Layout.isEmbedded()) {
-					fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
-				}
-				FlowRouter.goToRoomById(channel);
-				return;
-			}
-
-			if (group) {
-				openMembersListTab(instance, group);
-				return;
-			}
-
-			if (username) {
-				openUserCard({
-					username,
-					rid: Session.get('openedRoom'),
-					target: e.currentTarget,
-					open: (e) => {
-						e.preventDefault();
-						openProfileTab(e, instance, username);
-					},
-				});
-			}
-		},
-
-
-		'click .user-card-message'(e, instance) {
-			const { msg } = messageArgs(this);
-			if (!Meteor.userId()) {
-				return;
-			}
-
-			const { username } = msg.u;
-
-			if (username) {
-				openUserCard({
-					username,
-					rid: Session.get('openedRoom'),
-					target: e.currentTarget,
-					open: (e) => {
-						e.preventDefault();
-						openProfileTab(e, instance, username);
-					},
-				});
-			}
-		},
-
-
-		'click .image-to-download'(event) {
-			const { msg } = messageArgs(this);
-			ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
-			ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
-		},
-		'load .gallery-item'(e, template) {
-			template.sendToBottomIfNecessaryDebounced();
-		},
-
-		'rendered .js-block-wrapper'(e, i) {
-			i.sendToBottomIfNecessaryDebounced();
-		},
-
-		'click .jump-recent button'(e, template) {
-			e.preventDefault();
-			template.atBottom = true;
-			RoomHistoryManager.clear(template && template.data && template.data._id);
+		'click .toggle-hidden'(e) {
+			const id = e.currentTarget.dataset.message;
+			document.querySelector(`#${ id }`).classList.toggle('message--ignored');
 		},
 
 		'click .message'(e, template) {
@@ -905,58 +557,74 @@ Meteor.startup(() => {
 				addClass.forEach((message) => $(`.messages-box #${ message }`).addClass('selected'));
 			}
 		},
-		'click .announcement'() {
-			const roomData = Session.get(`roomData${ this._id }`);
-			if (!roomData) { return false; }
-			if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
-				return callbacks.run(roomData.announcementDetails.callback, this._id);
-			}
-
-			modal.open({
-				title: t('Announcement'),
-				text: renderMessageBody({ msg: roomData.announcement }),
-				html: true,
-				showConfirmButton: false,
-				showCancelButton: true,
-				cancelButtonText: t('Close'),
-			});
+		'click .jump-recent button'(e, template) {
+			e.preventDefault();
+			template.atBottom = true;
+			RoomHistoryManager.clear(template && template.data && template.data._id);
 		},
-		'click .toggle-hidden'(e) {
-			const id = e.currentTarget.dataset.message;
-			document.querySelector(`#${ id }`).classList.toggle('message--ignored');
+		'load .gallery-item'(e, template) {
+			template.sendToBottomIfNecessaryDebounced();
 		},
-		async 'click .js-actionButton-sendMessage'(event, instance) {
-			const rid = instance.data._id;
-			const msg = event.currentTarget.value;
-			let msgObject = { _id: Random.id(), rid, msg };
-			if (!msg) {
-				return;
-			}
 
-			msgObject = await promises.run('onClientBeforeSendMessage', msgObject);
-
-			const _chatMessages = chatMessages[rid];
-			if (_chatMessages && await _chatMessages.processSlashCommand(msgObject)) {
-				return;
-			}
-
-			await call('sendMessage', msgObject);
-		},
-		'click .js-actionButton-respondWithMessage'(event, instance) {
-			const rid = instance.data._id;
-			const msg = event.currentTarget.value;
-			if (!msg) {
-				return;
-			}
-
-			const { input } = chatMessages[rid];
-			input.value = msg;
-			input.focus();
+		'rendered .js-block-wrapper'(e, template) {
+			template.sendToBottomIfNecessaryDebounced();
 		},
 		'click .js-navigate-to-discussion'(event) {
 			event.preventDefault();
 			const { msg: { drid } } = messageArgs(this);
 			FlowRouter.goToRoomById(drid);
+		},
+		'click .new-message'(event, instance) {
+			instance.atBottom = true;
+			chatMessages[RoomManager.openedRoom].input.focus();
+		},
+		'click .upload-progress-close'(e) {
+			e.preventDefault();
+			Session.set(`uploading-cancel-${ this.id }`, true);
+		},
+		'click .unread-bar > button.mark-read'(e, t) {
+			readMessage.readNow(t.data._id);
+		},
+
+		'click .unread-bar > button.jump-to'(e, t) {
+			const { _id } = t.data;
+			const room = RoomHistoryManager.getRoom(_id);
+			let message = room && room.firstUnread.get();
+			if (!message) {
+				const subscription = Subscriptions.findOne({ rid: _id });
+				message = ChatMessage.find({ rid: _id, ts: { $gt: subscription != null ? subscription.ls : undefined } }, { sort: { ts: 1 }, limit: 1 }).fetch()[0];
+			}
+			RoomHistoryManager.getSurroundingMessages(message, 50);
+		},
+		'scroll .wrapper': _.throttle(function(e, t) {
+			const $roomLeader = $('.room-leader');
+			if ($roomLeader.length) {
+				if (e.target.scrollTop < lastScrollTop) {
+					t.hideLeaderHeader.set(false);
+				} else if (t.isAtBottom(100) === false && e.target.scrollTop > $roomLeader.height()) {
+					t.hideLeaderHeader.set(true);
+				}
+			}
+			lastScrollTop = e.target.scrollTop;
+			const height = e.target.clientHeight;
+			const isLoading = RoomHistoryManager.isLoading(this._id);
+			const hasMore = RoomHistoryManager.hasMore(this._id);
+			const hasMoreNext = RoomHistoryManager.hasMoreNext(this._id);
+
+			if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
+				if (hasMore === true && lastScrollTop <= height / 3) {
+					RoomHistoryManager.getMore(this._id);
+				} else if (hasMoreNext === true && Math.ceil(lastScrollTop) >= e.target.scrollHeight - height) {
+					RoomHistoryManager.getMoreNext(this._id);
+				}
+			}
+		}, 300),
+
+		'click .time a'(e) {
+			e.preventDefault();
+			const { msg } = messageArgs(this);
+			const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
+			FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
 		},
 	});
 
