@@ -7,7 +7,6 @@ import {
 	FieldGroup,
 	Select,
 	Throbber,
-	Margins,
 	ButtonGroup,
 	Button,
 	Option,
@@ -26,16 +25,15 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserRoom } from '../../../../contexts/UserContext';
 import VerticalBar from '../../../../components/VerticalBar';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useMethodData } from '../../../../hooks/useMethodData';
+import { useMethod } from '../../../../contexts/ServerContext';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../../hooks/useUserInfoActions';
 import { withPreventPropagation } from '../../../../lib/withPreventPropagation';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { useDataWithLoadMore } from './hooks/useDataWithLoadMore';
 
-const LOADING = 1;
-const LOADED = 2;
-const itemStatusMap = {};
-
-const MemberOption = ({ memberData: { _id, status, name, username }, onClickView, rid }) => {
+const MemberOption = React.memo(({ memberData: { _id, status, name, username }, onClickView, rid, style }) => {
 	const { menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions({ _id, username }, rid));
 
 	const menu = useMemo(() => {
@@ -47,7 +45,7 @@ const MemberOption = ({ memberData: { _id, status, name, username }, onClickView
 			flexShrink={0}
 			mi='x2'
 			key='menu'
-			ghost={false}
+			// ghost={false}
 			renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
 			options={menuOptions}
 		/></div>;
@@ -56,13 +54,14 @@ const MemberOption = ({ memberData: { _id, status, name, username }, onClickView
 	return (
 		<Option
 			id={_id}
+			style={style}
 			avatar={<UserAvatar username={username} size='x28' />}
 			presence={status}
 			label={<Box withTruncatedText>{name} <Box is='span' color='neutral-500'>({username})</Box></Box>}
 			onClick={() => onClickView(username)}
 		>{withPreventPropagation(menu)}</Option>
 	);
-};
+});
 
 export const RoomMembers = ({
 	rid,
@@ -76,34 +75,21 @@ export const RoomMembers = ({
 	onClickView,
 	onClickAdd,
 	onClickInvite,
-	canAddUsers,
+	total,
+	loadMoreItems,
 }) => {
 	const t = useTranslation();
-	const isItemLoaded = (index) => !!itemStatusMap[index];
 
-	const loadMoreItems = (offset, count, startIndex, stopIndex) => {
-		for (let index = startIndex; index <= stopIndex; index++) {
-			itemStatusMap[index] = LOADING;
-		}
-		return new Promise((resolve) =>
-			setTimeout(() => {
-				for (let index = startIndex; index <= stopIndex; index++) {
-					itemStatusMap[index] = LOADED;
-				}
-				resolve();
-			}, 2500),
-		);
-	};
+	const isItemLoaded = (index) => !!members[index];
 
 	const memberRenderer = useCallback(({ data, index, style }) => (
-		<RoomMembers.Option
-			data={data}
+		data[index] ? <RoomMembers.Option
 			index={index}
 			style={style}
-			memberData={members[index]}
+			memberData={data[index]}
 			onClickView={onClickView}
 			rid={rid}
-		/>), [onClickView, members, rid]);
+		/> : ''), [onClickView, rid]);
 
 	const options = useMemo(() => [
 		['online', t('Online')],
@@ -158,37 +144,43 @@ export const RoomMembers = ({
 						<Box is='span' color='neutral-500' fontScale='p1' mis='x8'>
 							{t('Online')}: <Box is='span' color='default' fontScale='p2'>{members.length}</Box>
 						</Box>
+
+						<Box is='span' color='neutral-500' fontScale='p1' mis='x8'>
+							{t('Total')}: <Box is='span' color='default' fontScale='p2'>{total}</Box>
+						</Box>
 					</Box>
 				)}
 
 				<Box w='full' h='full' ref={ref}>
-					<Margins all='none'>
-						<InfiniteLoader
-							isItemLoaded={isItemLoaded}
-							itemCount={members.length}
-							loadMoreItems={loadMoreItems}
-						>
-							{({ onItemsRendered, ref }) => (
-								<List
-									className='List'
-									height={blockSize}
-									itemCount={members.length}
-									itemSize={46}
-									onItemsRendered={onItemsRendered}
-									ref={ref}
-								>
-									{memberRenderer}
-								</List>
-							)}
-						</InfiniteLoader>
-					</Margins>
+					{!loading && members
+					&& <InfiniteLoader
+						isItemLoaded={isItemLoaded}
+						itemCount={total}
+						loadMoreItems={loadMoreItems}
+					>
+						{({ onItemsRendered, ref }) => (
+							<List
+								outerElementType={ScrollableContentWrapper}
+								className='List'
+								itemData={members}
+								height={blockSize}
+								itemCount={total}
+								itemSize={46}
+								onItemsRendered={onItemsRendered}
+								ref={ref}
+							>
+								{memberRenderer}
+							</List>
+						)}
+					</InfiniteLoader>
+					}
 				</Box>
 			</VerticalBar.Content>
 
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					{ canAddUsers && onClickInvite && <Button onClick={onClickInvite} width='50%'><Box is='span' mie='x4'><Icon name='link' size='x20' /></Box>{t('Invite_Link')}</Button> }
-					{ canAddUsers && onClickAdd && <Button onClick={onClickAdd} width='50%' primary><Box is='span' mie='x4'><Icon name='user-plus' size='x20' /></Box>{t('Add_users')}</Button> }
+					{ onClickInvite && <Button onClick={onClickInvite} width='50%'><Box is='span' mie='x4'><Icon name='link' size='x20' /></Box>{t('Invite_Link')}</Button> }
+					{ onClickAdd && <Button onClick={onClickAdd} width='50%' primary><Box is='span' mie='x4'><Icon name='user-plus' size='x20' /></Box>{t('Add_users')}</Button> }
 				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>
@@ -196,6 +188,11 @@ export const RoomMembers = ({
 };
 
 RoomMembers.Option = MemberOption;
+
+const useGetUsersOfRoom = (params) => {
+	const method = useMethod('getUsersOfRoom');
+	return useDataWithLoadMore(useCallback((args) => method(...args), [method]), params);
+};
 
 export default ({
 	rid,
@@ -213,14 +210,15 @@ export default ({
 	const debouncedText = useDebouncedValue(text, 500);
 	const params = useMemo(() => [rid, type === 'all', {}, debouncedText], [rid, type, debouncedText]);
 
-	const { value, phase } = useMethodData('getUsersOfRoom', params);
+	const { value, phase, more } = useGetUsersOfRoom(params);
+
 	const canAddUsers = usePermission(room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', rid);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const viewUser = (username) => {
+	const viewUser = useMutableCallback((username) => {
 		tabBar.setTemplate('UserInfoWithData');
 		tabBar.setData({
 			username,
@@ -229,7 +227,7 @@ export default ({
 			onClose: onClickClose,
 			onBack: () => tabBar.set(),
 		});
-	};
+	});
 
 	const createInvite = useMutableCallback(() => {
 		if (!tabBar) {
@@ -257,20 +255,26 @@ export default ({
 		});
 	});
 
+	const loadMoreItems = (start, end) => more(([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter], (prev, next) => ({
+		total: next.total,
+		records: [...prev.records, ...next.records],
+	}));
+
 	return (
 		<RoomMembers
 			rid={rid}
-			loading={phase === 'loading' && true}
+			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
 			setType={setType}
 			setText={handleTextChange}
-			members={phase === 'resolved' && value.records}
+			members={value?.records}
+			total={value?.total}
 			onClickClose={onClickClose}
 			onClickView={viewUser}
-			onClickAdd={addUser}
-			onClickInvite={createInvite}
-			canAddUsers={canAddUsers}
+			onClickAdd={canAddUsers && addUser}
+			onClickInvite={canAddUsers && createInvite}
+			loadMoreItems={loadMoreItems}
 		/>
 	);
 };
