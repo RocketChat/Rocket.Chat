@@ -15,6 +15,7 @@ Meteor.startup(() => {
 
 		import('../../../app/google-vision/client').then(({ createGoogleVisionMessageStreamHandler }) => {
 			const streamMessage = createGoogleVisionMessageStreamHandler();
+			callbacks.remove('streamMessage', 'googlevision');
 			callbacks.add('streamMessage', streamMessage, callbacks.priority.HIGH - 3, 'googlevision');
 		});
 	});

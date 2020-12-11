@@ -26,6 +26,7 @@ Meteor.startup(() => {
 
 		import('../../../app/autolinker/client').then(({ createAutolinkerMessageRenderer }) => {
 			const renderMessage = createAutolinkerMessageRenderer(options);
+			callbacks.remove('renderMessage', 'autolinker');
 			callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'autolinker');
 		});
 	});

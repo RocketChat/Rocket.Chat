@@ -15,6 +15,7 @@ Meteor.startup(() => {
 
 		import('../../../app/colors/client').then(({ createHexColorPreviewMessageRenderer }) => {
 			const renderMessage = createHexColorPreviewMessageRenderer();
+			callbacks.remove('renderMessage', 'hexcolor');
 			callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'hexcolor');
 		});
 	});

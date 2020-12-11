@@ -15,6 +15,7 @@ Meteor.startup(() => {
 
 		import('../../../app/emoji/client').then(({ createEmojiMessageRenderer }) => {
 			const renderMessage = createEmojiMessageRenderer();
+			callbacks.remove('renderMessage', 'emoji');
 			callbacks.add('renderMessage', renderMessage, callbacks.priority.LOW, 'emoji');
 		});
 	});
