@@ -3,7 +3,6 @@ import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
-import s from 'underscore.string';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -18,6 +17,8 @@ import {
 } from '../lib/restrictLoginAttempts';
 import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
+import { escapeHTML } from '../../../../lib/escapeHTML';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -47,9 +48,9 @@ Accounts.emailTemplates.userToActivate = {
 		const email = options.reason ? 'Accounts_Admin_Email_Approval_Needed_With_Reason_Default' : 'Accounts_Admin_Email_Approval_Needed_Default';
 
 		return Mailer.replace(TAPi18n.__(email), {
-			name: s.escapeHTML(options.name),
-			email: s.escapeHTML(options.email),
-			reason: s.escapeHTML(options.reason),
+			name: escapeHTML(options.name),
+			email: escapeHTML(options.email),
+			reason: escapeHTML(options.reason),
 		});
 	},
 };
@@ -69,7 +70,7 @@ Accounts.emailTemplates.userActivated = {
 		const action = active ? activated : 'Deactivated';
 
 		return Mailer.replace(TAPi18n.__(`Accounts_Email_${ action }`), {
-			name: s.escapeHTML(name),
+			name: escapeHTML(name),
 		});
 	},
 };
@@ -121,8 +122,8 @@ Accounts.emailTemplates.enrollAccount.subject = function(user) {
 
 Accounts.emailTemplates.enrollAccount.html = function(user = {}/* , url*/) {
 	return Mailer.replace(enrollAccountTemplate, {
-		name: s.escapeHTML(user.name),
-		email: user.emails && user.emails[0] && s.escapeHTML(user.emails[0].address),
+		name: escapeHTML(user.name),
+		email: user.emails && user.emails[0] && escapeHTML(user.emails[0].address),
 	});
 };
 
@@ -370,7 +371,7 @@ Accounts.validateNewUser(function(user) {
 	}
 
 	let domainWhiteList = settings.get('Accounts_AllowedDomainsList');
-	if (_.isEmpty(s.trim(domainWhiteList))) {
+	if (_.isEmpty(domainWhiteList?.trim())) {
 		return true;
 	}
 
@@ -378,7 +379,7 @@ Accounts.validateNewUser(function(user) {
 
 	if (user.emails && user.emails.length > 0) {
 		const email = user.emails[0].address;
-		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${ RegExp.escape(domain) }$`));
+		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${ escapeRegExp(domain) }$`));
 
 		if (inWhiteList === false) {
 			throw new Meteor.Error('error-invalid-domain');

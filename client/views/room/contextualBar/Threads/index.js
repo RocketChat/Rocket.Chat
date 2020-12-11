@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from 'react';
 import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
@@ -8,7 +7,7 @@ import { useDebouncedValue, useResizeObserver, useLocalStorage, useMutableCallba
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useRoute, useCurrentRoute, useRouteParameter, useQueryStringParameter } from '../../../../contexts/RouterContext';
-import { call, renderMessageBody } from '../../../../../app/ui-utils/client';
+import { call } from '../../../../../app/ui-utils/client';
 import { useUserId, useUserSubscription } from '../../../../contexts/UserContext';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
@@ -16,12 +15,14 @@ import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../helpers/clickableItem';
 import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
+import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
+import { renderMessageBody } from '../../../../lib/renderMessageBody';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -154,11 +155,11 @@ export const normalizeThreadMessage = ({ ...message }) => {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
 		if (attachment && attachment.description) {
-			return s.escapeHTML(attachment.description);
+			return escapeHTML(attachment.description);
 		}
 
 		if (attachment && attachment.title) {
-			return s.escapeHTML(attachment.title);
+			return escapeHTML(attachment.title);
 		}
 	}
 };

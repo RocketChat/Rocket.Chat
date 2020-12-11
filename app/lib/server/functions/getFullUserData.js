@@ -4,6 +4,7 @@ import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
 import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const logger = new Logger('getFullUserData');
 
@@ -129,6 +130,6 @@ export const getFullUserData = function({ userId, filter, limit: l }) {
 		return Users.findByUsername(userToRetrieveFullUserData.username, options);
 	}
 
-	const usernameReg = new RegExp(s.escapeRegExp(username), 'i');
+	const usernameReg = new RegExp(escapeRegExp(username), 'i');
 	return Users.findByUsernameNameOrEmailAddress(usernameReg, options);
 };

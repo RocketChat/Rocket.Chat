@@ -22,13 +22,14 @@ import {
 	Layout,
 } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
-import { renderMessageBody } from '../../../../ui-utils/client/lib/renderMessageBody';
+import { renderMessageBody } from '../../../../../client/lib/renderMessageBody';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
+import { Markdown } from '../../../../markdown/client';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 
@@ -259,7 +260,8 @@ Template.roomOld.helpers({
 	},
 
 	announcement() {
-		return Template.instance().state.get('announcement');
+		const announcement = Template.instance().state.get('announcement');
+		return announcement ? Markdown.parse(announcement).replace(/^<p>|<\/p>$/, '') : undefined;
 	},
 
 	messageboxData() {

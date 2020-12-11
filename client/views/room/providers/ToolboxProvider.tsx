@@ -1,12 +1,13 @@
-import React, { ReactNode, useContext, useEffect, useMemo, useState, useCallback, useLayoutEffect } from 'react';
+import React, { ReactNode, useContext, useMemo, useState, useCallback, useLayoutEffect } from 'react';
 import { useDebouncedState, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Handler } from '@rocket.chat/emitter';
 
 import { ToolboxContext } from '../lib/Toolbox/ToolboxContext';
-import { ToolboxAction, ActionsStore, ToolboxActionConfig } from '../lib/Toolbox/index';
+import { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
 import { IRoom } from '../../../../definition/IRoom';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSession } from '../../../contexts/SessionContext';
+import { Store } from '../lib/Toolbox/generator';
 
 const groupsDict = {
 	l: 'live',
@@ -23,11 +24,11 @@ const VirtualAction = React.memo(({ handleChange, room, action, id }: { id: stri
 	const visible = config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
 
 	useLayoutEffect(() => {
-		handleChange((list: ActionsStore) => {
+		handleChange((list: Store<ToolboxAction>) => {
 			visible && config ? list.get(id) !== config && list.set(id, config) : list.delete(id);
 		});
 		return (): void => {
-			handleChange((list: ActionsStore) => list.delete(id));
+			handleChange((list: Store<ToolboxAction>) => list.delete(id));
 		};
 	}, [config, visible, handleChange, id]);
 
@@ -51,7 +52,7 @@ const useToolboxActions = (room: IRoom): { listen: (handler: Handler<any>) => Fu
 
 export const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
 	const [activeTabBar, setActiveTabBar] = useState<ToolboxActionConfig|undefined>();
-	const [list, setList] = useDebouncedState<ActionsStore>(new Map(), 5);
+	const [list, setList] = useDebouncedState<Store<ToolboxAction>>(new Map(), 5);
 	const handleChange = useMutableCallback((fn) => { fn(list); setList((list) => new Map(list)); });
 	const { listen, actions } = useToolboxActions(room);
 
