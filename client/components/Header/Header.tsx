@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Box, Icon, Divider, ButtonGroup, ActionButton, ActionButtonProps, Badge, BadgeProps } from '@rocket.chat/fuselage';
+import { Box, Icon, Divider, ButtonGroup, ActionButton, Badge, BadgeProps } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
 const Title = (props: any): JSX.Element => <Box color='default' mi='x4' fontScale='s2' withTruncatedText {...props}/>;
