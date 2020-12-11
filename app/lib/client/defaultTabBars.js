@@ -53,8 +53,9 @@ TabBar.addButton({
 	id: 'members-list',
 	i18nTitle: 'Members',
 	icon: 'team',
-	template: 'membersList',
+	template: 'RoomMembers',
 	order: 5,
+	full: 1,
 	condition() {
 		const rid = Session.get('openedRoom');
 		const room = Rooms.findOne({
