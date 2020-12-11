@@ -12,7 +12,7 @@ import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useUserSubscription } from '../contexts/UserContext';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';
-import WarningModal from '../admin/apps/WarningModal';
+import WarningModal from '../views/admin/apps/WarningModal';
 
 const fields = {
 	f: 1,

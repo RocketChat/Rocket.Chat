@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useEffect } from 'react';
@@ -7,7 +6,7 @@ import memoize from 'memoize-one';
 
 import { usePreventDefault } from './hooks/usePreventDefault';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
-import { ReactiveUserStatus, colors } from '../components/basic/UserStatus';
+import { ReactiveUserStatus, colors } from '../components/UserStatus';
 import { useTranslation } from '../contexts/TranslationContext';
 import { roomTypes } from '../../app/utils';
 import { useUserPreference, useUserId } from '../contexts/UserContext';
@@ -19,6 +18,8 @@ import { useShortcutOpenMenu } from './hooks/useShortcutOpenMenu';
 import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 import { useRoomList } from './hooks/useRoomList';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
+import { escapeHTML } from '../../lib/escapeHTML';
+import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
 
 const sections = {
 	Omnichannel,
@@ -84,18 +85,18 @@ export const Row = React.memo(({ data, index, style }) => {
 
 export const normalizeSidebarMessage = (message, t) => {
 	if (message.msg) {
-		return s.escapeHTML(filterMarkdown(message.msg));
+		return escapeHTML(filterMarkdown(message.msg));
 	}
 
 	if (message.attachments) {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
 		if (attachment && attachment.description) {
-			return s.escapeHTML(attachment.description);
+			return escapeHTML(attachment.description);
 		}
 
 		if (attachment && attachment.title) {
-			return s.escapeHTML(attachment.title);
+			return escapeHTML(attachment.title);
 		}
 
 		return t('Sent_an_attachment');
@@ -130,6 +131,7 @@ export default () => {
 
 	return <Box h='full' w='full' ref={ref}>
 		<List
+			outerElementType={ScrollableContentWrapper}
 			height={blockSize}
 			itemCount={roomsList.length}
 			itemSize={(index) => (typeof roomsList[index] === 'string' ? (sections[roomsList[index]] && sections[roomsList[index]].size) || 40 : itemSize)}
@@ -154,7 +156,7 @@ const getMessage = (room, lastMessage, t) => {
 	if (lastMessage.u?.username === room.u?.username) {
 		return `${ t('You') }: ${ normalizeSidebarMessage(lastMessage, t) }`;
 	}
-	if (room.t === 'd' && room.uids.length <= 2) {
+	if (room.t === 'd' && room.uids && room.uids.length <= 2) {
 		return normalizeSidebarMessage(lastMessage, t);
 	}
 	return `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeSidebarMessage(lastMessage, t) }`;

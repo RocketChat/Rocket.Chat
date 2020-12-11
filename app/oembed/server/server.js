@@ -260,7 +260,7 @@ const getRelevantMetaTags = function(metaObj) {
 	}
 };
 
-const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml.replace('iframe', 'iframe style=\"max-width: 100%\"');
+const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style=\"max-width: 100%\"');
 
 OEmbed.rocketUrlParser = function(message) {
 	if (Array.isArray(message.urls)) {
@@ -281,7 +281,9 @@ OEmbed.rocketUrlParser = function(message) {
 				}
 				if (data.meta != null) {
 					item.meta = getRelevantMetaTags(data.meta);
-					item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml);
+					if (item.meta && item.meta.oembedHtml) {
+						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml);
+					}
 				}
 				if (data.headers != null) {
 					item.headers = getRelevantHeaders(data.headers);

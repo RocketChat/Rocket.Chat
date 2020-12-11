@@ -1,6 +1,6 @@
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { registerAdminRoute } from '../../../client/admin';
+import { registerAdminRoute } from '../../../client/views/admin';
 import { t } from '../../utils';
 
 registerAdminRoute('/chatpal', {
