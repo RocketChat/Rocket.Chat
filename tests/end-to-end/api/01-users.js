@@ -1241,7 +1241,7 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe.only('[/users.forgotPassword]', () => {
+	describe('[/users.forgotPassword]', () => {
 		it('should send email to user (return success), when is a valid email', (done) => {
 			request.post(api('users.forgotPassword'))
 				.send({
