@@ -1241,7 +1241,7 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.forgotPassword]', () => {
+	describe.only('[/users.forgotPassword]', () => {
 		it('should send email to user (return success), when is a valid email', (done) => {
 			request.post(api('users.forgotPassword'))
 				.send({
@@ -1261,7 +1261,7 @@ describe('[Users]', function() {
 					email: 'invalidEmail',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				})
