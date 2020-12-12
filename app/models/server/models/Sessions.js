@@ -225,11 +225,6 @@ export const aggregates = {
 			startOfPeriod = new Date(year, month - 1, day);
 			startOfPeriod.setMonth(startOfPeriod.getMonth() - 1, (currMonthLastDay === day ? pastMonthLastDay : Math.min(pastMonthLastDay, day)) + 1);
 		} else {
-			const yesterday = new Date(year, month - 1, day - 1);
-			year = yesterday.getFullYear();
-			month = yesterday.getMonth() + 1;
-			day = yesterday.getDate();
-
 			startOfPeriod = new Date(year, month - 1, day - 6);
 		}
 
