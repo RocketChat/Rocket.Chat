@@ -469,7 +469,7 @@ export class Sessions extends Base {
 
 	getUniqueUsersOfLastMonth() {
 		const date = new Date();
-		date.setMonth(date.getMonth() - 1);
+		date.setDate(date.getDate() - 1);
 
 		const year = date.getFullYear();
 		const month = date.getMonth() + 1;
@@ -480,6 +480,22 @@ export class Sessions extends Base {
 			month,
 			day,
 			data: Promise.await(aggregates.getUniqueUsersOfLastMonthOrWeek(this.secondaryCollection, { year, month, day })),
+		};
+	}
+
+	getUniqueUsersOfLastWeek() {
+		const date = new Date();
+		date.setDate(date.getDate() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+
+		return {
+			year,
+			month,
+			day,
+			data: Promise.await(aggregates.getUniqueUsersOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' })),
 		};
 	}
 
@@ -515,6 +531,22 @@ export class Sessions extends Base {
 		};
 	}
 
+	getUniqueDevicesOfLastWeek() {
+		const date = new Date();
+		date.setDate(date.getDate() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+
+		return {
+			year,
+			month,
+			day,
+			data: Promise.await(aggregates.getUniqueDevicesOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' })),
+		};
+	}
+
 	getUniqueOSOfYesterday() {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
@@ -544,6 +576,22 @@ export class Sessions extends Base {
 			month,
 			day,
 			data: Promise.await(aggregates.getUniqueOSOfLastMonthOrWeek(this.secondaryCollection, { year, month, day })),
+		};
+	}
+
+	getUniqueOSOfLastWeek() {
+		const date = new Date();
+		date.setDate(date.getDate() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+
+		return {
+			year,
+			month,
+			day,
+			data: Promise.await(aggregates.getUniqueOSOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' })),
 		};
 	}
 
