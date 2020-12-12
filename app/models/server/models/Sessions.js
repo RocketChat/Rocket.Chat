@@ -149,11 +149,11 @@ export const aggregates = {
 		}]).toArray();
 	},
 
-	getUniqueUsersOfLastMonth(collection, { year, month, day }) {
+	getUniqueUsersOfLastMonthOrWeek(collection, { year, month, day, type = 'month' }) {
 		return collection.aggregate([{
 			$match: {
 				type: 'user_daily',
-				...aggregates.getMatchOfLastMonthToday({ year, month, day }),
+				...aggregates.getMatchOfLastMonthOrWeek({ year, month, day, type }),
 			},
 		}, {
 			$group: {
@@ -215,35 +215,47 @@ export const aggregates = {
 		}], { allowDiskUse: true }).toArray();
 	},
 
-	getMatchOfLastMonthToday({ year, month, day }) {
-		const pastMonthLastDay = new Date(year, month - 1, 0).getDate();
-		const currMonthLastDay = new Date(year, month, 0).getDate();
+	getMatchOfLastMonthOrWeek({ year, month, day, type = 'month' }) {
+		let startOfPeriod;
 
-		const lastMonthToday = new Date(year, month - 1, day);
-		lastMonthToday.setMonth(lastMonthToday.getMonth() - 1, (currMonthLastDay === day ? pastMonthLastDay : Math.min(pastMonthLastDay, day)) + 1);
-		const lastMonthTodayObject = {
-			year: lastMonthToday.getFullYear(),
-			month: lastMonthToday.getMonth() + 1,
-			day: lastMonthToday.getDate(),
+		if (type === 'month') {
+			const pastMonthLastDay = new Date(year, month - 1, 0).getDate();
+			const currMonthLastDay = new Date(year, month, 0).getDate();
+
+			startOfPeriod = new Date(year, month - 1, day);
+			startOfPeriod.setMonth(startOfPeriod.getMonth() - 1, (currMonthLastDay === day ? pastMonthLastDay : Math.min(pastMonthLastDay, day)) + 1);
+		} else {
+			const yesterday = new Date(year, month - 1, day - 1);
+			year = yesterday.getFullYear();
+			month = yesterday.getMonth() + 1;
+			day = yesterday.getDate();
+
+			startOfPeriod = new Date(year, month - 1, day - 6);
+		}
+
+		const startOfPeriodObject = {
+			year: startOfPeriod.getFullYear(),
+			month: startOfPeriod.getMonth() + 1,
+			day: startOfPeriod.getDate(),
 		};
 
-		if (year === lastMonthTodayObject.year && month === lastMonthTodayObject.month) {
+		if (year === startOfPeriodObject.year && month === startOfPeriodObject.month) {
 			return {
 				year,
 				month,
-				day: { $gte: lastMonthTodayObject.day, $lte: day },
+				day: { $gte: startOfPeriodObject.day, $lte: day },
 			};
 		}
 
-		if (year === lastMonthTodayObject.year) {
+		if (year === startOfPeriodObject.year) {
 			return {
 				year,
 				$and: [{
 					$or: [{
-						month: { $gt: lastMonthTodayObject.month },
+						month: { $gt: startOfPeriodObject.month },
 					}, {
-						month: lastMonthTodayObject.month,
-						day: { $gte: lastMonthTodayObject.day },
+						month: startOfPeriodObject.month,
+						day: { $gte: startOfPeriodObject.day },
 					}],
 				}, {
 					$or: [{
@@ -259,14 +271,14 @@ export const aggregates = {
 		return {
 			$and: [{
 				$or: [{
-					year: { $gt: lastMonthTodayObject.year },
+					year: { $gt: startOfPeriodObject.year },
 				}, {
-					year: lastMonthTodayObject.year,
-					month: { $gt: lastMonthTodayObject.month },
+					year: startOfPeriodObject.year,
+					month: { $gt: startOfPeriodObject.month },
 				}, {
-					year: lastMonthTodayObject.year,
-					month: lastMonthTodayObject.month,
-					day: { $gte: lastMonthTodayObject.day },
+					year: startOfPeriodObject.year,
+					month: startOfPeriodObject.month,
+					day: { $gte: startOfPeriodObject.day },
 				}],
 			}, {
 				$or: [{
@@ -283,11 +295,11 @@ export const aggregates = {
 		};
 	},
 
-	getUniqueDevicesOfLastMonth(collection, { year, month, day }) {
+	getUniqueDevicesOfLastMonthOrWeek(collection, { year, month, day, type = 'month' }) {
 		return collection.aggregate([{
 			$match: {
 				type: 'user_daily',
-				...aggregates.getMatchOfLastMonthToday({ year, month, day }),
+				...aggregates.getMatchOfLastMonthOrWeek({ year, month, day, type }),
 			},
 		}, {
 			$unwind: '$devices',
@@ -353,14 +365,14 @@ export const aggregates = {
 		}]).toArray();
 	},
 
-	getUniqueOSOfLastMonth(collection, { year, month, day }) {
+	getUniqueOSOfLastMonthOrWeek(collection, { year, month, day, type = 'month' }) {
 		return collection.aggregate([{
 			$match: {
 				type: 'user_daily',
 				'devices.device.os.name': {
 					$exists: true,
 				},
-				...aggregates.getMatchOfLastMonthToday({ year, month, day }),
+				...aggregates.getMatchOfLastMonthOrWeek({ year, month, day, type }),
 			},
 		}, {
 			$unwind: '$devices',
@@ -472,7 +484,7 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueUsersOfLastMonth(this.secondaryCollection, { year, month, day })),
+			data: Promise.await(aggregates.getUniqueUsersOfLastMonthOrWeek(this.secondaryCollection, { year, month, day })),
 		};
 	}
 
@@ -504,7 +516,7 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueDevicesOfLastMonth(this.secondaryCollection, { year, month, day })),
+			data: Promise.await(aggregates.getUniqueDevicesOfLastMonthOrWeek(this.secondaryCollection, { year, month, day })),
 		};
 	}
 
@@ -536,7 +548,7 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueOSOfLastMonth(this.secondaryCollection, { year, month, day })),
+			data: Promise.await(aggregates.getUniqueOSOfLastMonthOrWeek(this.secondaryCollection, { year, month, day })),
 		};
 	}
 

@@ -279,7 +279,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should match sessions between 2018-12-11 and 2019-1-10', () => {
 		const collection = db.collection('sessions_dates');
-		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 1, day: 10 });
+		const $match = aggregates.getMatchOfLastMonthOrWeek({ year: 2019, month: 1, day: 10 });
 
 		assert.deepEqual($match, {
 			$and: [{
@@ -340,7 +340,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should match sessions between 2019-1-11 and 2019-2-10', () => {
 		const collection = db.collection('sessions_dates');
-		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 2, day: 10 });
+		const $match = aggregates.getMatchOfLastMonthOrWeek({ year: 2019, month: 2, day: 10 });
 
 		assert.deepEqual($match, {
 			year: 2019,
@@ -400,7 +400,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should match sessions between 2019-5-1 and 2019-5-31', () => {
 		const collection = db.collection('sessions_dates');
-		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 5, day: 31 });
+		const $match = aggregates.getMatchOfLastMonthOrWeek({ year: 2019, month: 5, day: 31 });
 
 		assert.deepEqual($match, {
 			year: 2019,
@@ -451,7 +451,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should match sessions between 2019-4-1 and 2019-4-30', () => {
 		const collection = db.collection('sessions_dates');
-		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 4, day: 30 });
+		const $match = aggregates.getMatchOfLastMonthOrWeek({ year: 2019, month: 4, day: 30 });
 
 		assert.deepEqual($match, {
 			year: 2019,
@@ -501,7 +501,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should match sessions between 2019-2-1 and 2019-2-28', () => {
 		const collection = db.collection('sessions_dates');
-		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 2, day: 28 });
+		const $match = aggregates.getMatchOfLastMonthOrWeek({ year: 2019, month: 2, day: 28 });
 
 		assert.deepEqual($match, {
 			year: 2019,
@@ -549,7 +549,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should match sessions between 2019-1-28 and 2019-2-27', () => {
 		const collection = db.collection('sessions_dates');
-		const $match = aggregates.getMatchOfLastMonthToday({ year: 2019, month: 2, day: 27 });
+		const $match = aggregates.getMatchOfLastMonthOrWeek({ year: 2019, month: 2, day: 27 });
 
 		assert.deepEqual($match, {
 			year: 2019,
@@ -718,7 +718,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should have 2 unique users for month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates.getUniqueUsersOfLastMonth(collection, { year: 2019, month: 5, day: 31 })
+		return aggregates.getUniqueUsersOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 31 })
 			.then((docs) => {
 				assert.equal(docs.length, 1);
 				assert.deepEqual(docs, [{
@@ -780,7 +780,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should have 2 unique devices for month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates.getUniqueDevicesOfLastMonth(collection, { year: 2019, month: 5, day: 31 })
+		return aggregates.getUniqueDevicesOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 31 })
 			.then((docs) => {
 				assert.equal(docs.length, 2);
 				assert.deepEqual(docs, [{
@@ -822,7 +822,7 @@ describe('Sessions Aggregates', () => {
 
 	it('should have 2 unique OS for month 5 of 2019', () => {
 		const collection = db.collection('sessions');
-		return aggregates.getUniqueOSOfLastMonth(collection, { year: 2019, month: 5, day: 31 })
+		return aggregates.getUniqueOSOfLastMonthOrWeek(collection, { year: 2019, month: 5, day: 31 })
 			.then((docs) => {
 				assert.equal(docs.length, 2);
 				assert.deepEqual(docs, [{
