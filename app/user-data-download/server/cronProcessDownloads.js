@@ -60,7 +60,7 @@ export const getRoomData = (roomId, ownUserId) => {
 		roomId,
 		roomName,
 		userId,
-		exportedCount: 0,
+		lastExportedTimestamp: undefined,
 		status: 'pending',
 		type: roomData.t,
 		targetFile: '',
@@ -217,22 +217,28 @@ const exportMessageObject = (type, messageObject, messageFile) => {
 	return file.join('\n');
 };
 
-export async function exportRoomMessages(rid, exportType, skip, limit, assetsPath, exportOpRoomData, userData, filter = {}, usersMap = {}, hideUsers = true) {
-	const query = { ...filter, rid };
+export async function exportRoomMessages(rid, exportType, afterTimestamp, skip, limit, assetsPath, exportOpRoomData, userData, filter = {}, usersMap = {}, hideUsers = true) {
+	const query = {
+		...filter,
+		rid,
+		ts: {
+			$exists: true,
+			...afterTimestamp && { $gt: afterTimestamp },
+		},
+	};
 
 	const cursor = Messages.model.rawCollection().find(query, {
 		sort: { ts: 1 },
-		skip,
+		// Support old format using skip for those exports still running
+		// This can be removed in the future
+		...afterTimestamp != null && skip > 0 && { skip },
 		limit,
 		readPreference: readSecondaryPreferred(Messages.model.rawDatabase()),
 	});
 
-	const total = await cursor.count();
 	const results = await cursor.toArray();
 
 	const result = {
-		total,
-		exported: results.length,
 		messages: [],
 		uploads: [],
 	};
@@ -350,28 +356,27 @@ export const exportRoomMessagesToFile = async function(exportPath, assetsPath, e
 	};
 
 	const limit = settings.get('UserData_MessageLimitPerRequest') > 0 ? settings.get('UserData_MessageLimitPerRequest') : 1000;
-	for (const exportOpRoomData of roomList) {
+	for await (const exportOpRoomData of roomList) {
 		const filePath = path.join(exportPath, exportOpRoomData.targetFile);
 		if (exportOpRoomData.status === 'pending') {
 			exportOpRoomData.status = 'exporting';
 			startFile(filePath, exportType === 'html' ? '<meta http-equiv="content-type" content="text/html; charset=utf-8">' : '');
 		}
 
+		const afterTimestamp = exportOpRoomData.lastExportedTimestamp;
 		const skip = exportOpRoomData.exportedCount;
 
 		const {
-			total,
-			exported,
 			uploads,
 			messages,
-		// eslint-disable-next-line no-await-in-loop
-		} = await exportRoomMessages(exportOpRoomData.roomId, exportType, skip, limit, assetsPath, exportOpRoomData, userData, messagesFilter, usersMap, hideUsers);
+		} = await exportRoomMessages(exportOpRoomData.roomId, exportType, afterTimestamp, skip, limit, assetsPath, exportOpRoomData, userData, messagesFilter, usersMap, hideUsers);
 
 		result.fileList.push(...uploads);
 
-		exportOpRoomData.exportedCount += exported;
+		const count = messages.length;
+		exportOpRoomData.lastExportedTimestamp = messages[count - 1].ts;
 
-		if (total <= exportOpRoomData.exportedCount) {
+		if (count < limit) {
 			exportOpRoomData.status = 'completed';
 		}
 
