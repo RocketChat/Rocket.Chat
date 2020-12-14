@@ -9,10 +9,8 @@ import {
 	Throbber,
 	ButtonGroup,
 	Button,
-	Option,
-	Menu,
 } from '@rocket.chat/fuselage';
-import { FixedSizeList as List } from 'react-window';
+import { FixedSizeList as List, areEqual } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import {
 	useResizeObserver,
@@ -20,51 +18,45 @@ import {
 	useDebouncedValue,
 	useLocalStorage,
 } from '@rocket.chat/fuselage-hooks';
+import memoize from 'memoize-one';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useUserRoom } from '../../../../contexts/UserContext';
-import VerticalBar from '../../../../components/VerticalBar';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { usePermission } from '../../../../contexts/AuthorizationContext';
-import { useUserInfoActions, useUserInfoActionsSpread } from '../../hooks/useUserInfoActions';
-import { withPreventPropagation } from '../../../../lib/withPreventPropagation';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import { useDataWithLoadMore } from './hooks/useDataWithLoadMore';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useUserRoom } from '../../../../../contexts/UserContext';
+import VerticalBar from '../../../../../components/VerticalBar';
+import { useMethod } from '../../../../../contexts/ServerContext';
+import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
+import { usePermission } from '../../../../../contexts/AuthorizationContext';
+import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
+import { useDataWithLoadMore } from '../hooks/useDataWithLoadMore';
+import { MemberItem } from './components/MemberItem';
 
-const MemberOption = React.memo(({ memberData: { _id, status, name, username }, onClickView, rid, style }) => {
-	const { menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions({ _id, username }, rid));
+export const createItemData = memoize((items, onClickView, rid) => ({
+	items,
+	onClickView,
+	rid,
+}));
 
-	const menu = useMemo(() => {
-		if (!menuOptions) {
-			return null;
-		}
+const Row = React.memo(({ data, index, style }) => {
+	const { onClickView, items, rid } = data;
+	const user = items[index];
 
-		return <div><Menu
-			flexShrink={0}
-			mi='x2'
-			key='menu'
-			// ghost={false}
-			renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
-			options={menuOptions}
-		/></div>;
-	}, [menuOptions]);
+	if (!user) {
+		return null;
+	}
 
-	return (
-		<Option
-			id={_id}
-			style={style}
-			avatar={<UserAvatar username={username} size='x28' />}
-			presence={status}
-			label={<Box withTruncatedText>{name} <Box is='span' color='neutral-500'>({username})</Box></Box>}
-			onClick={() => onClickView(username)}
-		>{withPreventPropagation(menu)}</Option>
-	);
-});
+	return <RoomMembers.Option
+		index={index}
+		style={style}
+		username={user.username}
+		_id={user._id}
+		rid={rid}
+		status={user.status}
+		name={user.name}
+		onClickView={onClickView}
+	/>;
+}, areEqual);
 
 export const RoomMembers = ({
-	rid,
 	loading,
 	members = [],
 	text,
@@ -77,26 +69,20 @@ export const RoomMembers = ({
 	onClickInvite,
 	total,
 	loadMoreItems,
+	rid,
 }) => {
 	const t = useTranslation();
 
 	const isItemLoaded = (index) => !!members[index];
-
-	const memberRenderer = useCallback(({ data, index, style }) => (
-		data[index] ? <RoomMembers.Option
-			index={index}
-			style={style}
-			memberData={data[index]}
-			onClickView={onClickView}
-			rid={rid}
-		/> : ''), [onClickView, rid]);
 
 	const options = useMemo(() => [
 		['online', t('Online')],
 		['all', t('All')],
 	], [t]);
 
-	const { ref, contentBoxSize: { blockSize = 200 } = {} } = useResizeObserver({ debounceDelay: 100 });
+	const { ref, contentBoxSize: { blockSize = 780 } = {} } = useResizeObserver({ debounceDelay: 100 });
+
+	const itemData = createItemData(members, onClickView, rid);
 
 	return (
 		<>
@@ -107,7 +93,7 @@ export const RoomMembers = ({
 			</VerticalBar.Header>
 
 			<VerticalBar.Content p='x12'>
-				<Box width='full' pi='x12' pb='x12' mi='neg-x4'>
+				<Box pi='x12' pb='x12' mi='neg-x4'>
 					<FieldGroup>
 						<Box flexDirection='row' display='flex' justifyContent='stretch'>
 							<Box flexGrow={2} flexBasis='85%' mi='x4'>
@@ -137,21 +123,21 @@ export const RoomMembers = ({
 
 				{!loading && members.length > 0 && (
 					<Box pi='x12' pb='x12'>
-						<Box is='span' color='neutral-500' fontScale='p1'>
+						<Box is='span' color='info' fontScale='p1'>
 							{t('Showing')}: <Box is='span' color='default' fontScale='p2'>{members.length}</Box>
 						</Box>
 
-						<Box is='span' color='neutral-500' fontScale='p1' mis='x8'>
+						<Box is='span' color='info' fontScale='p1' mis='x8'>
 							{t('Online')}: <Box is='span' color='default' fontScale='p2'>{members.length}</Box>
 						</Box>
 
-						<Box is='span' color='neutral-500' fontScale='p1' mis='x8'>
+						<Box is='span' color='info' fontScale='p1' mis='x8'>
 							{t('Total')}: <Box is='span' color='default' fontScale='p2'>{total}</Box>
 						</Box>
 					</Box>
 				)}
 
-				<Box w='full' h='full' ref={ref}>
+				<Box w='full' h='full' overflow='hidden' flexShrink={1} ref={ref}>
 					{!loading && members
 					&& <InfiniteLoader
 						isItemLoaded={isItemLoaded}
@@ -162,14 +148,14 @@ export const RoomMembers = ({
 							<List
 								outerElementType={ScrollableContentWrapper}
 								className='List'
-								itemData={members}
+								itemData={itemData}
 								height={blockSize}
 								itemCount={total}
 								itemSize={46}
 								onItemsRendered={onItemsRendered}
 								ref={ref}
 							>
-								{memberRenderer}
+								{Row}
 							</List>
 						)}
 					</InfiniteLoader>
@@ -187,7 +173,7 @@ export const RoomMembers = ({
 	);
 };
 
-RoomMembers.Option = MemberOption;
+RoomMembers.Option = MemberItem;
 
 const useGetUsersOfRoom = (params) => {
 	const method = useMethod('getUsersOfRoom');
@@ -218,7 +204,8 @@ export default ({
 		setText(event.currentTarget.value);
 	}, []);
 
-	const viewUser = useMutableCallback((username) => {
+	const viewUser = useMutableCallback((e) => {
+		const { username } = e.currentTarget.dataset;
 		tabBar.setTemplate('UserInfoWithData');
 		tabBar.setData({
 			username,
@@ -255,10 +242,10 @@ export default ({
 		});
 	});
 
-	const loadMoreItems = (start, end) => more(([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter], (prev, next) => ({
+	const loadMoreItems = useCallback((start, end) => more(([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter], (prev, next) => ({
 		total: next.total,
 		records: [...prev.records, ...next.records],
-	}));
+	})), [more]);
 
 	return (
 		<RoomMembers

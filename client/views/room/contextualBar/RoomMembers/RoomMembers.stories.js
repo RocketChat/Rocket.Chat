@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { RoomMembers } from './RoomMembers';
+import { RoomMembers } from './List/RoomMembers';
 import VerticalBar from '../../../../components/VerticalBar';
 
 export default {
