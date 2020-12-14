@@ -40,11 +40,11 @@ class NetworkBroker implements IBroker {
 	private started: Promise<void>;
 
 	private whitelist = {
-		events: ['license.module'],
+		events: ['license.module', 'watch.settings'],
 		actions: ['license.hasLicense'],
 	}
 
-	// wether only internal services are allowed to be registered
+	// whether only internal services are allowed to be registered
 	private internalOnly = ['true', 'yes'].includes(INTERNAL_SERVICES_ONLY.toLowerCase());
 
 	// list of allowed services to run - has precedence over `internalOnly`
@@ -64,10 +64,22 @@ class NetworkBroker implements IBroker {
 		this.allowed = License.hasLicense('scalability');
 	}
 
+	isWhitelisted(list: string[], item: string) {
+		return list.includes(item);
+	}
+
+	isActionWhitelisted(method: string) {
+		return this.isWhitelisted(this.whitelist.actions, method);
+	}
+
+	isEventWhitelisted(event: string) {
+		return this.isWhitelisted(this.whitelist.events, event);
+	}
+
 	async call(method: string, data: any): Promise<any> {
 		await this.started;
 
-		if (!(this.whitelist.actions.includes(method) || await this.allowed)) {
+		if (!(this.isActionWhitelisted(method) || await this.allowed)) {
 			return this.localBroker.call(method, data);
 		}
 
@@ -86,11 +98,15 @@ class NetworkBroker implements IBroker {
 	async waitAndCall(method: string, data: any): Promise<any> {
 		await this.started;
 
-		if (!(this.whitelist.actions.includes(method) || await this.allowed)) {
+		if (!(this.isActionWhitelisted(method) || await this.allowed)) {
 			return this.localBroker.call(method, data);
 		}
 
-		await this.broker.waitForServices(method.split('.')[0], this.whitelist.actions.includes(method) ? waitForServicesWhitelistTimeout : waitForServicesTimeout);
+		try {
+			await this.broker.waitForServices(method.split('.')[0], this.isActionWhitelisted(method) ? waitForServicesWhitelistTimeout : waitForServicesTimeout);
+		} catch (err) {
+			console.error(err);
+		}
 
 		const context = asyncLocalStorage.getStore();
 		if (context?.ctx?.call) {
@@ -128,7 +144,7 @@ class NetworkBroker implements IBroker {
 			name,
 			actions: {},
 			events: instance.getEvents().reduce<Record<string, Function>>((map, eventName) => {
-				if (this.whitelist.events.includes(eventName)) {
+				if (this.isEventWhitelisted(eventName)) {
 					map[eventName] = (data: Parameters<EventSignatures[typeof eventName]>): void => instance.emit(eventName, ...data);
 					return map;
 				}
@@ -177,7 +193,7 @@ class NetworkBroker implements IBroker {
 				broker: this,
 				ctx,
 			}, async (): Promise<any> => {
-				if (this.whitelist.actions.includes(`${ name }.${ method }`) || await this.allowed) {
+				if (this.isActionWhitelisted(`${ name }.${ method }`) || await this.allowed) {
 					return i[method](...ctx.params);
 				}
 			});
@@ -187,7 +203,7 @@ class NetworkBroker implements IBroker {
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		if (!(this.whitelist.events.includes(event) || await this.allowed)) {
+		if (!(this.isEventWhitelisted(event) || await this.allowed)) {
 			return this.localBroker.broadcast(event, ...args);
 		}
 		return this.broker.broadcast(event, args);
