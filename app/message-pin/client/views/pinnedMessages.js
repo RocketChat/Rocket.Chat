@@ -7,8 +7,11 @@ import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManag
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { APIClient } from '../../../utils/client';
 import { Messages } from '../../../models/client';
+import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 
 const LIMIT_DEFAULT = 50;
+
+Template.pinnedMessages.events(getCommonRoomEvents());
 
 Template.pinnedMessages.helpers({
 	hasMessages() {

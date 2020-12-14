@@ -8,9 +8,11 @@ import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { Messages } from '../../../models/client';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { APIClient } from '../../../utils/client';
+import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 
 const LIMIT_DEFAULT = 50;
 
+Template.starredMessages.events(getCommonRoomEvents());
 Template.starredMessages.helpers({
 	hasMessages() {
 		return Template.instance().messages.find().count();
