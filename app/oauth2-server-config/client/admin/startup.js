@@ -1,5 +1,5 @@
 import { hasAllPermission } from '../../../authorization';
-import { registerAdminSidebarItem } from '../../../../client/admin';
+import { registerAdminSidebarItem } from '../../../../client/views/admin';
 
 registerAdminSidebarItem({
 	href: 'admin-oauth-apps',

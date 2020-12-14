@@ -67,3 +67,13 @@ Meteor.logoutWithSaml = function(options/* , callback*/) {
 		window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${ options.provider }/?redirect=${ encodeURIComponent(result) }`));
 	});
 };
+
+Meteor.loginWithSamlToken = function(token, userCallback) {
+	Accounts.callLoginMethod({
+		methodArguments: [{
+			saml: true,
+			credentialToken: token,
+		}],
+		userCallback,
+	});
+};

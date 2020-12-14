@@ -2,12 +2,11 @@
 import 'babel-polyfill';
 import assert from 'assert';
 
-import s from 'underscore.string';
-
 import './client.mocks.js';
 import { original } from '../lib/parser/original/original';
 import { filtered } from '../lib/parser/filtered/filtered';
 import { Markdown } from '../lib/markdown';
+import { escapeHTML } from '../../../lib/escapeHTML';
 
 const wrapper = (text, tag) => `<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
 const boldWrapper = (text) => wrapper(`<strong>${ text }</strong>`, '*');
@@ -127,63 +126,63 @@ const headersLevel4 = {
 };
 
 const quote = {
-	'&gt;Hello': s.escapeHTML('&gt;Hello'),
-	'&gt;Rocket.Cat': s.escapeHTML('&gt;Rocket.Cat'),
-	'&gt;Hi': s.escapeHTML('&gt;Hi'),
-	'&gt; Hello this is dog': s.escapeHTML('&gt; Hello this is dog'),
-	'&gt; Rocket cat says Hello': s.escapeHTML('&gt; Rocket cat says Hello'),
-	'&gt; He said Hello to her': s.escapeHTML('&gt; He said Hello to her'),
-	'&gt; He said Hello to her ': s.escapeHTML('&gt; He said Hello to her '),
-	'&lt;Hello': s.escapeHTML('&lt;Hello'),
-	'&lt;Rocket.Cat&gt;': s.escapeHTML('&lt;Rocket.Cat&gt;'),
-	' &gt;Hi': s.escapeHTML(' &gt;Hi'),
-	'Hello &gt; this is dog': s.escapeHTML('Hello &gt; this is dog'),
-	'Roc&gt;ket cat says Hello': s.escapeHTML('Roc&gt;ket cat says Hello'),
-	'He said Hello to her&gt;': s.escapeHTML('He said Hello to her&gt;'),
+	'&gt;Hello': escapeHTML('&gt;Hello'),
+	'&gt;Rocket.Cat': escapeHTML('&gt;Rocket.Cat'),
+	'&gt;Hi': escapeHTML('&gt;Hi'),
+	'&gt; Hello this is dog': escapeHTML('&gt; Hello this is dog'),
+	'&gt; Rocket cat says Hello': escapeHTML('&gt; Rocket cat says Hello'),
+	'&gt; He said Hello to her': escapeHTML('&gt; He said Hello to her'),
+	'&gt; He said Hello to her ': escapeHTML('&gt; He said Hello to her '),
+	'&lt;Hello': escapeHTML('&lt;Hello'),
+	'&lt;Rocket.Cat&gt;': escapeHTML('&lt;Rocket.Cat&gt;'),
+	' &gt;Hi': escapeHTML(' &gt;Hi'),
+	'Hello &gt; this is dog': escapeHTML('Hello &gt; this is dog'),
+	'Roc&gt;ket cat says Hello': escapeHTML('Roc&gt;ket cat says Hello'),
+	'He said Hello to her&gt;': escapeHTML('He said Hello to her&gt;'),
 	'>Hello': quoteWrapper('Hello'),
 	'>Rocket.Cat': quoteWrapper('Rocket.Cat'),
 	'>Hi': quoteWrapper('Hi'),
 	'> Hello this is dog': quoteWrapper(' Hello this is dog'),
 	'> Rocket cat says Hello': quoteWrapper(' Rocket cat says Hello'),
 	'> He said Hello to her': quoteWrapper(' He said Hello to her'),
-	'<Hello': s.escapeHTML('<Hello'),
-	'<Rocket.Cat>': s.escapeHTML('<Rocket.Cat>'),
-	' >Hi': s.escapeHTML(' >Hi'),
-	'Hello > this is dog': s.escapeHTML('Hello > this is dog'),
-	'Roc>ket cat says Hello': s.escapeHTML('Roc>ket cat says Hello'),
-	'He said Hello to her>': s.escapeHTML('He said Hello to her>'),
+	'<Hello': escapeHTML('<Hello'),
+	'<Rocket.Cat>': escapeHTML('<Rocket.Cat>'),
+	' >Hi': escapeHTML(' >Hi'),
+	'Hello > this is dog': escapeHTML('Hello > this is dog'),
+	'Roc>ket cat says Hello': escapeHTML('Roc>ket cat says Hello'),
+	'He said Hello to her>': escapeHTML('He said Hello to her>'),
 };
 
 const link = {
-	'&lt;http://link|Text&gt;': s.escapeHTML('&lt;http://link|Text&gt;'),
-	'&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;': s.escapeHTML('&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
-	'&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;': s.escapeHTML('&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;'),
-	'&lt;https://rocket.chat/|Rocket.Chat Site&gt;': s.escapeHTML('&lt;https://rocket.chat/|Rocket.Chat Site&gt;'),
-	'&lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;': s.escapeHTML('&lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;'),
-	'&lt;http://linkText&gt;': s.escapeHTML('&lt;http://linkText&gt;'),
-	'&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;': s.escapeHTML('&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;'),
-	'https://open.rocket.chat/|Open Site For Rocket.Chat': s.escapeHTML('https://open.rocket.chat/|Open Site For Rocket.Chat'),
-	'&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;': s.escapeHTML('&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
-	'&lt;htps://rocket.chat/|Rocket.Chat Site&gt;': s.escapeHTML('&lt;htps://rocket.chat/|Rocket.Chat Site&gt;'),
-	'&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;': s.escapeHTML('&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;'),
-	'&lt;tps://rocket.chat/|Rocket.Chat Site&gt;': s.escapeHTML('&lt;tps://rocket.chat/|Rocket.Chat Site&gt;'),
-	'&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;': s.escapeHTML('&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
-	'&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;': s.escapeHTML('&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;'),
+	'&lt;http://link|Text&gt;': escapeHTML('&lt;http://link|Text&gt;'),
+	'&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML('&lt;https://open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
+	'&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;': escapeHTML('&lt;https://open.rocket.chat/ | Open Site For Rocket.Chat&gt;'),
+	'&lt;https://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML('&lt;https://rocket.chat/|Rocket.Chat Site&gt;'),
+	'&lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;': escapeHTML('&lt;https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;'),
+	'&lt;http://linkText&gt;': escapeHTML('&lt;http://linkText&gt;'),
+	'&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;': escapeHTML('&lt;https:open.rocket.chat/ | Open Site For Rocket.Chat&gt;'),
+	'https://open.rocket.chat/|Open Site For Rocket.Chat': escapeHTML('https://open.rocket.chat/|Open Site For Rocket.Chat'),
+	'&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML('&lt;www.open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
+	'&lt;htps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML('&lt;htps://rocket.chat/|Rocket.Chat Site&gt;'),
+	'&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML('&lt;ttps://rocket.chat/|Rocket.Chat Site&gt;'),
+	'&lt;tps://rocket.chat/|Rocket.Chat Site&gt;': escapeHTML('&lt;tps://rocket.chat/|Rocket.Chat Site&gt;'),
+	'&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;': escapeHTML('&lt;open.rocket.chat/|Open Site For Rocket.Chat&gt;'),
+	'&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;': escapeHTML('&lt;htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site&gt;'),
 
-	'<http://invalid link|Text>': s.escapeHTML('<http://invalid link|Text>'),
+	'<http://invalid link|Text>': escapeHTML('<http://invalid link|Text>'),
 	'<http://link|Text>': linkWrapped('http://link', 'Text'),
 	'<https://open.rocket.chat/|Open Site For Rocket.Chat>': linkWrapped('https://open.rocket.chat/', 'Open Site For Rocket.Chat'),
 	'<https://open.rocket.chat/ | Open Site For Rocket.Chat>': linkWrapped('https://open.rocket.chat/ ', ' Open Site For Rocket.Chat'),
 	'<https://rocket.chat/|Rocket.Chat Site>': linkWrapped('https://rocket.chat/', 'Rocket.Chat Site'),
 	'<https://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>': linkWrapped('https://rocket.chat/docs/developer-guides/testing/#testing', 'Testing Entry on Rocket.Chat Docs Site'),
-	'<http://linkText>': s.escapeHTML('<http://linkText>'),
-	'<https:open.rocket.chat/ | Open Site For Rocket.Chat>': s.escapeHTML('<https:open.rocket.chat/ | Open Site For Rocket.Chat>'),
-	'<www.open.rocket.chat/|Open Site For Rocket.Chat>': s.escapeHTML('<www.open.rocket.chat/|Open Site For Rocket.Chat>'),
-	'<htps://rocket.chat/|Rocket.Chat Site>': s.escapeHTML('<htps://rocket.chat/|Rocket.Chat Site>'),
-	'<ttps://rocket.chat/|Rocket.Chat Site>': s.escapeHTML('<ttps://rocket.chat/|Rocket.Chat Site>'),
-	'<tps://rocket.chat/|Rocket.Chat Site>': s.escapeHTML('<tps://rocket.chat/|Rocket.Chat Site>'),
-	'<open.rocket.chat/|Open Site For Rocket.Chat>': s.escapeHTML('<open.rocket.chat/|Open Site For Rocket.Chat>'),
-	'<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>': s.escapeHTML('<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>'),
+	'<http://linkText>': escapeHTML('<http://linkText>'),
+	'<https:open.rocket.chat/ | Open Site For Rocket.Chat>': escapeHTML('<https:open.rocket.chat/ | Open Site For Rocket.Chat>'),
+	'<www.open.rocket.chat/|Open Site For Rocket.Chat>': escapeHTML('<www.open.rocket.chat/|Open Site For Rocket.Chat>'),
+	'<htps://rocket.chat/|Rocket.Chat Site>': escapeHTML('<htps://rocket.chat/|Rocket.Chat Site>'),
+	'<ttps://rocket.chat/|Rocket.Chat Site>': escapeHTML('<ttps://rocket.chat/|Rocket.Chat Site>'),
+	'<tps://rocket.chat/|Rocket.Chat Site>': escapeHTML('<tps://rocket.chat/|Rocket.Chat Site>'),
+	'<open.rocket.chat/|Open Site For Rocket.Chat>': escapeHTML('<open.rocket.chat/|Open Site For Rocket.Chat>'),
+	'<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>': escapeHTML('<htts://rocket.chat/docs/developer-guides/testing/#testing|Testing Entry on Rocket.Chat Docs Site>'),
 
 	'[Text](http://invalid link)': '[Text](http://invalid link)',
 	'[Text](http://link)': linkWrapped('http://link', 'Text'),
@@ -347,7 +346,7 @@ const defaultObjectTest = (result, object, objectKey) => assert.equal(result.htm
 const testObject = (object, parser = original, test = defaultObjectTest) => {
 	Object.keys(object).forEach((objectKey) => {
 		describe(objectKey, () => {
-			const message = parser === original ? { html: s.escapeHTML(objectKey) } : objectKey;
+			const message = parser === original ? { html: escapeHTML(objectKey) } : objectKey;
 			const result = parser === original ? Markdown.mountTokensBack(parser(message)) : { html: parser(message) };
 			it(`should be equal to ${ object[objectKey] }`, () => {
 				test(result, object, objectKey);

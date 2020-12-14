@@ -614,11 +614,8 @@ API.v1.addRoute('users.forgotPassword', { authRequired: false }, {
 			return API.v1.failure('The \'email\' param is required');
 		}
 
-		const emailSent = Meteor.call('sendForgotPasswordEmail', email);
-		if (emailSent) {
-			return API.v1.success();
-		}
-		return API.v1.failure('User not found');
+		Meteor.call('sendForgotPasswordEmail', email);
+		return API.v1.success();
 	},
 });
 
@@ -776,6 +773,18 @@ API.v1.addRoute('users.requestDataDownload', { authRequired: true }, {
 			requested: result.requested,
 			exportOperation: result.exportOperation,
 		});
+	},
+});
+
+API.v1.addRoute('users.logoutOtherClients', { authRequired: true }, {
+	post() {
+		try {
+			const result = Meteor.call('logoutOtherClients');
+
+			return API.v1.success(result);
+		} catch (error) {
+			return API.v1.failure(error);
+		}
 	},
 });
 
