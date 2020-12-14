@@ -66,12 +66,12 @@ const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...prop
 	return null;
 });
 
-export default function CustomFieldsForm({ customFieldsData, setCustomFieldsData, onLoadFields = () => {}, ...props }) {
-	const customFieldsJson = useSetting('Accounts_CustomFields');
+export default function CustomFieldsForm({ jsonCustomFields, customFieldsData, setCustomFieldsData, onLoadFields = () => {}, ...props }) {
+	const accountsCustomFieldsJson = useSetting('Accounts_CustomFields');
 
 	const [customFields] = useState(() => {
 		try {
-			return JSON.parse(customFieldsJson || '{}');
+			return jsonCustomFields || JSON.parse(accountsCustomFieldsJson || '{}');
 		} catch {
 			return {};
 		}

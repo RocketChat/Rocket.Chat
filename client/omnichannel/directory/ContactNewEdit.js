@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Field, TextInput, Icon, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -12,6 +12,9 @@ import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { FormSkeleton } from './Skeleton';
+import CustomFieldsForm from '../../components/CustomFieldsForm';
+import { hasAtLeastOnePermission } from '../../../app/authorization';
+
 
 const initialValues = {
 	name: '',
@@ -25,12 +28,13 @@ const getInitialValues = (data) => {
 	}
 
 	const { contact } = data;
-	const { name, phone, visitorEmails } = contact;
+	const { name, phone, visitorEmails, livechatData } = contact;
 
 	return {
 		name: name ?? '',
 		email: visitorEmails ? visitorEmails[0].address : '',
 		phone: phone ? phone[0].phoneNumber : '',
+		livechatData: livechatData ?? '',
 	};
 };
 
@@ -52,7 +56,11 @@ export function ContactEditWithData({ id, reload, close }) {
 export function ContactNewEdit({ id, data, reload, close }) {
 	const t = useTranslation();
 
+	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+
 	const { values, handlers } = useForm(getInitialValues(data));
+
+	console.log(values);
 
 	const {
 		handleName,
@@ -65,8 +73,36 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		phone,
 	} = values;
 
+	const { values: valueCustom, handlers: handleValueCustom } = useForm({
+		livechatData: values.livechatData,
+	});
+
+	const { handleLivechatData } = handleValueCustom;
+	const { livechatData } = valueCustom;
+
 	const [nameError, setNameError] = useState();
 	const [emailError, setEmailError] = useState();
+	const [phoneError] = useState();
+
+	const { data: allCustomFields, state } = useEndpointDataExperimental('livechat/custom-fields');
+
+	const jsonConverterToValidFormat = (customFields) => {
+		const jsonObj = {};
+		// eslint-disable-next-line no-return-assign
+		customFields.map(({ _id, visibility, options, scope, defaultValue, required }) =>
+			(visibility === 'visible' & scope === 'visitor')
+			&& (jsonObj[_id] = {
+				type: options ? 'select' : 'text',
+				required,
+				defaultValue,
+				options: options && options.split(',').map((item) => item.trim()),
+			}));
+		return jsonObj;
+	};
+
+	const jsonCustomField = useMemo(() => (allCustomFields
+		&& allCustomFields.customFields
+		? jsonConverterToValidFormat(allCustomFields.customFields) : {}), [allCustomFields]);
 
 	const saveContact = useEndpointAction('POST', 'contact');
 
@@ -102,6 +138,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		};
 
 		if (id) { payload._id = id; }
+		if (livechatData) { payload.livechatData = livechatData; }
 
 		try {
 			await saveContact(payload);
@@ -114,6 +151,12 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	});
 
 	const formIsValid = name;
+
+	// console.log(valueCustom);
+
+	if ([state].includes(ENDPOINT_STATES.LOADING)) {
+		return <FormSkeleton/>;
+	}
 
 	return <>
 		<VerticalBar.ScrollableContent is='form'>
@@ -138,9 +181,14 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			<Field>
 				<Field.Label>{t('Phone')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={phone} onChange={handlePhone} />
+					<TextInput error={phoneError} flexGrow={1} value={phone} onChange={handlePhone} />
 				</Field.Row>
+				<Field.Error>
+					{t(phoneError)}
+				</Field.Error>
 			</Field>
+			{ canViewCustomFields() && allCustomFields
+			&& <CustomFieldsForm jsonCustomFields={jsonCustomField} customFieldsData={livechatData} setCustomFieldsData={handleLivechatData} /> }
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>

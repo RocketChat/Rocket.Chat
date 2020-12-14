@@ -62,8 +62,9 @@ export function ContactInfo({ id }) {
 				<Info>November 12, 2020</Info>
 
 				{ canViewCustomFields() && livechatData && Object.keys(livechatData).map((key) => <Box key={key}>
-					<Label>{key}</Label>
-					<Info>{livechatData[key]}</Info>
+					{ livechatData[key] && <><Label>{key}</Label>
+						<Info>{livechatData[key]}</Info></>
+					}
 				</Box>)
 				}
 			</Margins>
