@@ -60,8 +60,6 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 	const { values, handlers } = useForm(getInitialValues(data));
 
-	console.log(values);
-
 	const {
 		handleName,
 		handleEmail,
@@ -151,8 +149,6 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	});
 
 	const formIsValid = name;
-
-	// console.log(valueCustom);
 
 	if ([state].includes(ENDPOINT_STATES.LOADING)) {
 		return <FormSkeleton/>;

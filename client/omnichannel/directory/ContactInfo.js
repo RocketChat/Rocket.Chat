@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -21,6 +21,10 @@ export function ContactInfo({ id }) {
 	const t = useTranslation();
 	const directoryRoute = useRoute('omnichannel-directory');
 
+	const { data: allCustomFields, state: stateCustomFields } = useEndpointDataExperimental('livechat/custom-fields');
+
+	const [customFields, setCustomFields] = useState([]);
+
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 
 	const onEditButtonClick = useMutableCallback(() => directoryRoute.push({
@@ -28,6 +32,13 @@ export function ContactInfo({ id }) {
 		context: 'edit',
 		id,
 	}));
+
+	useEffect(() => {
+		if (allCustomFields && stateCustomFields === ENDPOINT_STATES.DONE) {
+			const { customFields: customFieldsAPI } = allCustomFields;
+			setCustomFields(customFieldsAPI);
+		}
+	}, [allCustomFields, stateCustomFields]);
 
 	const { data, state, error } = useEndpointDataExperimental(`contact?contactId=${ id }`);
 	if (state === ENDPOINT_STATES.LOADING) {
@@ -37,9 +48,14 @@ export function ContactInfo({ id }) {
 	if (error || !data || !data.contact) {
 		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
 	}
-	const { contact } = data;
+	const { contact: { name, username, visitorEmails, phone, livechatData } } = data;
 
-	const { name, username, visitorEmails, phone, livechatData } = contact;
+	const checkIsVisibleAndScopeVisitor = (key) => {
+		const field = customFields.find(({ _id }) => _id === key);
+		if (field && field.visibility === 'visible' && field.scope === 'visitor') { return true; }
+		return false;
+	};
+
 	return <>
 		<VerticalBar.ScrollableContent p='x24'>
 			<Margins block='x4'>
@@ -62,7 +78,7 @@ export function ContactInfo({ id }) {
 				<Info>November 12, 2020</Info>
 
 				{ canViewCustomFields() && livechatData && Object.keys(livechatData).map((key) => <Box key={key}>
-					{ livechatData[key] && <><Label>{key}</Label>
+					{ checkIsVisibleAndScopeVisitor(key) && livechatData[key] && <><Label>{key}</Label>
 						<Info>{livechatData[key]}</Info></>
 					}
 				</Box>)
