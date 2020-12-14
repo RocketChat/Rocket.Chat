@@ -46,7 +46,7 @@ class UserPresenceClass {
 		if (!this.awayTime) {
 			return;
 		}
-		this.timer = setTimeout(this.setAway, this.awayTime);
+		this.timer = setTimeout(this.setAway.bind(this), this.awayTime);
 	}
 
 	stopTimer(): void {
@@ -108,7 +108,7 @@ class UserPresenceClass {
 		window.addEventListener('focus', this.setOnline.bind(this));
 
 		if (this.awayOnWindowBlur === true) {
-			window.addEventListener('blur', this.setAway);
+			window.addEventListener('blur', this.setAway.bind(this));
 		}
 	}
 }
