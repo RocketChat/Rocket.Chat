@@ -147,7 +147,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
-	const { data, phase: state, error } = useEndpointData(
+	const { value, phase: state, error } = useEndpointData(
 		'users.info',
 		useMemo(
 			() => ({ ...uid && { userId: uid }, ...username && { username } }),
@@ -156,7 +156,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 	);
 
 	const user = useMemo(() => {
-		const { user } = data || { user: {} };
+		const { user } = value || { user: {} };
 		const {
 			_id,
 			name,
@@ -187,7 +187,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			customStatus: statusText,
 			nickname,
 		};
-	}, [data, showRealNames, getRoles]);
+	}, [value, showRealNames, getRoles]);
 
 	return (
 		<VerticalBar>
@@ -205,9 +205,9 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 				</VerticalBar.Content>)
 				|| <UserInfo
 					{...user}
-					data={data.user}
+					data={user}
 					// onChange={onChange}
-					actions={<UserActions user={data.user} rid={rid}/>}
+					actions={<UserActions user={user} rid={rid}/>}
 					{...props}
 					p='x24'
 				/>

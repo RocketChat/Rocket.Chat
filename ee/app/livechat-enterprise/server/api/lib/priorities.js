@@ -1,6 +1,5 @@
-import s from 'underscore.string';
-
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
+import { escapeRegExp } from '../../../../../../lib/escapeRegExp';
 import LivechatPriority from '../../../../models/server/raw/LivechatPriority';
 
 export async function findPriorities({ userId, text, pagination: { offset, count, sort } }) {
@@ -8,7 +7,7 @@ export async function findPriorities({ userId, text, pagination: { offset, count
 		throw new Error('error-not-authorized');
 	}
 
-	const filterReg = new RegExp(s.escapeRegExp(text), 'i');
+	const filterReg = new RegExp(escapeRegExp(text), 'i');
 
 	const query = { ...text && { $or: [{ name: filterReg }, { description: filterReg }] } };
 

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import s from 'underscore.string';
 
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
 import { Logger } from '../../logger';
+import { escapeHTML } from '../../../lib/escapeHTML';
 
 const Providers = Symbol('Providers');
 const Provider = Symbol('Provider');
@@ -273,7 +273,7 @@ export class AutoTranslate {
 		if (message.msg) {
 			Meteor.defer(() => {
 				let targetMessage = Object.assign({}, message);
-				targetMessage.html = s.escapeHTML(String(targetMessage.msg));
+				targetMessage.html = escapeHTML(String(targetMessage.msg));
 				targetMessage = this.tokenize(targetMessage);
 
 				const translations = this._translateMessage(targetMessage, targetLanguages);
