@@ -16,6 +16,7 @@ Meteor.startup(() => {
 
 		import('../../../app/autotranslate/client').then(({ createAutoTranslateMessageRenderer }) => {
 			const renderMessage = createAutoTranslateMessageRenderer();
+			callbacks.remove('renderMessage', 'autotranslate');
 			callbacks.add('renderMessage', renderMessage, callbacks.priority.HIGH - 3, 'autotranslate');
 		});
 	});
