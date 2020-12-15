@@ -208,7 +208,7 @@ export default ({
 
 	const { value, phase, more, error } = useGetUsersOfRoom(params);
 
-	const canAddUsers = useAtLeastOnePermission([room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], rid);
+	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
