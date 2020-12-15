@@ -25,7 +25,7 @@ import { useUserRoom } from '../../../../../contexts/UserContext';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
-import { usePermission } from '../../../../../contexts/AuthorizationContext';
+import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import { useDataWithLoadMore } from '../hooks/useDataWithLoadMore';
 import { MemberItem } from './components/MemberItem';
@@ -202,7 +202,7 @@ export default ({
 
 	const { value, phase, more } = useGetUsersOfRoom(params);
 
-	const canAddUsers = usePermission(room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', rid);
+	const canAddUsers = useAtLeastOnePermission([room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], rid);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
