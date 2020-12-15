@@ -71,7 +71,7 @@ function VerticalBarClose(props) {
 }
 
 const VerticalBarContent = React.forwardRef(function VerticalBarContent(props, ref) {
-	return <Page.Content {...props} ref={ref}/>;
+	return <Page.Content display='flex' {...props} ref={ref}/>;
 });
 
 const VerticalBarScrollableContent = React.forwardRef(function VerticalBarScrollableContent({ children, ...props }, ref) {

@@ -139,8 +139,7 @@ UserInfo.Info = Info;
 UserInfo.Label = Label;
 UserInfo.Username = Username;
 
-
-export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClose, video, showBackButton, width, ...props }) {
+export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = onClickClose, video, onClickBack, ...props }) {
 	const t = useTranslation();
 
 	const getRoles = useRolesDescription();
@@ -190,9 +189,10 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 	}, [value, showRealNames, getRoles]);
 
 	return (
-		<VerticalBar width={width}>
+		<>
 			<VerticalBar.Header>
-				{t('User_Info')}
+				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
+				<VerticalBar.Text>{t('User_Info')}</VerticalBar.Text>
 				{onClose && <VerticalBar.Close onClick={onClose} />}
 			</VerticalBar.Header>
 
@@ -212,7 +212,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 					p='x24'
 				/>
 			}
-		</VerticalBar>
+		</>
 	);
 });
 

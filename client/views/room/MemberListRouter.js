@@ -1,31 +1,26 @@
 import React from 'react';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import UserInfo from './contextualBar/UserInfo';
-import VerticalBarOldActions from './components/VerticalBarOldActions';
-import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
+import { useRouteParameter } from '../../contexts/RouterContext';
 import { useUserId } from '../../contexts/UserContext';
 import { useRoom } from './providers/RoomProvider';
-import { useTab } from './providers/ToolboxProvider';
+import { useTab, useTabBarClose } from './providers/ToolboxProvider';
+import RoomMembers from './contextualBar/RoomMembers';
 
-const MemberListRouter = ({ tabBar, rid }) => {
+const MemberListRouter = ({ rid }) => {
 	const username = useRouteParameter('context');
 	const room = useRoom();
+	const onClickClose = useTabBarClose();
 	const ownUserId = useUserId();
 	const tab = useTab();
 
-	const [currentRoute, params] = useCurrentRoute();
-	const router = useRoute(currentRoute);
-
 	const isMembersList = tab.id === 'members-list' || tab.id === 'user-info-group';
 
-	const onClose = useMutableCallback(() => router.push({ ...params, tab: isMembersList ? tab.id : '', context: '' }));
-
 	if (isMembersList && !username) {
-		return <VerticalBarOldActions {...tab} name={'membersList'} template={'membersList'} tabBar={tabBar} rid={rid} _id={rid} />;
+		return <RoomMembers rid={rid}/>;
 	}
 
-	return <UserInfo width='100%' {...username ? { username } : { uid: room.uids.filter((uid) => uid !== ownUserId).shift() }} onClose={onClose} rid={rid}/>;
+	return <UserInfo width='100%' {...username ? { username } : { uid: room.uids.filter((uid) => uid !== ownUserId).shift() }} onClose={onClickClose} rid={rid}/>;
 };
 
 export default MemberListRouter;

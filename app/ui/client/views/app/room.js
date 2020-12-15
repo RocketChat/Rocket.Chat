@@ -327,7 +327,6 @@ Template.roomOld.helpers({
 
 		return moment(this.since).calendar(null, { sameDay: 'LT' });
 	},
-
 	adminClass() {
 		if (hasRole(Meteor.userId(), 'admin')) { return 'admin'; }
 	},
@@ -741,6 +740,7 @@ Meteor.startup(() => {
 
 		this.clearUserDetail = () => {
 			this.userDetail.set(null);
+			this.tabBar.setData({});
 			this.tabBar.close();
 		};
 
