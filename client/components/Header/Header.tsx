@@ -35,7 +35,7 @@ const Content = (props: any): JSX.Element => <Box flexGrow={1} width={1} flexShr
 const Button = (props: any): JSX.Element => <Box mi='x4' display='flex' alignItems='center' {...props}/>;
 const Avatar = (props: any): JSX.Element => <Button width='x36' {...props}/>;
 
-const HeaderDivider = (): JSX.Element => <Divider mbs='neg-x2' mbe={0}/>;
+const HeaderDivider = (): JSX.Element => <Divider { ...{ mbs: 'neg-x2', mbe: 0 } as any} />;
 
 const Header = (props: any): JSX.Element => <Box rcx-room-header is='header' height='x64' display='flex' justifyContent='center' flexDirection='column' overflow='hidden' flexShrink={0}>
 	<Box mi='neg-x4' height='x64' pi='x24' display='flex' flexGrow={1} justifyContent='center' alignItems='center' overflow='hidden' flexDirection='row' {...props}/>
