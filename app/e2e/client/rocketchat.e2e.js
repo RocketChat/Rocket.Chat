@@ -338,8 +338,6 @@ class E2E {
 
 	async requestPassword() {
 		return new Promise((resolve) => {
-			let showAlert;
-
 			const showModal = () => {
 				modal.open({
 					title: TAPi18n.__('Enter_E2E_password_to_decode_your_key'),
@@ -358,11 +356,11 @@ class E2E {
 					}
 				}, () => {
 					failedToDecodeKey = false;
-					showAlert();
+					this.closeAlert();
 				});
 			};
 
-			showAlert = () => {
+			const showAlert = () => {
 				this.openAlert({
 					title: TAPi18n.__('Enter_your_E2E_password'),
 					html: TAPi18n.__('Click_here_to_enter_your_encryption_password'),
