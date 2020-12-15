@@ -71,4 +71,12 @@ export const Contacts = {
 			contact,
 		};
 	},
+	updateContactLastChat(contactId, lastChat) {
+		const updateUser = {
+			$set: {
+				lastChat,
+			},
+		};
+		LivechatVisitors.updateById(contactId, updateUser);
+	},
 };
