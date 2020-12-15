@@ -9,6 +9,7 @@ import {
 	Throbber,
 	ButtonGroup,
 	Button,
+	Callout,
 } from '@rocket.chat/fuselage';
 import { FixedSizeList as List, areEqual } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -72,6 +73,7 @@ export const RoomMembers = ({
 	onClickInvite,
 	total,
 	limit,
+	error,
 	loadMoreItems,
 	rid,
 }) => {
@@ -121,6 +123,10 @@ export const RoomMembers = ({
 						</Box>
 					</FieldGroup>
 				</Box>
+
+				{ error && <Box pi='x24' pb='x12'><Callout type='danger'>
+					{error}
+				</Callout></Box> }
 
 				{loading && <Box pi='x24' pb='x12'><Throbber size='x12' /></Box>}
 				{!loading && members.length <= 0 && <Box pi='x24' pb='x12'>{t('No_results_found')}</Box>}
@@ -200,7 +206,7 @@ export default ({
 	const debouncedText = useDebouncedValue(text, 500);
 	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [rid, type, debouncedText]);
 
-	const { value, phase, more } = useGetUsersOfRoom(params);
+	const { value, phase, more, error } = useGetUsersOfRoom(params);
 
 	const canAddUsers = useAtLeastOnePermission([room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], rid);
 
@@ -250,6 +256,7 @@ export default ({
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
+			error={error}
 			setType={setType}
 			setText={handleTextChange}
 			members={value?.records}
