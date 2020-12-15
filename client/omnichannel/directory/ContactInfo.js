@@ -10,6 +10,8 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { hasPermission } from '../../../app/authorization';
+import { useFormatDate } from '../../hooks/useFormatDate';
+
 
 const wordBreak = css`
 	word-break: break-word;
@@ -24,6 +26,8 @@ export function ContactInfo({ id }) {
 	const { data: allCustomFields, state: stateCustomFields } = useEndpointDataExperimental('livechat/custom-fields');
 
 	const [customFields, setCustomFields] = useState([]);
+	const formatDate = useFormatDate();
+
 
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 
@@ -48,7 +52,7 @@ export function ContactInfo({ id }) {
 	if (error || !data || !data.contact) {
 		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
 	}
-	const { contact: { name, username, visitorEmails, phone, livechatData } } = data;
+	const { contact: { name, username, visitorEmails, phone, livechatData, ts } } = data;
 
 	const checkIsVisibleAndScopeVisitor = (key) => {
 		const field = customFields.find(({ _id }) => _id === key);
@@ -71,8 +75,8 @@ export function ContactInfo({ id }) {
 					<Label>{t('Phone')}</Label>
 					<Info>{phone[0].phoneNumber}</Info>
 				</>}
-				<Label>{t('CreatedAt')}</Label>
-				<Info>November 12, 2020</Info>
+				{ ts && <><Label>{t('CreatedAt')}</Label>
+					<Info>{formatDate(ts)}</Info></> }
 
 				<Label>{t('LastChat')}</Label>
 				<Info>November 12, 2020</Info>

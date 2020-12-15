@@ -25,6 +25,7 @@ export const Contacts = {
 
 			const userData = {
 				username,
+				ts: new Date(),
 			};
 
 			contactId = LivechatVisitors.insert(userData);

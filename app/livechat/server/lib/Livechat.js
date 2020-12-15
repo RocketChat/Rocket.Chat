@@ -219,6 +219,7 @@ export const Livechat = {
 			} else {
 				const userData = {
 					username,
+					ts: new Date(),
 				};
 
 				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
@@ -256,7 +257,6 @@ export const Livechat = {
 			const dep = LivechatDepartment.findOneByIdOrName(department);
 			updateUser.$set.department = dep && dep._id;
 		}
-
 		LivechatVisitors.updateById(userId, updateUser);
 
 		return userId;
