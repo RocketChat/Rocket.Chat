@@ -53,6 +53,6 @@ Template.renderField.helpers({
 			// consider the value already formatted as html
 			html = escapeHTML(field.value);
 		}
-		return `<div class="${ field.type }">${ html }</div>`;
+		return `<div class="${ escapeHTML(field.type) }">${ html }</div>`;
 	},
 });
