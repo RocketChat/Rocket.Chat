@@ -17,6 +17,7 @@ import UserActions from './actions/UserActions';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import { getUserEmailVerified } from '../../../../lib/getUserEmailVerified';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -32,6 +33,7 @@ export const UserInfo = React.memo(function UserInfo({
 	username,
 	bio,
 	email,
+	verified,
 	showRealNames,
 	status,
 	phone,
@@ -105,10 +107,10 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{email && <> <Label>{t('Email')}</Label>
 				<Info display='flex' flexDirection='row' alignItems='center'>
-					<Box is='a' withTruncatedText href={`mailto:${ email.address }`}>{email.address}</Box>
+					<Box is='a' withTruncatedText href={`mailto:${ email }`}>{email}</Box>
 					<Margins inline='x4'>
-						{email.verified && <Tag variant='primary'>{t('Verified')}</Tag>}
-						{email.verified || <Tag disabled>{t('Not_verified')}</Tag>}
+						{verified && <Tag variant='primary'>{t('Verified')}</Tag>}
+						{verified || <Tag disabled>{t('Not_verified')}</Tag>}
 					</Margins>
 				</Info>
 			</>}
@@ -178,6 +180,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			bio,
 			phone: user.phone,
 			customFields: user.customFields,
+			verified: getUserEmailVerified(user),
 			email: getUserEmailAddress(user),
 			utcOffset,
 			createdAt: user.createdAt,
