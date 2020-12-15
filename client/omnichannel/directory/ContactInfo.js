@@ -52,7 +52,7 @@ export function ContactInfo({ id }) {
 	if (error || !data || !data.contact) {
 		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
 	}
-	const { contact: { name, username, visitorEmails, phone, livechatData, ts } } = data;
+	const { contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat } } = data;
 
 	const checkIsVisibleAndScopeVisitor = (key) => {
 		const field = customFields.find(({ _id }) => _id === key);
@@ -75,11 +75,15 @@ export function ContactInfo({ id }) {
 					<Label>{t('Phone')}</Label>
 					<Info>{phone[0].phoneNumber}</Info>
 				</>}
-				{ ts && <><Label>{t('CreatedAt')}</Label>
-					<Info>{formatDate(ts)}</Info></> }
+				{ts && <>
+					<Label>{t('CreatedAt')}</Label>
+					<Info>{formatDate(ts)}</Info>
+				</>}
 
-				<Label>{t('LastChat')}</Label>
-				<Info>November 12, 2020</Info>
+				{lastChat && <>
+					<Label>{t('LastChat')}</Label>
+					<Info>{formatDate(lastChat.ts)}</Info>
+				</>}
 
 				{ canViewCustomFields() && livechatData && Object.keys(livechatData).map((key) => <Box key={key}>
 					{ checkIsVisibleAndScopeVisitor(key) && livechatData[key] && <><Label>{key}</Label>

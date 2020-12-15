@@ -7,6 +7,8 @@ import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperime
 import GenericTable from '../../components/GenericTable';
 import FilterByText from '../../components/FilterByText';
 import { useRoute } from '../../contexts/RouterContext';
+import { useFormatDate } from '../../hooks/useFormatDate';
+
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
 	term: text,
@@ -24,6 +26,7 @@ function ContactTable({ setContactReload }) {
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
 	const directoryRoute = useRoute('omnichannel-directory');
+	const formatDate = useFormatDate();
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -63,13 +66,13 @@ function ContactTable({ setContactReload }) {
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
 
-	const renderRow = useCallback(({ _id, username, name, visitorEmails, phone }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
+	const renderRow = useCallback(({ _id, username, name, visitorEmails, phone, lastChat }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
 		<Table.Cell withTruncatedText>{username}</Table.Cell>
 		<Table.Cell withTruncatedText>{name}</Table.Cell>
 		<Table.Cell withTruncatedText>{phone && phone.length && phone[0].phoneNumber}</Table.Cell>
 		<Table.Cell withTruncatedText>{visitorEmails && visitorEmails.length && visitorEmails[0].address}</Table.Cell>
-		<Table.Cell withTruncatedText>November 12, 2020</Table.Cell>
-	</Table.Row>, [onRowClick]);
+		<Table.Cell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</Table.Cell>
+	</Table.Row>, [formatDate, onRowClick]);
 
 	return <GenericTable
 		header={header}
