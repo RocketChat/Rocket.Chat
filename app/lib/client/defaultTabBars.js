@@ -19,7 +19,8 @@ TabBar.addButton({
 	id: 'user-info',
 	i18nTitle: 'User_Info',
 	icon: 'user',
-	template: 'membersList',
+	full: true,
+	template: 'UserInfoWithData',
 	order: 5,
 	condition() {
 		const rid = Session.get('openedRoom');
@@ -53,7 +54,7 @@ TabBar.addButton({
 	id: 'members-list',
 	i18nTitle: 'Members',
 	icon: 'team',
-	template: 'RoomMembers',
+	template: 'membersList',
 	order: 5,
 	full: 1,
 	condition() {

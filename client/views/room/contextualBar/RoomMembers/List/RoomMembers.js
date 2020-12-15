@@ -29,6 +29,9 @@ import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import { useDataWithLoadMore } from '../hooks/useDataWithLoadMore';
 import { MemberItem } from './components/MemberItem';
+import UserInfoWithData from '../../UserInfo';
+import InviteUsers from '../InviteUsers/InviteUsers';
+import AddUsers from '../AddUsers/AddUsers';
 
 export const createItemData = memoize((items, onClickView, rid) => ({
 	items,
@@ -41,7 +44,7 @@ const Row = React.memo(({ data, index, style }) => {
 	const user = items[index];
 
 	if (!user) {
-		return null;
+		return <RoomMembers.Option.Skeleton style={style}/>;
 	}
 
 	return <RoomMembers.Option
@@ -68,6 +71,7 @@ export const RoomMembers = ({
 	onClickAdd,
 	onClickInvite,
 	total,
+	limit,
 	loadMoreItems,
 	rid,
 }) => {
@@ -92,8 +96,8 @@ export const RoomMembers = ({
 				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>
 
-			<VerticalBar.Content p='x12'>
-				<Box pi='x12' pb='x12' mi='neg-x4'>
+			<VerticalBar.Content p='0'>
+				<Box pi='x24' pb='x24'>
 					<FieldGroup>
 						<Box flexDirection='row' display='flex' justifyContent='stretch'>
 							<Box flexGrow={2} flexBasis='85%' mi='x4'>
@@ -118,18 +122,18 @@ export const RoomMembers = ({
 					</FieldGroup>
 				</Box>
 
-				{loading && <Box p='x12'><Throbber size='x12' /></Box>}
-				{!loading && members.length <= 0 && <Box p='x12'>{t('No_results_found')}</Box>}
+				{loading && <Box pi='x24' pb='x12'><Throbber size='x12' /></Box>}
+				{!loading && members.length <= 0 && <Box pi='x24' pb='x12'>{t('No_results_found')}</Box>}
 
 				{!loading && members.length > 0 && (
-					<Box pi='x12' pb='x12'>
+					<Box pi='x24' pb='x12'>
 						<Box is='span' color='info' fontScale='p1'>
 							{t('Showing')}: <Box is='span' color='default' fontScale='p2'>{members.length}</Box>
 						</Box>
 
-						<Box is='span' color='info' fontScale='p1' mis='x8'>
+						{/* <Box is='span' color='info' fontScale='p1' mis='x8'>
 							{t('Online')}: <Box is='span' color='default' fontScale='p2'>{members.length}</Box>
-						</Box>
+						</Box> */}
 
 						<Box is='span' color='info' fontScale='p1' mis='x8'>
 							{t('Total')}: <Box is='span' color='default' fontScale='p2'>{total}</Box>
@@ -137,7 +141,7 @@ export const RoomMembers = ({
 					</Box>
 				)}
 
-				<Box w='full' h='full' overflow='hidden' flexShrink={1} ref={ref}>
+				<Box pi='x8' w='full' h='full' overflow='hidden' flexShrink={1} ref={ref}>
 					{!loading && members
 					&& <InfiniteLoader
 						isItemLoaded={isItemLoaded}
@@ -150,8 +154,8 @@ export const RoomMembers = ({
 								className='List'
 								itemData={itemData}
 								height={blockSize}
-								itemCount={total}
-								itemSize={46}
+								itemCount={limit}
+								itemSize={36}
 								onItemsRendered={onItemsRendered}
 								ref={ref}
 							>
@@ -184,8 +188,8 @@ export default ({
 	rid,
 	tabBar,
 }) => {
+	const [state, setState] = useState({});
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
-	const onClickBack = useMutableCallback(() => tabBar && tabBar.setTemplate('RoomMembers'));
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
@@ -194,7 +198,7 @@ export default ({
 	const [text, setText] = useState('');
 
 	const debouncedText = useDebouncedValue(text, 500);
-	const params = useMemo(() => [rid, type === 'all', {}, debouncedText], [rid, type, debouncedText]);
+	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [rid, type, debouncedText]);
 
 	const { value, phase, more } = useGetUsersOfRoom(params);
 
@@ -206,46 +210,39 @@ export default ({
 
 	const viewUser = useMutableCallback((e) => {
 		const { username } = e.currentTarget.dataset;
-		tabBar.setTemplate('UserInfoWithData');
-		tabBar.setData({
+		setState({
+			tab: 'UserInfo',
 			username,
-			rid,
-			full: 1,
-			onClose: onClickClose,
-			onBack: () => tabBar.set(),
 		});
 	});
 
 	const createInvite = useMutableCallback(() => {
-		if (!tabBar) {
-			return;
-		}
-
-		tabBar.setTemplate('InviteUsers');
-		tabBar.setData({
-			rid,
-			onClickBack,
-			full: 1,
-		});
+		setState({ tab: 'InviteUsers' });
 	});
 
 	const addUser = useMutableCallback(() => {
-		if (!tabBar) {
-			return;
-		}
-
-		tabBar.setTemplate('AddUsers');
-		tabBar.setData({
-			rid,
-			onClickBack,
-			full: 1,
-		});
+		setState({ tab: 'AddUsers' });
 	});
+
+	const handleBack = useCallback(() => setState({}), [setState]);
 
 	const loadMoreItems = useCallback((start, end) => more(([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter], (prev, next) => ({
 		total: next.total,
+		finished: next.records.length < 50,
 		records: [...prev.records, ...next.records],
 	})), [more]);
+
+	if (state.tab === 'UserInfo') {
+		return <UserInfoWithData rid={rid} onClickClose={onClickClose} onClickBack={handleBack} username={state.username} />;
+	}
+
+	if (state.tab === 'InviteUsers') {
+		return <InviteUsers onClickClose={onClickClose} rid={rid} tabBar={tabBar} onClickBack={handleBack} />;
+	}
+
+	if (state.tab === 'AddUsers') {
+		return <AddUsers onClickClose={onClickClose} rid={rid} tabBar={tabBar} onClickBack={handleBack} />;
+	}
 
 	return (
 		<RoomMembers
@@ -257,6 +254,7 @@ export default ({
 			setText={handleTextChange}
 			members={value?.records}
 			total={value?.total}
+			limit={ value?.finished || value?.records.length < 50 ? value?.records.length : value?.records.length + 50}
 			onClickClose={onClickClose}
 			onClickView={viewUser}
 			onClickAdd={canAddUsers && addUser}

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-	Box,
 	Option,
 	ActionButton,
 	Menu,
@@ -10,6 +9,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 
 import { useUserInfoActions, useUserInfoActionsSpread } from '../../../../hooks/useUserInfoActions';
 import UserAvatar from '../../../../../../components/avatar/UserAvatar';
+import { ReactiveUserStatus } from '../../../../../../components/UserStatus';
 import { usePreventProgation } from '../hooks/usePreventProgation';
 
 const UserActions = ({ username, _id, rid }) => {
@@ -41,16 +41,21 @@ export const MemberItem = ({ _id, status, name, username, onClickView, style, ri
 			id={_id}
 			style={style}
 			data-username={username}
-			avatar={<UserAvatar username={username} size='x28' />}
 			presence={status}
-			label={<>{name} <Box is='span' color='hint'>({username})</Box></>}
 			onClick={onClickView}
-		><Box onClick={onClick}>
+		>
+			<Option.Avatar>
+				<UserAvatar username={username} size='x28' />
+			</Option.Avatar>
+			<Option.Column><ReactiveUserStatus uid={_id} presence={status}/></Option.Column>
+			<Option.Content>{name} <Option.Description>({username})</Option.Description></Option.Content>
+			<Option.Menu onClick={onClick}>
 				{showButton ? <UserActions username={username} rid={rid} _id={_id} /> : <ActionButton
 					ghost
 					small
 					icon='kebab'
-				/>}
-			</Box></Option>
+				/>}</Option.Menu></Option>
 	);
 };
+
+MemberItem.Skeleton = Option.Skeleton;
