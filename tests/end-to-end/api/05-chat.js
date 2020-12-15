@@ -699,6 +699,92 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 
+		describe('oembed', () => {
+			let ytEmbedMsgId;
+			let imgUrlMsgId;
+
+			before(async () => {
+				const ytEmbedMsgPayload = {
+					_id: `id-${ Date.now() }`,
+					rid: 'GENERAL',
+					msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
+					alias: 'Gruggy',
+					emoji: ':smirk:',
+					avatar: 'http://res.guggy.com/logo_128.png',
+				};
+
+				const imgUrlMsgPayload = {
+					_id: `id-${ Date.now() }1`,
+					rid: 'GENERAL',
+					msg: 'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
+					alias: 'Gruggy',
+					emoji: ':smirk:',
+					avatar: 'http://res.guggy.com/logo_128.png',
+				};
+
+				const ytPostResponse = await request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({ message: ytEmbedMsgPayload });
+
+
+				const imgUrlResponse = await request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({ message: imgUrlMsgPayload });
+
+				ytEmbedMsgId = ytPostResponse.body.message._id;
+				imgUrlMsgId = imgUrlResponse.body.message._id;
+			});
+
+			it('should have an iframe oembed with style max-width', (done) => {
+				setTimeout(() => {
+					request.get(api('chat.getMessage'))
+						.set(credentials)
+						.query({
+							msgId: ytEmbedMsgId,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body)
+								.to.have.property('message')
+								.to.have.property('urls')
+								.to.be.an('array')
+								.that.is.not.empty;
+
+							expect(res.body.message.urls[0])
+								.to.have.property('meta')
+								.to.have.property('oembedHtml')
+								.to.have.string('<iframe style="max-width: 100%"');
+						})
+						.end(done);
+				}, 200);
+			});
+
+			it('should embed an image preview if message has an image url', (done) => {
+				setTimeout(() => {
+					request.get(api('chat.getMessage'))
+						.set(credentials)
+						.query({
+							msgId: imgUrlMsgId,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body)
+								.to.have.property('message')
+								.to.have.property('urls')
+								.to.be.an('array')
+								.that.is.not.empty;
+
+							expect(res.body.message.urls[0])
+								.to.have.property('headers')
+								.to.have.property('contentType', 'image/jpeg');
+						})
+						.end(done);
+				}, 200);
+			});
+		});
+
 		describe('Read only channel', () => {
 			let readOnlyChannel;
 

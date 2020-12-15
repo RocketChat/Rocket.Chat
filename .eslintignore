@@ -4,7 +4,6 @@ packages/meteor-streams/
 packages/meteor-timesync/
 app/emoji-emojione/generateEmojiIndex.js
 app/favico/favico.js
-app/katex/client/katex/katex.min.js
 packages/rocketchat-livechat/assets/rocketchat-livechat.min.js
 packages/rocketchat-livechat/assets/rocket-livechat.js
 app/theme/client/vendor/
@@ -18,3 +17,4 @@ public/workers/**/*
 imports/client/
 !/.storybook/
 ee/server/services/dist/**
+!/.mocharc.js
