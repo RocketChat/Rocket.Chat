@@ -70,7 +70,7 @@ const openProfileTab = (e, instance, username) => {
 	}
 	instance.groupDetail.set(null);
 	instance.tabBar.setTemplate('UserInfoWithData');
-	instance.tabBar.setData({});
+	instance.tabBar.setData({ full: true });
 	instance.tabBar.open();
 };
 
@@ -451,7 +451,6 @@ Template.roomOld.helpers({
 		const instace = Template.instance();
 		const flexData = {
 			tabBar: instace.tabBar,
-			full: true,
 			data: {
 				rid: this._id,
 				username: Template.instance().userDetail.get(),
@@ -1183,6 +1182,7 @@ Template.roomOld.onCreated(function() {
 
 	this.clearUserDetail = () => {
 		this.userDetail.set(null);
+		this.tabBar.setData({});
 		this.tabBar.close();
 	};
 
