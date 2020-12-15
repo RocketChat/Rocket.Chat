@@ -188,6 +188,7 @@
 		"express-rate-limit": "^5.1.3",
 		"fibers": "4.0.3",
 		"file-type": "^10.11.0",
+		"filenamify": "^4.2.0",
 		"filesize": "^3.6.1",
 		"googleapis": "^25.0.0",
 		"grapheme-splitter": "^1.0.4",
