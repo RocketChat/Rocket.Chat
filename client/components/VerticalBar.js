@@ -45,7 +45,7 @@ function VerticalBarHeader({ children, ...props }) {
 }
 
 function VerticalBarIcon(props) {
-	return <Icon {...props} size='x22'/>;
+	return <Icon {...props} size='x24'/>;
 }
 
 function VerticalBarClose(props) {
@@ -54,7 +54,7 @@ function VerticalBarClose(props) {
 }
 
 const VerticalBarContent = React.forwardRef(function VerticalBarContent(props, ref) {
-	return <Page.Content {...props} ref={ref}/>;
+	return <Page.Content display='flex' {...props} ref={ref}/>;
 });
 
 const VerticalBarScrollableContent = React.forwardRef(function VerticalBarScrollableContent({ children, ...props }, ref) {
@@ -78,7 +78,7 @@ function VerticalBarAction({ name, ...props }) {
 }
 
 function VerticalBarActionBack(props) {
-	return <VerticalBarAction {...props} name='arrow-back' />;
+	return <VerticalBarAction {...props} tiny name='arrow-back' />;
 }
 
 function VerticalBarSkeleton(props) {

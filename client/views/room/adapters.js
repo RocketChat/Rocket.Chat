@@ -22,22 +22,43 @@ createTemplateForComponent('room', () => import('.'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
 });
 
-createTemplateForComponent('AutoTranslate', () => import('./AutoTranslate'), {
+createTemplateForComponent('AutoTranslate', () => import('./contextualBar/AutoTranslate'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 
-createTemplateForComponent('NotificationsPreferences', () => import('./NotificationPreferences'), {
+createTemplateForComponent('NotificationsPreferences', () => import('./contextualBar/NotificationPreferences'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 
-createTemplateForComponent('InviteUsers', () => import('../views/room/RoomMembers/InviteUsers'), {
+createTemplateForComponent('InviteUsers', () => import('./contextualBar/RoomMembers/InviteUsers'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 
-createTemplateForComponent('EditInvite', () => import('../views/room/RoomMembers/EditInvite'), {
+createTemplateForComponent('EditInvite', () => import('./contextualBar/RoomMembers/EditInvite'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 
-createTemplateForComponent('OTR', () => import('../views/room/ContextualBar/OTR'), {
+createTemplateForComponent('AddUsers', () => import('./contextualBar/RoomMembers/AddUsers'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
+
+createTemplateForComponent('membersList', () => import('./contextualBar/RoomMembers'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
+
+createTemplateForComponent('OTR', () => import('./contextualBar/OTR'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
+
+createTemplateForComponent('EditRoomInfo', () => import('./contextualBar/Info/EditRoomInfo'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
+
+createTemplateForComponent('RoomInfo', () => import('./contextualBar/Info/RoomInfo'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
+
+createTemplateForComponent('UserInfoWithData', () => import('./contextualBar/UserInfo'), {
+	// eslint-disable-next-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });

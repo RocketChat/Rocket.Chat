@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Sidebar, ActionButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 const Extended = React.memo(({
 	icon,

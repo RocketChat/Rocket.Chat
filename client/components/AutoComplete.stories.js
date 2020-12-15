@@ -1,10 +1,10 @@
 import React from 'react';
 
-import AutoComplete from './AutoComplete';
+import { UserAutoComplete } from './AutoComplete';
 
 export default {
 	title: 'components/AutoComplete',
-	component: AutoComplete,
+	component: UserAutoComplete,
 };
 
-export const Example = () => <AutoComplete/>;
+export const Example = () => <UserAutoComplete/>;
