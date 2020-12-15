@@ -12,6 +12,7 @@ module.exports = {
 	spec: [
 		'app/**/*.tests.js',
 		'app/**/*.tests.ts',
+		'server/**/*.tests.ts',
 		'client/**/*.spec.ts',
 	],
 };
