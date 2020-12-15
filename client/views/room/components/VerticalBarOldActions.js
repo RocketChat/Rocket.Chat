@@ -15,8 +15,8 @@ export default ({ name, icon, tabBar, title, ...props }) => {
 		{close && <VerticalBar.Close onClick={close}/>}
 	</VerticalBar.Header>
 
-	<VerticalBar.ScrollableContent>
+	<VerticalBar.Content>
 		<BlazeTemplate name={name} tabBar={tabBar} {...props} />
-	</VerticalBar.ScrollableContent>
+	</VerticalBar.Content>
 	</>;
 };
