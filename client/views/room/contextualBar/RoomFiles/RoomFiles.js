@@ -26,6 +26,7 @@ import ScrollableContentWrapper from '../../../../components/ScrollableContentWr
 import { useFileList } from './hooks/useFileList';
 import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
 import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';
+import { useTabBarClose } from '../../providers/ToolboxProvider';
 
 const Row = React.memo(({ data, index, style }) => {
 	const { items, userId, onClickDelete, isDeletionAllowed } = data;
@@ -153,9 +154,9 @@ export const RoomFiles = function RoomFiles({
 
 RoomFiles.Item = FileItem;
 
-export default ({ rid, tabBar }) => {
+export default ({ rid }) => {
 	const uid = useUserId();
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
