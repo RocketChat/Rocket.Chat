@@ -1,4 +1,4 @@
-import type { IUser, IUserEmail } from '../../definition/IUser';
+import type { IUser } from '../../definition/IUser';
 
-export const getUserEmailAddress = (user: IUser): IUserEmail | undefined =>
-	(Array.isArray(user.emails) ? user.emails.find(({ address }) => !!address) : undefined);
+export const getUserEmailAddress = (user: IUser): string | undefined =>
+	(Array.isArray(user.emails) ? user.emails.find(({ address }) => !!address)?.address : undefined);
