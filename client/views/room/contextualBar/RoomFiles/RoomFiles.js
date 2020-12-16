@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useMutableCallback, useLocalStorage, useDebouncedState, useUniqueId, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	Box,
@@ -8,22 +8,49 @@ import {
 	FieldGroup,
 	Select,
 	Throbber,
-	Margins,
 } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
+import memoize from 'memoize-one';
 
 import { useUserId, useUserRoom } from '../../../../contexts/UserContext';
 import DeleteFileWarning from '../../../../components/DeleteFileWarning';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useMethod } from '../../../../contexts/ServerContext';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../components/VerticalBar';
 import FileItem from './components/FileItem';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { useFileList } from './hooks';
+import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
+
+
+const Row = React.memo(({ data, index, style }) => {
+	const { items, userId, onClickDelete } = data;
+	const item = items[index] || null;
+	return item && <RoomFiles.Item
+		index={index}
+		style={style}
+		_id={item._id}
+		name={item.name}
+		url={item.url}
+		uploadedAt={item.uploadedAt}
+		user={item.user}
+		type={item.type}
+		typeGroup={item.typeGroup}
+		fileData={data[index]}
+		userId={userId}
+		onClickDelete={onClickDelete}
+	/>;
+});
+
+export const createItemData = memoize((items, onClickDelete, userId) => ({
+	items,
+	onClickDelete,
+	userId,
+}));
 
 
 export const RoomFiles = function RoomFiles({
@@ -41,16 +68,6 @@ export const RoomFiles = function RoomFiles({
 }) {
 	const t = useTranslation();
 	const isItemLoaded = (index) => !!filesItems[index];
-
-	const fileRenderer = useCallback(({ data, index, style }) => <RoomFiles.Item
-		data={data}
-		index={index}
-		style={style}
-		fileData={filesItems[index]}
-		userId={userId}
-		onClickDelete={onClickDelete}
-	/>, [filesItems, userId, onClickDelete]);
-
 	const options = useMemo(() => [
 		['all', t('All')],
 		['image', t('Images')],
@@ -64,6 +81,8 @@ export const RoomFiles = function RoomFiles({
 
 	const searchId = useUniqueId();
 
+	const itemData = createItemData(filesItems, onClickDelete, userId);
+
 	return (
 		<>
 			<VerticalBar.Header>
@@ -73,7 +92,7 @@ export const RoomFiles = function RoomFiles({
 			</VerticalBar.Header>
 
 			<VerticalBar.Content p='x12'>
-				<Box width='full' pb='x12' mi='neg-x4'>
+				<Box width='full' p='x12' mi='neg-x4'>
 					<FieldGroup>
 						<Box flexDirection='row' alignItems='flex-end' display='flex' justifyContent='stretch'>
 							<Box flexGrow={2} flexBasis='80%' mi='x4'>
@@ -102,7 +121,7 @@ export const RoomFiles = function RoomFiles({
 				{loading && <Box p='x12'><Throbber size='x12' /></Box>}
 				{!loading && filesItems.length <= 0 && <Box p='x12'>{t('No_results_found')}</Box>}
 
-				<Box w='full' h='full' ref={ref}>
+				<Box w='full' h='full' ref={ref} flexShrink={1} overflow='hidden'>
 					<InfiniteLoader
 						isItemLoaded={isItemLoaded}
 						itemCount={total}
@@ -115,10 +134,11 @@ export const RoomFiles = function RoomFiles({
 								height={blockSize}
 								itemCount={total}
 								itemSize={74}
+								itemData={itemData}
 								onItemsRendered={onItemsRendered}
 								ref={ref}
 							>
-								{fileRenderer}
+								{Row}
 							</List>
 						)}
 					</InfiniteLoader>
@@ -147,6 +167,8 @@ export default ({ rid, tabBar }) => {
 
 	const [query, setQuery] = useDebouncedState({
 		roomId: rid,
+		sort: JSON.stringify({ uploadedAt: -1 }),
+		count: 50,
 		query: JSON.stringify({
 			...type !== 'all' && {
 				typeGroup: type,
@@ -158,7 +180,8 @@ export default ({ rid, tabBar }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	useEffect(() => setQuery({
+	useComponentDidUpdate(() => setQuery((params) => ({
+		...params,
 		roomId: rid,
 		query: JSON.stringify({
 			name: { $regex: text || '', $options: 'i' },
@@ -166,9 +189,9 @@ export default ({ rid, tabBar }) => {
 				typeGroup: type,
 			},
 		}),
-	}), [rid, text, type, setQuery]);
+	})), [rid, text, type, setQuery]);
 
-	const { value: data, phase: state, reload } = useEndpointData(room.type === 'c' ? 'channels.files' : 'groups.files', query);
+	const { value: data, phase: state, reload, more } = useFileList(room.type, query);
 
 	const handleDelete = useMutableCallback((_id) => {
 		const onConfirm = async () => {
@@ -184,12 +207,18 @@ export default ({ rid, tabBar }) => {
 		setModal(<DeleteFileWarning onConfirm={onConfirm} onCancel={closeModal} />);
 	}, []);
 
+	const loadMoreItems = useCallback((start, end) => more((params) => ({ ...params, offset: start, count: end - start }), (prev, next) => ({
+		total: next.total,
+		files: [...prev.files, ...next.files],
+	})), [more]);
+
 	return (
 		<RoomFiles
 			userId={userId}
 			loading={state === AsyncStatePhase.LOADING && true}
 			type={type}
 			text={text}
+			loadMoreItems={loadMoreItems}
 			setType={setType}
 			setText={handleTextChange}
 			filesItems={state === AsyncStatePhase.RESOLVED && data?.files}
