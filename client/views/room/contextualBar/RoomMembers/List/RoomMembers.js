@@ -28,7 +28,7 @@ import { useMethod } from '../../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
-import { useDataWithLoadMore } from '../hooks/useDataWithLoadMore';
+import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
 import { MemberItem } from './components/MemberItem';
 import UserInfoWithData from '../../UserInfo';
 import InviteUsers from '../InviteUsers/InviteUsers';

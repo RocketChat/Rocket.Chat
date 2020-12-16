@@ -49,7 +49,7 @@ addAction('uploaded-files-list', {
 	id: 'uploaded-files-list',
 	title: 'Files',
 	icon: 'clip',
-	template: 'uploadedFilesList',
+	template: lazy(() => import('../../contextualBar/RoomFiles')) as LazyExoticComponent<FC>,
 	order: 6,
 });
 
