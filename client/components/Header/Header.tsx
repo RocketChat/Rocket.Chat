@@ -26,7 +26,7 @@ const ToolBoxAction: any = ({ id, icon, title, action, className, tabId, index, 
 	{...props}
 />;
 
-const ToolBoxActionBadge: FC<BadgeProps> = (props) => <Box position='absolute' zIndex={99} className={css`top: 0; right: 0; transform: translate(30%, -30%);`}><Badge {...props}/></Box>;
+const ToolBoxActionBadge: FC<BadgeProps> = (props) => <Box position='absolute' className={css`top: 0; right: 0; transform: translate(30%, -30%);`}><Badge {...props}/></Box>;
 
 const State = (props: any): JSX.Element => (props.onClick ? <ActionButton ghost mini {...props}/> : <Icon size={16} name={props.icon} {...props}/>);
 

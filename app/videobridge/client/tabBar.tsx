@@ -52,8 +52,8 @@ addAction('video', ({ room }) => {
 
 	const currentTime = new Date().getTime();
 	const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
+	const live = jitsiTimeout > currentTime || null;
 
-	const live = jitsiTimeout > currentTime;
 	return useMemo(() => (enabled ? {
 		groups,
 		id: 'video',
@@ -62,8 +62,10 @@ addAction('video', ({ room }) => {
 		template: 'videoFlexTab',
 		order: live ? -1 : 0,
 		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>
-			{live ? <Header.ToolBoxAction.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.ToolBoxAction.Badge> : null}
+			{live && <Header.ToolBoxAction.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.ToolBoxAction.Badge>}
 		</Header.ToolBoxAction>,
-		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}><Badge title={t('Started_a_video_call')} variant='primary'>!</Badge></Option>,
+		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}>
+			{ live && <Badge title={t('Started_a_video_call')} variant='primary'>!</Badge> }
+		</Option>,
 	} : null), [enabled, groups, live, t]);
 });

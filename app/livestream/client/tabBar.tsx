@@ -22,6 +22,8 @@ addAction('livestream', ({ room }) => {
 		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>
 			{isLive ? <Header.ToolBoxAction.Badge title={t('Livestream_live_now')} variant='danger'>!</Header.ToolBoxAction.Badge> : null}
 		</Header.ToolBoxAction>,
-		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}><Badge title={t('Livestream_live_now')} variant='danger'>!</Badge></Option>,
+		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}>
+			{isLive ? <Badge title={t('Livestream_live_now')} variant='danger'>!</Badge> : null }
+		</Option>,
 	} : null), [enabled, isLive, t]);
 });
