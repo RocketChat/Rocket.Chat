@@ -23,12 +23,12 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../components/VerticalBar';
 import FileItem from './components/FileItem';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import { useFileList } from './hooks';
+import { useFileList } from './hooks/useFileList';
 import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
-
+import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';
 
 const Row = React.memo(({ data, index, style }) => {
-	const { items, userId, onClickDelete } = data;
+	const { items, userId, onClickDelete, isDeletionAllowed } = data;
 	const item = items[index] || null;
 	return item && <RoomFiles.Item
 		index={index}
@@ -38,23 +38,24 @@ const Row = React.memo(({ data, index, style }) => {
 		url={item.url}
 		uploadedAt={item.uploadedAt}
 		user={item.user}
+		ts={item.ts}
 		type={item.type}
 		typeGroup={item.typeGroup}
 		fileData={data[index]}
 		userId={userId}
 		onClickDelete={onClickDelete}
+		isDeletionAllowed={isDeletionAllowed}
 	/>;
 });
 
-export const createItemData = memoize((items, onClickDelete, userId) => ({
+export const createItemData = memoize((items, onClickDelete, isDeletionAllowed) => ({
 	items,
 	onClickDelete,
-	userId,
+	isDeletionAllowed,
 }));
 
 
 export const RoomFiles = function RoomFiles({
-	userId,
 	loading,
 	filesItems = [],
 	text,
@@ -65,6 +66,7 @@ export const RoomFiles = function RoomFiles({
 	onClickDelete,
 	total,
 	loadMoreItems,
+	isDeletionAllowed,
 }) {
 	const t = useTranslation();
 	const isItemLoaded = (index) => !!filesItems[index];
@@ -81,7 +83,8 @@ export const RoomFiles = function RoomFiles({
 
 	const searchId = useUniqueId();
 
-	const itemData = createItemData(filesItems, onClickDelete, userId);
+	const itemData = createItemData(filesItems, onClickDelete, isDeletionAllowed);
+
 
 	return (
 		<>
@@ -151,8 +154,8 @@ export const RoomFiles = function RoomFiles({
 RoomFiles.Item = FileItem;
 
 export default ({ rid, tabBar }) => {
+	const uid = useUserId();
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
-	const userId = useUserId();
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
@@ -212,9 +215,11 @@ export default ({ rid, tabBar }) => {
 		files: [...prev.files, ...next.files],
 	})), [more]);
 
+	const isDeletionAllowed = useMessageDeletionIsAllowed(rid, uid);
+
 	return (
 		<RoomFiles
-			userId={userId}
+			rid={rid}
 			loading={state === AsyncStatePhase.LOADING && true}
 			type={type}
 			text={text}
@@ -225,6 +230,7 @@ export default ({ rid, tabBar }) => {
 			total={data?.total}
 			onClickClose={onClickClose}
 			onClickDelete={handleDelete}
+			isDeletionAllowed={isDeletionAllowed}
 		/>
 	);
 };
