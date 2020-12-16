@@ -135,10 +135,6 @@ export class MeteorService extends ServiceClass implements IMeteor {
 			setValue(setting._id, undefined);
 		});
 
-		// this.onEvent('presence.status', ({ user }) => {
-
-		// });
-
 		// TODO: May need to merge with https://github.com/RocketChat/Rocket.Chat/blob/0ddc2831baf8340cbbbc432f88fc2cb97be70e9b/ee/server/services/Presence/Presence.ts#L28
 		if (!process.env.DISABLE_DB_WATCH) {
 			this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {

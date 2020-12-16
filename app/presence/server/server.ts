@@ -240,7 +240,7 @@ export const UserPresence = {
 		});
 
 		UserPresenceEvents.on('setStatus', function(userId, status) {
-			const { user, result } = Promise.await(handleUserPresenceAndStatus({
+			const { user, result, status: processedStatus, statusConnection } = Promise.await(handleUserPresenceAndStatus({
 				models: {
 					Users,
 				},
@@ -250,7 +250,7 @@ export const UserPresence = {
 
 			// if nothing updated, do not emit anything
 			if (result) {
-				UserPresenceEvents.emit('setUserStatus', user, status, status);
+				UserPresenceEvents.emit('setUserStatus', user, processedStatus, statusConnection);
 			}
 		});
 

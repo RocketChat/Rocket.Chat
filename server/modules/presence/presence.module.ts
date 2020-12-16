@@ -12,15 +12,7 @@ interface IUpdateUserStatusParam {
 	statusProcessor?: Function;
 }
 
-export const processUserStatus = (current: USER_STATUS, status: USER_STATUS = USER_STATUS.OFFLINE): { status: USER_STATUS; statusConnection: USER_STATUS } => {
-	if (status === USER_STATUS.ONLINE) {
-		return { status: USER_STATUS.ONLINE, statusConnection: current };
-	}
-	if (status !== USER_STATUS.OFFLINE) {
-		return { status, statusConnection: current };
-	}
-	return { status: current, statusConnection: current };
-};
+export const processUserStatus = (current: USER_STATUS, status: USER_STATUS = USER_STATUS.OFFLINE): { status: USER_STATUS; statusConnection: USER_STATUS } => ({ status, statusConnection: current });
 
 export async function handleUserPresenceAndStatus({ models: { Users }, userId, status, statusProcessor = processUserStatus }: IUpdateUserStatusParam): Promise<any> {
 	const user = await Users.findOne({ _id: userId });
