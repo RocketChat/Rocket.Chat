@@ -77,20 +77,20 @@ const toolboxRoom = {
 	usersCount: 2,
 };
 
-// const renderWithBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='primary'>1</Header.ToolBoxAction.Badge>);
-// const renderWithRedBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='danger'>2</Header.ToolBoxAction.Badge>);
-// const renderWithOrangeBadge = createHeaderActionRenderer(<Header.ToolBoxAction.Badge variant='warning'>99</Header.ToolBoxAction.Badge>);
+// const renderWithBadge = createHeaderActionRenderer(<Header.Badge variant='primary'>1</Header.Badge>);
+// const renderWithRedBadge = createHeaderActionRenderer(<Header.Badge variant='danger'>2</Header.Badge>);
+// const renderWithOrangeBadge = createHeaderActionRenderer(<Header.Badge variant='warning'>99</Header.Badge>);
 
 const renderWithBadge = (props, index) => <Header.ToolBoxAction index={index} {...props} >
-	<Header.ToolBoxAction.Badge variant='primary'>1</Header.ToolBoxAction.Badge>
+	<Header.Badge variant='primary'>1</Header.Badge>
 </Header.ToolBoxAction>;
 
 const renderWithRedBadge = (props, index) => <Header.ToolBoxAction index={index} {...props} >
-	<Header.ToolBoxAction.Badge variant='danger'>2</Header.ToolBoxAction.Badge>
+	<Header.Badge variant='danger'>2</Header.Badge>
 </Header.ToolBoxAction>;
 
 const renderWithOrangeBadge = (props, index) => <Header.ToolBoxAction index={index} {...props} >
-	<Header.ToolBoxAction.Badge variant='warning'>99</Header.ToolBoxAction.Badge>
+	<Header.Badge variant='warning'>99</Header.Badge>
 </Header.ToolBoxAction>;
 
 

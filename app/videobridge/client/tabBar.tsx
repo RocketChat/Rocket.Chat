@@ -31,7 +31,7 @@ addAction('bbb_video', ({ room }) => {
 		template: 'videoFlexTabBbb',
 		order: live ? -1 : 0,
 		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>
-			{live ? <Header.ToolBoxAction.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.ToolBoxAction.Badge> : null}
+			{live ? <Header.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.Badge> : null}
 		</Header.ToolBoxAction>,
 		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}><Badge title={t('Started_a_video_call')} variant='primary'>!</Badge></Option>,
 	} : null), [enabled, groups, live, t]);
@@ -62,7 +62,7 @@ addAction('video', ({ room }) => {
 		template: 'videoFlexTab',
 		order: live ? -1 : 0,
 		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>
-			{live && <Header.ToolBoxAction.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.ToolBoxAction.Badge>}
+			{live && <Header.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.Badge>}
 		</Header.ToolBoxAction>,
 		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}>
 			{ live && <Badge title={t('Started_a_video_call')} variant='primary'>!</Badge> }

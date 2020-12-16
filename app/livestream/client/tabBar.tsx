@@ -20,7 +20,7 @@ addAction('livestream', ({ room }) => {
 		template: 'liveStreamTab',
 		order: isLive ? -1 : 15,
 		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>
-			{isLive ? <Header.ToolBoxAction.Badge title={t('Livestream_live_now')} variant='danger'>!</Header.ToolBoxAction.Badge> : null}
+			{isLive ? <Header.Badge title={t('Livestream_live_now')} variant='danger'>!</Header.Badge> : null}
 		</Header.ToolBoxAction>,
 		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}>
 			{isLive ? <Badge title={t('Livestream_live_now')} variant='danger'>!</Badge> : null }

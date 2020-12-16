@@ -31,7 +31,7 @@ addAction('thread', (options) => {
 			const unread = room.tunread?.length > 99 ? '99+' : room.tunread?.length;
 			const variant = getVariant(room);
 			return <Header.ToolBoxAction {...props} >
-				{ unread > 0 && <Header.ToolBoxAction.Badge variant={variant}>{unread}</Header.ToolBoxAction.Badge> }
+				{ unread > 0 && <Header.Badge variant={variant}>{unread}</Header.Badge> }
 			</Header.ToolBoxAction>;
 		},
 		order: 2,
