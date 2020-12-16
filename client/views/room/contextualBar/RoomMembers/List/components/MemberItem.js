@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
 	Option,
 	ActionButton,
 	Menu,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 
 
 import { useUserInfoActions, useUserInfoActionsSpread } from '../../../../hooks/useUserInfoActions';
@@ -13,16 +13,11 @@ import { ReactiveUserStatus } from '../../../../../../components/UserStatus';
 import { usePreventProgation } from '../hooks/usePreventProgation';
 
 const UserActions = ({ username, _id, rid }) => {
-	const { menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions({ _id, username }, rid));
-	const id = useUniqueId();
-	useEffect(() => {
-		document.getElementById(`a-${ id }`).click();
-	}, [id]);
+	const { menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions({ _id, username }, rid), 0);
 	if (!menuOptions) {
 		return null;
 	}
 	return <Menu
-		id={`a-${ id }`}
 		flexShrink={0}
 		key='menu'
 		tiny
@@ -33,9 +28,11 @@ const UserActions = ({ username, _id, rid }) => {
 
 export const MemberItem = ({ _id, status, name, username, onClickView, style, rid }) => {
 	const [showButton, setShowButton] = useState();
-	const onClick = usePreventProgation(() => {
-		setShowButton(true);
-	});
+
+	const isReduceMotionEnabled = usePrefersReducedMotion();
+	const handleMenuEvent = { [isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton };
+
+	const onClick = usePreventProgation();
 
 	return (
 		<Option
@@ -44,6 +41,7 @@ export const MemberItem = ({ _id, status, name, username, onClickView, style, ri
 			data-username={username}
 			presence={status}
 			onClick={onClickView}
+			{ ...handleMenuEvent }
 		>
 			<Option.Avatar>
 				<UserAvatar username={username} size='x28' />
