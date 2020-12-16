@@ -17,6 +17,7 @@ import { messageArgs } from '../../../../../ui-utils/client/lib/messageArgs';
 import { ChatMessage, Rooms } from '../../../../../models';
 import { t, roomTypes } from '../../../../../utils/client';
 import { chatMessages, openProfileTab } from '../room';
+import { EmojiEvents } from '../../../../../reactions/client/init';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');
@@ -77,6 +78,7 @@ export const getCommonRoomEvents = () => ({
 
 		let touchtime = null;
 		return {
+			...EmojiEvents,
 			'click .message img'(e) {
 				clearTimeout(touchtime);
 				if (touchMoved === true) {
