@@ -102,7 +102,7 @@ export const RoomMembers = ({
 			<VerticalBar.Content p='0'>
 				<Box pi='x24' pb='x24'>
 					<FieldGroup>
-						<Box flexDirection='row' display='flex' justifyContent='stretch'>
+						<Box flexDirection='row' display='flex' justifyContent='stretch' mi='neg-x4'>
 							<Box flexGrow={2} flexBasis='85%' mi='x4'>
 								<Field>
 									<Field.Row>
