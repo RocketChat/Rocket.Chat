@@ -1,15 +1,16 @@
 import React, { useMemo, lazy, LazyExoticComponent, FC } from 'react';
+import { BadgeProps } from '@rocket.chat/fuselage';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
 import Header from '../../../../client/components/Header';
 import { ISubscription } from '../../../../definition/ISubscription';
 
-const getVariant = (room: ISubscription): string => {
-	if (room.tunreadUser?.length > 0) {
+const getVariant = (tunreadUser: number, tunreadGroup: number): BadgeProps['variant'] => {
+	if (tunreadUser > 0) {
 		return 'danger';
 	}
-	if (room.tunreadGroup?.length > 0) {
+	if (tunreadGroup > 0) {
 		return 'warning';
 	}
 	return 'primary';
@@ -29,11 +30,11 @@ addAction('thread', (options) => {
 		template,
 		renderAction: (props) => {
 			const unread = room.tunread?.length > 99 ? '99+' : room.tunread?.length;
-			const variant = getVariant(room);
+			const variant = getVariant(room.tunreadUser?.length, room.tunreadGroup?.length);
 			return <Header.ToolBoxAction {...props} >
 				{ unread > 0 && <Header.Badge variant={variant}>{unread}</Header.Badge> }
 			</Header.ToolBoxAction>;
 		},
 		order: 2,
-	} : null), [threadsEnabled, room?.tunread]);
+	} : null), [threadsEnabled, room.tunread?.length, room.tunreadUser?.length, room.tunreadGroup?.length]);
 });
