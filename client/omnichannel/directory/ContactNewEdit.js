@@ -110,7 +110,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
 	}, [t, name]);
 	useComponentDidUpdate(() => {
-		setEmailError(!isEmail(email) ? t('Validate_email_address') : '');
+		setEmailError(!isEmail(email) ? t('Validate_email_address') : undefined);
 	}, [t, email]);
 
 	const handleSave = useMutableCallback(async (e) => {
@@ -157,7 +157,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	return <>
 		<VerticalBar.ScrollableContent is='form'>
 			<Field>
-				<Field.Label>{t('Name')}</Field.Label>
+				<Field.Label>{t('Name')}*</Field.Label>
 				<Field.Row>
 					<TextInput error={nameError} flexGrow={1} value={name} onChange={handleName} placeholder={t('Insert_Contact_Name')} />
 				</Field.Row>
