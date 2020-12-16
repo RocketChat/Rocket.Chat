@@ -1,8 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useEffect } from 'react';
 
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useAsyncState, AsyncState, AsyncStatePhase } from '../../../../../hooks/useAsyncState';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useAsyncState, AsyncState, AsyncStatePhase } from '../../../../hooks/useAsyncState';
 
 export const useDataWithLoadMore = <T, P>(
 	getData: (...args: any[]) => Promise<any>,
