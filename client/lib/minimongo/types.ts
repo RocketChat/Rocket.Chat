@@ -66,4 +66,8 @@ export type Query<T> = {
 	$or?: Query<T>[];
 	$and?: Query<T>[];
 	$nor?: Query<T>[];
-}
+};
+
+export type Sort = (string | [string, 'asc' | 'desc'])[] | {
+	[key: string]: -1 | 1;
+};
