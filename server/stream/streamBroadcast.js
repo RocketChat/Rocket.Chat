@@ -97,8 +97,11 @@ function startMatrixBroadcast() {
 				_dontPrintErrors: LoggerManager.logLevel < 2,
 			});
 
+
 			connections[instance].instanceRecord = record;
 			connections[instance].instanceId = record._id;
+
+			console.log(connections);
 
 			connections[instance].onReconnect = function() {
 				return authorizeConnection(instance);
@@ -314,21 +317,30 @@ function startStreamBroadcast() {
 	});
 }
 
+export function getInstances() {
+	if (!hasPermission(Meteor.userId(), 'view-statistics')) {
+		return;
+	}
+
+	return Object.keys(connections).map((address) => {
+		const conn = connections[address];
+		return Object.assign({ address, currentStatus: conn._stream.currentStatus }, _.pick(conn, 'instanceRecord', 'broadcastAuth'));
+	});
+}
+
 Meteor.startup(function() {
 	return startStreamBroadcast();
 });
 
 Meteor.methods({
 	'instances/get'() {
-		if (!hasPermission(Meteor.userId(), 'view-statistics')) {
+		const instances = getInstances();
+		if (!instances) {
 			throw new Meteor.Error('error-action-not-allowed', 'List instances is not allowed', {
 				method: 'instances/get',
 			});
 		}
 
-		return Object.keys(connections).map((address) => {
-			const conn = connections[address];
-			return Object.assign({ address, currentStatus: conn._stream.currentStatus }, _.pick(conn, 'instanceRecord', 'broadcastAuth'));
-		});
+		return instances;
 	},
 });
