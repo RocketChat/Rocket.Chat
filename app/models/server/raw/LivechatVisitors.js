@@ -1,5 +1,4 @@
-import s from 'underscore.string';
-
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatVisitorsRaw extends BaseRaw {
@@ -20,7 +19,7 @@ export class LivechatVisitorsRaw extends BaseRaw {
 			exceptions = [exceptions];
 		}
 
-		const nameRegex = new RegExp(`^${ s.escapeRegExp(searchTerm).trim() }`, 'i');
+		const nameRegex = new RegExp(`^${ escapeRegExp(searchTerm).trim() }`, 'i');
 
 		const match = {
 			$match: {
