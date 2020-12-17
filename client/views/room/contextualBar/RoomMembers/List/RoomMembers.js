@@ -3,8 +3,7 @@ import {
 	Box,
 	Icon,
 	TextInput,
-	Field,
-	FieldGroup,
+	Margins,
 	Select,
 	Throbber,
 	ButtonGroup,
@@ -99,30 +98,19 @@ export const RoomMembers = ({
 				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>
 
-			<VerticalBar.Content p='0'>
-				<Box pi='x24' pb='x24'>
-					<FieldGroup>
-						<Box flexDirection='row' display='flex' justifyContent='stretch' mi='neg-x4'>
-							<Box flexGrow={2} flexBasis='85%' mi='x4'>
-								<Field>
-									<Field.Row>
-										<TextInput placeholder={t('Search_by_username')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
-									</Field.Row>
-								</Field>
-							</Box>
-
-							<Box flexGrow={1} flexBasis='15%' mi='x4'>
-								<Field>
-									<Field.Row>
-										<Select
-											onChange={setType}
-											value={type}
-											options={options} />
-									</Field.Row>
-								</Field>
-							</Box>
-						</Box>
-					</FieldGroup>
+			<VerticalBar.Content p='x12'>
+				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
+					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+						<Margins inline='x4'>
+							<TextInput placeholder={t('Search_by_username')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+							<Select
+								flexGrow={0}
+								width='110px'
+								onChange={setType}
+								value={type}
+								options={options} />
+						</Margins>
+					</Box>
 				</Box>
 
 				{ error && <Box pi='x24' pb='x12'><Callout type='danger'>
