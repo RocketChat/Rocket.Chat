@@ -1,11 +1,10 @@
+import { isEmptyArray } from './comparisons';
+
 const isNullDocument = (doc: unknown): doc is undefined | null =>
 	doc === undefined || doc === null;
 
 const isRecordDocument = (doc: unknown): doc is Record<string, unknown> =>
 	doc !== undefined && doc !== null && (typeof doc === 'object' || typeof doc === 'function');
-
-const isEmptyArray = <T>(value: unknown): value is T[] & { length: 0 } =>
-	Array.isArray(value) && value.length === 0;
 
 const isIndexedByNumber = <T>(value: unknown, isIndexedByNumber: boolean): value is T[] =>
 	Array.isArray(value) || isIndexedByNumber;
