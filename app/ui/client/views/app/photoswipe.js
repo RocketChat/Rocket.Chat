@@ -21,7 +21,7 @@ Meteor.startup(() => {
 	};
 
 	const defaultGalleryOptions = {
-		bgOpacity: 0.8,
+		bgOpacity: 0.7,
 		showHideOpacity: true,
 		counterEl: false,
 		shareEl: false,
@@ -31,15 +31,11 @@ Meteor.startup(() => {
 		event.preventDefault();
 		event.stopPropagation();
 
-		if (currentGallery) {
-			return;
-		}
-
 		const galleryOptions = {
 			...defaultGalleryOptions,
 			index: 0,
 			addCaptionHTMLFn(item, captionEl) {
-				captionEl.children[0].innerHTML =					`${ escapeHTML(item.title) }<br/><small>${ escapeHTML(item.description) }</small>`;
+				captionEl.children[0].innerHTML = `${ escapeHTML(item.title) }<br/><small>${ escapeHTML(item.description) }</small>`;
 				return true;
 			},
 		};

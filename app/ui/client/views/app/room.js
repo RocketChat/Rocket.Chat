@@ -69,9 +69,9 @@ const openProfileTab = (e, instance, username) => {
 		return;
 	}
 	instance.groupDetail.set(null);
-	instance.tabBar.setTemplate('membersList');
-	instance.tabBar.setData({});
-	instance.tabBar.open('members-list');
+	instance.tabBar.setTemplate('UserInfoWithData');
+	instance.tabBar.setData({ full: true });
+	instance.tabBar.open();
 };
 
 export const openProfileTabOrOpenDM = (e, instance, username) => {
@@ -448,13 +448,14 @@ Template.roomOld.helpers({
 	},
 
 	flexData() {
+		const instace = Template.instance();
 		const flexData = {
-			tabBar: Template.instance().tabBar,
+			tabBar: instace.tabBar,
 			data: {
 				rid: this._id,
-				userDetail: Template.instance().userDetail.get(),
+				username: Template.instance().userDetail.get(),
 				groupDetail: Template.instance().groupDetail.get(),
-				clearUserDetail: Template.instance().clearUserDetail,
+				onClose: () => instace.clearUserDetail(),
 			},
 			...Template.instance().tabBar.getData(),
 		};
@@ -1181,6 +1182,7 @@ Template.roomOld.onCreated(function() {
 
 	this.clearUserDetail = () => {
 		this.userDetail.set(null);
+		this.tabBar.setData({});
 		this.tabBar.close();
 	};
 
