@@ -26,7 +26,7 @@ import {
 	RocketChatTabBar,
 } from '../../../../ui-utils';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
-import { renderMessageBody } from '../../../../ui-utils/client/lib/renderMessageBody';
+import { renderMessageBody } from '../../../../../client/lib/renderMessageBody';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
 import { call } from '../../../../ui-utils/client/lib/callMethod';
 import { settings } from '../../../../settings';
@@ -37,6 +37,7 @@ import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
 import { openUserCard } from '../../lib/UserCard';
+import { Markdown } from '../../../../markdown/client';
 
 import './room.html';
 
@@ -68,9 +69,9 @@ const openProfileTab = (e, instance, username) => {
 		return;
 	}
 	instance.groupDetail.set(null);
-	instance.tabBar.setTemplate('membersList');
-	instance.tabBar.setData({});
-	instance.tabBar.open('members-list');
+	instance.tabBar.setTemplate('UserInfoWithData');
+	instance.tabBar.setData({ full: true });
+	instance.tabBar.open();
 };
 
 export const openProfileTabOrOpenDM = (e, instance, username) => {
@@ -365,7 +366,8 @@ Template.roomOld.helpers({
 	},
 
 	announcement() {
-		return Template.instance().state.get('announcement');
+		const announcement = Template.instance().state.get('announcement');
+		return announcement ? Markdown.parse(announcement).replace(/^<p>|<\/p>$/, '') : undefined;
 	},
 
 	messageboxData() {
@@ -446,13 +448,14 @@ Template.roomOld.helpers({
 	},
 
 	flexData() {
+		const instace = Template.instance();
 		const flexData = {
-			tabBar: Template.instance().tabBar,
+			tabBar: instace.tabBar,
 			data: {
 				rid: this._id,
-				userDetail: Template.instance().userDetail.get(),
+				username: Template.instance().userDetail.get(),
 				groupDetail: Template.instance().groupDetail.get(),
-				clearUserDetail: Template.instance().clearUserDetail,
+				onClose: () => instace.clearUserDetail(),
 			},
 			...Template.instance().tabBar.getData(),
 		};
@@ -1179,6 +1182,7 @@ Template.roomOld.onCreated(function() {
 
 	this.clearUserDetail = () => {
 		this.userDetail.set(null);
+		this.tabBar.setData({});
 		this.tabBar.close();
 	};
 

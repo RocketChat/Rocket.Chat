@@ -15,6 +15,7 @@ import { useUserPreference, useUserSubscriptions } from '../../contexts/UserCont
 import { itemSizeMap, SideBarItemTemplateWithData } from '../RoomList';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { escapeRegExp } from '../../../lib/escapeRegExp';
 import { useMethodData } from '../../hooks/useMethodData';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
@@ -106,7 +107,7 @@ const useSearchItems = (filterText) => {
 
 	const [, type, name] = teste;
 	const query = useMemo(() => {
-		const filterRegex = new RegExp(RegExp.escape(name), 'i');
+		const filterRegex = new RegExp(escapeRegExp(name), 'i');
 
 		return {
 			$or: [

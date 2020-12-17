@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { MongoInternals, OplogHandle } from 'meteor/mongo';
 import semver from 'semver';
-import s from 'underscore.string';
 import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
 
 import { urlParser } from './_oplogUrlParser';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 class CustomOplogHandle {
 	dbName: string;
@@ -99,8 +99,8 @@ class CustomOplogHandle {
 
 		const oplogSelector = {
 			ns: new RegExp(`^(?:${ [
-				s.escapeRegExp(`${ this.dbName }.`),
-				s.escapeRegExp('admin.$cmd'),
+				escapeRegExp(`${ this.dbName }.`),
+				escapeRegExp('admin.$cmd'),
 			].join('|') })`),
 
 			op: { $in: ['i', 'u', 'd'] },
