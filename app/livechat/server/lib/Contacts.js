@@ -6,7 +6,7 @@ import {
 
 
 export const Contacts = {
-	saveContact({ _id, name, email, phone, livechatData } = {}) {
+	saveContact({ _id, name, email, phone, livechatData, user } = {}) {
 		let contactId;
 		let username;
 		const updateUser = {
@@ -51,6 +51,11 @@ export const Contacts = {
 			updateUser.$set.livechatData = livechatData;
 		} else {
 			updateUser.$unset.livechatData = 1;
+		}
+		if (user) {
+			updateUser.$set.user = user;
+		} else {
+			updateUser.$unset.user = 1;
 		}
 
 		if (_.isEmpty(updateUser.$unset)) { delete updateUser.$unset; }

@@ -13,6 +13,7 @@ API.v1.addRoute('contact', { authRequired: true }, {
 				email: Match.Maybe(String),
 				phone: Match.Maybe(String),
 				livechatData: Match.Maybe(Object),
+				user: Match.Maybe(Object),
 			});
 
 			const contactParams = this.bodyParams;

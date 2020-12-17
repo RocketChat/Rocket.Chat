@@ -14,6 +14,7 @@ import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEnd
 import { FormSkeleton } from './Skeleton';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { hasAtLeastOnePermission } from '../../../app/authorization';
+import { UserAutoComplete } from '../../components/basic/AutoComplete';
 
 
 const initialValues = {
@@ -27,14 +28,14 @@ const getInitialValues = (data) => {
 		return initialValues;
 	}
 
-	const { contact } = data;
-	const { name, phone, visitorEmails, livechatData } = contact;
+	const { contact: { name, phone, visitorEmails, livechatData, user } } = data;
 
 	return {
 		name: name ?? '',
 		email: visitorEmails ? visitorEmails[0].address : '',
 		phone: phone ? phone[0].phoneNumber : '',
 		livechatData: livechatData ?? '',
+		username: user?.username ?? '',
 	};
 };
 
@@ -64,11 +65,13 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		handleName,
 		handleEmail,
 		handlePhone,
+		handleUsername,
 	} = handlers;
 	const {
 		name,
 		email,
 		phone,
+		username,
 	} = values;
 
 	const { values: valueCustom, handlers: handleValueCustom } = useForm({
@@ -110,7 +113,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
 	}, [t, name]);
 	useComponentDidUpdate(() => {
-		setEmailError(!isEmail(email) ? t('Validate_email_address') : undefined);
+		setEmailError(email && !isEmail(email) ? t('Validate_email_address') : undefined);
 	}, [t, email]);
 
 	const handleSave = useMutableCallback(async (e) => {
@@ -137,6 +140,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 		if (id) { payload._id = id; }
 		if (livechatData) { payload.livechatData = livechatData; }
+		if (username) { payload.user = { username }; }
 
 		try {
 			await saveContact(payload);
@@ -148,7 +152,8 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		}
 	});
 
-	const formIsValid = name;
+	const formIsValid = name && !emailError;
+
 
 	if ([state].includes(ENDPOINT_STATES.LOADING)) {
 		return <FormSkeleton/>;
@@ -185,6 +190,12 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			</Field>
 			{ canViewCustomFields() && allCustomFields
 			&& <CustomFieldsForm jsonCustomFields={jsonCustomField} customFieldsData={livechatData} setCustomFieldsData={handleLivechatData} /> }
+			<Field>
+				<Field.Label>{t('Contact_Manager')}</Field.Label>
+				<Field.Row>
+					<UserAutoComplete value={username} onChange={handleUsername}/>
+				</Field.Row>
+			</Field>
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
