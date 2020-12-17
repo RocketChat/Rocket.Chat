@@ -1,6 +1,4 @@
-import { Mongo } from 'meteor/mongo';
-
-enum BSONType {
+export const enum BSONType {
 	Double = 1,
 	String,
 	Object,
@@ -27,7 +25,7 @@ enum BSONType {
 	MaxKey = 127,
 }
 
-export const getBSONType = (v: unknown): Mongo.BsonType => {
+export const getBSONType = <T>(v: T): BSONType => {
 	if (typeof v === 'number') {
 		return BSONType.Double;
 	}
@@ -67,7 +65,7 @@ export const getBSONType = (v: unknown): Mongo.BsonType => {
 	return BSONType.Object;
 };
 
-export const getBSONTypeOrder = (type: Mongo.BsonType): number => {
+const getBSONTypeOrder = (type: BSONType): number => {
 	switch (type) {
 		case BSONType.Null:
 			return 0;
@@ -112,6 +110,11 @@ export const getBSONTypeOrder = (type: Mongo.BsonType): number => {
 	}
 };
 
+type ObjectID = {
+	toHexString(): string;
+	equals(otherID: ObjectID): boolean;
+};
+
 export const compareBSONValues = (a: unknown, b: unknown): number => {
 	if (a === undefined) {
 		return b === undefined ? 0 : -1;
@@ -122,8 +125,9 @@ export const compareBSONValues = (a: unknown, b: unknown): number => {
 	}
 
 	const ta = getBSONType(a);
-	const tb = getBSONType(b);
 	const oa = getBSONTypeOrder(ta);
+
+	const tb = getBSONType(b);
 	const ob = getBSONTypeOrder(tb);
 
 	if (oa !== ob) {
@@ -185,7 +189,7 @@ export const compareBSONValues = (a: unknown, b: unknown): number => {
 			return 0;
 
 		case BSONType.ObjectId:
-			return (a as Mongo.ObjectID).toHexString().localeCompare((b as Mongo.ObjectID).toHexString());
+			return (a as ObjectID).toHexString().localeCompare((b as ObjectID).toHexString());
 
 		case BSONType.Boolean:
 			return Number(a) - Number(b);
