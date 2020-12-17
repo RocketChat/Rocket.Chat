@@ -1,17 +1,21 @@
-export type Document = Record<string, unknown> | undefined | null;
-
 const isNullDocument = (doc: unknown): doc is undefined | null =>
 	doc === undefined || doc === null;
 
-const isEmptyArray = (value: unknown): value is unknown[] & { length: 0 } =>
+const isRecordDocument = (doc: unknown): doc is Record<string, unknown> =>
+	doc !== undefined && doc !== null && (typeof doc === 'object' || typeof doc === 'function');
+
+const isEmptyArray = <T>(value: unknown): value is T[] & { length: 0 } =>
 	Array.isArray(value) && value.length === 0;
 
-export const createLookupFunction = (key: string): ((doc: Document) => unknown[]) => {
+const isIndexedByNumber = <T>(value: unknown, isIndexedByNumber: boolean): value is T[] =>
+	Array.isArray(value) || isIndexedByNumber;
+
+export const createLookupFunction = <T>(key: string): ((doc: T) => unknown[]) => {
 	const [first, rest] = key.split(/\.(.+)/);
 
 	if (!rest) {
-		return (doc: Document): unknown[] => {
-			if (isNullDocument(doc)) {
+		return <T>(doc: T): unknown[] => {
+			if (isNullDocument(doc) || !isRecordDocument(doc)) {
 				return [undefined];
 			}
 
@@ -22,11 +26,8 @@ export const createLookupFunction = (key: string): ((doc: Document) => unknown[]
 	const lookupRest = createLookupFunction(rest);
 	const nextIsNumeric = /^\d+(\.|$)/.test(rest);
 
-	const isDocumentArray = (value: unknown): value is Document[] =>
-		Array.isArray(value) || nextIsNumeric;
-
-	return (doc: Document): unknown[] => {
-		if (isNullDocument(doc)) {
+	return <T>(doc: T): unknown[] => {
+		if (isNullDocument(doc) || !isRecordDocument(doc)) {
 			return [undefined];
 		}
 
@@ -36,7 +37,7 @@ export const createLookupFunction = (key: string): ((doc: Document) => unknown[]
 			return [undefined];
 		}
 
-		const docs = isDocumentArray(firstLevel) ? firstLevel : [firstLevel as Document];
+		const docs = isIndexedByNumber(firstLevel, nextIsNumeric) ? firstLevel : [firstLevel as T];
 		return Array.prototype.concat.apply([], docs.map(lookupRest));
 	};
 };

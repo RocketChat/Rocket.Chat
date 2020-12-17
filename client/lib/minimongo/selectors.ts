@@ -1,7 +1,7 @@
 import type { Mongo } from 'meteor/mongo';
 
 import { equals, flatSome, isObject, some } from './comparisons';
-import { createLookupFunction, Document } from './lookups';
+import { createLookupFunction } from './lookups';
 import { hasOperators, isLogicalOperator, isValueOperator, logicalOperators, valueOperators } from './operators';
 
 const compileUndefinedOrNullSelector = <T>(): ((value: T) => boolean) =>
@@ -66,7 +66,7 @@ export const compileValueSelector = <T>(valueSelector: Mongo.Query<T>[string]): 
 	return (value: T): boolean => flatSome(value, (x) => equals(valueSelector, x as unknown as object));
 };
 
-export const compileDocumentSelector = <T extends Document>(docSelector: T extends {} ? Mongo.Query<T> : Mongo.FieldExpression<T>): ((doc: T) => boolean) => {
+export const compileDocumentSelector = <T>(docSelector: T extends {} ? Mongo.Query<T> : Mongo.FieldExpression<T>): ((doc: T) => boolean) => {
 	const perKeySelectors = Object.entries(docSelector).map(([key, subSelector]) => {
 		if (isLogicalOperator(key)) {
 			const operation = logicalOperators[key] as unknown as (docSelector: T) => (doc: T) => boolean;

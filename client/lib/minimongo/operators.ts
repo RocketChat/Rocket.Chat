@@ -3,7 +3,6 @@ import type { Mongo } from 'meteor/mongo';
 import { compareBSONValues, getBSONType } from './bson';
 import { equals, flatSome, some } from './comparisons';
 import { compileDocumentSelector, compileValueSelector } from './selectors';
-import { Document } from './lookups';
 
 export const hasOperators = <T>(valueSelector: object): valueSelector is Mongo.FieldExpression<T> =>
 	Object.keys(valueSelector).every((key) => key.slice(0, 1) === '$');
@@ -169,7 +168,7 @@ export const valueOperators = {
 type LogicalOperand<T, K extends keyof Mongo.Query<T> = never, L extends keyof Mongo.FieldExpression<T> = never> =
 	Required<Mongo.Query<T>>[K] | Required<Mongo.FieldExpression<T>>[L];
 
-export const $and = <T extends Document>(subSelector: LogicalOperand<T, '$and'>): ((doc: T) => boolean) => {
+export const $and = <T>(subSelector: LogicalOperand<T, '$and'>): ((doc: T) => boolean) => {
 	if (!Array.isArray(subSelector) || subSelector.length === 0) {
 		throw Error('$and/$or/$nor must be nonempty array');
 	}
@@ -178,7 +177,7 @@ export const $and = <T extends Document>(subSelector: LogicalOperand<T, '$and'>)
 	return (doc: T): boolean => subSelectorFunctions.every((f) => f(doc));
 };
 
-export const $or = <T extends Document>(subSelector: LogicalOperand<T, '$or'>): ((doc: T) => boolean) => {
+export const $or = <T>(subSelector: LogicalOperand<T, '$or'>): ((doc: T) => boolean) => {
 	if (!Array.isArray(subSelector) || subSelector.length === 0) {
 		throw Error('$and/$or/$nor must be nonempty array');
 	}
@@ -187,7 +186,7 @@ export const $or = <T extends Document>(subSelector: LogicalOperand<T, '$or'>): 
 	return (doc: T): boolean => subSelectorFunctions.some((f) => f(doc));
 };
 
-export const $nor = <T extends Document>(subSelector: LogicalOperand<T, '$nor'>): ((doc: T) => boolean) => {
+export const $nor = <T>(subSelector: LogicalOperand<T, '$nor'>): ((doc: T) => boolean) => {
 	if (!Array.isArray(subSelector) || subSelector.length === 0) {
 		throw Error('$and/$or/$nor must be nonempty array');
 	}
@@ -196,7 +195,7 @@ export const $nor = <T extends Document>(subSelector: LogicalOperand<T, '$nor'>)
 	return (doc: T): boolean => subSelectorFunctions.every((f) => !f(doc));
 };
 
-export const $where = <T extends Document>(selectorValue: LogicalOperand<T, never, '$where'>): ((doc: T) => boolean) => {
+export const $where = <T>(selectorValue: LogicalOperand<T, never, '$where'>): ((doc: T) => boolean) => {
 	const fn = selectorValue instanceof Function ? selectorValue : Function(`return ${ selectorValue }`);
 	return (doc: T): boolean => fn.call(doc);
 };
