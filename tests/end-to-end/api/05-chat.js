@@ -735,7 +735,7 @@ describe('[Chat]', function() {
 				imgUrlMsgId = imgUrlResponse.body.message._id;
 			});
 
-			it('should embed an youtube preview if message has a youtube url', (done) => {
+			it.skip('should embed an youtube preview if message has a youtube url', (done) => {
 				setTimeout(() => {
 					request.get(api('chat.getMessage'))
 						.set(credentials)
