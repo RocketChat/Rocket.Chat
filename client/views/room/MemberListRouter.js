@@ -20,7 +20,11 @@ const MemberListRouter = ({ rid }) => {
 		return <RoomMembers rid={rid}/>;
 	}
 
-	return <UserInfo width='100%' {...username ? { username } : { uid: room.uids.filter((uid) => uid !== ownUserId).shift() }} onClose={onClickClose} rid={rid}/>;
+	const uid = !username && room.uids.filter((uid) => uid !== ownUserId).shift();
+
+	const hasIdentifier = uid || username;
+
+	return hasIdentifier ? <UserInfo width='100%' {...username ? { username } : { uid }} onClose={onClickClose} rid={rid}/> : null;
 };
 
 export default MemberListRouter;
