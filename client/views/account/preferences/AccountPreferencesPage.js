@@ -39,7 +39,7 @@ const AccountPreferencesPage = () => {
 		if (anyChange !== hasAnyChange) {
 			setHasAnyChange(anyChange);
 		}
-	}, [hasAnyChange]);
+	}, [hasAnyChange, updates]);
 
 	const saveFn = useMethod('saveUserPreferences');
 
@@ -47,7 +47,7 @@ const AccountPreferencesPage = () => {
 		try {
 			const { current: data } = saveData;
 			setUpdates({ ...updates, ...data });
-			if (typeof(data.highlights) === "string") {
+			if (typeof data.highlights === 'string') {
 				Object.assign(data, { highlights: data.highlights.split(/,|\n/).map((val) => val.trim()).filter(Boolean) });
 			}
 
@@ -64,7 +64,7 @@ const AccountPreferencesPage = () => {
 		} catch (e) {
 			dispatchToastMessage({ type: 'error', message: e });
 		}
-	}, [dispatchToastMessage, saveFn, t]);
+	}, [dispatchToastMessage, saveFn, t, updates]);
 
 	return <Page>
 		<Page.Header title={t('Preferences')}>
