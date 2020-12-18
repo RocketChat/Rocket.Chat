@@ -1,7 +1,8 @@
 import chai from 'chai';
 import { describe, it } from 'mocha';
 
-import { BSONType, getBSONType, compareBSONValues } from './bson';
+import { BSONType } from './types';
+import { getBSONType, compareBSONValues } from './bson';
 
 describe('getBSONType', () => {
 	it('should work', () => {
