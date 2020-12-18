@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
-type Stream = (eventName: string, callback: (...args: unknown[]) => void) => () => void;
+type Stream<T> = (eventName: string, callback: (data: T) => void) => () => void;
 
 type ServerContextValue = {
 	info: {};
@@ -8,7 +8,7 @@ type ServerContextValue = {
 	callMethod: (methodName: string, ...args: any[]) => Promise<any>;
 	callEndpoint: (httpMethod: 'GET' | 'POST' | 'DELETE', endpoint: string, ...args: any[]) => Promise<any>;
 	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
-	getStream: (streamName: string, options?: {}) => Stream;
+	getStream: <T>(streamName: string, options?: {}) => Stream<T>;
 };
 
 export const ServerContext = createContext<ServerContextValue>({
@@ -39,7 +39,7 @@ export const useUpload = (endpoint: string): (params: any, formData: any) => Pro
 	return useCallback((params, formData: any) => uploadToEndpoint(endpoint, params, formData), [endpoint, uploadToEndpoint]);
 };
 
-export const useStream = (streamName: string, options?: {}): Stream => {
+export const useStream = <T>(streamName: string, options?: {}): Stream<T> => {
 	const { getStream } = useContext(ServerContext);
-	return useMemo(() => getStream(streamName, options), [getStream, streamName, options]);
+	return useMemo(() => getStream<T>(streamName, options), [getStream, streamName, options]);
 };
