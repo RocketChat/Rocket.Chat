@@ -8,7 +8,8 @@ Meteor.startup(function() {
 		id: 'starred-messages',
 		i18nTitle: 'Starred_Messages',
 		icon: 'star',
-		template: 'starredMessages',
+		template: 'StarredMessages',
+		full: true,
 		order: 10,
 	});
 });
