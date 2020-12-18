@@ -26,17 +26,60 @@ type DeleteAction = {
 
 type Action = UpsertAction | BulkUpsertAction | DeleteAction;
 
-const messageReducer = (state: IMessage[], action: Action): IMessage[] => {
+const findUpsertIndex = (
+	sortedMessages: IMessage[],
+	message: IMessage,
+	start = 0,
+): ['insert', number] | ['update', number] => {
+	const { _id } = message;
+	const ts = message.ts.getTime();
+
+	for (let i = start; i < sortedMessages.length; ++i) {
+		const message = sortedMessages[i];
+
+		if (message._id === _id) {
+			return ['update', i];
+		}
+
+		if (ts < message.ts.getTime()) {
+			return ['insert', i];
+		}
+	}
+
+	if (start > 0) {
+		for (let i = 0; i < start; ++i) {
+			const message = sortedMessages[i];
+
+			if (message._id === _id) {
+				return ['update', i];
+			}
+		}
+	}
+
+	return ['insert', sortedMessages.length];
+};
+
+const compareMessages = (a: IMessage, b: IMessage): number => {
+	if (a._id === b._id) {
+		return 0;
+	}
+
+	return a.ts.getTime() - b.ts.getTime();
+};
+
+export const messageReducer = (state: IMessage[], action: Action): IMessage[] => {
 	switch (action.type) {
 		case 'upsert': {
-			const index = state.findIndex((value) => value._id === action.payload?._id);
-			if (index > -1) {
-				state[index] = action.payload;
+			const newState = [...state];
+			const [type, index] = findUpsertIndex(newState, action.payload);
 
-				return [...state];
+			if (type === 'insert') {
+				newState.splice(index, 0, action.payload);
+				return newState;
 			}
 
-			return [...state, action.payload];
+			newState[index] = action.payload;
+			return newState;
 		}
 
 		case 'bulkUpsert': {
@@ -44,22 +87,27 @@ const messageReducer = (state: IMessage[], action: Action): IMessage[] => {
 				return state;
 			}
 
-			const map = new Map<IMessage['_id'], IMessage>([
-				...state.map<[IMessage['_id'], IMessage]>((message) => [message._id, message]),
-				...action.payload.map<[IMessage['_id'], IMessage]>((message) => [message._id, message]),
-			]);
+			const newState = [...state];
+			const newMessages = [...action.payload].sort(compareMessages);
 
-			return Array.from(map.values());
-		}
+			let lastIndex = 0;
+			for (const newMessage of newMessages) {
+				const [type, index] = findUpsertIndex(newState, newMessage, lastIndex);
+				lastIndex = index;
 
-		case 'delete': {
-			const index = state.findIndex((value) => value._id === action.payload);
-			if (index > -1) {
-				state.slice(0, index).concat(state.slice(index + 1));
+				if (type === 'insert') {
+					newState.splice(index, 0, newMessage);
+					continue;
+				}
+
+				newState[index] = newMessage;
 			}
 
-			return [...state];
+			return newState;
 		}
+
+		case 'delete':
+			return state.filter((message) => message._id !== action.payload);
 
 		default:
 			return state;
