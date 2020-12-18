@@ -1,12 +1,11 @@
-import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { useMessageList } from './useMessageList';
-import { useEndpoint, useStream } from '../../../../../contexts/ServerContext';
+import { useStream } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { IMessage } from '../../../../../../definition/IMessage';
-import { FieldExpression, Query, createFilterFromQuery } from '../../../../../lib/minimongo';
-
+import { FieldExpression, createFilterFromQuery } from '../../../../../lib/minimongo';
+import { useGetStarredMessages } from './useGetStarredMessages';
 
 const LIMIT_DEFAULT = 50;
 
@@ -18,13 +17,11 @@ type DeleteMessageBulkParams = {
 	users: string[];
 }
 
-export const useStarredMessages = (rid: string): any => {
-	// TODO: useMessageList should use `useAsyncState` internally...
-	const { messages, bulkUpsertMessages, upsertMessage, deleteMessage } = useMessageList();
-	// ...or we can split `useAsyncState` internals to add async state phase logic here
+export const useStarredMessages = (rid: IMessage['rid']): any => {
+	const { messages, reset, update, bulkUpsertMessages, upsertMessage, deleteMessage, reject } = useMessageList();
+	const offsetRef = useRef(0);
 
-	const getStarredMessages = useEndpoint('GET', 'chat.getStarredMessages');
-	const [offset, setOffset] = useSafely(useState(0));
+	const getStarredMessages = useGetStarredMessages();
 
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
@@ -33,40 +30,32 @@ export const useStarredMessages = (rid: string): any => {
 
 	const fetchData = useCallback(async (rid, offset) => {
 		try {
-			const result = await getStarredMessages({
+			const messages = await getStarredMessages({
 				roomId: rid,
 				count: LIMIT_DEFAULT,
 				offset,
 			});
 
-			/*
-				Messages coming from the REST API are just plain JSON objects i.e. all the dates are strings
-				in the ISO 8601 format. We need to convert `_updatedAt` and `ts` types from string to Date.
-			*/
-
-			type RawIMessage = Omit<IMessage, '_updatedAt' | 'ts'> // we omit the fields of Date type...
-			& { _updatedAt: string; ts: string }; // and re-add them as strings
-
-			// Here, we map RawIMessage[] to IMessage[]
-			const messages = result.messages.map(
-				(message: RawIMessage): IMessage => ({
-					...message,
-					_updatedAt: new Date(message._updatedAt),
-					ts: new Date(message.ts),
-				}),
-			);
-
 			bulkUpsertMessages(messages);
 		} catch (error) {
+			reject(error);
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [getStarredMessages, bulkUpsertMessages, dispatchToastMessage]);
+	}, [getStarredMessages, bulkUpsertMessages, reject, dispatchToastMessage]);
 
 	useEffect(() => {
-		fetchData(rid, offset);
-	}, [fetchData, offset, rid, setOffset]);
+		offsetRef.current = 0;
+		reset();
 
-	const loadMore = useCallback(() => setOffset((offset) => offset + LIMIT_DEFAULT), [setOffset]);
+		fetchData(rid, offsetRef.current);
+	}, [reset, fetchData, rid]);
+
+	const loadMore = useCallback(() => {
+		offsetRef.current += LIMIT_DEFAULT;
+		update();
+
+		fetchData(rid, offsetRef.current);
+	}, [update, fetchData, rid]);
 
 	useEffect(() =>
 		subscribeToRoomMessages<IMessage>(rid, (message) => {
@@ -95,7 +84,10 @@ export const useStarredMessages = (rid: string): any => {
 				return;
 			}
 
-			const query: Query = { rid: params.rid, ts: params.ts };
+			const query: Record<string, unknown> = {
+				rid: params.rid,
+				ts: params.ts,
+			};
 
 			if (params.excludePinned) {
 				query.pinned = { $ne: true };
@@ -110,7 +102,7 @@ export const useStarredMessages = (rid: string): any => {
 
 			const filter = createFilterFromQuery<IMessage>(query);
 
-			const deletedMessages = messages.filter(filter);
+			const deletedMessages = (messages ?? []).filter(filter);
 
 			console.log(deletedMessages);
 

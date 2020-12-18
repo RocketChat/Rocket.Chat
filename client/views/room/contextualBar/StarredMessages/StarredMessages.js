@@ -13,7 +13,9 @@ export const StarredMessages = ({
 }) => {
 	const t = useTranslation();
 
-	const content = messages.length ? <StarredMessagesList /> : <EmptyStarredMessages />;
+	const content = Array.isArray(messages)
+		? <StarredMessagesList messages={messages} />
+		: <EmptyStarredMessages />;
 
 	return <>
 		<VerticalBar.Header>

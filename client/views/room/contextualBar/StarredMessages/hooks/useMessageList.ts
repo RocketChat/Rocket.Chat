@@ -1,12 +1,16 @@
-import { useCallback, useReducer } from 'react';
+import { useCallback } from 'react';
 
 import { IMessage } from '../../../../../../definition/IMessage';
+import { useAsyncState } from '../../../../../hooks/useAsyncState';
 
 type MessageList = {
-	messages: IMessage[];
+	messages: IMessage[] | undefined;
 	upsertMessage: (message: IMessage) => void;
 	bulkUpsertMessages: (messages: IMessage[]) => void;
 	deleteMessage: (mid: IMessage['_id']) => void;
+	reject: (error: Error) => void;
+	reset: () => void;
+	update: () => void;
 };
 
 type UpsertAction = {
@@ -60,27 +64,41 @@ export const messageReducer = (state: IMessage[], action: Action): IMessage[] =>
 };
 
 export const useMessageList = (): MessageList => {
-	const [messages, changeMessageList] = useReducer(messageReducer, []);
+	const { resolve, reject, reset, update, ...state } = useAsyncState<IMessage[]>();
 
-	const upsertMessage = useCallback<MessageList['upsertMessage']>((message) => changeMessageList({
-		type: 'upsert',
-		payload: message,
-	}), []);
+	const upsertMessage = useCallback<MessageList['upsertMessage']>((upsertedMessage) => {
+		resolve((state = []) => [
+			upsertedMessage,
+			...state.filter((message) => message._id !== upsertedMessage._id),
+		].sort(compareMessages));
+	}, [resolve]);
 
-	const bulkUpsertMessages = useCallback<MessageList['bulkUpsertMessages']>((messages) => changeMessageList({
-		type: 'bulkUpsert',
-		payload: messages,
-	}), []);
+	const bulkUpsertMessages = useCallback<MessageList['bulkUpsertMessages']>((upsertedMessages) => {
+		resolve((state = []) => {
+			if (upsertedMessages.length === 0) {
+				return state;
+			}
 
-	const deleteMessage = useCallback<MessageList['deleteMessage']>((mid) => changeMessageList({
-		type: 'delete',
-		payload: mid,
-	}), []);
+			const newIds = upsertedMessages.map((message) => message._id);
+
+			return [
+				...upsertedMessages,
+				...state.filter((message) => !newIds.includes(message._id)),
+			].sort(compareMessages);
+		});
+	}, [resolve]);
+
+	const deleteMessage = useCallback<MessageList['deleteMessage']>((mid) => {
+		resolve((state = []) => state.filter((message) => message._id !== mid));
+	}, [resolve]);
 
 	return {
-		messages,
+		messages: state.value,
 		upsertMessage,
 		bulkUpsertMessages,
 		deleteMessage,
+		reject,
+		reset,
+		update,
 	};
 };
