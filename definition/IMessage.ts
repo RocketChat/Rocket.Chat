@@ -20,4 +20,5 @@ export interface IMessage extends IRocketChatRecord {
 		type: 'Point';
 		coordinates: [string, string];
 	};
+	starred?: Array<{_id: string}>;
 }

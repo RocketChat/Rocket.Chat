@@ -5,20 +5,29 @@ import { useMessageList } from './useMessageList';
 import { useEndpoint, useStream } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { IMessage } from '../../../../../../definition/IMessage';
-// import { createFilterFromQuery } from '../../../../../lib/minimongo';
+import { FieldExpression, Query, createFilterFromQuery } from '../../../../../lib/minimongo';
+
 
 const LIMIT_DEFAULT = 50;
 
+type DeleteMessageBulkParams = {
+	rid: IMessage['rid'];
+	excludePinned: boolean;
+	ignoreDiscussion: boolean;
+	ts: FieldExpression<IMessage>;
+	users: string[];
+}
+
 export const useStarredMessages = (rid: string): any => {
 	// TODO: useMessageList should use `useAsyncState` internally...
-	const { messages, bulkUpsertMessages, upsertMessage } = useMessageList();
+	const { messages, bulkUpsertMessages, upsertMessage, deleteMessage } = useMessageList();
 	// ...or we can split `useAsyncState` internals to add async state phase logic here
 
 	const getStarredMessages = useEndpoint('GET', 'chat.getStarredMessages');
 	const [offset, setOffset] = useSafely(useState(0));
 
-	const subscribeToRoomMessages = useStream<IMessage>('room-messages');
-	// const filter = createFilterFromQuery({ starred: { $exists: true } });
+	const subscribeToRoomMessages = useStream('room-messages');
+	const subscribeToNotifyRoom = useStream('notify-room');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -60,12 +69,54 @@ export const useStarredMessages = (rid: string): any => {
 	const loadMore = useCallback(() => setOffset((offset) => offset + LIMIT_DEFAULT), [setOffset]);
 
 	useEffect(() =>
-		subscribeToRoomMessages(rid, (_message) => {
-			// TODO: this event is triggered wheneven a message is sent to the room.
-			// Not all message is a starred message, so we need to filter it.
-			// upsertMessage(message);
+		subscribeToRoomMessages<IMessage>(rid, (message) => {
+			if (!Array.isArray(message.starred)) {
+				return;
+			}
+
+			if (message.starred.length === 0) {
+				deleteMessage(message._id);
+				return;
+			}
+
+			upsertMessage(message);
 		}),
-	[subscribeToRoomMessages, rid, upsertMessage]);
+	[subscribeToRoomMessages, rid, upsertMessage, deleteMessage]);
+
+	useEffect(() =>
+		subscribeToNotifyRoom<{_id: IMessage['_id']}>(`${ rid }/deleteMessage`, (message) => {
+			deleteMessage(message._id);
+		}),
+	[subscribeToNotifyRoom, rid, deleteMessage]);
+
+	useEffect(() =>
+		subscribeToNotifyRoom<DeleteMessageBulkParams>(`${ rid }/deleteMessageBulk`, (params) => {
+			if (params.rid !== rid) {
+				return;
+			}
+
+			const query: Query = { rid: params.rid, ts: params.ts };
+
+			if (params.excludePinned) {
+				query.pinned = { $ne: true };
+			}
+
+			if (params.ignoreDiscussion) {
+				query.drid = { $exists: false };
+			}
+			if (params.users && params.users.length) {
+				query['u.username'] = { $in: params.users };
+			}
+
+			const filter = createFilterFromQuery<IMessage>(query);
+
+			const deletedMessages = messages.filter(filter);
+
+			console.log(deletedMessages);
+
+			// TODO : Create DeleteBulk
+		}),
+	[subscribeToNotifyRoom, rid, deleteMessage, messages]);
 
 	return {
 		messages,

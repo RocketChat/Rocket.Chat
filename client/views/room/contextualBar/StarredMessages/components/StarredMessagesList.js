@@ -3,11 +3,10 @@ import { Box } from '@rocket.chat/fuselage';
 
 // import { useTranslation } from '../../../../../contexts/TranslationContext';
 
-export const StarredMessagesList = () =>
-// const t = useTranslation();
+export const StarredMessagesList = ({ messages }) => {
+	const content = messages.map(({ msg }, idx) => <Box key={idx}>{msg}</Box>);
 
-	(
-		<Box fontScale='p2'>
-			has content!
-		</Box>
-	);
+	return	<Box fontScale='p2'>
+		{content}
+	</Box>;
+};
