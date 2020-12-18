@@ -75,6 +75,7 @@ Template.mentionsFlexTab.onDestroyed(function() {
 });
 
 Template.starredMessages.events({
+	...getCommonRoomEvents(),
 	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {
 			return instance.limit.set(instance.limit.get() + 50);
