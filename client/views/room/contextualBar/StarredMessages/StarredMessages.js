@@ -8,17 +8,17 @@ import { StarredMessagesList } from './components/StarredMessagesList';
 import VerticalBar from '../../../../components/VerticalBar';
 
 export const StarredMessages = ({
-	handleClose,
-	handleStarredMessages,
+	messages,
+	handleClose, // TODO: prefer `onClose`; `handleClose` refers to the concrete implementation
 }) => {
 	const t = useTranslation();
 
-	const content = handleStarredMessages.messages.length ? <StarredMessagesList /> : <EmptyStarredMessages />;
+	const content = messages.length ? <StarredMessagesList /> : <EmptyStarredMessages />;
 
 	return <>
 		<VerticalBar.Header>
 			<VerticalBar.Icon name='star'/>
-			<VerticalBar.Text>{ t('Starred_messages') }</VerticalBar.Text>
+			<VerticalBar.Text>{ t('Starred_Messages') }</VerticalBar.Text>
 			{handleClose && <VerticalBar.Close onClick={handleClose}/>}
 		</VerticalBar.Header>
 		<VerticalBar.ScrollableContent>
@@ -29,12 +29,10 @@ export const StarredMessages = ({
 
 export default React.memo(({ tabBar, rid }) => {
 	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
-	const staredMessages = useStarredMessages(rid);
-
-	staredMessages.loadData();
+	const { messages } = useStarredMessages(rid);
 
 	return <StarredMessages
 		handleClose={handleClose}
-		handleStarredMessages={staredMessages}
+		messages={messages}
 	/>;
 });
