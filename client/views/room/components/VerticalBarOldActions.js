@@ -16,7 +16,7 @@ export default ({ name, icon, tabBar, title, ...props }) => {
 	</VerticalBar.Header>
 
 	<VerticalBar.Content>
-		<BlazeTemplate name={name} tabBar={tabBar} {...props} />
+		<BlazeTemplate flexShrink={1} overflow='hidden' name={name} tabBar={tabBar} {...props} />
 	</VerticalBar.Content>
 	</>;
 };

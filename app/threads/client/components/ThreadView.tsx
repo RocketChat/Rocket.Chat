@@ -60,12 +60,10 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 				display='flex'
 				flexDirection='column'
 				width={'full'}
-				maxWidth={855}
+				maxWidth={hasExpand && expanded ? 855 : null}
 				overflow='hidden'
 				zIndex={100}
 				insetBlock={0}
-				// insetInlineEnd={0}
-				// borderStartStartRadius={4}
 				style={style} // workaround due to a RTL bug in Fuselage
 			>
 				<VerticalBar.Header>

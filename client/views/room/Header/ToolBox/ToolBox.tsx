@@ -80,7 +80,7 @@ const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Eleme
 			return <Header.ToolBoxAction {...props} />;
 		})}
 		{ actions.length > 6 && <Menu
-			small={!isMobile}
+			tiny={!isMobile}
 			className={className}
 			aria-keyshortcuts='alt'
 			tabIndex={-1}

@@ -11,7 +11,7 @@ const LayoutProvider: FC = ({ children }) => {
 	const layout = useQueryStringParameter('layout');
 	const isEmbedded = layout === 'embedded';
 	const breakpoints = useBreakpoints();
-	// ["xs", "sm", "md", "lg", "xl"]
+	// ["xs", "sm", "md", "lg", "xl", xxl"]
 	return <LayoutContext.Provider
 		children={children}
 		value={useMemo(() => ({
@@ -24,7 +24,7 @@ const LayoutProvider: FC = ({ children }) => {
 				// eslint-disable-next-line no-nested-ternary
 				contextualBar: breakpoints.includes('sm') ? breakpoints.includes('xl') ? '30%' : '380px' : '100%',
 			},
-			contextualBarExpanded: !breakpoints.includes('xl') || !breakpoints.includes('sm'),
+			contextualBarExpanded: !breakpoints.includes('xxl') && breakpoints.includes('sm'),
 			// eslint-disable-next-line no-nested-ternary
 			contextualBarPosition: breakpoints.includes('sm') ? breakpoints.includes('lg') ? 'relative' : 'absolute' : 'fixed',
 		}), [isEmbedded, showTopNavbarEmbeddedLayout, breakpoints])}

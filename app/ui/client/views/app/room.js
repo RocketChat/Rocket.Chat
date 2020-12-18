@@ -577,6 +577,7 @@ Meteor.startup(() => {
 		},
 		'click .new-message'(event, instance) {
 			instance.atBottom = true;
+			instance.sendToBottomIfNecessaryDebounced();
 			chatMessages[RoomManager.openedRoom].input.focus();
 		},
 		'click .upload-progress-close'(e) {

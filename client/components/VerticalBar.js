@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Margins, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Button, ActionButton, Icon, Margins, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useLayoutContextualBarPosition, useLayoutSizes } from '../providers/LayoutProvider';
@@ -44,20 +44,26 @@ function VerticalBarInnerContent(props) {
 
 function VerticalBarHeader({ children, ...props }) {
 	return <Box
+		display='flex'
+		alignItems='center'
 		minHeight='56px'
 		maxHeight='56px'
 		is='h3'
 		pi='x24'
-		display='flex'
-		alignItems='center'
-		justifyContent='space-between'
-		borderBlockColor='neutral-200'
 		borderBlockEndWidth='x2'
-		fontScale='s2'
-		color='neutral-800'
+		borderBlockColor='neutral-200'
 		{...props}
 	>
-		<Margins inline='x4'>{children}</Margins>
+		<Box
+			marginInline='neg-x4'
+			display='flex'
+			alignItems='center'
+			justifyContent='space-between'
+			fontScale='s2'
+			flexGrow={1}
+			color='neutral-800'>
+			<Margins inline='x4'>{children}</Margins>
+		</Box>
 	</Box>;
 }
 
@@ -71,7 +77,7 @@ function VerticalBarClose(props) {
 }
 
 const VerticalBarContent = React.forwardRef(function VerticalBarContent(props, ref) {
-	return <Page.Content display='flex' {...props} ref={ref}/>;
+	return <Page.Content rcx-vertical-bar__content display='flex' {...props} ref={ref}/>;
 });
 
 const VerticalBarScrollableContent = React.forwardRef(function VerticalBarScrollableContent({ children, ...props }, ref) {
@@ -91,11 +97,11 @@ function VerticalBarButton(props) {
 }
 
 function VerticalBarAction({ name, ...props }) {
-	return <VerticalBarButton small square flexShrink={0} ghost {...props}><VerticalBarIcon name={name}/></VerticalBarButton>;
+	return <ActionButton flexShrink={0} icon={name} ghost {...props} tiny />;
 }
 
 function VerticalBarActionBack(props) {
-	return <VerticalBarAction {...props} tiny name='arrow-back' />;
+	return <VerticalBarAction {...props} name='arrow-back' />;
 }
 
 function VerticalBarSkeleton(props) {

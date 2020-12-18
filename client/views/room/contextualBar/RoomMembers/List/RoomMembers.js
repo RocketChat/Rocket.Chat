@@ -136,7 +136,7 @@ export const RoomMembers = ({
 					</Box>
 				)}
 
-				<Box pi='x8' w='full' h='full' overflow='hidden' flexShrink={1} ref={ref}>
+				<Box w='full' h='full' overflow='hidden' flexShrink={1} ref={ref}>
 					{!loading && members
 					&& <InfiniteLoader
 						isItemLoaded={isItemLoaded}
