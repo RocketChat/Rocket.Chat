@@ -1,4 +1,26 @@
 
+# 3.9.3
+`2020-12-18  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### Important XSS Security hotfix
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.21.0-alpha.4235`
+
+### 🐛 Bug fixes
+
+
+- Issue with special message rendering ([#19817](https://github.com/RocketChat/Rocket.Chat/pull/19817))
+
+- Problem with attachment render ([#19854](https://github.com/RocketChat/Rocket.Chat/pull/19854))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+
 # 3.9.2
 `2020-12-17  ·  5 🐛  ·  6 👩‍💻👨‍💻`
 
@@ -11,9 +33,9 @@
 ### 🐛 Bug fixes
 
 
-- **ENTERPRISE:** Omnichannel Department form is not correctly storing the list of departments allowed for forwarding ([#19793](https://github.com/RocketChat/Rocket.Chat/pull/19793))
-
 - 'Not Allowed' in message auditing ([#19762](https://github.com/RocketChat/Rocket.Chat/pull/19762))
+
+- **ENTERPRISE:** Omnichannel Department form is not correctly storing the list of departments allowed for forwarding ([#19793](https://github.com/RocketChat/Rocket.Chat/pull/19793))
 
 - Download my data with file uploads ([#19862](https://github.com/RocketChat/Rocket.Chat/pull/19862))
 
