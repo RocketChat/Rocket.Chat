@@ -116,7 +116,7 @@ FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
-		renderRouteComponent(() => import('./account/AccountRoute'), { template: 'main', region: 'center' });
+		renderRouteComponent(() => import('./views/account/AccountRoute'), { template: 'main', region: 'center' });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');

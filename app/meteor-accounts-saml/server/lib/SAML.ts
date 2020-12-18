@@ -5,7 +5,6 @@ import { Random } from 'meteor/random';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import fiber from 'fibers';
-import s from 'underscore.string';
 
 import { settings } from '../../../settings/server';
 import { Users, Rooms, CredentialTokens } from '../../../models/server';
@@ -17,12 +16,14 @@ import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
+import { escapeHTML } from '../../../../lib/escapeHTML';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
 	res.writeHead(200, {
 		'Content-Type': 'text/html',
 	});
-	const content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${ s.escapeHTML(err) }</div></body></html>`;
+	const content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${ escapeHTML(err) }</div></body></html>`;
 	res.end(content, 'utf-8');
 };
 
@@ -71,8 +72,6 @@ export class SAML {
 	}
 
 	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
-		// @ts-ignore RegExp.escape is a meteor method
-		const escapeRegexp = (email: string): string => RegExp.escape(email);
 		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite } = SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
@@ -94,7 +93,7 @@ export class SAML {
 
 		// Second, try searching by username or email (according to the immutableProperty setting)
 		if (!user) {
-			const expression = userObject.emailList.map((email) => `^${ escapeRegexp(email) }$`).join('|');
+			const expression = userObject.emailList.map((email) => `^${ escapeRegExp(email) }$`).join('|');
 			const emailRegex = new RegExp(expression, 'i');
 
 			user = SAML.findUser(userObject.username, emailRegex);

@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useEffect } from 'react';
@@ -7,7 +6,7 @@ import memoize from 'memoize-one';
 
 import { usePreventDefault } from './hooks/usePreventDefault';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
-import { ReactiveUserStatus, colors } from '../components/basic/UserStatus';
+import { ReactiveUserStatus, colors } from '../components/UserStatus';
 import { useTranslation } from '../contexts/TranslationContext';
 import { roomTypes } from '../../app/utils';
 import { useUserPreference, useUserId } from '../contexts/UserContext';
@@ -19,7 +18,8 @@ import { useShortcutOpenMenu } from './hooks/useShortcutOpenMenu';
 import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 import { useRoomList } from './hooks/useRoomList';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
-import ScrollableContentWrapper from '../components/basic/ScrollableContentWrapper';
+import { escapeHTML } from '../../lib/escapeHTML';
+import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
 
 const sections = {
 	Omnichannel,
@@ -85,18 +85,18 @@ export const Row = React.memo(({ data, index, style }) => {
 
 export const normalizeSidebarMessage = (message, t) => {
 	if (message.msg) {
-		return s.escapeHTML(filterMarkdown(message.msg));
+		return escapeHTML(filterMarkdown(message.msg));
 	}
 
 	if (message.attachments) {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
 		if (attachment && attachment.description) {
-			return s.escapeHTML(attachment.description);
+			return escapeHTML(attachment.description);
 		}
 
 		if (attachment && attachment.title) {
-			return s.escapeHTML(attachment.title);
+			return escapeHTML(attachment.title);
 		}
 
 		return t('Sent_an_attachment');
@@ -228,6 +228,9 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 		return false;
 	}
 	if (prevProps.room.alert !== nextProps.room.alert) {
+		return false;
+	}
+	if (prevProps.room.v?.status !== nextProps.room.v?.status) {
 		return false;
 	}
 

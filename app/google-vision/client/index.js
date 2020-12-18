@@ -1,1 +1,4 @@
-import './googlevision';
+export {
+	createGoogleVisionMessageRenderer,
+	createGoogleVisionMessageStreamHandler,
+} from './googlevision';

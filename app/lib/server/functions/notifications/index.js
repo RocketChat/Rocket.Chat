@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import s from 'underscore.string';
 
+import { escapeRegExp } from '../../../../../lib/escapeRegExp';
 import { callbacks } from '../../../../callbacks';
 import { settings } from '../../../../settings';
 
@@ -39,7 +39,7 @@ export function replaceMentionedUsernamesWithFullNames(message, mentions) {
 	}
 	mentions.forEach((mention) => {
 		if (mention.name) {
-			message = message.replace(new RegExp(s.escapeRegExp(`@${ mention.username }`), 'g'), mention.name);
+			message = message.replace(new RegExp(escapeRegExp(`@${ mention.username }`), 'g'), mention.name);
 		}
 	});
 	return message;
@@ -57,7 +57,7 @@ export function messageContainsHighlight(message, highlights) {
 	if (! highlights || highlights.length === 0) { return false; }
 
 	return highlights.some(function(highlight) {
-		const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
+		const regexp = new RegExp(escapeRegExp(highlight), 'i');
 		return regexp.test(message.msg);
 	});
 }
