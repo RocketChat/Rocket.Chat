@@ -44,7 +44,7 @@ const UserRow = ({ emails, _id, username, name, roles, status, avatarETag, onCli
 };
 
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
+const useQuery = ({ text, itemsPerPage, current }, sorts) => useMemo(() => ({
 	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1, avatarETag: 1, active: 1 }),
 	query: JSON.stringify({
 		$or: [
@@ -53,16 +53,19 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMe
 			{ name: { $regex: text || '', $options: 'i' } },
 		],
 	}),
-	sort: JSON.stringify({ [column]: sortDir(direction), usernames: column === 'name' ? sortDir(direction) : undefined }),
+	sort: JSON.stringify(sorts.reduce((agg, [column, direction]) => {
+		agg[column] = sortDir(direction);
+		return agg;
+	}, {})),
 	...itemsPerPage && { count: itemsPerPage },
 	...current && { offset: current },
-}), [text, itemsPerPage, current, column, direction]);
+}), [text, itemsPerPage, current, sorts]);
 
 export function UsersTable() {
 	const t = useTranslation();
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['name', 'asc']);
+	const [sort, setSort] = useState([['name', 'asc'], ['usernames', 'asc']]);
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
@@ -78,13 +81,30 @@ export function UsersTable() {
 	}), [usersRoute]);
 
 	const onHeaderClick = useCallback((id) => {
-		const [sortBy, sortDirection] = sort;
+		const preparedSort = [];
+
+		const [[sortBy, sortDirection]] = sort;
 
 		if (sortBy === id) {
-			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
-			return;
+			preparedSort.push([id, sortDirection === 'asc' ? 'desc' : 'asc']);
+		} else {
+			preparedSort.push([id, 'asc']);
 		}
-		setSort([id, 'asc']);
+
+		//
+		// Special cases
+
+		// If the sortable field is `name`, we should also add `usernames`
+		if (id === 'name') {
+			preparedSort.push(['usernames', sortDirection]);
+		}
+
+		// If the sortable field is `name`, we should also add `usernames`
+		if (id === 'status') {
+			preparedSort.push(['active', sortDirection === 'asc' ? 'desc' : 'asc']);
+		}
+
+		setSort(preparedSort);
 	}, [sort]);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
