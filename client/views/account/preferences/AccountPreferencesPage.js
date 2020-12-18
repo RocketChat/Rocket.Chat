@@ -21,13 +21,15 @@ const AccountPreferencesPage = () => {
 
 	const [hasAnyChange, setHasAnyChange] = useState(false);
 
+	const [updates, setUpdates] = useState({});
+
 	const saveData = useRef({});
 
 	const dataDownloadEnabled = useSetting('UserData_EnableDownload');
 
 	const onChange = useCallback(({ initialValue, value, key }) => {
 		const { current } = saveData;
-		if (JSON.stringify(initialValue) !== JSON.stringify(value)) {
+		if (JSON.stringify(updates[key] || initialValue) !== JSON.stringify(value)) {
 			current[key] = value;
 		} else {
 			delete current[key];
@@ -44,7 +46,8 @@ const AccountPreferencesPage = () => {
 	const handleSave = useCallback(async () => {
 		try {
 			const { current: data } = saveData;
-			if (data.highlights && data.highlights.length > 0) {
+			setUpdates({ ...updates, ...data });
+			if (typeof(data.highlights) === "string") {
 				Object.assign(data, { highlights: data.highlights.split(/,|\n/).map((val) => val.trim()).filter(Boolean) });
 			}
 
