@@ -10,10 +10,14 @@ export default {
 
 export const Default = () => <VerticalBar>
 	<PruneMessages
-		onClickBack={alert}
 		onClickClose={alert}
-		onClickSave={alert}
-		value={[]}
-		errors={{}}
+	/>
+</VerticalBar>;
+
+export const withCallout = () => <VerticalBar>
+	<PruneMessages
+		onClickClose={alert}
+		pinned={true}
+		callOutText='Lorem Ipsum Ipsum Ipsum'
 	/>
 </VerticalBar>;

@@ -11,8 +11,9 @@ Meteor.startup(() => {
 		anonymous: true,
 		i18nTitle: 'Prune_Messages',
 		icon: 'eraser',
-		template: 'cleanHistory',
+		template: 'PruneMessages',
 		order: 250,
+		full: 1,
 		condition: () => hasAllPermission('clean-channel-history', Session.get('openedRoom')),
 	});
 });
