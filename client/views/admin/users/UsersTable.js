@@ -44,7 +44,7 @@ const UserRow = ({ emails, _id, username, name, roles, status, avatarETag, onCli
 };
 
 
-const useQuery = ({ text, itemsPerPage, current }, sorts) => useMemo(() => ({
+const useQuery = ({ text, itemsPerPage, current }, sortFields) => useMemo(() => ({
 	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1, avatarETag: 1, active: 1 }),
 	query: JSON.stringify({
 		$or: [
@@ -53,13 +53,13 @@ const useQuery = ({ text, itemsPerPage, current }, sorts) => useMemo(() => ({
 			{ name: { $regex: text || '', $options: 'i' } },
 		],
 	}),
-	sort: JSON.stringify(sorts.reduce((agg, [column, direction]) => {
+	sort: JSON.stringify(sortFields.reduce((agg, [column, direction]) => {
 		agg[column] = sortDir(direction);
 		return agg;
 	}, {})),
 	...itemsPerPage && { count: itemsPerPage },
 	...current && { offset: current },
-}), [text, itemsPerPage, current, sorts]);
+}), [text, itemsPerPage, current, sortFields]);
 
 export function UsersTable() {
 	const t = useTranslation();
