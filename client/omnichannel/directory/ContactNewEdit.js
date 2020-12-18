@@ -21,6 +21,7 @@ const initialValues = {
 	name: '',
 	email: '',
 	phone: '',
+	username: '',
 };
 
 const getInitialValues = (data) => {
@@ -199,7 +200,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
-				<Button flexGrow={1} type='reset'>{t('Cancel')}</Button>
+				<Button flexGrow={1} onClick={close}>{t('Cancel')}</Button>
 				<Button mie='none' flexGrow={1} onClick={handleSave} disabled={!formIsValid} primary>{t('Save')}</Button>
 			</ButtonGroup>
 		</VerticalBar.Footer>

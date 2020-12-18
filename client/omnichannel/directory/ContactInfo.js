@@ -24,7 +24,6 @@ function ContactManagerField({ username }) {
 	const { data, state } = useEndpointDataExperimental(`users.info?username=${ username }`);
 	if (!data && state === ENDPOINT_STATES.LOADING) { return null; }
 	const { user: { name, status } } = data;
-	console.log(name, status);
 	return <>
 		<Info style={{ display: 'flex' }}>
 			<UserAvatar title={username} username={username} />
@@ -123,7 +122,7 @@ export function ContactInfo({ id }) {
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
-				<Button><Icon name='history' size='x20'/> {t('Chat_History')}</Button>
+				{/* <Button><Icon name='history' size='x20'/> {t('Chat_History')}</Button> */}
 				<Button onClick={onEditButtonClick}><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
 			</ButtonGroup>
 		</VerticalBar.Footer>
