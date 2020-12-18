@@ -11,13 +11,28 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { hasPermission } from '../../../app/authorization';
 import { useFormatDate } from '../../hooks/useFormatDate';
-
+import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import { UserStatus } from '../../components/basic/UserStatus';
 
 const wordBreak = css`
 	word-break: break-word;
 `;
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
+
+function ContactManagerField({ username }) {
+	const { data, state } = useEndpointDataExperimental(`users.info?username=${ username }`);
+	if (!data && state === ENDPOINT_STATES.LOADING) { return null; }
+	const { user: { name, status } } = data;
+	console.log(name, status);
+	return <>
+		<Info style={{ display: 'flex' }}>
+			<UserAvatar title={username} username={username} />
+			<UserCard.Username mis='x10' name={username} status={<UserStatus status={status} />} />
+			<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>({name})</Box>
+		</Info>
+	</>;
+}
 
 export function ContactInfo({ id }) {
 	const t = useTranslation();
@@ -26,6 +41,7 @@ export function ContactInfo({ id }) {
 	const { data: allCustomFields, state: stateCustomFields } = useEndpointDataExperimental('livechat/custom-fields');
 
 	const [customFields, setCustomFields] = useState([]);
+
 	const formatDate = useFormatDate();
 
 
@@ -44,7 +60,11 @@ export function ContactInfo({ id }) {
 		}
 	}, [allCustomFields, stateCustomFields]);
 
+
 	const { data, state, error } = useEndpointDataExperimental(`contact?contactId=${ id }`);
+
+	const { contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, user } } = data || { contact: {} };
+
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <FormSkeleton />;
 	}
@@ -52,7 +72,6 @@ export function ContactInfo({ id }) {
 	if (error || !data || !data.contact) {
 		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
 	}
-	const { contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat } } = data;
 
 	const checkIsVisibleAndScopeVisitor = (key) => {
 		const field = customFields.find(({ _id }) => _id === key);
@@ -90,6 +109,15 @@ export function ContactInfo({ id }) {
 						<Info>{livechatData[key]}</Info></>
 					}
 				</Box>)
+				}
+				{lastChat && <>
+					<Label>{t('LastChat')}</Label>
+					<Info>{formatDate(lastChat.ts)}</Info>
+				</>}
+				{ user && <>
+					<Label>{t('Contact_Manager')}</Label>
+					<ContactManagerField username={user.username} />
+				</>
 				}
 			</Margins>
 		</VerticalBar.ScrollableContent>
