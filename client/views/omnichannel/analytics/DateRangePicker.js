@@ -1,42 +1,23 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Box, InputBox, Menu, Margins, Field } from '@rocket.chat/fuselage';
+import { Box, InputBox, Menu, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import moment from 'moment';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-const date = new Date();
+const formatToDateInput = (date) => date.format('YYYY-MM-DD');
 
-const formatToDateInput = (date) => date.toISOString().slice(0, 10);
+const todayDate = formatToDateInput(moment());
 
-const todayDate = formatToDateInput(date);
+const getMonthRange = (monthsToSubtractFromToday) => ({
+	start: formatToDateInput(moment().subtract(monthsToSubtractFromToday, 'month').date(1)),
+	end: formatToDateInput(monthsToSubtractFromToday === 0 ? moment() : moment().subtract(monthsToSubtractFromToday).date(0)),
+});
 
-const getMonthRange = (monthsToSubtractFromToday) => {
-	const date = new Date();
-	return {
-		start: formatToDateInput(new Date(
-			date.getFullYear(),
-			date.getMonth() - monthsToSubtractFromToday,
-			1)),
-		end: formatToDateInput(new Date(
-			date.getFullYear(),
-			date.getMonth() - monthsToSubtractFromToday + 1,
-			0)),
-	};
-};
-
-const getWeekRange = (daysToSubtractFromStart, daysToSubtractFromEnd) => {
-	const date = new Date();
-	return {
-		start: formatToDateInput(new Date(
-			date.getFullYear(),
-			date.getMonth(),
-			date.getDate() - daysToSubtractFromStart)),
-		end: formatToDateInput(new Date(
-			date.getFullYear(),
-			date.getMonth(),
-			date.getDate() - daysToSubtractFromEnd)),
-	};
-};
+const getWeekRange = (daysToSubtractFromStart, daysToSubtractFromEnd) => ({
+	start: formatToDateInput(moment().subtract(daysToSubtractFromStart, 'day')),
+	end: formatToDateInput(moment().subtract(daysToSubtractFromEnd, 'day')),
+});
 
 const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 	const t = useTranslation();
@@ -110,22 +91,20 @@ const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 		},
 	}), [handleRange, t]);
 
-	return <Box mi='neg-x4' {...props}>
-		<Margins inline='x4'>
-			<Field>
-				<Field.Label>{t('Start')}</Field.Label>
-				<Field.Row>
-					<InputBox type='date' onChange={handleStart} max={todayDate} value={start}/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('End')}</Field.Label>
-				<Field.Row>
-					<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end}/>
-					<Menu options={options}/>
-				</Field.Row>
-			</Field>
-		</Margins>
+	return <Box {...props}>
+		<Field mis='x4' flexShrink={1}>
+			<Field.Label>{t('Start')}</Field.Label>
+			<Field.Row>
+				<InputBox type='date' onChange={handleStart} max={todayDate} value={start}/>
+			</Field.Row>
+		</Field>
+		<Field mis='x4' flexShrink={1}>
+			<Field.Label>{t('End')}</Field.Label>
+			<Field.Row>
+				<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end}/>
+				<Menu options={options}/>
+			</Field.Row>
+		</Field>
 	</Box>;
 };
 
