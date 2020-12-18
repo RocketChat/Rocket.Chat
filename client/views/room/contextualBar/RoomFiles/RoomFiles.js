@@ -4,8 +4,6 @@ import {
 	Box,
 	Icon,
 	TextInput,
-	Field,
-	FieldGroup,
 	Select,
 	Throbber,
 	Margins,
