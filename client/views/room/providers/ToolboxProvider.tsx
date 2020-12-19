@@ -55,7 +55,7 @@ const useToolboxActions = (room: IRoom): { listen: (handler: Handler<any>) => Fu
 export const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const uid = useUserId();
-	const [activeTabBar, setActiveTabBar] = useState<ToolboxActionConfig|undefined>();
+	const [activeTabBar, setActiveTabBar] = useState<[ToolboxActionConfig|undefined, any]>([]);
 	const [list, setList] = useDebouncedState<Store<ToolboxAction>>(new Map(), 5);
 	const handleChange = useMutableCallback((fn) => { fn(list); setList((list) => new Map(list)); });
 	const { listen, actions } = useToolboxActions(room);
@@ -66,6 +66,7 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 	const currentRoom = useSession('openedRoom');
 
 	const tab = params?.tab;
+	const context = params?.context;
 
 	const open = useMutableCallback((actionId, context) => {
 		router.push({
@@ -103,27 +104,29 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 		}
 
 		if (!tab) {
-			setActiveTabBar(undefined);
+			setActiveTabBar([undefined, undefined]);
 		}
 
-		setActiveTabBar(list.get(tab as string) as ToolboxActionConfig);
-	}, [tab, list, currentRoom, room._id]);
+		setActiveTabBar([list.get(tab as string) as ToolboxActionConfig, context]);
+	}, [tab, list, currentRoom, room._id, context]);
 
-	const context = useMemo(() => ({
+	const contextValue = useMemo(() => ({
 		listen,
 		actions: new Map(list),
-		activeTabBar,
+		activeTabBar: activeTabBar[0],
+		context: activeTabBar[1],
 		open,
 		close,
 		openUserInfo,
 	}), [listen, list, activeTabBar, open, close, openUserInfo]);
 
-	return <ToolboxContext.Provider value={context}>
+	return <ToolboxContext.Provider value={contextValue}>
 		{ actions.filter(([, action]) => uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && (action as ToolboxActionConfig).anonymous)).map(([id, item]) => <VirtualAction action={item} room={room} id={id} key={id} handleChange={handleChange} />) }
 		{children}
 	</ToolboxContext.Provider>;
 };
 
+export const useTabContext = (): ToolboxActionConfig | undefined => useContext(ToolboxContext).context;
 export const useTab = (): ToolboxActionConfig | undefined => useContext(ToolboxContext).activeTabBar;
 export const useTabBarOpen = (): Function => useContext(ToolboxContext).open;
 export const useTabBarClose = (): Function => useContext(ToolboxContext).close;

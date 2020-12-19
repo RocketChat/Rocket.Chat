@@ -20,7 +20,7 @@ import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose, useTabContext } from '../../providers/ToolboxProvider';
 import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
 import { renderMessageBody } from '../../../../lib/renderMessageBody';
 
@@ -240,7 +240,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 	const isItemLoaded = useMutableCallback((index) => index < threadsRef.current.length);
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({ debounceDelay: 200 });
 
-	const mid = useRouteParameter('context');
+	const mid = useTabContext();
 	const jump = useQueryStringParameter('jump');
 
 	return <>

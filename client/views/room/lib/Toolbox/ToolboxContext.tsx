@@ -9,6 +9,7 @@ export type ChannelContextValue = {
 	actions: Map<ToolboxActionConfig['id'], ToolboxAction>;
 	listen: (handler: Handler) => Function;
 	tabBar?: any;
+	context?: any;
 	open: Function;
 	openUserInfo: Function;
 	close: Function;

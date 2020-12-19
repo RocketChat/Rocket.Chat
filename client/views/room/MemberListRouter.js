@@ -1,14 +1,13 @@
 import React from 'react';
 
 import UserInfo from './contextualBar/UserInfo';
-import { useRouteParameter } from '../../contexts/RouterContext';
 import { useUserId } from '../../contexts/UserContext';
 import { useRoom } from './providers/RoomProvider';
-import { useTab, useTabBarClose } from './providers/ToolboxProvider';
+import { useTab, useTabBarClose, useTabContext } from './providers/ToolboxProvider';
 import RoomMembers from './contextualBar/RoomMembers';
 
 const MemberListRouter = ({ rid }) => {
-	const username = useRouteParameter('context');
+	const username = useTabContext();
 	const room = useRoom();
 	const onClickClose = useTabBarClose();
 	const ownUserId = useUserId();
