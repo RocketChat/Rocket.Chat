@@ -2,10 +2,10 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { Tabs, Icon, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import ContactTab from './ContactTab';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 import { ContactNewEdit, ContactEditWithData } from './ContactNewEdit';
 import { ContactInfo } from './ContactInfo';
 

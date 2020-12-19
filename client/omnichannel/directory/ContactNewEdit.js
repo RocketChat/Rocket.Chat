@@ -4,17 +4,18 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import VerticalBar from '../../components/basic/VerticalBar';
+import VerticalBar from '../../components/VerticalBar';
 import { useForm } from '../../hooks/useForm';
 import { isEmail } from '../../../app/utils';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import { FormSkeleton } from './Skeleton';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { hasAtLeastOnePermission } from '../../../app/authorization';
-import { UserAutoComplete } from '../../components/basic/AutoComplete';
+import { UserAutoComplete } from '../../components/AutoComplete';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 
 const initialValues = {
@@ -42,9 +43,9 @@ const getInitialValues = (data) => {
 
 export function ContactEditWithData({ id, reload, close }) {
 	const t = useTranslation();
-	const { data, state, error } = useEndpointDataExperimental(`contact?contactId=${ id }`);
+	const { value: data, phase: state, error } = useEndpointData(`contact?contactId=${ id }`);
 
-	if ([state].includes(ENDPOINT_STATES.LOADING)) {
+	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 
@@ -86,7 +87,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	const [emailError, setEmailError] = useState();
 	const [phoneError] = useState();
 
-	const { data: allCustomFields, state } = useEndpointDataExperimental('livechat/custom-fields');
+	const { value: allCustomFields, phase: state } = useEndpointData('livechat/custom-fields');
 
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};
@@ -156,7 +157,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	const formIsValid = name && !emailError;
 
 
-	if ([state].includes(ENDPOINT_STATES.LOADING)) {
+	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 

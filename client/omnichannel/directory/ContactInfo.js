@@ -3,16 +3,17 @@ import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import VerticalBar from '../../components/basic/VerticalBar';
-import UserCard from '../../components/basic/UserCard';
+import VerticalBar from '../../components/VerticalBar';
+import UserCard from '../../components/UserCard';
 import { FormSkeleton } from './Skeleton';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { hasPermission } from '../../../app/authorization';
 import { useFormatDate } from '../../hooks/useFormatDate';
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
-import { UserStatus } from '../../components/basic/UserStatus';
+import UserAvatar from '../../components/avatar/UserAvatar';
+import { UserStatus } from '../../components/UserStatus';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
 
 const wordBreak = css`
 	word-break: break-word;
@@ -21,8 +22,8 @@ const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
 
 function ContactManagerField({ username }) {
-	const { data, state } = useEndpointDataExperimental(`users.info?username=${ username }`);
-	if (!data && state === ENDPOINT_STATES.LOADING) { return null; }
+	const { value: data, phase: state } = useEndpointData(`users.info?username=${ username }`);
+	if (!data && state === AsyncStatePhase.LOADING) { return null; }
 	const { user: { name, status } } = data;
 	return <>
 		<Info style={{ display: 'flex' }}>
@@ -37,7 +38,7 @@ export function ContactInfo({ id }) {
 	const t = useTranslation();
 	const directoryRoute = useRoute('omnichannel-directory');
 
-	const { data: allCustomFields, state: stateCustomFields } = useEndpointDataExperimental('livechat/custom-fields');
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
 
 	const [customFields, setCustomFields] = useState([]);
 
@@ -53,18 +54,18 @@ export function ContactInfo({ id }) {
 	}));
 
 	useEffect(() => {
-		if (allCustomFields && stateCustomFields === ENDPOINT_STATES.DONE) {
+		if (allCustomFields && stateCustomFields === AsyncStatePhase.DONE) {
 			const { customFields: customFieldsAPI } = allCustomFields;
 			setCustomFields(customFieldsAPI);
 		}
 	}, [allCustomFields, stateCustomFields]);
 
 
-	const { data, state, error } = useEndpointDataExperimental(`contact?contactId=${ id }`);
+	const { value: data, phase: state, error } = useEndpointData(`contact?contactId=${ id }`);
 
 	const { contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, user } } = data || { contact: {} };
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
 

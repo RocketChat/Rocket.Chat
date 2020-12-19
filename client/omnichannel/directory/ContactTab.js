@@ -3,7 +3,7 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import { Table } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import GenericTable from '../../components/GenericTable';
 import FilterByText from '../../components/FilterByText';
 import { useRoute } from '../../contexts/RouterContext';
@@ -50,7 +50,7 @@ function ContactTable({ setContactReload }) {
 		id,
 	}));
 
-	const { data, reload } = useEndpointDataExperimental('livechat/visitors.search', query) || {};
+	const { value: data, reload } = useEndpointData('livechat/visitors.search', query) || {};
 
 	useEffect(() => {
 		setContactReload(() => reload);
