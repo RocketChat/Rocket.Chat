@@ -50375,6 +50375,58 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "1.3.5": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "apps_engine_version": "1.5.1",
+      "mongo_versions": [],
+      "pull_requests": [
+        {
+          "pr": "19817",
+          "title": "[FIX] Issue with special message rendering",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19854",
+          "title": "[FIX] Problem with attachment render",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "3.7.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.18.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19854",
+          "title": "[FIX] Problem with attachment render",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19817",
+          "title": "[FIX] Issue with special message rendering",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
     }
   }
 }
