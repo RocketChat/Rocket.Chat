@@ -21,5 +21,12 @@
 		"title": "[FIX] Layout color settings not saving properly",
 		"userLogin": "ggazzo",
 		"contributors": []
+	}],
+	"2.4.13": [{
+		"title": "[FIX] Exception on certain login cases including SAML",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
 	}]
 }
