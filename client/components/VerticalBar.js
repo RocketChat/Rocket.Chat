@@ -61,6 +61,7 @@ function VerticalBarHeader({ children, ...props }) {
 			justifyContent='space-between'
 			fontScale='s2'
 			flexGrow={1}
+			overflow='hidden'
 			color='neutral-800'>
 			<Margins inline='x4'>{children}</Margins>
 		</Box>
