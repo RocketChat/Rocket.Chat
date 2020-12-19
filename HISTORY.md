@@ -1,4 +1,26 @@
 
+# 3.8.4
+`2020-12-18  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### Important XSS Security hotfix
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.19.0`
+
+### 🐛 Bug fixes
+
+
+- Issue with special message rendering ([#19817](https://github.com/RocketChat/Rocket.Chat/pull/19817))
+
+- Problem with attachment render ([#19854](https://github.com/RocketChat/Rocket.Chat/pull/19854))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+
 # 3.8.3
 `2020-12-05  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
@@ -362,6 +384,26 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 3.7.4
+`2020-12-18  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.18.0`
+
+### 🐛 Bug fixes
+
+
+- Issue with special message rendering ([#19817](https://github.com/RocketChat/Rocket.Chat/pull/19817))
+
+- Problem with attachment render ([#19854](https://github.com/RocketChat/Rocket.Chat/pull/19854))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
 
 # 3.7.3
 `2020-12-05  ·  1 🐛  ·  1 👩‍💻👨‍💻`
@@ -824,8 +866,10 @@
 
 - **2FA:** Password enforcement setting and 2FA protection when saving settings or resetting E2E encryption ([#18640](https://github.com/RocketChat/Rocket.Chat/pull/18640))
 
-  - Increase the 2FA remembering time from 5min to 30min  
-  - Add new setting to enforce 2FA password fallback (enabled only for new installations)  
+  - Increase the 2FA remembering time from 5min to 30min
+
+  - Add new setting to enforce 2FA password fallback (enabled only for new installations)
+
   - Require 2FA to save settings and reset E2E Encryption keys
 
 - **Omnichannel:** Allow set other agent status via method `livechat:changeLivechatStatus ` ([#18571](https://github.com/RocketChat/Rocket.Chat/pull/18571))
@@ -1172,7 +1216,7 @@
 
 - External MP3 encoder worker for audio recording ([#18277](https://github.com/RocketChat/Rocket.Chat/pull/18277))
 
-- Sign in with apple (iOS client only) ([#18258](https://github.com/RocketChat/Rocket.Chat/pull/18258))
+- Sign in with apple (iOS client only) ([#18258](https://github.com/RocketChat/Rocket.Chat/pull/18258) by [@djorkaeffalexandre](https://github.com/djorkaeffalexandre))
 
   Add Sign in with Apple service for the iOS client-only, support for the Web and Android clients will land in future releases.
 
@@ -1185,7 +1229,7 @@
 ### 🚀 Improvements
 
 
-- Change setting that blocks unauthenticated access to avatar to public ([#18316](https://github.com/RocketChat/Rocket.Chat/pull/18316))
+- Change setting that blocks unauthenticated access to avatar to public ([#18316](https://github.com/RocketChat/Rocket.Chat/pull/18316) by [@djorkaeffalexandre](https://github.com/djorkaeffalexandre))
 
 - Improve performance and remove agents when the department is removed ([#17049](https://github.com/RocketChat/Rocket.Chat/pull/17049) by [@MarcosSpessatto](https://github.com/MarcosSpessatto))
 
@@ -1193,9 +1237,12 @@
 
 - Mention autocomplete UI and performance improvements  ([#18309](https://github.com/RocketChat/Rocket.Chat/pull/18309))
 
-  * New setting to configure the number of suggestions `Admin > Layout > User Interface > Number of users' autocomplete suggestions` (default 5)  
-  * The UI shows whenever the user is not a member of the room  
-  * The UI shows when the suggestion came from the last messages for quick selection/reply  
+  * New setting to configure the number of suggestions `Admin > Layout > User Interface > Number of users' autocomplete suggestions` (default 5)
+
+  * The UI shows whenever the user is not a member of the room
+
+  * The UI shows when the suggestion came from the last messages for quick selection/reply
+
   * The suggestions follow this order:
     * The user with the exact username and member of the room
     * The user with the exact username but not a member of the room (if allowed to list non-members)
@@ -1303,11 +1350,11 @@
 
 - Regression: nickname field in user profile. ([#18359](https://github.com/RocketChat/Rocket.Chat/pull/18359))
 
-- Regression: Notification with id-only isn't showed by iOS devices ([#18353](https://github.com/RocketChat/Rocket.Chat/pull/18353))
+- Regression: Notification with id-only isn't showed by iOS devices ([#18353](https://github.com/RocketChat/Rocket.Chat/pull/18353) by [@djorkaeffalexandre](https://github.com/djorkaeffalexandre))
 
 - Regression: Preferences crashing when User has no preferences set. ([#18341](https://github.com/RocketChat/Rocket.Chat/pull/18341))
 
-- Regression: Provide a fallback text when push notification is idOnly ([#18373](https://github.com/RocketChat/Rocket.Chat/pull/18373))
+- Regression: Provide a fallback text when push notification is idOnly ([#18373](https://github.com/RocketChat/Rocket.Chat/pull/18373) by [@djorkaeffalexandre](https://github.com/djorkaeffalexandre))
 
 - Regression: Remove calls to Console API in useForm hook ([#18244](https://github.com/RocketChat/Rocket.Chat/pull/18244))
 
@@ -1348,6 +1395,7 @@
 - [@antkaz](https://github.com/antkaz)
 - [@cking-vonix](https://github.com/cking-vonix)
 - [@darigovresearch](https://github.com/darigovresearch)
+- [@djorkaeffalexandre](https://github.com/djorkaeffalexandre)
 - [@lpilz](https://github.com/lpilz)
 - [@mariaeduardacunha](https://github.com/mariaeduardacunha)
 - [@omarchehab98](https://github.com/omarchehab98)
@@ -1357,7 +1405,6 @@
 
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
-- [@djorkaeffalexandre](https://github.com/djorkaeffalexandre)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -1977,7 +2024,7 @@
 
 - Rewrite admin pages ([#17388](https://github.com/RocketChat/Rocket.Chat/pull/17388) by [@mariaeduardacunha](https://github.com/mariaeduardacunha))
 
-- Screen Lock settings - mobile client ([#17523](https://github.com/RocketChat/Rocket.Chat/pull/17523))
+- Screen Lock settings - mobile client ([#17523](https://github.com/RocketChat/Rocket.Chat/pull/17523) by [@djorkaeffalexandre](https://github.com/djorkaeffalexandre))
 
 - Show user's status description by the usernames in messages list ([#14892](https://github.com/RocketChat/Rocket.Chat/pull/14892) by [@wreiske](https://github.com/wreiske))
 
@@ -2053,9 +2100,12 @@
 
 - Notification sounds ([#17616](https://github.com/RocketChat/Rocket.Chat/pull/17616))
 
-  * Global CDN config was ignored when loading the sound files  
-  * Upload of custom sounds wasn't getting the file extension correctly  
-  * Some translations were missing  
+  * Global CDN config was ignored when loading the sound files
+
+  * Upload of custom sounds wasn't getting the file extension correctly
+
+  * Some translations were missing
+
   * Edit and delete of custom sounds were not working correctly
 
 - Omnichannel departments are not saved when the offline channel name is not defined ([#17553](https://github.com/RocketChat/Rocket.Chat/pull/17553))
@@ -2198,6 +2248,7 @@
 - [@Nikhil713](https://github.com/Nikhil713)
 - [@TaimurAzhar](https://github.com/TaimurAzhar)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@djorkaeffalexandre](https://github.com/djorkaeffalexandre)
 - [@dudizilla](https://github.com/dudizilla)
 - [@fbartels](https://github.com/fbartels)
 - [@huzaifahj](https://github.com/huzaifahj)
@@ -2222,7 +2273,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@ashwaniYDV](https://github.com/ashwaniYDV)
 - [@d-gubert](https://github.com/d-gubert)
-- [@djorkaeffalexandre](https://github.com/djorkaeffalexandre)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
@@ -2344,11 +2394,16 @@
 - Better Push and Email Notification logic ([#17357](https://github.com/RocketChat/Rocket.Chat/pull/17357))
 
   We are still using the same logic to define which notifications every new message will generate, it takes some servers' settings, users's preferences and subscriptions' settings in consideration to determine who will receive each notification type (desktop, audio, email and mobile push), but now it doesn't check the user's status (online, away, offline) for email and mobile push notifications but send those notifications to a new queue with the following rules:
-  
-  - When the user is online the notification is scheduled to be sent in 120 seconds  
-  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away  
-  - When the user is offline the notification is scheduled to be sent right away  
-  - When the user reads a channel all the notifications for that user are removed (clear queue)  
+
+
+  - When the user is online the notification is scheduled to be sent in 120 seconds
+
+  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away
+
+  - When the user is offline the notification is scheduled to be sent right away
+
+  - When the user reads a channel all the notifications for that user are removed (clear queue)
+
   - When a notification is processed to be sent to a user and there are other scheduled notifications:
     - All the scheduled notifications for that user are rescheduled to now
     - The current notification goes back to the queue to be processed ordered by creation date
@@ -3022,7 +3077,7 @@
 
 - Regression: Broken Search if users without DM subscriptions are listed ([#17074](https://github.com/RocketChat/Rocket.Chat/pull/17074))
 
-- Regression: Can't login with 2FA over REST API when 2FA via Email is enabled ([#17128](https://github.com/RocketChat/Rocket.Chat/pull/17128))
+- Regression: Can't login with 2FA over REST API when 2FA via Email is enabled ([#17128](https://github.com/RocketChat/Rocket.Chat/pull/17128) by [@djorkaeffalexandre](https://github.com/djorkaeffalexandre))
 
 - Regression: Check Omnichannel routing system before emitting queue changes ([#17087](https://github.com/RocketChat/Rocket.Chat/pull/17087))
 
@@ -3104,6 +3159,7 @@
 - [@aryamanpuri](https://github.com/aryamanpuri)
 - [@col-panic](https://github.com/col-panic)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@djorkaeffalexandre](https://github.com/djorkaeffalexandre)
 - [@fliptrail](https://github.com/fliptrail)
 - [@georgmu](https://github.com/georgmu)
 - [@harakiwi1](https://github.com/harakiwi1)
@@ -3126,7 +3182,6 @@
 - [@Sing-Li](https://github.com/Sing-Li)
 - [@ashwaniYDV](https://github.com/ashwaniYDV)
 - [@d-gubert](https://github.com/d-gubert)
-- [@djorkaeffalexandre](https://github.com/djorkaeffalexandre)
 - [@engelgabriel](https://github.com/engelgabriel)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
@@ -3783,6 +3838,26 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 2.4.14
+`2020-12-18  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.11.2`
+
+### 🐛 Bug fixes
+
+
+- Issue with special message rendering ([#19817](https://github.com/RocketChat/Rocket.Chat/pull/19817))
+
+- Problem with attachment render ([#19854](https://github.com/RocketChat/Rocket.Chat/pull/19854))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
 
 # 2.4.12
 `2020-05-11  ·  1 🐛  ·  1 👩‍💻👨‍💻`
@@ -5302,6 +5377,25 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 1.3.5
+`2020-12-18  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- Apps-Engine: `1.5.1`
+
+### 🐛 Bug fixes
+
+
+- Issue with special message rendering ([#19817](https://github.com/RocketChat/Rocket.Chat/pull/19817))
+
+- Problem with attachment render ([#19854](https://github.com/RocketChat/Rocket.Chat/pull/19854))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
 
 # 1.3.3
 `2019-11-19  ·  2 🐛  ·  2 👩‍💻👨‍💻`
