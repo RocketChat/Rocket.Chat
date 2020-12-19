@@ -4,7 +4,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
-import { escapeRegExp } from '../../../client/lib/escapeRegExp';
+import { escapeRegExp } from '../../../lib/escapeRegExp';
 import '../../theme/client/imports/components/emojiPicker.css';
 import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';

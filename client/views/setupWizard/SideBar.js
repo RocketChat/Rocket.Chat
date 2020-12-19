@@ -3,9 +3,9 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import Logo from '../../components/basic/Logo';
+import Logo from '../../components/Logo';
 import './SideBar.css';
-import ScrollableContentWrapper from '../../components/basic/ScrollableContentWrapper';
+import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
 
 function SideBar({
 	logoSrc = 'images/logo/logo.svg',

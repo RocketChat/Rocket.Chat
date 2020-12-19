@@ -5,8 +5,8 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
 import { useSession } from '../../../../client/contexts/SessionContext';
-import Emoji from '../../../../client/components/basic/Emoji';
-import ScrollableContentWrapper from '../../../../client/components/basic/ScrollableContentWrapper';
+import Emoji from '../../../../client/components/Emoji';
+import ScrollableContentWrapper from '../../../../client/components/ScrollableContentWrapper';
 import { openUserCard } from '../../../ui/client/lib/UserCard';
 import { openProfileTabOrOpenDM } from '../../../ui/client/views/app/room';
 
