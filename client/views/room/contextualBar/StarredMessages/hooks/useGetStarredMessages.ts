@@ -3,17 +3,25 @@ import { useCallback } from 'react';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { IMessage } from '../../../../../../definition/IMessage';
 import { IRoom } from '../../../../../../definition/IRoom';
+import { Sort } from '../../../../../lib/minimongo';
 
+type RawMessage = Omit<IMessage, '_updatedAt' | 'ts'> & {
+	_updatedAt: string;
+	ts: string;
+};
 
 type GetStarredMessagesParams = {
 	roomId: IRoom['_id'];
 	offset?: number;
 	count?: number;
-	sort?: unknown;
+	sort?: Sort;
 };
 
-type RawMessage = Omit<IMessage, '_updatedAt' | 'ts'> // we omit the fields of Date type...
-& { _updatedAt: string; ts: string }; // and re-add them as strings
+type GetStarredMessagesReturn = Promise<{
+	messages: RawMessage[];
+}>;
+
+type GetStarredMessagesType = (params: GetStarredMessagesParams) => GetStarredMessagesReturn;
 
 const mapRawMessage = (message: RawMessage): IMessage => ({
 	...message,
@@ -22,15 +30,10 @@ const mapRawMessage = (message: RawMessage): IMessage => ({
 });
 
 export const useGetStarredMessages = (): ((params: GetStarredMessagesParams) => Promise<IMessage[]>) => {
-	const getStarredMessages = useEndpoint('GET', 'chat.getStarredMessages');
+	const getStarredMessages: GetStarredMessagesType = useEndpoint('GET', 'chat.getStarredMessages');
 
 	return useCallback<(params: GetStarredMessagesParams) => Promise<IMessage[]>>(async (params) => {
 		const result = await getStarredMessages(params);
-
-		/*
-			Messages coming from the REST API are just plain JSON objects i.e. all the dates are strings
-			in the ISO 8601 format. We need to convert `_updatedAt` and `ts` types from string to Date.
-		*/
 		return result.messages.map(mapRawMessage);
 	}, [getStarredMessages]);
 };

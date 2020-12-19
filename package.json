@@ -199,6 +199,7 @@
 		"iconv-lite": "^0.4.24",
 		"image-size": "^0.6.3",
 		"imap": "^0.8.19",
+		"immer": "^8.0.0",
 		"ip-range-check": "^0.0.2",
 		"jquery": "^3.5.1",
 		"jschardet": "^1.6.0",

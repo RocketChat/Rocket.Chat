@@ -8,6 +8,7 @@ type AsyncStateObject<T> = AsyncState<T> & {
 	reject: (error: Error) => void;
 	reset: () => void;
 	update: () => void;
+	mutate: (mutation: (prev: T | undefined) => Promise<T>) => void;
 };
 
 export const useAsyncState = <T>(initialValue?: T | (() => T)): AsyncStateObject<T> => {
@@ -24,6 +25,16 @@ export const useAsyncState = <T>(initialValue?: T | (() => T)): AsyncStateObject
 			);
 		}),
 	);
+
+	const mutate = useCallback((mutation: (prev: T | undefined) => Promise<T>): void => {
+		setState((prev) => {
+			mutation(asyncState.value(prev))
+				.then((value) => setState((prev) => asyncState.resolve(prev, value)))
+				.catch((error) => setState((prev) => asyncState.reject(prev, error)));
+
+			return asyncState.update(prev);
+		});
+	}, [setState]);
 
 	const resolve = useCallback((value: T | ((prev: T | undefined) => T)) => {
 		setState((state) => asyncState.resolve(state, (value as (prev: T | undefined) => T)(state.value)));
@@ -48,7 +59,8 @@ export const useAsyncState = <T>(initialValue?: T | (() => T)): AsyncStateObject
 		reject,
 		reset,
 		update,
-	}), [state, resolve, reject, reset, update]);
+		mutate,
+	}), [state, resolve, reject, reset, update, mutate]);
 };
 
 export {
