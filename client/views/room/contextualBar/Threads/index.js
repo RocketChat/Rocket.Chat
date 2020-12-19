@@ -6,7 +6,7 @@ import { useDebouncedValue, useResizeObserver, useLocalStorage, useMutableCallba
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useRoute, useCurrentRoute, useRouteParameter, useQueryStringParameter } from '../../../../contexts/RouterContext';
+import { useRoute, useCurrentRoute, useQueryStringParameter } from '../../../../contexts/RouterContext';
 import { call } from '../../../../../app/ui-utils/client';
 import { useUserId, useUserSubscription } from '../../../../contexts/UserContext';
 import { useUserRoom } from '../../hooks/useUserRoom';
