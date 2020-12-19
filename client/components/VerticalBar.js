@@ -1,4 +1,4 @@
-import { Box, Button, ActionButton, Icon, Margins, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Button, ActionButton, ButtonGroup, Icon, Margins, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useLayoutContextualBarPosition, useLayoutSizes } from '../providers/LayoutProvider';
@@ -30,14 +30,18 @@ function VerticalBar({ children, ...props }) {
 	</Box>;
 }
 
+const style = {
+	left: '0',
+	right: '0',
+};
+
 function VerticalBarInnerContent(props) {
 	return <Box
 		rcx-vertical-bar--inner-content
 		position='absolute'
-		width='full'
 		height='full'
 		display='flex'
-		mis='neg-x2'
+		style={style}
 		{...props}
 	/>;
 }
@@ -101,6 +105,10 @@ function VerticalBarAction({ name, ...props }) {
 	return <ActionButton flexShrink={0} icon={name} ghost {...props} tiny />;
 }
 
+function VerticalBarActions(props) {
+	return <ButtonGroup small {...props} />;
+}
+
 function VerticalBarActionBack(props) {
 	return <VerticalBarAction {...props} name='arrow-back' />;
 }
@@ -124,6 +132,7 @@ VerticalBar.Icon = React.memo(VerticalBarIcon);
 VerticalBar.Footer = React.memo(VerticalBarFooter);
 VerticalBar.Text = React.memo(VerticalBarText);
 VerticalBar.Action = React.memo(VerticalBarAction);
+VerticalBar.Actions = React.memo(VerticalBarActions);
 VerticalBar.Header = React.memo(VerticalBarHeader);
 VerticalBar.Close = React.memo(VerticalBarClose);
 VerticalBar.Content = React.memo(VerticalBarContent);

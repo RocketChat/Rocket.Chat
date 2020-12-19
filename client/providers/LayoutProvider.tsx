@@ -22,9 +22,9 @@ const LayoutProvider: FC = ({ children }) => {
 			size: {
 				sidebar: '240px',
 				// eslint-disable-next-line no-nested-ternary
-				contextualBar: breakpoints.includes('sm') ? breakpoints.includes('xl') ? '30%' : '380px' : '100%',
+				contextualBar: breakpoints.includes('sm') ? breakpoints.includes('xl') ? '38%' : '380px' : '100%',
 			},
-			contextualBarExpanded: !breakpoints.includes('xxl') && breakpoints.includes('sm'),
+			contextualBarExpanded: !breakpoints.includes('xxxl') && breakpoints.includes('sm'),
 			// eslint-disable-next-line no-nested-ternary
 			contextualBarPosition: breakpoints.includes('sm') ? breakpoints.includes('lg') ? 'relative' : 'absolute' : 'fixed',
 		}), [isEmbedded, showTopNavbarEmbeddedLayout, breakpoints])}

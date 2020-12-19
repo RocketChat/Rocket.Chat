@@ -70,8 +70,10 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 					<VerticalBar.Icon name='thread' />
 					<VerticalBar.Text dangerouslySetInnerHTML={{ __html: title }} />
 					{hasExpand && <VerticalBar.Action aria-label={expandLabel} name={expandIcon} onClick={handleExpandActionClick} />}
-					<VerticalBar.Action aria-label={followLabel} name={followIcon} onClick={handleFollowActionClick} />
-					<VerticalBar.Close onClick={onClose} />
+					<VerticalBar.Actions>
+						<VerticalBar.Action aria-label={followLabel} name={followIcon} onClick={handleFollowActionClick} />
+						<VerticalBar.Close onClick={onClose} />
+					</VerticalBar.Actions>
 				</VerticalBar.Header>
 				<VerticalBar.Content
 					ref={ref}
