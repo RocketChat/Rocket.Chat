@@ -3,6 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useStarredMessages } from './hooks/useStarredMessages';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { LoadingStarredMessages } from './components/LoadingStarredMessages';
 import { EmptyStarredMessages } from './components/EmptyStarredMessages';
 import { StarredMessagesList } from './components/StarredMessagesList';
 import VerticalBar from '../../../../components/VerticalBar';
@@ -13,10 +14,15 @@ export const StarredMessages = ({
 	handleClose, // TODO: prefer `onClose`; `handleClose` refers to the concrete implementation
 }) => {
 	const t = useTranslation();
+	let content;
 
-	const content = Array.isArray(messages)
-		? <StarredMessagesList messages={messages} />
-		: <EmptyStarredMessages />;
+	if (Array.isArray(messages)) {
+		content = messages.length > 0
+			? <StarredMessagesList messages={messages} />
+			: <EmptyStarredMessages />;
+	} else {
+		content = <LoadingStarredMessages />;
+	}
 
 	return <>
 		<VerticalBar.Header>
@@ -33,8 +39,8 @@ export const StarredMessages = ({
 export default React.memo(({ tabBar, rid }) => {
 	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
 	const { messages, error } = useStarredMessages(rid);
-
 	const dispatchToastMessage = useToastMessageDispatch();
+
 	useEffect(() => {
 		if (error) {
 			dispatchToastMessage({
@@ -42,7 +48,7 @@ export default React.memo(({ tabBar, rid }) => {
 				message: error,
 			});
 		}
-	}, []);
+	}, [dispatchToastMessage, error]);
 
 	return <StarredMessages
 		handleClose={handleClose}
