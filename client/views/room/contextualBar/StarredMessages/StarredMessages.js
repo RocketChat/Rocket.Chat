@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useStarredMessages } from './hooks/useStarredMessages';
+import { useUser, useUserSubscription } from '../../../../contexts/UserContext';
+import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { LoadingStarredMessages } from './components/LoadingStarredMessages';
 import { EmptyStarredMessages } from './components/EmptyStarredMessages';
@@ -11,14 +13,24 @@ import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesConte
 
 export const StarredMessages = ({
 	messages,
-	handleClose, // TODO: prefer `onClose`; `handleClose` refers to the concrete implementation
+	onClose,
+	rid,
+	subscription,
+	settings,
+	u,
 }) => {
 	const t = useTranslation();
 	let content;
 
 	if (Array.isArray(messages)) {
 		content = messages.length > 0
-			? <StarredMessagesList messages={messages} />
+			? <StarredMessagesList
+				messages={messages}
+				rid={rid}
+				subscription={subscription}
+				settings={settings}
+				u={u}
+			/>
 			: <EmptyStarredMessages />;
 	} else {
 		content = <LoadingStarredMessages />;
@@ -28,7 +40,7 @@ export const StarredMessages = ({
 		<VerticalBar.Header>
 			<VerticalBar.Icon name='star'/>
 			<VerticalBar.Text>{ t('Starred_Messages') }</VerticalBar.Text>
-			{handleClose && <VerticalBar.Close onClick={handleClose}/>}
+			{onClose && <VerticalBar.Close onClick={onClose}/>}
 		</VerticalBar.Header>
 		<VerticalBar.ScrollableContent>
 			{content}
@@ -40,6 +52,12 @@ export default React.memo(({ tabBar, rid }) => {
 	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
 	const { messages, error } = useStarredMessages(rid);
 	const dispatchToastMessage = useToastMessageDispatch();
+	const subscription = useUserSubscription(rid);
+	const settings = {
+		AutoTranslate_Enabled: useSetting('AutoTranslate_Enabled'),
+		Chatops_Username: useSetting('Chatops_Username'),
+	};
+	const u = useUser();
 
 	useEffect(() => {
 		if (error) {
@@ -53,5 +71,9 @@ export default React.memo(({ tabBar, rid }) => {
 	return <StarredMessages
 		handleClose={handleClose}
 		messages={messages}
+		rid={rid}
+		subscription={subscription}
+		settings={settings}
+		u={u}
 	/>;
 });
