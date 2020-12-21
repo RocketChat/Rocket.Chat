@@ -97,11 +97,8 @@ function startMatrixBroadcast() {
 				_dontPrintErrors: LoggerManager.logLevel < 2,
 			});
 
-
 			connections[instance].instanceRecord = record;
 			connections[instance].instanceId = record._id;
-
-			console.log(connections);
 
 			connections[instance].onReconnect = function() {
 				return authorizeConnection(instance);
