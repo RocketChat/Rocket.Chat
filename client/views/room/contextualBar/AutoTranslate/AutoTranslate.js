@@ -25,8 +25,7 @@ export const AutoTranslate = ({
 			<VerticalBar.Text>{ t('Auto_Translate') }</VerticalBar.Text>
 			{handleClose && <VerticalBar.Close onClick={handleClose}/>}
 		</VerticalBar.Header>
-
-		<VerticalBar.ScrollableContent>
+		<VerticalBar.Content>
 			<FieldGroup>
 				<Field.Label htmlFor='automatic-translation'>{ t('Automatic_Translation') }</Field.Label>
 				<Field.Row>
@@ -38,7 +37,7 @@ export const AutoTranslate = ({
 					<Select id='language' value={language} disabled={!translateEnable} onChange={handleChangeLanguage} options={languages} />
 				</Field.Row>
 			</FieldGroup>
-		</VerticalBar.ScrollableContent>
+		</VerticalBar.Content>
 	</>;
 };
 
@@ -47,6 +46,7 @@ export default React.memo(({ rid }) => {
 	const userLanguage = useLanguage();
 	const subscription = useUserSubscription(rid);
 
+	console.log(subscription);
 	const { value: data } = useEndpointData(
 		'autotranslate.getSupportedLanguages',
 		useMemo(
