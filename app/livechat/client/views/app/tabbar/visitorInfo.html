@@ -41,7 +41,7 @@
 						{{#if servedBy}}<li><strong>{{_ "Agent"}}</strong>: {{servedBy.username}}</li>{{/if}}
 						{{#if facebook}}<li><i class="icon-facebook"></i>{{_ "Facebook_Page"}}: {{facebook.page.name}}</li>{{/if}}
 						{{#if sms}}<li><i class="i con-mobile"></i>{{_ "SMS_Enabled"}}</li>{{/if}}
-						{{#if topic}}<li><strong>{{_ "Topic"}}</strong>: {{{RocketChatMarkdown topic}}}</li>{{/if}}
+						{{#if topic}}<li><strong>{{_ "Topic"}}</strong>: {{{markdown topic}}}</li>{{/if}}
 						{{#if tags}}<li><strong>{{_ "Tags"}}</strong>: {{joinTags}}</li>{{/if}}
 						{{#if closedAt}}<li><strong>{{_ "Closed_At"}}</strong>: {{roomClosedDateTime}} <strong>{{_ "by"}}:</strong> {{roomClosedBy}}</li>{{/if}}
 						{{> Template.dynamic template=customInfoTemplate data=roomDataContext}}

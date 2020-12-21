@@ -5,17 +5,17 @@ const fg = require('fast-glob');
 const checkFiles = async (path, source, fix = false) => {
 	const sourceFile = JSON.parse(fs.readFileSync(`${ path }${ source }`, 'utf8'));
 
-	const regexVar = /__([a-zA-Z_]+?)__/g;
+	const regexVar = /__[a-zA-Z_]+__/g;
 
 	const usedKeys = Object.entries(sourceFile)
-		.filter(([, value]) => regexVar.exec(value))
 		.map(([key, value]) => {
 			const replaces = value.match(regexVar);
 			return {
 				key,
 				replaces,
 			};
-		});
+		})
+		.filter(({ replaces }) => !!replaces);
 
 	const validateKeys = (json) =>
 		usedKeys
@@ -23,7 +23,7 @@ const checkFiles = async (path, source, fix = false) => {
 			.reduce((prev, cur) => {
 				const { key, replaces } = cur;
 
-				const miss = replaces.filter((replace) => json[key].indexOf(replace) === -1);
+				const miss = replaces.filter((replace) => json[key] && json[key].indexOf(replace) === -1);
 
 				if (miss.length > 0) {
 					prev.push({ key, miss });
@@ -35,18 +35,18 @@ const checkFiles = async (path, source, fix = false) => {
 	const i18nFiles = await fg([`${ path }/**/*.i18n.json`]);
 
 	const removeMissingKeys = () => {
-		const allKeys = Object.keys(sourceFile);
 		i18nFiles.forEach((file) => {
 			const json = JSON.parse(fs.readFileSync(file, 'utf8'));
 			if (Object.keys(json).length === 0) {
 				return;
 			}
 
-			const invalidKeys = validateKeys(json).map(({ key }) => key);
+			validateKeys(json)
+				.forEach(({ key }) => {
+					json[key] = null;
+				});
 
-			const validKeys = allKeys.filter((key) => !invalidKeys.includes(key));
-
-			fs.writeFileSync(file, JSON.stringify(json, validKeys, 2));
+			fs.writeFileSync(file, JSON.stringify(json, null, 2));
 		});
 	};
 
@@ -87,7 +87,6 @@ const checkFiles = async (path, source, fix = false) => {
 (async () => {
 	try {
 		await checkFiles('./packages/rocketchat-i18n', '/i18n/en.i18n.json', process.argv[2] === '--fix');
-		await checkFiles('./ee', '/i18n/en.i18n.json', process.argv[2] === '--fix');
 	} catch (e) {
 		console.error(e);
 		process.exit(1);

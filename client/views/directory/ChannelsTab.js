@@ -2,7 +2,7 @@ import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import MarkdownText from '../../components/basic/MarkdownText';
+import MarkdownText from '../../components/MarkdownText';
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
@@ -54,7 +54,7 @@ function ChannelsTable() {
 
 	const channelRoute = useRoute('channel');
 
-	const data = useEndpointData('directory', query) || { result: [] };
+	const { value: data = { result: [] } } = useEndpointData('directory', query);
 
 	const onClick = useMemo(() => (name) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {

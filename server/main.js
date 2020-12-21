@@ -2,8 +2,6 @@ import '../ee/server/broker';
 import './importPackages';
 import '../imports/startup/server';
 
-import '../lib/RegExp';
-
 import './services/startup';
 
 import '../ee/server';
