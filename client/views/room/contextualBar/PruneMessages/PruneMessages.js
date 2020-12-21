@@ -238,13 +238,15 @@ export default ({
 
 	useEffect(() => {
 		if (newerDate) {
-			setToDate(new Date(`${ newerDate }T${ newerTime || '00:00' }:00${ getTimeZoneOffset() }`));
+			setFromDate(new Date(`${ newerDate }T${ newerTime || '00:00' }:00${ getTimeZoneOffset() }`));
 		}
 
 		if (olderDate) {
-			setFromDate(new Date(`${ olderDate }T${ olderTime || '00:00' }:00${ getTimeZoneOffset() }`));
+			setToDate(new Date(`${ olderDate }T${ olderTime || '24:00' }:00${ getTimeZoneOffset() }`));
 		}
+	}, [newerDate, newerTime, olderDate, olderTime]);
 
+	useEffect(() => {
 		const exceptPinned = pinned ? ` ${ t('except_pinned', {}) }` : '';
 		const ifFrom = users.length ? ` ${ t('if_they_are_from', {
 			postProcess: 'sprintf',
@@ -288,7 +290,7 @@ export default ({
 		}
 
 		setValidateText();
-	}, [newerDate, newerTime, olderDate, olderTime, attached, name, t, pinned, users]);
+	}, [newerDate, olderDate, fromDate, toDate, attached, name, t, pinned, users]);
 
 	return (
 		<PruneMessages
