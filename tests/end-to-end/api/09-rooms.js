@@ -935,15 +935,15 @@ describe('[Rooms]', function() {
 		});
 	});
 
-	describe.only('update group dms name', () => {
+	describe('update group dms name', () => {
 		let testUser;
 		let roomId;
 
 		before(async () => {
 			testUser = await createUser();
-			const admin = 'rocketchat.internal.admin.test';
+
 			const rocketcat = 'rocket.cat';
-			const usernames = [testUser.username, admin, rocketcat].join(',');
+			const usernames = [testUser.username, rocketcat].join(',');
 
 			const result = await request.post(api('dm.create'))
 				.set(credentials)

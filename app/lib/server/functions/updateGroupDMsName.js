@@ -32,6 +32,8 @@ export const updateGroupDMsName = (userThatChangedName) => {
 	}
 
 	const users = getUsersWhoAreInTheSameGroupDMsAs(userThatChangedName);
+	users.set(userThatChangedName._id, userThatChangedName);
+
 	const rooms = Rooms.findGroupDMsByUids(userThatChangedName._id, { fields: { uids: 1 } });
 
 	const getMembers = (uids) => uids.map((uid) => users.get(uid)).filter(Boolean);
@@ -39,7 +41,6 @@ export const updateGroupDMsName = (userThatChangedName) => {
 	// loop rooms to update the subcriptions from them all
 	rooms.forEach((room) => {
 		const members = getMembers(room.uids);
-		members.push(userThatChangedName);
 		const sortedMembers = members.sort(sortUsersAlphabetically);
 
 		const subs = Subscriptions.findByRoomId(room._id, { fields: { _id: 1, 'u._id': 1 } });

@@ -65,7 +65,6 @@ describe('[Subscriptions]', function() {
 		});
 	});
 
-
 	describe('[/subscriptions.read]', () => {
 		let testChannel;
 		it('create a channel', (done) => {
