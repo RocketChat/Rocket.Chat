@@ -66,16 +66,6 @@ export const Contacts = {
 
 		return contactUpdated;
 	},
-	findContactInfo(contactId) {
-		const contact = LivechatVisitors.findOneById(contactId);
-		if (!contact) {
-			throw new Error('contact-not-found');
-		}
-
-		return {
-			contact,
-		};
-	},
 	updateContactLastChat(contactId, lastChat) {
 		const updateUser = {
 			$set: {
