@@ -1,7 +1,7 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { Contacts } from '../../lib/Contacts';
+import { Livechat } from '../../lib/Livechat';
 import {
 	LivechatVisitors,
 } from '../../../../models';
@@ -10,19 +10,19 @@ API.v1.addRoute('contact', { authRequired: true }, {
 	post() {
 		try {
 			check(this.bodyParams, {
-				_id: Match.Maybe(String),
+				token: String,
 				name: String,
 				email: Match.Maybe(String),
 				phone: Match.Maybe(String),
 				livechatData: Match.Maybe(Object),
-				user: Match.Maybe(Object),
+				contactManager: Match.Maybe(Object),
 			});
 
 			const contactParams = this.bodyParams;
 			if (this.bodyParams.phone) {
 				contactParams.phone = { number: this.bodyParams.phone };
 			}
-			const contact = Contacts.saveContact(contactParams);
+			const contact = Livechat.registerGuest(contactParams);
 
 			return API.v1.success({ contact });
 		} catch (e) {

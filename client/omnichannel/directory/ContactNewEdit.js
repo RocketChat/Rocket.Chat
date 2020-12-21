@@ -16,9 +16,11 @@ import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { hasAtLeastOnePermission } from '../../../app/authorization';
 import { UserAutoComplete } from '../../components/AutoComplete';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
+import { createToken } from '../../components/helpers';
 
 
 const initialValues = {
+	token: '',
 	name: '',
 	email: '',
 	phone: '',
@@ -30,14 +32,15 @@ const getInitialValues = (data) => {
 		return initialValues;
 	}
 
-	const { contact: { name, phone, visitorEmails, livechatData, user } } = data;
+	const { contact: { name, token, phone, visitorEmails, livechatData, contactManager } } = data;
 
 	return {
+		token: token ?? '',
 		name: name ?? '',
 		email: visitorEmails ? visitorEmails[0].address : '',
 		phone: phone ? phone[0].phoneNumber : '',
 		livechatData: livechatData ?? '',
-		username: user?.username ?? '',
+		username: contactManager?.username ?? '',
 	};
 };
 
@@ -70,6 +73,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		handleUsername,
 	} = handlers;
 	const {
+		token,
 		name,
 		email,
 		phone,
@@ -109,6 +113,8 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 	const saveContact = useEndpointAction('POST', 'contact');
 
+	const updateContact = useEndpointAction('PUT', 'contact');
+
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	useComponentDidUpdate(() => {
@@ -140,12 +146,17 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			phone,
 		};
 
-		if (id) { payload._id = id; }
+		if (id) {
+			payload._id = id;
+			payload.token = token;
+		} else {
+			payload.token = createToken();
+		}
 		if (livechatData) { payload.livechatData = livechatData; }
-		if (username) { payload.user = { username }; }
+		if (username) { payload.contactManager = { username }; }
 
 		try {
-			await saveContact(payload);
+			!id ? await saveContact(payload) : updateContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
 			close();

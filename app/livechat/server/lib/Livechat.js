@@ -198,7 +198,7 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
+	registerGuest({ token, name, email, department, phone, username, livechatData, contactManager, connectionData } = {}) {
 		check(token, String);
 
 		let userId;
@@ -254,6 +254,18 @@ export const Livechat = {
 
 		if (name) {
 			updateUser.$set.name = name;
+		}
+
+		if (livechatData) {
+			updateUser.$set.livechatData = livechatData;
+		} else {
+			Object.assign(updateUser, { $unset: { livechatData: 1 } });
+		}
+
+		if (contactManager) {
+			updateUser.$set.contactManager = contactManager;
+		} else {
+			Object.assign(updateUser, { $unset: { contactManager: 1 } });
 		}
 
 		if (!department) {

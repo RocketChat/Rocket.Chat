@@ -54,17 +54,15 @@ export function ContactInfo({ id }) {
 	}));
 
 	useEffect(() => {
-		if (allCustomFields && stateCustomFields === AsyncStatePhase.DONE) {
+		if (allCustomFields) {
 			const { customFields: customFieldsAPI } = allCustomFields;
 			setCustomFields(customFieldsAPI);
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-
 	const { value: data, phase: state, error } = useEndpointData(`contact?contactId=${ id }`);
 
-	const { contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, user } } = data || { contact: {} };
-
+	const { contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager } } = data || { contact: {} };
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
@@ -104,19 +102,18 @@ export function ContactInfo({ id }) {
 					<Info>{formatDate(lastChat.ts)}</Info>
 				</>}
 
-				{ canViewCustomFields() && livechatData && Object.keys(livechatData).map((key) => <Box key={key}>
-					{ checkIsVisibleAndScopeVisitor(key) && livechatData[key] && <><Label>{key}</Label>
-						<Info>{livechatData[key]}</Info></>
+				{canViewCustomFields() && livechatData && Object.keys(livechatData).map((key) => <Box key={key}>
+					{ checkIsVisibleAndScopeVisitor(key) && livechatData[key]
+					&& <>
+						<Label>{key}</Label>
+						<Info>{livechatData[key]}</Info>
+					</>
 					}
 				</Box>)
 				}
-				{lastChat && <>
-					<Label>{t('LastChat')}</Label>
-					<Info>{formatDate(lastChat.ts)}</Info>
-				</>}
-				{ user && <>
+				{ contactManager && <>
 					<Label>{t('Contact_Manager')}</Label>
-					<ContactManagerField username={user.username} />
+					<ContactManagerField username={contactManager.username} />
 				</>
 				}
 			</Margins>
