@@ -35,18 +35,18 @@ const checkFiles = async (path, source, fix = false) => {
 	const i18nFiles = await fg([`${ path }/**/*.i18n.json`]);
 
 	const removeMissingKeys = () => {
-		const allKeys = Object.keys(sourceFile);
 		i18nFiles.forEach((file) => {
 			const json = JSON.parse(fs.readFileSync(file, 'utf8'));
 			if (Object.keys(json).length === 0) {
 				return;
 			}
 
-			const invalidKeys = validateKeys(json).map(({ key }) => key);
+			validateKeys(json)
+				.forEach(({ key }) => {
+					json[key] = null;
+				});
 
-			const validKeys = allKeys.filter((key) => !invalidKeys.includes(key));
-
-			fs.writeFileSync(file, JSON.stringify(json, validKeys, 2));
+			fs.writeFileSync(file, JSON.stringify(json, null, 2));
 		});
 	};
 
