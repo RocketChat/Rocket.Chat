@@ -16,7 +16,7 @@ import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../ui-utils/client/lib/messageArgs';
 import { ChatMessage, Rooms } from '../../../../../models';
 import { t, roomTypes } from '../../../../../utils/client';
-import { chatMessages, openProfileTab } from '../room';
+import { chatMessages } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';
 
 const mountPopover = (e, i, outerContext) => {
