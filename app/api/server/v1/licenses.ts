@@ -18,12 +18,12 @@ API.v1.addRoute('licenses.post', { authRequired: true }, {
 
 		const { license } = this.bodyParams;
 		if (!addLicense(license)) {
-			API.v1.failure('Invalid license', null, null, null);
+			return API.v1.failure({ error: 'Invalid license' }, null, null, null);
 		}
 
 		Settings.updateValueById('Enterprise_License', license);
 
-		API.v1.success();
+		return API.v1.success();
 	},
 });
 
