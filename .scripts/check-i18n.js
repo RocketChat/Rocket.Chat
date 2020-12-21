@@ -23,7 +23,7 @@ const checkFiles = async (path, source, fix = false) => {
 			.reduce((prev, cur) => {
 				const { key, replaces } = cur;
 
-				const miss = replaces.filter((replace) => json[key].indexOf(replace) === -1);
+				const miss = replaces.filter((replace) => json[key] && json[key].indexOf(replace) === -1);
 
 				if (miss.length > 0) {
 					prev.push({ key, miss });
