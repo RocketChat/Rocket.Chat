@@ -10,6 +10,7 @@ import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } 
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
+import { Contacts } from '../../lib/Contacts';
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -40,6 +41,14 @@ API.v1.addRoute('livechat/room', {
 
 			const rid = roomId || Random.id();
 			const room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
+			const { room: { _id } } = room;
+
+			const lastChat = {
+				_id,
+				ts: new Date(),
+			};
+			Contacts.updateLastChat(guest._id, lastChat);
+
 			return API.v1.success(room);
 		} catch (e) {
 			return API.v1.failure(e);

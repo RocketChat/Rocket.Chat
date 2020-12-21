@@ -39,7 +39,6 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
-import { Contacts } from './Contacts';
 
 export const Livechat = {
 	Analytics,
@@ -150,11 +149,6 @@ export const Livechat = {
 		if (guest.name) {
 			message.alias = guest.name;
 		}
-		const lastChat = {
-			_id: room._id,
-			ts: new Date(),
-		};
-		Contacts.updateContactLastChat(guest._id, lastChat);
 		return _.extend(sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
 	},
 

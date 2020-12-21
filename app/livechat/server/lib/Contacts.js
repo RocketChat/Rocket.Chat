@@ -66,7 +66,7 @@ export const Contacts = {
 
 	// 	return contactUpdated;
 	// },
-	updateContactLastChat(contactId, lastChat) {
+	updateLastChat(contactId, lastChat) {
 		const updateUser = {
 			$set: {
 				lastChat,
