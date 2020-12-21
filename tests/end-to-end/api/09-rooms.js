@@ -942,7 +942,7 @@ describe('[Rooms]', function() {
 			const rocketcat = 'rocket.cat';
 			const usernames = [testUser.username, admin, rocketcat].join(',');
 
-			request.post(api('dm.create'))
+			return request.post(api('dm.create'))
 				.set(credentials)
 				.send({
 					usernames,
@@ -954,53 +954,49 @@ describe('[Rooms]', function() {
 		});
 
 		it('should update group name if user changes username', (done) => {
-			setTimeout(() => {
-				updateSetting('UI_Use_Real_Name', false).then(() => {
-					request.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: this.testUser._id,
-							data: {
-								username: `changed.username.${ this.testUser.username }`,
-							},
-						})
-						.end(() => {
-							request.get(api('subscriptions.getOne'))
-								.set(credentials)
-								.query({ roomId: this.roomId })
-								.end((err, res) => {
-									const { subscription } = res.body;
-									expect(subscription.name).to.equal(`rocket.cat,changed.username.${ this.testUser.username }`);
-									done();
-								});
-						});
-				});
-			}, 200);
+			updateSetting('UI_Use_Real_Name', false).then(() => {
+				request.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: this.testUser._id,
+						data: {
+							username: `changed.username.${ this.testUser.username }`,
+						},
+					})
+					.end(() => {
+						request.get(api('subscriptions.getOne'))
+							.set(credentials)
+							.query({ roomId: this.roomId })
+							.end((err, res) => {
+								const { subscription } = res.body;
+								expect(subscription.name).to.equal(`rocket.cat,changed.username.${ this.testUser.username }`);
+								done();
+							});
+					});
+			});
 		});
 
 		it('should update group name if user changes name', (done) => {
-			setTimeout(() => {
-				updateSetting('UI_Use_Real_Name', true).then(() => {
-					request.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: this.testUser._id,
-							data: {
-								name: `changed.name.${ this.testUser.username }`,
-							},
-						})
-						.end(() => {
-							request.get(api('subscriptions.getOne'))
-								.set(credentials)
-								.query({ roomId: this.roomId })
-								.end((err, res) => {
-									const { subscription } = res.body;
-									expect(subscription.fname).to.equal(`changed.name.${ this.testUser.username }, Rocket.Cat`);
-									done();
-								});
-						});
-				});
-			}, 200);
+			updateSetting('UI_Use_Real_Name', true).then(() => {
+				request.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: this.testUser._id,
+						data: {
+							name: `changed.name.${ this.testUser.username }`,
+						},
+					})
+					.end(() => {
+						request.get(api('subscriptions.getOne'))
+							.set(credentials)
+							.query({ roomId: this.roomId })
+							.end((err, res) => {
+								const { subscription } = res.body;
+								expect(subscription.fname).to.equal(`changed.name.${ this.testUser.username }, Rocket.Cat`);
+								done();
+							});
+					});
+			});
 		});
 	});
 });
