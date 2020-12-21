@@ -55,7 +55,7 @@ const useToolboxActions = (room: IRoom): { listen: (handler: Handler<any>) => Fu
 export const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const uid = useUserId();
-	const [activeTabBar, setActiveTabBar] = useState<[ToolboxActionConfig|undefined, any]>([]);
+	const [activeTabBar, setActiveTabBar] = useState<[ToolboxActionConfig|undefined, any]>([undefined, undefined]);
 	const [list, setList] = useDebouncedState<Store<ToolboxAction>>(new Map(), 5);
 	const handleChange = useMutableCallback((fn) => { fn(list); setList((list) => new Map(list)); });
 	const { listen, actions } = useToolboxActions(room);
