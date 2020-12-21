@@ -2684,6 +2684,8 @@
   "UserDataDownload_EmailBody": "Jūsų duomenų failas dabar paruoštas atsisiuntimui. Jei norite atsisiųsti, spustelėkite <a href=\"__download_link__\">čia</a>.",
   "UserDataDownload_EmailSubject": "Jūsų duomenų failas yra pasirengęs atsisiųsti",
   "UserDataDownload_Requested": "Parsisiųskite prašomą failą",
+  "UserDataDownload_Requested_Text": null,
+  "UserDataDownload_RequestExisted_Text": null,
   "Username": "Vartotojo vardas",
   "Username_already_exist": "Vardas jau egzistuoja. Pabandykite kitą vartotojo vardą.",
   "Username_and_message_must_not_be_empty": "Vartotojo vardas ir žinutė negali būti tušti.",
