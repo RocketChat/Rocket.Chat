@@ -21,15 +21,13 @@ const AccountPreferencesPage = () => {
 
 	const [hasAnyChange, setHasAnyChange] = useState(false);
 
-	const [updates, setUpdates] = useState({});
-
 	const saveData = useRef({});
 
 	const dataDownloadEnabled = useSetting('UserData_EnableDownload');
 
 	const onChange = useCallback(({ initialValue, value, key }) => {
 		const { current } = saveData;
-		if (JSON.stringify(updates[key] || initialValue) !== JSON.stringify(value)) {
+		if (JSON.stringify(initialValue) !== JSON.stringify(value)) {
 			current[key] = value;
 		} else {
 			delete current[key];
@@ -39,15 +37,14 @@ const AccountPreferencesPage = () => {
 		if (anyChange !== hasAnyChange) {
 			setHasAnyChange(anyChange);
 		}
-	}, [hasAnyChange, updates]);
+	}, [hasAnyChange]);
 
 	const saveFn = useMethod('saveUserPreferences');
 
 	const handleSave = useCallback(async () => {
 		try {
 			const { current: data } = saveData;
-			setUpdates({ ...updates, ...data });
-			if (typeof data.highlights === 'string') {
+			if (data.highlights || data.hightlights === '') {
 				Object.assign(data, { highlights: data.highlights.split(/,|\n/).map((val) => val.trim()).filter(Boolean) });
 			}
 
@@ -64,7 +61,7 @@ const AccountPreferencesPage = () => {
 		} catch (e) {
 			dispatchToastMessage({ type: 'error', message: e });
 		}
-	}, [dispatchToastMessage, saveFn, t, updates]);
+	}, [dispatchToastMessage, saveFn, t]);
 
 	return <Page>
 		<Page.Header title={t('Preferences')}>
