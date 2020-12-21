@@ -93,12 +93,12 @@ export function ContactInfo({ id }) {
 					<Info>{phone[0].phoneNumber}</Info>
 				</>}
 				{ts && <>
-					<Label>{t('CreatedAt')}</Label>
+					<Label>{t('Created_at')}</Label>
 					<Info>{formatDate(ts)}</Info>
 				</>}
 
 				{lastChat && <>
-					<Label>{t('LastChat')}</Label>
+					<Label>{t('Last_Chat')}</Label>
 					<Info>{formatDate(lastChat.ts)}</Info>
 				</>}
 
