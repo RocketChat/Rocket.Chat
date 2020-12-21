@@ -10,7 +10,7 @@ import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } 
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
-import { Contacts } from '../../lib/Contacts';
+
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -47,7 +47,7 @@ API.v1.addRoute('livechat/room', {
 				_id,
 				ts: new Date(),
 			};
-			Contacts.updateLastChat(guest._id, lastChat);
+			Livechat.updateLastChat(guest._id, lastChat);
 
 			return API.v1.success(room);
 		} catch (e) {

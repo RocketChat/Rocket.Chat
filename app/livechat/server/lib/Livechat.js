@@ -1172,6 +1172,14 @@ export const Livechat = {
 
 		return LivechatRooms.findOneById(roomId);
 	},
+	updateLastChat(contactId, lastChat) {
+		const updateUser = {
+			$set: {
+				lastChat,
+			},
+		};
+		LivechatVisitors.updateById(contactId, updateUser);
+	},
 };
 
 settings.get('Livechat_history_monitor_type', (key, value) => {
