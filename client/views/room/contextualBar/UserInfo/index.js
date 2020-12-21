@@ -72,7 +72,7 @@ export const UserInfo = React.memo(function UserInfo({
 			</>}
 
 			{Number.isInteger(utcOffset) && <>
-				<Label>{t('Local Time')}</Label>
+				<Label>{t('Local_Time')}</Label>
 				<Info><UTCClock utcOffset={utcOffset}/></Info>
 			</>}
 
