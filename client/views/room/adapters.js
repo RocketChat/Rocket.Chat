@@ -62,3 +62,7 @@ createTemplateForComponent('UserInfoWithData', () => import('./contextualBar/Use
 	// eslint-disable-next-line new-cap
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
+
+createTemplateForComponent('channelFilesList', () => import('./contextualBar/RoomFiles/RoomFiles'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});

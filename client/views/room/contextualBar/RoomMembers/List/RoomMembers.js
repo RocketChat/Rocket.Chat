@@ -28,7 +28,7 @@ import { useMethod } from '../../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
-import { useDataWithLoadMore } from '../hooks/useDataWithLoadMore';
+import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
 import { MemberItem } from './components/MemberItem';
 import UserInfoWithData from '../../UserInfo';
 import InviteUsers from '../InviteUsers/InviteUsers';
@@ -208,7 +208,7 @@ export default ({
 
 	const { value, phase, more, error } = useGetUsersOfRoom(params);
 
-	const canAddUsers = useAtLeastOnePermission([room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], rid);
+	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
