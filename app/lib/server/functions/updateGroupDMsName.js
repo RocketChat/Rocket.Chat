@@ -4,15 +4,14 @@ const getFname = (members) => members.map(({ name, username }) => name || userna
 const getName = (members) => members.map(({ username }) => username).join(',');
 
 function getUsersWhoAreInTheSameGroupDMsAs(user) {
-	const userIds = new Set();
-	const users = new Map();
-
 	// add all users to single array so we can fetch details from them all at once
 	const rooms = Rooms.findGroupDMsByUids(user._id, { fields: { uids: 1 } });
-
 	if (rooms.count() === 0) {
 		return;
 	}
+
+	const userIds = new Set();
+	const users = new Map();
 
 	rooms.forEach((room) => room.uids.forEach((uid) => uid !== user._id && userIds.add(uid)));
 
@@ -32,6 +31,10 @@ export const updateGroupDMsName = (userThatChangedName) => {
 	}
 
 	const users = getUsersWhoAreInTheSameGroupDMsAs(userThatChangedName);
+	if (!users) {
+		return;
+	}
+
 	users.set(userThatChangedName._id, userThatChangedName);
 
 	const rooms = Rooms.findGroupDMsByUids(userThatChangedName._id, { fields: { uids: 1 } });
