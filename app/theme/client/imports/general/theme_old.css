@@ -373,31 +373,6 @@ textarea {
 	}
 }
 
-.flex-tab-bar {
-	.tab-button {
-		&:hover {
-			background-color: var(--secondary-background-color);
-		}
-
-		&.active {
-			border-right-color: var(--selection-color);
-			background-color: var(--secondary-background-color);
-		}
-
-		&.attention {
-			animation-name: blink;
-			animation-duration: 1000ms;
-			animation-iteration-count: infinite;
-			animation-direction: alternate;
-		}
-	}
-
-	.counter {
-		color: white;
-		background: var(--secondary-font-color);
-	}
-}
-
 i.status-online {
 	color: var(--rc-status-online);
 }

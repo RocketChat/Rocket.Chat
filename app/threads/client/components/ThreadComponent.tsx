@@ -15,6 +15,7 @@ import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
 import { IMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
+import { useTabBarOpenUserInfo } from '../../../../client/views/room/providers/ToolboxProvider';
 
 const subscriptionFields = {};
 
@@ -67,6 +68,8 @@ const ThreadComponent: FC<{
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
 	const threadMessage = useThreadMessage(mid);
 
+	const open = useTabBarOpenUserInfo();
+
 	const ref = useRef<Element>(null);
 	const uid = useUserId();
 
@@ -103,6 +106,8 @@ const ThreadComponent: FC<{
 		jump,
 		following,
 		subscription,
+		rid: room._id,
+		openProfileTab: open,
 	}));
 
 	useEffect(() => {
@@ -116,9 +121,11 @@ const ThreadComponent: FC<{
 				jump,
 				following,
 				subscription,
+				rid: room._id,
+				openProfileTab: open,
 			};
 		});
-	}, [following, jump, subscription, threadMessage]);
+	}, [following, jump, open, room._id, subscription, threadMessage]);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {

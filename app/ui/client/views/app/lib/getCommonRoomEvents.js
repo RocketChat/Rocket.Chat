@@ -208,7 +208,7 @@ export const getCommonRoomEvents = () => ({
 				target: e.currentTarget,
 				open: (e) => {
 					e.preventDefault();
-					openProfileTab(e, instance.data.tabBar, username);
+					instance.data.openProfileTab(username);
 				},
 			});
 		}
@@ -299,7 +299,6 @@ export const getCommonRoomEvents = () => ({
 		}
 
 		if (group) {
-			openProfileTab(e, instance.tabBar);
 			return;
 		}
 
@@ -310,7 +309,7 @@ export const getCommonRoomEvents = () => ({
 				target: e.currentTarget,
 				open: (e) => {
 					e.preventDefault();
-					openProfileTab(e, instance.tabBar, username);
+					instance.data.openProfileTab(username);
 				},
 			});
 		}
