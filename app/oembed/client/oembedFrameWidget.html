@@ -23,7 +23,7 @@
 			{{#if meta.oembedDescription}}
 				<p>{{meta.oembedDescription}}</p>
 			{{/if}}
-			<iframe srcdoc={{meta.oembedHtml}}></iframe>
+			<iframe sandbox="allow-scripts" srcdoc={{meta.oembedHtml}}></iframe>
 		{{/unless}}
 	</blockquote>
 {{/if}}
