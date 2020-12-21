@@ -43,19 +43,22 @@ export const sendNotification = async ({
 		return;
 	}
 
+	const user = Users.findOneById(subscription.u._id, {
+		fields: {
+			active: 1,
+			emails: 1,
+			language: 1,
+			status: 1,
+			statusConnection: 1,
+			username: 1,
+			settings: 1,
+		},
+	});
+
+	const { settings, ...restUser } = user;
+
 	if (!subscription.receiver) {
-		subscription.receiver = [
-			Users.findOneById(subscription.u._id, {
-				fields: {
-					active: 1,
-					emails: 1,
-					language: 1,
-					status: 1,
-					statusConnection: 1,
-					username: 1,
-				},
-			}),
-		];
+		subscription.receiver = [restUser];
 	}
 
 	const [receiver] = subscription.receiver;
@@ -84,7 +87,7 @@ export const sendNotification = async ({
 		disableAllMessageNotifications,
 		status: receiver.status,
 		statusConnection: receiver.statusConnection,
-		audioNotifications,
+		audioNotifications: audioNotifications || settings?.preferences?.audioNotifications,
 		hasMentionToAll,
 		hasMentionToHere,
 		isHighlighted,

@@ -2763,6 +2763,7 @@
   "Nothing": "Nothing",
   "Nothing_found": "Nothing found",
   "Notification_Desktop_Default_For": "Show Desktop Notifications For",
+  "Notification_Desktop_Audio_Default_For": "Play Desktop Notifications Audio For",
   "Notification_Mobile_Default_For": "Push Mobile Notifications For",
   "Notification_RequireInteraction": "Require Interaction to Dismiss Desktop Notification",
   "Notification_RequireInteraction_Description": "Works only with Chrome browser versions > 50. Utilizes the parameter <i>requireInteraction</i> to show the desktop notification to indefinite until the user interacts with it.",

@@ -78,7 +78,7 @@ export default React.memo(({ tabBar, rid }) => {
 			muteGroupMentions: subscription.muteGroupMentions,
 			showCounter: !subscription.hideUnreadStatus,
 			desktopAlert: subscription.desktopNotifications || userSettingsPreferences.desktopNotifications,
-			desktopAudio: subscription.audioNotifications || userSettingsPreferences.audioNotifications,
+			desktopAudio: subscription.audioNotifications || 'default',
 			desktopSound: subscription.audioNotificationValue || userSettingsPreferences.newMessageNotification,
 			mobileAlert: subscription.mobilePushNotifications || userSettingsPreferences.mobileNotifications,
 			emailAlert: subscription.emailNotifications || userSettingsPreferences.emailNotificationMode,

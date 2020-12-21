@@ -19,6 +19,7 @@ Meteor.methods({
 			unreadAlert: Match.Optional(Boolean),
 			notificationsSoundVolume: Match.Optional(Number),
 			desktopNotifications: Match.Optional(String),
+			audioNotifications: Match.Optional(String),
 			mobileNotifications: Match.Optional(String),
 			enableAutoAway: Match.Optional(Boolean),
 			highlights: Match.Optional([String]),
