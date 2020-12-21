@@ -935,22 +935,23 @@ describe('[Rooms]', function() {
 		});
 	});
 
-	describe('update group dms name', () => {
+	describe.only('update group dms name', () => {
+		let testUser;
+		let roomId;
+
 		before(async () => {
-			const testUser = await createUser();
+			testUser = await createUser();
 			const admin = 'rocketchat.internal.admin.test';
 			const rocketcat = 'rocket.cat';
 			const usernames = [testUser.username, admin, rocketcat].join(',');
 
-			return request.post(api('dm.create'))
+			const result = await request.post(api('dm.create'))
 				.set(credentials)
 				.send({
 					usernames,
-				})
-				.end((err, res) => {
-					this.roomId = res.body.room.rid;
-					this.testUser = testUser;
 				});
+
+			roomId = result.body.room.rid;
 		});
 
 		it('should update group name if user changes username', (done) => {
@@ -958,18 +959,18 @@ describe('[Rooms]', function() {
 				request.post(api('users.update'))
 					.set(credentials)
 					.send({
-						userId: this.testUser._id,
+						userId: testUser._id,
 						data: {
-							username: `changed.username.${ this.testUser.username }`,
+							username: `changed.username.${ testUser.username }`,
 						},
 					})
 					.end(() => {
 						request.get(api('subscriptions.getOne'))
 							.set(credentials)
-							.query({ roomId: this.roomId })
+							.query({ roomId })
 							.end((err, res) => {
 								const { subscription } = res.body;
-								expect(subscription.name).to.equal(`rocket.cat,changed.username.${ this.testUser.username }`);
+								expect(subscription.name).to.equal(`rocket.cat,changed.username.${ testUser.username }`);
 								done();
 							});
 					});
@@ -981,18 +982,18 @@ describe('[Rooms]', function() {
 				request.post(api('users.update'))
 					.set(credentials)
 					.send({
-						userId: this.testUser._id,
+						userId: testUser._id,
 						data: {
-							name: `changed.name.${ this.testUser.username }`,
+							name: `changed.name.${ testUser.username }`,
 						},
 					})
 					.end(() => {
 						request.get(api('subscriptions.getOne'))
 							.set(credentials)
-							.query({ roomId: this.roomId })
+							.query({ roomId })
 							.end((err, res) => {
 								const { subscription } = res.body;
-								expect(subscription.fname).to.equal(`changed.name.${ this.testUser.username }, Rocket.Cat`);
+								expect(subscription.fname).to.equal(`changed.name.${ testUser.username }, Rocket.Cat`);
 								done();
 							});
 					});
