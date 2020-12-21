@@ -11,28 +11,14 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { hasPermission } from '../../../app/authorization';
 import { useFormatDate } from '../../hooks/useFormatDate';
-import UserAvatar from '../../components/avatar/UserAvatar';
-import { UserStatus } from '../../components/UserStatus';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
+import { ContactManagerInfo } from '../../../ee/client/omnichannel/ContactManager';
 
 const wordBreak = css`
 	word-break: break-word;
 `;
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
-
-function ContactManagerField({ username }) {
-	const { value: data, phase: state } = useEndpointData(`users.info?username=${ username }`);
-	if (!data && state === AsyncStatePhase.LOADING) { return null; }
-	const { user: { name, status } } = data;
-	return <>
-		<Info style={{ display: 'flex' }}>
-			<UserAvatar title={username} username={username} />
-			<UserCard.Username mis='x10' name={username} status={<UserStatus status={status} />} />
-			<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>({name})</Box>
-		</Info>
-	</>;
-}
 
 export function ContactInfo({ id }) {
 	const t = useTranslation();
@@ -101,7 +87,6 @@ export function ContactInfo({ id }) {
 					<Label>{t('Last_Chat')}</Label>
 					<Info>{formatDate(lastChat.ts)}</Info>
 				</>}
-
 				{canViewCustomFields() && livechatData && Object.keys(livechatData).map((key) => <Box key={key}>
 					{ checkIsVisibleAndScopeVisitor(key) && livechatData[key]
 					&& <>
@@ -113,7 +98,7 @@ export function ContactInfo({ id }) {
 				}
 				{ contactManager && <>
 					<Label>{t('Contact_Manager')}</Label>
-					<ContactManagerField username={contactManager.username} />
+					<ContactManagerInfo username={contactManager.username} />
 				</>
 				}
 			</Margins>

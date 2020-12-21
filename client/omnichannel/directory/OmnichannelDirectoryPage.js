@@ -6,7 +6,7 @@ import Page from '../../components/Page';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import ContactTab from './ContactTab';
 import VerticalBar from '../../components/VerticalBar';
-import { ContactNewEdit, ContactEditWithData } from './ContactNewEdit';
+import { ContactNewEdit, ContactEditWithData } from './ContactForm';
 import { ContactInfo } from './ContactInfo';
 
 
