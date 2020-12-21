@@ -3799,7 +3799,7 @@
   "UserData_ProcessingFrequency": "Frecuencia de procesamiento (minutos)",
   "UserDataDownload": "Descarga de datos de usuario",
   "UserDataDownload_CompletedRequestExisted_Text": "Su archivo de datos ya fue generado. Verifique su cuenta de correo electrónico para ver el enlace de descarga.",
-  "UserDataDownload_CompletedRequestExistedWithLink_Text": "Su archivo de datos ha sido generado. Haga clic en <a0>aquí</a> para descargarlo.",
+  "UserDataDownload_CompletedRequestExistedWithLink_Text": null,
   "UserDataDownload_EmailBody": "Su archivo de datos ahora está listo para descargar. Haga clic en <a href=\"__download_link__\">aquí</a>para descargarlo.",
   "UserDataDownload_EmailSubject": "Su archivo de datos está listo para descargar",
   "UserDataDownload_Requested": "Descargar archivo solicitado",

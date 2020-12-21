@@ -4047,7 +4047,7 @@
   "Wednesday": "水曜日",
   "Weekly_Active_Users": "週別のアクティブユーザー",
   "Welcome": "ようこそ <em>%s</em>.",
-  "Welcome_to": "[Site_Name]へようこそ",
+  "Welcome_to": null,
   "Welcome_to_the": "ようこそ",
   "When": "いつ",
   "When_a_line_starts_with_one_of_there_words_post_to_the_URLs_below": "行がこれらの単語のいずれかで始まる場合は、以下のURLに投稿してください",
