@@ -64,15 +64,15 @@ class NetworkBroker implements IBroker {
 		this.allowed = License.hasLicense('scalability');
 	}
 
-	isWhitelisted(list: string[], item: string) {
+	isWhitelisted(list: string[], item: string): boolean {
 		return list.includes(item);
 	}
 
-	isActionWhitelisted(method: string) {
+	isActionWhitelisted(method: string): boolean {
 		return this.isWhitelisted(this.whitelist.actions, method);
 	}
 
-	isEventWhitelisted(event: string) {
+	isEventWhitelisted(event: string): boolean {
 		return this.isWhitelisted(this.whitelist.events, event);
 	}
 
