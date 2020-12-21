@@ -6,10 +6,12 @@ import {
 	LivechatVisitors,
 } from '../../../../models';
 
+
 API.v1.addRoute('contact', { authRequired: true }, {
 	post() {
 		try {
 			check(this.bodyParams, {
+				_id: Match.Maybe(String),
 				token: String,
 				name: String,
 				email: Match.Maybe(String),
@@ -38,4 +40,28 @@ API.v1.addRoute('contact', { authRequired: true }, {
 
 		return API.v1.success({ contact });
 	},
+	// put() {
+	// 	try {
+	// 		check(this.bodyParams, {
+	// 			_id: String,
+	// 			token: String,
+	// 			name: String,
+	// 			email: Match.Maybe(String),
+	// 			phone: Match.Maybe(String),
+	// 			livechatData: Match.Maybe(Object),
+	// 			contactManager: Match.Maybe(Object),
+	// 		});
+
+	// 		const contactParams = this.bodyParams;
+	// 		if (this.bodyParams.phone) {
+	// 			contactParams.phone = { number: this.bodyParams.phone };
+	// 		}
+
+	// 		const contact = Livechat.registerGuest(contactParams);
+
+	// 		return API.v1.success({ contact });
+	// 	} catch (e) {
+	// 		return API.v1.failure(e);
+	// 	}
+	// },
 });

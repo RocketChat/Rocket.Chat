@@ -113,8 +113,6 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 	const saveContact = useEndpointAction('POST', 'contact');
 
-	const updateContact = useEndpointAction('PUT', 'contact');
-
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	useComponentDidUpdate(() => {
@@ -156,7 +154,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		if (username) { payload.contactManager = { username }; }
 
 		try {
-			!id ? await saveContact(payload) : updateContact(payload);
+			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
 			close();
