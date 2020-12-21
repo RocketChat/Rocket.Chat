@@ -13,9 +13,9 @@ export const StarredMessagesList = ({
 	// console.log(messages);
 	// console.log(settings);
 	// console.log(subscription);
-	const content = messages.map((msg, idx) =>
+	const content = messages.map((msg) =>
 		<Message
-			key={idx}
+			key={msg._id}
 			msg={msg}
 			context='starred'
 			room={rid}
