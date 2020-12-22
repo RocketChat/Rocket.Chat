@@ -41,13 +41,6 @@ API.v1.addRoute('livechat/room', {
 
 			const rid = roomId || Random.id();
 			const room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
-			const { room: { _id } } = room;
-
-			const lastChat = {
-				_id,
-				ts: new Date(),
-			};
-			Livechat.updateLastChat(guest._id, lastChat);
 
 			return API.v1.success(room);
 		} catch (e) {
