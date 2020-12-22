@@ -43,8 +43,8 @@ function AdminSidebar() {
 	// TODO: uplift this provider
 	return <SettingsProvider privileged>
 		<Sidebar>
-			<Sidebar.Header onClose={closeAdminFlex} title={<>{t('Administration')} <PlanTag/></>}/>
 			<Sidebar.Content>
+				<Sidebar.Header onClose={closeAdminFlex} title={<>{t('Administration')} <PlanTag/></>}/>
 				<AdminSidebarPages currentPath={currentPath}/>
 				{canViewSettings && <AdminSidebarSettings currentPath={currentPath}/>}
 			</Sidebar.Content>
