@@ -16,7 +16,7 @@ import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../ui-utils/client/lib/messageArgs';
 import { ChatMessage, Rooms } from '../../../../../models';
 import { t, roomTypes } from '../../../../../utils/client';
-import { chatMessages } from '../room';
+import { chatMessages, openProfileTab } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';
 
 const mountPopover = (e, i, outerContext) => {
@@ -208,7 +208,7 @@ export const getCommonRoomEvents = () => ({
 				target: e.currentTarget,
 				open: (e) => {
 					e.preventDefault();
-					instance.data.openProfileTab(username);
+					openProfileTab(e, instance.data.tabBar, username);
 				},
 			});
 		}
@@ -309,7 +309,7 @@ export const getCommonRoomEvents = () => ({
 				target: e.currentTarget,
 				open: (e) => {
 					e.preventDefault();
-					instance.data.openProfileTab(username);
+					openProfileTab(e, instance.data.tabBar, username);
 				},
 			});
 		}
