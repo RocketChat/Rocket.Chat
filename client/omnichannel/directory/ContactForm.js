@@ -16,8 +16,10 @@ import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { hasAtLeastOnePermission } from '../../../app/authorization';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { formsSubscription } from '../../views/omnichannel/additionalForms';
+import { createToken } from '../../components/helpers';
 
 const initialValues = {
+	token: '',
 	name: '',
 	email: '',
 	phone: '',
@@ -29,9 +31,10 @@ const getInitialValues = (data) => {
 		return initialValues;
 	}
 
-	const { contact: { name, phone, visitorEmails, livechatData, contactManager } } = data;
+	const { contact: { name, token, phone, visitorEmails, livechatData, contactManager } } = data;
 
 	return {
+		token: token ?? '',
 		name: name ?? '',
 		email: visitorEmails ? visitorEmails[0].address : '',
 		phone: phone ? phone[0].phoneNumber : '',
@@ -76,6 +79,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		handleUsername,
 	} = handlers;
 	const {
+		token,
 		name,
 		email,
 		phone,
@@ -148,8 +152,10 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 		if (id) {
 			payload._id = id;
+			payload.token = token;
+		} else {
+			payload.token = createToken();
 		}
-
 		if (livechatData) { payload.livechatData = livechatData; }
 		if (username) { payload.contactManager = { username }; }
 
