@@ -8,6 +8,7 @@ import ContactTab from './ContactTab';
 import VerticalBar from '../../components/VerticalBar';
 import { ContactNewEdit, ContactEditWithData } from './ContactForm';
 import { ContactInfo } from './ContactInfo';
+import ChatTab from './ChatTab';
 
 
 const OmnichannelDirectoryPage = () => {
@@ -63,6 +64,7 @@ const OmnichannelDirectoryPage = () => {
 			<Page.Content>
 				{
 					(tab === 'contacts' && <ContactTab setContactReload={setContactReload} />)
+					|| (tab === 'chats' && <ChatTab />)
 				}
 			</Page.Content>
 		</Page>
