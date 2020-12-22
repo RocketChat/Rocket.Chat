@@ -9,6 +9,9 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
 import GenericTable from '../../components/GenericTable';
 import FilterByText from '../../components/FilterByText';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLoggedIn) => useMemo(() => ({
 	sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
@@ -40,8 +43,6 @@ const ChatTable = () => {
 
 	const onRowClick = useMutableCallback((_id) => {
 		FlowRouter.go('live', { id: _id });
-		// routing this way causes a 404 that only goes away with a refresh, need to fix in review
-		// livechatRoomRoute.push({ id: _id });
 	});
 
 	const { data } = useEndpointDataExperimental('livechat/rooms', query) || {};
@@ -86,7 +87,11 @@ const ChatTable = () => {
 
 
 export default function ChatTab(props) {
-	return <ChatTable {...props} />;
+	const hasAccess = usePermission('view-l-room');
 
-	// return <NotAuthorizedPage />;
+	if (hasAccess) {
+		return <ChatTable {...props} />;
+	}
+
+	return <NotAuthorizedPage />;
 }
