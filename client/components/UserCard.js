@@ -36,9 +36,8 @@ const Roles = ({ children }) => <Info rcx-user-card__roles m='neg-x2' flexWrap='
 	{children}
 </Info>;
 
-const Role = ({ children }) => <Box m='x2'><Tag
+const Role = ({ children }) => <Box m='x2' fontScale='c2'><Tag
 	disabled
-	fontScale='c2'
 	children={children}
 /></Box>;
 
