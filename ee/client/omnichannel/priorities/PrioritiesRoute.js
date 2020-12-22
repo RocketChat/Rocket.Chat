@@ -121,7 +121,7 @@ function PrioritiesRoute() {
 			prioritiesRoute.push({});
 		};
 
-		return <VerticalBar className={'contextual-bar'}>
+		return <VerticalBar>
 			<VerticalBar.Header>
 				{context === 'edit' && t('Edit_Priority')}
 				{context === 'new' && t('New_Priority')}

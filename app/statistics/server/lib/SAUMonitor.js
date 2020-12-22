@@ -344,7 +344,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		logger.info('[aggregate] - Aggregatting data.');
+		logger.info('[aggregate] - Aggregating data.');
 
 		const date = new Date();
 		date.setDate(date.getDate() - 0); // yesterday

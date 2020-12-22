@@ -8,7 +8,7 @@
 
 		overflow: hidden;
 		flex-direction: column;
-		flex: 0 0 var(--flex-tab-width);
+		flex: 1 0 var(--flex-tab-width);
 
 		width: var(--flex-tab-width);
 		height: 100%;
