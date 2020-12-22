@@ -68,7 +68,7 @@ const ThreadComponent: FC<{
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
 	const threadMessage = useThreadMessage(mid);
 
-	const open = useTabBarOpenUserInfo();
+	const openUserInfo = useTabBarOpenUserInfo();
 
 	const ref = useRef<Element>(null);
 	const uid = useUserId();
@@ -107,7 +107,7 @@ const ThreadComponent: FC<{
 		following,
 		subscription,
 		rid: room._id,
-		openProfileTab: open,
+		tabBar: { openUserInfo },
 	}));
 
 	useEffect(() => {
@@ -122,10 +122,10 @@ const ThreadComponent: FC<{
 				following,
 				subscription,
 				rid: room._id,
-				openProfileTab: open,
+				tabBar: { openUserInfo },
 			};
 		});
-	}, [following, jump, open, room._id, subscription, threadMessage]);
+	}, [following, jump, openUserInfo, room._id, subscription, threadMessage]);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {
