@@ -10,13 +10,15 @@ import tinykeys from 'tinykeys';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useMethodData, AsyncState } from '../../contexts/ServerContext';
 import { roomTypes } from '../../../app/utils';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { itemSizeMap, SideBarItemTemplateWithData } from '../RoomList';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
-import ScrollableContentWrapper from '../../components/basic/ScrollableContentWrapper';
+import { escapeRegExp } from '../../../lib/escapeRegExp';
+import { useMethodData } from '../../hooks/useMethodData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
+import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
 
 const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended) => ({
 	items,
@@ -82,11 +84,11 @@ const useSpotlight = (filterText = '', usernames) => {
 	}, [searchForChannels, searchForDMs]);
 	const args = useMemo(() => [name, usernames, type], [type, name, usernames]);
 
-	const [data = { users: [], rooms: [] }, status] = useMethodData('spotlight', args);
+	const { value: data = { users: [], rooms: [] }, phase: status } = useMethodData('spotlight', args);
 
 	return useMemo(() => {
 		if (!data) {
-			return { data: { users: [], rooms: [] }, status: AsyncState.LOADING };
+			return { data: { users: [], rooms: [] }, status: 'loading' };
 		}
 		return { data, status };
 	}, [data, status]);
@@ -105,7 +107,7 @@ const useSearchItems = (filterText) => {
 
 	const [, type, name] = teste;
 	const query = useMemo(() => {
-		const filterRegex = new RegExp(RegExp.escape(name), 'i');
+		const filterRegex = new RegExp(escapeRegExp(name), 'i');
 
 		return {
 			$or: [
@@ -273,7 +275,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		<Sidebar.TopBar.Section role='search' is='form'>
 			<TextInput aria-owns={listId} data-qa='sidebar-search-input' ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
 		</Sidebar.TopBar.Section>
-		<Box aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncState.DONE}>
+		<Box aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncStatePhase.RESOLVED}>
 			<List
 				outerElementType={ScrollableContentWrapper}
 				height={blockSize}

@@ -55,7 +55,7 @@ export function NewUsersSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('engagement-dashboard/users/new-users', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/new-users', params);
 
 	const { ref: sizeRef, contentBoxSize: { inlineSize = 600 } = {} } = useResizeObserver();
 

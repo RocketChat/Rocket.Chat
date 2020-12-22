@@ -1,9 +1,9 @@
-import s from 'underscore.string';
 import moment from 'moment';
 
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 /**
  * Chechs if a messages contains a user highlight
@@ -18,7 +18,7 @@ export function messageContainsHighlight(message, highlights) {
 	if (! highlights || highlights.length === 0) { return false; }
 
 	return highlights.some(function(highlight) {
-		const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
+		const regexp = new RegExp(escapeRegExp(highlight), 'i');
 		return regexp.test(message.msg);
 	});
 }
