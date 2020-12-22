@@ -105,39 +105,6 @@ button {
 	}
 }
 
-.flex-tab-bar {
-	& .tab-button {
-		position: relative;
-
-		cursor: pointer;
-	}
-
-	& .tab-button-icon {
-		color: var(--rc-color-primary-dark);
-
-		font-size: 20px;
-
-		&--star {
-			width: 17px;
-			height: 16px;
-			fill: none;
-		}
-
-		&--language {
-			width: 16px;
-			height: 16px;
-
-			fill: currentColor;
-			stroke: none;
-		}
-
-		&--hubot {
-			width: 14px;
-			height: 16px;
-		}
-	}
-}
-
 .rc-icon {
 	overflow: hidden;
 

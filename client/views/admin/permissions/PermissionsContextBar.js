@@ -18,7 +18,7 @@ const PermissionsContextBar = () => {
 		router.push({});
 	});
 
-	return (context && <VerticalBar className={'contextual-bar'}>
+	return (context && <VerticalBar>
 		<VerticalBar.Header>
 			{context === 'new' && t('New_role')}
 			{context === 'edit' && t('Role_Editing')}

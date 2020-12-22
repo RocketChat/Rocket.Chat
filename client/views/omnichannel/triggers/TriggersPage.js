@@ -47,7 +47,7 @@ const MonitorsPage = () => {
 				<TriggersTable reloadRef={reload}/>
 			</Page.ScrollableContentWithShadow>
 		</Page>
-		{context && <VerticalBar className={'contextual-bar'}>
+		{context && <VerticalBar>
 			<VerticalBar.Header>
 				{t('Trigger')}
 				<VerticalBar.Close onClick={handleCloseVerticalBar} />
