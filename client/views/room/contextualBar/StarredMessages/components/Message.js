@@ -3,9 +3,9 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import React, { useEffect, useRef } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 
-export const Message = ({ msg, ...props }) => {
+const Message = ({ style, msg, ...props }) => {
 	const siblingRef = useRef(); // the node rendered by the component
 	const viewNodeRef = useRef(); // the node rendered by the template
 	const depRef = useRef(new Tracker.Dependency()); // dependency to force template update
@@ -51,10 +51,13 @@ export const Message = ({ msg, ...props }) => {
 
 		// force the view node to ALWAYS be before sibling node
 		siblingRef.current.parentElement.insertBefore(viewNodeRef.current, siblingRef.current);
+		viewNodeRef.current.setAttribute('style', siblingRef.current.getAttribute('style'));
 		// force template update, recomputing `processSequentials` function
 		depRef.current.changed();
 	});
 
 	// use appropriate props to help `processSequentials` function
-	return <Box ref={siblingRef} is='li' data-timestamp={msg?.ts?.getTime()} />;
+	return <Box ref={siblingRef} is='li' data-timestamp={msg?.ts?.getTime()} style={style} />;
 };
+
+export default memo(Message);

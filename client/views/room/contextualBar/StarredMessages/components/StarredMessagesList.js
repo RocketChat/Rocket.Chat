@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 // import { ReactiveVar } from 'meteor/reactive-var';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { FixedSizeList as List } from 'react-window';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { Box } from '@rocket.chat/fuselage';
 
-import { Message } from './Message';
+import Message from './Message';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 
 export const StarredMessagesList = ({
@@ -18,9 +18,7 @@ export const StarredMessagesList = ({
 }) => {
 	const { ref, contentBoxSize: { blockSize = 780 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
-	const isItemLoaded = ({ index }) => !!messages[index];
-
-	const content = React.memo(({ data, index }) => {
+	const children = useCallback(({ data, index, style }) => {
 		const item = data[index] || null;
 
 		return item && <Message
@@ -32,13 +30,14 @@ export const StarredMessagesList = ({
 			subscription={subscription}
 			settings={settings}
 			u={u}
+			style={style}
 		/>;
-	});
+	}, [rid, settings, subscription, u]);
 
 	return (
 		<Box is='ul' w='full' h='full' flexShrink={1} ref={ref} overflow='hidden'>
 			<InfiniteLoader
-				isItemLoaded={isItemLoaded}
+				isItemLoaded={({ index }) => !!messages[index]}
 				itemCount={messages.length}
 				loadMoreItems={loadMore}
 			>
@@ -53,7 +52,7 @@ export const StarredMessagesList = ({
 						onItemsRendered={onItemsRendered}
 						ref={ref}
 					>
-						{content}
+						{children}
 					</List>
 				)}
 			</InfiniteLoader>
