@@ -61,7 +61,6 @@ import '../app/tokenpass/client';
 import '../app/ui';
 import '../app/ui-account';
 import '../app/ui-clean-history';
-import '../app/ui-flextab';
 import '../app/ui-login';
 import '../app/ui-master/client';
 import '../app/ui-message';
