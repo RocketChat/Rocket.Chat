@@ -19,6 +19,7 @@ import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManag
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import MarkdownText from '../../../../../components/MarkdownText';
+import { useTabBarClose } from '../../../providers/ToolboxProvider';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -79,7 +80,7 @@ export const RoomInfo = function RoomInfo({
 
 			<VerticalBar.ScrollableContent p='x24'>
 				<Box flexGrow={1}>
-					<Box pbe='x24'>
+					<Box pbe='x24' display='flex' justifyContent='center'>
 						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
 					</Box>
 
@@ -144,10 +145,9 @@ RoomInfo.Icon = RoomInfoIcon;
 
 export default ({
 	rid,
-	tabBar,
+	openEditing,
 }) => {
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
-	const openEditing = useMutableCallback(() => tabBar && tabBar.setTemplate('EditRoomInfo'));
+	const onClickClose = useTabBarClose();
 	const t = useTranslation();
 
 	const room = useUserRoom(rid);

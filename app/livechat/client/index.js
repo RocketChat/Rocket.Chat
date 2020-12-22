@@ -2,7 +2,7 @@ import '../lib/messageTypes';
 import './roomType';
 import './route';
 import './ui';
-import './hooks/onCreateRoomTabBar';
+import './tabBar';
 import './startup/notifyUnreadRooms';
 import './views/app/dialog/closeRoom';
 import './stylesheets/livechat.css';

@@ -4,10 +4,9 @@ import {
 	Box,
 	Icon,
 	TextInput,
-	Field,
-	FieldGroup,
 	Select,
 	Throbber,
+	Margins,
 } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -26,6 +25,7 @@ import ScrollableContentWrapper from '../../../../components/ScrollableContentWr
 import { useFileList } from './hooks/useFileList';
 import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
 import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';
+import { useTabBarClose } from '../../providers/ToolboxProvider';
 
 const Row = React.memo(({ data, index, style }) => {
 	const { items, userId, onClickDelete, isDeletionAllowed } = data;
@@ -95,30 +95,18 @@ export const RoomFiles = function RoomFiles({
 			</VerticalBar.Header>
 
 			<VerticalBar.Content p='x12'>
-				<Box p='x12' mi='neg-x4'>
-					<FieldGroup>
-						<Box flexDirection='row' alignItems='flex-end' display='flex' justifyContent='stretch'>
-							<Box flexGrow={2} flexBasis='80%' mi='x4'>
-								<Field>
-									<Field.Label htmlFor={searchId} flexGrow={0}>{t('Search_by_file_name')}</Field.Label>
-									<Field.Row>
-										<TextInput data-qa-files-search id={searchId} placeholder={t('Search_Files')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
-									</Field.Row>
-								</Field>
-							</Box>
-
-							<Box flexGrow={1} flexBasis='20%' mi='x4'>
-								<Field>
-									<Field.Row>
-										<Select
-											onChange={setType}
-											value={type}
-											options={options} />
-									</Field.Row>
-								</Field>
-							</Box>
-						</Box>
-					</FieldGroup>
+				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
+					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+						<Margins inline='x4'>
+							<TextInput data-qa-files-search id={searchId} placeholder={t('Search_Files')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+							<Select
+								flexGrow={0}
+								width='110px'
+								onChange={setType}
+								value={type}
+								options={options} />
+						</Margins>
+					</Box>
 				</Box>
 
 				{loading && <Box p='x12'><Throbber size='x12' /></Box>}
@@ -153,9 +141,9 @@ export const RoomFiles = function RoomFiles({
 
 RoomFiles.Item = FileItem;
 
-export default ({ rid, tabBar }) => {
+export default ({ rid }) => {
 	const uid = useUserId();
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
