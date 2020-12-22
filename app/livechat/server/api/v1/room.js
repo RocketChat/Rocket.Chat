@@ -11,6 +11,7 @@ import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
 
+
 API.v1.addRoute('livechat/room', {
 	get() {
 		const defaultCheckParams = {
@@ -40,6 +41,7 @@ API.v1.addRoute('livechat/room', {
 
 			const rid = roomId || Random.id();
 			const room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
+
 			return API.v1.success(room);
 		} catch (e) {
 			return API.v1.failure(e);
