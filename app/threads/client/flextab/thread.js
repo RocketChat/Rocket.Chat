@@ -20,6 +20,7 @@ import { getUserPreference } from '../../../utils';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
 import './messageBoxFollow';
+import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 
 createTemplateForComponent('Checkbox', async () => {
 	const { CheckBox } = await import('@rocket.chat/fuselage');
@@ -38,6 +39,7 @@ createTemplateForComponent('ThreadComponent', () => import('../components/Thread
 
 Template.thread.events({
 	...dropzoneEvents,
+	...getCommonRoomEvents(),
 	'click .js-close'(e) {
 		e.preventDefault();
 		e.stopPropagation();

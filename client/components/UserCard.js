@@ -28,7 +28,7 @@ export const Info = (props) => (
 	/>
 );
 
-export const Username = ({ name, status = <Status.Offline/>, title }) => <Box display='flex' title={title} flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
+export const Username = ({ name, status = <Status.Offline/>, title, ...props }) => <Box {...props} display='flex' title={title} flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
 	{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box>
 </Box>;
 
