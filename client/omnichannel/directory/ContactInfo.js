@@ -46,8 +46,7 @@ export function ContactInfo({ id }) {
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-	const { value: data, phase: state, error } = useEndpointData(`contact?contactId=${ id }`);
-
+	const { value: data, phase: state, error } = useEndpointData(`omnichannel/contact?contactId=${ id }`);
 	const { contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager } } = data || { contact: {} };
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;

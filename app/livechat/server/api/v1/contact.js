@@ -6,13 +6,13 @@ import {
 	LivechatVisitors,
 } from '../../../../models';
 
+const createToken = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
-API.v1.addRoute('contact', { authRequired: true }, {
+API.v1.addRoute('omnichannel/contact', { authRequired: true }, {
 	post() {
 		try {
 			check(this.bodyParams, {
 				_id: Match.Maybe(String),
-				token: String,
 				name: String,
 				email: Match.Maybe(String),
 				phone: Match.Maybe(String),
@@ -24,8 +24,9 @@ API.v1.addRoute('contact', { authRequired: true }, {
 			if (this.bodyParams.phone) {
 				contactParams.phone = { number: this.bodyParams.phone };
 			}
-			const contact = Livechat.registerGuest(contactParams);
 
+			const data = Object.assign(contactParams, { token: createToken() });
+			const contact = Livechat.registerGuest(data);
 			return API.v1.success({ contact });
 		} catch (e) {
 			return API.v1.failure(e);
@@ -40,28 +41,4 @@ API.v1.addRoute('contact', { authRequired: true }, {
 
 		return API.v1.success({ contact });
 	},
-	// put() {
-	// 	try {
-	// 		check(this.bodyParams, {
-	// 			_id: String,
-	// 			token: String,
-	// 			name: String,
-	// 			email: Match.Maybe(String),
-	// 			phone: Match.Maybe(String),
-	// 			livechatData: Match.Maybe(Object),
-	// 			contactManager: Match.Maybe(Object),
-	// 		});
-
-	// 		const contactParams = this.bodyParams;
-	// 		if (this.bodyParams.phone) {
-	// 			contactParams.phone = { number: this.bodyParams.phone };
-	// 		}
-
-	// 		const contact = Livechat.registerGuest(contactParams);
-
-	// 		return API.v1.success({ contact });
-	// 	} catch (e) {
-	// 		return API.v1.failure(e);
-	// 	}
-	// },
 });

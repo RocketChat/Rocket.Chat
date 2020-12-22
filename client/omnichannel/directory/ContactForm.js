@@ -15,11 +15,9 @@ import { FormSkeleton } from './Skeleton';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { hasAtLeastOnePermission } from '../../../app/authorization';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
-import { createToken } from '../../components/helpers';
 import { formsSubscription } from '../../views/omnichannel/additionalForms';
 
 const initialValues = {
-	token: '',
 	name: '',
 	email: '',
 	phone: '',
@@ -31,10 +29,9 @@ const getInitialValues = (data) => {
 		return initialValues;
 	}
 
-	const { contact: { name, token, phone, visitorEmails, livechatData, contactManager } } = data;
+	const { contact: { name, phone, visitorEmails, livechatData, contactManager } } = data;
 
 	return {
-		token: token ?? '',
 		name: name ?? '',
 		email: visitorEmails ? visitorEmails[0].address : '',
 		phone: phone ? phone[0].phoneNumber : '',
@@ -45,7 +42,7 @@ const getInitialValues = (data) => {
 
 export function ContactEditWithData({ id, reload, close }) {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`contact?contactId=${ id }`);
+	const { value: data, phase: state, error } = useEndpointData(`omnichannel/contact?contactId=${ id }`);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
@@ -79,7 +76,6 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		handleUsername,
 	} = handlers;
 	const {
-		token,
 		name,
 		email,
 		phone,
@@ -117,7 +113,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		&& allCustomFields.customFields
 		? jsonConverterToValidFormat(allCustomFields.customFields) : {}), [allCustomFields]);
 
-	const saveContact = useEndpointAction('POST', 'contact');
+	const saveContact = useEndpointAction('POST', 'omnichannel/contact');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -152,10 +148,8 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 		if (id) {
 			payload._id = id;
-			payload.token = token;
-		} else {
-			payload.token = createToken();
 		}
+
 		if (livechatData) { payload.livechatData = livechatData; }
 		if (username) { payload.contactManager = { username }; }
 
