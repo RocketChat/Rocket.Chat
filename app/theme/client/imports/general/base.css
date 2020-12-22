@@ -205,3 +205,43 @@ button {
 .hidden {
 	display: none;
 }
+
+@media print {
+	#rocket-chat.menu-nav,
+	.simplebar-content-wrapper,
+	section.rcx-box.rcx-box--full,
+	.rc-old.main-content {
+		overflow: auto !important;
+
+		height: auto !important;
+		max-height: none !important;
+		flex-shrink: 0 !important;
+	}
+
+	div.simplebar-offset,
+	.simplebar-mask,
+	.rc-old .messages-container .wrapper {
+		position: relative !important;
+	}
+
+	.simplebar-placeholder {
+		height: 0 !important;
+	}
+
+	body {
+		height: auto !important;
+	}
+
+	.rc-old .room-container,
+	.rc-old .room-container:first-child,
+	.rc-old .messages-container-main,
+	.rc-old .messages-container-wrapper,
+	.rc-old .main-content-flex {
+		flex: 1 0 auto !important;
+
+		height: auto !important;
+	}
+	.rc-alerts {
+		display: none !important;
+	}
+}
