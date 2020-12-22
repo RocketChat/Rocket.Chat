@@ -315,10 +315,6 @@ function startStreamBroadcast() {
 }
 
 export function getInstances() {
-	if (!hasPermission(Meteor.userId(), 'view-statistics')) {
-		return;
-	}
-
 	return Object.keys(connections).map((address) => {
 		const conn = connections[address];
 		return Object.assign({ address, currentStatus: conn._stream.currentStatus }, _.pick(conn, 'instanceRecord', 'broadcastAuth'));
@@ -331,13 +327,11 @@ Meteor.startup(function() {
 
 Meteor.methods({
 	'instances/get'() {
-		const instances = getInstances();
-		if (!instances) {
+		if (!hasPermission(Meteor.userId(), 'view-statistics')) {
 			throw new Meteor.Error('error-action-not-allowed', 'List instances is not allowed', {
 				method: 'instances/get',
 			});
 		}
-
-		return instances;
+		return getInstances();
 	},
 });
