@@ -1,4 +1,6 @@
 import React from 'react';
-import { Throbber } from '@rocket.chat/fuselage';
+import { Box, Throbber } from '@rocket.chat/fuselage';
 
-export const LoadingStarredMessages = () => <Throbber />;
+export const LoadingStarredMessages = () => <Box h='full' w='full' display='flex' justifyContent='center' alignItems='center'>
+	<Throbber />
+</Box>;
