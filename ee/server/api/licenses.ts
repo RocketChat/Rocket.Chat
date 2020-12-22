@@ -7,7 +7,7 @@ import { hasPermission } from '../../../app/authorization/server';
 
 API.v1.addRoute('licenses.get', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'edit-privileged-setting')) {
+		if (!hasPermission(this.userId, 'view-privileged-setting')) {
 			return API.v1.unauthorized();
 		}
 
@@ -27,7 +27,7 @@ API.v1.addRoute('licenses.add', { authRequired: true }, {
 			license: String,
 		});
 
-		if (!hasPermission(this.userId, 'view-privileged-setting')) {
+		if (!hasPermission(this.userId, 'edit-privileged-setting')) {
 			return API.v1.unauthorized();
 		}
 
