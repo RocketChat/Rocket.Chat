@@ -8,7 +8,6 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../../hooks/useForm';
 import { useRoute } from '../../../contexts/RouterContext';
 import Page from '../../../components/Page';
@@ -18,6 +17,7 @@ import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { isEmail } from '../../../../app/utils';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { FormSkeleton } from '../../../components/Skeleton';
 
 export default function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
