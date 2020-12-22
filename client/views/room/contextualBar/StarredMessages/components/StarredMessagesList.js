@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-// import { ReactiveVar } from 'meteor/reactive-var';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { FixedSizeList as List } from 'react-window';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';

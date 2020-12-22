@@ -4,7 +4,7 @@ import { MessageMap } from './useMessageList';
 import { IMessage } from '../../../../../../definition/IMessage';
 import { useGetStarredMessages } from './useGetStarredMessages';
 
-const LIMIT_DEFAULT = 10;
+const LIMIT_DEFAULT = 50;
 
 export const useStarredMessagesFromEndpoint = (
 	rid: IMessage['rid'],

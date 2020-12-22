@@ -44,7 +44,7 @@ export const StarredMessages = ({
 			<VerticalBar.Text>{ t('Starred_Messages') }</VerticalBar.Text>
 			{onClose && <VerticalBar.Close onClick={onClose}/>}
 		</VerticalBar.Header>
-		<VerticalBar.Content p='x0'>
+		<VerticalBar.Content padding={0}>
 			{content}
 		</VerticalBar.Content>
 	</>;
