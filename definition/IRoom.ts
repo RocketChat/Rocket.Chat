@@ -13,16 +13,23 @@ export interface IRoom extends IRocketChatRecord {
 	name: string;
 	msgs: number;
 	default?: true;
+	broadcast?: true;
 	featured?: true;
+	encrypted?: boolean;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 
 	lastMessage?: IMessage;
 	lm?: Date;
 	usersCount: number;
-	// "jitsiTimeout" : Date
+	jitsiTimeout: Date;
 
-	prid: string;
+	streamingOptions?: {
+		id?: string;
+		type: string;
+	};
+
+	prid?: string;
 	avatarETag?: string;
 	tokenpass?: {
 		require: string;
@@ -35,5 +42,14 @@ export interface IRoom extends IRocketChatRecord {
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
+	uids: Array<string>;
 	usernames: Array<Username>;
+}
+
+
+export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
+	t: 'l';
+	v: {
+		status: 'online' | 'busy' | 'away' | 'offline';
+	};
 }

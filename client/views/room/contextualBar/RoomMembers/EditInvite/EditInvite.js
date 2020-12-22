@@ -4,6 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../../components/VerticalBar';
+import { useTabBarClose } from '../../../providers/ToolboxProvider';
 
 export const EditInvite = ({
 	onClickBack,
@@ -65,7 +66,6 @@ export const EditInvite = ({
 };
 
 export default ({
-	tabBar,
 	onClickBack,
 	setParams,
 	linkText,
@@ -73,7 +73,7 @@ export default ({
 	days: _days,
 	maxUses: _maxUses,
 }) => {
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const onClickClose = useTabBarClose();
 
 	const [days, setDays] = useState(_days);
 	const [maxUses, setMaxUses] = useState(_maxUses);
