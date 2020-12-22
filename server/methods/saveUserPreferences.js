@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Users, Subscriptions } from '../../app/models';
+import { Users, Subscriptions } from '../../app/models/server';
 
 Meteor.methods({
 	saveUserPreferences(settings) {
@@ -77,25 +77,33 @@ Meteor.methods({
 		Meteor.defer(() => {
 			if (settings.desktopNotifications && oldDesktopNotifications !== settings.desktopNotifications) {
 				if (settings.desktopNotifications === 'default') {
-					Subscriptions.clearDesktopNotificationUserPreferences(user._id);
+					Subscriptions.clearNotificationUserPreferences(user._id, 'desktopNotifications', 'desktopPrefOrigin');
 				} else {
-					Subscriptions.updateDesktopNotificationUserPreferences(user._id, settings.desktopNotifications);
+					Subscriptions.updateNotificationUserPreferences(user._id, settings.desktopNotifications, 'desktopNotifications', 'desktopPrefOrigin');
 				}
 			}
 
 			if (settings.mobileNotifications && oldMobileNotifications !== settings.mobileNotifications) {
 				if (settings.mobileNotifications === 'default') {
-					Subscriptions.clearMobileNotificationUserPreferences(user._id);
+					Subscriptions.clearNotificationUserPreferences(user._id, 'mobilePushNotifications', 'mobilePrefOrigin');
 				} else {
-					Subscriptions.updateMobileNotificationUserPreferences(user._id, settings.mobileNotifications);
+					Subscriptions.updateNotificationUserPreferences(user._id, settings.mobileNotifications, 'mobilePushNotifications', 'mobilePrefOrigin');
 				}
 			}
 
 			if (settings.emailNotificationMode && oldEmailNotifications !== settings.emailNotificationMode) {
 				if (settings.emailNotificationMode === 'default') {
-					Subscriptions.clearEmailNotificationUserPreferences(user._id);
+					Subscriptions.clearNotificationUserPreferences(user._id, 'emailNotifications', 'emailPrefOrigin');
 				} else {
-					Subscriptions.updateEmailNotificationUserPreferences(user._id, settings.emailNotificationMode);
+					Subscriptions.updateNotificationUserPreferences(user._id, settings.emailNotificationMode, 'emailNotifications', 'emailPrefOrigin');
+				}
+			}
+
+			if (settings.audioNotifications && oldEmailNotifications !== settings.audioNotifications) {
+				if (settings.audioNotifications === 'default') {
+					Subscriptions.clearNotificationUserPreferences(user._id, 'audioNotifications', 'audioPrefOrigin');
+				} else {
+					Subscriptions.updateNotificationUserPreferences(user._id, settings.audioNotifications, 'audioNotifications', 'audioPrefOrigin');
 				}
 			}
 
