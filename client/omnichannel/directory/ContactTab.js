@@ -8,6 +8,8 @@ import GenericTable from '../../components/GenericTable';
 import FilterByText from '../../components/FilterByText';
 import { useRoute } from '../../contexts/RouterContext';
 import { useFormatDate } from '../../hooks/useFormatDate';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import { NotAuthorizedPage } from '../../components/NotAuthorizedPage';
 
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
@@ -86,7 +88,11 @@ function ContactTable({ setContactReload }) {
 }
 
 export default function ContactTab(props) {
-	return <ContactTable {...props} />;
+	const hasAccess = usePermission('view-l-room');
 
-	// return <NotAuthorizedPage />;
+	if (hasAccess) {
+		return <ContactTable {...props} />;
+	}
+
+	return <NotAuthorizedPage />;
 }
