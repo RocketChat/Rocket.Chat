@@ -309,7 +309,7 @@ export const getCommonRoomEvents = () => ({
 				target: e.currentTarget,
 				open: (e) => {
 					e.preventDefault();
-					openProfileTab(e, instance.data.tabBar, username);
+					instance.data.openProfileTab(username);
 				},
 			});
 		}
