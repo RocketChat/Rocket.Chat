@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Field, TextInput, Icon, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-
+import { useSubscription } from 'use-subscription';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBar from '../../components/VerticalBar';
@@ -14,10 +14,9 @@ import { useEndpointData } from '../../hooks/useEndpointData';
 import { FormSkeleton } from './Skeleton';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { hasAtLeastOnePermission } from '../../../app/authorization';
-import { UserAutoComplete } from '../../components/AutoComplete';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { createToken } from '../../components/helpers';
-
+import { formsSubscription } from '../../views/omnichannel/additionalForms';
 
 const initialValues = {
 	token: '',
@@ -65,6 +64,13 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
 	const { values, handlers } = useForm(getInitialValues(data));
+	const eeForms = useSubscription(formsSubscription);
+
+	const {
+		useContactManager = () => {},
+	} = eeForms;
+
+	const ContactManager = useContactManager();
 
 	const {
 		handleName,
@@ -201,12 +207,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			</Field>
 			{ canViewCustomFields() && allCustomFields
 			&& <CustomFieldsForm jsonCustomFields={jsonCustomField} customFieldsData={livechatData} setCustomFieldsData={handleLivechatData} /> }
-			<Field>
-				<Field.Label>{t('Contact_Manager')}</Field.Label>
-				<Field.Row>
-					<UserAutoComplete value={username} onChange={handleUsername}/>
-				</Field.Row>
-			</Field>
+			{ ContactManager && <ContactManager value={username} handler={handleUsername} /> }
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
