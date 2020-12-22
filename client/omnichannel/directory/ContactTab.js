@@ -3,7 +3,7 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import { Table } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import GenericTable from '../../components/GenericTable';
 import FilterByText from '../../components/FilterByText';
 
@@ -33,7 +33,7 @@ function ContactTable() {
 		setSort([id, 'asc']);
 	});
 
-	const { data } = useEndpointDataExperimental('livechat/visitors.search', query) || {};
+	const { value: data } = useEndpointData('livechat/visitors.search', query) || {};
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'username'} direction={sort[1]} active={sort[0] === 'username'} onClick={onHeaderClick} sort='username' w='x140'>{t('Username')}</GenericTable.HeaderCell>,

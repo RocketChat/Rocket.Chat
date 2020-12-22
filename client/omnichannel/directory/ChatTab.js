@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointData } from '../../hooks/useEndpointData';
 import GenericTable from '../../components/GenericTable';
 import FilterByText from '../../components/FilterByText';
 import { usePermission } from '../../contexts/AuthorizationContext';
@@ -45,7 +45,7 @@ const ChatTable = () => {
 		FlowRouter.go('live', { id: _id });
 	});
 
-	const { data } = useEndpointDataExperimental('livechat/rooms', query) || {};
+	const { value: data } = useEndpointData('livechat/rooms', query) || {};
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'fname'} direction={sort[1]} active={sort[0] === 'fname'} onClick={onHeaderClick} sort='fname' w='x400'>{t('Contact_Name')}</GenericTable.HeaderCell>,

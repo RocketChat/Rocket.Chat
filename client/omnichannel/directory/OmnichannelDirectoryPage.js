@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { Tabs } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-import Page from '../../components/basic/Page';
+import Page from '../../components/Page';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import ContactTab from './ContactTab';
 import ChatTab from './ChatTab';
