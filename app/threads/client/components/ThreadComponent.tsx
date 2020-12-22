@@ -8,13 +8,16 @@ import { ChatMessage } from '../../../models/client';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { roomTypes } from '../../../utils/client';
 import { normalizeThreadTitle } from '../lib/normalizeThreadTitle';
-import { useUserId } from '../../../../client/contexts/UserContext';
+import { useUserId, useUserSubscription } from '../../../../client/contexts/UserContext';
 import { useEndpoint, useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import ThreadSkeleton from './ThreadSkeleton';
 import ThreadView from './ThreadView';
 import { IMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
+import { useTabBarOpenUserInfo } from '../../../../client/views/room/providers/ToolboxProvider';
+
+const subscriptionFields = {};
 
 const useThreadMessage = (tmid: string): IMessage => {
 	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
@@ -56,15 +59,16 @@ const ThreadComponent: FC<{
 	mid: string;
 	jump: unknown;
 	room: IRoom;
-	subscription: unknown;
 }> = ({
 	mid,
 	jump,
 	room,
-	subscription,
 }) => {
+	const subscription = useUserSubscription(room._id, subscriptionFields);
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
 	const threadMessage = useThreadMessage(mid);
+
+	const open = useTabBarOpenUserInfo();
 
 	const ref = useRef<Element>(null);
 	const uid = useUserId();
@@ -102,6 +106,8 @@ const ThreadComponent: FC<{
 		jump,
 		following,
 		subscription,
+		rid: room._id,
+		openProfileTab: open,
 	}));
 
 	useEffect(() => {
@@ -115,15 +121,16 @@ const ThreadComponent: FC<{
 				jump,
 				following,
 				subscription,
+				rid: room._id,
+				openProfileTab: open,
 			};
 		});
-	}, [following, jump, subscription, threadMessage]);
+	}, [following, jump, open, room._id, subscription, threadMessage]);
 
 	useEffect(() => {
 		if (!ref.current || !viewData.mainMessage) {
 			return;
 		}
-
 		const view = Blaze.renderWithData(Template.thread, viewData, ref.current);
 
 		return (): void => {

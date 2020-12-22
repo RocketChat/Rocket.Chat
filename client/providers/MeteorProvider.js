@@ -4,6 +4,7 @@ import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
+import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider';
 import OmniChannelProvider from './OmniChannelProvider';
 import RouterProvider from './RouterProvider';
@@ -25,19 +26,21 @@ function MeteorProvider({ children }) {
 						<SidebarProvider>
 							<ToastMessagesProvider>
 								<SettingsProvider>
-									<AvatarUrlProvider>
-										<CustomSoundProvider>
-											<UserProvider>
-												<AuthorizationProvider>
-													<OmniChannelProvider>
-														<ModalProvider>
-															{children}
-														</ModalProvider>
-													</OmniChannelProvider>
-												</AuthorizationProvider>
-											</UserProvider>
-										</CustomSoundProvider>
-									</AvatarUrlProvider>
+									<LayoutProvider>
+										<AvatarUrlProvider>
+											<CustomSoundProvider>
+												<UserProvider>
+													<AuthorizationProvider>
+														<OmniChannelProvider>
+															<ModalProvider>
+																{children}
+															</ModalProvider>
+														</OmniChannelProvider>
+													</AuthorizationProvider>
+												</UserProvider>
+											</CustomSoundProvider>
+										</AvatarUrlProvider>
+									</LayoutProvider>
 								</SettingsProvider>
 							</ToastMessagesProvider>
 						</SidebarProvider>
