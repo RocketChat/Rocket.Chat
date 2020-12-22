@@ -33,6 +33,10 @@ const isStarredMessage = (
 		return false;
 	}
 
+	if (message._hidden) {
+		return false;
+	}
+
 	return true;
 };
 

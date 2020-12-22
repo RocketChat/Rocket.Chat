@@ -12,8 +12,9 @@ import VerticalBar from '../../../../components/VerticalBar';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 
 export const StarredMessages = ({
-	messages,
 	onClose,
+	loadMore,
+	messages,
 	rid,
 	subscription,
 	settings,
@@ -25,6 +26,7 @@ export const StarredMessages = ({
 	if (Array.isArray(messages)) {
 		content = messages.length > 0
 			? <StarredMessagesList
+				loadMore={loadMore}
 				messages={messages}
 				rid={rid}
 				subscription={subscription}
@@ -42,15 +44,15 @@ export const StarredMessages = ({
 			<VerticalBar.Text>{ t('Starred_Messages') }</VerticalBar.Text>
 			{onClose && <VerticalBar.Close onClick={onClose}/>}
 		</VerticalBar.Header>
-		<VerticalBar.ScrollableContent>
+		<VerticalBar.Content p='x0'>
 			{content}
-		</VerticalBar.ScrollableContent>
+		</VerticalBar.Content>
 	</>;
 };
 
 export default React.memo(({ tabBar, rid }) => {
-	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
-	const { messages, error } = useStarredMessages(rid);
+	const onClose = useMutableCallback(() => tabBar && tabBar.close());
+	const { messages, error, loadMore } = useStarredMessages(rid);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const subscription = useUserSubscription(rid);
 	const settings = {
@@ -69,7 +71,8 @@ export default React.memo(({ tabBar, rid }) => {
 	}, [dispatchToastMessage, error]);
 
 	return <StarredMessages
-		handleClose={handleClose}
+		onClose={onClose}
+		loadMore={loadMore}
 		messages={messages}
 		rid={rid}
 		subscription={subscription}
