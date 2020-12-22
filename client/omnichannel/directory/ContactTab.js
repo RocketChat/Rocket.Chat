@@ -34,8 +34,7 @@ function ContactTable({ setContactReload }) {
 		const [sortBy, sortDirection] = sort;
 
 		if (sortBy === id) {
-			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
-			return;
+			return setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
 		}
 		setSort([id, 'asc']);
 	});
