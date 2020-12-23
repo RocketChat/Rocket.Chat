@@ -7,7 +7,7 @@ import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { getUserEmailAddress } from '../../lib/getUserEmailAddress';
-import { UserAvatarEditor } from '../../components/avatar/UserAvatarEditor';
+import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 import UserStatusMenu from '../../components/UserStatusMenu';
 

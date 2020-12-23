@@ -3,10 +3,10 @@ import React, { memo } from 'react';
 import BaseAvatar from './BaseAvatar';
 import { useUserAvatarPath } from '../../contexts/AvatarUrlContext';
 
-function UserAvatar({ username, etag, ...rest }) {
+const UserAvatar = ({ username, etag, url, ...props }) => {
 	const getUserAvatarPath = useUserAvatarPath();
-	const { url = getUserAvatarPath(username, etag), ...props } = rest;
+	url = url ?? getUserAvatarPath(username, etag);
 	return <BaseAvatar url={url} title={username} {...props}/>;
-}
+};
 
 export default memo(UserAvatar);
