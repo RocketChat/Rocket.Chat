@@ -209,8 +209,6 @@ Template.rc_modal.helpers({
 
 Template.rc_modal.onRendered(function() {
 	this.oldFocus = document.activeElement;
-	
-    console.log(document.activeElement)
 	if (this.data.input) {
 		$('.js-modal-input', this.firstNode).focus();
 	} else if (this.data.showConfirmButton && this.data.confirmOnEnter) {
@@ -219,7 +217,7 @@ Template.rc_modal.onRendered(function() {
 	if (this.data.onRendered) {
 		this.data.onRendered();
 	}
-    console.log(document.activeElement)
+    
 	this.data.closeOnEscape && document.addEventListener('keydown', modal.onKeyDown);
 });
 
