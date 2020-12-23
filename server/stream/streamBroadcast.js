@@ -314,6 +314,13 @@ function startStreamBroadcast() {
 	});
 }
 
+export function getInstances() {
+	return Object.keys(connections).map((address) => {
+		const conn = connections[address];
+		return Object.assign({ address, currentStatus: conn._stream.currentStatus }, _.pick(conn, 'instanceRecord', 'broadcastAuth'));
+	});
+}
+
 Meteor.startup(function() {
 	return startStreamBroadcast();
 });
@@ -325,10 +332,6 @@ Meteor.methods({
 				method: 'instances/get',
 			});
 		}
-
-		return Object.keys(connections).map((address) => {
-			const conn = connections[address];
-			return Object.assign({ address, currentStatus: conn._stream.currentStatus }, _.pick(conn, 'instanceRecord', 'broadcastAuth'));
-		});
+		return getInstances();
 	},
 });

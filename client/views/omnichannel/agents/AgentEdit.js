@@ -8,7 +8,7 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useTranslation } from '../../../contexts/TranslationContext';
 import VerticalBar from '../../../components/VerticalBar';
 import { UserInfo } from '../../room/contextualBar/UserInfo';
-import { FormSkeleton } from './Skeleton';
+import { FormSkeleton } from '../../../components/Skeleton';
 import { useForm } from '../../../hooks/useForm';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import { useRoute } from '../../../contexts/RouterContext';

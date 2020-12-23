@@ -8,6 +8,7 @@ import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import EditInvite from '../EditInvite';
+import { useTabBarClose } from '../../../providers/ToolboxProvider';
 
 export const InviteUsers = ({
 	onClickBack,
@@ -22,7 +23,7 @@ export const InviteUsers = ({
 	const { copy } = useClipboardWithToast(linkText);
 
 	return (
-		<>
+		<Box position='absolute' h='full' w='full'>
 			<VerticalBar.Header>
 				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
 				<VerticalBar.Text>{t('Invite_Users')}</VerticalBar.Text>
@@ -45,7 +46,7 @@ export const InviteUsers = ({
 					{onClickEdit && <Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>}
 				</Box>
 			</VerticalBar.ScrollableContent>
-		</>
+		</Box>
 	);
 };
 
@@ -58,7 +59,7 @@ export default ({
 	const format = useFormatDateAndTime();
 	const t = useTranslation();
 
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const onClickClose = useTabBarClose();
 
 	const handleEdit = useMutableCallback(() => setEditing(true));
 	const onClickBackEditing = useMutableCallback(() => setEditing(false));
