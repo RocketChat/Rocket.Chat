@@ -2,6 +2,8 @@ import { expect } from 'chai';
 
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
+import {createUser, login as doLogin} from "/tests/data/users.helper";
+import {updatePermission} from "/tests/data/permissions.helper";
 
 describe('miscellaneous', function() {
 	this.retries(0);
@@ -442,6 +444,53 @@ describe('miscellaneous', function() {
 					expect(res.body.rooms[0]).to.have.property('_id');
 					expect(res.body.rooms[0]).to.have.property('name');
 					expect(res.body.rooms[0]).to.have.property('t');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/instances.get]', () => {
+		let unauthorizedUserCredentials;
+		before((done) => {
+			createUser().then((createdUser) => {
+				doLogin(createdUser.username, password).then((createdUserCredentials) => {
+					unauthorizedUserCredentials = createdUserCredentials;
+					updatePermission('view-statistics', ['guest']).then(done);
+				});
+			});
+		});
+
+		it('should fail if user is logged in but is unauthorized', (done) => {
+			request.get(api('instances.get'))
+				.set(unauthorizedUserCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				})
+				.end(done);
+		});
+
+		it('should fail if not logged in', (done) => {
+			request.get(api('instances.get'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should return instances if user is logged in and is authorized', (done) => {
+			request.get(api('instances.get'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('instances').and.to.be.an('array');
+					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
