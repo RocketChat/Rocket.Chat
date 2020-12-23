@@ -9,7 +9,7 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
-import { FormSkeleton } from './Skeleton';
+import { FormSkeleton } from '../../../components/Skeleton';
 import { useForm } from '../../../hooks/useForm';
 import { useRoute, useRouteParameter, useCurrentRoute } from '../../../contexts/RouterContext';
 import Page from '../../../components/Page';
