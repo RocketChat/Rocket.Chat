@@ -15,7 +15,7 @@ type CustomScrollbarsProps = {
 	style?: CSSProperties;
 }
 
-const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(({ onScroll, children, style }, ref) => {
+const ScrollableContentWrapper = forwardRef<unknown, CustomScrollbarsProps>(({ onScroll, children, style }, ref) => {
 	const dir = useDir();
 	const simpleBarStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]) as CSSProperties;
 	return <SimpleBar data-simplebar-direction={dir} direction={dir} style={simpleBarStyle} scrollableNodeProps={{ ref, onScroll }} children={children}/>;
