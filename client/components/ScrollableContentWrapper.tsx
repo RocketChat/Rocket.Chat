@@ -11,8 +11,8 @@ const styleDefault = {
 
 type CustomScrollbarsProps = {
 	onScroll?: Function;
-	ref: React.Ref<unknown>;
 	style?: CSSProperties;
+	children?: React.ReactNode;
 }
 
 const ScrollableContentWrapper = forwardRef<unknown, CustomScrollbarsProps>(({ onScroll, children, style }, ref) => {
