@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../../authorization/server';
+import { hasAtLeastOnePermission } from '../../../../authorization/server';
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
 
@@ -19,7 +19,7 @@ const validateDateParams = (property, date) => {
 
 API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 	get() {
-		if (!hasPermission(this.userId, 'view-livechat-manager')) {
+		if (!hasAtLeastOnePermission(this.userId, ['view-livechat-rooms', 'view-l-room'])) {
 			return API.v1.unauthorized();
 		}
 		const { offset, count } = this.getPaginationItems();
