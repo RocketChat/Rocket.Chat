@@ -226,6 +226,7 @@ export function EditDepartment({ data, id, title, reload }) {
 	const handleReturn = useMutableCallback(() => {
 		router.push({});
 	});
+
 	const invalidForm = !name || !email || !isEmail(email) || !hasUnsavedChanges || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
@@ -243,13 +244,15 @@ export function EditDepartment({ data, id, title, reload }) {
 		router.push({ ...params, tab: '' });
 	});
 
+	const hasNewAgent = useMemo(() => data.agents.length === agentList.length, [data.agents, agentList]);
+
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={title}>
 				<ButtonGroup>
 					{hasCannedResponsesLicense && cannedResponsesEnabled && <Button onClick={handleOpenCannedResponses} title={t('Canned Responses')}><Icon name='baloon-exclamation' size='x16'/></Button>}
 					<Button onClick={handleReturn}><Icon name='back'/> {t('Back')}</Button>
-					<Button type='submit' form={formId} primary disabled={invalidForm}>{t('Save')}</Button>
+					<Button type='submit' form={formId} primary disabled={invalidForm && hasNewAgent}>{t('Save')}</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
