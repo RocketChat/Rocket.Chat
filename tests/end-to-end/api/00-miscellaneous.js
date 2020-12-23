@@ -446,4 +446,22 @@ describe('miscellaneous', function() {
 				.end(done);
 		});
 	});
+
+	describe('/instances.get', () => {
+		it('should return available instances', (done) => {
+			request.get(api('instances.get'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('instances');
+
+					const { instances } = res.body;
+
+					expect(instances).to.have.property('current');
+					expect(instances).to.have.property('connections').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
 });
