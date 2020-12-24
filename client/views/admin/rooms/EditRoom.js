@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Box, Skeleton, Button, ButtonGroup, TextInput, Field, ToggleSwitch, Icon, Callout, TextAreaInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -15,6 +15,7 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useDeleteRoom } from './contexts/RoomsPageContext';
 
 const getInitialValues = (room) => ({
 	roomName: room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, { type: room.t, ...room }),
@@ -58,8 +59,6 @@ function EditRoomWithData({ rid }) {
 
 function EditRoom({ room, onChange }) {
 	const t = useTranslation();
-
-	const [deleted, setDeleted] = useState(false);
 
 	const setModal = useSetModal();
 
@@ -151,11 +150,13 @@ function EditRoom({ room, onChange }) {
 
 	const deleteRoom = useMethod('eraseRoom');
 
+	const { deleted, setDeleted, incrementDeletedRooms } = useDeleteRoom();
 	const handleDelete = useMutableCallback(() => {
 		const onCancel = () => setModal(undefined);
 		const onConfirm = async () => {
 			await deleteRoom(room._id);
 			onCancel();
+			incrementDeletedRooms();
 			setDeleted(true);
 		};
 
