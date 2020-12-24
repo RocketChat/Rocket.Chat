@@ -1,6 +1,5 @@
 import fs from 'fs';
 import util from 'util';
-import path from 'path';
 
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
@@ -14,6 +13,7 @@ import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOp
 import { FileUpload } from '../../file-upload/server';
 import * as Mailer from '../../mailer';
 import { readSecondaryPreferred } from '../../../server/database/readSecondaryPreferred';
+import { joinPath } from '../../../server/lib/fileUtils';
 
 const fsStat = util.promisify(fs.stat);
 const fsOpen = util.promisify(fs.open);
@@ -182,7 +182,7 @@ export const copyFile = function(attachmentData, assetsPath) {
 	if (!file) {
 		return;
 	}
-	FileUpload.copy(file, path.join(assetsPath, `${ attachmentData._id }-${ attachmentData.name }`));
+	FileUpload.copy(file, joinPath(assetsPath, `${ attachmentData._id }-${ attachmentData.name }`));
 };
 
 const exportMessageObject = (type, messageObject, messageFile) => {
@@ -330,7 +330,7 @@ const generateChannelsFile = function(type, exportPath, exportOperation) {
 		return;
 	}
 
-	const fileName = path.join(exportPath, 'channels.json');
+	const fileName = joinPath(exportPath, 'channels.json');
 	startFile(fileName,
 		exportOperation.roomList.map((roomData) =>
 			JSON.stringify({
@@ -351,7 +351,7 @@ export const exportRoomMessagesToFile = async function(exportPath, assetsPath, e
 
 	const limit = settings.get('UserData_MessageLimitPerRequest') > 0 ? settings.get('UserData_MessageLimitPerRequest') : 1000;
 	for (const exportOpRoomData of roomList) {
-		const filePath = path.join(exportPath, exportOpRoomData.targetFile);
+		const filePath = joinPath(exportPath, exportOpRoomData.targetFile);
 		if (exportOpRoomData.status === 'pending') {
 			exportOpRoomData.status = 'exporting';
 			startFile(filePath, exportType === 'html' ? '<meta http-equiv="content-type" content="text/html; charset=utf-8">' : '');
@@ -397,7 +397,7 @@ const generateUserFile = function(exportOperation, userData) {
 		services: Object.keys(services),
 	};
 
-	const fileName = path.join(exportOperation.exportPath, exportOperation.fullExport ? 'user.json' : 'user.html');
+	const fileName = joinPath(exportOperation.exportPath, exportOperation.fullExport ? 'user.json' : 'user.html');
 	startFile(fileName, '');
 
 	if (exportOperation.fullExport) {
@@ -440,7 +440,7 @@ const generateUserAvatarFile = function(exportOperation, userData) {
 		return;
 	}
 
-	const filePath = path.join(exportOperation.exportPath, 'avatar');
+	const filePath = joinPath(exportOperation.exportPath, 'avatar');
 	if (FileUpload.copy(file, filePath)) {
 		exportOperation.generatedAvatar = true;
 	}
@@ -504,7 +504,7 @@ const continueExportOperation = async function(exportOperation) {
 				copyFile(attachmentData, exportOperation.assetsPath);
 			});
 
-			const targetFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
+			const targetFile = joinPath(zipFolder, `${ exportOperation.userId }.zip`);
 			if (await fsExists(targetFile)) {
 				await fsUnlink(targetFile);
 			}
@@ -515,7 +515,7 @@ const continueExportOperation = async function(exportOperation) {
 		if (exportOperation.status === 'compressing') {
 			createDir(zipFolder);
 
-			exportOperation.generatedFile = path.join(zipFolder, `${ exportOperation.userId }.zip`);
+			exportOperation.generatedFile = joinPath(zipFolder, `${ exportOperation.userId }.zip`);
 			if (!await fsExists(exportOperation.generatedFile)) {
 				await makeZipFile(exportOperation.exportPath, exportOperation.generatedFile);
 			}

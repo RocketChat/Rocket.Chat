@@ -12,7 +12,9 @@ Meteor.startup(function() {
 		icon: 'jump',
 		label: 'Jump_to_message',
 		context: ['mentions', 'threads'],
-		action() {
+		action(e) {
+			e.preventDefault();
+			e.stopPropagation();
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();

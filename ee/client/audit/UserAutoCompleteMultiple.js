@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { AutoComplete, Option, Options, Chip } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Option, Options, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import UserAvatar from '../../../client/components/avatar/UserAvatar';
@@ -18,11 +18,12 @@ const UserAutoCompleteMultiple = React.memo((props) => {
 		e.preventDefault();
 		props.onChange(e.currentTarget.value, 'remove');
 	});
+
 	return <AutoComplete
 		{...props}
 		filter={filter}
 		setFilter={setFilter}
-		renderSelected={({ value: selected }) => selected?.map((value) => <Chip key={value} {...props} height='x20' value={value} onClick={onClickRemove} mie='x4'><UserAvatar size='x20' username={value} />{value}</Chip>)}
+		renderSelected={({ value: selected }) => selected?.map((value) => <Chip key={value} {...props} height='x20' value={value} onClick={onClickRemove} mie='x4'><UserAvatar size='x20' username={value} /><Box is='span' margin='none' mis='x4'>{value}</Box></Chip>)}
 		renderItem={({ value, ...props }) => <Option key={value} {...props} avatar={<Avatar value={value} />} />}
 		options={ options }
 	/>;

@@ -1,14 +1,12 @@
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import s from 'underscore.string';
 import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from 'react';
 import { Box, Icon, TextInput, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 
-import { renderMessageBody } from '../../../../../app/ui-utils/client';
 import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { Messages } from '../../../../../app/models/client';
 import VerticalBar from '../../../../components/VerticalBar';
@@ -20,9 +18,12 @@ import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
 import { clickableItem } from '../../helpers/clickableItem';
+import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { renderMessageBody } from '../../../../lib/renderMessageBody';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
@@ -44,6 +45,7 @@ export function withData(WrappedComponent) {
 		const room = useUserRoom(rid, roomFields);
 		const subscription = useUserSubscription(rid, subscriptionFields);
 		const userId = useUserId();
+		const onClose = useTabBarClose();
 
 		const [text, setText] = useState('');
 		const [total, setTotal] = useState(LIST_SIZE);
@@ -110,6 +112,7 @@ export function withData(WrappedComponent) {
 
 		return <WrappedComponent
 			{...props}
+			onClose={onClose}
 			unread={subscription?.tunread}
 			unreadUser={subscription?.tunreadUser}
 			unreadGroup={subscription?.tunreadGroup}
@@ -135,11 +138,11 @@ export const normalizeThreadMessage = ({ ...message }) => {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
 		if (attachment && attachment.description) {
-			return s.escapeHTML(attachment.description);
+			return escapeHTML(attachment.description);
 		}
 
 		if (attachment && attachment.title) {
-			return s.escapeHTML(attachment.title);
+			return escapeHTML(attachment.title);
 		}
 	}
 };
@@ -202,7 +205,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 	const isItemLoaded = useCallback((index) => index < discussionsRef.current.length, []);
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
-	return <VerticalBar>
+	return <>
 		<VerticalBar.Header>
 			<VerticalBar.Icon name='discussion'/>
 			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Discussions')}</Box>
@@ -235,7 +238,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 				</InfiniteLoader>}
 			</Box>
 		</VerticalBar.Content>
-	</VerticalBar>;
+	</>;
 }
 
 export default withData(DiscussionList);
