@@ -5,7 +5,7 @@ import { dummyDate } from '../../../../.storybook/helpers';
 import InformationPage from './InformationPage';
 
 export default {
-	title: 'admin/info/InformationPage',
+	title: 'views/admin/info/InformationPage',
 	component: InformationPage,
 	decorators: [
 		(fn) => <div className='rc-old'>{fn()}</div>,

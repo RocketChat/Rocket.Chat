@@ -5,7 +5,7 @@ import React from 'react';
 import { BooleanSettingInput } from './BooleanSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/BooleanSettingInput',
+	title: 'views/admin/settings/inputs/BooleanSettingInput',
 	component: BooleanSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

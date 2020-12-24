@@ -5,7 +5,7 @@ import React from 'react';
 import { RelativeUrlSettingInput } from './RelativeUrlSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/RelativeUrlSettingInput',
+	title: 'views/admin/settings/inputs/RelativeUrlSettingInput',
 	component: RelativeUrlSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

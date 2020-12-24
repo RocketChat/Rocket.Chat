@@ -7,7 +7,7 @@ import { AutoTranslate } from '.';
 
 
 export default {
-	title: 'components/basic/AutoTranslate',
+	title: 'components/AutoTranslate',
 	component: AutoTranslate,
 };
 

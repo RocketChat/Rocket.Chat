@@ -5,7 +5,7 @@ import React from 'react';
 import { CodeSettingInput } from './CodeSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/CodeSettingInput',
+	title: 'views/admin/settings/inputs/CodeSettingInput',
 	component: CodeSettingInput,
 	decorators: [
 		(storyFn) => <div className='rc-old'>

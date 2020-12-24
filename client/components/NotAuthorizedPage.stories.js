@@ -3,7 +3,7 @@ import React from 'react';
 import NotAuthorizedPage from './NotAuthorizedPage';
 
 export default {
-	title: 'admin/NotAuthorizedPage',
+	title: 'views/admin/NotAuthorizedPage',
 	component: NotAuthorizedPage,
 };
 

@@ -4,7 +4,7 @@ import React from 'react';
 import ImportOperationSummary from './ImportOperationSummary';
 
 export default {
-	title: 'admin/import/ImportOperationSummary',
+	title: 'views/admin/import/ImportOperationSummary',
 	component: ImportOperationSummary,
 	decorators: [(fn) => <Table>
 		<Table.Body>

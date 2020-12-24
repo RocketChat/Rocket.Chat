@@ -14,7 +14,8 @@ addParameters({
 		cellSize: 4,
 	},
 	options: {
-		storySort: ([, a], [, b]) =>
-			a.kind.localeCompare(b.kind),
+		storySort: {
+			method: 'alphabetical',
+		},
 	},
 });

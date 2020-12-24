@@ -7,7 +7,7 @@ import UserAvatar from '../../components/avatar/UserAvatar';
 
 
 export default {
-	title: 'Sidebar/medium',
+	title: 'sidebar/medium',
 	component: Medium,
 };
 

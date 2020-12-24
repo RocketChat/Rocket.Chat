@@ -4,7 +4,7 @@ import { dummyDate } from '../../../../.storybook/helpers';
 import RocketChatSection from './RocketChatSection';
 
 export default {
-	title: 'admin/info/RocketChatSection',
+	title: 'views/admin/info/RocketChatSection',
 	component: RocketChatSection,
 	decorators: [
 		(fn) => <div className='rc-old'>{fn()}</div>,

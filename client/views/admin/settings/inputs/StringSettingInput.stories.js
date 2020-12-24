@@ -5,7 +5,7 @@ import React from 'react';
 import { StringSettingInput } from './StringSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/StringSettingInput',
+	title: 'views/admin/settings/inputs/StringSettingInput',
 	component: StringSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

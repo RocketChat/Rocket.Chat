@@ -3,7 +3,7 @@ import React from 'react';
 import AppearanceForm from './AppearanceForm';
 
 export default {
-	title: 'omnichannel/AppearanceForm',
+	title: 'views/omnichannel/AppearanceForm',
 	component: AppearanceForm,
 };
 

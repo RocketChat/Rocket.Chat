@@ -4,7 +4,7 @@ import React from 'react';
 import { ActionSettingInput } from './ActionSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/ActionSettingInput',
+	title: 'views/admin/settings/inputs/ActionSettingInput',
 	component: ActionSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

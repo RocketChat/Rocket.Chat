@@ -4,7 +4,7 @@ import DescriptionList from './DescriptionList';
 import Page from '../../../components/Page';
 
 export default {
-	title: 'admin/info/DescriptionList',
+	title: 'views/admin/info/DescriptionList',
 	component: DescriptionList,
 	decorators: [
 		(fn) => <div className='rc-old'>{fn()}</div>,

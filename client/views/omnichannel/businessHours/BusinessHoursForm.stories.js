@@ -5,7 +5,7 @@ import BusinessHoursForm from './BusinessHoursForm';
 import { useForm } from '../../../hooks/useForm';
 
 export default {
-	title: 'omnichannel/businessHours',
+	title: 'views/omnichannel/businessHours',
 	component: BusinessHoursForm,
 };
 

@@ -3,7 +3,7 @@ import React from 'react';
 import UsageSection from './UsageSection';
 
 export default {
-	title: 'admin/info/UsageSection',
+	title: 'views/admin/info/UsageSection',
 	component: UsageSection,
 	decorators: [
 		(fn) => <div className='rc-old'>{fn()}</div>,

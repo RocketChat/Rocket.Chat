@@ -5,7 +5,7 @@ import ExtendedSkeleton from '../ExtendedSkeleton';
 import MediumSkeleton from './MediumSkeleton';
 
 export default {
-	title: 'Sidebar/Skeleton',
+	title: 'sidebar/Skeleton',
 };
 
 export const CondensedWithAvatar = () => <CondensedSkeleton showAvatar={true} />;

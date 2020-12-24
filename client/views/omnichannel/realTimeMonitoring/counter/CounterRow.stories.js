@@ -4,7 +4,7 @@ import CounterRow from './CounterRow';
 import CounterItem from './CounterItem';
 
 export default {
-	title: 'omnichannel/RealtimeMonitoring/Counter',
+	title: 'views/omnichannel/RealtimeMonitoring/Counter',
 	component: CounterRow,
 };
 

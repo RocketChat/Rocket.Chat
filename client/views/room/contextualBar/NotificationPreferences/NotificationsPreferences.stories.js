@@ -6,7 +6,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import { NotificationsPreferences } from '.';
 
 export default {
-	title: 'components/basic/NotificationsPreferences',
+	title: 'components/NotificationsPreferences',
 	component: NotificationsPreferences,
 };
 

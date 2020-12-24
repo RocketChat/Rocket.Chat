@@ -7,7 +7,7 @@ import UserAvatar from '../../components/avatar/UserAvatar';
 
 
 export default {
-	title: 'Sidebar/Extended',
+	title: 'sidebar/Extended',
 	component: Extended,
 };
 

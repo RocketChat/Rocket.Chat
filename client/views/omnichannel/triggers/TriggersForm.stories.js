@@ -5,7 +5,7 @@ import TriggersForm from './TriggersForm';
 import { useForm } from '../../../hooks/useForm';
 
 export default {
-	title: 'omnichannel/TriggersForm',
+	title: 'views/omnichannel/TriggersForm',
 	component: TriggersForm,
 };
 

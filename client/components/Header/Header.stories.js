@@ -9,7 +9,7 @@ import { addAction } from '../../views/room/lib/Toolbox';
 import { useRoomIcon } from '../../hooks/useRoomIcon';
 
 export default {
-	title: 'Chat Header',
+	title: 'components/Header',
 	component: Header,
 };
 

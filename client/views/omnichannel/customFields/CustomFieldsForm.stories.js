@@ -5,7 +5,7 @@ import CustomFieldsForm from './CustomFieldsForm';
 import { useForm } from '../../../hooks/useForm';
 
 export default {
-	title: 'omnichannel/customFields/NewCustomFieldsForm',
+	title: 'views/omnichannel/customFields/NewCustomFieldsForm',
 	component: CustomFieldsForm,
 };
 
