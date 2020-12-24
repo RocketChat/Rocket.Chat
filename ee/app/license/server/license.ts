@@ -123,6 +123,10 @@ class LicenseClass {
 		return this.licenses.some((item) => item.valid);
 	}
 
+	getLicenses(): IValidLicense[] {
+		return this.licenses;
+	}
+
 	getModules(): string[] {
 		return [...this.modules];
 	}
@@ -249,6 +253,10 @@ export function isEnterprise(): boolean {
 
 export function getMaxGuestUsers(): number {
 	return maxGuestUsers;
+}
+
+export function getLicenses(): IValidLicense[] {
+	return License.getLicenses();
 }
 
 export function getModules(): string[] {

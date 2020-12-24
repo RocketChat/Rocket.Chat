@@ -13,6 +13,7 @@ settings.addGroup('General', function() {
 				_id: 'Register_Server',
 				value: true,
 			},
+			i18nDescription: 'Update_EnableChecker_Description',
 		});
 	});
 });

@@ -3,8 +3,7 @@ import {
 	Box,
 	Icon,
 	TextInput,
-	Field,
-	FieldGroup,
+	Margins,
 	Select,
 	Throbber,
 	ButtonGroup,
@@ -28,11 +27,12 @@ import { useMethod } from '../../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
-import { useDataWithLoadMore } from '../hooks/useDataWithLoadMore';
+import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
 import { MemberItem } from './components/MemberItem';
 import UserInfoWithData from '../../UserInfo';
 import InviteUsers from '../InviteUsers/InviteUsers';
 import AddUsers from '../AddUsers/AddUsers';
+import { useTabBarClose } from '../../../providers/ToolboxProvider';
 
 export const createItemData = memoize((items, onClickView, rid) => ({
 	items,
@@ -98,30 +98,19 @@ export const RoomMembers = ({
 				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>
 
-			<VerticalBar.Content p='0'>
-				<Box pi='x24' pb='x24'>
-					<FieldGroup>
-						<Box flexDirection='row' display='flex' justifyContent='stretch'>
-							<Box flexGrow={2} flexBasis='85%' mi='x4'>
-								<Field>
-									<Field.Row>
-										<TextInput placeholder={t('Search_by_username')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
-									</Field.Row>
-								</Field>
-							</Box>
-
-							<Box flexGrow={1} flexBasis='15%' mi='x4'>
-								<Field>
-									<Field.Row>
-										<Select
-											onChange={setType}
-											value={type}
-											options={options} />
-									</Field.Row>
-								</Field>
-							</Box>
-						</Box>
-					</FieldGroup>
+			<VerticalBar.Content p='x12'>
+				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
+					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+						<Margins inline='x4'>
+							<TextInput placeholder={t('Search_by_username')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+							<Select
+								flexGrow={0}
+								width='110px'
+								onChange={setType}
+								value={type}
+								options={options} />
+						</Margins>
+					</Box>
 				</Box>
 
 				{ error && <Box pi='x24' pb='x12'><Callout type='danger'>
@@ -147,7 +136,7 @@ export const RoomMembers = ({
 					</Box>
 				)}
 
-				<Box pi='x8' w='full' h='full' overflow='hidden' flexShrink={1} ref={ref}>
+				<Box w='full' h='full' overflow='hidden' flexShrink={1} ref={ref}>
 					{!loading && members
 					&& <InfiniteLoader
 						isItemLoaded={isItemLoaded}
@@ -192,10 +181,9 @@ const useGetUsersOfRoom = (params) => {
 
 export default ({
 	rid,
-	tabBar,
 }) => {
 	const [state, setState] = useState({});
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
@@ -208,7 +196,7 @@ export default ({
 
 	const { value, phase, more, error } = useGetUsersOfRoom(params);
 
-	const canAddUsers = useAtLeastOnePermission([room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], rid);
+	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
@@ -243,11 +231,11 @@ export default ({
 	}
 
 	if (state.tab === 'InviteUsers') {
-		return <InviteUsers onClickClose={onClickClose} rid={rid} tabBar={tabBar} onClickBack={handleBack} />;
+		return <InviteUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
 	}
 
 	if (state.tab === 'AddUsers') {
-		return <AddUsers onClickClose={onClickClose} rid={rid} tabBar={tabBar} onClickBack={handleBack} />;
+		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
 	}
 
 	return (

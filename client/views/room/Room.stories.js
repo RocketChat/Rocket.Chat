@@ -1,16 +1,16 @@
 import React from 'react';
 
-import { Room } from '.';
+import { RoomTemplate } from './components/RoomTemplate';
 
 export default {
 	title: 'views/Room',
-	component: Room,
+	component: RoomTemplate,
 };
 
-export const Default = () => <Room>
-	<Room.Header>header</Room.Header>
-	<Room.Body>body</Room.Body>
-	<Room.Body>body</Room.Body>
-	<Room.Footer>footer</Room.Footer>
-	<Room.Aside>Aside</Room.Aside>
-</Room>;
+export const Default = () => <RoomTemplate>
+	<RoomTemplate.Header>header</RoomTemplate.Header>
+	<RoomTemplate.Body>body</RoomTemplate.Body>
+	<RoomTemplate.Body>body</RoomTemplate.Body>
+	<RoomTemplate.Footer>footer</RoomTemplate.Footer>
+	<RoomTemplate.Aside>Aside</RoomTemplate.Aside>
+</RoomTemplate>;
