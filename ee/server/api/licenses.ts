@@ -11,10 +11,10 @@ API.v1.addRoute('licenses.get', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const licenses = getLicenses().map((x) => x.license);
+		const licenses = getLicenses()?.map((x) => x.license);
 
-		if (!licenses || licenses.length === 0) {
-			return API.v1.failure('Could not find registered licenses');
+		if (!licenses) {
+			return API.v1.success();
 		}
 
 		return API.v1.success({ licenses });
