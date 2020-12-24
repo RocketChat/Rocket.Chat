@@ -1,16 +1,27 @@
 import React from 'react';
 
 import { SettingsContext } from '../../contexts/SettingsContext';
-import Header from './Header';
 import RoomAvatar from '../avatar/RoomAvatar';
 import ToolBox from '../../views/room/Header/ToolBox';
 import { ToolboxProvider } from '../../views/room/providers/ToolboxProvider';
 import { addAction } from '../../views/room/lib/Toolbox';
 import { useRoomIcon } from '../../hooks/useRoomIcon';
 
+import Header from '.';
+
 export default {
 	title: 'components/Header',
 	component: Header,
+	subcomponents: {
+		'Header.Content': Header.Content,
+		'Header.Divider': Header.Divider,
+		'Header.Icon': Header.Icon,
+		'Header.State': Header.State,
+		'Header.Subtitle': Header.Subtitle,
+		'Header.Title': Header.Title,
+		'Header.ToolBox': Header.ToolBox,
+		'Header.ToolBoxAction': Header.ToolBoxAction,
+	},
 };
 
 const room = {
