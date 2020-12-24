@@ -9,6 +9,7 @@ const Header: FC<HeaderProps> = (props) => <Box
 	rcx-room-header
 	is='header'
 	height='x64'
+	mi='neg-x4'
 	display='flex'
 	justifyContent='center'
 	flexDirection='column'
