@@ -239,6 +239,19 @@ export function addLicense(encryptedLicense: string): boolean {
 	}
 }
 
+export function validateFormat(encryptedLicense: string): boolean {
+	if (!encryptedLicense || String(encryptedLicense).trim() === '') {
+		return false;
+	}
+
+	const decrypted = decrypt(encryptedLicense);
+	if (!decrypted) {
+		return false;
+	}
+
+	return true;
+}
+
 export function setURL(url: string): void {
 	License.setURL(url);
 }

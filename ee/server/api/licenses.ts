@@ -1,6 +1,6 @@
 import { check } from 'meteor/check';
 
-import { IValidLicense, addLicense, getLicenses } from '../../app/license/server/license';
+import { IValidLicense, getLicenses, validateFormat } from '../../app/license/server/license';
 import { Settings } from '../../../app/models/server';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server';
@@ -34,8 +34,8 @@ API.v1.addRoute('licenses.add', { authRequired: true }, {
 		}
 
 		const { license } = this.bodyParams;
-		if (!addLicense(license)) {
-			return API.v1.failure({ error: 'Invalid license' });
+		if (!validateFormat(license)) {
+			return API.v1.failure('Invalid license');
 		}
 
 		Settings.updateValueById('Enterprise_License', license);
