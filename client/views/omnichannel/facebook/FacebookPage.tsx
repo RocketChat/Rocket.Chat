@@ -1,5 +1,5 @@
 import React, { FC, useState, Dispatch } from 'react';
-import { Box, Button, ButtonGroup, Field, FieldGroup, ToggleSwitch, BoxClassName, Callout, Divider } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Field, FieldGroup, ToggleSwitch, BoxProps, Callout, Divider } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../../components/Page';
@@ -29,11 +29,11 @@ type FacebookPageProps = OnToggleProps & {
 
 type PageToggleAssemblerProps = OnToggleProps & {
 	pages: PageItem[];
-	className?: BoxClassName;
+	className?: BoxProps['className'];
 };
 
 type PageToggleProps = OnToggleProps & PageItem & {
-	className?: BoxClassName;
+	className?: BoxProps['className'];
 };
 
 type PageData = {

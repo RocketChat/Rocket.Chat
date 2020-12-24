@@ -1,5 +1,5 @@
 import React, { FC, FormEvent, useMemo, useState } from 'react';
-import { Box, Field, TextInput, ToggleSwitch, BoxClassName, Select, TextAreaInput, SelectOptions } from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, ToggleSwitch, BoxProps, Select, TextAreaInput, SelectOptions } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -38,7 +38,7 @@ type TriggersFormProps = {
 		handleConditions: (value: TriggerConditions) => void;
 		handleActions: (value: TriggerActions) => void;
 	};
-	className?: BoxClassName;
+	className?: BoxProps['className'];
 }
 
 const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) => {
