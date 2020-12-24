@@ -53495,6 +53495,47 @@
           ]
         }
       ]
+    },
+    "3.10.0-rc.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19948",
+          "title": "Regression: Omnichannel Custom Fields Form no longer working after refactoring",
+          "userLogin": "renatobecker",
+          "description": "The Omnichannel `Custom Fields` form is not working anymore after some refactorings on client-side.\r\nWhen the user clicks on `Custom Field` in the Omnichannel menu, a blank page appears.",
+          "milestone": "3.10.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "19941",
+          "title": "Regression: UserCard \"See full profile\" link broken",
+          "userLogin": "dougfabris",
+          "milestone": "3.10.0",
+          "contributors": [
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19944",
+          "title": "Regression: Admin Sidebar Scroll",
+          "userLogin": "gabriellsh",
+          "milestone": "3.10.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }
