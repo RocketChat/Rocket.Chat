@@ -258,6 +258,7 @@
 		"ua-parser-js": "^0.7.21",
 		"underscore": "^1.10.2",
 		"underscore.string": "^3.3.5",
+		"uplink-js": "^0.1.0",
 		"url-polyfill": "^1.1.10",
 		"use-subscription": "^1.4.1",
 		"uuid": "^3.4.0",

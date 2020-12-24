@@ -242,9 +242,15 @@ export class Store {
 					callback.call(self, err);
 				});
 
+				let finishAttempts = 0;
 				const finishHandler = Meteor.bindEnvironment(function() {
+					finishAttempts++;
 					let size = 0;
 					const readStream = self.getReadStream(fileId, file);
+					if (!readStream && finishAttempts < 10) {
+						setTimeout(finishHandler, 500);
+						return;
+					}
 
 					readStream.on('error', Meteor.bindEnvironment(function(error) {
 						callback.call(self, error, null);

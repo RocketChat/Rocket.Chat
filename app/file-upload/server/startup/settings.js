@@ -234,20 +234,6 @@ settings.addGroup('FileUpload', function() {
 			},
 			secret: true,
 		});
-		// this.add('FileUpload_Storj_Proxy_Avatars', false, {
-		// 	type: 'boolean',
-		// 	enableQuery: {
-		// 		_id: 'FileUpload_Storage_Type',
-		// 		value: 'Storj',
-		// 	},
-		// });
-		// this.add('FileUpload_Storj_Proxy_Uploads', false, {
-		// 	type: 'boolean',
-		// 	enableQuery: {
-		// 		_id: 'FileUpload_Storage_Type',
-		// 		value: 'Storj',
-		// 	},
-		// });
 	});
 
 	this.section('File System', function() {
