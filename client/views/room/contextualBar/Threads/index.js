@@ -253,7 +253,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
 				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 					<Margins inline='x4'>
-						<TextInput placeholder={t('Search_Messages')} autoFocus={true} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+						<TextInput placeholder={t('Search_Messages')} autoFocus value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 						<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
 					</Margins>
 				</Box>
