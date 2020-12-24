@@ -2,8 +2,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
-import {createUser, login as doLogin} from "/tests/data/users.helper";
-import {updatePermission} from "/tests/data/permissions.helper";
+import {createUser, login as doLogin} from "../../../tests/data/users.helper";
 
 describe('miscellaneous', function() {
 	this.retries(0);
@@ -449,16 +448,12 @@ describe('miscellaneous', function() {
 		});
 	});
 
-	describe('[/instances.get]', () => {
+	describe.only('[/instances.get]', () => {
 		let unauthorizedUserCredentials;
-		before((done) => {
-			createUser().then((createdUser) => {
-				doLogin(createdUser.username, password).then((createdUserCredentials) => {
-					unauthorizedUserCredentials = createdUserCredentials;
-					updatePermission('view-statistics', ['guest']).then(done);
-				});
-			});
-		});
+		before(async () => {
+			const createdUser = await createUser();
+			unauthorizedUserCredentials = await doLogin(createdUser.username, password);
+		})
 
 		it('should fail if user is logged in but is unauthorized', (done) => {
 			request.get(api('instances.get'))
@@ -486,11 +481,15 @@ describe('miscellaneous', function() {
 		it('should return instances if user is logged in and is authorized', (done) => {
 			request.get(api('instances.get'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('instances').and.to.be.an('array');
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('instances');
+
+					const { instances } = res.body;
+
+					expect(instances).to.have.property('current');
+					expect(instances).to.have.property('connections').and.to.be.an('array');
 				})
 				.end(done);
 		});
