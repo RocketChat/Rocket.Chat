@@ -208,7 +208,7 @@ export const getCommonRoomEvents = () => ({
 				target: e.currentTarget,
 				open: (e) => {
 					e.preventDefault();
-					instance.data.openProfileTab(username);
+					instance.data.tabBar.openUserInfo(username);
 				},
 			});
 		}
@@ -309,7 +309,7 @@ export const getCommonRoomEvents = () => ({
 				target: e.currentTarget,
 				open: (e) => {
 					e.preventDefault();
-					instance.data.openProfileTab(username);
+					instance.data.tabBar.openUserInfo(username);
 				},
 			});
 		}
