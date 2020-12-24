@@ -6,7 +6,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import { NotificationsPreferences } from '.';
 
 export default {
-	title: 'components/NotificationsPreferences',
+	title: 'views/room/contextualBar/NotificationPreferences',
 	component: NotificationsPreferences,
 };
 
@@ -49,7 +49,7 @@ handleSelect.mobile.alert = 'mentions';
 
 handleSelect.email.alert = 'nothing';
 
-export const Default = () => <Box height='600px'>
+export const _NotificationPreferences = () => <Box height='600px'>
 	<VerticalBar>
 		<NotificationsPreferences
 			handleOn={handleOn}
@@ -66,3 +66,4 @@ export const Default = () => <Box height='600px'>
 		/>
 	</VerticalBar>
 </Box>;
+_NotificationPreferences.storyName = 'NotificationPreferences';

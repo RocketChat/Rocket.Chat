@@ -1,15 +1,11 @@
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { centeredDecorator } from '../../../.storybook/decorators';
 import BurgerMenuButton from './BurgerMenuButton';
 
 export default {
 	title: 'components/burger/BurgerMenuButton',
 	component: BurgerMenuButton,
-	decorators: [
-		centeredDecorator,
-	],
 };
 
 export const Basic = () =>

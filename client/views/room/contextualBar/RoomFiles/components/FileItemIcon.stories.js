@@ -3,7 +3,7 @@ import React from 'react';
 import FileItemIcon from './FileItemIcon';
 
 export default {
-	title: 'components/RoomFiles/FileItemIcon',
+	title: 'views/room/contextualBar/RoomFiles/FileItemIcon',
 	component: FileItemIcon,
 };
 
@@ -17,4 +17,5 @@ const options = [
 	'application/pdf',
 ];
 
-export const Default = () => <FileItemIcon type={options[0]} />;
+export const _FileItemIcon = () => <FileItemIcon type={options[0]} />;
+_FileItemIcon.storyName = 'FileItemIcon';

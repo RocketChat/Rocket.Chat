@@ -5,7 +5,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import UserCard from '../../../components/UserCard';
-import { Backdrop } from '../../../components/Backdrop';
+import Backdrop from '../../../components/Backdrop';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { LocalTime } from '../../../components/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';

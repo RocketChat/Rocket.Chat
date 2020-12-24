@@ -4,7 +4,7 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import { FileItem } from './FileItem';
 
 export default {
-	title: 'components/RoomFiles/FileItem',
+	title: 'views/room/contextualBar/RoomFiles/FileItem',
 	component: FileItem,
 };
 
@@ -17,8 +17,9 @@ const fileData = {
 	},
 };
 
-export const Default = () => <VerticalBar>
+export const _FileItem = () => <VerticalBar>
 	<FileItem
 		fileData={fileData}
 	/>
 </VerticalBar>;
+_FileItem.storyName = 'FileItem';

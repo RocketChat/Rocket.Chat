@@ -4,11 +4,11 @@ import { RoomMembers } from './List/RoomMembers';
 import VerticalBar from '../../../../components/VerticalBar';
 
 export default {
-	title: 'components/RoomMembers',
+	title: 'views/room/contextualBar/RoomMembers',
 	component: RoomMembers,
 };
 
-export const Default = () => <VerticalBar>
+export const _RoomMembers = () => <VerticalBar>
 	<RoomMembers
 		onClickBack={alert}
 		onClickClose={alert}
@@ -18,3 +18,4 @@ export const Default = () => <VerticalBar>
 		type='all'
 	/>
 </VerticalBar>;
+_RoomMembers.storyName = 'RoomMembers';

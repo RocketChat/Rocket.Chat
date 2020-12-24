@@ -3,15 +3,13 @@ import { TextInput, Box, Icon } from '@rocket.chat/fuselage';
 
 import GenericTable from './GenericTable';
 
-
 export default {
 	title: 'components/GenericTable',
 	component: GenericTable,
 	decorators: [(fn) => <div children={fn()} style={{ height: '100vh' }} />],
 };
 
-
-export const _default = () => {
+export const _GenericTable = () => {
 	const Search = () => <Box mb='x16' is='form' display='flex' flexDirection='column'>
 		<TextInput flexShrink={0} placeholder='Search...' addon={<Icon name='magnifier' size='x20'/>}/>
 	</Box>;
@@ -28,3 +26,4 @@ export const _default = () => {
 		renderFilter={(props) => <Search {...props} />}
 	/>;
 };
+_GenericTable.storyName = 'GenericTable';

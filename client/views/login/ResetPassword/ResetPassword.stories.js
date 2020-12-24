@@ -3,10 +3,11 @@ import React from 'react';
 import ResetPassword from './ResetPassword';
 
 export default {
-	title: 'components/Login/ResetPassword',
+	title: 'views/login/ResetPassword',
 	component: ResetPassword,
 };
 
-export const Basic = () => (
+export const _ResetPassword = () => (
 	<ResetPassword/>
 );
+_ResetPassword.storyName = 'ResetPassword';

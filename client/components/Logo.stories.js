@@ -7,4 +7,5 @@ export default {
 	component: Logo,
 };
 
-export const AsPlaceholder = () => <Logo />;
+export const _Logo = () => <Logo />;
+_Logo.storyName = 'Logo';

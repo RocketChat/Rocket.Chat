@@ -4,7 +4,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import { RoomFiles } from './RoomFiles';
 
 export default {
-	title: 'components/RoomFiles',
+	title: 'views/room/contextualBar/RoomFiles',
 	component: RoomFiles,
 };
 

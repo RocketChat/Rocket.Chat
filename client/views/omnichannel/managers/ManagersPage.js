@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Box, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { UserAutoComplete } from '../../../components/AutoComplete';
+import UserAutoComplete from '../../../components/UserAutoComplete';
 import Page from '../../../components/Page';
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';

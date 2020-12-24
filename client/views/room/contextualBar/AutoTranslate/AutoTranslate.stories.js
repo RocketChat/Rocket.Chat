@@ -7,7 +7,7 @@ import { AutoTranslate } from '.';
 
 
 export default {
-	title: 'components/AutoTranslate',
+	title: 'views/room/contextualBar/AutoTranslate',
 	component: AutoTranslate,
 };
 
@@ -17,10 +17,11 @@ const languages = [
 	['pt', 'Portuguese'],
 ];
 
-export const Default = () => (
+export const _AutoTranslate = () => (
 	<Box height='600px'>
 		<VerticalBar>
 			<AutoTranslate languages={languages} defaultLanguage='en'/>
 		</VerticalBar>
 	</Box>
 );
+_AutoTranslate.storyName = 'AutoTranslate';

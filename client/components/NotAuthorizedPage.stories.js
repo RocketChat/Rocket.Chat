@@ -3,9 +3,10 @@ import React from 'react';
 import NotAuthorizedPage from './NotAuthorizedPage';
 
 export default {
-	title: 'views/admin/NotAuthorizedPage',
+	title: 'components/NotAuthorizedPage',
 	component: NotAuthorizedPage,
 };
 
-export const _default = () =>
+export const _NotAuthorizedPage = () =>
 	<NotAuthorizedPage />;
+_NotAuthorizedPage.storyName = 'NotAuthorizedPage';
