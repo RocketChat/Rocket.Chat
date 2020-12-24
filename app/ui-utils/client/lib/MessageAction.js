@@ -363,14 +363,12 @@ Meteor.startup(async function() {
 		icon: 'emoji',
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads'],
-		action(_, roomInstance) {
+		action(_, { tabBar, rid }) {
 			const { msg: { reactions } } = messageArgs(this);
 
 			modal.open({
-				template: createTemplateForComponent('reactionList', () => import('./ReactionListContent'), {
-					renderContainerView: () => HTML.DIV({ style: 'margin: -16px; height: 100%; display: flex; flex-direction: column; overflow: hidden;' }), // eslint-disable-line new-cap
-				}),
-				data: { reactions, roomInstance, onClose: () => modal.close() },
+				template: 'reactionList',
+				data: { reactions, tabBar, rid, onClose: () => modal.close() },
 			});
 		},
 		condition({ msg: { reactions } }) {
@@ -379,4 +377,8 @@ Meteor.startup(async function() {
 		order: 18,
 		group: 'menu',
 	});
+});
+
+createTemplateForComponent('reactionList', () => import('./ReactionListContent'), {
+	renderContainerView: () => HTML.DIV({ style: 'margin: -16px; height: 100%; display: flex; flex-direction: column; overflow: hidden;' }), // eslint-disable-line new-cap
 });

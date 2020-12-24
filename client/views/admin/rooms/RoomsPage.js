@@ -26,7 +26,7 @@ export function RoomsPage() {
 				<RoomsTable />
 			</Page.Content>
 		</Page>
-		{context && <VerticalBar className='contextual-bar'>
+		{context && <VerticalBar>
 			<VerticalBar.Header>
 				{t('Room_Info')}
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />

@@ -22,6 +22,7 @@ import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { useTabBarClose } from '../../providers/ToolboxProvider';
 import { renderMessageBody } from '../../../../lib/renderMessageBody';
 
 function mapProps(WrappedComponent) {
@@ -44,6 +45,7 @@ export function withData(WrappedComponent) {
 		const room = useUserRoom(rid, roomFields);
 		const subscription = useUserSubscription(rid, subscriptionFields);
 		const userId = useUserId();
+		const onClose = useTabBarClose();
 
 		const [text, setText] = useState('');
 		const [total, setTotal] = useState(LIST_SIZE);
@@ -110,6 +112,7 @@ export function withData(WrappedComponent) {
 
 		return <WrappedComponent
 			{...props}
+			onClose={onClose}
 			unread={subscription?.tunread}
 			unreadUser={subscription?.tunreadUser}
 			unreadGroup={subscription?.tunreadGroup}
@@ -202,7 +205,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 	const isItemLoaded = useCallback((index) => index < discussionsRef.current.length, []);
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
-	return <VerticalBar>
+	return <>
 		<VerticalBar.Header>
 			<VerticalBar.Icon name='discussion'/>
 			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Discussions')}</Box>
@@ -235,7 +238,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 				</InfiniteLoader>}
 			</Box>
 		</VerticalBar.Content>
-	</VerticalBar>;
+	</>;
 }
 
 export default withData(DiscussionList);
