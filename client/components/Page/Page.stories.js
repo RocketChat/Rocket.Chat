@@ -1,23 +1,33 @@
 import { Button, ButtonGroup, Tile } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { fullHeightDecorator } from '../../.storybook/decorators';
-import Page from './Page';
+import { fullHeightDecorator } from '../../../.storybook/decorators';
+
+import Page from '.';
 
 export default {
 	title: 'components/Page',
 	component: Page,
+	subcomponents: {
+		'Page.Header': Page.Header,
+		'Page.Content': Page.Content,
+		'Page.ScrollableContent': Page.ScrollableContent,
+		'Page.ScrollableContentWithShadow': Page.ScrollableContentWithShadow,
+	},
+	parameters: {
+		layout: 'fullscreen',
+	},
 };
 
-const DummyContent = () => <>
-	{Array.from({ length: 60 }, (_, i) => <Tile key={i} children='Content slice' marginBlock='x16' />)}
+const DummyContent = ({ length = 60 }) => <>
+	{Array.from({ length }, (_, i) => <Tile key={i} children='Content slice' marginBlock='x16' />)}
 </>;
 
 export const Basic = () =>
 	<Page>
 		<Page.Header title='Header' />
 		<Page.Content>
-			<DummyContent />
+			<DummyContent length={3} />
 		</Page.Content>
 	</Page>;
 
@@ -29,7 +39,7 @@ export const WithButtonsAtTheHeader = () =>
 			</ButtonGroup>
 		</Page.Header>
 		<Page.Content>
-			<DummyContent />
+			<DummyContent length={3} />
 		</Page.Content>
 	</Page>;
 
