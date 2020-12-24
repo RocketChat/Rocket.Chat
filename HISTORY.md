@@ -1,6 +1,31 @@
 
 # 3.10.0 (Under Release Candidate Process)
 
+## 3.10.0-rc.1
+`2020-12-23  ·  3 🔍  ·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Admin Sidebar Scroll ([#19944](https://github.com/RocketChat/Rocket.Chat/pull/19944))
+
+- Regression: Omnichannel Custom Fields Form no longer working after refactoring ([#19948](https://github.com/RocketChat/Rocket.Chat/pull/19948))
+
+  The Omnichannel `Custom Fields` form is not working anymore after some refactorings on client-side.
+  When the user clicks on `Custom Field` in the Omnichannel menu, a blank page appears.
+
+- Regression: UserCard "See full profile" link broken ([#19941](https://github.com/RocketChat/Rocket.Chat/pull/19941))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+
 ## 3.10.0-rc.0
 `2020-12-22  ·  7 🎉  ·  10 🚀  ·  26 🐛  ·  28 🔍  ·  21 👩‍💻👨‍💻`
 
