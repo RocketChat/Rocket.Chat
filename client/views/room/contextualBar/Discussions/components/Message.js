@@ -9,7 +9,7 @@ import * as MessageTemplate from '../../../components/Message';
 export default React.memo(function Message({ _id, msg, following, username, name = username, ts, dcount, t = (text) => text, participants, handleFollowButton, unread, mention, all, formatDate = (e) => e, dlm, className = [], ...props }) {
 	return <MessageTemplate.Message {...props} className={className}>
 		<MessageTemplate.Container mb='neg-x2'>
-			<UserAvatar username={username} rcx-message__avatar size='x36'/>
+			<UserAvatar username={username} className='rcx-message__avatar' size='x36'/>
 		</MessageTemplate.Container>
 		<MessageTemplate.Container width='1px' mb='neg-x4' flexGrow={1}>
 			<MessageTemplate.Header>
