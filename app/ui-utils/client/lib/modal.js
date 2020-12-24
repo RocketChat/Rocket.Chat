@@ -217,7 +217,6 @@ Template.rc_modal.onRendered(function() {
 	if (this.data.onRendered) {
 		this.data.onRendered();
 	}
-    
 	this.data.closeOnEscape && document.addEventListener('keydown', modal.onKeyDown);
 });
 
