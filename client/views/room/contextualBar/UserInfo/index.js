@@ -4,7 +4,7 @@ import { css } from '@rocket.chat/css-in-js';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
-import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import ReactiveUserStatus from '../../../../components/ReactiveUserStatus';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useRolesDescription } from '../../../../contexts/AuthorizationContext';

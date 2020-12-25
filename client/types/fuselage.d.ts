@@ -7,6 +7,7 @@ declare module '@rocket.chat/fuselage' {
 		CSSProperties,
 		Dispatch,
 		ElementType,
+		FC,
 		ForwardRefExoticComponent,
 		PropsWithChildren,
 		ReactNode,
@@ -270,8 +271,8 @@ declare module '@rocket.chat/fuselage' {
 	type ModalCloseProps = BoxProps;
 	type ModalContentProps = BoxProps;
 	type ModalFooterProps = BoxProps;
-  type ModalHeaderProps = BoxProps;
-  type ModalThumbProps = BoxProps;
+	type ModalHeaderProps = BoxProps;
+	type ModalThumbProps = BoxProps;
 	type ModalTitleProps = BoxProps;
 	export const Modal: ForwardRefExoticComponent<ModalProps> & {
 		Backdrop: ForwardRefExoticComponent<ModalBackdropProps>;
@@ -393,4 +394,10 @@ declare module '@rocket.chat/fuselage' {
 		options: SelectOptions;
 	};
 	export const Select: ForwardRefExoticComponent<SelectProps>;
+
+	type StatusBulletProps = {
+		status?: 'loading' | 'online' | 'busy' | 'away' | 'offline';
+		size?: 'small' | 'large';
+	} & Omit<AllHTMLAttributes<HTMLSpanElement>, 'size'>;
+	export const StatusBullet: FC<StatusBulletProps>;
 }

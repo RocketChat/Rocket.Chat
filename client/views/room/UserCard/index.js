@@ -6,7 +6,7 @@ import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import UserCard from '../../../components/UserCard';
 import Backdrop from '../../../components/Backdrop';
-import { ReactiveUserStatus } from '../../../components/UserStatus';
+import ReactiveUserStatus from '../../../components/ReactiveUserStatus';
 import { LocalTime } from '../../../components/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
 import { useRolesDescription } from '../../../contexts/AuthorizationContext';

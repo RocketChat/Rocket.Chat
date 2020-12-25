@@ -6,7 +6,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserInfo } from '../../room/contextualBar/UserInfo';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
-import { UserStatus } from '../../../components/UserStatus';
+import UserStatus from '../../../components/UserStatus';
 import UserCard from '../../../components/UserCard';
 import { UserInfoActions } from './UserInfoActions';
 import { FormSkeleton } from '../../../components/Skeleton';

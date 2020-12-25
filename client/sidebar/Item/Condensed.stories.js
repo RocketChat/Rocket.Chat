@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, ActionButton } from '@rocket.chat/fuselage';
 
 import Condensed from './Condensed';
-import * as Status from '../../components/UserStatus';
+import UserStatus from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 
 
@@ -24,7 +24,7 @@ export const Normal = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='
 	<Condensed
 		clickable
 		title='John Doe'
-		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
+		titleIcon={<Box mi='x4'>{<UserStatus.Online />}</Box>}
 		avatar={avatar}
 	/>
 </Box>;
@@ -34,7 +34,7 @@ export const Selected = () => <Box maxWidth='x300' bg='neutral-800' borderRadius
 		clickable
 		selected
 		title='John Doe'
-		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
+		titleIcon={<Box mi='x4'>{<UserStatus.Online />}</Box>}
 		avatar={avatar}
 	/>
 </Box>;
@@ -43,7 +43,7 @@ export const Menu = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4
 	<Condensed
 		clickable
 		title='John Doe'
-		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
+		titleIcon={<Box mi='x4'>{<UserStatus.Online />}</Box>}
 		avatar={avatar}
 		menuOptions={{
 			hide: {
@@ -67,7 +67,7 @@ export const Actions = () => <Box maxWidth='x300' bg='neutral-800' borderRadius=
 		clickable
 		selected
 		title='John Doe'
-		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
+		titleIcon={<Box mi='x4'>{<UserStatus.Online />}</Box>}
 		avatar={avatar}
 		actions={actions}
 	/>

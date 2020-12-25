@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import { Box, Tag, ActionButton, Skeleton } from '@rocket.chat/fuselage';
 
 import UserAvatar from './avatar/UserAvatar';
-import * as Status from './UserStatus';
+import UserStatus from './UserStatus';
 import MarkdownText from './MarkdownText';
 
 const clampStyle = {
@@ -28,7 +28,7 @@ export const Info = (props) => (
 	/>
 );
 
-export const Username = ({ name, status = <Status.Offline/>, title, ...props }) => <Box {...props} display='flex' title={title} flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
+export const Username = ({ name, status = <UserStatus.Offline/>, title, ...props }) => <Box {...props} display='flex' title={title} flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
 	{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box>
 </Box>;
 
@@ -60,7 +60,7 @@ const UserCard = forwardRef(({
 		<Skeleton width='100%'/>
 		<Skeleton width='100%'/>
 	</>,
-	status = <Status.Offline/>,
+	status = <UserStatus.Offline/>,
 	actions,
 	localTime = <Skeleton width='100%'/>,
 	onClose,

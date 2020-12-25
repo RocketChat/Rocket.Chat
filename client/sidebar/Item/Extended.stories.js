@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, ActionButton, Badge } from '@rocket.chat/fuselage';
 
 import Extended from './Extended';
-import * as Status from '../../components/UserStatus';
+import UserStatus from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 
 
@@ -43,7 +43,7 @@ export const Normal = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='
 		clickable
 		title={title}
 		subtitle={subtitle}
-		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
+		titleIcon={<Box mi='x4'>{<UserStatus.Online />}</Box>}
 		avatar={avatar}
 	/>
 </Box>;
@@ -54,7 +54,7 @@ export const Selected = () => <Box maxWidth='x300' bg='neutral-800' borderRadius
 		selected
 		title={title}
 		subtitle={subtitle}
-		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
+		titleIcon={<Box mi='x4'>{<UserStatus.Online />}</Box>}
 		avatar={avatar}
 	/>
 </Box>;
@@ -64,7 +64,7 @@ export const Menu = () => <Box maxWidth='x300' bg='neutral-800' borderRadius='x4
 		clickable
 		title={title}
 		subtitle={subtitle}w
-		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
+		titleIcon={<Box mi='x4'>{<UserStatus.Online />}</Box>}
 		avatar={avatar}
 		menuOptions={{
 			hide: {
@@ -88,7 +88,7 @@ export const Actions = () => <Box maxWidth='x300' bg='neutral-800' borderRadius=
 		clickable
 		title='John Doe'
 		subtitle='John Doe: test 123'
-		titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
+		titleIcon={<Box mi='x4'>{<UserStatus.Online />}</Box>}
 		avatar={avatar}
 		actions={actions}
 	/>

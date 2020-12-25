@@ -8,7 +8,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { popover, modal, AccountBox } from '../../../app/ui-utils';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { UserStatus } from '../../components/UserStatus';
+import UserStatus from '../../components/UserStatus';
 import { userStatus } from '../../../app/user-status';
 import { callbacks } from '../../../app/callbacks';
 import UserAvatar from '../../components/avatar/UserAvatar';

@@ -6,7 +6,7 @@ import memoize from 'memoize-one';
 
 import { usePreventDefault } from './hooks/usePreventDefault';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
-import { ReactiveUserStatus, colors } from '../components/UserStatus';
+import ReactiveUserStatus from '../components/ReactiveUserStatus';
 import { useTranslation } from '../contexts/TranslationContext';
 import { roomTypes } from '../../app/utils';
 import { useUserPreference, useUserId } from '../contexts/UserContext';
@@ -20,6 +20,7 @@ import { useRoomList } from './hooks/useRoomList';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
 import { escapeHTML } from '../../lib/escapeHTML';
 import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
+import statusColors from '../lib/statusColors';
 
 const sections = {
 	Omnichannel,
@@ -47,7 +48,7 @@ const SidebarIcon = ({ room, small }) => {
 		case 'c':
 			return <Sidebar.Item.Icon aria-hidden='true' name={roomTypes.getIcon(room)} />;
 		case 'l':
-			return <Sidebar.Item.Icon aria-hidden='true' name='headset' color={colors[room.v.status]}/>;
+			return <Sidebar.Item.Icon aria-hidden='true' name='headset' color={statusColors[room.v.status]}/>;
 		case 'd':
 			if (room.uids && room.uids.length > 2) {
 				return <Sidebar.Item.Icon aria-hidden='true' name='team'/>;
