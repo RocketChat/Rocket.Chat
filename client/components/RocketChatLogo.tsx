@@ -1,9 +1,9 @@
 import { Box, BoxProps } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-type RocketChatLogoProps = BoxProps & {
-	variant: 'red' | 'blue' | 'white';
-};
+type RocketChatLogoProps = {
+	variant?: 'red' | 'blue' | 'white';
+} & BoxProps;
 
 const colorMapping = {
 	red: '#f5455c', // r500
