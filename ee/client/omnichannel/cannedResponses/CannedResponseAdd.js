@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ButtonGroup, Button, ActionButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -9,10 +9,21 @@ import CannedResponsesForm from './CannedResponseForm';
 
 const CannedResponseEdit = ({ onSave, onReturn, onClose }) => {
 	const t = useTranslation();
+	const [errors, setErrors] = useState();
 
 	const { values, handlers } = useForm({ shortcut: '', text: '' });
+	const { shortcut, text } = values;
 
 	const handleSave = useMutableCallback(() => {
+		if (!shortcut) {
+			return setErrors({ shortcut: t('The_field_is_required', 'shortcut') });
+		}
+		if (!text) {
+			return setErrors({ text: t('The_field_is_required', 'text') });
+		}
+
+		setErrors({});
+
 		onSave(values);
 		onReturn();
 	});
@@ -25,7 +36,7 @@ const CannedResponseEdit = ({ onSave, onReturn, onClose }) => {
 		</VerticalBar.Header>
 
 		<VerticalBar.ScrollableContent>
-			<CannedResponsesForm values={values} handlers={handlers}/>
+			<CannedResponsesForm errors={errors} values={values} handlers={handlers}/>
 		</VerticalBar.ScrollableContent>
 
 		<VerticalBar.Footer>

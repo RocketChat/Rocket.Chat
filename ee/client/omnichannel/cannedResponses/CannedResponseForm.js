@@ -3,7 +3,7 @@ import { FieldGroup, Field, TextInput, TextAreaInput } from '@rocket.chat/fusela
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
-const CannedResponsesForm = ({ values, handlers }) => {
+const CannedResponsesForm = ({ values, handlers, errors }) => {
 	const t = useTranslation();
 	const {
 		shortcut,
@@ -19,14 +19,20 @@ const CannedResponsesForm = ({ values, handlers }) => {
 		<Field>
 			<Field.Label>{t('Shortcut')}</Field.Label>
 			<Field.Row>
-				<TextInput value={shortcut} onChange={handleShortcut} placeholder={t('Shortcut')}/>
+				<TextInput error={errors && errors.shortcut} value={shortcut} onChange={handleShortcut} placeholder={t('Shortcut')}/>
 			</Field.Row>
+			{errors && errors.shortcut && <Field.Error>
+				{errors.shortcut}
+			</Field.Error>}
 		</Field>
 		<Field>
 			<Field.Label>{t('Content')}</Field.Label>
 			<Field.Row>
-				<TextAreaInput rows={3} value={text} onChange={handleText} placeholder={t('Content')}/>
+				<TextAreaInput error={errors && errors.text} rows={3} value={text} onChange={handleText} placeholder={t('Content')}/>
 			</Field.Row>
+			{errors && errors.text && <Field.Error>
+				{errors.text}
+			</Field.Error>}
 		</Field>
 	</FieldGroup>;
 };
