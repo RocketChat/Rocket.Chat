@@ -45,7 +45,7 @@ const ChatTable = () => {
 		FlowRouter.go('live', { id: _id });
 	});
 
-	const { value: data } = useEndpointData('livechat/rooms', query) || {};
+	const { value: data } = useEndpointData('livechat/rooms', query);
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'fname'} direction={sort[1]} active={sort[0] === 'fname'} onClick={onHeaderClick} sort='fname' w='x400'>{t('Contact_Name')}</GenericTable.HeaderCell>,
