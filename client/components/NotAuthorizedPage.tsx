@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { FC } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import Page from './Page';
 
-function NotAuthorizedPage() {
+const NotAuthorizedPage: FC = () => {
 	const t = useTranslation();
 
 	return <Page>
@@ -12,6 +12,6 @@ function NotAuthorizedPage() {
 			<Box is='p' fontScale='p1'>{t('You_are_not_authorized_to_view_this_page')}</Box>
 		</Page.Content>
 	</Page>;
-}
+};
 
 export default NotAuthorizedPage;
