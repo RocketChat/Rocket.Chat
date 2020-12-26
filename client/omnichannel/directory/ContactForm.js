@@ -16,7 +16,7 @@ import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { hasAtLeastOnePermission } from '../../../app/authorization';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { formsSubscription } from '../../views/omnichannel/additionalForms';
-import { createToken } from '../../components/helpers';
+import { createToken } from '../../lib/createToken';
 
 const initialValues = {
 	token: '',
