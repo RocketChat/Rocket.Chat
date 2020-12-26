@@ -11,7 +11,6 @@ import GenericTable from '../../components/GenericTable';
 import FilterByText from '../../components/FilterByText';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import { hasPermission } from '../../../app/authorization';
 
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLoggedIn) => useMemo(() => ({
@@ -31,10 +30,6 @@ const ChatTable = () => {
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const userIdLoggedIn = Meteor.userId();
 	const query = useQuery(debouncedParams, debouncedSort, userIdLoggedIn);
-
-	if (hasPermission(userIdLoggedIn, 'view-livechat-rooms')) {
-		delete query.agents;
-	}
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
