@@ -22,6 +22,9 @@ const stateDecorator = ({
 export default {
 	title: 'components/connectionStatus/ConnectionStatusAlert',
 	component: ConnectionStatusAlert,
+	parameters: {
+		layout: 'fullscreen',
+	},
 };
 
 export const Connected = () => <ConnectionStatusAlert />;
