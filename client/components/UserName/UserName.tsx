@@ -23,8 +23,6 @@ const UserName: FC<UserNameProps> = ({
 	return <Box
 		{...props}
 		display='flex'
-		flexGrow={1}
-		flexShrink={0}
 		alignItems='center'
 		fontScale='s2'
 		color='default'
