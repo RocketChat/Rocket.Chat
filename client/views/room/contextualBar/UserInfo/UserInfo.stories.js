@@ -18,10 +18,8 @@ const user = {
 	// actions: [<UserCard.Action icon='message'/>, <UserCard.Action icon='phone'/>],
 	localTime: 'Local Time: 7:44 AM',
 	utcOffset: -3,
-	email: {
-		address: 'rocketchat@rocket.chat',
-		verified: true,
-	},
+	email: 'rocketchat@rocket.chat',
+	verified: true,
 };
 
 const nickname = {
@@ -29,5 +27,10 @@ const nickname = {
 	nickname: 'Nickname',
 };
 
-export const Default = () => <VerticalBar><UserInfo { ...user } /></VerticalBar>;
-export const Nickname = () => <VerticalBar><UserInfo { ...nickname } /></VerticalBar>;
+export const Default = () => <VerticalBar>
+	<UserInfo { ...user } />
+</VerticalBar>;
+
+export const Nickname = () => <VerticalBar>
+	<UserInfo { ...nickname } />
+</VerticalBar>;

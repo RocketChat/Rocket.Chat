@@ -4,6 +4,7 @@ import { Box, Tag, ActionButton, Skeleton } from '@rocket.chat/fuselage';
 import UserAvatar from './avatar/UserAvatar';
 import UserStatus from './UserStatus';
 import MarkdownText from './MarkdownText';
+import UserName from './UserDisplay';
 
 const clampStyle = {
 	display: '-webkit-box',
@@ -46,7 +47,7 @@ const UserCard = forwardRef(({
 	className,
 	style,
 	open,
-	name = <Skeleton width='100%'/>,
+	name,
 	username,
 	etag,
 	customStatus = <Skeleton width='100%'/>,
@@ -74,14 +75,13 @@ const UserCard = forwardRef(({
 		</Box>}
 	</Box>
 	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
-		<Box withTruncatedText display='flex'>
-			<Username status={status} name={name} title={username !== name ? username : undefined} />
-			{nickname && <Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText>({ nickname })</Box>}
-		</Box>
-		{ customStatus && <Info>{customStatus}</Info> }
+		{name
+			? <UserName status={status} name={name} username={username} nickname={nickname} />
+			: <UserName.Skeleton />}
+		{customStatus && <Info>{customStatus}</Info>}
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
-		{ bio && <Info withTruncatedText={false} style={clampStyle} height='x60'><MarkdownText content={bio}/></Info> }
+		{bio && <Info withTruncatedText={false} style={clampStyle} height='x60'><MarkdownText content={bio}/></Info>}
 		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
 	{onClose && <Box><ActionButton ghost icon='cross' onClick={onClose}/></Box>}

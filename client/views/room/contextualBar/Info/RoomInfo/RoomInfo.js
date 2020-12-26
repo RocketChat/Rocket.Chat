@@ -20,6 +20,7 @@ import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import RoomName from '../../../../../components/RoomName';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -39,10 +40,6 @@ const wordBreak = css`
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
-
-export const RoomInfoIcon = ({ name }) => <Icon name={name} size='x22' />;
-
-export const Title = (props) => <UserCard.Username {...props}/>;
 
 export const RoomInfo = function RoomInfo({
 	name,
@@ -81,17 +78,19 @@ export const RoomInfo = function RoomInfo({
 			<VerticalBar.ScrollableContent p='x24'>
 				<Box flexGrow={1}>
 					<Box pbe='x24' display='flex' justifyContent='center'>
-						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
+						<RoomAvatar size='x332' room={{ _id: rid, type, t: type } } />
 					</Box>
 
-					{ archived && <Box pbe='x24'>
+					{archived && <Box pbe='x24'>
 						<Callout type='warning'>
 							{t('Room_archived')}
 						</Callout>
 					</Box>}
 
 					<Box pbe='x24'>
-						<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
+						{name
+							? <RoomName icon={<Icon name={icon} size={22} />} name={name} />
+							: <RoomName.Skeleton />}
 					</Box>
 
 					{broadcast && broadcast !== '' && <Box pbe='x16'>
@@ -139,9 +138,6 @@ export const RoomInfo = function RoomInfo({
 		</>
 	);
 };
-
-RoomInfo.Title = Title;
-RoomInfo.Icon = RoomInfoIcon;
 
 export default ({
 	rid,

@@ -18,6 +18,7 @@ import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { getUserEmailVerified } from '../../../../lib/getUserEmailVerified';
+import UserName from '../../../../components/UserName';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -27,7 +28,6 @@ const wordBreak = css`
 
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
 const Avatar = ({ username, ...props }) => <UserAvatar title={username} username={username} {...props}/>;
-const Username = ({ username, status, ...props }) => <UserCard.Username name={username} status={status} {...props}/>;
 
 export const UserInfo = React.memo(function UserInfo({
 	username,
@@ -57,13 +57,18 @@ export const UserInfo = React.memo(function UserInfo({
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
 		<Box alignSelf='center'>
-			<Avatar size={'x332'} username={username} etag={data?.avatarETag}/>
+			<Avatar size='x332' username={username} etag={data?.avatarETag}/>
 		</Box>
 
 		{actions}
 
 		<Margins block='x4'>
-			<UserCard.Username name={(showRealNames && name) || username || name} status={status} />
+			<UserName
+				status={status}
+				name={(showRealNames && name) || username || name}
+				username={username}
+			/>
+
 			<Info>{customStatus}</Info>
 
 			{!!roles && <>
@@ -136,10 +141,6 @@ export const Action = ({ icon, label, ...props }) => (
 );
 
 UserInfo.Action = Action;
-UserInfo.Avatar = Avatar;
-UserInfo.Info = Info;
-UserInfo.Label = Label;
-UserInfo.Username = Username;
 
 export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = onClickClose, video, onClickBack, ...props }) {
 	const t = useTranslation();
