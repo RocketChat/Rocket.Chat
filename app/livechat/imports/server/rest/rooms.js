@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 
-import { hasAtLeastOnePermission } from '../../../../authorization/server';
+import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
 
@@ -19,9 +19,6 @@ const validateDateParams = (property, date) => {
 
 API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 	get() {
-		if (!hasAtLeastOnePermission(this.userId, ['view-livechat-rooms', 'view-l-room'])) {
-			return API.v1.unauthorized();
-		}
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
 		const { agents, departmentId, open, tags, roomName } = this.requestParams();
@@ -31,6 +28,12 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 		check(departmentId, Match.Maybe(String));
 		check(open, Match.Maybe(String));
 		check(tags, Match.Maybe([String]));
+
+		const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
+		const hasAgentAccess = hasPermission(this.userId, 'view-l-room') && agents?.includes(this.userId) && agents?.length === 1;
+		if (!hasAdminAccess && !hasAgentAccess) {
+			return API.v1.unauthorized();
+		}
 
 		createdAt = validateDateParams('createdAt', createdAt);
 		closedAt = validateDateParams('closedAt', closedAt);
