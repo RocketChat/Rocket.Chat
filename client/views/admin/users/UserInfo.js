@@ -7,12 +7,12 @@ import { UserInfo } from '../../room/contextualBar/UserInfo';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import UserStatus from '../../../components/UserStatus';
-import UserCard from '../../../components/UserCard';
 import { UserInfoActions } from './UserInfoActions';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import UserRoles from '../../../components/UserRoles';
 
 export function UserInfoWithData({ uid, username, ...props }) {
 	const t = useTranslation();
@@ -41,9 +41,11 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			username,
 			lastLogin,
 			showRealNames,
-			roles: roles.map((role, index) => (
-				<UserCard.Role key={index}>{role}</UserCard.Role>
-			)),
+			roles: <>
+				{roles.map((role, index) => (
+					<UserRoles.Item key={index}>{role}</UserRoles.Item>
+				))}
+			</>,
 			bio,
 			phone: user.phone,
 			utcOffset,

@@ -12,6 +12,7 @@ import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserIn
 import { useRolesDescription } from '../../../contexts/AuthorizationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import UserRoles from '../../../components/UserRoles';
 
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
@@ -51,7 +52,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			name: showRealNames ? name : username,
 			username,
 			roles: roles && getRoles(roles).map((role, index) => (
-				<UserCard.Role key={index}>{role}</UserCard.Role>
+				<UserRoles.Item key={index}>{role}</UserRoles.Item>
 			)),
 			bio,
 			etag: avatarETag,

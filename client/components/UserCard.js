@@ -1,10 +1,11 @@
 import React, { forwardRef } from 'react';
-import { Box, Tag, ActionButton, Skeleton } from '@rocket.chat/fuselage';
+import { Box, ActionButton, Skeleton } from '@rocket.chat/fuselage';
 
 import UserAvatar from './avatar/UserAvatar';
 import UserStatus from './UserStatus';
 import MarkdownText from './MarkdownText';
-import UserName from './UserDisplay';
+import UserName from './UserName';
+import UserRoles from './UserRoles';
 
 const clampStyle = {
 	display: '-webkit-box',
@@ -29,18 +30,19 @@ export const Info = (props) => (
 	/>
 );
 
-export const Username = ({ name, status = <UserStatus.Offline/>, title, ...props }) => <Box {...props} display='flex' title={title} flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
-	{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box>
-</Box>;
+export const Username = ({ name, status = <UserStatus.Offline/>, title, ...props }) => (
+	<Box {...props} display='flex' title={title} flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
+		{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box>
+	</Box>
+);
 
-const Roles = ({ children }) => <Info rcx-user-card__roles m='neg-x2' flexWrap='wrap' display='flex' flexShrink={0}>
-	{children}
-</Info>;
+const Roles = (props) => (
+	<UserRoles className='rcx-user-card__roles' {...props} />
+);
 
-const Role = ({ children }) => <Box m='x2' fontScale='c2'><Tag
-	disabled
-	children={children}
-/></Box>;
+const Role = (props) => (
+	<UserRoles.Item {...props} />
+);
 
 const UserCardContainer = forwardRef((props, ref) => <Box rcx-user-card bg='surface' elevation='2' p='x24' display='flex' borderRadius='x2' width='439px' {...props} ref={ref}/>);
 const UserCard = forwardRef(({
@@ -51,11 +53,7 @@ const UserCard = forwardRef(({
 	username,
 	etag,
 	customStatus = <Skeleton width='100%'/>,
-	roles = <>
-		<Skeleton width='32%' mi='x2'/>
-		<Skeleton width='32%' mi='x2'/>
-		<Skeleton width='32%' mi='x2'/>
-	</>,
+	roles,
 	bio = <>
 		<Skeleton width='100%'/>
 		<Skeleton width='100%'/>
@@ -70,7 +68,7 @@ const UserCard = forwardRef(({
 }, ref) => <UserCardContainer className={className} ref={ref} style={style}>
 	<Box>
 		<UserAvatar username={username} etag={etag} size='x124'/>
-		{ actions && <Box flexGrow={0} display='flex' mb='x8' align='center' justifyContent='center'>
+		{actions && <Box flexGrow={0} display='flex' mb='x8' align='center' justifyContent='center'>
 			{actions}
 		</Box>}
 	</Box>
@@ -79,12 +77,17 @@ const UserCard = forwardRef(({
 			? <UserName status={status} name={name} username={username} nickname={nickname} />
 			: <UserName.Skeleton />}
 		{customStatus && <Info>{customStatus}</Info>}
-		<Roles>{roles}</Roles>
+		{(!!roles && <UserRoles className='rcx-user-card__roles'>{roles}</UserRoles>)
+			|| (roles === undefined && <UserRoles.Skeleton />)}
 		<Info>{localTime}</Info>
-		{bio && <Info withTruncatedText={false} style={clampStyle} height='x60'><MarkdownText content={bio}/></Info>}
+		{bio && <Info withTruncatedText={false} style={clampStyle} height='x60'>
+			<MarkdownText content={bio}/>
+		</Info>}
 		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
-	{onClose && <Box><ActionButton ghost icon='cross' onClick={onClose}/></Box>}
+	{onClose && <Box>
+		<ActionButton ghost icon='cross' onClick={onClose}/>
+	</Box>}
 </UserCardContainer>);
 
 

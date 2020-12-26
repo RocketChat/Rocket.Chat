@@ -19,6 +19,7 @@ import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { getUserEmailVerified } from '../../../../lib/getUserEmailVerified';
 import UserName from '../../../../components/UserName';
+import UserRoles from '../../../../components/UserRoles';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -73,7 +74,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{!!roles && <>
 				<Label>{t('Roles')}</Label>
-				<UserCard.Roles>{roles}</UserCard.Roles>
+				<UserRoles>{roles}</UserRoles>
 			</>}
 
 			{Number.isInteger(utcOffset) && <>
@@ -176,7 +177,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			username,
 			lastLogin,
 			roles: roles && getRoles(roles).map((role, index) => (
-				<UserCard.Role key={index}>{role}</UserCard.Role>
+				<UserRoles.Item key={index}>{role}</UserRoles.Item>
 			)),
 			bio,
 			phone: user.phone,
