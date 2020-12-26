@@ -66,7 +66,7 @@ export function ContactInfo({ id }) {
 		<VerticalBar.ScrollableContent p='x24'>
 			<Margins block='x4'>
 				{username && username !== name && <>
-					<Label>{t('Name/Username')}</Label>
+					<Label>{`${ t('Name') } / ${ t('Username') }`}</Label>
 					<Info>{`${ name }/${ username }`}</Info>
 				</>}
 				{visitorEmails && visitorEmails.length && <>
