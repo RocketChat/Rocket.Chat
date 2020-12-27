@@ -407,7 +407,7 @@ settings.addGroup('Email', function() {
 	});
 
 	this.section('Offline_Message', function() {
-		this.add('Offline_Message_Use_DeepLink', true, {
+		this.add('Offline_Message_Use_DeepLink', false, {
 			type: 'boolean',
 		});
 	});
