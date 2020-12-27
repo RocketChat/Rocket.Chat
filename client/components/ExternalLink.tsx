@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 type ExternalLinkProps = {
@@ -6,8 +5,8 @@ type ExternalLinkProps = {
 };
 
 const ExternalLink: FC<ExternalLinkProps> = ({ children, to, ...props }) =>
-	<Box is='a' href={to} target='_blank' rel='noopener noreferrer' {...props}>
+	<a href={to} target='_blank' rel='noopener noreferrer' {...props}>
 		{children || to}
-	</Box>;
+	</a>;
 
 export default ExternalLink;
