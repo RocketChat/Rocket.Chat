@@ -250,7 +250,7 @@ export function EditDepartment({ data, id, title, reload }) {
 		<Page>
 			<Page.Header title={title}>
 				<ButtonGroup>
-					{hasCannedResponsesLicense && cannedResponsesEnabled && <Button onClick={handleOpenCannedResponses} title={t('Canned Responses')}><Icon name='baloon-exclamation' size='x16'/></Button>}
+					{id && hasCannedResponsesLicense && cannedResponsesEnabled && <Button onClick={handleOpenCannedResponses} title={t('Canned Responses')}><Icon name='baloon-exclamation' size='x16'/></Button>}
 					<Button onClick={handleReturn}><Icon name='back'/> {t('Back')}</Button>
 					<Button type='submit' form={formId} primary disabled={invalidForm && hasNewAgent}>{t('Save')}</Button>
 				</ButtonGroup>
