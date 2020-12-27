@@ -5,7 +5,6 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../components/VerticalBar';
 import UserCard from '../../components/UserCard';
-import { FormSkeleton } from './Skeleton';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useRoute } from '../../contexts/RouterContext';
@@ -13,6 +12,7 @@ import { hasPermission } from '../../../app/authorization';
 import { useFormatDate } from '../../hooks/useFormatDate';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { ContactManagerInfo } from '../../../ee/client/omnichannel/ContactManager';
+import FormSkeleton from '../../components/FormSkeleton';
 
 const wordBreak = css`
 	word-break: break-word;

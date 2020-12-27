@@ -6,7 +6,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import VerticalBar from '../../../components/VerticalBar';
 import { UserInfo } from '../../room/contextualBar/UserInfo';
 import UserStatus from '../../../components/UserStatus';
-import { FormSkeleton } from '../../../components/Skeleton';
+import FormSkeleton from '../../../components/FormSkeleton';
 import { formsSubscription } from '../additionalForms';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';

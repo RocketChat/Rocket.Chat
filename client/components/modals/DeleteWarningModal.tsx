@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 
 type DeleteWarningModalProps = {
 	cancelText?: string;

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 
-import RawText from './RawText';
-import { useTranslation } from '../contexts/TranslationContext';
+import RawText from '../RawText';
+import { useTranslation } from '../../contexts/TranslationContext';
 
 const ConfirmOwnerChangeWarningModal = ({ onConfirm, onCancel, contentTitle = '', confirmLabel = '', shouldChangeOwner, shouldBeRemoved, ...props }) => {
 	const t = useTranslation();

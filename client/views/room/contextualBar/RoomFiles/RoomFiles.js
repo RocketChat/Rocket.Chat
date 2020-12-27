@@ -13,7 +13,7 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import memoize from 'memoize-one';
 
 import { useUserId, useUserRoom } from '../../../../contexts/UserContext';
-import DeleteFileWarning from '../../../../components/DeleteFileWarning';
+import DeleteFileWarning from '../../../../components/modals/DeleteFileWarning';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useMethod } from '../../../../contexts/ServerContext';

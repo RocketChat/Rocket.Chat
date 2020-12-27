@@ -2,7 +2,7 @@ import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
 import React, { useCallback, useMemo } from 'react';
 
 import { useUserInfoActionsSpread } from '../../room/hooks/useUserInfoActions';
-import ConfirmOwnerChangeWarningModal from '../../../components/ConfirmOwnerChangeWarningModal';
+import ConfirmOwnerChangeWarningModal from '../../../components/modals/ConfirmOwnerChangeWarningModal';
 import { UserInfo } from '../../room/contextualBar/UserInfo';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -11,8 +11,8 @@ import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import DeleteSuccessModal from '../../../components/modals/DeleteSuccessModal';
+import DeleteWarningModal from '../../../components/modals/DeleteWarningModal';
 
 export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) => {
 	const t = useTranslation();

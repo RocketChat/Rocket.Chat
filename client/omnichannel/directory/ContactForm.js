@@ -11,12 +11,12 @@ import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
-import { FormSkeleton } from './Skeleton';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { hasAtLeastOnePermission } from '../../../app/authorization';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { formsSubscription } from '../../views/omnichannel/additionalForms';
 import { createToken } from '../../lib/createToken';
+import FormSkeleton from '../../components/FormSkeleton';
 
 const initialValues = {
 	token: '',
@@ -173,7 +173,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton/>;
+		return <FormSkeleton />;
 	}
 
 	return <>

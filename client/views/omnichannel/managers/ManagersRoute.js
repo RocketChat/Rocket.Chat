@@ -11,7 +11,7 @@ import ManagersPage from './ManagersPage';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import DeleteWarningModal from '../../../components/modals/DeleteWarningModal';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 
 export function RemoveManagerButton({ _id, reload }) {

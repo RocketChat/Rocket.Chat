@@ -17,7 +17,7 @@ import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { isEmail } from '../../../../app/utils';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { FormSkeleton } from '../../../components/Skeleton';
+import FormSkeleton from '../../../components/FormSkeleton';
 
 export default function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();

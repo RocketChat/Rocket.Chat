@@ -16,7 +16,7 @@ import UserActions from './actions/UserActions';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import { FormSkeleton } from '../../../../components/Skeleton';
+import FormSkeleton from '../../../../components/FormSkeleton';
 import { getUserEmailVerified } from '../../../../lib/getUserEmailVerified';
 import UserName from '../../../../components/UserName';
 import UserRoles from '../../../../components/UserRoles';

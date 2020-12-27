@@ -13,7 +13,7 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import CurrentChatsPage from './CurrentChatsPage';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import DeleteWarningModal from '../../../components/modals/DeleteWarningModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';

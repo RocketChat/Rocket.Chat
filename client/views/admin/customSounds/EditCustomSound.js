@@ -8,8 +8,8 @@ import { useFileInput } from '../../../hooks/useFileInput';
 import { validate, createSoundData } from './lib';
 import { useSetModal } from '../../../contexts/ModalContext';
 import VerticalBar from '../../../components/VerticalBar';
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import DeleteSuccessModal from '../../../components/modals/DeleteSuccessModal';
+import DeleteWarningModal from '../../../components/modals/DeleteWarningModal';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 

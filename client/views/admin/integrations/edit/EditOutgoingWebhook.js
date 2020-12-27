@@ -15,8 +15,8 @@ import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesConte
 import { useSetModal } from '../../../../contexts/ModalContext';
 import OutgoingWebhookForm from '../OutgoiongWebhookForm';
 import { useForm } from '../../../../hooks/useForm';
-import DeleteSuccessModal from '../../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../../components/DeleteWarningModal';
+import DeleteSuccessModal from '../../../../components/modals/DeleteSuccessModal';
+import DeleteWarningModal from '../../../../components/modals/DeleteWarningModal';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { triggerWordsToArray, triggerWordsToString } from '../helpers/triggerWords';

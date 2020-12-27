@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { AutoComplete, Option } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../contexts/TranslationContext';
-import { useEndpointData } from '../hooks/useEndpointData';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
 
 export const AutoCompleteDepartment = React.memo((props) => {
 	const t = useTranslation();

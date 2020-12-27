@@ -10,7 +10,7 @@ import { useForm } from '../../../../client/hooks/useForm';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
-import { FormSkeleton } from '../../../../client/components/Skeleton';
+import FormSkeleton from '../../../../client/components/FormSkeleton';
 
 export function TagEditWithData({ tagId, reload }) {
 	const query = useMemo(() => ({ tagId }), [tagId]);

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Box, Tag } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 
-import { useMethod } from '../contexts/ServerContext';
+import { useMethod } from '../../../contexts/ServerContext';
 
-function PlanTag() {
+const PlanTag = () => {
 	const [plans, setPlans] = useSafely(useState([]));
 
 	const getTags = useMethod('license:getTags');
@@ -35,6 +35,6 @@ function PlanTag() {
 			</Tag>
 		</Box>
 	));
-}
+};
 
 export default PlanTag;

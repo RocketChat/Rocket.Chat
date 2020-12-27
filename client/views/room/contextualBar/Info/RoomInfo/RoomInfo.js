@@ -9,7 +9,7 @@ import UserCard from '../../../../../components/UserCard';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
-import DeleteChannelWarning from '../../../../../components/DeleteChannelWarning';
+import DeleteChannelWarning from '../../../../../components/modals/DeleteChannelWarning';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useRoute } from '../../../../../contexts/RouterContext';

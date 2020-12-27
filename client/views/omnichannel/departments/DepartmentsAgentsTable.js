@@ -7,10 +7,10 @@ import GenericTable from '../../../components/GenericTable';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import UserAvatar from '../../../components/avatar/UserAvatar';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import DeleteWarningModal from '../../../components/modals/DeleteWarningModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { AutoCompleteAgent } from '../../../components/AutoCompleteAgent';
+import { AutoCompleteAgent } from '../../../components/omnichannel/AutoCompleteAgent';
 
 function AddAgent({ agentList, setAgentList, ...props }) {
 	const t = useTranslation();

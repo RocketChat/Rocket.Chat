@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../contexts/TranslationContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 
 const DeleteChannelWarning = ({ onConfirm, onCancel, ...props }) => {
 	const t = useTranslation();

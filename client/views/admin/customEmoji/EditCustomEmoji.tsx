@@ -8,8 +8,8 @@ import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import VerticalBar from '../../../components/VerticalBar';
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import DeleteSuccessModal from '../../../components/modals/DeleteSuccessModal';
+import DeleteWarningModal from '../../../components/modals/DeleteWarningModal';
 import { EmojiDescriptor } from './types';
 import { useAbsoluteUrl } from '../../../contexts/ServerContext';
 

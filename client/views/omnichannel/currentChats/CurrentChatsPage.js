@@ -10,11 +10,11 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import GenericTable from '../../../components/GenericTable';
 import { useMethod } from '../../../contexts/ServerContext';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import DeleteWarningModal from '../../../components/modals/DeleteWarningModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
-import { AutoCompleteAgent } from '../../../components/AutoCompleteAgent';
+import { AutoCompleteDepartment } from '../../../components/omnichannel/AutoCompleteDepartment';
+import { AutoCompleteAgent } from '../../../components/omnichannel/AutoCompleteAgent';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;

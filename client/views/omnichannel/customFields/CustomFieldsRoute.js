@@ -12,7 +12,7 @@ import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import GenericTable from '../../../components/GenericTable';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import DeleteWarningModal from '../../../components/modals/DeleteWarningModal';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 

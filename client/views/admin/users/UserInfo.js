@@ -8,7 +8,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import UserStatus from '../../../components/UserStatus';
 import { UserInfoActions } from './UserInfoActions';
-import { FormSkeleton } from '../../../components/Skeleton';
+import FormSkeleton from '../../../components/FormSkeleton';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
