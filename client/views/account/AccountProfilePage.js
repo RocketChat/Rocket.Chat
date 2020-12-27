@@ -4,7 +4,7 @@ import React, { useMemo, useState, useCallback } from 'react';
 
 import Page from '../../components/Page';
 import AccountProfileForm from './AccountProfileForm';
-import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeWarningModal';
+import ConfirmOwnerChangeWarningModal from '../../components/modals/ConfirmOwnerChangeWarningModal';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useSetting } from '../../contexts/SettingsContext';

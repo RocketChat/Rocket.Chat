@@ -5,7 +5,7 @@ import React from 'react';
 import { PasswordSettingInput } from './PasswordSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/PasswordSettingInput',
+	title: 'views/admin/settings/inputs/PasswordSettingInput',
 	component: PasswordSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

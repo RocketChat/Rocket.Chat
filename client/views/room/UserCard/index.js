@@ -5,13 +5,14 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import UserCard from '../../../components/UserCard';
-import { Backdrop } from '../../../components/Backdrop';
-import { ReactiveUserStatus } from '../../../components/UserStatus';
-import { LocalTime } from '../../../components/UTCClock';
+import Backdrop from '../../../components/Backdrop';
+import ReactiveUserStatus from '../../../components/ReactiveUserStatus';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
 import { useRolesDescription } from '../../../contexts/AuthorizationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import UserRoles from '../../../components/UserRoles';
+import LocalTime from '../../../components/LocalTime';
 
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
@@ -51,7 +52,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			name: showRealNames ? name : username,
 			username,
 			roles: roles && getRoles(roles).map((role, index) => (
-				<UserCard.Role key={index}>{role}</UserCard.Role>
+				<UserRoles.Item key={index}>{role}</UserRoles.Item>
 			)),
 			bio,
 			etag: avatarETag,

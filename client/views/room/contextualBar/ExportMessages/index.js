@@ -4,7 +4,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { UserAutoComplete } from '../../../../components/AutoComplete';
+import UserAutoComplete from '../../../../components/UserAutoComplete';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 import { useUserRoom } from '../../hooks/useUserRoom';

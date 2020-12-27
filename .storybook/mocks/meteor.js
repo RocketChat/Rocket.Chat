@@ -84,3 +84,7 @@ export const Session = {
 	get: () => {},
 	set: () => {},
 };
+
+window.__meteor_runtime_config__ = {
+	ROOT_URL_PATH_PREFIX: '',
+};

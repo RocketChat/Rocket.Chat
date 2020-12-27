@@ -3,7 +3,7 @@ import React from 'react';
 import ServersSection from './ServersSection';
 
 export default {
-	title: 'admin/federationDashboard/ServersSection',
+	title: 'views/admin/federationDashboard/ServersSection',
 	component: ServersSection,
 };
 

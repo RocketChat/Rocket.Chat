@@ -3,7 +3,7 @@ import React from 'react';
 import Installation from './Installation';
 
 export default {
-	title: 'omnichannel/Installation',
+	title: 'views/omnichannel/Installation',
 	component: Installation,
 };
 

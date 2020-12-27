@@ -3,7 +3,7 @@ import React from 'react';
 import CommitSection from './CommitSection';
 
 export default {
-	title: 'admin/info/CommitSection',
+	title: 'views/admin/info/CommitSection',
 	component: CommitSection,
 	decorators: [
 		(fn) => <div className='rc-old'>{fn()}</div>,

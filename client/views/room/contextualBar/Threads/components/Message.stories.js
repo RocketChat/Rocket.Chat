@@ -38,7 +38,7 @@ const mention = {
 };
 
 export default {
-	title: 'components/Threads/Message',
+	title: 'views/room/contextualBar/Threads/Message',
 	component: Message,
 };
 

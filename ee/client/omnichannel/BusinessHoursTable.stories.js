@@ -4,7 +4,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { BusinessHoursTable } from './BusinessHoursTable';
 
 export default {
-	title: 'omnichannel/businessHours/ee/BusinessHoursTable',
+	title: 'ee/omnichannel/businessHours/ee/BusinessHoursTable',
 	component: BusinessHoursTable,
 };
 

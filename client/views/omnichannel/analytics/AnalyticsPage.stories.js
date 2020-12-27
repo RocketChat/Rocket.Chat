@@ -3,7 +3,7 @@ import React from 'react';
 import AnalyticsPage from './AnalyticsPage';
 
 export default {
-	title: 'omnichannel/AnalyticsPage',
+	title: 'views/omnichannel/AnalyticsPage',
 	component: AnalyticsPage,
 };
 

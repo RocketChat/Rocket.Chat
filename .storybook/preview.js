@@ -1,13 +1,21 @@
-import { withKnobs } from '@storybook/addon-knobs';
+import { DocsPage, DocsContainer } from '@storybook/addon-docs/blocks';
 import { addDecorator, addParameters } from '@storybook/react';
 
 import { rocketChatDecorator } from './decorators';
 
 addDecorator(rocketChatDecorator);
-addDecorator(withKnobs);
 
 addParameters({
+	docs: {
+		container: DocsContainer,
+		page: DocsPage,
+	},
+	grid: {
+		cellSize: 4,
+	},
 	options: {
-		showRoots: true,
+		storySort: {
+			method: 'alphabetical',
+		},
 	},
 });

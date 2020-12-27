@@ -5,7 +5,7 @@ import React from 'react';
 import { ColorSettingInput } from './ColorSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/ColorSettingInput',
+	title: 'views/admin/settings/inputs/ColorSettingInput',
 	component: ColorSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

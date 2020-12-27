@@ -4,7 +4,7 @@ import React from 'react';
 import { Setting } from './Setting';
 
 export default {
-	title: 'admin/settings/Setting',
+	title: 'views/admin/settings/Setting',
 	component: Setting,
 	decorators: [
 		(storyFn) => <div className='rc-old'>

@@ -4,7 +4,7 @@ import { dummyDate } from '../../../../.storybook/helpers';
 import InstancesSection from './InstancesSection';
 
 export default {
-	title: 'admin/info/InstancesSection',
+	title: 'views/admin/info/InstancesSection',
 	component: InstancesSection,
 	decorators: [
 		(fn) => <div className='rc-old'>{fn()}</div>,

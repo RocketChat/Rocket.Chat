@@ -5,12 +5,13 @@ import KeyboardShortcuts from './KeyboardShortcuts';
 import VerticalBar from '../../../../components/VerticalBar';
 
 export default {
-	title: 'components/KeyboardShortcut',
+	title: 'views/room/contextualBar/KeyboardShortcuts',
 	component: KeyboardShortcuts,
 };
 
-export const Default = () => <Box height='600px'>
+export const _KeyboardShortcuts = () => <Box height='600px'>
 	<VerticalBar>
 		<KeyboardShortcuts />
 	</VerticalBar>
 </Box>;
+_KeyboardShortcuts.storyName = 'KeyboardShortcuts';

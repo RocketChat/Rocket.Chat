@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { Option, Badge } from '@rocket.chat/fuselage';
 
+import Header from '../../../client/components/Header';
 import { useSetting } from '../../../client/contexts/SettingsContext';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
-import Header from '../../../client/components/Header';
 
 addAction('livestream', ({ room }) => {
 	const enabled = useSetting('Livestream_enabled');

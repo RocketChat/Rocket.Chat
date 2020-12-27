@@ -1,7 +1,7 @@
 import React, { FC, memo } from 'react';
 
 import { useSetting } from '../../contexts/SettingsContext';
-import { useAsyncImage } from './useAsyncImage';
+import { useAsyncImage } from '../../hooks/useAsyncImage';
 import MapViewImage from './MapViewImage';
 import MapViewFallback from './MapViewFallback';
 

@@ -10,7 +10,7 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useHasLicense } from '../../hooks/useHasLicense';
 import { useMethod } from '../../../../client/contexts/ServerContext';
-import { UserAutoComplete } from '../../../../client/components/AutoComplete';
+import UserAutoComplete from '../../../../client/components/UserAutoComplete';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 

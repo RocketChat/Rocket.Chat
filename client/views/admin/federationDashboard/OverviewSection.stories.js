@@ -3,7 +3,7 @@ import React from 'react';
 import OverviewSection from './OverviewSection';
 
 export default {
-	title: 'admin/federationDashboard/OverviewSection',
+	title: 'views/admin/federationDashboard/OverviewSection',
 	component: OverviewSection,
 };
 

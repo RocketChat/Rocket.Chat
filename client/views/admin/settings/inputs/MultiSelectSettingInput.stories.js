@@ -5,7 +5,7 @@ import React from 'react';
 import { MultiSelectSettingInput } from './MultiSelectSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/MultiSelectSettingInput',
+	title: 'views/admin/settings/inputs/MultiSelectSettingInput',
 	component: MultiSelectSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

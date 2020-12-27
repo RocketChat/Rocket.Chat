@@ -3,7 +3,7 @@ import React from 'react';
 import ExportMessages from './index';
 
 export default {
-	title: 'contextualBar/Export Messages',
+	title: 'views/room/contextualBar/Export Messages',
 	component: ExportMessages,
 };
 

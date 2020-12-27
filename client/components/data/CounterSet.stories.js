@@ -7,10 +7,11 @@ export default {
 	component: CounterSet,
 };
 
-export const _default = () => <CounterSet
+export const _CounterSet = () => <CounterSet
 	counters={[
 		{ count: 123, variation: 0 },
 		{ count: 456, variation: 7 },
 		{ count: 789, variation: -1, description: 'Description' },
 	]}
 />;
+_CounterSet.storyName = 'CounterSet';

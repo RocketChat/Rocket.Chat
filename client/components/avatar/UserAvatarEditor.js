@@ -4,30 +4,9 @@ import { Box, Button, Icon, TextInput, Margins, Avatar } from '@rocket.chat/fuse
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFileInput } from '../../hooks/useFileInput';
 import UserAvatar from './UserAvatar';
+import UserAvatarSuggestions from './UserAvatarSuggestions';
 
-function UserAvatarSuggestions({ suggestions, setAvatarObj, setNewAvatarSource, disabled, ...props }) {
-	const handleClick = useCallback((suggestion) => () => {
-		setAvatarObj(suggestion);
-		setNewAvatarSource(suggestion.blob);
-	}, [setAvatarObj, setNewAvatarSource]);
-
-	return <Margins inline='x4' {...props}>
-		{Object.values(suggestions)
-			.map((suggestion) =>
-				<Button
-					key={suggestion.service}
-					disabled={disabled}
-					square
-					onClick={handleClick(suggestion)}
-				>
-					<Box mie='x4'>
-						<Avatar title={suggestion.service} url={suggestion.blob} />
-					</Box>
-				</Button>)}
-	</Margins>;
-}
-
-export function UserAvatarEditor({ username, setAvatarObj, suggestions, disabled, etag }) {
+const UserAvatarEditor = ({ username, setAvatarObj, suggestions, disabled, etag }) => {
 	const t = useTranslation();
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
@@ -74,6 +53,6 @@ export function UserAvatarEditor({ username, setAvatarObj, suggestions, disabled
 			</Box>
 		</Box>
 	</Box>;
-}
+};
 
 export default UserAvatarEditor;

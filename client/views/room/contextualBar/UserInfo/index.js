@@ -4,20 +4,22 @@ import { css } from '@rocket.chat/css-in-js';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
-import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import ReactiveUserStatus from '../../../../components/ReactiveUserStatus';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useRolesDescription } from '../../../../contexts/AuthorizationContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
-import { UTCClock } from '../../../../components/UTCClock';
+import UTCClock from '../../../../components/UTCClock';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MarkdownText from '../../../../components/MarkdownText';
 import UserActions from './actions/UserActions';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import { FormSkeleton } from '../../../../components/Skeleton';
+import FormSkeleton from '../../../../components/FormSkeleton';
 import { getUserEmailVerified } from '../../../../lib/getUserEmailVerified';
+import UserName from '../../../../components/UserName';
+import UserRoles from '../../../../components/UserRoles';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -27,7 +29,6 @@ const wordBreak = css`
 
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
 const Avatar = ({ username, ...props }) => <UserAvatar title={username} username={username} {...props}/>;
-const Username = ({ username, status, ...props }) => <UserCard.Username name={username} status={status} {...props}/>;
 
 export const UserInfo = React.memo(function UserInfo({
 	username,
@@ -57,18 +58,23 @@ export const UserInfo = React.memo(function UserInfo({
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
 		<Box alignSelf='center'>
-			<Avatar size={'x332'} username={username} etag={data?.avatarETag}/>
+			<Avatar size='x332' username={username} etag={data?.avatarETag}/>
 		</Box>
 
 		{actions}
 
 		<Margins block='x4'>
-			<UserCard.Username name={(showRealNames && name) || username || name} status={status} />
+			<UserName
+				status={status}
+				name={(showRealNames && name) || username || name}
+				username={username}
+			/>
+
 			<Info>{customStatus}</Info>
 
 			{!!roles && <>
 				<Label>{t('Roles')}</Label>
-				<UserCard.Roles>{roles}</UserCard.Roles>
+				<UserRoles>{roles}</UserRoles>
 			</>}
 
 			{Number.isInteger(utcOffset) && <>
@@ -136,10 +142,6 @@ export const Action = ({ icon, label, ...props }) => (
 );
 
 UserInfo.Action = Action;
-UserInfo.Avatar = Avatar;
-UserInfo.Info = Info;
-UserInfo.Label = Label;
-UserInfo.Username = Username;
 
 export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = onClickClose, video, onClickBack, ...props }) {
 	const t = useTranslation();
@@ -175,7 +177,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			username,
 			lastLogin,
 			roles: roles && getRoles(roles).map((role, index) => (
-				<UserCard.Role key={index}>{role}</UserCard.Role>
+				<UserRoles.Item key={index}>{role}</UserRoles.Item>
 			)),
 			bio,
 			phone: user.phone,

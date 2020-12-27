@@ -3,7 +3,7 @@ import React from 'react';
 import GroupPage from './GroupPage';
 
 export default {
-	title: 'admin/settings/GroupPage',
+	title: 'views/admin/settings/GroupPage',
 	component: GroupPage,
 };
 

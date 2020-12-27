@@ -3,7 +3,7 @@ import React from 'react';
 import RuntimeEnvironmentSection from './RuntimeEnvironmentSection';
 
 export default {
-	title: 'admin/info/RuntimeEnvironmentSection',
+	title: 'views/admin/info/RuntimeEnvironmentSection',
 	component: RuntimeEnvironmentSection,
 	decorators: [
 		(fn) => <div className='rc-old'>{fn()}</div>,

@@ -5,7 +5,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import VerticalBar from '../../../components/VerticalBar';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
-import DeleteChannelWarning from '../../../components/DeleteChannelWarning';
+import DeleteChannelWarning from '../../../components/modals/DeleteChannelWarning';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';

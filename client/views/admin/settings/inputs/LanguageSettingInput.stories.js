@@ -5,7 +5,7 @@ import React from 'react';
 import { LanguageSettingInput } from './LanguageSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/LanguageSettingInput',
+	title: 'views/admin/settings/inputs/LanguageSettingInput',
 	component: LanguageSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

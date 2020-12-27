@@ -5,7 +5,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import Page from '../../../components/Page';
 import UsersInRoleTable from './UsersInRoleTable';
 import RoomAutoComplete from '../../../components/RoomAutoComplete';
-import { UserAutoComplete } from '../../../components/AutoComplete';
+import UserAutoComplete from '../../../components/UserAutoComplete';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useMethod } from '../../../contexts/ServerContext';

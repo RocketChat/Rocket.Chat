@@ -159,6 +159,7 @@
 		text-overflow: ellipsis;
 	}
 }
+
 .tab-bugtton-icon--team {
 	font-size: 28px;
 }
@@ -187,6 +188,7 @@
 			flex-direction: row;
 			align-items: center;
 		}
+
 		&--burger {
 			display: flex;
 

@@ -8,7 +8,7 @@ import { useRoute } from '../../../contexts/RouterContext';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
-import { FormSkeleton } from '../../../components/Skeleton';
+import FormSkeleton from '../../../components/FormSkeleton';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 

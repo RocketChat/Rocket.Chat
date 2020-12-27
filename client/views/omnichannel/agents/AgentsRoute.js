@@ -14,7 +14,7 @@ import AgentInfo from './AgentInfo';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import VerticalBar from '../../../components/VerticalBar';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import DeleteWarningModal from '../../../components/modals/DeleteWarningModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';

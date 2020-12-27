@@ -8,7 +8,7 @@ import RoomAutoComplete from './RoomAutoComplete';
 import UserAutoCompleteMultiple from './UserAutoCompleteMultiple';
 import VisitorAutoComplete from './VisitorAutoComplete';
 import Result from './Result';
-import { AutoCompleteAgent } from '../../../client/components/AutoCompleteAgent';
+import { AutoCompleteAgent } from '../../../client/components/omnichannel/AutoCompleteAgent';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useForm } from '../../../client/hooks/useForm';
 

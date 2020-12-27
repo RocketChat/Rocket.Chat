@@ -3,7 +3,7 @@ import React from 'react';
 import { Section } from './Section';
 
 export default {
-	title: 'admin/settings/Section',
+	title: 'views/admin/settings/Section',
 	component: Section,
 };
 

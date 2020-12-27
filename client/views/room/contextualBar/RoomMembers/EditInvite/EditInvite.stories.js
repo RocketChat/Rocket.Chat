@@ -4,11 +4,11 @@ import { EditInvite } from './EditInvite';
 import VerticalBar from '../../../../../components/VerticalBar';
 
 export default {
-	title: 'components/RoomMembers/EditInvite',
+	title: 'views/room/contextualBar/RoomMembers/EditInvite',
 	component: EditInvite,
 };
 
-export const Default = () => <VerticalBar>
+export const _EditInvite = () => <VerticalBar>
 	<EditInvite
 		onClickBack={alert}
 		onClickClose={alert}
@@ -19,3 +19,4 @@ export const Default = () => <VerticalBar>
 		setMaxUses={alert}
 	/>
 </VerticalBar>;
+_EditInvite.storyName = 'EditInvite';

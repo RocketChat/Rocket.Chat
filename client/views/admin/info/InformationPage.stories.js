@@ -1,12 +1,11 @@
 import { action } from '@storybook/addon-actions';
-import { boolean, object } from '@storybook/addon-knobs/react';
 import React from 'react';
 
 import { dummyDate } from '../../../../.storybook/helpers';
 import InformationPage from './InformationPage';
 
 export default {
-	title: 'admin/info/InformationPage',
+	title: 'views/admin/info/InformationPage',
 	component: InformationPage,
 	decorators: [
 		(fn) => <div className='rc-old'>{fn()}</div>,
@@ -109,11 +108,11 @@ const exampleInstance = {
 
 export const _default = () =>
 	<InformationPage
-		canViewStatistics={boolean('canViewStatistics', true)}
-		isLoading={boolean('isLoading', false)}
-		info={object('info', info)}
-		statistics={object('statistics', statistics)}
-		instances={object('instances', exampleInstance)}
+		canViewStatistics={true}
+		isLoading={false}
+		info={info}
+		statistics={statistics}
+		instances={exampleInstance}
 		onClickRefreshButton={action('clickRefreshButton')}
 		onClickDownloadInfo={action('clickDownloadInfo')}
 	/>;

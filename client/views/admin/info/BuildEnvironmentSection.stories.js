@@ -4,7 +4,7 @@ import { dummyDate } from '../../../../.storybook/helpers';
 import BuildEnvironmentSection from './BuildEnvironmentSection';
 
 export default {
-	title: 'admin/info/BuildEnvironmentSection',
+	title: 'views/admin/info/BuildEnvironmentSection',
 	component: BuildEnvironmentSection,
 	decorators: [
 		(fn) => <div className='rc-old'>{fn()}</div>,

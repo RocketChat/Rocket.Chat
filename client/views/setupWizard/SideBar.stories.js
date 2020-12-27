@@ -1,4 +1,3 @@
-import { select } from '@storybook/addon-knobs';
 import React from 'react';
 
 import SideBar from './SideBar';
@@ -29,7 +28,7 @@ export const _default = () =>
 				title: 'Implement the solution',
 			},
 		]}
-		currentStep={select('currentStep', [1, 2, 3, 4])}
+		currentStep={[1, 2, 3, 4][0]}
 	/>;
 
 export const atSomeStep = () =>

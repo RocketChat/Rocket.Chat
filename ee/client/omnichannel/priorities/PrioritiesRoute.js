@@ -13,7 +13,7 @@ import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterC
 import VerticalBar from '../../../../client/components/VerticalBar';
 import PrioritiesPage from './PrioritiesPage';
 import { PriorityEditWithData, PriorityNew } from './EditPriority';
-import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
+import DeleteWarningModal from '../../../../client/components/modals/DeleteWarningModal';
 import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';

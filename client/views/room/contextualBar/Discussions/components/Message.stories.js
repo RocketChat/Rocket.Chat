@@ -21,7 +21,7 @@ const noReplies = {
 };
 
 export default {
-	title: 'components/Discussion/Message',
+	title: 'views/room/contextualBar/Discussions/components/Message',
 	component: Message,
 };
 

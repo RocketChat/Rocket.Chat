@@ -4,7 +4,7 @@ import React from 'react';
 import { Histogram } from './Histogram';
 
 export default {
-	title: 'admin/enterprise/engagement/data/Histogram',
+	title: 'views/admin/enterprise/engagement/data/Histogram',
 	component: Histogram,
 	decorators: [(fn) => <Margins all='x16'>
 		<Flex.Container>

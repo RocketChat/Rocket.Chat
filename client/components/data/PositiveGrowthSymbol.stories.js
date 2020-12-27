@@ -17,8 +17,6 @@ export const Default = () =>
 export const WithColor = () =>
 	<PositiveGrowthSymbol />;
 
-WithColor.story = {
-	decorators: [
-		(storyFn) => <Box color='success'>{storyFn()}</Box>,
-	],
-};
+WithColor.decorators = [
+	(storyFn) => <Box color='success'>{storyFn()}</Box>,
+];

@@ -8,7 +8,7 @@ import { UserContext } from '../contexts/UserContext';
 import { SettingsContext } from '../contexts/SettingsContext';
 
 export default {
-	title: 'Sidebar',
+	title: 'sidebar/Sidebar',
 	component: '',
 };
 

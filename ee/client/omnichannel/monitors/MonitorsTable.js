@@ -2,7 +2,7 @@ import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
-import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
+import DeleteWarningModal from '../../../../client/components/modals/DeleteWarningModal';
 import FilterByText from '../../../../client/components/FilterByText';
 import GenericTable from '../../../../client/components/GenericTable';
 import { useSetModal } from '../../../../client/contexts/ModalContext';

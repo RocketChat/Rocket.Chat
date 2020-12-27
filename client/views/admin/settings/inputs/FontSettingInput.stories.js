@@ -5,7 +5,7 @@ import React from 'react';
 import { FontSettingInput } from './FontSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/FontSettingInput',
+	title: 'views/admin/settings/inputs/FontSettingInput',
 	component: FontSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

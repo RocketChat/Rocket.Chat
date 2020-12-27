@@ -3,7 +3,7 @@ import React from 'react';
 import ImportHistoryPage from './ImportHistoryPage';
 
 export default {
-	title: 'admin/import/ImportHistoryPage',
+	title: 'views/admin/import/ImportHistoryPage',
 	component: ImportHistoryPage,
 };
 

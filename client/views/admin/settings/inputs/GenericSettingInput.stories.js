@@ -5,7 +5,7 @@ import React from 'react';
 import { GenericSettingInput } from './GenericSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/GenericSettingInput',
+	title: 'views/admin/settings/inputs/GenericSettingInput',
 	component: GenericSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

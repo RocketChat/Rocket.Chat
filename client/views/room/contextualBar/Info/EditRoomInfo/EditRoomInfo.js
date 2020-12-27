@@ -19,7 +19,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
-import DeleteChannelWarning from '../../../../../components/DeleteChannelWarning';
+import DeleteChannelWarning from '../../../../../components/modals/DeleteChannelWarning';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useForm } from '../../../../../hooks/useForm';
 import { roomTypes, RoomSettingsEnum } from '../../../../../../app/utils/client';

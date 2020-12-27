@@ -5,7 +5,7 @@ import React from 'react';
 import { IntSettingInput } from './IntSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/IntSettingInput',
+	title: 'views/admin/settings/inputs/IntSettingInput',
 	component: IntSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

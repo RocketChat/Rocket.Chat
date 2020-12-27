@@ -26,7 +26,10 @@
 		"baseUrl": ".",
 		"paths": {
 			/* Support absolute /imports/* with a leading '/' */
-			"/*": ["*"]
+			"/*": ["*"],
+			"@rocket.chat/fuselage": [
+				"./client/types/fuselage.d.ts"
+			]
 		},
 		"moduleResolution": "node",
 		"resolveJsonModule": true,

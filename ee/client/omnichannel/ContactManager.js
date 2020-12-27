@@ -5,7 +5,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../client/hooks/useAsyncState';
 import UserAvatar from '../../../client/components/avatar/UserAvatar';
-import { UserStatus } from '../../../client/components/UserStatus';
+import UserStatus from '../../../client/components/UserStatus';
 import UserCard from '../../../client/components/UserCard';
 
 const wordBreak = css`

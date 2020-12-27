@@ -3,7 +3,7 @@ import React from 'react';
 import GroupSelector from './GroupSelector';
 
 export default {
-	title: 'admin/settings/GroupSelector',
+	title: 'views/admin/settings/GroupSelector',
 	component: GroupSelector,
 };
 

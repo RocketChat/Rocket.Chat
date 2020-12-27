@@ -11,7 +11,7 @@ import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
 import EditDepartmentWithData from './DepartmentEdit';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import DeleteWarningModal from '../../../components/modals/DeleteWarningModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';

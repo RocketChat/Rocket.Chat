@@ -1,28 +1,28 @@
-import React, { useEffect } from 'react';
-import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
+import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useEffect } from 'react';
 
-import RoomAvatar from './RoomAvatar';
-import { useFileInput } from '../../hooks/useFileInput';
-import { useTranslation } from '../../contexts/TranslationContext';
 import { getAvatarURL } from '../../../app/utils/lib/getAvatarURL';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useFileInput } from '../../hooks/useFileInput';
+import RoomAvatar from './RoomAvatar';
 
-const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...props }) => {
+const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar, ...props }) => {
 	const t = useTranslation();
 
 	const handleChangeAvatar = useMutableCallback((file) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onloadend = () => {
-			onChangeAvatar(reader.result);
+			onChangeAvatar && onChangeAvatar(reader.result);
 		};
 	});
 
 	const [clickUpload, reset] = useFileInput(handleChangeAvatar);
 	const clickReset = useMutableCallback(() => {
 		reset();
-		onChangeAvatar(null);
+		onChangeAvatar && onChangeAvatar(null);
 	});
 
 	useEffect(() => {

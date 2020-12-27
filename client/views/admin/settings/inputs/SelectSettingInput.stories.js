@@ -5,7 +5,7 @@ import React from 'react';
 import { SelectSettingInput } from './SelectSettingInput';
 
 export default {
-	title: 'admin/settings/inputs/SelectSettingInput',
+	title: 'views/admin/settings/inputs/SelectSettingInput',
 	component: SelectSettingInput,
 	decorators: [
 		(storyFn) => <Field>{storyFn()}</Field>,

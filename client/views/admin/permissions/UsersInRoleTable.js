@@ -3,7 +3,7 @@ import { Box, Table, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import DeleteWarningModal from '../../../components/modals/DeleteWarningModal';
 import { useMethod } from '../../../contexts/ServerContext';
 import GenericTable from '../../../components/GenericTable';
 import { useTranslation } from '../../../contexts/TranslationContext';

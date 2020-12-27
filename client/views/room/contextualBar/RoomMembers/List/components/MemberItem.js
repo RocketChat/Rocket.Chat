@@ -9,7 +9,7 @@ import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 
 import { useUserInfoActions, useUserInfoActionsSpread } from '../../../../hooks/useUserInfoActions';
 import UserAvatar from '../../../../../../components/avatar/UserAvatar';
-import { ReactiveUserStatus } from '../../../../../../components/UserStatus';
+import ReactiveUserStatus from '../../../../../../components/ReactiveUserStatus';
 import { usePreventProgation } from '../hooks/usePreventProgation';
 
 const UserActions = ({ username, _id, rid }) => {
