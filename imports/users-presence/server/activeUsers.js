@@ -1,7 +1,6 @@
-import { UserPresenceEvents } from 'meteor/konecty:user-presence';
-
 import { settings } from '../../../app/settings/server';
 import { api } from '../../../server/sdk/api';
+import { UserPresenceEvents } from '../../../app/presence/server/monitor';
 
 // mirror of object in /imports/startup/client/listenActiveUsers.js - keep updated
 export const STATUS_MAP = {
@@ -25,14 +24,16 @@ export const setUserStatus = (user, status/* , statusConnection*/) => {
 	});
 };
 
-let TroubleshootDisablePresenceBroadcast;
-settings.get('Troubleshoot_Disable_Presence_Broadcast', (key, value) => {
-	if (TroubleshootDisablePresenceBroadcast === value) { return; }
-	TroubleshootDisablePresenceBroadcast = value;
+if (!process.env.DISABLE_DB_WATCH) {
+	let TroubleshootDisablePresenceBroadcast;
+	settings.get('Troubleshoot_Disable_Presence_Broadcast', (key, value) => {
+		if (TroubleshootDisablePresenceBroadcast === value) { return; }
+		TroubleshootDisablePresenceBroadcast = value;
 
-	if (value) {
-		return UserPresenceEvents.removeListener('setUserStatus', setUserStatus);
-	}
+		if (value) {
+			return UserPresenceEvents.removeListener('setUserStatus', setUserStatus);
+		}
 
-	UserPresenceEvents.on('setUserStatus', setUserStatus);
-});
+		UserPresenceEvents.on('setUserStatus', setUserStatus);
+	});
+}

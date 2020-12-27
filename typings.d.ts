@@ -6,13 +6,10 @@ declare module 'meteor/routepolicy';
 declare module 'xml-encryption';
 declare module 'webdav';
 
-declare module 'meteor/konecty:user-presence' {
-	namespace UserPresenceMonitor {
-		function processUserSession(userSession: any, event: string): void;
-	}
-
-	namespace UserPresence {
-		function removeConnectionsByInstanceId(id: string): void;
+declare module 'meteor/konecty:multiple-instances-status' {
+	namespace InstanceStatus {
+		function getCollection(): Mongo.Collection<import('./definition/IInstanceStatus').IInstanceStatus>;
+		function id(): string;
 	}
 }
 

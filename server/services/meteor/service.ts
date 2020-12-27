@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
@@ -19,6 +18,10 @@ import { matrixBroadCastActions } from '../../stream/streamBroadcast';
 import { integrations } from '../../../app/integrations/server/lib/triggerHandler';
 import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
 import notifications from '../../../app/notifications/server/lib/Notifications';
+import { hasRole } from '../../../app/authorization/server';
+import { UserPresenceMonitor } from '../../../app/presence/server/monitor';
+import { UserPresence } from '../../../app/presence/server/server';
+import { USER_STATUS } from '../../../definition/UserStatus';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -133,32 +136,42 @@ export class MeteorService extends ServiceClass implements IMeteor {
 		});
 
 		// TODO: May need to merge with https://github.com/RocketChat/Rocket.Chat/blob/0ddc2831baf8340cbbbc432f88fc2cb97be70e9b/ee/server/services/Presence/Presence.ts#L28
-		this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
-			if (clientAction === 'removed') {
-				UserPresenceMonitor.processUserSession({
-					_id: userSession._id,
-					connections: [{
-						fake: true,
-					}],
-				}, 'removed');
-			}
-
-			UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
-		});
-
-		this.onEvent('watch.instanceStatus', async ({ clientAction, id, data }): Promise<void> => {
-			if (clientAction === 'removed') {
-				UserPresence.removeConnectionsByInstanceId(id);
-				matrixBroadCastActions?.removed?.(id);
-				return;
-			}
-
-			if (clientAction === 'inserted') {
-				if (data?.extraInformation?.port) {
-					matrixBroadCastActions?.added?.(data);
+		if (!process.env.DISABLE_DB_WATCH) {
+			this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
+				if (!userSession._id) {
+					return;
 				}
-			}
-		});
+
+				if (clientAction === 'removed') {
+					UserPresenceMonitor.processUserSession({
+						_id: userSession._id,
+						connections: [{
+							id: 'fake',
+							instanceId: 'fake',
+							status: USER_STATUS.OFFLINE,
+							_createdAt: new Date(),
+							_updatedAt: new Date(),
+						}],
+					}, 'removed');
+				}
+
+				UserPresenceMonitor.processUserSession({ ...userSession, _id: userSession._id }, minimongoChangeMap[clientAction]);
+			});
+
+			this.onEvent('watch.instanceStatus', async ({ clientAction, id, data }): Promise<void> => {
+				if (clientAction === 'removed') {
+					UserPresence.removeConnectionsByInstanceId(id);
+					matrixBroadCastActions?.removed?.(id);
+					return;
+				}
+
+				if (clientAction === 'inserted') {
+					if (data?.extraInformation?.port) {
+						matrixBroadCastActions?.added?.(data);
+					}
+				}
+			});
+		}
 
 		if (disableOplog) {
 			this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
@@ -176,9 +189,15 @@ export class MeteorService extends ServiceClass implements IMeteor {
 		}
 
 		this.onEvent('watch.users', async ({ clientAction, id, diff }) => {
-			if (disableOplog) {
+			if (disableOplog && !process.env.DISABLE_DB_WATCH) {
 				if (clientAction === 'updated' && diff) {
 					processOnChange(diff, id);
+				}
+			}
+
+			if (diff?.status) {
+				if (hasRole(id, ['livechat-manager', 'livechat-monitor', 'livechat-agent'])) {
+					Livechat.notifyAgentStatusChanged(id, diff.status);
 				}
 			}
 

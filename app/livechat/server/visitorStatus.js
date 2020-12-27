@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { UserPresenceEvents } from 'meteor/konecty:user-presence';
 
 import { Livechat } from './lib/Livechat';
+import { UserPresenceEvents } from '../../presence/server/monitor';
 
 Meteor.startup(() => {
 	UserPresenceEvents.on('setStatus', (session, status, metadata) => {

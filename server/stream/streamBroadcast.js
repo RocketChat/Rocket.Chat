@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { UserPresence } from 'meteor/konecty:user-presence';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
 import _ from 'underscore';
@@ -13,6 +12,7 @@ import { isDocker, getURL } from '../../app/utils';
 import { Users } from '../../app/models/server';
 import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
 import { StreamerCentral } from '../modules/streamer/streamer.module';
+import { UserPresence } from '../../app/presence/server/server';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
