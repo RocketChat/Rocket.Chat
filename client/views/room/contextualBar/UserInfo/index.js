@@ -9,7 +9,7 @@ import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useRolesDescription } from '../../../../contexts/AuthorizationContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
-import { UTCClock } from '../../../../components/UTCClock';
+import UTCClock from '../../../../components/UTCClock';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MarkdownText from '../../../../components/MarkdownText';
 import UserActions from './actions/UserActions';

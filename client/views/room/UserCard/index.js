@@ -7,12 +7,12 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import UserCard from '../../../components/UserCard';
 import Backdrop from '../../../components/Backdrop';
 import ReactiveUserStatus from '../../../components/ReactiveUserStatus';
-import { LocalTime } from '../../../components/UTCClock';
 import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
 import { useRolesDescription } from '../../../contexts/AuthorizationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import UserRoles from '../../../components/UserRoles';
+import LocalTime from '../../../components/LocalTime';
 
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
