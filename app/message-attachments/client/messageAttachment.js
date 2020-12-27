@@ -94,6 +94,9 @@ Template.messageAttachment.helpers({
 
 		return true;
 	},
+	uploading() {
+		return Template.parentData(1).msg.uploads;
+	},
 	getImageHeight(height = 200) {
 		return height;
 	},

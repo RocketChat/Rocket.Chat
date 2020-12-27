@@ -42,16 +42,6 @@ Meteor.startup(function() {
 					fromOpenedRoom: messageIsInOpenedRoom,
 					hasFocus,
 				});
-
-				if (Layout.isEmbedded()) {
-					if (!hasFocus && messageIsInOpenedRoom) {
-						// Show a notification.
-						KonchatNotification.showDesktop(notification);
-					}
-				} else if (!hasFocus || !messageIsInOpenedRoom) {
-					// Show a notification.
-					KonchatNotification.showDesktop(notification);
-				}
 			});
 
 			Notifications.onUser('audioNotification', function(notification) {

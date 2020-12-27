@@ -33,16 +33,18 @@ const getInitialValues = ({
 	description,
 	enabled,
 	runOnce,
+	registeredOnly,
 	conditions: [{
 		name: condName,
 		value: condValue,
 	}],
 	actions: [{
-		action: actName,
+		name: actName,
 		params: {
 			sender: actSender,
 			msg: actMsg,
 			name: actSenderName,
+			department: actDept,
 		},
 	}],
 }) => ({
@@ -50,16 +52,18 @@ const getInitialValues = ({
 	description: description ?? '',
 	enabled: !!enabled,
 	runOnce: !!runOnce,
+	registeredOnly: !!registeredOnly,
 	conditions: {
 		name: condName ?? 'page-url',
 		value: condValue ?? '',
 	},
 	actions: {
-		name: actName ?? '',
+		name: actName ?? 'send-message',
 		params: {
 			sender: actSender ?? 'queue',
 			msg: actMsg ?? '',
 			name: actSenderName ?? '',
+			department: actDept ?? '',
 		},
 	},
 });
@@ -76,16 +80,17 @@ const EditTriggerPage = ({ data, onSave }) => {
 
 	const handleSave = useMutableCallback(async () => {
 		try {
-			const { actions: { params: { sender, msg, name } }, ...restValues } = values;
+			const { actions: { name: actionName, params: { sender, msg, name, department } }, ...restValues } = values;
 			await save({
 				_id: data._id,
 				...restValues,
 				conditions: [values.conditions],
 				actions: [{
-					name: 'send-message',
+					name: actionName,
 					params: {
 						sender,
 						msg,
+						department,
 						...sender === 'custom' && { name },
 					},
 				}],

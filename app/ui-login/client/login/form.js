@@ -126,6 +126,7 @@ Template.loginForm.events({
 						} if (error && error.error === 'error-user-is-not-activated') {
 							return instance.state.set('wait-activation');
 						}
+						callbacks.run('onUserLogin');
 						Session.set('forceLogin', false);
 					});
 				});
@@ -157,6 +158,7 @@ Template.loginForm.events({
 						return toastr.error(t('User_not_found_or_incorrect_password'));
 					}
 				}
+				callbacks.run('onUserLogin');
 				Session.set('forceLogin', false);
 			});
 		}
