@@ -4,19 +4,21 @@ import React, { useCallback } from 'react';
 import { useTranslation } from '../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
-const Wrapper = (text) => <Box
-	fontFamily='mono'
-	alignSelf='center'
-	fontScale='p1'
-	style={{ wordBreak: 'break-all' }}
-	mie='x4'
-	flexGrow={1}
-	maxHeight='x108'
->
-	{text}
-</Box>;
+const defaultWrapper = (text) => (
+	<Box
+		fontFamily='mono'
+		alignSelf='center'
+		fontScale='p1'
+		style={{ wordBreak: 'break-all' }}
+		mie='x4'
+		flexGrow={1}
+		maxHeight='x108'
+	>
+		{text}
+	</Box>
+);
 
-const TextCopy = ({ text, wrapper = Wrapper, ...props }) => {
+const TextCopy = ({ text, wrapper = defaultWrapper, ...props }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
