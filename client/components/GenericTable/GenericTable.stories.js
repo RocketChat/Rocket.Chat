@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextInput, Box, Icon } from '@rocket.chat/fuselage';
 
-import GenericTable from './GenericTable';
+import GenericTable from '.';
 
 export default {
 	title: 'components/GenericTable',
