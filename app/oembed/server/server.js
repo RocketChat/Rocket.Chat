@@ -60,7 +60,7 @@ const toUtf8 = function(contentType, body) {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = function(urlObj, redirectCount = 5, callback) {
+const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callback) {
 	if (_.isString(urlObj)) {
 		urlObj = URL.parse(urlObj);
 	}
@@ -142,10 +142,9 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	return stream.on('error', function(err) {
 		error = err;
 	});
-};
+});
 
 OEmbed.getUrlMeta = function(url, withFragment) {
-	const getUrlContentSync = Meteor.wrapAsync(getUrlContent);
 	const urlObj = URL.parse(url);
 	if (withFragment != null) {
 		const queryStringObj = querystring.parse(urlObj.query);
@@ -158,7 +157,7 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		}
 		urlObj.path = path;
 	}
-	const content = getUrlContentSync(urlObj, 5);
+	const content = getUrlContent(urlObj, 5);
 	if (!content) {
 		return;
 	}
@@ -190,12 +189,11 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		if (metas.fragment === '!' && (withFragment == null)) {
 			return OEmbed.getUrlMeta(url, true);
 		}
+		delete metas.oembedHtml;
 	}
 	let headers = undefined;
-	let data = undefined;
 
-
-	if (content && content.headers) {
+	if (content?.headers) {
 		headers = {};
 		const headerObj = content.headers;
 		Object.keys(headerObj).forEach((header) => {
@@ -203,15 +201,15 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		});
 	}
 	if (content && content.statusCode !== 200) {
-		return data;
+		return;
 	}
-	data = callbacks.run('oembed:afterParseContent', {
+	return callbacks.run('oembed:afterParseContent', {
+		url,
 		meta: metas,
 		headers,
 		parsedUrl: content.parsedUrl,
 		content,
 	});
-	return data;
 };
 
 OEmbed.getUrlMetaWithCache = function(url, withFragment) {

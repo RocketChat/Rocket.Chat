@@ -96,31 +96,52 @@ callbacks.add('oembed:beforeGetUrlContent', function(data) {
 	return data;
 }, callbacks.priority.MEDIUM, 'oembed-providers-before');
 
+const cleanupOembed = (data) => {
+	if (!data?.meta) {
+		return data;
+	}
+
+	// remove oembedHtml key from original meta
+	const { oembedHtml, ...meta } = data.meta;
+
+	return {
+		...data,
+		meta,
+	};
+};
+
 callbacks.add('oembed:afterParseContent', function(data) {
-	if (data.parsedUrl && data.parsedUrl.query) {
-		let queryString = data.parsedUrl.query;
-		if (_.isString(data.parsedUrl.query)) {
-			queryString = QueryString.parse(data.parsedUrl.query);
-		}
-		if (queryString.url != null) {
-			const { url } = queryString;
-			const provider = providers.getProviderForUrl(url);
-			if (provider != null) {
-				if (data.content && data.content.body) {
-					try {
-						const metas = JSON.parse(data.content.body);
-						_.each(metas, function(value, key) {
-							if (_.isString(value)) {
-								data.meta[camelCase(`oembed_${ key }`)] = value;
-							}
-						});
-						data.meta.oembedUrl = url;
-					} catch (error) {
-						console.log(error);
-					}
-				}
+	if (!data || !data.url || !data.content?.body || !data.parsedUrl?.query) {
+		return cleanupOembed(data);
+	}
+
+	let queryString = data.parsedUrl.query;
+	if (_.isString(data.parsedUrl.query)) {
+		queryString = QueryString.parse(data.parsedUrl.query);
+	}
+
+	if (!queryString.url) {
+		return cleanupOembed(data);
+	}
+
+	const { url: originalUrl } = data;
+	const provider = providers.getProviderForUrl(originalUrl);
+	if (!provider) {
+		return cleanupOembed(data);
+	}
+
+	const { url } = queryString;
+	data.meta.oembedUrl = url;
+
+	try {
+		const metas = JSON.parse(data.content.body);
+		_.each(metas, function(value, key) {
+			if (_.isString(value)) {
+				data.meta[camelCase(`oembed_${ key }`)] = value;
 			}
-		}
+		});
+	} catch (error) {
+		console.log(error);
 	}
 	return data;
 }, callbacks.priority.MEDIUM, 'oembed-providers-after');
