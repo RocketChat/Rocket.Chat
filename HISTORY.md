@@ -1,6 +1,45 @@
 
 # 3.10.0 (Under Release Candidate Process)
 
+## 3.10.0-rc.2
+`2020-12-28  ·  3 🐛  ·  5 🔍  ·  8 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Omnichannel Departments Canned Responses ([#19830](https://github.com/RocketChat/Rocket.Chat/pull/19830))
+
+- Room scrolling to top after returns to a opened room ([#19945](https://github.com/RocketChat/Rocket.Chat/pull/19945))
+
+- Status on searchlist ([#19935](https://github.com/RocketChat/Rocket.Chat/pull/19935))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Add missing translations on the Omnichannel Contact Center(Directory) ([#19968](https://github.com/RocketChat/Rocket.Chat/pull/19968))
+
+- Regression: Check permissions properly when fetching rooms in Omnichannel Directory ([#19951](https://github.com/RocketChat/Rocket.Chat/pull/19951))
+
+- Regression: Fix oembed ([#19978](https://github.com/RocketChat/Rocket.Chat/pull/19978))
+
+- Regression: Fix sorting indicators on Admin Users page ([#19950](https://github.com/RocketChat/Rocket.Chat/pull/19950))
+
+- Regression: Header Styles fixes ([#19946](https://github.com/RocketChat/Rocket.Chat/pull/19946))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@alansikora](https://github.com/alansikora)
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rafaelblink](https://github.com/rafaelblink)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.10.0-rc.1
 `2020-12-23  ·  3 🔍  ·  4 👩‍💻👨‍💻`
 
