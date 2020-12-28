@@ -17,7 +17,7 @@ import { MessageSkeleton } from '../../components/Message';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
-import { clickableItem } from '../../helpers/clickableItem';
+import { clickableItem } from '../../../../lib/clickableItem';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';

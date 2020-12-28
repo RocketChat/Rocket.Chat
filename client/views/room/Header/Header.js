@@ -36,10 +36,10 @@ const RoomHeader = ({ room }) => {
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room}/>;
 	return <Header>
-		<Header.ToolBox>
+		{ (isMobile || room.prid) && <Header.ToolBox>
 			{ isMobile && <Burger/>}
 			{ room.prid && <BackToRoom small={!isMobile} prid={room.prid}/>}
-		</Header.ToolBox>
+		</Header.ToolBox> }
 		{ avatar && <Header.Avatar>{avatar}</Header.Avatar> }
 		<Header.Content>
 			<Header.Content.Row>
