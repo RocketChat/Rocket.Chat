@@ -6,7 +6,7 @@ import { useDir } from '../hooks/useDir';
 
 
 const styleDefault = {
-	maxHeight: '100%', flexGrow: 1, overflowY: 'auto', willChange: 'transform',
+	height: '100%', flexGrow: 1, overflowY: 'auto', willChange: 'transform',
 };
 
 type CustomScrollbarsProps = {
