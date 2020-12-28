@@ -12,7 +12,7 @@ import { useUserId, useUserSubscription } from '../../../../contexts/UserContext
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
-import { clickableItem } from '../../helpers/clickableItem';
+import { clickableItem } from '../../../../lib/clickableItem';
 import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
