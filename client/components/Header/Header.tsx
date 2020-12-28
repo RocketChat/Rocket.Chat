@@ -9,7 +9,7 @@ const Row: FC = (props: any) => <Box alignItems='center' flexShrink={1} flexGrow
 
 const HeaderIcon: FC<{ icon: JSX.Element | { name: string; color?: string } | null}> = ({ icon }) => icon && <Box display='flex' flexShrink={0} alignItems='center' size={18} overflow='hidden' justifyContent='center'>{React.isValidElement(icon) ? icon : <Icon color='info' size='x18' { ...{ name: (icon as any).name }} />}</Box>;
 
-const ToolBox: FC = (props: any) => <ButtonGroup small {...props}/>;
+const ToolBox: FC = (props: any) => <ButtonGroup mi='x4' medium {...props}/>;
 
 const ToolBoxAction: FC = ({ id, icon, title, action, className, tabId, index, ...props }: any) => <ActionButton
 	className={className}
@@ -38,7 +38,7 @@ const Avatar: FC = (props: any) => <Button width='x36' {...props}/>;
 const HeaderDivider: FC = () => <Divider { ...{ mbs: 'neg-x2', mbe: 0 } as any} />;
 
 const Header: FC & { ToolBoxAction: FC; Badge: FC<BadgeProps> } = (props: any) => <Box rcx-room-header is='header' height='x64' display='flex' justifyContent='center' flexDirection='column' overflow='hidden' flexShrink={0}>
-	<Box height='x64' pi='x24' display='flex' flexGrow={1} justifyContent='center' alignItems='center' overflow='hidden' flexDirection='row' {...props}/>
+	<Box height='x64' mi='neg-x4' pi='x24' display='flex' flexGrow={1} justifyContent='center' alignItems='center' overflow='hidden' flexDirection='row' {...props}/>
 	<HeaderDivider/>
 </Box>;
 
