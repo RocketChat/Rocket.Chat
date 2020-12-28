@@ -1417,6 +1417,7 @@
   "FileUpload_S3_URLExpiryTimeSpan": "URLs Expiration Timespan",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Tempo após o qual os URLs gerados pela Amazon S3 não serão mais válidos (em segundos). Se for definido para menos de 5 segundos, este campo será ignorado.",
   "FileUpload_Storage_Type": "Tipo de Armazenamento",
+  "FileUpload_Storj_AccessKey": "Amazon S3 AWSAccessKeyId",
   "FileUpload_Webdav_Password": "Senha do WebDAV",
   "FileUpload_Webdav_Proxy_Avatars": "Avatares Proxy",
   "FileUpload_Webdav_Proxy_Avatars_Description": "Transmissões de arquivos de avatar proxy por meio do seu servidor, em vez de acesso direto ao URL do recurso",
