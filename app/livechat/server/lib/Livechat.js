@@ -35,7 +35,7 @@ import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
-import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
+import { normalizeTransferredByData, parseAgentCustomFields, parseAgentServices, updateDepartmentAgents } from './Helper';
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
@@ -701,6 +701,7 @@ export const Livechat = {
 
 		if (agent) {
 			const customFields = parseAgentCustomFields(agent.customFields);
+			const services = parseAgentServices(agent.services);
 
 			postData.agent = {
 				_id: agent._id,
@@ -708,6 +709,7 @@ export const Livechat = {
 				name: agent.name,
 				email: null,
 				...customFields && { customFields },
+				...services && { services },
 			};
 
 			if (agent.emails && agent.emails.length > 0) {

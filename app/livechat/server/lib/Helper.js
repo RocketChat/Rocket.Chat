@@ -421,3 +421,17 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 
 	return true;
 };
+
+export const parseAgentServices = (services) => {
+	if (!services) {
+		return;
+	}
+	const externalKeys = ['id'];
+	const externalService = (service) => Object.fromEntries(
+		Object.entries(service).filter(([key]) => externalKeys.includes(key)));
+
+	return Object.fromEntries(
+		Object.entries(services)
+			.map(([serviceId, service]) => [serviceId, externalService(service)])
+			.filter(([, service]) => Object.keys(service).length > 0));
+};
