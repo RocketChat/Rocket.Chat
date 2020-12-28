@@ -34,6 +34,8 @@ class LicenseClass {
 
 	private licenses: IValidLicense[] = [];
 
+	private encryptedLicenses = new Set<string>();
+
 	private tags = new Set<ILicenseTag>();
 
 	private modules = new Set<string>();
@@ -113,6 +115,18 @@ class LicenseClass {
 		});
 
 		this.validate();
+	}
+
+	lockLicense(encryptedLicense: string): void {
+		this.encryptedLicenses.add(encryptedLicense);
+	}
+
+	isLicenseDuplicate(encryptedLicense: string): boolean {
+		if (this.encryptedLicenses.has(encryptedLicense)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	hasModule(module: string): boolean {
@@ -211,7 +225,7 @@ class LicenseClass {
 const License = new LicenseClass();
 
 export function addLicense(encryptedLicense: string): boolean {
-	if (!encryptedLicense || String(encryptedLicense).trim() === '') {
+	if (!encryptedLicense || String(encryptedLicense).trim() === '' || License.isLicenseDuplicate(encryptedLicense)) {
 		return false;
 	}
 
@@ -228,6 +242,7 @@ export function addLicense(encryptedLicense: string): boolean {
 		}
 
 		License.addLicense(JSON.parse(decrypted));
+		License.lockLicense(encryptedLicense);
 
 		return true;
 	} catch (e) {
