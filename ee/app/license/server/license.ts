@@ -296,6 +296,15 @@ export function onValidateLicenses(cb: (...args: any[]) => void): void {
 	EnterpriseLicenses.on('validate', cb);
 }
 
+export function flatModules(modulesAndBundles: string[]): string[] {
+	const bundles = modulesAndBundles.filter(isBundle);
+	const modules = modulesAndBundles.filter((x) => !isBundle(x));
+
+	const modulesFromBundles = bundles.map(getBundleModules).flat();
+
+	return modules.concat(modulesFromBundles);
+}
+
 export interface IOverrideClassProperties {
 	[key: string]: (...args: any[]) => any;
 }
