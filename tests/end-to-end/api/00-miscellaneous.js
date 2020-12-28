@@ -448,7 +448,7 @@ describe('miscellaneous', function() {
 		});
 	});
 
-	describe.only('[/instances.get]', () => {
+	describe('[/instances.get]', () => {
 		let unauthorizedUserCredentials;
 		before(async () => {
 			const createdUser = await createUser();
