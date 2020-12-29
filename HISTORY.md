@@ -1,6 +1,9 @@
 
 # 3.10.0 (Under Release Candidate Process)
 
+## 3.10.0-rc.4
+`2020-12-29  ·  `
+
 ## 3.10.0-rc.3
 `2020-12-28  ·  3 🔍  ·  4 👩‍💻👨‍💻`
 
@@ -95,7 +98,7 @@
 - [@renatobecker](https://github.com/renatobecker)
 
 ## 3.10.0-rc.0
-`2020-12-22  ·  7 🎉  ·  10 🚀  ·  26 🐛  ·  28 🔍  ·  21 👩‍💻👨‍💻`
+`2020-12-22  ·  6 🎉  ·  10 🚀  ·  26 🐛  ·  28 🔍  ·  20 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
@@ -109,10 +112,6 @@
   Returns an array of instances on the cluster.
 
 - REST endpoints to add and retrieve Enterprise licenses ([#19925](https://github.com/RocketChat/Rocket.Chat/pull/19925))
-
-- Storj integration ([#19932](https://github.com/RocketChat/Rocket.Chat/pull/19932))
-
-  Add storage type for Storj, an S3-compatible platform and suite of decentralized applications that allows you to store data in a secure and decentralized manner.
 
 - Update Checker Description ([#19892](https://github.com/RocketChat/Rocket.Chat/pull/19892))
 
@@ -290,7 +289,6 @@
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
