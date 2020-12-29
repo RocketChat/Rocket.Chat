@@ -16,4 +16,8 @@ export interface IMessage extends IRocketChatRecord {
 	_hidden?: boolean;
 	imported?: boolean;
 	replies?: IUser['_id'][];
+	location?: {
+		type: 'Point';
+		coordinates: [string, string];
+	};
 }

@@ -735,7 +735,7 @@ describe('[Chat]', function() {
 				imgUrlMsgId = imgUrlResponse.body.message._id;
 			});
 
-			it.skip('should embed an youtube preview if message has a youtube url', (done) => {
+			it('should have an iframe oembed with style max-width', (done) => {
 				setTimeout(() => {
 					request.get(api('chat.getMessage'))
 						.set(credentials)
@@ -745,10 +745,16 @@ describe('[Chat]', function() {
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
-							const msgMetadataUrl = res.body.message.urls[0].meta;
-							const expectedOembedHtml = '<iframe style="max-width: 100%" width="267" height="200" src="https://www.youtube.com/embed/T2v29gK8fP4?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+							expect(res.body)
+								.to.have.property('message')
+								.to.have.property('urls')
+								.to.be.an('array')
+								.that.is.not.empty;
 
-							expect(msgMetadataUrl).to.have.property('oembedHtml', expectedOembedHtml);
+							expect(res.body.message.urls[0])
+								.to.have.property('meta')
+								.to.have.property('oembedHtml')
+								.to.have.string('<iframe style="max-width: 100%"');
 						})
 						.end(done);
 				}, 200);
@@ -764,11 +770,15 @@ describe('[Chat]', function() {
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
-							const msgHeaders = res.body.message.urls[0].headers;
-							console.log('msg urls object: ');
-							const expectedContentType = 'image/jpeg';
+							expect(res.body)
+								.to.have.property('message')
+								.to.have.property('urls')
+								.to.be.an('array')
+								.that.is.not.empty;
 
-							expect(msgHeaders).to.have.property('contentType', expectedContentType);
+							expect(res.body.message.urls[0])
+								.to.have.property('headers')
+								.to.have.property('contentType', 'image/jpeg');
 						})
 						.end(done);
 				}, 200);
