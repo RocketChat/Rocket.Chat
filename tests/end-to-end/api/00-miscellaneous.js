@@ -447,8 +447,37 @@ describe('miscellaneous', function() {
 		});
 	});
 
-	describe('/instances.get', () => {
-		it('should return available instances', (done) => {
+	describe('[/instances.get]', () => {
+		let unauthorizedUserCredentials;
+		before(async () => {
+			const createdUser = await createUser();
+			unauthorizedUserCredentials = await doLogin(createdUser.username, password);
+		})
+
+		it('should fail if user is logged in but is unauthorized', (done) => {
+			request.get(api('instances.get'))
+				.set(unauthorizedUserCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				})
+				.end(done);
+		});
+
+		it('should fail if not logged in', (done) => {
+			request.get(api('instances.get'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should return instances if user is logged in and is authorized', (done) => {
 			request.get(api('instances.get'))
 				.set(credentials)
 				.expect(200)
