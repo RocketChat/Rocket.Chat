@@ -52875,15 +52875,6 @@
           ]
         },
         {
-          "pr": "19932",
-          "title": "[NEW] Storj integration",
-          "userLogin": "sampaiodiego",
-          "description": "Add storage type for Storj, an S3-compatible platform and suite of decentralized applications that allows you to store data in a secure and decentralized manner.",
-          "contributors": [
-            "pierre-lehnen-rc"
-          ]
-        },
-        {
           "pr": "19924",
           "title": "[NEW] User preference for audio notifications",
           "userLogin": "gabriellsh",
@@ -53672,6 +53663,17 @@
           ]
         }
       ]
+    },
+    "3.10.0-rc.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
     }
   }
 }
