@@ -1,14 +1,15 @@
 import { check } from 'meteor/check';
 
-import { IValidLicense, ILicense, getLicenses, validateFormat, flatModules } from '../../app/license/server/license';
+import { ILicense, getLicenses, validateFormat, flatModules } from '../../app/license/server/license';
 import { Settings } from '../../../app/models/server';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server';
 
 function licenseTransform(license: ILicense): ILicense {
-	const newLicense = license;
-	newLicense.modules = flatModules(license.modules);
-	return newLicense;
+	return {
+		...license,
+		modules: flatModules(license.modules),
+	};
 }
 
 API.v1.addRoute('licenses.get', { authRequired: true }, {
@@ -18,12 +19,8 @@ API.v1.addRoute('licenses.get', { authRequired: true }, {
 		}
 
 		const licenses = getLicenses()
-			?.filter((x: IValidLicense) => x.valid === true)
-			.map((x: IValidLicense) => licenseTransform(x.license));
-
-		if (!licenses) {
-			return API.v1.success();
-		}
+			.filter(({ valid }) => valid)
+			.map(({ license }) => licenseTransform(license));
 
 		return API.v1.success({ licenses });
 	},
