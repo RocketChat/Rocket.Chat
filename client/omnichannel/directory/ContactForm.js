@@ -181,7 +181,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			<Field>
 				<Field.Label>{t('Name')}*</Field.Label>
 				<Field.Row>
-					<TextInput error={nameError} flexGrow={1} value={name} onChange={handleName} placeholder={t('Insert_Contact_Name')} />
+					<TextInput error={nameError} flexGrow={1} value={name} onChange={handleName} />
 				</Field.Row>
 				<Field.Error>
 					{nameError}
@@ -190,7 +190,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			<Field>
 				<Field.Label>{t('Email')}</Field.Label>
 				<Field.Row>
-					<TextInput error={emailError} flexGrow={1} value={email} onChange={handleEmail} placeholder='example@domain.com' addon={<Icon name='mail' size='x20'/>}/>
+					<TextInput error={emailError} flexGrow={1} value={email} onChange={handleEmail} addon={<Icon name='mail' size='x20'/>}/>
 				</Field.Row>
 				<Field.Error>
 					{t(emailError)}
