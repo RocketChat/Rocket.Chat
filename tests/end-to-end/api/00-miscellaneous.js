@@ -2,6 +2,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
+import {createUser, login as doLogin} from "../../../tests/data/users.helper";
 
 describe('miscellaneous', function() {
 	this.retries(0);
