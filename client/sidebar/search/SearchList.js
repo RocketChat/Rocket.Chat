@@ -7,7 +7,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { FixedSizeList as List } from 'react-window';
 import tinykeys from 'tinykeys';
 
-import { ReactiveUserStatus } from '../../components/UserStatus';
+import { ReactiveUserStatus } from '../../components/basic/UserStatus';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useSetting } from '../../contexts/SettingsContext';

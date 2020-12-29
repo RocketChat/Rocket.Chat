@@ -11,12 +11,15 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../hooks/useForm';
-import { useRoute } from '../../contexts/RouterContext';
+import { useCurrentRoute, useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import Page from '../../components/basic/Page';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 import { formsSubscription } from '../additionalForms';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { isEmail } from '../../../app/utils';
+import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
+import { useSetting } from '../../contexts/SettingsContext';
+import CannedResponsesRouter from '../../../ee/client/omnichannel/cannedResponses';
 
 export default function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
@@ -41,6 +44,7 @@ export function EditDepartment({ data, id, title, reload }) {
 	const initialAgents = useRef((data && data.agents) || []);
 
 	const router = useRoute('omnichannel-departments');
+	const [, params] = useCurrentRoute();
 
 	const {
 		useEeNumberInput = () => {},
@@ -221,16 +225,33 @@ export function EditDepartment({ data, id, title, reload }) {
 	const handleReturn = useMutableCallback(() => {
 		router.push({});
 	});
+
 	const invalidForm = !name || !email || !isEmail(email) || !hasUnsavedChanges || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
+
+	const tab = useRouteParameter('tab');
+	const hasCannedResponsesLicense = useHasLicense('canned-responses');
+	const cannedResponsesEnabled = useSetting('Canned_Responses_Enable');
+	const showCanned = hasCannedResponsesLicense && cannedResponsesEnabled && tab === 'canned-responses';
+
+	const handleOpenCannedResponses = useMutableCallback(() => {
+		router.push({ ...params, tab: 'canned-responses' });
+	});
+
+	const handleCloseCannedResponses = useMutableCallback(() => {
+		router.push({ ...params, tab: '' });
+	});
+
+	const hasNewAgent = useMemo(() => data.agents.length === agentList.length, [data.agents, agentList]);
 
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={title}>
 				<ButtonGroup>
+					{id && hasCannedResponsesLicense && cannedResponsesEnabled && <Button onClick={handleOpenCannedResponses} title={t('Canned Responses')}><Icon name='baloon-exclamation' size='x16'/></Button>}
 					<Button onClick={handleReturn}><Icon name='back'/> {t('Back')}</Button>
-					<Button type='submit' form={formId} primary disabled={invalidForm}>{t('Save')}</Button>
+					<Button type='submit' form={formId} primary disabled={invalidForm && hasNewAgent}>{t('Save')}</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
@@ -330,5 +351,6 @@ export function EditDepartment({ data, id, title, reload }) {
 				</FieldGroup>
 			</Page.ScrollableContentWithShadow>
 		</Page>
+		{showCanned && <CannedResponsesRouter departmentId={id} onClose={handleCloseCannedResponses}/>}
 	</Page>;
 }
