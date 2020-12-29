@@ -1,7 +1,7 @@
-import React, { memo, useContext, useEffect, ReactNode, useRef } from 'react';
+import React, { memo, useContext, ReactNode, useRef } from 'react';
 import { Menu, Option, BoxProps, MenuProps } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import tinykeys from 'tinykeys';
+// import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
 import Header from '../../../../components/Header';
@@ -44,20 +44,20 @@ const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Eleme
 		openTabBar(actions[index].id);
 	});
 
-	const open = useMutableCallback((index) => {
-		openTabBar(actions[index].id);
-	});
+	// const open = useMutableCallback((index) => {
+	// 	openTabBar(actions[index].id);
+	// });
 
-	useEffect(() => {
-		if (!visibleActions.length) {
-			return;
-		}
-		const unsubscribe = tinykeys(window, Object.fromEntries(new Array(visibleActions.length).fill(true).map((_, index) => [`$mod+${ index + 1 }`, (): void => { open(index); }])));
+	// useEffect(() => {
+	// 	if (!visibleActions.length) {
+	// 		return;
+	// 	}
+	// 	const unsubscribe = tinykeys(window, Object.fromEntries(new Array(visibleActions.length).fill(true).map((_, index) => [`$mod+${ index + 1 }`, (): void => { open(index); }])));
 
-		return (): void => {
-			unsubscribe();
-		};
-	}, [visibleActions.length, open]);
+	// 	return (): void => {
+	// 		unsubscribe();
+	// 	};
+	// }, [visibleActions.length, open]);
 
 	return <>
 		{ visibleActions.map(({ renderAction, id, icon, title, action = actionDefault }, index) => {
