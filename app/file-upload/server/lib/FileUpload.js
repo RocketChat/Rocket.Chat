@@ -50,7 +50,6 @@ export const FileUpload = {
 		const stores = UploadFS.getStores();
 		delete stores[name];
 
-		// the class that is instantiated here is the one from ../../ufs/*/server
 		return new UploadFS.store[store](Object.assign({
 			name,
 		}, options, FileUpload[`default${ type }`]()));
