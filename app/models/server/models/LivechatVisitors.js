@@ -4,6 +4,7 @@ import s from 'underscore.string';
 
 import { Base } from './_Base';
 import Settings from './Settings';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 export class LivechatVisitors extends Base {
 	constructor() {
@@ -207,7 +208,7 @@ export class LivechatVisitors extends Base {
 
 	findOneGuestByEmailAddress(emailAddress) {
 		const query = {
-			'visitorEmails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i'),
+			'visitorEmails.address': new RegExp(`^${ escapeRegExp(emailAddress) }$`, 'i'),
 		};
 
 		return this.findOne(query);

@@ -25,8 +25,9 @@ RUN set -x \
     && mkdir -p /app/uploads \
     && chown rocketchat:rocketchat /app/uploads
 
-ADD . /app
-ADD entrypoint.sh /app/bundle/
+# --chown requires Docker 17.12 and works only on Linux
+ADD --chown=rocketchat:rocketchat . /app
+ADD --chown=rocketchat:rocketchat entrypoint.sh /app/bundle/
 
 RUN aptMark="$(apt-mark showmanual)" \
     && apt-get install -y --no-install-recommends g++ make python ca-certificates \
@@ -42,8 +43,7 @@ RUN aptMark="$(apt-mark showmanual)" \
        | sort -u \
        | xargs -r apt-mark manual \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-    && npm cache clear --force \
-    && chown -R rocketchat:rocketchat /app
+    && npm cache clear --force
 
 VOLUME /app/uploads
 

@@ -3,7 +3,7 @@ import React from 'react';
 import Header from './header';
 import RoomList from './RoomList';
 // import Extended from './Item/Extended';
-// import RoomAvatar from '../basic/avatar/RoomAvatar';
+// import RoomAvatar from '../avatar/RoomAvatar';
 import { UserContext } from '../contexts/UserContext';
 import { SettingsContext } from '../contexts/SettingsContext';
 

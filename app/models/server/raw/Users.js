@@ -1,5 +1,4 @@
-import s from 'underscore.string';
-
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
@@ -46,7 +45,7 @@ export class UsersRaw extends BaseRaw {
 
 	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
 		if (typeof username === 'string') {
-			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
 		}
 
 		const query = {
@@ -88,7 +87,7 @@ export class UsersRaw extends BaseRaw {
 			return this.find(query, options);
 		}
 
-		const termRegex = new RegExp((startsWith ? '^' : '') + s.escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
 		// const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
@@ -113,7 +112,7 @@ export class UsersRaw extends BaseRaw {
 
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
-			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
 		}
 
 		const query = { username };

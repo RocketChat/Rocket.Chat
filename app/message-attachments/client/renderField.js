@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 
+import { Markdown } from '../../markdown/client';
 import { escapeHTML } from '../../../lib/escapeHTML';
 
 const renderers = {};
@@ -54,5 +55,8 @@ Template.renderField.helpers({
 			html = escapeHTML(field.value);
 		}
 		return `<div class="${ escapeHTML(field.type) }">${ html }</div>`;
+	},
+	markdown(text) {
+		return Markdown.parse(text);
 	},
 });
