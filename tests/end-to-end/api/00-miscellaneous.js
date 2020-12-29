@@ -446,4 +446,31 @@ describe('miscellaneous', function() {
 				.end(done);
 		});
 	});
+
+	describe('/instances.get', () => {
+		it('should return available instances', (done) => {
+			request.get(api('instances.get'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
+
+					const { instances: [instance] } = res.body;
+
+					expect(instance).to.have.property('_id');
+					expect(instance).to.have.property('extraInformation');
+					expect(instance).to.have.property('name');
+					expect(instance).to.have.property('pid');
+
+					const { extraInformation } = instance;
+
+					expect(extraInformation).to.have.property('host');
+					expect(extraInformation).to.have.property('port');
+					expect(extraInformation).to.have.property('os').and.to.have.property('cpus').to.be.a('number');
+					expect(extraInformation).to.have.property('nodeVersion');
+				})
+				.end(done);
+		});
+	});
 });
