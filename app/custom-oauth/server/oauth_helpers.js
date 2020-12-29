@@ -1,5 +1,5 @@
 import { addUserRoles, removeUserFromRoles } from '../../authorization';
-import {Roles, Rooms, Users} from '../../models';
+import { Roles, Rooms, Users } from '../../models';
 import { addUserToRoom, createRoom } from '../../lib/server/functions';
 import { Logger } from '../../logger';
 
