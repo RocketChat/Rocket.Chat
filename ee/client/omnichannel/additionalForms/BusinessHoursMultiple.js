@@ -59,7 +59,7 @@ export const BusinessHoursMultiple = ({ values = {}, handlers = {}, className, d
 			</Box>
 		</Field>
 		<Field className={className}>
-			<Field.Label>{t('Name')}</Field.Label>
+			<Field.Label>{t('Name')}*</Field.Label>
 			<Field.Row>
 				<TextInput value={name} onChange={handleName} placeholder={t('Name')}/>
 			</Field.Row>

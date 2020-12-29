@@ -23,7 +23,7 @@ const getInitalData = ({ workHours }) => ({
 
 const cleanFunc = () => {};
 
-const BusinessHoursFormContainer = ({ data, saveRef, onChange }) => {
+const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
 	const forms = useSubscription(formsSubscription);
 
 	const {
