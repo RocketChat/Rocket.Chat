@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
-// import uplink from 'uplink-js';
+import uplink from 'uplink-js';
 
 /**
  * Storj store
@@ -21,6 +21,9 @@ export class StorjStore extends UploadFS.Store {
 		};
 
 		this.bucketName = options.bucketName;
+		uplink.parseAccess(options.accessKey).then((access) => access.openProject()).then((project) => {
+			this.project = project;
+		});
 
 		this.getPath = function(file) {
 			if (file.Storj) {
@@ -63,13 +66,24 @@ export class StorjStore extends UploadFS.Store {
 		/**
 		 * Returns the file read stream
 		 * @param fileId
-		 * @param file
-		 * @param options
 		 * @return {*}
 		 */
-		this.getReadStream = function(fileId/* , file, options = {}*/) {
-			const download = Promise.await(this.project.downloadObject(this.bucketName, fileId));
-			return download.stream();
+		this.getReadStreamAsync = async function(fileId) {
+			try {
+				const download = await this.project.downloadObject(this.bucketName, fileId);
+				return download.stream();
+			} catch (e) {
+				return undefined;
+			}
+		};
+
+		/**
+		 * Returns the file read stream
+		 * @param fileId
+		 * @return {*}
+		 */
+		this.getReadStream = function(fileId) {
+			return Promise.await(this.getReadStreamAsync(fileId));
 		};
 
 		/**

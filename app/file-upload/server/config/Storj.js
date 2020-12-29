@@ -10,18 +10,16 @@ import '../../ufs/Storj/server.js';
 
 const get = function(file, req, res) {
 	const forceDownload = typeof req.query.download !== 'undefined';
+	res.setHeader('Content-Disposition', `${ forceDownload ? 'attachment' : 'inline' }; filename="${ encodeURI(file.name) }"`);
 
-	this.store.getRedirectURL(file, forceDownload, (err, fileUrl) => {
-		if (err) {
-			return console.error(err);
-		}
+	const stream = this.store.getReadStream(file._id);
+	if (!stream) {
+		console.log(`Storj file not found: ${ file.name }, ${ file._id }`);
+		return res.end();
+	}
 
-		if (!fileUrl) {
-			return res.end();
-		}
-
-		return FileUpload.redirectToFile(fileUrl, req, res);
-	});
+	stream.on('error', (err) => console.log(err));
+	stream.pipe(res);
 };
 
 const copy = function(file, out) {
