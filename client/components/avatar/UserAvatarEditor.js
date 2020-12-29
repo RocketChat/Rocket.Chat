@@ -30,7 +30,7 @@ function UserAvatarSuggestions({ suggestions, setAvatarObj, setNewAvatarSource, 
 export function UserAvatarEditor({ username, setAvatarObj, suggestions, disabled, etag }) {
 	const t = useTranslation();
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
-	const [newAvatarSource, setNewAvatarSource] = useState();
+	const [newAvatarSource, setNewAvatarSource] = useState(`/avatar/%40${ username }`);
 
 	const setUploadedPreview = useCallback(async (file, avatarObj) => {
 		setAvatarObj(avatarObj);
