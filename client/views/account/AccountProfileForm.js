@@ -130,8 +130,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 
 	return <FieldGroup is='form' autoComplete='off' onSubmit={handleSubmit} {...props}>
 		{useMemo(() => <Field>
-			<UserAvatarEditor etag={user.avatarETag} username={username} setAvatarObj={handleAvatar} disabled={!allowUserAvatarChange} suggestions={avatarSuggestions}/>
-		</Field>, [username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user.avatarETag])}
+			<UserAvatarEditor etag={user.avatarETag} currentUsername={user.username} username={username} setAvatarObj={handleAvatar} disabled={!allowUserAvatarChange} suggestions={avatarSuggestions}/>
+		</Field>, [username, user.username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user.avatarETag])}
 		<Box display='flex' flexDirection='row' justifyContent='space-between'>
 			{useMemo(() => <Field mie='x8' flexShrink={1}>
 				<Field.Label flexGrow={0}>{t('Name')}</Field.Label>
