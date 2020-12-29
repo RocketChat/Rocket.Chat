@@ -56,6 +56,8 @@ function _OAuthServicesUpdate() {
 				data.rolesClaim = settings.get(`${ service.key }-roles_claim`);
 				data.groupsClaim = settings.get(`${ service.key }-groups_claim`);
 				data.channelsMap = settings.get(`${ service.key }-groups_channel_map`);
+				data.customFieldsMap = settings.get(`${ service.key }-custom_fields_map`);
+				data.mapCustomFields = settings.get(`${ service.key }-map_custom_fields`);
 				data.channelsAdmin = settings.get(`${ service.key }-channels_admin`);
 				data.mergeUsers = settings.get(`${ service.key }-merge_users`);
 				data.mapChannels = settings.get(`${ service.key }-map_channels`);
@@ -79,6 +81,8 @@ function _OAuthServicesUpdate() {
 					groupsClaim: data.groupsClaim,
 					mapChannels: data.mapChannels,
 					channelsMap: data.channelsMap,
+					mapCustomFields: data.mapCustomFields,
+					customFieldsMap: data.customFieldsMap,
 					channelsAdmin: data.channelsAdmin,
 					mergeUsers: data.mergeUsers,
 					mergeRoles: data.mergeRoles,
@@ -183,6 +187,8 @@ function customOAuthServicesInit() {
 					rolesClaim: process.env[`${ serviceKey }_roles_claim`],
 					groupsClaim: process.env[`${ serviceKey }_groups_claim`],
 					channelsMap: process.env[`${ serviceKey }_groups_channel_map`],
+					mapCustomFields: process.env[`${ serviceKey }_map_custom_fields`],
+					customFieldsMap: process.env[`${ serviceKey }_custom_fields_map`],
 					channelsAdmin: process.env[`${ serviceKey }_channels_admin`],
 					mergeUsers: process.env[`${ serviceKey }_merge_users`],
 					mapChannels: process.env[`${ serviceKey }_map_channels`],

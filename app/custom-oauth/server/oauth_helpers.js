@@ -1,5 +1,5 @@
 import { addUserRoles, removeUserFromRoles } from '../../authorization';
-import { Roles, Rooms } from '../../models';
+import {Roles, Rooms, Users} from '../../models';
 import { addUserToRoom, createRoom } from '../../lib/server/functions';
 import { Logger } from '../../logger';
 
@@ -70,4 +70,15 @@ export function mapSSOGroupsToChannels(user, identity, groupClaimName, channelsM
 			}
 		}
 	}
+}
+
+export function mapClaimsToCustomFields(user, identity, customFieldsMap) {
+	if (!user || !identity || !customFieldsMap) {
+		return;
+	}
+
+	const customFields = Object.fromEntries(Object.keys(customFieldsMap)
+		.map((claimName) => [customFieldsMap[claimName], identity[claimName]]));
+
+	Users.setCustomFields(user._id, customFields);
 }

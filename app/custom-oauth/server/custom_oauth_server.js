@@ -7,7 +7,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { mapRolesFromSSO, mapSSOGroupsToChannels, updateRolesFromSSO } from './oauth_helpers';
+import {mapClaimsToCustomFields, mapRolesFromSSO, mapSSOGroupsToChannels, updateRolesFromSSO} from './oauth_helpers';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
 import { isURL } from '../../utils/lib/isURL';
@@ -79,6 +79,7 @@ export class CustomOAuth {
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
 		this.mergeRoles = options.mergeRoles || false;
+		this.mapCustomFields = options.mapCustomFields || false;
 		this.mapChannels = options.mapChannels || false;
 		this.rolesClaim = options.rolesClaim || 'roles';
 		this.groupsClaim = options.groupsClaim || 'groups';
@@ -89,6 +90,15 @@ export class CustomOAuth {
 			const channelsMap = (options.channelsMap || '{}').trim();
 			try {
 				this.channelsMap = JSON.parse(channelsMap);
+			} catch (err) {
+				logger.error(`Unexpected error : ${ err.message }`);
+			}
+		}
+
+		if (this.mapCustomFields) {
+			const customFieldsMap = (options.customFieldsMap || '{}').trim();
+			try {
+				this.customFieldsMap = JSON.parse(customFieldsMap);
 			} catch (err) {
 				logger.error(`Unexpected error : ${ err.message }`);
 			}
@@ -345,6 +355,10 @@ export class CustomOAuth {
 
 				if (this.mapChannels) {
 					mapSSOGroupsToChannels(user, serviceData, this.groupsClaim, this.channelsMap, this.channelsAdmin);
+				}
+
+				if (this.mapCustomFields) {
+					mapClaimsToCustomFields(user, serviceData, this.customFieldsMap);
 				}
 
 				// User already created or merged and has identical name as before
