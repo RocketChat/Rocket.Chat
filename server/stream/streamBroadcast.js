@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { UserPresence } from 'meteor/konecty:user-presence';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
-import _ from 'underscore';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
 
