@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, login, request, credentials } from '../../data/api-data.js';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
-import {createUser, login as doLogin} from "../../../tests/data/users.helper";
+import { createUser, login as doLogin } from '../../data/users.helper';
 
 describe('miscellaneous', function() {
 	this.retries(0);
@@ -453,7 +453,7 @@ describe('miscellaneous', function() {
 		before(async () => {
 			const createdUser = await createUser();
 			unauthorizedUserCredentials = await doLogin(createdUser.username, password);
-		})
+		});
 
 		it('should fail if user is logged in but is unauthorized', (done) => {
 			request.get(api('instances.get'))
