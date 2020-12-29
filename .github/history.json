@@ -53631,6 +53631,47 @@
           ]
         }
       ]
+    },
+    "3.10.0-rc.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19981",
+          "title": "Regression: polishing licenses endpoints ",
+          "userLogin": "g-thome",
+          "contributors": [
+            "g-thome",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19980",
+          "title": "Regression: Double Scrollbars on tables",
+          "userLogin": "gabriellsh",
+          "description": "Before:\r\n![image](https://user-images.githubusercontent.com/40830821/103242719-0ec84680-4936-11eb-87a7-68b6eea8de7b.png)\r\n\r\n\r\nAfter:\r\n![image](https://user-images.githubusercontent.com/40830821/103242680-ee988780-4935-11eb-99e2-a95de99f78f1.png)",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19955",
+          "title": "Regression: Add currently running instance to instances.get endpoint",
+          "userLogin": "g-thome",
+          "milestone": "3.10.0",
+          "contributors": [
+            "g-thome",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
