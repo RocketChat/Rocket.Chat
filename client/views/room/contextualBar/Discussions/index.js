@@ -215,7 +215,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
 				<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden'>
+			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden' display='flex'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Discussions_found')}</Box>}
 				{!error && total > 0 && <InfiniteLoader
