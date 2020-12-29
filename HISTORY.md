@@ -1,104 +1,12 @@
 
-# 3.10.0 (Under Release Candidate Process)
+# 3.10.0
+`2020-12-29  ·  6 🎉  ·  10 🚀  ·  29 🐛  ·  39 🔍  ·  20 👩‍💻👨‍💻`
 
-## 3.10.0-rc.4
-`2020-12-29  ·  `
-
-## 3.10.0-rc.3
-`2020-12-28  ·  3 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Add currently running instance to instances.get endpoint ([#19955](https://github.com/RocketChat/Rocket.Chat/pull/19955))
-
-- Regression: Double Scrollbars on tables ([#19980](https://github.com/RocketChat/Rocket.Chat/pull/19980))
-
-  Before:
-  ![image](https://user-images.githubusercontent.com/40830821/103242719-0ec84680-4936-11eb-87a7-68b6eea8de7b.png)
-
-
-  After:
-  ![image](https://user-images.githubusercontent.com/40830821/103242680-ee988780-4935-11eb-99e2-a95de99f78f1.png)
-
-- Regression: polishing licenses endpoints  ([#19981](https://github.com/RocketChat/Rocket.Chat/pull/19981))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@g-thome](https://github.com/g-thome)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.10.0-rc.2
-`2020-12-28  ·  3 🐛  ·  5 🔍  ·  8 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- Omnichannel Departments Canned Responses ([#19830](https://github.com/RocketChat/Rocket.Chat/pull/19830))
-
-- Room scrolling to top after returns to a opened room ([#19945](https://github.com/RocketChat/Rocket.Chat/pull/19945))
-
-- Status on searchlist ([#19935](https://github.com/RocketChat/Rocket.Chat/pull/19935))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Add missing translations on the Omnichannel Contact Center(Directory) ([#19968](https://github.com/RocketChat/Rocket.Chat/pull/19968))
-
-- Regression: Check permissions properly when fetching rooms in Omnichannel Directory ([#19951](https://github.com/RocketChat/Rocket.Chat/pull/19951))
-
-- Regression: Fix oembed ([#19978](https://github.com/RocketChat/Rocket.Chat/pull/19978))
-
-- Regression: Fix sorting indicators on Admin Users page ([#19950](https://github.com/RocketChat/Rocket.Chat/pull/19950))
-
-- Regression: Header Styles fixes ([#19946](https://github.com/RocketChat/Rocket.Chat/pull/19946))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@alansikora](https://github.com/alansikora)
-- [@dougfabris](https://github.com/dougfabris)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@ggazzo](https://github.com/ggazzo)
-- [@rafaelblink](https://github.com/rafaelblink)
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 3.10.0-rc.1
-`2020-12-23  ·  3 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Admin Sidebar Scroll ([#19944](https://github.com/RocketChat/Rocket.Chat/pull/19944))
-
-- Regression: Omnichannel Custom Fields Form no longer working after refactoring ([#19948](https://github.com/RocketChat/Rocket.Chat/pull/19948))
-
-  The Omnichannel `Custom Fields` form is not working anymore after some refactorings on client-side.
-  When the user clicks on `Custom Field` in the Omnichannel menu, a blank page appears.
-
-- Regression: UserCard "See full profile" link broken ([#19941](https://github.com/RocketChat/Rocket.Chat/pull/19941))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@dougfabris](https://github.com/dougfabris)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@ggazzo](https://github.com/ggazzo)
-- [@renatobecker](https://github.com/renatobecker)
-
-## 3.10.0-rc.0
-`2020-12-22  ·  6 🎉  ·  10 🚀  ·  26 🐛  ·  28 🔍  ·  20 👩‍💻👨‍💻`
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.21.0-alpha.4235`
 
 ### 🎉 New features
 
@@ -179,7 +87,11 @@
 
 - Issue with special message rendering ([#19817](https://github.com/RocketChat/Rocket.Chat/pull/19817))
 
+- Omnichannel Departments Canned Responses ([#19830](https://github.com/RocketChat/Rocket.Chat/pull/19830))
+
 - Problem with attachment render ([#19854](https://github.com/RocketChat/Rocket.Chat/pull/19854))
+
+- Room scrolling to top after returns to a opened room ([#19945](https://github.com/RocketChat/Rocket.Chat/pull/19945))
 
 - RoomForeword ([#19875](https://github.com/RocketChat/Rocket.Chat/pull/19875))
 
@@ -192,6 +104,8 @@
 - Spotify oEmbed ([#19825](https://github.com/RocketChat/Rocket.Chat/pull/19825))
 
 - Startup error when using MongoDB with a password containing special characters ([#19749](https://github.com/RocketChat/Rocket.Chat/pull/19749))
+
+- Status on searchlist ([#19935](https://github.com/RocketChat/Rocket.Chat/pull/19935))
 
 - UIKit Modal not scrolling ([#19690](https://github.com/RocketChat/Rocket.Chat/pull/19690))
 
@@ -245,9 +159,26 @@
 
 - Regression:  "My Account" page doesn't load ([#19753](https://github.com/RocketChat/Rocket.Chat/pull/19753))
 
+- Regression: Add currently running instance to instances.get endpoint ([#19955](https://github.com/RocketChat/Rocket.Chat/pull/19955))
+
 - Regression: Add Members showing the wrong template ([#19748](https://github.com/RocketChat/Rocket.Chat/pull/19748))
 
+- Regression: Add missing translations on the Omnichannel Contact Center(Directory) ([#19968](https://github.com/RocketChat/Rocket.Chat/pull/19968))
+
+- Regression: Admin Sidebar Scroll ([#19944](https://github.com/RocketChat/Rocket.Chat/pull/19944))
+
+- Regression: Check permissions properly when fetching rooms in Omnichannel Directory ([#19951](https://github.com/RocketChat/Rocket.Chat/pull/19951))
+
 - Regression: contextualBar folder structure ([#19761](https://github.com/RocketChat/Rocket.Chat/pull/19761))
+
+- Regression: Double Scrollbars on tables ([#19980](https://github.com/RocketChat/Rocket.Chat/pull/19980))
+
+  Before:
+  ![image](https://user-images.githubusercontent.com/40830821/103242719-0ec84680-4936-11eb-87a7-68b6eea8de7b.png)
+
+
+  After:
+  ![image](https://user-images.githubusercontent.com/40830821/103242680-ee988780-4935-11eb-99e2-a95de99f78f1.png)
 
 - Regression: Failed autolinker and markdown rendering ([#19831](https://github.com/RocketChat/Rocket.Chat/pull/19831))
 
@@ -255,13 +186,28 @@
 
 - Regression: Fix member list Actions ([#19876](https://github.com/RocketChat/Rocket.Chat/pull/19876))
 
+- Regression: Fix oembed ([#19978](https://github.com/RocketChat/Rocket.Chat/pull/19978))
+
 - Regression: Fix Room Files for DMs ([#19874](https://github.com/RocketChat/Rocket.Chat/pull/19874))
+
+- Regression: Fix sorting indicators on Admin Users page ([#19950](https://github.com/RocketChat/Rocket.Chat/pull/19950))
+
+- Regression: Header Styles fixes ([#19946](https://github.com/RocketChat/Rocket.Chat/pull/19946))
+
+- Regression: Omnichannel Custom Fields Form no longer working after refactoring ([#19948](https://github.com/RocketChat/Rocket.Chat/pull/19948))
+
+  The Omnichannel `Custom Fields` form is not working anymore after some refactorings on client-side.
+  When the user clicks on `Custom Field` in the Omnichannel menu, a blank page appears.
+
+- Regression: polishing licenses endpoints  ([#19981](https://github.com/RocketChat/Rocket.Chat/pull/19981))
 
 - Regression: roomInfo folder structure ([#19787](https://github.com/RocketChat/Rocket.Chat/pull/19787))
 
 - Regression: RoomMembers Permission ([#19867](https://github.com/RocketChat/Rocket.Chat/pull/19867))
 
 - Regression: User Info Context bar breaking. ([#19807](https://github.com/RocketChat/Rocket.Chat/pull/19807))
+
+- Regression: UserCard "See full profile" link broken ([#19941](https://github.com/RocketChat/Rocket.Chat/pull/19941))
 
 - Regression: UserInfoWithData endpoint variable ([#19816](https://github.com/RocketChat/Rocket.Chat/pull/19816))
 
