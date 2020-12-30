@@ -13,6 +13,7 @@ import Users from '../../../models/server/models/Users';
 import Subscriptions from '../../../models/server/models/Subscriptions';
 import { settings } from '../../../settings';
 import { findMentionedMessages, findStarredMessages, findSnippetedMessageById, findSnippetedMessages, findDiscussionsFromRoom } from '../lib/messages';
+import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 
 API.v1.addRoute('chat.delete', { authRequired: true }, {
 	post() {
@@ -128,6 +129,22 @@ API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 
 API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 	post() {
+		const { roles } = getFullUserDataByIdOrUsername({
+			userId: this.request.headers['x-user-id'],
+			filterId: this.request.headers['x-user-id'],
+		});
+
+		const privilegedParams = ['alias', 'avatar'];
+		const privilegedRole = 'bot';
+
+		const hasPrivilegedParams = Object.keys(this.bodyParams).some((k) => privilegedParams.includes(k));
+		const hasPrivilegedRole = roles.includes(privilegedRole);
+
+
+		if (hasPrivilegedParams && !hasPrivilegedRole) {
+			return API.v1.failure('error-not-allowed');
+		}
+
 		const messageReturn = processWebhookMessage(this.bodyParams, this.user)[0];
 
 		if (!messageReturn) {
