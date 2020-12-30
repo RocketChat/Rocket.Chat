@@ -27,9 +27,9 @@ const BusinessHoursPage = () => {
 				</Button>
 			</ButtonGroup>
 		</Page.Header>
-		<Page.ScrollableContentWithShadow>
+		<Page.Content>
 			<Table />
-		</Page.ScrollableContentWithShadow>
+		</Page.Content>
 	</Page>;
 };
 
