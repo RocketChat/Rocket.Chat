@@ -2,7 +2,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import { Box } from '@rocket.chat/fuselage';
-import { css } from '@rocket.chat/css-in-js';
 
 import { RoomHistoryManager } from '../../../../../../app/ui-utils';
 import { Rooms } from '../../../../../../app/models/client';
@@ -26,7 +25,6 @@ export const StarredMessagesList = ({
 			username={u.username}
 			name={u.name || u.username}
 			timestamp={timeAgo(data.ts)}
-			className={css`cursor: pointer`}
 			onClick={() => {
 				if (window.matchMedia('(max-width: 500px)').matches) {
 					onClose();
@@ -53,7 +51,7 @@ export const StarredMessagesList = ({
 			<Virtuoso
 				style={{ height: '100%' }}
 				endReached={loadMore}
-				overscan={200}
+				overscan={100}
 				itemContent={(index, data) => message(index, data)}
 				data={messages}
 			/>

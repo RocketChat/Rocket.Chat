@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 
+import { clickableItem } from '../../../helpers/clickableItem';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import RawText from '../../../../../components/RawText';
 import * as MessageTemplate from '../../../components/Message';
@@ -40,4 +41,4 @@ const Message = ({
 	</MessageTemplate.Message>
 );
 
-export default memo(Message);
+export default memo(clickableItem(Message));
