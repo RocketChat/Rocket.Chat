@@ -14,12 +14,15 @@ const getInitialData = (data = {}) => ({
 	departments: mapDepartments(data.departments),
 });
 
-const BusinessHoursMultipleContainer = ({ onChange, data: initialData, className }) => {
+const BusinessHoursMultipleContainer = ({ onChange, data: initialData, className, hasChangesAndIsValid = () => {} }) => {
 	const { value: data, phase: state } = useEndpointData('livechat/department');
 
-	const { values, handlers } = useForm(getInitialData(initialData));
+	const { values, handlers, hasUnsavedChanges } = useForm(getInitialData(initialData));
+
+	const { name } = values;
 
 	onChange(values);
+	hasChangesAndIsValid(hasUnsavedChanges && !!name);
 
 	const departmentList = useMemo(() => data && data.departments?.map(({ _id, name }) => [_id, name]), [data]);
 
