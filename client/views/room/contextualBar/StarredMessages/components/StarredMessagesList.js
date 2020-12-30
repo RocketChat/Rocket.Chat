@@ -1,60 +1,62 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useCallback } from 'react';
-import InfiniteLoader from 'react-window-infinite-loader';
-import { FixedSizeList as List } from 'react-window';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { Virtuoso } from 'react-virtuoso';
 import { Box } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
 
+import { RoomHistoryManager } from '../../../../../../app/ui-utils';
+import { Rooms } from '../../../../../../app/models/client';
 import Message from './Message';
-import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
+import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
+
 
 export const StarredMessagesList = ({
+	onClose,
 	loadMore,
 	messages,
-	rid,
-	subscription,
-	settings,
 	u,
 }) => {
-	const { ref, contentBoxSize: { blockSize = 780 } = {} } = useResizeObserver({ debounceDelay: 100 });
+	const timeAgo = useTimeAgo();
 
-	const children = useCallback(({ data, index, style }) => {
-		const item = data[index] || null;
+	const message = useCallback((index, data) => (
+		<Message
+			key={index}
+			_id={data._id}
+			msg={data.msg}
+			username={u.username}
+			name={u.name || u.username}
+			timestamp={timeAgo(data.ts)}
+			className={css`cursor: pointer`}
+			onClick={() => {
+				if (window.matchMedia('(max-width: 500px)').matches) {
+					onClose();
+				}
+				if (data.tmid) {
+					return FlowRouter.go(FlowRouter.getRouteName(), {
+						tab: 'thread',
+						context: data.tmid,
+						jump: data._id,
+						rid: data.rid,
+						name: Rooms.findOne({ _id: data.rid }).name,
+					}, {
+						jump: data._id,
+					});
+				}
 
-		return item && <Message
-			key={item._id}
-			msg={item}
-			context='starred'
-			room={rid}
-			groupable={false}
-			subscription={subscription}
-			settings={settings}
-			u={u}
-			style={style}
-		/>;
-	}, [rid, settings, subscription, u]);
+				RoomHistoryManager.getSurroundingMessages(data, 50);
+			}}
+		/>
+	), [u.username, u.name, timeAgo, onClose]);
 
 	return (
-		<Box is='ul' w='full' h='full' flexShrink={1} ref={ref} overflow='hidden'>
-			<InfiniteLoader
-				isItemLoaded={({ index }) => !!messages[index]}
-				itemCount={messages.length}
-				loadMoreItems={loadMore}
-			>
-				{({ onItemsRendered, ref }) => (
-					<List
-						outerElementType={ScrollableContentWrapper}
-						className='List'
-						height={blockSize}
-						itemCount={messages.length}
-						itemSize={74}
-						itemData={messages}
-						onItemsRendered={onItemsRendered}
-						ref={ref}
-					>
-						{children}
-					</List>
-				)}
-			</InfiniteLoader>
+		<Box is='ul' w='full' h='full' flexShrink={1} overflow='hidden'>
+			<Virtuoso
+				style={{ height: '100%' }}
+				endReached={loadMore}
+				overscan={200}
+				itemContent={(index, data) => message(index, data)}
+				data={messages}
+			/>
 		</Box>
 	);
 };
