@@ -184,10 +184,10 @@ function customOAuthServicesInit() {
 					groupsClaim: process.env[`${ serviceKey }_groups_claim`],
 					channelsMap: process.env[`${ serviceKey }_groups_channel_map`],
 					channelsAdmin: process.env[`${ serviceKey }_channels_admin`],
-					mergeUsers: process.env[`${ serviceKey }_merge_users`],
+					mergeUsers: process.env[`${ serviceKey }_merge_users`] === 'true',
 					mapChannels: process.env[`${ serviceKey }_map_channels`],
-					mergeRoles: process.env[`${ serviceKey }_merge_roles`],
-					showButton: process.env[`${ serviceKey }_show_button`],
+					mergeRoles: process.env[`${ serviceKey }_merge_roles`] === 'true',
+					showButton: process.env[`${ serviceKey }_show_button`] === 'true',
 					avatarField: process.env[`${ serviceKey }_avatar_field`],
 				};
 
