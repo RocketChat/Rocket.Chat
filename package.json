@@ -242,6 +242,7 @@
 		"react": "^16.13.1",
 		"react-dom": "^16.13.1",
 		"react-keyed-flatten-children": "^1.3.0",
+		"react-virtuoso": "^1.2.1",
 		"react-window": "^1.8.5",
 		"react-window-infinite-loader": "^1.0.5",
 		"redis": "^2.8.0",
