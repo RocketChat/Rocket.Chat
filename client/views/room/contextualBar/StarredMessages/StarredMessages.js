@@ -15,6 +15,7 @@ export const StarredMessages = ({
 	loadMore,
 	messages,
 	u,
+	dispatchToastMessage,
 }) => {
 	const t = useTranslation();
 	let content;
@@ -26,6 +27,8 @@ export const StarredMessages = ({
 				loadMore={loadMore}
 				messages={messages}
 				u={u}
+				t={t}
+				dispatchToastMessage={dispatchToastMessage}
 			/>
 			: <EmptyStarredMessages />;
 	} else {
@@ -64,5 +67,6 @@ export default React.memo(({ tabBar, rid }) => {
 		loadMore={loadMore}
 		messages={messages}
 		u={u}
+		dispatchToastMessage={dispatchToastMessage}
 	/>;
 });

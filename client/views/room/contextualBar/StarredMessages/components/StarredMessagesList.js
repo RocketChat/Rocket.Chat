@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import { Box } from '@rocket.chat/fuselage';
 
-import { RoomHistoryManager } from '../../../../../../app/ui-utils';
+import { RoomHistoryManager, MessageAction } from '../../../../../../app/ui-utils';
 import { Rooms } from '../../../../../../app/models/client';
 import Message from './Message';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
@@ -14,6 +14,8 @@ export const StarredMessagesList = ({
 	loadMore,
 	messages,
 	u,
+	t,
+	dispatchToastMessage,
 }) => {
 	const timeAgo = useTimeAgo();
 
@@ -25,6 +27,9 @@ export const StarredMessagesList = ({
 			username={u.username}
 			name={u.name || u.username}
 			timestamp={timeAgo(data.ts)}
+			t={t}
+			dispatchToastMessage={dispatchToastMessage}
+			getPermaLink={MessageAction.getPermaLink}
 			onClick={() => {
 				if (window.matchMedia('(max-width: 500px)').matches) {
 					onClose();
@@ -44,7 +49,7 @@ export const StarredMessagesList = ({
 				RoomHistoryManager.getSurroundingMessages(data, 50);
 			}}
 		/>
-	), [u.username, u.name, timeAgo, onClose]);
+	), [u.username, u.name, timeAgo, t, dispatchToastMessage, onClose]);
 
 	return (
 		<Box is='ul' w='full' h='full' flexShrink={1} overflow='hidden'>
