@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Icon } from '@rocket.chat/fuselage';
 
 import { clickableItem } from '../../../helpers/clickableItem';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
@@ -64,26 +64,28 @@ const Message = ({
 			<MessageTemplate.BodyClamp><RawText>{msg}</RawText></MessageTemplate.BodyClamp>
 		</MessageTemplate.Container>
 		<MessageTemplate.Container alignItems='center'>
-			<Button
-				small
-				square
-				flexShrink={0}
-				ghost
-				onClick={handleUnstarButton}
-				title={t('Unstar_Message')}
-			>
-				<Icon name={'star'} size='x20'/>
-			</Button>
-			<Button
-				small
-				square
-				flexShrink={0}
-				ghost
-				onClick={handleGetLinkButton}
-				title={t('Get_link')}
-			>
-				<Icon name={'link'} size='x20'/>
-			</Button>
+			<Box display='flex' flexDirection='row'>
+				<Button
+					small
+					square
+					flexShrink={0}
+					ghost
+					onClick={handleUnstarButton}
+					title={t('Unstar_Message')}
+				>
+					<Icon name={'star'} size='x20'/>
+				</Button>
+				<Button
+					small
+					square
+					flexShrink={0}
+					ghost
+					onClick={handleGetLinkButton}
+					title={t('Get_link')}
+				>
+					<Icon name={'link'} size='x20'/>
+				</Button>
+			</Box>
 		</MessageTemplate.Container>
 	</MessageTemplate.Message>;
 };
