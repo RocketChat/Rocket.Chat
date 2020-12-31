@@ -34,6 +34,8 @@ class LicenseClass {
 
 	private licenses: IValidLicense[] = [];
 
+	private encryptedLicenses = new Set<string>();
+
 	private tags = new Set<ILicenseTag>();
 
 	private modules = new Set<string>();
@@ -113,6 +115,18 @@ class LicenseClass {
 		});
 
 		this.validate();
+	}
+
+	lockLicense(encryptedLicense: string): void {
+		this.encryptedLicenses.add(encryptedLicense);
+	}
+
+	isLicenseDuplicate(encryptedLicense: string): boolean {
+		if (this.encryptedLicenses.has(encryptedLicense)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	hasModule(module: string): boolean {
@@ -211,7 +225,7 @@ class LicenseClass {
 const License = new LicenseClass();
 
 export function addLicense(encryptedLicense: string): boolean {
-	if (!encryptedLicense || String(encryptedLicense).trim() === '') {
+	if (!encryptedLicense || String(encryptedLicense).trim() === '' || License.isLicenseDuplicate(encryptedLicense)) {
 		return false;
 	}
 
@@ -228,6 +242,7 @@ export function addLicense(encryptedLicense: string): boolean {
 		}
 
 		License.addLicense(JSON.parse(decrypted));
+		License.lockLicense(encryptedLicense);
 
 		return true;
 	} catch (e) {
@@ -237,6 +252,19 @@ export function addLicense(encryptedLicense: string): boolean {
 		}
 		return false;
 	}
+}
+
+export function validateFormat(encryptedLicense: string): boolean {
+	if (!encryptedLicense || String(encryptedLicense).trim() === '') {
+		return false;
+	}
+
+	const decrypted = decrypt(encryptedLicense);
+	if (!decrypted) {
+		return false;
+	}
+
+	return true;
 }
 
 export function setURL(url: string): void {
@@ -281,6 +309,15 @@ export function onModule(cb: (...args: any[]) => void): void {
 
 export function onValidateLicenses(cb: (...args: any[]) => void): void {
 	EnterpriseLicenses.on('validate', cb);
+}
+
+export function flatModules(modulesAndBundles: string[]): string[] {
+	const bundles = modulesAndBundles.filter(isBundle);
+	const modules = modulesAndBundles.filter((x) => !isBundle(x));
+
+	const modulesFromBundles = bundles.map(getBundleModules).flat();
+
+	return modules.concat(modulesFromBundles);
 }
 
 export interface IOverrideClassProperties {
