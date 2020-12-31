@@ -13,7 +13,7 @@ import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import MarkdownText from '../../../components/MarkdownText'
+import MarkdownText from '../../../components/MarkdownText';
 
 export default React.memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
