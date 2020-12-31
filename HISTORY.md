@@ -1,4 +1,39 @@
 
+# 3.9.4
+`2020-12-31  ·  3 🐛  ·  1 🔍  ·  6 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.21.0-alpha.4235`
+
+### 🐛 Bug fixes
+
+
+- Omnichannel Departments Canned Responses ([#19830](https://github.com/RocketChat/Rocket.Chat/pull/19830))
+
+- Room scrolling to top after returns to a opened room ([#19945](https://github.com/RocketChat/Rocket.Chat/pull/19945))
+
+- Status on searchlist ([#19935](https://github.com/RocketChat/Rocket.Chat/pull/19935))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix oembed ([#19978](https://github.com/RocketChat/Rocket.Chat/pull/19978))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 3.9.3
 `2020-12-18  ·  2 🐛  ·  1 👩‍💻👨‍💻`
 
@@ -295,6 +330,47 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 3.8.5
+`2020-12-31  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.19.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix oembed ([#19978](https://github.com/RocketChat/Rocket.Chat/pull/19978))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.8.4
+`2020-12-18  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.19.0`
+
+### 🐛 Bug fixes
+
+
+- Issue with special message rendering ([#19817](https://github.com/RocketChat/Rocket.Chat/pull/19817))
+
+- Problem with attachment render ([#19854](https://github.com/RocketChat/Rocket.Chat/pull/19854))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
 
 # 3.8.3
 `2020-12-05  ·  1 🐛  ·  1 👩‍💻👨‍💻`
@@ -668,6 +744,26 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 3.7.4
+`2020-12-18  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.18.0`
+
+### 🐛 Bug fixes
+
+
+- Issue with special message rendering ([#19817](https://github.com/RocketChat/Rocket.Chat/pull/19817))
+
+- Problem with attachment render ([#19854](https://github.com/RocketChat/Rocket.Chat/pull/19854))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
 
 # 3.7.3
 `2020-12-05  ·  1 🐛  ·  1 👩‍💻👨‍💻`
@@ -4103,6 +4199,26 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 
+# 2.4.14
+`2020-12-18  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.17.0`
+- NPM: `6.13.4`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.11.2`
+
+### 🐛 Bug fixes
+
+
+- Issue with special message rendering ([#19817](https://github.com/RocketChat/Rocket.Chat/pull/19817))
+
+- Problem with attachment render ([#19854](https://github.com/RocketChat/Rocket.Chat/pull/19854))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+
 # 2.4.12
 `2020-05-11  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
@@ -5621,6 +5737,25 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
+
+# 1.3.5
+`2020-12-18  ·  2 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `8.11.4`
+- NPM: `6.4.1`
+- Apps-Engine: `1.5.1`
+
+### 🐛 Bug fixes
+
+
+- Issue with special message rendering ([#19817](https://github.com/RocketChat/Rocket.Chat/pull/19817))
+
+- Problem with attachment render ([#19854](https://github.com/RocketChat/Rocket.Chat/pull/19854))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
 
 # 1.3.3
 `2019-11-19  ·  2 🐛  ·  2 👩‍💻👨‍💻`
