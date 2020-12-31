@@ -13,6 +13,7 @@ import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import MarkdownText from '../../../components/MarkdownText'
 
 export default React.memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
@@ -50,7 +51,7 @@ const RoomHeader = ({ room }) => {
 				<Translate room={room} />
 			</Header.Content.Row>
 			<Header.Content.Row>
-				<Header.Subtitle>{room.topic}</Header.Subtitle>
+				<Header.Subtitle>{room.topic && <MarkdownText withRichContent={false} content={room.topic}/>}</Header.Subtitle>
 			</Header.Content.Row>
 		</Header.Content>
 		<Header.ToolBox>
