@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
 
-import { clickableItem } from '../../../helpers/clickableItem';
+import { clickableItem } from '../../../../../lib/clickableItem';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import RawText from '../../../../../components/RawText';
 import * as MessageTemplate from '../../../components/Message';
