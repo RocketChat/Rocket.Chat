@@ -7,6 +7,7 @@ import CannedResponseRaw from './raw/CannedResponse';
 import LivechatPriorityRaw from './raw/LivechatPriority';
 import LivechatTagRaw from './raw/LivechatTag';
 import LivechatUnitMonitorsRaw from './raw/LivechatUnitMonitors';
+import LivechatDepartmentAgentsRaw from './raw/LivechatDepartmentAgents';
 import './models/LivechatDepartment';
 import './models/LivechatRooms';
 import './models/LivechatInquiry';
@@ -24,4 +25,5 @@ export {
 	LivechatUnitMonitorsRaw,
 	LivechatPriority,
 	LivechatPriorityRaw,
+	LivechatDepartmentAgentsRaw,
 };
