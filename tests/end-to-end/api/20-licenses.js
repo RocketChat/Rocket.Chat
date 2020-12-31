@@ -1,0 +1,66 @@
+import { expect } from 'chai';
+
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { password } from '../../data/user.js';
+import { createUser, login as doLogin } from '../../data/users.helper';
+
+describe.only('licenses', function() {
+	this.retries(0);
+
+	before((done) => getCredentials(done));
+
+	//describe('[/licenses.add]', () => {
+	//});
+
+	describe('[/licenses.get]', () => {
+		let unauthorizedUserCredentials;
+		before(async () => {
+			const createdUser = await createUser();
+			unauthorizedUserCredentials = await doLogin(createdUser.username, password);
+		});
+
+		it('should fail if not logged in', (done) => {
+			request.get(api('licenses.get'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should fail if user is logged in but is unauthorized', (done) => {
+			request.get(api('licenses.get'))
+				.set(unauthorizedUserCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				})
+				.end(done);
+		});
+
+		it('should return licenses if user is logged in and is authorized', (done) => {
+			request.get(api('licenses.get'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('licenses').and.to.be.an('array');
+
+					const { licenses: [license] } = res.body;
+
+					expect(license).to.have.property('url');
+					expect(license).to.have.property('expiry');
+					expect(license).to.have.property('modules').and.to.be.an('array');
+					expect(license).to.have.property('maxActiveUsers');
+					expect(license).to.have.property('maxGuestUsers');
+					expect(license).to.have.property('maxRoomsPerGuest');
+				})
+
+				.end(done);
+		});
+	});
+});
