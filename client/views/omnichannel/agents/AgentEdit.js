@@ -65,8 +65,6 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, re
 		useMaxChatsPerAgent = () => {},
 	} = eeForms;
 
-	console.log(eeForms, useMaxChatsPerAgent());
-
 	const { values, handlers, hasUnsavedChanges, commit } = useForm({ departments: initialDepartmentValue, status: statusLivechat, maxChats: 0 });
 	const {
 		reset: resetMaxChats,
@@ -109,7 +107,9 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, re
 	});
 
 	return <VerticalBar.ScrollableContent is='form' { ...props }>
-		<UserInfo.Avatar margin='auto' size={'x332'} title={username} username={username}/>
+		<Box alignSelf='center'>
+			<UserInfo.Avatar margin='auto' size={'x332'} title={username} username={username}/>
+		</Box>
 		<Field>
 			<Field.Label>{t('Name')}</Field.Label>
 			<Field.Row>
