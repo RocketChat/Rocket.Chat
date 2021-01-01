@@ -1,6 +1,8 @@
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 
+import { escapeHTML } from '../../../lib/escapeHTML';
+
 const renderers = {};
 
 /**
@@ -49,8 +51,8 @@ Template.renderField.helpers({
 			html = Blaze.toHTMLWithData(Template[renderers[field.type]], { field, message });
 		} else {
 			// consider the value already formatted as html
-			html = field.value;
+			html = escapeHTML(field.value);
 		}
-		return `<div class="${ field.type }">${ html }</div>`;
+		return `<div class="${ escapeHTML(field.type) }">${ html }</div>`;
 	},
 });

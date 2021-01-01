@@ -52642,6 +52642,96 @@
           ]
         }
       ]
+    },
+    "3.9.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19763",
+          "title": "[FIX] Some apps were not correctly enabled during startup in HA environments",
+          "userLogin": "thassiov",
+          "milestone": "3.9.2",
+          "contributors": [
+            "thassiov",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19862",
+          "title": "[FIX] Download my data with file uploads",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.9.2",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19842",
+          "title": "[FIX] Forgot password endpoint return status",
+          "userLogin": "g-thome",
+          "milestone": "3.9.2",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "19793",
+          "title": "[FIX][ENTERPRISE] Omnichannel Department form is not correctly storing the list of departments allowed for forwarding",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.2",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19762",
+          "title": "[FIX] 'Not Allowed' in message auditing",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.9.2",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "3.9.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19854",
+          "title": "[FIX] Problem with attachment render",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19817",
+          "title": "[FIX] Issue with special message rendering",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
     }
   }
 }
