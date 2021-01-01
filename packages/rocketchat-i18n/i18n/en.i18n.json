@@ -2736,6 +2736,7 @@
   "Newer_than_may_not_exceed_Older_than": "\"Newer than\" may not exceed \"Older than\"",
   "Nickname": "Nickname",
   "Nickname_Placeholder": "Enter your nickname...",
+  "No": "No",
   "No_available_agents_to_transfer": "No available agents to transfer",
   "No_Canned_Responses": "No Canned Responses",
   "No_channel_with_name_%s_was_found": "No channel with name <strong>\"%s\"</strong> was found!",

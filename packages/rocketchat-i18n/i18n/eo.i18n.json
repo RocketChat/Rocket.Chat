@@ -2684,8 +2684,6 @@
   "UserDataDownload_EmailBody": "Via datuma dosiero nun estas preta por elŝuti. Alklaku <a href=\"__download_link__\">ĉi tie</a>por elŝuti ĝin.",
   "UserDataDownload_EmailSubject": "Via datuma dosiero estas preta por elŝuti",
   "UserDataDownload_Requested": "Elŝuta dosiero Petita",
-  "UserDataDownload_Requested_Text": null,
-  "UserDataDownload_RequestExisted_Text": null,
   "Username": "Uzulnomo",
   "Username_already_exist": "Uzantnomo jam ekzistas. Bonvolu provi alian uzantnomon.",
   "Username_and_message_must_not_be_empty": "Uzulnomo kaj mesaĝo ne devas esti malplenaj.",
