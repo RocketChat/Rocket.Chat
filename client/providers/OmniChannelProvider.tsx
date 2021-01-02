@@ -7,7 +7,7 @@ import { Notifications } from '../../app/notifications/client';
 import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useUser, useUserId } from '../contexts/UserContext';
-import { usePermission, useRole } from '../contexts/AuthorizationContext';
+import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetting } from '../contexts/SettingsContext';
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
@@ -26,22 +26,21 @@ const emptyContext = {
 
 const useOmnichannelInquiries = (): Array<any> => {
 	const uid = useUserId();
-	const isOmnichannelManger = useRole('livechat-manager');
 	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed') as number;
 	useEffect(() => {
 		const handler = async (): Promise<void> => {
-			initializeLivechatInquiryStream(uid, isOmnichannelManger);
+			initializeLivechatInquiryStream(uid);
 		};
 
 		(async (): Promise<void> => {
-			initializeLivechatInquiryStream(uid, isOmnichannelManger);
+			initializeLivechatInquiryStream(uid);
 			Notifications.onUser('departmentAgentData', handler);
 		})();
 
 		return (): void => {
 			Notifications.unUser('departmentAgentData', handler);
 		};
-	}, [isOmnichannelManger, uid]);
+	}, [uid]);
 
 	return useReactiveValue(useCallback(() => LivechatInquiry.find({
 		status: 'queued',
