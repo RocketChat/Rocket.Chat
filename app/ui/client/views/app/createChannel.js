@@ -10,7 +10,7 @@ import _ from 'underscore';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { t, roomTypes } from '../../../../utils';
-import { hasAllPermission } from '../../../../authorization';
+import { hasAllPermission, hasPermission } from '../../../../authorization';
 import { AutoComplete } from '../../../../meteor-autocomplete/client';
 
 const acEvents = {
@@ -114,6 +114,18 @@ Template.createChannel.helpers({
 	readOnlyDescription() {
 		return t(Template.instance().readOnly.get() ? t('Only_authorized_users_can_write_new_messages') : t('All_users_in_the_channel_can_write_new_messages'));
 	},
+	cantCreateNotCl() {
+		return !hasPermission(['create-not-cl']);
+	},
+	notCl() {
+		return !Template.instance().cl.get();
+	},
+	notClEnabled() {
+		return settings.get('Not_Cl_Enable');
+	},
+	notClDescription() {
+		return t(Template.instance().cl.get() ? t('Users_can_leave_channel') : t('Users_cannot_leave_channel'));
+	},
 	cantCreateBothTypes() {
 		return !hasAllPermission(['create-c', 'create-p']);
 	},
@@ -192,6 +204,10 @@ Template.createChannel.events({
 		t.encrypted.set(e.target.checked);
 		t.change();
 	},
+	'change [name="cl"]'(e, t) {
+		t.cl.set(!e.target.checked);
+		t.change();
+	},
 	'change [name="readOnly"]'(e, t) {
 		t.readOnly.set(e.target.checked);
 	},
@@ -228,6 +244,7 @@ Template.createChannel.events({
 		const readOnly = instance.readOnly.get();
 		const broadcast = instance.broadcast.get();
 		const encrypted = instance.encrypted.get();
+		const cl = instance.cl.get();
 		const isPrivate = type === 'p';
 
 		if (instance.invalid.get() || instance.inUse.get()) {
@@ -238,7 +255,7 @@ Template.createChannel.events({
 		}
 
 		const extraData = Object.keys(instance.extensions_submits)
-			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted });
+			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted, cl });
 
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
 			if (err) {
@@ -299,6 +316,7 @@ Template.createChannel.onCreated(function() {
 	this.readOnly = new ReactiveVar(false);
 	this.broadcast = new ReactiveVar(false);
 	this.encrypted = new ReactiveVar(false);
+	this.cl = new ReactiveVar(true);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.extensions_invalid = new ReactiveVar(false);

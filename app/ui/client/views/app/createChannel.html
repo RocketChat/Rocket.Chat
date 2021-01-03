@@ -63,6 +63,22 @@
 							{{_"Broadcast_channel_Description"}}
 						</span>
 					</div>
+					{{#if notClEnabled}}
+						<div class="rc-switch">
+							<label class="rc-switch__label">
+								<input type="checkbox" class="rc-switch__input" name="cl" checked={{notCl}} disabled="{{cantCreateNotCl}}">
+								<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+								<span class="rc-switch__text">
+									{{_"Cannot_Leave"}}
+								</span>
+							</label>
+							<span class="rc-switch__description">
+								{{_"Cannot_Leave_channel_Description"}}
+							</span>
+						</div>
+					{{/if}}
 				</div>
 				<div class="create-channel__inputs">
 					<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">

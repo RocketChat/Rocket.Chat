@@ -43,6 +43,7 @@ const useInitialValues = (room, settings) => {
 		t,
 		ro,
 		archived,
+		cl,
 		topic,
 		description,
 		announcement,
@@ -65,6 +66,7 @@ const useInitialValues = (room, settings) => {
 		roomName: t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(t, { type: t, ...room }),
 		roomType: t,
 		readOnly: !!ro,
+		cl: !!cl,
 		reactWhenReadOnly: false,
 		archived: !!archived,
 		roomTopic: topic ?? '',
@@ -86,6 +88,7 @@ const useInitialValues = (room, settings) => {
 	}), [
 		announcement,
 		archived,
+		cl,
 		description,
 		excludePinnedDefault,
 		filesOnlyDefault,
@@ -152,6 +155,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		encrypted,
 		roomAvatar,
 		archived,
+		cl,
 		roomTopic,
 		roomDescription,
 		roomAnnouncement,
@@ -176,6 +180,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		handleRoomName,
 		handleReadOnly,
 		handleArchived,
+		handleCl,
 		handleRoomAvatar,
 		handleReactWhenReadOnly,
 		handleRoomType,
@@ -194,6 +199,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewTopic,
 		canViewAnnouncement,
 		canViewArchived,
+		canViewCl,
 		canViewDescription,
 		canViewType,
 		canViewReadOnly,
@@ -208,6 +214,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 			isAllowed(room, RoomSettingsEnum.TOPIC),
 			isAllowed(room, RoomSettingsEnum.ANNOUNCEMENT),
 			isAllowed(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE),
+			isAllowed(room, RoomSettingsEnum.CAN_LEAVE_OR_UNLEAVABLE),
 			isAllowed(room, RoomSettingsEnum.DESCRIPTION),
 			isAllowed(room, RoomSettingsEnum.TYPE),
 			isAllowed(room, RoomSettingsEnum.READ_ONLY),
@@ -227,6 +234,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canSetReactWhenRo = usePermission('set-react-when-readonly', room._id);
 	const canEditPrivilegedSetting = usePermission('edit-privileged-setting', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(useMemo(() => ['archive-room', 'unarchive-room'], []));
+	const canSetNotCl = usePermission('set-not-cl');
 	const canDelete = usePermission(`delete-${ room.t }`);
 
 	const changeArchivation = archived !== !!room.archived;
@@ -339,6 +347,14 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Field.Label>{t('Archived')}</Field.Label>
 						<Field.Row>
 							<ToggleSwitch disabled={!canArchiveOrUnarchive} checked={archived} onChange={handleArchived}/>
+						</Field.Row>
+					</Box>
+				</Field>}
+				{canViewCl && <Field>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+						<Field.Label>{t('Unleavable')}</Field.Label>
+						<Field.Row>
+							<ToggleSwitch disabled={!canSetNotCl} checked={!cl} onChange={handleCl}/>
 						</Field.Row>
 					</Box>
 				</Field>}
