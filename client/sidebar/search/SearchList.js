@@ -7,6 +7,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { FixedSizeList as List } from 'react-window';
 import tinykeys from 'tinykeys';
 
+import { ReactiveUserStatus } from '../../components/UserStatus';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useSetting } from '../../contexts/SettingsContext';
@@ -20,13 +21,14 @@ import { useMethodData } from '../../hooks/useMethodData';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
 
-const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended) => ({
+const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended, sidebarViewMode) => ({
 	items,
 	t,
 	SideBarItemTemplate,
 	AvatarTemplate,
 	useRealName,
 	extended,
+	sidebarViewMode,
 }));
 
 const Row = React.memo(({ data, index, style }) => {
@@ -38,9 +40,10 @@ const Row = React.memo(({ data, index, style }) => {
 	return <SideBarItemTemplateWithData id={`search-${ item._id }`} tabIndex={-1} extended={extended} style={style} t={t} room={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 });
 
-const UserItem = React.memo(({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName }) => {
+const UserItem = React.memo(({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName, sidebarViewMode }) => {
 	const title = useRealName ? item.fname || item.name : item.name || item.fname;
-	const icon = <Sidebar.Item.Icon name={roomTypes.getIcon(item)}/>;
+	const small = sidebarViewMode !== 'medium';
+	const icon = <Sidebar.Item.Icon><ReactiveUserStatus small={small && 'small'} uid={item._id} /></Sidebar.Item.Icon>;
 	const href = roomTypes.getRouteLink(item.t, item);
 
 	return <SideBarItemTemplate
@@ -197,7 +200,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 
 	const { data: items, status } = useSearchItems(filterText);
 
-	const itemData = createItemData(items, t, sideBarItemTemplate, avatarTemplate, showRealName, extended);
+	const itemData = createItemData(items, t, sideBarItemTemplate, avatarTemplate, showRealName, extended, sidebarViewMode);
 
 	const { ref: boxRef, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 

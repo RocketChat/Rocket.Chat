@@ -12,7 +12,7 @@ import { useUserId, useUserSubscription } from '../../../../contexts/UserContext
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
-import { clickableItem } from '../../helpers/clickableItem';
+import { clickableItem } from '../../../../lib/clickableItem';
 import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
@@ -258,7 +258,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 					</Margins>
 				</Box>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden'>
+			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden' display='flex'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
 				{!error && total > 0 && <InfiniteLoader
