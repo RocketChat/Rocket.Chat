@@ -1659,6 +1659,8 @@
   "FEDERATION_Error_user_is_federated_on_rooms": "You can't remove federated users who belongs to rooms",
   "FEDERATION_Hub_URL": "Hub URL",
   "FEDERATION_Hub_URL_Description": "Set the hub URL, for example: https://hub.rocket.chat. Ports are accepted as well.",
+  "FEDERATION_Public_Channels": "Allow Federation for Public Channels",
+  "FEDERATION_Public_Channels_Alert": "External users may have access to public channels",
   "FEDERATION_Public_Key": "Public Key",
   "FEDERATION_Public_Key_Description": "This is the key you need to share with your peers.",
   "FEDERATION_Room_Status": "Federation Status",

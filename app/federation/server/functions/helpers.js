@@ -17,7 +17,7 @@ export function updateEnabled(enabled) {
 	Settings.updateValueById('FEDERATION_Enabled', enabled);
 }
 
-export const checkRoomType = (room) => room.t === 'p' || room.t === 'd';
+export const checkRoomType = (room) => room.t === 'p' || room.t === 'd' || (room.t === 'c' && Settings.findOneById('FEDERATION_Public_Channels'));
 export const checkRoomDomainsLength = (domains) => domains.length <= (process.env.FEDERATED_DOMAINS_LENGTH || 10);
 
 export const hasExternalDomain = ({ federation }) => {

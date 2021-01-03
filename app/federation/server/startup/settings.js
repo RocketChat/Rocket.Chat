@@ -29,6 +29,12 @@ Meteor.startup(function() {
 			i18nLabel: 'FEDERATION_Status',
 		});
 
+		this.add('FEDERATION_Public_Channels', false, {
+			type: 'boolean',
+			i18nLabel: 'FEDERATION_Public_Channels',
+			alert: 'FEDERATION_Public_Channels_Alert',
+		});
+
 		this.add('FEDERATION_Domain', '', {
 			type: 'string',
 			i18nLabel: 'FEDERATION_Domain',
