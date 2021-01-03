@@ -1,10 +1,10 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 
-import {getCredentials, api, request, credentials} from '../../data/api-data.js';
-import {password} from '../../data/user.js';
-import {createUser, login as doLogin} from '../../data/users.helper';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { password } from '../../data/user.js';
+import { createUser, login as doLogin } from '../../data/users.helper';
 
-describe.only('licenses', function () {
+describe('licenses', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
