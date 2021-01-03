@@ -78,7 +78,15 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 	const conditionOptions: SelectOptions = useMemo(() => [
 		['page-url', t('Visitor_page_URL')],
 		['time-on-site', t('Visitor_time_on_site')],
+		['chat-opened-by-visitor', t('Chat_opened_by_visitor')],
 	], [t]);
+
+	const conditionValuePlaceholders: {[conditionName: string]: string} = useMemo(() => ({
+		'page-url': t('Enter_a_regex'),
+		'time-on-site': t('Time_in_seconds'),
+	}), [t]);
+
+	const conditionValuePlaceholder = conditionValuePlaceholders[conditionName];
 
 	const senderOptions: SelectOptions = useMemo(() => [
 		['queue', t('Impersonate_next_agent_from_queue')],
@@ -165,9 +173,9 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 			<Field.Row>
 				<Select options={conditionOptions} value={conditionName} onChange={handleConditionName}/>
 			</Field.Row>
-			<Field.Row>
-				<TextInput value={conditionValue} onChange={handleConditionValue} placeholder={conditionName === 'page-url' ? t('Enter_a_regex') : t('Time_in_seconds')}/>
-			</Field.Row>
+			{conditionValuePlaceholder && <Field.Row>
+				<TextInput value={conditionValue} onChange={handleConditionValue} placeholder={conditionValuePlaceholder}/>
+			</Field.Row>}
 		</Field>
 		<Field className={className}>
 			<Field.Label>{t('Action')}</Field.Label>
