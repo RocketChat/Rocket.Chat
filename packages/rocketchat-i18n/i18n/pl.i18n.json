@@ -2714,6 +2714,7 @@
   "Newer_than_may_not_exceed_Older_than": "\"Nowsze niż\" nie może przekraczać \"Starsze niż\"",
   "Nickname": "Pseudonim",
   "Nickname_Placeholder": "Podaj swój pseudonim...",
+  "No": "Nie",
   "No_available_agents_to_transfer": "Brak dostępnych agentów do przeniesienia",
   "No_Canned_Responses": "Brak predefiniowanych odpowiedzi",
   "No_channel_with_name_%s_was_found": "Nie odnaleziono kanału o nazwie <strong>\"%s\"</strong>!",

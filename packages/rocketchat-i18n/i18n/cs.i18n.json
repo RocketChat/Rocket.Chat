@@ -2683,6 +2683,7 @@
   "Newer_than_may_not_exceed_Older_than": "\"Novější než\" nesmí překročit hodnotu \"Starší než\"",
   "Nickname": "Přezdívka",
   "Nickname_Placeholder": "Vložte svou přezdívku...",
+  "No": "Ne",
   "No_available_agents_to_transfer": "Žádní operátoři k dispozici",
   "No_Canned_Responses": "Žádné zakonzervované odpovědi",
   "No_channel_with_name_%s_was_found": "Nebyla nalezena žádná místnost s názvem <strong>\"%s\"</strong>!",

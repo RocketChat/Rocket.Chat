@@ -1854,6 +1854,7 @@
   "New_visitor_navigation": "Nauja navigacija: __history__",
   "Newer_than": "Naujesnis nei",
   "Newer_than_may_not_exceed_Older_than": "\"Naujesni nei\" negali viršyti \"Senesni nei\"",
+  "No": "Nėra",
   "No_available_agents_to_transfer": "Negalima perkelti jokių agentų",
   "No_channel_with_name_%s_was_found": "Nebuvo rastas kanalo pavadinimas <strong>\"%s\"</strong>.",
   "No_channels_yet": "Dar nėra kanalo dalis",

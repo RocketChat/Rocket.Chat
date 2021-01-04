@@ -1570,6 +1570,7 @@
   "New_visitor_navigation": "Нова навигација: __history__",
   "Newer_than": "Новије од",
   "Newer_than_may_not_exceed_Older_than": "\"Новије од\" можда не прелази \"Старије од\"",
+  "No": "Ne",
   "No_available_agents_to_transfer": "Нема расположивих агената за пренос",
   "No_channel_with_name_%s_was_found": "Канал са именом <strong>\"%s\"</strong> није пронађен!",
   "No_channels_yet": "Још увек нисте члан ниједног канала",
