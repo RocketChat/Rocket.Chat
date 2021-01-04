@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
-import { css } from '@rocket.chat/css-in-js';
 
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import RawText from '../../../../../components/RawText';
 import * as MessageTemplate from '../../../components/Message';
-import * as NotificationStatus from '../../../components/NotificationStatus';
+import * as NotificationStatus from '../../../../../components/Message/NotificationStatus';
+import { followStyle, anchor } from '../../../../../components/Message/helpers/followSyle';
 
 function isIterable(obj) {
 	// checks for null and undefined
@@ -14,17 +14,6 @@ function isIterable(obj) {
 	}
 	return typeof obj[Symbol.iterator] === 'function';
 }
-
-const followStyle = css`
-	& > .rcx-message__container > .rcx-contextual-message__follow {
-		opacity: 0;
-	}
-	.rcx-contextual-message__follow:focus,
-	&:hover > .rcx-message__container > .rcx-contextual-message__follow,
-	&:focus > .rcx-message__container > .rcx-contextual-message__follow {
-		opacity: 1;
-	}
-`;
 
 export default React.memo(function Message({ _id, msg, following, username, name = username, ts, replies, participants, handleFollowButton, unread, mention, all, t = (e) => e, formatDate = (e) => e, tlm, className = [], ...props }) {
 	const button = !following ? 'bell-off' : 'bell';
@@ -47,7 +36,7 @@ export default React.memo(function Message({ _id, msg, following, username, name
 			</Box>
 		</MessageTemplate.Container>
 		<MessageTemplate.Container alignItems='center'>
-			<Button rcx-contextual-message__follow small square flexShrink={0} ghost data-following={following} data-id={_id} onClick={handleFollowButton} title={actionLabel} aria-label={actionLabel}><Icon name={button} size='x20'/></Button>
+			<Button className={anchor} small square flexShrink={0} ghost data-following={following} data-id={_id} onClick={handleFollowButton} title={actionLabel} aria-label={actionLabel}><Icon name={button} size='x20'/></Button>
 			{
 				(mention && <NotificationStatus.Me t={t} mb='x24'/>)
 				|| (all && <NotificationStatus.All t={t} mb='x24'/>)

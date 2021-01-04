@@ -19,12 +19,12 @@ export const Default = () => <Content>
 			<Metrics.Item.Label>3</Metrics.Item.Label>
 		</Metrics.Item>
 		<Metrics.Item>
-			<Metrics.Item.Icon name='bell'/>
-			<Metrics.Item.Label>3</Metrics.Item.Label>
-		</Metrics.Item>
-		<Metrics.Item>
 			<Metrics.Item.Icon name='clock'/>
 			<Metrics.Item.Label>sunday</Metrics.Item.Label>
+		</Metrics.Item>
+		<Metrics.Item>
+			<Metrics.Item.Icon name='bell'/>
+			<Metrics.Item.Label>3</Metrics.Item.Label>
 		</Metrics.Item>
 	</Metrics>
 </Content>;
