@@ -5,6 +5,7 @@ import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import { getValidRoomName } from '../../../utils';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -414,7 +415,7 @@ export class Rooms extends Base {
 	}
 
 	findByNameContaining(name, discussion = false, options = {}) {
-		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
+		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
 
 		const query = {
 			prid: { $exists: discussion },
@@ -430,7 +431,7 @@ export class Rooms extends Base {
 	}
 
 	findByNameContainingAndTypes(name, types, discussion = false, options = {}) {
-		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
+		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
 
 		const query = {
 			t: {
@@ -501,7 +502,7 @@ export class Rooms extends Base {
 	}
 
 	findChannelAndPrivateByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${ s.trim(s.escapeRegExp(name)) }`, 'i');
+		const nameRegex = new RegExp(`^${ s.trim(escapeRegExp(name)) }`, 'i');
 
 		const query = {
 			t: {
@@ -565,7 +566,7 @@ export class Rooms extends Base {
 	}
 
 	findByTypeAndNameContaining(type, name, options) {
-		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
+		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
 
 		const query = {
 			name: nameRegex,
@@ -576,7 +577,7 @@ export class Rooms extends Base {
 	}
 
 	findByTypeInIdsAndNameContaining(type, ids, name, options) {
-		const nameRegex = new RegExp(s.trim(s.escapeRegExp(name)), 'i');
+		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
 
 		const query = {
 			_id: {
@@ -1143,7 +1144,7 @@ export class Rooms extends Base {
 	// ############################
 	// Discussion
 	findDiscussionParentByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${ s.trim(s.escapeRegExp(name)) }`, 'i');
+		const nameRegex = new RegExp(`^${ s.trim(escapeRegExp(name)) }`, 'i');
 
 		const query = {
 			t: {

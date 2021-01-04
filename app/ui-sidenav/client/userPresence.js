@@ -86,7 +86,7 @@ Tracker.autorun(() => {
 	mem.clear(get);
 	wasConnected = isConnected;
 
-	Presence.emit('restart');
+	Presence.restart();
 
 	if (featureExists) {
 		for (const node of data.keys()) {

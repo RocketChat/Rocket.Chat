@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Field } from '@rocket.chat/fuselage';
 
-import Page from '../../../client/components/basic/Page';
+import Page from '../../../client/components/Page';
 import DateRangePicker from './DateRangePicker';
 import AuditLogTable from './AuditLogTable';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
-import { useMethodData } from '../../../client/contexts/ServerContext';
+import { useMethodData } from '../../../client/hooks/useMethodData';
 
 const AuditLogPage = () => {
 	const t = useTranslation();
@@ -25,7 +25,7 @@ const AuditLogPage = () => {
 		endDate: new Date(end),
 	}], [end, start]);
 
-	const [data] = useMethodData('auditGetAuditions', params);
+	const { value: data } = useMethodData('auditGetAuditions', params);
 
 	return <Page>
 		<Page.Header title={t('Message_auditing_log')} />

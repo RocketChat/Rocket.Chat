@@ -151,10 +151,13 @@ export const statistics = {
 		statistics.mongoStorageEngine = mongoStorageEngine;
 
 		statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
+		statistics.uniqueUsersOfLastWeek = Sessions.getUniqueUsersOfLastWeek();
 		statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
 		statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
+		statistics.uniqueDevicesOfLastWeek = Sessions.getUniqueDevicesOfLastWeek();
 		statistics.uniqueDevicesOfLastMonth = Sessions.getUniqueDevicesOfLastMonth();
 		statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
+		statistics.uniqueOSOfLastWeek = Sessions.getUniqueOSOfLastWeek();
 		statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
 		statistics.apps = getAppsStatistics();

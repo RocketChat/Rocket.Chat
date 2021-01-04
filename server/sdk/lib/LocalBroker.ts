@@ -4,6 +4,7 @@ import { IBroker, IBrokerNode } from '../types/IBroker';
 import { ServiceClass } from '../types/ServiceClass';
 import { asyncLocalStorage } from '..';
 import { EventSignatures } from './Events';
+import { StreamerCentral } from '../../modules/streamer/streamer.module';
 
 export class LocalBroker implements IBroker {
 	private methods = new Map<string, Function>();
@@ -46,7 +47,9 @@ export class LocalBroker implements IBroker {
 		const namespace = instance.getName();
 
 		instance.getEvents().forEach((eventName) => {
-			this.events.on(eventName, instance.emit);
+			this.events.on(eventName, (...args) => {
+				instance.emit(eventName, ...args as Parameters<EventSignatures[typeof eventName]>);
+			});
 		});
 
 		const methods = instance.constructor?.name === 'Object' ? Object.getOwnPropertyNames(instance) : Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
@@ -61,8 +64,13 @@ export class LocalBroker implements IBroker {
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		// Pass the event name twice to forward it to the instance's emit method
-		this.events.emit(event, event, ...args);
+		this.broadcastLocal(event, ...args);
+
+		StreamerCentral.emit('broadcast', 'local', 'broadcast', [{ eventName: event, args }]);
+	}
+
+	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
+		this.events.emit(event, ...args);
 	}
 
 	async nodeList(): Promise<IBrokerNode[]> {

@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { settings } from '../../../settings/server';
-import { createLivechatSubscription,
+import {
+	createLivechatSubscription,
 	dispatchAgentDelegated,
 	forwardRoomToAgent,
 	forwardRoomToDepartment,
@@ -150,12 +151,12 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		if (transferData.userId) {
-			return forwardRoomToAgent(room, transferData);
-		}
-
 		if (transferData.departmentId) {
 			return forwardRoomToDepartment(room, guest, transferData);
+		}
+
+		if (transferData.userId) {
+			return forwardRoomToAgent(room, transferData);
 		}
 
 		return false;

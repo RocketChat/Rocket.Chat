@@ -41,7 +41,7 @@
 						{{#if servedBy}}<li><strong>{{_ "Agent"}}</strong>: {{servedBy.username}}</li>{{/if}}
 						{{#if facebook}}<li><i class="icon-facebook"></i>{{_ "Facebook_Page"}}: {{facebook.page.name}}</li>{{/if}}
 						{{#if sms}}<li><i class="i con-mobile"></i>{{_ "SMS_Enabled"}}</li>{{/if}}
-						{{#if topic}}<li><strong>{{_ "Topic"}}</strong>: {{{RocketChatMarkdown topic}}}</li>{{/if}}
+						{{#if topic}}<li><strong>{{_ "Topic"}}</strong>: {{{markdown topic}}}</li>{{/if}}
 						{{#if tags}}<li><strong>{{_ "Tags"}}</strong>: {{joinTags}}</li>{{/if}}
 						{{#if closedAt}}<li><strong>{{_ "Closed_At"}}</strong>: {{roomClosedDateTime}} <strong>{{_ "by"}}:</strong> {{roomClosedBy}}</li>{{/if}}
 						{{> Template.dynamic template=customInfoTemplate data=roomDataContext}}
@@ -74,7 +74,7 @@
 
 				{{#if roomOpen}}
 					{{#if canCloseRoom}}
-						<button class='button rc-button rc-button--secondary button-block close-livechat'><span><i class='icon-download'></i> {{_ "Close"}}</span></button>
+						<button class='button rc-button rc-button--secondary button-block close-livechat'><span><i class='icon-cancel'></i> {{_ "Close"}}</span></button>
 					{{/if}}
 					{{#if canForwardGuest}}
 						<button class="button rc-button rc-button--secondary button-block forward-livechat"><span><i class="icon-forward"></i> {{_ "Forward"}}</span></button>

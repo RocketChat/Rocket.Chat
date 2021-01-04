@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import Page from '../../../../client/components/basic/Page';
+import Page from '../../../../client/components/Page';
 import FilterByText from '../../../../client/components/FilterByText';
 import GenericTable from '../../../../client/components/GenericTable';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -29,7 +29,9 @@ function TagsPage({
 		<Page>
 			<Page.Header title={title}>
 				<ButtonGroup>
-					<Button small onClick={handleClick} title={t('New_Tag')}><Icon name='plus'/></Button>
+					<Button onClick={handleClick} title={t('New_Tag')}>
+						<Icon name='plus'/> {t('New')}
+					</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>

@@ -13,7 +13,7 @@ export const setRoomAvatar = function(rid, dataURI, user) {
 	if (!dataURI) {
 		fileStore.deleteByRoomId(rid);
 		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
-		api.broadcast('room.avatarUpdate', { rid });
+		api.broadcast('room.avatarUpdate', { _id: rid });
 
 		return Rooms.unsetAvatarData(rid);
 	}
@@ -40,7 +40,7 @@ export const setRoomAvatar = function(rid, dataURI, user) {
 			}
 			Rooms.setAvatarData(rid, 'upload', result.etag);
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
-			api.broadcast('room.avatarUpdate', { rid, avatarETag: result.etag });
+			api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
 		}, 500);
 	});
 };

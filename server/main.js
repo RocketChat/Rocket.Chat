@@ -2,8 +2,6 @@ import '../ee/server/broker';
 import './importPackages';
 import '../imports/startup/server';
 
-import '../lib/RegExp';
-
 import './services/startup';
 
 import '../ee/server';
@@ -12,6 +10,7 @@ import './startup/migrations';
 import './startup/appcache';
 import './startup/cron';
 import './startup/initialData';
+import './startup/instance';
 import './startup/presence';
 import './startup/serverRunning';
 import './configuration/accounts_meld';

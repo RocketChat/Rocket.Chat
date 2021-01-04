@@ -4,6 +4,7 @@ import s from 'underscore.string';
 
 import { MessageTypes } from './MessageTypes';
 import { settings } from '../../settings';
+import { escapeHTML } from '../../../lib/escapeHTML';
 
 export const Message = {
 	parse(msg, language) {
@@ -28,7 +29,7 @@ export const Message = {
 		}
 		msg.html = msg.msg;
 		if (s.trim(msg.html) !== '') {
-			msg.html = s.escapeHTML(msg.html);
+			msg.html = escapeHTML(msg.html);
 		}
 		msg.html = msg.html.replace(/\n/gm, '<br/>');
 		return msg.html;

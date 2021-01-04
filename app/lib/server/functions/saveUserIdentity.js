@@ -38,7 +38,7 @@ export function saveUserIdentity(userId, { _id, name: rawName, username: rawUser
 	}
 
 	// if coming from old username, update all references
-	if (previousUsername && usernameChanged) {
+	if ((previousUsername && usernameChanged) || (previousName && previousUsername)) {
 		if (typeof rawUsername !== 'undefined') {
 			Messages.updateAllUsernamesByUserId(user._id, username);
 			Messages.updateUsernameOfEditByUserId(user._id, username);

@@ -1,6 +1,9 @@
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 
+import { Markdown } from '../../markdown/client';
+import { escapeHTML } from '../../../lib/escapeHTML';
+
 const renderers = {};
 
 /**
@@ -33,7 +36,7 @@ export function registerFieldTemplate(fieldType, templateName, events) {
 					});
 			}
 		}
-		Template.room.events(uniqueEvents);
+		Template.roomOld.events(uniqueEvents);
 	}
 }
 
@@ -49,8 +52,11 @@ Template.renderField.helpers({
 			html = Blaze.toHTMLWithData(Template[renderers[field.type]], { field, message });
 		} else {
 			// consider the value already formatted as html
-			html = field.value;
+			html = escapeHTML(field.value);
 		}
-		return `<div class="${ field.type }">${ html }</div>`;
+		return `<div class="${ escapeHTML(field.type) }">${ html }</div>`;
+	},
+	markdown(text) {
+		return Markdown.parse(text);
 	},
 });

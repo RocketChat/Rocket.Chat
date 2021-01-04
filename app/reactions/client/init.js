@@ -3,14 +3,14 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
 import { roomTypes } from '../../utils/client';
-import { Rooms } from '../../models';
+import { Rooms, Subscriptions } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { EmojiPicker } from '../../emoji';
 import { tooltip } from '../../ui/client/components/tooltip';
 
-Template.room.events({
-	'click .add-reaction'(event, instance) {
+export const EmojiEvents = {
+	'click .add-reaction'(event) {
 		event.preventDefault();
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
@@ -22,7 +22,7 @@ Template.room.events({
 			return false;
 		}
 
-		if (!instance.subscription.get()) {
+		if (!Subscriptions.findOne({ rid })) {
 			return false;
 		}
 
@@ -58,7 +58,9 @@ Template.room.events({
 		event.stopPropagation();
 		tooltip.hide();
 	},
-});
+};
+
+Template.roomOld.events(EmojiEvents);
 
 Meteor.startup(function() {
 	MessageAction.addButton({
