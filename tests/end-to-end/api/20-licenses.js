@@ -19,7 +19,7 @@ describe('licenses', function() {
 		it('should fail if not logged in', (done) => {
 			request.post(api('licenses.add'))
 				.send({
-					license: ''
+					license: '',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(401)
@@ -34,7 +34,7 @@ describe('licenses', function() {
 			request.post(api('licenses.add'))
 				.set(unauthorizedUserCredentials)
 				.send({
-					license: ''
+					license: '',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(403)
@@ -49,7 +49,7 @@ describe('licenses', function() {
 			request.post(api('licenses.add'))
 				.set(credentials)
 				.send({
-					license: ''
+					license: '',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -99,7 +99,7 @@ describe('licenses', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('licenses').and.to.be.an('array');
 
-					const {licenses: [license]} = res.body;
+					const { licenses: [license] } = res.body;
 
 					expect(license).to.have.property('url');
 					expect(license).to.have.property('expiry');
