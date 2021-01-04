@@ -13,7 +13,7 @@ export const CannedResponseDetails = ({ response: { shortcut, text, scope }, onE
 
 	return <VerticalBar>
 		<VerticalBar.Header>
-			<VerticalBar.Back mis='none' onClick={onReturn} />
+			<VerticalBar.Back onClick={onReturn} />
 			<VerticalBar.Text>!{shortcut}</VerticalBar.Text>
 			<VerticalBar.Close onClick={onClose} />
 		</VerticalBar.Header>
