@@ -420,12 +420,21 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
 					const { status } = this.bodyParams;
-					Meteor.users.update(user._id, {
-						$set: {
-							status,
-							statusDefault: status,
-						},
-					});
+
+					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+						throw new Meteor.Error('error-not-allowed', 'Invisible status is not allowed', {
+							method: 'users.setStatus',
+						});
+					}
+
+
+						Meteor.users.update(user._id, {
+							$set: {
+								status,
+								statusDefault: status,
+								},
+						});
+
 					setUserStatus(user, status);
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
