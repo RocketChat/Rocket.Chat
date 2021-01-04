@@ -2,11 +2,11 @@ import React from 'react';
 import { Box, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import Card from '../../components/Card/Card';
-import { useTranslation } from '../../contexts/TranslationContext';
+import Card from '../../../components/Card/Card';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import UsagePieGraph from './UsagePieGraph';
 import InstancesModal from './InstancesModal';
-import { useSetModal } from '../../contexts/ModalContext';
+import { useSetModal } from '../../../contexts/ModalContext';
 
 const InstancesCard = ({ instances }) => {
 	const t = useTranslation();

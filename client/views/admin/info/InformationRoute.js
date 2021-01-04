@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-import { useRouteParameter } from '../../../contexts/RouterContext';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { useMethod, useServerInformation, useEndpoint } from '../../../contexts/ServerContext';
 import { downloadJsonAs } from '../../../lib/download';
-import InformationPage from './InformationPage';
 import NewInformationPage from './NewInformationPage';
 
 const InformationRoute = React.memo(function InformationRoute() {
@@ -51,7 +49,6 @@ const InformationRoute = React.memo(function InformationRoute() {
 
 	const info = useServerInformation();
 
-	const old = useRouteParameter('old');
 
 	const handleClickRefreshButton = () => {
 		if (isLoading) {
@@ -68,17 +65,7 @@ const InformationRoute = React.memo(function InformationRoute() {
 		downloadJsonAs(statistics, 'statistics');
 	};
 
-	if (canViewStatistics && old) {
-		return <InformationPage
-			canViewStatistics={canViewStatistics}
-			isLoading={isLoading}
-			info={info}
-			statistics={statistics}
-			instances={instances}
-			onClickRefreshButton={handleClickRefreshButton}
-			onClickDownloadInfo={handleClickDownloadInfo}
-		/>;
-	} if (canViewStatistics) {
+	if (canViewStatistics) {
 		return <NewInformationPage
 			canViewStatistics={canViewStatistics}
 			isLoading={isLoading}

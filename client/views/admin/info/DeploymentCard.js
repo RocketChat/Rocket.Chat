@@ -1,19 +1,25 @@
 import React from 'react';
-import { Skeleton } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Skeleton, ButtonGroup, Button } from '@rocket.chat/fuselage';
 
 import Card from '../../../components/Card/Card';
+import InstancesModal from './InstancesModal';
+import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
-const DeploymentCard = React.memo(function DeploymentCard({ info, statistics, isLoading }) {
+const DeploymentCard = React.memo(function DeploymentCard({ info, statistics, instances, isLoading }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
+	const setModal = useSetModal();
 
 	const { commit = {} } = info;
 
 	const s = (fn) => (isLoading ? <Skeleton width='50%' /> : fn());
 
 	const appsEngineVersion = info && info.marketplaceApiVersion;
+
+	const handleInstancesModal = useMutableCallback(() => { setModal(<InstancesModal instances={instances} onClose={() => setModal()}/>); });
 
 	return <Card>
 		<Card.Title>{t('Deployment')}</Card.Title>
@@ -54,6 +60,12 @@ const DeploymentCard = React.memo(function DeploymentCard({ info, statistics, is
 				</Card.Col.Section>
 			</Card.Col>
 		</Card.Body>
+
+		{!!instances.length && <Card.Footer>
+			<ButtonGroup align='end'>
+				<Button small onClick={handleInstancesModal}>{t('Instances')}</Button>
+			</ButtonGroup>
+		</Card.Footer>}
 	</Card>;
 });
 

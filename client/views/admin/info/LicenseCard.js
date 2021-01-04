@@ -1,36 +1,43 @@
 import React from 'react';
-import { Box, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Icon, ButtonGroup, Button, Skeleton, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import PlanTag from '../../components/basic/PlanTag';
-import Card from '../../components/Card/Card';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useSetting } from '../../contexts/SettingsContext';
-import { useSetModal } from '../../contexts/ModalContext';
-import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
+import PlanTag from '../../../components/PlanTag';
+import Card from '../../../components/Card/Card';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useSetting } from '../../../contexts/SettingsContext';
+import { useSetModal } from '../../../contexts/ModalContext';
 import UsagePieGraph from './UsagePieGraph';
 import OfflineLicenseModal from './OfflineLicenseModal';
 
-const Feature = ({ label, enabled }) => <Box display='flex' flexDirection='row' mb='x4'>
+const Feature = ({ label, enabled }) => <Box display='flex' flexDirection='row'>
 	<Box color={enabled ? 'success' : 'danger'}><Icon name={enabled ? 'check' : 'cross'} size='x16' /></Box>
 	{label}
 </Box>;
 
-const LicenseCard = () => {
+const LicenseCard = ({ statistics, isLoading }) => {
 	const t = useTranslation();
 
 	const setModal = useSetModal();
 
 	const currentLicense = useSetting('Enterprise_License');
+	const licenseStatus = useSetting('Enterprise_License_Status');
 
 	const isAirGapped = true;
 
-	const hasEngagement = useHasLicense('engagement-dashboard');
-	const hasOmnichannel = useHasLicense('livechat-enterprise');
-	const hasAuditing = useHasLicense('auditing');
-	const hasCannedResponses = useHasLicense('canned-responses');
+	const { value, phase, error } = useEndpointData('licenses.get');
+	const endpointLoading = phase === AsyncStatePhase.LOADING;
 
-	const handleApplyLicense = useMutableCallback(() => setModal(<OfflineLicenseModal onClose={() => { setModal(); }} license={currentLicense}/>));
+	const { maxActiveUsers = 0, modules = [] } = endpointLoading || error ? {} : value.licenses[0];
+
+	const hasEngagement = modules.includes('engagement-dashboard');
+	const hasOmnichannel = modules.includes('livechat-enterprise');
+	const hasAuditing = modules.includes('auditing');
+	const hasCannedResponses = modules.includes('canned-responses');
+
+	const handleApplyLicense = useMutableCallback(() => setModal(<OfflineLicenseModal onClose={() => { setModal(); }} license={currentLicense} licenseStatus={licenseStatus}/>));
 
 	return <Card>
 		<Card.Title>{t('License')}</Card.Title>
@@ -41,16 +48,38 @@ const LicenseCard = () => {
 				</Card.Col.Section>
 				<Card.Col.Section>
 					<Card.Col.Title>{t('Features')}</Card.Col.Title>
-					<Feature label={t('Omnichannel')} enabled={hasOmnichannel}/>
-					<Feature label={t('Auditing')} enabled={hasAuditing}/>
-					<Feature label={t('Canned_responses')} enabled={hasCannedResponses}/>
-					<Feature label={t('Engagement_Dashboard')} enabled={hasEngagement}/>
+					<Margins block='x4'>
+						{
+							endpointLoading
+								? <>
+									<Skeleton width='40x' />
+									<Skeleton width='40x' />
+									<Skeleton width='40x' />
+									<Skeleton width='40x' />
+								</>
+								: <>
+									<Feature label={t('Omnichannel')} enabled={hasOmnichannel}/>
+									<Feature label={t('Auditing')} enabled={hasAuditing}/>
+									<Feature label={t('Canned_responses')} enabled={hasCannedResponses}/>
+									<Feature label={t('Engagement_Dashboard')} enabled={hasEngagement}/>
+								</>
+						}
+					</Margins>
 				</Card.Col.Section>
 				<Card.Col.Section>
 					<Card.Col.Title>{t('Usage')}</Card.Col.Title>
 					<Box display='flex' flexDirection='row'>
-						<UsagePieGraph label={t('Users')} used={300} total={300} size={112}/>
-						<UsagePieGraph label={t('Integrations')} used={200} total={300} size={112} />
+						{
+							isLoading
+								? <Skeleton variant='rect' width='x112' height='x112'/>
+								: <UsagePieGraph
+									label={t('Users')}
+									used={statistics?.totalUsers}
+									total={maxActiveUsers}
+									size={112}
+									isLoading={isLoading}
+								/>
+						}
 					</Box>
 				</Card.Col.Section>
 			</Card.Col>
