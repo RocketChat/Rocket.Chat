@@ -2611,6 +2611,7 @@
   "Newer_than_may_not_exceed_Older_than": "«Новее, чем» не может превышать «Старше, чем»",
   "Nickname": "Псевдоним",
   "Nickname_Placeholder": "Введите ваш псевдоним...",
+  "No": "Нет",
   "No_available_agents_to_transfer": "Нет доступных сотрудников для передачи",
   "No_Canned_Responses": "Нет заготовленных ответов",
   "No_channel_with_name_%s_was_found": "Канал с названием <strong>\"%s\"</strong> не найден!",
