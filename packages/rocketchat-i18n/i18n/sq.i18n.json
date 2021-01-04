@@ -1854,6 +1854,7 @@
   "New_visitor_navigation": "New Navigation: __history__",
   "Newer_than": "Më i ri se",
   "Newer_than_may_not_exceed_Older_than": "\"Më i ri se\" nuk mund të kalojë \"Më i vjetër se\"",
+  "No": "jo",
   "No_available_agents_to_transfer": "Nuk ka agjentë në dispozicion për të transferuar",
   "No_channel_with_name_%s_was_found": "Asnjë kanal me emrin <strong>\"%s\"</strong> nuk u gjetë!",
   "No_channels_yet": "Ju nuk jeni ende pjesë e ndonjë kanali.",

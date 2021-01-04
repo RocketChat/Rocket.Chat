@@ -2361,6 +2361,7 @@
   "New_visitor_navigation": "Нова навігація: __history__",
   "Newer_than": "Новіші ніж",
   "Newer_than_may_not_exceed_Older_than": "\"Новіші ніж\" не можуть перевищувати \"Старіше, ніж\"",
+  "No": "Ні",
   "No_available_agents_to_transfer": "Немає доступних агентів для передачі",
   "No_channel_with_name_%s_was_found": "Ні один канал з ім'ям <strong>\"%s\"</strong> не було знайдено!",
   "No_channels_yet": "Ви не під'єднані до жодного каналу.",
