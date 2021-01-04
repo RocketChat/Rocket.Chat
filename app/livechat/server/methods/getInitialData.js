@@ -33,6 +33,7 @@ Meteor.methods({
 			guestDefaultAvatar: null,
 			registrationFormMessage: null,
 			showConnecting: false,
+			hideSysMessages: [],
 		};
 
 		const options = {
@@ -90,6 +91,7 @@ Meteor.methods({
 		info.guestDefaultAvatar = initSettings.Assets_livechat_guest_default_avatar;
 		info.registrationFormMessage = initSettings.Livechat_registration_form_message;
 		info.showConnecting = initSettings.Livechat_Show_Connecting;
+		info.hideSysMessages = initSettings.Livechat_hide_sys_messages;
 
 		info.agentData = room && room[0] && room[0].servedBy && Users.getAgentInfo(room[0].servedBy._id);
 

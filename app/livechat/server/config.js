@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
+import { MessageTypesValues } from '../../lib/lib/MessageTypes';
 
 Meteor.startup(function() {
 	settings.addGroup('Omnichannel');
@@ -24,6 +25,17 @@ Meteor.startup(function() {
 		allowedTypes: ['color', 'expression'],
 		group: 'Omnichannel',
 		section: 'Livechat',
+		public: true,
+	});
+
+	settings.add('Livechat_hide_sys_messages', [], {
+		type: 'multiSelect',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		values: [
+			...MessageTypesValues,
+			{ key: 'livechat_transfer_history', i18nLabel: 'Message_HideType_livechat_transfer_history' },
+		],
 		public: true,
 	});
 
