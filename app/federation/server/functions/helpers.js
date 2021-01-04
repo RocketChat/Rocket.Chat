@@ -1,4 +1,5 @@
 import { Settings, Subscriptions, Users } from '../../../models/server';
+import { settings } from '../../../settings';
 import { STATUS_ENABLED, STATUS_REGISTERING } from '../constants';
 
 export const getNameAndDomain = (fullyQualifiedName) => fullyQualifiedName.split('@');
@@ -17,7 +18,7 @@ export function updateEnabled(enabled) {
 	Settings.updateValueById('FEDERATION_Enabled', enabled);
 }
 
-export const checkRoomType = (room) => room.t === 'p' || room.t === 'd' || (room.t === 'c' && Settings.findOneById('FEDERATION_Public_Channels'));
+export const checkRoomType = (room) => room.t === 'p' || room.t === 'd' || (room.t === 'c' && settings.get('FEDERATION_Public_Channels'));
 export const checkRoomDomainsLength = (domains) => domains.length <= (process.env.FEDERATED_DOMAINS_LENGTH || 10);
 
 export const hasExternalDomain = ({ federation }) => {
