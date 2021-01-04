@@ -1849,6 +1849,7 @@
   "New_visitor_navigation": "การนำทางใหม่: __history__",
   "Newer_than": "ใหม่กว่า",
   "Newer_than_may_not_exceed_Older_than": "\"ใหม่กว่า\" ต้องไม่เกิน \"เก่ากว่า\"",
+  "No": "ไม่",
   "No_available_agents_to_transfer": "ไม่มีตัวแทนที่จะโอน",
   "No_channel_with_name_%s_was_found": "ไม่พบช่องที่มีชื่อ <strong>\"%s\"</strong>!",
   "No_channels_yet": "คุณยังไม่ได้เป็นส่วนหนึ่งของช่องใด ๆ",

@@ -1942,6 +1942,7 @@
   "New_visitor_navigation": "Ny navigasjon: __history__",
   "Newer_than": "Nyere enn",
   "Newer_than_may_not_exceed_Older_than": "\"Nyere enn\" kan ikke overstige \"Eldre enn\"",
+  "No": "Nei",
   "No_available_agents_to_transfer": "Ingen tilgjengelige agenter for å overføre",
   "No_channel_with_name_%s_was_found": "Ingen kanal med navn <strong>\"%s\"</strong> ble funnet!",
   "No_channels_yet": "Du er ikke en del av en kanal ennå",

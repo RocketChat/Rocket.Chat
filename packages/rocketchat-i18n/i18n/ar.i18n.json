@@ -1853,6 +1853,7 @@
   "New_visitor_navigation": "التنقل الجديد: __history__",
   "Newer_than": "أحدث من",
   "Newer_than_may_not_exceed_Older_than": "\"أحدث من\" قد لا يتجاوز \"أقدم من\"",
+  "No": "لا",
   "No_available_agents_to_transfer": "لا يوجد أي موظفين ليتم نقلهم",
   "No_channel_with_name_%s_was_found": "لا توجد قناة باسم <strong>\"%s\"</strong>",
   "No_channels_yet": "لست جزء من أي قناة حتى الآن.",

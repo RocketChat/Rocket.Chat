@@ -23,7 +23,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 
 	const saveData = useRef({ form: {} });
 
-	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+	const [hasChanges, setHasChanges] = useState(false);
 
 	const save = useMethod('livechat:saveBusinessHour');
 	const deleteBH = useMethod('livechat:removeBusinessHour');
@@ -112,7 +112,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 				{type === 'custom' && <Button primary danger onClick={handleDelete}>
 					{t('Delete')}
 				</Button>}
-				<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+				<Button primary onClick={handleSave} disabled={!hasChanges}>
 					{t('Save')}
 				</Button>
 			</ButtonGroup>
@@ -121,7 +121,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 			<BusinessHoursFormContainer
 				data={data.businessHour}
 				saveRef={saveData}
-				onChange={(hasChanges) => setHasUnsavedChanges(hasChanges)} />
+				onChange={setHasChanges} />
 		</Page.ScrollableContentWithShadow>
 	</Page>;
 };

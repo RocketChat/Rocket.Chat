@@ -1854,6 +1854,7 @@
   "New_visitor_navigation": "Нова навигация: __history__",
   "Newer_than": "По - нова от",
   "Newer_than_may_not_exceed_Older_than": "\"По-нова от\" не може да надвишава \"По-стари от\"",
+  "No": "Не",
   "No_available_agents_to_transfer": "Няма налични агенти за прехвърляне",
   "No_channel_with_name_%s_was_found": "Не е намерен канал с име <strong>\"%s\"</strong>!",
   "No_channels_yet": "Не си част от никой канал все още",

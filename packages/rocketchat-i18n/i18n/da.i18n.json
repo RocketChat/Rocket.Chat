@@ -2698,6 +2698,7 @@
   "Newer_than_may_not_exceed_Older_than": "\"Nyere end\" må ikke overstige \"Ældre end\"",
   "Nickname": "Kaldenavn",
   "Nickname_Placeholder": "Indtast dit kaldenavn...",
+  "No": "Nej",
   "No_available_agents_to_transfer": "Ingen tilgængelige agenter til overførsel",
   "No_Canned_Responses": "Ingen opbevarede svar",
   "No_channel_with_name_%s_was_found": "Ingen kanal med navn <strong>\"%s\"</strong> blev fundet!",

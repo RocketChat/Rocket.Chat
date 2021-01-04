@@ -1855,6 +1855,7 @@
   "New_visitor_navigation": "Uusi navigointi: __history__",
   "Newer_than": "Uudempi kuin",
   "Newer_than_may_not_exceed_Older_than": "\"Uudempi kuin\" ei saa ylittää \"Vanhemmat kuin\"",
+  "No": "Ei",
   "No_available_agents_to_transfer": "Ei vapaita tukihenkilöitä siirrettäviksi",
   "No_channel_with_name_%s_was_found": "Kanavaa nimeltä '%s' ei löytynyt!",
   "No_channels_yet": "Et ole vielä millään kanavalla.",

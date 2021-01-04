@@ -2120,6 +2120,7 @@
   "New_visitor_navigation": "ناوبری جدید: __history__",
   "Newer_than": "جدیدتر از",
   "Newer_than_may_not_exceed_Older_than": "\"جدیدتر از\" ممکن است از \"قدیمی تر از\"",
+  "No": "خیر",
   "No_available_agents_to_transfer": "هیچ عامل موجود برای انتقال وجود ندارد",
   "No_Canned_Responses": "بدون پاسخ آماده",
   "No_channel_with_name_%s_was_found": "کانالی با نام <strong>\"%s\" را</strong> پیدا نشد!",

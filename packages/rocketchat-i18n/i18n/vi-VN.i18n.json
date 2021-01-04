@@ -1854,6 +1854,7 @@
   "New_visitor_navigation": "Điều hướng mới: __history__",
   "Newer_than": "Mới hơn",
   "Newer_than_may_not_exceed_Older_than": "\"Mới hơn\" không được vượt quá \"Cũ hơn\"",
+  "No": "Không",
   "No_available_agents_to_transfer": "Không có agent nào có thể chuyển",
   "No_channel_with_name_%s_was_found": "Không tìm thấy kênh có tên <strong>\"%s\"</strong>!",
   "No_channels_yet": "Bạn chưa thuộc bất kỳ kênh nào",

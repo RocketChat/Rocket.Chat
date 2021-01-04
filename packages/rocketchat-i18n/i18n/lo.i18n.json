@@ -1893,6 +1893,7 @@
   "New_visitor_navigation": "New Navigation: __history__",
   "Newer_than": "ໃຫມ່ກວ່າ",
   "Newer_than_may_not_exceed_Older_than": "\"ໃຫມ່ກວ່າ\" ອາດຈະບໍ່ເກີນ \"ເກົ່າກວ່າ\"",
+  "No": "No",
   "No_available_agents_to_transfer": "ບໍ່ມີຕົວແທນທີ່ມີການໂອນ",
   "No_channel_with_name_%s_was_found": "ບໍ່ມີຊ່ອງທາງທີ່ມີຊື່ <strong>\"%s\"</strong> ໄດ້ຖືກພົບເຫັນ!",
   "No_channels_yet": "ທ່ານບໍ່ແມ່ນສ່ວນຫນຶ່ງຂອງຊ່ອງທາງໃດ ໆ .",

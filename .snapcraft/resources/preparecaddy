@@ -32,7 +32,7 @@ caddy_arch=_linux_$caddy_arch
 
 echo "Downloading Caddy for $caddy_os/$caddy_arch$caddy_arm..."
 caddy_file="caddy_linux_$caddy_arch${caddy_arm}_custom$caddy_dl_ext"
-caddy_url="https://github.com/mholt/caddy/releases/download/$caddy_version/caddy_$caddy_version$caddy_arch$caddy_arm.tar.gz"
+caddy_url="https://github.com/caddyserver/caddy/releases/download/$caddy_version/caddy_$caddy_version$caddy_arch$caddy_arm.tar.gz"
 echo "$caddy_url"
 
 curl -L "$caddy_url" -o "$caddy_file"

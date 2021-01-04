@@ -2,25 +2,27 @@ import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from '
 import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useResizeObserver, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useResizeObserver, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useRoute, useCurrentRoute } from '../../../../contexts/RouterContext';
+import { useRoute, useCurrentRoute, useQueryStringParameter } from '../../../../contexts/RouterContext';
 import { call } from '../../../../../app/ui-utils/client';
 import { useUserId, useUserSubscription } from '../../../../contexts/UserContext';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
-import { clickableItem } from '../../helpers/clickableItem';
+import { clickableItem } from '../../../../lib/clickableItem';
 import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
-import { renderMessageBody } from '../../../../lib/renderMessageBody';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { useTabBarClose, useTabContext } from '../../providers/ToolboxProvider';
+import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
+import { renderMessageBody } from '../../../../lib/renderMessageBody';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -37,8 +39,18 @@ const filterProps = ({ msg, u, replies, mentions, tcount, ts, _id, tlm, attachme
 const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
 const roomFields = { t: 1, name: 1 };
 
+const mergeThreads = (threads, newThreads) =>
+	Array.from(
+		new Map([
+			...threads.map((msg) => [msg._id, msg]),
+			...newThreads.map((msg) => [msg._id, msg]),
+		]).values(),
+	)
+		.sort((a, b) => b.tlm.getTime() - a.tlm.getTime());
+
 export function withData(WrappedComponent) {
 	return ({ rid, ...props }) => {
+		const onClose = useTabBarClose();
 		const room = useUserRoom(rid, roomFields);
 		const subscription = useUserSubscription(rid, subscriptionFields);
 		const userId = useUserId();
@@ -57,20 +69,8 @@ export function withData(WrappedComponent) {
 		const [type, setType] = useLocalStorage('thread-list-type', 'all');
 		const [text, setText] = useState('');
 
-		const mergeThreads = useCallback(
-			(threads, newThreads) =>
-				Array.from(
-					new Map([
-						...threads.map((msg) => [msg._id, msg]),
-						...newThreads.map((msg) => [msg._id, msg]),
-					]).values(),
-				)
-					.sort((a, b) => b.tlm.getTime() - a.tlm.getTime()),
-			[],
-		);
-
 		const getThreadsList = useEndpoint('GET', 'chat.getThreadsList');
-		const fetchThreads = useCallback(async ({ rid, offset, limit, type, text }) => {
+		const fetchThreads = useMutableCallback(async ({ rid, offset, limit, type, text }) => {
 			try {
 				const data = await getThreadsList({
 					rid,
@@ -94,7 +94,7 @@ export function withData(WrappedComponent) {
 					count,
 				}));
 			}
-		}, [getThreadsList, mergeThreads]);
+		});
 
 		const debouncedText = useDebouncedValue(text, 400);
 		useEffect(() => {
@@ -135,6 +135,7 @@ export function withData(WrappedComponent) {
 			setText={handleTextChange}
 			type={type}
 			setType={setType}
+			onClose={onClose}
 		/>;
 	};
 }
@@ -210,7 +211,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 
 	const [name] = useCurrentRoute();
 	const channelRoute = useRoute(name);
-	const onClick = useCallback((e) => {
+	const onClick = useMutableCallback((e) => {
 		const { id: context } = e.currentTarget.dataset;
 		channelRoute.push({
 			tab: 'thread',
@@ -218,7 +219,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 			rid: room._id,
 			name: room.name,
 		});
-	}, [channelRoute, room._id, room.name]);
+	});
 
 	const options = useMemo(() => [['all', t('All')], ['following', t('Following')], ['unread', t('Unread')]], [t]);
 
@@ -236,25 +237,28 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 		onClick={onClick}
 	/>, [showRealNames, unread, unreadUser, unreadGroup, userId, onClick]);
 
-	const isItemLoaded = useCallback((index) => index < threadsRef.current.length, []);
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({ debounceDelay: 100 });
+	const isItemLoaded = useMutableCallback((index) => index < threadsRef.current.length);
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({ debounceDelay: 200 });
 
-	return <VerticalBar>
+	const mid = useTabContext();
+	const jump = useQueryStringParameter('jump');
+
+	return <>
 		<VerticalBar.Header>
-			<Icon name='thread' size='x20'/>
-			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Threads')}</Box>
+			<VerticalBar.Icon name='thread'/>
+			<VerticalBar.Text>{t('Threads')}</VerticalBar.Text>
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>
 			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
-				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x8'>
-					<Margins inline='x8'>
+				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+					<Margins inline='x4'>
 						<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 						<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
 					</Margins>
 				</Box>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden'>
+			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden' display='flex'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
 				{!error && total > 0 && <InfiniteLoader
@@ -277,7 +281,8 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 				</InfiniteLoader>}
 			</Box>
 		</VerticalBar.Content>
-	</VerticalBar>;
+		{ mid && <VerticalBar.InnerContent><ThreadComponent mid={mid} jump={jump} room={room}/></VerticalBar.InnerContent> }
+	</>;
 }
 
 export default withData(ThreadList);
