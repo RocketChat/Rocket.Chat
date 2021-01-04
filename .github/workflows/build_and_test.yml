@@ -137,6 +137,13 @@ jobs:
       run: |
         meteor reset
 
+    - name: Try building micro services
+      run: |
+        cd ./ee/server/services
+        npm i
+        npm run build
+        rm -rf dist/
+
     - name: Build Rocket.Chat From Pull Request
       if: startsWith(github.ref, 'refs/pull/') == true
       env:
