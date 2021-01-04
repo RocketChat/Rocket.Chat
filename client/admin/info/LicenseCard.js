@@ -3,7 +3,7 @@ import { Box, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import PlanTag from '../../components/basic/PlanTag';
-import Card from '../../components/basic/Card/Card';
+import Card from '../../components/Card/Card';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useSetModal } from '../../contexts/ModalContext';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Skeleton } from '@rocket.chat/fuselage';
 
-import Card from '../../components/basic/Card/Card';
+import Card from '../../components/Card/Card';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 

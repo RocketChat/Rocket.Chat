@@ -8,7 +8,7 @@ import UsageCard from './UsageCard';
 import LicenseCard from './LicenseCard';
 import InstancesCard from './InstancesCard';
 import PushCard from './PushCard';
-import { DOUBLE_COLUMN_CARD_WIDTH } from '../../components/basic/Card/Card';
+import { DOUBLE_COLUMN_CARD_WIDTH } from '../../components/Card/Card';
 import { useTranslation } from '../../contexts/TranslationContext';
 // import RocketChatSection from './RocketChatSection';
 // import CommitSection from './CommitSection';

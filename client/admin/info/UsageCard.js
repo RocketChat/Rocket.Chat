@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, Skeleton, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import DotLeader from '../../components/basic/DotLeader';
-import Card from '../../components/basic/Card/Card';
+import DotLeader from '../../components/DotLeader';
+import Card from '../../components/Card/Card';
 import { UserStatus } from '../../components/basic/UserStatus';
 import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
 import { useTranslation } from '../../contexts/TranslationContext';
