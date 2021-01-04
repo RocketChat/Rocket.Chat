@@ -16,7 +16,7 @@
   "24_Hour": "24 órás óra",
   "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Egy új tulajdonos automatikusan <span style=\"font-weight: bold;\">__count__</span> szobához lesz rendelve.",
   "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Egy új tulajdonos automatikusan <span style=\"font-weight: bold;\">__roomName__</span> szobához lesz rendelve.",
-  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Egy új tulajdonos lesz automatikusan hozzárendelve ezekhez a <span style=\"font-weight: bold;\"> __ count __ </span> szobákhoz: <br/> __rooms__.",
+  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Egy új tulajdonos lesz automatikusan hozzárendelve ezekhez a <span style=\"font-weight: bold;\">__count__</span> szobákhoz: <br/> __rooms__.",
   "Accept": "Elfogadás",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Bejövő Livechat kérések elfogadása akkor is, ha nincs elérhető ügyintéző",
   "Accept_new_livechats_when_agent_is_idle": "Új Livechat kérések elfogadása, ha az ügyintéző tétlen",
