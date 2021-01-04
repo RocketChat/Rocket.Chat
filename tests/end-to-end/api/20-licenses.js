@@ -98,15 +98,6 @@ describe('licenses', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('licenses').and.to.be.an('array');
-
-					const { licenses: [license] } = res.body;
-
-					expect(license).to.have.property('url');
-					expect(license).to.have.property('expiry');
-					expect(license).to.have.property('modules').and.to.be.an('array');
-					expect(license).to.have.property('maxActiveUsers');
-					expect(license).to.have.property('maxGuestUsers');
-					expect(license).to.have.property('maxRoomsPerGuest');
 				})
 
 				.end(done);
