@@ -30,7 +30,7 @@ const CannedResponseEdit = ({ onSave, onReturn, onClose }) => {
 
 	return <VerticalBar>
 		<VerticalBar.Header>
-			<ActionButton tiny ghost mis='none' icon='arrow-back' onClick={onReturn} />
+			<VerticalBar.Back mis='none' onClick={onReturn} />
 			<VerticalBar.Text>{t('New_Canned_Response')}</VerticalBar.Text>
 			<VerticalBar.Close onClick={onClose} />
 		</VerticalBar.Header>
