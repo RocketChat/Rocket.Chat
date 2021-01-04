@@ -2378,6 +2378,7 @@
   "New_visitor_navigation": "新的导航：__history__",
   "Newer_than": "比...更新",
   "Newer_than_may_not_exceed_Older_than": "“晚于“不得超过”早于“",
+  "No": "否",
   "No_available_agents_to_transfer": "没有可用的代理进行传输",
   "No_Canned_Responses": "无罐装回复",
   "No_channel_with_name_%s_was_found": "未找到频道 <strong>\"%s\"</strong> !",
