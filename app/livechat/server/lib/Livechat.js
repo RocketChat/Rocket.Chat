@@ -345,6 +345,14 @@ export const Livechat = {
 
 		const params = callbacks.run('livechat.beforeCloseRoom', { room, options });
 		const { extraData } = params;
+		const guest = LivechatVisitors.findOneById(room.v._id);
+		const updateUser = {};
+
+		// remove department from guest when closing chat.
+		if (guest.department) {
+			Object.assign(updateUser, { $unset: { department: 1 } });
+			LivechatVisitors.updateById(guest._id, updateUser);
+		}
 
 		const now = new Date();
 		const { _id: rid, servedBy, transcriptRequest } = room;
