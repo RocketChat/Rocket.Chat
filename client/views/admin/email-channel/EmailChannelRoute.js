@@ -5,7 +5,7 @@ import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import EmailChannelPage from './EmailChannelPage';
 
 function EmailChannelRoute() {
-	const canViewEmailChannel = usePermission('view-room-administration');
+	const canViewEmailChannel = usePermission('manage-email-channels');
 
 	if (!canViewEmailChannel) {
 		return <NotAuthorizedPage />;

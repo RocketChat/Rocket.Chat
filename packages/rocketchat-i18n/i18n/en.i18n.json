@@ -2452,6 +2452,8 @@
   "manage-assets": "Manage Assets",
   "manage-assets_description": "Permission to manage the server assets",
   "manage-cloud_description": "Manage Cloud",
+  "manage-email-channels": "Manage Email Channel",
+  "manage-email-channels_description": "Permission to manage the email channel",
   "manage-emoji": "Manage Emoji",
   "manage-emoji_description": "Permission to manage the server emojis",
   "manage-incoming-integrations": "Manage Incoming Integrations",
