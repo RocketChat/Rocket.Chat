@@ -3,8 +3,6 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from 'react';
 import { Box, Icon, TextInput, Callout } from '@rocket.chat/fuselage';
-// import { FixedSizeList as List } from 'react-window';
-// import InfiniteLoader from 'react-window-infinite-loader';
 import { Virtuoso } from 'react-virtuoso';
 import { useDebouncedValue, useDebouncedState/* , useResizeObserver*/ } from '@rocket.chat/fuselage-hooks';
 
@@ -21,7 +19,6 @@ import { clickableItem } from '../../../../lib/clickableItem';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import { renderMessageBody } from '../../../../lib/renderMessageBody';
 
@@ -151,7 +148,6 @@ const Row = memo(function Row({
 	userId,
 	onClick,
 }) {
-	console.log(discussion);
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 
@@ -202,7 +198,6 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 						endReached={ loading ? () => {} : loadMoreItems}
 						overscan={25}
 						data={discussions}
-						components={{ List: ScrollableContentWrapper }}
 						itemContent={(index, data) => <Row
 							discussion={data}
 							showRealNames={showRealNames}
