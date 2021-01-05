@@ -5,8 +5,6 @@ module.exports = {
 		'../ee/**/*.stories.js',
 	],
 	addons: [
-		'@storybook/addon-actions',
-		'@storybook/addon-knobs',
-		'@storybook/addon-viewport',
+		'@storybook/addon-essentials',
 	],
 };
