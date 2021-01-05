@@ -119,6 +119,11 @@ registerAdminRoute('/permissions/:context?/:_id?', {
 	lazyRouteComponent: () => import('./permissions/PermissionsRouter'),
 });
 
+registerAdminRoute('/email-channel/:context?/:_id?', {
+	name: 'admin-email-channel',
+	lazyRouteComponent: () => import('./email-channel/EmailChannelRoute'),
+});
+
 Meteor.startup(() => {
 	registerAdminRoute('/:group+', {
 		name: 'admin',
