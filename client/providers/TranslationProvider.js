@@ -51,19 +51,23 @@ const getLanguage = () => TAPi18n.getLanguage();
 
 const loadLanguage = (language) => TAPi18n._loadLanguage(language);
 
-export function TranslationProvider({ children }) {
+function TranslationProvider({ children }) {
 	const languages = useReactiveValue(getLanguages);
 	const language = useReactiveValue(getLanguage);
+
 	const translate = useMemo(() => createTranslateFunction(language), [language]);
+
 	const value = useMemo(() => ({
 		languages,
 		language,
 		loadLanguage,
 		translate,
-	}),
-	[languages, language, loadLanguage, translate]);
+	}), [languages, language, translate]);
+
 	return <TranslationContext.Provider
 		children={children}
 		value={value}
 	/>;
 }
+
+export default TranslationProvider;

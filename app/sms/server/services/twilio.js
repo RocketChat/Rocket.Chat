@@ -1,20 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import twilio from 'twilio';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 
 import { settings } from '../../../settings';
 import { SMS } from '../SMS';
-import { Notifications } from '../../../notifications';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
+import { api } from '../../../../server/sdk/api';
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId, rid, msg) => Notifications.notifyUser(userId, 'message', {
-	_id: Random.id(),
-	rid,
-	ts: new Date(),
+const notifyAgent = (userId, rid, msg) => api.broadcast('notify.ephemeralMessage', userId, rid, {
 	msg,
 });
 

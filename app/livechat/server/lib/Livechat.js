@@ -38,6 +38,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 export const Livechat = {
 	Analytics,
@@ -148,7 +149,6 @@ export const Livechat = {
 		if (guest.name) {
 			message.alias = guest.name;
 		}
-		// return messages;
 		return _.extend(sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
 	},
 
@@ -192,7 +192,7 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
+	registerGuest({ token, name, email, department, phone, username, livechatData, contactManager, connectionData } = {}) {
 		check(token, String);
 
 		let userId;
@@ -200,6 +200,7 @@ export const Livechat = {
 			$set: {
 				token,
 			},
+			$unset: { },
 		};
 
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
@@ -218,6 +219,7 @@ export const Livechat = {
 			} else {
 				const userData = {
 					username,
+					ts: new Date(),
 				};
 
 				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
@@ -233,29 +235,45 @@ export const Livechat = {
 			}
 		}
 
+		if (name) {
+			updateUser.$set.name = name;
+		}
+
 		if (phone) {
 			updateUser.$set.phone = [
 				{ phoneNumber: phone.number },
 			];
+		} else {
+			updateUser.$unset.phone = 1;
 		}
 
 		if (email && email.trim() !== '') {
 			updateUser.$set.visitorEmails = [
 				{ address: email },
 			];
+		} else {
+			updateUser.$unset.visitorEmails = 1;
 		}
 
-		if (name) {
-			updateUser.$set.name = name;
+		if (livechatData) {
+			updateUser.$set.livechatData = livechatData;
+		} else {
+			updateUser.$unset.livechatData = 1;
+		}
+
+		if (contactManager) {
+			updateUser.$set.contactManager = contactManager;
+		} else {
+			updateUser.$unset.contactManager = 1;
 		}
 
 		if (!department) {
-			Object.assign(updateUser, { $unset: { department: 1 } });
+			updateUser.$unset.department = 1;
 		} else {
 			const dep = LivechatDepartment.findOneByIdOrName(department);
 			updateUser.$set.department = dep && dep._id;
 		}
-
+		if (_.isEmpty(updateUser.$unset)) { delete updateUser.$unset; }
 		LivechatVisitors.updateById(userId, updateUser);
 
 		return userId;
@@ -312,6 +330,7 @@ export const Livechat = {
 		const ret = LivechatVisitors.saveGuestById(_id, updateData);
 
 		Meteor.defer(() => {
+			Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
 			callbacks.run('livechat.saveGuest', updateData);
 		});
 
@@ -495,6 +514,7 @@ export const Livechat = {
 		}
 
 		Meteor.defer(() => {
+			Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 			callbacks.run('livechat.saveRoom', roomData);
 		});
 
@@ -1105,7 +1125,7 @@ export const Livechat = {
 		}
 
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			Livechat.stream.emit(room._id, {
+			notifications.streamLivechatRoom.emit(room._id, {
 				type: 'agentStatus',
 				status,
 			});
@@ -1121,7 +1141,7 @@ export const Livechat = {
 	},
 
 	notifyRoomVisitorChange(roomId, visitor) {
-		Livechat.stream.emit(roomId, {
+		notifications.streamLivechatRoom.emit(roomId, {
 			type: 'visitorData',
 			visitor,
 		});
@@ -1152,23 +1172,15 @@ export const Livechat = {
 
 		return LivechatRooms.findOneById(roomId);
 	},
+	updateLastChat(contactId, lastChat) {
+		const updateUser = {
+			$set: {
+				lastChat,
+			},
+		};
+		LivechatVisitors.updateById(contactId, updateUser);
+	},
 };
-
-Livechat.stream = new Meteor.Streamer('livechat-room');
-
-Livechat.stream.allowRead((roomId, extraData) => {
-	const room = LivechatRooms.findOneById(roomId);
-
-	if (!room) {
-		console.warn(`Invalid eventName: "${ roomId }"`);
-		return false;
-	}
-
-	if (room.t === 'l' && extraData && extraData.visitorToken && room.v.token === extraData.visitorToken) {
-		return true;
-	}
-	return false;
-});
 
 settings.get('Livechat_history_monitor_type', (key, value) => {
 	Livechat.historyMonitorType = value;

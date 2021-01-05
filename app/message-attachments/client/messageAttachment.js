@@ -3,7 +3,8 @@ import { Template } from 'meteor/templating';
 
 import { DateFormat } from '../../lib';
 import { getURL } from '../../utils/client';
-import { renderMessageBody, createCollapseable } from '../../ui-utils';
+import { createCollapseable } from '../../ui-utils';
+import { renderMessageBody } from '../../../client/lib/renderMessageBody';
 
 const colors = {
 	good: '#35AC19',
@@ -42,10 +43,10 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 		loader.style.display = 'block';
 	}
 
-	const pdf = await pdfjsLib.getDocument(pdfLink);
+	const pdf = await pdfjsLib.getDocument(pdfLink).promise;
 	const page = await pdf.getPage(1);
 	const scale = 0.5;
-	const viewport = page.getViewport(scale);
+	const viewport = page.getViewport({ scale });
 	const context = canvas.getContext('2d');
 	canvas.height = viewport.height;
 	canvas.width = viewport.width;

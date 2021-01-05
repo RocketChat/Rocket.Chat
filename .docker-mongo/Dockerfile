@@ -1,23 +1,33 @@
-FROM node:12.16.1-buster-slim
+FROM node:12.18.4-buster-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
 # Install MongoDB and dependencies
+ENV MONGO_MAJOR 4.2
+ENV MONGO_VERSION 4.2.10
+
 RUN set -x \
     && apt-get update \
     && apt-get install -y wget gnupg dirmngr pwgen \
-    && wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | apt-key add - \
-    && echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" | tee /etc/apt/sources.list.d/mongodb-org-4.2.list \
+    && wget -qO - "https://www.mongodb.org/static/pgp/server-${MONGO_MAJOR}.asc" | apt-key add - \
+    && echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/$MONGO_MAJOR main" | tee "/etc/apt/sources.list.d/mongodb-org-${MONGO_MAJOR}.list" \
     && apt-get update \
-    && apt-get install -y mongodb-org fontconfig \
+    && apt-get install -y \
+       mongodb-org=$MONGO_VERSION \
+       mongodb-org-server=$MONGO_VERSION \
+       mongodb-org-shell=$MONGO_VERSION \
+       mongodb-org-mongos=$MONGO_VERSION \
+       mongodb-org-tools=$MONGO_VERSION \
+       fontconfig \
     && apt-get clean my room \
     && groupadd -g 65533 -r rocketchat \
     && useradd -u 65533 -r -g rocketchat rocketchat \
     && mkdir -p /app/uploads \
     && chown rocketchat:rocketchat /app/uploads
 
-ADD . /app
-ADD entrypoint.sh /app/bundle/
+# --chown requires Docker 17.12 and works only on Linux
+ADD --chown=rocketchat:rocketchat . /app
+ADD --chown=rocketchat:rocketchat entrypoint.sh /app/bundle/
 
 RUN aptMark="$(apt-mark showmanual)" \
     && apt-get install -y --no-install-recommends g++ make python ca-certificates \
@@ -33,8 +43,7 @@ RUN aptMark="$(apt-mark showmanual)" \
        | sort -u \
        | xargs -r apt-mark manual \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-    && npm cache clear --force \
-    && chown -R rocketchat:rocketchat /app
+    && npm cache clear --force
 
 VOLUME /app/uploads
 

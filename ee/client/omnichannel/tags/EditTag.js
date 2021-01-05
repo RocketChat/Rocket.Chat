@@ -1,25 +1,25 @@
 import React, { useMemo } from 'react';
-import { Field, TextInput, Button, Margins, Box, MultiSelect, Callout } from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Box, MultiSelect, Callout, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
-import { FormSkeleton } from './Skeleton';
+import VerticalBar from '../../../../client/components/VerticalBar';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useRoute } from '../../../../client/contexts/RouterContext';
-
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
+import { FormSkeleton } from '../../../../client/components/Skeleton';
 
 export function TagEditWithData({ tagId, reload }) {
 	const query = useMemo(() => ({ tagId }), [tagId]);
-	const { data, state, error } = useEndpointDataExperimental('livechat/tags.getOne', query);
-	const { data: availableDepartments, state: availableDepartmentsState, error: availableDepartmentsError } = useEndpointDataExperimental('livechat/department');
+	const { value: data, phase: state, error } = useEndpointData('livechat/tags.getOne', query);
+	const { value: availableDepartments, phase: availableDepartmentsState, error: availableDepartmentsError } = useEndpointData('livechat/department');
 
 	const t = useTranslation();
 
-	if ([state, availableDepartmentsState].includes(ENDPOINT_STATES.LOADING)) {
+	if ([state, availableDepartmentsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 
@@ -33,9 +33,9 @@ export function TagEditWithData({ tagId, reload }) {
 export function TagNew({ reload }) {
 	const t = useTranslation();
 
-	const { data: availableDepartments, state: availableDepartmentsState, error: availableDepartmentsError } = useEndpointDataExperimental('livechat/department');
+	const { value: availableDepartments, phase: availableDepartmentsState, error: availableDepartmentsError } = useEndpointData('livechat/department');
 
-	if (availableDepartmentsState === ENDPOINT_STATES.LOADING) {
+	if (availableDepartmentsState === AsyncStatePhase.LOADING) {
 		return <FormSkeleton/>;
 	}
 
@@ -54,7 +54,7 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 
 	const options = useMemo(() => (availableDepartments && availableDepartments.departments ? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id]) : []), [availableDepartments]);
 
-	const { values, handlers, hasUnsavedChanges } = useForm({ name: tag.name, description: tag.description, departments: tag.departments });
+	const { values, handlers, hasUnsavedChanges } = useForm({ name: tag.name, description: tag.description, departments: tag.departments && tag.departments[0] === '' ? [] : tag.departments });
 
 	const {
 		handleName,
@@ -68,8 +68,6 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 	} = values;
 
 	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined), [name, t]);
-	const descriptionError = useMemo(() => (!description || description.length === 0 ? t('The_field_is_required', 'description') : undefined), [description, t]);
-	const departmentError = useMemo(() => (!departments || departments.length === 0 ? t('The_field_is_required', 'departments') : undefined), [departments, t]);
 
 	const saveTag = useMethod('livechat:saveTag');
 
@@ -79,7 +77,7 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 		reload();
 	});
 
-	const canSave = useMemo(() => !nameError && !descriptionError && !departmentError, [nameError, descriptionError, departmentError]);
+	const canSave = useMemo(() => !nameError, [nameError]);
 
 	const handleSave = useMutableCallback(async () => {
 		const tagData = { name, description };
@@ -88,9 +86,11 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
 		}
 
+		const finalDepartments = departments || [''];
+
 		try {
-			await saveTag(tagId, tagData, departments);
-			dispatchToastMessage({ type: 'success', message: t('saved') });
+			await saveTag(tagId, tagData, finalDepartments);
+			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
 			tagsRoute.push({});
 		} catch (error) {
@@ -100,21 +100,21 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 
 	return <VerticalBar.ScrollableContent is='form' { ...props }>
 		<Field>
-			<Field.Label>{t('Name')}</Field.Label>
+			<Field.Label>{t('Name')}*</Field.Label>
 			<Field.Row>
-				<TextInput flexGrow={1} value={name} onChange={handleName} error={hasUnsavedChanges && nameError}/>
+				<TextInput placeholder={t('Name')} flexGrow={1} value={name} onChange={handleName} error={hasUnsavedChanges && nameError}/>
 			</Field.Row>
 		</Field>
 		<Field>
 			<Field.Label>{t('Description')}</Field.Label>
 			<Field.Row>
-				<TextInput flexGrow={1} value={description} onChange={handleDescription} error={hasUnsavedChanges && descriptionError} />
+				<TextInput placeholder={t('Description')} flexGrow={1} value={description} onChange={handleDescription} />
 			</Field.Row>
 		</Field>
 		<Field>
 			<Field.Label>{t('Departments')}</Field.Label>
 			<Field.Row>
-				<MultiSelect options={options} value={departments} error={hasUnsavedChanges && departmentError} placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
+				<MultiSelect options={options} value={departments} maxWidth='100%' placeholder={t('Select_an_option')} onChange={handleDepartments} flexGrow={1}/>
 			</Field.Row>
 		</Field>
 
@@ -122,7 +122,7 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 				<Margins inlineEnd='x4'>
 					{!isNew && <Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>{t('Reset')}</Button>}
-					<Button mie='none' flexGrow={1} disabled={!hasUnsavedChanges && !canSave} onClick={handleSave}>{t('Save')}</Button>
+					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={handleSave}>{t('Save')}</Button>
 				</Margins>
 			</Box>
 		</Field.Row>

@@ -1,4 +1,4 @@
-import { registerOmnichannelSidebarItem } from '../../../../../client/omnichannel/sidebarItems';
+import { registerOmnichannelSidebarItem } from '../../../../../client/views/omnichannel/sidebarItems';
 import { hasPermission } from '../../../../../app/authorization/client';
 
 registerOmnichannelSidebarItem({

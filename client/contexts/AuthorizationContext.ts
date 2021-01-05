@@ -1,5 +1,15 @@
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext, useMemo, useCallback } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
+import { Emitter, Handler } from '@rocket.chat/emitter';
+
+import { IRole } from '../../definition/IUser';
+
+type IRoles = { [_id: string]: IRole }
+
+
+export class RoleStore extends Emitter {
+	roles: IRoles = {};
+}
 
 export type AuthorizationContextValue = {
 	queryPermission(
@@ -15,7 +25,9 @@ export type AuthorizationContextValue = {
 		scope?: string | Mongo.ObjectID
 	): Subscription<boolean>;
 	queryRole(role: string | Mongo.ObjectID): Subscription<boolean>;
+	roleStore: RoleStore;
 };
+
 
 export const AuthorizationContext = createContext<AuthorizationContextValue>({
 	queryPermission: () => ({
@@ -34,6 +46,7 @@ export const AuthorizationContext = createContext<AuthorizationContextValue>({
 		getCurrentValue: (): boolean => false,
 		subscribe: (): Unsubscribe => (): void => undefined,
 	}),
+	roleStore: new RoleStore(),
 });
 
 export const usePermission = (
@@ -70,6 +83,28 @@ export const useAllPermissions = (
 		[queryAllPermissions, permissions, scope],
 	);
 	return useSubscription(subscription);
+};
+
+export const useRolesDescription = (): (ids: Array<string>) => [string] => {
+	const { roleStore } = useContext(AuthorizationContext);
+
+	const subscription = useMemo(
+		() => ({
+			getCurrentValue: (): IRoles => roleStore.roles,
+			subscribe: (callback: Handler): () => void => {
+				roleStore.on('change', callback);
+				return (): void => {
+					roleStore.off('change', callback);
+				};
+			},
+		}),
+		[roleStore],
+	);
+
+	const roles = useSubscription<IRoles>(subscription);
+
+	return useCallback((values) => values.map((role: string) => (roles[role] && roles[role].description) || role)
+		, [roles]) as (ids: Array<string>) => [string];
 };
 
 export const useRole = (role: string | Mongo.ObjectID): boolean => {

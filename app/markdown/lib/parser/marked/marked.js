@@ -1,10 +1,11 @@
 import { Random } from 'meteor/random';
 import _ from 'underscore';
-import s from 'underscore.string';
 import _marked from 'marked';
 
+
 import hljs from '../../hljs';
-import { settings } from '../../../../settings';
+import { escapeHTML } from '../../../../../lib/escapeHTML';
+import { unescapeHTML } from '../../../../../lib/unescapeHTML';
 
 const renderer = new _marked.Renderer();
 
@@ -22,9 +23,9 @@ renderer.code = function(code, lang, escaped) {
 	let text = null;
 
 	if (!lang) {
-		text = `<pre><code class="code-colors hljs">${ escaped ? code : s.escapeHTML(code, true) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs">${ escaped ? code : escapeHTML(code) }</code></pre>`;
 	} else {
-		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ escaped ? code : s.escapeHTML(code, true) }</code></pre>`;
+		text = `<pre><code class="code-colors hljs ${ escape(lang, true) }">${ escaped ? code : escapeHTML(code) }</code></pre>`;
 	}
 
 	if (_.isString(msg)) {
@@ -78,28 +79,23 @@ const highlight = function(code, lang) {
 	}
 };
 
-let gfm = null;
-let tables = null;
-let breaks = null;
-let pedantic = null;
-let smartLists = null;
-let smartypants = null;
-
-export const marked = (message) => {
+export const marked = (message, {
+	marked: {
+		gfm,
+		tables,
+		breaks,
+		pedantic,
+		smartLists,
+		smartypants,
+	} = {},
+}) => {
 	msg = message;
 
-	if (!msg.tokens) {
-		msg.tokens = [];
+	if (!message.tokens) {
+		message.tokens = [];
 	}
 
-	if (gfm == null) { gfm = settings.get('Markdown_Marked_GFM'); }
-	if (tables == null) { tables = settings.get('Markdown_Marked_Tables'); }
-	if (breaks == null) { breaks = settings.get('Markdown_Marked_Breaks'); }
-	if (pedantic == null) { pedantic = settings.get('Markdown_Marked_Pedantic'); }
-	if (smartLists == null) { smartLists = settings.get('Markdown_Marked_SmartLists'); }
-	if (smartypants == null) { smartypants = settings.get('Markdown_Marked_Smartypants'); }
-
-	msg.html = _marked(s.unescapeHTML(msg.html), {
+	message.html = _marked(unescapeHTML(message.html), {
 		gfm,
 		tables,
 		breaks,
@@ -111,5 +107,5 @@ export const marked = (message) => {
 		highlight,
 	});
 
-	return msg;
+	return message;
 };

@@ -13,7 +13,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!resetUserE2EEncriptionKey(userId)) {
+		if (!resetUserE2EEncriptionKey(userId, false)) {
 			return false;
 		}
 		return true;

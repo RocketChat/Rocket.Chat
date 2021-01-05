@@ -53,6 +53,7 @@ const contextValue = {
 	getStream,
 };
 
-export function ServerProvider({ children }) {
-	return <ServerContext.Provider children={children} value={contextValue} />;
-}
+const ServerProvider = ({ children }) =>
+	<ServerContext.Provider children={children} value={contextValue} />;
+
+export default ServerProvider;

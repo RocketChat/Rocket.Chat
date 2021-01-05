@@ -19,9 +19,11 @@ import {
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
-import { Apps } from '../../../apps/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import { NotificationQueue } from '../../../models/server/raw';
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
+import { getAppsStatistics } from './getAppsStatistics';
+import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 
 const wizardFields = [
 	'Organization_Type',
@@ -35,6 +37,8 @@ const wizardFields = [
 
 export const statistics = {
 	get: function _getStatistics() {
+		const readPreference = readSecondaryPreferred(Uploads.model.rawDatabase());
+
 		const statistics = {};
 
 		// Setup Wizard
@@ -131,7 +135,9 @@ export const statistics = {
 		statistics.enterpriseReady = true;
 
 		statistics.uploadsTotal = Uploads.find().count();
-		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{ $group: { _id: 'total', total: { $sum: '$size' } } }]).toArray());
+		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{
+			$group: { _id: 'total', total: { $sum: '$size' } },
+		}], { readPreference }).toArray());
 		statistics.uploadsTotalSize = result ? result.total : 0;
 
 		statistics.migration = Migrations._getControl();
@@ -143,20 +149,26 @@ export const statistics = {
 		statistics.mongoStorageEngine = mongoStorageEngine;
 
 		statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
+		statistics.uniqueUsersOfLastWeek = Sessions.getUniqueUsersOfLastWeek();
 		statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
 		statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
+		statistics.uniqueDevicesOfLastWeek = Sessions.getUniqueDevicesOfLastWeek();
 		statistics.uniqueDevicesOfLastMonth = Sessions.getUniqueDevicesOfLastMonth();
 		statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
+		statistics.uniqueOSOfLastWeek = Sessions.getUniqueOSOfLastWeek();
 		statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
-		statistics.apps = {
-			engineVersion: Info.marketplaceApiVersion,
-			enabled: Apps.isEnabled(),
-			totalInstalled: Apps.isInitialized() && Apps.getManager().get().length,
-			totalActive: Apps.isInitialized() && Apps.getManager().get({ enabled: true }).length,
-		};
+		statistics.apps = getAppsStatistics();
 
-		const integrations = Integrations.find().fetch();
+		const integrations = Promise.await(Integrations.model.rawCollection().find({}, {
+			projection: {
+				_id: 0,
+				type: 1,
+				enabled: 1,
+				scriptEnabled: 1,
+			},
+			readPreference,
+		}).toArray());
 
 		statistics.integrations = {
 			totalIntegrations: integrations.length,
@@ -168,6 +180,8 @@ export const statistics = {
 		};
 
 		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
+
+		statistics.enterprise = getEnterpriseStatistics();
 
 		return statistics;
 	},

@@ -60,7 +60,7 @@ export class AppLivechatBridge {
 		let agentRoom;
 		if (agent && agent.id) {
 			const user = Users.getAgentInfo(agent.id);
-			agentRoom = Object.assign({}, { agentId: user._id });
+			agentRoom = Object.assign({}, { agentId: user._id, username: user.username });
 		}
 
 		const result = await getRoom({
@@ -191,5 +191,11 @@ export class AppLivechatBridge {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat departments.`);
 
 		return this.orch.getConverters().get('departments').convertDepartment(LivechatDepartment.findOneByIdOrName(value));
+	}
+
+	async setCustomFields(data, appId) {
+		this.orch.debugLog(`The App ${ appId } is setting livechat visitor's custom fields.`);
+
+		return Livechat.setCustomFields(data);
 	}
 }

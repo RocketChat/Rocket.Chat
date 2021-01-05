@@ -11,9 +11,9 @@ function SortListItem({ text, icon, input }) {
 	return <Flex.Container>
 		<Box is='li'>
 			<Flex.Container>
-				<Box is='label' componentClassName='rc-popover__label' style={{ width: '100%' }}>
+				<Box is='label' className='rc-popover__label' style={{ width: '100%' }}>
 					<Flex.Item grow={0}>
-						<Box componentClassName='rc-popover__icon'><Icon name={icon} size={20}/></Box>
+						<Box className='rc-popover__icon'><Icon name={icon} size={20}/></Box>
 					</Flex.Item>
 					<Margins inline='x8'>
 						<Flex.Item grow={1}>

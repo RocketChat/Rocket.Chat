@@ -1,9 +1,8 @@
-import s from 'underscore.string';
-
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import { LivechatBusinessHours } from '../../../../../../app/models/server/raw';
 import { IPaginatedResponse, IPagination } from '../../api/lib/definition';
 import { ILivechatBusinessHour } from '../../../../../../definition/ILivechatBusinessHour';
+import { escapeRegExp } from '../../../../../../lib/escapeRegExp';
 
 interface IResponse extends IPaginatedResponse {
 	businessHours: ILivechatBusinessHour[];
@@ -15,7 +14,7 @@ export async function findBusinessHours(userId: string, { offset, count, sort }:
 	}
 	const query = {};
 	if (name) {
-		const filterReg = new RegExp(s.escapeRegExp(name), 'i');
+		const filterReg = new RegExp(escapeRegExp(name), 'i');
 		Object.assign(query, { name: filterReg });
 	}
 	const cursor = LivechatBusinessHours.find(query, {

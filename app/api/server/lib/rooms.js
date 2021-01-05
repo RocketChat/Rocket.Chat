@@ -94,6 +94,8 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 		fields: {
 			_id: 1,
 			name: 1,
+			t: 1,
+			avatarETag: 1,
 		},
 		limit: 10,
 		sort: {

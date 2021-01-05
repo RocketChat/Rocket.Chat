@@ -3,9 +3,12 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 
 import { hasAllPermission, hasPermission, canAccessRoom } from '../../app/authorization/server';
-import { Users, Subscriptions, Rooms } from '../../app/models/server';
+import { Subscriptions, Rooms } from '../../app/models/server';
+import { Users } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
 import { roomTypes } from '../../app/utils/server';
+import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
+import { escapeRegExp } from '../../lib/escapeRegExp';
 
 function fetchRooms(userId, rooms) {
 	if (!settings.get('Store_Last_Message') || hasPermission(userId, 'preview-c-room')) {
@@ -19,7 +22,7 @@ function fetchRooms(userId, rooms) {
 }
 
 function searchRooms({ userId, text }) {
-	const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
+	const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
 
 	const roomOptions = {
 		limit: 5,
@@ -80,7 +83,8 @@ function processLimitAndUsernames(options, usernames, users) {
 function _searchInsiderUsers({ rid, text, usernames, options, users, insiderExtraQuery, match = { startsWith: false, endsWith: false } }) {
 	// Get insiders first
 	if (rid) {
-		users.push(...Users.findByActiveUsersExcept(text, usernames, options, undefined, insiderExtraQuery, match).fetch());
+		const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
+		users.push(...Promise.await(Users.findByActiveUsersExcept(text, usernames, options, searchFields, insiderExtraQuery, match).toArray()));
 
 		// If the limit was reached, return
 		if (processLimitAndUsernames(options, usernames, users)) {
@@ -92,7 +96,8 @@ function _searchInsiderUsers({ rid, text, usernames, options, users, insiderExtr
 function _searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
 	// Then get the outsiders if allowed
 	if (canListOutsiders) {
-		users.push(...Users.findByActiveUsersExcept(text, usernames, options, undefined, undefined, match).fetch().map(mapOutsiders));
+		const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
+		users.push(...Promise.await(Users.findByActiveUsersExcept(text, usernames, options, searchFields, undefined, match).toArray()).map(mapOutsiders));
 
 		// If the limit was reached, return
 		if (processLimitAndUsernames(options, usernames, users)) {
@@ -106,7 +111,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 
 	const options = {
 		limit: settings.get('Number_of_users_autocomplete_suggestions'),
-		fields: {
+		projection: {
 			username: 1,
 			nickname: 1,
 			name: 1,
@@ -117,6 +122,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 		sort: {
 			[settings.get('UI_Use_Real_Name') ? 'name' : 'username']: 1,
 		},
+		readPreference: readSecondaryPreferred(Users.col.s.db),
 	};
 
 	const room = Rooms.findOneById(rid, { fields: { _id: 1, t: 1, uids: 1 } });
@@ -125,7 +131,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 		return users;
 	}
 
-	const canListOutsiders = hasAllPermission(userId, 'view-outside-room', 'view-d-room');
+	const canListOutsiders = hasAllPermission(userId, ['view-outside-room', 'view-d-room']);
 	const canListInsiders = canListOutsiders || (rid && canAccessRoom(room, { _id: userId }));
 
 	// If can't list outsiders and, wither, the rid was not passed or the user has no access to the room, return
@@ -159,7 +165,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 
 	// Exact match for username only
 	if (rid) {
-		const exactMatch = Users.findOneByUsernameAndRoomIgnoringCase(text, rid, { fields: options.fields });
+		const exactMatch = Promise.await(Users.findOneByUsernameAndRoomIgnoringCase(text, rid, { projection: options.projection, readPreference: options.readPreference }));
 		if (exactMatch) {
 			users.push(exactMatch);
 			processLimitAndUsernames(options, usernames, users);
@@ -167,7 +173,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 	}
 
 	if (users.length === 0 && canListOutsiders) {
-		const exactMatch = Users.findOneByUsernameIgnoringCase(text, { fields: options.fields });
+		const exactMatch = Promise.await(Users.findOneByUsernameIgnoringCase(text, { projection: options.projection, readPreference: options.readPreference }));
 		if (exactMatch) {
 			users.push(exactMatch);
 			processLimitAndUsernames(options, usernames, users);

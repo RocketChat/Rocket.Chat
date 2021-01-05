@@ -1,9 +1,9 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { deleteRoom } from './deleteRoom';
-import { FileUpload } from '../../../file-upload';
-import { Messages, Rooms } from '../../../models';
-import { Notifications } from '../../../notifications';
+import { FileUpload } from '../../../file-upload/server';
+import { Messages, Rooms, Subscriptions } from '../../../models/server';
+import { Notifications } from '../../../notifications/server';
 
 export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
 	const gt = inclusive ? '$gte' : '$gt';
@@ -39,7 +39,17 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 			.forEach(({ drid }) => deleteRoom(drid));
 	}
 
-	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers);
+	if (!ignoreThreads) {
+		const threads = new Set();
+		Messages.findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers }, { fields: { _id: 1 } })
+			.forEach(({ _id }) => threads.add(_id));
+
+		if (threads.size > 0) {
+			Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
+		}
+	}
+
+	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
 	if (count) {
 		Rooms.resetLastMessageById(rid);
 		Notifications.notifyRoom(rid, 'deleteMessageBulk', {

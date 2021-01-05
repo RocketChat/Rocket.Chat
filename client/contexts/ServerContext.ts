@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState, useEffect, useRef } from 'react';
+import { createContext, useCallback, useContext, useMemo } from 'react';
 
 interface IServerStream {
 	on(eventName: string, callback: (data: any) => void): void;
@@ -10,7 +10,7 @@ type ServerContextValue = {
 	absoluteUrl: (path: string) => string;
 	callMethod: (methodName: string, ...args: any[]) => Promise<any>;
 	callEndpoint: (httpMethod: 'GET' | 'POST' | 'DELETE', endpoint: string, ...args: any[]) => Promise<any>;
-	uploadToEndpoint: (endpoint: string) => Promise<void>;
+	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
 	getStream: (streamName: string, options?: {}) => IServerStream;
 };
 
@@ -40,72 +40,12 @@ export const useEndpoint = (httpMethod: 'GET' | 'POST' | 'DELETE', endpoint: str
 	return useCallback((...args: any[]) => callEndpoint(httpMethod, endpoint, ...args), [callEndpoint, httpMethod, endpoint]);
 };
 
-export const useUpload = (endpoint: string): () => Promise<void> => {
+export const useUpload = (endpoint: string): (params: any, formData: any) => Promise<void> => {
 	const { uploadToEndpoint } = useContext(ServerContext);
-	return useCallback(() => uploadToEndpoint(endpoint), [endpoint, uploadToEndpoint]);
+	return useCallback((params, formData: any) => uploadToEndpoint(endpoint, params, formData), [endpoint, uploadToEndpoint]);
 };
 
 export const useStream = (streamName: string, options?: {}): IServerStream => {
 	const { getStream } = useContext(ServerContext);
 	return useMemo(() => getStream(streamName, options), [getStream, streamName, options]);
-};
-
-export enum AsyncState {
-	LOADING = 'loading',
-	DONE = 'done',
-	ERROR = 'error',
-}
-
-export const useMethodData = <T>(methodName: string, args: any[] = []): [T | null, AsyncState, () => void] => {
-	const getData: (...args: unknown[]) => Promise<T> = useMethod(methodName);
-	const [[data, state], updateState] = useState<[T | null, AsyncState]>([null, AsyncState.LOADING]);
-
-	const isMountedRef = useRef(true);
-
-	useEffect(() => (): void => {
-		isMountedRef.current = false;
-	}, []);
-
-	const fetchData = useCallback(() => {
-		updateState(([data]) => [data, AsyncState.LOADING]);
-
-		getData(...args)
-			.then((data) => {
-				if (!isMountedRef.current) {
-					return;
-				}
-
-				updateState([data, AsyncState.DONE]);
-			})
-			.catch((error) => {
-				if (!isMountedRef.current) {
-					return;
-				}
-
-				updateState(([data]) => [data, AsyncState.ERROR]);
-				console.error(error);
-			});
-	}, [getData, args]);
-
-	useEffect(() => {
-		fetchData();
-	}, [fetchData]);
-
-	return [data, state, fetchData];
-};
-
-export const usePolledMethodData = <T>(methodName: string, args: any[] = [], intervalMs: number): [T | null, AsyncState, () => void] => {
-	const [data, state, fetchData] = useMethodData<T>(methodName, args);
-
-	useEffect(() => {
-		const timer = setInterval(() => {
-			fetchData();
-		}, intervalMs);
-
-		return (): void => {
-			clearInterval(timer);
-		};
-	}, [fetchData, intervalMs]);
-
-	return [data, state, fetchData];
 };

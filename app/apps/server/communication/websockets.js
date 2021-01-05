@@ -1,5 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
+
+import notifications from '../../../notifications/server/lib/Notifications';
 
 export const AppEvents = Object.freeze({
 	APP_ADDED: 'app/added',
@@ -101,18 +102,10 @@ export class AppServerListener {
 
 export class AppServerNotifier {
 	constructor(orch) {
-		this.engineStreamer = new Meteor.Streamer('apps-engine', { retransmit: false });
-		this.engineStreamer.serverOnly = true;
-		this.engineStreamer.allowRead('none');
-		this.engineStreamer.allowEmit('all');
-		this.engineStreamer.allowWrite('none');
+		this.engineStreamer = notifications.streamAppsEngine;
 
 		// This is used to broadcast to the web clients
-		this.clientStreamer = new Meteor.Streamer('apps', { retransmit: false });
-		this.clientStreamer.serverOnly = true;
-		this.clientStreamer.allowRead('all');
-		this.clientStreamer.allowEmit('all');
-		this.clientStreamer.allowWrite('none');
+		this.clientStreamer = notifications.streamApps;
 
 		this.received = new Map();
 		this.listener = new AppServerListener(orch, this.engineStreamer, this.clientStreamer, this.received);

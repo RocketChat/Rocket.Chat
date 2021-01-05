@@ -1,5 +1,4 @@
 import _ from 'underscore';
-import s from 'underscore.string';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
@@ -8,15 +7,20 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
-import { renderMessageBody, MessageTypes, MessageAction } from '../../ui-utils/client';
+import { MessageTypes, MessageAction } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles } from '../../models/client';
-import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes } from '../../utils';
-import './message.html';
 import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
+import { escapeHTML } from '../../../lib/escapeHTML';
+import { renderMentions } from '../../mentions/client/client';
+import { renderMessageBody } from '../../../client/lib/renderMessageBody';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
 
+import './message.html';
+
+createTemplateForComponent('messageLocation', () => import('../../../client/views/location/MessageLocation'));
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
@@ -28,11 +32,11 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.template) {
 		// render template
 	} else if (messageType.message) {
-		msg.msg = s.escapeHTML(msg.msg);
+		msg.msg = escapeHTML(msg.msg);
 		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
-		msg = callbacks.run('renderMentions', msg);
+		msg = renderMentions(msg);
 		msg = msg.html;
 	} else {
 		msg = renderMessageBody(msg);
@@ -137,6 +141,13 @@ Template.message.helpers({
 			return msg.avatar.replace(/^@/, '');
 		}
 	},
+	avatarFromMessage() {
+		const { msg } = this;
+		if (msg && msg.avatar) {
+			return encodeURI(msg.avatar);
+		}
+		return '';
+	},
 	getStatus() {
 		const { msg } = this;
 		return Session.get(`user_${ msg.u.username }_status_text`);
@@ -156,7 +167,7 @@ Template.message.helpers({
 		return msg.alias || (settings.UI_Use_Real_Name && msg.u && msg.u.name);
 	},
 	own() {
-		const { msg, u } = this;
+		const { msg, u = {} } = this;
 		if (msg.u && msg.u._id === u._id) {
 			return 'own';
 		}
@@ -236,7 +247,7 @@ Template.message.helpers({
 	translationProvider() {
 		const instance = Template.instance();
 		const { translationProvider } = instance.data.msg;
-		return translationProvider && AutoTranslate.providersMetadata[translationProvider].displayName;
+		return translationProvider && AutoTranslate.providersMetadata[translationProvider]?.displayName;
 	},
 	edited() {
 		const { msg } = this;
@@ -321,6 +332,25 @@ Template.message.helpers({
 		const { msg } = this;
 		if (_.isEmpty(msg.reactions)) {
 			return 'hidden';
+		}
+	},
+	hideAddReaction() {
+		const { room, u, msg, subscription } = this;
+
+		if (!room) {
+			return true;
+		}
+
+		if (!subscription) {
+			return true;
+		}
+
+		if (msg.private) {
+			return true;
+		}
+
+		if (roomTypes.readOnly(room._id, u._id) && !room.reactWhenReadOnly) {
+			return true;
 		}
 	},
 	hideMessageActions() {

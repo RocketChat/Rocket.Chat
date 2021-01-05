@@ -45,12 +45,6 @@ Meteor.methods({
 					],
 				});
 				message.msg = TAPi18n.__('Started_a_video_call');
-				message.mentions = [
-					{
-						_id: 'here',
-						username: 'here',
-					},
-				];
 				callbacks.run('afterSaveMessage', message, { ...room, jitsiTimeout: currentTime + CONSTANTS.TIMEOUT });
 			}
 
