@@ -20,4 +20,7 @@ export interface IMessage extends IRocketChatRecord {
 		type: 'Point';
 		coordinates: [string, string];
 	};
+	starred?: {_id: string}[];
+	pinned?: boolean;
+	drid?: RoomID;
 }

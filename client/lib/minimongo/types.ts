@@ -66,7 +66,7 @@ export type Query<T> = {
 	$or?: Query<T>[];
 	$and?: Query<T>[];
 	$nor?: Query<T>[];
-};
+} & Record<string, FieldExpression<unknown>>;
 
 export type Sort = (string | [string, 'asc' | 'desc'])[] | {
 	[key: string]: -1 | 1;

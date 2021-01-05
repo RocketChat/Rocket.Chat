@@ -4,12 +4,12 @@ import { createLookupFunction } from './lookups';
 import { BSONType, FieldExpression, Query } from './types';
 import { compareBSONValues, getBSONType } from './bson';
 
-const isStringArray = (values: unknown[]): values is string[] =>
-	values.every((value) => typeof value === 'string');
+const isArrayOfFields = <T>(values: unknown[]): values is T[] =>
+	values.every((value) => ['number', 'string', 'symbol'].includes(typeof value));
 
-const $in = <T>(operand: T[], _options: undefined): ((value: T) => boolean) => {
-	const index: Record<string, unknown> = {};
-	if (isStringArray(operand)) {
+const $in = <T extends number | string | symbol>(operand: T[], _options: undefined): ((value: T) => boolean) => {
+	const index = {} as Record<T, T>;
+	if (isArrayOfFields<T>(operand)) {
 		for (const operandElement of operand) {
 			index[operandElement] = operandElement;
 		}
@@ -24,7 +24,7 @@ const $in = <T>(operand: T[], _options: undefined): ((value: T) => boolean) => {
 	});
 };
 
-const $nin = <T>(operand: T[], _options: undefined): ((value: T) => boolean) => {
+const $nin = <T extends number | string | symbol>(operand: T[], _options: undefined): ((value: T) => boolean) => {
 	const isIn = $in(operand, undefined);
 
 	return (value: T): boolean => {
