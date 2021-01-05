@@ -18,15 +18,13 @@ describe('[Chat]', function() {
 
 	before((done) => getCredentials(done));
 
-	describe('/chat.postMessage', () => {
+	describe.only('/chat.postMessage', () => {
 		it('should throw an error when at least one of required parameters(channel, roomId) is not sent', (done) => {
 			request.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
 					text: 'Sample message',
-					alias: 'Gruggy',
 					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -42,10 +40,8 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					channel: 'general',
-					alias: 'Gruggy',
 					text: 'Sample message',
 					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png',
 					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
@@ -80,9 +76,7 @@ describe('[Chat]', function() {
 					.set(credentials)
 					.send({
 						channel: 'general',
-						alias: 'Gruggy',
 						text: 'Sample message',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						emoji: ':smirk:',
 						attachments: [{
 							color: '#ff0000',
@@ -106,9 +100,7 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
-						alias: 'Gruggy',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -131,9 +123,7 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
-						alias: 'Gruggy',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -156,9 +146,7 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
-						alias: 'Gruggy',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -182,37 +170,31 @@ describe('[Chat]', function() {
 					}),
 			);
 
-			it('message.avatar', () =>
-				request.post(api('chat.postMessage'))
+			it('message.avatar', async () => {
+				const user = await createUser();
+				await request.post(api('roles.addUserToRole'))
 					.set(credentials)
+					.send({
+						roleName: 'bot',
+						username: user.username,
+					});
+
+				const userCredentials = await login(user.username, password);
+				return request.post(api('chat.postMessage'))
+					.set(userCredentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
-						emoji: ':smirk:',
 						avatar: 'javascript:alert("xss")',
-						alias: 'Gruggy',
-						attachments: [{
-							color: '#ff0000',
-							text: 'Yay for gruggy!',
-							ts: '2016-12-09T16:53:06.761Z',
-							title: 'Attachment Example',
-							title_link: 'https://youtube.com',
-							actions: [
-								{
-									type: 'button',
-									text: 'Text',
-									url: 'https://youtube.com',
-								},
-							],
-						}],
+						emoji: ':smirk:',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					}),
-			);
+					});
+			});
 
 			it('attachment.action.image_url', () =>
 				request.post(api('chat.postMessage'))
@@ -220,9 +202,7 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
-						alias: 'Gruggy',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -254,8 +234,6 @@ describe('[Chat]', function() {
 						channel: 'general',
 						text: 'Sample message',
 						emoji: ':smirk:',
-						alias: 'Gruggy',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -280,8 +258,6 @@ describe('[Chat]', function() {
 						channel: 'general',
 						text: 'Sample message',
 						emoji: ':smirk:',
-						alias: 'Gruggy',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -305,9 +281,7 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
-						alias: 'Gruggy',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -330,9 +304,7 @@ describe('[Chat]', function() {
 					.send({
 						channel: 'general',
 						text: 'Sample message',
-						alias: 'Gruggy',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -354,10 +326,8 @@ describe('[Chat]', function() {
 					.set(credentials)
 					.send({
 						channel: 'general',
-						alias: 'Gruggy',
 						text: 'Sample message',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -383,8 +353,6 @@ describe('[Chat]', function() {
 					channel: 'general',
 					text: 'Sample message',
 					emoji: ':smirk:',
-					alias: 'Gruggy',
-					avatar: 'http://res.guggy.com/logo_128.png',
 					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
@@ -423,9 +391,7 @@ describe('[Chat]', function() {
 				.send({
 					channel: 'general',
 					text: 'Sample message',
-					alias: 'Gruggy',
 					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png',
 					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
@@ -459,6 +425,23 @@ describe('[Chat]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
 					message._id = res.body.message._id;
+				})
+				.end(done);
+		});
+		it('should throw an error if a non bot user tries to use bot-exclusive params', (done) => {
+			request.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: 'general',
+					text: 'sample text',
+					alias: 'some alias',
+					avatar: 'http://res.guggy.com/logo_128.png',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-not-allowed');
 				})
 				.end(done);
 		});
@@ -508,10 +491,8 @@ describe('[Chat]', function() {
 					.set(credentials)
 					.send({
 						channel: 'general',
-						alias: 'Gruggy',
 						text: 'Sample message',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
