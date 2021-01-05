@@ -3,9 +3,10 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from 'react';
 import { Box, Icon, TextInput, Callout } from '@rocket.chat/fuselage';
-import { FixedSizeList as List } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+// import { FixedSizeList as List } from 'react-window';
+// import InfiniteLoader from 'react-window-infinite-loader';
+import { Virtuoso } from 'react-virtuoso';
+import { useDebouncedValue, useDebouncedState/* , useResizeObserver*/ } from '@rocket.chat/fuselage-hooks';
 
 import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { Messages } from '../../../../../app/models/client';
@@ -13,7 +14,6 @@ import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId, useUserSubscription } from '../../../../contexts/UserContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
-import { MessageSkeleton } from '../../components/Message';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
@@ -30,8 +30,6 @@ function mapProps(WrappedComponent) {
 }
 
 const Discussion = React.memo(mapProps(clickableItem(DiscussionListMessage)));
-
-const Skeleton = React.memo(clickableItem(MessageSkeleton));
 
 const LIST_SIZE = parseInt(getConfig('discussionListSize')) || 25;
 
@@ -148,20 +146,15 @@ export const normalizeThreadMessage = ({ ...message }) => {
 };
 
 const Row = memo(function Row({
-	data,
-	index,
-	style,
+	discussion,
 	showRealNames,
 	userId,
 	onClick,
 }) {
+	console.log(discussion);
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 
-	if (!data[index]) {
-		return <Skeleton style={style}/>;
-	}
-	const discussion = data[index];
 	const msg = normalizeThreadMessage(discussion);
 
 	const { name = discussion.u.username } = discussion.u;
@@ -170,7 +163,6 @@ const Row = memo(function Row({
 		{ ...discussion }
 		name={showRealNames ? name : discussion.u.username }
 		username={ discussion.u.username }
-		style={style}
 		following={discussion.replies && discussion.replies.includes(userId)}
 		data-drid={discussion.drid}
 		msg={msg}
@@ -182,7 +174,6 @@ const Row = memo(function Row({
 
 export function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, onClose, error, userId, text, setText }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
-	const discussionsRef = useRef();
 
 	const t = useTranslation();
 
@@ -190,20 +181,6 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 		const { drid } = e.currentTarget.dataset;
 		FlowRouter.goToRoomById(drid);
 	}, []);
-
-	discussionsRef.current = discussions;
-
-	const rowRenderer = useCallback(({ data, index, style }) => <Row
-		data={data}
-		index={index}
-		style={style}
-		showRealNames={showRealNames}
-		userId={userId}
-		onClick={onClick}
-	/>, [onClick, showRealNames, userId]);
-
-	const isItemLoaded = useCallback((index) => index < discussionsRef.current.length, []);
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
 	return <>
 		<VerticalBar.Header>
@@ -215,27 +192,26 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
 				<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden' display='flex'>
+			<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Discussions_found')}</Box>}
-				{!error && total > 0 && <InfiniteLoader
-					isItemLoaded={isItemLoaded}
-					itemCount={total}
-					loadMoreItems={ loading ? () => {} : loadMoreItems}
-				>
-					{({ onItemsRendered, ref }) => (<List
-						outerElementType={ScrollableContentWrapper}
-						height={blockSize}
-						width={inlineSize}
-						itemCount={total}
-						itemData={discussions}
-						itemSize={124}
-						ref={ref}
-						minimumBatchSize={LIST_SIZE}
-						onItemsRendered={onItemsRendered}
-					>{rowRenderer}</List>
-					)}
-				</InfiniteLoader>}
+				{!error && total > 0 && discussions.length > 0 && <>
+					<Virtuoso
+						style={{ height: '100%', width: '100%' }}
+						totalCount={total}
+						endReached={ loading ? () => {} : loadMoreItems}
+						overscan={25}
+						data={discussions}
+						components={{ List: ScrollableContentWrapper }}
+						itemContent={(index, data) => <Row
+							discussion={data}
+							showRealNames={showRealNames}
+							userId={userId}
+							onClick={onClick}
+						/>}
+					/>
+				</>
+				}
 			</Box>
 		</VerticalBar.Content>
 	</>;
