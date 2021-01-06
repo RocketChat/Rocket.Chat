@@ -1,11 +1,11 @@
 import { EmailChannel } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-export async function find({ userId, pagination: { offset, count, sort } }) {
+export async function find({ userId, query = {}, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'manage-email-channels')) {
 		throw new Error('error-not-allowed');
 	}
-	const cursor = EmailChannel.find({
+	const cursor = EmailChannel.find(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,

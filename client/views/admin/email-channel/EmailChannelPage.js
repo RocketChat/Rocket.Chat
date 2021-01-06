@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Icon, Box } from '@rocket.chat/fuselage';
+import { Button, Icon } from '@rocket.chat/fuselage';
 
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -32,11 +32,11 @@ export function EmailChannelPage() {
 			</Page.Header>
 			<Page.Content>
 				{!context && <EmailChannelTable />}
-				<Page.ScrollableContentWithShadow>
+				{context === 'new' && <EmailChannelNew />}
+				{/* <Page.ScrollableContentWithShadow>
 					<Box maxWidth='x600' w='full' alignSelf='center'>
-						{context === 'new' && <EmailChannelNew />}
 					</Box>
-				</Page.ScrollableContentWithShadow>
+				</Page.ScrollableContentWithShadow> */}
 			</Page.Content>
 		</Page>
 	</Page>;
