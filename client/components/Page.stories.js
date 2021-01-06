@@ -40,9 +40,9 @@ export const WithScrollableContent = () =>
 			<DummyContent />
 		</Page.ScrollableContent>
 	</Page>;
-WithScrollableContent.story = {
-	decorators: [fullHeightDecorator],
-};
+WithScrollableContent.decorators = [
+	fullHeightDecorator,
+];
 
 export const WithScrollableContentWithShadow = () =>
 	<Page>
@@ -51,6 +51,6 @@ export const WithScrollableContentWithShadow = () =>
 			<DummyContent />
 		</Page.ScrollableContentWithShadow>
 	</Page>;
-WithScrollableContentWithShadow.story = {
-	decorators: [fullHeightDecorator],
-};
+WithScrollableContentWithShadow.decorators = [
+	fullHeightDecorator,
+];
