@@ -310,7 +310,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 			text={t('The_user_will_be_removed_from_s', roomName)}
 			close={closeModal}
 			confirmText={t('Yes_remove_user')}
-			confirm={() => { removeUserAction({ roomId: rid, userId: uid }); closeModal(); }}
+			confirm={() => { removeUserAction({ roomId: rid, username: user.username }); closeModal(); }}
 		/>);
 	});
 	const removeUserOption = useMemo(() => roomCanRemove && userCanRemove && {
