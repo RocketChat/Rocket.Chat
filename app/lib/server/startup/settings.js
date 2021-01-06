@@ -121,7 +121,7 @@ settings.addGroup('Accounts', function() {
 	this.add('Accounts_AllowInvisibleStatusOption', true, {
 		type: 'boolean',
 		public: true,
-		i18nLabel: 'allow_users_invisible_status',
+		i18nLabel: 'Accounts_AllowInvisibleStatusOption',
 	});
 
 	this.section('Registration', function() {

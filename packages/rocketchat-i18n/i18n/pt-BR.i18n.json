@@ -34,6 +34,7 @@
   "Accounts_AllowDeleteOwnAccount": "Permitir que Usuários Apaguem A Própria Conta",
   "Accounts_AllowedDomainsList": "Lista de Domínios Permitidos",
   "Accounts_AllowedDomainsList_Description": "Lista de domínios permitidos, separados por vírgula",
+  "Accounts_AllowInvisibleStatusOption": "Permitir opção de status Invisível",
   "Accounts_AllowEmailChange": "Permitir alterar e-mail",
   "Accounts_AllowEmailNotifications": "Permitir notificações por e-mail",
   "Accounts_AllowPasswordChange": "Permitir Alteração de Senha",

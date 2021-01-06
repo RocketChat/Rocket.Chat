@@ -39,6 +39,7 @@
   "Accounts_AllowDeleteOwnAccount": "Allow Users to Delete Own Account",
   "Accounts_AllowedDomainsList": "Allowed Domains List",
   "Accounts_AllowedDomainsList_Description": "Comma-separated list of allowed domains",
+  "Accounts_AllowInvisibleStatusOption": "Allow Invisible status option",
   "Accounts_AllowEmailChange": "Allow Email Change",
   "Accounts_AllowEmailNotifications": "Allow Email Notifications",
   "Accounts_AllowPasswordChange": "Allow Password Change",
