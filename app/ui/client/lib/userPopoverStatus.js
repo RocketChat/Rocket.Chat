@@ -1,8 +1,9 @@
 import { t } from '../../../utils';
-import { settings } from "/app/settings";
+
+import { settings } from '../../../settings/server';
 
 export const getPopoverStatusConfig = (currentTarget, actionCallback) => {
-	let popoverStatusConfig = {
+	const popoverStatusConfig = {
 		popoverClass: 'edit-status-type',
 		columns: [
 			{
@@ -56,10 +57,11 @@ export const getPopoverStatusConfig = (currentTarget, actionCallback) => {
 		],
 		currentTarget,
 		offsetVertical: currentTarget.clientHeight,
-	}
+	};
 
-	if(!settings.get('Accounts_AllowInvisibleStatusOption'))
+	if(!settings.get('Accounts_AllowInvisibleStatusOption')) {
 		popoverStatusConfig.columns[0].groups[0].items.splice(3,1);
+	}
 
 	return popoverStatusConfig;
 }

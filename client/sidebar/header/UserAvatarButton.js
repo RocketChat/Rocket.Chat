@@ -12,7 +12,7 @@ import { UserStatus } from '../../components/UserStatus';
 import { userStatus } from '../../../app/user-status';
 import { callbacks } from '../../../app/callbacks';
 import UserAvatar from '../../components/avatar/UserAvatar';
-import { settings } from "../../../app/settings";
+import { settings } from '../../../app/settings';
 
 const setStatus = (status, statusText) => {
 	AccountBox.setStatus(status, statusText);
@@ -30,8 +30,10 @@ const onClick = (e, t, allowAnonymousRead) => {
 			'busy',
 		];
 		const userStatusList = Object.keys(userStatus.list).map((key) => {
-			if(key === 'invisible' && !settings.get('Accounts_AllowInvisibleStatusOption'))
+			if(key === 'invisible' && !settings.get('Accounts_AllowInvisibleStatusOption')){
 				return;
+			}
+
 			const status = userStatus.list[key];
 			const name = status.localizeName ? t(status.name) : status.name;
 			const modifier = status.statusType || user.status;
