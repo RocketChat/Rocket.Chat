@@ -248,7 +248,7 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff, true, marketplaceInfo));
+				const aff = Promise.await(manager.add(buff, { marketplaceInfo, enable: true, permissionsGranted: this.bodyParams.permissionsGranted }));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
@@ -466,7 +466,7 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.update(buff));
+				const aff = Promise.await(manager.update(buff, permissionsGranted = this.bodyParams.permissionsGranted));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {

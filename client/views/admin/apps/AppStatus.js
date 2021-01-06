@@ -7,12 +7,13 @@ import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange } 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import IframeModal from './IframeModal';
 import CloudLoginModal from './CloudLoginModal';
+import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
 
-const installApp = async ({ id, name, version }) => {
+const installApp = async ({ id, name, version, permissionsGranted }) => {
 	try {
-		const { status } = await Apps.installApp(id, version);
+		const { status } = await Apps.installApp(id, version, permissionsGranted);
 		warnStatusChange(name, status);
 	} catch (error) {
 		handleAPIError(error);
@@ -22,9 +23,9 @@ const installApp = async ({ id, name, version }) => {
 const actions = {
 	purchase: installApp,
 	install: installApp,
-	update: async ({ id, name, version }) => {
+	update: async ({ id, name, version, permissionsGranted }) => {
 		try {
-			const { status } = await Apps.updateApp(id, version);
+			const { status } = await Apps.updateApp(id, version, permissionsGranted);
 			warnStatusChange(name, status);
 		} catch (error) {
 			handleAPIError(error);
@@ -41,10 +42,10 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 	const status = !button && appStatusSpanProps(app);
 
 	const action = button?.action || '';
-	const confirmAction = useCallback(() => {
+	const confirmAction = useCallback((permissionsGranted) => {
 		setModal(null);
 
-		actions[action](app).then(() => {
+		actions[action]({ ...app, permissionsGranted }).then(() => {
 			setLoading(false);
 		});
 	}, [setModal, action, app, setLoading]);
@@ -73,15 +74,14 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 		if (action === 'purchase') {
 			try {
 				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
-
-				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={confirmAction}/>);
+				setModal(<IframeModal url={data.url} cancel={cancelAction}/>);
 			} catch (error) {
 				handleAPIError(error);
 			}
-			return;
 		}
 
-		confirmAction();
+		setModal(<AppPermissionsReviewModal appPermissions={app.permissions} cancel={cancelAction} confirm={confirmAction} />);
+		return;
 	}, [setLoading, checkUserLoggedIn, action, confirmAction, setModal, app.id, app.purchaseType, cancelAction]);
 
 	return <Box {...props}>
