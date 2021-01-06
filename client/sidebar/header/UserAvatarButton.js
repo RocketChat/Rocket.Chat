@@ -30,7 +30,7 @@ const onClick = (e, t, allowAnonymousRead) => {
 			'busy',
 		];
 		const userStatusList = Object.keys(userStatus.list).map((key) => {
-			if(key === 'invisible' && !settings.get('Accounts_AllowInvisibleStatusOption')){
+			if (key === 'invisible' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 				return;
 			}
 

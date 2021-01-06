@@ -1,5 +1,4 @@
 import { t } from '../../../utils';
-
 import { settings } from '../../../settings/server';
 
 export const getPopoverStatusConfig = (currentTarget, actionCallback) => {
@@ -59,9 +58,9 @@ export const getPopoverStatusConfig = (currentTarget, actionCallback) => {
 		offsetVertical: currentTarget.clientHeight,
 	};
 
-	if(!settings.get('Accounts_AllowInvisibleStatusOption')) {
-		popoverStatusConfig.columns[0].groups[0].items.splice(3,1);
+	if (!settings.get('Accounts_AllowInvisibleStatusOption')) {
+		popoverStatusConfig.columns[0].groups[0].items.splice(3, 1);
 	}
 
 	return popoverStatusConfig;
-}
+};
