@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { useMutableCallback, useLocalStorage, useDebouncedState, useUniqueId, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useLocalStorage, useDebouncedState, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import {
 	Box,
 	Icon,
@@ -8,8 +8,7 @@ import {
 	Throbber,
 	Margins,
 } from '@rocket.chat/fuselage';
-import { FixedSizeList as List } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
+import { Virtuoso } from 'react-virtuoso';
 import memoize from 'memoize-one';
 
 import { useUserId, useUserRoom } from '../../../../contexts/UserContext';
@@ -21,18 +20,16 @@ import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../components/VerticalBar';
 import FileItem from './components/FileItem';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useFileList } from './hooks/useFileList';
 import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
 import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 
-const Row = React.memo(({ data, index, style }) => {
-	const { items, userId, onClickDelete, isDeletionAllowed } = data;
-	const item = items[index] || null;
+const Row = React.memo(({ item, data, index }) => {
+	const { userId, onClickDelete, isDeletionAllowed } = data;
+
 	return item && <RoomFiles.Item
 		index={index}
-		style={style}
 		_id={item._id}
 		name={item.name}
 		url={item.url}
@@ -41,15 +38,14 @@ const Row = React.memo(({ data, index, style }) => {
 		ts={item.ts}
 		type={item.type}
 		typeGroup={item.typeGroup}
-		fileData={data[index]}
+		fileData={item}
 		userId={userId}
 		onClickDelete={onClickDelete}
 		isDeletionAllowed={isDeletionAllowed}
 	/>;
 });
 
-export const createItemData = memoize((items, onClickDelete, isDeletionAllowed) => ({
-	items,
+export const createItemData = memoize((onClickDelete, isDeletionAllowed) => ({
 	onClickDelete,
 	isDeletionAllowed,
 }));
@@ -69,7 +65,6 @@ export const RoomFiles = function RoomFiles({
 	isDeletionAllowed,
 }) {
 	const t = useTranslation();
-	const isItemLoaded = (index) => !!filesItems[index];
 	const options = useMemo(() => [
 		['all', t('All')],
 		['image', t('Images')],
@@ -79,12 +74,9 @@ export const RoomFiles = function RoomFiles({
 		['application', t('Files')],
 	], [t]);
 
-	const { ref, contentBoxSize: { blockSize = 780 } = {} } = useResizeObserver({ debounceDelay: 100 });
-
 	const searchId = useUniqueId();
 
-	const itemData = createItemData(filesItems, onClickDelete, isDeletionAllowed);
-
+	const itemData = createItemData(onClickDelete, isDeletionAllowed);
 
 	return (
 		<>
@@ -112,27 +104,19 @@ export const RoomFiles = function RoomFiles({
 				{loading && <Box p='x12'><Throbber size='x12' /></Box>}
 				{!loading && filesItems.length <= 0 && <Box p='x12'>{t('No_results_found')}</Box>}
 
-				<Box w='full' h='full' ref={ref} flexShrink={1} overflow='hidden'>
-					<InfiniteLoader
-						isItemLoaded={isItemLoaded}
-						itemCount={total}
-						loadMoreItems={loadMoreItems}
-					>
-						{({ onItemsRendered, ref }) => (
-							<List
-								outerElementType={ScrollableContentWrapper}
-								className='List'
-								height={blockSize}
-								itemCount={total}
-								itemSize={74}
-								itemData={itemData}
-								onItemsRendered={onItemsRendered}
-								ref={ref}
-							>
-								{Row}
-							</List>
-						)}
-					</InfiniteLoader>
+				<Box w='full' h='full' flexShrink={1} overflow='hidden'>
+					<Virtuoso
+						style={{ height: '100%', width: '100%' }}
+						totalCount={total}
+						endReached={loading ? () => {} : loadMoreItems}
+						overscan={50}
+						data={filesItems}
+						itemContent={(index, data) => <Row
+							data={itemData}
+							index={index}
+							item={data}
+						/>}
+					/>
 				</Box>
 			</VerticalBar.Content>
 		</>
@@ -198,10 +182,18 @@ export default ({ rid }) => {
 		setModal(<DeleteFileWarning onConfirm={onConfirm} onCancel={closeModal} />);
 	}, []);
 
-	const loadMoreItems = useCallback((start, end) => more((params) => ({ ...params, offset: start, count: end - start }), (prev, next) => ({
-		total: next.total,
-		files: [...prev.files, ...next.files],
-	})), [more]);
+	const loadMoreItems = useCallback(
+		(start, end) => {
+			more(
+				(params) => ({ ...params, offset: start, count: end - start }),
+				(prev, next) => ({
+					total: next.total,
+					files: [...prev.files, ...next.files],
+				}),
+			);
+		},
+		[more],
+	);
 
 	const isDeletionAllowed = useMessageDeletionIsAllowed(rid, uid);
 
