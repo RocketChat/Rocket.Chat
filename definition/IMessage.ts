@@ -23,4 +23,5 @@ export interface IMessage extends IRocketChatRecord {
 	starred?: {_id: string}[];
 	pinned?: boolean;
 	drid?: RoomID;
+	tlm?: Date;
 }
