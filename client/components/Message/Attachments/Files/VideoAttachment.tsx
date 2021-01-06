@@ -9,10 +9,17 @@ export type VideoAttachmentProps = {
 	video_url: string;
 	video_type: string;
 	video_size: number;
-	title_link_download?: string;
 } & AttachmentPropsBase;
 
-export const VideoAttachment: FC<VideoAttachmentProps> = ({ title, video_url: url, video_type: type, collapsed: collapsedDefault = false, video_size: size, description }) => {
+export const VideoAttachment: FC<VideoAttachmentProps> = ({ title,
+	video_url: url,
+	video_type: type,
+	collapsed: collapsedDefault = false,
+	video_size: size,
+	description,
+	title_link: link,
+	title_link_download: hasDownload,
+}) => {
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	// useTranslation();
 	return <Attachment>
@@ -20,6 +27,7 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({ title, video_url: ur
 			<Attachment.Title>{title}</Attachment.Title>
 			{size && <Attachment.Size size={size}/>}
 			{collapse}
+			{hasDownload && link && <Attachment.Download href={link}/>}
 		</Attachment.Row>
 		{ !collapsed && <Attachment.Content width='full' maxWidth='480px' border='none'>
 			<Box is='video' maxWidth='480px' width='full' controls>

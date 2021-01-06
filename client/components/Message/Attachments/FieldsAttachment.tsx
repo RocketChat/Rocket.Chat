@@ -7,12 +7,12 @@ type FieldProp = {
 	value: JSX.Element | string;
 }
 
-const Field: FC<BoxProps | FieldProp> = ({ title, value, ...props }) => <Box mb='x4' width='full' flexBasis={100} flexShrink={0} {...props}>
+const Field: FC<BoxProps | FieldProp> = ({ title, value, ...props }) => <Box mb='x4' pi='x4' width='full' flexBasis={100} flexShrink={0} {...props}>
 	<Box fontScale='p2' color='default'>{title}</Box>
 	{value}
 </Box>;
 
-const ShortField: FC<FieldProp> = (props) => <Field {...props} pi='x4' flexGrow={1} width='50%' flexBasis={undefined} maxWidth='50%'/>;
+const ShortField: FC<FieldProp> = (props) => <Field {...props} flexGrow={1} width='50%' flexBasis={1}/>;
 
 export type FieldsAttachmentProps = Array<FieldProp>;
 

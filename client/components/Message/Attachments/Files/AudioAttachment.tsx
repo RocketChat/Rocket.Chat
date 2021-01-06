@@ -8,7 +8,6 @@ export type AudioAttachmentProps = {
 	audio_url: string;
 	audio_type: string;
 	audio_size?: number;
-	title_link_download?: string;
 } & AttachmentPropsBase;
 
 export const AudioAttachment: FC<AudioAttachmentProps> = ({
@@ -18,6 +17,8 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	collapsed: collapsedDefault = false,
 	audio_size: size,
 	description,
+	title_link: link,
+	title_link_download: hasDownload,
 }) => {
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	// useTranslation();
@@ -26,6 +27,7 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 			<Attachment.Title>{title}</Attachment.Title>
 			{size && <Attachment.Size size={size}/>}
 			{collapse}
+			{hasDownload && link && <Attachment.Download href={link}/>}
 		</Attachment.Row>
 		{ !collapsed && <Attachment.Content border='none'>
 			<audio controls>

@@ -15,16 +15,26 @@ export type ImageAttachmentProps = {
 	image_url: string;
 	image_type: string;
 	image_size?: number;
-	title_link_download?: string;
 } & AttachmentPropsBase;
 
-export const ImageAttachment: FC<ImageAttachmentProps> = ({ title, image_url: url, image_preview: imagePreview, collapsed: collapsedDefault = false, image_size: imageSize, image_dimensions: imageDimensions, description }) => {
+export const ImageAttachment: FC<ImageAttachmentProps> = ({
+	title,
+	image_url: url,
+	image_preview: imagePreview,
+	collapsed: collapsedDefault = false,
+	image_size: imageSize,
+	image_dimensions: imageDimensions,
+	description,
+	title_link: link,
+	title_link_download: hasDownload,
+}) => {
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	return <Attachment>
 		<Attachment.Row>
 			<Attachment.Title>{title}</Attachment.Title>
 			{imageSize && <Attachment.Size size={imageSize}/>}
 			{collapse}
+			{hasDownload && link && <Attachment.Download href={link}/>}
 		</Attachment.Row>
 		{ !collapsed && <Attachment.Content is='figure' maxWidth='480px' width='full' height='auto'>
 			<Box is='img' maxWidth={imageDimensions?.width} maxHeight={imageDimensions?.height} width='full' height='auto' src={ url || `data:image/png;base64,${ imagePreview }`} display='block'></Box>
