@@ -2893,6 +2893,7 @@
   "Send_request_on_offline_messages": "Enviar requisição para mensagens off-line",
   "Send_request_on_visitor_message": "Enviar requisição para mensagens do Visitante",
   "Send_Test": "Enviar teste",
+  "Send_Test_Email": "Enviar email de teste",
   "Send_Visitor_navigation_history_as_a_message": "Enviar histórico de navegação do visitante como uma mensagem",
   "Send_visitor_navigation_history_on_request": "Enviar histórico de navegação do visitante a pedido",
   "Send_welcome_email": "Enviar e-mail de boas-vindas",

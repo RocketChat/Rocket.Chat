@@ -3376,6 +3376,7 @@
   "Send_request_on_offline_messages": "Send Request on Offline Messages",
   "Send_request_on_visitor_message": "Send Request on Visitor Messages",
   "Send_Test": "Send Test",
+  "Send_Test_Email": "Send test email",
   "Send_via_email": "Send via email",
   "Send_Visitor_navigation_history_as_a_message": "Send Visitor Navigation History as a Message",
   "Send_visitor_navigation_history_on_request": "Send Visitor Navigation History on Request",
