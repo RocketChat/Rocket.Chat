@@ -1,14 +1,21 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { SelectFiltered, Field } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useTimezoneNameList } from '../../../../client/hooks/useTimezoneNameList';
+import { useForm } from '../../../../client/hooks/useForm';
 
-const BusinessHoursTimeZone = ({ onChange, data, className }) => {
+const getInitialData = (data = {}) => ({
+	name: data ?? '',
+});
+
+const BusinessHoursTimeZone = ({ onChange, data, className, hasChanges = () => {} }) => {
 	const t = useTranslation();
 
-	const [timezone, setTimezone] = useState(data);
+	const { values, handlers, hasUnsavedChanges } = useForm(getInitialData(data));
+
+	const { name } = values;
+	const { handleName } = handlers;
 
 	const timeZones = useTimezoneNameList();
 
@@ -17,18 +24,15 @@ const BusinessHoursTimeZone = ({ onChange, data, className }) => {
 		t(name),
 	]), [t, timeZones]);
 
-	const handleChange = useMutableCallback((value) => {
-		setTimezone(value);
-	});
-
-	onChange({ name: timezone });
+	onChange({ name });
+	hasChanges(hasUnsavedChanges);
 
 	return <Field className={className}>
 		<Field.Label>
 			{t('Timezone')}
 		</Field.Label>
 		<Field.Row>
-			<SelectFiltered options={timeZonesOptions} value={timezone} onChange={handleChange}/>
+			<SelectFiltered options={timeZonesOptions} value={name} onChange={handleName}/>
 		</Field.Row>
 	</Field>;
 };
