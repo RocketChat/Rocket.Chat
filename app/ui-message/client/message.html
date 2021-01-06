@@ -115,6 +115,8 @@
 					{{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
+
+			{{> reactAttachment attachments=msg.attachments}}
 			{{#each msg.attachments}}
 				{{injectMessage . ../msg}}
 				{{injectSettings . ../settings}}

@@ -9,7 +9,7 @@
 		<div class="color-primary-font-color {{# unless $eq color 'none'}}attachment-block{{/unless}}">
 
 			<div class="attachment-block-border background-info-font-color" style="background-color: {{color}}"></div>
-			{{#if author_name}}
+			<!-- {{#if author_name}}
 				{{#if author_link}}
 					<div class="attachment-author">
 						{{#if author_icon}}
@@ -51,7 +51,9 @@
 					{{/if}}
 					</div>
 				{{/if}}
-			{{/if}}
+			{{/if}} -->
+
+
 			{{#if title}}
 				<div class="attachment-title">
 					{{#if title_link}}
@@ -82,7 +84,7 @@
 				</div>
 			{{/unless}}
 
-			{{#if image_url}}
+			<!-- {{#if image_url}}
 				{{#unless collapsed}}
 					<div class="attachment-image inline-image">
 					{{#if loadImage}}
@@ -109,13 +111,13 @@
 					{{/if}}
 					</div>
 				{{/unless}}
-			{{/if}}
+			{{/if}} -->
 
-			{{#if audio_url}}
+			<!-- {{#if audio_url}}
 				{{#unless collapsed}}
 					<div class="attachment-audio">
 						<audio controls>
-							<source src="{{ getURL audio_url}}" type="{{audio_type}}" data-description="{{description}}">
+							<source src="{{ getURL audio_url}}" type="{{audio_type}}" data-description="{{qq}}">
 							{{_ "Browser_does_not_support_audio_element"}}
 						</audio>
 					</div>
@@ -131,7 +133,7 @@
 						</video>
 					</div>
 				{{/unless}}
-			{{/if}}
+			{{/if}} -->
 
 			{{#if isPDF}}
 				{{#unless collapsed}}
@@ -141,7 +143,7 @@
 					<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
 				{{/unless}}
 			{{/if}}
-			{{#if fields}}
+			<!-- {{#if fields}}
 				{{#unless collapsed}}
 					<div class="attachment-fields">
 						{{#each field in fields}}
@@ -149,13 +151,13 @@
 						{{/each}}
 					</div>
 				{{/unless}}
-			{{/if}}
-
+			{{/if}} -->
+<!-- 
 			{{#unless image_url}}
 				{{#if description}}
 					<div class="attachment-description">{{description}}</div>
 				{{/if}}
-			{{/unless}}
+			{{/unless}} -->
 
 			{{#if actions}}
 				{{#unless collapsed}}
