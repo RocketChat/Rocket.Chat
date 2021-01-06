@@ -1,47 +1,45 @@
 <template name="messageAttachment">
 	<div class="attachment">
-		<div class="color-primary-font-color {{# unless $eq color 'none'}}attachment-block{{/unless}}">
-			{{#unless collapsed}}
-				<div class="attachment-flex">
-					{{#if thumb_url}}
-						<div class="attachment-thumb">
-							<img src="{{thumb_url}}">
-						</div>
-					{{/if}}
+		{{#unless collapsed}}
+			<div class="attachment-flex">
+				{{#if thumb_url}}
+					<div class="attachment-thumb">
+						<img src="{{thumb_url}}">
+					</div>
+				{{/if}}
 
-					{{#if text}}
-						<div class="attachment-flex-column-grow attachment-text">
-							{{{parsedText}}}
-						</div>
-					{{/if}}
+				{{#if text}}
+					<div class="attachment-flex-column-grow attachment-text">
+						{{{parsedText}}}
+					</div>
+				{{/if}}
+			</div>
+		{{/unless}}
+
+		{{#if isPDF}}
+			{{#unless collapsed}}
+				<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
+					{{> icon block="rc-input__icon-svg" icon="loading"}}
+				</div>
+				<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
+			{{/unless}}
+		{{/if}}
+
+		{{#if actions}}
+			{{#unless collapsed}}
+				<div class="actions-container">
+					{{#each actions}}
+						{{> messageAction}}
+					{{/each}}
 				</div>
 			{{/unless}}
+		{{/if}}
 
-			{{#if isPDF}}
-				{{#unless collapsed}}
-					<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
-						{{> icon block="rc-input__icon-svg" icon="loading"}}
-					</div>
-					<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
-				{{/unless}}
-			{{/if}}
-
-			{{#if actions}}
-				{{#unless collapsed}}
-					<div class="actions-container">
-						{{#each actions}}
-							{{> messageAction}}
-						{{/each}}
-					</div>
-				{{/unless}}
-			{{/if}}
-
-			{{#each attachments}}
-				{{injectMessage . ../msg}}
-			 	{{injectSettings . ../settings}}
-				{{injectIndex . ../index @index}}
-				{{> messageAttachment (injectCollapsedMedia ..)}}
-			{{/each}}
-		</div>
+		{{#each attachments}}
+			{{injectMessage . ../msg}}
+			{{injectSettings . ../settings}}
+			{{injectIndex . ../index @index}}
+			{{> messageAttachment (injectCollapsedMedia ..)}}
+		{{/each}}
 	</div>
 </template>

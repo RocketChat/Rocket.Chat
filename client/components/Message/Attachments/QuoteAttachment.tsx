@@ -19,7 +19,7 @@ export type QuoteAttachmentProps = {
 export const QuoteAttachment: FC<QuoteAttachmentProps> = ({ author_icon: url, author_name: name, author_link: authorLink, message_link: messageLink, ts, text, attachments }) => {
 	const format = useTimeAgo();
 	return <>
-		<Attachment.Content maxWidth='480px' width='full'>
+		<Attachment.Content maxWidth='480px' width='full' borderRadius='x2' borderWidth='x2' borderStyle='solid' borderColor='neutral-200' >
 			<Attachment.Details is='blockquote'>
 				<Attachment.Author>
 					<Attachment.AuthorAvatar url={url} />

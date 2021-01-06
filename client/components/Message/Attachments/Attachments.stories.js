@@ -87,6 +87,10 @@ export const Fields = () => <Attachments
 	attachments={[field]}
 />;
 
+export const FailingImage = () => <Attachments
+	attachments={[{ ...image, image_url: 'invalid.url' }]}
+/>;
+
 export const Image = () => <Attachments
 	attachments={[image]}
 />;

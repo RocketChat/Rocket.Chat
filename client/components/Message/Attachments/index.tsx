@@ -5,6 +5,7 @@ import { QuoteAttachment, QuoteAttachmentProps } from './QuoteAttachment';
 import { Attachment } from './Attachment';
 import { FileAttachmentProps, isFileAttachment, FileAttachment } from './Files';
 import MarkdownText from '../../MarkdownText';
+import { Dimensions } from './components/Image';
 
 type PossibleMarkdownFields = 'text' | 'pretext' | 'fields';
 
@@ -19,6 +20,7 @@ type AttachmentProps = {
 	// footer_icon
 
 	image_url?: string;
+	image_dimensions?: Dimensions;
 
 	mrkdwn_in?: Array<PossibleMarkdownFields>;
 	pretext?: string;
@@ -58,6 +60,7 @@ const Item: FC<{attachment: AttachmentPropsGeneric }> = memo(({ attachment }) =>
 		{attachment.title && <Attachment.Title {...attachment.title_link && { is: 'a', href: attachment.title_link, target: '_blank', color: undefined }}>{attachment.title}</Attachment.Title> }
 		{attachment.text && <Attachment.Text>{applyMardownFor('text', attachment.text)}</Attachment.Text>}
 		{attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />}
+		{attachment.image_url && <Attachment.Image {...attachment.image_dimensions as any} src={attachment.image_url} />}
 	</Attachment.Block>;
 });
 

@@ -29,8 +29,8 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({ title,
 			{collapse}
 			{hasDownload && link && <Attachment.Download href={link}/>}
 		</Attachment.Row>
-		{ !collapsed && <Attachment.Content width='full' maxWidth='480px' border='none'>
-			<Box is='video' maxWidth='480px' width='full' controls>
+		{ !collapsed && <Attachment.Content width='full' maxWidth='480px'>
+			<Box is='video' width='full' controls>
 				<source src={getURL(url)} type={type}/>
 			</Box>
 			{description && <Attachment.Details is='figcaption'>{description}</Attachment.Details>}

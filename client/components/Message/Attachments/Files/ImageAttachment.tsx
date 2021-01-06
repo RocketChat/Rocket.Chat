@@ -1,16 +1,13 @@
-import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import { useCollapse } from '../hooks/useCollapse';
 import { Attachment, AttachmentPropsBase } from '../Attachment';
+import Image, { Dimensions } from '../components/Image';
+import MarkdownText from '../../../MarkdownText';
 
-type Dimensions = {
-	width: number;
-	height: number;
-};
 
 export type ImageAttachmentProps = {
-	image_dimensions?: Dimensions;
+	image_dimensions: Dimensions;
 	image_preview?: string;
 	image_url: string;
 	image_type: string;
@@ -23,22 +20,25 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	image_preview: imagePreview,
 	collapsed: collapsedDefault = false,
 	image_size: imageSize,
-	image_dimensions: imageDimensions,
+	image_dimensions: imageDimensions = {
+		height: 360,
+		width: 480,
+	},
 	description,
 	title_link: link,
 	title_link_download: hasDownload,
 }) => {
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	return <Attachment>
+		<MarkdownText withRichContent={undefined} content={description} />
 		<Attachment.Row>
 			<Attachment.Title>{title}</Attachment.Title>
 			{imageSize && <Attachment.Size size={imageSize}/>}
 			{collapse}
 			{hasDownload && link && <Attachment.Download href={link}/>}
 		</Attachment.Row>
-		{ !collapsed && <Attachment.Content is='figure' maxWidth='480px' width='full' height='auto'>
-			<Box is='img' maxWidth={imageDimensions?.width} maxHeight={imageDimensions?.height} width='full' height='auto' src={ url || `data:image/png;base64,${ imagePreview }`} display='block'></Box>
-			{description && <Attachment.Details is='figcaption'>{description}</Attachment.Details>}
+		{ !collapsed && <Attachment.Content>
+			<Image {...imageDimensions } src={ url || `data:image/png;base64,${ imagePreview }`} />
 		</Attachment.Content> }
 	</Attachment>;
 };

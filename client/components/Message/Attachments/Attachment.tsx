@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { ActionButton, Box, BoxProps, ButtonProps, Avatar } from '@rocket.chat/fuselage';
 
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
+import Image, { ImageProps } from './components/Image';
 
 export type AttachmentPropsBase = {
 	title?: string;
@@ -28,7 +29,7 @@ const Action: FC<ButtonProps & { icon: string }> = (props) => <ActionButton mi='
 const Collapse: FC<ButtonProps & { collapsed?: boolean }> = ({ collapsed = false, ...props }) => <Action icon={ !collapsed ? 'chevron-down' : 'chevron-left' }{...props} />;
 const Download: FC<ButtonProps & { href: string }> = (props) => <Action icon='download' is='a' target='_blank' {...props} />;
 
-const Content: FC<BoxProps> = ({ ...props }) => <Box mb='x4' borderRadius='x2' borderWidth='x2' borderStyle='solid' borderColor='neutral-200' {...props} />;
+const Content: FC<BoxProps> = ({ ...props }) => <Box mb='x4' {...props} />;
 const Details: FC<BoxProps> = ({ ...props }) => <Box fontScale='p1' color='info' bg='neutral-100' pi='x16' pb='x16' {...props}/>;
 const Inner: FC<BoxProps> = ({ ...props }) => <Box mis='x16' {...props}/>;
 
@@ -52,8 +53,12 @@ export const Attachment: FC<BoxProps> & {
 	AuthorAvatar: FC<{ url: string }>;
 	AuthorName: FC<BoxProps>;
 
+	Image: FC<ImageProps>;
+
 	Download: FC<ButtonProps & { href: string }>;
 } = (props) => <Box rcx-message-attachment mb='x4' maxWidth='480px' width='full' display='flex' overflow='hidden' flexDirection='column' {...props}/>;
+
+Attachment.Image = Image;
 
 Attachment.Row = Row;
 Attachment.Title = Title;
