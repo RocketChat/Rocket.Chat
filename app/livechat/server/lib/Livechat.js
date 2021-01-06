@@ -480,6 +480,7 @@ export const Livechat = {
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
 			'Livechat_skip_registration_form_DomainsList',
+			'Livechat_hide_sys_messages',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
