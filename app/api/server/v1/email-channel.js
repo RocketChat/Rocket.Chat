@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
-import { find, findOne } from '../lib/email-channel';
+import { find, findOne, createEdit } from '../lib/email-channel';
 import { EmailChannel, Users } from '../../../models';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 API.v1.addRoute('email-channel.list', { authRequired: true }, {
 	get() {
@@ -51,11 +52,10 @@ API.v1.addRoute('email-channel', { authRequired: true }, {
 				smtp: Object,
 				imap: Object,
 			});
-			const emailChannelParams = this.bodyParams;
-			emailChannelParams.ts = new Date();
-			emailChannelParams._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
 
-			const emailChannel = EmailChannel.create(emailChannelParams);
+			const emailChannelParams = this.bodyParams;
+			const emailChannel = Promise.await(createEdit(emailChannelParams, this.userId));
+
 			return API.v1.success(emailChannel);
 		} catch (e) {
 			return API.v1.failure(e);

@@ -35,9 +35,9 @@ function EmailChannelTable() {
 	const query = useQuery(debouncedParams, debouncedSort);
 	const router = useRoute('admin-email-channel');
 
-	const onClick = useCallback((rid) => () => router.push({
+	const onClick = useCallback((_id) => () => router.push({
 		context: 'edit',
-		id: rid,
+		_id,
 	}), [router]);
 
 
@@ -48,14 +48,14 @@ function EmailChannelTable() {
 		<GenericTable.HeaderCell key={'sendTest'} w='x60'></GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, t]);
 
-	const { value: data, reload } = useEndpointData('email-channel.list', query);
+	const { value: data } = useEndpointData('email-channel.list', query);
 
 	const renderRow = useCallback(({ _id, name, email, _createdBy: { username: createdBy } }) => <Table.Row action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link'qa-room-id={_id}>
 		<Table.Cell withTruncatedText>{name}</Table.Cell>
 		<Table.Cell withTruncatedText>{email}</Table.Cell>
 		<Table.Cell withTruncatedText>{createdBy}</Table.Cell>
-		<SendTestButton _id={_id} reload={reload}/>
-	</Table.Row>, [onClick, reload]);
+		<SendTestButton />
+	</Table.Row>, [onClick]);
 
 	return <GenericTable
 		header={header}

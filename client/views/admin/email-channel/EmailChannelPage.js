@@ -5,14 +5,14 @@ import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import EmailChannelTable from './EmailChannelTable';
-import EmailChannelForm from './EmailChannelNew';
+import EmailChannelForm, { EmailChannelEditWithData } from './EmailChannelForm';
 
 
 export function EmailChannelPage() {
 	const t = useTranslation();
 
 	const context = useRouteParameter('context');
-	// const id = useRouteParameter('id');
+	const id = useRouteParameter('_id');
 
 	const emailChannelRoute = useRoute('admin-email-channel');
 
@@ -33,6 +33,7 @@ export function EmailChannelPage() {
 			<Page.Content>
 				{!context && <EmailChannelTable />}
 				{context === 'new' && <EmailChannelForm />}
+				{context === 'edit' && <EmailChannelEditWithData id={id} />}
 			</Page.Content>
 		</Page>
 	</Page>;

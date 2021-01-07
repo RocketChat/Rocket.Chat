@@ -20,7 +20,9 @@ import Page from '../../../components/Page';
 import { useForm } from '../../../hooks/useForm';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { isEmail } from '../../../../app/utils';
-
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { FormSkeleton } from './Skeleton';
 
 const initialValues = {
 	active: true,
@@ -48,14 +50,55 @@ const getInitialValues = (data) => {
 		return initialValues;
 	}
 
-	const { name } = data;
+	const {
+		active,
+		name,
+		email,
+		description,
+		senderInfo,
+		department,
+		smtp,
+		imap,
+	} = data;
 
 	return {
+		active: active ?? true,
 		name: name ?? '',
+		email: email ?? '',
+		description: description ?? '',
+		senderInfo: senderInfo ?? '',
+		department: department ?? '',
+		// SMTP
+		SMTP_server: smtp.server ?? '',
+		SMTP_port: smtp.port ?? '',
+		SMTP_username: smtp.username ?? '',
+		SMTP_password: smtp.password ?? '',
+		SMTP_SSL_TLS: smtp.sslTls ?? false,
+		// IMAP
+		IMAP_server: imap.server ?? '',
+		IMAP_port: imap.port ?? '',
+		IMAP_username: imap.username ?? '',
+		IMAP_password: imap.password ?? '',
+		IMAP_SSL_TLS: imap.sslTls ?? false,
 	};
 };
 
-export default function EmailChannelForm({ data }) {
+export function EmailChannelEditWithData({ id }) {
+	const t = useTranslation();
+	const { value: data, error, phase: state } = useEndpointData(`email-channel?id=${ id }`);
+
+	if ([state].includes(AsyncStatePhase.LOADING)) {
+		return <FormSkeleton/>;
+	}
+
+	if (error || !data) {
+		return <Box mbs='x16'>{t('EmailChannel_not_found')}</Box>;
+	}
+
+	return <EmailChannelForm id={id} data={data} />;
+}
+
+export default function EmailChannelForm({ id, data }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -112,6 +155,10 @@ export default function EmailChannelForm({ data }) {
 		const smtp = { server: SMTP_server, port: SMTP_port, username: SMTP_username, password: SMTP_password, sslTls: SMTP_SSL_TLS };
 		const imap = { server: IMAP_server, port: IMAP_port, username: IMAP_username, password: IMAP_password, sslTls: IMAP_SSL_TLS };
 		const payload = { active, name, email, description, senderInfo, department, smtp, imap };
+		if (id) {
+			payload._id = id;
+		}
+		console.log(payload);
 		try {
 			await saveEmailChannel(payload);
 			dispatchToastMessage({ type: 'success', message: t('Email_channel_added') });

@@ -16,7 +16,7 @@ export class EmailChannel extends Base {
 	}
 
 	updateById(_id, data) {
-		return this.update({ _id }, { $set: data });
+		return this.update({ _id }, data);
 	}
 
 	removeById(_id) {
