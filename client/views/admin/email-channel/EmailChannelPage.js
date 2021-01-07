@@ -5,7 +5,7 @@ import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import EmailChannelTable from './EmailChannelTable';
-import EmailChannelNew from './EmailChannelNew';
+import EmailChannelForm from './EmailChannelNew';
 
 
 export function EmailChannelPage() {
@@ -32,11 +32,7 @@ export function EmailChannelPage() {
 			</Page.Header>
 			<Page.Content>
 				{!context && <EmailChannelTable />}
-				{context === 'new' && <EmailChannelNew />}
-				{/* <Page.ScrollableContentWithShadow>
-					<Box maxWidth='x600' w='full' alignSelf='center'>
-					</Box>
-				</Page.ScrollableContentWithShadow> */}
+				{context === 'new' && <EmailChannelForm />}
 			</Page.Content>
 		</Page>
 	</Page>;

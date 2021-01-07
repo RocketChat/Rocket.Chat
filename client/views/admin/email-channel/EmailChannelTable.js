@@ -44,13 +44,13 @@ function EmailChannelTable() {
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'}>{t('Name')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'email'} direction={sort[1]} active={sort[0] === 'email'}>{t('Email')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'createdBy'} direction={sort[1]} active={sort[0] === 'createdBy'}>{t('Created by')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'_createdBy'} direction={sort[1]} active={sort[0] === '_createdBy'}>{t('Created_by')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'sendTest'} w='x60'></GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, t]);
 
 	const { value: data, reload } = useEndpointData('email-channel.list', query);
 
-	const renderRow = useCallback(({ _id, name, email, createdBy }) => <Table.Row action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link'qa-room-id={_id}>
+	const renderRow = useCallback(({ _id, name, email, _createdBy: { username: createdBy } }) => <Table.Row action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link'qa-room-id={_id}>
 		<Table.Cell withTruncatedText>{name}</Table.Cell>
 		<Table.Cell withTruncatedText>{email}</Table.Cell>
 		<Table.Cell withTruncatedText>{createdBy}</Table.Cell>
