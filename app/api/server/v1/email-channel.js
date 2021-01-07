@@ -3,7 +3,7 @@ import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
 import { find, findOne } from '../lib/email-channel';
-import { EmailChannel } from '../../../models';
+import { EmailChannel, Users } from '../../../models';
 
 API.v1.addRoute('email-channel.list', { authRequired: true }, {
 	get() {
@@ -45,14 +45,15 @@ API.v1.addRoute('email-channel', { authRequired: true }, {
 				name: String,
 				email: String,
 				active: Boolean,
-				description: Match.Maybe(String),
+				description: String,
 				senderInfo: Match.Maybe(String),
 				department: String,
-				SMTP: Match.Maybe(Object),
-				IMAP: Match.Maybe(Object),
+				smtp: Object,
+				imap: Object,
 			});
 			const emailChannelParams = this.bodyParams;
 			emailChannelParams.ts = new Date();
+			emailChannelParams._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
 
 			const emailChannel = EmailChannel.create(emailChannelParams);
 			return API.v1.success(emailChannel);
