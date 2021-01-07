@@ -3,8 +3,6 @@ import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
 import { find, findOne, createEdit } from '../lib/email-channel';
-import { EmailChannel, Users } from '../../../models';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 API.v1.addRoute('email-channel.list', { authRequired: true }, {
 	get() {
