@@ -138,7 +138,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			if (await this.DepartmentsAgentsRepository.findByAgentId(agentId).count() === 0) { // eslint-disable-line no-await-in-loop
 				agentIdsWithoutDepartment.push(agentId);
 			}
-
 			if (!(await this.DepartmentsAgentsRepository.findAgentsByAgentIdAndBusinessHourId(agentId, department.businessHourId)).length) { // eslint-disable-line no-await-in-loop
 				agentIdsToRemoveCurrentBusinessHour.push(agentId);
 			}
