@@ -3,6 +3,7 @@ import { ActionButton, Box, BoxProps, ButtonProps, Avatar } from '@rocket.chat/f
 
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 import Image, { ImageProps } from './components/Image';
+import { useAttachmentDimensions } from './context/AttachmentContext';
 
 export type AttachmentPropsBase = {
 	title?: string;
@@ -59,7 +60,10 @@ export const Attachment: FC<BoxProps> & {
 	Thumb: FC<{ url: string }>;
 
 	Download: FC<ButtonProps & { href: string }>;
-} = (props) => <Box rcx-message-attachment mb='x4' maxWidth='480px' width='full' display='flex' overflow='hidden' flexDirection='column' {...props}/>;
+} = (props) => {
+	const { width } = useAttachmentDimensions();
+	return <Box rcx-message-attachment mb='x4' maxWidth={width} width='full' display='flex' overflow='hidden' flexDirection='column' {...props}/>;
+};
 
 Attachment.Image = Image;
 

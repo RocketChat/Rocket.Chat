@@ -4,16 +4,13 @@ import { css } from '@rocket.chat/css-in-js';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useAttachmentDimensions } from '../context/AttachmentContext';
 
 export type Dimensions = {
 	width: number;
 	height: number;
 };
 
-const Limits: Dimensions = {
-	width: 480,
-	height: 360,
-};
 
 export type ImageProps = {
 	previewUrl?: string;
@@ -41,18 +38,18 @@ export const Retry: FC<Dimensions & { retry: () => void }> = ({ retry, ...props 
 
 export const RawImage: FC<ImageProps> = (props) => <Box is='img' {...props} display='block'/>;
 
-
-const ratio = Limits.height / Limits.width;
-
-const getDimensions = (width: Dimensions['width'], height: Dimensions['height']): { width: 'auto' | number; height: 'auto' | number } => {
-	if (height >= width || height * ratio > Limits.height) {
-		return { width: 'auto', height: Math.min(height, Limits.height) };
+const getDimensions = (width: Dimensions['width'], height: Dimensions['height'], limits: { width: number; height: number }): { width: 'auto' | number; height: 'auto' | number } => {
+	const ratio = height / width;
+	if (height >= width || Math.min(width, limits.width) * ratio > limits.height) {
+		return { width: 'auto', height: Math.min(height, limits.height) };
 	}
 
-	return { width: Math.min(width, Limits.width), height: 'auto' };
+	return { width: Math.min(width, limits.width), height: 'auto' };
 };
 
-const Image: FC<ImageProps> = ({ previewUrl, src, width = Limits.width, height = Limits.height }) => {
+const Image: FC<ImageProps> = ({ previewUrl, src, ...size }) => {
+	const limits = useAttachmentDimensions();
+	const { width = limits.width, height = limits.height } = size;
 	const [error, setError] = useState(false);
 
 	const { setHasError, setHasNoError } = useMemo(() => ({
@@ -60,7 +57,7 @@ const Image: FC<ImageProps> = ({ previewUrl, src, width = Limits.width, height =
 		setHasNoError: (): void => setError(false),
 	}), []);
 
-	const dimensions = getDimensions(width, height);
+	const dimensions = getDimensions(width, height, limits);
 
 	if (error) {
 		return <Retry width={width} height={height} retry={setHasNoError}/>;
