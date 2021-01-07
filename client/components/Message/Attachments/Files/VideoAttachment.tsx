@@ -3,8 +3,8 @@ import { Box } from '@rocket.chat/fuselage';
 
 import { useCollapse } from '../hooks/useCollapse';
 import { Attachment, AttachmentPropsBase } from '../Attachment';
-import { getURL } from '../../../../../app/utils/client';
 import { FileProp } from '..';
+import { useMediaUrl } from '../context/AttachmentContext';
 
 export type VideoAttachmentProps = {
 	video_url: string;
@@ -24,6 +24,7 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({ title,
 }) => {
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	// useTranslation();
+	const getURL = useMediaUrl();
 	return <Attachment>
 		<Attachment.Row>
 			<Attachment.Title>{title}</Attachment.Title>
