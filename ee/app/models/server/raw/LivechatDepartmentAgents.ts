@@ -1,7 +1,7 @@
-import { LivechatDepartmentAgentsRaw as Raw } from '../../../../../app/models/server/raw/LivechatDepartmentAgents';
-import { LivechatDepartmentAgents } from '../../../../../app/models/server';
+import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/raw/LivechatDepartmentAgents';
+import { overwriteClassOnLicense } from '../../../license/server';
 
-export class LivechatDepartmentAgentsRaw extends Raw {
+overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgentsRaw, {
 	findAgentsByAgentIdAndBusinessHourId(agentId: string, businessHourId: string): Promise<Record<string, any>> {
 		const match = {
 			$match: { agentId },
@@ -22,8 +22,7 @@ export class LivechatDepartmentAgentsRaw extends Raw {
 		};
 		const withBusinessHourId = { $match: { 'departments.businessHourId': businessHourId } };
 		const project = { $project: { departments: 0 } };
-		return this.col.aggregate([match, lookup, unwind, withBusinessHourId, project]).toArray();
-	}
-}
-
-export default new LivechatDepartmentAgentsRaw(LivechatDepartmentAgents.model.rawCollection());
+		const model = this as unknown as LivechatDepartmentAgentsRaw;
+		return model.col.aggregate([match, lookup, unwind, withBusinessHourId, project]).toArray();
+	},
+});
