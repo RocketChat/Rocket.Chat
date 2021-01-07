@@ -115,15 +115,7 @@
 					{{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
-
 			{{> reactAttachment attachments=msg.attachments file=msg.file }}
-			{{#each msg.attachments}}
-				{{injectMessage . ../msg}}
-				{{injectSettings . ../settings}}
-				{{injectIndex . @index}}
-				{{> messageAttachment}}
-			{{/each}}
-
 			{{#if msg.drid}}
 				<div class="message-discussion">
 					{{#if $gt msg.dcount 0}}

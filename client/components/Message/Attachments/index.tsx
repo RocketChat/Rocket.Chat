@@ -66,16 +66,19 @@ const Item: FC<{attachment: AttachmentPropsGeneric; file?: FileProp }> = memo(({
 	const applyMardownFor = applyMarkdownIfRequires(attachment.mrkdwn_in);
 
 	return <Attachment.Block color={attachment.color} pre={attachment.pretext && <Attachment.Text>{applyMardownFor('pretext', attachment.pretext)}</Attachment.Text>}>
-		{attachment.author_name && <Attachment.Author>
-			{ attachment.author_icon && <Attachment.AuthorAvatar url={attachment.author_icon } />}
-			<Attachment.AuthorName {...attachment.author_link && { is: 'a', href: attachment.author_link, target: '_blank', color: undefined }}>{attachment.author_name}</Attachment.AuthorName>
-		</Attachment.Author> }
-		{attachment.title && <Attachment.Title {...attachment.title_link && { is: 'a', href: attachment.title_link, target: '_blank', color: undefined }}>{attachment.title}</Attachment.Title> }
-		{attachment.text && <Attachment.Text>{applyMardownFor('text', attachment.text)}</Attachment.Text>}
-		{attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />}
-		{attachment.image_url && <Attachment.Image {...attachment.image_dimensions as any} src={attachment.image_url} />}
-		{/* DEPRECATED */}
-		{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}
+		<Attachment.Content>
+			{attachment.author_name && <Attachment.Author>
+				{ attachment.author_icon && <Attachment.AuthorAvatar url={attachment.author_icon } />}
+				<Attachment.AuthorName {...attachment.author_link && { is: 'a', href: attachment.author_link, target: '_blank', color: undefined }}>{attachment.author_name}</Attachment.AuthorName>
+			</Attachment.Author> }
+			{attachment.title && <Attachment.Title {...attachment.title_link && { is: 'a', href: attachment.title_link, target: '_blank', color: undefined }}>{attachment.title}</Attachment.Title> }
+			{attachment.text && <Attachment.Text>{applyMardownFor('text', attachment.text)}</Attachment.Text>}
+			{attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />}
+			{attachment.image_url && <Attachment.Image {...attachment.image_dimensions as any} src={attachment.image_url} />}
+			{/* DEPRECATED */}
+			{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}
+		</Attachment.Content>
+		{attachment.thumb_url && <Attachment.Thumb url={attachment.thumb_url} /> }
 	</Attachment.Block>;
 });
 

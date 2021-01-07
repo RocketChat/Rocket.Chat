@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 import { ActionButton, Box, BoxProps, ButtonProps, Avatar } from '@rocket.chat/fuselage';
 
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
@@ -33,11 +33,13 @@ const Content: FC<BoxProps> = ({ ...props }) => <Box mb='x4' {...props} />;
 const Details: FC<BoxProps> = ({ ...props }) => <Box fontScale='p1' color='info' bg='neutral-100' pi='x16' pb='x16' {...props}/>;
 const Inner: FC<BoxProps> = ({ ...props }) => <Box mis='x16' {...props}/>;
 
-const Block: FC<{ pre?: JSX.Element | string; color?: string }> = ({ pre, color = 'neutral-600', children }) => <Attachment>{pre}<Box pis='x16' borderRadius='x2' borderInlineStartStyle='solid' borderInlineStartWidth='x2' borderInlineStartColor={color} children={children}></Box></Attachment>;
+const Block: FC<{ pre?: JSX.Element | string; color?: string }> = ({ pre, color = 'neutral-600', children }) => <Attachment>{pre}<Box display='flex' flexDirection='row' pis='x16' borderRadius='x2' borderInlineStartStyle='solid' borderInlineStartWidth='x2' borderInlineStartColor={color} children={children}></Box></Attachment>;
 
 const Author: FC<{}> = (props) => <Box display='flex' flexDirection='row' alignItems='center' mbe='x4' {...props}/>;
 const AuthorAvatar: FC<{ url: string }> = ({ url }) => <Avatar { ...{ url, size: 'x24' } as any} />;
 const AuthorName: FC<BoxProps> = (props) => <Box withTruncatedText fontScale='p2' mi='x8' {...props}/>;
+
+const Thumb: FC<{ url: string }> = memo(({ url }) => <Box mis='x8'><Avatar { ...{ url, size: 'x48' } as any} /></Box>);
 
 export const Attachment: FC<BoxProps> & {
 	Row: FC<BoxProps>;
@@ -54,6 +56,7 @@ export const Attachment: FC<BoxProps> & {
 	AuthorName: FC<BoxProps>;
 
 	Image: FC<ImageProps>;
+	Thumb: FC<{ url: string }>;
 
 	Download: FC<ButtonProps & { href: string }>;
 } = (props) => <Box rcx-message-attachment mb='x4' maxWidth='480px' width='full' display='flex' overflow='hidden' flexDirection='column' {...props}/>;
@@ -65,6 +68,8 @@ Attachment.Title = Title;
 Attachment.Text = Text;
 Attachment.Size = Size;
 
+Attachment.Thumb = Thumb;
+
 Attachment.Collapse = Collapse;
 Attachment.Download = Download;
 
@@ -72,6 +77,7 @@ Attachment.Content = Content;
 Attachment.Details = Details;
 Attachment.Inner = Inner;
 Attachment.Block = Block;
+
 Attachment.Author = Author;
 Attachment.AuthorAvatar = AuthorAvatar;
 Attachment.AuthorName = AuthorName;
