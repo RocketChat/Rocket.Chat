@@ -65,7 +65,7 @@ const NavigationItem = ({ permissionGranted, pathGroup, pathSection, icon, label
 	if (permissionGranted && !permissionGranted()) { return null; }
 	return <Sidebar.GenericItem active={isActive} href={path} key={path}>
 		{icon && <Icon name={icon} size='x20' mi='x4'/>}
-		<Box withTruncatedText fontScale='p1' mi='x4' color='info'>{label} {tag && <Tag style={{ display: 'inline', backgroundColor: '#000', color: '#FFF' }}>{tag}</Tag>}</Box>
+		<Box withTruncatedText fontScale='p1' mi='x4' color='info'>{label} {tag && <Tag style={{ display: 'inline', backgroundColor: '#000', color: '#FFF', marginLeft: 4 }}>{tag}</Tag>}</Box>
 	</Sidebar.GenericItem>;
 };
 
