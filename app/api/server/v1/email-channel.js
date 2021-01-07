@@ -44,9 +44,9 @@ API.v1.addRoute('email-channel', { authRequired: true }, {
 				name: String,
 				email: String,
 				active: Boolean,
-				description: String,
+				description: Match.Maybe(String),
 				senderInfo: Match.Maybe(String),
-				department: String,
+				department: Match.Maybe(String),
 				smtp: Object,
 				imap: Object,
 			});
