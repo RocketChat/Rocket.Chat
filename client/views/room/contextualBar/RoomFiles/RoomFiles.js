@@ -78,6 +78,8 @@ export const RoomFiles = function RoomFiles({
 
 	const itemData = createItemData(onClickDelete, isDeletionAllowed);
 
+	const lm = useMutableCallback((start) => loadMoreItems(start + 1, Math.min(50, start + 1 - filesItems.length)));
+
 	return (
 		<>
 			<VerticalBar.Header>
@@ -108,7 +110,7 @@ export const RoomFiles = function RoomFiles({
 					<Virtuoso
 						style={{ height: '100%', width: '100%' }}
 						totalCount={total}
-						endReached={loading ? () => {} : loadMoreItems}
+						endReached={loading ? () => {} : lm}
 						overscan={50}
 						data={filesItems}
 						itemContent={(index, data) => <Row
@@ -206,7 +208,7 @@ export default ({ rid }) => {
 			loadMoreItems={loadMoreItems}
 			setType={setType}
 			setText={handleTextChange}
-			filesItems={state === AsyncStatePhase.RESOLVED && data?.files}
+			filesItems={[AsyncStatePhase.UPDATING, AsyncStatePhase.RESOLVED].includes(state) && data?.files}
 			total={data?.total}
 			onClickClose={onClickClose}
 			onClickDelete={handleDelete}

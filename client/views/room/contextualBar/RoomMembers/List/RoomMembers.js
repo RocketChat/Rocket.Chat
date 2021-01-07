@@ -42,7 +42,7 @@ const Row = React.memo(({ user, data, index }) => {
 	if (!user) {
 		return <RoomMembers.Option.Skeleton />;
 	}
-	console.log(user);
+
 	return <RoomMembers.Option
 		index={index}
 		username={user.username}
@@ -78,6 +78,7 @@ export const RoomMembers = ({
 	], [t]);
 
 	const itemData = createItemData(onClickView, rid);
+	const lm = useMutableCallback((start) => loadMoreItems(start + 1, Math.min(50, start + 1 - members.length)));
 
 	return (
 		<>
@@ -129,7 +130,7 @@ export const RoomMembers = ({
 					{!loading && members && members.length > 0 && <Virtuoso
 						style={{ height: '100%', width: '100%' }}
 						totalCount={total}
-						endReached={loadMoreItems}
+						endReached={lm}
 						overscan={50}
 						data={members}
 						itemContent={(index, data) => <Row
@@ -174,7 +175,7 @@ export default ({
 	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [rid, type, debouncedText]);
 
 	const { value, phase, more, error } = useGetUsersOfRoom(params);
-
+	console.log(value);
 	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
 
 	const handleTextChange = useCallback((event) => {
