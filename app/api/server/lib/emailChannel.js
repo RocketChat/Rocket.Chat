@@ -2,7 +2,7 @@ import { EmailChannel as EmailChannelRaw } from '../../../models/server/raw';
 import { EmailChannel, Users } from '../../../models';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-export async function find({ userId, query = {}, pagination: { offset, count, sort } }) {
+export async function findEmailChannels({ userId, query = {}, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'manage-email-channels')) {
 		throw new Error('error-not-allowed');
 	}
@@ -24,22 +24,17 @@ export async function find({ userId, query = {}, pagination: { offset, count, so
 	};
 }
 
-export async function findOne({ userId, id }) {
+export async function findOneEmailChannel({ userId, id }) {
 	if (!hasPermissionAsync(userId, 'manage-email-channels')) {
 		throw new Error('error-not-allowed');
 	}
 	return EmailChannel.findOneById(id);
 }
 
-export async function createEdit(emailChannelParams, userId) {
+export async function createEditEmailChannel(emailChannelParams, userId) {
 	if (!hasPermissionAsync(userId, 'manage-email-channels')) {
 		throw new Error('error-not-allowed');
 	}
-
-	const updateEmailChannel = {
-		$set: { },
-	};
-
 	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailChannelParams;
 
 	if (!_id) {
@@ -47,6 +42,10 @@ export async function createEdit(emailChannelParams, userId) {
 		emailChannelParams._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
 		return EmailChannel.create(emailChannelParams);
 	}
+
+	const updateEmailChannel = {
+		$set: { },
+	};
 
 	updateEmailChannel.$set.active = active;
 	updateEmailChannel.$set.name = name;

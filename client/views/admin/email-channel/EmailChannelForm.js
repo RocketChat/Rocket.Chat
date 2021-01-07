@@ -32,17 +32,17 @@ const initialValues = {
 	senderInfo: '',
 	department: '',
 	// SMTP
-	SMTP_server: '',
-	SMTP_port: '',
-	SMTP_username: '',
-	SMTP_password: '',
-	SMTP_SSL_TLS: false,
+	smtpServer: '',
+	smtpPort: '',
+	smtpUsername: '',
+	smtpPassword: '',
+	smtpSslTls: false,
 	// IMAP
-	IMAP_server: '',
-	IMAP_port: '',
-	IMAP_username: '',
-	IMAP_password: '',
-	IMAP_SSL_TLS: false,
+	imapServer: '',
+	imapPort: '',
+	imapUsername: '',
+	imapPassword: '',
+	imapSslTls: false,
 };
 
 const getInitialValues = (data) => {
@@ -69,17 +69,17 @@ const getInitialValues = (data) => {
 		senderInfo: senderInfo ?? '',
 		department: department ?? '',
 		// SMTP
-		SMTP_server: smtp.server ?? '',
-		SMTP_port: smtp.port ?? '',
-		SMTP_username: smtp.username ?? '',
-		SMTP_password: smtp.password ?? '',
-		SMTP_SSL_TLS: smtp.sslTls ?? false,
+		smtpServer: smtp.server ?? '',
+		smtpPort: smtp.port ?? '',
+		smtpUsername: smtp.username ?? '',
+		smtpPassword: smtp.password ?? '',
+		smtpSslTls: smtp.sslTls ?? false,
 		// IMAP
-		IMAP_server: imap.server ?? '',
-		IMAP_port: imap.port ?? '',
-		IMAP_username: imap.username ?? '',
-		IMAP_password: imap.password ?? '',
-		IMAP_SSL_TLS: imap.sslTls ?? false,
+		imapServer: imap.server ?? '',
+		imapPort: imap.port ?? '',
+		imapUsername: imap.username ?? '',
+		imapPassword: imap.password ?? '',
+		imapSslTls: imap.sslTls ?? false,
 	};
 };
 
@@ -112,17 +112,17 @@ export default function EmailChannelForm({ id, data }) {
 		handleSenderInfo,
 		handleDepartment,
 		// SMTP
-		handleSMTP_server,
-		handleSMTP_port,
-		handleSMTP_username,
-		handleSMTP_password,
-		handleSMTP_SSL_TLS,
+		handleSmtpServer,
+		handleSmtpPort,
+		handleSmtpUsername,
+		handleSmtpPassword,
+		handleSmtpSslTls,
 		// IMAP
-		handleIMAP_server,
-		handleIMAP_port,
-		handleIMAP_username,
-		handleIMAP_password,
-		handleIMAP_SSL_TLS,
+		handleImapServer,
+		handleImapPort,
+		handleImapUsername,
+		handleImapPassword,
+		handleImapSslTls,
 	} = handlers;
 	const {
 		active,
@@ -132,17 +132,17 @@ export default function EmailChannelForm({ id, data }) {
 		senderInfo,
 		department,
 		// SMTP
-		SMTP_server,
-		SMTP_port,
-		SMTP_username,
-		SMTP_password,
-		SMTP_SSL_TLS,
+		smtpServer,
+		smtpPort,
+		smtpUsername,
+		smtpPassword,
+		smtpSslTls,
 		// IMAP
-		IMAP_server,
-		IMAP_port,
-		IMAP_username,
-		IMAP_password,
-		IMAP_SSL_TLS,
+		imapServer,
+		imapPort,
+		imapUsername,
+		imapPassword,
+		imapSslTls,
 	} = values;
 
 	const router = useRoute('admin-email-channel');
@@ -152,8 +152,8 @@ export default function EmailChannelForm({ id, data }) {
 	const saveEmailChannel = useEndpointAction('POST', 'email-channel');
 
 	const handleSave = useMutableCallback(async () => {
-		const smtp = { server: SMTP_server, port: SMTP_port, username: SMTP_username, password: SMTP_password, sslTls: SMTP_SSL_TLS };
-		const imap = { server: IMAP_server, port: IMAP_port, username: IMAP_username, password: IMAP_password, sslTls: IMAP_SSL_TLS };
+		const smtp = { server: smtpServer, port: smtpPort, username: smtpUsername, password: smtpPassword, sslTls: smtpSslTls };
+		const imap = { server: imapServer, port: imapPort, username: imapUsername, password: imapPassword, sslTls: imapSslTls };
 		const payload = { active, name, email, description, senderInfo, department, smtp, imap };
 		if (id) {
 			payload._id = id;
@@ -168,9 +168,9 @@ export default function EmailChannelForm({ id, data }) {
 		}
 	});
 
-	const canSave = name && (email && isEmail(email)) && description && department
-	&& SMTP_server && SMTP_port && SMTP_username && SMTP_password
-	&& IMAP_server && IMAP_port && IMAP_username && IMAP_password;
+	const canSave = name && (email && isEmail(email))
+	&& smtpServer && smtpPort && smtpUsername && smtpPassword
+	&& imapServer && imapPort && imapUsername && imapPassword;
 
 	return <Page.ScrollableContentWithShadow>
 		<Box maxWidth='x600' w='full' alignSelf='center'>
@@ -196,7 +196,7 @@ export default function EmailChannelForm({ id, data }) {
 							</Field.Row>
 						</Field>
 						<Field>
-							<Field.Label>{t('Description')}*</Field.Label>
+							<Field.Label>{t('Description')}</Field.Label>
 							<Field.Row>
 								<TextAreaInput value={description} rows={4} onChange={handleDescription} />
 							</Field.Row>
@@ -211,7 +211,7 @@ export default function EmailChannelForm({ id, data }) {
 							</Field.Hint>
 						</Field>
 						<Field>
-							<Field.Label>{t('Department')}*</Field.Label>
+							<Field.Label>{t('Department')}</Field.Label>
 							<Field.Row>
 								<AutoCompleteDepartment value={department} onChange={handleDepartment} />
 							</Field.Row>
@@ -226,31 +226,31 @@ export default function EmailChannelForm({ id, data }) {
 						<Field>
 							<Field.Label>{t('Server')}*</Field.Label>
 							<Field.Row>
-								<TextInput value={SMTP_server} onChange={handleSMTP_server} />
+								<TextInput value={smtpServer} onChange={handleSmtpServer} />
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label>{t('Port')}*</Field.Label>
 							<Field.Row>
-								<TextInput value={SMTP_port} onChange={handleSMTP_port} />
+								<TextInput value={smtpPort} onChange={handleSmtpPort} />
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label>{t('Username')}*</Field.Label>
 							<Field.Row>
-								<TextInput value={SMTP_username} onChange={handleSMTP_username} />
+								<TextInput value={smtpUsername} onChange={handleSmtpUsername} />
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label>{t('Password')}*</Field.Label>
 							<Field.Row>
-								<TextInput type='password' value={SMTP_password} onChange={handleSMTP_password} />
+								<TextInput type='password' value={smtpPassword} onChange={handleSmtpPassword} />
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label display='flex' justifyContent='space-between' w='full'>
 								{t('Connect_SSL_TLS')}
-								<ToggleSwitch checked={SMTP_SSL_TLS} onChange={handleSMTP_SSL_TLS}/>
+								<ToggleSwitch checked={smtpSslTls} onChange={handleSmtpSslTls}/>
 							</Field.Label>
 						</Field>
 					</FieldGroup>
@@ -260,31 +260,31 @@ export default function EmailChannelForm({ id, data }) {
 						<Field>
 							<Field.Label>{t('Server')}*</Field.Label>
 							<Field.Row>
-								<TextInput value={IMAP_server} onChange={handleIMAP_server} />
+								<TextInput value={imapServer} onChange={handleImapServer} />
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label>{t('Port')}*</Field.Label>
 							<Field.Row>
-								<TextInput value={IMAP_port} onChange={handleIMAP_port} />
+								<TextInput value={imapPort} onChange={handleImapPort} />
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label>{t('Username')}*</Field.Label>
 							<Field.Row>
-								<TextInput value={IMAP_username} onChange={handleIMAP_username}/>
+								<TextInput value={imapUsername} onChange={handleImapUsername}/>
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label>{t('Password')}*</Field.Label>
 							<Field.Row>
-								<TextInput type='password' value={IMAP_password} onChange={handleIMAP_password} />
+								<TextInput type='password' value={imapPassword} onChange={handleImapPassword} />
 							</Field.Row>
 						</Field>
 						<Field>
 							<Field.Label display='flex' justifyContent='space-between' w='full'>
 								{t('Connect_SSL_TLS')}
-								<ToggleSwitch checked={IMAP_SSL_TLS} onChange={handleIMAP_SSL_TLS} />
+								<ToggleSwitch checked={imapSslTls} onChange={handleImapSslTls} />
 							</Field.Label>
 						</Field>
 					</FieldGroup>
