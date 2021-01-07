@@ -27,8 +27,8 @@ export const QuoteAttachment: FC<QuoteAttachmentProps> = ({ author_icon: url, au
 					<Box fontScale='c1' {...messageLink ? { is: 'a', href: messageLink, target: '_blank' } : { color: 'hint' }}>{format(ts)}</Box>
 				</Attachment.Author>
 				<MarkdownText content={text} />
+				{attachments && <Attachment.Inner><Attachments attachments={attachments} /></Attachment.Inner>}
 			</Attachment.Details>
 		</Attachment.Content>
-		{attachments && <Attachment.Inner><Attachments attachments={attachments} /></Attachment.Inner>}
 	</>;
 };

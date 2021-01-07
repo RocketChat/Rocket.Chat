@@ -3,11 +3,13 @@ import React, { FC } from 'react';
 import { useCollapse } from '../hooks/useCollapse';
 import { Attachment, AttachmentPropsBase } from '../Attachment';
 import { getURL } from '../../../../../app/utils/client';
+import { FileProp } from '..';
 
 export type AudioAttachmentProps = {
 	audio_url: string;
 	audio_type: string;
 	audio_size?: number;
+	file: FileProp;
 } & AttachmentPropsBase;
 
 export const AudioAttachment: FC<AudioAttachmentProps> = ({

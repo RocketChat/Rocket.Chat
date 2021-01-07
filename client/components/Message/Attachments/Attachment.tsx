@@ -33,7 +33,7 @@ const Content: FC<BoxProps> = ({ ...props }) => <Box mb='x4' {...props} />;
 const Details: FC<BoxProps> = ({ ...props }) => <Box fontScale='p1' color='info' bg='neutral-100' pi='x16' pb='x16' {...props}/>;
 const Inner: FC<BoxProps> = ({ ...props }) => <Box mis='x16' {...props}/>;
 
-const Block: FC<{ pre?: JSX.Element | string; color: string }> = ({ pre, color, children }) => <Attachment>{pre}<Box pis='x16' borderRadius='x4' borderInlineStartStyle='solid' borderInlineStartWidth='x2' borderInlineStartColor={color} children={children}></Box></Attachment>;
+const Block: FC<{ pre?: JSX.Element | string; color?: string }> = ({ pre, color = 'neutral-600', children }) => <Attachment>{pre}<Box pis='x16' borderRadius='x2' borderInlineStartStyle='solid' borderInlineStartWidth='x2' borderInlineStartColor={color} children={children}></Box></Attachment>;
 
 const Author: FC<{}> = (props) => <Box display='flex' flexDirection='row' alignItems='center' mbe='x4' {...props}/>;
 const AuthorAvatar: FC<{ url: string }> = ({ url }) => <Avatar { ...{ url, size: 'x24' } as any} />;
@@ -48,7 +48,7 @@ export const Attachment: FC<BoxProps> & {
 	Content: FC<BoxProps>;
 	Details: FC<BoxProps>;
 	Inner: FC<BoxProps>;
-	Block: FC<{ pre?: JSX.Element | string; color: string }>;
+	Block: FC<{ pre?: JSX.Element | string; color?: string }>;
 	Author: FC<{}>;
 	AuthorAvatar: FC<{ url: string }>;
 	AuthorName: FC<BoxProps>;

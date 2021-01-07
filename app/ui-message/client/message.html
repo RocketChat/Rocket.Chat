@@ -116,7 +116,7 @@
 				{{/each}}
 			{{/if}}
 
-			{{> reactAttachment attachments=msg.attachments}}
+			{{> reactAttachment attachments=msg.attachments file=msg.file }}
 			{{#each msg.attachments}}
 				{{injectMessage . ../msg}}
 				{{injectSettings . ../settings}}

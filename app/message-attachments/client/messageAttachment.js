@@ -144,7 +144,7 @@ Template.messageAttachment.onRendered(function() {
 	const { msg } = Template.parentData(1);
 	this.autorun(() => {
 		if (msg && msg.file && msg.file.type === 'application/pdf' && !this.collapsedMedia.get()) {
-			Meteor.defer(() => { renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link); });
+			setTimeout(() => renderPdfToCanvas(msg.file._id, msg.attachments[0].title_link), 500);
 		}
 	});
 });

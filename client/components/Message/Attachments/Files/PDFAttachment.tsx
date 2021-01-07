@@ -2,44 +2,37 @@ import React, { FC } from 'react';
 
 import { useCollapse } from '../hooks/useCollapse';
 import { Attachment, AttachmentPropsBase } from '../Attachment';
-import Image, { Dimensions } from '../components/Image';
 import MarkdownText from '../../../MarkdownText';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import { FileProp } from '..';
 
-export type ImageAttachmentProps = {
-	image_dimensions: Dimensions;
-	image_preview?: string;
-	image_url: string;
-	image_type: string;
-	image_size?: number;
+export type PDFAttachmentProps = {
 	file: FileProp;
 } & AttachmentPropsBase;
 
-export const ImageAttachment: FC<ImageAttachmentProps> = ({
-	title,
-	image_url: url,
-	image_preview: imagePreview,
+export const PDFAttachment: FC<PDFAttachmentProps> = ({
 	collapsed: collapsedDefault = false,
-	image_size: size,
-	image_dimensions: imageDimensions = {
-		height: 360,
-		width: 480,
-	},
 	description,
 	title_link: link,
 	title_link_download: hasDownload,
+	file,
 }) => {
+	const t = useTranslation();
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	return <Attachment>
 		<MarkdownText withRichContent={undefined} content={description} />
 		<Attachment.Row>
-			<Attachment.Title>{title}</Attachment.Title>
-			{size && <Attachment.Size size={size}/>}
+			<Attachment.Title>{t('PDF')}</Attachment.Title>
 			{collapse}
 			{hasDownload && link && <Attachment.Download href={link}/>}
 		</Attachment.Row>
 		{ !collapsed && <Attachment.Content>
-			<Image {...imageDimensions } src={ url || `data:image/png;base64,${ imagePreview }`} />
+			<canvas id={file._id} className='attachment-canvas'></canvas>
+			{/* <div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
+			<Attachment.Title>{title}</Attachment.Title>
+			{file.size && <Attachment.Size size={file.size}/>}
+					{{> icon block="rc-input__icon-svg" icon="loading"}}
+				</div>*/}
 		</Attachment.Content> }
 	</Attachment>;
 };

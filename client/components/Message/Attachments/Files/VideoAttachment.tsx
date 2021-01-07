@@ -4,11 +4,13 @@ import { Box } from '@rocket.chat/fuselage';
 import { useCollapse } from '../hooks/useCollapse';
 import { Attachment, AttachmentPropsBase } from '../Attachment';
 import { getURL } from '../../../../../app/utils/client';
+import { FileProp } from '..';
 
 export type VideoAttachmentProps = {
 	video_url: string;
 	video_type: string;
 	video_size: number;
+	file: FileProp;
 } & AttachmentPropsBase;
 
 export const VideoAttachment: FC<VideoAttachmentProps> = ({ title,

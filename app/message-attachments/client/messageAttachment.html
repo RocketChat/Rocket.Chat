@@ -16,25 +16,6 @@
 			</div>
 		{{/unless}}
 
-		{{#if isPDF}}
-			{{#unless collapsed}}
-				<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
-					{{> icon block="rc-input__icon-svg" icon="loading"}}
-				</div>
-				<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
-			{{/unless}}
-		{{/if}}
-
-		{{#if actions}}
-			{{#unless collapsed}}
-				<div class="actions-container">
-					{{#each actions}}
-						{{> messageAction}}
-					{{/each}}
-				</div>
-			{{/unless}}
-		{{/if}}
-
 		{{#each attachments}}
 			{{injectMessage . ../msg}}
 			{{injectSettings . ../settings}}
