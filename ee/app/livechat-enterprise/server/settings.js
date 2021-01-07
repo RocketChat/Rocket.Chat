@@ -90,6 +90,19 @@ export const createSettings = () => {
 		],
 	});
 
+	settings.add('Livechat_auto_transfer_chat_if_no_response_routing', 0, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Routing',
+		i18nLabel: 'Livechat_Auto_transfer_chat_if_no_response',
+		i18nDescription: 'Livechat_Auto_transfer_chat_if_no_response_description',
+		enterprise: true,
+		invalidValue: 0,
+		modules: [
+			'livechat-enterprise',
+		],
+	});
+
 	settings.addGroup('Omnichannel', function() {
 		this.section('Business_Hours', function() {
 			this.add('Livechat_business_hour_type', 'Single', {

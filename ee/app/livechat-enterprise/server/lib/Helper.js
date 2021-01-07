@@ -10,12 +10,14 @@ import {
 	LivechatRooms,
 	Messages,
 	LivechatCustomField,
+	LivechatVisitors,
 } from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
+import { Livechat } from '../../../../../app/livechat/server';
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
 	if (agentId) {
@@ -243,4 +245,31 @@ export const getLivechatQueueInfo = async (room) => {
 	}
 
 	return normalizeQueueInfo(inq);
+};
+
+export const transferToNewAgent = async (room, transferredBy) => {
+	const { departmentId, v: { token } } = room;
+
+	const guest = await LivechatVisitors.getVisitorByToken(token, {});
+
+	const nextAgent = await Livechat.getNextAgent(departmentId);
+	// TODO: remove this console log
+	console.log('----next Agent', nextAgent);
+
+	const transferData = {
+		userId: nextAgent?.agentId,
+		comment: 'Visitor transferred due to inactivity',
+		transferredBy,
+		transferredTo: nextAgent,
+	};
+
+	// TODO: remove this console log
+	console.log('---transferred data', transferData);
+
+	try {
+		const result = await Livechat.transfer(room, guest, transferData);
+		console.log('----result', result);
+	} catch (err) {
+		console.log('---error occurred while transferring chat', err.message);
+	}
 };
