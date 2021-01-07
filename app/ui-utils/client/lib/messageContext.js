@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { Subscriptions, Rooms, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
@@ -12,6 +13,20 @@ const fields = { name: 1, username: 1, 'settings.preferences.showMessageInMainTh
 export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
 	const user = Users.findOne({ _id: uid }, { fields }) || {};
+
+	const openThread = (e) => {
+		const { rid, mid, tmid } = e.currentTarget.dataset;
+		const room = Rooms.findOne({ _id: rid });
+		FlowRouter.go(FlowRouter.getRouteName(), {
+			rid,
+			name: room.name,
+			tab: 'thread',
+			context: tmid || mid,
+		}, {
+			jump: tmid && tmid !== mid && mid && mid,
+		});
+	};
+
 	return {
 		u: user,
 		room: Rooms.findOne({ _id: rid }, {
@@ -31,6 +46,11 @@ export function messageContext({ rid } = Template.instance()) {
 				tunreadGroup: 1,
 			},
 		}),
+		actions: {
+			openThread() {
+				return openThread;
+			},
+		},
 		settings: {
 			translateLanguage: AutoTranslate.getLanguage(rid),
 			showMessageInMainThread: getUserPreference(user, 'showMessageInMainThread'),
