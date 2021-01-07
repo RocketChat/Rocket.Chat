@@ -2550,7 +2550,7 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled',  (done) => {
+		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled', (done) => {
 			request.post(api('users.setStatus'))
 				.set(credentials)
 				.send({
