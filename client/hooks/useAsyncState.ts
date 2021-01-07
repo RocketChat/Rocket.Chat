@@ -26,7 +26,13 @@ export const useAsyncState = <T>(initialValue?: T | (() => T)): AsyncStateObject
 	);
 
 	const resolve = useCallback((value: T | ((prev: T | undefined) => T)) => {
-		setState((state) => asyncState.resolve(state, (value as (prev: T | undefined) => T)(state.value)));
+		setState((state) => {
+			if (typeof value === 'function') {
+				return asyncState.resolve(state, (value as (prev: T | undefined) => T)(state.value));
+			}
+
+			return asyncState.resolve(state, value);
+		});
 	}, [setState]);
 
 	const reject = useCallback((error: Error) => {
