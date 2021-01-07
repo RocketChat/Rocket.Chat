@@ -5,12 +5,12 @@ import type { IRocketChatRecord } from '../../../definition/IRocketChatRecord';
 export class RecordList<T extends IRocketChatRecord> extends Emitter {
 	protected index = new Map<T['_id'], T>();
 
-	public constructor(
-		protected filter?: (item: T) => boolean,
-		protected compare: (a: T, b: T) => number = (a, b): number =>
-			a._updatedAt.getTime() - b._updatedAt.getTime(),
-	) {
-		super();
+	protected filter(_item: T): boolean {
+		return true;
+	}
+
+	protected compare(a: T, b: T): number {
+		return a._updatedAt.getTime() - b._updatedAt.getTime();
 	}
 
 	private _cache: T[] | undefined;
@@ -53,5 +53,11 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 		}
 
 		return this._cache;
+	}
+
+	public clear(): void {
+		this.index.clear();
+		this._cache = undefined;
+		this.emit('cleared');
 	}
 }

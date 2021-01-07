@@ -20,7 +20,7 @@ type ThreadsListOptions = {
 		uid: IUser['_id'];
 	}
 	| {
-		type: null;
+		type: 'all';
 	}
 );
 
@@ -36,40 +36,51 @@ const isThreadUnread = (threadMessage: ThreadMessage, tunread: ISubscription['tu
 const isThreadTextMatching = (threadMessage: ThreadMessage, regex: RegExp): boolean =>
 	regex.test(threadMessage.msg);
 
-const createFilter = (options: ThreadsListOptions): ((message: IMessage) => boolean) => {
-	const optionalFilters: ((message: ThreadMessage) => boolean)[] = [];
-
-	if (options.type === 'following') {
-		const { uid } = options;
-		optionalFilters.push((message): boolean => isThreadFollowedByUser(message, uid));
+export class ThreadsList extends MessageList {
+	public constructor(private options: ThreadsListOptions) {
+		super();
 	}
 
-	if (options.type === 'unread') {
-		const { tunread } = options;
-		optionalFilters.push((message): boolean => isThreadUnread(message, tunread));
+	public updateFilters(options: ThreadsListOptions): void {
+		this.options = options;
+		this.clear();
 	}
 
-	if (options.text) {
-		const regex = new RegExp(options.text.split(/\s/g).map((text) => escapeRegExp(text)).join('|'));
-		optionalFilters.push((message): boolean => isThreadTextMatching(message, regex));
-	}
+	protected filter(message: IMessage): boolean {
+		const { rid } = this.options;
 
-	const { rid } = options;
-
-	return (message): boolean => {
 		if (!isThreadMessageInRoom(message, rid)) {
 			return false;
 		}
 
-		return optionalFilters.every((filter) => filter(message));
-	};
-};
+		if (this.options.type === 'following') {
+			const { uid } = this.options;
+			if (!isThreadFollowedByUser(message, uid)) {
+				return false;
+			}
+		}
 
-const compareThreadMessages = (a: IMessage, b: IMessage): number =>
-	(b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime();
+		if (this.options.type === 'unread') {
+			const { tunread } = this.options;
+			if (!isThreadUnread(message, tunread)) {
+				return false;
+			}
+		}
 
-export class ThreadsList extends MessageList {
-	public constructor(options: ThreadsListOptions) {
-		super(createFilter(options), compareThreadMessages);
+		if (this.options.text) {
+			const regex = new RegExp(
+				this.options.text.split(/\s/g)
+					.map((text) => escapeRegExp(text)).join('|'),
+			);
+			if (!isThreadTextMatching(message, regex)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	protected compare(a: IMessage, b: IMessage): number {
+		return (b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime();
 	}
 }
