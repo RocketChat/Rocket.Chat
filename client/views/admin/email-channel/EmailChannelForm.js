@@ -102,7 +102,7 @@ export default function EmailChannelForm({ id, data }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { values, handlers } = useForm(getInitialValues(data));
+	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data));
 
 	const {
 		handleActive,
@@ -158,7 +158,6 @@ export default function EmailChannelForm({ id, data }) {
 		if (id) {
 			payload._id = id;
 		}
-		// console.log(payload);
 		try {
 			await saveEmailChannel(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
@@ -168,7 +167,7 @@ export default function EmailChannelForm({ id, data }) {
 		}
 	});
 
-	const canSave = name && (email && isEmail(email))
+	const canSave = hasUnsavedChanges && name && (email && isEmail(email))
 	&& smtpServer && smtpPort && smtpUsername && smtpPassword
 	&& imapServer && imapPort && imapUsername && imapPassword;
 

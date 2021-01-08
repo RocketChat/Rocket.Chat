@@ -1526,6 +1526,7 @@
   "error-invalid-domain": "Invalid domain",
   "error-invalid-email": "Invalid email __email__",
   "error-invalid-email-address": "Invalid email address",
+  "error-invalid-email-channel": "Invalid email channel",
   "error-invalid-file-height": "Invalid file height",
   "error-invalid-file-type": "Invalid file type",
   "error-invalid-file-width": "Invalid file width",

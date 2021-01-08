@@ -1357,6 +1357,7 @@
   "error-invalid-domain": "Domínio inválido",
   "error-invalid-email": "__email__ não é um e-mail válido",
   "error-invalid-email-address": "Endereço de e-mail inválido",
+  "error-invalid-email-channel": "Canal via Email inválido",
   "error-invalid-file-height": "Altura de arquivo inválida",
   "error-invalid-file-type": "Tipo de arquivo inválido",
   "error-invalid-file-width": "Altura de arquivo inválida",

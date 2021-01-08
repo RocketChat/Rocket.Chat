@@ -71,7 +71,7 @@ API.v1.addRoute('email-channel', { authRequired: true }, {
 			const emailChannel = Promise.await(findOneEmailChannel({ userId: this.userId, id: _id }));
 
 			if (!emailChannel) {
-				throw new Error('invalid-email-channel');
+				throw new Error('error-invalid-email-channel');
 			}
 
 			updateEmailChannel.$set.active = active;
