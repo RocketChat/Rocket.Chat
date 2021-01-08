@@ -25,7 +25,7 @@ export async function findEmailsInbox({ userId, query = {}, pagination: { offset
 }
 
 export async function findOneEmailsInbox({ userId, _id }) {
-	if (!hasPermissionAsync(userId, 'manage-email-inbox')) {
+	if (!await hasPermissionAsync(userId, 'manage-email-inbox')) {
 		throw new Error('error-not-allowed');
 	}
 	return EmailInbox.findOneById(_id);

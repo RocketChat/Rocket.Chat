@@ -3,7 +3,7 @@ import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
 import { findEmailsInbox, findOneEmailsInbox, inserOneOrUpdateEmailInbox } from '../lib/emailInbox';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { EmailInbox } from '../../../models';
 
 API.v1.addRoute('email-inbox.list', { authRequired: true }, {
@@ -54,7 +54,7 @@ API.v1.addRoute('email-inbox', { authRequired: true }, {
 
 			const emailsInboxParams = this.bodyParams;
 
-			if (!hasPermissionAsync(this.userId, 'manage-email-inbox')) {
+			if (!hasPermission(this.userId, 'manage-email-inbox')) {
 				throw new Error('error-not-allowed');
 			}
 
@@ -68,7 +68,7 @@ API.v1.addRoute('email-inbox', { authRequired: true }, {
 		}
 	},
 	delete() {
-		if (!hasPermissionAsync(this.userId, 'manage-email-inboxs')) {
+		if (!hasPermission(this.userId, 'manage-email-inboxs')) {
 			throw new Error('error-not-allowed');
 		}
 		try {
