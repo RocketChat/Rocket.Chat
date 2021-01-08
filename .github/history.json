@@ -53685,6 +53685,202 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "3.8.5": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19978",
+          "title": "Regression: Fix oembed",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.9.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19978",
+          "title": "Regression: Fix oembed",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19830",
+          "title": "[FIX] Omnichannel Departments Canned Responses",
+          "userLogin": "gabriellsh",
+          "milestone": "3.9.4",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "renatobecker",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "19945",
+          "title": "[FIX] Room scrolling to top after returns to a opened room",
+          "userLogin": "ggazzo",
+          "milestone": "3.9.4",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19935",
+          "title": "[FIX] Status on searchlist",
+          "userLogin": "gabriellsh",
+          "milestone": "3.9.4",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.10.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20073",
+          "title": "[FIX] Actions from User Info panel",
+          "userLogin": "Darshilp326",
+          "description": "Users can be removed from channels without any error message.",
+          "milestone": "3.10.1",
+          "contributors": [
+            "Darshilp326"
+          ]
+        },
+        {
+          "pr": "20114",
+          "title": "[FIX] Messages being updated when not required after user changes his profile",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.10.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19953",
+          "title": "[FIX][ENTERPRISE] Omnichannel custom fields not storing additional form values ",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20089",
+          "title": "[FIX] Omnichannel rooms breaking after return to queue or forward",
+          "userLogin": "gabriellsh",
+          "milestone": "3.10.1",
+          "contributors": [
+            "gabriellsh",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20093",
+          "title": "[FIX] Omnichannel raw model importing meteor dependency",
+          "userLogin": "renatobecker",
+          "milestone": "3.10.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "20061",
+          "title": "[FIX] User Audio notification preference not being applied",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.10.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20003",
+          "title": "[FIX] OAuth users being asked to change password on second login",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.10.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20022",
+          "title": "[FIX] Omnichannel Agents unable to take new chats in the queue",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "20007",
+          "title": "[FIX] Omnichannel Business Hours form is not being rendered",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19965",
+          "title": "[FIX] Agent information panel not rendering",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19997",
+          "title": "[FIX] Creation of Omnichannel rooms not working correctly through the Apps when the agent parameter is set",
+          "userLogin": "murtaza98",
+          "milestone": "3.10.1",
+          "contributors": [
+            "murtaza98"
+          ]
+        }
+      ]
     }
   }
 }
