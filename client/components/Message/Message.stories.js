@@ -7,7 +7,7 @@ export default {
 	component: Metrics,
 };
 
-export const Default = () => <Content>
+export const Thread = () => <Content>
 	<Reply/>
 	<Metrics>
 		<Metrics.Item>
@@ -25,6 +25,16 @@ export const Default = () => <Content>
 		<Metrics.Item>
 			<Metrics.Item.Icon name='bell'/>
 			<Metrics.Item.Label>3</Metrics.Item.Label>
+		</Metrics.Item>
+	</Metrics>
+</Content>;
+
+
+export const Discussion = () => <Content>
+	<Reply/>
+	<Metrics>
+		<Metrics.Item>
+			<Metrics.Item.Label>sunday</Metrics.Item.Label>
 		</Metrics.Item>
 	</Metrics>
 </Content>;
