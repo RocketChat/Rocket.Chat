@@ -62,3 +62,24 @@ export async function inserOneOrUpdateEmailInbox(userId, emailInboxParams) {
 
 	return EmailInbox.update({ _id }, updateEmailInbox);
 }
+
+export async function findOneEmailInboxByEmail({ userId, email }) {
+	if (!await hasPermissionAsync(userId, 'manage-email-inbox')) {
+		throw new Error('error-not-allowed');
+	}
+	return EmailInbox.findOne({ email });
+}
+
+export async function findOneDifferentEmailInboxByEmail({ userId, email, _id }) {
+	if (!await hasPermissionAsync(userId, 'manage-email-inbox')) {
+		throw new Error('error-not-allowed');
+	}
+
+	const existentEmail = await EmailInbox.findOne({ email });
+
+	if (existentEmail && existentEmail._id === _id) {
+		return;
+	}
+
+	return existentEmail;
+}

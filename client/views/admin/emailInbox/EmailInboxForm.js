@@ -158,9 +158,10 @@ export default function EmailInboxForm({ id, data }) {
 
 	const saveEmailInbox = useEndpointAction('POST', 'email-inbox');
 	const deleteAction = useEndpointAction('DELETE', `email-inbox?_id=${ id }`);
+	const emailAlreadyExistsAction = useEndpointAction('GET', id ? `email-inbox?_id=${ id }&email=${ email }` : `email-inbox?email=${ email }`);
 
 	useComponentDidUpdate(() => {
-		setEmailError(!isEmail(email) ? t('Validate_email_address') : '');
+		setEmailError(!isEmail(email) ? t('Validate_email_address') : undefined);
 	}, [t, email]);
 
 	const handleRemoveClick = useMutableCallback(async () => {
@@ -204,7 +205,17 @@ export default function EmailInboxForm({ id, data }) {
 		}
 	});
 
-	const canSave = hasUnsavedChanges && name && (email && isEmail(email))
+
+	const checkEmailExists = useMutableCallback(async () => {
+		if (isEmail(email)) {
+			const result = await emailAlreadyExistsAction();
+			if (result.emailInboxes) {
+				setEmailError(t('Email_already_exists'));
+			}
+		}
+	});
+
+	const canSave = hasUnsavedChanges && name && (email && isEmail(email) && !emailError)
 	&& smtpServer && smtpPort && smtpUsername && smtpPassword
 	&& imapServer && imapPort && imapUsername && imapPassword;
 
@@ -228,8 +239,11 @@ export default function EmailInboxForm({ id, data }) {
 						<Field>
 							<Field.Label>{t('Email')}*</Field.Label>
 							<Field.Row>
-								<TextInput error={emailError} value={email} onChange={handleEmail} addon={<Icon name='mail' size='x20' />}/>
+								<TextInput onBlur={checkEmailExists} error={emailError} value={email} onChange={handleEmail} addon={<Icon name='mail' size='x20' />}/>
 							</Field.Row>
+							<Field.Error>
+								{t(emailError)}
+							</Field.Error>
 						</Field>
 						<Field>
 							<Field.Label>{t('Description')}</Field.Label>

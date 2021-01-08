@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
-import { findEmailInboxes, findOneEmailInbox, inserOneOrUpdateEmailInbox } from '../lib/emailInbox';
+import { findEmailInboxes, findOneEmailInbox, inserOneOrUpdateEmailInbox, findOneEmailInboxByEmail, findOneDifferentEmailInboxByEmail } from '../lib/emailInbox';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { EmailInbox } from '../../../models';
 
@@ -19,21 +19,31 @@ API.v1.addRoute('email-inbox.list', { authRequired: true }, {
 	},
 });
 
+
 API.v1.addRoute('email-inbox', { authRequired: true }, {
 	get() {
 		try {
 			check(this.queryParams, {
 				_id: Match.Maybe(String),
+				email: Match.Maybe(String),
 			});
-			const { _id } = this.queryParams;
+			const { _id, email } = this.queryParams;
 
-			const emailInboxes = Promise.await(findOneEmailInbox({ userId: this.userId, _id }));
-
-			if (!emailInboxes) {
-				throw new Meteor.Error('email-inbox-not-found');
+			if (_id && !email) {
+				const emailInboxes = Promise.await(findOneEmailInbox({ userId: this.userId, _id }));
+				if (!emailInboxes) {
+					throw new Meteor.Error('email-inbox-not-found');
+				}
+				return API.v1.success(emailInboxes);
 			}
 
-			return API.v1.success(emailInboxes);
+			if (_id && email) {
+				const emailInboxes = Promise.await(findOneDifferentEmailInboxByEmail({ userId: this.userId, _id, email }));
+				return API.v1.success({ emailInboxes });
+			}
+
+			const emailInboxes = Promise.await(findOneEmailInboxByEmail({ userId: this.userId, email }));
+			return API.v1.success({ emailInboxes });
 		} catch (e) {
 			return API.v1.failure(e);
 		}
