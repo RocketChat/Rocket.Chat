@@ -1,4 +1,22 @@
 
+# 3.10.2
+`2021-01-08  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.21.0-alpha.4235`
+
+### 🐛 Bug fixes
+
+
+- Tabbar is opened ([#20122](https://github.com/RocketChat/Rocket.Chat/pull/20122))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 # 3.10.1
 `2021-01-08  ·  11 🐛  ·  7 👩‍💻👨‍💻`
 
