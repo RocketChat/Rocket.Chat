@@ -17,8 +17,6 @@ export function SendTestButton() {
 	</Table.Cell>;
 }
 
-// const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
-
 const useQuery = ({ itemsPerPage, current }, [column, direction]) => useMemo(() => ({
 	sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
 	...itemsPerPage && { count: itemsPerPage },
@@ -60,7 +58,7 @@ function EmailInboxTable() {
 	return <GenericTable
 		header={header}
 		renderRow={renderRow}
-		results={data && data.emailsInbox}
+		results={data && data.emailInboxes}
 		total={data && data.total}
 		setParams={setParams}
 		params={params}

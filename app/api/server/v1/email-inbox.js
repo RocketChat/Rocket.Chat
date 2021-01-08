@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
-import { findEmailsInbox, findOneEmailsInbox, inserOneOrUpdateEmailInbox } from '../lib/emailInbox';
+import { findEmailInboxes, findOneEmailInbox, inserOneOrUpdateEmailInbox } from '../lib/emailInbox';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { EmailInbox } from '../../../models';
 
@@ -11,8 +11,8 @@ API.v1.addRoute('email-inbox.list', { authRequired: true }, {
 		try {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, query } = this.parseJsonQuery();
-			const emailsInbox = Promise.await(findEmailsInbox({ userId: this.userId, query, pagination: { offset, count, sort } }));
-			return API.v1.success(emailsInbox);
+			const emailInboxes = Promise.await(findEmailInboxes({ userId: this.userId, query, pagination: { offset, count, sort } }));
+			return API.v1.success(emailInboxes);
 		} catch (e) {
 			return API.v1.failure(e);
 		}
@@ -27,13 +27,13 @@ API.v1.addRoute('email-inbox', { authRequired: true }, {
 			});
 			const { _id } = this.queryParams;
 
-			const emailsInbox = Promise.await(findOneEmailsInbox({ userId: this.userId, _id }));
+			const emailInboxes = Promise.await(findOneEmailInbox({ userId: this.userId, _id }));
 
-			if (!emailsInbox) {
+			if (!emailInboxes) {
 				throw new Meteor.Error('email-inbox-not-found');
 			}
 
-			return API.v1.success(emailsInbox);
+			return API.v1.success(emailInboxes);
 		} catch (e) {
 			return API.v1.failure(e);
 		}
@@ -52,15 +52,15 @@ API.v1.addRoute('email-inbox', { authRequired: true }, {
 				imap: Object,
 			});
 
-			const emailsInboxParams = this.bodyParams;
+			const emailInboxParams = this.bodyParams;
 
 			if (!hasPermission(this.userId, 'manage-email-inbox')) {
 				throw new Error('error-not-allowed');
 			}
 
-			const { _id } = emailsInboxParams;
+			const { _id } = emailInboxParams;
 
-			Promise.await(inserOneOrUpdateEmailInbox(this.userId, emailsInboxParams));
+			Promise.await(inserOneOrUpdateEmailInbox(this.userId, emailInboxParams));
 
 			return API.v1.success({ _id });
 		} catch (e) {
@@ -77,9 +77,9 @@ API.v1.addRoute('email-inbox', { authRequired: true }, {
 			});
 
 			const { _id } = this.queryParams;
-			const emailsInbox = EmailInbox.findOneById(_id);
+			const emailInboxes = EmailInbox.findOneById(_id);
 
-			if (!emailsInbox) {
+			if (!emailInboxes) {
 				return API.v1.notFound();
 			}
 			EmailInbox.removeById(_id);

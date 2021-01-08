@@ -2,7 +2,7 @@ import { EmailInbox } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../models';
 
-export async function findEmailsInbox({ userId, query = {}, pagination: { offset, count, sort } }) {
+export async function findEmailInboxes({ userId, query = {}, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'manage-email-inbox')) {
 		throw new Error('error-not-allowed');
 	}
@@ -14,35 +14,35 @@ export async function findEmailsInbox({ userId, query = {}, pagination: { offset
 
 	const total = await cursor.count();
 
-	const emailsInbox = await cursor.toArray();
+	const emailInboxes = await cursor.toArray();
 
 	return {
-		emailsInbox,
-		count: emailsInbox.length,
+		emailInboxes,
+		count: emailInboxes.length,
 		offset,
 		total,
 	};
 }
 
-export async function findOneEmailsInbox({ userId, _id }) {
+export async function findOneEmailInbox({ userId, _id }) {
 	if (!await hasPermissionAsync(userId, 'manage-email-inbox')) {
 		throw new Error('error-not-allowed');
 	}
 	return EmailInbox.findOneById(_id);
 }
 
-export async function inserOneOrUpdateEmailInbox(userId, emailsInboxParams) {
-	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailsInboxParams;
+export async function inserOneOrUpdateEmailInbox(userId, emailInboxParams) {
+	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailInboxParams;
 
 	if (!_id) {
-		emailsInboxParams.ts = new Date();
-		emailsInboxParams._createdBy = Users.findOne(userId, { fields: { username: 1 } });
-		return EmailInbox.insertOne(emailsInboxParams);
+		emailInboxParams.ts = new Date();
+		emailInboxParams._createdBy = Users.findOne(userId, { fields: { username: 1 } });
+		return EmailInbox.insertOne(emailInboxParams);
 	}
 
-	const emailsInbox = findOneEmailsInbox({ userId, id: _id });
+	const emailInboxes = await findOneEmailInbox({ userId, id: _id });
 
-	if (!emailsInbox) {
+	if (!emailInboxes) {
 		throw new Error('error-invalid-email-inbox');
 	}
 
@@ -57,8 +57,8 @@ export async function inserOneOrUpdateEmailInbox(userId, emailsInboxParams) {
 	updateEmailInbox.$set.department = department;
 	updateEmailInbox.$set.smtp = smtp;
 	updateEmailInbox.$set.imap = imap;
-	updateEmailInbox.$set.ts = emailsInbox.ts;
-	updateEmailInbox.$set._createdBy = emailsInbox._createdBy;
+	updateEmailInbox.$set.ts = emailInboxes.ts;
+	updateEmailInbox.$set._createdBy = emailInboxes._createdBy;
 
 	return EmailInbox.update({ _id }, updateEmailInbox);
 }

@@ -204,7 +204,7 @@ export default function EmailInboxForm({ id, data }) {
 	return <Page.ScrollableContentWithShadow>
 		<Box maxWidth='x600' w='full' alignSelf='center'>
 			<Accordion>
-				<Accordion.Item defaultExpanded title={t('Channel_Info')}>
+				<Accordion.Item defaultExpanded title={t('Inbox_Info')}>
 					<FieldGroup>
 						<Field>
 							<Field.Label display='flex' justifyContent='space-between' w='full'>
