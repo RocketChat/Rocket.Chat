@@ -181,7 +181,7 @@ export class AppsRestApi {
 					try {
 						result = HTTP.call('GET', this.bodyParams.url, { npmRequestOptions: { encoding: null } });
 					} catch (e) {
-						orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
+						orchestrator.getRocketChatLogger().error('Error getting the app from url:', e?.response.data);
 						return API.v1.internalError();
 					}
 
