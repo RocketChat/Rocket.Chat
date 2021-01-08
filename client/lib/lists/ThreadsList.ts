@@ -6,7 +6,7 @@ import { escapeRegExp } from '../../../lib/escapeRegExp';
 
 type ThreadMessage = IMessage & { tcount: number };
 
-type ThreadsListOptions = {
+export type ThreadsListOptions = {
 	rid: IMessage['rid'];
 	text?: string;
 }
@@ -37,39 +37,43 @@ const isThreadTextMatching = (threadMessage: ThreadMessage, regex: RegExp): bool
 	regex.test(threadMessage.msg);
 
 export class ThreadsList extends MessageList {
-	public constructor(private options: ThreadsListOptions) {
+	public constructor(private _options: ThreadsListOptions) {
 		super();
 	}
 
+	public get options(): ThreadsListOptions {
+		return this._options;
+	}
+
 	public updateFilters(options: ThreadsListOptions): void {
-		this.options = options;
+		this._options = options;
 		this.clear();
 	}
 
 	protected filter(message: IMessage): boolean {
-		const { rid } = this.options;
+		const { rid } = this._options;
 
 		if (!isThreadMessageInRoom(message, rid)) {
 			return false;
 		}
 
-		if (this.options.type === 'following') {
-			const { uid } = this.options;
+		if (this._options.type === 'following') {
+			const { uid } = this._options;
 			if (!isThreadFollowedByUser(message, uid)) {
 				return false;
 			}
 		}
 
-		if (this.options.type === 'unread') {
-			const { tunread } = this.options;
+		if (this._options.type === 'unread') {
+			const { tunread } = this._options;
 			if (!isThreadUnread(message, tunread)) {
 				return false;
 			}
 		}
 
-		if (this.options.text) {
+		if (this._options.text) {
 			const regex = new RegExp(
-				this.options.text.split(/\s/g)
+				this._options.text.split(/\s/g)
 					.map((text) => escapeRegExp(text)).join('|'),
 			);
 			if (!isThreadTextMatching(message, regex)) {

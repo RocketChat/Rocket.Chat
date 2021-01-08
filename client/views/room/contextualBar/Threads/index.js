@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from 'react';
+import React, { useCallback, useMemo, useState, useRef, memo } from 'react';
 import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -17,12 +17,13 @@ import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { getConfig } from '../../../../../app/ui-utils/client/config';
-import { useEndpoint } from '../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useTabBarClose, useTabContext } from '../../providers/ToolboxProvider';
 import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
 import { renderMessageBody } from '../../../../lib/renderMessageBody';
+import { useThreadsList } from './useThreadsList';
+import { useRecordList } from '../../../../hooks/useRecordList';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -34,86 +35,29 @@ const Skeleton = React.memo(clickableItem(MessageSkeleton));
 
 const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 25;
 
-const filterProps = ({ msg, u, replies, mentions, tcount, ts, _id, tlm, attachments }) => ({ ..._id && { _id }, attachments, mentions, msg, u, replies, tcount, ts: new Date(ts), tlm: new Date(tlm) });
-
 const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
 const roomFields = { t: 1, name: 1 };
 
-const mergeThreads = (threads, newThreads) =>
-	Array.from(
-		new Map([
-			...threads.map((msg) => [msg._id, msg]),
-			...newThreads.map((msg) => [msg._id, msg]),
-		]).values(),
-	)
-		.sort((a, b) => b.tlm.getTime() - a.tlm.getTime());
-
 export function withData(WrappedComponent) {
 	return ({ rid, ...props }) => {
+		const [type, setType] = useLocalStorage('thread-list-type', 'all');
+
+		const [text, setText] = useState('');
+		const debouncedText = useDebouncedValue(text, 400);
+
+		const options = useMemo(() => ({
+			rid,
+			text: debouncedText,
+			type,
+		}), [rid, debouncedText, type]);
+
+		const [threadsList, total, loadMoreItems] = useThreadsList(options);
+		const { phase, value: threads, error } = useRecordList(threadsList);
+
 		const onClose = useTabBarClose();
 		const room = useUserRoom(rid, roomFields);
 		const subscription = useUserSubscription(rid, subscriptionFields);
 		const userId = useUserId();
-
-		const [{
-			state,
-			error,
-			threads,
-			count,
-		}, setState] = useState(() => ({
-			state: AsyncStatePhase.LOADING,
-			error: null,
-			threads: [],
-			count: 0,
-		}));
-		const [type, setType] = useLocalStorage('thread-list-type', 'all');
-		const [text, setText] = useState('');
-
-		const getThreadsList = useEndpoint('GET', 'chat.getThreadsList');
-		const fetchThreads = useMutableCallback(async ({ rid, offset, limit, type, text }) => {
-			try {
-				const data = await getThreadsList({
-					rid,
-					offset,
-					count: limit,
-					type,
-					text,
-				});
-
-				setState(({ threads }) => ({
-					state: AsyncStatePhase.RESOLVED,
-					error: null,
-					threads: mergeThreads(offset === 0 ? [] : threads, data.threads.map(filterProps)),
-					count: data.total,
-				}));
-			} catch (error) {
-				setState(({ threads, count }) => ({
-					state: AsyncStatePhase.REJECTED,
-					error,
-					threads,
-					count,
-				}));
-			}
-		});
-
-		const debouncedText = useDebouncedValue(text, 400);
-		useEffect(() => {
-			fetchThreads({
-				rid: room._id,
-				offset: 0,
-				limit: LIST_SIZE,
-				type,
-				text: debouncedText,
-			});
-		}, [debouncedText, fetchThreads, room._id, type]);
-
-		const loadMoreItems = useCallback((start, end) => fetchThreads({
-			rid: room._id,
-			offset: start,
-			limit: end - start,
-			type,
-			text,
-		}), [fetchThreads, room._id, type, text]);
 
 		const handleTextChange = useCallback((event) => {
 			setText(event.currentTarget.value);
@@ -127,8 +71,8 @@ export function withData(WrappedComponent) {
 			userId={userId}
 			error={error}
 			threads={threads}
-			total={count}
-			loading={state === AsyncStatePhase.LOADING}
+			total={total}
+			loading={phase === AsyncStatePhase.LOADING}
 			loadMoreItems={loadMoreItems}
 			room={room}
 			text={text}
