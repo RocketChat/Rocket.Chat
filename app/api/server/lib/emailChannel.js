@@ -23,9 +23,9 @@ export async function findEmailChannels({ userId, query = {}, pagination: { offs
 	};
 }
 
-export async function findOneEmailChannel({ userId, id }) {
+export async function findOneEmailChannel({ userId, _id }) {
 	if (!hasPermissionAsync(userId, 'manage-email-channels')) {
 		throw new Error('error-not-allowed');
 	}
-	return EmailChannel.findOneById(id);
+	return EmailChannel.findOneById(_id);
 }

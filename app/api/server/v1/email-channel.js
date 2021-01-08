@@ -19,16 +19,15 @@ API.v1.addRoute('email-channel.list', { authRequired: true }, {
 	},
 });
 
-
 API.v1.addRoute('email-channel', { authRequired: true }, {
 	get() {
 		try {
 			check(this.queryParams, {
-				id: String,
+				_id: Match.Maybe(String),
 			});
-			const { id } = this.queryParams;
+			const { _id } = this.queryParams;
 
-			const emailChannel = Promise.await(findOneEmailChannel({ userId: this.userId, id }));
+			const emailChannel = Promise.await(findOneEmailChannel({ userId: this.userId, _id }));
 
 			if (!emailChannel) {
 				throw new Meteor.Error('email-channel-not-found');
@@ -84,6 +83,27 @@ API.v1.addRoute('email-channel', { authRequired: true }, {
 			updateEmailChannel.$set.imap = imap;
 			EmailChannel.updateById(_id, updateEmailChannel);
 
+			return API.v1.success({ _id });
+		} catch (e) {
+			return API.v1.failure(e);
+		}
+	},
+	delete() {
+		if (!hasPermissionAsync(this.userId, 'manage-email-channels')) {
+			throw new Error('error-not-allowed');
+		}
+		try {
+			check(this.queryParams, {
+				_id: String,
+			});
+
+			const { _id } = this.queryParams;
+			const emailChannel = EmailChannel.findOneById(_id);
+
+			if (!emailChannel) {
+				return API.v1.notFound();
+			}
+			EmailChannel.removeById(_id);
 			return API.v1.success({ _id });
 		} catch (e) {
 			return API.v1.failure(e);

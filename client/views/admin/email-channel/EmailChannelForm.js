@@ -10,6 +10,7 @@ import {
 	ToggleSwitch,
 	FieldGroup,
 	Box,
+	Margins,
 } from '@rocket.chat/fuselage';
 
 import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
@@ -23,6 +24,9 @@ import { isEmail } from '../../../../app/utils';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { FormSkeleton } from './Skeleton';
+import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import { useSetModal } from '../../../contexts/ModalContext';
+
 
 const initialValues = {
 	active: true,
@@ -85,7 +89,7 @@ const getInitialValues = (data) => {
 
 export function EmailChannelEditWithData({ id }) {
 	const t = useTranslation();
-	const { value: data, error, phase: state } = useEndpointData(`email-channel?id=${ id }`);
+	const { value: data, error, phase: state } = useEndpointData(`email-channel?_id=${ id }`);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
@@ -101,7 +105,7 @@ export function EmailChannelEditWithData({ id }) {
 export default function EmailChannelForm({ id, data }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-
+	const setModal = useSetModal();
 	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data));
 
 	const {
@@ -150,6 +154,32 @@ export default function EmailChannelForm({ id, data }) {
 	const close = useCallback(() => router.push({}), [router]);
 
 	const saveEmailChannel = useEndpointAction('POST', 'email-channel');
+	const deleteAction = useEndpointAction('DELETE', `email-channel?_id=${ id }`);
+
+	const handleRemoveClick = useMutableCallback(async () => {
+		const result = await deleteAction();
+		if (result.success === true) {
+			close();
+		}
+	});
+
+	const handleDelete = useMutableCallback((e) => {
+		e.stopPropagation();
+		const onDeleteManager = async () => {
+			try {
+				await handleRemoveClick();
+				dispatchToastMessage({ type: 'success', message: t('Removed') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			setModal();
+		};
+
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteManager}
+			onCancel={() => setModal()}
+		>{t('You_will_not_be_able_to_recover_channel')}</DeleteWarningModal>);
+	});
 
 	const handleSave = useMutableCallback(async () => {
 		const smtp = { server: smtpServer, port: smtpPort, username: smtpUsername, password: smtpPassword, sslTls: smtpSslTls };
@@ -294,6 +324,13 @@ export default function EmailChannelForm({ id, data }) {
 							<Button onClick={close}>{t('Cancel')}</Button>
 							<Button disabled={!canSave} primary onClick={handleSave}>{t('Save')}</Button>
 						</ButtonGroup>
+					</Field.Row>
+					<Field.Row>
+						<Margins blockStart='x16'>
+							<ButtonGroup stretch w='full'>
+								{id && <Button primary danger onClick={handleDelete}>{t('Delete')}</Button>}
+							</ButtonGroup>
+						</Margins>
 					</Field.Row>
 				</Field>
 			</Accordion>
