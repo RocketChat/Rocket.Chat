@@ -1,8 +1,6 @@
 import React from 'react';
-import colors from '@rocket.chat/fuselage-tokens/colors';
-import { Box, Icon, Margins, Divider } from '@rocket.chat/fuselage';
+import { Box, Margins, Divider, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { css } from '@rocket.chat/css-in-js';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
@@ -34,23 +32,8 @@ const ADMIN_PERMISSIONS = [
 	'manage-own-incoming-integrations',
 ];
 
-const Item = ({ icon, label, onClick }) => {
-	const clickable = css`
-		cursor: pointer;
-		&:hover,
-		&:focus {
-			background: ${ colors.n100 };
-		}
-	`;
-
-	return <Box mi='neg-x16' pi='x16' className={clickable}>
-		<Box display='flex' flexDirection='row' onClick={onClick} alignItems='center' mi='neg-x4' pb='x4'>
-			<Margins inline='x4'>
-				<Box>{typeof icon === 'string' ? <Icon size='x16' name={icon} mi='neg-x2'/> : icon}</Box>
-				<Box withTruncatedText fontScale='p2'>{label}</Box>
-			</Margins>
-		</Box>
-	</Box>;
+const style = {
+	marginInline: '-16px',
 };
 
 const setStatus = (status, statusText) => {
@@ -135,27 +118,25 @@ const UserDropdown = ({ user, onClose }) => {
 		</Box>
 
 		<Divider mi='neg-x16' mb='x16' borderColor='muted'/>
-		<div>
-			<Box fontScale='c1' textTransform='uppercase'>{t('Status')}</Box>
+		<div style={style}>
+			<Box pi='x16' fontScale='c1' textTransform='uppercase'>{t('Status')}</Box>
 			{Object.keys(userStatus.list).map((key) => {
 				const status = userStatus.list[key];
 				const name = status.localizeName ? t(status.name) : status.name;
 				const modifier = status.statusType || user.status;
 
-				return <Item
-					key={key}
-					icon={<UserStatus status={modifier}/>}
-					label={name}
-					onClick={() => { setStatus(status.statusType, name); onClose(); }}
-				/>;
+				return <Option onClick={() => { setStatus(status.statusType, name); onClose(); }}>
+					<Option.Column><UserStatus status={modifier}/></Option.Column>
+					<Option.Content withTruncatedText fontScale='p2'>{name}</Option.Content>
+				</Option>;
 			})}
-			<Item icon='emoji' label={`${ t('Custom_Status') }...`} onClick={handleCustomStatus}/>
+			<Option icon='emoji' label={`${ t('Custom_Status') }...`} onClick={handleCustomStatus}/>
 		</div>
 
 		{(accountBoxItems.length || showAdmin) && <>
 			<Divider mi='neg-x16' mb='x16'/>
-			<div>
-				{showAdmin && <Item icon={'customize'} label={t('Administration')} onClick={handleAdmin}/>}
+			<div style={style}>
+				{showAdmin && <Option icon={'customize'} label={t('Administration')} onClick={handleAdmin}/>}
 				{accountBoxItems.map((item, i) => {
 					let action;
 
@@ -173,15 +154,15 @@ const UserDropdown = ({ user, onClose }) => {
 						};
 					}
 
-					return <Item icon={item.icon} label={t(item.name)} onClick={action} key={i}/>;
+					return <Option icon={item.icon} label={t(item.name)} onClick={action} key={i}/>;
 				})}
 			</div>
 		</>}
 
 		<Divider mi='neg-x16' mb='x16'/>
-		<div>
-			<Item icon='user' label={t('My_Account')} onClick={handleMyAccount}/>
-			<Item icon='sign-out' label={t('Logout')} onClick={handleLogout}/>
+		<div style={style}>
+			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}/>
+			<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}/>
 		</div>
 
 	</Box>;
