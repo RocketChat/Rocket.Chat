@@ -13,6 +13,12 @@ export function connectWorkspace(token) {
 		Settings.updateValueById('Register_Server', true);
 	}
 
+	// shouldn't get here due to checking this on the method
+	// but this is just to double check
+	if (!token) {
+		return new Error('Invalid token; the registration token is required.');
+	}
+
 	const redirectUri = getRedirectUri();
 
 	const regInfo = {

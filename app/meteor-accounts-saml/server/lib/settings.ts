@@ -131,6 +131,10 @@ export const loadSamlServiceProviders = function(): void {
 };
 
 export const addSamlService = function(name: string): void {
+	console.log(`Adding ${ name } is deprecated`);
+};
+
+export const addSettings = function(name: string): void {
 	settings.add(`SAML_Custom_${ name }`, false, {
 		type: 'boolean',
 		group: 'SAML',

@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, ActionButton, Badge } from '@rocket.chat/fuselage';
 
 import Extended from './Extended';
-import * as Status from '../../components/basic/UserStatus';
-import UserAvatar from '../../components/basic/avatar/UserAvatar';
+import * as Status from '../../components/UserStatus';
+import UserAvatar from '../../components/avatar/UserAvatar';
 
 
 export default {
@@ -25,7 +25,15 @@ const title = <Box display='flex' flexDirection='row' w='full' alignItems='cente
 
 const subtitle = <Box display='flex' flexDirection='row' w='full' alignItems='center'>
 	<Box flexGrow='1' withTruncatedText>John Doe: test 123</Box>
-	<Badge bg='neutral-700' color='surface' flexShrink={0}>99</Badge>
+	<Badge
+		style={{
+			backgroundColor: '#6c727a',
+			color: 'var(--rcx-color-surface, white)',
+			flexShrink: 0,
+		}}
+	>
+		99
+	</Badge>
 </Box>;
 
 const avatar = <UserAvatar size='x36' url='https://via.placeholder.com/16' />;

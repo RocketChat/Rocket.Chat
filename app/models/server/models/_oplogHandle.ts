@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { MongoInternals, OplogHandle } from 'meteor/mongo';
 import semver from 'semver';
-import s from 'underscore.string';
 import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
 
 import { urlParser } from './_oplogUrlParser';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 class CustomOplogHandle {
 	dbName: string;
@@ -54,7 +54,7 @@ class CustomOplogHandle {
 			throw Error(`Error parsing database URL (${ oplogUrl })`);
 		}
 
-		if (!this.usingChangeStream && (!oplogUrl || urlParsed.dbName !== 'local')) {
+		if (!this.usingChangeStream && (!oplogUrl || urlParsed.defaultDatabase !== 'local')) {
 			throw Error("$MONGO_OPLOG_URL must be set to the 'local' database of a Mongo replica set");
 		}
 
@@ -64,7 +64,7 @@ class CustomOplogHandle {
 
 		if (process.env.MONGO_OPLOG_URL) {
 			const urlParsed = await urlParser(process.env.MONGO_URL);
-			this.dbName = urlParsed.dbName;
+			this.dbName = urlParsed.defaultDatabase;
 		}
 
 		this.client = new MongoClient(oplogUrl, {
@@ -99,8 +99,8 @@ class CustomOplogHandle {
 
 		const oplogSelector = {
 			ns: new RegExp(`^(?:${ [
-				s.escapeRegExp(`${ this.dbName }.`),
-				s.escapeRegExp('admin.$cmd'),
+				escapeRegExp(`${ this.dbName }.`),
+				escapeRegExp('admin.$cmd'),
 			].join('|') })`),
 
 			op: { $in: ['i', 'u', 'd'] },
@@ -161,6 +161,15 @@ class CustomOplogHandle {
 									return obj;
 								}, {} as Record<string, true>),
 							},
+						},
+					});
+					break;
+				case 'replace':
+					callback({
+						id: event.documentKey._id,
+						op: {
+							op: 'u',
+							o: event.fullDocument,
 						},
 					});
 					break;
