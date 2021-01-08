@@ -1,8 +1,8 @@
 import { Base } from './_Base';
 
-export class EmailChannel extends Base {
+export class EmailInbox extends Base {
 	constructor() {
-		super('email_channels');
+		super('email_inbox');
 
 		this.tryEnsureIndex({ email: 1 }, { unique: true });
 	}
@@ -24,4 +24,4 @@ export class EmailChannel extends Base {
 	}
 }
 
-export default new EmailChannel();
+export default new EmailInbox();

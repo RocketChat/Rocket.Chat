@@ -25,7 +25,7 @@ const useQuery = ({ itemsPerPage, current }, [column, direction]) => useMemo(() 
 	...current && { offset: current },
 }), [column, current, direction, itemsPerPage]);
 
-function EmailChannelTable() {
+function EmailInboxTable() {
 	const t = useTranslation();
 
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
@@ -33,7 +33,7 @@ function EmailChannelTable() {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
-	const router = useRoute('admin-email-channel');
+	const router = useRoute('admin-email-inbox');
 
 	const onClick = useCallback((_id) => () => router.push({
 		context: 'edit',
@@ -48,7 +48,7 @@ function EmailChannelTable() {
 		<GenericTable.HeaderCell key={'sendTest'} w='x60'></GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, t]);
 
-	const { value: data } = useEndpointData('email-channel.list', query);
+	const { value: data } = useEndpointData('email-inbox.list', query);
 
 	const renderRow = useCallback(({ _id, name, email, _createdBy: { username: createdBy } }) => <Table.Row action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link'qa-room-id={_id}>
 		<Table.Cell withTruncatedText>{name}</Table.Cell>
@@ -60,11 +60,11 @@ function EmailChannelTable() {
 	return <GenericTable
 		header={header}
 		renderRow={renderRow}
-		results={data && data.emailChannels}
+		results={data && data.emailsInbox}
 		total={data && data.total}
 		setParams={setParams}
 		params={params}
 	/>;
 }
 
-export default EmailChannelTable;
+export default EmailInboxTable;

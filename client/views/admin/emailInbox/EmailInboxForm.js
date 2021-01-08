@@ -87,22 +87,22 @@ const getInitialValues = (data) => {
 	};
 };
 
-export function EmailChannelEditWithData({ id }) {
+export function EmailInboxEditWithData({ id }) {
 	const t = useTranslation();
-	const { value: data, error, phase: state } = useEndpointData(`email-channel?_id=${ id }`);
+	const { value: data, error, phase: state } = useEndpointData(`email-inbox?_id=${ id }`);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 
 	if (error || !data) {
-		return <Box mbs='x16'>{t('EmailChannel_not_found')}</Box>;
+		return <Box mbs='x16'>{t('EmailInbox_not_found')}</Box>;
 	}
 
-	return <EmailChannelForm id={id} data={data} />;
+	return <EmailInboxForm id={id} data={data} />;
 }
 
-export default function EmailChannelForm({ id, data }) {
+export default function EmailInboxForm({ id, data }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -149,12 +149,12 @@ export default function EmailChannelForm({ id, data }) {
 		imapSslTls,
 	} = values;
 
-	const router = useRoute('admin-email-channel');
+	const router = useRoute('admin-email-inbox');
 
 	const close = useCallback(() => router.push({}), [router]);
 
-	const saveEmailChannel = useEndpointAction('POST', 'email-channel');
-	const deleteAction = useEndpointAction('DELETE', `email-channel?_id=${ id }`);
+	const saveEmailInbox = useEndpointAction('POST', 'email-inbox');
+	const deleteAction = useEndpointAction('DELETE', `email-inbox?_id=${ id }`);
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		const result = await deleteAction();
@@ -189,7 +189,7 @@ export default function EmailChannelForm({ id, data }) {
 			payload._id = id;
 		}
 		try {
-			await saveEmailChannel(payload);
+			await saveEmailInbox(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			close();
 		} catch (e) {

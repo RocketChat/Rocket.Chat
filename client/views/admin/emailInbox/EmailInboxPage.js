@@ -4,39 +4,39 @@ import { Button, Icon } from '@rocket.chat/fuselage';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import EmailChannelTable from './EmailChannelTable';
-import EmailChannelForm, { EmailChannelEditWithData } from './EmailChannelForm';
+import EmailInboxTable from './EmailInboxTable';
+import EmailInboxForm, { EmailInboxEditWithData } from './EmailInboxForm';
 
 
-export function EmailChannelPage() {
+export function EmailInboxPage() {
 	const t = useTranslation();
 
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('_id');
 
-	const emailChannelRoute = useRoute('admin-email-channel');
+	const emailInboxRoute = useRoute('admin-email-inbox');
 
 	const handleNewButtonClick = () => {
-		emailChannelRoute.push({ context: 'new' });
+		emailInboxRoute.push({ context: 'new' });
 	};
 
 	return <Page flexDirection='row'>
 		<Page>
-			<Page.Header title={t('Email_Channel')}>
-				{context && <Button alignSelf='flex-end' onClick={() => emailChannelRoute.push({})}>
+			<Page.Header title={t('Email_Inbox')}>
+				{context && <Button alignSelf='flex-end' onClick={() => emailInboxRoute.push({})}>
 					<Icon name='back'/>{t('Back')}
 				</Button>}
 				{!context && <Button primary onClick={handleNewButtonClick}>
-					<Icon name='plus'/> {t('New_Email_Channel')}
+					<Icon name='plus'/> {t('New_Email_Inbox')}
 				</Button>}
 			</Page.Header>
 			<Page.Content>
-				{!context && <EmailChannelTable />}
-				{context === 'new' && <EmailChannelForm />}
-				{context === 'edit' && <EmailChannelEditWithData id={id} />}
+				{!context && <EmailInboxTable />}
+				{context === 'new' && <EmailInboxForm />}
+				{context === 'edit' && <EmailInboxEditWithData id={id} />}
 			</Page.Content>
 		</Page>
 	</Page>;
 }
 
-export default EmailChannelPage;
+export default EmailInboxPage;

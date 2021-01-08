@@ -71,9 +71,9 @@ export const {
 		permissionGranted: () => hasPermission(['manage-apps']),
 	}, {
 		icon: 'mail',
-		href: 'admin-email-channel',
-		i18nLabel: 'Email_Channel',
+		href: 'admin-email-inbox',
+		i18nLabel: 'Email_Inbox',
 		tag: 'Alpha',
-		permissionGranted: () => hasPermission(['manage-apps']),
+		permissionGranted: () => hasPermission(['manage-email-inbox']),
 	},
 ]);
