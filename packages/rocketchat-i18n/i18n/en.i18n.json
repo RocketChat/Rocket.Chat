@@ -1409,7 +1409,7 @@
   "Email_Footer_Description": "You may use the following placeholders: <br/><ul><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
   "Email_from": "From",
   "Email_Header_Description": "You may use the following placeholders: <br/><ul><li>[Site_Name] and [Site_URL] for the Application Name and URL respectively.</li></ul>",
-  "Email_Inbox": "Email Inbox",
+  "Email_Inboxes": "Email Inboxes",
   "Email_Notification_Mode": "Offline Email Notifications",
   "Email_Notification_Mode_All": "Every Mention/DM",
   "Email_Notification_Mode_Disabled": "Disabled",

@@ -1252,7 +1252,7 @@
   "Email_Footer_Description": "Você pode usar os seguintes espaços reservados: <br/><ul><li> [Site_Name] e [Site_URL] para o nome do aplicativo e URL, respectivamente. </li></ul>",
   "Email_from": "De",
   "Email_Header_Description": "Você pode usar os seguintes espaços reservados: <br/><ul><li> [Site_Name] e [Site_URL] para o nome do aplicativo e URL, respectivamente. </li></ul>",
-  "Email_Inbox": "Email Inbox",
+  "Email_Inboxes": "Email Inboxes",
   "Email_Notification_Mode": "Notificações de E-mail Offline",
   "Email_Notification_Mode_All": "Cada Menção / Mensagem Direta",
   "Email_Notification_Mode_Disabled": "Desativado",

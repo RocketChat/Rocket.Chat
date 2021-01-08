@@ -149,7 +149,7 @@ export default function EmailInboxForm({ id, data }) {
 		imapSslTls,
 	} = values;
 
-	const router = useRoute('admin-email-inbox');
+	const router = useRoute('admin-email-inboxes');
 
 	const close = useCallback(() => router.push({}), [router]);
 

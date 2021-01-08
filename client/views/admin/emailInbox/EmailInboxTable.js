@@ -33,7 +33,7 @@ function EmailInboxTable() {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
-	const router = useRoute('admin-email-inbox');
+	const router = useRoute('admin-email-inboxes');
 
 	const onClick = useCallback((_id) => () => router.push({
 		context: 'edit',

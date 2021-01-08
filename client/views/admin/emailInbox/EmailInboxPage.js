@@ -14,7 +14,7 @@ export function EmailInboxPage() {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('_id');
 
-	const emailInboxRoute = useRoute('admin-email-inbox');
+	const emailInboxRoute = useRoute('admin-email-inboxes');
 
 	const handleNewButtonClick = () => {
 		emailInboxRoute.push({ context: 'new' });
@@ -22,7 +22,7 @@ export function EmailInboxPage() {
 
 	return <Page flexDirection='row'>
 		<Page>
-			<Page.Header title={t('Email_Inbox')}>
+			<Page.Header title={t('Email_Inboxes')}>
 				{context && <Button alignSelf='flex-end' onClick={() => emailInboxRoute.push({})}>
 					<Icon name='back'/>{t('Back')}
 				</Button>}

@@ -119,8 +119,8 @@ registerAdminRoute('/permissions/:context?/:_id?', {
 	lazyRouteComponent: () => import('./permissions/PermissionsRouter'),
 });
 
-registerAdminRoute('/email-inbox/:context?/:_id?', {
-	name: 'admin-email-inbox',
+registerAdminRoute('/email-inboxes/:context?/:_id?', {
+	name: 'admin-email-inboxes',
 	lazyRouteComponent: () => import('./emailInbox/EmailInboxRoute'),
 });
 
