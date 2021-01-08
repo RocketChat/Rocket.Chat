@@ -115,7 +115,7 @@
 					{{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
-			{{> reactAttachment attachments=msg.attachments file=msg.file }}
+			{{> reactAttachments attachments=msg.attachments file=msg.file }}
 			{{#if msg.drid}}
 				<div class="message-discussion">
 					{{#if $gt msg.dcount 0}}

@@ -41,7 +41,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 			{hasDownload && link && <Attachment.Download href={getURL(link)}/>}
 		</Attachment.Row>
 		{ !collapsed && <Attachment.Content>
-			<Image {...imageDimensions } src={ url || `data:image/png;base64,${ imagePreview }`} />
+			<Image {...imageDimensions } src={ url} previewUrl={`data:image/png;base64,${ imagePreview }`} />
 		</Attachment.Content> }
 	</Attachment>;
 };
