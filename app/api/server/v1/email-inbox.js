@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
-import { findEmailsInbox, findOneEmailsInbox } from '../lib/emailInbox';
+import { findEmailsInbox, findOneEmailsInbox, inserOneOrUpdateEmailInbox } from '../lib/emailInbox';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { EmailInbox, Users } from '../../../models';
+import { EmailInbox } from '../../../models';
 
 API.v1.addRoute('email-inbox.list', { authRequired: true }, {
 	get() {
@@ -57,31 +57,10 @@ API.v1.addRoute('email-inbox', { authRequired: true }, {
 			if (!hasPermissionAsync(this.userId, 'manage-email-inbox')) {
 				throw new Error('error-not-allowed');
 			}
-			const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailsInboxParams;
-			if (!_id) {
-				emailsInboxParams.ts = new Date();
-				emailsInboxParams._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
-				return EmailInbox.create(emailsInboxParams);
-			}
-			const updateEmailInbox = {
-				$set: { },
-			};
 
-			const emailsInbox = Promise.await(findOneEmailsInbox({ userId: this.userId, id: _id }));
+			const { _id } = emailsInboxParams;
 
-			if (!emailsInbox) {
-				throw new Error('error-invalid-email-inbox');
-			}
-
-			updateEmailInbox.$set.active = active;
-			updateEmailInbox.$set.name = name;
-			updateEmailInbox.$set.email = email;
-			updateEmailInbox.$set.description = description;
-			updateEmailInbox.$set.senderInfo = senderInfo;
-			updateEmailInbox.$set.department = department;
-			updateEmailInbox.$set.smtp = smtp;
-			updateEmailInbox.$set.imap = imap;
-			EmailInbox.updateById(_id, updateEmailInbox);
+			Promise.await(inserOneOrUpdateEmailInbox(this.userId, emailsInboxParams));
 
 			return API.v1.success({ _id });
 		} catch (e) {
