@@ -16,7 +16,6 @@ hasLicense('livechat-enterprise').then((enabled) => {
 	registerForm({ useEeTextInput: () => useMemo(() => lazy(() => import('./EeTextInput')), []) });
 	registerForm({ useDepartmentForwarding: () => useMemo(() => lazy(() => import('./DepartmentForwarding')), []) });
 	registerForm({ useDepartmentBusinessHours: () => useMemo(() => lazy(() => import('./DepartmentBusinessHours')), []) });
-	registerForm({ useCustomFieldsAdditionalForm: () => useMemo(() => lazy(() => import('./CustomFieldsAdditionalForm')), []) });
 	registerForm({ useBusinessHoursTimeZone: () => useMemo(() => lazy(() => import('./BusinessHoursTimeZone')), []) });
 	registerForm({ useBusinessHoursMultiple: () => useMemo(() => lazy(() => import('./BusinessHoursMultiple')), []) });
 	registerForm({ useCurrentChatTags: () => useMemo(() => lazy(() => import('../tags/CurrentChatTags')), []) });
