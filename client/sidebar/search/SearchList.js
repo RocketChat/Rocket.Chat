@@ -7,23 +7,28 @@ import { css } from '@rocket.chat/css-in-js';
 import { FixedSizeList as List } from 'react-window';
 import tinykeys from 'tinykeys';
 
+import { ReactiveUserStatus } from '../../components/UserStatus';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useMethodData, AsyncState } from '../../contexts/ServerContext';
 import { roomTypes } from '../../../app/utils';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { itemSizeMap, SideBarItemTemplateWithData } from '../RoomList';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { escapeRegExp } from '../../../lib/escapeRegExp';
+import { useMethodData } from '../../hooks/useMethodData';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
+import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
 
-const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended) => ({
+const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended, sidebarViewMode) => ({
 	items,
 	t,
 	SideBarItemTemplate,
 	AvatarTemplate,
 	useRealName,
 	extended,
+	sidebarViewMode,
 }));
 
 const Row = React.memo(({ data, index, style }) => {
@@ -35,9 +40,10 @@ const Row = React.memo(({ data, index, style }) => {
 	return <SideBarItemTemplateWithData id={`search-${ item._id }`} tabIndex={-1} extended={extended} style={style} t={t} room={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 });
 
-const UserItem = React.memo(({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName }) => {
+const UserItem = React.memo(({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName, sidebarViewMode }) => {
 	const title = useRealName ? item.fname || item.name : item.name || item.fname;
-	const icon = <Sidebar.Item.Icon name={roomTypes.getIcon(item)}/>;
+	const small = sidebarViewMode !== 'medium';
+	const icon = <Sidebar.Item.Icon><ReactiveUserStatus small={small && 'small'} uid={item._id} /></Sidebar.Item.Icon>;
 	const href = roomTypes.getRouteLink(item.t, item);
 
 	return <SideBarItemTemplate
@@ -81,11 +87,11 @@ const useSpotlight = (filterText = '', usernames) => {
 	}, [searchForChannels, searchForDMs]);
 	const args = useMemo(() => [name, usernames, type], [type, name, usernames]);
 
-	const [data = { users: [], rooms: [] }, status] = useMethodData('spotlight', args);
+	const { value: data = { users: [], rooms: [] }, phase: status } = useMethodData('spotlight', args);
 
 	return useMemo(() => {
 		if (!data) {
-			return { data: { users: [], rooms: [] }, status: AsyncState.LOADING };
+			return { data: { users: [], rooms: [] }, status: 'loading' };
 		}
 		return { data, status };
 	}, [data, status]);
@@ -104,7 +110,7 @@ const useSearchItems = (filterText) => {
 
 	const [, type, name] = teste;
 	const query = useMemo(() => {
-		const filterRegex = new RegExp(RegExp.escape(name), 'i');
+		const filterRegex = new RegExp(escapeRegExp(name), 'i');
 
 		return {
 			$or: [
@@ -128,7 +134,7 @@ const useSearchItems = (filterText) => {
 
 		const filterUsersUnique = ({ _id }, index, arr) => index === arr.findIndex((user) => _id === user._id);
 		const roomFilter = (room) => !localRooms.find((item) => (room.t === 'd' && room.uids.length > 1 && room.uids.includes(item._id)) || [item.rid, item._id].includes(room._id));
-		const usersfilter = (user) => !localRooms.find((room) => room.t !== 'd' || (room.uids.length === 2 && room.uids.includes(user._id)));
+		const usersfilter = (user) => !localRooms.find((room) => room.t === 'd' && (room.uids.length === 2 && room.uids.includes(user._id)));
 
 		const userMap = (user) => ({
 			_id: user._id,
@@ -194,7 +200,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 
 	const { data: items, status } = useSearchItems(filterText);
 
-	const itemData = createItemData(items, t, sideBarItemTemplate, avatarTemplate, showRealName, extended);
+	const itemData = createItemData(items, t, sideBarItemTemplate, avatarTemplate, showRealName, extended, sidebarViewMode);
 
 	const { ref: boxRef, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
@@ -272,8 +278,9 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		<Sidebar.TopBar.Section role='search' is='form'>
 			<TextInput aria-owns={listId} data-qa='sidebar-search-input' ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
 		</Sidebar.TopBar.Section>
-		<Box aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncState.DONE}>
+		<Box aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncStatePhase.RESOLVED}>
 			<List
+				outerElementType={ScrollableContentWrapper}
 				height={blockSize}
 				itemCount={items?.length}
 				itemSize={itemSize}

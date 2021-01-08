@@ -3,6 +3,7 @@ import s from 'underscore.string';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 import { Base } from './_Base';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const fillTypeGroup = (fileData) => {
 	if (!fileData.type) {
@@ -36,7 +37,7 @@ export class Uploads extends Base {
 		};
 
 		if (searchText) {
-			fileQuery.name = { $regex: new RegExp(RegExp.escape(searchText), 'i') };
+			fileQuery.name = { $regex: new RegExp(escapeRegExp(searchText), 'i') };
 		}
 
 		if (fileType && fileType !== 'all') {

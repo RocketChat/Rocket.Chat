@@ -60,7 +60,7 @@ export class AppLivechatBridge {
 		let agentRoom;
 		if (agent && agent.id) {
 			const user = Users.getAgentInfo(agent.id);
-			agentRoom = Object.assign({}, { agentId: user._id });
+			agentRoom = Object.assign({}, { agentId: user._id, username: user.username });
 		}
 
 		const result = await getRoom({

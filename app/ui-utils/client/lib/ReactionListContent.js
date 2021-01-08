@@ -1,18 +1,16 @@
 import React from 'react';
-import { Box, Tag, Modal, ButtonGroup, Button, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Tag, Modal, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
-import { useSession } from '../../../../client/contexts/SessionContext';
-import Emoji from '../../../../client/components/basic/Emoji';
+import Emoji from '../../../../client/components/Emoji';
+import ScrollableContentWrapper from '../../../../client/components/ScrollableContentWrapper';
 import { openUserCard } from '../../../ui/client/lib/UserCard';
-import { openProfileTabOrOpenDM } from '../../../ui/client/views/app/room';
 
-export function Reactions({ reactions, roomInstance, onClose }) {
+export function Reactions({ reactions, onClick }) {
 	const useRealName = useSetting('UI_Use_Real_Name');
-
-	return <Scrollable>
+	return <ScrollableContentWrapper>
 		<Box>
 			{Object.entries(reactions).map(([reaction, { names = [], usernames }]) => <Box key={reaction}>
 				<Box display='flex' flexWrap='wrap' overflowX='hidden' mb='x8'>
@@ -22,38 +20,41 @@ export function Reactions({ reactions, roomInstance, onClose }) {
 							key={username}
 							displayName={useRealName ? names[i] || username : username}
 							username={username}
-							roomInstance={roomInstance}
-							onClose={onClose}
+							onClick={onClick}
 						/>)}
 					</Box>
 				</Box>
 			</Box>)}
 		</Box>
-	</Scrollable>;
+	</ScrollableContentWrapper>;
 }
 
-export function Username({ username, displayName, roomInstance, onClose }) {
-	const openedRoom = useSession('openedRoom');
-	const handleUserCard = useMutableCallback((e) => openUserCard({
-		username,
-		rid: openedRoom,
-		target: e.currentTarget,
-		open: (e) => {
-			e.preventDefault();
-			onClose();
-			openProfileTabOrOpenDM(e, roomInstance, username);
-		},
-	}));
-
+export function Username({ username, onClick, displayName }) {
 	return (
-		<Box marginInlineEnd='x4' onClick={handleUserCard} key={displayName}>
+		<Box marginInlineEnd='x4' data-username={username} onClick={onClick} key={displayName}>
 			<Tag>{displayName}</Tag>
 		</Box>
 	);
 }
 
-export default function ReactionListContent({ reactions, roomInstance, onClose }) {
+export default function ReactionListContent({ rid, reactions, tabBar, onClose }) {
 	const t = useTranslation();
+	const onClick = useMutableCallback((e) => {
+		const { username } = e.currentTarget.dataset;
+		if (!username) {
+			return;
+		}
+		openUserCard({
+			username,
+			rid,
+			target: e.currentTarget,
+			open: (e) => {
+				e.preventDefault();
+				onClose();
+				tabBar.openUserInfo(username);
+			},
+		});
+	});
 
 	return <>
 		<Modal.Header>
@@ -61,7 +62,7 @@ export default function ReactionListContent({ reactions, roomInstance, onClose }
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			<Reactions reactions={reactions} roomInstance={roomInstance} onClose={onClose}/>
+			<Reactions reactions={reactions} onClick={onClick} onClose={onClose}/>
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>

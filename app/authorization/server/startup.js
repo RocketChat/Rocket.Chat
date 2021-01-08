@@ -98,7 +98,7 @@ Meteor.startup(function() {
 		{ _id: 'save-others-livechat-room-info',     roles: ['livechat-manager'] },
 		{ _id: 'remove-closed-livechat-rooms',       roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-analytics',            roles: ['livechat-manager', 'admin'] },
-		{ _id: 'view-livechat-queue',                roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-queue',                roles: ['livechat-agent', 'livechat-manager', 'admin'] },
 		{ _id: 'transfer-livechat-guest',            roles: ['livechat-manager', 'admin'] },
 		{ _id: 'manage-livechat-managers',           roles: ['livechat-manager', 'admin'] },
 		{ _id: 'manage-livechat-agents',             roles: ['livechat-manager', 'admin'] },
@@ -187,7 +187,15 @@ Meteor.startup(function() {
 		}, { fields: { _id: 1 } });
 
 		if (!existent) {
-			Permissions.upsert({ _id: permissionId }, { $set: permission });
+			try {
+				Permissions.upsert({ _id: permissionId }, { $set: permission });
+			} catch (e) {
+				if (!e.message.includes('E11000')) {
+					// E11000 refers to a MongoDB error that can occur when using unique indexes for upserts
+					// https://docs.mongodb.com/manual/reference/method/db.collection.update/#use-unique-indexes
+					Permissions.upsert({ _id: permissionId }, { $set: permission });
+				}
+			}
 		}
 
 		delete previousSettingPermissions[permissionId];
