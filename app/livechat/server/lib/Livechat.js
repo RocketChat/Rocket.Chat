@@ -200,11 +200,9 @@ export const Livechat = {
 			$set: {
 				token,
 			},
-			$unset: { },
 		};
 
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
-
 		if (user) {
 			userId = user._id;
 		} else {
@@ -243,39 +241,28 @@ export const Livechat = {
 			updateUser.$set.phone = [
 				{ phoneNumber: phone.number },
 			];
-		} else {
-			updateUser.$unset.phone = 1;
 		}
 
 		if (email && email.trim() !== '') {
 			updateUser.$set.visitorEmails = [
 				{ address: email },
 			];
-		} else {
-			updateUser.$unset.visitorEmails = 1;
 		}
 
 		if (livechatData) {
 			updateUser.$set.livechatData = livechatData;
-		} else {
-			updateUser.$unset.livechatData = 1;
 		}
 
 		if (contactManager) {
 			updateUser.$set.contactManager = contactManager;
-		} else {
-			updateUser.$unset.contactManager = 1;
 		}
 
-		if (!department) {
-			updateUser.$unset.department = 1;
-		} else {
+		if (department) {
 			const dep = LivechatDepartment.findOneByIdOrName(department);
 			updateUser.$set.department = dep && dep._id;
 		}
-		if (_.isEmpty(updateUser.$unset)) { delete updateUser.$unset; }
-		LivechatVisitors.updateById(userId, updateUser);
 
+		LivechatVisitors.updateById(userId, updateUser);
 		return userId;
 	},
 
