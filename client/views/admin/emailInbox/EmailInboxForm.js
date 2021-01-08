@@ -11,6 +11,7 @@ import {
 	FieldGroup,
 	Box,
 	Margins,
+	Icon,
 } from '@rocket.chat/fuselage';
 
 import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
@@ -178,7 +179,7 @@ export default function EmailInboxForm({ id, data }) {
 		setModal(<DeleteWarningModal
 			onDelete={onDeleteManager}
 			onCancel={() => setModal()}
-		>{t('You_will_not_be_able_to_recover_channel')}</DeleteWarningModal>);
+		>{t('You_will_not_be_able_to_recover_email_inbox')}</DeleteWarningModal>);
 	});
 
 	const handleSave = useMutableCallback(async () => {
@@ -221,7 +222,7 @@ export default function EmailInboxForm({ id, data }) {
 						<Field>
 							<Field.Label>{t('Email')}*</Field.Label>
 							<Field.Row>
-								<TextInput value={email} onChange={handleEmail} />
+								<TextInput value={email} onChange={handleEmail} addon={<Icon name='mail' size='x20' />}/>
 							</Field.Row>
 						</Field>
 						<Field>
