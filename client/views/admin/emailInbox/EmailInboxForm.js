@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	Accordion,
@@ -27,6 +27,7 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { FormSkeleton } from './Skeleton';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
 import { useSetModal } from '../../../contexts/ModalContext';
+import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 
 
 const initialValues = {
@@ -107,6 +108,7 @@ export default function EmailInboxForm({ id, data }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
+	const [emailError, setEmailError] = useState();
 	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data));
 
 	const {
@@ -156,6 +158,10 @@ export default function EmailInboxForm({ id, data }) {
 
 	const saveEmailInbox = useEndpointAction('POST', 'email-inbox');
 	const deleteAction = useEndpointAction('DELETE', `email-inbox?_id=${ id }`);
+
+	useComponentDidUpdate(() => {
+		setEmailError(!isEmail(email) ? t('Validate_email_address') : '');
+	}, [t, email]);
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		const result = await deleteAction();
@@ -222,7 +228,7 @@ export default function EmailInboxForm({ id, data }) {
 						<Field>
 							<Field.Label>{t('Email')}*</Field.Label>
 							<Field.Row>
-								<TextInput value={email} onChange={handleEmail} addon={<Icon name='mail' size='x20' />}/>
+								<TextInput error={emailError} value={email} onChange={handleEmail} addon={<Icon name='mail' size='x20' />}/>
 							</Field.Row>
 						</Field>
 						<Field>
