@@ -102,7 +102,7 @@ export function EditUser({ data, roles, ...props }) {
 
 	const canSaveOrReset = hasUnsavedChanges || avatarObj;
 
-	const prepend = useMemo(() => <UserAvatarEditor username={data.username} etag={data.avatarETag} setAvatarObj={setAvatarObj}/>, [data.username, data.avatarETag]);
+	const prepend = useMemo(() => <UserAvatarEditor currentUsername={data.username} username={values.username} etag={data.avatarETag} setAvatarObj={setAvatarObj}/>, [data.username, data.avatarETag, values.username]);
 
 	const append = useMemo(() => <Field>
 		<Field.Row>
