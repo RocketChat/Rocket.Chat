@@ -10,3 +10,24 @@ role: admin, owner
 ```
 
 2. Run the command `meteor npm run testapps` to start automation tests
+
+
+## Other Notes
+
+1. We use the library `superagent` for API testing. You can `req._data` to print the body of a http request.
+
+Example:
+
+```javascript
+const req = request.post(apps())
+    .set(credentials)
+    .send({
+        url: APP_URL,
+    })
+    .expect((res) => {
+        console.log({
+            reqBody: req._data,
+            resBody: res.body
+        });
+    });
+```
