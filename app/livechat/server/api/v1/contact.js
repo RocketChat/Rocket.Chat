@@ -23,7 +23,24 @@ API.v1.addRoute('omnichannel/contact', { authRequired: true }, {
 			if (this.bodyParams.phone) {
 				contactParams.phone = { number: this.bodyParams.phone };
 			}
-			const contact = Livechat.registerGuest(contactParams);
+			const { phone, email, livechatData, contactManager } = contactParams;
+
+			const unsetFields = [];
+
+			if (phone === null) {
+				unsetFields.push({ phone });
+			}
+			if (email === null) {
+				unsetFields.push({ email });
+			}
+			if (livechatData === null) {
+				unsetFields.push({ livechatData });
+			}
+			if (contactManager === null) {
+				unsetFields.push({ contactManager });
+			}
+
+			const contact = Livechat.registerGuest(contactParams, unsetFields);
 
 			return API.v1.success({ contact });
 		} catch (e) {

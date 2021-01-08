@@ -192,7 +192,7 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ token, name, email, department, phone, username, livechatData, contactManager, connectionData } = {}) {
+	registerGuest({ token, name, email, department, phone, username, livechatData, contactManager, connectionData } = {}, unsetFields = []) {
 		check(token, String);
 
 		let userId;
@@ -200,6 +200,7 @@ export const Livechat = {
 			$set: {
 				token,
 			},
+			$unset: { },
 		};
 
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
@@ -233,34 +234,40 @@ export const Livechat = {
 			}
 		}
 
-		if (name) {
+		if (name !== null) {
 			updateUser.$set.name = name;
 		}
 
-		if (phone) {
+		if (phone !== null) {
 			updateUser.$set.phone = [
-				{ phoneNumber: phone.number },
+				{ phoneNumber: phone?.number },
 			];
 		}
 
-		if (email && email.trim() !== '') {
+		if (email !== null) {
 			updateUser.$set.visitorEmails = [
 				{ address: email },
 			];
 		}
 
-		if (livechatData) {
+		if (livechatData !== null) {
 			updateUser.$set.livechatData = livechatData;
 		}
 
-		if (contactManager) {
+		if (contactManager !== null) {
 			updateUser.$set.contactManager = contactManager;
 		}
 
-		if (department) {
+		if (department !== null) {
 			const dep = LivechatDepartment.findOneByIdOrName(department);
 			updateUser.$set.department = dep && dep._id;
 		}
+
+		Object.keys(unsetFields).forEach((key) => {
+			updateUser.$unset[key] = 1;
+		});
+
+		if (_.isEmpty(updateUser.$unset)) { delete updateUser.$unset; }
 
 		LivechatVisitors.updateById(userId, updateUser);
 		return userId;

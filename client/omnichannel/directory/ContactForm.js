@@ -146,9 +146,9 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 		const payload = {
 			name,
-			email,
-			phone,
 		};
+		payload.phone = phone;
+		payload.email = email;
 
 		if (id) {
 			payload._id = id;
