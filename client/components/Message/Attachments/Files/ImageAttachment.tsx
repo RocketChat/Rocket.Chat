@@ -6,6 +6,7 @@ import Image, { Dimensions } from '../components/Image';
 import MarkdownText from '../../../MarkdownText';
 import { FileProp } from '..';
 import { useMediaUrl } from '../context/AttachmentContext';
+import { useLoadImage } from '../hooks/useLoadImage';
 
 export type ImageAttachmentProps = {
 	image_dimensions: Dimensions;
@@ -30,6 +31,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	title_link: link,
 	title_link_download: hasDownload,
 }) => {
+	const [loadImage, setLoadImage] = useLoadImage();
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
 	return <Attachment>
@@ -41,7 +43,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 			{hasDownload && link && <Attachment.Download href={getURL(link)}/>}
 		</Attachment.Row>
 		{ !collapsed && <Attachment.Content>
-			<Image {...imageDimensions } src={ url} previewUrl={`data:image/png;base64,${ imagePreview }`} />
+			<Image {...imageDimensions } loadImage={loadImage} setLoadImage={setLoadImage} src={ url} previewUrl={`data:image/png;base64,${ imagePreview }`} />
 		</Attachment.Content> }
 	</Attachment>;
 };

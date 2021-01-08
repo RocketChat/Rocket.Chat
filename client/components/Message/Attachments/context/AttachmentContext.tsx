@@ -32,4 +32,4 @@ export const useAttachmentDimensions = (): {
 } => useContext(AttachmentContext).dimensions;
 
 export const useAttachmentIsCollapsedByDefault = (): boolean => useContext(AttachmentContext).collapsedByDefault;
-export const useAttachmentAutoLoadEmbedMedias = (): boolean => useContext(AttachmentContext).autoLoadEmbedMedias;
+export const useAttachmentAutoLoadEmbedMedia = (): boolean => useContext(AttachmentContext).autoLoadEmbedMedias;

@@ -4,8 +4,10 @@ import { usePrefersReducedData } from '@rocket.chat/fuselage-hooks';
 import { AttachmentContext, AttachmentContextValue } from '../context/AttachmentContext';
 import { useUserPreference } from '../../../../contexts/UserContext';
 import { getURL } from '../../../../../app/utils/client';
+import { useLayout } from '../../../../contexts/LayoutContext';
 
 const AttachmentProvider: FC<{}> = ({ children }) => {
+	const { isMobile } = useLayout();
 	const reducedData = usePrefersReducedData();
 	const collapsedByDefault = !!useUserPreference<boolean>('collapseMediaByDefault');
 	const autoLoadEmbedMedias = !!useUserPreference<boolean>('autoImageLoad');
@@ -14,7 +16,7 @@ const AttachmentProvider: FC<{}> = ({ children }) => {
 	const contextValue: AttachmentContextValue = useMemo(() => ({
 		getURL: getURL as (url: string) => string,
 		collapsedByDefault,
-		autoLoadEmbedMedias: !reducedData && (autoLoadEmbedMedias && !saveMobileBandwidth),
+		autoLoadEmbedMedias: !reducedData && autoLoadEmbedMedias && (!saveMobileBandwidth || !isMobile),
 		dimensions: {
 			width: 480,
 			height: 360,
