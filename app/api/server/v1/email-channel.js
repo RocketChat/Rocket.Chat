@@ -2,7 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
-import { findEmailChannels, findOneEmailChannel, createEditEmailChannel } from '../lib/emailChannel';
+import { findEmailChannels, findOneEmailChannel } from '../lib/emailChannel';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { EmailChannel, Users } from '../../../models';
 
 API.v1.addRoute('email-channel.list', { authRequired: true }, {
 	get() {
@@ -52,9 +54,37 @@ API.v1.addRoute('email-channel', { authRequired: true }, {
 			});
 
 			const emailChannelParams = this.bodyParams;
-			const emailChannel = Promise.await(createEditEmailChannel(emailChannelParams, this.userId));
 
-			return API.v1.success(emailChannel);
+			if (!hasPermissionAsync(this.userId, 'manage-email-channels')) {
+				throw new Error('error-not-allowed');
+			}
+			const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailChannelParams;
+			if (!_id) {
+				emailChannelParams.ts = new Date();
+				emailChannelParams._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
+				return EmailChannel.create(emailChannelParams);
+			}
+			const updateEmailChannel = {
+				$set: { },
+			};
+
+			const emailChannel = Promise.await(findOneEmailChannel({ userId: this.userId, id: _id }));
+
+			if (!emailChannel) {
+				throw new Error('invalid-email-channel');
+			}
+
+			updateEmailChannel.$set.active = active;
+			updateEmailChannel.$set.name = name;
+			updateEmailChannel.$set.email = email;
+			updateEmailChannel.$set.description = description;
+			updateEmailChannel.$set.senderInfo = senderInfo;
+			updateEmailChannel.$set.department = department;
+			updateEmailChannel.$set.smtp = smtp;
+			updateEmailChannel.$set.imap = imap;
+			EmailChannel.updateById(_id, updateEmailChannel);
+
+			return API.v1.success({ _id });
 		} catch (e) {
 			return API.v1.failure(e);
 		}

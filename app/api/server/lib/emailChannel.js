@@ -1,12 +1,11 @@
-import { EmailChannel as EmailChannelRaw } from '../../../models/server/raw';
-import { EmailChannel, Users } from '../../../models';
+import { EmailChannel } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export async function findEmailChannels({ userId, query = {}, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'manage-email-channels')) {
 		throw new Error('error-not-allowed');
 	}
-	const cursor = EmailChannelRaw.find(query, {
+	const cursor = EmailChannel.find(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
@@ -29,34 +28,4 @@ export async function findOneEmailChannel({ userId, id }) {
 		throw new Error('error-not-allowed');
 	}
 	return EmailChannel.findOneById(id);
-}
-
-export async function createEditEmailChannel(emailChannelParams, userId) {
-	if (!hasPermissionAsync(userId, 'manage-email-channels')) {
-		throw new Error('error-not-allowed');
-	}
-	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailChannelParams;
-
-	if (!_id) {
-		emailChannelParams.ts = new Date();
-		emailChannelParams._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
-		return EmailChannel.create(emailChannelParams);
-	}
-
-	const updateEmailChannel = {
-		$set: { },
-	};
-
-	updateEmailChannel.$set.active = active;
-	updateEmailChannel.$set.name = name;
-	updateEmailChannel.$set.email = email;
-	updateEmailChannel.$set.description = description;
-	updateEmailChannel.$set.senderInfo = senderInfo;
-	updateEmailChannel.$set.department = department;
-	updateEmailChannel.$set.smtp = smtp;
-	updateEmailChannel.$set.imap = imap;
-
-	EmailChannel.updateById(_id, updateEmailChannel);
-
-	return _id;
 }

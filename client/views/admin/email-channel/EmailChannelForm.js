@@ -158,10 +158,10 @@ export default function EmailChannelForm({ id, data }) {
 		if (id) {
 			payload._id = id;
 		}
-		console.log(payload);
+		// console.log(payload);
 		try {
 			await saveEmailChannel(payload);
-			dispatchToastMessage({ type: 'success', message: t('Email_channel_added') });
+			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			close();
 		} catch (e) {
 			dispatchToastMessage({ type: 'error', message: e });
