@@ -10,7 +10,7 @@ export const useEndpointData = <T>(
 	endpoint: string,
 	params: Record<string, unknown> = defaultParams,
 	initialValue?: T | (() => T),
-	noOfRoomsDeleted?: number
+	noOfRoomsDeleted?: number,
 ): AsyncState<T> & { reload: () => void } => {
 	const { resolve, reject, reset, ...state } = useAsyncState<T>(initialValue);
 	const dispatchToastMessage = useToastMessageDispatch();

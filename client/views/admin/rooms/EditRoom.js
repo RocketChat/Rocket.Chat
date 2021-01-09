@@ -15,7 +15,7 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import {useDeleteRoom} from './contexts/RoomsPageContext'
+import { useDeleteRoom } from './contexts/RoomsPageContext';
 
 const getInitialValues = (room) => ({
 	roomName: room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, { type: room.t, ...room }),
@@ -150,8 +150,8 @@ function EditRoom({ room, onChange }) {
 
 	const deleteRoom = useMethod('eraseRoom');
 
-	const {deleted,setDeleted,incrementDeletedRooms} = useDeleteRoom();
-
+	const { deleted, setDeleted, incrementDeletedRooms } = useDeleteRoom();
+	
 	const handleDelete = useMutableCallback(() => {
 		const onCancel = () => setModal(undefined);
 		const onConfirm = async () => {
