@@ -570,11 +570,6 @@ Meteor.startup(() => {
 		'rendered .js-block-wrapper'(e, template) {
 			template.sendToBottomIfNecessaryDebounced();
 		},
-		'click .js-navigate-to-discussion'(event) {
-			event.preventDefault();
-			const { msg: { drid } } = messageArgs(this);
-			FlowRouter.goToRoomById(drid);
-		},
 		'click .new-message'(event, instance) {
 			instance.atBottom = true;
 			instance.sendToBottomIfNecessaryDebounced();
