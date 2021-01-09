@@ -26,7 +26,7 @@ addAction('bbb_video', ({ room }) => {
 	return useMemo(() => (enabled ? {
 		groups,
 		id: 'bbb_video',
-		title: 'BBB Video Call',
+		title: 'BBB_Video_Call',
 		icon: 'phone',
 		template: 'videoFlexTabBbb',
 		order: live ? -1 : 0,
