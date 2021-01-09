@@ -71,9 +71,9 @@ export function findOpenRoom(token, departmentId) {
 	}
 
 	if (room) {
-		Livechat.addTypingListener(room._id, _.debounce((username, typing) => {
-			Apps.triggerEvent(AppEvents.IRoomUserTyping, { roomId: room._id, username, typing });
-		}, 2500, true));
+		Livechat.addTypingListener(room._id, (username, typing, data) => {
+			Apps.triggerEvent(AppEvents.IRoomUserTyping, { roomId: room._id, username, typing, data });
+		});
 	}
 	return room;
 }
@@ -89,10 +89,9 @@ export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
 		ts: new Date(),
 	};
 
-	Livechat.addTypingListener(rid, _.debounce((username, typing) => {
-		Apps.triggerEvent(AppEvents.IRoomUserTyping, { roomId: rid, username, typing });
-	}, 2500, true),
-	);
+	Livechat.addTypingListener(rid, (username, typing, data) => {
+		Apps.triggerEvent(AppEvents.IRoomUserTyping, { roomId: rid, username, typing, data });
+	});
 
 	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
 }
