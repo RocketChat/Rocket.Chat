@@ -151,7 +151,7 @@ function EditRoom({ room, onChange }) {
 	const deleteRoom = useMethod('eraseRoom');
 
 	const { deleted, setDeleted, incrementDeletedRooms } = useDeleteRoom();
-	
+
 	const handleDelete = useMutableCallback(() => {
 		const onCancel = () => setModal(undefined);
 		const onConfirm = async () => {
