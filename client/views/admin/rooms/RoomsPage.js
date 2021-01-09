@@ -1,9 +1,10 @@
-import React from 'react';
+import React,{useCallback,useEffect,useState} from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
+import {RoomsPageProvider} from './contexts/RoomsPageContext'
 import { EditRoomContextBar } from './EditRoom';
 import RoomsTable from './RoomsTable';
 
@@ -15,11 +16,21 @@ export function RoomsPage() {
 
 	const roomsRoute = useRoute('admin-rooms');
 
-	const handleVerticalBarCloseButtonClick = () => {
+	const closeVerticalBar = useCallback(()=>{
 		roomsRoute.push({});
-	};
+	},[roomsRoute])
 
-	return <Page flexDirection='row'>
+	const [deleted,setDeleted] = useState(false);
+
+	useEffect(()=>{
+		if(deleted){
+			closeVerticalBar();
+			setDeleted(true);
+		}
+	},[deleted,closeVerticalBar]);
+
+	return (<RoomsPageProvider deleted={deleted} setDeleted={setDeleted}>
+	 <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={t('Rooms')} />
 			<Page.Content>
@@ -29,12 +40,13 @@ export function RoomsPage() {
 		{context && <VerticalBar>
 			<VerticalBar.Header>
 				{t('Room_Info')}
-				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
+				<VerticalBar.Close onClick={closeVerticalBar} />
 			</VerticalBar.Header>
 
 			<EditRoomContextBar rid={id} />
 		</VerticalBar>}
-	</Page>;
+	</Page>
+	</RoomsPageProvider>);
 }
 
 export default RoomsPage;

@@ -8,6 +8,7 @@ import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomTypes } from '../../../../app/utils/client';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useRoute } from '../../../contexts/RouterContext';
+import {useDeleteRoom} from './contexts/RoomsPageContext'
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
@@ -98,6 +99,7 @@ function RoomsTable() {
 
 	const query = useQuery(debouncedParams, debouncedSort);
 
+	const { noOfDeletedRooms} = useDeleteRoom();
 	const { value: data = {} } = useEndpointData('rooms.adminRooms', query);
 
 	const router = useRoute(routeName);
