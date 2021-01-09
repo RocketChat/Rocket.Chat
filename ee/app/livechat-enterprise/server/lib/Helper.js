@@ -247,29 +247,23 @@ export const getLivechatQueueInfo = async (room) => {
 	return normalizeQueueInfo(inq);
 };
 
-export const transferToNewAgent = async (room, transferredBy) => {
-	const { departmentId, v: { token } } = room;
+export const transferToNewAgent = async (roomId, transferredBy) => {
+	const room = await LivechatRooms.findOneById(roomId);
+	const timeout = await settings.get('Livechat_auto_transfer_chat_if_no_response_routing');
+
+	const { departmentId, v: { token }, servedBy: { _id: ignoredUserId, username } = {} } = room;
 
 	const guest = await LivechatVisitors.getVisitorByToken(token, {});
-
-	const nextAgent = await Livechat.getNextAgent(departmentId);
-	// TODO: remove this console log
-	console.log('----next Agent', nextAgent);
-
 	const transferData = {
-		userId: nextAgent?.agentId,
-		comment: 'Visitor transferred due to inactivity',
+		ignoredUserId,
+		departmentId,
 		transferredBy,
-		transferredTo: nextAgent,
+		comment: `The chat was transferred because ${ username } had not replied for ${ timeout } minutes`,
 	};
 
-	// TODO: remove this console log
-	console.log('---transferred data', transferData);
-
 	try {
-		const result = await Livechat.transfer(room, guest, transferData);
-		console.log('----result', result);
+		await Livechat.transfer(room, guest, transferData);
 	} catch (err) {
-		console.log('---error occurred while transferring chat', err.message);
+		console.error(`Error occurred while transferring chat. Details: ${ err.message }`);
 	}
 };

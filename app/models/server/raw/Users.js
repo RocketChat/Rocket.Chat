@@ -133,9 +133,9 @@ export class UsersRaw extends BaseRaw {
 		return this.col.distinct('federation.origin', { federation: { $exists: true } });
 	}
 
-	async getNextLeastBusyAgent(department) {
+	async getNextLeastBusyAgent(department, ignoredUserId) {
 		const aggregate = [
-			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
+			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent', ...ignoredUserId && { _id: { $ne: ignoredUserId } } } },
 			{ $lookup: {
 				from: 'rocketchat_subscription',
 				let: { id: '$_id' },

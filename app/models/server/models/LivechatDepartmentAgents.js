@@ -54,7 +54,7 @@ export class LivechatDepartmentAgents extends Base {
 		this.remove({ departmentId });
 	}
 
-	getNextAgentForDepartment(departmentId) {
+	getNextAgentForDepartment(departmentId, ignoredUserId) {
 		const agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
@@ -70,6 +70,7 @@ export class LivechatDepartmentAgents extends Base {
 			username: {
 				$in: onlineUsernames,
 			},
+			...ignoredUserId && { agentId: { $ne: ignoredUserId } },
 		};
 
 		const sort = {

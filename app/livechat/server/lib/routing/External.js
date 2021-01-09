@@ -18,10 +18,14 @@ class ExternalQueue {
 		};
 	}
 
-	getNextAgent(department) {
+	getNextAgent(department, ignoredUserId) {
 		for (let i = 0; i < 10; i++) {
 			try {
-				const queryString = department ? `?departmentId=${ department }` : '';
+				let queryString = department ? `?departmentId=${ department }` : '';
+				if (ignoredUserId) {
+					const ignoredUserIdParam = `ignoredUserId=${ ignoredUserId }`;
+					queryString = queryString.startsWith('?') ? `${ queryString }&${ ignoredUserIdParam }` : `?${ ignoredUserIdParam }`;
+				}
 				const result = HTTP.call('GET', `${ settings.get('Livechat_External_Queue_URL') }${ queryString }`, {
 					headers: {
 						'User-Agent': 'RocketChat Server',

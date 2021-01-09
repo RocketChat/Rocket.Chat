@@ -174,8 +174,11 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	getNextAgent() {
-		const query = queryStatusAgentOnline();
+	getNextAgent(ignoredUserId) {
+		const extraFilters = {
+			...ignoredUserId && { _id: { $ne: { ignoredUserId } } },
+		};
+		const query = queryStatusAgentOnline(extraFilters);
 
 		const collectionObj = this.model.rawCollection();
 		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);

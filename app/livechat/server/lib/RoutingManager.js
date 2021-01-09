@@ -13,6 +13,7 @@ import {
 import { callbacks } from '../../../callbacks/server';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry } from '../../../models/server';
 import { Apps, AppEvents } from '../../../apps/server';
+import { Livechat } from './Livechat';
 
 export const RoutingManager = {
 	methodName: null,
@@ -37,11 +38,11 @@ export const RoutingManager = {
 		return this.getMethod().config || {};
 	},
 
-	async getNextAgent(department) {
+	async getNextAgent(department, ignoredUserId) {
 		let agent = callbacks.run('livechat.beforeGetNextAgent', department);
 
 		if (!agent) {
-			agent = await this.getMethod().getNextAgent(department);
+			agent = await this.getMethod().getNextAgent(department, ignoredUserId);
 		}
 
 		return agent;
@@ -151,6 +152,17 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
+		if (transferData.ignoredUserId) {
+			const agent = await RoutingManager.getNextAgent(transferData.departmentId, transferData.ignoredUserId);
+			if (agent) {
+				transferData.userId = agent.agentId;
+				return forwardRoomToAgent(room, transferData);
+			}
+			if (!RoutingManager.getConfig().autoAssignAgent) {
+				return Livechat.returnRoomAsInquiry(room._id, room.departmentId);
+			}
+		}
+
 		if (transferData.departmentId) {
 			return forwardRoomToDepartment(room, guest, transferData);
 		}

@@ -31,22 +31,19 @@ export class AutoTransferMonitor {
 		return this._instance;
 	}
 
-	public async startMonitoring(room: any, timeout: number): Promise<void> {
-		const { _id: roomId } = room;
+	public async startMonitoring(roomId: string, timeout: number): Promise<void> {
 		const jobName = `livechat-auto-transfer-${ roomId }`;
 		const when = this.addMinutesToDate(new Date(), timeout);
 
 		this.schedular.define(jobName, autoTransferVisitorJob);
 
-		await this.schedular.schedule(when, jobName, { room, transferredBy: this.userToPerformAutomaticTransfer });
+		await this.schedular.schedule(when, jobName, { roomId, transferredBy: this.userToPerformAutomaticTransfer });
 	}
 
 	public async stopMonitoring(roomId: string): Promise<void> {
 		const jobName = `livechat-auto-transfer-${ roomId }`;
 
-		const cancelledJobs = await this.schedular.cancel({ name: jobName });
-		// TODO: remove this console log
-		console.log('---cancelledJobs', cancelledJobs);
+		await this.schedular.cancel({ name: jobName });
 	}
 
 	private addMinutesToDate(date: Date, minutes: number): Date {
