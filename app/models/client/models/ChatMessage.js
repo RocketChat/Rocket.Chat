@@ -7,7 +7,7 @@ import { CachedChatSubscription } from './CachedChatSubscription';
 import { ChatSubscription } from './ChatSubscription';
 import { getConfig } from '../../../ui-utils/client/config';
 import { cleanMessagesAtStartup, triggerOfflineMsgs } from '../../../utils';
-import { renderMessageBody } from '../../../ui-utils/client/lib/renderMessageBody';
+import { renderMessageBody } from '../../../../client/lib/renderMessageBody';
 import { promises } from '../../../promises/client';
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
