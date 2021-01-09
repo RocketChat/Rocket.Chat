@@ -47,7 +47,7 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 				verified: true,
 			};
 
-			if (!_.findWhere(user.emails, findQuery)) {
+			if (user.services?.password && !_.findWhere(user.emails, findQuery)) {
 				Users.resetPasswordAndSetRequirePasswordChange(user._id, true, 'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password');
 			}
 

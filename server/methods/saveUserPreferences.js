@@ -51,6 +51,7 @@ Meteor.methods({
 			desktopNotifications: oldDesktopNotifications,
 			mobileNotifications: oldMobileNotifications,
 			emailNotificationMode: oldEmailNotifications,
+			audioNotifications: oldAudioNotifications,
 		} = (user.settings && user.settings.preferences) || {};
 
 		if (user.settings == null) {
@@ -100,7 +101,7 @@ Meteor.methods({
 				}
 			}
 
-			if (settings.audioNotifications && oldEmailNotifications !== settings.audioNotifications) {
+			if (settings.audioNotifications && oldAudioNotifications !== settings.audioNotifications) {
 				if (settings.audioNotifications === 'default') {
 					Subscriptions.clearNotificationUserPreferences(user._id, 'audioNotifications', 'audioPrefOrigin');
 				} else {

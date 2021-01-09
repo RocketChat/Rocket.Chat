@@ -31,7 +31,7 @@ jobs:
         cat $GITHUB_EVENT_PATH
 
     - name: Use Node.js 12.18.4
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: "12.18.4"
 
@@ -51,7 +51,7 @@ jobs:
 
     - name: Cache cypress
       id: cache-cypress
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: /home/runner/.cache/Cypress
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
@@ -59,19 +59,19 @@ jobs:
     - name: Cache node modules
       if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: node_modules
         key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ./.meteor/local
         key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
@@ -160,13 +160,13 @@ jobs:
         tar czf Rocket.Chat.test.tar.gz ./build-test
 
     - name: Store build for tests
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: build-test
         path: /tmp/Rocket.Chat.test.tar.gz
 
     - name: Store build
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
         name: build
         path: /tmp/build
@@ -187,7 +187,7 @@ jobs:
         mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
 
     - name: Restore build for tests
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v2
       with:
         name: build-test
         path: /tmp
@@ -199,7 +199,7 @@ jobs:
         cd -
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -216,7 +216,7 @@ jobs:
 
     - name: Cache cypress
       id: cache-cypress
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: /home/runner/.cache/Cypress
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
@@ -224,7 +224,7 @@ jobs:
     - name: Cache node modules
       if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: node_modules
         key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
@@ -265,6 +265,13 @@ jobs:
   #   steps:
   #   - uses: actions/checkout@v2
 
+  #   - name: Login to GitHub Container Registry
+  #     uses: docker/login-action@v1
+  #     with:
+  #       registry: ghcr.io
+  #       username: ${{ secrets.CR_USER }}
+  #       password: ${{ secrets.CR_PAT }}
+
   #   - name: Free disk space
   #     run: |
   #       sudo swapoff -a
@@ -275,27 +282,27 @@ jobs:
 
   #   - name: Cache node modules
   #     id: cache-nodemodules
-  #     uses: actions/cache@v1
+  #     uses: actions/cache@v2
   #     with:
   #       path: node_modules
   #       key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
   #   - name: Cache meteor local
-  #     uses: actions/cache@v1
+  #     uses: actions/cache@v2
   #     with:
   #       path: ./.meteor/local
   #       key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
   #   - name: Cache meteor
-  #     uses: actions/cache@v1
+  #     uses: actions/cache@v2
   #     with:
   #       path: ~/.meteor
   #       key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
-  #   - name: Use Node.js 12.16.1
-  #     uses: actions/setup-node@v1
+  #   - name: Use Node.js 12.18.4
+  #     uses: actions/setup-node@v2
   #     with:
-  #       node-version: "12.16.1"
+  #       node-version: "12.18.4"
 
   #   - name: Install Meteor
   #     run: |
@@ -324,7 +331,6 @@ jobs:
   #       meteor npm --versions
   #       meteor node -v
   #       git version
-  #       echo $GITHUB_REF
 
   #   - name: npm install
   #     if: steps.cache-nodemodules.outputs.cache-hit != 'true'
@@ -346,23 +352,15 @@ jobs:
   #       meteor build --server-only --directory /tmp/build-pr
 
   #   - name: Build Docker image for PRs
-  #     env:
-  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       VERSION: pr-${{ github.event.number }}
   #     run: |
   #       cd /tmp/build-pr
 
-  #       docker login docker.pkg.github.com -u "${GITHUB_ACTOR}" -p "${GITHUB_TOKEN}"
-
-  #       cp $GITHUB_WORKSPACE/.docker/Dockerfile .
-
-  #       export LOWERCASE_REPOSITORY=$(echo "$GITHUB_REPOSITORY" | tr "[:upper:]" "[:lower:]")
-
-  #       export IMAGE_NAME="docker.pkg.github.com/${LOWERCASE_REPOSITORY}/rocket.chat:${VERSION}"
+  #       LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+  #       IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:pr-${{ github.event.number }}"
 
   #       echo "Build official Docker image ${IMAGE_NAME}"
 
-  #       docker build -t $IMAGE_NAME .
+  #       docker build -f $GITHUB_WORKSPACE/.docker/Dockerfile -t $IMAGE_NAME .
   #       docker push $IMAGE_NAME
 
   deploy:
@@ -377,7 +375,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Restore build
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v2
       with:
         name: build
         path: /tmp/build
@@ -392,28 +390,58 @@ jobs:
         UPDATE_TOKEN: ${{ secrets.UPDATE_TOKEN }}
       run: |
         if [[ '${{ github.event_name }}' = 'release' ]]; then
-          export CIRCLE_TAG="${GITHUB_REF#*tags/}"
-          export CIRCLE_BRANCH=""
+          GIT_TAG="${GITHUB_REF#*tags/}"
+          GIT_BRANCH=""
+          ARTIFACT_NAME="$(npm run version --silent)"
+          RC_VERSION=$GIT_TAG
+
+          if [[ $GIT_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+ ]]; then
+            SNAP_CHANNEL=candidate
+            RC_RELEASE=candidate
+          elif [[ $GIT_TAG =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            SNAP_CHANNEL=stable
+            RC_RELEASE=stable
+          fi
         else
-          export CIRCLE_TAG=""
-          export CIRCLE_BRANCH="${GITHUB_REF#*heads/}"
+          GIT_TAG=""
+          GIT_BRANCH="${GITHUB_REF#*heads/}"
+          ARTIFACT_NAME="$(npm run version --silent).$GITHUB_SHA"
+          RC_VERSION="$(npm run version --silent)"
+          SNAP_CHANNEL=edge
+          RC_RELEASE=develop
         fi;
+        ROCKET_DEPLOY_DIR="/tmp/deploy"
+        FILENAME="$ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.tgz";
 
-        export CIRCLE_SHA1=$GITHUB_SHA
-        export CIRCLE_BUILD_NUM=$GITHUB_SHA
+        aws s3 cp s3://rocketchat/sign.key.gpg .github/sign.key.gpg
 
-        aws s3 cp s3://rocketchat/sign.key.gpg .circleci/sign.key.gpg
+        mkdir -p $ROCKET_DEPLOY_DIR
 
-        source .circleci/setartname.sh
-        source .circleci/setdeploydir.sh
-        bash .circleci/setupsig.sh
-        bash .circleci/namefiles.sh
+        cp .github/sign.key.gpg /tmp
+        gpg --yes --batch --passphrase=$GPG_PASSWORD /tmp/sign.key.gpg
+        gpg --allow-secret-key-import --import /tmp/sign.key
+        rm /tmp/sign.key
+
+        ln -s /tmp/build/Rocket.Chat.tar.gz "$FILENAME"
+        gpg --armor --detach-sign "$FILENAME"
 
         aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
-        bash .circleci/update-releases.sh
-        # bash .circleci/snap.sh
-        bash .circleci/redhat-registry.sh
+        curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
+            "{\"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\" }" \
+            https://releases.rocket.chat/update
+
+        # Makes build fail if the release isn't there
+        curl --fail https://releases.rocket.chat/$RC_VERSION/info
+
+        if [[ $GIT_TAG ]]; then
+          curl -X POST \
+            https://connect.redhat.com/api/v2/projects/$REDHAT_REGISTRY_PID/build \
+            -H "Authorization: Bearer $REDHAT_REGISTRY_KEY" \
+            -H 'Cache-Control: no-cache' \
+            -H 'Content-Type: application/json' \
+            -d '{"tag":"'$GIT_TAG'"}'
+        fi
 
   image-build:
     runs-on: ubuntu-latest
@@ -438,7 +466,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASS }}
 
     - name: Restore build
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v2
       with:
         name: build
         path: /tmp/build
@@ -464,22 +492,22 @@ jobs:
       if: github.event_name == 'release'
       run: |
         cd /tmp/build
-        CIRCLE_TAG="${GITHUB_REF#*tags/}"
+        GIT_TAG="${GITHUB_REF#*tags/}"
 
         if [[ '${{ matrix.release }}' = 'preview' ]]; then
           IMAGE="${IMAGE}.preview"
         fi;
 
-        docker build -t ${IMAGE}:$CIRCLE_TAG .
-        docker push ${IMAGE}:$CIRCLE_TAG
+        docker build -t ${IMAGE}:$GIT_TAG .
+        docker push ${IMAGE}:$GIT_TAG
 
-        if echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+        if echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
           RELEASE="latest"
-        elif echo "$CIRCLE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+        elif echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
           RELEASE="release-candidate"
         fi
 
-        docker tag ${IMAGE}:$CIRCLE_TAG ${IMAGE}:${RELEASE}
+        docker tag ${IMAGE}:$GIT_TAG ${IMAGE}:${RELEASE}
         docker push ${IMAGE}:${RELEASE}
 
     - name: Build Docker image for develop
@@ -502,7 +530,7 @@ jobs:
     needs: test
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      
+
     steps:
     - uses: actions/checkout@v1
 
