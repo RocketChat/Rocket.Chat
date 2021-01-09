@@ -31,6 +31,7 @@ import { usePermission, useAtLeastOnePermission, useRole } from '../../../../../
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 import { useUserRoom } from '../../../hooks/useUserRoom';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { offlineAction } from '../../../../../../app/ui-utils';
 
 const typeMap = {
 	c: 'Channels',
@@ -236,6 +237,10 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const archiveAction = useEndpointActionExperimental('POST', 'rooms.changeArchivationState', t(archiveMessage));
 
 	const handleSave = useMutableCallback(async () => {
+		// WIDECHAT
+		if (offlineAction('Editing room')) {
+			return;
+		}
 		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;
 		const save = () => saveAction({
 			rid: room._id,

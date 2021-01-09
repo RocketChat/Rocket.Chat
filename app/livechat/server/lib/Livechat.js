@@ -39,6 +39,9 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { Notifications } from '../../../notifications';
+
+const rooms = {};
 
 export const Livechat = {
 	Analytics,
@@ -49,6 +52,21 @@ export const Livechat = {
 			webhook: 'Webhook',
 		},
 	}),
+
+	addTypingListener(rid, callback) {
+		if (rooms[rid]) {
+			return;
+		}
+		rooms[rid] = callback;
+		return Notifications.onRoom(rid, 'typing', rooms[rid]);
+	},
+
+	removeTypingListener(rid) {
+		if (rooms[rid]) {
+			Notifications.unRoom(rid, 'typing', rooms[rid]);
+			delete rooms[rid];
+		}
+	},
 
 	online(department) {
 		if (settings.get('Livechat_accept_chats_with_no_agents')) {
@@ -398,6 +416,7 @@ export const Livechat = {
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
 			callbacks.runAsync('livechat.closeRoom', room);
+			Livechat.removeTypingListener(rid);
 		});
 
 		return true;
@@ -413,6 +432,7 @@ export const Livechat = {
 		Messages.removeByRoomId(rid);
 		Subscriptions.removeByRoomId(rid);
 		LivechatInquiry.removeByRoomId(rid);
+		Livechat.removeTypingListener(rid);
 		return LivechatRooms.removeById(rid);
 	},
 
@@ -452,6 +472,7 @@ export const Livechat = {
 			'Message_MaxAllowedSize',
 			'Livechat_enabled',
 			'Livechat_registration_form',
+			'Livechat_start_session_on_new_chat',
 			'Livechat_allow_switching_departments',
 			'Livechat_offline_title',
 			'Livechat_offline_title_color',
@@ -470,10 +491,13 @@ export const Livechat = {
 			'Livechat_conversation_finished_text',
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
+			'Assets_livechat_guest_default_avatar',
 			'Livechat_registration_form_message',
 			'Livechat_force_accept_data_processing_consent',
 			'Livechat_data_processing_consent_text',
 			'Livechat_show_agent_info',
+			'Livechat_skip_registration_form_DomainsList',
+			'Livechat_hide_sys_messages',
 		]).forEach((setting) => {
 			rcSettings[setting._id] = setting.value;
 		});
