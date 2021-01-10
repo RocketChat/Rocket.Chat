@@ -8,7 +8,7 @@ import { settings } from '../../../settings';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 
 Meteor.methods({
-	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads }) {
+	getChannelHistory({ rid, latest, oldest, offset = 0, count = 20, unreads, excludeTypes }) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
@@ -26,13 +26,8 @@ Meteor.methods({
 			return false;
 		}
 
-		// Ensure latest is always defined.
-		if (_.isUndefined(latest)) {
-			latest = new Date();
-		}
-
 		// Verify oldest is a date if it exists
-		if (!_.isUndefined(oldest) && !_.isDate(oldest)) {
+		if ((oldest && !_.isDate(oldest)) || (latest && !_.isDate(latest))) {
 			throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
 		}
 
@@ -48,16 +43,7 @@ Meteor.methods({
 			options.fields = { editedAt: 0 };
 		}
 
-		let records = [];
-		if (_.isUndefined(oldest) && inclusive) {
-			records = Messages.findVisibleByRoomIdBeforeTimestampInclusive(rid, latest, options).fetch();
-		} else if (_.isUndefined(oldest) && !inclusive) {
-			records = Messages.findVisibleByRoomIdBeforeTimestamp(rid, latest, options).fetch();
-		} else if (!_.isUndefined(oldest) && inclusive) {
-			records = Messages.findVisibleByRoomIdBetweenTimestampsInclusive(rid, oldest, latest, options).fetch();
-		} else {
-			records = Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, options).fetch();
-		}
+		const records = Messages.findVisibleByRoomId({ rid, latest, oldest, queryOptions: options, excludeTypes });
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
 
@@ -68,7 +54,12 @@ Meteor.methods({
 			if (!_.isUndefined(oldest)) {
 				const firstMsg = messages[messages.length - 1];
 				if (!_.isUndefined(firstMsg) && firstMsg.ts > oldest) {
-					const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, firstMsg.ts, { limit: 1, sort: { ts: 1 } });
+					const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestamps({
+						rid,
+						oldest,
+						latest: firstMsg.ts,
+						queryOptions: { limit: 1, sort: { ts: 1 } },
+					});
 					firstUnread = unreadMessages.fetch()[0];
 					unreadNotLoaded = unreadMessages.count();
 				}

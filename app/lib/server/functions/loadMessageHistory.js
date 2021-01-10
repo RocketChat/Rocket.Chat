@@ -27,7 +27,18 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 		};
 	}
 
-	const records = end != null ? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hiddenMessageTypes, options).fetch() : Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options).fetch();
+	let records;
+	if (end) {
+		records = Messages.findVisibleByRoomId({
+			rid,
+			latest: end,
+			excludeTypes: hiddenMessageTypes,
+			queryOptions: options,
+		}).fetch();
+	} else {
+		records = Messages.findVisibleByRoomId({ rid, excludeTypes: hiddenMessageTypes, queryOptions: options }).fetch();
+	}
+
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;
@@ -37,10 +48,16 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
-			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, hiddenMessageTypes, {
-				limit: 1,
-				sort: {
-					ts: 1,
+			const unreadMessages = Messages.findVisibleByRoomId({
+				rid,
+				latest: ls,
+				oldest: firstMessage.ts,
+				excludeTypes: hiddenMessageTypes,
+				queryOptions: {
+					limit: 1,
+					sort: {
+						ts: 1,
+					},
 				},
 			});
 

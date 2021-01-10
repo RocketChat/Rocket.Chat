@@ -22,7 +22,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const options = {
+		const queryOptions = {
 			sort: {
 				ts: 1,
 			},
@@ -30,16 +30,16 @@ Meteor.methods({
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			options.fields = {
+			queryOptions.fields = {
 				editedAt: 0,
 			};
 		}
 
 		let records;
 		if (end) {
-			records = Messages.findVisibleByRoomIdAfterTimestamp(rid, end, options).fetch();
+			records = Messages.findVisibleByRoomId({ rid, oldest: end, queryOptions }).fetch();
 		} else {
-			records = Messages.findVisibleByRoomId(rid, options).fetch();
+			records = Messages.findVisibleByRoomId({ rid, queryOptions }).fetch();
 		}
 
 		return {

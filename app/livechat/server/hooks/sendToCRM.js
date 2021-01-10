@@ -63,7 +63,7 @@ function sendToCRM(type, room, includeMessages = true) {
 
 	let messages;
 	if (typeof includeMessages === 'boolean' && includeMessages) {
-		messages = Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } });
+		messages = Messages.findVisibleByRoomId({ rid: room._id, queryOptions: { sort: { ts: 1 } } });
 	} else if (includeMessages instanceof Array) {
 		messages = includeMessages;
 	}

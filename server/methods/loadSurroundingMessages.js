@@ -34,7 +34,7 @@ Meteor.methods({
 
 		limit -= 1;
 
-		const options = {
+		const queryOptions = {
 			sort: {
 				ts: -1,
 			},
@@ -42,26 +42,26 @@ Meteor.methods({
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			options.fields = {
+			queryOptions.fields = {
 				editedAt: 0,
 			};
 		}
 
-		const messages = Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
+		const messages = Messages.findVisibleByRoomId({ rid: message.rid, latest: message.ts, queryOptions }).fetch();
 
-		const moreBefore = messages.length === options.limit;
+		const moreBefore = messages.length === queryOptions.limit;
 
 		messages.push(message);
 
-		options.sort = {
+		queryOptions.sort = {
 			ts: 1,
 		};
 
-		options.limit = Math.floor(limit / 2);
+		queryOptions.limit = Math.floor(limit / 2);
 
-		const afterMessages = Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
+		const afterMessages = Messages.findVisibleByRoomId({ rid: message.rid, oldest: message.ts, queryOptions }).fetch();
 
-		const moreAfter = afterMessages.length === options.limit;
+		const moreAfter = afterMessages.length === queryOptions.limit;
 
 		messages.push(...afterMessages);
 

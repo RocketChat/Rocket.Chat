@@ -337,12 +337,12 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 	get() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
 
-		let latestDate = new Date();
+		let latestDate;
 		if (this.queryParams.latest) {
 			latestDate = new Date(this.queryParams.latest);
 		}
 
-		let oldestDate = undefined;
+		let oldestDate;
 		if (this.queryParams.oldest) {
 			oldestDate = new Date(this.queryParams.oldest);
 		}
@@ -359,6 +359,12 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 			offset = parseInt(this.queryParams.offset);
 		}
 
+		const excludeTypes = [];
+		if (this.queryParams.notContainingTypes) {
+			const t = this.queryParams.excludeTypes;
+			Array.isArray(t) ? excludeTypes.push(...t) : excludeTypes.push(...t.split(','));
+		}
+
 		const unreads = this.queryParams.unreads || false;
 
 		let result;
@@ -371,6 +377,7 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 				offset,
 				count,
 				unreads,
+				excludeTypes,
 			});
 		});
 

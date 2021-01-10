@@ -20,18 +20,18 @@ Meteor.methods({
 			return false;
 		}
 
-		const options = {
+		const queryOptions = {
 			sort: {
 				ts: -1,
 			},
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			options.fields = {
+			queryOptions.fields = {
 				editedAt: 0,
 			};
 		}
 
-		return Messages.findVisibleByRoomIdAfterTimestamp(rid, start, options).fetch();
+		return Messages.findVisibleByRoomIdAfterTimestamp({ rid, oldest: start, queryOptions }).fetch();
 	},
 });
