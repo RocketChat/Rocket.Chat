@@ -7,13 +7,13 @@ import PageSkeleton from '../../components/PageSkeleton';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useForm } from '../../hooks/useForm';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointData, ENDPOINT_STATES } from '../../hooks/useEndpointData';
 import { useRoute } from '../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 
 const EditFilterPageContainer = ({ id, onSave }) => {
 	const t = useTranslation();
-	const { data, state } = useEndpointDataExperimental(`livechat/filters/${ id }`);
+	const { data, state } = useEndpointData(`livechat/filters/${ id }`);
 
 	if (state === ENDPOINT_STATES.LOADING) {
 		return <PageSkeleton />;

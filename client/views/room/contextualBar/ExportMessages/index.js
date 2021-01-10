@@ -12,6 +12,7 @@ import { useEndpoint } from '../../../../contexts/ServerContext';
 import { roomTypes, isEmail } from '../../../../../app/utils/client';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { offlineAction } from '../../../../../app/ui-utils';
 
 const clickable = css`
 	cursor: pointer;
