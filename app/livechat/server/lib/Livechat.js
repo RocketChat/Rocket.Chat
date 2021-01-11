@@ -192,7 +192,7 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ token, name, email, department, phone, username, livechatData, contactManager, connectionData } = {}, unsetFields = []) {
+	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
 		check(token, String);
 
 		let userId;
@@ -200,10 +200,10 @@ export const Livechat = {
 			$set: {
 				token,
 			},
-			$unset: { },
 		};
 
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+
 		if (user) {
 			userId = user._id;
 		} else {
@@ -218,7 +218,6 @@ export const Livechat = {
 			} else {
 				const userData = {
 					username,
-					ts: new Date(),
 				};
 
 				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
@@ -234,42 +233,31 @@ export const Livechat = {
 			}
 		}
 
-		if (name !== null) {
-			updateUser.$set.name = name;
-		}
-
-		if (phone !== null) {
+		if (phone) {
 			updateUser.$set.phone = [
-				{ phoneNumber: phone?.number },
+				{ phoneNumber: phone.number },
 			];
 		}
 
-		if (email !== null) {
+		if (email && email.trim() !== '') {
 			updateUser.$set.visitorEmails = [
 				{ address: email },
 			];
 		}
 
-		if (livechatData !== null) {
-			updateUser.$set.livechatData = livechatData;
+		if (name) {
+			updateUser.$set.name = name;
 		}
 
-		if (contactManager !== null) {
-			updateUser.$set.contactManager = contactManager;
-		}
-
-		if (department !== null) {
+		if (!department) {
+			Object.assign(updateUser, { $unset: { department: 1 } });
+		} else {
 			const dep = LivechatDepartment.findOneByIdOrName(department);
 			updateUser.$set.department = dep && dep._id;
 		}
 
-		Object.keys(unsetFields).forEach((key) => {
-			updateUser.$unset[key] = 1;
-		});
-
-		if (_.isEmpty(updateUser.$unset)) { delete updateUser.$unset; }
-
 		LivechatVisitors.updateById(userId, updateUser);
+
 		return userId;
 	},
 
