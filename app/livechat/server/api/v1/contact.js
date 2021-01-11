@@ -15,16 +15,11 @@ API.v1.addRoute('omnichannel/contact', { authRequired: true }, {
 				name: String,
 				email: Match.Maybe(String),
 				phone: Match.Maybe(String),
-				livechatData: Match.Maybe(Object),
+				customFields: Match.Maybe(Object),
 				contactManager: Match.Maybe(Object),
 			});
 
-			const contactParams = this.bodyParams;
-			if (this.bodyParams.phone) {
-				contactParams.phone = { number: this.bodyParams.phone };
-			}
-
-			const contact = Contacts.registerContact(contactParams);
+			const contact = Contacts.registerContact(this.bodyParams);
 
 			return API.v1.success({ contact });
 		} catch (e) {

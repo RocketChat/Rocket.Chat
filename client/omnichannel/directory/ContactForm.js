@@ -149,7 +149,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		};
 		payload.phone = phone;
 		payload.email = email;
-		payload.livechatData = livechatData;
+		payload.customFields = livechatData || {};
 		payload.contactManager = username ? { username } : {};
 
 		if (id) {

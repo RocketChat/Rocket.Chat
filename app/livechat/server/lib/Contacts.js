@@ -1,6 +1,5 @@
 import { check } from 'meteor/check';
 import s from 'underscore.string';
-import _ from 'underscore';
 
 import {
 	LivechatVisitors,
@@ -8,7 +7,7 @@ import {
 
 export const Contacts = {
 
-	registerContact({ token, name, email, phone, username, livechatData, contactManager } = {}) {
+	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
 		check(token, String);
 
 		let userId;
@@ -43,17 +42,13 @@ export const Contacts = {
 
 		updateUser.$set.name = name;
 
-		updateUser.$set.phone = [
-			{ phoneNumber: phone?.number },
-		];
+		updateUser.$set.phone = (phone?.number && [{ phoneNumber: phone.number }]) || null;
 
-		updateUser.$set.visitorEmails = [
-			{ address: email },
-		];
+		updateUser.$set.visitorEmails = (email && [{ address: email }]) || null;
 
-		updateUser.$set.livechatData = livechatData;
+		updateUser.$set.customFields = customFields || null;
 
-		updateUser.$set.contactManager = !_.isEmpty(contactManager) ? contactManager : '';
+		updateUser.$set.contactManager = (contactManager?.username && { username: contactManager.username }) || null;
 
 		LivechatVisitors.updateById(userId, updateUser);
 
