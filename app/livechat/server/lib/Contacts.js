@@ -3,12 +3,13 @@ import s from 'underscore.string';
 
 import {
 	LivechatVisitors,
+	LivechatCustomField,
 } from '../../../models';
-import { findCustomFieldById } from '../api/lib/customFields';
+
 
 export const Contacts = {
 
-	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}, userId) {
+	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
 		check(token, String);
 
 		let contactId;
@@ -42,24 +43,19 @@ export const Contacts = {
 		}
 
 		updateUser.$set.name = name;
-
 		updateUser.$set.phone = (phone && [{ phoneNumber: phone }]) || null;
-
 		updateUser.$set.visitorEmails = (email && [{ address: email }]) || null;
 
-		const validCustomFields = {};
+		const allowedCF = LivechatCustomField.find({ scope: 'visitor' }).map(({ _id }) => _id);
 
-		Object.entries(customFields).forEach(([key, value]) => {
-			if (value) {
-				const { customField } = Promise.await(findCustomFieldById({ userId, customFieldId: key }));
-				if (customField && customField.scope === 'visitor') {
-					validCustomFields[key] = value;
-				}
-			}
-		});
+		const livechatData = Object.keys(customFields)
+			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)
+			.reduce((obj, key) => {
+				obj[key] = customFields[key];
+				return obj;
+			}, {});
 
-		updateUser.$set.livechatData = (Object.keys(validCustomFields).length > 0 && validCustomFields) || null;
-
+		updateUser.$set.livechatData = livechatData;
 		updateUser.$set.contactManager = (contactManager?.username && { username: contactManager.username }) || null;
 
 		LivechatVisitors.updateById(contactId, updateUser);
