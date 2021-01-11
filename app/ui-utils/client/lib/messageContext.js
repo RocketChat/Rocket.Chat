@@ -27,6 +27,12 @@ export function messageContext({ rid } = Template.instance()) {
 		});
 	};
 
+	const openDiscussion = (e) => {
+		e.preventDefault();
+		const { drid } = e.currentTarget.dataset;
+		FlowRouter.goToRoomById(drid);
+	};
+
 	return {
 		u: user,
 		room: Rooms.findOne({ _id: rid }, {
@@ -49,6 +55,9 @@ export function messageContext({ rid } = Template.instance()) {
 		actions: {
 			openThread() {
 				return openThread;
+			},
+			openDiscussion() {
+				return openDiscussion;
 			},
 		},
 		settings: {
