@@ -149,6 +149,8 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		};
 		payload.phone = phone;
 		payload.email = email;
+		payload.livechatData = livechatData;
+		payload.contactManager = username ? { username } : {};
 
 		if (id) {
 			payload._id = id;
@@ -156,8 +158,6 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		} else {
 			payload.token = createToken();
 		}
-		if (livechatData) { payload.livechatData = livechatData; }
-		if (username) { payload.contactManager = { username }; }
 
 		try {
 			await saveContact(payload);
