@@ -149,6 +149,7 @@ const getStyle = ((selector) => (colors) => `
 			--rcx-button-colors-secondary-active-border-color: ${ toVar(colors.n900) };
 			--rcx-button-colors-secondary-active-background-color: ${ toVar(colors.n800) };
 			--rcx-button-colors-secondary-color: ${ toVar(colors.n600) };
+			--rcx-button-colors-ghost-color: ${ toVar(colors.n600) };
 			--rcx-button-colors-secondary-border-color: ${ toVar(colors.n800) };
 			--rcx-button-colors-secondary-background-color: ${ toVar(colors.n800) };
 			--rcx-button-colors-secondary-hover-background-color: ${ toVar(colors.n900) };
