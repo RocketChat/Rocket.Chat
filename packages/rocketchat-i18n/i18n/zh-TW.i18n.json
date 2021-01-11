@@ -3186,7 +3186,7 @@
   "Room_archivation_state_true": "封存",
   "Room_archived": "Room 已封存",
   "room_changed_announcement": "房間公告更改為：<em>__room_announcement__</em><em>__user_by__</em>",
-  "room_changed_avatar": "Room 大頭貼由<em> __ user_by __ </em>更改",
+  "room_changed_avatar": "Room 大頭貼由<em> __user_by__ </em>更改",
   "room_changed_description": "客房描述更改為：<em>__room_description__</em><em>__user_by__</em>",
   "room_changed_privacy": "通過<em>__user_by__</em> <em>__room_type__：</em> Room 類型變更為",
   "room_changed_topic": "Room 話題改為<em>：__room_topic__</em>由<em>__user_by__</em>",
