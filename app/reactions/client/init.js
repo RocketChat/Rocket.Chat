@@ -60,8 +60,6 @@ export const EmojiEvents = {
 	},
 };
 
-Template.roomOld.events(EmojiEvents);
-
 Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'reaction-message',
