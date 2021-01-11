@@ -4,13 +4,14 @@ import s from 'underscore.string';
 import {
 	LivechatVisitors,
 } from '../../../models';
+import { findCustomFieldById } from '../api/lib/customFields';
 
 export const Contacts = {
 
-	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}) {
+	registerContact({ token, name, email, phone, username, customFields = {}, contactManager = {} } = {}, userId) {
 		check(token, String);
 
-		let userId;
+		let contactId;
 		const updateUser = {
 			$set: {
 				token,
@@ -20,7 +21,7 @@ export const Contacts = {
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
 
 		if (user) {
-			userId = user._id;
+			contactId = user._id;
 		} else {
 			if (!username) {
 				username = LivechatVisitors.getNextVisitorUsername();
@@ -29,14 +30,14 @@ export const Contacts = {
 			let existingUser = null;
 
 			if (s.trim(email) !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
-				userId = existingUser._id;
+				contactId = existingUser._id;
 			} else {
 				const userData = {
 					username,
 					ts: new Date(),
 				};
 
-				userId = LivechatVisitors.insert(userData);
+				contactId = LivechatVisitors.insert(userData);
 			}
 		}
 
@@ -50,7 +51,10 @@ export const Contacts = {
 
 		Object.entries(customFields).forEach(([key, value]) => {
 			if (value) {
-				validCustomFields[key] = value;
+				const { customField } = Promise.await(findCustomFieldById({ userId, customFieldId: key }));
+				if (customField && customField.scope === 'visitor') {
+					validCustomFields[key] = value;
+				}
 			}
 		});
 
@@ -58,8 +62,8 @@ export const Contacts = {
 
 		updateUser.$set.contactManager = (contactManager?.username && { username: contactManager.username }) || null;
 
-		LivechatVisitors.updateById(userId, updateUser);
+		LivechatVisitors.updateById(contactId, updateUser);
 
-		return userId;
+		return contactId;
 	},
 };
