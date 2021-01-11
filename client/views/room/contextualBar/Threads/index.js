@@ -42,7 +42,7 @@ import { useTabBarClose, useTabContext } from '../../providers/ToolboxProvider';
 import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
 import { renderMessageBody } from '../../../../lib/renderMessageBody';
 import { useThreadsList } from './useThreadsList';
-import { useRecordList } from '../../../../hooks/useRecordList';
+import { useRecordList } from '../../../../hooks/lists/useRecordList';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => (
@@ -82,13 +82,14 @@ export function withData(WrappedComponent) {
 			[rid, debouncedText, type],
 		);
 
-		const [threadsList, total, loadMoreItems] = useThreadsList(options);
+		const userId = useUserId();
+
+		const [threadsList, total, loadMoreItems] = useThreadsList(options, userId);
 		const { phase, value: threads, error } = useRecordList(threadsList);
 
 		const onClose = useTabBarClose();
 		const room = useUserRoom(rid, roomFields);
 		const subscription = useUserSubscription(rid, subscriptionFields);
-		const userId = useUserId();
 
 		const handleTextChange = useCallback((event) => {
 			setText(event.currentTarget.value);

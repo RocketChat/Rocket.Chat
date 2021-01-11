@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 
-import { AsyncState } from '../lib/asyncState';
-import { RecordList } from '../lib/lists/RecordList';
-import { useAsyncState } from './useAsyncState';
-import { IRocketChatRecord } from '../../definition/IRocketChatRecord';
+import { AsyncState } from '../../lib/asyncState';
+import { RecordList } from '../../lib/lists/RecordList';
+import { useAsyncState } from '../useAsyncState';
+import { IRocketChatRecord } from '../../../definition/IRocketChatRecord';
 
 export const useRecordList = <T extends IRocketChatRecord>(
 	recordList: RecordList<T>,

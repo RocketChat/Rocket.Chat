@@ -1,11 +1,19 @@
-import { useCallback, useEffect, useState } from 'react';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useCallback, useEffect, useState } from 'react';
 
-import { ThreadsList, ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
+import {
+	ThreadsList,
+	ThreadsListOptions,
+} from '../../../../lib/lists/ThreadsList';
 import { useEndpoint } from '../../../../contexts/ServerContext';
-import { useMessageListInRoom } from '../hooks/useMessageListInRoom';
+import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
+import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
+import { IUser } from '../../../../../definition/IUser';
 
-export const useThreadsList = (options: ThreadsListOptions): [ThreadsList, number, (start: number, end: number) => void] => {
+export const useThreadsList = (
+	options: ThreadsListOptions,
+	uid: IUser['_id'],
+): [ThreadsList, number, (start: number, end: number) => void] => {
 	const [threadsList] = useState(() => new ThreadsList(options));
 	const [total, setTotal] = useSafely(useState(0));
 
@@ -17,21 +25,28 @@ export const useThreadsList = (options: ThreadsListOptions): [ThreadsList, numbe
 
 	const getThreadsList = useEndpoint('GET', 'chat.getThreadsList');
 
-	const fetch = useCallback(async (start, end) => {
-		const { threads, total } = await getThreadsList({
-			rid: options.rid,
-			type: options.type,
-			text: options.text,
-			offset: start,
-			count: end - start,
-		});
+	const fetchMessages = useCallback(
+		async (start, end) => {
+			const { threads, total } = await getThreadsList({
+				rid: options.rid,
+				type: options.type,
+				text: options.text,
+				offset: start,
+				count: end - start,
+			});
 
-		setTotal(total);
+			setTotal(total);
 
-		return threads;
-	}, [getThreadsList, options.rid, options.text, options.type, setTotal]);
+			return threads;
+		},
+		[getThreadsList, options.rid, options.text, options.type, setTotal],
+	);
 
-	const loadMessages = useMessageListInRoom(threadsList, options.rid, fetch);
+	const { loadMoreItems } = useScrollableMessageList(
+		threadsList,
+		fetchMessages,
+	);
+	useStreamUpdatesForMessageList(threadsList, uid, options.rid);
 
-	return [threadsList, total, loadMessages];
+	return [threadsList, total, loadMoreItems];
 };
