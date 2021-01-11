@@ -5,7 +5,9 @@ import { RecordList } from '../lib/lists/RecordList';
 import { useAsyncState } from './useAsyncState';
 import { IRocketChatRecord } from '../../definition/IRocketChatRecord';
 
-export const useRecordList = <T extends IRocketChatRecord>(recordList: RecordList<T>): AsyncState<T[]> => {
+export const useRecordList = <T extends IRocketChatRecord>(
+	recordList: RecordList<T>,
+): AsyncState<T[]> => {
 	const { update, resolve, reject, reset, ...state } = useAsyncState<T[]>();
 
 	useEffect(() => {
@@ -13,7 +15,7 @@ export const useRecordList = <T extends IRocketChatRecord>(recordList: RecordLis
 			update();
 		});
 
-		const disconnectMutatedEvent = recordList.on('mutated', (_hasChanged: boolean | undefined) => {
+		const disconnectMutatedEvent = recordList.on('mutated', () => {
 			resolve(recordList.items());
 		});
 
@@ -21,7 +23,7 @@ export const useRecordList = <T extends IRocketChatRecord>(recordList: RecordLis
 			reset();
 		});
 
-		const disconnectErroredEvent = recordList.on('errored', (error: Error | undefined) => {
+		const disconnectErroredEvent = recordList.on('errored', (error?: Error) => {
 			if (!error) {
 				reject(new Error('undefined error'));
 				return;

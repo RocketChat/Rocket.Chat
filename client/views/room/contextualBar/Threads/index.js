@@ -1,14 +1,33 @@
 import React, { useCallback, useMemo, useState, useRef, memo } from 'react';
-import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Icon,
+	TextInput,
+	Select,
+	Margins,
+	Callout,
+} from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useResizeObserver, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useDebouncedValue,
+	useResizeObserver,
+	useLocalStorage,
+	useMutableCallback,
+} from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useRoute, useCurrentRoute, useQueryStringParameter } from '../../../../contexts/RouterContext';
+import {
+	useRoute,
+	useCurrentRoute,
+	useQueryStringParameter,
+} from '../../../../contexts/RouterContext';
 import { call } from '../../../../../app/ui-utils/client';
-import { useUserId, useUserSubscription } from '../../../../contexts/UserContext';
+import {
+	useUserId,
+	useUserSubscription,
+} from '../../../../contexts/UserContext';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
@@ -26,7 +45,16 @@ import { useThreadsList } from './useThreadsList';
 import { useRecordList } from '../../../../hooks/useRecordList';
 
 function mapProps(WrappedComponent) {
-	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
+	return ({ msg, username, replies, tcount, ts, ...props }) => (
+		<WrappedComponent
+			replies={tcount}
+			participants={replies.length}
+			username={username}
+			msg={msg}
+			ts={ts}
+			{...props}
+		/>
+	);
 }
 
 const Thread = React.memo(mapProps(clickableItem(ThreadListMessage)));
@@ -45,11 +73,14 @@ export function withData(WrappedComponent) {
 		const [text, setText] = useState('');
 		const debouncedText = useDebouncedValue(text, 400);
 
-		const options = useMemo(() => ({
-			rid,
-			text: debouncedText,
-			type,
-		}), [rid, debouncedText, type]);
+		const options = useMemo(
+			() => ({
+				rid,
+				text: debouncedText,
+				type,
+			}),
+			[rid, debouncedText, type],
+		);
 
 		const [threadsList, total, loadMoreItems] = useThreadsList(options);
 		const { phase, value: threads, error } = useRecordList(threadsList);
@@ -63,31 +94,38 @@ export function withData(WrappedComponent) {
 			setText(event.currentTarget.value);
 		}, []);
 
-		return <WrappedComponent
-			{...props}
-			unread={subscription?.tunread}
-			unreadUser={subscription?.tunreadUser}
-			unreadGroup={subscription?.tunreadGroup}
-			userId={userId}
-			error={error}
-			threads={threads}
-			total={total}
-			loading={phase === AsyncStatePhase.LOADING}
-			loadMoreItems={loadMoreItems}
-			room={room}
-			text={text}
-			setText={handleTextChange}
-			type={type}
-			setType={setType}
-			onClose={onClose}
-		/>;
+		return (
+			<WrappedComponent
+				{...props}
+				unread={subscription?.tunread}
+				unreadUser={subscription?.tunreadUser}
+				unreadGroup={subscription?.tunreadGroup}
+				userId={userId}
+				error={error}
+				threads={threads}
+				total={total}
+				loading={phase === AsyncStatePhase.LOADING}
+				loadMoreItems={loadMoreItems}
+				room={room}
+				text={text}
+				setText={handleTextChange}
+				type={type}
+				setType={setType}
+				onClose={onClose}
+			/>
+		);
 	};
 }
 
 const handleFollowButton = (e) => {
 	e.preventDefault();
 	e.stopPropagation();
-	call(![true, 'true'].includes(e.currentTarget.dataset.following) ? 'followMessage' : 'unfollowMessage', { mid: e.currentTarget.dataset.id });
+	call(
+		![true, 'true'].includes(e.currentTarget.dataset.following)
+			? 'followMessage'
+			: 'unfollowMessage',
+		{ mid: e.currentTarget.dataset.id },
+	);
 };
 
 export const normalizeThreadMessage = ({ ...message }) => {
@@ -96,7 +134,9 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 
 	if (message.attachments) {
-		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
+		const attachment = message.attachments.find(
+			(attachment) => attachment.title || attachment.description,
+		);
 
 		if (attachment && attachment.description) {
 			return escapeHTML(attachment.description);
@@ -123,31 +163,50 @@ const Row = memo(function Row({
 	const formatDate = useTimeAgo();
 
 	if (!data[index]) {
-		return <Skeleton style={style}/>;
+		return <Skeleton style={style} />;
 	}
 	const thread = data[index];
 	const msg = normalizeThreadMessage(thread);
 
 	const { name = thread.u.username } = thread.u;
 
-	return <Thread
-		{ ...thread }
-		name={showRealNames ? name : thread.u.username }
-		username={ thread.u.username }
-		style={style}
-		unread={unread.includes(thread._id)}
-		mention={unreadUser.includes(thread._id)}
-		all={unreadGroup.includes(thread._id)}
-		following={thread.replies && thread.replies.includes(userId)}
-		data-id={thread._id}
-		msg={msg}
-		t={t}
-		formatDate={formatDate}
-		handleFollowButton={handleFollowButton} onClick={onClick}
-	/>;
+	return (
+		<Thread
+			{...thread}
+			name={showRealNames ? name : thread.u.username}
+			username={thread.u.username}
+			style={style}
+			unread={unread.includes(thread._id)}
+			mention={unreadUser.includes(thread._id)}
+			all={unreadGroup.includes(thread._id)}
+			following={thread.replies && thread.replies.includes(userId)}
+			data-id={thread._id}
+			msg={msg}
+			t={t}
+			formatDate={formatDate}
+			handleFollowButton={handleFollowButton}
+			onClick={onClick}
+		/>
+	);
 });
 
-export function ThreadList({ total = 10, threads = [], room, unread = [], unreadUser = [], unreadGroup = [], type, setType, loadMoreItems, loading, onClose, error, userId, text, setText }) {
+export function ThreadList({
+	total = 10,
+	threads = [],
+	room,
+	unread = [],
+	unreadUser = [],
+	unreadGroup = [],
+	type,
+	setType,
+	loadMoreItems,
+	loading,
+	onClose,
+	error,
+	userId,
+	text,
+	setText,
+}) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const threadsRef = useRef();
 
@@ -165,68 +224,125 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 		});
 	});
 
-	const options = useMemo(() => [['all', t('All')], ['following', t('Following')], ['unread', t('Unread')]], [t]);
+	const options = useMemo(
+		() => [
+			['all', t('All')],
+			['following', t('Following')],
+			['unread', t('Unread')],
+		],
+		[t],
+	);
 
 	threadsRef.current = threads;
 
-	const rowRenderer = useCallback(({ data, index, style }) => <Row
-		data={data}
-		index={index}
-		style={style}
-		showRealNames={showRealNames}
-		unread={unread}
-		unreadUser={unreadUser}
-		unreadGroup={unreadGroup}
-		userId={userId}
-		onClick={onClick}
-	/>, [showRealNames, unread, unreadUser, unreadGroup, userId, onClick]);
+	const rowRenderer = useCallback(
+		({ data, index, style }) => (
+			<Row
+				data={data}
+				index={index}
+				style={style}
+				showRealNames={showRealNames}
+				unread={unread}
+				unreadUser={unreadUser}
+				unreadGroup={unreadGroup}
+				userId={userId}
+				onClick={onClick}
+			/>
+		),
+		[showRealNames, unread, unreadUser, unreadGroup, userId, onClick],
+	);
 
-	const isItemLoaded = useMutableCallback((index) => index < threadsRef.current.length);
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({ debounceDelay: 200 });
+	const isItemLoaded = useMutableCallback(
+		(index) => index < threadsRef.current.length,
+	);
+	const {
+		ref,
+		contentBoxSize: { inlineSize = 378, blockSize = 1 } = {},
+	} = useResizeObserver({ debounceDelay: 200 });
 
 	const mid = useTabContext();
 	const jump = useQueryStringParameter('jump');
 
-	return <>
-		<VerticalBar.Header>
-			<VerticalBar.Icon name='thread'/>
-			<VerticalBar.Text>{t('Threads')}</VerticalBar.Text>
-			<VerticalBar.Close onClick={onClose}/>
-		</VerticalBar.Header>
-		<VerticalBar.Content paddingInline={0}>
-			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
-				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-					<Margins inline='x4'>
-						<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
-						<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
-					</Margins>
-				</Box>
-			</Box>
-			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden' display='flex'>
-				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
-				{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
-				{!error && total > 0 && <InfiniteLoader
-					isItemLoaded={isItemLoaded}
-					itemCount={total}
-					loadMoreItems={ loading ? () => {} : loadMoreItems}
+	return (
+		<>
+			<VerticalBar.Header>
+				<VerticalBar.Icon name='thread' />
+				<VerticalBar.Text>{t('Threads')}</VerticalBar.Text>
+				<VerticalBar.Close onClick={onClose} />
+			</VerticalBar.Header>
+			<VerticalBar.Content paddingInline={0}>
+				<Box
+					display='flex'
+					flexDirection='row'
+					p='x24'
+					borderBlockEndWidth='x2'
+					borderBlockEndStyle='solid'
+					borderBlockEndColor='neutral-200'
+					flexShrink={0}
 				>
-					{({ onItemsRendered, ref }) => (<List
-						outerElementType={ScrollableContentWrapper}
-						height={blockSize}
-						width={inlineSize}
-						itemCount={total}
-						itemData={threads}
-						itemSize={124}
-						ref={ref}
-						minimumBatchSize={LIST_SIZE}
-						onItemsRendered={onItemsRendered}
-					>{rowRenderer}</List>
+					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+						<Margins inline='x4'>
+							<TextInput
+								placeholder={t('Search_Messages')}
+								value={text}
+								onChange={setText}
+								addon={<Icon name='magnifier' size='x20' />}
+							/>
+							<Select
+								flexGrow={0}
+								width='110px'
+								onChange={setType}
+								value={type}
+								options={options}
+							/>
+						</Margins>
+					</Box>
+				</Box>
+				<Box
+					flexGrow={1}
+					flexShrink={1}
+					ref={ref}
+					overflow='hidden'
+					display='flex'
+				>
+					{error && (
+						<Callout mi='x24' type='danger'>
+							{error.toString()}
+						</Callout>
 					)}
-				</InfiniteLoader>}
-			</Box>
-		</VerticalBar.Content>
-		{ mid && <VerticalBar.InnerContent><ThreadComponent mid={mid} jump={jump} room={room}/></VerticalBar.InnerContent> }
-	</>;
+					{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
+					{!error && total > 0 && (
+						<InfiniteLoader
+							isItemLoaded={isItemLoaded}
+							itemCount={total}
+							loadMoreItems={loading ? () => {} : loadMoreItems}
+						>
+							{({ onItemsRendered, ref }) => (
+								<List
+									outerElementType={ScrollableContentWrapper}
+									height={blockSize}
+									width={inlineSize}
+									itemCount={total}
+									itemData={threads}
+									itemSize={124}
+									ref={ref}
+									minimumBatchSize={LIST_SIZE}
+									onItemsRendered={onItemsRendered}
+								>
+									{rowRenderer}
+								</List>
+							)}
+						</InfiniteLoader>
+					)}
+				</Box>
+			</VerticalBar.Content>
+			{mid && (
+				<VerticalBar.InnerContent>
+					<ThreadComponent mid={mid} jump={jump} room={room} />
+				</VerticalBar.InnerContent>
+			)}
+		</>
+	);
 }
 
 export default withData(ThreadList);

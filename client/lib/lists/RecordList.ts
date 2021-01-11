@@ -140,6 +140,10 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 	}
 
 	public clear(): void {
+		if (this.index.size === 0) {
+			return;
+		}
+
 		this.index.clear();
 		this._cache = undefined;
 		this.emit('cleared');
