@@ -5,12 +5,10 @@ import _ from 'underscore';
 import {
 	LivechatVisitors,
 } from '../../../models';
-import { settings } from '../../../settings';
-
 
 export const Contacts = {
 
-	registerContact({ token, name, email, phone, username, livechatData, contactManager, connectionData } = {}) {
+	registerContact({ token, name, email, phone, username, livechatData, contactManager } = {}) {
 		check(token, String);
 
 		let userId;
@@ -38,15 +36,6 @@ export const Contacts = {
 					username,
 					ts: new Date(),
 				};
-
-				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
-					const connection = this.connection || connectionData;
-					if (connection && connection.httpHeaders) {
-						userData.userAgent = connection.httpHeaders['user-agent'];
-						userData.ip = connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
-						userData.host = connection.httpHeaders.host;
-					}
-				}
 
 				userId = LivechatVisitors.insert(userData);
 			}
