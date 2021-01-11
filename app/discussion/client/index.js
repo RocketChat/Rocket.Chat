@@ -8,6 +8,3 @@ import './discussionFromMessageBox';
 import './tabBar';
 
 import '../lib/discussionRoomType';
-
-// Style
-import './public/stylesheets/discussion.css';

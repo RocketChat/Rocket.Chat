@@ -106,7 +106,7 @@ function VerticalBarAction({ name, ...props }) {
 }
 
 function VerticalBarActions(props) {
-	return <ButtonGroup small {...props} />;
+	return <ButtonGroup medium {...props} />;
 }
 
 function VerticalBarActionBack(props) {
