@@ -42,11 +42,19 @@ export const Contacts = {
 
 		updateUser.$set.name = name;
 
-		updateUser.$set.phone = (phone?.number && [{ phoneNumber: phone.number }]) || null;
+		updateUser.$set.phone = (phone && [{ phoneNumber: phone }]) || null;
 
 		updateUser.$set.visitorEmails = (email && [{ address: email }]) || null;
 
-		updateUser.$set.customFields = customFields || null;
+		const validCustomFields = {};
+
+		Object.entries(customFields).forEach(([key, value]) => {
+			if (value) {
+				validCustomFields[key] = value;
+			}
+		});
+
+		updateUser.$set.livechatData = (Object.keys(validCustomFields).length > 0 && validCustomFields) || null;
 
 		updateUser.$set.contactManager = (contactManager?.username && { username: contactManager.username }) || null;
 
