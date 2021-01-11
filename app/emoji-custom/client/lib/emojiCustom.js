@@ -7,7 +7,7 @@ import { RoomManager } from '../../../ui-utils/client';
 import { emoji, EmojiPicker } from '../../../emoji/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { APIClient } from '../../../utils/client';
-import { escapeRegExp } from '../../../../client/lib/escapeRegExp';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 export const getEmojiUrlFromName = function(name, extension) {
 	Session.get;

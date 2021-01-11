@@ -1,7 +1,6 @@
-import s from 'underscore.string';
-
 import { Users } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 export async function findUsersToAutocomplete({ uid, selector }) {
 	if (!await hasPermissionAsync(uid, 'view-outside-room')) {
@@ -23,7 +22,7 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 		limit: 10,
 	};
 
-	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(new RegExp(s.escapeRegExp(selector.term), 'i'), exceptions, conditions, options).toArray();
+	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions(new RegExp(escapeRegExp(selector.term), 'i'), exceptions, conditions, options).toArray();
 
 	return {
 		items: users,

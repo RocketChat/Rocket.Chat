@@ -8,6 +8,7 @@ import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';
+import { escapeRegExp } from '../../lib/escapeRegExp';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -42,7 +43,7 @@ const sortUsers = function(field, direction) {
 
 Meteor.methods({
 	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
-		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
+		const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
 
 		if (!['channels', 'users'].includes(type)) {
 			return;

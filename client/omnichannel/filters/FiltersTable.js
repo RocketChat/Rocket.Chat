@@ -10,7 +10,7 @@ import { useMethod } from '../../contexts/ServerContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
+import { useEndpointData, ENDPOINT_STATES } from '../../hooks/useEndpointData';
 
 const FiltersRow = memo(function FiltersRow(props) {
 	const {
@@ -95,7 +95,7 @@ const FiltersTableContainer = ({ reloadRef }) => {
 		itemsPerPage,
 	} = params;
 
-	const { data, state, reload } = useEndpointDataExperimental('livechat/filters', useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]));
+	const { data, state, reload } = useEndpointData('livechat/filters', useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]));
 
 	reloadRef.current = reload;
 

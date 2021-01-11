@@ -17,7 +17,7 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'live',
-			path: '/live/:id',
+			path: '/live/:id/:tab?/:context?',
 		});
 	}
 
@@ -122,19 +122,19 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		if (!room || !room.v || room.v.username !== username) {
 			return false;
 		}
-		const button = instance.tabBar.getButtons().find((button) => button.id === 'visitor-info');
-		if (!button) {
-			return false;
-		}
+		// const button = instance.tabBar.getButtons({ room }).find((button) => button.id === 'visitor-info');
+		// if (!button) {
+		// 	return false;
+		// }
 
-		const { template, i18nTitle: label, icon } = button;
-		instance.tabBar.setTemplate(template);
-		instance.tabBar.setData({
-			label,
-			icon,
-		});
+		// const { template, i18nTitle: label, icon } = button;
+		// instance.tabBar.setTemplate(template);
+		// instance.tabBar.setData({
+		// 	label,
+		// 	icon,
+		// });
 
-		instance.tabBar.open();
+		instance.tabBar.openUserInfo();
 		return true;
 	}
 }

@@ -48,9 +48,6 @@ import './components/popupList';
 import './components/selectDropdown.html';
 
 import './components/header/header';
-import './components/header/headerRoom';
-import './components/contextualBar.html';
-import './components/contextualBar';
 import './components/tooltip';
 import './lib/Tooltip';
 

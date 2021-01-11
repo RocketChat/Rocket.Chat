@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Session } from 'meteor/session';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import s from 'underscore.string';
 
@@ -8,6 +7,7 @@ import { AccountBox } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { baseURI } from '../../../utils/client/lib/baseuri.js';
+import { add, remove } from '../../../../client/views/room/lib/Toolbox/IframeButtons';
 
 const commands = {
 	go(data) {
@@ -70,16 +70,11 @@ const commands = {
 		});
 	},
 
-	'set-toolbar-button'({ id, icon, label: i18nTitle }) {
-		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
-		toolbar.buttons[id] = { icon, i18nTitle };
-		Session.set('toolbarButtons', toolbar);
+	'set-toolbar-button'({ id, icon, label }) {
+		add(id, { id, icon, label });
 	},
-
 	'remove-toolbar-button'({ id }) {
-		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
-		delete toolbar.buttons[id];
-		Session.set('toolbarButtons', toolbar);
+		remove(id);
 	},
 };
 

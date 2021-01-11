@@ -103,7 +103,7 @@ export const openRoom = async function(type, name) {
 			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
 			if (mainNode) {
-				if (roomDom.classList.contains('room-container .messages-box > .wrapper')) {
+				if (roomDom.classList.contains('.room-container .messages-box > .wrapper')) {
 					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop;
 				}
 			}

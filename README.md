@@ -27,7 +27,6 @@ The WideChat repo is a fork of RocketChat for development of features to be merg
    * [IndieHosters](#indiehosters)
    * [Ubuntu 16.04](#ubuntu-1604)
    * [Cloudron.io](#cloudronio)
-   * [Heroku](#heroku)
    * [Helm Kubernetes](#helm-kubernetes)
   * [Scalingo](#scalingo)
   * [Sloppy.io](#sloppyio)
@@ -142,11 +141,6 @@ Get your Rocket.Chat instance hosted in an "as a Service" style. You register an
 Install Rocket.Chat on [Cloudron](https://cloudron.io) Smartserver:
 
 [![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/button.html?app=chat.rocket.cloudronapp)
-
-## Heroku
-Host your own Rocket.Chat server for **FREE** with [One-Click Deploy](https://heroku.com/deploy).
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RocketChat/Rocket.Chat/tree/master)
 
 ## Helm Kubernetes
 Deploy on Kubernetes using the official [helm chart](https://github.com/helm/charts/tree/master/stable/rocketchat).

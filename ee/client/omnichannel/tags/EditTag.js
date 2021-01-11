@@ -5,21 +5,21 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import VerticalBar from '../../../../client/components/basic/VerticalBar';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
-import { FormSkeleton } from './Skeleton';
+import VerticalBar from '../../../../client/components/VerticalBar';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useRoute } from '../../../../client/contexts/RouterContext';
-
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
+import { FormSkeleton } from '../../../../client/components/Skeleton';
 
 export function TagEditWithData({ tagId, reload }) {
 	const query = useMemo(() => ({ tagId }), [tagId]);
-	const { data, state, error } = useEndpointDataExperimental('livechat/tags.getOne', query);
-	const { data: availableDepartments, state: availableDepartmentsState, error: availableDepartmentsError } = useEndpointDataExperimental('livechat/department');
+	const { value: data, phase: state, error } = useEndpointData('livechat/tags.getOne', query);
+	const { value: availableDepartments, phase: availableDepartmentsState, error: availableDepartmentsError } = useEndpointData('livechat/department');
 
 	const t = useTranslation();
 
-	if ([state, availableDepartmentsState].includes(ENDPOINT_STATES.LOADING)) {
+	if ([state, availableDepartmentsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 
@@ -33,9 +33,9 @@ export function TagEditWithData({ tagId, reload }) {
 export function TagNew({ reload }) {
 	const t = useTranslation();
 
-	const { data: availableDepartments, state: availableDepartmentsState, error: availableDepartmentsError } = useEndpointDataExperimental('livechat/department');
+	const { value: availableDepartments, phase: availableDepartmentsState, error: availableDepartmentsError } = useEndpointData('livechat/department');
 
-	if (availableDepartmentsState === ENDPOINT_STATES.LOADING) {
+	if (availableDepartmentsState === AsyncStatePhase.LOADING) {
 		return <FormSkeleton/>;
 	}
 

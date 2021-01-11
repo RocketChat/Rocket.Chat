@@ -1,4 +1,3 @@
-// import { katex } from '../../../katex/client';
 import { Markdown } from '../../../markdown/client';
 import { settings } from '../../../settings';
 

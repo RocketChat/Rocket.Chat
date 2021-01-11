@@ -150,8 +150,11 @@ const mergeSubRoom = (subscription) => {
 			v: 1,
 			streamingOptions: 1,
 			usernames: 1,
-			description: 1,
 			topic: 1,
+			encrypted: 1,
+			// autoTranslate: 1,
+			// autoTranslateLanguage: 1,
+			description: 1,
 			announcement: 1,
 			broadcast: 1,
 			archived: 1,
@@ -177,7 +180,7 @@ const mergeSubRoom = (subscription) => {
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
 	subscription.streamingOptions = room.streamingOptions;
 
-
+	subscription.encrypted = room.encrypted;
 	subscription.description = room.description;
 	subscription.cl = room.cl;
 	subscription.topic = room.topic;
@@ -197,6 +200,7 @@ const mergeRoomSub = (room) => {
 		rid: room._id,
 	}, {
 		$set: {
+			encrypted: room.encrypted,
 			description: room.description,
 			cl: room.cl,
 			topic: room.topic,

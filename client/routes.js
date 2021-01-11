@@ -103,10 +103,20 @@ FlowRouter.route('/directory/:tab?', {
 	}],
 });
 
+FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
+	name: 'omnichannel-directory',
+	action: () => {
+		renderRouteComponent(() => import('./omnichannel/directory/OmnichannelDirectoryPage'), { template: 'main', region: 'center' });
+	},
+	triggersExit: [function() {
+		$('.main-content').addClass('rc-old');
+	}],
+});
+
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
-		renderRouteComponent(() => import('./account/AccountRoute'), { template: 'main', region: 'center' });
+		renderRouteComponent(() => import('./views/account/AccountRoute'), { template: 'main', region: 'center' });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');
