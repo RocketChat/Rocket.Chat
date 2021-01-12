@@ -15,6 +15,7 @@ import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
+import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
 
@@ -207,8 +208,8 @@ const settingSavers = {
 	retentionOverrideGlobal({ value, rid }) {
 		Rooms.saveRetentionOverrideGlobalById(rid, value);
 	},
-	encrypted({ value, rid }) {
-		Rooms.saveEncryptedById(rid, value);
+	encrypted({ value, room, rid, user }) {
+		saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
 	favorite({ value, rid }) {
 		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
