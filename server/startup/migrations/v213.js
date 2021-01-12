@@ -3,38 +3,41 @@ import { Subscriptions, Rooms } from '../../../app/models/server/raw';
 
 const batchSize = 2;
 
-const updateSubscriptions = async (total, current) => {
-	return new Promise(async (resolve, reject) => {
-		Subscriptions
-			.find({ t: 'd' }, { projection: { rid: 1, u: 1 } })
-			.limit(batchSize)
-			.forEach(async (sub) => {
-				console.log('sub', sub);
-				const room = await Rooms.findOne({ _id: sub.rid }, { projection: { usernames: 1 } });
-				if (!room) {
-					console.log(`ROOM NOT FOUND: ${ sub.rid }`);
-					return;
-				}
+const updateSubscriptions = async () => new Promise(async (resolve, reject) => {
+	Subscriptions
+		.find({ t: 'd' }, { projection: { rid: 1, u: 1 } })
+		.limit(batchSize)
+		.forEach(async (sub) => {
+			console.log('sub', sub);
+			const room = await Rooms.findOne({ _id: sub.rid }, { projection: { usernames: 1 } });
+			if (!room) {
+				console.log(`ROOM NOT FOUND: ${ sub.rid }`);
+				return;
+			}
 
-				if (!room.usernames || room.usernames.length === 0) {
-					console.log(`NO USERNAMES: ${ sub.rid }`);
-					return;
-				}
+			if (!room.usernames || room.usernames.length === 0) {
+				console.log(`NO USERNAMES: ${ sub.rid }`);
+				return;
+			}
 
-				const name = room.usernames
-					.filter((u) => u !== sub.u.username)
-					.sort()
-					.join(', ') || sub.u.username;
-				if (!name) {
-					console.log(`NO NAME ${ sub._id }`);
-					return;
-				}
+			const name = room.usernames
+				.filter((u) => u !== sub.u.username)
+				.sort()
+				.join(', ') || sub.u.username;
+			if (!name) {
+				console.log(`NO NAME ${ sub._id }`);
+				return;
+			}
 
-				console.log('fix', sub._id);
-				await Subscriptions.update({ _id: sub._id }, { $set: { name, _updatedAt: new Date() } });
-			});
-	});
-};
+			console.log('fix', sub._id);
+			await Subscriptions.update({ _id: sub._id }, { $set: { name, _updatedAt: new Date() } });
+		}, (error) => {
+			if (error) {
+				return reject(error);
+			}
+			resolve();
+		});
+});
 
 Migrations.add({
 	version: 213,
