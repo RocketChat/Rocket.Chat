@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const fg = require('fast-glob');
 
@@ -53,6 +54,8 @@ const validate = (i18nFiles, usedKeys) => {
 
 			checkUniqueKeys(content, json, file);
 
+			// console.log('json, usedKeys2', json, usedKeys);
+
 			const result = validateKeys(json, usedKeys);
 
 			if (result.length === 0) {
@@ -73,13 +76,13 @@ const validate = (i18nFiles, usedKeys) => {
 	}
 };
 
-const checkFiles = async (path, source, fix = false) => {
-	const content = fs.readFileSync(`${ path }${ source }`, 'utf8');
-	const sourceFile = JSON.parse(content);
+const checkFiles = async (sourcePath, sourceFile, fix = false) => {
+	const content = fs.readFileSync(path.join(sourcePath, sourceFile), 'utf8');
+	const sourceContent = JSON.parse(content);
 
-	checkUniqueKeys(content, sourceFile, source);
+	checkUniqueKeys(content, sourceContent, sourceFile);
 
-	const usedKeys = Object.entries(sourceFile)
+	const usedKeys = Object.entries(sourceContent)
 		.map(([key, value]) => {
 			const replaces = value.match(regexVar);
 			return {
@@ -91,7 +94,7 @@ const checkFiles = async (path, source, fix = false) => {
 	const keysWithInterpolation = usedKeys
 		.filter(({ replaces }) => !!replaces);
 
-	const i18nFiles = await fg([`${ path }/**/*.i18n.json`]);
+	const i18nFiles = await fg([`${ sourcePath }/**/*.i18n.json`]);
 
 	if (fix) {
 		return removeMissingKeys(i18nFiles, keysWithInterpolation);
@@ -102,7 +105,7 @@ const checkFiles = async (path, source, fix = false) => {
 
 (async () => {
 	try {
-		await checkFiles('./packages/rocketchat-i18n/i18n/', 'en.i18n.json', process.argv[2] === '--fix');
+		await checkFiles('./packages/rocketchat-i18n/i18n', 'en.i18n.json', process.argv[2] === '--fix');
 	} catch (e) {
 		console.error(e);
 		process.exit(1);

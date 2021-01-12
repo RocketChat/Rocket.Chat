@@ -31,4 +31,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw {
 	findByDepartmentIds(departmentIds, options = {}) {
 		return this.find({ departmentId: { $in: departmentIds } }, options);
 	}
+
+	// eslint-disable-next-line no-unused-vars
+	findAgentsByAgentIdAndBusinessHourId(agentId, businessHourId) { return []; }
 }
