@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { RecordList } from '../../lib/lists/RecordList';
 import { IRocketChatRecord } from '../../../definition/IRocketChatRecord';
-import { getConfig } from '../../../app/ui-utils/client/config';
 
-const INITIAL_ITEM_COUNT = 50;
+const INITIAL_ITEM_COUNT = 25;
 
 export const useScrollableRecordList = <T extends IRocketChatRecord>(
 	recordList: RecordList<T>,
 	fetchItems: (start: number, end: number) => Promise<T[]>,
+	initialItemCount: number = INITIAL_ITEM_COUNT,
 ): {
 	loadMoreItems: (start: number, end: number) => void;
 	initialItemCount: number;
@@ -20,13 +20,8 @@ export const useScrollableRecordList = <T extends IRocketChatRecord>(
 		[recordList, fetchItems],
 	);
 
-	const initialItemCount = useMemo(
-		() => parseInt(getConfig('threadsListSize'), 10) || parseInt(getConfig('discussionListSize'), 10) || INITIAL_ITEM_COUNT,
-		[],
-	);
-
 	useEffect(() => {
-		loadMoreItems(0, initialItemCount);
+		loadMoreItems(0, initialItemCount ?? INITIAL_ITEM_COUNT);
 	}, [loadMoreItems, initialItemCount]);
 
 	return { loadMoreItems, initialItemCount };

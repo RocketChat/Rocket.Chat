@@ -1,5 +1,5 @@
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
 	ThreadsList,
@@ -9,6 +9,7 @@ import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
 import { IUser } from '../../../../../definition/IUser';
+import { getConfig } from '../../../../../app/ui-utils/client/config';
 
 export const useThreadsList = (
 	options: ThreadsListOptions,
@@ -50,6 +51,7 @@ export const useThreadsList = (
 	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
 		threadsList,
 		fetchMessages,
+		useMemo(() => parseInt(getConfig('threadsListSize'), 10), []),
 	);
 	useStreamUpdatesForMessageList(threadsList, uid, options.rid);
 

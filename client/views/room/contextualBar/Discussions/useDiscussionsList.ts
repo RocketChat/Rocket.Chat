@@ -1,5 +1,5 @@
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
 	DiscussionsList,
@@ -9,6 +9,7 @@ import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
 import { IUser } from '../../../../../definition/IUser';
+import { getConfig } from '../../../../../app/ui-utils/client/config';
 
 export const useDiscussionsList = (
 	options: DiscussionsListOptions,
@@ -49,6 +50,7 @@ export const useDiscussionsList = (
 	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
 		discussionsList,
 		fetchMessages,
+		useMemo(() => parseInt(getConfig('discussionListSize'), 10), []),
 	);
 	useStreamUpdatesForMessageList(discussionsList, uid, options.rid);
 
