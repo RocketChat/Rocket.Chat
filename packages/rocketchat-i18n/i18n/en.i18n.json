@@ -1178,6 +1178,7 @@
   "Custom_Sound_Info": "Custom Sound Info",
   "Custom_Sound_Saved_Successfully": "Custom sound saved successfully",
   "Custom_Sounds": "Custom Sounds",
+  "Custom_Status": "Custom Status",
   "Custom_Translations": "Custom Translations",
   "Custom_Translations_Description": "Should be a valid JSON where keys are languages containing a dictionary of key and translations. Example:<br/><code>{\n \"en\": {\n  \"Channels\": \"Rooms\"\n },\n \"pt\": {\n  \"Channels\": \"Salas\"\n }\n}</code> ",
   "Custom_User_Status": "Custom User Status",
