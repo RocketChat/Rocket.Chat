@@ -35,7 +35,7 @@ describe('Apps - Send Messages As User', function() {
 				.end(done);
 		});
 		it('should return an error when the user is not found', (done) => {
-			request.post(apps(`/public/${ app.id }/send-message-as-user?userId=invalid-user`))
+			request.post(apps(`/public/${ app.id }/send-message-as-user?username=invalid-user`))
 				.send({
 					roomId: 'GENERAL',
 				})
@@ -45,14 +45,14 @@ describe('Apps - Send Messages As User', function() {
 					expect(err).to.have.a.property('error');
 					expect(res).to.be.equal(undefined);
 					expect(err.error).to.have.a.property('text');
-					expect(err.error.text).to.be.equal('User with id "invalid-user" could not be found');
+					expect(err.error.text).to.be.equal('User with username "invalid-user" could not be found');
 				})
 				.end(done);
 		});
 		describe('Send to a Public Channel', () => {
 			let publicMessageId;
 			it('should send a message as app user', (done) => {
-				request.post(apps(`/public/${ app.id }/send-message-as-user?userId=${ adminUsername }`))
+				request.post(apps(`/public/${ app.id }/send-message-as-user?username=${ adminUsername }`))
 					.set(credentials)
 					.send({
 						roomId: 'GENERAL',
@@ -83,7 +83,7 @@ describe('Apps - Send Messages As User', function() {
 								const user = createdUser;
 								login(user.username, password).then((credentials) => {
 									const userCredentials = credentials;
-									request.post(apps(`/public/${ app.id }/send-message-as-user?userId=${ user._id }`))
+									request.post(apps(`/public/${ app.id }/send-message-as-user?username=${ user.username }`))
 										.set(userCredentials)
 										.send({
 											roomId: createdRoom.body.group._id,
@@ -100,7 +100,7 @@ describe('Apps - Send Messages As User', function() {
 					name: `apps-e2etest-room-${ Date.now() }`,
 				})
 					.end((err, createdRoom) => {
-						request.post(apps(`/public/${ app.id }/send-message-as-user?userId=${ adminUsername }`))
+						request.post(apps(`/public/${ app.id }/send-message-as-user?username=${ adminUsername }`))
 							.set(credentials)
 							.send({
 								roomId: createdRoom.body.group._id,
@@ -127,7 +127,7 @@ describe('Apps - Send Messages As User', function() {
 					username: 'rocket.cat',
 				})
 					.end((err, createdRoom) => {
-						request.post(apps(`/public/${ app.id }/send-message-as-user?userId=${ adminUsername }`))
+						request.post(apps(`/public/${ app.id }/send-message-as-user?username=${ adminUsername }`))
 							.set(credentials)
 							.send({
 								roomId: createdRoom.body.room._id,
