@@ -11,7 +11,6 @@ import {
 	FieldGroup,
 	Box,
 	Margins,
-	Icon,
 } from '@rocket.chat/fuselage';
 
 import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
