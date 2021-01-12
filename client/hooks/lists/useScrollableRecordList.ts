@@ -21,7 +21,7 @@ export const useScrollableRecordList = <T extends IRocketChatRecord>(
 	);
 
 	const initialItemCount = useMemo(
-		() => parseInt(getConfig('threadsListSize'), 10) || INITIAL_ITEM_COUNT,
+		() => parseInt(getConfig('threadsListSize'), 10) || parseInt(getConfig('discussionListSize'), 10) || INITIAL_ITEM_COUNT,
 		[],
 	);
 

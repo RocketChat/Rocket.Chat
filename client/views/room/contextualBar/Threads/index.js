@@ -65,6 +65,11 @@ const roomFields = { t: 1, name: 1 };
 
 export function withData(WrappedComponent) {
 	return ({ rid, ...props }) => {
+		const userId = useUserId();
+		const onClose = useTabBarClose();
+		const room = useUserRoom(rid, roomFields);
+		const subscription = useUserSubscription(rid, subscriptionFields);
+
 		const [type, setType] = useLocalStorage('thread-list-type', 'all');
 
 		const [text, setText] = useState('');
@@ -75,11 +80,11 @@ export function withData(WrappedComponent) {
 				rid,
 				text: debouncedText,
 				type,
+				tunread: subscription?.tunread,
+				uid: userId,
 			}),
-			[rid, debouncedText, type],
+			[rid, debouncedText, type, subscription, userId],
 		);
-
-		const userId = useUserId();
 
 		const {
 			threadsList,
@@ -88,10 +93,6 @@ export function withData(WrappedComponent) {
 			loadMoreItems,
 		} = useThreadsList(options, userId);
 		const { phase, value: threads, error } = useRecordList(threadsList);
-
-		const onClose = useTabBarClose();
-		const room = useUserRoom(rid, roomFields);
-		const subscription = useUserSubscription(rid, subscriptionFields);
 
 		const handleTextChange = useCallback((event) => {
 			setText(event.currentTarget.value);

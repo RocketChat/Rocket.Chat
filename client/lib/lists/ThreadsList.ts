@@ -4,7 +4,7 @@ import { IUser } from '../../../definition/IUser';
 import { ISubscription } from '../../../definition/ISubscription';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
 
-type ThreadMessage = IMessage & { tcount: number };
+type ThreadMessage = Omit<IMessage, 'tcount'> & Required<Pick<IMessage, 'tcount'>>;
 
 export type ThreadsListOptions = {
 	rid: IMessage['rid'];
