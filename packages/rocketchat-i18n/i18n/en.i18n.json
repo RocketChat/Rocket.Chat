@@ -3435,6 +3435,7 @@
   "Showing_archived_results": "<p>Showing <b>%s</b> archived results</p>",
   "Showing_online_users": "Showing: <b>__total_showing__</b>, Online: __online__, Total: __total__ users",
   "Showing_results": "<p>Showing <b>%s</b> results</p>",
+  "Showing_results_of": "Showing results %s - %s of %s",
   "Sidebar": "Sidebar",
   "Sidebar_list_mode": "Sidebar Channel List Mode",
   "Sign_in_to_start_talking": "Sign in to start talking",
