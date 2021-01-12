@@ -24,11 +24,13 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 
 	const draw = useMutableCallback(async (params) => {
 		try {
-			const result = await loadData(params);
-			if (!(result && result.chartLabel && result.dataLabels && result.dataPoints)) {
-				return console.log('livechat:getAnalyticsChartData => Missing Data');
+			if (params.daterange.from && params.daterange.to) {
+				const result = await loadData(params);
+				if (!(result && result.chartLabel && result.dataLabels && result.dataPoints)) {
+					return console.log('livechat:getAnalyticsChartData => Missing Data');
+				}
+				context.current = await drawLineChart(canvas.current, context.current, [result.chartLabel], result.dataLabels, [result.dataPoints]);
 			}
-			context.current = await drawLineChart(canvas.current, context.current, [result.chartLabel], result.dataLabels, [result.dataPoints]);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -43,7 +45,7 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 			chartOptions: { name: chartName },
 			...departmentId && { departmentId },
 		});
-	}, [chartName, departmentId, draw, end, start, t]);
+	}, [chartName, departmentId, draw, end, start, t, loadData]);
 
 	return <Chart border='none' pi='none' ref={canvas} {...props}/>;
 };
