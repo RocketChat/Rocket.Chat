@@ -30,7 +30,7 @@ registerAdminRoute('/apps/:context?/:id?/:version?', {
 	lazyRouteComponent: () => import('./apps/AppsRoute'),
 });
 
-registerAdminRoute('/info/:old?', {
+registerAdminRoute('/info', {
 	name: 'admin-info',
 	lazyRouteComponent: () => import('./info/InformationRoute'),
 });
