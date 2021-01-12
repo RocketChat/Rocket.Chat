@@ -386,7 +386,7 @@ Template.messageBox.events({
 			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
 			.map((item) => ({
 				file: item.getAsFile(),
-				name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }`,
+				name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.png`,
 			}))
 			.filter(({ file }) => file !== null);
 
