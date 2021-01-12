@@ -5,7 +5,7 @@
 				<div class="messages-container-main dropzone {{dragAndDrop}}">
 					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 					{{#unless embeddedVersion}}
-						{{> RoomAnnouncement}}
+						{{> RoomAnnouncement announcement=announcement }}
 					{{/unless}}
 					<div class="container-bars {{containerBarsShow unreadData uploading}}">
 						{{#with unreadData}}

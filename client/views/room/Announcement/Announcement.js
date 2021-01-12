@@ -6,7 +6,6 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import AnnouncementModal from './AnnouncementModal';
 import { useSetModal } from '../../../contexts/ModalContext';
-import { useUserRoom } from '../../../contexts/UserContext';
 
 export const Announcement = ({ children, onClickOpen }) => {
 	const clickable = css`
@@ -26,13 +25,9 @@ export const Announcement = ({ children, onClickOpen }) => {
 	return <Box onClick={onClickOpen} display='flex' p='x16' fontScale='p2' textAlign='center' className={clickable}><Box withTruncatedText w='none'>{children}</Box></Box>;
 };
 
-export default ({ rid }) => {
-	const room = useUserRoom(rid);
-	const { announcement } = room;
-
+export default ({ announcement }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
-
 	const handleClick = () => setModal(<AnnouncementModal onClose={closeModal}>{announcement}</AnnouncementModal>);
 
 	return announcement && <Announcement onClickOpen={handleClick}>{announcement}</Announcement>;
