@@ -14,9 +14,7 @@ const convertMessageFromApi = (apiMessage: ObjectFromApi<IMessage>): IMessage =>
 export const useScrollableMessageList = (
 	messageList: MessageList,
 	fetchMessages: (start: number, end: number) => Promise<ObjectFromApi<IMessage>[]>,
-): {
-		loadMoreItems: (start: number, end: number) => void;
-	} => {
+): ReturnType<typeof useScrollableRecordList> => {
 	const fetchItems = useCallback(async (start: number, end: number): Promise<IMessage[]> =>
 		fetchMessages(start, end).then((apiMessages) => apiMessages.map(convertMessageFromApi)), [fetchMessages]);
 

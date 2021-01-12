@@ -13,9 +13,14 @@ import { IUser } from '../../../../../definition/IUser';
 export const useThreadsList = (
 	options: ThreadsListOptions,
 	uid: IUser['_id'],
-): [ThreadsList, number, (start: number, end: number) => void] => {
+): {
+		threadsList: ThreadsList;
+		totalItemCount: number;
+		initialItemCount: number;
+		loadMoreItems: (start: number, end: number) => void;
+	} => {
 	const [threadsList] = useState(() => new ThreadsList(options));
-	const [total, setTotal] = useSafely(useState(0));
+	const [totalItemCount, setTotalItemCount] = useSafely(useState(0));
 
 	useEffect(() => {
 		if (threadsList.options !== options) {
@@ -35,18 +40,23 @@ export const useThreadsList = (
 				count: end - start,
 			});
 
-			setTotal(total);
+			setTotalItemCount(total);
 
 			return threads;
 		},
-		[getThreadsList, options.rid, options.text, options.type, setTotal],
+		[getThreadsList, options.rid, options.text, options.type, setTotalItemCount],
 	);
 
-	const { loadMoreItems } = useScrollableMessageList(
+	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
 		threadsList,
 		fetchMessages,
 	);
 	useStreamUpdatesForMessageList(threadsList, uid, options.rid);
 
-	return [threadsList, total, loadMoreItems];
+	return {
+		threadsList,
+		totalItemCount,
+		loadMoreItems,
+		initialItemCount,
+	};
 };

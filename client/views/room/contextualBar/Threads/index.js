@@ -35,7 +35,6 @@ import { clickableItem } from '../../../../lib/clickableItem';
 import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
-import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useTabBarClose, useTabContext } from '../../providers/ToolboxProvider';
@@ -61,8 +60,6 @@ const Thread = React.memo(mapProps(clickableItem(ThreadListMessage)));
 
 const Skeleton = React.memo(clickableItem(MessageSkeleton));
 
-const LIST_SIZE = parseInt(getConfig('threadsListSize')) || 25;
-
 const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
 const roomFields = { t: 1, name: 1 };
 
@@ -84,7 +81,12 @@ export function withData(WrappedComponent) {
 
 		const userId = useUserId();
 
-		const [threadsList, total, loadMoreItems] = useThreadsList(options, userId);
+		const {
+			threadsList,
+			totalItemCount,
+			initialItemCount,
+			loadMoreItems,
+		} = useThreadsList(options, userId);
 		const { phase, value: threads, error } = useRecordList(threadsList);
 
 		const onClose = useTabBarClose();
@@ -104,7 +106,8 @@ export function withData(WrappedComponent) {
 				userId={userId}
 				error={error}
 				threads={threads}
-				total={total}
+				total={totalItemCount}
+				initial={initialItemCount}
 				loading={phase === AsyncStatePhase.LOADING}
 				loadMoreItems={loadMoreItems}
 				room={room}
@@ -193,6 +196,7 @@ const Row = memo(function Row({
 
 export function ThreadList({
 	total = 10,
+	initial = 10,
 	threads = [],
 	room,
 	unread = [],
@@ -327,7 +331,7 @@ export function ThreadList({
 									itemData={threads}
 									itemSize={124}
 									ref={ref}
-									minimumBatchSize={LIST_SIZE}
+									minimumBatchSize={initial}
 									onItemsRendered={onItemsRendered}
 								>
 									{rowRenderer}
