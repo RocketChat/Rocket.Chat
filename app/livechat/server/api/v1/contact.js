@@ -50,14 +50,14 @@ API.v1.addRoute('omnichannel/contact.search', { authRequired: true }, {
 
 			const { email, phone } = this.queryParams;
 
-			const query = {};
-
 			if (!email && !phone) {
 				throw new Meteor.Error('error-invalid-params');
 			}
 
-			if (email) { query.visitorEmails = { address: email }; }
-			if (phone) { query.phone = { phoneNumber: phone }; }
+			const query = Object.assign({}, {
+				...email && { visitorEmails: { address: email } },
+				...phone && { phone: { phoneNumber: phone } },
+			});
 
 			const contact = Promise.await(LivechatVisitors.findOne(query));
 			return API.v1.success({ contact });

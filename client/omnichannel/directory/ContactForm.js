@@ -122,21 +122,19 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	const phoneAlreadyExistsAction = useEndpointAction('GET', `omnichannel/contact.search?phone=${ phone }`);
 
 	const checkEmailExists = useMutableCallback(async () => {
-		if (!isEmail(email)) { return; }
+		if (!isEmail(email)) { return setEmailError(null); }
 		const { contact } = await emailAlreadyExistsAction();
 		if (!contact || (id && contact._id === id)) {
-			setEmailError(null);
-			return;
+			return setEmailError(null);
 		}
 		setEmailError(t('Email_already_exists'));
 	});
 
 	const checkPhoneExists = useMutableCallback(async () => {
-		if (!phone) { return; }
+		if (!phone) { return setPhoneError(null); }
 		const { contact } = await phoneAlreadyExistsAction();
 		if (!contact || (id && contact._id === id)) {
-			setPhoneError(null);
-			return;
+			return setPhoneError(null);
 		}
 		setPhoneError(t('Phone_already_exists'));
 	});
@@ -148,7 +146,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
 	}, [t, name]);
 	useComponentDidUpdate(() => {
-		setEmailError(email && !isEmail(email) ? t('Validate_email_address') : undefined);
+		setEmailError(email && !isEmail(email) ? t('Validate_email_address') : null);
 	}, [t, email]);
 
 	const handleSave = useMutableCallback(async (e) => {
