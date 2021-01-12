@@ -246,7 +246,7 @@ describe('Sessions Aggregates', () => {
 	if (!process.env.MONGO_URL) {
 		before(function() {
 			this.timeout(120000);
-			return mongoUnit.start({ version: '3.2.22' })
+			return mongoUnit.start({ version: '4.0.22' })
 				.then((testMongoUrl) => { process.env.MONGO_URL = testMongoUrl; });
 		});
 
