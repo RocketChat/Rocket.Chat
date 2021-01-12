@@ -26,8 +26,6 @@ const updateSubscriptions = async () => {
 			return;
 		}
 
-		await Subscriptions.update({ _id: sub._id }, { $set: { name, _updatedAt: new Date() } });
-
 		actions.push({
 			updateMany: {
 				filter: { _id: sub._id },
