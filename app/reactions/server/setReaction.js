@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
-import { Messages, EmojiCustom, Rooms, Users } from '../../models';
+import { Messages, EmojiCustom, Rooms } from '../../models';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../../emoji';
 import { isTheLastMessage, msgStream } from '../../lib';
@@ -10,12 +10,11 @@ import { hasPermission } from '../../authorization/server/functions/hasPermissio
 import { api } from '../../../server/sdk/api';
 
 const removeUserReaction = (message, reaction, userId) => {
-
 	const idx = message.reactions[reaction].userIds.indexOf(userId);
 	// both the userId and its corresponding username are at the same position
-	message.reactions[reaction].userIds.splice(idx,1);
-	message.reactions[reaction].usernames.splice(idx,1);
-	
+	message.reactions[reaction].userIds.splice(idx, 1);
+	message.reactions[reaction].usernames.splice(idx, 1);
+
 	if (message.reactions[reaction].userIds.length === 0) {
 		delete message.reactions[reaction];
 	}
@@ -42,9 +41,8 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		});
 	}
 
-	const userAlreadyReacted = 
-	Boolean(message.reactions) 
-	&& Boolean(message.reactions[reaction]) 
+	const userAlreadyReacted = 	Boolean(message.reactions)
+	&& Boolean(message.reactions[reaction])
 	&& message.reactions[reaction].userIds.indexOf(user._id) !== -1;
 	if (shouldReact === undefined) {
 		shouldReact = !userAlreadyReacted;
