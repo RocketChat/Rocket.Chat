@@ -100,11 +100,11 @@ const UserDropdown = ({ user, onClose }) => {
 
 	const accountBoxItems = useReactiveValue(getItems);
 
-	return <Box display='flex' flexDirection='column'>
+	return <Box display='flex' flexDirection='column' maxWidth='244px'>
 
 		<Box display='flex' flexDirection='row' mi='neg-x8' >
 			<Box mie='x4' mis='x8'><UserAvatar size='x36' username={username} etag={avatarETag} /></Box>
-			<Box mie='x8' mis='x4' display='flex' flexDirection='column' fontScale='p1' mb='neg-x4' flexGrow={1} flexShrink={1}>
+			<Box mie='x8' mis='x4' display='flex' overflow='hidden' flexDirection='column' fontScale='p1' mb='neg-x4' flexGrow={1} flexShrink={1}>
 				<Box withTruncatedText w='full' display='flex' alignItems='center' flexDirection='row'>
 					<Margins inline='x4'>
 						<UserStatus status={status}/>
