@@ -13,7 +13,7 @@ const RoomForeword = ({ _id: rid }) => {
 	const user = useUser();
 	const room = useReactiveValue(useCallback(() => Rooms.findOne({ _id: rid }), [rid]));
 
-	if (room.t !== 'd') {
+	if (room?.t !== 'd') {
 		return t('Start_of_conversation');
 	}
 
