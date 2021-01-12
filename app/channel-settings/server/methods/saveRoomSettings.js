@@ -56,12 +56,21 @@ const validators = {
 			});
 		}
 	},
-	encrypted({ value, room }) {
-		if (value !== room.encrypted && !roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
-				method: 'saveRoomSettings',
-				action: 'Change_Room_Encrypted',
-			});
+	encrypted({ userId, value, room, rid }) {
+		if (value !== room.encrypted) {
+			if (!roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
+				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Encrypted',
+				});
+			}
+
+			if (!hasPermission(userId, 'toggle-room-e2e-encryption', rid)) {
+				throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to toggle E2E encryption', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Encrypted',
+				});
+			}
 		}
 	},
 	retentionEnabled({ userId, value, room, rid }) {

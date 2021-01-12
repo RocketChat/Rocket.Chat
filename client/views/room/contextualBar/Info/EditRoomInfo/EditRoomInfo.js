@@ -228,6 +228,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canEditPrivilegedSetting = usePermission('edit-privileged-setting', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(useMemo(() => ['archive-room', 'unarchive-room'], []));
 	const canDelete = usePermission(`delete-${ room.t }`);
+	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id);
 
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
@@ -368,7 +369,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Encrypted')}</Field.Label>
 						<Field.Row>
-							<ToggleSwitch checked={encrypted} onChange={handleEncrypted}/>
+							<ToggleSwitch disabled={!canToggleEncryption} checked={encrypted} onChange={handleEncrypted}/>
 						</Field.Row>
 					</Box>
 				</Field>}
