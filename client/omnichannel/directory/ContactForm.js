@@ -122,7 +122,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	const phoneAlreadyExistsAction = useEndpointAction('GET', `omnichannel/contact.search?phone=${ phone }`);
 
 	const checkEmailExists = useMutableCallback(async () => {
-		if (!isEmail(email)) { return setEmailError(null); }
+		if (!isEmail(email)) { return; }
 		const { contact } = await emailAlreadyExistsAction();
 		if (!contact || (id && contact._id === id)) {
 			return setEmailError(null);
@@ -131,7 +131,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	});
 
 	const checkPhoneExists = useMutableCallback(async () => {
-		if (!phone) { return setPhoneError(null); }
+		if (!phone) { return; }
 		const { contact } = await phoneAlreadyExistsAction();
 		if (!contact || (id && contact._id === id)) {
 			return setPhoneError(null);
