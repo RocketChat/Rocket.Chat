@@ -31,6 +31,7 @@ import { usePermission, useAtLeastOnePermission, useRole } from '../../../../../
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 import { useUserRoom } from '../../../hooks/useUserRoom';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 
 const typeMap = {
 	c: 'Channels',
@@ -228,7 +229,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canEditPrivilegedSetting = usePermission('edit-privileged-setting', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(useMemo(() => ['archive-room', 'unarchive-room'], []));
 	const canDelete = usePermission(`delete-${ room.t }`);
-	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id);
+	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
 
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
