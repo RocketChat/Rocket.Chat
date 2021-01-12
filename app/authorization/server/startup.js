@@ -98,7 +98,7 @@ Meteor.startup(function() {
 		{ _id: 'save-others-livechat-room-info',     roles: ['livechat-manager'] },
 		{ _id: 'remove-closed-livechat-rooms',       roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-analytics',            roles: ['livechat-manager', 'admin'] },
-		{ _id: 'view-livechat-queue',                roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-queue',                roles: ['livechat-agent', 'livechat-manager', 'admin'] },
 		{ _id: 'transfer-livechat-guest',            roles: ['livechat-manager', 'admin'] },
 		{ _id: 'manage-livechat-managers',           roles: ['livechat-manager', 'admin'] },
 		{ _id: 'manage-livechat-agents',             roles: ['livechat-manager', 'admin'] },

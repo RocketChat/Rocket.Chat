@@ -1,21 +1,24 @@
-import React, { FC } from 'react';
+import React, { CSSProperties, useMemo, memo, forwardRef } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar/src/simplebar.css';
 
 import { useDir } from '../hooks/useDir';
 
-const style = {
-	maxHeight: '100%', flexGrow: 1,
+
+const styleDefault = {
+	height: '100%', flexGrow: 1, overflowY: 'auto', willChange: 'transform', width: '100%',
 };
 
 type CustomScrollbarsProps = {
 	onScroll?: Function;
-	ref: React.Ref<unknown>;
+	style?: CSSProperties;
+	children?: React.ReactNode;
 }
 
-const ScrollableContentWrapper: FC<CustomScrollbarsProps> = React.memo(React.forwardRef(({ onScroll, children }, ref) => {
+const ScrollableContentWrapper = forwardRef<unknown, CustomScrollbarsProps>(({ onScroll, children, style }, ref) => {
 	const dir = useDir();
-	return <SimpleBar data-simplebar-direction={dir} direction={dir} style={style} scrollableNodeProps={{ ref, onScroll }} children={children}/>;
-}));
+	const simpleBarStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]) as CSSProperties;
+	return <SimpleBar data-simplebar-direction={dir} direction={dir} style={simpleBarStyle} scrollableNodeProps={{ ref, onScroll }} children={children}/>;
+});
 
-export default ScrollableContentWrapper;
+export default memo(ScrollableContentWrapper);

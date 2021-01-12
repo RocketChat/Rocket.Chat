@@ -1,4 +1,3 @@
-import { boolean, select, text } from '@storybook/addon-knobs';
 import React from 'react';
 
 import RegisterServerStep from './RegisterServerStep';
@@ -10,7 +9,7 @@ export default {
 
 export const _default = () =>
 	<RegisterServerStep
-		step={select('step', [1, 2, 3, 4, 'final'], 4)}
-		title={text('title', 'Register Server')}
-		active={boolean('active', true)}
+		step={[1, 2, 3, 4, 'final'][3]}
+		title={'Register Server'}
+		active={true}
 	/>;
