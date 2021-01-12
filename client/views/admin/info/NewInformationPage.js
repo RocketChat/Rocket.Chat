@@ -1,14 +1,15 @@
-import { Box, Button, ButtonGroup, Callout, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/fuselage';
+import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import Page from '../../../components/Page';
+import DeploymentCard from './DeploymentCard';
+import UsageCard from './UsageCard';
+import LicenseCard from './LicenseCard';
+// import InstancesCard from './InstancesCard';
+// import PushCard from './PushCard';
+import { DOUBLE_COLUMN_CARD_WIDTH } from '../../../components/Card/Card';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import RocketChatSection from './RocketChatSection';
-import CommitSection from './CommitSection';
-import RuntimeEnvironmentSection from './RuntimeEnvironmentSection';
-import BuildEnvironmentSection from './BuildEnvironmentSection';
-import UsageSection from './UsageSection';
-import InstancesSection from './InstancesSection';
 
 const InformationPage = React.memo(function InformationPage({
 	canViewStatistics,
@@ -20,6 +21,10 @@ const InformationPage = React.memo(function InformationPage({
 	onClickDownloadInfo,
 }) {
 	const t = useTranslation();
+
+	const { ref, contentBoxSize: { inlineSize = DOUBLE_COLUMN_CARD_WIDTH } = {} } = useResizeObserver();
+
+	const isSmall = inlineSize < DOUBLE_COLUMN_CARD_WIDTH;
 
 	if (!info) {
 		return null;
@@ -63,12 +68,15 @@ const InformationPage = React.memo(function InformationPage({
 					</Box>
 				</Callout>}
 
-				{canViewStatistics && <RocketChatSection info={info} statistics={statistics} isLoading={isLoading} />}
-				<CommitSection info={info} />
-				{canViewStatistics && <RuntimeEnvironmentSection statistics={statistics} isLoading={isLoading} />}
-				<BuildEnvironmentSection info={info} />
-				{canViewStatistics && <UsageSection statistics={statistics} isLoading={isLoading} />}
-				<InstancesSection instances={instances} />
+				<Box display='flex' flexDirection='row' w='full' flexWrap='wrap' justifyContent={isSmall ? 'center' : 'flex-start'} ref={ref}>
+					<Margins all='x8'>
+						<DeploymentCard info={info} statistics={statistics} instances={instances} isLoading={isLoading}/>
+						<LicenseCard statistics={statistics} isLoading={isLoading}/>
+						<UsageCard vertical={isSmall} statistics={statistics} isLoading={isLoading}/>
+						{/* {!!instances.length && <InstancesCard instances={instances}/>} */}
+						{/* <PushCard /> */}
+					</Margins>
+				</Box>
 			</Box>
 		</Page.ScrollableContentWithShadow>
 	</Page>;
