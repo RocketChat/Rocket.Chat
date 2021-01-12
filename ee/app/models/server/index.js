@@ -7,13 +7,13 @@ import CannedResponseRaw from './raw/CannedResponse';
 import LivechatPriorityRaw from './raw/LivechatPriority';
 import LivechatTagRaw from './raw/LivechatTag';
 import LivechatUnitMonitorsRaw from './raw/LivechatUnitMonitors';
-import LivechatDepartmentAgentsRaw from './raw/LivechatDepartmentAgents';
 import './models/LivechatDepartment';
 import './models/LivechatRooms';
 import './models/LivechatInquiry';
 import './models/Messages';
 import './raw/LivechatDepartment';
 import './raw/LivechatRooms';
+import './raw/LivechatDepartmentAgents';
 
 export {
 	CannedResponse,
@@ -25,5 +25,4 @@ export {
 	LivechatUnitMonitorsRaw,
 	LivechatPriority,
 	LivechatPriorityRaw,
-	LivechatDepartmentAgentsRaw,
 };
