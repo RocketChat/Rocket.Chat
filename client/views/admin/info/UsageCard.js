@@ -11,7 +11,7 @@ import { useRoute } from '../../../contexts/RouterContext';
 import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
 
 const TextSeparator = ({ label, value }) => <Box display='flex' flexDirection='row' mb='x4'>
-	<span>{label}</span>
+	<Box display='inline-flex' alignItems='center'>{label}</Box>
 	<DotLeader />
 	<span>{value}</span>
 </Box>;
@@ -36,23 +36,23 @@ const UsageCard = React.memo(function UsageCard({ statistics, isLoading, vertica
 				<Card.Col.Section>
 					<Card.Col.Title>{t('Users')}</Card.Col.Title>
 					<TextSeparator
-						label={<span><Icon name='dialpad' size='x16'/> {t('Total')}</span>}
+						label={<><Card.Icon name='dialpad'/> {t('Total')}</>}
 						value={s(() => statistics.totalUsers)}
 					/>
 					<TextSeparator
-						label={<span><UserStatus status='online'/> {t('Online')}</span>}
+						label={<><Card.Icon><UserStatus status='online'/></Card.Icon> {t('Online')}</>}
 						value={s(() => statistics.onlineUsers)}
 					/>
 					<TextSeparator
-						label={<span><UserStatus status='busy'/> {t('Busy')}</span>}
+						label={<><Card.Icon><UserStatus status='busy'/></Card.Icon> {t('Busy')}</>}
 						value={s(() => statistics.busyUsers)}
 					/>
 					<TextSeparator
-						label={<span><UserStatus status='away'/> {t('Away')}</span>}
+						label={<><Card.Icon><UserStatus status='away'/></Card.Icon> {t('Away')}</>}
 						value={s(() => statistics.awayUsers)}
 					/>
 					<TextSeparator
-						label={<span><UserStatus status='offline'/> {t('Offline')}</span>}
+						label={<><Card.Icon><UserStatus status='offline'/></Card.Icon> {t('Offline')}</>}
 						value={s(() => statistics.offlineUsers)}
 					/>
 				</Card.Col.Section>
@@ -96,54 +96,54 @@ const UsageCard = React.memo(function UsageCard({ statistics, isLoading, vertica
 				<Card.Col.Section>
 					<Card.Col.Title>{t('Rooms')}</Card.Col.Title>
 					<TextSeparator
-						label={<span><Icon name='dialpad' size='x16'/> {t('Stats_Total_Rooms')}</span>}
+						label={<><Card.Icon name='dialpad' size='x16'/> {t('Stats_Total_Rooms')}</>}
 						value={s(() => statistics.totalRooms)}
 					/>
 					<TextSeparator
-						label={<span><Icon name='hash' size='x16'/> {t('Stats_Total_Channels')}</span>}
+						label={<><Card.Icon name='hash' size='x16'/> {t('Stats_Total_Channels')}</>}
 						value={s(() => statistics.totalChannels)}
 					/>
 					<TextSeparator
-						label={<span><Icon name='lock' size='x16'/> {t('Stats_Total_Private_Groups')}</span>}
+						label={<><Card.Icon name='lock' size='x16'/> {t('Stats_Total_Private_Groups')}</>}
 						value={s(() => statistics.totalPrivateGroups)}
 					/>
 					<TextSeparator
-						label={<span><Icon name='team' size='x16'/> {t('Stats_Total_Direct_Messages')}</span>}
+						label={<><Card.Icon name='team' size='x16'/> {t('Stats_Total_Direct_Messages')}</>}
 						value={s(() => statistics.totalDirect)}
 					/>
 					<TextSeparator
-						label={<span><Icon name='discussion' size='x16'/> {t('Total_Discussions')}</span>}
+						label={<><Card.Icon name='discussion' size='x16'/> {t('Total_Discussions')}</>}
 						value={s(() => statistics.totalDiscussions)}
 					/>
 					<TextSeparator
-						label={<span><Icon name='headset' size='x16'/> {t('Stats_Total_Livechat_Rooms')}</span>}
+						label={<><Card.Icon name='headset' size='x16'/> {t('Stats_Total_Livechat_Rooms')}</>}
 						value={s(() => statistics.totalLivechat)}
 					/>
 				</Card.Col.Section>
 				<Card.Col.Section>
 					<Card.Col.Title>{t('Messages')}</Card.Col.Title>
 					<TextSeparator
-						label={<span>{t('Stats_Total_Messages')}</span>}
+						label={t('Stats_Total_Messages')}
 						value={s(() => statistics.totalMessages)}
 					/>
 					<TextSeparator
-						label={<span>{t('Total_Threads')}</span>}
+						label={t('Total_Threads')}
 						value={s(() => statistics.totalThreads)}
 					/>
 					<TextSeparator
-						label={<span>{t('Stats_Total_Messages_Channel')}</span>}
+						label={t('Stats_Total_Messages_Channel')}
 						value={s(() => statistics.totalChannelMessages)}
 					/>
 					<TextSeparator
-						label={<span>{t('Stats_Total_Messages_PrivateGroup')}</span>}
+						label={t('Stats_Total_Messages_PrivateGroup')}
 						value={s(() => statistics.totalPrivateGroupMessages)}
 					/>
 					<TextSeparator
-						label={<span>{t('Stats_Total_Messages_Direct')}</span>}
+						label={t('Stats_Total_Messages_Direct')}
 						value={s(() => statistics.totalDirectMessages)}
 					/>
 					<TextSeparator
-						label={<span>{t('Stats_Total_Messages_Livechat')}</span>}
+						label={t('Stats_Total_Messages_Livechat')}
 						value={s(() => statistics.totalLivechatMessages)}
 					/>
 				</Card.Col.Section>
