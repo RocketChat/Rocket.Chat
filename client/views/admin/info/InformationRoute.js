@@ -4,7 +4,7 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { useMethod, useServerInformation, useEndpoint } from '../../../contexts/ServerContext';
 import { downloadJsonAs } from '../../../lib/download';
-import InformationPage from './InformationPage';
+import NewInformationPage from './NewInformationPage';
 
 const InformationRoute = React.memo(function InformationRoute() {
 	const canViewStatistics = usePermission('view-statistics');
@@ -49,6 +49,7 @@ const InformationRoute = React.memo(function InformationRoute() {
 
 	const info = useServerInformation();
 
+
 	const handleClickRefreshButton = () => {
 		if (isLoading) {
 			return;
@@ -65,7 +66,7 @@ const InformationRoute = React.memo(function InformationRoute() {
 	};
 
 	if (canViewStatistics) {
-		return <InformationPage
+		return <NewInformationPage
 			canViewStatistics={canViewStatistics}
 			isLoading={isLoading}
 			info={info}
