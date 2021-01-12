@@ -33,10 +33,13 @@ Meteor.methods({
 			return false;
 		}
 
-		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
-			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
+		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].userIds.indexOf(user._id) !== -1) {
+			const idx = message.reactions[reaction].userIds.indexOf(user._id);
+			// both userId and its corresponding username are at the same position
+			message.reactions[reaction].userIds.splice(idx, 1);
+			message.reactions[reaction].usernames.splice(idx, 1);
 
-			if (message.reactions[reaction].usernames.length === 0) {
+			if (message.reactions[reaction].userIds.length === 0) {
 				delete message.reactions[reaction];
 			}
 
@@ -55,9 +58,11 @@ Meteor.methods({
 			if (!message.reactions[reaction]) {
 				message.reactions[reaction] = {
 					usernames: [],
+					userIds: [],
 				};
 			}
 			message.reactions[reaction].usernames.push(user.username);
+			message.reactions[reaction].userIds.push(user._id);
 
 			Messages.setReactions(messageId, message.reactions);
 			callbacks.run('setReaction', messageId, reaction);
