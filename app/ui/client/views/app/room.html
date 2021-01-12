@@ -5,11 +5,7 @@
 				<div class="messages-container-main dropzone {{dragAndDrop}}">
 					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 					{{#unless embeddedVersion}}
-						{{#if announcement}}
-						<div class="fixed-title announcement {{getAnnouncementStyle}}">
-							<p>{{{announcement}}}</p>
-						</div>
-						{{/if}}
+						{{> RoomAnnouncement}}
 					{{/unless}}
 					<div class="container-bars {{containerBarsShow unreadData uploading}}">
 						{{#with unreadData}}
