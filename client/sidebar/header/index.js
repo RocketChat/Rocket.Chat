@@ -6,7 +6,6 @@ import Search from './actions/Search';
 import Directory from './actions/Directory';
 import Sort from './actions/Sort';
 import CreateRoom from './actions/CreateRoom';
-import Menu from './actions/Menu';
 import Login from './actions/Login';
 import UserAvatarButton from './UserAvatarButton';
 import { useUser } from '../../contexts/UserContext';
@@ -25,7 +24,6 @@ const HeaderWithData = () => {
 					<Directory />
 					<Sort />
 					<CreateRoom data-qa='sidebar-create' />
-					<Menu />
 				</>}
 				{!user && <Login/>}
 			</Sidebar.TopBar.Actions>
