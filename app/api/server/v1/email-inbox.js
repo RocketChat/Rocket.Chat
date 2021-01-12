@@ -18,22 +18,7 @@ API.v1.addRoute('email-inbox.list', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('email-inbox/:_id?', { authRequired: true }, {
-	get() {
-		try {
-			check(this.urlParams, {
-				_id: String,
-			});
-
-			const { _id } = this.urlParams;
-			if (!_id) { throw new Error('error-invalid-params'); }
-			const emailInboxes = Promise.await(findOneEmailInbox({ userId: this.userId, _id }));
-
-			return API.v1.success(emailInboxes);
-		} catch (e) {
-			return API.v1.failure(e);
-		}
-	},
+API.v1.addRoute('email-inbox', { authRequired: true }, {
 	post() {
 		try {
 			if (!hasPermission(this.userId, 'manage-email-inbox')) {
@@ -58,6 +43,24 @@ API.v1.addRoute('email-inbox/:_id?', { authRequired: true }, {
 			Promise.await(inserOneOrUpdateEmailInbox(this.userId, emailInboxParams));
 
 			return API.v1.success({ _id });
+		} catch (e) {
+			return API.v1.failure(e);
+		}
+	},
+});
+
+API.v1.addRoute('email-inbox/:_id', { authRequired: true }, {
+	get() {
+		try {
+			check(this.urlParams, {
+				_id: String,
+			});
+
+			const { _id } = this.urlParams;
+			if (!_id) { throw new Error('error-invalid-params'); }
+			const emailInboxes = Promise.await(findOneEmailInbox({ userId: this.userId, _id }));
+
+			return API.v1.success(emailInboxes);
 		} catch (e) {
 			return API.v1.failure(e);
 		}
