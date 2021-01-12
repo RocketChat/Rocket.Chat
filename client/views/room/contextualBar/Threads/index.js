@@ -44,10 +44,10 @@ import { useThreadsList } from './useThreadsList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 
 function mapProps(WrappedComponent) {
-	return ({ msg, username, replies, tcount, ts, ...props }) => (
+	return ({ msg, username, replies = [], tcount, ts, ...props }) => (
 		<WrappedComponent
 			replies={tcount}
-			participants={replies.length}
+			participants={replies?.length}
 			username={username}
 			msg={msg}
 			ts={ts}

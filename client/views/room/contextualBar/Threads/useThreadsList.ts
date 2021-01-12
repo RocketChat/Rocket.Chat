@@ -51,7 +51,7 @@ export const useThreadsList = (
 	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
 		threadsList,
 		fetchMessages,
-		useMemo(() => parseInt(getConfig('threadsListSize'), 10), []),
+		useMemo(() => parseInt(getConfig('threadsListSize') ?? 10), []),
 	);
 	useStreamUpdatesForMessageList(threadsList, uid, options.rid);
 

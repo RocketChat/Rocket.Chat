@@ -8,6 +8,7 @@ import { useScrollableRecordList } from './useScrollableRecordList';
 const convertMessageFromApi = (apiMessage: ObjectFromApi<IMessage>): IMessage => ({
 	...apiMessage,
 	ts: new Date(apiMessage.ts),
+	tlm: apiMessage.tlm && new Date(apiMessage.tlm),
 	_updatedAt: new Date(apiMessage._updatedAt),
 });
 
