@@ -56,19 +56,22 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 	}
 
 	protected push(item: T): void {
-		if (!this.index.has(item._id)) {
-			this.insert(item);
-			return;
-		}
+		const exists = this.index.has(item._id);
+		const valid = this.filter(item);
 
-		const isUpserted = this.filter?.(item) ?? true;
-
-		if (!isUpserted) {
+		if (exists && !valid) {
 			this.delete(item._id);
 			return;
 		}
 
-		this.update(item);
+		if (exists && valid) {
+			this.update(item);
+			return;
+		}
+
+		if (!exists && valid) {
+			this.insert(item);
+		}
 	}
 
 	public async pushMany(items: T[] | (() => (T[] | Promise<T[]>))): Promise<void> {
