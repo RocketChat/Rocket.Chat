@@ -133,8 +133,8 @@ const useSearchItems = (filterText) => {
 		const resultsFromServer = [];
 
 		const filterUsersUnique = ({ _id }, index, arr) => index === arr.findIndex((user) => _id === user._id);
-		const roomFilter = (room) => !localRooms.find((item) => (room.t === 'd' && room.uids.length > 1 && room.uids.includes(item._id)) || [item.rid, item._id].includes(room._id));
-		const usersfilter = (user) => !localRooms.find((room) => room.t !== 'd' || (room.uids?.length === 2 && room.uids.includes(user._id)));
+		const roomFilter = (room) => !localRooms.find((item) => (room.t === 'd' && room.uids?.length > 1 && room.uids.includes(item._id)) || [item.rid, item._id].includes(room._id));
+		const usersfilter = (user) => !localRooms.find((room) => room.t === 'd' && (room.uids?.length === 2 && room.uids.includes(user._id)));
 
 		const userMap = (user) => ({
 			_id: user._id,
@@ -272,7 +272,8 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		return () => {
 			unsubscribe();
 		};
-	}, [autofocus, changeSelection, items.length, onClose, resetCursor, setFilterValue]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [autofocus, changeSelection, items?.length, onClose, resetCursor, setFilterValue]);
 
 	return <Box position='absolute' rcx-sidebar h='full' display='flex' flexDirection='column' zIndex={99} w='full' className={css`left: 0; top: 0;`} ref={ref}>
 		<Sidebar.TopBar.Section role='search' is='form'>

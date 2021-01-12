@@ -1806,7 +1806,7 @@
   "get-password-policy-maxLength": "The password should be maximum __maxLength__ characters long",
   "get-password-policy-minLength": "The password should be minimum __minLength__ characters long",
   "get-password-policy-mustContainAtLeastOneLowercase": "The password should contain at least one lowercase letter",
-  "get-password-policy-mustContainAtLeastOneNumber": "The password should contain atleast one number",
+  "get-password-policy-mustContainAtLeastOneNumber": "The password should contain at least one number",
   "get-password-policy-mustContainAtLeastOneSpecialCharacter": "The password should contain at least one special character",
   "get-password-policy-mustContainAtLeastOneUppercase": "The password should contain at least one uppercase letter",
   "github_no_public_email": "You don't have any email as public email in your GitHub account",
