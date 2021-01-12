@@ -25,36 +25,26 @@ export default {
 };
 
 export const Connected = () => <ConnectionStatusAlert />;
-Connected.story = {
-	decorators: [
-		stateDecorator(),
-	],
-};
+Connected.decorators = [
+	stateDecorator(),
+];
 
 export const Connecting = () => <ConnectionStatusAlert />;
-Connecting.story = {
-	decorators: [
-		stateDecorator({ status: 'connecting' }),
-	],
-};
+Connecting.decorators = [
+	stateDecorator({ status: 'connecting' }),
+];
 
 export const Failed = () => <ConnectionStatusAlert />;
-Failed.story = {
-	decorators: [
-		stateDecorator({ status: 'failed' }),
-	],
-};
+Failed.decorators = [
+	stateDecorator({ status: 'failed' }),
+];
 
 export const Waiting = () => <ConnectionStatusAlert />;
-Waiting.story = {
-	decorators: [
-		stateDecorator({ status: 'waiting' }),
-	],
-};
+Waiting.decorators = [
+	stateDecorator({ status: 'waiting' }),
+];
 
 export const Offline = () => <ConnectionStatusAlert />;
-Offline.story = {
-	decorators: [
-		stateDecorator({ status: 'offline' }),
-	],
-};
+Offline.decorators = [
+	stateDecorator({ status: 'offline' }),
+];

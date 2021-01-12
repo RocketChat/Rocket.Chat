@@ -7,7 +7,7 @@ import { Accounts } from 'meteor/accounts-base';
  */
 export function compareUserPassword(user, pass) {
 	if (!user?.services?.password?.bcrypt?.trim()) {
-		return true;
+		return false;
 	}
 
 	if (!pass || (!pass.plain && !pass.sha256)) {
