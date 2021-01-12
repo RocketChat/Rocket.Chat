@@ -95,7 +95,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 	const [nameError, setNameError] = useState();
 	const [emailError, setEmailError] = useState();
-	const [phoneError] = useState();
+	const [phoneError, setPhoneError] = useState();
 
 	const { value: allCustomFields, phase: state } = useEndpointData('livechat/custom-fields');
 
@@ -118,6 +118,29 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		? jsonConverterToValidFormat(allCustomFields.customFields) : {}), [allCustomFields]);
 
 	const saveContact = useEndpointAction('POST', 'omnichannel/contact');
+	const emailAlreadyExistsAction = useEndpointAction('GET', `omnichannel/contact.search?email=${ email }`);
+	const phoneAlreadyExistsAction = useEndpointAction('GET', `omnichannel/contact.search?phone=${ phone }`);
+
+	const checkEmailExists = useMutableCallback(async () => {
+		if (!isEmail(email)) { return; }
+		const { contact } = await emailAlreadyExistsAction();
+		if (!contact || (id && contact._id === id)) {
+			setEmailError(null);
+			return;
+		}
+		setEmailError(t('Email_already_exists'));
+	});
+
+	const checkPhoneExists = useMutableCallback(async () => {
+		if (!phone) { return; }
+		const { contact } = await phoneAlreadyExistsAction();
+		if (!contact || (id && contact._id === id)) {
+			setPhoneError(null);
+			return;
+		}
+		setPhoneError(t('Phone_already_exists'));
+	});
+
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -169,7 +192,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		}
 	});
 
-	const formIsValid = name && !emailError;
+	const formIsValid = name && !emailError && !phoneError;
 
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
@@ -190,7 +213,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			<Field>
 				<Field.Label>{t('Email')}</Field.Label>
 				<Field.Row>
-					<TextInput error={emailError} flexGrow={1} value={email} onChange={handleEmail} addon={<Icon name='mail' size='x20'/>}/>
+					<TextInput onBlur={checkEmailExists} error={emailError} flexGrow={1} value={email} onChange={handleEmail} addon={<Icon name='mail' size='x20'/>}/>
 				</Field.Row>
 				<Field.Error>
 					{t(emailError)}
@@ -199,7 +222,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			<Field>
 				<Field.Label>{t('Phone')}</Field.Label>
 				<Field.Row>
-					<TextInput error={phoneError} flexGrow={1} value={phone} onChange={handlePhone} />
+					<TextInput onBlur={checkPhoneExists} error={phoneError} flexGrow={1} value={phone} onChange={handlePhone} />
 				</Field.Row>
 				<Field.Error>
 					{t(phoneError)}

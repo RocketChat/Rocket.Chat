@@ -2906,6 +2906,7 @@
   "Permissions": "Permissions",
   "Personal_Access_Tokens": "Personal Access Tokens",
   "Phone": "Phone",
+  "Phone_already_exists": "Phone already exists",
   "Phone_number": "Phone number",
   "Pin": "Pin",
   "Pin_Message": "Pin Message",
