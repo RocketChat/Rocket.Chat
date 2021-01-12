@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Field, TextInput, Icon, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { Field, TextInput, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
 
@@ -148,6 +148,9 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	useComponentDidUpdate(() => {
 		setEmailError(email && !isEmail(email) ? t('Validate_email_address') : null);
 	}, [t, email]);
+	useComponentDidUpdate(() => {
+		!phone && setPhoneError(null);
+	}, [phone]);
 
 	const handleSave = useMutableCallback(async (e) => {
 		e.preventDefault();
@@ -211,7 +214,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			<Field>
 				<Field.Label>{t('Email')}</Field.Label>
 				<Field.Row>
-					<TextInput onBlur={checkEmailExists} error={emailError} flexGrow={1} value={email} onChange={handleEmail} addon={<Icon name='mail' size='x20'/>}/>
+					<TextInput onBlur={checkEmailExists} error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
 				</Field.Row>
 				<Field.Error>
 					{t(emailError)}
