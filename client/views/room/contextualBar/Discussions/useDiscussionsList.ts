@@ -50,7 +50,10 @@ export const useDiscussionsList = (
 	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
 		discussionsList,
 		fetchMessages,
-		useMemo(() => parseInt(getConfig('discussionListSize'), 10), []),
+		useMemo(() => {
+			const discussionListSize = getConfig('discussionListSize');
+			return discussionListSize ? parseInt(discussionListSize, 10) : undefined;
+		}, []),
 	);
 	useStreamUpdatesForMessageList(discussionsList, uid, options.rid);
 
