@@ -49,7 +49,7 @@ Migrations.add({
 			const options = {
 				projection: { rid: 1, u: 1, name: 1 },
 			};
-			const cursor = Subscriptions.find({ t: 'd' }, options).limit(100);
+			const cursor = Subscriptions.find({ t: 'd' }, options).sort({ _updatedAt: 1 }).limit(100);
 			const total = await cursor.count();
 
 			// if number of subscription is low, we can go ahead and fix them all
