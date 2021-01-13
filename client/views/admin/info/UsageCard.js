@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Skeleton, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Skeleton, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import DotLeader from '../../../components/DotLeader';
