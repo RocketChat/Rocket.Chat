@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { Callout } from '@rocket.chat/fuselage';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import Page from '../../../components/Page';
 import { useMethod, useServerInformation, useEndpoint } from '../../../contexts/ServerContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { downloadJsonAs } from '../../../lib/download';
 import NewInformationPage from './NewInformationPage';
 
 const InformationRoute = React.memo(function InformationRoute() {
+	const t = useTranslation();
 	const canViewStatistics = usePermission('view-statistics');
 
 	const [isLoading, setLoading] = useState(true);
+	const [error, setError] = useState();
 	const [statistics, setStatistics] = useState({});
 	const [instances, setInstances] = useState([]);
 	const [fetchStatistics, setFetchStatistics] = useState(() => () => ({}));
@@ -33,6 +38,8 @@ const InformationRoute = React.memo(function InformationRoute() {
 				}
 				setStatistics(statistics);
 				setInstances(instances);
+			} catch (error) {
+				setError(error);
 			} finally {
 				setLoading(false);
 			}
@@ -65,6 +72,17 @@ const InformationRoute = React.memo(function InformationRoute() {
 		downloadJsonAs(statistics, 'statistics');
 	};
 
+	if (error) {
+		return <Page>
+			<Page.Header title={t('Info')}/>
+			<Page.ScrollableContentWithShadow>
+				<Callout type='danger'>
+					{t('Error_loading_pages')} {/* : {error.message || error.stack}*/}
+				</Callout>
+			</Page.ScrollableContentWithShadow>
+		</Page>;
+	}
+
 	if (canViewStatistics) {
 		return <NewInformationPage
 			canViewStatistics={canViewStatistics}
@@ -76,6 +94,7 @@ const InformationRoute = React.memo(function InformationRoute() {
 			onClickDownloadInfo={handleClickDownloadInfo}
 		/>;
 	}
+
 	return <NotAuthorizedPage />;
 });
 
