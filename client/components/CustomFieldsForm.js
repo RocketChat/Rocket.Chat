@@ -6,7 +6,7 @@ import { useForm } from '../hooks/useForm';
 import { useTranslation } from '../contexts/TranslationContext';
 import { capitalize } from '../lib/capitalize';
 
-const CustomTextInput = ({ name, required, minLength, maxLength, setState, state, className }) => {
+const CustomTextInput = ({ name, required, minLength, maxLength, setState, state, className, setCustomFieldsError = () => [] }) => {
 	const t = useTranslation();
 
 	const verify = useMemo(() => {
@@ -23,6 +23,10 @@ const CustomTextInput = ({ name, required, minLength, maxLength, setState, state
 		return errors.join(', ');
 	}, [state, required, minLength, t]);
 
+	useEffect(() => {
+		setCustomFieldsError((oldArray) => (verify ? [...oldArray, { name }] : oldArray.filter((item) => item.name !== name)));
+	}, [name, setCustomFieldsError, verify]);
+
 	return useMemo(() => <Field className={className}>
 		<Field.Label>{t(name)}{required && '*'}</Field.Label>
 		<Field.Row>
@@ -32,10 +36,14 @@ const CustomTextInput = ({ name, required, minLength, maxLength, setState, state
 	</Field>, [className, t, name, verify, maxLength, state, required, setState]);
 };
 
-const CustomSelect = ({ name, required, options = {}, setState, state, className }) => {
+const CustomSelect = ({ name, required, options = {}, setState, state, className, setCustomFieldsError = () => [] }) => {
 	const t = useTranslation();
 	const mappedOptions = useMemo(() => Object.values(options).map((value) => [value, value]), [options]);
 	const verify = useMemo(() => (!state.length && required ? t('Field_required') : ''), [required, state.length, t]);
+
+	useEffect(() => {
+		setCustomFieldsError((oldArray) => (verify ? [...oldArray, { name }] : oldArray.filter((item) => item.name !== name)));
+	}, [name, setCustomFieldsError, verify]);
 
 	return useMemo(() => <Field className={className}>
 		<Field.Label>{t(name)}{required && '*'}</Field.Label>
