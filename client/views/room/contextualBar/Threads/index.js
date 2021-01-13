@@ -20,6 +20,7 @@ import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useTabBarClose, useTabContext } from '../../providers/ToolboxProvider';
 import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
 import { renderMessageBody } from '../../../../lib/renderMessageBody';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies, tcount, ts, ...props }) => <WrappedComponent replies={tcount} participants={replies.length} username={username} msg={msg} ts={ts} {...props}/>;
@@ -240,6 +241,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 					endReached={ loading ? () => {} : loadMoreItems}
 					overscan={25}
 					data={threads}
+					components={{ Scroller: ScrollableContentWrapper }}
 					itemContent={(index, data) => <Row
 						thread={data}
 						showRealNames={showRealNames}

@@ -19,6 +19,7 @@ import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 import { useRoomList } from './hooks/useRoomList';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
 import { escapeHTML } from '../../lib/escapeHTML';
+import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
 
 const sections = {
 	Omnichannel,
@@ -131,6 +132,7 @@ export default () => {
 			style={{ height: '100%', width: '100%' }}
 			totalCount={roomsList.length}
 			data={roomsList}
+			components={{ Scroller: ScrollableContentWrapper }}
 			itemContent={(index, data) => <Row
 				data={itemData}
 				item={data}
