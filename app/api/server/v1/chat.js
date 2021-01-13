@@ -655,6 +655,9 @@ API.v1.addRoute('chat.getStarredMessages', { authRequired: true }, {
 				sort,
 			},
 		}));
+
+		messages.messages = normalizeMessagesForUser(messages.messages, this.userId);
+
 		return API.v1.success(messages);
 	},
 });

@@ -11,6 +11,7 @@ import UserCard from '../../../components/UserCard';
 import { UserInfoActions } from './UserInfoActions';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
+import { getUserEmailVerified } from '../../../lib/getUserEmailVerified';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
@@ -48,6 +49,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			phone: user.phone,
 			utcOffset,
 			customFields: { ...user.customFields, ...approveManuallyUsers && user.active === false && user.reason && { Reason: user.reason } },
+			verified: getUserEmailVerified(user),
 			email: getUserEmailAddress(user),
 			createdAt: user.createdAt,
 			status: <UserStatus status={status} />,

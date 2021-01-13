@@ -81,6 +81,7 @@ const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Eleme
 		})}
 		{ actions.length > 6 && <Menu
 			tiny={!isMobile}
+			title={t('Options')}
 			maxHeight='initial'
 			className={className}
 			aria-keyshortcuts='alt'
