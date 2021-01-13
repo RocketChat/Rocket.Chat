@@ -18,17 +18,17 @@ const AgentOverview = ({ type, dateRange, departmentId }) => {
 
 	const [displayData, setDisplayData] = useState({ head: [], data: [] });
 
-	const method = useMethod('livechat:getAgentOverviewData');
+	const loadData = useMethod('livechat:getAgentOverviewData');
 
 	useEffect(() => {
 		async function fetchData() {
 			if (start && end) {
-				const value = await method(params);
+				const value = await loadData(params);
 				setDisplayData(value);
 			}
 		}
 		fetchData();
-	}, [start, end, method, params]);
+	}, [start, end, loadData, params]);
 
 	return <Table style={style} fixed>
 		<Table.Head>

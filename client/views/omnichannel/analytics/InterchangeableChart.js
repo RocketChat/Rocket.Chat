@@ -24,13 +24,14 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 
 	const draw = useMutableCallback(async (params) => {
 		try {
-			if (params.daterange.from && params.daterange.to) {
-				const result = await loadData(params);
-				if (!(result && result.chartLabel && result.dataLabels && result.dataPoints)) {
-					return console.log('livechat:getAnalyticsChartData => Missing Data');
-				}
-				context.current = await drawLineChart(canvas.current, context.current, [result.chartLabel], result.dataLabels, [result.dataPoints]);
+			if (!params?.daterange?.from || !params?.daterange?.to) {
+				return;
 			}
+			const result = await loadData(params);
+			if (!result?.chartLabel || !result?.dataLabels || !result?.dataPoints) {
+				throw new Error('Error! fetching chart data. Details: livechat:getAnalyticsChartData => Missing Data');
+			}
+			context.current = await drawLineChart(canvas.current, context.current, [result.chartLabel], result.dataLabels, [result.dataPoints]);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
