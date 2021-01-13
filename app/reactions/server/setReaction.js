@@ -2,12 +2,22 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
-import { Messages, EmojiCustom, Rooms } from '../../models';
+import { Messages, EmojiCustom, Rooms, Users } from '../../models';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../../emoji';
 import { isTheLastMessage, msgStream } from '../../lib';
 import { hasPermission } from '../../authorization/server/functions/hasPermission';
 import { api } from '../../../server/sdk/api';
+
+const createNewUsernamesArray = (userIds)=>{
+	console.log('CREATING A NEW USERS ARRAY');
+	const newUsernamesArr = [];
+	for(const userId of userIds){
+		const {username} = Users.findOne({_id:userId},{fields:{username:1}});
+		newUsernamesArr.push(username);
+	}
+	return newUsernamesArr;
+}
 
 const removeUserReaction = (message, reaction, userId) => {
 	const idx = message.reactions[reaction].userIds.indexOf(userId);
@@ -41,13 +51,17 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		});
 	}
 
-	const userAlreadyReacted = 	Boolean(message.reactions)
+	const userAlreadyReacted = 
+	Boolean(message.reactions)
 	&& Boolean(message.reactions[reaction])
 	&& message.reactions[reaction].userIds.indexOf(user._id) !== -1;
+
+	console.log('has user reacted?',userAlreadyReacted);
+	
+	// When shouldReact was not informed, toggle the reaction.
 	if (shouldReact === undefined) {
 		shouldReact = !userAlreadyReacted;
 	}
-
 	if (userAlreadyReacted === shouldReact) {
 		return;
 	}
@@ -78,6 +92,14 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 			};
 		}
 
+		/* handle a corner case scenario 
+		   user2 has renamed himself to user1 (who has already reacted)
+		   make a new array of usernames in this case */
+		if(message.reactions[reaction].usernames.some(usrnm=>usrnm===user.username)){
+			const newArr = createNewUsernamesArray(message.reactions[reaction].userIds);
+			message.reactions[reaction].usernames = newArr;
+		}
+
 		message.reactions[reaction].usernames.push(user.username);
 		message.reactions[reaction].userIds.push(user._id); // aditya-add-here
 
@@ -88,6 +110,8 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		callbacks.run('setReaction', message._id, reaction);
 		callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 	}
+
+	console.log('\n==============\nthe updated message is',message.reactions,'\n and the message object is\n==================\n');
 
 	msgStream.emit(message.rid, message);
 }

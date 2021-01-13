@@ -33,8 +33,9 @@ Meteor.methods({
 			return false;
 		}
 
-		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].userIds.indexOf(user._id) !== -1) {
-			const idx = message.reactions[reaction].userIds.indexOf(user._id);
+		const idx = message.reactions && message.reactions[reaction] && message.reactions[reaction].userIds.indexOf(user._id);
+
+		if (idx && idx!==-1) {
 			// both userId and its corresponding username are at the same position
 			message.reactions[reaction].userIds.splice(idx, 1);
 			message.reactions[reaction].usernames.splice(idx, 1);

@@ -284,17 +284,39 @@ Template.message.helpers({
 		return true;
 	},
 	reactions() {
-		const { msg: { reactions = {} }, u: { username: myUsername, name: myName } } = this;
+		const { msg: { reactions = {} }, u: { _id: myId, username: myUsername, name: myName } } = this;
 
 		return Object.entries(reactions)
 			.map(([emoji, reaction]) => {
 				const myDisplayName = reaction.names ? myName : `@${ myUsername }`;
 				const displayNames = reaction.names || reaction.usernames.map((username) => `@${ username }`);
-				const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
+				
+				const selectedDisplayNames = displayNames.slice(0, 15); // there are always 15 selected names
 
-				if (displayNames.some((displayName) => displayName === myDisplayName)) {
-					selectedDisplayNames.unshift(t('You'));
+				// your userId and username are the same pos in both the arrays
+
+				// check if your userId is present
+				const idx = reaction.userIds.indexOf(myId);
+
+				// you have reacted and 'You' have to be in the beginning of the array
+				if(idx!==-1){
+					// you are there in the 15 selectedDisplayNames
+					if(idx <15){
+						selectedDisplayNames.splice(idx,1)
+						selectedDisplayNames.unshift(t('You'));
+					}
+					// remove the last one
+					else{
+						selectedDisplayNames.pop();
+						selectedDisplayNames.unshift(t('You'));
+					}
 				}
+
+
+				// if (displayNames.some((displayName) => displayName === myDisplayName)) {
+				// 	selectedDisplayNames.unshift(t('You'));
+				// }
+				console.log(selectedDisplayNames, 'is the selected isplay names', t('You'), idx);
 
 				let usernames;
 
@@ -311,7 +333,7 @@ Template.message.helpers({
 					count: displayNames.length,
 					usernames,
 					reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
-					userReacted: displayNames.indexOf(myDisplayName) > -1,
+					userReacted: idx>-1,
 				};
 			});
 	},
