@@ -9,8 +9,9 @@ import { isTheLastMessage, msgStream } from '../../lib';
 import { hasPermission } from '../../authorization/server/functions/hasPermission';
 import { api } from '../../../server/sdk/api';
 
-const removeUserReaction = (message, reaction, username) => {
+const removeUserReaction = (message, reaction, username, uid) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
+	message.reactions[reaction].uids.splice(message.reactions[reaction].uids.indexOf(uid), 1);
 	if (message.reactions[reaction].usernames.length === 0) {
 		delete message.reactions[reaction];
 	}
@@ -37,7 +38,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		});
 	}
 
-	const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+	const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].uids.indexOf(user._id) !== -1;
 	// When shouldReact was not informed, toggle the reaction.
 	if (shouldReact === undefined) {
 		shouldReact = !userAlreadyReacted;
@@ -47,7 +48,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		return;
 	}
 	if (userAlreadyReacted) {
-		removeUserReaction(message, reaction, user.username);
+		removeUserReaction(message, reaction, user.username, user._id);
 		if (_.isEmpty(message.reactions)) {
 			delete message.reactions;
 			if (isTheLastMessage(room, message)) {
@@ -69,9 +70,11 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		if (!message.reactions[reaction]) {
 			message.reactions[reaction] = {
 				usernames: [],
+				uids: [],
 			};
 		}
 		message.reactions[reaction].usernames.push(user.username);
+		message.reactions[reaction].uids.push(user._id);
 		Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
 			Rooms.setReactionsInLastMessage(room._id, message);
