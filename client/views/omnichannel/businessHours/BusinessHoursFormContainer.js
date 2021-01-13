@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
@@ -23,8 +23,11 @@ const getInitalData = ({ workHours }) => ({
 
 const cleanFunc = () => {};
 
-const BusinessHoursFormContainer = ({ data, saveRef, onChange }) => {
+const BusinessHoursFormContainer = ({ data, saveRef, onChange = () => {} }) => {
 	const forms = useSubscription(formsSubscription);
+
+	const [hasChangesMultiple, setHasChangesMultiple] = useState(false);
+	const [hasChangesTimeZone, setHasChangesTimeZone] = useState(false);
 
 	const {
 		useBusinessHoursTimeZone = cleanFunc,
@@ -45,13 +48,13 @@ const BusinessHoursFormContainer = ({ data, saveRef, onChange }) => {
 	saveRef.current.form = values;
 
 	useEffect(() => {
-		onChange(hasUnsavedChanges);
+		onChange(hasUnsavedChanges || (showMultipleBHForm && hasChangesMultiple) || (showTimezone && hasChangesTimeZone));
 	});
 
 	return <Box maxWidth='600px' w='full' alignSelf='center'>
 		<FieldGroup>
-			{showMultipleBHForm && MultipleBHForm && <MultipleBHForm onChange={onChangeMultipleBHForm} data={data}/>}
-			{showTimezone && TimezoneForm && <TimezoneForm onChange={onChangeTimezone} data={data?.timezone?.name ?? data?.timezoneName}/>}
+			{showMultipleBHForm && MultipleBHForm && <MultipleBHForm onChange={onChangeMultipleBHForm} data={data} hasChangesAndIsValid={setHasChangesMultiple} />}
+			{showTimezone && TimezoneForm && <TimezoneForm onChange={onChangeTimezone} data={data?.timezone?.name ?? data?.timezoneName} hasChanges={setHasChangesTimeZone}/>}
 			<BusinessHourForm values={values} handlers={handlers}/>
 		</FieldGroup>
 	</Box>;

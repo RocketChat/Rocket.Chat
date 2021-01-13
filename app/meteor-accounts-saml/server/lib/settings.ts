@@ -57,6 +57,8 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		logoutRequestTemplate: settings.get(`${ service }_LogoutRequest_template`),
 		metadataCertificateTemplate: settings.get(`${ service }_MetadataCertificate_template`),
 		metadataTemplate: settings.get(`${ service }_Metadata_template`),
+		channelsAttributeUpdate: settings.get(`${ service }_channels_update`),
+		includePrivateChannelsInUpdate: settings.get(`${ service }_include_private_channels_update`),
 	};
 };
 
@@ -129,6 +131,10 @@ export const loadSamlServiceProviders = function(): void {
 };
 
 export const addSamlService = function(name: string): void {
+	console.log(`Adding ${ name } is deprecated`);
+};
+
+export const addSettings = function(name: string): void {
 	settings.add(`SAML_Custom_${ name }`, false, {
 		type: 'boolean',
 		group: 'SAML',
@@ -266,6 +272,20 @@ export const addSamlService = function(name: string): void {
 		group: 'SAML',
 		section: 'SAML_Section_3_Behavior',
 		i18nLabel: 'SAML_Custom_Logout_Behaviour',
+	});
+	settings.add(`SAML_Custom_${ name }_channels_update`, false, {
+		type: 'boolean',
+		group: 'SAML',
+		section: 'SAML_Section_3_Behavior',
+		i18nLabel: 'SAML_Custom_channels_update',
+		i18nDescription: 'SAML_Custom_channels_update_description',
+	});
+	settings.add(`SAML_Custom_${ name }_include_private_channels_update`, false, {
+		type: 'boolean',
+		group: 'SAML',
+		section: 'SAML_Section_3_Behavior',
+		i18nLabel: 'SAML_Custom_include_private_channels_update',
+		i18nDescription: 'SAML_Custom_include_private_channels_update_description',
 	});
 
 	// Roles Settings
