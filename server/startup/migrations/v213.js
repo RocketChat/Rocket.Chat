@@ -9,12 +9,12 @@ const updateSubscriptions = async () => {
 		const room = await Rooms.findOne({ _id: sub.rid }, { projection: { usernames: 1 } });
 		if (!room) {
 			console.log(`[migration] room record not found: ${ sub.rid }`);
-			return;
+			continue;
 		}
 
 		if (!room.usernames || room.usernames.length === 0) {
 			console.log(`[migration] room without usernames: ${ sub.rid }`);
-			return;
+			continue;
 		}
 
 		const name = room.usernames
@@ -23,7 +23,7 @@ const updateSubscriptions = async () => {
 			.join(', ') || sub.u.username;
 		if (!name) {
 			console.log(`[migration] subscription without name ${ sub._id }`);
-			return;
+			continue;
 		}
 
 		actions.push({
