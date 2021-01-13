@@ -86,18 +86,17 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 		}
 	}
 
-	protected async mutate(mutation: () => void | Promise<void>): Promise<void> {
-		if (this.#phase === AsyncStatePhase.UPDATING) {
-			return;
-		}
+	#pedingMutation: Promise<void> = Promise.resolve();
 
+	protected async mutate(mutation: () => void | Promise<void>): Promise<void> {
 		try {
 			if (this.#phase === AsyncStatePhase.RESOLVED) {
 				this.#phase = AsyncStatePhase.UPDATING;
+				this.emit('mutating');
 			}
 
-			this.emit('mutating');
-			await mutation();
+			this.#pedingMutation = this.#pedingMutation.then(mutation);
+			await this.#pedingMutation;
 		} catch (error) {
 			this.emit('errored', error);
 		} finally {
