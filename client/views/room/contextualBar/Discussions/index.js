@@ -21,6 +21,7 @@ import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import { renderMessageBody } from '../../../../lib/renderMessageBody';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
@@ -193,11 +194,12 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 				{total === 0 && <Box p='x24'>{t('No_Discussions_found')}</Box>}
 				{!error && total > 0 && discussions.length > 0 && <>
 					<Virtuoso
-						style={{ height: '100%', width: '100%' }}
+						style={{ height: '100%', width: '100%', overflow: 'hidden' }}
 						totalCount={total}
 						endReached={ loading ? () => {} : loadMoreItems}
 						overscan={25}
 						data={discussions}
+						components={{ Scroller: ScrollableContentWrapper }}
 						itemContent={(index, data) => <Row
 							discussion={data}
 							showRealNames={showRealNames}

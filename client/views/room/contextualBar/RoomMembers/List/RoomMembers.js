@@ -30,6 +30,7 @@ import UserInfoWithData from '../../UserInfo';
 import InviteUsers from '../InviteUsers/InviteUsers';
 import AddUsers from '../AddUsers/AddUsers';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 
 export const createItemData = memoize((onClickView, rid) => ({
 	onClickView,
@@ -133,6 +134,7 @@ export const RoomMembers = ({
 						endReached={lm}
 						overscan={50}
 						data={members}
+						components={{ Scroller: ScrollableContentWrapper }}
 						itemContent={(index, data) => <Row
 							data={itemData}
 							user={data}

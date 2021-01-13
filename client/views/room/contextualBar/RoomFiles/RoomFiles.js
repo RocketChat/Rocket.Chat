@@ -24,6 +24,7 @@ import { useFileList } from './hooks/useFileList';
 import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
 import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 
 const Row = React.memo(({ item, data, index }) => {
 	const { userId, onClickDelete, isDeletionAllowed } = data;
@@ -113,6 +114,7 @@ export const RoomFiles = function RoomFiles({
 						endReached={loading ? () => {} : lm}
 						overscan={50}
 						data={filesItems}
+						components={{ Scroller: ScrollableContentWrapper }}
 						itemContent={(index, data) => <Row
 							data={itemData}
 							index={index}
