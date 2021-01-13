@@ -91,14 +91,14 @@ const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 		},
 	}), [handleRange, t]);
 
-	return <Box {...props}>
-		<Field mis='x4' flexShrink={1}>
+	return <Box display='flex' mie='x8' flexGrow={1} flexDirection='row' {...props}>
+		<Field mie='x4' flexShrink={1} flexGrow={1}>
 			<Field.Label>{t('Start')}</Field.Label>
 			<Field.Row>
 				<InputBox type='date' onChange={handleStart} max={todayDate} value={start}/>
 			</Field.Row>
 		</Field>
-		<Field mis='x4' flexShrink={1}>
+		<Field mie='x4' flexShrink={1} flexGrow={1}>
 			<Field.Label>{t('End')}</Field.Label>
 			<Field.Row>
 				<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end}/>
