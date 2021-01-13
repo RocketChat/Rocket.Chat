@@ -11,7 +11,6 @@ import {
 	FieldGroup,
 	Box,
 	Margins,
-	Icon,
 } from '@rocket.chat/fuselage';
 
 import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
@@ -91,7 +90,7 @@ const getInitialValues = (data) => {
 
 export function EmailInboxEditWithData({ id }) {
 	const t = useTranslation();
-	const { value: data, error, phase: state } = useEndpointData(`email-inbox?_id=${ id }`);
+	const { value: data, error, phase: state } = useEndpointData(`email-inbox/${ id }`);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
@@ -157,12 +156,15 @@ export default function EmailInboxForm({ id, data }) {
 	const close = useCallback(() => router.push({}), [router]);
 
 	const saveEmailInbox = useEndpointAction('POST', 'email-inbox');
-	const deleteAction = useEndpointAction('DELETE', `email-inbox?_id=${ id }`);
-	const emailAlreadyExistsAction = useEndpointAction('GET', id ? `email-inbox?_id=${ id }&email=${ email }` : `email-inbox?email=${ email }`);
+	const deleteAction = useEndpointAction('DELETE', `email-inbox/${ id }`);
+	const emailAlreadyExistsAction = useEndpointAction('GET', `email-inbox.search?email=${ email }`);
 
 	useComponentDidUpdate(() => {
-		setEmailError(!isEmail(email) ? t('Validate_email_address') : undefined);
+		setEmailError(!isEmail(email) ? t('Validate_email_address') : null);
 	}, [t, email]);
+	useComponentDidUpdate(() => {
+		!email && setEmailError(null);
+	}, [email]);
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		const result = await deleteAction();
@@ -207,12 +209,11 @@ export default function EmailInboxForm({ id, data }) {
 
 
 	const checkEmailExists = useMutableCallback(async () => {
-		if (isEmail(email)) {
-			const result = await emailAlreadyExistsAction();
-			if (result.emailInboxes) {
-				setEmailError(t('Email_already_exists'));
-			}
-		}
+		if (!email && !isEmail(email)) { return; }
+		const { emailInbox } = await emailAlreadyExistsAction();
+
+		if (!emailInbox || (id && emailInbox._id === id)) { return; }
+		setEmailError(t('Email_already_exists'));
 	});
 
 	const canSave = hasUnsavedChanges && name && (email && isEmail(email) && !emailError)
@@ -239,7 +240,7 @@ export default function EmailInboxForm({ id, data }) {
 						<Field>
 							<Field.Label>{t('Email')}*</Field.Label>
 							<Field.Row>
-								<TextInput onBlur={checkEmailExists} error={emailError} value={email} onChange={handleEmail} addon={<Icon name='mail' size='x20' />}/>
+								<TextInput onBlur={checkEmailExists} error={emailError} value={email} onChange={handleEmail} />
 							</Field.Row>
 							<Field.Error>
 								{t(emailError)}

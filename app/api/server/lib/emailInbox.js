@@ -69,17 +69,3 @@ export async function findOneEmailInboxByEmail({ userId, email }) {
 	}
 	return EmailInbox.findOne({ email });
 }
-
-export async function findOneDifferentEmailInboxByEmail({ userId, email, _id }) {
-	if (!await hasPermissionAsync(userId, 'manage-email-inbox')) {
-		throw new Error('error-not-allowed');
-	}
-
-	const existentEmail = await EmailInbox.findOne({ email });
-
-	if (existentEmail && existentEmail._id === _id) {
-		return;
-	}
-
-	return existentEmail;
-}

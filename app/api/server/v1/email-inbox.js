@@ -1,8 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
-import { findEmailInboxes, findOneEmailInbox, inserOneOrUpdateEmailInbox, findOneEmailInboxByEmail, findOneDifferentEmailInboxByEmail } from '../lib/emailInbox';
+import { findEmailInboxes, findOneEmailInbox, inserOneOrUpdateEmailInbox } from '../lib/emailInbox';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { EmailInbox } from '../../../models';
 
@@ -19,37 +18,12 @@ API.v1.addRoute('email-inbox.list', { authRequired: true }, {
 	},
 });
 
-
 API.v1.addRoute('email-inbox', { authRequired: true }, {
-	get() {
-		try {
-			check(this.queryParams, {
-				_id: Match.Maybe(String),
-				email: Match.Maybe(String),
-			});
-			const { _id, email } = this.queryParams;
-
-			if (_id && !email) {
-				const emailInboxes = Promise.await(findOneEmailInbox({ userId: this.userId, _id }));
-				if (!emailInboxes) {
-					throw new Meteor.Error('email-inbox-not-found');
-				}
-				return API.v1.success(emailInboxes);
-			}
-
-			if (_id && email) {
-				const emailInboxes = Promise.await(findOneDifferentEmailInboxByEmail({ userId: this.userId, _id, email }));
-				return API.v1.success({ emailInboxes });
-			}
-
-			const emailInboxes = Promise.await(findOneEmailInboxByEmail({ userId: this.userId, email }));
-			return API.v1.success({ emailInboxes });
-		} catch (e) {
-			return API.v1.failure(e);
-		}
-	},
 	post() {
 		try {
+			if (!hasPermission(this.userId, 'manage-email-inbox')) {
+				throw new Error('error-not-allowed');
+			}
 			check(this.bodyParams, {
 				_id: Match.Maybe(String),
 				name: String,
@@ -64,10 +38,6 @@ API.v1.addRoute('email-inbox', { authRequired: true }, {
 
 			const emailInboxParams = this.bodyParams;
 
-			if (!hasPermission(this.userId, 'manage-email-inbox')) {
-				throw new Error('error-not-allowed');
-			}
-
 			const { _id } = emailInboxParams;
 
 			Promise.await(inserOneOrUpdateEmailInbox(this.userId, emailInboxParams));
@@ -77,16 +47,36 @@ API.v1.addRoute('email-inbox', { authRequired: true }, {
 			return API.v1.failure(e);
 		}
 	},
-	delete() {
-		if (!hasPermission(this.userId, 'manage-email-inboxs')) {
-			throw new Error('error-not-allowed');
-		}
+});
+
+API.v1.addRoute('email-inbox/:_id', { authRequired: true }, {
+	get() {
 		try {
-			check(this.queryParams, {
+			check(this.urlParams, {
 				_id: String,
 			});
 
-			const { _id } = this.queryParams;
+			const { _id } = this.urlParams;
+			if (!_id) { throw new Error('error-invalid-params'); }
+			const emailInboxes = Promise.await(findOneEmailInbox({ userId: this.userId, _id }));
+
+			return API.v1.success(emailInboxes);
+		} catch (e) {
+			return API.v1.failure(e);
+		}
+	},
+	delete() {
+		try {
+			if (!hasPermission(this.userId, 'manage-email-inbox')) {
+				throw new Error('error-not-allowed');
+			}
+			check(this.urlParams, {
+				_id: String,
+			});
+
+			const { _id } = this.urlParams;
+			if (!_id) { throw new Error('error-invalid-params'); }
+
 			const emailInboxes = EmailInbox.findOneById(_id);
 
 			if (!emailInboxes) {
@@ -94,6 +84,26 @@ API.v1.addRoute('email-inbox', { authRequired: true }, {
 			}
 			EmailInbox.removeById(_id);
 			return API.v1.success({ _id });
+		} catch (e) {
+			return API.v1.failure(e);
+		}
+	},
+});
+
+API.v1.addRoute('email-inbox.search', { authRequired: true }, {
+	get() {
+		try {
+			if (!hasPermission(this.userId, 'manage-email-inbox')) {
+				throw new Error('error-not-allowed');
+			}
+			check(this.queryParams, {
+				email: String,
+			});
+
+			const { email } = this.queryParams;
+			const emailInbox = Promise.await(EmailInbox.findOne({ email }));
+
+			return API.v1.success({ emailInbox });
 		} catch (e) {
 			return API.v1.failure(e);
 		}
