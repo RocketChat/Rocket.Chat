@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Callout } from '@rocket.chat/fuselage';
+import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
@@ -26,6 +26,7 @@ const InformationRoute = React.memo(function InformationRoute() {
 
 		const fetchStatistics = async ({ refresh = false } = {}) => {
 			setLoading(true);
+			setError(false);
 
 			try {
 				const [statistics, instances] = await Promise.all([
@@ -74,7 +75,13 @@ const InformationRoute = React.memo(function InformationRoute() {
 
 	if (error) {
 		return <Page>
-			<Page.Header title={t('Info')}/>
+			<Page.Header title={t('Info')}>
+				<ButtonGroup>
+					<Button primary type='button' onClick={handleClickRefreshButton}>
+						<Icon name='reload' /> {t('Refresh')}
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
 			<Page.ScrollableContentWithShadow>
 				<Callout type='danger'>
 					{t('Error_loading_pages')} {/* : {error.message || error.stack}*/}
