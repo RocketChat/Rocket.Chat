@@ -1,4 +1,3 @@
-import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
@@ -16,12 +15,10 @@ export const useThreadsList = (
 	uid: IUser['_id'],
 ): {
 		threadsList: ThreadsList;
-		totalItemCount: number;
 		initialItemCount: number;
 		loadMoreItems: (start: number, end: number) => void;
 	} => {
 	const [threadsList] = useState(() => new ThreadsList(options));
-	const [totalItemCount, setTotalItemCount] = useSafely(useState(0));
 
 	useEffect(() => {
 		if (threadsList.options !== options) {
@@ -41,11 +38,12 @@ export const useThreadsList = (
 				count: end - start,
 			});
 
-			setTotalItemCount(total);
-
-			return threads;
+			return {
+				items: threads,
+				itemCount: total,
+			};
 		},
-		[getThreadsList, options.rid, options.text, options.type, setTotalItemCount],
+		[getThreadsList, options.rid, options.text, options.type],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
@@ -60,7 +58,6 @@ export const useThreadsList = (
 
 	return {
 		threadsList,
-		totalItemCount,
 		loadMoreItems,
 		initialItemCount,
 	};

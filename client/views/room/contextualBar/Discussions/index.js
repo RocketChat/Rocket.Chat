@@ -50,11 +50,10 @@ export function withData(WrappedComponent) {
 
 		const {
 			discussionsList,
-			totalItemCount,
 			initialItemCount,
 			loadMoreItems,
 		} = useDiscussionsList(options, userId);
-		const { phase, value: discussions, error } = useRecordList(discussionsList);
+		const { phase, error, items: discussions, itemCount: totalItemCount } = useRecordList(discussionsList);
 
 		const handleTextChange = useCallback((e) => {
 			setText(e.currentTarget.value);

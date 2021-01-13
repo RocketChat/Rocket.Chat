@@ -1,35 +1,56 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { AsyncState } from '../../lib/asyncState';
+import { AsyncStatePhase } from '../../lib/asyncState';
 import { RecordList } from '../../lib/lists/RecordList';
-import { useAsyncState } from '../useAsyncState';
 import { IRocketChatRecord } from '../../../definition/IRocketChatRecord';
+
+type RecordListValue<T> = {
+	phase: AsyncStatePhase;
+	items: T[];
+	itemCount: number;
+	error: Error | undefined;
+}
 
 export const useRecordList = <T extends IRocketChatRecord>(
 	recordList: RecordList<T>,
-): AsyncState<T[]> => {
-	const { update, resolve, reject, reset, ...state } = useAsyncState<T[]>();
+): RecordListValue<T> => {
+	const [state, setState] = useState<RecordListValue<T>>(() => ({
+		phase: recordList.phase,
+		items: recordList.items,
+		itemCount: recordList.itemCount,
+		error: undefined,
+	}));
 
 	useEffect(() => {
 		const disconnectMutatingEvent = recordList.on('mutating', () => {
-			update();
+			setState(() => ({
+				phase: recordList.phase,
+				items: recordList.items,
+				itemCount: recordList.itemCount,
+				error: undefined,
+			}));
 		});
 
 		const disconnectMutatedEvent = recordList.on('mutated', () => {
-			resolve(recordList.items());
+			setState((prevState) => ({
+				phase: recordList.phase,
+				items: recordList.items,
+				itemCount: recordList.itemCount,
+				error: prevState.error,
+			}));
 		});
 
 		const disconnectClearedEvent = recordList.on('cleared', () => {
-			reset();
+			setState(() => ({
+				phase: recordList.phase,
+				items: recordList.items,
+				itemCount: recordList.itemCount,
+				error: undefined,
+			}));
 		});
 
-		const disconnectErroredEvent = recordList.on('errored', (error?: Error) => {
-			if (!error) {
-				reject(new Error('undefined error'));
-				return;
-			}
-
-			reject(error);
+		const disconnectErroredEvent = recordList.on('errored', (error) => {
+			setState((state) => ({ ...state, error }));
 		});
 
 		return (): void => {
@@ -38,7 +59,7 @@ export const useRecordList = <T extends IRocketChatRecord>(
 			disconnectClearedEvent();
 			disconnectErroredEvent();
 		};
-	}, [recordList, update, reset, resolve, reject]);
+	}, [recordList]);
 
 	return state;
 };

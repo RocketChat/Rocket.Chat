@@ -88,11 +88,10 @@ export function withData(WrappedComponent) {
 
 		const {
 			threadsList,
-			totalItemCount,
 			initialItemCount,
 			loadMoreItems,
 		} = useThreadsList(options, userId);
-		const { phase, value: threads, error } = useRecordList(threadsList);
+		const { phase, error, items: threads, itemCount: totalItemCount } = useRecordList(threadsList);
 
 		const handleTextChange = useCallback((event) => {
 			setText(event.currentTarget.value);

@@ -1,9 +1,23 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import type { IRocketChatRecord } from '../../../definition/IRocketChatRecord';
+import { AsyncStatePhase } from '../asyncState';
+
+export type RecordListBatchChanges<T> = {
+	items?: T[];
+	itemCount?: number;
+};
 
 export class RecordList<T extends IRocketChatRecord> extends Emitter {
-	protected index = new Map<T['_id'], T>();
+	#hasChanges = false;
+
+	#index = new Map<T['_id'], T>();
+
+	#phase: AsyncStatePhase.LOADING | AsyncStatePhase.UPDATING | AsyncStatePhase.RESOLVED = AsyncStatePhase.LOADING
+
+	#items: T[] | undefined = undefined;
+
+	#itemCount: number | undefined = undefined;
 
 	protected filter(_item: T): boolean {
 		return true;
@@ -13,50 +27,48 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 		return a._updatedAt.getTime() - b._updatedAt.getTime();
 	}
 
-	private _cache: T[] | undefined;
-
-	public items(): T[] {
-		if (!this._cache) {
-			this._cache = Array.from(this.index.values()).sort(this.compare);
-		}
-
-		return this._cache;
+	public get phase(): AsyncStatePhase {
+		return this.#phase;
 	}
 
-	protected insert(item: T): void {
-		this.index.set(item._id, item);
-		this._cache = undefined;
+	public get items(): T[] {
+		if (!this.#items) {
+			this.#items = Array.from(this.#index.values()).sort(this.compare);
+		}
+
+		return this.#items;
+	}
+
+	public get itemCount(): number {
+		return this.#itemCount ?? this.#index.size;
+	}
+
+	private insert(item: T): void {
+		this.#index.set(item._id, item);
 		this.emit(`${ item._id }/inserted`, item);
-	}
-
-	protected update(item: T): void {
-		this.index.set(item._id, item);
-		this._cache = undefined;
-		this.emit(`${ item._id }/updated`, item);
-	}
-
-	protected merge(partial: { _id: T['_id'] } & Partial<Omit<T, '_id'>>): void {
-		const prevItem = this.index.get(partial._id);
-
-		if (!prevItem) {
-			return;
+		if (typeof this.#itemCount === 'number') {
+			this.#itemCount++;
 		}
-
-		const newItem = { ...prevItem, ...partial };
-
-		this.index.set(partial._id, newItem);
-		this._cache = undefined;
-		this.emit(`${ newItem._id }/updated`, newItem);
+		this.#hasChanges = true;
 	}
 
-	protected delete(_id: T['_id']): void {
-		this.index.delete(_id);
-		this._cache = undefined;
+	private update(item: T): void {
+		this.#index.set(item._id, item);
+		this.emit(`${ item._id }/updated`, item);
+		this.#hasChanges = true;
+	}
+
+	private delete(_id: T['_id']): void {
+		this.#index.delete(_id);
 		this.emit(`${ _id }/deleted`);
+		if (typeof this.#itemCount === 'number') {
+			this.#itemCount--;
+		}
+		this.#hasChanges = true;
 	}
 
-	protected push(item: T): void {
-		const exists = this.index.has(item._id);
+	private push(item: T): void {
+		const exists = this.#index.has(item._id);
 		const valid = this.filter(item);
 
 		if (exists && !valid) {
@@ -74,81 +86,85 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 		}
 	}
 
-	public async pushMany(items: T[] | (() => (T[] | Promise<T[]>))): Promise<void> {
-		try {
-			this.emit('mutating');
-
-			if (typeof items === 'function') {
-				items = await items();
-			}
-
-			if (items.length === 0) {
-				this.emit('mutated', false);
-				return;
-			}
-
-			for (const item of items) {
-				this.push(item);
-			}
-
-			this.emit('mutated', true);
-		} catch (error) {
-			this.emit('errored', error);
-		}
-	}
-
-	public deleteMany(matchCriteria: (item: T) => boolean): void {
-		try {
-			this.emit('mutating');
-
-			let hasChanged = false;
-
-			for (const item of this.index.values()) {
-				if (matchCriteria(item)) {
-					this.delete(item._id);
-					hasChanged = true;
-				}
-			}
-
-			this.emit('mutated', hasChanged);
-		} catch (error) {
-			this.emit('errored', error);
-		}
-	}
-
-	public async pushOne(item: T | (() => (T | Promise<T>))): Promise<void> {
-		if (typeof item === 'function') {
-			return this.pushMany(async () => [await item()]);
-		}
-
-		return this.pushMany(() => [item]);
-	}
-
-	public deleteOne(_id: T['_id']): void {
-		try {
-			this.emit('mutating');
-
-			const item = this.index.get(_id);
-
-			if (!item) {
-				this.emit('mutated', false);
-				return;
-			}
-
-			this.delete(item._id);
-			this.emit('mutated', true);
-		} catch (error) {
-			this.emit('errored', error);
-		}
-	}
-
-	public clear(): void {
-		if (this.index.size === 0) {
+	protected async mutate(mutation: () => void | Promise<void>): Promise<void> {
+		if (this.#phase === AsyncStatePhase.UPDATING) {
 			return;
 		}
 
-		this.index.clear();
-		this._cache = undefined;
-		this.emit('cleared');
+		try {
+			if (this.#phase === AsyncStatePhase.RESOLVED) {
+				this.#phase = AsyncStatePhase.UPDATING;
+			}
+
+			this.emit('mutating');
+			await mutation();
+		} catch (error) {
+			this.emit('errored', error);
+		} finally {
+			const hasChanged = this.#hasChanges;
+			this.#phase = AsyncStatePhase.RESOLVED;
+			if (hasChanged) {
+				this.#items = undefined;
+				this.#hasChanges = false;
+			}
+			this.emit('mutated', hasChanged);
+		}
+	}
+
+	public batchHandle(getInfo: () => Promise<RecordListBatchChanges<T>>): Promise<void> {
+		return this.mutate(async () => {
+			const info = await getInfo();
+
+			if (info.items) {
+				for (const item of info.items) {
+					this.push(item);
+				}
+			}
+
+			if (info.itemCount) {
+				this.#itemCount = info.itemCount;
+				this.#hasChanges = true;
+			}
+		});
+	}
+
+	public prune(matchCriteria: (item: T) => boolean): Promise<void> {
+		return this.mutate(() => {
+			for (const item of this.#index.values()) {
+				if (matchCriteria(item)) {
+					this.delete(item._id);
+				}
+			}
+		});
+	}
+
+	public handle(item: T): Promise<void> {
+		return this.mutate(() => {
+			this.push(item);
+		});
+	}
+
+	public remove(_id: T['_id']): Promise<void> {
+		return this.mutate(() => {
+			if (!this.#index.has(_id)) {
+				return;
+			}
+
+			this.delete(_id);
+		});
+	}
+
+	public clear(): Promise<void> {
+		return this.mutate(() => {
+			if (this.#index.size === 0) {
+				return;
+			}
+
+			this.#index.clear();
+			this.#items = undefined;
+			this.#itemCount = undefined;
+			this.#hasChanges = true;
+			this.emit('cleared');
+		});
 	}
 }

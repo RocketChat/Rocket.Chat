@@ -1,4 +1,3 @@
-import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
@@ -16,12 +15,10 @@ export const useDiscussionsList = (
 	uid: IUser['_id'],
 ): {
 		discussionsList: DiscussionsList;
-		totalItemCount: number;
 		initialItemCount: number;
 		loadMoreItems: (start: number, end: number) => void;
 	} => {
 	const [discussionsList] = useState(() => new DiscussionsList(options));
-	const [totalItemCount, setTotalItemCount] = useSafely(useState(0));
 
 	useEffect(() => {
 		if (discussionsList.options !== options) {
@@ -40,11 +37,12 @@ export const useDiscussionsList = (
 				count: end - start,
 			});
 
-			setTotalItemCount(total);
-
-			return messages;
+			return {
+				items: messages,
+				itemCount: total,
+			};
 		},
-		[getDiscussions, options.rid, options.text, setTotalItemCount],
+		[getDiscussions, options.rid, options.text],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
@@ -59,7 +57,6 @@ export const useDiscussionsList = (
 
 	return {
 		discussionsList,
-		totalItemCount,
 		loadMoreItems,
 		initialItemCount,
 	};
