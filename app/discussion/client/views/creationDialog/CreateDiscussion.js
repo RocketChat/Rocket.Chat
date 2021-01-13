@@ -107,7 +107,7 @@ Template.CreateDiscussion.events({
 		const { pmid } = instance;
 		const t_name = instance.discussionName.get();
 		const users = instance.selectedUsers.get().map(({ username }) => username).filter((value, index, self) => self.indexOf(value) === index);
-		const encrypted = instance.ecrypted.get();
+		const encrypted = instance.encrypted.get();
 
 		const prid = instance.parentChannelId.get();
 		const reply = instance.reply.get();
