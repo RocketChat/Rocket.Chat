@@ -24,7 +24,7 @@ const CustomTextInput = ({ name, required, minLength, maxLength, setState, state
 	}, [state, required, minLength, t]);
 
 	useEffect(() => {
-		setCustomFieldsError((oldArray) => (verify ? [...oldArray, { name }] : oldArray.filter((item) => item.name !== name)));
+		setCustomFieldsError((oldErrors) => (verify ? [...oldErrors, { name }] : oldErrors.filter((item) => item.name !== name)));
 	}, [name, setCustomFieldsError, verify]);
 
 	return useMemo(() => <Field className={className}>
@@ -42,7 +42,7 @@ const CustomSelect = ({ name, required, options = {}, setState, state, className
 	const verify = useMemo(() => (!state.length && required ? t('Field_required') : ''), [required, state.length, t]);
 
 	useEffect(() => {
-		setCustomFieldsError((oldArray) => (verify ? [...oldArray, { name }] : oldArray.filter((item) => item.name !== name)));
+		setCustomFieldsError((oldErrors) => (verify ? [...oldErrors, { name }] : oldErrors.filter((item) => item.name !== name)));
 	}, [name, setCustomFieldsError, verify]);
 
 	return useMemo(() => <Field className={className}>
