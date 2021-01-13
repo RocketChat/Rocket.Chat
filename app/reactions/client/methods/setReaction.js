@@ -35,7 +35,7 @@ Meteor.methods({
 
 		const idx = message.reactions && message.reactions[reaction] && message.reactions[reaction].userIds.indexOf(user._id);
 
-		if (idx && idx!==-1) {
+		if (idx && idx !== -1) {
 			// both userId and its corresponding username are at the same position
 			message.reactions[reaction].userIds.splice(idx, 1);
 			message.reactions[reaction].usernames.splice(idx, 1);
