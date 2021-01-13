@@ -14,7 +14,8 @@ export const saveRoomEncrypted = function(rid: string, encrypted: boolean, user:
 
 	const update = Rooms.saveEncryptedById(rid, encrypted);
 	if (update && sendMessage) {
-		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(`room_e2e_${ encrypted ? 'enabled' : 'disabled' }`, rid, user.username, user, {});
+		const action = encrypted ? 'room-e2e-enabled' : 'room-e2e-disabled';
+		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(action, rid, user.username, user, {});
 	}
 	return update;
 };
