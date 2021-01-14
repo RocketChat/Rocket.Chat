@@ -22,10 +22,11 @@ const AgentOverview = ({ type, dateRange, departmentId }) => {
 
 	useEffect(() => {
 		async function fetchData() {
-			if (start && end) {
-				const value = await loadData(params);
-				setDisplayData(value);
+			if (!start || !end) {
+				return;
 			}
+			const value = await loadData(params);
+			setDisplayData(value);
 		}
 		fetchData();
 	}, [start, end, loadData, params]);
