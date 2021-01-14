@@ -1,4 +1,4 @@
-import { useMemo, lazy, LazyExoticComponent, FC } from 'react';
+import { useMemo, lazy } from 'react';
 
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 
@@ -19,7 +19,7 @@ addAction('user-info', {
 	id: 'user-info',
 	title: 'User_Info',
 	icon: 'user',
-	template: lazy(() => import('../../MemberListRouter')) as LazyExoticComponent<FC>,
+	template: lazy(() => import('../../MemberListRouter')),
 	order: 5,
 });
 
@@ -28,7 +28,7 @@ addAction('user-info-group', {
 	id: 'user-info-group',
 	title: 'Members',
 	icon: 'team',
-	template: lazy(() => import('../../MemberListRouter')) as LazyExoticComponent<FC>,
+	template: lazy(() => import('../../MemberListRouter')),
 	order: 5,
 });
 
@@ -39,7 +39,7 @@ addAction('members-list', ({ room }) => {
 		id: 'members-list',
 		title: 'Members',
 		icon: 'team',
-		template: lazy(() => import('../../MemberListRouter')) as LazyExoticComponent<FC>,
+		template: lazy(() => import('../../MemberListRouter')),
 		order: 5,
 	} : null), [hasPermission, room.broadcast]);
 });
@@ -49,7 +49,7 @@ addAction('uploaded-files-list', {
 	id: 'uploaded-files-list',
 	title: 'Files',
 	icon: 'clip',
-	template: lazy(() => import('../../contextualBar/RoomFiles')) as LazyExoticComponent<FC>,
+	template: lazy(() => import('../../contextualBar/RoomFiles')),
 	order: 6,
 });
 
