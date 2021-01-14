@@ -123,6 +123,10 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	callbacks.runAsync('afterSaveMessage', discussionMsg, p_room, user._id);
 
 	if (reply) {
+		if (encrypted) {
+			// #ToDo: Encrypt the reply
+		}
+
 		sendMessage(user, { msg: reply }, discussion);
 	}
 	return discussion;
