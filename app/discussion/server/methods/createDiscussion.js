@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Match } from 'meteor/check';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { hasAtLeastOnePermission, canSendMessage } from '../../../authorization/server';
 import { Messages, Rooms } from '../../../models/server';
@@ -109,6 +110,9 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 
 	let discussionMsg;
 	if (pmid) {
+		if (p_room.encrypted) {
+			message.msg = TAPi18n.__('Encrypted_message');
+		}
 		mentionMessage(discussion._id, user, attachMessage(message, p_room));
 
 		discussionMsg = createDiscussionMessage(message.rid, user, discussion._id, t_name, attachMessage(message, p_room));
