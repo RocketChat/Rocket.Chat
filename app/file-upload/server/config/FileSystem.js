@@ -7,6 +7,51 @@ import _ from 'underscore';
 import { settings } from '../../../settings';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 
+const getByteRange = function(header) {
+	if (header) {
+		const matches = header.match(/(\d+)-(\d+)/);
+		if (matches) {
+			return {
+				start: parseInt(matches[1], 10),
+				stop: parseInt(matches[2], 10),
+			};
+		}
+	}
+	return null;
+};
+
+// code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L310
+const readFromFileSystem = function(store, fileId, file, req, res) {
+	const range = getByteRange(req.headers.range);
+	let out_of_range = false;
+	if (range) {
+		out_of_range = (range.start >= file.size) || (range.stop < range.start);
+		if (range.stop >= file.size - 1) {
+			range.stop = file.size - 1;
+		}
+	}
+
+	if (range && out_of_range) {
+		// out of range request, return 416
+		res.removeHeader('Content-Length');
+		res.removeHeader('Content-Type');
+		res.removeHeader('Content-Disposition');
+		res.removeHeader('Last-Modified');
+		res.setHeader('Content-Range', `bytes */${ file.size }`);
+		res.writeHead(416);
+		res.end();
+	} else if (range) {
+		res.setHeader('Content-Range', `bytes ${ range.start }-${ range.stop }/${ file.size }`);
+		res.removeHeader('Content-Length');
+		res.setHeader('Content-Length', range.stop - range.start + 1);
+		res.writeHead(206);
+		store.getReadStream(fileId, file, { start: range.start, end: range.stop }).pipe(res);
+	} else {
+		res.writeHead(200);
+		store.getReadStream(fileId, file).pipe(res);
+	}
+};
+
 const FileSystemUploads = new FileUploadClass({
 	name: 'FileSystem:Uploads',
 	// store setted bellow
@@ -24,7 +69,7 @@ const FileSystemUploads = new FileUploadClass({
 				res.setHeader('Content-Type', file.type || 'application/octet-stream');
 				res.setHeader('Content-Length', file.size);
 
-				this.store.getReadStream(file._id, file).pipe(res);
+				return readFromFileSystem(this.store, file._id, file, req, res);
 			}
 		} catch (e) {
 			res.writeHead(404);
@@ -61,7 +106,7 @@ const FileSystemAvatars = new FileUploadClass({
 			if (stat && stat.isFile()) {
 				file = FileUpload.addExtensionTo(file);
 
-				this.store.getReadStream(file._id, file).pipe(res);
+				return readFromFileSystem(this.store, file._id, file, req, res);
 			}
 		} catch (e) {
 			res.writeHead(404);
@@ -86,7 +131,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 				res.setHeader('Content-Type', file.type);
 				res.setHeader('Content-Length', file.size);
 
-				this.store.getReadStream(file._id, file).pipe(res);
+				return readFromFileSystem(this.store, file._id, file, req, res);
 			}
 		} catch (e) {
 			res.writeHead(404);
