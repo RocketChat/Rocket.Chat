@@ -1,6 +1,7 @@
-import { settings } from '../../../settings';
-import { Messages, Rooms } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import { Message } from '../../../../server/sdk';
 
 const hideMessagesOfTypeServer = new Set();
 
@@ -13,7 +14,11 @@ settings.get('Hide_System_Messages', function(key, values) {
 export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 	const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 
-	const hiddenMessageTypes = Array.isArray(room && room.sysMes) ? room.sysMes : Array.from(hideMessagesOfTypeServer.values()); // TODO probably remove on chained event system
+	// TODO probably remove on chained event system
+	const hiddenMessageTypes = Array.isArray(room && room.sysMes)
+		? room.sysMes
+		: Array.from(hideMessagesOfTypeServer.values());
+
 	const options = {
 		sort: {
 			ts: -1,
@@ -29,6 +34,7 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 
 	let records;
 	if (end) {
+		// TODO apply logic for history visibility
 		records = Messages.findVisibleByRoomId({
 			rid,
 			latest: end,
@@ -36,10 +42,11 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 			queryOptions: options,
 		}).fetch();
 	} else {
-		records = Messages.findVisibleByRoomId({ rid, excludeTypes: hiddenMessageTypes, queryOptions: options }).fetch();
+		records = Promise.await(Message.get(userId, { rid, excludeTypes: hiddenMessageTypes, queryOptions: options }));
 	}
 
 	const messages = normalizeMessagesForUser(records, userId);
+
 	let unreadNotLoaded = 0;
 	let firstUnread;
 
@@ -48,6 +55,7 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
+			// TODO apply logic for history visibility
 			const unreadMessages = Messages.findVisibleByRoomId({
 				rid,
 				latest: ls,
