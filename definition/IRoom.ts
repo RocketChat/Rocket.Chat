@@ -19,6 +19,8 @@ export interface IRoom extends IRocketChatRecord {
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 
+	uids: Array<string>;
+
 	lastMessage?: IMessage;
 	lm?: Date;
 	usersCount: number;

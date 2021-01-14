@@ -196,6 +196,7 @@ export default ({
 
 	const { value, phase, more, error } = useGetUsersOfRoom(params);
 
+	const isDirectMultiple = room.type === 'd' && room.uids.length > 2;
 	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
 
 	const handleTextChange = useCallback((event) => {
@@ -252,8 +253,8 @@ export default ({
 			limit={ value?.finished || value?.records.length < 50 ? value?.records.length : value?.records.length + 50}
 			onClickClose={onClickClose}
 			onClickView={viewUser}
-			onClickAdd={canAddUsers && addUser}
-			onClickInvite={canAddUsers && createInvite}
+			onClickAdd={canAddUsers && !isDirectMultiple && addUser}
+			onClickInvite={canAddUsers && !isDirectMultiple && createInvite}
 			loadMoreItems={loadMoreItems}
 		/>
 	);

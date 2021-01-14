@@ -18,7 +18,7 @@ addAction('e2e', ({ room }) => {
 	const enabledOnRoom = !!room.encrypted;
 
 	return useMemo(() => (e2eEnabled && hasPermission ? {
-		groups: ['direct', 'group'],
+		groups: ['direct', 'group', 'direct_multiple'],
 		id: 'e2e',
 		title: enabledOnRoom ? 'E2E_disable' : 'E2E_enable',
 		icon: 'key',

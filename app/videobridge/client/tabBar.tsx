@@ -47,6 +47,7 @@ addAction('video', ({ room }) => {
 		'direct',
 		'group',
 		'live',
+		'direct_multiple',
 		enabledChannel && 'channel',
 	].filter(Boolean) as ToolboxActionConfig['groups']);
 

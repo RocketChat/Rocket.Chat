@@ -7,7 +7,7 @@ import { usePermission } from '../../../../client/contexts/AuthorizationContext'
 addAction('clean-history', ({ room }) => {
 	const hasPermission = usePermission('clean-channel-history', room._id);
 	return useMemo(() => (hasPermission ? {
-		groups: ['channel', 'group', 'direct'],
+		groups: ['channel', 'group', 'direct', 'direct_multiple'],
 		id: 'clean-history',
 		anonymous: true,
 		title: 'Prune_Messages',

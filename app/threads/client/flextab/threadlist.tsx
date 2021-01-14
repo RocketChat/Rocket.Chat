@@ -22,7 +22,7 @@ addAction('thread', (options) => {
 	const room = options.room as unknown as ISubscription;
 	const threadsEnabled = useSetting('Threads_enabled');
 	return useMemo(() => (threadsEnabled ? {
-		groups: ['channel', 'group', 'direct'],
+		groups: ['channel', 'group', 'direct', 'direct_multiple'],
 		id: 'thread',
 		full: true,
 		title: 'Threads',

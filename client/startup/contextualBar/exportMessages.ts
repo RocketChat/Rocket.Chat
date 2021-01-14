@@ -6,7 +6,7 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 addAction('export-messages', ({ room }) => {
 	const hasPermission = usePermission('mail-messages', room._id);
 	return useMemo(() => (hasPermission ? {
-		groups: ['channel', 'group', 'direct'],
+		groups: ['channel', 'group', 'direct', 'direct_multiple'],
 		id: 'export-messages',
 		anonymous: true,
 		title: 'Export_Messages',
