@@ -652,6 +652,19 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
+	setAutoTransferredAtById(roomId, autoTransferredAt) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferredAt,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	changeVisitorByRoomId(roomId, { _id, username, token }) {
 		const query = {
 			_id: roomId,

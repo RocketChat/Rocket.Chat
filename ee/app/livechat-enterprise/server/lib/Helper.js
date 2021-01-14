@@ -262,6 +262,7 @@ export const transferToNewAgent = async (roomId, transferredBy) => {
 	};
 
 	try {
+		await LivechatRooms.setAutoTransferredAtById(roomId, new Date());
 		await Livechat.transfer(room, guest, transferData);
 	} catch (err) {
 		console.error(`Error occurred while transferring chat. Details: ${ err.message }`);

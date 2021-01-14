@@ -94,7 +94,6 @@ export const createSettings = () => {
 		type: 'int',
 		group: 'Omnichannel',
 		section: 'Sessions',
-		i18nDescription: 'Livechat_Auto_transfer_chat_if_no_response_description',
 		enterprise: true,
 		invalidValue: 0,
 		modules: [

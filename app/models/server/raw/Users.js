@@ -135,7 +135,7 @@ export class UsersRaw extends BaseRaw {
 
 	async getNextLeastBusyAgent(department, ignoreAgentId) {
 		const aggregate = [
-			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent', ... ignoreAgentId && { _id: { $ne: ignoreAgentId } } } },
+			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent', ...ignoreAgentId && { _id: { $ne: ignoreAgentId } } } },
 			{ $lookup: {
 				from: 'rocketchat_subscription',
 				let: { id: '$_id' },

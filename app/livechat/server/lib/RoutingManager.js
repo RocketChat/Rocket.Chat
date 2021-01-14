@@ -152,8 +152,8 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		if (transferData. ignoreAgentId) {
-			const agent = await RoutingManager.getNextAgent(transferData.departmentId, transferData. ignoreAgentId);
+		if (transferData.ignoreAgentId) {
+			const agent = await RoutingManager.getNextAgent(transferData.departmentId, transferData.ignoreAgentId);
 			if (agent) {
 				transferData.userId = agent.agentId;
 				return forwardRoomToAgent(room, transferData);

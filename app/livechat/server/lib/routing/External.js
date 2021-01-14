@@ -22,8 +22,8 @@ class ExternalQueue {
 		for (let i = 0; i < 10; i++) {
 			try {
 				let queryString = department ? `?departmentId=${ department }` : '';
-				if (ignoredUserId) {
-					const ignoredUserIdParam = `ignoredUserId=${ ignoredUserId }`;
+				if (ignoreAgentId) {
+					const ignoredUserIdParam = `ignoredUserId=${ ignoreAgentId }`;
 					queryString = queryString.startsWith('?') ? `${ queryString }&${ ignoredUserIdParam }` : `?${ ignoredUserIdParam }`;
 				}
 				const result = HTTP.call('GET', `${ settings.get('Livechat_External_Queue_URL') }${ queryString }`, {

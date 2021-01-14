@@ -70,7 +70,7 @@ export class LivechatDepartmentAgents extends Base {
 			username: {
 				$in: onlineUsernames,
 			},
-			... ignoreAgentId && { agentId: { $ne: ignoreAgentId } },
+			...ignoreAgentId && { agentId: { $ne: ignoreAgentId } },
 		};
 
 		const sort = {
