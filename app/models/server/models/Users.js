@@ -204,11 +204,12 @@ export class Users extends Base {
 		return null;
 	}
 
-	getNextBotAgent() {
+	getNextBotAgent(ignoreAgentId) {
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
 			},
+			...ignoreAgentId && { _id: { $ne: { ignoreAgentId } } },
 		};
 
 		const collectionObj = this.model.rawCollection();

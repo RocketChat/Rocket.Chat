@@ -2338,6 +2338,7 @@
   "Livechat_Agents": "Agents",
   "Livechat_AllowedDomainsList": "Livechat Allowed Domains",
   "Livechat_Appearance": "Livechat Appearance",
+  "Livechat_auto_transfer_chat_message": "The chat was transferred because __username__ had not replied for __timeout__ minute(s)",
   "Livechat_auto_transfer_chat_timeout": "Timeout (in minutes) for automatic transfer of unanswered chats to another agent",
   "Livechat_auto_transfer_chat_timeout_description" : "This event takes place only when the chat has just started. After the first transfering for inactivity, the room is no longer monitored.",
   "Livechat_business_hour_type": "Business Hour Type (Single or Multiple)",

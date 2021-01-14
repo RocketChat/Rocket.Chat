@@ -15,9 +15,8 @@ const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> =
 		return inquiry;
 	}
 
-	const room = await LivechatRooms.findOneById(rid);
-	const { autoTransferredAt } = room;
-	if (autoTransferredAt) {
+	const room = LivechatRooms.findOneById(rid, { autoTransferredAt: 1 });
+	if (!room || room.autoTransferredAt) {
 		return inquiry;
 	}
 
@@ -37,5 +36,14 @@ const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promis
 	await AutoTransferChatScheduler.unscheduleRoom(rid);
 };
 
-callbacks.add('livechat.afterTakeInquiry', handleAfterTakeInquiryCallback, callbacks.priority.MEDIUM, 'livechat-livechat-auto-transfer-job-inquiry');
-callbacks.add('afterSaveMessage', handleAfterSaveMessage, callbacks.priority.HIGH, 'livechat-cancel-auto-transfer-job');
+
+settings.get('Livechat_auto_transfer_chat_timeout', function(_, value) {
+	if (!value || value === 0) {
+		callbacks.remove('livechat.afterTakeInquiry', 'livechat-auto-transfer-job-inquiry');
+		callbacks.remove('afterSaveMessage', 'livechat-cancel-auto-transfer-job');
+		return;
+	}
+
+	callbacks.add('livechat.afterTakeInquiry', handleAfterTakeInquiryCallback, callbacks.priority.MEDIUM, 'livechat-auto-transfer-job-inquiry');
+	callbacks.add('afterSaveMessage', handleAfterSaveMessage, callbacks.priority.HIGH, 'livechat-cancel-auto-transfer-job');
+});

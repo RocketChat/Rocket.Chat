@@ -39,7 +39,7 @@ export const RoutingManager = {
 	},
 
 	async getNextAgent(department, ignoreAgentId) {
-		let agent = callbacks.run('livechat.beforeGetNextAgent', department);
+		let agent = callbacks.run('livechat.beforeGetNextAgent', department, ignoreAgentId);
 
 		if (!agent) {
 			agent = await this.getMethod().getNextAgent(department, ignoreAgentId);
@@ -156,6 +156,7 @@ export const RoutingManager = {
 			const agent = await RoutingManager.getNextAgent(transferData.departmentId, transferData.ignoreAgentId);
 			if (agent) {
 				transferData.userId = agent.agentId;
+				transferData.transferredTo = agent;
 				return forwardRoomToAgent(room, transferData);
 			}
 			if (!RoutingManager.getConfig().autoAssignAgent) {

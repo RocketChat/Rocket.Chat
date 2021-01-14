@@ -652,13 +652,13 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	setAutoTransferredAtById(roomId, autoTransferredAt) {
+	setAutoTransferredAtById(roomId) {
 		const query = {
 			_id: roomId,
 		};
 		const update = {
 			$set: {
-				autoTransferredAt,
+				autoTransferredAt: new Date(),
 			},
 		};
 

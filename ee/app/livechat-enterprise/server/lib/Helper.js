@@ -10,14 +10,12 @@ import {
 	LivechatRooms,
 	Messages,
 	LivechatCustomField,
-	LivechatVisitors,
 } from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
-import { Livechat } from '../../../../../app/livechat/server';
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
 	if (agentId) {
@@ -245,26 +243,4 @@ export const getLivechatQueueInfo = async (room) => {
 	}
 
 	return normalizeQueueInfo(inq);
-};
-
-export const autoTransferToNewAgent = async (roomId, transferredBy) => {
-	const room = await LivechatRooms.findOneById(roomId);
-	const timeout = await settings.get('Livechat_auto_transfer_chat_if_no_response_routing');
-
-	const { departmentId, v: { token }, servedBy: { _id: ignoreAgentId, username } = {} } = room;
-
-	const guest = await LivechatVisitors.getVisitorByToken(token, {});
-	const transferData = {
-		ignoreAgentId,
-		departmentId,
-		transferredBy,
-		comment: `The chat was transferred because ${ username } had not replied for ${ timeout } minutes`,
-	};
-
-	try {
-		await LivechatRooms.setAutoTransferredAtById(roomId, new Date());
-		await Livechat.transfer(room, guest, transferData);
-	} catch (err) {
-		console.error(`Error occurred while transferring chat. Details: ${ err.message }`);
-	}
 };
