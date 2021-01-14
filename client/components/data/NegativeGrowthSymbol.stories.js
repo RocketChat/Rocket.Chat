@@ -15,8 +15,6 @@ export const Default = () => <NegativeGrowthSymbol />;
 
 export const WithColor = () => <NegativeGrowthSymbol />;
 
-WithColor.story = {
-	decorators: [
-		(storyFn) => <Box color='danger'>{storyFn()}</Box>,
-	],
-};
+WithColor.decorators = [
+	(storyFn) => <Box color='danger'>{storyFn()}</Box>,
+];

@@ -61,7 +61,7 @@ function SortModeList() {
 		</Margins>
 		<ul className='rc-popover__list'>
 			<Margins block='x8'>
-				<SortListItem icon={'sort'} text={t('Alphabetical')} input={<RadioButton name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />} />
+				<SortListItem icon={'sort-az'} text={t('Alphabetical')} input={<RadioButton name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />} />
 				<SortListItem icon={'clock'} text={t('Activity')} input={<RadioButton name='sidebarSortby' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />} />
 			</Margins>
 		</ul>

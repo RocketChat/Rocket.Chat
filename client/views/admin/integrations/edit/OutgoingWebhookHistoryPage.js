@@ -280,7 +280,7 @@ function OutgoingWebhookHistoryPage(props) {
 		return () => integrationHistoryStreamer.removeListener(id, handleDataChange);
 	}, [handleDataChange, id, mounted]);
 
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
+	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
 
 	return <Page flexDirection='column' {...props}>
 		<Page.Header title={t('Integration_Outgoing_WebHook_History')}>

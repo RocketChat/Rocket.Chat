@@ -171,6 +171,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			nickname,
 		} = user;
 		return {
+			_id,
 			name: showRealNames ? name : username,
 			username,
 			lastLogin,

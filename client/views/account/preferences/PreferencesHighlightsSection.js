@@ -5,16 +5,18 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 
-const PreferencesHighlightsSection = ({ onChange, ...props }) => {
+const PreferencesHighlightsSection = ({ onChange, commitRef, ...props }) => {
 	const t = useTranslation();
 
 	const userHighlights = useUserPreference('highlights')?.join(',\n') ?? '';
 
-	const { values, handlers } = useForm({ highlights: userHighlights }, onChange);
+	const { values, handlers, commit } = useForm({ highlights: userHighlights }, onChange);
 
 	const { highlights } = values;
 
 	const { handleHighlights } = handlers;
+
+	commitRef.current.highlights = commit;
 
 	return <Accordion.Item title={t('Highlights')} {...props}>
 		<FieldGroup>
