@@ -48,7 +48,7 @@ const Overview = ({ type, dateRange, departmentId }) => {
 			setDisplayData([value]);
 		}
 		fetchData();
-	}, [start, end, method, params]);
+	}, [start, end, loadData, params]);
 
 	return <Box
 		pb='x28'
