@@ -186,4 +186,87 @@ export class MessagesRaw extends BaseRaw {
 		}
 		return this.col.aggregate(params).toArray();
 	}
+
+	findVisibleByRoomId({ rid, latest, oldest, notContainingTypes, queryOptions, inclusive }) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+
+			rid,
+		};
+
+		if (Array.isArray(notContainingTypes) && notContainingTypes.length > 0) {
+			query.t = { $nin: notContainingTypes };
+		}
+
+		console.log('latest: ', latest);
+		console.log('oldest: ', oldest);
+		console.log('query: ', query);
+		console.log('notContainingTypes: ', notContainingTypes);
+
+		if (latest && oldest) {
+			console.log('!latest && !oldest');
+			return this.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, notContainingTypes, queryOptions);
+		}
+
+		if (latest && !oldest) {
+			console.log('latest && !oldest');
+			return this.findVisibleByRoomIdBeforeTimestamp(rid, latest, queryOptions, inclusive);
+		}
+
+		if (!latest && oldest) {
+			console.log('!latest && oldest');
+			return this.findVisibleByRoomIdAfterTimestamp(rid, oldest, queryOptions);
+		}
+
+		console.log('!latest && !oldest');
+		return this.find(query, queryOptions);
+	}
+
+
+	findVisibleByRoomIdBeforeTimestamp(roomId, timestamp, options, inclusive) {
+		const timestampKey = inclusive ? '$lte' : '$lt';
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: {
+				[timestampKey]: timestamp,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+
+	findVisibleByRoomIdBetweenTimestamps(roomId, afterTimestamp, beforeTimestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: {
+				$gt: afterTimestamp,
+				$lt: beforeTimestamp,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findVisibleByRoomIdAfterTimestamp(roomId, timestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: {
+				$gt: timestamp,
+			},
+		};
+
+		return this.find(query, options);
+	}
 }
