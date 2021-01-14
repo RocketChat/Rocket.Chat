@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { Match } from 'meteor/check';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { hasAtLeastOnePermission, canSendMessage } from '../../../authorization/server';
 import { Messages, Rooms } from '../../../models/server';
@@ -35,7 +37,7 @@ const mentionMessage = (rid, { _id, username, name }, message_embedded) => {
 	return Messages.insert(welcomeMessage);
 };
 
-const create = ({ prid, pmid, t_name, reply, users, user }) => {
+const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	// if you set both, prid and pmid, and the rooms doesnt match... should throw an error)
 	let message = false;
 	if (pmid) {
@@ -67,6 +69,12 @@ const create = ({ prid, pmid, t_name, reply, users, user }) => {
 		throw new Meteor.Error('error-nested-discussion', 'Cannot create nested discussions', { method: 'DiscussionCreation' });
 	}
 
+	if (!Match.Maybe(encrypted, Boolean)) {
+		throw new Meteor.Error('error-invalid-arguments', 'Invalid encryption state', {
+			method: 'DiscussionCreation',
+		});
+	}
+
 	if (pmid) {
 		const discussionAlreadyExists = Rooms.findOne({
 			prid,
@@ -86,11 +94,15 @@ const create = ({ prid, pmid, t_name, reply, users, user }) => {
 	const invitedUsers = message ? [message.u.username, ...users] : users;
 
 	const type = roomTypes.getConfig(p_room.t).getDiscussionType();
+	const description = p_room.encrypted ? '' : message.msg;
+	const topic = p_room.encrypted ? '' : p_room.name;
+
 	const discussion = createRoom(type, name, user.username, [...new Set(invitedUsers)], false, {
 		fname: t_name,
-		description: message.msg, // TODO discussions remove
-		topic: p_room.name, // TODO discussions remove
+		description, // TODO discussions remove
+		topic, // TODO discussions remove
 		prid,
+		encrypted,
 	}, {
 		// overrides name validation to allow anything, because discussion's name is randomly generated
 		nameValidationRegex: /.*/,
@@ -98,6 +110,9 @@ const create = ({ prid, pmid, t_name, reply, users, user }) => {
 
 	let discussionMsg;
 	if (pmid) {
+		if (p_room.encrypted) {
+			message.msg = TAPi18n.__('Encrypted_message');
+		}
 		mentionMessage(discussion._id, user, attachMessage(message, p_room));
 
 		discussionMsg = createDiscussionMessage(message.rid, user, discussion._id, t_name, attachMessage(message, p_room));
@@ -108,6 +123,10 @@ const create = ({ prid, pmid, t_name, reply, users, user }) => {
 	callbacks.runAsync('afterSaveMessage', discussionMsg, p_room, user._id);
 
 	if (reply) {
+		if (encrypted) {
+			// #ToDo: Encrypt the reply
+		}
+
 		sendMessage(user, { msg: reply }, discussion);
 	}
 	return discussion;
@@ -122,8 +141,9 @@ Meteor.methods({
 	* @param {string} reply - The reply, optional
 	* @param {string} t_name - discussion name
 	* @param {string[]} users - users to be added
+	* @param {boolean} encrypted - if the discussion's e2e encryption should be enabled.
 	*/
-	createDiscussion({ prid, pmid, t_name, reply, users }) {
+	createDiscussion({ prid, pmid, t_name, reply, users, encrypted }) {
 		if (!settings.get('Discussion_enabled')) {
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
@@ -137,6 +157,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
 
-		return create({ uid, prid, pmid, t_name, reply, users, user: Meteor.user() });
+		return create({ uid, prid, pmid, t_name, reply, users, user: Meteor.user(), encrypted });
 	},
 });
