@@ -53923,6 +53923,37 @@
           ]
         }
       ]
+    },
+    "3.10.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20200",
+          "title": "Chore: Change console.warning() to console.warn()",
+          "userLogin": "lucassartor",
+          "milestone": "3.10.4",
+          "contributors": [
+            "lucassartor"
+          ]
+        },
+        {
+          "pr": "20176",
+          "title": "[FIX] Room's list showing all rooms with same name",
+          "userLogin": "sampaiodiego",
+          "description": "Add a migration to fix the room's list for those who ran version 3.10.1 and got it scrambled when a new user was registered.",
+          "milestone": "3.10.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
