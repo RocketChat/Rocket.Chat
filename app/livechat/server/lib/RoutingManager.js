@@ -38,11 +38,11 @@ export const RoutingManager = {
 		return this.getMethod().config || {};
 	},
 
-	async getNextAgent(department, ignoredUserId) {
+	async getNextAgent(department, ignoreAgentId) {
 		let agent = callbacks.run('livechat.beforeGetNextAgent', department);
 
 		if (!agent) {
-			agent = await this.getMethod().getNextAgent(department, ignoredUserId);
+			agent = await this.getMethod().getNextAgent(department, ignoreAgentId);
 		}
 
 		return agent;
@@ -152,8 +152,8 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
-		if (transferData.ignoredUserId) {
-			const agent = await RoutingManager.getNextAgent(transferData.departmentId, transferData.ignoredUserId);
+		if (transferData. ignoreAgentId) {
+			const agent = await RoutingManager.getNextAgent(transferData.departmentId, transferData. ignoreAgentId);
 			if (agent) {
 				transferData.userId = agent.agentId;
 				return forwardRoomToAgent(room, transferData);

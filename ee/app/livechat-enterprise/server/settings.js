@@ -90,11 +90,10 @@ export const createSettings = () => {
 		],
 	});
 
-	settings.add('Livechat_auto_transfer_chat_if_no_response_routing', 0, {
+	settings.add('Livechat_auto_transfer_chat_timeout', 0, {
 		type: 'int',
 		group: 'Omnichannel',
-		section: 'Routing',
-		i18nLabel: 'Livechat_Auto_transfer_chat_if_no_response',
+		section: 'Sessions',
 		i18nDescription: 'Livechat_Auto_transfer_chat_if_no_response_description',
 		enterprise: true,
 		invalidValue: 0,

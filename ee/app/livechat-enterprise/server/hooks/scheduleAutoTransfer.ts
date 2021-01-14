@@ -5,7 +5,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 
 
 const scheduleAutoTransferJob = async (roomId: string): Promise<any> => {
-	if (!roomId || roomId.length <= 0) {
+	if (!roomId || !roomId.trim()) {
 		return;
 	}
 

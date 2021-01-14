@@ -174,9 +174,9 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	getNextAgent(ignoredUserId) {
+	getNextAgent(ignoreAgentId) {
 		const extraFilters = {
-			...ignoredUserId && { _id: { $ne: { ignoredUserId } } },
+			... ignoreAgentId && { _id: { $ne: { ignoreAgentId } } },
 		};
 		const query = queryStatusAgentOnline(extraFilters);
 

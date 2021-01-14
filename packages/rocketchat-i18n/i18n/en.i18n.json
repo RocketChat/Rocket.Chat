@@ -2338,8 +2338,9 @@
   "Livechat_Agents": "Agents",
   "Livechat_AllowedDomainsList": "Livechat Allowed Domains",
   "Livechat_Appearance": "Livechat Appearance",
-  "Livechat_Auto_transfer_chat_if_no_response": "Auto-Transfer to another agent, if the current agent hasn't responsed in the specified time (in minutes)",
-  "Livechat_Auto_transfer_chat_if_no_response_description" : "This applied when the chat has just started. All the following responses can be longer and won't result in transfer",
+  "Livechat_auto_transfer_chat_timeout": "Timeout (in minutes) for automatic transfer of unanswered chats to another agent",
+  "Livechat_Auto_transfer_chat_if_no_response_description" : "
+This event takes place only when the chat has just started. After the first transfering for inactivity, the room is no longer monitored.",
   "Livechat_business_hour_type": "Business Hour Type (Single or Multiple)",
   "Livechat_chat_transcript_sent": "Chat transcript sent: __transcript__",
   "Livechat_custom_fields_options_placeholder": "Comma-separated list used to select a pre-configured value. Spaces between elements are not accepted.",

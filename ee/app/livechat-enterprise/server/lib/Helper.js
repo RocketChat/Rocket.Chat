@@ -251,11 +251,11 @@ export const transferToNewAgent = async (roomId, transferredBy) => {
 	const room = await LivechatRooms.findOneById(roomId);
 	const timeout = await settings.get('Livechat_auto_transfer_chat_if_no_response_routing');
 
-	const { departmentId, v: { token }, servedBy: { _id: ignoredUserId, username } = {} } = room;
+	const { departmentId, v: { token }, servedBy: { _id: ignoreAgentId, username } = {} } = room;
 
 	const guest = await LivechatVisitors.getVisitorByToken(token, {});
 	const transferData = {
-		ignoredUserId,
+		ignoreAgentId,
 		departmentId,
 		transferredBy,
 		comment: `The chat was transferred because ${ username } had not replied for ${ timeout } minutes`,

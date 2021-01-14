@@ -18,7 +18,7 @@ class ExternalQueue {
 		};
 	}
 
-	getNextAgent(department, ignoredUserId) {
+	getNextAgent(department, ignoreAgentId) {
 		for (let i = 0; i < 10; i++) {
 			try {
 				let queryString = department ? `?departmentId=${ department }` : '';
