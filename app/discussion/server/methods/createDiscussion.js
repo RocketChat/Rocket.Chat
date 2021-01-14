@@ -39,6 +39,7 @@ const create = ({ prid, pmid, t_name, reply, users, user }) => {
 	// if you set both, prid and pmid, and the rooms doesnt match... should throw an error)
 	let message = false;
 	if (pmid) {
+		// TODO apply logic for history visibility
 		message = Messages.findOne({ _id: pmid });
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'DiscussionCreation' });

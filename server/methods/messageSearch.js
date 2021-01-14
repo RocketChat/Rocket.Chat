@@ -248,6 +248,7 @@ Meteor.methods({
 				};
 			}
 
+			// TODO apply logic for history visibility
 			result.message.docs = Promise.await(Messages.find(query, {
 				readPreference: readSecondaryPreferred(Messages.col.s.db),
 				...options,

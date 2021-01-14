@@ -80,6 +80,7 @@ API.v1.addRoute('push.get', { authRequired: true }, {
 			throw new Error('error-user-not-found');
 		}
 
+		// TODO apply logic for history visibility
 		const message = Messages.findOneById(params.id);
 		if (!message) {
 			throw new Error('error-message-not-found');

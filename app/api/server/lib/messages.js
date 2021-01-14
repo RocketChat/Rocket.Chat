@@ -12,6 +12,7 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 		throw new Error('invalid-user');
 	}
 
+	// TODO apply logic for history visibility
 	const cursor = await Messages.findVisibleByMentionAndRoomId(user.username, roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
@@ -98,6 +99,7 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 		throw new Error('error-not-allowed');
 	}
 
+	// TODO apply logic for history visibility
 	const cursor = await Messages.findSnippetedByRoom(roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
@@ -123,6 +125,7 @@ export async function findDiscussionsFromRoom({ uid, roomId, text, pagination: {
 		throw new Error('error-not-allowed');
 	}
 
+	// TODO apply logic for history visibility
 	const cursor = Messages.findDiscussionsByRoomAndText(roomId, text, {
 		sort: sort || { ts: -1 },
 		skip: offset,

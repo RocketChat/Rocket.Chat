@@ -22,6 +22,7 @@ Meteor.methods({
 			return false;
 		}
 
+		// TODO apply logic for history visibility
 		message = Messages.findOneById(message._id);
 
 		if (!message || !message.rid) {
@@ -47,6 +48,7 @@ Meteor.methods({
 			};
 		}
 
+		// TODO apply logic for history visibility
 		const messages = Messages.findVisibleByRoomId({ rid: message.rid, latest: message.ts, queryOptions }).fetch();
 
 		const moreBefore = messages.length === queryOptions.limit;
@@ -59,6 +61,7 @@ Meteor.methods({
 
 		queryOptions.limit = Math.floor(limit / 2);
 
+		// TODO apply logic for history visibility
 		const afterMessages = Messages.findVisibleByRoomId({ rid: message.rid, oldest: message.ts, queryOptions }).fetch();
 
 		const moreAfter = afterMessages.length === queryOptions.limit;

@@ -20,6 +20,7 @@ Meteor.methods({
 			});
 		}
 
+		// TODO apply logic for history visibility
 		const message = Messages.findOneById(messageId);
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message_id', 'Invalid message id', {

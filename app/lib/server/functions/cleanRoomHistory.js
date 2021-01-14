@@ -14,6 +14,7 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 	const text = `_${ TAPi18n.__('File_removed_by_prune') }_`;
 
 	let fileCount = 0;
+	// TODO apply logic for history visibility
 	Messages.findFilesByRoomIdPinnedTimestampAndUsers(
 		rid,
 		excludePinned,
@@ -35,12 +36,14 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 	}
 
 	if (!ignoreDiscussion) {
+		// TODO apply logic for history visibility
 		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, { fields: { drid: 1 }, ...limit && { limit } }, ignoreThreads).fetch()
 			.forEach(({ drid }) => deleteRoom(drid));
 	}
 
 	if (!ignoreThreads) {
 		const threads = new Set();
+		// TODO apply logic for history visibility
 		Messages.findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers }, { fields: { _id: 1 } })
 			.forEach(({ _id }) => threads.add(_id));
 

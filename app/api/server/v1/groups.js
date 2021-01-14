@@ -525,6 +525,7 @@ API.v1.addRoute('groups.messages', { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
+		// TODO apply logic for history visibility
 		const messages = Messages.find(ourQuery, {
 			sort: sort || { ts: -1 },
 			skip: offset,

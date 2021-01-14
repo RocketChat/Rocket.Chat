@@ -583,6 +583,7 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
+		// TODO apply logic for history visibility
 		const cursor = Messages.find(ourQuery, {
 			sort: sort || { ts: -1 },
 			skip: offset,

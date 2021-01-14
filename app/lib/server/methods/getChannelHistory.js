@@ -43,6 +43,7 @@ Meteor.methods({
 			options.fields = { editedAt: 0 };
 		}
 
+		// TODO apply logic for history visibility
 		const records = Messages.findVisibleByRoomId({ rid, latest, oldest, queryOptions: options, excludeTypes });
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
@@ -54,6 +55,8 @@ Meteor.methods({
 			if (!_.isUndefined(oldest)) {
 				const firstMsg = messages[messages.length - 1];
 				if (!_.isUndefined(firstMsg) && firstMsg.ts > oldest) {
+
+					// TODO apply logic for history visibility
 					const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestamps({
 						rid,
 						oldest,

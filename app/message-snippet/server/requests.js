@@ -36,6 +36,7 @@ WebApp.connectHandlers.use('/snippet/download', function(req, res) {
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 
 	if (match[1]) {
+		// TODO apply logic for history visibility
 		const snippet = Messages.findOne(
 			{
 				_id: match[1],

@@ -28,6 +28,7 @@ callbacks.add('beforeSaveMessage', (msg) => {
 				if (urlObj.query) {
 					const queryString = QueryString.parse(urlObj.query);
 					if (_.isString(queryString.msg)) { // Jump-to query param
+						// TODO apply logic for history visibility
 						const jumpToMessage = recursiveRemove(Messages.findOneById(queryString.msg));
 						if (jumpToMessage) {
 							msg.attachments = msg.attachments || [];

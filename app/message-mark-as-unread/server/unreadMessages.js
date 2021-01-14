@@ -13,6 +13,7 @@ Meteor.methods({
 		}
 
 		if (room) {
+			// TODO apply logic for history visibility
 			const lastMessage = Messages.findVisibleByRoomId({ rid: room, queryOptions: { limit: 1, sort: { ts: -1 } } }).fetch()[0];
 
 			if (lastMessage == null) {
@@ -25,6 +26,7 @@ Meteor.methods({
 			return Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
 		}
 
+		// TODO apply logic for history visibility
 		const originalMessage = Messages.findOneById(firstUnreadMessage._id, {
 			fields: {
 				u: 1,

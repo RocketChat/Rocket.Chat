@@ -234,6 +234,7 @@ API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
 
+		// TODO apply logic for history visibility
 		const messages = Messages.find(ourQuery, {
 			sort: sort || { ts: -1 },
 			skip: offset,
@@ -274,6 +275,7 @@ API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authRequired: tr
 		const { sort, fields, query } = this.parseJsonQuery();
 		const ourQuery = Object.assign({}, query, { rid: room._id });
 
+		// TODO apply logic for history visibility
 		const msgs = Messages.find(ourQuery, {
 			sort: sort || { ts: -1 },
 			skip: offset,

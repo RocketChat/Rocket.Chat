@@ -35,6 +35,7 @@ Meteor.methods({
 			};
 		}
 
+		// TODO apply logic for history visibility
 		let records;
 		if (end) {
 			records = Messages.findVisibleByRoomId({ rid, oldest: end, queryOptions }).fetch();

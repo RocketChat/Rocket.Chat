@@ -14,6 +14,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'getThreadMessages' });
 		}
 
+		// TODO apply logic for history visibility
 		const thread = Messages.findOneById(tmid);
 		if (!thread) {
 			return;

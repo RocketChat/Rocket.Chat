@@ -19,6 +19,7 @@ Meteor.methods({
 
 		const user = Users.findOneById(Meteor.userId());
 
+		// TODO apply logic for history visibility
 		return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).fetch();
 	},
 });

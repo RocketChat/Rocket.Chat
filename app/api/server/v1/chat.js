@@ -190,6 +190,7 @@ API.v1.addRoute('chat.starMessage', { authRequired: true }, {
 			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
 		}
 
+		// TODO apply logic for history visibility
 		const msg = Messages.findOneById(this.bodyParams.messageId);
 
 		if (!msg) {
@@ -212,6 +213,7 @@ API.v1.addRoute('chat.unPinMessage', { authRequired: true }, {
 			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
 		}
 
+		// TODO apply logic for history visibility
 		const msg = Messages.findOneById(this.bodyParams.messageId);
 
 		if (!msg) {
@@ -230,6 +232,7 @@ API.v1.addRoute('chat.unStarMessage', { authRequired: true }, {
 			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
 		}
 
+		// TODO apply logic for history visibility
 		const msg = Messages.findOneById(this.bodyParams.messageId);
 
 		if (!msg) {
@@ -254,6 +257,7 @@ API.v1.addRoute('chat.update', { authRequired: true }, {
 			text: String, // Using text to be consistant with chat.postMessage
 		}));
 
+		// TODO apply logic for history visibility
 		const msg = Messages.findOneById(this.bodyParams.msgId);
 
 		// Ensure the message exists
@@ -284,6 +288,7 @@ API.v1.addRoute('chat.react', { authRequired: true }, {
 			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is missing.');
 		}
 
+		// TODO apply logic for history visibility
 		const msg = Messages.findOneById(this.bodyParams.messageId);
 
 		if (!msg) {
@@ -408,6 +413,7 @@ API.v1.addRoute('chat.getPinnedMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
+		// TODO apply logic for history visibility
 		const cursor = Messages.findPinnedByRoom(room._id, {
 			skip: offset,
 			limit: count,
@@ -456,6 +462,8 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 		};
 
 		const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };
+
+		// TODO apply logic for history visibility
 		const cursor = Messages.find(threadQuery, {
 			sort: sort || { tlm: -1 },
 			skip: offset,
@@ -502,6 +510,8 @@ API.v1.addRoute('chat.syncThreadsList', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 		const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
+
+		// TODO apply logic for history visibility
 		return API.v1.success({
 			threads: {
 				update: Messages.find({ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } }, { fields, sort }).fetch(),
@@ -533,6 +543,8 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
+
+		// TODO apply logic for history visibility
 		const cursor = Messages.find({ ...query, tmid }, {
 			sort: sort || { ts: 1 },
 			skip: offset,
@@ -573,6 +585,7 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 		} else {
 			updatedSinceDate = new Date(updatedSince);
 		}
+
 		const thread = Messages.findOneById(tmid, { fields: { rid: 1 } });
 		if (!thread || !thread.rid) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
@@ -583,6 +596,8 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
+
+		// TODO apply logic for history visibility
 		return API.v1.success({
 			messages: {
 				update: Messages.find({ ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, { fields, sort }).fetch(),

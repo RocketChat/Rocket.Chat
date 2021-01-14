@@ -27,6 +27,7 @@ Meteor.methods({
 			},
 		};
 
+		// TODO apply logic for history visibility
 		if (lastUpdate instanceof Date) {
 			return {
 				updated: Messages.findForUpdates(rid, lastUpdate, options).fetch(),

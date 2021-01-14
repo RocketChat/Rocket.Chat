@@ -32,6 +32,7 @@ Meteor.methods({
 			};
 		}
 
+		// TODO apply logic for history visibility
 		return Messages.findVisibleByRoomIdAfterTimestamp({ rid, oldest: start, queryOptions }).fetch();
 	},
 });

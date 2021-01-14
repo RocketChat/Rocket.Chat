@@ -23,6 +23,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'getThreadsList' });
 		}
 
+		// TODO apply logic for history visibility
 		return Messages.findThreadsByRoomId(rid, skip, limit).fetch();
 	},
 });
