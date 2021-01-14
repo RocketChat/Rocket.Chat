@@ -3,7 +3,7 @@ import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 
 import { Users } from '../../../../../app/models/server';
-import { transferToNewAgent } from './Helper';
+import { autoTransferToNewAgent } from './Helper';
 
 
 class AutoTransferChatSchedulerClass {
@@ -40,7 +40,7 @@ class AutoTransferChatSchedulerClass {
 	private async autoTransferVisitorJob({ attrs: { data } }: any = {}): Promise<void> {
 		const { roomId, transferredBy } = data;
 		try {
-			await transferToNewAgent(roomId, transferredBy);
+			await autoTransferToNewAgent(roomId, transferredBy);
 		} catch (err) {
 			console.error(err);
 		}

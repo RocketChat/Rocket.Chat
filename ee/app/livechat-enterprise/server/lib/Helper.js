@@ -247,7 +247,7 @@ export const getLivechatQueueInfo = async (room) => {
 	return normalizeQueueInfo(inq);
 };
 
-export const transferToNewAgent = async (roomId, transferredBy) => {
+export const autoTransferToNewAgent = async (roomId, transferredBy) => {
 	const room = await LivechatRooms.findOneById(roomId);
 	const timeout = await settings.get('Livechat_auto_transfer_chat_if_no_response_routing');
 
