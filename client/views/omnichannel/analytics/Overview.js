@@ -22,7 +22,7 @@ const Overview = ({ type, dateRange, departmentId }) => {
 		...departmentId && { departmentId },
 	}), [departmentId, end, start, type]);
 
-	const method = useMethod('livechat:getAnalyticsOverviewData');
+	const loadData = useMethod('livechat:getAnalyticsOverviewData');
 
 	const [displayData, setDisplayData] = useState(conversationsInitialData);
 
@@ -32,14 +32,20 @@ const Overview = ({ type, dateRange, departmentId }) => {
 
 	useEffect(() => {
 		async function fetchData() {
-			if (start && end) {
-				const value = await method(params);
-				if (value?.length > 3) {
-					setDisplayData([value.slice(0, 3), value.slice(3)]);
-				} else if (value) {
-					setDisplayData([value]);
-				}
+			if (!start || !end) {
+				return;
 			}
+
+			const value = await loadData(params);
+			if (!value) {
+				return;
+			}
+
+			if (value.length > 3) {
+				return setDisplayData([value.slice(0, 3), value.slice(3)]);
+			}
+
+			setDisplayData([value]);
 		}
 		fetchData();
 	}, [start, end, method, params]);
