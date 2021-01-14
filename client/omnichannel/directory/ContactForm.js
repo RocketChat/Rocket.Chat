@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Field, TextInput, Icon, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { Field, TextInput, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
 
@@ -95,7 +95,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 	const [nameError, setNameError] = useState();
 	const [emailError, setEmailError] = useState();
-	const [phoneError] = useState();
+	const [phoneError, setPhoneError] = useState();
 
 	const { value: allCustomFields, phase: state } = useEndpointData('livechat/custom-fields');
 
@@ -118,6 +118,27 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		? jsonConverterToValidFormat(allCustomFields.customFields) : {}), [allCustomFields]);
 
 	const saveContact = useEndpointAction('POST', 'omnichannel/contact');
+	const emailAlreadyExistsAction = useEndpointAction('GET', `omnichannel/contact.search?email=${ email }`);
+	const phoneAlreadyExistsAction = useEndpointAction('GET', `omnichannel/contact.search?phone=${ phone }`);
+
+	const checkEmailExists = useMutableCallback(async () => {
+		if (!isEmail(email)) { return; }
+		const { contact } = await emailAlreadyExistsAction();
+		if (!contact || (id && contact._id === id)) {
+			return setEmailError(null);
+		}
+		setEmailError(t('Email_already_exists'));
+	});
+
+	const checkPhoneExists = useMutableCallback(async () => {
+		if (!phone) { return; }
+		const { contact } = await phoneAlreadyExistsAction();
+		if (!contact || (id && contact._id === id)) {
+			return setPhoneError(null);
+		}
+		setPhoneError(t('Phone_already_exists'));
+	});
+
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -125,8 +146,11 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
 	}, [t, name]);
 	useComponentDidUpdate(() => {
-		setEmailError(email && !isEmail(email) ? t('Validate_email_address') : undefined);
+		setEmailError(email && !isEmail(email) ? t('Validate_email_address') : null);
 	}, [t, email]);
+	useComponentDidUpdate(() => {
+		!phone && setPhoneError(null);
+	}, [phone]);
 
 	const handleSave = useMutableCallback(async (e) => {
 		e.preventDefault();
@@ -146,9 +170,11 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 		const payload = {
 			name,
-			email,
-			phone,
 		};
+		payload.phone = phone;
+		payload.email = email;
+		payload.customFields = livechatData || {};
+		payload.contactManager = username ? { username } : {};
 
 		if (id) {
 			payload._id = id;
@@ -156,8 +182,6 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		} else {
 			payload.token = createToken();
 		}
-		if (livechatData) { payload.livechatData = livechatData; }
-		if (username) { payload.contactManager = { username }; }
 
 		try {
 			await saveContact(payload);
@@ -169,7 +193,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		}
 	});
 
-	const formIsValid = name && !emailError;
+	const formIsValid = name && !emailError && !phoneError;
 
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
@@ -190,7 +214,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			<Field>
 				<Field.Label>{t('Email')}</Field.Label>
 				<Field.Row>
-					<TextInput error={emailError} flexGrow={1} value={email} onChange={handleEmail} addon={<Icon name='mail' size='x20'/>}/>
+					<TextInput onBlur={checkEmailExists} error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
 				</Field.Row>
 				<Field.Error>
 					{t(emailError)}
@@ -199,7 +223,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			<Field>
 				<Field.Label>{t('Phone')}</Field.Label>
 				<Field.Row>
-					<TextInput error={phoneError} flexGrow={1} value={phone} onChange={handlePhone} />
+					<TextInput onBlur={checkPhoneExists} error={phoneError} flexGrow={1} value={phone} onChange={handlePhone} />
 				</Field.Row>
 				<Field.Error>
 					{t(phoneError)}

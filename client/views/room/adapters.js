@@ -93,3 +93,7 @@ createTemplateForComponent('channelFilesList', () => import('./contextualBar/Roo
 createTemplateForComponent('RoomAnnouncement', () => import('./Announcement'), {
 	renderContainerView: () => HTML.DIV(), // eslint-disable-line new-cap
 });
+
+createTemplateForComponent('PruneMessages', () => import('./contextualBar/PruneMessages'), {
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+});
