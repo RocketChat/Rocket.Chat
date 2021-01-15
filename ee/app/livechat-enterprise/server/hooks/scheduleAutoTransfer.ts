@@ -29,6 +29,11 @@ const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promis
 	const { _id: rid, t } = room;
 	const { token } = message;
 
+	const timeout = settings.get('Livechat_auto_transfer_chat_timeout');
+	if (!timeout || timeout <= 0) {
+		return;
+	}
+
 	if (!rid || !message || rid === '' || t !== 'l' || token) {
 		return;
 	}

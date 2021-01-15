@@ -29,8 +29,10 @@ class AutoTransferChatSchedulerClass {
 	}
 
 	public async scheduleRoom(roomId: string, timeout: number): Promise<void> {
+		await this.unscheduleRoom(roomId);
+
 		const jobName = `livechat-auto-transfer-${ roomId }`;
-		const when = this.addMinutesToDate(new Date(), timeout);
+		const when = this.addSecondsToDate(new Date(), timeout);
 
 		this.scheduler.define(jobName, this.autoTransferVisitorJob);
 
@@ -59,19 +61,15 @@ class AutoTransferChatSchedulerClass {
 				transferredBy: schedulerUser,
 				comment: TAPi18n.__('Livechat_auto_transfer_chat_message', { username, timeout }),
 			};
-			try {
-				await LivechatRooms.setAutoTransferredAtById(roomId);
-				await Livechat.transfer(room, guest, transferData);
-			} catch (err) {
-				console.error(`Error occurred while transferring chat. Details: ${ err.message }`);
-			}
+			await LivechatRooms.setAutoTransferredAtById(roomId);
+			await Livechat.transfer(room, guest, transferData);
 		} catch (err) {
 			console.error(err);
 		}
 	}
 
-	private addMinutesToDate(date: Date, minutes: number): Date {
-		return new Date(date.getTime() + minutes * 1000 * 60);
+	private addSecondsToDate(date: Date, seconds: number): Date {
+		return new Date(date.getTime() + seconds * 1000);
 	}
 }
 
