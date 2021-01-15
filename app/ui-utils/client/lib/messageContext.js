@@ -5,8 +5,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Subscriptions, Rooms, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
-import { getUserPreference } from '../../../utils/client';
+import { getUserPreference, roomTypes } from '../../../utils/client';
 import { AutoTranslate } from '../../../autotranslate/client';
+
 
 const fields = { name: 1, username: 1, 'settings.preferences.showMessageInMainThread': 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
 
@@ -25,6 +26,17 @@ export function messageContext({ rid } = Template.instance()) {
 		}, {
 			jump: tmid && tmid !== mid && mid && mid,
 		});
+	};
+
+	const openDiscussion = (e) => {
+		e.preventDefault();
+		const { drid } = e.currentTarget.dataset;
+		FlowRouter.goToRoomById(drid);
+	};
+
+	const replyBroadcast = (e) => {
+		const { username, mid } = e.currentTarget.dataset;
+		roomTypes.openRouteLink('d', { name: username }, { ...FlowRouter.current().queryParams, reply: mid });
 	};
 
 	return {
@@ -49,6 +61,12 @@ export function messageContext({ rid } = Template.instance()) {
 		actions: {
 			openThread() {
 				return openThread;
+			},
+			openDiscussion() {
+				return openDiscussion;
+			},
+			replyBroadcast() {
+				return replyBroadcast;
 			},
 		},
 		settings: {

@@ -4,6 +4,7 @@ import { ActionButton, Box, BoxProps, ButtonProps, Avatar } from '@rocket.chat/f
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 import Image, { ImageProps } from './components/Image';
 import { useAttachmentDimensions } from './context/AttachmentContext';
+import { useTranslation } from '/client/contexts/TranslationContext';
 
 export type AttachmentPropsBase = {
 	title?: string;
@@ -27,8 +28,15 @@ const Size: FC<BoxProps & { size: number }> = ({ size, ...props }) => {
 };
 
 const Action: FC<ButtonProps & { icon: string }> = (props) => <ActionButton mi='x2' mini ghost {...props} />;
-const Collapse: FC<ButtonProps & { collapsed?: boolean }> = ({ collapsed = false, ...props }) => <Action icon={ !collapsed ? 'chevron-down' : 'chevron-left' }{...props} />;
-const Download: FC<ButtonProps & { href: string }> = (props) => <Action icon='download' is='a' target='_blank' {...props} />;
+const Collapse: FC<ButtonProps & { collapsed?: boolean }> = ({ collapsed = false, ...props }) => {
+	const t = useTranslation();
+	return <Action title={collapsed ? t('Uncollapse') : t('Collapse')}icon={ !collapsed ? 'chevron-down' : 'chevron-left' }{...props} />;
+};
+
+const Download: FC<ButtonProps & { href: string }> = (props) => {
+	const t = useTranslation();
+	return <Action icon='download' title={t('Download')} is='a' target='_blank' {...props} />;
+};
 
 const Content: FC<BoxProps> = ({ ...props }) => <Box mb='x4' {...props} />;
 const Details: FC<BoxProps> = ({ ...props }) => <Box fontScale='p1' color='info' bg='neutral-100' pi='x16' pb='x16' {...props}/>;

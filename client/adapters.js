@@ -1,4 +1,6 @@
 import { createTemplateForComponent } from './reactAdapters';
 
 createTemplateForComponent('reactAttachments', () => import('./components/Message/Attachments'));
-createTemplateForComponent('ThreadReply', () => import('./components/Message/Metrics/Thread'));
+createTemplateForComponent('ThreadMetric', () => import('./components/Message/Metrics/Thread'));
+createTemplateForComponent('DiscussionMetric', () => import('./components/Message/Metrics/Discussion'));
+createTemplateForComponent('BroadCastMetric', () => import('./components/Message/Metrics/Broadcast'));

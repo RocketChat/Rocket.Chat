@@ -117,26 +117,15 @@
 			{{/if}}
 			{{> reactAttachments attachments=msg.attachments file=msg.file }}
 			{{#if msg.drid}}
-				<div class="message-discussion">
-					{{#if $gt msg.dcount 0}}
-						<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small" data-rid={{roomId}}>
-							<!-- {{> icon icon="discussion"}} -->
-							<span>{{{_ 'message_counter' counter=i18nDiscussionCounter count=msg.dcount }}}</span>
-						</button>
-					{{else}}
-						<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small no-replies" data-rid={{roomId}}>
-							{{_ "No_messages_yet" }}
-						</button>
-					{{/if}}
-					<span class="discussion-reply-lm">{{ formatDateAndTime msg.dlm }}</span>
-					{{# if unread }}
-						<div title="{{_ 'Unread' }}" class="message-unread"></div>
-					{{/if}}
-				</div>
+				{{> DiscussionMetric count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
 			{{/if}}
+			
 			{{#if $and settings.showReplyButton msg.tcount}}
-			    {{> ThreadReply counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
+			    {{> ThreadMetric counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
+			{{/if}}
 
+			{{#if broadcast}}
+			 	{{> BroadCastMetric mid=msg._id username=msg.u.username replyBroadcast=actions.replyBroadcast }}
 			{{/if}}
 
 			{{#with readReceipt}}
@@ -177,13 +166,6 @@
 				{{/each}}
 			</ul>
 			{{/unless}}
-			{{#if broadcast}}
-				{{#with msg}}
-					<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
-						{{> icon icon="reply"}} {{_'Reply'}}
-					</button>
-				{{/with}}
-			{{/if}}
 			{{#unless hideReactions}}
 			<ul class="reactions">
 				{{#each reaction in reactions}}

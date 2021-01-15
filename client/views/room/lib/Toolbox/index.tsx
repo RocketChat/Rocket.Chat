@@ -31,7 +31,7 @@ export type ToolboxActionConfig = {
 	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple'>;
 	hotkey?: string;
 	action?: (e: MouseEvent<HTMLElement>) => void;
-	template?: string | FC | JSX.Element | LazyExoticComponent<FC>;
+	template?: string | FC | LazyExoticComponent<FC<{ rid: string; tabBar: any }>>;
 }
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;

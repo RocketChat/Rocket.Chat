@@ -1,5 +1,5 @@
 import React, { ReactNode, useContext, useMemo, useState, useCallback, useLayoutEffect } from 'react';
-import { useDebouncedState, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { Handler } from '@rocket.chat/emitter';
 
 import { ToolboxContext } from '../lib/Toolbox/ToolboxContext';
@@ -56,7 +56,7 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const uid = useUserId();
 	const [activeTabBar, setActiveTabBar] = useState<[ToolboxActionConfig|undefined, string?]>([undefined]);
-	const [list, setList] = useDebouncedState<Store<ToolboxAction>>(new Map(), 5);
+	const [list, setList] = useSafely(useDebouncedState<Store<ToolboxAction>>(new Map(), 5));
 	const handleChange = useMutableCallback((fn) => { fn(list); setList((list) => new Map(list)); });
 	const { listen, actions } = useToolboxActions(room);
 
