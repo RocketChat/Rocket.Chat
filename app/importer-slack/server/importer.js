@@ -111,7 +111,16 @@ export class SlackImporter extends Base {
 						this.logger.debug(`loaded ${ tempUsers.length } users.`);
 
 						// Insert the users record
-						this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', users: tempUsers });
+						if (Base.getBSONSize(tempUsers) > Base.getMaxBSONSize()) {
+							const tmp = Base.getBSONSafeArraysFromAnArray(tempUsers);
+							Object.keys(tmp).forEach((i) => {
+								const splitUsers = tmp[i];
+								this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', name: `users/${ i }`, users: splitUsers, i });
+							});
+						} else {
+							this.collection.insert({ import: this.importRecord._id, importer: this.name, type: 'users', name: 'users', users: tempUsers });
+						}
+
 						this.updateRecord({ 'count.users': tempUsers.length });
 						this.addCountToTotal(tempUsers.length);
 
@@ -537,8 +546,10 @@ export class SlackImporter extends Base {
 		this._userIdReference = {};
 
 		super.updateProgress(ProgressStep.IMPORTING_USERS);
-		this.users.users.forEach((user) => this.performUserImport(user, startedByUserId));
-		this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
+		for (const list of this.userLists) {
+			list.users.forEach((user) => this.performUserImport(user, startedByUserId));
+			this.collection.update({ _id: list._id }, { $set: { users: list.users } });
+		}
 	}
 
 	_importChannels(startedByUserId, channelNames) {
@@ -798,14 +809,18 @@ export class SlackImporter extends Base {
 	_applyUserSelection(importSelection) {
 		Object.keys(importSelection.users).forEach((key) => {
 			const user = importSelection.users[key];
-			Object.keys(this.users.users).forEach((k) => {
-				const u = this.users.users[k];
-				if (u.id === user.user_id) {
-					u.do_import = user.do_import;
-				}
-			});
+
+			for (const list of this.userLists) {
+				Object.keys(list.users).forEach((k) => {
+					const u = list.users[k];
+					if (u.id === user.user_id) {
+						u.do_import = user.do_import;
+					}
+				});
+
+				this.collection.update({ _id: list._id }, { $set: { users: list.users } });
+			}
 		});
-		this.collection.update({ _id: this.users._id }, { $set: { users: this.users.users } });
 	}
 
 	_applyChannelSelection(importSelection) {
@@ -855,7 +870,7 @@ export class SlackImporter extends Base {
 			this.bots = {};
 		}
 
-		this.users = RawImports.findOne({ import: this.importRecord._id, type: 'users' });
+		this.userLists = RawImports.find({ import: this.importRecord._id, type: 'users' }).fetch();
 		this.channels = RawImports.findOne({ import: this.importRecord._id, type: 'channels' });
 		this.groups = RawImports.findOne({ import: this.importRecord._id, type: 'groups' });
 		this.dms = RawImports.findOne({ import: this.importRecord._id, type: 'DMs' });
@@ -987,17 +1002,19 @@ export class SlackImporter extends Base {
 			return 'rocket.cat';
 		}
 
-		for (const user of this.users.users) {
-			if (user.id !== slackUserId) {
-				continue;
-			}
+		for (const list of this.userLists) {
+			for (const user of list.users) {
+				if (user.id !== slackUserId) {
+					continue;
+				}
 
-			if (user.do_import) {
-				return user.rocketId;
-			}
+				if (user.do_import) {
+					return user.rocketId;
+				}
 
-			if (user.is_bot) {
-				return 'rocket.cat';
+				if (user.is_bot) {
+					return 'rocket.cat';
+				}
 			}
 		}
 	}
