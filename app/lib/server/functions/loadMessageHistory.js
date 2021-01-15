@@ -32,19 +32,25 @@ export function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 		};
 	}
 
-	let oldest;
-	console.log('room: ', room);
+	// let oldest;
+	// 	if (room.hideHistoryForNewMembers) {
+	// 		const sub = Subscriptions.findOneByRoomIdAndUserId(rid, fromId);
+
+	// 		if (end) {
+	// 			oldest = Math.max(sub.ts, end);
+	// 		}
+	// 	}
+
+	// 	const records = Promise.await(Messages.get(fromId, { rid, oldest, queryOptions }));
+
+	let oldest = end;
 	if (room.hideHistoryForNewMembers) {
 		const sub = Subscriptions.findOneByRoomIdAndUserId(rid, userId);
-		oldest = sub.ts;
+
+		oldest = Math.max(sub.ts, end || 0);
 	}
 
-	let records;
-	if (end) {
-		records = Promise.await(Message.get(userId, { rid, excludeTypes: hiddenMessageTypes, latest: end, oldest, queryOptions: options }));
-	} else {
-		records = Promise.await(Message.get(userId, { rid, excludeTypes: hiddenMessageTypes, oldest, queryOptions: options }));
-	}
+	const records = Promise.await(Message.get(userId, { rid, excludeTypes: hiddenMessageTypes, oldest, queryOptions: options }));
 
 	const messages = normalizeMessagesForUser(records, userId);
 

@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
 import logger from './logger';
-import { Messages, Subscriptions } from '../../models';
+import { Messages, Subscriptions, Rooms } from '../../models';
+import { Message } from '../../../server/sdk';
 
 Meteor.methods({
-	unreadMessages(firstUnreadMessage, room) {
+	unreadMessages(firstUnreadMessage, rid) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -12,9 +13,9 @@ Meteor.methods({
 			});
 		}
 
-		if (room) {
-			// TODO apply logic for history visibility
-			const lastMessage = Messages.findVisibleByRoomId({ rid: room, queryOptions: { limit: 1, sort: { ts: -1 } } }).fetch()[0];
+		if (rid) {
+			const room = Rooms.findOneById(rid, { hideHistoryForNewMembers: 1 });
+			const lastMessage = Promise.await(Message.get(userId, { rid, queryOptions: { limit: 1, sort: { ts: -1 } } }))[0];
 
 			if (lastMessage == null) {
 				throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
