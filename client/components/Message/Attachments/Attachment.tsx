@@ -4,7 +4,7 @@ import { ActionButton, Box, BoxProps, ButtonProps, Avatar } from '@rocket.chat/f
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 import Image, { ImageProps } from './components/Image';
 import { useAttachmentDimensions } from './context/AttachmentContext';
-import { useTranslation } from '/client/contexts/TranslationContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 
 export type AttachmentPropsBase = {
 	title?: string;
