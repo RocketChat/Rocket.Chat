@@ -65,7 +65,7 @@ function AppLogsPage({ id, ...props }) {
 	const loading = !Object.values(app).length;
 	const showData = !loading && !app.error;
 
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
+	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return <Page flexDirection='column' {...props}>
