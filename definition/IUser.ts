@@ -118,6 +118,7 @@ export interface IUser {
 		[key: string]: any;
 	};
 	settings?: IUserSettings;
+	bannersDismissed?: string[];
 }
 
 export type IUserDataEvent = {

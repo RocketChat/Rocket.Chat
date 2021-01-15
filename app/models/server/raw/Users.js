@@ -570,4 +570,14 @@ export class UsersRaw extends BaseRaw {
 			},
 		});
 	}
+
+	addBannerDismissById(userId, bannerId) {
+		return this.col.updateOne({
+			_id: userId,
+		}, {
+			$addToSet: {
+				bannersDismissed: bannerId,
+			},
+		});
+	}
 }
