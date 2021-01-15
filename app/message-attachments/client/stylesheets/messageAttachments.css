@@ -58,9 +58,15 @@ html.rtl .attachment {
 		}
 
 		& .time,
-		& .time-link {
+		& .time-link,
+		& .attachment_jump {
 			font-size: 0.8em;
 			font-weight: normal;
+		}
+
+		& .attachment_jump {
+			display: inline-block;
+			color: var(--primary-font-color);
 		}
 	}
 

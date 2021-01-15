@@ -617,11 +617,12 @@ Meteor.startup(() => {
 			}
 		}, 300),
 
-		'click .time a'(e) {
+		'click .time-link > a, click .attachment_jump'(e) {
 			e.preventDefault();
-			const { msg } = messageArgs(this);
-			const repliedMessageId = msg.attachments[0].message_link.split('?msg=')[1];
-			FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId, hash: Random.id() });
+			const { msg, message_link } = messageArgs(this);
+			const repliedMessageId = message_link.split('?msg=')[1];
+			FlowRouter.go(FlowRouter.current().context.pathname, null, { msg: repliedMessageId });
+			RoomHistoryManager.getSurroundingMessages(msg, 50);
 		},
 	});
 

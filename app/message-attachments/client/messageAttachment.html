@@ -29,6 +29,12 @@
 								{{/unless}}
 							{{/if}}
 						{{/if}}
+						{{#if message_link}}
+							<a rel="noopener noreferrer" href="{{message_link}}" class="attachment_jump">
+								{{> icon block="attachment_jump" icon="jump"}}
+								<span class="attachment_jump__label">{{_ "Jump_to_message"}}</span>
+							</a>
+						{{/if}}
 					</div>
 				{{else}}
 					<div class="attachment-author">
@@ -48,6 +54,12 @@
 								</span>
 							{{/unless}}
 						{{/if}}
+					{{/if}}
+					{{#if message_link}}
+						<a rel="noopener noreferrer" href="{{message_link}}" class="attachment_jump">
+							{{> icon block="attachment_jump" icon="jump"}}
+							<span class="attachment_jump__label">{{_ "Jump_to_message"}}</span>
+						</a>
 					{{/if}}
 					</div>
 				{{/if}}
