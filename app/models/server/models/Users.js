@@ -176,7 +176,7 @@ export class Users extends Base {
 
 	getNextAgent(ignoreAgentId) {
 		const extraFilters = {
-			...ignoreAgentId && { _id: { $ne: { ignoreAgentId } } },
+			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
 		};
 		const query = queryStatusAgentOnline(extraFilters);
 
@@ -209,7 +209,7 @@ export class Users extends Base {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
 			},
-			...ignoreAgentId && { _id: { $ne: { ignoreAgentId } } },
+			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
 		};
 
 		const collectionObj = this.model.rawCollection();
