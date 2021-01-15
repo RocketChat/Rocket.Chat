@@ -1,5 +1,6 @@
-const { createTemplateForComponent } = require('./reactAdapters');
+import { createTemplateForComponent } from './reactAdapters';
 
+createTemplateForComponent('reactAttachments', () => import('./components/Message/Attachments'));
 createTemplateForComponent('ThreadMetric', () => import('./components/Message/Metrics/Thread'));
 createTemplateForComponent('DiscussionMetric', () => import('./components/Message/Metrics/Discussion'));
 createTemplateForComponent('BroadCastMetric', () => import('./components/Message/Metrics/Broadcast'));
