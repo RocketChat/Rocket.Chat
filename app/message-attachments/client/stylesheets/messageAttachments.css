@@ -66,6 +66,7 @@ html.rtl .attachment {
 
 		& .attachment_jump {
 			display: inline-block;
+
 			color: var(--primary-font-color);
 		}
 	}
