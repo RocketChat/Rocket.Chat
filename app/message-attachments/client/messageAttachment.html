@@ -114,7 +114,7 @@
 			{{#if audio_url}}
 				{{#unless collapsed}}
 					<div class="attachment-audio">
-						<audio controls>
+						<audio controls preload="metadata">
 							<source src="{{ getURL audio_url}}" type="{{audio_type}}" data-description="{{description}}">
 							{{_ "Browser_does_not_support_audio_element"}}
 						</audio>
@@ -125,7 +125,7 @@
 			{{#if video_url}}
 				{{#unless collapsed}}
 					<div class="attachment-video">
-						<video controls class="inline-video">
+						<video controls class="inline-video" preload="metadata">
 							<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
 							{{_ "Browser_does_not_support_video_element"}}
 						</video>
