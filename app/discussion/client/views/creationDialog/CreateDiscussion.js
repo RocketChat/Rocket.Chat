@@ -20,6 +20,11 @@ Template.CreateDiscussion.helpers({
 	onSelectUser() {
 		return Template.instance().onSelectUser;
 	},
+	messageDisable() {
+		if (Template.instance().encrypted.get()) {
+			return 'disabled';
+		}
+	},
 	disabled() {
 		if (Template.instance().selectParent.get()) {
 			return 'disabled';
