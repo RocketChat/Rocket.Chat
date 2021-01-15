@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Divider } from '@rocket.chat/fuselage';
+import { Box, Divider, Icon } from '@rocket.chat/fuselage';
 
 export const DOUBLE_COLUMN_CARD_WIDTH = 552;
 
@@ -19,6 +19,16 @@ const CardDivider = () => <Divider width='x1' mi='x24' mb='none' alignSelf='stre
 
 const Card = ({ children, ...props }) => <Box display='flex' flexDirection='column' pi='x16' pb='x8' width='fit-content' bg='neutral-100' {...props}>{children}</Box>;
 
+const CardIcon = ({ name, children, ...props }) => <Box
+	minWidth='x16'
+	display='inline-flex'
+	flexDirection='row'
+	alignItems='flex-end'
+	justifyContent='center'
+>
+	{children || <Icon size='x16' name={name} {...props}/>}
+</Box>;
+
 Object.assign(Col, {
 	Title: ColTitle,
 	Section: ColSection,
@@ -30,6 +40,7 @@ Object.assign(Card, {
 	Col,
 	Footer,
 	Divider: CardDivider,
+	Icon: CardIcon,
 });
 
 export default Card;
