@@ -6,6 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { LivechatRooms, LivechatVisitors, Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server';
 import { settings } from '../../../../../app/settings/server';
+import { postAutoTransferExecuted } from './Helper';
 
 
 class AutoTransferChatSchedulerClass {
@@ -37,11 +38,13 @@ class AutoTransferChatSchedulerClass {
 		this.scheduler.define(jobName, this.autoTransferVisitorJob);
 
 		await this.scheduler.schedule(when, jobName, { roomId });
+		await LivechatRooms.setAutoTransferOngoingById(roomId);
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
 		const jobName = `livechat-auto-transfer-${ roomId }`;
 
+		await LivechatRooms.unsetAutoTransferOngoingById(roomId);
 		await this.scheduler.cancel({ name: jobName });
 	}
 
@@ -63,6 +66,7 @@ class AutoTransferChatSchedulerClass {
 			};
 			await LivechatRooms.setAutoTransferredAtById(roomId);
 			await Livechat.transfer(room, guest, transferData);
+			await postAutoTransferExecuted(roomId);
 		} catch (err) {
 			console.error(err);
 		}

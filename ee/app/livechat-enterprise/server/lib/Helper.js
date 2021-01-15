@@ -16,6 +16,7 @@ import { settings } from '../../../../../app/settings';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
+import { AutoTransferChatScheduler } from './AutoTransferChatScheduler';
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
 	if (agentId) {
@@ -243,4 +244,8 @@ export const getLivechatQueueInfo = async (room) => {
 	}
 
 	return normalizeQueueInfo(inq);
+};
+
+export const postAutoTransferExecuted = async (roomId) => {
+	await AutoTransferChatScheduler.unscheduleRoom(roomId);	// (cleanup) since the job is executed, clear it's copy from db
 };

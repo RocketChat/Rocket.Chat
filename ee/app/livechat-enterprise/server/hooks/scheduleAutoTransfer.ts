@@ -26,12 +26,11 @@ const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> =
 };
 
 const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promise<any> => {
-	const { _id: rid, t, autoTransferredAt } = room;
+	const { _id: rid, t, autoTransferredAt, autoTransferOngoing } = room;
 	const { token } = message;
 
-	const timeout = settings.get('Livechat_auto_transfer_chat_timeout');
-	if (!timeout || timeout <= 0) {
-		return;
+	if (!autoTransferTimeout || autoTransferTimeout <= 0) {
+		return message;
 	}
 
 	if (!rid || !message || rid === '' || t !== 'l' || token) {
@@ -42,8 +41,9 @@ const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promis
 		return message;
 	}
 
-	// TODO: We can't call this process all time, if need to know wheter the room transfer is scheduled or not
-	await AutoTransferChatScheduler.unscheduleRoom(rid);
+	if (autoTransferOngoing) {
+		await AutoTransferChatScheduler.unscheduleRoom(rid);
+	}
 
 	return message;
 };
