@@ -21,7 +21,7 @@ type ThreadReplyOptions = {
 	openThread: () => any;
 };
 
-const ReplyBlock: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, counter, participants, following, lm, openThread }) => {
+const ThreadMetric: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, counter, participants, following, lm, openThread }) => {
 	const t = useTranslation();
 
 	const followMessage = useEndpoint('POST', 'chat.followMessage');
@@ -31,7 +31,7 @@ const ReplyBlock: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, co
 	const handleFollow = useCallback(() => (following ? unfollowMessage({ mid }) : followMessage({ mid })), [followMessage, following, mid, unfollowMessage]);
 
 	return <Content className={followStyle}>
-		<Reply data-rid={rid} data-mid={mid} onClick={openThread} />
+		<Reply data-rid={rid} data-mid={mid} onClick={openThread}>{t('Reply')}</Reply>
 		<Metrics>
 			<Metrics.Item title={t('Replies')}>
 				<Metrics.Item.Icon name='thread'/>
@@ -41,7 +41,7 @@ const ReplyBlock: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, co
 				<Metrics.Item.Icon name='user'/>
 				<Metrics.Item.Label>{participants}</Metrics.Item.Label>
 			</Metrics.Item> }
-			<Metrics.Item>
+			<Metrics.Item title={lm?.toLocaleString()}>
 				<Metrics.Item.Icon name='clock'/>
 				<Metrics.Item.Label>{format(lm)}</Metrics.Item.Label>
 			</Metrics.Item>
@@ -57,4 +57,4 @@ const ReplyBlock: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, co
 	</Content>;
 };
 
-export default ReplyBlock;
+export default ThreadMetric;

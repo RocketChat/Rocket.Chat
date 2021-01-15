@@ -38,13 +38,18 @@ export function messageContext({ rid } = Template.instance()) {
 			message: msg,
 		});
 	} : (msg, e) => {
-		console.log(e);
 		const { actionlink } = e.currentTarget.dataset;
 		actionLinks.run(actionlink, msg._id, instace, (err) => {
 			if (err) {
 				handleError(err);
 			}
 		});
+	};
+
+	const openDiscussion = (e) => {
+		e.preventDefault();
+		const { drid } = e.currentTarget.dataset;
+		FlowRouter.goToRoomById(drid);
 	};
 
 	return {
@@ -72,6 +77,9 @@ export function messageContext({ rid } = Template.instance()) {
 			},
 			runAction(msg) {
 				return () => (e) => runAction(msg, e);
+			},
+			openDiscussion() {
+				return openDiscussion;
 			},
 		},
 		settings: {

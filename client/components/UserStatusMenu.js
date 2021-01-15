@@ -63,6 +63,7 @@ const UserStatusMenu = ({
 			<Button
 				ref={ref}
 				small
+				square
 				ghost
 				onClick={onClick}
 				onBlur={hide}
