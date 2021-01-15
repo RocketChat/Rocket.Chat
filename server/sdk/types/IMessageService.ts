@@ -4,7 +4,7 @@ export type MessageFilter = {
 	rid: string;
 	latest?: Date;
 	oldest?: Date;
-	notContainingTypes?: string[];
+	excludeTypes?: string[];
 	queryOptions?: any;
 	inclusive?: boolean;
 };

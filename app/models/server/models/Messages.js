@@ -227,7 +227,7 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomId({ rid, latest, oldest, notContainingTypes, queryOptions, inclusive }) {
+	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive }) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -236,18 +236,18 @@ export class Messages extends Base {
 			rid,
 		};
 
-		if (Match.test(notContainingTypes, [String]) && (notContainingTypes.length > 0)) {
-			query.t = { $nin: notContainingTypes };
+		if (Match.test(excludeTypes, [String]) && (excludeTypes.length > 0)) {
+			query.t = { $nin: excludeTypes };
 		}
 
 		console.log('latest: ', latest);
 		console.log('oldest: ', oldest);
 		console.log('query: ', query);
-		console.log('notContainingTypes: ', notContainingTypes);
+		console.log('excludeTypes: ', excludeTypes);
 
 		if (latest && oldest) {
 			console.log('!latest && !oldest');
-			return this.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, notContainingTypes, queryOptions);
+			return this.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, excludeTypes, queryOptions);
 		}
 
 		if (latest && !oldest) {

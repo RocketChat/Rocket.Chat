@@ -187,7 +187,7 @@ export class MessagesRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findVisibleByRoomId({ rid, latest, oldest, notContainingTypes, queryOptions, inclusive }) {
+	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive }) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -196,18 +196,18 @@ export class MessagesRaw extends BaseRaw {
 			rid,
 		};
 
-		if (Array.isArray(notContainingTypes) && notContainingTypes.length > 0) {
-			query.t = { $nin: notContainingTypes };
+		if (Array.isArray(excludeTypes) && excludeTypes.length > 0) {
+			query.t = { $nin: excludeTypes };
 		}
 
 		console.log('latest: ', latest);
 		console.log('oldest: ', oldest);
 		console.log('query: ', query);
-		console.log('notContainingTypes: ', notContainingTypes);
+		console.log('excludeTypes: ', excludeTypes);
 
 		if (latest && oldest) {
 			console.log('!latest && !oldest');
-			return this.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, notContainingTypes, queryOptions);
+			return this.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, excludeTypes, queryOptions);
 		}
 
 		if (latest && !oldest) {

@@ -360,7 +360,7 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 		}
 
 		const excludeTypes = [];
-		if (this.queryParams.notContainingTypes) {
+		if (this.queryParams.excludeTypes) {
 			const t = this.queryParams.excludeTypes;
 			Array.isArray(t) ? excludeTypes.push(...t) : excludeTypes.push(...t.split(','));
 		}
