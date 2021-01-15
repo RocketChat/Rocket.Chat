@@ -6,6 +6,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import AnnouncementModal from './AnnouncementModal';
 import { useSetModal } from '../../../contexts/ModalContext';
+import MarkdownText from '../../../components/MarkdownText';
 
 export const Announcement = ({ children, onClickOpen }) => {
 	const clickable = css`
@@ -22,13 +23,15 @@ export const Announcement = ({ children, onClickOpen }) => {
 			color: ${ colors.b800 };
 		}`;
 
-	return <Box onClick={onClickOpen} display='flex' p='x16' fontScale='p2' textAlign='center' className={clickable}><Box withTruncatedText w='none'>{children}</Box></Box>;
+	return <Box onClick={onClickOpen} display='flex' fontScale='p2' textAlign='center' className={clickable}><Box withTruncatedText w='none'>{children}</Box></Box>;
 };
 
-export default ({ announcement }) => {
+export default ({ announcement, announcementDetails }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
-	const handleClick = () => setModal(<AnnouncementModal onClose={closeModal}>{announcement}</AnnouncementModal>);
+	const handleClick = () => {
+		announcementDetails ? announcementDetails() : setModal(<AnnouncementModal onClose={closeModal}>{announcement}</AnnouncementModal>);
+	};
 
-	return announcement && <Announcement onClickOpen={handleClick}>{announcement}</Announcement>;
+	return announcement ? <Announcement onClickOpen={handleClick}><MarkdownText content={announcement} /></Announcement> : false;
 };
