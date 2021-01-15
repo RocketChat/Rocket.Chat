@@ -42,7 +42,17 @@ const uploadToEndpoint = (endpoint, params, formData) => {
 	return APIClient.v1.upload(endpoint, params, formData).promise;
 };
 
-const getStream = (streamName, options = {}) => new Meteor.Streamer(streamName, options);
+const getStream = (streamName, options = {}) => {
+	const streamer = Meteor.StreamerCentral.instances[streamName]
+		? Meteor.StreamerCentral.instances[streamName]
+		: new Meteor.Streamer(streamName, options);
+	return (eventName, callback) => {
+		streamer.on(eventName, callback);
+		return () => {
+			streamer.removeListener(eventName, callback);
+		};
+	};
+};
 
 const contextValue = {
 	info,
