@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { API } from '../api';
 import { settings } from '../../../settings';
 import { Messages } from '../../../models/server';
+import { Message } from '../../../../server/sdk';
 
 API.v1.addRoute('autotranslate.getSupportedLanguages', { authRequired: true }, {
 	get() {

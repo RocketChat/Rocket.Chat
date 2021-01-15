@@ -11,7 +11,7 @@ settings.get('Hide_System_Messages', function(key, values) {
 	hiddenTypes.forEach((item) => hideMessagesOfTypeServer.add(item));
 });
 
-export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
+export function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 	const room = Rooms.findOne(rid, { fields: { sysMes: 1, hideHistoryForNewMembers: 1 } });
 
 	// TODO probably remove on chained event system
@@ -56,7 +56,6 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
-			// TODO apply logic for history visibility
 			const unreadMessages = Promise.await(Message.get(userId, {
 				rid, excludeTypes: hiddenMessageTypes, latest: ls, oldest: firstMessage.ts, queryOptions: {
 				limit: 1,

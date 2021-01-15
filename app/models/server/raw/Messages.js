@@ -206,21 +206,17 @@ export class MessagesRaw extends BaseRaw {
 		console.log('excludeTypes: ', excludeTypes);
 
 		if (latest && oldest) {
-			console.log('!latest && !oldest');
 			return this.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, excludeTypes, queryOptions);
 		}
 
 		if (latest && !oldest) {
-			console.log('latest && !oldest');
 			return this.findVisibleByRoomIdBeforeTimestamp(rid, latest, queryOptions, inclusive);
 		}
 
 		if (!latest && oldest) {
-			console.log('!latest && oldest');
 			return this.findVisibleByRoomIdAfterTimestamp(rid, oldest, queryOptions);
 		}
 
-		console.log('!latest && !oldest');
 		return this.find(query, queryOptions);
 	}
 

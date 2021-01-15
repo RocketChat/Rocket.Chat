@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Messages } from '../../app/models';
+import { Messages, Rooms, Subscriptions } from '../../app/models';
+import { Message } from '../../server/sdk';
 import { settings } from '../../app/settings';
 
 Meteor.methods({
@@ -32,7 +33,13 @@ Meteor.methods({
 			};
 		}
 
-		// TODO apply logic for history visibility
-		return Messages.findVisibleByRoomIdAfterTimestamp({ rid, oldest: start, queryOptions }).fetch();
+		const room = Rooms.findOne(rid, { fields: { hideHistoryForNewMembers: 1 } });
+
+		let oldest;
+		if (room.hideHistoryForNewMembers) {
+			const sub = Subscriptions.findOneByRoomIdAndUserId(rid, fromId);
+			oldest = sub.ts;
+		}
+		return Promise.await(Message.get(fromId, { rid, oldest, queryOptions }));
 	},
 });

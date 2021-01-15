@@ -6,6 +6,7 @@ import { hasPermission } from '../../../authorization';
 import { Subscriptions, Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import { Message } from '../../../../server/sdk';
 
 Meteor.methods({
 	getChannelHistory({ rid, latest, oldest, offset = 0, count = 20, unreads, excludeTypes }) {
@@ -31,7 +32,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
 		}
 
-		const options = {
+		const queryOptions = {
 			sort: {
 				ts: -1,
 			},
@@ -40,11 +41,10 @@ Meteor.methods({
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			options.fields = { editedAt: 0 };
+			queryOptions.fields = { editedAt: 0 };
 		}
 
-		// TODO apply logic for history visibility
-		const records = Messages.findVisibleByRoomId({ rid, latest, oldest, queryOptions: options, excludeTypes });
+		const records = Promise.await(Message.get(fromUserId, { rid, latest, oldest, queryOptions, excludeTypes }));
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
 
@@ -52,19 +52,18 @@ Meteor.methods({
 			let unreadNotLoaded = 0;
 			let firstUnread = undefined;
 
-			if (!_.isUndefined(oldest)) {
+			if (oldest) {
 				const firstMsg = messages[messages.length - 1];
-				if (!_.isUndefined(firstMsg) && firstMsg.ts > oldest) {
+				if (firstMsg && firstMsg.ts > oldest) {
 
-					// TODO apply logic for history visibility
-					const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestamps({
+					const unreadMessages = Promise.await(Messages.get(fromUserId, {
 						rid,
 						oldest,
 						latest: firstMsg.ts,
 						queryOptions: { limit: 1, sort: { ts: 1 } },
-					});
-					firstUnread = unreadMessages.fetch()[0];
-					unreadNotLoaded = unreadMessages.count();
+					}));
+					firstUnread = unreadMessages[0];
+					unreadNotLoaded = unreadMessages.length;
 				}
 			}
 
