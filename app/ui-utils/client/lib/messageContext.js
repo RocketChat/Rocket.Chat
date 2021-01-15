@@ -5,11 +5,12 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Subscriptions, Rooms, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
-import { getUserPreference, handleError } from '../../../utils/client';
+import { getUserPreference, roomTypes, handleError } from '../../../utils/client';
 import { AutoTranslate } from '../../../autotranslate/client';
 import { Layout } from './Layout';
 import { fireGlobalEvent } from './fireGlobalEvent';
 import { actionLinks } from '../../../action-links/client';
+
 
 const fields = { name: 1, username: 1, 'settings.preferences.showMessageInMainThread': 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
 
@@ -52,6 +53,11 @@ export function messageContext({ rid } = Template.instance()) {
 		FlowRouter.goToRoomById(drid);
 	};
 
+	const replyBroadcast = (e) => {
+		const { username, mid } = e.currentTarget.dataset;
+		roomTypes.openRouteLink('d', { name: username }, { ...FlowRouter.current().queryParams, reply: mid });
+	};
+
 	return {
 		u: user,
 		room: Rooms.findOne({ _id: rid }, {
@@ -80,6 +86,9 @@ export function messageContext({ rid } = Template.instance()) {
 			},
 			openDiscussion() {
 				return openDiscussion;
+			},
+			replyBroadcast() {
+				return replyBroadcast;
 			},
 		},
 		settings: {
