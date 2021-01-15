@@ -8,7 +8,8 @@ module.exports = {
 	reporter: 'spec',
 	ui: 'bdd',
 	extension: 'js,ts',
-	timeout: 10000,
+	// 1 min timout is acceptable in CI
+	timeout: 60000,
 	bail: true,
 	file: 'tests/end-to-end/teardown.js',
 	spec: [
