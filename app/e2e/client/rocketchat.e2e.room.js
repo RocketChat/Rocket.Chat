@@ -42,6 +42,46 @@ export const E2E_ROOM_STATES = {
 };
 
 const KEY_ID = Symbol('keyID');
+
+const reduce = (prev, next) => {
+	if (prev === next) {
+		return next === E2E_ROOM_STATES.ERROR;
+	}
+
+
+	switch (next) {
+		case E2E_ROOM_STATES.READY:
+			if (prev === E2E_ROOM_STATES.PAUSED) {
+				return E2E_ROOM_STATES.READY;
+			}
+			return E2E_ROOM_STATES.DISABLED;
+		case E2E_ROOM_STATES.PAUSED:
+			if (prev === E2E_ROOM_STATES.READY) {
+				return E2E_ROOM_STATES.PAUSED;
+			}
+			return E2E_ROOM_STATES.DISABLED;
+	}
+	switch (prev) {
+		case E2E_ROOM_STATES.PAUSED:
+			if (next === E2E_ROOM_STATES.READY) {
+				return E2E_ROOM_STATES.READY;
+			}
+			return false;
+		case E2E_ROOM_STATES.NOT_STARTED:
+			return [E2E_ROOM_STATES.ESTABLISHING, E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED, E2E_ROOM_STATES.KEYS_RECEIVED].includes(next) && next;
+		case E2E_ROOM_STATES.READY:
+			return [E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED].includes(next) && next;
+		case E2E_ROOM_STATES.ERROR:
+			return [E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.NOT_STARTED].includes(next) && next;
+		case E2E_ROOM_STATES.WAITING_KEYS:
+			return [E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.ERROR, E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED].includes(next) && next;
+		case E2E_ROOM_STATES.ESTABLISHING:
+			return [E2E_ROOM_STATES.READY, E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.ERROR, E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED, E2E_ROOM_STATES.WAITING_KEYS].includes(next) && next;
+		default:
+			return next;
+	}
+};
+
 export class E2ERoom extends Emitter {
 	log(...msg) {
 		if (this.roomId === Session.get('openedRoom')) {
@@ -57,9 +97,15 @@ export class E2ERoom extends Emitter {
 
 	setState(state) {
 		const prev = this.state;
+
+		const next = reduce(prev, state);
+		if (!next) {
+			this.error(`invalid state ${ prev } -> ${ state }`);
+			return;
+		}
 		this.state = state;
+		this.emit('STATE_CHANGED', prev, next, this);
 		this.emit(state, this);
-		this.emit('STATE_CHANGED', prev, state, this);
 	}
 
 	constructor(userId, roomId, t) {
@@ -76,7 +122,7 @@ export class E2ERoom extends Emitter {
 		this.once(E2E_ROOM_STATES.READY, () => this.decryptPendingSubscription());
 		this.on('STATE_CHANGED', (prev) => {
 			if (this.roomId === Session.get('openedRoom')) {
-				this.log('State CHANGED', `[PREV: ${ prev }]`);
+				this.log(`[PREV: ${ prev }]`, 'State CHANGED');
 			}
 		});
 		this.on('STATE_CHANGED', () => this.handshake());
@@ -85,15 +131,19 @@ export class E2ERoom extends Emitter {
 
 
 	disable() {
-		![E2E_ROOM_STATES.DISABLED].includes(this.state) && this.setState(E2E_ROOM_STATES.DISABLED);
+		this.setState(E2E_ROOM_STATES.DISABLED);
+	}
+
+	keyReceived() {
+		this.setState(E2E_ROOM_STATES.KEYS_RECEIVED);
 	}
 
 	pause() {
-		![E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED].includes(this.state) && this.setState(this.state === E2E_ROOM_STATES.READY ? E2E_ROOM_STATES.PAUSED : E2E_ROOM_STATES.DISABLED);
+		this.setState(this.state === E2E_ROOM_STATES.READY ? E2E_ROOM_STATES.PAUSED : E2E_ROOM_STATES.DISABLED);
 	}
 
 	enable() {
-		![E2E_ROOM_STATES.READY, E2E_ROOM_STATES.NOT_STARTED].includes(this.state) && this.setState(this.state === E2E_ROOM_STATES.PAUSED ? E2E_ROOM_STATES.READY : E2E_ROOM_STATES.NOT_STARTED);
+		this.setState(E2E_ROOM_STATES.READY);
 	}
 
 	shouldConvertSentMessages() {
@@ -125,10 +175,6 @@ export class E2ERoom extends Emitter {
 
 	isWaitingKeys() {
 		return this.state === E2E_ROOM_STATES.WAITING_KEYS;
-	}
-
-	keyReceived() {
-		this.setState(E2E_ROOM_STATES.KEYS_RECEIVED);
 	}
 
 	get keyID() {
