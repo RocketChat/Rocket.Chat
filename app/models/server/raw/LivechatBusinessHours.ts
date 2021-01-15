@@ -57,7 +57,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> {
 		});
 	}
 
-	async updateOne(_id: string, data: Omit<ILivechatBusinessHour, '_id'>): Promise<any> {
+	async updateOneById(_id: string, data: Omit<ILivechatBusinessHour, '_id'>): Promise<any> {
 		const query = {
 			_id,
 		};
