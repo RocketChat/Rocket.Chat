@@ -115,13 +115,7 @@
 					{{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
-			{{#each msg.attachments}}
-				{{injectMessage . ../msg}}
-				{{injectSettings . ../settings}}
-				{{injectIndex . @index}}
-				{{> messageAttachment}}
-			{{/each}}
-
+			{{> reactAttachments attachments=msg.attachments file=msg.file }}
 			{{#if msg.drid}}
 				{{> DiscussionMetric count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
 			{{/if}}
