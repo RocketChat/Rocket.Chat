@@ -6,7 +6,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { LivechatRooms, LivechatVisitors, Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server';
 import { settings } from '../../../../../app/settings/server';
-import { postAutoTransferExecuted } from './Helper';
 
 
 class AutoTransferChatSchedulerClass {
@@ -64,9 +63,10 @@ class AutoTransferChatSchedulerClass {
 				transferredBy: schedulerUser,
 				comment: TAPi18n.__('Livechat_auto_transfer_chat_message', { username, timeout }),
 			};
-			await LivechatRooms.setAutoTransferredAtById(roomId);
+
 			await Livechat.transfer(room, guest, transferData);
-			await postAutoTransferExecuted(roomId);
+			await LivechatRooms.setAutoTransferredAtById(roomId);
+			await this.unscheduleRoom(roomId);
 		} catch (err) {
 			console.error(err);
 		}

@@ -15,8 +15,8 @@ const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> =
 		return inquiry;
 	}
 
-	const room = LivechatRooms.findOneById(rid, { autoTransferredAt: 1 });
-	if (!room || room.autoTransferredAt) {
+	const room = LivechatRooms.findOneById(rid, { autoTransferredAt: 1, autoTransferOngoing: 1 });
+	if (!room || room.autoTransferredAt || room.autoTransferOngoing) {
 		return inquiry;
 	}
 
@@ -41,10 +41,11 @@ const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promis
 		return message;
 	}
 
-	if (autoTransferOngoing) {
-		await AutoTransferChatScheduler.unscheduleRoom(rid);
+	if (!autoTransferOngoing) {
+		return message;
 	}
 
+	await AutoTransferChatScheduler.unscheduleRoom(rid);
 	return message;
 };
 

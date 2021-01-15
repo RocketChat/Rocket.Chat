@@ -245,7 +245,3 @@ export const getLivechatQueueInfo = async (room) => {
 
 	return normalizeQueueInfo(inq);
 };
-
-export const postAutoTransferExecuted = async (roomId) => {
-	await AutoTransferChatScheduler.unscheduleRoom(roomId);	// (cleanup) since the job is executed, clear it's copy from db
-};
