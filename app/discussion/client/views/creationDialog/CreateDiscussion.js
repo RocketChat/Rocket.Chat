@@ -116,7 +116,8 @@ Template.CreateDiscussion.events({
 			const errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
 			return toastr.error(errorText);
 		}
-		const result = await call('createDiscussion', { prid, pmid, t_name, reply, users, encrypted });
+		const result = await call('createDiscussion', { prid, pmid, t_name, users, encrypted });
+
 		// callback to enable tracking
 		callbacks.run('afterDiscussion', Meteor.user(), result);
 
@@ -125,6 +126,10 @@ Template.CreateDiscussion.events({
 		}
 
 		roomTypes.openRouteLink(result.t, result);
+
+		if (reply) {
+			call('sendMessage', { msg: reply, rid: result.rid });
+		}
 	},
 });
 
