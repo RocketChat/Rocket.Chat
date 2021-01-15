@@ -130,6 +130,10 @@
 			    {{> ThreadMetric counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
 			{{/if}}
 
+			{{#if broadcast}}
+			 	{{> BroadCastMetric mid=msg._id username=msg.u.username replyBroadcast=actions.replyBroadcast }}
+			{{/if}}
+
 			{{#with readReceipt}}
 				<div class="read-receipt {{readByEveryone}}">
 					{{> icon icon="check" }}
@@ -168,13 +172,6 @@
 				{{/each}}
 			</ul>
 			{{/unless}}
-			{{#if broadcast}}
-				{{#with msg}}
-					<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
-						{{> icon icon="reply"}} {{_'Reply'}}
-					</button>
-				{{/with}}
-			{{/if}}
 			{{#unless hideReactions}}
 			<ul class="reactions">
 				{{#each reaction in reactions}}
