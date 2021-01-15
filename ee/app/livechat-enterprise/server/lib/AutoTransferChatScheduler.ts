@@ -7,7 +7,6 @@ import { LivechatRooms, LivechatVisitors, Users } from '../../../../../app/model
 import { Livechat } from '../../../../../app/livechat/server';
 import { settings } from '../../../../../app/settings/server';
 
-
 class AutoTransferChatSchedulerClass {
 	scheduler: Agenda;
 
