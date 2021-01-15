@@ -10,5 +10,5 @@ export type MessageFilter = {
 };
 
 export interface IMessageService extends IServiceClass {
-	get(userId: string, options: MessageFilter): Promise<any[]>;
+	get(userId: string, options: MessageFilter): Promise<any[] | undefined>;
 }

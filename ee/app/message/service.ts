@@ -17,14 +17,15 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 		this.Messages = new MessagesRaw(db.collection('rocketchat_message'));
 	}
 
-	async get(userId: string, filter: MessageFilter): Promise<any[] | null> {
+	async get(userId: string, filter: MessageFilter): Promise<any[] | undefined> {
 		console.log('MessageEnterprise', userId, filter);
 
 		if (!hasLicense('livechat-enterprise')) {
 			return;
 		}
 
-		filter.oldest = new Date(2021, 0, 14);
+		//filter.oldest = new Date(2021, 0, 14);
+		console.log('enterprise filter');
 
 		return this.Messages.findVisibleByRoomId(filter).toArray();
 	}
