@@ -133,10 +133,13 @@ export function getEmailData({
 		subjectKey = 'Offline_Mention_Email';
 	}
 
-	const emailSubject = Mailer.replace(settings.get(subjectKey), {
+	let emailSubject = Mailer.replace(settings.get(subjectKey), {
 		user: username,
 		room: roomTypes.getRoomName(room.t, room),
 	});
+	if (settings.get('Direct_Reply_Method') === 'subject') {
+		emailSubject = `${ emailSubject } reply:${ message._id }`;
+	}
 	const content = getEmailContent({
 		message,
 		user: receiver,
@@ -169,8 +172,15 @@ export function getEmailData({
 	if (settings.get('Direct_Reply_Enable')) {
 		const replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
 
-		// Reply-To header with format "username+messageId@domain"
-		email.headers['Reply-To'] = `${ replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0] }${ settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`;
+		email.headers = {
+			'Reply-To': replyto,
+		};
+		if (settings.get('Direct_Reply_Method') === 'to') {
+			email.headers = {
+				// Reply-To header with format "username+messageId@domain"
+				'Reply-To': `${ replyto.split('@')[0].split(settings.get('Direct_Reply_Separator'))[0] }${ settings.get('Direct_Reply_Separator') }${ message._id }@${ replyto.split('@')[1] }`,
+			};
+		}
 	}
 
 	metrics.notificationsSent.inc({ notification_type: 'email' });
