@@ -10,6 +10,7 @@ import './startup/migrations';
 import './startup/appcache';
 import './startup/cron';
 import './startup/initialData';
+import './startup/instance';
 import './startup/presence';
 import './startup/serverRunning';
 import './configuration/accounts_meld';

@@ -2195,6 +2195,7 @@
   "New_visitor_navigation": "Yeni Gezinme: __history__",
   "Newer_than": "Daha yeni",
   "Newer_than_may_not_exceed_Older_than": "\"Daha yeni\", \"Daha eski\"den yeni olamaz",
+  "No": "Hayır",
   "No_available_agents_to_transfer": "Aktarılacak ajanlar yok",
   "No_channel_with_name_%s_was_found": "Adı <strong>\"%s\"</strong> olan hiçbir kanal bulunamadı!",
   "No_channels_yet": "Henüz hiç bir kanala bağlı değilsiniz.",

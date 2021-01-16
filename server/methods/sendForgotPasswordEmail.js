@@ -9,12 +9,12 @@ Meteor.methods({
 	sendForgotPasswordEmail(to) {
 		check(to, String);
 
-		const email = to.trim();
+		const email = to.trim().toLowerCase();
 
 		const user = Users.findOneByEmailAddress(email, { fields: { _id: 1 } });
 
 		if (!user) {
-			return false;
+			return true;
 		}
 
 		if (user.services && !user.services.password) {
@@ -24,12 +24,10 @@ Meteor.methods({
 		}
 
 		try {
-			return !!Accounts.sendResetPasswordEmail(user._id, email);
+			Accounts.sendResetPasswordEmail(user._id, email);
+			return true;
 		} catch (error) {
-			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
-				method: 'registerUser',
-				message: error.message,
-			});
+			console.error(error);
 		}
 	},
 });

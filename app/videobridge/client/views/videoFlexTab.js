@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { TimeSync } from 'meteor/mizzao:timesync';
 
 import { settings } from '../../../settings';
-import { modal, TabBar, call } from '../../../ui-utils/client';
+import { modal, call } from '../../../ui-utils/client';
 import { t } from '../../../utils/client';
 import { Users, Rooms } from '../../../models';
 import * as CONSTANTS from '../../constants';
@@ -45,7 +45,7 @@ Template.videoFlexTab.onRendered(function() {
 
 		this.tabBar.close();
 
-		TabBar.updateButton('video', { class: '' });
+		// TabBar.updateButton('video', { class: '' });
 	};
 
 	const stop = () => {
@@ -78,7 +78,7 @@ Template.videoFlexTab.onRendered(function() {
 			}
 			clearInterval(this.intervalHandler);
 			this.intervalHandler = setInterval(update, CONSTANTS.HEARTBEAT);
-			TabBar.updateButton('video', { class: 'red' });
+			// TabBar.updateButton('video', { class: 'red' });
 			return jitsiTimeout;
 		} catch (error) {
 			console.error(error);
@@ -105,8 +105,8 @@ Template.videoFlexTab.onRendered(function() {
 				return closePanel();
 			}
 
-			if (this.tabBar.getState() !== 'opened') {
-				TabBar.updateButton('video', { class: '' });
+			if (!this.tabBar.isOpen()) {
+				// TabBar.updateButton('video', { class: '' });
 				return stop();
 			}
 
@@ -155,12 +155,21 @@ Template.videoFlexTab.onRendered(function() {
 				});
 			}
 
+			await new Promise((resolve) => {
+				if (typeof JitsiMeetExternalAPI === 'undefined') {
+					const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+					return $.getScript(`${ prefix }/packages/rocketchat_videobridge/client/public/external_api.js`, resolve);
+				}
+				resolve();
+			});
+
 			if (typeof JitsiMeetExternalAPI !== 'undefined') {
 				// Keep it from showing duplicates when re-evaluated on variable change.
 				const name = Users.findOne(Meteor.userId(), { fields: { name: 1 } });
 				if (!$('[id^=jitsiConference]').length) {
 					Tracker.nonreactive(async () => {
 						await start();
+
 
 						this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl, accessToken);
 
