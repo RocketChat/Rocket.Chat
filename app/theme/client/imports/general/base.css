@@ -246,3 +246,7 @@ button {
 		display: none !important;
 	}
 }
+
+.gallery-item {
+	cursor: pointer;
+}

@@ -155,12 +155,21 @@ Template.videoFlexTab.onRendered(function() {
 				});
 			}
 
+			await new Promise((resolve) => {
+				if (typeof JitsiMeetExternalAPI === 'undefined') {
+					const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+					return $.getScript(`${ prefix }/packages/rocketchat_videobridge/client/public/external_api.js`, resolve);
+				}
+				resolve();
+			});
+
 			if (typeof JitsiMeetExternalAPI !== 'undefined') {
 				// Keep it from showing duplicates when re-evaluated on variable change.
 				const name = Users.findOne(Meteor.userId(), { fields: { name: 1 } });
 				if (!$('[id^=jitsiConference]').length) {
 					Tracker.nonreactive(async () => {
 						await start();
+
 
 						this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl, accessToken);
 
