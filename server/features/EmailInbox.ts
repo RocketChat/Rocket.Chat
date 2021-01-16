@@ -1,6 +1,7 @@
 import stripHtml from 'string-strip-html';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { ParsedMail } from 'mailparser';
 
 import { EmailInbox } from '../../app/models/server/raw';
 import { IMAPInterceptor } from '../email/IMAPInterceptor';
@@ -37,6 +38,51 @@ function getGuestByEmail(email: string, name: string): any {
 	throw new Error('Error getting guest');
 }
 
+function onEmailReceived(email: ParsedMail): void {
+	// console.log('NEW EMAIL =>', email.text);
+	// console.log('NEW EMAIL =>', email);
+
+	if (!email.from?.value?.[0]?.address) {
+		return;
+	}
+
+	const thread = email.references?.[0] ?? email.messageId;
+
+	const guest = getGuestByEmail(email.from.value[0].address, email.from.value[0].name);
+
+	// TODO: Get the closed room and reopen rather than create a new one
+	// const room = LivechatRooms.findOneByVisitorTokenAndEmailThread(guest.token, emailThread, {});
+	const room = LivechatRooms.findOneOpenByVisitorTokenAndEmailThread(guest.token, thread, {});
+
+	let msg = email.text;
+
+	if (email.html) {
+		// Try to remove the signature and history
+		msg = stripHtml(email.html.replace(/<div name="messageSignatureSection.+/s, '')).result;
+	}
+
+	const rid = room?._id ?? Random.id();
+
+	Livechat.sendMessage({
+		guest,
+		message: {
+			_id: Random.id(),
+			msg,
+			rid,
+			email: {
+				references: email.references,
+			},
+		},
+		roomInfo: {
+			email: {
+				thread,
+				subject: email.subject,
+			},
+		},
+		agent: undefined,
+	});
+}
+
 async function configureEmailInboxes(): Promise<void> {
 	const emailInboxesCursor = EmailInbox.find({
 		active: true,
@@ -59,7 +105,6 @@ async function configureEmailInboxes(): Promise<void> {
 			port: parseInt(emailInboxRecord.imap.port),
 			tls: emailInboxRecord.imap.sslTls,
 			tlsOptions: {
-				// TODO: Check why it's not working without this setting
 				rejectUnauthorized: false,
 			},
 			// debug: (...args: any[]): void => console.log(...args),
@@ -72,48 +117,7 @@ async function configureEmailInboxes(): Promise<void> {
 
 		IMAPInboxes.add(imap);
 
-		imap.on('email', Meteor.bindEnvironment((email) => {
-			// console.log('NEW EMAIL =>', email.text);
-			console.log('NEW EMAIL =>', email);
-
-			if (!email.from?.value?.[0]?.address) {
-				return;
-			}
-
-			const thread = email.references?.[0] ?? email.messageId;
-
-			const guest = getGuestByEmail(email.from.value[0].address, email.from.value[0].name);
-
-			// TODO: Get the closed room and reopen rather than create a new one
-			// const room = LivechatRooms.findOneByVisitorTokenAndEmailThread(guest.token, emailThread, {});
-			const room = LivechatRooms.findOneOpenByVisitorTokenAndEmailThread(guest.token, thread, {});
-
-			let msg = email.text;
-
-			if (email.html) {
-				// Try to remove the signature and history
-				msg = stripHtml(email.html.replace(/<div name="messageSignatureSection.+/s, ''));
-			}
-
-			Livechat.sendMessage({
-				guest,
-				message: {
-					_id: Random.id(),
-					msg,
-					rid: room?._id ?? Random.id(),
-					email: {
-						references: email.references,
-					},
-				},
-				roomInfo: {
-					email: {
-						thread,
-						subject: email.subject,
-					},
-				},
-				agent: undefined,
-			});
-		}));
+		imap.on('email', Meteor.bindEnvironment(onEmailReceived));
 
 		imap.start();
 	}
