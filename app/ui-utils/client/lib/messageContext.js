@@ -5,8 +5,11 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Subscriptions, Rooms, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
-import { getUserPreference, roomTypes } from '../../../utils/client';
+import { getUserPreference, roomTypes, handleError } from '../../../utils/client';
 import { AutoTranslate } from '../../../autotranslate/client';
+import { Layout } from './Layout';
+import { fireGlobalEvent } from './fireGlobalEvent';
+import { actionLinks } from '../../../action-links/client';
 
 
 const fields = { name: 1, username: 1, 'settings.preferences.showMessageInMainThread': 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
@@ -14,7 +17,7 @@ const fields = { name: 1, username: 1, 'settings.preferences.showMessageInMainTh
 export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
 	const user = Users.findOne({ _id: uid }, { fields }) || {};
-
+	const instace = Template.instance();
 	const openThread = (e) => {
 		const { rid, mid, tmid } = e.currentTarget.dataset;
 		const room = Rooms.findOne({ _id: rid });
@@ -25,6 +28,22 @@ export function messageContext({ rid } = Template.instance()) {
 			context: tmid || mid,
 		}, {
 			jump: tmid && tmid !== mid && mid && mid,
+		});
+	};
+
+	const runAction = Layout.isEmbedded() ? (msg, e) => {
+		const { actionlink } = e.currentTarget.dataset;
+		return fireGlobalEvent('click-action-link', {
+			actionlink,
+			value: msg._id,
+			message: msg,
+		});
+	} : (msg, e) => {
+		const { actionlink } = e.currentTarget.dataset;
+		actionLinks.run(actionlink, msg._id, instace, (err) => {
+			if (err) {
+				handleError(err);
+			}
 		});
 	};
 
@@ -61,6 +80,9 @@ export function messageContext({ rid } = Template.instance()) {
 		actions: {
 			openThread() {
 				return openThread;
+			},
+			runAction(msg) {
+				return () => (e) => runAction(msg, e);
 			},
 			openDiscussion() {
 				return openDiscussion;

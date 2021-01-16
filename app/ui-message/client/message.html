@@ -149,22 +149,7 @@
 				</div>
 			{{/unless}}
 			{{#unless hideActionLinks}}
-			<ul class="actionLinks">
-				{{#each actionLink in actionLinks}}
-					<li class="color-primary-action-color">
-						<span class="rc-button rc-button--primary rc-button--small" style="display: inline-block; line-height: 1.75rem" data-actionlink="{{actionLink.id}}">
-							{{#if actionLink.icon}}
-								<i class="{{actionLink.icon}}"></i>
-							{{/if}}
-							{{#if actionLink.i18nLabel}}
-								{{_ actionLink.i18nLabel}}
-							{{else}}
-								{{actionLink.label}}
-							{{/if}}
-						</span>
-					</li>
-				{{/each}}
-			</ul>
+				{{> MessageActions mid=msg._id actions=actionLinks runAction=(actions.runAction msg)}}
 			{{/unless}}
 			{{#unless hideReactions}}
 			<ul class="reactions">
