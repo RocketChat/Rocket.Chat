@@ -148,6 +148,8 @@
 		"@rocket.chat/ui-kit": "^0.20.1",
 		"@slack/client": "^4.12.0",
 		"@types/fibers": "^3.1.0",
+		"@types/imap": "^0.8.33",
+		"@types/mailparser": "^3.0.0",
 		"@types/mkdirp": "^1.0.1",
 		"@types/underscore.string": "0.0.38",
 		"@types/use-subscription": "^1.0.0",
