@@ -207,7 +207,7 @@ Run Rocket.Chat on your easy to use personal device.
 
 # About Rocket.Chat
 
-Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/install) full stack framework.
+Rocket.Chat is a Web Chat Server, developed in JavaScript, using the [Meteor](https://www.meteor.com/developers/install) full stack framework.
 
 It is a great solution for communities and companies wanting to privately host their own chat service or for developers looking forward to build and evolve their own chat platforms.
 
@@ -352,7 +352,7 @@ Note that Rocket.Chat is distributed under the [MIT License](http://opensource.o
 Prerequisites:
 
 * [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-* [Meteor](https://www.meteor.com/install)
+* [Meteor](https://www.meteor.com/developers/install)
 
 > Meteor automatically installs a hidden [NodeJS v12](https://nodejs.org/download/release/v12.18.4/) and [MongoDB v4.2](https://docs.mongodb.com/manual/introduction/) to be used when you run your app in development mode using the `meteor` command.
 
