@@ -151,6 +151,7 @@
 		"@types/imap": "^0.8.33",
 		"@types/mailparser": "^3.0.0",
 		"@types/mkdirp": "^1.0.1",
+		"@types/string-strip-html": "^5.0.0",
 		"@types/underscore.string": "0.0.38",
 		"@types/use-subscription": "^1.0.0",
 		"@types/xml-crypto": "^1.4.1",
