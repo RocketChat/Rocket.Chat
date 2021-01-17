@@ -12,8 +12,9 @@ import LivechatVisitors from '../../app/models/server/models/LivechatVisitors';
 import LivechatRooms from '../../app/models/server/models/LivechatRooms';
 import { callbacks } from '../../app/callbacks/server';
 import Messages from '../../app/models/server/models/Messages';
+import { IEmailInbox } from '../../definition/IEmailInbox';
 
-const inboxes = new Map<string, {imap: IMAPInterceptor; smtp: Mail}>();
+const inboxes = new Map<string, {imap: IMAPInterceptor; smtp: Mail; config: IEmailInbox}>();
 
 function getGuestByEmail(email: string, name: string): any {
 	const guest = LivechatVisitors.findOneGuestByEmailAddress(email);
@@ -131,6 +132,10 @@ callbacks.add('afterSaveMessage', function(message: any, room: any) {
 	}
 
 	inbox.smtp.sendMail({
+		from: inbox.config.senderInfo ? {
+			name: inbox.config.senderInfo,
+			address: inbox.config.email,
+		} : inbox.config.email,
 		to: room.email.replyTo,
 		subject: room.email.subject,
 		text: match.groups.text,
@@ -193,7 +198,7 @@ export async function configureEmailInboxes(): Promise<void> {
 			},
 		});
 
-		inboxes.set(emailInboxRecord.email, { imap, smtp });
+		inboxes.set(emailInboxRecord.email, { imap, smtp, config: emailInboxRecord });
 	}
 }
 
