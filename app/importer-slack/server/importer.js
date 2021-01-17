@@ -187,7 +187,18 @@ export class SlackImporter extends Base {
 			return this.getProgress();
 		}
 
-		const selectionUsers = tempUsers.map((user) => new SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
+		const selectionUsers = (() => {
+			if (tempUsers.length <= 500) {
+				return tempUsers.map((user) => new SelectionUser(user.id, user.name, user.profile.email, user.deleted, user.is_bot, !user.is_bot));
+			}
+
+			return [
+				new SelectionUser('users', 'Regular Users', '', false, false, true),
+				new SelectionUser('bot_users', 'Bot Users', '', false, true, false),
+				new SelectionUser('deleted_users', 'Deleted Users', '', true, false, true),
+			];
+		})();
+
 		const selectionChannels = tempChannels.map((channel) => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
 		const selectionGroups = tempGroups.map((channel) => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, true));
 		const selectionMpims = tempMpims.map((channel) => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, true));
@@ -807,6 +818,28 @@ export class SlackImporter extends Base {
 	}
 
 	_applyUserSelection(importSelection) {
+		if (importSelection.users.length === 3 && importSelection.users[0].user_id === 'users') {
+			const regularUsers = importSelection.users[0].do_import;
+			const botUsers = importSelection.users[1].do_import;
+			const deletedUsers = importSelection.users[2].do_import;
+
+			for (const list of this.userLists) {
+				Object.keys(list.users).forEach((k) => {
+					const u = list.users[k];
+
+					if (u.is_bot) {
+						u.do_import = botUsers;
+					} else if (u.deleted) {
+						u.do_import = deletedUsers;
+					} else {
+						u.do_import = regularUsers;
+					}
+				});
+
+				this.collection.update({ _id: list._id }, { $set: { users: list.users } });
+			}
+		}
+
 		Object.keys(importSelection.users).forEach((key) => {
 			const user = importSelection.users[key];
 
