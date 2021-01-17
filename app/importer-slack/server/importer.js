@@ -230,13 +230,13 @@ export class SlackImporter extends Base {
 				Meteor.runAsUser(userId, () => {
 					Meteor.call('setUsername', user.name, { joinDefaultChannelsSilenced: true });
 
-					const url = user.profile.image_original || user.profile.image_512;
-					try {
-						Meteor.call('setAvatarFromService', url, undefined, 'url');
-					} catch (error) {
-						this.logger.warn(`Failed to set ${ user.name }'s avatar from url ${ url }`);
-						console.log(`Failed to set ${ user.name }'s avatar from url ${ url }`);
-					}
+					// const url = user.profile.image_original || user.profile.image_512;
+					// try {
+					// 	Meteor.call('setAvatarFromService', url, undefined, 'url');
+					// } catch (error) {
+					// 	this.logger.warn(`Failed to set ${ user.name }'s avatar from url ${ url }`);
+					// 	console.log(`Failed to set ${ user.name }'s avatar from url ${ url }`);
+					// }
 
 					// Slack's is -18000 which translates to Rocket.Chat's after dividing by 3600
 					if (user.tz_offset) {
