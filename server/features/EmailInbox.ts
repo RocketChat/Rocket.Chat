@@ -2,14 +2,18 @@ import stripHtml from 'string-strip-html';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { ParsedMail } from 'mailparser';
+import nodemailer from 'nodemailer';
+import Mail from 'nodemailer/lib/mailer';
 
 import { EmailInbox } from '../../app/models/server/raw';
 import { IMAPInterceptor } from '../email/IMAPInterceptor';
 import { Livechat } from '../../app/livechat/server';
 import LivechatVisitors from '../../app/models/server/models/LivechatVisitors';
 import LivechatRooms from '../../app/models/server/models/LivechatRooms';
+import { callbacks } from '../../app/callbacks/server';
+import Messages from '../../app/models/server/models/Messages';
 
-const IMAPInboxes = new Set<IMAPInterceptor>();
+const IMAPInboxes = new Map<string, {imap: IMAPInterceptor; smtp: Mail}>();
 
 function getGuestByEmail(email: string, name: string): any {
 	const guest = LivechatVisitors.findOneGuestByEmailAddress(email);
@@ -38,15 +42,17 @@ function getGuestByEmail(email: string, name: string): any {
 	throw new Error('Error getting guest');
 }
 
-function onEmailReceived(email: ParsedMail): void {
+function onEmailReceived(email: ParsedMail, inbox: string): void {
 	// console.log('NEW EMAIL =>', email.text);
-	// console.log('NEW EMAIL =>', email);
+	// console.log('NEW EMAIL =>', email.headers);
 
 	if (!email.from?.value?.[0]?.address) {
 		return;
 	}
 
-	const thread = email.references?.[0] ?? email.messageId;
+	const references = typeof email.references === 'string' ? [email.references] : email.references;
+
+	const thread = references?.[0] ?? email.messageId;
 
 	const guest = getGuestByEmail(email.from.value[0].address, email.from.value[0].name);
 
@@ -70,12 +76,15 @@ function onEmailReceived(email: ParsedMail): void {
 			msg,
 			rid,
 			email: {
-				references: email.references,
+				references,
+				messageId: email.messageId,
 			},
 		},
 		roomInfo: {
 			email: {
+				inbox,
 				thread,
+				replyTo: email.from.value[0].address,
 				subject: email.subject,
 			},
 		},
@@ -83,12 +92,56 @@ function onEmailReceived(email: ParsedMail): void {
 	});
 }
 
+const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
+
+callbacks.add('afterSaveMessage', function(message: any, room: any) {
+	if (!room.email?.inbox || !message.urls || message.urls.length === 0) {
+		return message;
+	}
+
+	const { msg } = message;
+
+	// Try to identify a quote in a livechat room
+	const match = msg.match(livechatQuoteRegExp);
+	if (!match) {
+		return message;
+	}
+
+	const inbox = IMAPInboxes.get(room.email.inbox);
+
+	if (!inbox) {
+		return message;
+	}
+
+	const replyToMessage = Messages.findOneById(match.groups.id);
+
+	if (!replyToMessage) {
+		return message;
+	}
+
+	inbox.smtp.sendMail({
+		to: room.email.replyTo,
+		subject: room.email.subject,
+		text: match.groups.text,
+		inReplyTo: replyToMessage.email.messageId,
+		references: [
+			...replyToMessage.email.references ?? [],
+			replyToMessage.email.messageId,
+		],
+	}).then((info) => {
+		console.log('Message sent: %s', info.messageId);
+	});
+
+	return message;
+}, callbacks.priority.LOW, 'ReplyEmail');
+
+
 async function configureEmailInboxes(): Promise<void> {
 	const emailInboxesCursor = EmailInbox.find({
 		active: true,
 	});
 
-	for (const imap of IMAPInboxes) {
+	for (const { imap } of IMAPInboxes.values()) {
 		imap.stop();
 	}
 
@@ -115,11 +168,21 @@ async function configureEmailInboxes(): Promise<void> {
 			markSeen: true,
 		});
 
-		IMAPInboxes.add(imap);
-
-		imap.on('email', Meteor.bindEnvironment(onEmailReceived));
+		imap.on('email', Meteor.bindEnvironment((email) => onEmailReceived(email, emailInboxRecord.email)));
 
 		imap.start();
+
+		const smtp = nodemailer.createTransport({
+			host: emailInboxRecord.smtp.server,
+			port: parseInt(emailInboxRecord.smtp.port),
+			secure: emailInboxRecord.smtp.sslTls,
+			auth: {
+				user: emailInboxRecord.smtp.username,
+				pass: emailInboxRecord.smtp.password,
+			},
+		});
+
+		IMAPInboxes.set(emailInboxRecord.email, { imap, smtp });
 	}
 }
 
