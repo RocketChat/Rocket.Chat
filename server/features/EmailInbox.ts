@@ -7,12 +7,13 @@ import Mail from 'nodemailer/lib/mailer';
 
 import { EmailInbox } from '../../app/models/server/raw';
 import { IMAPInterceptor } from '../email/IMAPInterceptor';
-import { Livechat } from '../../app/livechat/server';
+import { Livechat } from '../../app/livechat/server/lib/Livechat';
 import LivechatVisitors from '../../app/models/server/models/LivechatVisitors';
 import LivechatRooms from '../../app/models/server/models/LivechatRooms';
 import { callbacks } from '../../app/callbacks/server';
 import Messages from '../../app/models/server/models/Messages';
 import { IEmailInbox } from '../../definition/IEmailInbox';
+import { IUser } from '../../definition/IUser';
 
 const inboxes = new Map<string, {imap: IMAPInterceptor; smtp: Mail; config: IEmailInbox}>();
 
@@ -151,6 +152,33 @@ callbacks.add('afterSaveMessage', function(message: any, room: any) {
 	return message;
 }, callbacks.priority.LOW, 'ReplyEmail');
 
+export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: IUser): Promise<void> {
+	const inbox = inboxes.get(emailInboxRecord.email);
+
+	if (!inbox) {
+		throw new Error('inbox-not-found');
+	}
+
+	const address = user.emails?.find((email) => email.verified)?.address;
+
+	if (!address) {
+		throw new Error('user-without-verified-email');
+	}
+
+	console.log(`Sending testing email to ${ address }`);
+
+	inbox.smtp.sendMail({
+		from: inbox.config.senderInfo ? {
+			name: inbox.config.senderInfo,
+			address: inbox.config.email,
+		} : inbox.config.email,
+		to: address,
+		subject: 'Test of inbox configuration',
+		text: 'Test of inbox configuration successful',
+	}).then((info) => {
+		console.log('Message sent: %s', info.messageId);
+	});
+}
 
 export async function configureEmailInboxes(): Promise<void> {
 	const emailInboxesCursor = EmailInbox.find({

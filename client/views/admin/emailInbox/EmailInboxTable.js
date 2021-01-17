@@ -6,12 +6,17 @@ import GenericTable from '../../../components/GenericTable';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useEndpoint } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 
-export function SendTestButton() {
+export function SendTestButton({ id }) {
 	const t = useTranslation();
 
+	const dispatchToastMessage = useToastMessageDispatch();
+	const sendTest = useEndpoint('POST', `email-inbox.send-test/${ id }`);
+
 	return <Table.Cell fontScale='p1' color='hint' withTruncatedText>
-		<Button small ghost title={t('Send_Test_Email')} >
+		<Button small ghost title={t('Send_Test_Email')} onClick={(e) => e.preventDefault() & e.stopPropagation() & sendTest() & dispatchToastMessage({ type: 'success', message: t('Email_sent') })}>
 			<Icon name='send' size='x20'/>
 		</Button>
 	</Table.Cell>;
@@ -52,7 +57,7 @@ function EmailInboxTable() {
 		<Table.Cell withTruncatedText>{name}</Table.Cell>
 		<Table.Cell withTruncatedText>{email}</Table.Cell>
 		<Table.Cell withTruncatedText>{createdBy}</Table.Cell>
-		<SendTestButton />
+		<SendTestButton id={_id} />
 	</Table.Row>, [onClick]);
 
 	return <GenericTable

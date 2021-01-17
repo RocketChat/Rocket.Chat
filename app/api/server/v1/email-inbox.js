@@ -4,6 +4,8 @@ import { API } from '../api';
 import { findEmailInboxes, findOneEmailInbox, insertOneOrUpdateEmailInbox } from '../lib/emailInbox';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { EmailInbox } from '../../../models';
+import Users from '../../../models/server/models/Users';
+import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox';
 
 API.v1.addRoute('email-inbox.list', { authRequired: true }, {
 	get() {
@@ -104,6 +106,35 @@ API.v1.addRoute('email-inbox.search', { authRequired: true }, {
 			const emailInbox = Promise.await(EmailInbox.findOne({ email }));
 
 			return API.v1.success({ emailInbox });
+		} catch (e) {
+			return API.v1.failure(e);
+		}
+	},
+});
+
+API.v1.addRoute('email-inbox.send-test/:_id', { authRequired: true }, {
+	post() {
+		try {
+			if (!hasPermission(this.userId, 'manage-email-inbox')) {
+				throw new Error('error-not-allowed');
+			}
+			check(this.urlParams, {
+				_id: String,
+			});
+
+			const { _id } = this.urlParams;
+			if (!_id) { throw new Error('error-invalid-params'); }
+			const emailInbox = Promise.await(findOneEmailInbox({ userId: this.userId, _id }));
+
+			if (!emailInbox) {
+				return API.v1.notFound();
+			}
+
+			const user = Users.findOneById(this.userId);
+
+			Promise.await(sendTestEmailToInbox(emailInbox, user));
+
+			return API.v1.success({ _id });
 		} catch (e) {
 			return API.v1.failure(e);
 		}
