@@ -16,7 +16,7 @@ import { IEmailInbox } from '../../definition/IEmailInbox';
 
 const inboxes = new Map<string, {imap: IMAPInterceptor; smtp: Mail; config: IEmailInbox}>();
 
-function getGuestByEmail(email: string, name: string): any {
+function getGuestByEmail(email: string, name: string, department?: string): any {
 	const guest = LivechatVisitors.findOneGuestByEmailAddress(email);
 
 	if (guest) {
@@ -27,7 +27,7 @@ function getGuestByEmail(email: string, name: string): any {
 		token: Random.id(),
 		name: name || email,
 		email,
-		department: undefined,
+		department,
 		phone: undefined,
 		username: undefined,
 		connectionData: undefined,
@@ -41,7 +41,7 @@ function getGuestByEmail(email: string, name: string): any {
 	throw new Error('Error getting guest');
 }
 
-function onEmailReceived(email: ParsedMail, inbox: string): void {
+function onEmailReceived(email: ParsedMail, inbox: string, department?: string): void {
 	// console.log('NEW EMAIL =>', email.headers);
 
 	if (!email.from?.value?.[0]?.address) {
@@ -52,7 +52,7 @@ function onEmailReceived(email: ParsedMail, inbox: string): void {
 
 	const thread = references?.[0] ?? email.messageId;
 
-	const guest = getGuestByEmail(email.from.value[0].address, email.from.value[0].name);
+	const guest = getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
 
 	// TODO: Get the closed room and reopen rather than create a new one
 	// const room = LivechatRooms.findOneByVisitorTokenAndEmailThread(guest.token, emailThread, {});
@@ -179,12 +179,12 @@ export async function configureEmailInboxes(): Promise<void> {
 			// debug: (...args: any[]): void => console.log(...args),
 		}, {
 			deleteAfterRead: false,
-			filter: [['UNSEEN'], ['SINCE', emailInboxRecord.ts]],
-			rejectBeforeTS: emailInboxRecord.ts,
+			filter: [['UNSEEN'], ['SINCE', emailInboxRecord._updatedAt]],
+			rejectBeforeTS: emailInboxRecord._updatedAt,
 			markSeen: true,
 		});
 
-		imap.on('email', Meteor.bindEnvironment((email) => onEmailReceived(email, emailInboxRecord.email)));
+		imap.on('email', Meteor.bindEnvironment((email) => onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department)));
 
 		imap.start();
 

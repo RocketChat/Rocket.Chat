@@ -31,11 +31,12 @@ export async function findOneEmailInbox({ userId, _id }) {
 	return EmailInbox.findOneById(_id);
 }
 
-export async function inserOneOrUpdateEmailInbox(userId, emailInboxParams) {
+export async function insertOneOrUpdateEmailInbox(userId, emailInboxParams) {
 	const { _id, active, name, email, description, senderInfo, department, smtp, imap } = emailInboxParams;
 
 	if (!_id) {
-		emailInboxParams.ts = new Date();
+		emailInboxParams._createdAt = new Date();
+		emailInboxParams._updatedAt = new Date();
 		emailInboxParams._createdBy = Users.findOne(userId, { fields: { username: 1 } });
 		return EmailInbox.insertOne(emailInboxParams);
 	}
@@ -47,20 +48,27 @@ export async function inserOneOrUpdateEmailInbox(userId, emailInboxParams) {
 	}
 
 	const updateEmailInbox = {
-		$set: { },
+		$set: {
+			active,
+			name,
+			email,
+			description,
+			senderInfo,
+			smtp,
+			imap,
+			_updatedAt: new Date(),
+		},
 	};
-	updateEmailInbox.$set.active = active;
-	updateEmailInbox.$set.name = name;
-	updateEmailInbox.$set.email = email;
-	updateEmailInbox.$set.description = description;
-	updateEmailInbox.$set.senderInfo = senderInfo;
-	updateEmailInbox.$set.department = department;
-	updateEmailInbox.$set.smtp = smtp;
-	updateEmailInbox.$set.imap = imap;
-	updateEmailInbox.$set.ts = emailInboxes.ts;
-	updateEmailInbox.$set._createdBy = emailInboxes._createdBy;
 
-	return EmailInbox.update({ _id }, updateEmailInbox);
+	if (department === 'All') {
+		updateEmailInbox.$unset = {
+			department: 1,
+		};
+	} else {
+		updateEmailInbox.$set.department = department;
+	}
+
+	return EmailInbox.updateOne({ _id }, updateEmailInbox);
 }
 
 export async function findOneEmailInboxByEmail({ userId, email }) {

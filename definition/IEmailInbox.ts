@@ -20,9 +20,10 @@ export interface IEmailInbox {
 		password: string;
 		sslTls: boolean; // TODO: Rename to ssl only
 	};
-	ts: Date;
+	_createdAt: Date;
 	_createdBy: {
 		_id: string;
 		username: string; // TODO: This will not be updated dynamically
 	};
+	_updatedAt: Date;
 }

@@ -1,7 +1,7 @@
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
-import { findEmailInboxes, findOneEmailInbox, inserOneOrUpdateEmailInbox } from '../lib/emailInbox';
+import { findEmailInboxes, findOneEmailInbox, insertOneOrUpdateEmailInbox } from '../lib/emailInbox';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { EmailInbox } from '../../../models';
 
@@ -40,7 +40,7 @@ API.v1.addRoute('email-inbox', { authRequired: true }, {
 
 			const { _id } = emailInboxParams;
 
-			Promise.await(inserOneOrUpdateEmailInbox(this.userId, emailInboxParams));
+			Promise.await(insertOneOrUpdateEmailInbox(this.userId, emailInboxParams));
 
 			return API.v1.success({ _id });
 		} catch (e) {
