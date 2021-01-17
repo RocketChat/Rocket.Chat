@@ -119,6 +119,7 @@ const map = {
 	[InstanceStatus.col.collectionName]: InstanceStatusModel,
 	[IntegrationHistory.col.collectionName]: IntegrationHistoryModel,
 	[Integrations.col.collectionName]: IntegrationsModel,
+	[EmailInbox.col.collectionName]: EmailInboxModel,
 };
 
 if (!process.env.DISABLE_DB_WATCH) {
@@ -137,6 +138,7 @@ if (!process.env.DISABLE_DB_WATCH) {
 		InstanceStatus,
 		IntegrationHistory,
 		Integrations,
+		EmailInbox,
 	};
 
 	initWatchers(models, api.broadcastLocal.bind(api), (model, fn) => {

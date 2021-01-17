@@ -13,7 +13,7 @@ import LivechatRooms from '../../app/models/server/models/LivechatRooms';
 import { callbacks } from '../../app/callbacks/server';
 import Messages from '../../app/models/server/models/Messages';
 
-const IMAPInboxes = new Map<string, {imap: IMAPInterceptor; smtp: Mail}>();
+const inboxes = new Map<string, {imap: IMAPInterceptor; smtp: Mail}>();
 
 function getGuestByEmail(email: string, name: string): any {
 	const guest = LivechatVisitors.findOneGuestByEmailAddress(email);
@@ -41,7 +41,6 @@ function getGuestByEmail(email: string, name: string): any {
 }
 
 function onEmailReceived(email: ParsedMail, inbox: string): void {
-	// console.log('NEW EMAIL =>', email.text);
 	// console.log('NEW EMAIL =>', email.headers);
 
 	if (!email.from?.value?.[0]?.address) {
@@ -119,7 +118,7 @@ callbacks.add('afterSaveMessage', function(message: any, room: any) {
 		return message;
 	}
 
-	const inbox = IMAPInboxes.get(room.email.inbox);
+	const inbox = inboxes.get(room.email.inbox);
 
 	if (!inbox) {
 		return message;
@@ -148,16 +147,16 @@ callbacks.add('afterSaveMessage', function(message: any, room: any) {
 }, callbacks.priority.LOW, 'ReplyEmail');
 
 
-async function configureEmailInboxes(): Promise<void> {
+export async function configureEmailInboxes(): Promise<void> {
 	const emailInboxesCursor = EmailInbox.find({
 		active: true,
 	});
 
-	for (const { imap } of IMAPInboxes.values()) {
+	for (const { imap } of inboxes.values()) {
 		imap.stop();
 	}
 
-	IMAPInboxes.clear();
+	inboxes.clear();
 
 	for await (const emailInboxRecord of emailInboxesCursor) {
 		console.log('Setting up email interceptor for', emailInboxRecord.email);
@@ -194,16 +193,8 @@ async function configureEmailInboxes(): Promise<void> {
 			},
 		});
 
-		IMAPInboxes.set(emailInboxRecord.email, { imap, smtp });
+		inboxes.set(emailInboxRecord.email, { imap, smtp });
 	}
 }
 
-// TODO: Sync changes
 configureEmailInboxes();
-
-// TODO: Remove, used to update from client while the sync is not implemented
-Meteor.methods({
-	configureEmailInboxes() {
-		configureEmailInboxes();
-	},
-});

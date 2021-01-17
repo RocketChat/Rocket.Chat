@@ -19,6 +19,7 @@ import { matrixBroadCastActions } from '../../stream/streamBroadcast';
 import { integrations } from '../../../app/integrations/server/lib/triggerHandler';
 import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
 import notifications from '../../../app/notifications/server/lib/Notifications';
+import { configureEmailInboxes } from '../../features/EmailInbox';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -231,6 +232,10 @@ export class MeteorService extends ServiceClass implements IMeteor {
 					integrations.triggerHandler.removeIntegration({ _id: id });
 					break;
 			}
+		});
+
+		this.onEvent('watch.emailInbox', async () => {
+			configureEmailInboxes();
 		});
 	}
 
