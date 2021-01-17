@@ -3,9 +3,11 @@ import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { LivechatRooms, LivechatVisitors, Users } from '../../../../../app/models/server';
+import { LivechatRooms, Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server';
 import { settings } from '../../../../../app/settings/server';
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
 
 class AutoTransferChatSchedulerClass {
 	scheduler: Agenda;
@@ -31,10 +33,10 @@ class AutoTransferChatSchedulerClass {
 		await this.unscheduleRoom(roomId);
 
 		const jobName = `livechat-auto-transfer-${ roomId }`;
-		const when = this.addSecondsToDate(new Date(), timeout);
+		const when = new Date();
+		when.setSeconds(when.getSeconds() + timeout);
 
-		this.scheduler.define(jobName, this.autoTransferVisitorJob);
-
+		this.scheduler.define(jobName, this.executeJob);
 		await this.scheduler.schedule(when, jobName, { roomId });
 		await LivechatRooms.setAutoTransferOngoingById(roomId);
 	}
@@ -46,33 +48,48 @@ class AutoTransferChatSchedulerClass {
 		await this.scheduler.cancel({ name: jobName });
 	}
 
-	private async autoTransferVisitorJob({ attrs: { data } }: any = {}): Promise<void> {
+	private async transferRoom({ attrs: { data } }: any = {}): Promise<boolean> {
+
+		forwardRoomToAgent(room, transferData);
+		if (!success) {
+			return;
+		}
+	}
+
+	if (!RoutingManager.getConfig().autoAssignAgent) {
+		Livechat.returnRoomAsInquiry(room._id, departmentId);
+		return;
+	}
+	}
+
+	private executeJob({ attrs: { data } }: any = {}): Promise<void> {
 		const { roomId } = data;
 		const schedulerUser: any = Users.findOneById('rocket.cat');
 
 		try {
-			const room = await LivechatRooms.findOneById(roomId, { _id: 1, v: 1, servedBy: 1, open: 1, departmentId: 1 });
-			const timeout = await settings.get('Livechat_auto_transfer_chat_timeout');
-			const { departmentId, v: { token }, servedBy: { _id: ignoreAgentId, username } = { _id: null, username: null } } = room;
+			const room = LivechatRooms.findOneById(roomId, { _id: 1, v: 1, servedBy: 1, open: 1, departmentId: 1 });
+			if (!room?.servedBy?._id) {
+				return;
+			}
 
-			const guest = await LivechatVisitors.getVisitorByToken(token, {});
-			const transferData = {
-				ignoreAgentId,
-				departmentId,
-				transferredBy: schedulerUser,
-				comment: TAPi18n.__('Livechat_auto_transfer_chat_message', { username, timeout }),
-			};
+			const timeout = settings.get('Livechat_auto_transfer_chat_timeout');
+			const { departmentId, servedBy: { _id: ignoreAgentId, username } } = room;
 
-			await Livechat.transfer(room, guest, transferData);
+			const agent = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
+			if (agent) {
+				const transferData = {
+					userId: agent.agentId,
+					transferredBy: schedulerUser,
+					transferredTo: agent,
+					comment: TAPi18n.__('Livechat_auto_transfer_chat_message', { username, timeout }),
+				};
+			}
+
 			await LivechatRooms.setAutoTransferredAtById(roomId);
 			await this.unscheduleRoom(roomId);
 		} catch (err) {
 			console.error(err);
 		}
-	}
-
-	private addSecondsToDate(date: Date, seconds: number): Date {
-		return new Date(date.getTime() + seconds * 1000);
 	}
 }
 
