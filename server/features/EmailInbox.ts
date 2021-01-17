@@ -19,7 +19,6 @@ function getGuestByEmail(email: string, name: string): any {
 	const guest = LivechatVisitors.findOneGuestByEmailAddress(email);
 
 	if (guest) {
-		// console.log('Guest found', guest);
 		return guest;
 	}
 
@@ -35,7 +34,6 @@ function getGuestByEmail(email: string, name: string): any {
 
 	const newGuest = LivechatVisitors.findOneById(userId, {});
 	if (newGuest) {
-		// console.log('Guest created', newGuest);
 		return newGuest;
 	}
 
@@ -73,7 +71,21 @@ function onEmailReceived(email: ParsedMail, inbox: string): void {
 		guest,
 		message: {
 			_id: Random.id(),
+			groupable: false,
 			msg,
+			blocks: [{
+				type: 'context',
+				elements: [{
+					type: 'mrkdwn',
+					text: `**From:** ${ email.from.text }\n**Subject:** ${ email.subject }`,
+				}],
+			}, {
+				type: 'section',
+				text: {
+					type: 'plain_text',
+					text: msg,
+				},
+			}],
 			rid,
 			email: {
 				references,
