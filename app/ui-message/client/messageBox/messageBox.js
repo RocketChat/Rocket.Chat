@@ -29,7 +29,7 @@ import {
 	t,
 	roomTypes,
 	getUserPreference,
-} from '../../../utils';
+} from '../../../utils/client';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
