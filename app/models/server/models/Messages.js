@@ -227,7 +227,7 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive }) {
+	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, mentionsUsername }) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -238,6 +238,10 @@ export class Messages extends Base {
 
 		if (Match.test(excludeTypes, [String]) && (excludeTypes.length > 0)) {
 			query.t = { $nin: excludeTypes };
+		}
+
+		if (mentionsUsername) {
+			query['mentions.username'] = mentionsUsername;
 		}
 
 		console.log('latest: ', latest);

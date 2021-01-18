@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Rooms, Users, Messages } from '../../../models';
+import { Rooms, Users, Messages, Subscriptions } from '../../../models';
+import { Message } from '../../../../server/sdk';
 
 Meteor.methods({
-	getUserMentionsByChannel({ roomId, options }) {
+	getUserMentionsByChannel({ roomId, queryOptions }) {
 		check(roomId, String);
 
 		if (!Meteor.userId()) {
@@ -19,7 +20,14 @@ Meteor.methods({
 
 		const user = Users.findOneById(Meteor.userId());
 
+		const oldest = Subscriptions.findOneByRoomIdAndUserId(roomId, uid).ts;
+
 		// TODO apply logic for history visibility
-		return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).fetch();
+		return Promise.await(Message.get(user.userId, {
+			rid: roomId,
+			mentionsUsername: user.username,
+			oldest,
+			queryOptions
+		}));
 	},
 });

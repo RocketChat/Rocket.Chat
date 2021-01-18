@@ -187,7 +187,7 @@ export class MessagesRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive }) {
+	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, mentionsUsername }) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -198,6 +198,10 @@ export class MessagesRaw extends BaseRaw {
 
 		if (Array.isArray(excludeTypes) && excludeTypes.length > 0) {
 			query.t = { $nin: excludeTypes };
+		}
+
+		if (mentionsUsername) {
+			query['mentions.username'] = mentionsUsername;
 		}
 
 		console.log('latest: ', latest);

@@ -7,6 +7,7 @@ export type MessageFilter = {
 	excludeTypes?: string[];
 	queryOptions?: any;
 	inclusive?: boolean;
+	mentionsUsername: string;
 };
 
 export interface IMessageService extends IServiceClass {
