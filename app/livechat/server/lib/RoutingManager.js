@@ -37,11 +37,11 @@ export const RoutingManager = {
 		return this.getMethod().config || {};
 	},
 
-	async getNextAgent(department) {
-		let agent = callbacks.run('livechat.beforeGetNextAgent', department);
+	async getNextAgent(department, ignoreAgentId) {
+		let agent = callbacks.run('livechat.beforeGetNextAgent', department, ignoreAgentId);
 
 		if (!agent) {
-			agent = await this.getMethod().getNextAgent(department);
+			agent = await this.getMethod().getNextAgent(department, ignoreAgentId);
 		}
 
 		return agent;
