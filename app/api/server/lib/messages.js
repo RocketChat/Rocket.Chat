@@ -115,7 +115,7 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 		messages,
 		count: messages.length,
 		offset,
-		total,
+		total: messages.lenght,
 	};
 }
 

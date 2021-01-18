@@ -12,7 +12,9 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 	protected name = 'ee-message';
 
 	private Messages: MessagesRaw;
+
 	private Rooms: RoomsRaw;
+
 	private Subscriptions: SubscriptionsRaw;
 
 	constructor(db: Db) {
