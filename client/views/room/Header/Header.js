@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { ActionButton } from '@rocket.chat/fuselage';
@@ -14,6 +14,9 @@ import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import MarkdownText from '../../../components/MarkdownText';
+
+import { useEndpointData } from '/client/hooks/useEndpointData';
+import { useUser } from '/client/contexts/UserContext';
 
 export default React.memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
@@ -34,6 +37,23 @@ const BackToRoom = React.memo(({ small, prid }) => {
 
 const RoomHeader = ({ room }) => {
 	const icon = useRoomIcon(room);
+
+	const user = useUser();
+
+	const findUserQuery = useMemo(() => {
+		// is room direct message with 2 members
+		if (room.t === 'd' && room.usernames && room.usernames.length === 2) {
+			const username = room.usernames.find((usernm) => usernm !== user.username);
+			return { username };
+		}
+		return null;
+	}, [room, user]);
+
+	const { value: data } = useEndpointData('users.info', findUserQuery);
+
+	// the room will not have a topic in direct messages.
+	const roomTopic = (findUserQuery && data && data.user && data.user.statusText) || room.topic;
+
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room}/>;
 	return <Header>
@@ -51,7 +71,7 @@ const RoomHeader = ({ room }) => {
 				<Translate room={room} />
 			</Header.Content.Row>
 			<Header.Content.Row>
-				<Header.Subtitle>{room.topic && <MarkdownText withRichContent={false} content={room.topic}/>}</Header.Subtitle>
+				<Header.Subtitle>{roomTopic && <MarkdownText withRichContent={false} content={roomTopic}/>}</Header.Subtitle>
 			</Header.Content.Row>
 		</Header.Content>
 		<Header.ToolBox>
