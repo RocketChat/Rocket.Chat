@@ -308,6 +308,15 @@ export class SlackImporter extends Base {
 		message.channels.push(...filteredChannels);
 	}
 
+	parseSlackTimestamp(ts) {
+		const stringTs = String(ts);
+		if (stringTs.includes('.')) {
+			return parseInt(stringTs.split('.')[0]) * 1000;
+		}
+
+		return parseInt(stringTs);
+	}
+
 	processMessageSubType(message, room, msgDataDefaults, missedTypes) {
 		const ignoreTypes = { bot_add: true, file_comment: true, file_mention: true };
 
@@ -358,7 +367,7 @@ export class SlackImporter extends Base {
 				};
 
 				if (message.edited) {
-					msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
+					msgObj.editedAt = new Date(this.parseSlackTimestamp(message.edited.ts));
 					const editedBy = this.getRocketUserFromUserId(message.edited.user);
 					if (editedBy) {
 						msgObj.editedBy = {
@@ -415,7 +424,7 @@ export class SlackImporter extends Base {
 						type: message.file.mimetype,
 						rid: room._id,
 					};
-					this.uploadFile(details, message.file.url_private_download, rocketUser, room, new Date(parseInt(String(message.ts).split('.')[0]) * 1000));
+					this.uploadFile(details, message.file.url_private_download, rocketUser, room, new Date(this.parseSlackTimestamp(message.ts)));
 				}
 				break;
 			default:
@@ -428,9 +437,11 @@ export class SlackImporter extends Base {
 
 	performMessageImport(message, room, missedTypes, slackChannel) {
 		const messageTs = String(message.ts);
+		const parsedTs = this.parseSlackTimestamp(message.ts);
+
 		const msgDataDefaults = {
 			_id: `slack-${ slackChannel.id }-${ messageTs.replace(/\./g, '-') }`,
-			ts: new Date(parseInt(messageTs.split('.')[0]) * 1000),
+			ts: new Date(parsedTs),
 		};
 
 		// Process the reactions
@@ -521,14 +532,14 @@ export class SlackImporter extends Base {
 							}
 
 							msgObj.tcount = message.reply_count;
-							msgObj.tlm = new Date(parseInt(message.latest_reply.split('.')[0]) * 1000);
+							msgObj.tlm = new Date(this.parseSlackTimestamp(message.latest_reply));
 						} else {
 							msgObj.tmid = `slack-${ slackChannel.id }-${ message.thread_ts.replace(/\./g, '-') }`;
 						}
 					}
 
 					if (message.edited) {
-						msgObj.editedAt = new Date(parseInt(message.edited.ts.split('.')[0]) * 1000);
+						msgObj.editedAt = new Date(this.parseSlackTimestamp(message.edited.ts));
 						const editedBy = this.getRocketUserFromUserId(message.edited.user);
 						if (editedBy) {
 							msgObj.editedBy = {
