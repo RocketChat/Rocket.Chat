@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Rooms, Users, Messages, Subscriptions } from '../../../models';
+import { Rooms, Users } from '../../../models';
 import { Message } from '../../../../server/sdk';
 
 Meteor.methods({
@@ -23,7 +23,7 @@ Meteor.methods({
 		return Promise.await(Message.get(user.userId, {
 			rid: roomId,
 			mentionsUsername: user.username,
-			queryOptions
+			queryOptions,
 		}));
 	},
 });

@@ -21,10 +21,10 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
-		}
+		},
 	}));
 
-	const total = await m.length;
+	const total = messages.length;
 
 	return {
 		messages,

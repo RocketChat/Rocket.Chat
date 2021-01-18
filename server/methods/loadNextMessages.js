@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Messages, Rooms, Subscriptions } from '../../app/models';
-import { Message } from '../../server/sdk';
+import { Messages } from '../../app/models';
 import { settings } from '../../app/settings';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
@@ -36,18 +35,7 @@ Meteor.methods({
 			};
 		}
 
-		const room = Rooms.findOne(rid, { fields: { hideHistoryForNewMembers: 1 } });
-
-		let oldest;
-		if (room.hideHistoryForNewMembers) {
-			const sub = Subscriptions.findOneByRoomIdAndUserId(rid, fromId);
-
-			if (end) {
-				oldest = Math.max(sub.ts, end);
-			}
-		}
-
-		const records = Promise.await(Messages.get(fromId, { rid, oldest, queryOptions }));
+		const records = Promise.await(Messages.get(fromId, { rid, oldest: end, queryOptions }));
 
 		return {
 			messages: normalizeMessagesForUser(records, fromId),

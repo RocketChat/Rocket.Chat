@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import logger from './logger';
-import { Messages, Subscriptions, Rooms } from '../../models';
+import { Messages, Subscriptions } from '../../models';
 import { Message } from '../../../server/sdk';
 
 Meteor.methods({
@@ -14,7 +14,6 @@ Meteor.methods({
 		}
 
 		if (rid) {
-			const room = Rooms.findOneById(rid, { hideHistoryForNewMembers: 1 });
 			const lastMessage = Promise.await(Message.get(userId, { rid, queryOptions: { limit: 1, sort: { ts: -1 } } }))[0];
 
 			if (lastMessage == null) {

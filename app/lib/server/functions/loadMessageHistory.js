@@ -1,5 +1,5 @@
 import { settings } from '../../../settings/server';
-import { Messages, Rooms, Subscriptions } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { Message } from '../../../../server/sdk';
 
@@ -45,12 +45,16 @@ export function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
 			const unreadMessages = Promise.await(Message.get(userId, {
-				rid, excludeTypes: hiddenMessageTypes, latest: ls, oldest: firstMessage.ts, queryOptions: {
-				limit: 1,
-				sort: {
-					ts: 1,
+				rid,
+				excludeTypes: hiddenMessageTypes,
+				latest: ls,
+				oldest: firstMessage.ts,
+				queryOptions: {
+					limit: 1,
+					sort: {
+						ts: 1,
+					},
 				},
-				}
 			}));
 
 			firstUnread = unreadMessages[0];
@@ -63,4 +67,4 @@ export function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 		firstUnread,
 		unreadNotLoaded,
 	};
-};
+}

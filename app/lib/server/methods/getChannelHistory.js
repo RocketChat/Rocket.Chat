@@ -55,7 +55,6 @@ Meteor.methods({
 			if (oldest) {
 				const firstMsg = messages[messages.length - 1];
 				if (firstMsg && firstMsg.ts > oldest) {
-
 					const unreadMessages = Promise.await(Messages.get(fromUserId, {
 						rid,
 						oldest,

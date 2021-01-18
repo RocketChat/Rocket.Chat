@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Messages, Subscriptions } from '../../app/models';
-import { Message } from '../../server/sdk';
+import { Messages } from '../../app/models';
+import { Message } from '../sdk';
 import { settings } from '../../app/settings';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
@@ -49,13 +49,7 @@ Meteor.methods({
 			};
 		}
 
-		let oldest;
-		if (room.hideHistoryForNewMembers) {
-			const sub = Subscriptions.findOneByRoomIdAndUserId(rid, userId);
-			oldest = sub.ts;
-		}
-
-		const messages = Promise.await(Message.get(fromId, { rid: message.rid, latest: message.ts, oldest, queryOptions }));
+		const messages = Promise.await(Message.get(fromId, { rid: message.rid, latest: message.ts, queryOptions }));
 
 		const moreBefore = messages.length === queryOptions.limit;
 
@@ -66,7 +60,7 @@ Meteor.methods({
 		};
 
 		queryOptions.limit = Math.floor(limit / 2);
-		const afterMessages = Promise.await(Message.get(fromId, { rid: message.rid, oldest: Math.max(message.ts, oldest), queryOptions }));
+		const afterMessages = Promise.await(Message.get(fromId, { rid: message.rid, oldest: message.ts, queryOptions }));
 
 		const moreAfter = afterMessages.length === queryOptions.limit;
 

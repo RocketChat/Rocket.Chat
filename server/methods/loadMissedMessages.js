@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Messages, Rooms, Subscriptions } from '../../app/models';
-import { Message } from '../../server/sdk';
+import { Rooms, Subscriptions } from '../../app/models';
+import { Message } from '../sdk';
 import { settings } from '../../app/settings';
 
 Meteor.methods({
