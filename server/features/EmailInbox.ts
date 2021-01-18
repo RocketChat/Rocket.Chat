@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import stripHtml from 'string-strip-html';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import { ParsedMail } from 'mailparser';
+import { ParsedMail, Attachment } from 'mailparser';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 
@@ -14,6 +15,22 @@ import { callbacks } from '../../app/callbacks/server';
 import Messages from '../../app/models/server/models/Messages';
 import { IEmailInbox } from '../../definition/IEmailInbox';
 import { IUser } from '../../definition/IUser';
+import { FileUpload } from '../../app/file-upload/server';
+
+type FileAttachment = {
+	title: string;
+	title_link: string;
+	image_url?: string;
+	image_type?: string;
+	image_size?: string;
+	image_dimensions?: string;
+	audio_url?: string;
+	audio_type?: string;
+	audio_size?: string;
+	video_url?: string;
+	video_type?: string;
+	video_size?: string;
+}
 
 const inboxes = new Map<string, {imap: IMAPInterceptor; smtp: Mail; config: IEmailInbox}>();
 
@@ -42,8 +59,55 @@ function getGuestByEmail(email: string, name: string, department?: string): any 
 	throw new Error('Error getting guest');
 }
 
-function onEmailReceived(email: ParsedMail, inbox: string, department?: string): void {
-	// console.log('NEW EMAIL =>', email.headers);
+async function uploadAttachment(attachment: Attachment, rid: string, visitorToken: string): Promise<FileAttachment> {
+	const details = {
+		name: attachment.filename,
+		size: attachment.size,
+		type: attachment.contentType,
+		rid,
+		visitorToken,
+	};
+
+	const fileStore = FileUpload.getStore('Uploads');
+	return new Promise((resolve, reject) => {
+		fileStore.insert(details, attachment.content, function(err: any, file: any) {
+			if (err) {
+				reject(new Error(err));
+			}
+
+			const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+
+			const attachment: FileAttachment = {
+				title: file.name,
+				title_link: url,
+			};
+
+			if (/^image\/.+/.test(file.type)) {
+				attachment.image_url = url;
+				attachment.image_type = file.type;
+				attachment.image_size = file.size;
+				attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+			}
+
+			if (/^audio\/.+/.test(file.type)) {
+				attachment.audio_url = url;
+				attachment.audio_type = file.type;
+				attachment.audio_size = file.size;
+			}
+
+			if (/^video\/.+/.test(file.type)) {
+				attachment.video_url = url;
+				attachment.video_type = file.type;
+				attachment.video_size = file.size;
+			}
+
+			resolve(attachment);
+		});
+	});
+}
+
+async function onEmailReceived(email: ParsedMail, inbox: string, department?: string): Promise<void> {
+	// console.log('NEW EMAIL =>', email);
 
 	if (!email.from?.value?.[0]?.address) {
 		return;
@@ -68,12 +132,26 @@ function onEmailReceived(email: ParsedMail, inbox: string, department?: string):
 
 	const rid = room?._id ?? Random.id();
 
+	const attachments = [];
+	for await (const attachment of email.attachments) {
+		if (attachment.type !== 'attachment') {
+			continue;
+		}
+
+		try {
+			attachments.push(await uploadAttachment(attachment, rid, guest.token));
+		} catch (e) {
+			console.error('Error uploading attachment from email', e);
+		}
+	}
+
 	Livechat.sendMessage({
 		guest,
 		message: {
 			_id: Random.id(),
 			groupable: false,
 			msg,
+			attachments,
 			blocks: [{
 				type: 'context',
 				elements: [{
