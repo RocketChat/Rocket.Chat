@@ -1,11 +1,9 @@
 import Agenda from 'agenda';
 import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { LivechatRooms, Messages, Users } from '../../../../../app/models/server';
+import { LivechatRooms, Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server';
-import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
 
