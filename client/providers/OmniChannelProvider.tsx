@@ -67,20 +67,16 @@ const OmnichannelDisabledProvider: FC = ({ children }) => <OmnichannelContext.Pr
 
 const OmnichannelManualSelectionProvider: FC<{ value: OmnichannelContextValue }> = ({ value, children }) => {
 	const queue = useOmnichannelInquiries();
-	console.log('---queue', queue);
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean && value.agentAvailable;
 
-	const contextValue = useMemo(() => {
-		console.log('showOmnichannelQueueLink', showOmnichannelQueueLink);
-		return {
-			...value,
-			inquiries: {
-				enabled: true,
-				queue,
-			},
-			showOmnichannelQueueLink,
-		};
-	}, [value, queue, showOmnichannelQueueLink]);
+	const contextValue = useMemo(() => ({
+		...value,
+		inquiries: {
+			enabled: true,
+			queue,
+		},
+		showOmnichannelQueueLink,
+	}), [value, queue, showOmnichannelQueueLink]);
 
 	return <OmnichannelContext.Provider value={contextValue} children={children}/>;
 };
@@ -111,8 +107,6 @@ const OmnichannelEnabledProvider: FC = ({ children }) => {
 	if (!routeConfig || !user) {
 		return <OmnichannelDisabledProvider children={children}/>;
 	}
-
-	console.log('--- manual test', canViewOmnichannelQueue && routeConfig.showQueue && !routeConfig.autoAssignAgent && contextValue.agentAvailable);
 
 	if (canViewOmnichannelQueue && routeConfig.showQueue && !routeConfig.autoAssignAgent && contextValue.agentAvailable) {
 		return <OmnichannelManualSelectionProvider value={contextValue} children={children} />;
