@@ -15,7 +15,7 @@ import { isURL } from '../../../../../utils/lib/isURL';
 import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../ui-utils/client/lib/messageArgs';
 import { ChatMessage, Rooms } from '../../../../../models';
-import { t, roomTypes } from '../../../../../utils/client';
+import { t } from '../../../../../utils/client';
 import { chatMessages } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';
 
@@ -182,10 +182,6 @@ export const getCommonRoomEvents = () => ({
 		}, {
 			jump: tmid && tmid !== _id && _id && _id,
 		});
-	},
-	'click .js-reply-broadcast'() {
-		const msg = messageArgs(this);
-		roomTypes.openRouteLink('d', { name: msg.u.username }, { ...FlowRouter.current().queryParams, reply: msg._id });
 	},
 
 	'click .image-to-download'(event) {
