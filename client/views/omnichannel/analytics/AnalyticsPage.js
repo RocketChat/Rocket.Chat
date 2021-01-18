@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Box, Select, Margins, Field } from '@rocket.chat/fuselage';
+import { Box, Select, Margins, Field, Label } from '@rocket.chat/fuselage';
 
 import DepartmentAutoComplete from '../DepartmentAutoComplete';
 import DateRangePicker from './DateRangePicker';
@@ -50,26 +50,16 @@ const AnalyticsPage = () => {
 		<Page.Header title={t('Analytics')}/>
 		<Page.ScrollableContentWithShadow display='flex' flexDirection='column'>
 			<Margins block='x4'>
-				<Box display='flex' flexDirection='row' justifyContent='space-between' flexWrap='wrap' mi='neg-x4' mb='neg-x4'>
-					<Box display='flex' flexWrap='nowrap' flexGrow={1} flexShrink={1} justifyContent='stretch' mb='x4'>
-						<Margins inline='x2'>
-							<Field>
-								<Field.Label>{t('Type')}</Field.Label>
-								<Field.Row>
-									<Select options={typeOptions} value={type} onChange={setType} />
-								</Field.Row>
-							</Field>
-						</Margins>
-						<Margins inline='x2'>
-							<Field>
-								<Field.Label>{t('Departments')}</Field.Label>
-								<Field.Row>
-									<DepartmentAutoComplete placeholder={t('All')} value={departmentId} onChange={setDepartmentId}/>
-								</Field.Row>
-							</Field>
-						</Margins>
+				<Box display='flex' flexDirection='row' flexWrap='wrap' >
+					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
+						<Label mb='x4' >{t('Type')}</Label>
+						<Select flexShrink={0} options={typeOptions} value={type} onChange={setType} />
 					</Box>
-					<DateRangePicker mi='none' mb='x4' flexWrap='nowrap' display='flex' flexGrow={1} flexShrink={1} justifyContent='stretch' onChange={setDateRange}/>
+					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
+						<Label mb='x4'>{t('Departments')}</Label>
+						<DepartmentAutoComplete flexShrink={0} placeholder={t('All')} value={departmentId} onChange={setDepartmentId}/>
+					</Box>
+					<DateRangePicker onChange={setDateRange}/>
 				</Box>
 				<Box>
 					<Overview type={type} dateRange={dateRange} departmentId={departmentId}/>
