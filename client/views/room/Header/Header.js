@@ -14,9 +14,8 @@ import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import MarkdownText from '../../../components/MarkdownText';
-
-import { useEndpointData } from '/client/hooks/useEndpointData';
-import { useUser } from '/client/contexts/UserContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useUser } from '../../../contexts/UserContext';
 
 export default React.memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
