@@ -8,7 +8,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
 
 const schedulerUser = Users.findOneById('rocket.cat');
-const JOB_NAME_PREFIX = 'omnichannel-auto-transfer-chat-';
+const SCHEDULER_NAME = 'omnichannel_scheduler';
 
 class AutoTransferChatSchedulerClass {
 	scheduler: Agenda;
@@ -24,8 +24,7 @@ class AutoTransferChatSchedulerClass {
 
 		this.scheduler = new Agenda({
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
-			db: { collection: 'omnichannel_scheduler' },
-			// this ensures the same job doesn't get executed multiple times in a cluster
+			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
 		});
 
@@ -36,7 +35,7 @@ class AutoTransferChatSchedulerClass {
 	public async scheduleRoom(roomId: string, timeout: number): Promise<void> {
 		await this.unscheduleRoom(roomId);
 
-		const jobName = `${ JOB_NAME_PREFIX }${ roomId }`;
+		const jobName = `${ SCHEDULER_NAME }-${ roomId }`;
 		const when = new Date();
 		when.setSeconds(when.getSeconds() + timeout);
 
@@ -46,7 +45,7 @@ class AutoTransferChatSchedulerClass {
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
-		const jobName = `${ JOB_NAME_PREFIX }${ roomId }`;
+		const jobName = `${ SCHEDULER_NAME }-${ roomId }`;
 
 		await LivechatRooms.unsetAutoTransferOngoingById(roomId);
 		await this.scheduler.cancel({ name: jobName });
