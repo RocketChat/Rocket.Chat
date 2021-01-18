@@ -18,9 +18,6 @@ export class BannersRaw extends BaseRaw<T> {
 
 	findActiveByRoleOrId(roles: string[], platform: BannerPlatform, bannerId?: string, options?: FindOneOptions<T>): Cursor<T> {
 		const today = new Date();
-		today.setHours(0);
-		today.setMinutes(0);
-		today.setSeconds(0);
 
 		const query = {
 			...bannerId && { _id: bannerId },

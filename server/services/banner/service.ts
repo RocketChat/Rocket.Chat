@@ -6,6 +6,7 @@ import { BannersDismissRaw } from '../../../app/models/server/raw/BannersDismiss
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IBannerService } from '../../sdk/types/IBannerService';
 import { BannerPlatform, IBanner } from '../../../definition/IBanner';
+import { api } from '../../sdk/api';
 
 export class BannerService extends ServiceClass implements IBannerService {
 	protected name = 'banner';
@@ -27,7 +28,7 @@ export class BannerService extends ServiceClass implements IBannerService {
 	async create(doc: Omit<IBanner, '_id'>): Promise<IBanner> {
 		const { insertedId } = await this.Banners.insertOne(doc);
 
-		const invalidPlatform = doc.platform.some((platform) => !Object.values(BannerPlatform).includes(platform));
+		const invalidPlatform = doc.platform?.some((platform) => !Object.values(BannerPlatform).includes(platform));
 		if (invalidPlatform) {
 			throw new Error('Invalid platform');
 		}
@@ -44,6 +45,8 @@ export class BannerService extends ServiceClass implements IBannerService {
 		if (!banner) {
 			throw new Error('error-creating-banner');
 		}
+
+		api.broadcast('banner.new', banner._id);
 
 		return banner;
 	}
