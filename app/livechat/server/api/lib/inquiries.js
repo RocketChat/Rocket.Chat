@@ -44,6 +44,15 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 	const filter = {
 		...status && { status },
 		...department && { department },
+		$or: [
+			{ defaultAgent: { $exists: false } },
+			{
+				$and: [
+					{ defaultAgent: { $exists: true } },
+					{ 'defaultAgent.agentId': userId },
+				],
+			},
+		],
 	};
 
 	const cursor = LivechatInquiry.find(filter, options);

@@ -44,6 +44,15 @@ const useOmnichannelInquiries = (): Array<any> => {
 
 	return useReactiveValue(useCallback(() => LivechatInquiry.find({
 		status: 'queued',
+		$or: [
+			{ defaultAgent: { $exists: false } },
+			{
+				$and: [
+					{ defaultAgent: { $exists: true } },
+					{ 'defaultAgent.agentId': uid },
+				],
+			},
+		],
 	}, {
 		sort: {
 			queueOrder: 1,
@@ -51,23 +60,27 @@ const useOmnichannelInquiries = (): Array<any> => {
 			estimatedServiceTimeAt: 1,
 		},
 		limit: omnichannelPoolMaxIncoming,
-	}).fetch(), [omnichannelPoolMaxIncoming]));
+	}).fetch(), [omnichannelPoolMaxIncoming, uid]));
 };
 
 const OmnichannelDisabledProvider: FC = ({ children }) => <OmnichannelContext.Provider value={emptyContext} children={children}/>;
 
 const OmnichannelManualSelectionProvider: FC<{ value: OmnichannelContextValue }> = ({ value, children }) => {
 	const queue = useOmnichannelInquiries();
+	console.log('---queue', queue);
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean && value.agentAvailable;
 
-	const contextValue = useMemo(() => ({
-		...value,
-		inquiries: {
-			enabled: true,
-			queue,
-		},
-		showOmnichannelQueueLink,
-	}), [value, queue, showOmnichannelQueueLink]);
+	const contextValue = useMemo(() => {
+		console.log('showOmnichannelQueueLink', showOmnichannelQueueLink);
+		return {
+			...value,
+			inquiries: {
+				enabled: true,
+				queue,
+			},
+			showOmnichannelQueueLink,
+		};
+	}, [value, queue, showOmnichannelQueueLink]);
 
 	return <OmnichannelContext.Provider value={contextValue} children={children}/>;
 };
@@ -98,6 +111,8 @@ const OmnichannelEnabledProvider: FC = ({ children }) => {
 	if (!routeConfig || !user) {
 		return <OmnichannelDisabledProvider children={children}/>;
 	}
+
+	console.log('--- manual test', canViewOmnichannelQueue && routeConfig.showQueue && !routeConfig.autoAssignAgent && contextValue.agentAvailable);
 
 	if (canViewOmnichannelQueue && routeConfig.showQueue && !routeConfig.autoAssignAgent && contextValue.agentAvailable) {
 		return <OmnichannelManualSelectionProvider value={contextValue} children={children} />;

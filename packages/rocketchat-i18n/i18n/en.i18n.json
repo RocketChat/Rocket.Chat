@@ -2341,6 +2341,8 @@
   "Livechat_Appearance": "Livechat Appearance",
   "Livechat_business_hour_type": "Business Hour Type (Single or Multiple)",
   "Livechat_chat_transcript_sent": "Chat transcript sent: __transcript__",
+  "Livechat_contact_manager_routing": "Contact Manager Preferred",
+  "Livechat_contact_manager_routing_Description": "This setting allocates a chat to the assigned Contact Manager, provided the Contact Manager is online when the chat starts.",
   "Livechat_custom_fields_options_placeholder": "Comma-separated list used to select a pre-configured value. Spaces between elements are not accepted.",
   "Livechat_custom_fields_public_description": "Public custom fields will be displayed in external applications, such as Livechat, etc.",
   "Livechat_Dashboard": "Omnichannel Dashboard",
