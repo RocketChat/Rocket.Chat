@@ -15,35 +15,41 @@ const normalizeDefaultAgent = (agent) => {
 	return { agentId, username };
 };
 
+const getDefaultAgent = (username) => username && normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(username, { fields: { _id: 1, username: 1 } }));
+
 const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	if (defaultAgent || !defaultGuest) {
 		return defaultAgent;
 	}
 
-	if (!contactManagerPreferred && !lastChattedAgentPreferred) {
+	const { _id: guestId } = defaultGuest;
+	const guest = LivechatVisitors.findOneById(guestId, { fields: { lastAgent: 1, token: 1, contactManager: 1 } });
+	if (!guest) {
+		console.log('guest');
+		console.log(guest);
 		return defaultAgent;
 	}
 
-	const { _id: guestId } = defaultGuest;
-	const guest = LivechatVisitors.findOneById(guestId, { fields: { lastAgent: 1, token: 1, contactManager: 1 } });
-	const { lastAgent: { username: usernameByVisitor } = {}, token, contactManager: { username: contactManagerUsername } = {} } = guest;
-	const contactManager = contactManagerUsername && normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(contactManagerUsername, { fields: { _id: 1, username: 1 } }));
-	if (contactManager) {
-		return contactManager;
+	const { lastAgent, token, contactManager } = guest;
+	const guestAgent = (contactManagerPreferred && getDefaultAgent(contactManager?.username)) || (lastChattedAgentPreferred && getDefaultAgent(lastAgent?.username));
+	console.log('guestAgent');
+	console.log(guestAgent);
+
+	if (guestAgent) {
+		return guestAgent;
 	}
 
-	const lastGuestAgent = lastChattedAgentPreferred && usernameByVisitor && normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(usernameByVisitor, { fields: { _id: 1, username: 1 } }));
-	if (lastGuestAgent) {
-		return lastGuestAgent;
-	}
-
-	const room = lastChattedAgentPreferred && LivechatRooms.findOneLastServedAndClosedByVisitorToken(token, { fields: { servedBy: 1 } });
-	if (!room || !room.servedBy) {
+	const room = LivechatRooms.findOneLastServedAndClosedByVisitorToken(token, { fields: { servedBy: 1 } });
+	if (!room?.servedBy) {
+		console.log('!room?.servedBy');
 		return defaultAgent;
 	}
 
 	const { servedBy: { username: usernameByRoom } } = room;
 	const lastRoomAgent = normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(usernameByRoom, { fields: { _id: 1, username: 1 } }));
+	console.log('lastRoomAgent');
+	console.log(lastRoomAgent);
+
 	return lastRoomAgent || defaultAgent;
 };
 
@@ -85,28 +91,16 @@ settings.get('Livechat_last_chatted_agent_routing', function(key, value) {
 	if (!lastChattedAgentPreferred) {
 		callbacks.remove('livechat.onMaxNumberSimultaneousChatsReached', 'livechat-on-max-number-simultaneous-chats-reached');
 		callbacks.remove('livechat.afterTakeInquiry', 'livechat-save-default-agent-after-take-inquiry');
-		if (!contactManagerPreferred) {
-			callbacks.remove('livechat.checkDefaultAgentOnNewRoom', 'livechat-check-default-agent-new-room');
-		}
 		return;
 	}
 
-	callbacks.add('livechat.onMaxNumberSimultaneousChatsReached', onMaxNumberSimultaneousChatsReached, callbacks.priority.MEDIUM, 'livechat-on-max-number-simultaneous-chats-reached');
 	callbacks.add('livechat.afterTakeInquiry', afterTakeInquiry, callbacks.priority.MEDIUM, 'livechat-save-default-agent-after-take-inquiry');
-	if (!contactManagerPreferred) {
-		callbacks.add('livechat.checkDefaultAgentOnNewRoom', checkDefaultAgentOnNewRoom, callbacks.priority.MEDIUM, 'livechat-check-default-agent-new-room');
-	}
+	callbacks.add('livechat.onMaxNumberSimultaneousChatsReached', onMaxNumberSimultaneousChatsReached, callbacks.priority.MEDIUM, 'livechat-on-max-number-simultaneous-chats-reached');
 });
 
-settings.get('Livechat_contact_manager_routing', function(key, value) {
+settings.get('Omnichannel_contact_manager_routing', function(key, value) {
 	contactManagerPreferred = value;
-	if (!contactManagerPreferred) {
-		if (!lastChattedAgentPreferred) {
-			callbacks.remove('livechat.checkDefaultAgentOnNewRoom', 'livechat-check-default-agent-new-room');
-		}
-		return;
-	}
-	if (!lastChattedAgentPreferred) {
-		callbacks.add('livechat.checkDefaultAgentOnNewRoom', checkDefaultAgentOnNewRoom, callbacks.priority.MEDIUM, 'livechat-check-default-agent-new-room');
-	}
 });
+
+
+callbacks.add('livechat.checkDefaultAgentOnNewRoom', checkDefaultAgentOnNewRoom, callbacks.priority.MEDIUM, 'livechat-check-default-agent-new-room');

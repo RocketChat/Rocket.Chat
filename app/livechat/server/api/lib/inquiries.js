@@ -46,12 +46,7 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 		...department && { department },
 		$or: [
 			{ defaultAgent: { $exists: false } },
-			{
-				$and: [
-					{ defaultAgent: { $exists: true } },
-					{ 'defaultAgent.agentId': userId },
-				],
-			},
+			{ 'defaultAgent.agentId': userId },
 		],
 	};
 

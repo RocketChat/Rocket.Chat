@@ -46,12 +46,7 @@ const useOmnichannelInquiries = (): Array<any> => {
 		status: 'queued',
 		$or: [
 			{ defaultAgent: { $exists: false } },
-			{
-				$and: [
-					{ defaultAgent: { $exists: true } },
-					{ 'defaultAgent.agentId': uid },
-				],
-			},
+			{ 'defaultAgent.agentId': uid },
 		],
 	}, {
 		sort: {

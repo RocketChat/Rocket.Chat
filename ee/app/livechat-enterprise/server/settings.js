@@ -111,7 +111,7 @@ export const createSettings = () => {
 		});
 	});
 
-	settings.add('Livechat_contact_manager_routing', true, {
+	settings.add('Omnichannel_contact_manager_routing', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Routing',

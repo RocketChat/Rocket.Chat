@@ -20,7 +20,7 @@ import './hooks/beforeNewInquiry';
 import './hooks/beforeNewRoom';
 import './hooks/beforeRoutingChat';
 import './hooks/checkAgentBeforeTakeInquiry';
-import './hooks/handleLastChattedAgentPreferredEvents';
+import './hooks/handleNextAgentPreferredEvents';
 import './hooks/onCheckRoomParamsApi';
 import './hooks/onLoadConfigApi';
 import './hooks/onCloseLivechat';
