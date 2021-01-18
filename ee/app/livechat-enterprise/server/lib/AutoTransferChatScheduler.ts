@@ -54,26 +54,30 @@ class AutoTransferChatSchedulerClass {
 		await this.scheduler.cancel({ name: jobName });
 	}
 
-	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
-		const { roomId } = data;
+	private async transferRoom(roomId: string): Promise<boolean> {
 		const room = LivechatRooms.findOneById(roomId, { _id: 1, v: 1, servedBy: 1, open: 1, departmentId: 1 });
 		if (!room?.open || !room?.servedBy?._id) {
-			return;
+			return false;
 		}
 
-		const { departmentId, servedBy: { _id: ignoreAgentId, username } } = room;
-		let success;
+		const { departmentId, servedBy: { _id: ignoreAgentId } } = room;
 
 		if (!RoutingManager.getConfig().autoAssignAgent) {
-			success = Livechat.returnRoomAsInquiry(room._id, departmentId);
-		} else {
-			const transferredTo = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
-			success = transferredTo && await forwardRoomToAgent(room, { userId: transferredTo.agentId, transferredBy: this.user, transferredTo });
+			return Livechat.returnRoomAsInquiry(room._id, departmentId);
 		}
 
-		if (success) {
-			const timeout = settings.get('Livechat_auto_transfer_chat_timeout');
-			Messages.createAutoTransferChatWithRoomIdMessageAndUser(roomId, TAPi18n.__('Livechat_auto_transfer_chat_message', { username, timeout }), schedulerUser);
+		const agent = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
+		if (agent) {
+			return forwardRoomToAgent(room, { userId: agent.agentId, transferredBy: schedulerUser, transferredTo: agent });
+		}
+
+		return false;
+	}
+
+	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
+		const { roomId } = data;
+
+		if (await this.transferRoom(roomId)) {
 			LivechatRooms.setAutoTransferredAtById(roomId);
 		}
 

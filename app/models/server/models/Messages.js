@@ -810,29 +810,6 @@ export class Messages extends Base {
 		return record;
 	}
 
-
-	createAutoTransferChatWithRoomIdMessageAndUser(roomId, message, user) {
-		const type = 'livechat_auto_transfer_chat';
-		const record = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			msg: message,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-			groupable: false,
-		};
-
-		if (settings.get('Message_Read_Receipt_Enabled')) {
-			record.unread = true;
-		}
-
-		record._id = this.insertOrUpsert(record);
-		return record;
-	}
-
 	createTranscriptHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
 		const type = 'livechat_transcript_history';
 		const record = {

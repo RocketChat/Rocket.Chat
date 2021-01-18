@@ -2024,7 +2024,6 @@
   "Livechat_Agents": "Agentes",
   "Livechat_AllowedDomainsList": "Domínios permitidos em Livechat",
   "Livechat_Appearance": "Aparência do Livechat",
-  "Livechat_auto_transfer_chat_message": "A conversa foi transferida porque __username__ não respondeu após __timeout__ segundo(s)",
   "Livechat_auto_transfer_chat_timeout": "Tempo limite (em segundos) para transferência automática de conversas não respondidas pelo agente",
   "Livechat_auto_transfer_chat_timeout_description" : "Este evento ocorre apenas quando a conversa foi iniciada. Após a primeira transferência por inatividade a conversa não será mais monitorada.",
   "Livechat_business_hour_type": "Tipo de Horário de expediente (Único ou Múltiplo)",
