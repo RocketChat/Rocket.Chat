@@ -1,7 +1,7 @@
 import { Box, Modal } from '@rocket.chat/fuselage';
 import React, { useEffect } from 'react';
 
-const iframeMsgListener = (cancel) => (e) => {
+const iframeMsgListener = (confirm, cancel) => (e) => {
 	let data;
 	try {
 		data = JSON.parse(e.data);
@@ -9,19 +9,19 @@ const iframeMsgListener = (cancel) => (e) => {
 		return;
 	}
 
-	cancel();
+	data.result ? confirm(data) : cancel();
 };
 
-const IframeModal = ({ url, cancel, ...props }) => {
+const IframeModal = ({ url, confirm, cancel, ...props }) => {
 	useEffect(() => {
-		const listener = iframeMsgListener(cancel);
+		const listener = iframeMsgListener(confirm, cancel);
 
 		window.addEventListener('message', listener);
 
 		return () => {
 			window.removeEventListener('message', listener);
 		};
-	}, [cancel]);
+	}, [confirm, cancel]);
 
 	return <Modal height='x360' {...props}>
 		<Box padding='x12' w='full' h='full' flexGrow={1}>

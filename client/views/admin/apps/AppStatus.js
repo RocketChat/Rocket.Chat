@@ -36,6 +36,7 @@ const actions = {
 const AppStatus = ({ app, showStatus = true, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
+	const [isAppPurchased, setPurchased] = useSafely(useState(props.isPurchased));
 	const setModal = useSetModal();
 
 	const button = appButtonProps(app);
@@ -55,6 +56,14 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 		setModal(null);
 	}, [setLoading, setModal]);
 
+	const showAppPermissionsReviewModal = () => {
+		if (!isAppPurchased) {
+			setPurchased(true);
+		}
+
+		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} cancel={cancelAction} confirm={confirmAction} />);
+	}
+
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
 	const handleClick = useCallback(async (e) => {
@@ -71,16 +80,17 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 			return;
 		}
 
-		if (action === 'purchase') {
+		if (action === 'purchase' && !isAppPurchased) {
 			try {
 				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
-				setModal(<IframeModal url={data.url} cancel={cancelAction}/>);
+				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal}/>);
 			} catch (error) {
 				handleAPIError(error);
 			}
+			return;
 		}
 
-		setModal(<AppPermissionsReviewModal appPermissions={app.permissions} cancel={cancelAction} confirm={confirmAction} />);
+		showAppPermissionsReviewModal();
 		return;
 	}, [setLoading, checkUserLoggedIn, action, confirmAction, setModal, app.id, app.purchaseType, cancelAction]);
 
