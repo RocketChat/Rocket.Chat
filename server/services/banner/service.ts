@@ -2,6 +2,7 @@ import { Db } from 'mongodb';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { BannersRaw } from '../../../app/models/server/raw/Banners';
+import { BannersDismissRaw } from '../../../app/models/server/raw/BannersDismiss';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IBannerService } from '../../sdk/types/IBannerService';
 import { BannerPlatform, IBanner } from '../../../definition/IBanner';
@@ -11,20 +12,35 @@ export class BannerService extends ServiceClass implements IBannerService {
 
 	private Banners: BannersRaw;
 
+	private BannersDismiss: BannersDismissRaw;
+
 	private Users: UsersRaw;
 
 	constructor(db: Db) {
 		super();
 
 		this.Banners = new BannersRaw(db.collection('rocketchat_banner'));
+		this.BannersDismiss = new BannersDismissRaw(db.collection('rocketchat_banner_dismiss'));
 		this.Users = new UsersRaw(db.collection('users'));
 	}
 
 	async create(doc: Omit<IBanner, '_id'>): Promise<IBanner> {
 		const { insertedId } = await this.Banners.insertOne(doc);
 
-		const banner = await this.Banners.findOneById(insertedId);
+		const invalidPlatform = doc.platform.some((platform) => !Object.values(BannerPlatform).includes(platform));
+		if (invalidPlatform) {
+			throw new Error('Invalid platform');
+		}
 
+		if (doc.startAt > doc.expireAt) {
+			throw new Error('Start date cannot be later than expire date');
+		}
+
+		if (doc.expireAt < new Date()) {
+			throw new Error('Cannot create banner already expired');
+		}
+
+		const banner = await this.Banners.findOneById(insertedId);
 		if (!banner) {
 			throw new Error('error-creating-banner');
 		}
@@ -32,12 +48,18 @@ export class BannerService extends ServiceClass implements IBannerService {
 		return banner;
 	}
 
-	async getNewBannersForUser(userId: string, platform: BannerPlatform): Promise<IBanner[]> {
-		const { roles, bannersDismissed } = await this.Users.findOneById(userId, { projection: { roles: 1, bannersDismissed: 1 } });
+	async getNewBannersForUser(userId: string, platform: BannerPlatform, bannerId?: string): Promise<IBanner[]> {
+		const { roles } = await this.Users.findOneById(userId, { projection: { roles: 1 } });
 
-		const banners = await this.Banners.findActiveByRoleAndPlatformExcluding(roles, platform, bannersDismissed).toArray();
+		const banners = await this.Banners.findActiveByRoleOrId(roles, platform, bannerId).toArray();
 
-		return banners;
+		const bannerIds = banners.map(({ _id }) => _id);
+
+		const result = await this.BannersDismiss.findByUserIdAndBannerId(userId, bannerIds, { projection: { bannerId: 1, _id: 0 } }).toArray();
+
+		const dismissed = new Set(result.map(({ bannerId }) => bannerId));
+
+		return banners.filter((banner) => !dismissed.has(banner._id));
 	}
 
 	async dismiss(userId: string, bannerId: string): Promise<boolean> {
@@ -46,15 +68,27 @@ export class BannerService extends ServiceClass implements IBannerService {
 			throw new Error('Banner not found');
 		}
 
-		const user = await this.Users.findOneById(userId, { projection: { roles: 1 } });
+		const user = await this.Users.findOneById(userId, { projection: { username: 1 } });
 		if (!user) {
 			throw new Error('User not found');
 		}
 
-		const result = await this.Users.addBannerDismissById(userId, bannerId);
-		if (!result) {
-			throw new Error('Error dismissing banner');
-		}
+		const dismissedBy = {
+			_id: user._id,
+			username: user.username,
+		};
+
+		const today = new Date();
+
+		const doc = {
+			userId,
+			bannerId,
+			dismissedBy,
+			dismissedAt: today,
+			_updatedAt: today,
+		};
+
+		await this.BannersDismiss.insertOne(doc);
 
 		return true;
 	}

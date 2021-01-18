@@ -1,19 +1,29 @@
-// import { FindOneOptions, Cursor, UpdateQuery, FilterQuery } from 'mongodb';
-import { Cursor, FindOneOptions } from 'mongodb';
+import { Collection, Cursor, FindOneOptions } from 'mongodb';
 
 import { BannerPlatform, IBanner } from '../../../../definition/IBanner';
 import { BaseRaw } from './BaseRaw';
 
 type T = IBanner;
 export class BannersRaw extends BaseRaw<T> {
-	findActiveByRoleAndPlatformExcluding(roles: string[], platform: BannerPlatform, excluding: string[], options?: FindOneOptions<T>): Cursor<T> {
+	constructor(
+		public readonly col: Collection<T>,
+		public readonly trash?: Collection<T>,
+	) {
+		super(col, trash);
+
+		this.col.createIndexes([
+			{ key: { platform: 1, startAt: 1, expireAt: 1 } },
+		]);
+	}
+
+	findActiveByRoleOrId(roles: string[], platform: BannerPlatform, bannerId?: string, options?: FindOneOptions<T>): Cursor<T> {
 		const today = new Date();
 		today.setHours(0);
 		today.setMinutes(0);
 		today.setSeconds(0);
 
 		const query = {
-			...excluding && { _id: { $nin: excluding } },
+			...bannerId && { _id: bannerId },
 			platform,
 			startAt: { $lte: today },
 			expireAt: { $gte: today },
