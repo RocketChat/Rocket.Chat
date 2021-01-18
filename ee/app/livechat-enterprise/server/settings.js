@@ -89,6 +89,18 @@ export const createSettings = () => {
 		],
 	});
 
+	settings.add('Livechat_auto_transfer_chat_timeout', 0, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		i18nDescription: 'Livechat_auto_transfer_chat_timeout_description',
+		enterprise: true,
+		invalidValue: 0,
+		modules: [
+			'livechat-enterprise',
+		],
+	});
+
 	settings.addGroup('Omnichannel', function() {
 		this.section('Business_Hours', function() {
 			this.add('Livechat_business_hour_type', 'Single', {
