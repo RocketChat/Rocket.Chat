@@ -1,5 +1,6 @@
 import React from 'react';
 
+import AttachmentProvider from '../components/Message/Attachments/providers/AttachmentProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
@@ -33,7 +34,10 @@ function MeteorProvider({ children }) {
 													<AuthorizationProvider>
 														<OmniChannelProvider>
 															<ModalProvider>
-																{children}
+																{/* TODO move to RoomContext */}
+																<AttachmentProvider>
+																	{children}
+																</AttachmentProvider>
 															</ModalProvider>
 														</OmniChannelProvider>
 													</AuthorizationProvider>
