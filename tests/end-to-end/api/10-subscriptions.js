@@ -224,7 +224,7 @@ describe('[Subscriptions]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
-					expect(res.body).to.have.property('errorType', 'error-no-message');
+					expect(res.body).to.have.property('errorType', 'error-no-message-for-unread');
 				})
 				.end(done);
 		});

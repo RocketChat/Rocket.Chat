@@ -1381,7 +1381,7 @@
   "error-message-editing-blocked": "Edição de mensagens está bloqueada",
   "error-message-size-exceeded": "O tamanho da mensagem excede Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "Você deve fornecer o link para desinscrever-se: [unsubscribe].",
-  "error-no-message": "Não há mensagens para serem marcadas como não lidas",
+  "error-no-message-for-unread": "Não há mensagens para serem marcadas como não lidas",
   "error-no-tokens-for-this-user": "Não existem tokens para este usuário",
   "error-not-allowed": "Não permitido",
   "error-not-authorized": "Não autorizado",
