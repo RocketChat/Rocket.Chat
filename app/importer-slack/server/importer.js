@@ -286,7 +286,9 @@ export class SlackImporter extends Base {
 				this.logger.warn(`Failed to import user mention with name: ${ user }`);
 			}
 		});
-		message.mentions.push(...users);
+
+		const filteredUsers = users.filter((u) => u);
+		message.mentions.push(...filteredUsers);
 
 		if (!message.channels) {
 			message.channels = [];
@@ -302,7 +304,8 @@ export class SlackImporter extends Base {
 				this.logger.warn(`Failed to import channel mention with name: ${ chan }`);
 			}
 		});
-		message.channels.push(...channels);
+		const filteredChannels = channels.filter((c) => c);
+		message.channels.push(...filteredChannels);
 	}
 
 	processMessageSubType(message, room, msgDataDefaults, missedTypes) {
@@ -406,13 +409,13 @@ export class SlackImporter extends Base {
 			case 'file_share':
 				if (message.file && message.file.url_private_download !== undefined) {
 					const details = {
-						message_id: `slack-${ message.ts.replace(/\./g, '-') }`,
+						message_id: `slack-${ String(message.ts).replace(/\./g, '-') }`,
 						name: message.file.name,
 						size: message.file.size,
 						type: message.file.mimetype,
 						rid: room._id,
 					};
-					this.uploadFile(details, message.file.url_private_download, rocketUser, room, new Date(parseInt(message.ts.split('.')[0]) * 1000));
+					this.uploadFile(details, message.file.url_private_download, rocketUser, room, new Date(parseInt(String(message.ts).split('.')[0]) * 1000));
 				}
 				break;
 			default:
@@ -424,9 +427,10 @@ export class SlackImporter extends Base {
 	}
 
 	performMessageImport(message, room, missedTypes, slackChannel) {
+		const messageTs = String(message.ts);
 		const msgDataDefaults = {
-			_id: `slack-${ slackChannel.id }-${ message.ts.replace(/\./g, '-') }`,
-			ts: new Date(parseInt(message.ts.split('.')[0]) * 1000),
+			_id: `slack-${ slackChannel.id }-${ messageTs.replace(/\./g, '-') }`,
+			ts: new Date(parseInt(messageTs.split('.')[0]) * 1000),
 		};
 
 		// Process the reactions
@@ -457,15 +461,27 @@ export class SlackImporter extends Base {
 				const fileUser = this.getRocketUserFromUserId(message.user);
 				let fileIndex = 0;
 
-				message.files.forEach((file) => {
+				const files = (() => {
+					if (Array.isArray(message.files)) {
+						return message.files;
+					}
+
+					if (typeof message.files === 'object') {
+						return [message.files];
+					}
+
+					return [];
+				})();
+
+				files.forEach((file) => {
 					fileIndex++;
 					const msgObj = {
-						_id: `slack-${ slackChannel.id }-${ message.ts.replace(/\./g, '-') }-file${ fileIndex }`,
+						_id: `slack-${ slackChannel.id }-${ messageTs.replace(/\./g, '-') }-file${ fileIndex }`,
 						ts: msgDataDefaults.ts,
 						msg: file.url_private_download || '',
 						_importFile: this.convertSlackFileToPendingFile(file),
 					};
-					if (message.thread_ts && (message.thread_ts !== message.ts)) {
+					if (message.thread_ts && (String(message.thread_ts) !== String(message.ts))) {
 						msgObj.tmid = `slack-${ slackChannel.id }-${ message.thread_ts.replace(/\./g, '-') }`;
 					}
 					insertMessage(fileUser, msgObj, room, this._anyExistingSlackMessage);
@@ -489,7 +505,7 @@ export class SlackImporter extends Base {
 					};
 
 					if (message.thread_ts) {
-						if (message.thread_ts === message.ts) {
+						if (String(message.thread_ts) === String(message.ts)) {
 							if (message.reply_users) {
 								msgObj.replies = [];
 								message.reply_users.forEach(function(item) {
