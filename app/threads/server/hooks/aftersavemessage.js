@@ -41,7 +41,7 @@ export const processThreads = (message, room) => {
 		return message;
 	}
 
-	// TODO apply logic for history visibility
+	// TODO evaluate limit history visibility
 	const parentMessage = Messages.findOneById(message.tmid);
 	if (!parentMessage) {
 		return message;

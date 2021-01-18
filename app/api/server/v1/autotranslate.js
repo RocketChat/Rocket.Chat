@@ -55,7 +55,7 @@ API.v1.addRoute('autotranslate.translateMessage', { authRequired: true }, {
 			return API.v1.failure('The bodyParam "messageId" is required.');
 		}
 
-		// TODO apply logic for history visibility
+		// TODO evaluate limit history visibility
 		const message = Messages.findOneById(messageId);
 		if (!message) {
 			return API.v1.failure('Message not found.');

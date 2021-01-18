@@ -51,7 +51,7 @@ Meteor.methods({
 			return false;
 		}
 
-		// TODO apply logic for history visibility
+		// TODO evaluate limit history visibility
 		let originalMessage = Messages.findOneById(message._id);
 		if (originalMessage == null || originalMessage._id == null) {
 			throw new Meteor.Error('error-invalid-message', 'Message you are pinning was not found', {
@@ -133,7 +133,7 @@ Meteor.methods({
 			return false;
 		}
 
-		// TODO apply logic for history visibility
+		// TODO evaluate limit history visibility
 		let originalMessage = Messages.findOneById(message._id);
 
 		if (originalMessage == null || originalMessage._id == null) {

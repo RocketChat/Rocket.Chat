@@ -26,7 +26,7 @@ Meteor.methods({
 			return Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
 		}
 
-		// TODO apply logic for history visibility
+		// TODO evaluate limit history visibility
 		const originalMessage = Messages.findOneById(firstUnreadMessage._id, {
 			fields: {
 				u: 1,
