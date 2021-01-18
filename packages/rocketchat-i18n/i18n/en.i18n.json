@@ -1305,6 +1305,7 @@
   "Disconnect": "Disconnect",
   "Discussion": "Discussion",
   "Discussion_description": "Help keeping an overview about what's going on! By creating a discussion, a sub-channel of the one you selected is created and both are linked.",
+  "Discussion_first_message_disabled_due_to_e2e": "You can start sending End-to-End encrypted messages in this discussion after its creation.",
   "Discussion_first_message_title": "Your message",
   "Discussion_name": "Discussion name",
   "Discussion_start": "Start a Discussion",

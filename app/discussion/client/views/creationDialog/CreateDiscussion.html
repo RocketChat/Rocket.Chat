@@ -80,6 +80,9 @@
 								<textarea rows="5" {{messageDisable}} name="discussion_message" id="discussion_message" class="rc-input__element" placeholder="{{_ 'New_discussion_first_message'}}"
 									maxlength="{{maxMessageLength}}"></textarea>
 							</div>
+							{{#if encrypted}}
+								<div class="rc-input__title">{{_ "Discussion_first_message_disabled_due_to_e2e"}}</div>
+							{{/if}}
 						</label>
 					</div>
 				</div>

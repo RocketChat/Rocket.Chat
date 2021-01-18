@@ -115,13 +115,13 @@ Template.CreateDiscussion.events({
 		const encrypted = instance.encrypted.get();
 
 		const prid = instance.parentChannelId.get();
-		const reply = instance.reply.get();
+		const reply = encrypted ? undefined : instance.reply.get();
 
 		if (!prid) {
 			const errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
 			return toastr.error(errorText);
 		}
-		const result = await call('createDiscussion', { prid, pmid, t_name, users, encrypted });
+		const result = await call('createDiscussion', { prid, pmid, t_name, users, encrypted, reply });
 
 		// callback to enable tracking
 		callbacks.run('afterDiscussion', Meteor.user(), result);
@@ -131,10 +131,6 @@ Template.CreateDiscussion.events({
 		}
 
 		roomTypes.openRouteLink(result.t, result);
-
-		if (reply) {
-			call('sendMessage', { msg: reply, rid: result.rid });
-		}
 	},
 });
 

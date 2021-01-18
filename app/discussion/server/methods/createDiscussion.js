@@ -75,6 +75,16 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 		});
 	}
 
+	if (typeof encrypted !== 'boolean') {
+		encrypted = p_room.encrypted;
+	}
+
+	if (encrypted && reply) {
+		throw new Meteor.Error('error-invalid-arguments', 'Encrypted discussions must not receive an initial reply.', {
+			method: 'DiscussionCreation',
+		});
+	}
+
 	if (pmid) {
 		const discussionAlreadyExists = Rooms.findOne({
 			prid,
@@ -95,7 +105,7 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 
 	const type = roomTypes.getConfig(p_room.t).getDiscussionType();
 	const description = p_room.encrypted ? '' : message.msg;
-	const topic = p_room.encrypted ? '' : p_room.name;
+	const topic = p_room.name;
 
 	const discussion = createRoom(type, name, user.username, [...new Set(invitedUsers)], false, {
 		fname: t_name,
@@ -123,10 +133,6 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	callbacks.runAsync('afterSaveMessage', discussionMsg, p_room, user._id);
 
 	if (reply) {
-		if (encrypted) {
-			// #ToDo: Encrypt the reply
-		}
-
 		sendMessage(user, { msg: reply }, discussion);
 	}
 	return discussion;
