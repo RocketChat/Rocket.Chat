@@ -20,13 +20,9 @@ Meteor.methods({
 
 		const user = Users.findOneById(Meteor.userId());
 
-		const oldest = Subscriptions.findOneByRoomIdAndUserId(roomId, uid).ts;
-
-		// TODO apply logic for history visibility
 		return Promise.await(Message.get(user.userId, {
 			rid: roomId,
 			mentionsUsername: user.username,
-			oldest,
 			queryOptions
 		}));
 	},

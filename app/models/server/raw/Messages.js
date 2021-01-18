@@ -1,16 +1,6 @@
 import { BaseRaw } from './BaseRaw';
 
 export class MessagesRaw extends BaseRaw {
-	findVisibleByMentionAndRoomId(username, rid, options) {
-		const query = {
-			_hidden: { $ne: true },
-			'mentions.username': username,
-			rid,
-		};
-
-		return this.find(query, options);
-	}
-
 	findStarredByUserAtRoom(userId, roomId, options) {
 		const query = {
 			_hidden: { $ne: true },
@@ -187,7 +177,7 @@ export class MessagesRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, mentionsUsername }) {
+	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, mentionsUsername, snippeted }) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -202,6 +192,10 @@ export class MessagesRaw extends BaseRaw {
 
 		if (mentionsUsername) {
 			query['mentions.username'] = mentionsUsername;
+		}
+
+		if (snippeted) {
+			query.snippeted = true;
 		}
 
 		console.log('latest: ', latest);

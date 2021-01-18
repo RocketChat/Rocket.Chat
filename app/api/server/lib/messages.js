@@ -13,7 +13,6 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 		throw new Error('invalid-user');
 	}
 
-	// TODO apply logic for history visibility 
 	const oldest = Subscriptions.findOneByRoomIdAndUserId(roomId, uid).ts;
 	const messages = Promise.await(Message.get(uid, {
 		rid: roomId,
@@ -104,15 +103,13 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 	}
 
 	// TODO apply logic for history visibility
-	const cursor = await Messages.findSnippetedByRoom(roomId, {
+	const queryOptions = {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
-	});
+	};
 
-	const total = await cursor.count();
-
-	const messages = await cursor.toArray();
+	const messages = Promise.await(Message.get(uid, { queryOptions }));
 
 	return {
 		messages,
