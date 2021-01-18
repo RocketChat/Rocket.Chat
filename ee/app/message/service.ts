@@ -42,7 +42,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			}
 		}
 
-		//filter.oldest = new Date(2021, 0, 14);
+		// filter.oldest = new Date(2021, 0, 14);
 		console.log('enterprise filter');
 
 		return this.Messages.findVisibleByRoomId(filter).toArray();
