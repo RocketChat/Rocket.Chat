@@ -232,7 +232,7 @@ export class SlackImporter extends Base {
 
 					const url = user.profile.image_original || user.profile.image_512;
 					try {
-						Meteor.call('setAvatarFromService', url, undefined, 'url');
+						Users.update({ _id: userId }, { $set: { _pendingAvatarUrl: url } });
 					} catch (error) {
 						this.logger.warn(`Failed to set ${ user.name }'s avatar from url ${ url }`);
 						console.log(`Failed to set ${ user.name }'s avatar from url ${ url }`);
