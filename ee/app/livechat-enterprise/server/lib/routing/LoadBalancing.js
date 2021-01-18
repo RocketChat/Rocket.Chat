@@ -19,8 +19,8 @@ class LoadBalancing {
 		};
 	}
 
-	async getNextAgent(department) {
-		const nextAgent = await Users.getNextLeastBusyAgent(department);
+	async getNextAgent(department, ignoreAgentId) {
+		const nextAgent = await Users.getNextLeastBusyAgent(department, ignoreAgentId);
 		if (!nextAgent) {
 			return;
 		}
