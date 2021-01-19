@@ -33,7 +33,8 @@ const ADMIN_PERMISSIONS = [
 ];
 
 const style = {
-	marginInline: '-16px',
+	marginLeft: '-16px',
+	marginRight: '-16px',
 };
 
 const setStatus = (status, statusText) => {

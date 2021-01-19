@@ -19,12 +19,12 @@ class AutoSelection {
 		};
 	}
 
-	getNextAgent(department) {
+	getNextAgent(department, ignoreAgentId) {
 		if (department) {
-			return LivechatDepartmentAgents.getNextAgentForDepartment(department);
+			return LivechatDepartmentAgents.getNextAgentForDepartment(department, ignoreAgentId);
 		}
 
-		return Users.getNextAgent();
+		return Users.getNextAgent(ignoreAgentId);
 	}
 
 	delegateAgent(agent) {

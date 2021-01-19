@@ -237,6 +237,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 
 	const handleSave = useMutableCallback(async () => {
 		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;
+		delete data.archived;
 		const save = () => saveAction({
 			rid: room._id,
 			...data,
