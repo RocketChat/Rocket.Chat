@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Messages } from '../../../models';
+import { Message } from '../../../../server/sdk';
 import { canAccessRoom, hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { processWebhookMessage } from '../../../lib/server';
@@ -463,13 +464,16 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 
 		const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };
 
-		// TODO apply logic for history visibility
-		const cursor = Messages.find(threadQuery, {
-			sort: sort || { tlm: -1 },
-			skip: offset,
-			limit: count,
-			fields,
-		});
+		const cursor = Promise.await(Message.customQuery({
+			query: threadQuery,
+			userId: this.userId,
+			queryOptions: {
+				sort: sort || { tlm: -1 },
+				skip: offset,
+				limit: count,
+				fields,
+			},
+		}));
 
 		const total = cursor.count();
 
@@ -544,17 +548,20 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
-		// TODO apply logic for history visibility
-		const cursor = Messages.find({ ...query, tmid }, {
-			sort: sort || { ts: 1 },
-			skip: offset,
-			limit: count,
-			fields,
-		});
+		const ourQuery = Object.assign({}, query, { rid: thread.rid });
 
-		const total = cursor.count();
+		const messages = Promise.await(Message.customQuery({
+			query: ourQuery,
+			userId: this.userId,
+			queryOptions: {
+				sort: sort || { ts: 1 },
+				skip: offset,
+				limit: count,
+				fields,
+			},
+		}));
 
-		const messages = cursor.fetch();
+		const total = messages.length;
 
 		return API.v1.success({
 			messages,

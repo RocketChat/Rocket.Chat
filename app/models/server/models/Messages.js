@@ -172,12 +172,27 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion = true, ts, users = [], ignoreThreads = true, options = {}) {
+	findFilesByRoomId({ rid, excludePinned, ignoreDiscussion = true, users = [], ignoreThreads = true, queryOptions = {}, oldest, latest, inclusive }) {
 		const query = {
 			rid,
-			ts,
 			'file._id': { $exists: true },
 		};
+
+		if (oldest) {
+			if (inclusive) {
+				query.ts.$gte = oldest;
+			} else {
+				query.ts.$gt = oldest;
+			}
+		}
+
+		if (latest) {
+			if (inclusive) {
+				query.ts.$lte = latest;
+			} else {
+				query.ts.$lt = latest;
+			}
+		}
 
 		if (excludePinned) {
 			query.pinned = { $ne: true };
@@ -196,7 +211,7 @@ export class Messages extends Base {
 			query['u.username'] = { $in: users };
 		}
 
-		return this.find(query, { fields: { 'file._id': 1 }, ...options });
+		return this.find(query, { fields: { 'file._id': 1 }, ...queryOptions });
 	}
 
 	findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {

@@ -5,7 +5,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { Messages, Rooms, Subscriptions } from '../../../models/server';
 import { Notifications } from '../../../notifications/server';
 
-export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
+export function cleanRoomHistory({ rid, latest, oldest, inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
@@ -15,15 +15,19 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 
 	let fileCount = 0;
 	// TODO apply logic for history visibility
-	Messages.findFilesByRoomIdPinnedTimestampAndUsers(
+	Messages.findFilesByRoomId({
 		rid,
 		excludePinned,
 		ignoreDiscussion,
-		ts,
+		oldest,
+		latest,
 		fromUsers,
 		ignoreThreads,
-		{ fields: { 'file._id': 1, pinned: 1 }, limit },
-	).forEach((document) => {
+		queryOptions: {
+			fields: { 'file._id': 1, pinned: 1 },
+			limit,
+		},
+	}).forEach((document) => {
 		FileUpload.getStore('Uploads').deleteById(document.file._id);
 		fileCount++;
 		if (filesOnly) {
@@ -64,4 +68,4 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 		});
 	}
 	return count;
-};
+}

@@ -102,14 +102,13 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 		throw new Error('error-not-allowed');
 	}
 
-	// TODO apply logic for history visibility
 	const queryOptions = {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
 	};
 
-	const messages = Promise.await(Message.get(uid, { queryOptions }));
+	const messages = await Message.get(uid, { queryOptions });
 
 	return {
 		messages,
@@ -126,16 +125,17 @@ export async function findDiscussionsFromRoom({ uid, roomId, text, pagination: {
 		throw new Error('error-not-allowed');
 	}
 
-	// TODO apply logic for history visibility
-	const cursor = Messages.findDiscussionsByRoomAndText(roomId, text, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
+	const messages = await Message.getDiscussions({
+		rid: roomId,
+		text,
+		queryOptions: {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+		},
 	});
 
-	const total = await cursor.count();
-
-	const messages = await cursor.toArray();
+	const total = messages.length;
 
 	return {
 		messages,

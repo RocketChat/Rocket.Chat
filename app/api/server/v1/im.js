@@ -6,6 +6,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { settings } from '../../../settings';
 import { API } from '../api';
 import { getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
+import { Message } from '../../../../server/sdk';
 
 function findDirectMessageRoom(params, user) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
@@ -234,19 +235,22 @@ API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
 
-		// TODO apply logic for history visibility
-		const messages = Messages.find(ourQuery, {
-			sort: sort || { ts: -1 },
-			skip: offset,
-			limit: count,
-			fields,
-		}).fetch();
+		const messages = Promise.await(Message.customQuery({
+			query: ourQuery,
+			userId: this.userId,
+			queryOptions: {
+				sort: sort || { ts: -1 },
+				skip: offset,
+				limit: count,
+				fields,
+			},
+		}));
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(messages, this.userId),
 			count: messages.length,
 			offset,
-			total: Messages.find(ourQuery).count(),
+			total: messages.length,
 		});
 	},
 });
@@ -275,13 +279,16 @@ API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authRequired: tr
 		const { sort, fields, query } = this.parseJsonQuery();
 		const ourQuery = Object.assign({}, query, { rid: room._id });
 
-		// TODO apply logic for history visibility
-		const msgs = Messages.find(ourQuery, {
-			sort: sort || { ts: -1 },
-			skip: offset,
-			limit: count,
-			fields,
-		}).fetch();
+		const msgs = Promise.await(Message.customQuery({
+			query: ourQuery,
+			userId: this.userId,
+			queryOptions: {
+				sort: sort || { ts: -1 },
+				skip: offset,
+				limit: count,
+				fields,
+			},
+		}));
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(msgs, this.userId),

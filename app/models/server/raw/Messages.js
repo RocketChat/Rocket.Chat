@@ -32,10 +32,18 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoom(rid, options) {
+	findDiscussionsByRoom({ rid, queryOptions, text, oldest }) {
 		const query = { rid, drid: { $exists: true } };
 
-		return this.find(query, options);
+		if (text) {
+			query.$text.$search = text;
+		}
+
+		if (oldest) {
+			query.ts.$gt = oldest;
+		}
+
+		return this.find(query, queryOptions);
 	}
 
 	findDiscussionsByRoomAndText(rid, text, options) {
