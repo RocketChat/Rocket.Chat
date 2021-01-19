@@ -77,7 +77,7 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 	});
 
 	const open = useMutableCallback((actionId, context) => {
-		if (actionId === activeTabBar[0]?.id) {
+		if (actionId === activeTabBar[0]?.id && context === undefined) {
 			return close();
 		}
 		router.push({
