@@ -8,7 +8,7 @@ import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Apps } from '../orchestrator';
-import * as InternalCoreApps from '../../../../server/sdk';
+import { UiKitCoreApp } from '../../../../server/sdk';
 
 const apiServer = express();
 
@@ -60,9 +60,6 @@ router.use((req, res, next) => {
 });
 
 apiServer.use('/api/apps/ui.interaction/', router);
-
-// TODO allow services register internal apps
-const InternalApps = new Set(['nps-core']);
 
 const getPayloadForType = (type, req) => {
 	if (type === UIKitIncomingInteractionType.BLOCK) {
@@ -138,20 +135,13 @@ const getPayloadForType = (type, req) => {
 	throw new Error('Type not supported');
 };
 
-const getInternalServiceName = (appId) =>
-	`${ appId
-		.split('-')
-		.map((name) => name.charAt(0).toUpperCase() + name.slice(1))
-		.join('') }App`;
-
 router.post('/:appId', async (req, res, next) => {
 	const {
 		appId,
 	} = req.params;
 
-	const serviceName = getInternalServiceName(appId);
-
-	if (!InternalApps.has(appId) || typeof InternalCoreApps[serviceName] === 'undefined') {
+	const isCore = await UiKitCoreApp.isRegistered(appId);
+	if (!isCore) {
 		console.log('not internal');
 		return next();
 	}
@@ -170,7 +160,7 @@ router.post('/:appId', async (req, res, next) => {
 
 		console.log('payload', payload);
 
-		const result = await InternalCoreApps[serviceName][type](payload);
+		const result = await UiKitCoreApp[type](payload);
 
 		res.send(result);
 	} catch (e) {
