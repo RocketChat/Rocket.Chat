@@ -5,7 +5,7 @@ import { AttachmentProps } from '.';
 // DEPRECATED
 
 type Action = {
-	msgId: string;
+	msgId?: string;
 	type: 'button';
 	text: string;
 	msg?: string;
@@ -27,5 +27,5 @@ export const ActionAttachment: FC<ActionAttachmentProps> = ({ actions }) => <But
 		if (url) {
 			return <Button is='a' href={url} target='_blank' rel='noopener noreferrer' key={index} small>{content}</Button>;
 		}
-		return <Button className={`js-actionButton-${ processingType }`} key={index} small value={processingType === 'respondWithQuotedMessage' ? msgId : msg}>{content}</Button>;
+		return <Button className={`js-actionButton-${ processingType }`} key={index} small value={msg} id={msgId}>{content}</Button>;
 	})}</ButtonGroup>;

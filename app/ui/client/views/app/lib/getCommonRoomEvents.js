@@ -225,7 +225,7 @@ export const getCommonRoomEvents = () => ({
 	},
 	async 'click .js-actionButton-respondWithQuotedMessage'(event, instance) {
 		const { rid } = instance.data;
-		const msgId = event.currentTarget.value;
+		const { id: msgId } = event.currentTarget;
 		const { $input } = chatMessages[rid];
 
 		if (!msgId) {
