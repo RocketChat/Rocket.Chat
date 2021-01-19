@@ -25,31 +25,31 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	const { _id: guestId } = defaultGuest;
 	const guest = LivechatVisitors.findOneById(guestId, { fields: { lastAgent: 1, token: 1, contactManager: 1 } });
 	if (!guest) {
-		console.log('guest');
-		console.log(guest);
 		return defaultAgent;
 	}
 
 	const { lastAgent, token, contactManager } = guest;
-	const guestAgent = (contactManagerPreferred && getDefaultAgent(contactManager?.username)) || (lastChattedAgentPreferred && getDefaultAgent(lastAgent?.username));
-	console.log('guestAgent');
-	console.log(guestAgent);
+	const guestManager = contactManagerPreferred && getDefaultAgent(contactManager?.username);
+	if (guestManager) {
+		return guestManager;
+	}
 
+	if (!lastChattedAgentPreferred) {
+		return defaultAgent;
+	}
+
+	const guestAgent = getDefaultAgent(lastAgent?.username);
 	if (guestAgent) {
 		return guestAgent;
 	}
 
 	const room = LivechatRooms.findOneLastServedAndClosedByVisitorToken(token, { fields: { servedBy: 1 } });
 	if (!room?.servedBy) {
-		console.log('!room?.servedBy');
 		return defaultAgent;
 	}
 
 	const { servedBy: { username: usernameByRoom } } = room;
 	const lastRoomAgent = normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(usernameByRoom, { fields: { _id: 1, username: 1 } }));
-	console.log('lastRoomAgent');
-	console.log(lastRoomAgent);
-
 	return lastRoomAgent || defaultAgent;
 };
 
