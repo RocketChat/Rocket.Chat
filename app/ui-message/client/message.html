@@ -115,7 +115,9 @@
 					{{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
-			{{> reactAttachments attachments=msg.attachments file=msg.file }}
+			{{#if hasAttachments}}
+				{{> reactAttachments attachments=msg.attachments file=msg.file }}
+			{{/if}}
 			{{#if msg.drid}}
 				{{> DiscussionMetric count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
 			{{/if}}

@@ -12,10 +12,10 @@ const options = {
 	headerIds: false,
 };
 
-function MarkdownText({ content, preserveHtml = false, ...props }) {
+function MarkdownText({ content, preserveHtml = false, withRichContent = true, ...props }) {
 	const __html = useMemo(() => content && marked(preserveHtml ? content : escapeHTML(content), options), [content, preserveHtml]);
 
-	return __html ? <Box dangerouslySetInnerHTML={{ __html }} withRichContent {...props} /> : null;
+	return __html ? <Box dangerouslySetInnerHTML={{ __html }} {...withRichContent && { withRichContent }} {...props} /> : null;
 }
 
 export default MarkdownText;
