@@ -23,7 +23,7 @@ export const Announcement = ({ children, onClickOpen }) => {
 			color: ${ colors.b800 };
 		}`;
 
-	return <Box onClick={onClickOpen} display='flex' fontScale='p2' textAlign='center' className={clickable}><Box withTruncatedText w='none'>{children}</Box></Box>;
+	return <Box onClick={onClickOpen} height='x40' alignItems='center' display='flex' fontScale='p2' textAlign='center' className={clickable}><Box withTruncatedText w='none'>{children}</Box></Box>;
 };
 
 export default ({ announcement, announcementDetails }) => {
