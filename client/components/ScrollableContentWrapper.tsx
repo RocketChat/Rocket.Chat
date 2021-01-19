@@ -10,12 +10,11 @@ const styleDefault = {
 };
 
 type CustomScrollbarsProps = {
-	onScroll?: (e: React.UIEvent<HTMLElement>) => void;
 	style?: CSSProperties;
 	children?: React.ReactNode;
 }
 
-const ScrollableContentWrapper = forwardRef<HTMLElement | undefined, CustomScrollbarsProps>(({ onScroll, children, style }, ref) => {
+const ScrollableContentWrapper = forwardRef<HTMLElement | undefined, CustomScrollbarsProps>(({ children, style }, ref) => {
 	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]) as CSSProperties;
 
 	return <Scrollbars
@@ -23,18 +22,20 @@ const ScrollableContentWrapper = forwardRef<HTMLElement | undefined, CustomScrol
 		autoHideTimeout={2000}
 		autoHideDuration={500}
 		style={scrollbarsStyle}
+		renderView={
+			({ style, ...props }): JSX.Element => (
+				<div {...props} className='teste' style={{ ...style, overflowX: 'hidden' }} />
+			)
+		}
+		renderTrackHorizontal={(props): JSX.Element => <div {...props} style={{ display: 'none' }} className='track-horizontal'/>}
 		renderThumbVertical={
-			({
-				style,
-				...props
-			}): JSX.Element => (
+			({ style, ...props }): JSX.Element => (
 				<div
 					{...props}
 					style={{ ...style, backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: '7px' }}
 				/>
 			)
 		}
-		onScroll={onScroll}
 		children={children}
 		ref={
 			(sRef): void => {

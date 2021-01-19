@@ -25,10 +25,6 @@ const sections = {
 	Omnichannel,
 };
 
-const style = {
-	overflowY: 'scroll',
-};
-
 export const itemSizeMap = (sidebarViewMode) => {
 	switch (sidebarViewMode) {
 		case 'extended':
@@ -77,9 +73,9 @@ export const Row = React.memo(({ data, item }) => {
 
 	if (typeof item === 'string') {
 		const Section = sections[item];
-		return Section ? <Section aria-level='1' /> : <Sidebar.Section.Title aria-level='1' style={style}>{t(item)}</Sidebar.Section.Title>;
+		return Section ? <Section aria-level='1' /> : <Sidebar.Section.Title aria-level='1'>{t(item)}</Sidebar.Section.Title>;
 	}
-	return <SideBarItemTemplateWithData sidebarViewMode={sidebarViewMode} style={style} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+	return <SideBarItemTemplateWithData sidebarViewMode={sidebarViewMode} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 });
 
 export const normalizeSidebarMessage = (message, t) => {
@@ -129,7 +125,6 @@ export default () => {
 
 	return <Box h='full' w='full' ref={ref}>
 		<Virtuoso
-			style={{ height: '100%', width: '100%' }}
 			totalCount={roomsList.length}
 			data={roomsList}
 			components={{ Scroller: ScrollableContentWrapper }}
