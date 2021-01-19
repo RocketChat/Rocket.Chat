@@ -9,12 +9,15 @@ import {
 	Layout,
 	MessageAction,
 } from '../../../../../ui-utils/client';
+import {
+	addMessageToList,
+} from '../../../../../ui-utils/client/lib/MessageAction';
 import { call } from '../../../../../ui-utils/client/lib/callMethod';
 import { promises } from '../../../../../promises/client';
 import { isURL } from '../../../../../utils/lib/isURL';
 import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../ui-utils/client/lib/messageArgs';
-import { ChatMessage, Rooms } from '../../../../../models';
+import { ChatMessage, Rooms, Messages } from '../../../../../models';
 import { t } from '../../../../../utils/client';
 import { chatMessages } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';
@@ -219,6 +222,26 @@ export const getCommonRoomEvents = () => ({
 		const { input } = chatMessages[rid];
 		input.value = msg;
 		input.focus();
+	},
+	async 'click .js-actionButton-respondWithQuotedMessage'(event, instance) {
+		const { rid } = instance.data;
+		const msgId = event.currentTarget.value;
+		const { $input } = chatMessages[rid];
+
+		if (!msgId) {
+			return;
+		}
+
+		const message = Messages.findOne({ _id: msgId });
+
+		let messages = $input.data('reply') || [];
+		messages = addMessageToList(messages, message, $input);
+
+		$input
+			.focus()
+			.data('mention-user', false)
+			.data('reply', messages)
+			.trigger('dataChange');
 	},
 	async 'click .js-actionButton-sendMessage'(event, instance) {
 		const { rid } = instance.data;
