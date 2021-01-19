@@ -18,11 +18,9 @@ import {
 	RoomHistoryManager,
 	RoomManager,
 	readMessage,
-	modal,
 	Layout,
 } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
-import { renderMessageBody } from '../../../../../client/lib/renderMessageBody';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
@@ -262,6 +260,14 @@ Template.roomOld.helpers({
 	announcement() {
 		const announcement = Template.instance().state.get('announcement');
 		return announcement ? Markdown.parse(announcement).replace(/^<p>|<\/p>$/, '') : undefined;
+	},
+
+	announcementDetails() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return false; }
+		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
+			return () => callbacks.run(roomData.announcementDetails.callback, this._id);
+		}
 	},
 
 	messageboxData() {
@@ -512,22 +518,6 @@ Meteor.startup(() => {
 	Template.roomOld.events({
 		...getCommonRoomEvents(),
 		...dropzoneEvents,
-		'click .announcement'() {
-			const roomData = Session.get(`roomData${ this._id }`);
-			if (!roomData) { return false; }
-			if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
-				return callbacks.run(roomData.announcementDetails.callback, this._id);
-			}
-
-			modal.open({
-				title: t('Announcement'),
-				text: renderMessageBody({ msg: roomData.announcement }),
-				html: true,
-				showConfirmButton: false,
-				showCancelButton: true,
-				cancelButtonText: t('Close'),
-			});
-		},
 		'click .toggle-hidden'(e) {
 			const id = e.currentTarget.dataset.message;
 			document.querySelector(`#${ id }`).classList.toggle('message--ignored');
