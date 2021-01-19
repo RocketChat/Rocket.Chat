@@ -54,15 +54,26 @@ API.v1.addRoute('subscriptions.getOne', { authRequired: true }, {
 	Route: api/v1/subscriptions.read
 	Params:
 		- rid: The rid of the room to be marked as read.
+ 		- roomId: Alternative for rid.
  */
 API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 	post() {
-		check(this.bodyParams, {
-			rid: String,
-		});
+		const { rid, roomId } = this.bodyParams;
+		if (!rid && !roomId) {
+			return API.v1.failure('At least one of "rid" or "roomId" params is required');
+		}
+
+		if (rid && roomId && (rid !== roomId)) {
+			return API.v1.failure('Params "rid" and "roomId" reference to different rooms, use only one param or both params with the same room id');
+		}
+
+		let finalRoomId = '';
+		rid && !roomId
+			? finalRoomId = rid
+			: finalRoomId = roomId;
 
 		Meteor.runAsUser(this.userId, () =>
-			Meteor.call('readMessages', this.bodyParams.rid),
+			Meteor.call('readMessages', finalRoomId),
 		);
 
 		return API.v1.success();
