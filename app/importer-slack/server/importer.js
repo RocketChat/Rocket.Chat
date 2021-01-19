@@ -224,6 +224,19 @@ export class SlackImporter extends Base {
 			if (existantUser) {
 				user.rocketId = existantUser._id;
 				Users.update({ _id: user.rocketId }, { $addToSet: { importIds: user.id } });
+
+				const url = user.profile.image_original || user.profile.image_512;
+				if (url) {
+					try {
+						Users.update({ _id: existantUser._id }, { $set: { _pendingAvatarUrl: url } });
+					} catch (error) {
+						this.logger.warn(`Failed to set ${ user.name }'s avatar from url ${ url }`);
+						console.log(`Failed to set ${ user.name }'s avatar from url ${ url }`);
+					}
+				} else {
+					Users.update({ _id: existantUser._id }, { $unset: { _pendingAvatarUrl: '' } });
+				}
+
 				this._saveUserIdReference(user.id, existantUser._id, user.name, existantUser.username);
 			} else {
 				const userId = user.profile.email ? Accounts.createUser({ email: user.profile.email, password: Date.now() + user.name + user.profile.email.toUpperCase() }) : Accounts.createUser({ username: user.name, password: Date.now() + user.name, joinDefaultChannelsSilenced: true });
