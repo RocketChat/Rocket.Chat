@@ -115,19 +115,19 @@
 					{{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
-			{{#each msg.attachments}}
-				{{injectMessage . ../msg}}
-				{{injectSettings . ../settings}}
-				{{injectIndex . @index}}
-				{{> messageAttachment}}
-			{{/each}}
-
+			{{#if hasAttachments}}
+				{{> reactAttachments attachments=msg.attachments file=msg.file }}
+			{{/if}}
 			{{#if msg.drid}}
 				{{> DiscussionMetric count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
 			{{/if}}
 			
 			{{#if $and settings.showReplyButton msg.tcount}}
 			    {{> ThreadMetric counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
+			{{/if}}
+
+			{{#if broadcast}}
+			 	{{> BroadCastMetric mid=msg._id username=msg.u.username replyBroadcast=actions.replyBroadcast }}
 			{{/if}}
 
 			{{#with readReceipt}}
@@ -151,30 +151,8 @@
 				</div>
 			{{/unless}}
 			{{#unless hideActionLinks}}
-			<ul class="actionLinks">
-				{{#each actionLink in actionLinks}}
-					<li class="color-primary-action-color">
-						<span class="rc-button rc-button--primary rc-button--small" style="display: inline-block; line-height: 1.75rem" data-actionlink="{{actionLink.id}}">
-							{{#if actionLink.icon}}
-								<i class="{{actionLink.icon}}"></i>
-							{{/if}}
-							{{#if actionLink.i18nLabel}}
-								{{_ actionLink.i18nLabel}}
-							{{else}}
-								{{actionLink.label}}
-							{{/if}}
-						</span>
-					</li>
-				{{/each}}
-			</ul>
+				{{> MessageActions mid=msg._id actions=actionLinks runAction=(actions.runAction msg)}}
 			{{/unless}}
-			{{#if broadcast}}
-				{{#with msg}}
-					<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
-						{{> icon icon="reply"}} {{_'Reply'}}
-					</button>
-				{{/with}}
-			{{/if}}
 			{{#unless hideReactions}}
 			<ul class="reactions">
 				{{#each reaction in reactions}}
