@@ -54,6 +54,19 @@ const renderBody = (msg, settings) => {
 };
 
 Template.message.helpers({
+	unread() {
+		const { msg, subscription } = this;
+		return subscription?.tunread?.includes(msg._id);
+	},
+	mention() {
+		const { msg, subscription } = this;
+		return subscription.tunreadUser?.includes(msg._id);
+	},
+
+	all() {
+		const { msg, subscription } = this;
+		return subscription.tunreadGroup?.includes(msg._id);
+	},
 	following() {
 		const { msg, u } = this;
 		return msg.replies && msg.replies.indexOf(u._id) > -1;
@@ -217,25 +230,6 @@ Template.message.helpers({
 			}
 			return 'system';
 		}
-	},
-	unread() {
-		const { msg, subscription } = this;
-		if (!subscription?.tunread?.includes(msg._id)) {
-			return false;
-		}
-
-		const badgeClass = (() => {
-			if (subscription.tunreadUser?.includes(msg._id)) {
-				return 'badge--user-mentions';
-			}
-			if (subscription.tunreadGroup?.includes(msg._id)) {
-				return 'badge--group-mentions';
-			}
-		})();
-
-		return {
-			class: badgeClass,
-		};
 	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
@@ -450,6 +444,10 @@ Template.message.helpers({
 	parentMessage() {
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
+	},
+	isPushMessage() {
+		const { msg } = this;
+		return msg.isPushMessage;
 	},
 	showStar() {
 		const { msg } = this;
