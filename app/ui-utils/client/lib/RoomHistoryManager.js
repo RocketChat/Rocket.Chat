@@ -271,6 +271,7 @@ export const RoomHistoryManager = new class {
 
 			return setTimeout(() => msgElement.removeClass('highlight'), 500);
 		}
+
 		const room = this.getRoom(message.rid);
 		room.isLoading.set(true);
 		let typeName = undefined;
