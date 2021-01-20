@@ -5,6 +5,7 @@ import { Random } from 'meteor/random';
 import { ParsedMail, Attachment } from 'mailparser';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
+import { Match } from 'meteor/check';
 
 import { EmailInbox } from '../../app/models/server/raw';
 import { IMAPInterceptor } from '../email/IMAPInterceptor';
@@ -16,6 +17,9 @@ import Messages from '../../app/models/server/models/Messages';
 import { IEmailInbox } from '../../definition/IEmailInbox';
 import { IUser } from '../../definition/IUser';
 import { FileUpload } from '../../app/file-upload/server';
+import { slashCommands } from '../../app/utils/server';
+import Rooms from '../../app/models/server/models/Rooms';
+import Uploads from '../../app/models/server/models/Uploads';
 
 type FileAttachment = {
 	title: string;
@@ -145,13 +149,27 @@ async function onEmailReceived(email: ParsedMail, inbox: string, department?: st
 		}
 	}
 
+	const msgId = Random.id();
+
 	Livechat.sendMessage({
 		guest,
 		message: {
-			_id: Random.id(),
+			_id: msgId,
 			groupable: false,
 			msg,
-			attachments,
+			attachments: [
+				...attachments,
+				{
+					actions: [{
+						type: 'button',
+						text: 'Reply via Email',
+						msg: 'msg',
+						msgId,
+						msg_in_chat_window: true,
+						msg_processing_type: 'respondWithQuotedMessage',
+					}],
+				},
+			],
 			blocks: [{
 				type: 'context',
 				elements: [{
@@ -184,6 +202,75 @@ async function onEmailReceived(email: ParsedMail, inbox: string, department?: st
 }
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
+
+slashCommands.add('sendEmailAttachment', (command: any, params: string) => {
+	if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
+		return;
+	}
+
+	const message = Messages.findOneById(params.trim());
+
+	if (!message || !message.file) {
+		return;
+	}
+
+	const room = Rooms.findOneById(message.rid);
+
+	const inbox = inboxes.get(room.email.inbox);
+
+	if (!inbox) {
+		return;
+	}
+
+	const file = Uploads.findOneById(message.file._id);
+
+	FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer) => {
+		inbox.smtp.sendMail({
+			from: inbox.config.senderInfo ? {
+				name: inbox.config.senderInfo,
+				address: inbox.config.email,
+			} : inbox.config.email,
+			to: room.email.replyTo,
+			subject: room.email.subject,
+			text: message.attachments[0].description || '',
+			attachments: [{
+				content: buffer,
+				contentType: file.type,
+				filename: file.name,
+			}],
+			inReplyTo: room.email.thread,
+			references: [
+				room.email.thread,
+			],
+		}).then((info) => {
+			console.log('Message sent: %s', info.messageId);
+		});
+	});
+}, {
+	description: 'Send attachment as email',
+	params: 'msg_id',
+});
+
+
+callbacks.add('beforeSaveMessage', function(message: any, room: any) {
+	if (!room.email?.inbox) {
+		return message;
+	}
+
+	if (message.file) {
+		message.attachments.push({
+			actions: [{
+				type: 'button',
+				text: 'Send via Email as attachment',
+				msg: `/sendEmailAttachment ${ message._id }`,
+				msg_in_chat_window: true,
+				msg_processing_type: 'sendMessage',
+			}],
+		});
+	}
+
+	return message;
+}, callbacks.priority.LOW, 'ReplyEmail');
 
 callbacks.add('afterSaveMessage', function(message: any, room: any) {
 	if (!room.email?.inbox || !message.urls || message.urls.length === 0) {
@@ -272,7 +359,6 @@ export async function configureEmailInboxes(): Promise<void> {
 	for await (const emailInboxRecord of emailInboxesCursor) {
 		console.log('Setting up email interceptor for', emailInboxRecord.email);
 
-		// TODO: Get attachments
 		const imap = new IMAPInterceptor({
 			password: emailInboxRecord.imap.password,
 			user: emailInboxRecord.imap.username,
@@ -308,4 +394,6 @@ export async function configureEmailInboxes(): Promise<void> {
 	}
 }
 
-configureEmailInboxes();
+Meteor.startup(() => {
+	configureEmailInboxes();
+});
