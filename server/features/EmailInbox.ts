@@ -253,7 +253,7 @@ slashCommands.add('sendEmailAttachment', (command: any, params: string) => {
 
 
 callbacks.add('beforeSaveMessage', function(message: any, room: any) {
-	if (!room.email?.inbox) {
+	if (!room?.email?.inbox) {
 		return message;
 	}
 
