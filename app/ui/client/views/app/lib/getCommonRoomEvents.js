@@ -235,7 +235,7 @@ export const getCommonRoomEvents = () => ({
 		const message = Messages.findOne({ _id: msgId });
 
 		let messages = $input.data('reply') || [];
-		messages = addMessageToList(messages, message, $input);
+		messages = addMessageToList(messages, message);
 
 		$input
 			.focus()
