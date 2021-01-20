@@ -284,27 +284,18 @@ export class Messages extends Base {
 			query['mentions.username'] = mentionsUsername;
 		}
 
-		console.log('latest: ', latest);
-		console.log('oldest: ', oldest);
-		console.log('query: ', query);
-		console.log('excludeTypes: ', excludeTypes);
-
 		if (latest && oldest) {
-			console.log('!latest && !oldest');
 			return this.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, excludeTypes, queryOptions);
 		}
 
 		if (latest && !oldest) {
-			console.log('latest && !oldest');
 			return this.findVisibleByRoomIdBeforeTimestamp(rid, latest, queryOptions, inclusive);
 		}
 
 		if (!latest && oldest) {
-			console.log('!latest && oldest');
 			return this.findVisibleByRoomIdAfterTimestamp(rid, oldest, queryOptions);
 		}
 
-		console.log('!latest && !oldest');
 		return this.find(query, queryOptions);
 	}
 

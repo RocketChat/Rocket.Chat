@@ -221,11 +221,6 @@ export class MessagesRaw extends BaseRaw {
 			query.snippeted = true;
 		}
 
-		console.log('latest: ', latest);
-		console.log('oldest: ', oldest);
-		console.log('query: ', query);
-		console.log('excludeTypes: ', excludeTypes);
-
 		if (latest && oldest) {
 			return this.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, excludeTypes, queryOptions);
 		}

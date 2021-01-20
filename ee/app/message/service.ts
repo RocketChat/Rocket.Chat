@@ -26,8 +26,6 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 	}
 
 	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<any[] | undefined> {
-		console.log('MessageEnterprise', userId, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername });
-
 		if (!hasLicense('livechat-enterprise')) {
 			return;
 		}
@@ -41,8 +39,6 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 				oldest = userJoinedAt.ts;
 			}
 		}
-
-		console.log('enterprise filter');
 
 		return this.Messages.findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }).toArray();
 	}
