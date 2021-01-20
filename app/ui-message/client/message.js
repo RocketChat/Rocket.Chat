@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
@@ -446,8 +447,8 @@ Template.message.helpers({
 		return threadMsg;
 	},
 	showStar() {
-		const { msg, u } = this;
-		return msg.starred && msg.starred.find((by) => by._id === u._id) && !(msg.actionContext === 'starred' || this.context === 'starred');
+		const { msg } = this;
+		return msg.starred && msg.starred.length > 0 && msg.starred.find((star) => star._id === Meteor.userId()) && !(msg.actionContext === 'starred' || this.context === 'starred');
 	},
 });
 
