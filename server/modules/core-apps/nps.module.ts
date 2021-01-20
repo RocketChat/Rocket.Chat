@@ -19,8 +19,11 @@ export class Nps implements IUiKitCoreApp {
 
 		// TODO use correct payload from uikit
 		const {
-			score,
-			comment,
+			payload: {
+				score,
+				comment,
+				npsId,
+			},
 			user: {
 				_id: userId,
 			},
@@ -30,11 +33,15 @@ export class Nps implements IUiKitCoreApp {
 
 		const result = await this.NpsModel.insertOne({
 			ts: new Date(),
+			npsId,
+			identifier,
 			score,
 			comment,
-			identifier,
 		});
+		if (!result) {
+			throw new Error('Error saving NPS vote');
+		}
 
-		return { result };
+		return true;
 	}
 }
