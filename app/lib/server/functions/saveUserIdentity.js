@@ -38,8 +38,8 @@ export function saveUserIdentity(userId, { _id, name: rawName, username: rawUser
 	}
 
 	// if coming from old username, update all references
-	if (previousUsername && usernameChanged) {
-		if (typeof rawUsername !== 'undefined') {
+	if (previousUsername) {
+		if (usernameChanged && typeof rawUsername !== 'undefined') {
 			Messages.updateAllUsernamesByUserId(user._id, username);
 			Messages.updateUsernameOfEditByUserId(user._id, username);
 			Messages.findByMention(previousUsername).forEach(function(msg) {
@@ -60,11 +60,14 @@ export function saveUserIdentity(userId, { _id, name: rawName, username: rawUser
 			}
 		}
 
-		// update name and fname of 1-on-1 direct messages
-		Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
+		// update other references if either the name or username has changed
+		if (usernameChanged || nameChanged) {
+			// update name and fname of 1-on-1 direct messages
+			Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
 
-		// update name and fname of group direct messages
-		updateGroupDMsName(user);
+			// update name and fname of group direct messages
+			updateGroupDMsName(user);
+		}
 	}
 
 	return true;

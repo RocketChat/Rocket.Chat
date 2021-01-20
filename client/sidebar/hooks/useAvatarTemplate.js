@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import RoomAvatar from '../../components/basic/avatar/RoomAvatar';
+import RoomAvatar from '../../components/avatar/RoomAvatar';
 import { useUserPreference } from '../../contexts/UserContext';
 
 export const useAvatarTemplate = () => {

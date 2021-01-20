@@ -25,6 +25,7 @@ import './hooks/onCheckRoomParamsApi';
 import './hooks/onLoadConfigApi';
 import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
+import './hooks/scheduleAutoTransfer';
 import './lib/routing/LoadBalancing';
 import { onLicense } from '../../license/server';
 import './business-hour';

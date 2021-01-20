@@ -10,7 +10,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', { method: 'autoTranslate.saveSettings' });
 		}
 
-		return TranslationProviderRegistry.getActiveProvider().getSupportedLanguages(targetLanguage);
+		return TranslationProviderRegistry.getSupportedLanguages(targetLanguage);
 	},
 });
 

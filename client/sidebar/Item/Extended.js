@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sidebar, ActionButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
@@ -23,9 +23,13 @@ const Extended = React.memo(({
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
+	const isReduceMotionEnabled = usePrefersReducedMotion();
+
 	const handleMenu = useMutableCallback((e) => {
 		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
 	});
+
+	const handleMenuEvent = { [isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: handleMenu };
 
 	return <Sidebar.Item aria-selected={selected} selected={selected} highlighted={unread} {...props} href={href} clickable={!!href}>
 		{ avatar && <Sidebar.Item.Avatar>
@@ -44,7 +48,7 @@ const Extended = React.memo(({
 					{ subtitle }
 				</Sidebar.Item.Subtitle>
 				<Sidebar.Item.Badge>{ badges }</Sidebar.Item.Badge>
-				{menu && <Sidebar.Item.Menu onTransitionEnd={handleMenu}>{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}</Sidebar.Item.Menu>}
+				{menu && <Sidebar.Item.Menu {...handleMenuEvent}>{menuVisibility ? menu() : <ActionButton square ghost mini rcx-sidebar-item__menu icon='kebab' />}</Sidebar.Item.Menu>}
 			</Sidebar.Item.Wrapper>
 		</Sidebar.Item.Content>
 		{ actions && <Sidebar.Item.Container>

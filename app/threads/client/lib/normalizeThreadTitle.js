@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { Users } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { MentionsParser } from '../../../mentions/lib/MentionsParser';
 import { emojiParser } from '../../../emoji/client/emojiParser.js';
+import { escapeHTML } from '../../../../lib/escapeHTML';
 
 export const normalizeThreadTitle = ({ ...message }) => {
 	if (message.msg) {
-		const filteredMessage = filterMarkdown(s.escapeHTML(message.msg));
+		const filteredMessage = filterMarkdown(escapeHTML(message.msg));
 		if (!message.channels && !message.mentions) {
 			return filteredMessage;
 		}
@@ -33,11 +33,11 @@ export const normalizeThreadTitle = ({ ...message }) => {
 		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
 
 		if (attachment && attachment.description) {
-			return s.escapeHTML(attachment.description);
+			return escapeHTML(attachment.description);
 		}
 
 		if (attachment && attachment.title) {
-			return s.escapeHTML(attachment.title);
+			return escapeHTML(attachment.title);
 		}
 	}
 };

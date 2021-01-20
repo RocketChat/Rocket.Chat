@@ -6,6 +6,7 @@ import { hasPermission } from '../../../authorization';
 import { RateLimiter, validateEmailDomain } from '../lib';
 import * as Mailer from '../../../mailer';
 import { settings } from '../../../settings';
+import { escapeHTML } from '../../../../lib/escapeHTML';
 
 import { checkEmailAvailability } from '.';
 
@@ -24,7 +25,7 @@ const _sendEmailChangeNotification = function(to, newEmail) {
 		subject,
 		html,
 		data: {
-			email: s.escapeHTML(newEmail),
+			email: escapeHTML(newEmail),
 		},
 	};
 

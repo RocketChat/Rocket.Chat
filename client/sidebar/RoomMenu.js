@@ -12,7 +12,7 @@ import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useUserSubscription } from '../contexts/UserContext';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';
-import WarningModal from '../admin/apps/WarningModal';
+import WarningModal from '../views/admin/apps/WarningModal';
 
 const fields = {
 	f: 1,
@@ -61,6 +61,7 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
+			closeModal();
 		};
 
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.LEAVE_WARNING);

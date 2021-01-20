@@ -6,7 +6,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import AuditLog from './auditLog';
 import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
-import { hasAllPermission } from '../../../../app/authorization/server';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
+import { hasPermission } from '../../../../app/authorization/server';
 
 const getValue = (room) => room && { rids: [room._id], name: room.name };
 
@@ -25,7 +26,7 @@ const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
 	}
 
 	if (type === 'l') {
-		console.warning('Deprecation Warning! This method will be removed in the next version (4.0.0)');
+		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
 		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, { fields: { _id: 1 } }).fetch();
 		return rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
 	}
@@ -37,7 +38,7 @@ Meteor.methods({
 		check(endDate, Date);
 
 		const user = Meteor.user();
-		if (!hasAllPermission(user._id, 'can-audit')) {
+		if (!hasPermission(user._id, 'can-audit')) {
 			throw new Meteor.Error('Not allowed');
 		}
 
@@ -55,7 +56,7 @@ Meteor.methods({
 		};
 
 		if (msg) {
-			const regex = new RegExp(s.trim(s.escapeRegExp(msg)), 'i');
+			const regex = new RegExp(s.trim(escapeRegExp(msg)), 'i');
 			query.msg = regex;
 		}
 		const messages = Messages.find(query).fetch();
@@ -71,7 +72,7 @@ Meteor.methods({
 		check(endDate, Date);
 
 		const user = Meteor.user();
-		if (!hasAllPermission(user._id, 'can-audit')) {
+		if (!hasPermission(user._id, 'can-audit')) {
 			throw new Meteor.Error('Not allowed');
 		}
 
@@ -100,7 +101,7 @@ Meteor.methods({
 		}
 
 		if (msg) {
-			const regex = new RegExp(s.trim(s.escapeRegExp(msg)), 'i');
+			const regex = new RegExp(s.trim(escapeRegExp(msg)), 'i');
 			query.msg = regex;
 		}
 
@@ -115,7 +116,7 @@ Meteor.methods({
 	auditGetAuditions({ startDate, endDate }) {
 		check(startDate, Date);
 		check(endDate, Date);
-		if (!hasAllPermission(Meteor.userId(), 'can-audit-log')) {
+		if (!hasPermission(Meteor.userId(), 'can-audit-log')) {
 			throw new Meteor.Error('Not allowed');
 		}
 		return AuditLog.find({
