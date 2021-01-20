@@ -76,4 +76,4 @@ import './publications/subscription';
 import './routes/avatar';
 import './stream/streamBroadcast';
 
-import './features/EmailInbox';
+import './features/EmailInbox/index';
