@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import moment from 'moment';
 
-import { hasRole } from '../../../../../app/authorization';
 import {
 	LivechatDepartment,
 	Users,
