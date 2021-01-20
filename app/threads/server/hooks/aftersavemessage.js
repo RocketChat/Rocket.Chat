@@ -4,7 +4,7 @@ import { Messages } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
-import { updateUsersSubscriptions } from '../../../lib/server/lib/notifyUsersOnMessage';
+import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 
 function notifyUsersOnReply(message, replies, room) {
@@ -13,13 +13,13 @@ function notifyUsersOnReply(message, replies, room) {
 		return message;
 	}
 
-	updateUsersSubscriptions(message, room, replies);
+	updateThreadUsersSubscriptions(message, room, replies);
 
 	return message;
 }
 
-const metaData = (message, parentMessage) => {
-	reply({ tmid: message.tmid }, message, parentMessage);
+const metaData = (message, parentMessage, followers) => {
+	reply({ tmid: message.tmid }, message, parentMessage, followers);
 
 	return message;
 };
@@ -36,7 +36,7 @@ const notification = (message, room, replies) => {
 	return message;
 };
 
-const processThreads = (message, room) => {
+export const processThreads = (message, room) => {
 	if (!message.tmid) {
 		return message;
 	}
@@ -46,12 +46,18 @@ const processThreads = (message, room) => {
 		return message;
 	}
 
+	const { mentionIds } = getMentions(message);
+
 	const replies = [
-		...parentMessage.replies || [],
+		...new Set([
+			...(!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || [],
+			...!parentMessage.tcount && room.t === 'd' ? room.uids : [],
+			...mentionIds,
+		]),
 	].filter((userId) => userId !== message.u._id);
 
 	notifyUsersOnReply(message, replies, room);
-	metaData(message, parentMessage);
+	metaData(message, parentMessage, replies);
 	notification(message, room, replies);
 
 	return message;

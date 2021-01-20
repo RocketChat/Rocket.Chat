@@ -1,4 +1,7 @@
 export const Meteor = {
+	Device: {
+		isDesktop: () => false,
+	},
 	isClient: true,
 	isServer: false,
 	_localStorage: window.localStorage,

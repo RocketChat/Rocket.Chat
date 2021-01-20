@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { TimeSync } from 'meteor/mizzao:timesync';
 
 import { settings } from '../../../settings';
-import { modal, TabBar, call } from '../../../ui-utils/client';
+import { modal, call } from '../../../ui-utils/client';
 import { t } from '../../../utils/client';
 import { Users, Rooms } from '../../../models';
 import * as CONSTANTS from '../../constants';
@@ -45,7 +45,7 @@ Template.videoFlexTab.onRendered(function() {
 
 		this.tabBar.close();
 
-		TabBar.updateButton('video', { class: '' });
+		// TabBar.updateButton('video', { class: '' });
 	};
 
 	const stop = () => {
@@ -76,8 +76,9 @@ Template.videoFlexTab.onRendered(function() {
 			if (!jitsiTimeout) {
 				return;
 			}
+			clearInterval(this.intervalHandler);
 			this.intervalHandler = setInterval(update, CONSTANTS.HEARTBEAT);
-			TabBar.updateButton('video', { class: 'red' });
+			// TabBar.updateButton('video', { class: 'red' });
 			return jitsiTimeout;
 		} catch (error) {
 			console.error(error);
@@ -104,13 +105,20 @@ Template.videoFlexTab.onRendered(function() {
 				return closePanel();
 			}
 
-			if (this.tabBar.getState() !== 'opened') {
-				TabBar.updateButton('video', { class: '' });
+			if (!this.tabBar.isOpen()) {
+				// TabBar.updateButton('video', { class: '' });
 				return stop();
 			}
 
 			const domain = settings.get('Jitsi_Domain');
-			const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + rid;
+			let rname;
+			if (settings.get('Jitsi_URL_Room_Hash')) {
+				rname = settings.get('uniqueID') + rid;
+			} else {
+				const room = Rooms.findOne({ _id: rid });
+				rname = encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+			}
+			const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + rname + settings.get('Jitsi_URL_Room_Suffix');
 			const noSsl = !settings.get('Jitsi_SSL');
 			const isEnabledTokenAuth = settings.get('Jitsi_Enabled_TokenAuth');
 
@@ -127,10 +135,10 @@ Template.videoFlexTab.onRendered(function() {
 			jitsiRoomActive = jitsiRoom;
 
 			if (settings.get('Jitsi_Open_New_Window')) {
-				Tracker.nonreactive(async () => {
+				return Tracker.nonreactive(async () => {
 					await start();
 
-					const queryString = accessToken && `?jwt=${ accessToken }`;
+					const queryString = accessToken ? `?jwt=${ accessToken }` : '';
 
 					const newWindow = window.open(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }${ queryString }`, jitsiRoom);
 					if (newWindow) {
@@ -147,12 +155,21 @@ Template.videoFlexTab.onRendered(function() {
 				});
 			}
 
+			await new Promise((resolve) => {
+				if (typeof JitsiMeetExternalAPI === 'undefined') {
+					const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+					return $.getScript(`${ prefix }/packages/rocketchat_videobridge/client/public/external_api.js`, resolve);
+				}
+				resolve();
+			});
+
 			if (typeof JitsiMeetExternalAPI !== 'undefined') {
 				// Keep it from showing duplicates when re-evaluated on variable change.
 				const name = Users.findOne(Meteor.userId(), { fields: { name: 1 } });
 				if (!$('[id^=jitsiConference]').length) {
 					Tracker.nonreactive(async () => {
 						await start();
+
 
 						this.api = new JitsiMeetExternalAPI(domain, jitsiRoom, width, height, this.$('.video-container').get(0), configOverwrite, interfaceConfigOverwrite, noSsl, accessToken);
 
@@ -161,7 +178,7 @@ Template.videoFlexTab.onRendered(function() {
 						* postMessage converts to events in the jitsi meet iframe.
 						* For some reason those aren't working right.
 						*/
-						Meteor.setTimeout(() => this.api.executeCommand('displayName', [name]), 5000);
+						setTimeout(() => this.api.executeCommand('displayName', [name]), 5000);
 					});
 				}
 

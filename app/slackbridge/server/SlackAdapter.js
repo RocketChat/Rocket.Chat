@@ -667,6 +667,13 @@ export default class SlackAdapter {
 				icon_url: iconUrl,
 				link_names: 1,
 			};
+
+			if (rocketMessage.tmid) {
+				const tmessage = Messages.findOneById(rocketMessage.tmid);
+				if (tmessage && tmessage.slackTs) {
+					data.thread_ts = tmessage.slackTs;
+				}
+			}
 			logger.slack.debug('Post Message To Slack', data);
 
 			// If we don't have the bot id yet and we have multiple slack bridges, we need to keep track of the messages that are being sent

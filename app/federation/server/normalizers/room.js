@@ -78,6 +78,8 @@ const normalizeRoom = (originalResource, users) => {
 		}
 	}
 
+	domains = [...new Set(domains)];
+
 	// Federation
 	resource.federation = resource.federation || {
 		origin: getFederationDomain(), // The origin of this resource, where it was created

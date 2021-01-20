@@ -3,10 +3,10 @@ import React, { useCallback, useEffect, useMemo, useState, FunctionComponent } f
 
 import { useMethod } from '../contexts/ServerContext';
 import { SettingsContext, SettingsContextValue } from '../contexts/SettingsContext';
-import { useReactiveSubscriptionFactory } from '../hooks/useReactiveSubscriptionFactory';
 import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
 import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCachedCollection';
 import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
+import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
 type SettingsProviderProps = {
 	readonly privileged?: boolean;
@@ -16,11 +16,13 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({
 	children,
 	privileged = false,
 }) => {
-	const hasPrivilegedPermission = useAtLeastOnePermission([
-		'view-privileged-setting',
-		'edit-privileged-setting',
-		'manage-selected-settings',
-	]);
+	const hasPrivilegedPermission = useAtLeastOnePermission(
+		useMemo(() => [
+			'view-privileged-setting',
+			'edit-privileged-setting',
+			'manage-selected-settings',
+		], []),
+	);
 
 	const hasPrivateAccess = privileged && hasPrivilegedPermission;
 
@@ -54,17 +56,18 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({
 		};
 	}, [cachedCollection]);
 
-	const querySetting = useReactiveSubscriptionFactory(
-		useCallback(
+	const querySetting = useMemo(
+		() => createReactiveSubscriptionFactory(
 			(_id) => ({ ...cachedCollection.collection.findOne(_id) }),
-			[cachedCollection],
 		),
+		[cachedCollection],
 	);
 
-	const querySettings = useReactiveSubscriptionFactory(
-		useCallback(
+	const querySettings = useMemo(
+		() => createReactiveSubscriptionFactory(
 			(query = {}) => cachedCollection.collection.find({
-				...('_id' in query) && { _id: { $in: query._id } },
+				...('_id' in query && Array.isArray(query._id)) && { _id: { $in: query._id } },
+				...('_id' in query && !Array.isArray(query._id)) && { _id: query._id },
 				...('group' in query) && { group: query.group },
 				...('section' in query) && (
 					query.section
@@ -83,8 +86,8 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({
 					i18nLabel: 1,
 				},
 			}).fetch(),
-			[cachedCollection],
 		),
+		[cachedCollection],
 	);
 
 	const saveSettings = useMethod('saveSettings');

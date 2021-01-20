@@ -8,13 +8,16 @@ const bundles: IBundle = {
 		'canned-responses',
 		'ldap-enterprise',
 		'livechat-enterprise',
+		'omnichannel-mobile-enterprise',
 		'engagement-dashboard',
+		'push-privacy',
+		'scalability',
 	],
 	pro: [
 	],
 };
 
-const getBundleFromModule = (moduleName: string): string|undefined => {
+export const getBundleFromModule = (moduleName: string): string|undefined => {
 	const match = moduleName.match(/(.*):\*$/);
 	if (!match) {
 		return;
@@ -43,7 +46,7 @@ export function getBundleModules(moduleName: string): string[] {
 	}
 
 	const bundle = getBundleFromModule(moduleName);
-	if (!bundle) {
+	if (!bundle || !bundles[bundle]) {
 		return [];
 	}
 

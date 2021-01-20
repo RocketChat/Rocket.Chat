@@ -10,6 +10,11 @@ import { HTTP } from 'meteor/http';
 function normalizeHttpOptions(options) {
 	const npmRequestOptions = {};
 
+	if (options.hasOwnProperty('encoding')) {
+		npmRequestOptions.encoding = options.encoding;
+		delete options.encoding;
+	}
+
 	if (options.hasOwnProperty('strictSSL')) {
 		npmRequestOptions.strictSSL = options.strictSSL;
 		delete options.strictSSL;

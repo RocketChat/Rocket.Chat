@@ -3,7 +3,11 @@ import { Meteor } from 'meteor/meteor';
 import { Push } from '../../../push/server';
 import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
+import { Users } from '../../../models/server';
 import { RocketChatAssets } from '../../../assets/server';
+import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../../lib/server/functions/notifications';
+import { callbacks } from '../../../callbacks/server';
+import { getPushData } from '../../../lib/server/functions/notifications/mobile';
 
 export class PushNotification {
 	getNotificationId(roomId) {
@@ -11,25 +15,11 @@ export class PushNotification {
 		return this.hash(`${ serverId }|${ roomId }`); // hash
 	}
 
-	hash(str) {
-		let hash = 0;
-		let i = str.length;
+	getNotificationConfig({ rid, uid: userId, mid: messageId, roomName, username, message, payload, badge = 1, category, idOnly = false }) {
+		const title = idOnly ? '' : roomName || username;
 
-		while (i) {
-			hash = ((hash << 5) - hash) + str.charCodeAt(--i);
-			hash &= hash; // Convert to 32bit integer
-		}
-		return hash;
-	}
-
-	send({ rid, uid: userId, mid: messageId, roomName, username, message, payload, badge = 1, category }) {
-		let title;
-		if (roomName && roomName !== '') {
-			title = `${ roomName }`;
-			message = `${ username }: ${ message }`;
-		} else {
-			title = `${ username }`;
-		}
+		// message is being redacted already by 'getPushData' if idOnly is true
+		const text = !idOnly && roomName !== '' ? `${ username }: ${ message }` : message;
 
 		const config = {
 			from: 'push',
@@ -37,12 +27,12 @@ export class PushNotification {
 			sound: 'default',
 			priority: 10,
 			title,
-			text: message,
+			text,
 			payload: {
 				host: Meteor.absoluteUrl(),
-				rid,
 				messageId,
-				...payload,
+				notificationType: idOnly ? 'message-id-only' : 'message',
+				...idOnly || { rid, ...payload },
 			},
 			userId,
 			notId: this.getNotificationId(rid),
@@ -58,8 +48,61 @@ export class PushNotification {
 			};
 		}
 
+		return config;
+	}
+
+	hash(str) {
+		let hash = 0;
+		let i = str.length;
+
+		while (i) {
+			hash = ((hash << 5) - hash) + str.charCodeAt(--i);
+			hash &= hash; // Convert to 32bit integer
+		}
+		return hash;
+	}
+
+	send({ rid, uid, mid, roomName, username, message, payload, badge = 1, category }) {
+		const idOnly = settings.get('Push_request_content_from_server');
+		const config = this.getNotificationConfig({ rid, uid, mid, roomName, username, message, payload, badge, category, idOnly });
+
 		metrics.notificationsSent.inc({ notification_type: 'mobile' });
 		return Push.send(config);
+	}
+
+	getNotificationForMessageId({ receiver, message, room }) {
+		const sender = Users.findOne(message.u._id, { fields: { username: 1, name: 1 } });
+		if (!sender) {
+			throw new Error('Message sender not found');
+		}
+
+		let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
+		if (message.mentions?.length > 0 && settings.get('UI_Use_Real_Name')) {
+			notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
+		}
+		notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
+
+		const pushData = Promise.await(getPushData({
+			room,
+			message,
+			userId: receiver._id,
+			receiver,
+			senderUsername: sender.username,
+			senderName: sender.name,
+			notificationMessage,
+			shouldOmitMessage: false,
+		}));
+
+		return {
+			message,
+			notification: this.getNotificationConfig({
+				...pushData,
+				rid: message.rid,
+				uid: message.u._id,
+				mid: message._id,
+				idOnly: false,
+			}),
+		};
 	}
 }
 

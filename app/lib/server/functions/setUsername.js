@@ -6,8 +6,8 @@ import { settings } from '../../../settings';
 import { Users, Invites } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
-import { Notifications } from '../../../notifications/server';
 import { addUserToRoom } from './addUserToRoom';
+import { api } from '../../../../server/sdk/api';
 
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
@@ -76,7 +76,7 @@ export const _setUsername = function(userId, u, fullUser) {
 		}
 	}
 
-	Notifications.notifyLogged('Users:NameChanged', {
+	api.broadcast('user.nameChanged', {
 		_id: user._id,
 		name: user.name,
 		username: user.username,

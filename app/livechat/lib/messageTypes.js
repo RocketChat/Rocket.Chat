@@ -50,6 +50,32 @@ MessageTypes.registerType({
 });
 
 MessageTypes.registerType({
+	id: 'livechat_transcript_history',
+	system: true,
+	message: 'Livechat_chat_transcript_sent',
+	data(message) {
+		if (!message.requestData) {
+			return;
+		}
+
+		const { requestData: { type, visitor = {}, user = {} } = {} } = message;
+		const requestTypes = {
+			visitor: () => TAPi18n.__('Livechat_visitor_transcript_request', {
+				guest: visitor.name || visitor.username,
+			}),
+			user: () => TAPi18n.__('Livechat_user_sent_chat_transcript_to_visitor', {
+				agent: user.name || user.username,
+				guest: visitor.name || visitor.username,
+			}),
+		};
+
+		return {
+			transcript: requestTypes[type](),
+		};
+	},
+});
+
+MessageTypes.registerType({
 	id: 'livechat_video_call',
 	system: true,
 	message: 'New_videocall_request',

@@ -21,6 +21,7 @@ import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { getUpload, requestEventsFromLatest } from '../handler';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
+import { processThreads } from '../../../threads/server/hooks/aftersavemessage';
 
 const eventHandlers = {
 	//
@@ -90,6 +91,9 @@ const eventHandlers = {
 	async [eventTypes.ROOM_ADD_USER](event) {
 		const eventResult = await FederationRoomEvents.addEvent(event.context, event);
 
+		// We only want to refresh the server list and update the room federation array if something changed
+		let federationAltered = false;
+
 		// If the event was successfully added, handle the event locally
 		if (eventResult.success) {
 			const { data: { roomId, user, subscription, domainsAfterAdd } } = event;
@@ -98,35 +102,49 @@ const eventHandlers = {
 			const persistedUser = Users.findOne({ _id: user._id });
 
 			if (persistedUser) {
-				// Update the federation
-				Users.update({ _id: persistedUser._id }, { $set: { federation: user.federation } });
+				// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed)
+				if (!persistedUser.federation) {
+					Users.update({ _id: persistedUser._id }, { $set: { federation: user.federation } });
+					federationAltered = true;
+				}
 			} else {
 				// Denormalize user
 				const denormalizedUser = normalizers.denormalizeUser(user);
 
 				// Create the user
 				Users.insert(denormalizedUser);
+				federationAltered = true;
 			}
 
 			// Check if subscription exists
 			const persistedSubscription = Subscriptions.findOne({ _id: subscription._id });
 
-			if (persistedSubscription) {
-				// Update the federation
-				Subscriptions.update({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
-			} else {
-				// Denormalize subscription
-				const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
+			try {
+				if (persistedSubscription) {
+					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
+					if (!persistedSubscription.federation) {
+						Subscriptions.update({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
+						federationAltered = true;
+					}
+				} else {
+					// Denormalize subscription
+					const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
 
-				// Create the subscription
-				Subscriptions.insert(denormalizedSubscription);
+					// Create the subscription
+					Subscriptions.insert(denormalizedSubscription);
+					federationAltered = true;
+				}
+			} catch (ex) {
+				logger.server.debug(`unable to create subscription for user ( ${ user._id } ) in room (${ roomId })`);
 			}
 
 			// Refresh the servers list
-			FederationServers.refreshServers();
+			if (federationAltered) {
+				FederationServers.refreshServers();
 
-			// Update the room's federation property
-			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
+				// Update the room's federation property
+				Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
+			}
 		}
 
 		return eventResult;
@@ -193,7 +211,9 @@ const eventHandlers = {
 
 			if (persistedMessage) {
 				// Update the federation
-				Messages.update({ _id: persistedMessage._id }, { $set: { federation: message.federation } });
+				if (!persistedMessage.federation) {
+					Messages.update({ _id: persistedMessage._id }, { $set: { federation: message.federation } });
+				}
 			} else {
 				// Load the room
 				const room = Rooms.findOneById(message.rid);
@@ -239,11 +259,17 @@ const eventHandlers = {
 				}
 
 				// Create the message
-				Messages.insert(denormalizedMessage);
+				try {
+					Messages.insert(denormalizedMessage);
 
-				// Notify users
-				notifyUsersOnMessage(denormalizedMessage, room);
-				sendAllNotifications(denormalizedMessage, room);
+					processThreads(denormalizedMessage, room);
+
+					// Notify users
+					notifyUsersOnMessage(denormalizedMessage, room);
+					sendAllNotifications(denormalizedMessage, room);
+				} catch (err) {
+					logger.server.debug(`Error on creating message: ${ message._id }`);
+				}
 			}
 		}
 
@@ -418,7 +444,7 @@ const eventHandlers = {
 	},
 };
 
-API.v1.addRoute('federation.events.dispatch', { authRequired: false }, {
+API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 1000 } }, {
 	async post() {
 		if (!isFederationEnabled()) {
 			return API.v1.failure('Federation not enabled');

@@ -10,8 +10,9 @@ export const useEndpointUpload = (endpoint, params = {}, successMessage) => {
 	return useCallback(async (...args) => {
 		try {
 			let data = sendData(params, ...args);
+			const promise = data instanceof Promise ? data : data.promise;
 
-			data = await data.promise;
+			data = await promise;
 
 			if (!data.success) {
 				throw new Error(data.status);

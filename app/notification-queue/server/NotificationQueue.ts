@@ -75,7 +75,7 @@ class NotificationClass {
 			NotificationQueue.removeById(notification._id);
 		} catch (e) {
 			console.error(e);
-			await NotificationQueue.unsetSendingById(notification._id);
+			await NotificationQueue.setErrorById(notification._id, e.message);
 		}
 
 		if (counter >= this.maxBatchSize) {

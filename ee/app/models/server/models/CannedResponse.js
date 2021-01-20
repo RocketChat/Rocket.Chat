@@ -45,6 +45,15 @@ export class CannedResponse extends Base {
 		return this.find(query, options);
 	}
 
+	findByDepartmentId(departmentId, options) {
+		const query = {
+			scope: 'department',
+			departmentId,
+		};
+
+		return this.find(query, options);
+	}
+
 	findByShortcut(shortcut, options) {
 		const query = { shortcut };
 

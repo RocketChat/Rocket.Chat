@@ -48,9 +48,6 @@ API.v1.addRoute('livechat/inquiries.list', { authRequired: true }, {
 
 API.v1.addRoute('livechat/inquiries.take', { authRequired: true }, {
 	post() {
-		if (!hasPermission(this.userId, 'view-livechat-manager')) {
-			return API.v1.unauthorized();
-		}
 		try {
 			check(this.bodyParams, {
 				inquiryId: String,

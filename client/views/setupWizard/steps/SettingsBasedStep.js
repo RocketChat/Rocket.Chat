@@ -9,7 +9,7 @@ import {
 	TextInput,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useState, useCallback, useMemo } from 'react';
 
 import { useSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
@@ -36,8 +36,8 @@ const useFields = () => {
 		return fields;
 	}, []);
 
-	const resetFields = (fields) => dispatch({ type: reset, payload: fields });
-	const setFieldValue = (_id, value) => dispatch({ type: setValue, payload: { _id, value } });
+	const resetFields = useCallback((fields) => dispatch({ type: reset, payload: fields }), []);
+	const setFieldValue = useCallback((_id, value) => dispatch({ type: setValue, payload: { _id, value } }), []);
 
 	return { fields, resetFields, setFieldValue };
 };
@@ -57,7 +57,7 @@ function SettingsBasedStep({ step, title, active }) {
 				.sort(({ wizard: { order: a } }, { wizard: { order: b } }) => a - b)
 				.map(({ value, ...field }) => ({ ...field, value: value != null ? value : '' })),
 		);
-	}, [settings, currentStep, resetFields, step]);
+	}, [settings, currentStep, step, resetFields]);
 
 	const t = useTranslation();
 
@@ -86,6 +86,9 @@ function SettingsBasedStep({ step, title, active }) {
 		}
 	};
 
+	const hasEmptyRequiredFields = useMemo(() => !!fields.find((field) => field.requiredOnWizard && String(field.value).trim() === ''), [fields]);
+
+
 	if (fields.length === 0) {
 		return <Step active={active} working={commiting} onSubmit={handleSubmit}>
 			<StepHeader number={step} title={title} />
@@ -110,9 +113,9 @@ function SettingsBasedStep({ step, title, active }) {
 
 		<Margins blockEnd='x32'>
 			<FieldGroup>
-				{fields.map(({ _id, type, i18nLabel, value, values }, i) =>
+				{fields.map(({ _id, type, i18nLabel, value, values, requiredOnWizard }, i) =>
 					<Field key={i}>
-						<Field.Label htmlFor={_id}>{t(i18nLabel)}</Field.Label>
+						<Field.Label htmlFor={_id} required={requiredOnWizard}>{t(i18nLabel)}</Field.Label>
 						<Field.Row>
 							{type === 'string' && <TextInput
 								type='text'
@@ -166,6 +169,7 @@ function SettingsBasedStep({ step, title, active }) {
 
 		<Pager
 			disabled={commiting}
+			isContinueEnabled={!hasEmptyRequiredFields}
 			onBackClick={currentStep > 2 && handleBackClick}
 		/>
 	</Step>;

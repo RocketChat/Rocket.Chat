@@ -1,7 +1,6 @@
-import s from 'underscore.string';
-
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import { Users } from '../../../../../../app/models/server/raw';
+import { escapeRegExp } from '../../../../../../lib/escapeRegExp';
 
 export async function findMonitors({ userId, text, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'manage-livechat-monitors')) {
@@ -9,7 +8,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 	}
 	const query = {};
 	if (text) {
-		const filterReg = new RegExp(s.escapeRegExp(text), 'i');
+		const filterReg = new RegExp(escapeRegExp(text), 'i');
 		Object.assign(query, { $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] });
 	}
 

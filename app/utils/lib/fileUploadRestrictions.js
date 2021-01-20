@@ -45,7 +45,7 @@ export const fileUploadIsValidContentType = function(type, customWhiteList) {
 	const blackList = fileUploadMediaBlackList();
 	const whiteList = fileUploadMediaWhiteList(customWhiteList);
 
-	if (!type) {
+	if (!type && blackList) {
 		return false;
 	}
 

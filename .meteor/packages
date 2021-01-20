@@ -9,17 +9,17 @@ accounts-facebook@1.3.2
 accounts-github@1.4.3
 accounts-google@1.3.3
 accounts-meteor-developer@1.4.2
-accounts-password@1.6.0
+accounts-password@1.6.2
 accounts-twitter@1.4.2
 blaze-html-templates
 check@1.3.1
-ddp-rate-limiter@1.0.7
+ddp-rate-limiter@1.0.9
 ddp-common@1.4.0
 dynamic-import@0.5.2
 ecmascript@0.14.3
 typescript@3.7.6
 ejson@1.1.1
-email@1.2.3
+email@2.0.0
 fastclick@1.0.13
 http@1.4.2
 jquery@1.11.10
@@ -70,7 +70,7 @@ littledata:synced-cron
 
 edgee:slingshot
 jalik:ufs-local@1.0.2
-accounts-base@1.6.0
+accounts-base@1.7.0
 accounts-oauth@1.2.0
 autoupdate@1.6.0
 babel-compiler@7.5.3

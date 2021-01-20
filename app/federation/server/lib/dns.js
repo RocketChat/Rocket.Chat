@@ -1,6 +1,7 @@
 import dnsResolver from 'dns';
 
 import { Meteor } from 'meteor/meteor';
+import mem from 'mem';
 
 import * as federationErrors from '../functions/errors';
 import { logger } from './logger';
@@ -9,6 +10,10 @@ import { federationRequest } from './http';
 
 const dnsResolveSRV = Meteor.wrapAsync(dnsResolver.resolveSrv);
 const dnsResolveTXT = Meteor.wrapAsync(dnsResolver.resolveTxt);
+
+const cacheMaxAge = 3600000; // one hour
+const memoizedDnsResolveSRV = mem(dnsResolveSRV, { maxAge: cacheMaxAge });
+const memoizedDnsResolveTXT = mem(dnsResolveTXT, { maxAge: cacheMaxAge });
 
 const hubUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://hub.rocket.chat';
 
@@ -68,7 +73,7 @@ export function search(peerDomain) {
 	// Search by HTTPS first
 	try {
 		logger.dns.debug(`search: peerDomain=${ peerDomain } srv=_rocketchat._https.${ peerDomain }`);
-		srvEntries = dnsResolveSRV(`_rocketchat._https.${ peerDomain }`);
+		srvEntries = memoizedDnsResolveSRV(`_rocketchat._https.${ peerDomain }`);
 		protocol = 'https';
 	} catch (err) {
 		// Ignore errors when looking for DNS entries
@@ -78,7 +83,7 @@ export function search(peerDomain) {
 	if (!srvEntries.length) {
 		try {
 			logger.dns.debug(`search: peerDomain=${ peerDomain } srv=_rocketchat._http.${ peerDomain }`);
-			srvEntries = dnsResolveSRV(`_rocketchat._http.${ peerDomain }`);
+			srvEntries = memoizedDnsResolveSRV(`_rocketchat._http.${ peerDomain }`);
 			protocol = 'http';
 		} catch (err) {
 			// Ignore errors when looking for DNS entries
@@ -89,12 +94,12 @@ export function search(peerDomain) {
 	if (!srvEntries.length) {
 		try {
 			logger.dns.debug(`search: peerDomain=${ peerDomain } srv=_rocketchat._tcp.${ peerDomain }`);
-			srvEntries = dnsResolveSRV(`_rocketchat._tcp.${ peerDomain }`);
+			srvEntries = memoizedDnsResolveSRV(`_rocketchat._tcp.${ peerDomain }`);
 			protocol = 'https'; // https is the default
 
 			// Then, also try to get the protocol
 			logger.dns.debug(`search: peerDomain=${ peerDomain } txt=rocketchat-tcp-protocol.${ peerDomain }`);
-			protocol = dnsResolveTXT(`rocketchat-tcp-protocol.${ peerDomain }`);
+			protocol = memoizedDnsResolveSRV(`rocketchat-tcp-protocol.${ peerDomain }`);
 			protocol = protocol[0].join('');
 
 			if (protocol !== 'http' && protocol !== 'https') {
@@ -119,7 +124,7 @@ export function search(peerDomain) {
 	// Get the public key from the TXT record
 	try {
 		logger.dns.debug(`search: peerDomain=${ peerDomain } txt=rocketchat-public-key.${ peerDomain }`);
-		const publicKeyTxtRecords = dnsResolveTXT(`rocketchat-public-key.${ peerDomain }`);
+		const publicKeyTxtRecords = memoizedDnsResolveTXT(`rocketchat-public-key.${ peerDomain }`);
 
 		// Join the TXT record, that might be split
 		publicKey = publicKeyTxtRecords[0].join('');

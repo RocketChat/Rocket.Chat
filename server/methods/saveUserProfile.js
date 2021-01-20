@@ -46,13 +46,22 @@ Meteor.methods({
 			Meteor.call('setUserStatus', settings.statusType, null);
 		}
 
-		if (settings.bio) {
+		if (settings.bio != null) {
 			if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
 				throw new Meteor.Error('error-invalid-field', 'bio', {
 					method: 'saveUserProfile',
 				});
 			}
 			Users.setBio(user._id, settings.bio.trim());
+		}
+
+		if (settings.nickname != null) {
+			if (typeof settings.nickname !== 'string' || settings.nickname.length > 120) {
+				throw new Meteor.Error('error-invalid-field', 'nickname', {
+					method: 'saveUserProfile',
+				});
+			}
+			Users.setNickname(user._id, settings.nickname.trim());
 		}
 
 		if (settings.email) {
@@ -65,31 +74,34 @@ Meteor.methods({
 			Meteor.call('setEmail', settings.email);
 		}
 
-		// Should be the last check to prevent error when trying to check password for users without password
-		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
-			if (!compareUserPassword(user, { sha256: settings.typedPassword })) {
-				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
-					method: 'saveUserProfile',
+		const canChangePasswordForOAuth = rcSettings.get('Accounts_AllowPasswordChangeForOAuthUsers');
+		if (canChangePasswordForOAuth || user.services?.password) {
+			// Should be the last check to prevent error when trying to check password for users without password
+			if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
+				if (!compareUserPassword(user, { sha256: settings.typedPassword })) {
+					throw new Meteor.Error('error-invalid-password', 'Invalid password', {
+						method: 'saveUserProfile',
+					});
+				}
+
+				// don't let user change to same password
+				if (compareUserPassword(user, { plain: settings.newPassword })) {
+					throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
+						method: 'saveUserProfile',
+					});
+				}
+
+				passwordPolicy.validate(settings.newPassword);
+
+				Accounts.setPassword(this.userId, settings.newPassword, {
+					logout: false,
 				});
-			}
 
-			// don't let user change to same password
-			if (compareUserPassword(user, { plain: settings.newPassword })) {
-				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
-					method: 'saveUserProfile',
-				});
-			}
-
-			passwordPolicy.validate(settings.newPassword);
-
-			Accounts.setPassword(this.userId, settings.newPassword, {
-				logout: false,
-			});
-
-			try {
-				Meteor.call('removeOtherTokens');
-			} catch (e) {
-				Accounts._clearAllLoginTokens(this.userId);
+				try {
+					Meteor.call('removeOtherTokens');
+				} catch (e) {
+					Accounts._clearAllLoginTokens(this.userId);
+				}
 			}
 		}
 

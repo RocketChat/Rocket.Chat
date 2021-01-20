@@ -27,7 +27,7 @@ Meteor.startup(function() {
 			return SyncedCron.remove(licenseCronName);
 		}
 
-		syncWorkspace();
+		Meteor.defer(() => syncWorkspace());
 
 		SyncedCron.add({
 			name: licenseCronName,

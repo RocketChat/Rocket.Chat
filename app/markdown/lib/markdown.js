@@ -2,16 +2,14 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {Object} message - The message object
  */
-import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
-import { Blaze } from 'meteor/blaze';
 
-import { marked } from './parser/marked/marked.js';
-import { original } from './parser/original/original.js';
-import { filtered } from './parser/filtered/filtered.js';
-import { code } from './parser/original/code.js';
-import { callbacks } from '../../callbacks';
+import { marked } from './parser/marked/marked';
+import { original } from './parser/original/original';
+import { filtered } from './parser/filtered/filtered';
+import { code } from './parser/original/code';
 import { settings } from '../../settings';
+import { escapeHTML } from '../../../lib/escapeHTML';
 
 const parsers = {
 	original,
@@ -22,7 +20,7 @@ const parsers = {
 class MarkdownClass {
 	parse(text) {
 		const message = {
-			html: s.escapeHTML(text),
+			html: escapeHTML(text),
 		};
 		return this.mountTokensBack(this.parseMessageNotEscaped(message)).html;
 	}
@@ -41,10 +39,23 @@ class MarkdownClass {
 			return message;
 		}
 
-		if (typeof parsers[parser] === 'function') {
-			return parsers[parser](message);
-		}
-		return parsers.original(message);
+		const options = {
+			supportSchemesForLink: settings.get('Markdown_SupportSchemesForLink'),
+			headers: settings.get('Markdown_Headers'),
+			rootUrl: Meteor.absoluteUrl(),
+			marked: {
+				gfm: settings.get('Markdown_Marked_GFM'),
+				tables: settings.get('Markdown_Marked_Tables'),
+				breaks: settings.get('Markdown_Marked_Breaks'),
+				pedantic: settings.get('Markdown_Marked_Pedantic'),
+				smartLists: settings.get('Markdown_Marked_SmartLists'),
+				smartypants: settings.get('Markdown_Marked_Smartypants'),
+			},
+		};
+
+		const parse = typeof parsers[parser] === 'function' ? parsers[parser] : parsers.original;
+
+		return parse(message, options);
 	}
 
 	mountTokensBackRecursively(message, tokenList, useHtml = true) {
@@ -80,31 +91,32 @@ class MarkdownClass {
 	}
 
 	filterMarkdownFromMessage(message) {
-		return parsers.filtered(message);
+		return parsers.filtered(message, {
+			supportSchemesForLink: settings.get('Markdown_SupportSchemesForLink'),
+		});
 	}
 }
 
 export const Markdown = new MarkdownClass();
 
-// renderMessage already did html escape
-const MarkdownMessage = (message) => {
-	if (s.trim(message != null ? message.html : undefined)) {
-		message = Markdown.parseMessageNotEscaped(message);
+export const filterMarkdown = (message) => Markdown.filterMarkdownFromMessage(message);
+
+export const createMarkdownMessageRenderer = ({ parser, ...options }) => {
+	if (!parser || parser === 'disabled') {
+		return (message) => message;
 	}
 
-	return message;
+	const parse = typeof parsers[parser] === 'function' ? parsers[parser] : parsers.original;
+
+	return (message) => {
+		if (!message?.html?.trim()) {
+			return message;
+		}
+
+		return parse(message, options);
+	};
 };
 
-const filterMarkdown = (message) => Markdown.filterMarkdownFromMessage(message);
-
-callbacks.add('renderMessage', MarkdownMessage, callbacks.priority.HIGH, 'markdown');
-callbacks.add('renderNotification', filterMarkdown, callbacks.priority.HIGH, 'filter-markdown');
-
-if (Meteor.isClient) {
-	Blaze.registerHelper('RocketChatMarkdown', (text) => Markdown.parse(text));
-	Blaze.registerHelper('RocketChatMarkdownUnescape', (text) => Markdown.parseNotEscaped(text));
-	Blaze.registerHelper('RocketChatMarkdownInline', (text) => {
-		const output = Markdown.parse(text);
-		return output.replace(/^<p>/, '').replace(/<\/p>$/, '');
-	});
-}
+export const createMarkdownNotificationRenderer = (options) =>
+	(message) =>
+		parsers.filtered(message, options);

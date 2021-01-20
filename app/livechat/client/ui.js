@@ -2,7 +2,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../settings';
 import { hasAllPermission } from '../../authorization';
-import { AccountBox, TabBar, MessageTypes } from '../../ui-utils';
+import { AccountBox, MessageTypes } from '../../ui-utils';
 
 Tracker.autorun((c) => {
 	// import omnichannel tabbar templates right away if omnichannel enabled
@@ -15,35 +15,11 @@ Tracker.autorun((c) => {
 
 AccountBox.addItem({
 	name: 'Omnichannel',
-	icon: 'omnichannel',
-	href: 'livechat-current-chats',
-	sideNav: 'livechatFlex',
+	icon: 'headset',
+	href: '/omnichannel/current',
+	sideNav: 'omnichannelFlex',
 	condition: () => settings.get('Livechat_enabled') && hasAllPermission('view-livechat-manager'),
 });
-
-TabBar.addButton({
-	groups: ['live'],
-	id: 'visitor-info',
-	i18nTitle: 'Visitor_Info',
-	icon: 'info-circled',
-	template: 'visitorInfo',
-	order: 0,
-});
-
-TabBar.addButton({
-	groups: ['live'],
-	id: 'visitor-history',
-	i18nTitle: 'Past_Chats',
-	icon: 'clock',
-	template: 'visitorHistory',
-	order: 11,
-});
-
-TabBar.addGroup('message-search', ['live']);
-TabBar.addGroup('starred-messages', ['live']);
-TabBar.addGroup('uploaded-files-list', ['live']);
-TabBar.addGroup('push-notifications', ['live']);
-TabBar.addGroup('video', ['live']);
 
 MessageTypes.registerType({
 	id: 'livechat-close',

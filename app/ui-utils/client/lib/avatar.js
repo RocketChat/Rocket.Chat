@@ -1,7 +1,5 @@
 import { Blaze } from 'meteor/blaze';
-import { Session } from 'meteor/session';
 
-import { RoomManager } from './RoomManager';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 
 Blaze.registerHelper('avatarUrlFromUsername', getUserAvatarURL);
@@ -25,19 +23,4 @@ export const getAvatarAsPng = function(username, cb) {
 		return cb('');
 	};
 	return image.onerror;
-};
-
-export const updateAvatarOfUsername = function(username) {
-	Session.set(`avatar_random_${ username }`, Date.now());
-	const url = getUserAvatarURL(username);
-
-	// force reload of avatars of messages
-	$(Object.values(RoomManager.openedRooms).map((room) => room.dom))
-		.find(`.message[data-username='${ username }'] .avatar-image`).attr('src', url);
-
-	// force reload of avatar on sidenav
-	$(`.sidebar-item.js-sidebar-type-d .sidebar-item__link[aria-label='${ username }'] .avatar-image`)
-		.attr('src', url);
-
-	return true;
 };

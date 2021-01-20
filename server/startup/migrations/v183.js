@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
 import { Migrations } from '../../../app/migrations';
@@ -56,11 +57,15 @@ const fixSelfDMs = () => {
 				rid: correctId,
 			},
 		}, { multi: true });
-		Uploads.update({ rid: room._id }, {
-			$set: {
-				rid: correctId,
-			},
-		}, { multi: true });
+
+		// Fix error of upload permission check using Meteor.userId()
+		Meteor.runAsUser(room.uids[0], () => {
+			Uploads.update({ rid: room._id }, {
+				$set: {
+					rid: correctId,
+				},
+			}, { multi: true });
+		});
 	});
 };
 

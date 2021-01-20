@@ -19,6 +19,6 @@ callbacks.add('afterSaveMessage', (message, room) => {
 	return message;
 }, callbacks.priority.MEDIUM, 'message-read-receipt-afterSaveMessage');
 
-callbacks.add('afterReadMessages', (rid, { userId, lastSeen }) => {
-	ReadReceipt.markMessagesAsRead(rid, userId, lastSeen);
+callbacks.add('afterReadMessages', (rid, { uid, lastSeen }) => {
+	ReadReceipt.markMessagesAsRead(rid, uid, lastSeen);
 }, callbacks.priority.MEDIUM, 'message-read-receipt-afterReadMessages');

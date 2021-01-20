@@ -8,6 +8,7 @@ import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';
+import { escapeRegExp } from '../../lib/escapeRegExp';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -42,7 +43,7 @@ const sortUsers = function(field, direction) {
 
 Meteor.methods({
 	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
-		const regex = new RegExp(s.trim(s.escapeRegExp(text)), 'i');
+		const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
 
 		if (!['channels', 'users'].includes(type)) {
 			return;
@@ -119,15 +120,18 @@ Meteor.methods({
 
 		const forcedSearchFields = workspace === 'all' && ['username', 'name', 'emails.address'];
 
+		const viewFullOtherUserInfo = hasPermission(user._id, 'view-full-other-user-info');
+
 		const options = {
 			...pagination,
 			sort: sortUsers(sortBy, sortDirection),
 			fields: {
 				username: 1,
 				name: 1,
+				nickname: 1,
 				bio: 1,
 				createdAt: 1,
-				emails: 1,
+				...viewFullOtherUserInfo && { emails: 1 },
 				federation: 1,
 				avatarETag: 1,
 			},
@@ -157,6 +161,7 @@ Meteor.methods({
 					username: user.username,
 					name: user.name,
 					bio: user.bio,
+					nickname: user.nickname,
 					emails: user.emails,
 					federation: user.federation,
 					isRemote: true,

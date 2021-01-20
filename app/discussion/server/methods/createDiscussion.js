@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { hasAtLeastOnePermission, canAccessRoom } from '../../../authorization/server';
+import { hasAtLeastOnePermission, canSendMessage } from '../../../authorization/server';
 import { Messages, Rooms } from '../../../models/server';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { roomTypes } from '../../../utils/server';
+import { callbacks } from '../../../callbacks/server';
 
 const getParentRoom = (rid) => {
 	const room = Rooms.findOne(rid);
@@ -34,7 +35,7 @@ const mentionMessage = (rid, { _id, username, name }, message_embedded) => {
 	return Messages.insert(welcomeMessage);
 };
 
-const create = ({ prid, pmid, t_name, reply, users }) => {
+const create = ({ prid, pmid, t_name, reply, users, user }) => {
 	// if you set both, prid and pmid, and the rooms doesnt match... should throw an error)
 	let message = false;
 	if (pmid) {
@@ -55,18 +56,15 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 		throw new Meteor.Error('error-invalid-arguments', { method: 'DiscussionCreation' });
 	}
 
-	const p_room = Rooms.findOne(prid);
-	if (!p_room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'DiscussionCreation' });
+	let p_room;
+	try {
+		p_room = canSendMessage(prid, { uid: user._id, username: user.username, type: user.type });
+	} catch (error) {
+		throw new Meteor.Error(error.message);
 	}
+
 	if (p_room.prid) {
 		throw new Meteor.Error('error-nested-discussion', 'Cannot create nested discussions', { method: 'DiscussionCreation' });
-	}
-
-	const user = Meteor.user();
-
-	if (!canAccessRoom(p_room, user)) {
-		throw new Meteor.Error('error-not-allowed', { method: 'DiscussionCreation' });
 	}
 
 	if (pmid) {
@@ -98,13 +96,16 @@ const create = ({ prid, pmid, t_name, reply, users }) => {
 		nameValidationRegex: /.*/,
 	});
 
+	let discussionMsg;
 	if (pmid) {
 		mentionMessage(discussion._id, user, attachMessage(message, p_room));
 
-		createDiscussionMessage(message.rid, user, discussion._id, t_name, attachMessage(message, p_room));
+		discussionMsg = createDiscussionMessage(message.rid, user, discussion._id, t_name, attachMessage(message, p_room));
 	} else {
-		createDiscussionMessage(prid, user, discussion._id, t_name);
+		discussionMsg = createDiscussionMessage(prid, user, discussion._id, t_name);
 	}
+
+	callbacks.runAsync('afterSaveMessage', discussionMsg, p_room, user._id);
 
 	if (reply) {
 		sendMessage(user, { msg: reply }, discussion);
@@ -136,6 +137,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
 
-		return create({ uid, prid, pmid, t_name, reply, users });
+		return create({ uid, prid, pmid, t_name, reply, users, user: Meteor.user() });
 	},
 });

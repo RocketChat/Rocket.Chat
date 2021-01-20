@@ -30,6 +30,10 @@ settings.addGroup('FileUpload', function() {
 		i18nDescription: 'FileUpload_ProtectFilesDescription',
 	});
 
+	this.add('FileUpload_RotateImages', true, {
+		type: 'boolean',
+	});
+
 	this.add('FileUpload_Enable_json_web_token_for_files', true, {
 		type: 'boolean',
 		i18nLabel: 'FileUpload_Enable_json_web_token_for_files',

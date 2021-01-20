@@ -1,5 +1,4 @@
-import s from 'underscore.string';
-
+import { escapeRegExp } from '../../../../../lib/escapeRegExp';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
 
@@ -9,7 +8,7 @@ export async function findDepartments({ userId, text, pagination: { offset, coun
 	}
 
 	const query = {
-		...text && { name: new RegExp(s.escapeRegExp(text), 'i') },
+		...text && { name: new RegExp(escapeRegExp(text), 'i') },
 	};
 
 	const cursor = LivechatDepartment.find(query, {
@@ -65,6 +64,29 @@ export async function findDepartmentsToAutocomplete({ uid, selector }) {
 	const items = await LivechatDepartment.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
 	return {
 		items,
+	};
+}
+
+export async function findDepartmentAgents({ userId, departmentId, pagination: { offset, count, sort } }) {
+	if (!await hasPermissionAsync(userId, 'view-livechat-departments') && !await hasPermissionAsync(userId, 'view-l-room')) {
+		throw new Error('error-not-authorized');
+	}
+
+	const cursor = LivechatDepartmentAgents.findAgentsByDepartmentId(departmentId, {
+		sort: sort || { username: 1 },
+		skip: offset,
+		limit: count,
+	});
+
+	const total = await cursor.count();
+
+	const agents = await cursor.toArray();
+
+	return {
+		agents,
+		count: agents.length,
+		offset,
+		total,
 	};
 }
 

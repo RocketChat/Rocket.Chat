@@ -1,7 +1,5 @@
 import mem from 'mem';
-import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
@@ -72,25 +70,26 @@ FlowRouter.route('/home', {
 	action(params, queryParams) {
 		KonchatNotification.getDesktopPermission();
 		if (queryParams.saml_idp_credentialToken !== undefined) {
-			Accounts.callLoginMethod({
-				methodArguments: [{
-					saml: true,
-					credentialToken: queryParams.saml_idp_credentialToken,
-				}],
-				userCallback(error) {
-					if (error) {
-						if (error.reason) {
-							toastr.error(error.reason);
-						} else {
-							handleError(error);
-						}
-					}
-					BlazeLayout.render('main', { center: 'home' });
-				},
+			const token = queryParams.saml_idp_credentialToken;
+			FlowRouter.setQueryParams({
+				saml_idp_credentialToken: null,
 			});
-		} else {
-			BlazeLayout.render('main', { center: 'home' });
+			Meteor.loginWithSamlToken(token, (error) => {
+				if (error) {
+					if (error.reason) {
+						toastr.error(error.reason);
+					} else {
+						handleError(error);
+					}
+				}
+
+				BlazeLayout.render('main', { center: 'home' });
+			});
+
+			return;
 		}
+
+		BlazeLayout.render('main', { center: 'home' });
 	},
 });
 
@@ -104,14 +103,20 @@ FlowRouter.route('/directory/:tab?', {
 	}],
 });
 
+FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
+	name: 'omnichannel-directory',
+	action: () => {
+		renderRouteComponent(() => import('./omnichannel/directory/OmnichannelDirectoryPage'), { template: 'main', region: 'center' });
+	},
+	triggersExit: [function() {
+		$('.main-content').addClass('rc-old');
+	}],
+});
+
 FlowRouter.route('/account/:group?', {
 	name: 'account',
-	action: (params) => {
-		if (!params.group) {
-			params.group = 'Profile';
-		}
-		params.group = s.capitalize(params.group, true);
-		BlazeLayout.render('main', { center: `account${ params.group }` });
+	action: () => {
+		renderRouteComponent(() => import('./views/account/AccountRoute'), { template: 'main', region: 'center' });
 	},
 	triggersExit: [function() {
 		$('.main-content').addClass('rc-old');

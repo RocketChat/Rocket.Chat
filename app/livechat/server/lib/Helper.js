@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { MongoInternals } from 'meteor/mongo';
+import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 
-import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry } from '../../../models/server';
+import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment, LivechatDepartmentAgents } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
 import { Apps, AppEvents } from '../../../apps/server';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
@@ -44,8 +45,11 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 
 	const roomId = Rooms.insert(room);
 
-	Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomStarted, room);
-	callbacks.run('livechat.newRoom', room);
+	Meteor.defer(() => {
+		Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
+		callbacks.run('livechat.newRoom', room);
+	});
+
 	return roomId;
 };
 
@@ -90,7 +94,7 @@ export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus
 	return LivechatInquiry.insert(inquiry);
 };
 
-export const createLivechatSubscription = (rid, name, guest, agent) => {
+export const createLivechatSubscription = (rid, name, guest, agent, department) => {
 	check(rid, String);
 	check(name, String);
 	check(guest, Match.ObjectIncluding({
@@ -127,36 +131,10 @@ export const createLivechatSubscription = (rid, name, guest, agent) => {
 			token,
 			status,
 		},
+		...department && { department },
 	};
 
 	return Subscriptions.insert(subscriptionData);
-};
-
-export const createLivechatQueueView = () => {
-	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
-	mongo.db.createCollection('view_livechat_queue_status', { // name of the view to create
-		viewOn: 'rocketchat_room', // name of source collection from which to create the view
-		pipeline: [
-			{
-				$match: {
-					open: true,
-					servedBy: { $exists: true },
-				},
-			},
-			{
-				$group: {
-					_id: '$servedBy._id',
-					chats: { $sum: 1 },
-				},
-			},
-			{
-				$sort: {
-					chats: 1,
-				},
-			},
-		],
-	});
 };
 
 export const removeAgentFromSubscription = (rid, { _id, username }) => {
@@ -166,7 +144,9 @@ export const removeAgentFromSubscription = (rid, { _id, username }) => {
 	Subscriptions.removeByRoomIdAndUserId(rid, _id);
 	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
 
-	Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
+	Meteor.defer(() => {
+		Apps.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
+	});
 };
 
 export const parseAgentCustomFields = (customFields) => {
@@ -213,7 +193,7 @@ export const normalizeAgent = (agentId) => {
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = normalizeAgent(agentId);
 
-	Livechat.stream.emit(rid, {
+	notifications.streamLivechatRoom.emit(rid, {
 		type: 'agentData',
 		data: agent,
 	});
@@ -257,6 +237,15 @@ export const forwardRoomToAgent = async (room, transferData) => {
 			removeAgentFromSubscription(rid, oldServedBy);
 		}
 		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
+
+		Meteor.defer(() => {
+			Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+				type: LivechatTransferEventType.AGENT,
+				room: rid,
+				from: oldServedBy?._id,
+				to: servedBy._id,
+			});
+		});
 	}
 
 	callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
@@ -266,6 +255,16 @@ export const forwardRoomToAgent = async (room, transferData) => {
 export const updateChatDepartment = ({ rid, newDepartmentId, oldDepartmentId }) => {
 	LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
+	Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
+
+	Meteor.defer(() => {
+		Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+			type: LivechatTransferEventType.DEPARTMENT,
+			room: rid,
+			from: oldDepartmentId,
+			to: newDepartmentId,
+		});
+	});
 
 	return callbacks.run('livechat.afterForwardChatToDepartment', { rid, newDepartmentId, oldDepartmentId });
 };
@@ -276,6 +275,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 	callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
+	let agent = null;
 
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
@@ -283,9 +283,22 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { departmentId } = transferData;
-
 	if (oldDepartmentId === departmentId) {
 		throw new Meteor.Error('error-forwarding-chat-same-department', 'The selected department and the current room department are the same', { function: 'forwardRoomToDepartment' });
+	}
+
+	const { userId: agentId } = transferData;
+	if (agentId) {
+		let user = Users.findOneOnlineAgentById(agentId);
+		if (!user) {
+			throw new Meteor.Error('error-user-is-offline', 'User is offline', { function: 'forwardRoomToAgent' });
+		}
+		user = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId);
+		if (!user) {
+			throw new Meteor.Error('error-user-not-belong-to-department', 'The selected user does not belong to this department', { function: 'forwardRoomToDepartment' });
+		}
+		const { username } = user;
+		agent = { agentId, username };
 	}
 
 	if (!RoutingManager.getConfig().autoAssignAgent) {
@@ -296,7 +309,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	// Fake the department to forward the inquiry - Case the forward process does not success
 	// the inquiry will stay in the same original department
 	inquiry.department = departmentId;
-	const roomTaken = await RoutingManager.delegateInquiry(inquiry);
+	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent);
 	if (!roomTaken) {
 		return false;
 	}
@@ -357,4 +370,54 @@ export const userCanTakeInquiry = (user) => {
 	const { roles, status, statusLivechat } = user;
 	// TODO: hasRole when the user has already been fetched from DB
 	return (status !== 'offline' && statusLivechat === 'available') || roles.includes('bot');
+};
+
+export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) => {
+	check(departmentId, String);
+	check(agents, Match.ObjectIncluding({
+		upsert: Match.Maybe(Array),
+		remove: Match.Maybe(Array),
+	}));
+
+	const { upsert = [], remove = [] } = agents;
+	const agentsRemoved = [];
+	const agentsAdded = [];
+	remove.forEach(({ agentId }) => {
+		LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
+		agentsRemoved.push(agentId);
+	});
+
+	if (agentsRemoved.length > 0) {
+		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
+	}
+
+	upsert.forEach((agent) => {
+		if (!Users.findOneById(agent.agentId, { fields: { _id: 1 } })) {
+			return;
+		}
+
+		LivechatDepartmentAgents.saveAgent({
+			agentId: agent.agentId,
+			departmentId,
+			username: agent.username,
+			count: agent.count ? parseInt(agent.count) : 0,
+			order: agent.order ? parseInt(agent.order) : 0,
+			departmentEnabled,
+		});
+		agentsAdded.push(agent.agentId);
+	});
+
+	if (agentsAdded.length > 0) {
+		callbacks.runAsync('livechat.saveAgentDepartment', {
+			departmentId,
+			agentsId: agentsAdded,
+		});
+	}
+
+	if (agentsRemoved.length > 0 || agentsAdded.length > 0) {
+		const numAgents = LivechatDepartmentAgents.find({ departmentId }).count();
+		LivechatDepartment.updateNumAgentsById(departmentId, numAgents);
+	}
+
+	return true;
 };

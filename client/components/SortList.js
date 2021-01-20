@@ -1,18 +1,19 @@
 import React, { useCallback } from 'react';
-import { Icon, ToggleSwitch, RadioButton, Box, Flex, Margins } from '@rocket.chat/fuselage';
+import { Icon, ToggleSwitch, RadioButton, Box, Flex, Margins, CheckBox, Divider } from '@rocket.chat/fuselage';
 
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { useUserPreference } from '../contexts/UserContext';
 import { useMethod } from '../contexts/ServerContext';
+import { useSetting } from '../contexts/SettingsContext';
 
 function SortListItem({ text, icon, input }) {
 	return <Flex.Container>
 		<Box is='li'>
 			<Flex.Container>
-				<Box is='label' componentClassName='rc-popover__label' style={{ width: '100%' }}>
+				<Box is='label' className='rc-popover__label' style={{ width: '100%' }}>
 					<Flex.Item grow={0}>
-						<Box componentClassName='rc-popover__icon'><Icon name={icon} size={20}/></Box>
+						<Box className='rc-popover__icon'><Icon name={icon} size={20}/></Box>
 					</Flex.Item>
 					<Margins inline='x8'>
 						<Flex.Item grow={1}>
@@ -33,8 +34,10 @@ const style = {
 export function SortList() {
 	return <>
 		<div className='rc-popover__column'>
-			<SortModeList/>
 			<ViewModeList/>
+			<Divider/>
+			<SortModeList/>
+			<Divider/>
 			<GroupingList/>
 		</div>
 	</>;
@@ -58,7 +61,7 @@ function SortModeList() {
 		</Margins>
 		<ul className='rc-popover__list'>
 			<Margins block='x8'>
-				<SortListItem icon={'sort'} text={t('Alphabetical')} input={<RadioButton name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />} />
+				<SortListItem icon={'sort-az'} text={t('Alphabetical')} input={<RadioButton name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />} />
 				<SortListItem icon={'clock'} text={t('Activity')} input={<RadioButton name='sidebarSortby' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />} />
 			</Margins>
 		</ul>
@@ -99,6 +102,7 @@ function ViewModeList() {
 
 
 function GroupingList() {
+	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowDiscussion = useUserPreference('sidebarShowDiscussion');
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const sidebarShowFavorites = useUserPreference('sidebarShowFavorites');
@@ -117,14 +121,14 @@ function GroupingList() {
 	const t = useTranslation();
 	return <>
 		<Margins block='x8'>
-			<Box is='p' style={style} fontScale='micro'>{t('Grouping')}</Box>
+			<Box is='p' style={style} fontScale='micro'>{t('Group_by')}</Box>
 		</Margins>
 		<ul className='rc-popover__list'>
 			<Margins block='x8'>
-				<SortListItem icon={'discussion'} text={t('Group_discussions')} input={<ToggleSwitch onChange={handleChangeShowDicussion} name='sidebarShowDiscussion' checked={sidebarShowDiscussion} />} />
-				<SortListItem icon={'sort-amount-down'} text={t('Group_by_Type')} input={<ToggleSwitch onChange={handleChangeGroupByType} name='sidebarGroupByType' checked={sidebarGroupByType} />} />
-				<SortListItem icon={'star'} text={t('Group_favorites')} input={<ToggleSwitch onChange={handleChangeShoFavorite} name='sidebarShowFavorites' checked={sidebarShowFavorites} />} />
-				<SortListItem icon={'eye-off'} text={t('Unread_on_top')} input={<ToggleSwitch onChange={handleChangeShowUnread} name='sidebarShowUnread' checked={sidebarShowUnread} />} />
+				{isDiscussionEnabled && <SortListItem icon={'discussion'} text={t('Discussions')} input={<CheckBox onChange={handleChangeShowDicussion} name='sidebarShowDiscussion' checked={sidebarShowDiscussion} />} />}
+				<SortListItem icon={'group-by-type'} text={t('Type')} input={<CheckBox onChange={handleChangeGroupByType} name='sidebarGroupByType' checked={sidebarGroupByType} />} />
+				<SortListItem icon={'star'} text={t('Favorites')} input={<CheckBox onChange={handleChangeShoFavorite} name='sidebarShowFavorites' checked={sidebarShowFavorites} />} />
+				<SortListItem icon={'eye-off'} text={t('Unread_on_top')} input={<CheckBox onChange={handleChangeShowUnread} name='sidebarShowUnread' checked={sidebarShowUnread} />} />
 			</Margins>
 		</ul>
 	</>;

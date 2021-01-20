@@ -29,7 +29,7 @@ import {
 	t,
 	roomTypes,
 	getUserPreference,
-} from '../../../utils';
+} from '../../../utils/client';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
@@ -90,7 +90,7 @@ Template.messageBox.onCreated(function() {
 			return;
 		}
 
-		const { autogrow, data: { rid, tmid, onSend } } = this;
+		const { autogrow, data: { rid, tmid, onSend, tshow } } = this;
 		const { value } = input;
 		this.set('');
 
@@ -98,7 +98,7 @@ Template.messageBox.onCreated(function() {
 			return;
 		}
 
-		onSend.call(this.data, event, { rid, tmid, value }, () => {
+		onSend.call(this.data, event, { rid, tmid, value, tshow }, () => {
 			autogrow.update();
 			input.focus();
 		});

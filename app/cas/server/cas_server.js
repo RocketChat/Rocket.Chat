@@ -126,6 +126,7 @@ Accounts.registerLoginHandler(function(options) {
 	const sync_enabled = settings.get('CAS_Sync_User_Data_Enabled');
 	const trustUsername = settings.get('CAS_trust_username');
 	const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+	const userCreationEnabled = settings.get('CAS_Creation_User_Enabled');
 
 	// We have these
 	const ext_attrs = {
@@ -179,11 +180,12 @@ Accounts.registerLoginHandler(function(options) {
 	// First, look for a user that has logged in from CAS with this username before
 	let user = Meteor.users.findOne({ 'services.cas.external_id': result.username });
 	if (!user) {
-		// If that user was not found, check if there's any CAS user that is currently using that username on Rocket.Chat
+		// If that user was not found, check if there's any Rocket.Chat user with that username
 		// With this, CAS login will continue to work if the user is renamed on both sides and also if the user is renamed only on Rocket.Chat.
+		// It'll also allow non-CAS users to switch to CAS based login
 		if (trustUsername) {
 			const username = new RegExp(`^${ result.username }$`, 'i');
-			user = Meteor.users.findOne({ 'services.cas.external_id': { $exists: true }, username });
+			user = Meteor.users.findOne({ username });
 			if (user) {
 				// Update the user's external_id to reflect this new username.
 				Meteor.users.update(user, { $set: { 'services.cas.external_id': result.username } });
@@ -205,7 +207,7 @@ Accounts.registerLoginHandler(function(options) {
 				Meteor.users.update(user, { $set: { emails: [{ address: int_attrs.email, verified }] } });
 			}
 		}
-	} else {
+	} else if (userCreationEnabled) {
 		// Define new user
 		const newUser = {
 			username: result.username,
@@ -262,6 +264,11 @@ Accounts.registerLoginHandler(function(options) {
 				}
 			});
 		}
+	} else {
+		// Should fail as no user exist and can't be created
+		logger.debug(`User "${ result.username }" does not exist yet, will fail as no user creation is enabled`);
+		throw new Meteor.Error(Accounts.LoginCancelledError.numericError,
+			'no matching user account found');
 	}
 
 	return { userId: user._id };

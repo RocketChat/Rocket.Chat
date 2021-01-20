@@ -93,8 +93,8 @@ export class CustomOAuth {
 		}${ separator }client_id=${ config.clientId
 		}&redirect_uri=${ encodeURIComponent(OAuth._redirectUri(this.name, config))
 		}&response_type=code`
-			+ `&state=${ OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl)
-			}&scope=${ this.scope }`;
+			+ `&state=${ encodeURIComponent(OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl))
+			}&scope=${ encodeURIComponent(this.scope) }`;
 
 		OAuth.launchLogin({
 			loginService: this.name,

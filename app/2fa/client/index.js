@@ -1,4 +1,6 @@
-import './accountSecurity.html';
-import './accountSecurity';
 import './callWithTwoFactorRequired';
 import './TOTPPassword';
+import './TOTPOAuth';
+import './TOTPGoogle';
+import './TOTPSaml';
+import './TOTPLDAP';

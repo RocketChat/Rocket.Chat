@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { settings } from '../../../settings';
@@ -134,6 +133,8 @@ const validateMessage = (message) => {
 		text: String,
 		alias: String,
 		emoji: String,
+		tmid: String,
+		tshow: Boolean,
 		avatar: ValidPartialURLParam,
 		attachments: [Match.Any],
 		blocks: [Match.Any],
@@ -154,6 +155,11 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	if (!message.ts) {
 		message.ts = new Date();
 	}
+
+	if (message.tshow !== true) {
+		delete message.tshow;
+	}
+
 	const { _id, username, name } = user;
 	message.u = {
 		_id,
@@ -175,7 +181,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	}
 
 	// For the Rocket.Chat Apps :)
-	if (message && Apps && Apps.isLoaded()) {
+	if (Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
 			if (settings.get('Apps_Framework_Development_Mode')) {
@@ -240,7 +246,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		Defer other updates as their return is not interesting to the user
 		*/
 		// Execute all callbacks
-		Meteor.defer(() => callbacks.run('afterSaveMessage', message, room, user._id));
+		callbacks.runAsync('afterSaveMessage', message, room, user._id);
 		return message;
 	}
 };

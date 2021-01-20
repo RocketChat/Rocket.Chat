@@ -6,14 +6,15 @@
 
 		"allowJs": true,
 		"checkJs": false,
-		"jsx": "preserve",
-		"incremental": true,
+		"jsx": "react",
+		// "incremental": true,
 		"noEmit": true,
 
 		/* Strict Type-Checking Options */
 		"strict": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
+		"strictPropertyInitialization": false,
 
 		/* Additional Checks */
 		"noUnusedLocals": true,

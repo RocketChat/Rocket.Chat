@@ -40,5 +40,6 @@ export interface INotification {
 	ts: Date;
 	schedule?: Date;
 	sending?: Date;
+	error?: string;
 	items: NotificationItem[];
 }

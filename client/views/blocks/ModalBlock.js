@@ -5,7 +5,7 @@ import { kitContext, UiKitComponent, UiKitModal, modalParser } from '@rocket.cha
 import { uiKitText } from '@rocket.chat/ui-kit';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import { renderMessageBody } from '../../../app/ui-utils/client';
+import { renderMessageBody } from '../../lib/renderMessageBody';
 import { getURL } from '../../../app/utils/lib/getURL';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 
@@ -73,7 +73,7 @@ export function ModalBlock({
 			const element = ref.current.querySelector(focusableElementsString);
 			element && element.focus();
 		}
-	}, [ref.current, errors]);
+	}, [errors]);
 	// save focus to restore after close
 	const previousFocus = useMemo(() => document.activeElement, []);
 	// restore the focus after the component unmount
@@ -183,7 +183,7 @@ const useActionManagerState = (initialState) => {
 		const handleUpdate = ({ type, ...data }) => {
 			if (type === 'errors') {
 				const { errors } = data;
-				setState({ ...state, errors });
+				setState((state) => ({ ...state, errors }));
 				return;
 			}
 

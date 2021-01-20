@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
+import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 
-import { AppWebsocketReceiver } from './communication';
-import { APIClient } from '../../utils';
-import { registerAdminSidebarItem } from '../../../client/admin';
-import { CachedCollectionManager } from '../../ui-cached-collection';
 import { hasAtLeastOnePermission } from '../../authorization';
+import { settings } from '../../settings/client';
+import { CachedCollectionManager } from '../../ui-cached-collection';
+import { APIClient } from '../../utils';
+import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
@@ -32,7 +32,6 @@ class AppClientOrchestrator {
 	load = async (isEnabled) => {
 		if (!this.isLoaded) {
 			this.ws = new AppWebsocketReceiver();
-			this.registerAdminMenuItems();
 			this.isLoaded = true;
 		}
 
@@ -49,22 +48,6 @@ class AppClientOrchestrator {
 	getWsListener = () => this.ws;
 
 	getAppClientManager = () => this._manager;
-
-	registerAdminMenuItems = () => {
-		registerAdminSidebarItem({
-			icon: 'cube',
-			href: 'apps',
-			i18nLabel: 'Apps',
-			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
-		});
-
-		registerAdminSidebarItem({
-			icon: 'cube',
-			href: 'marketplace',
-			i18nLabel: 'Marketplace',
-			permissionGranted: () => hasAtLeastOnePermission(['manage-apps']),
-		});
-	}
 
 	handleError = (error) => {
 		console.error(error);
@@ -202,5 +185,9 @@ Meteor.startup(() => {
 			Apps.getAppClientManager().initialize();
 			Apps.load(isEnabled);
 		});
+	});
+
+	settings.get('Apps_Framework_enabled', (isEnabled) => {
+		Apps.load(isEnabled);
 	});
 });

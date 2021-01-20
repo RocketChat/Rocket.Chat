@@ -148,4 +148,10 @@ if (!window._paq || window.ga) {
 			trackEvent('User', 'Avatar Changed', service);
 		}
 	}, callbacks.priority.MEDIUM, 'analytics-user-avatar-set');
+
+	callbacks.add('roomAvatarChanged', (room) => {
+		if (settings.get('Analytics_features_rooms')) {
+			trackEvent('Room', 'Changed Avatar', `${ room.name } (${ room._id })`);
+		}
+	}, callbacks.priority.MEDIUM, 'analytics-room-avatar-changed');
 }

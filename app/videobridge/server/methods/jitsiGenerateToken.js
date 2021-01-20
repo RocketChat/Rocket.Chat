@@ -17,8 +17,13 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'not allowed', { method: 'jitsi:generateToken' });
 		}
 
-		const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + settings.get('uniqueID') + rid;
-
+		let rname;
+		if (settings.get('Jitsi_URL_Room_Hash')) {
+			rname = settings.get('uniqueID') + rid;
+		} else {
+			rname = encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+		}
+		const jitsiRoom = settings.get('Jitsi_URL_Room_Prefix') + rname + settings.get('Jitsi_URL_Room_Suffix');
 		const jitsiDomain = settings.get('Jitsi_Domain');
 		const jitsiApplicationId = settings.get('Jitsi_Application_ID');
 		const jitsiApplicationSecret = settings.get('Jitsi_Application_Secret');

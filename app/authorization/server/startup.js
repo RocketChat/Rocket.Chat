@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 import { Roles, Permissions, Settings } from '../../models/server';
 import { settings } from '../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../lib';
-import { clearCache } from './functions/hasPermission';
 
 Meteor.startup(function() {
 	// Note:
@@ -24,6 +23,7 @@ Meteor.startup(function() {
 		{ _id: 'assign-roles',                       roles: ['admin'] },
 		{ _id: 'ban-user',                           roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'bulk-register-user',                 roles: ['admin'] },
+		{ _id: 'change-livechat-room-visitor',       roles: ['admin', 'livechat-manager', 'livechat-agent'] },
 		{ _id: 'create-c',                           roles: ['admin', 'user', 'bot', 'app'] },
 		{ _id: 'create-d',                           roles: ['admin', 'user', 'bot', 'app'] },
 		{ _id: 'create-p',                           roles: ['admin', 'user', 'bot', 'app'] },
@@ -41,8 +41,11 @@ Meteor.startup(function() {
 		{ _id: 'edit-other-user-info',               roles: ['admin'] },
 		{ _id: 'edit-other-user-password',           roles: ['admin'] },
 		{ _id: 'edit-other-user-avatar',             roles: ['admin'] },
+		{ _id: 'edit-other-user-e2ee',               roles: ['admin'] },
+		{ _id: 'edit-other-user-totp',               roles: ['admin'] },
 		{ _id: 'edit-privileged-setting',            roles: ['admin'] },
 		{ _id: 'edit-room',                          roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'edit-room-avatar',                   roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'edit-room-retention-policy',         roles: ['admin'] },
 		{ _id: 'force-delete-message',               roles: ['admin', 'owner'] },
 		{ _id: 'join-without-join-code',             roles: ['admin', 'bot', 'app'] },
@@ -95,7 +98,7 @@ Meteor.startup(function() {
 		{ _id: 'save-others-livechat-room-info',     roles: ['livechat-manager'] },
 		{ _id: 'remove-closed-livechat-rooms',       roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-analytics',            roles: ['livechat-manager', 'admin'] },
-		{ _id: 'view-livechat-queue',                roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-queue',                roles: ['livechat-agent', 'livechat-manager', 'admin'] },
 		{ _id: 'transfer-livechat-guest',            roles: ['livechat-manager', 'admin'] },
 		{ _id: 'manage-livechat-managers',           roles: ['livechat-manager', 'admin'] },
 		{ _id: 'manage-livechat-agents',             roles: ['livechat-manager', 'admin'] },
@@ -110,11 +113,13 @@ Meteor.startup(function() {
 		{ _id: 'view-livechat-appearance',      roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-webhooks',        roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-facebook',        roles: ['livechat-manager', 'admin'] },
-		{ _id: 'view-livechat-officeHours',     roles: ['livechat-manager', 'admin'] },
+		{ _id: 'view-livechat-business-hours',     roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-room-closed-same-department',  roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-room-closed-by-another-agent', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-room-customfields',    roles: ['livechat-manager', 'livechat-agent', 'admin'] },
 		{ _id: 'edit-livechat-room-customfields',    roles: ['livechat-manager', 'livechat-agent', 'admin'] },
+		{ _id: 'send-omnichannel-chat-transcript',   roles: ['livechat-manager', 'admin'] },
+		{ _id: 'mail-messages',                      roles: ['admin'] },
 	];
 
 	for (const permission of permissions) {
@@ -182,7 +187,15 @@ Meteor.startup(function() {
 		}, { fields: { _id: 1 } });
 
 		if (!existent) {
-			Permissions.upsert({ _id: permissionId }, { $set: permission });
+			try {
+				Permissions.upsert({ _id: permissionId }, { $set: permission });
+			} catch (e) {
+				if (!e.message.includes('E11000')) {
+					// E11000 refers to a MongoDB error that can occur when using unique indexes for upserts
+					// https://docs.mongodb.com/manual/reference/method/db.collection.update/#use-unique-indexes
+					Permissions.upsert({ _id: permissionId }, { $set: permission });
+				}
+			}
 		}
 
 		delete previousSettingPermissions[permissionId];
@@ -218,12 +231,4 @@ Meteor.startup(function() {
 	};
 
 	settings.onload('*', createPermissionForAddedSetting);
-
-	Roles.on('change', ({ diff }) => {
-		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
-			// avoid useless changes
-			return;
-		}
-		clearCache();
-	});
 });

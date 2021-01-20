@@ -1,14 +1,14 @@
 import { UIKitInteractionType, UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 import Notifications from '../../notifications/client/lib/Notifications';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { modal } from '../../ui-utils/client/lib/modal';
 import { APIClient } from '../../utils';
 
-const events = new EventEmitter();
+const events = new Emitter();
 
 export const on = (...args) => {
 	events.on(...args);

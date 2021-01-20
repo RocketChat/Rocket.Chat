@@ -1,8 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { Match, check } from 'meteor/check';
 
 import { appTokensCollection } from '../../../push/server';
 import { API } from '../api';
+import PushNotification from '../../../push-notifications/server/lib/PushNotification';
+import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { Users, Messages, Rooms } from '../../../models/server';
 
 API.v1.addRoute('push.token', { authRequired: true }, {
 	post() {
@@ -61,5 +65,37 @@ API.v1.addRoute('push.token', { authRequired: true }, {
 		}
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('push.get', { authRequired: true }, {
+	get() {
+		const params = this.requestParams();
+		check(params, Match.ObjectIncluding({
+			id: String,
+		}));
+
+		const receiver = Users.findOneById(this.userId);
+		if (!receiver) {
+			throw new Error('error-user-not-found');
+		}
+
+		const message = Messages.findOneById(params.id);
+		if (!message) {
+			throw new Error('error-message-not-found');
+		}
+
+		const room = Rooms.findOneById(message.rid);
+		if (!room) {
+			throw new Error('error-room-not-found');
+		}
+
+		if (!canAccessRoom(room, receiver)) {
+			throw new Error('error-not-allowed');
+		}
+
+		const data = PushNotification.getNotificationForMessageId({ receiver, room, message });
+
+		return API.v1.success({ data });
 	},
 });

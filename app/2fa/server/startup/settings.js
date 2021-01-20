@@ -37,8 +37,14 @@ settings.addGroup('Accounts', function() {
 			},
 		});
 
-		this.add('Accounts_TwoFactorAuthentication_RememberFor', 300, {
+		this.add('Accounts_TwoFactorAuthentication_RememberFor', 1800, {
 			type: 'int',
+		});
+
+		// TODO: Remove this setting for version 4.0
+		this.add('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback', true, {
+			type: 'boolean',
+			public: true,
 		});
 	});
 });

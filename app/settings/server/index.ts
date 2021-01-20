@@ -1,6 +1,6 @@
-import { settings } from './functions/settings';
-import './observer';
+import { settings, SettingsEvents } from './functions/settings';
 
 export {
 	settings,
+	SettingsEvents,
 };

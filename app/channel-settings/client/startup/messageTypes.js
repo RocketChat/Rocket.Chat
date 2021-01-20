@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 
+import { escapeHTML } from '../../../../lib/escapeHTML';
 import { MessageTypes } from '../../../ui-utils';
 import { t } from '../../../utils';
 
@@ -24,10 +24,22 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_by: message.u && message.u.username,
-				room_topic: s.escapeHTML(message.msg || `(${ t('None').toLowerCase() })`),
+				room_topic: escapeHTML(message.msg || `(${ t('None').toLowerCase() })`),
 			};
 		},
 	});
+
+	MessageTypes.registerType({
+		id: 'room_changed_avatar',
+		system: true,
+		message: 'room_changed_avatar',
+		data(message) {
+			return {
+				user_by: message.u && message.u.username,
+			};
+		},
+	});
+
 
 	MessageTypes.registerType({
 		id: 'room_changed_announcement',
@@ -36,7 +48,7 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_by: message.u && message.u.username,
-				room_announcement: s.escapeHTML(message.msg || `(${ t('None').toLowerCase() })`),
+				room_announcement: escapeHTML(message.msg || `(${ t('None').toLowerCase() })`),
 			};
 		},
 	});
@@ -48,7 +60,7 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_by: message.u && message.u.username,
-				room_description: s.escapeHTML(message.msg || `(${ t('None').toLowerCase() })`),
+				room_description: escapeHTML(message.msg || `(${ t('None').toLowerCase() })`),
 			};
 		},
 	});

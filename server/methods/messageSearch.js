@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import s from 'underscore.string';
 
-import { Subscriptions, Messages } from '../../app/models';
+import { Subscriptions } from '../../app/models/server';
+import { Messages } from '../../app/models/server/raw';
 import { settings } from '../../app/settings';
+import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
+import { escapeRegExp } from '../../lib/escapeRegExp';
 
 Meteor.methods({
 	messageSearch(text, rid, limit) {
@@ -40,6 +42,7 @@ Meteor.methods({
 
 		const query = {};
 		const options = {
+			projection: {},
 			sort: {
 				ts: -1,
 			},
@@ -113,17 +116,17 @@ Meteor.methods({
 		}
 
 		function filterLabel(_, tag) {
-			query['attachments.0.labels'] = new RegExp(s.escapeRegExp(tag), 'i');
+			query['attachments.0.labels'] = new RegExp(escapeRegExp(tag), 'i');
 			return '';
 		}
 
 		function filterTitle(_, tag) {
-			query['attachments.title'] = new RegExp(s.escapeRegExp(tag), 'i');
+			query['attachments.title'] = new RegExp(escapeRegExp(tag), 'i');
 			return '';
 		}
 
 		function filterDescription(_, tag) {
-			query['attachments.description'] = new RegExp(s.escapeRegExp(tag), 'i');
+			query['attachments.description'] = new RegExp(escapeRegExp(tag), 'i');
 			return '';
 		}
 
@@ -213,7 +216,7 @@ Meteor.methods({
 				query.$text = {
 					$search: text,
 				};
-				options.fields = {
+				options.projection = {
 					score: {
 						$meta: 'textScore',
 					},
@@ -240,12 +243,15 @@ Meteor.methods({
 			}
 
 			if (!settings.get('Message_ShowEditedStatus')) {
-				options.fields = {
+				options.projection = {
 					editedAt: 0,
 				};
 			}
 
-			result.message.docs = Messages.find(query, options).fetch();
+			result.message.docs = Promise.await(Messages.find(query, {
+				readPreference: readSecondaryPreferred(Messages.col.s.db),
+				...options,
+			}).toArray());
 		}
 
 		return result;

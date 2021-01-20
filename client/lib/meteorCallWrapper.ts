@@ -6,6 +6,7 @@ import { APIClient } from '../../app/utils/client';
 
 const bypassMethods: string[] = [
 	'setUserStatus',
+	'logout',
 ];
 
 function shouldBypass({ method, params }: Meteor.IDDPMessage): boolean {
@@ -46,7 +47,7 @@ function wrapMeteorDDPCalls(): void {
 			Meteor.connection.onMessage(_message);
 		};
 
-		APIClient.v1.post(`${ endpoint }/${ encodeURIComponent(message.method) }`, restParams)
+		APIClient.v1.post(`${ endpoint }/${ encodeURIComponent(message.method.replace(/\//g, ':')) }`, restParams)
 			.then(({ message: _message }) => {
 				processResult(_message);
 				if (message.method === 'login') {

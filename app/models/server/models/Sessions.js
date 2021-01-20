@@ -1,4 +1,5 @@
 import { Base } from './_Base';
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 
 export const aggregates = {
 	dailySessionsOfYesterday(collection, { year, month, day }) {
@@ -30,6 +31,7 @@ export const aggregates = {
 				day: 1,
 				month: 1,
 				year: 1,
+				mostImportantRole: 1,
 				time: { $trunc: { $divide: [{ $subtract: ['$lastActivityAt', '$loginAt'] }, 1000] } },
 			},
 		}, {
@@ -45,6 +47,7 @@ export const aggregates = {
 					month: '$month',
 					year: '$year',
 				},
+				mostImportantRole: { $first: '$mostImportantRole' },
 				time: { $sum: '$time' },
 				sessions: { $sum: 1 },
 			},
@@ -56,6 +59,7 @@ export const aggregates = {
 					month: '$_id.month',
 					year: '$_id.year',
 				},
+				mostImportantRole: { $first: '$mostImportantRole' },
 				time: { $sum: '$time' },
 				sessions: { $sum: '$sessions' },
 				devices: {
@@ -75,6 +79,7 @@ export const aggregates = {
 				month: '$_id.month',
 				year: '$_id.year',
 				userId: '$_id.userId',
+				mostImportantRole: 1,
 				time: 1,
 				sessions: 1,
 				devices: 1,
@@ -96,9 +101,35 @@ export const aggregates = {
 					day: '$day',
 					month: '$month',
 					year: '$year',
+					mostImportantRole: '$mostImportantRole',
 				},
 				count: {
 					$sum: 1,
+				},
+				sessions: {
+					$sum: '$sessions',
+				},
+				time: {
+					$sum: '$time',
+				},
+			},
+		}, {
+			$group: {
+				_id: {
+					day: '$day',
+					month: '$month',
+					year: '$year',
+				},
+				roles: {
+					$push: {
+						role: '$_id.mostImportantRole',
+						count: '$count',
+						sessions: '$sessions',
+						time: '$time',
+					},
+				},
+				count: {
+					$sum: '$count',
 				},
 				sessions: {
 					$sum: '$sessions',
@@ -113,20 +144,37 @@ export const aggregates = {
 				count: 1,
 				sessions: 1,
 				time: 1,
+				roles: 1,
 			},
 		}]).toArray();
 	},
 
-	getUniqueUsersOfLastMonth(collection, { year, month, day }) {
+	getUniqueUsersOfLastMonthOrWeek(collection, { year, month, day, type = 'month' }) {
 		return collection.aggregate([{
 			$match: {
 				type: 'user_daily',
-				...aggregates.getMatchOfLastMonthToday({ year, month, day }),
+				...aggregates.getMatchOfLastMonthOrWeek({ year, month, day, type }),
 			},
 		}, {
 			$group: {
 				_id: {
 					userId: '$userId',
+				},
+				mostImportantRole: { $first: '$mostImportantRole' },
+				sessions: {
+					$sum: '$sessions',
+				},
+				time: {
+					$sum: '$time',
+				},
+			},
+		}, {
+			$group: {
+				_id: {
+					mostImportantRole: '$mostImportantRole',
+				},
+				count: {
+					$sum: 1,
 				},
 				sessions: {
 					$sum: '$sessions',
@@ -138,8 +186,16 @@ export const aggregates = {
 		}, {
 			$group: {
 				_id: 1,
+				roles: {
+					$push: {
+						role: '$_id.mostImportantRole',
+						count: '$count',
+						sessions: '$sessions',
+						time: '$time',
+					},
+				},
 				count: {
-					$sum: 1,
+					$sum: '$count',
 				},
 				sessions: {
 					$sum: '$sessions',
@@ -152,41 +208,49 @@ export const aggregates = {
 			$project: {
 				_id: 0,
 				count: 1,
+				roles: 1,
 				sessions: 1,
 				time: 1,
 			},
 		}], { allowDiskUse: true }).toArray();
 	},
 
-	getMatchOfLastMonthToday({ year, month, day }) {
-		const pastMonthLastDay = new Date(year, month - 1, 0).getDate();
-		const currMonthLastDay = new Date(year, month, 0).getDate();
+	getMatchOfLastMonthOrWeek({ year, month, day, type = 'month' }) {
+		let startOfPeriod;
 
-		const lastMonthToday = new Date(year, month - 1, day);
-		lastMonthToday.setMonth(lastMonthToday.getMonth() - 1, (currMonthLastDay === day ? pastMonthLastDay : Math.min(pastMonthLastDay, day)) + 1);
-		const lastMonthTodayObject = {
-			year: lastMonthToday.getFullYear(),
-			month: lastMonthToday.getMonth() + 1,
-			day: lastMonthToday.getDate(),
+		if (type === 'month') {
+			const pastMonthLastDay = new Date(year, month - 1, 0).getDate();
+			const currMonthLastDay = new Date(year, month, 0).getDate();
+
+			startOfPeriod = new Date(year, month - 1, day);
+			startOfPeriod.setMonth(startOfPeriod.getMonth() - 1, (currMonthLastDay === day ? pastMonthLastDay : Math.min(pastMonthLastDay, day)) + 1);
+		} else {
+			startOfPeriod = new Date(year, month - 1, day - 6);
+		}
+
+		const startOfPeriodObject = {
+			year: startOfPeriod.getFullYear(),
+			month: startOfPeriod.getMonth() + 1,
+			day: startOfPeriod.getDate(),
 		};
 
-		if (year === lastMonthTodayObject.year && month === lastMonthTodayObject.month) {
+		if (year === startOfPeriodObject.year && month === startOfPeriodObject.month) {
 			return {
 				year,
 				month,
-				day: { $gte: lastMonthTodayObject.day, $lte: day },
+				day: { $gte: startOfPeriodObject.day, $lte: day },
 			};
 		}
 
-		if (year === lastMonthTodayObject.year) {
+		if (year === startOfPeriodObject.year) {
 			return {
 				year,
 				$and: [{
 					$or: [{
-						month: { $gt: lastMonthTodayObject.month },
+						month: { $gt: startOfPeriodObject.month },
 					}, {
-						month: lastMonthTodayObject.month,
-						day: { $gte: lastMonthTodayObject.day },
+						month: startOfPeriodObject.month,
+						day: { $gte: startOfPeriodObject.day },
 					}],
 				}, {
 					$or: [{
@@ -202,14 +266,14 @@ export const aggregates = {
 		return {
 			$and: [{
 				$or: [{
-					year: { $gt: lastMonthTodayObject.year },
+					year: { $gt: startOfPeriodObject.year },
 				}, {
-					year: lastMonthTodayObject.year,
-					month: { $gt: lastMonthTodayObject.month },
+					year: startOfPeriodObject.year,
+					month: { $gt: startOfPeriodObject.month },
 				}, {
-					year: lastMonthTodayObject.year,
-					month: lastMonthTodayObject.month,
-					day: { $gte: lastMonthTodayObject.day },
+					year: startOfPeriodObject.year,
+					month: startOfPeriodObject.month,
+					day: { $gte: startOfPeriodObject.day },
 				}],
 			}, {
 				$or: [{
@@ -226,11 +290,11 @@ export const aggregates = {
 		};
 	},
 
-	getUniqueDevicesOfLastMonth(collection, { year, month, day }) {
+	getUniqueDevicesOfLastMonthOrWeek(collection, { year, month, day, type = 'month' }) {
 		return collection.aggregate([{
 			$match: {
 				type: 'user_daily',
-				...aggregates.getMatchOfLastMonthToday({ year, month, day }),
+				...aggregates.getMatchOfLastMonthOrWeek({ year, month, day, type }),
 			},
 		}, {
 			$unwind: '$devices',
@@ -296,14 +360,14 @@ export const aggregates = {
 		}]).toArray();
 	},
 
-	getUniqueOSOfLastMonth(collection, { year, month, day }) {
+	getUniqueOSOfLastMonthOrWeek(collection, { year, month, day, type = 'month' }) {
 		return collection.aggregate([{
 			$match: {
 				type: 'user_daily',
 				'devices.device.os.name': {
 					$exists: true,
 				},
-				...aggregates.getMatchOfLastMonthToday({ year, month, day }),
+				...aggregates.getMatchOfLastMonthOrWeek({ year, month, day, type }),
 			},
 		}, {
 			$unwind: '$devices',
@@ -377,9 +441,14 @@ export class Sessions extends Base {
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1, userId: 1 });
 		this.tryEnsureIndex({ instanceId: 1, sessionId: 1 });
 		this.tryEnsureIndex({ sessionId: 1 });
+		this.tryEnsureIndex({ userId: 1 });
 		this.tryEnsureIndex({ year: 1, month: 1, day: 1, type: 1 });
 		this.tryEnsureIndex({ type: 1 });
+		this.tryEnsureIndex({ ip: 1, loginAt: 1 });
 		this.tryEnsureIndex({ _computedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 45 });
+
+		const db = this.model.rawDatabase();
+		this.secondaryCollection = db.collection(this.model._name, { readPreference: readSecondaryPreferred(db) });
 	}
 
 	getUniqueUsersOfYesterday() {
@@ -394,13 +463,13 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueUsersOfYesterday(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueUsersOfYesterday(this.secondaryCollection, { year, month, day })),
 		};
 	}
 
 	getUniqueUsersOfLastMonth() {
 		const date = new Date();
-		date.setMonth(date.getMonth() - 1);
+		date.setDate(date.getDate() - 1);
 
 		const year = date.getFullYear();
 		const month = date.getMonth() + 1;
@@ -410,7 +479,23 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueUsersOfLastMonth(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueUsersOfLastMonthOrWeek(this.secondaryCollection, { year, month, day })),
+		};
+	}
+
+	getUniqueUsersOfLastWeek() {
+		const date = new Date();
+		date.setDate(date.getDate() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+
+		return {
+			year,
+			month,
+			day,
+			data: Promise.await(aggregates.getUniqueUsersOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' })),
 		};
 	}
 
@@ -426,7 +511,7 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueDevicesOfYesterday(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueDevicesOfYesterday(this.secondaryCollection, { year, month, day })),
 		};
 	}
 
@@ -442,7 +527,23 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueDevicesOfLastMonth(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueDevicesOfLastMonthOrWeek(this.secondaryCollection, { year, month, day })),
+		};
+	}
+
+	getUniqueDevicesOfLastWeek() {
+		const date = new Date();
+		date.setDate(date.getDate() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+
+		return {
+			year,
+			month,
+			day,
+			data: Promise.await(aggregates.getUniqueDevicesOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' })),
 		};
 	}
 
@@ -458,7 +559,7 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueOSOfYesterday(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueOSOfYesterday(this.secondaryCollection, { year, month, day })),
 		};
 	}
 
@@ -474,7 +575,23 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueOSOfLastMonth(this.model.rawCollection(), { year, month, day })),
+			data: Promise.await(aggregates.getUniqueOSOfLastMonthOrWeek(this.secondaryCollection, { year, month, day })),
+		};
+	}
+
+	getUniqueOSOfLastWeek() {
+		const date = new Date();
+		date.setDate(date.getDate() - 1);
+
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+
+		return {
+			year,
+			month,
+			day,
+			data: Promise.await(aggregates.getUniqueOSOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' })),
 		};
 	}
 

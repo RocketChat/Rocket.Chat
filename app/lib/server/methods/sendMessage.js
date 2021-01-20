@@ -1,21 +1,26 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
 import { settings } from '../../../settings';
-import { Notifications } from '../../../notifications';
 import { messageProperties } from '../../../ui-utils';
 import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';
+import { api } from '../../../../server/sdk/api';
 
 export function executeSendMessage(uid, message) {
+	if (message.tshow && !message.tmid) {
+		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
+			method: 'sendMessage',
+		});
+	}
+
 	if (message.tmid && !settings.get('Threads_enabled')) {
 		throw new Meteor.Error('error-not-allowed', 'not-allowed', {
 			method: 'sendMessage',
@@ -75,10 +80,7 @@ export function executeSendMessage(uid, message) {
 		SystemLogger.error('Error sending message:', error);
 
 		const errorMessage = typeof error === 'string' ? error : error.error || error.message;
-		Notifications.notifyUser(uid, 'message', {
-			_id: Random.id(),
-			rid: message.rid,
-			ts: new Date(),
+		api.broadcast('notify.ephemeralMessage', uid, message.rid, {
 			msg: TAPi18n.__(errorMessage, {}, user.language),
 		});
 

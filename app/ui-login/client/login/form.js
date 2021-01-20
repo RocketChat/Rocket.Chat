@@ -149,6 +149,10 @@ Template.loginForm.events({
 						toastr.error(t('Wait_activation_warning'));
 					} else if (error.error === 'error-app-user-is-not-allowed-to-login') {
 						toastr.error(t('App_user_not_allowed_to_login'));
+					} else if (error.error === 'error-login-blocked-for-ip') {
+						toastr.error(t('Error_login_blocked_for_ip'));
+					} else if (error.error === 'error-login-blocked-for-user') {
+						toastr.error(t('Error_login_blocked_for_user'));
 					} else {
 						return toastr.error(t('User_not_found_or_incorrect_password'));
 					}
