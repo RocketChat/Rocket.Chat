@@ -7,6 +7,7 @@ import { Livechat } from '../../../app/livechat/server/lib/Livechat';
 import LivechatVisitors from '../../../app/models/server/models/LivechatVisitors';
 import LivechatRooms from '../../../app/models/server/models/LivechatRooms';
 import { FileUpload } from '../../../app/file-upload/server';
+import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 
 type FileAttachment = {
 	title: string;
@@ -96,8 +97,6 @@ async function uploadAttachment(attachment: Attachment, rid: string, visitorToke
 }
 
 export async function onEmailReceived(email: ParsedMail, inbox: string, department?: string): Promise<void> {
-	// console.log('NEW EMAIL =>', email);
-
 	if (!email.from?.value?.[0]?.address) {
 		return;
 	}
@@ -108,9 +107,10 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	const guest = getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
 
-	// TODO: Get the closed room and reopen rather than create a new one
-	// const room = LivechatRooms.findOneByVisitorTokenAndEmailThread(guest.token, emailThread, {});
-	const room = LivechatRooms.findOneOpenByVisitorTokenAndEmailThread(guest.token, thread, {});
+	let room = LivechatRooms.findOneByVisitorTokenAndEmailThread(guest.token, thread, {});
+	if (room?.closedAt) {
+		room = await QueueManager.unarchiveRoom(room);
+	}
 
 	let msg = email.text;
 
