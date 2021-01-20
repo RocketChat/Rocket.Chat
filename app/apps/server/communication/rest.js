@@ -428,18 +428,16 @@ export class AppsRestApi {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
-					if (token) {
-						headers.Authorization = `Bearer ${ token }`;
-					}
+					const token = getWorkspaceAccessToken(true, 'marketplace:download', false);
 
 					let result;
 					try {
-						result = HTTP.get(`${ baseUrl }/v2/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }`, {
+						result = HTTP.get(`${ baseUrl }/v2/apps/${ this.bodyParams.appId }/download/${ this.bodyParams.version }?token=${ token }`, {
 							headers,
 							npmRequestOptions: { encoding: null },
 						});
 					} catch (e) {
+						console.log(e, e.response.content.toString());
 						orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
 						return API.v1.internalError();
 					}
@@ -466,7 +464,7 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.update(buff, permissionsGranted = this.bodyParams.permissionsGranted));
+				const aff = Promise.await(manager.update(buff, this.bodyParams.permissionsGranted));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
