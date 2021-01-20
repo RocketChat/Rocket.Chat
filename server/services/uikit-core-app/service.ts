@@ -3,15 +3,14 @@ import { IUiKitCoreApp, IUiKitCoreAppService } from '../../sdk/types/IUiKitCoreA
 
 const registeredApps = new Map();
 
-const getService = (appId: string): any => {
-	const service = registeredApps.get(appId);
+const getAppModule = (appId: string): any => {
+	const module = registeredApps.get(appId);
 
-	if (typeof service === 'undefined') {
+	if (typeof module === 'undefined') {
 		throw new Error('invalid service name');
 	}
 
-
-	return service;
+	return module;
 };
 
 export const registerCoreApp = (module: IUiKitCoreApp): void => {
@@ -29,7 +28,7 @@ export class UiKitCoreApp extends ServiceClass implements IUiKitCoreAppService {
 	async blockAction(payload: any): Promise<any> {
 		const { appId } = payload;
 
-		const service = getService(appId);
+		const service = getAppModule(appId);
 
 		console.log('blockAction ->', payload);
 
@@ -41,7 +40,7 @@ export class UiKitCoreApp extends ServiceClass implements IUiKitCoreAppService {
 		console.log('viewClosed ->', payload);
 		const { appId } = payload;
 
-		const service = getService(appId);
+		const service = getAppModule(appId);
 
 		console.log('viewClosed ->', payload);
 
@@ -52,7 +51,7 @@ export class UiKitCoreApp extends ServiceClass implements IUiKitCoreAppService {
 		console.log('viewSubmit ->', payload);
 		const { appId } = payload;
 
-		const service = getService(appId);
+		const service = getAppModule(appId);
 
 		console.log('viewSubmit ->', payload);
 
