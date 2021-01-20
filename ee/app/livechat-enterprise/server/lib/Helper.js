@@ -125,14 +125,6 @@ export const processWaitingQueue = async (department) => {
 	await dispatchWaitingQueueStatus(departmentId);
 };
 
-export const allowAgentSkipQueue = (agent) => {
-	check(agent, Match.ObjectIncluding({
-		agentId: String,
-	}));
-
-	return settings.get('Livechat_assign_new_conversation_to_bot') && hasRole(agent.agentId, 'bot');
-};
-
 export const setPredictedVisitorAbandonmentTime = (room) => {
 	if (!room.v || !room.v.lastMessageTs || !settings.get('Livechat_auto_close_abandoned_rooms')) {
 		return;

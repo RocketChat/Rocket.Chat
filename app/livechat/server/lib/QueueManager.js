@@ -30,17 +30,12 @@ export const QueueManager = {
 
 		LivechatRooms.updateRoomCount();
 
-		if (!agent) {
-			agent = RoutingManager.getMethod().delegateAgent(agent, inquiry);
-		}
+		await callbacks.run('livechat.beforeRouteChat', inquiry);
+		const defaultAgent = RoutingManager.delegateAgent(agent, inquiry);
+		inquiry = LivechatInquiry.findOneById(inquiry._id);
 
-		inquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, agent);
 		if (inquiry.status === 'ready') {
-			return RoutingManager.delegateInquiry(inquiry, agent);
-		}
-
-		if (inquiry.status === 'queued') {
-			Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
+			return RoutingManager.delegateInquiry(inquiry, defaultAgent);
 		}
 
 		return room;

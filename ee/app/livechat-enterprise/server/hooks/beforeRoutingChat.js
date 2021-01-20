@@ -3,7 +3,7 @@ import { settings } from '../../../../../app/settings';
 import { LivechatInquiry } from '../../../../../app/models/server';
 import { dispatchInquiryPosition } from '../lib/Helper';
 
-callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
+callbacks.add('livechat.beforeRouteChat', async (inquiry) => {
 	if (!settings.get('Livechat_waiting_queue')) {
 		return inquiry;
 	}
@@ -18,7 +18,7 @@ callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
 		return inquiry;
 	}
 
-	LivechatInquiry.queueInquiry(_id, agent);
+	LivechatInquiry.queueInquiry(_id);
 
 	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id });
 	if (inq) {

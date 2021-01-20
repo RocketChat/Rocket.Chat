@@ -1,7 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 
+import { hasRole } from '../../../authorization';
 import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment, LivechatDepartmentAgents } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
@@ -9,6 +11,15 @@ import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
 import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { sendNotification } from '../../../lib/server';
+
+export const allowAgentSkipQueue = (agent) => {
+	check(agent, Match.ObjectIncluding({
+		agentId: String,
+	}));
+
+	return settings.get('Livechat_assign_new_conversation_to_bot') && hasRole(agent.agentId, 'bot');
+};
 
 export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
@@ -199,6 +210,61 @@ export const dispatchAgentDelegated = (rid, agentId) => {
 	});
 };
 
+export const dispatchInquiryQueued = (inquiry, agent) => {
+	if (!inquiry?._id) {
+		return;
+	}
+
+	const { department, rid, v } = inquiry;
+	const room = LivechatRooms.findOneById(rid);
+	Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
+
+	if (RoutingManager.getConfig().autoAssignAgent) {
+		return;
+	}
+
+	if (!agent || !allowAgentSkipQueue(agent)) {
+		LivechatInquiry.queueInquiry(inquiry._id);
+	}
+
+	// Alert only the online agents of the queued request
+	const onlineAgents = Livechat.getOnlineAgents(department, agent);
+
+	const notificationUserName = v && (v.name || v.username);
+
+	onlineAgents.forEach((agent) => {
+		if (agent.agentId) {
+			agent = Users.findOneById(agent.agentId);
+		}
+		const { _id, active, emails, language, status, statusConnection, username } = agent;
+		sendNotification({
+			// fake a subscription in order to make use of the function defined above
+			subscription: {
+				rid,
+				t: 'l',
+				u: {
+					_id,
+				},
+				receiver: [{
+					active,
+					emails,
+					language,
+					status,
+					statusConnection,
+					username,
+				}],
+			},
+			sender: v,
+			hasMentionToAll: true, // consider all agents to be in the room
+			hasMentionToHere: false,
+			message: Object.assign({}, { u: v }),
+			notificationMessage: TAPi18n.__('User_started_a_new_conversation', { username: notificationUserName }, language),
+			room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
+			mentionIds: [],
+		});
+	});
+};
+
 export const forwardRoomToAgent = async (room, transferData) => {
 	if (!room || !room.open) {
 		return false;
@@ -351,13 +417,13 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 };
 
 export const checkServiceStatus = ({ guest, agent }) => {
-	if (agent) {
-		const { agentId } = agent;
-		const users = Users.findOnlineAgents(agentId);
-		return users && users.count() > 0;
+	if (!agent) {
+		return Livechat.online(guest.department);
 	}
 
-	return Livechat.online(guest.department);
+	const { agentId } = agent;
+	const users = Users.findOnlineAgents(agentId);
+	return users && users.count() > 0;
 };
 
 export const userCanTakeInquiry = (user) => {
