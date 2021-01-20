@@ -20,8 +20,7 @@ import { FileUpload } from '../../app/file-upload/server';
 import { slashCommands } from '../../app/utils/server';
 import Rooms from '../../app/models/server/models/Rooms';
 import Uploads from '../../app/models/server/models/Uploads';
-
-import { QueueManager } from '/app/livechat/server/lib/QueueManager';
+import { QueueManager } from '../../app/livechat/server/lib/QueueManager';
 
 type FileAttachment = {
 	title: string;
