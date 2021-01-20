@@ -63,6 +63,21 @@ slashCommands.add('sendEmailAttachment', (command: any, params: string) => {
 			],
 		});
 	});
+
+	Messages.update({ _id: message._id }, {
+		$set: {
+			blocks: [{
+				type: 'context',
+				elements: [{
+					type: 'mrkdwn',
+					text: `**To:** ${ room.email.replyTo }\n**Subject:** ${ room.email.subject }`,
+				}],
+			}],
+		},
+		$pull: {
+			attachments: { 'actions.0.type': 'button' },
+		},
+	});
 }, {
 	description: 'Send attachment as email',
 	params: 'msg_id',
@@ -83,13 +98,7 @@ callbacks.add('beforeSaveMessage', function(message: any, room: any) {
 				msg_processing_type: 'sendMessage',
 			}],
 		});
-	}
 
-	return message;
-}, callbacks.priority.LOW, 'ReplyEmail');
-
-callbacks.add('afterSaveMessage', function(message: any, room: any) {
-	if (!room.email?.inbox || !message.urls || message.urls.length === 0) {
 		return message;
 	}
 
@@ -123,6 +132,32 @@ callbacks.add('afterSaveMessage', function(message: any, room: any) {
 		to: room.email.replyTo,
 		subject: room.email.subject,
 	});
+
+	message.msg = match.groups.text;
+
+	message.groupable = false;
+
+	message.blocks = [{
+		type: 'context',
+		elements: [{
+			type: 'mrkdwn',
+			text: `**To:** ${ room.email.replyTo }\n**Subject:** ${ room.email.subject }`,
+		}],
+	}, {
+		type: 'section',
+		text: {
+			type: 'mrkdwn',
+			text: message.msg,
+		},
+	}, {
+		type: 'section',
+		text: {
+			type: 'mrkdwn',
+			text: `> ---\n${ replyToMessage.msg.replace(/^/gm, '> ') }`,
+		},
+	}];
+
+	delete message.urls;
 
 	return message;
 }, callbacks.priority.LOW, 'ReplyEmail');

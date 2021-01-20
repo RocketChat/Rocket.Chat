@@ -164,7 +164,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			}, {
 				type: 'section',
 				text: {
-					type: 'plain_text',
+					type: 'mrkdwn',
 					text: msg,
 				},
 			}],
