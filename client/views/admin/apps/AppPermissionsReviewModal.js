@@ -1,18 +1,16 @@
 import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 const AppPermissionsReviewModal = (props) => {
 	const {
 		appPermissions,
 		cancel,
-		confirm
+		confirm,
 	} = props;
 
 	const t = useTranslation();
-	const setModal = useSetModal();
 
 	const handleCloseButtonClick = () => {
 		cancel();
@@ -38,9 +36,9 @@ const AppPermissionsReviewModal = (props) => {
 				{
 					props.appPermissions.map((permission) =>
 						<li key={permission.name}>
-							<b>{ t('Apps_Permissions_' + permission.name.replace('.','_')) }</b>
+							<b>{ t(`Apps_Permissions_${ permission.name.replace('.', '_') }`) }</b>
 							{ permission.required && <span style={{ color: 'red' }}> ({ t('Required') })</span> }
-						</li>
+						</li>,
 					)
 				}
 			</ul>

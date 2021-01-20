@@ -24,5 +24,5 @@ export type App = {
 	latest: App;
 	status: unknown;
 	marketplace: unknown;
-  permissions: unknown[];
+	permissions: unknown[];
 };

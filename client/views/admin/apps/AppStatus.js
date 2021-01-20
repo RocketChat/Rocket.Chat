@@ -62,7 +62,7 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 		}
 
 		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} cancel={cancelAction} confirm={confirmAction} />);
-	}
+	};
 
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
