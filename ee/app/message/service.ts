@@ -32,7 +32,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			return;
 		}
 
-		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId);
+		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId, {});
 		if (r.hideHistoryForNewMembers) {
 			const userJoinedAt = await this.Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 
@@ -52,7 +52,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			return;
 		}
 
-		const r = await this.Rooms.findOneByRoomIdAndUserId(filter.rid, filter.userId);
+		const r = await this.Rooms.findOneByRoomIdAndUserId(filter.rid, filter.userId, {});
 
 		let oldest;
 		if (r.hideHistoryForNewMembers) {
@@ -99,7 +99,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			return;
 		}
 
-		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId);
+		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId, {});
 
 		let ts;
 		if (r.hideHistoryForNewMembers) {
@@ -118,7 +118,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			return;
 		}
 
-		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId);
+		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId, {});
 
 		let ts = timestamp;
 		if (r.hideHistoryForNewMembers) {
@@ -137,7 +137,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			return;
 		}
 
-		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId);
+		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId, {});
 
 		const userJoinedAt = r.hideHistoryForNewMembers && await this.Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 
@@ -164,7 +164,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			return;
 		}
 
-		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId);
+		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId, {});
 
 		const userJoinedAt = r.hideHistoryForNewMembers && await this.Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 
