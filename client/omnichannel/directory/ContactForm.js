@@ -96,6 +96,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	const [nameError, setNameError] = useState();
 	const [emailError, setEmailError] = useState();
 	const [phoneError, setPhoneError] = useState();
+	const [customFieldsError, setCustomFieldsError] = useState([]);
 
 	const { value: allCustomFields, phase: state } = useEndpointData('livechat/custom-fields');
 
@@ -193,7 +194,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		}
 	});
 
-	const formIsValid = name && !emailError && !phoneError;
+	const formIsValid = name && !emailError && !phoneError && customFieldsError.length === 0;
 
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
@@ -230,7 +231,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 				</Field.Error>
 			</Field>
 			{ canViewCustomFields() && allCustomFields
-			&& <CustomFieldsForm jsonCustomFields={jsonCustomField} customFieldsData={livechatData} setCustomFieldsData={handleLivechatData} /> }
+			&& <CustomFieldsForm jsonCustomFields={jsonCustomField} customFieldsData={livechatData} setCustomFieldsData={handleLivechatData} setCustomFieldsError={setCustomFieldsError} /> }
 			{ ContactManager && <ContactManager value={username} handler={handleUsername} /> }
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
