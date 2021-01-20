@@ -149,7 +149,6 @@ export const Livechat = {
 		if (guest.name) {
 			message.alias = guest.name;
 		}
-		// return messages;
 		return _.extend(sendMessage(guest, message, room), { newRoom, showConnecting: this.showConnecting() });
 	},
 
@@ -219,6 +218,7 @@ export const Livechat = {
 			} else {
 				const userData = {
 					username,
+					ts: new Date(),
 				};
 
 				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
@@ -1154,6 +1154,14 @@ export const Livechat = {
 		Livechat.notifyRoomVisitorChange(room._id, visitor);
 
 		return LivechatRooms.findOneById(roomId);
+	},
+	updateLastChat(contactId, lastChat) {
+		const updateUser = {
+			$set: {
+				lastChat,
+			},
+		};
+		LivechatVisitors.updateById(contactId, updateUser);
 	},
 };
 

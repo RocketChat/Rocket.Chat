@@ -5,12 +5,12 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 
-const PreferencesUserPresenceSection = ({ onChange, ...props }) => {
+const PreferencesUserPresenceSection = ({ onChange, commitRef, ...props }) => {
 	const t = useTranslation();
 	const userEnableAutoAway = useUserPreference('enableAutoAway');
 	const userIdleTimeLimit = useUserPreference('idleTimeLimit');
 
-	const { values, handlers } = useForm({
+	const { values, handlers, commit } = useForm({
 		enableAutoAway: userEnableAutoAway,
 		idleTimeLimit: userIdleTimeLimit,
 	}, onChange);
@@ -24,6 +24,8 @@ const PreferencesUserPresenceSection = ({ onChange, ...props }) => {
 		handleEnableAutoAway,
 		handleIdleTimeLimit,
 	} = handlers;
+
+	commitRef.current.userPreference = commit;
 
 	const onChangeIdleTimeLimit = useCallback((e) => handleIdleTimeLimit(Number(e.currentTarget.value)), [handleIdleTimeLimit]);
 

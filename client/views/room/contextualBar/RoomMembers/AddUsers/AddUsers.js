@@ -8,6 +8,7 @@ import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useForm } from '../../../../../hooks/useForm';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
+import { useTabBarClose } from '../../../providers/ToolboxProvider';
 
 export const AddUsers = ({
 	onClickClose,
@@ -44,14 +45,13 @@ export const AddUsers = ({
 
 export default ({
 	rid,
-	tabBar,
 	onClickBack,
 }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [errors, setErrors] = useState({});
 
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
+	const onClickClose = useTabBarClose();
 	const saveAction = useMethod('addUsersToRoom');
 
 	const { values, handlers } = useForm({ users: [] });

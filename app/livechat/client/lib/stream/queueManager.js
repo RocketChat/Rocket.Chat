@@ -58,7 +58,7 @@ const addGlobalListener = () => {
 };
 
 
-const subscribe = async (userId, isManager) => {
+const subscribe = async (userId) => {
 	const config = await call('livechat:getRoutingConfig');
 	if (config && config.autoAssignAgent) {
 		return;
@@ -66,7 +66,7 @@ const subscribe = async (userId, isManager) => {
 
 	const agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
 
-	const cleanUp = agentDepartments.length ? await addListenerForeachDepartment(agentDepartments) : isManager && addGlobalListener();
+	const cleanUp = agentDepartments.length ? await addListenerForeachDepartment(agentDepartments) : addGlobalListener();
 
 	updateInquiries(await getInquiriesFromAPI());
 

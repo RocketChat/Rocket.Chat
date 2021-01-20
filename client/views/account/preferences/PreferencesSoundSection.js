@@ -8,7 +8,7 @@ import { CustomSounds } from '../../../../app/custom-sounds/client';
 
 const useCustomSoundsOptions = () => useMemo(() => CustomSounds && CustomSounds.getList && CustomSounds.getList().map(({ _id, name }) => [_id, name]), []);
 
-const PreferencesSoundSection = ({ onChange, ...props }) => {
+const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
 	const t = useTranslation();
 
 	const soundsList = useCustomSoundsOptions();
@@ -20,7 +20,7 @@ const PreferencesSoundSection = ({ onChange, ...props }) => {
 		notificationsSoundVolume: useUserPreference('notificationsSoundVolume'),
 	};
 
-	const { values, handlers } = useForm(settings, onChange);
+	const { values, handlers, commit } = useForm(settings, onChange);
 
 	const {
 		newRoomNotification,
@@ -38,6 +38,7 @@ const PreferencesSoundSection = ({ onChange, ...props }) => {
 
 	const onChangeNotificationsSoundVolume = useCallback((e) => handleNotificationsSoundVolume(Math.max(0, Math.min(Number(e.currentTarget.value), 100))), [handleNotificationsSoundVolume]);
 
+	commitRef.current.sound = commit;
 
 	return <Accordion.Item title={t('Sound')} {...props}>
 		<FieldGroup>

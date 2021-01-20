@@ -237,7 +237,11 @@ export const useUserInfoActions = (user = {}, rid) => {
 	const ignoreUserAction = useMutableCallback(async () => {
 		try {
 			await ignoreUser({ rid, userId: uid, ignore: !isIgnored });
-			dispatchToastMessage({ type: 'success', message: t('User_has_been_unignored') });
+			if (isIgnored) {
+				dispatchToastMessage({ type: 'success', message: t('User_has_been_unignored') });
+			} else {
+				dispatchToastMessage({ type: 'success', message: t('User_has_been_ignored') });
+			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
