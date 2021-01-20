@@ -21,6 +21,8 @@ import { slashCommands } from '../../app/utils/server';
 import Rooms from '../../app/models/server/models/Rooms';
 import Uploads from '../../app/models/server/models/Uploads';
 
+import { QueueManager } from '/app/livechat/server/lib/QueueManager';
+
 type FileAttachment = {
 	title: string;
 	title_link: string;
@@ -111,8 +113,6 @@ async function uploadAttachment(attachment: Attachment, rid: string, visitorToke
 }
 
 async function onEmailReceived(email: ParsedMail, inbox: string, department?: string): Promise<void> {
-	// console.log('NEW EMAIL =>', email);
-
 	if (!email.from?.value?.[0]?.address) {
 		return;
 	}
@@ -123,9 +123,12 @@ async function onEmailReceived(email: ParsedMail, inbox: string, department?: st
 
 	const guest = getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
 
-	// TODO: Get the closed room and reopen rather than create a new one
-	// const room = LivechatRooms.findOneByVisitorTokenAndEmailThread(guest.token, emailThread, {});
-	const room = LivechatRooms.findOneOpenByVisitorTokenAndEmailThread(guest.token, thread, {});
+	let room = LivechatRooms.findOneByVisitorTokenAndEmailThread(guest.token, thread, {});
+	if (room?.closedAt) {
+		console.log('passing here');
+		room = await QueueManager.unarchiveRoom(room);
+	}
+	// const room = LivechatRooms.findOneOpenByVisitorTokenAndEmailThread(guest.token, thread, {});
 
 	let msg = email.text;
 
@@ -293,7 +296,7 @@ callbacks.add('afterSaveMessage', function(message: any, room: any) {
 
 	const replyToMessage = Messages.findOneById(match.groups.id);
 
-	if (!replyToMessage) {
+	if (!replyToMessage?.email?.messageId) {
 		return message;
 	}
 

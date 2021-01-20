@@ -729,6 +729,26 @@ export class LivechatRooms extends Base {
 
 		return this.update(query, update);
 	}
+
+	unarchiveOneById(roomId) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				open: true,
+			},
+			$unset: {
+				servedBy: 1,
+				closedAt: 1,
+				closedBy: 1,
+				closer: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
 }
 
 export default new LivechatRooms(Rooms.model, true);
