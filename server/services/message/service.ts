@@ -40,7 +40,11 @@ export class MessageService extends ServiceClass implements IMessageService {
 			return result;
 		}
 
-		return this.Messages.trashFindDeletedAfter(timestamp, query, queryOptions)?.toArray();
+		const trash = await this.Messages.trashFindDeletedAfter(timestamp, query, queryOptions);
+
+		return trash
+			? trash.toArray()
+			: [];
 	}
 
 	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<any[]> {
