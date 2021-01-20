@@ -464,7 +464,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 
 		const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };
 
-		const cursor = Promise.await(Message.customQuery({
+		const threads = Promise.await(Message.customQuery({
 			query: threadQuery,
 			userId: this.userId,
 			queryOptions: {
@@ -475,15 +475,11 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 			},
 		}));
 
-		const total = cursor.count();
-
-		const threads = cursor.fetch();
-
 		return API.v1.success({
 			threads,
 			count: threads.length,
 			offset,
-			total,
+			total: threads.length,
 		});
 	},
 });
