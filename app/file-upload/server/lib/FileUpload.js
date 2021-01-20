@@ -102,9 +102,9 @@ export const FileUpload = {
 		);
 
 		if (response && response.prevent) {
-			const { appId, i18nReason } = response;
-			console.warn(`The app (${ appId }) prevented the file upload, reason: `, i18nReason);
-			throw new Meteor.Error('error-app-prevent-file-upload', i18nReason);
+			const { appId, reason } = response;
+			console.warn(`The app (${ appId }) prevented the file upload, reason: `, reason);
+			throw new Meteor.Error('error-app-prevent-file-upload', reason);
 		}
 
 		return true;
