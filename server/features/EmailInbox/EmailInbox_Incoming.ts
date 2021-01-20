@@ -2,6 +2,7 @@
 import stripHtml from 'string-strip-html';
 import { Random } from 'meteor/random';
 import { ParsedMail, Attachment } from 'mailparser';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Livechat } from '../../../app/livechat/server/lib/Livechat';
 import LivechatVisitors from '../../../app/models/server/models/LivechatVisitors';
@@ -147,7 +148,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				{
 					actions: [{
 						type: 'button',
-						text: 'Reply via Email',
+						text: TAPi18n.__('Reply_via_Email'),
 						msg: 'msg',
 						msgId,
 						msg_in_chat_window: true,

@@ -2907,6 +2907,7 @@
   "Send_request_on_visitor_message": "Enviar requisição para mensagens do Visitante",
   "Send_Test": "Enviar teste",
   "Send_Test_Email": "Enviar email de teste",
+  "Send_via_Email_as_attachment": "Enviar por Email como anexo",
   "Send_Visitor_navigation_history_as_a_message": "Enviar histórico de navegação do visitante como uma mensagem",
   "Send_visitor_navigation_history_on_request": "Enviar histórico de navegação do visitante a pedido",
   "Send_welcome_email": "Enviar e-mail de boas-vindas",

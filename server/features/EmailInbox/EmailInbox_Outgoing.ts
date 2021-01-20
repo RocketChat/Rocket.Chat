@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../app/callbacks/server';
 import Messages from '../../../app/models/server/models/Messages';
@@ -92,7 +93,7 @@ callbacks.add('beforeSaveMessage', function(message: any, room: any) {
 		message.attachments.push({
 			actions: [{
 				type: 'button',
-				text: 'Send via Email as attachment',
+				text: TAPi18n.__('Send_via_Email_as_attachment'),
 				msg: `/sendEmailAttachment ${ message._id }`,
 				msg_in_chat_window: true,
 				msg_processing_type: 'sendMessage',
