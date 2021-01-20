@@ -66,7 +66,9 @@ export function MessagesPerChannelSection() {
 	}, [pieData, tableData]);
 
 	const downloadData = () => {
-		const data = pieData.origins.map(({ t, messages }) => [t, messages]);
+		const header = ['l - livechat', 'p - private channel', 'c - public channel', 'd - direct message'];
+		const data = [header].concat(pieData.origins.map(({ t, messages }) => [t, messages]));
+
 		downloadCsvAs(data, `MessagesPerChannelSection_start_${ params.start }_end_${ params.end }`);
 	};
 
