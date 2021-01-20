@@ -69,7 +69,7 @@ export default React.memo(({ tabBar, rid }) => {
 	const customSound = useCustomSound();
 
 	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
-	const saveSettings = useEndpointActionExperimental('POST', 'rooms.saveNotification');
+	const saveSettings = useEndpointActionExperimental('POST', 'rooms.saveNotification', t('Room_updated_successfully'));
 
 	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm(
 		{

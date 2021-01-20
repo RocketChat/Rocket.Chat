@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
-import { Template } from 'meteor/templating';
 
 import { roomTypes } from '../../utils/client';
 import { Rooms, Subscriptions } from '../../models';
@@ -59,8 +58,6 @@ export const EmojiEvents = {
 		tooltip.hide();
 	},
 };
-
-Template.roomOld.events(EmojiEvents);
 
 Meteor.startup(function() {
 	MessageAction.addButton({
