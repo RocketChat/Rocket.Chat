@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { DiscussionArgs, IMessageService, MessageFilter, CustomQueryArgs, getUpdatesArgs, getDeletedArgs, getFilesArgs, getThreadsArgs } from '../../sdk/types/IMessageService';
+import { DiscussionArgs, IMessageService, MessageFilter, CustomQueryArgs, getUpdatesArgs, getDeletedArgs, getFilesArgs, getThreadsArgs, getByIdArgs, getThreadByIdArgs } from '../../sdk/types/IMessageService';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { MessageEnterprise } from '../../sdk';
 
@@ -16,27 +16,89 @@ export class MessageService extends ServiceClass implements IMessageService {
 		this.Messages = new MessagesRaw(db.collection('rocketchat_message'));
 	}
 
-	getDeleted({ rid, userId, timestamp, query, queryOptions }: getDeletedArgs): Promise<any[] | undefined> {
-		throw new Error('Method not implemented.');
+	async getThreadById({ tmid, userId, queryOptions }: getThreadByIdArgs): Promise<any[] | undefined> {
+		const result = await MessageEnterprise.getThreadById({ tmid, userId, queryOptions });
+		if (result) {
+			return result;
+		}
+
+		return this.Messages.findVisibleThreadByThreadId(tmid, queryOptions).toArray();
 	}
 
-	async get(userId: string, filter: MessageFilter): Promise<any[]> {
-		const result = await MessageEnterprise.get(userId, filter);
+	async getById({ msgId, userId }: getByIdArgs): Promise<any[] | undefined> {
+		const result = await MessageEnterprise.getById({ msgId, userId });
+		if (result) {
+			return result;
+		}
+
+		return this.Messages.findOneById(msgId);
+	}
+
+	async getDeleted({ rid, userId, timestamp, query, queryOptions }: getDeletedArgs): Promise<any[] | undefined> {
+		const result = await MessageEnterprise.getDeleted({ rid, userId, timestamp, query, queryOptions });
+		if (result) {
+			return result;
+		}
+
+		return this.Messages.trashFindDeletedAfter(timestamp, query, queryOptions)?.toArray();
+	}
+
+	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<any[]> {
+		const result = await MessageEnterprise.get(userId, {
+			rid,
+			latest,
+			oldest,
+			inclusive,
+			excludeTypes,
+			queryOptions,
+			snippeted,
+			mentionsUsername,
+		});
 		console.log('result ->', result);
 		if (result) {
 			return result;
 		}
 
-		return this.Messages.findVisibleByRoomId(filter).toArray();
+		return this.Messages.findVisibleByRoomId({
+			rid,
+			latest,
+			oldest,
+			excludeTypes,
+			queryOptions,
+			inclusive,
+			snippeted,
+			mentionsUsername,
+		}).toArray();
 	}
 
-	async getDiscussions(filter: DiscussionArgs): Promise<any[]> {
-		const result = await MessageEnterprise.getDiscussions(filter.userId, filter);
+	async getDiscussions({ rid, excludePinned, ignoreThreads, latest, oldest, inclusive, fromUsers, text, queryOptions, userId }: DiscussionArgs): Promise<any[]> {
+		const result = await MessageEnterprise.getDiscussions({
+			rid,
+			excludePinned,
+			ignoreThreads,
+			latest,
+			oldest,
+			inclusive,
+			fromUsers,
+			text,
+			queryOptions,
+			userId,
+		});
 		if (result) {
 			return result;
 		}
 
-		return this.Messages.findDiscussionByRoomId(filter).toArray();
+		return this.Messages.findDiscussionByRoomId({
+			rid,
+			excludePinned,
+			ignoreThreads,
+			latest,
+			oldest,
+			inclusive,
+			fromUsers,
+			text,
+			queryOptions,
+		}).toArray();
 	}
 
 	async customQuery(args: CustomQueryArgs): Promise<any[]> {

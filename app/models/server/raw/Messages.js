@@ -380,4 +380,17 @@ export class MessagesRaw extends BaseRaw {
 
 		return this.find(query, queryOptions);
 	}
+
+
+	findVisibleThreadByThreadId(tmid, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+
+			tmid,
+		};
+
+		return this.find(query, options);
+	}
 }
