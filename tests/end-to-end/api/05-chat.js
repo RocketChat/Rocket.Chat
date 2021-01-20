@@ -781,7 +781,7 @@ describe('[Chat]', function() {
 								.to.have.property('contentType', 'image/jpeg');
 						})
 						.end(done);
-				}, 200);
+				}, 250);
 			});
 		});
 

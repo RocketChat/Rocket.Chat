@@ -54,7 +54,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			snippeted,
 			mentionsUsername,
 		});
-		console.log('result ->', result);
+
 		if (result) {
 			return result;
 		}
