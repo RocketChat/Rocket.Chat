@@ -47,6 +47,7 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 		i18nLabel,
 		i18nDescription,
 		values,
+		required,
 	} = appSetting;
 
 	const label = ((i18nLabel && tApp(i18nLabel)) + (required ? ' *' : '')) || (id || tApp(id));
