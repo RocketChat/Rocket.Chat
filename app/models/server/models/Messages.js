@@ -172,7 +172,7 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomId({ rid, excludePinned, ignoreDiscussion = true, users = [], ignoreThreads = true, queryOptions = {}, oldest, latest, inclusive }) {
+	findFilesByRoomId({ rid, excludePinned, ignoreDiscussion = true, fromUsers = [], ignoreThreads = true, queryOptions = {}, oldest, latest, inclusive }) {
 		const query = {
 			rid,
 			'file._id': { $exists: true },
@@ -207,29 +207,54 @@ export class Messages extends Base {
 			query.drid = { $exists: 0 };
 		}
 
-		if (users.length) {
-			query['u.username'] = { $in: users };
+		if (fromUsers.length) {
+			query['u.username'] = { $in: fromUsers };
 		}
 
 		return this.find(query, { fields: { 'file._id': 1 }, ...queryOptions });
 	}
 
-	findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
+	findDiscussionByRoomId({ rid, oldest, latest, inclusive, text, excludePinned, ignoreThreads, fromUsers = [], queryOptions = {} }) {
 		const query = {
 			rid,
-			ts,
 			drid: { $exists: 1 },
 		};
+
+		if (oldest || latest) {
+			let ts;
+			if (oldest) {
+				inclusive
+					? ts.$gte = oldest
+					: ts.$gt = oldest;
+			}
+
+			if (latest) {
+				inclusive
+					? ts.$lte = latest
+					: ts.$lt = latest;
+			}
+
+			query.ts = ts;
+		}
 
 		if (excludePinned) {
 			query.pinned = { $ne: true };
 		}
 
-		if (users.length) {
-			query['u.username'] = { $in: users };
+		if (text) {
+			query.$text.$search = text;
 		}
 
-		return this.find(query, options);
+		if (fromUsers.length) {
+			query['u.username'] = { $in: fromUsers };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: 0 };
+			query.tcount = { $exists: 0 };
+		}
+
+		return this.find(query, queryOptions);
 	}
 
 	findVisibleByMentionAndRoomId(username, rid, options) {
@@ -940,6 +965,45 @@ export class Messages extends Base {
 
 	removeByRoomIds(rids) {
 		return this.remove({ rid: { $in: rids } });
+	}
+
+	findThreadsByRoomId({ rid, pinned, ignoreDiscussion = true, latest, oldest, inclusive, fromUsers = [], queryOptions }) {
+		const query = {
+			rid,
+			tlm: { $exists: 1 },
+			tcount: { $exists: 1 },
+		};
+
+		if (oldest || latest) {
+			let ts;
+			if (oldest) {
+				inclusive
+					? ts.$gte = oldest
+					: ts.$gt = oldest;
+			}
+
+			if (latest) {
+				inclusive
+					? ts.$lte = latest
+					: ts.$lt = latest;
+			}
+
+			query.ts = ts;
+		}
+
+		if (pinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (ignoreDiscussion) {
+			query.drid = { $exists: 0 };
+		}
+
+		if (fromUsers.length > 0) {
+			query['u.username'] = { $in: fromUsers };
+		}
+
+		return this.find(query, queryOptions);
 	}
 
 	findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned, ignoreDiscussion = true, ts, users = [] }, options) {

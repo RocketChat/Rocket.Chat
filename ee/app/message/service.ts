@@ -3,7 +3,7 @@ import { Db } from 'mongodb';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
-import { MessageFilter, DiscussionArgs, CustomQueryArgs } from '../../../server/sdk/types/IMessageService';
+import { MessageFilter, DiscussionArgs, CustomQueryArgs, getUpdatesArgs, getDeletedArgs, getFilesArgs, getThreadsArgs, getByIdArgs, getThreadByIdArgs } from '../../../server/sdk/types/IMessageService';
 import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import { IMessageEnterprise } from '../../../server/sdk/types/IMessageEnterprise';
 import { hasLicense } from '../license/server/license';
@@ -63,11 +63,16 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			}
 		}
 
-		return this.Messages.findDiscussionsByRoom({
+		return this.Messages.findDiscussionByRoomId({
 			rid: filter.rid,
 			queryOptions: filter.queryOptions,
 			text: filter.text,
 			oldest,
+			latest: filter.latest,
+			inclusive: filter.inclusive,
+			excludePinned: filter.excludePinned,
+			fromUsers: filter.fromUsers,
+			ignoreThreads: filter.ignoreThreads,
 		}).toArray();
 	}
 
@@ -78,16 +83,112 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 
 		const r = await this.Rooms.findOneByRoomIdAndUserId(query.rid, userId, queryOptions);
 
-		let oldest;
 		if (r.hideHistoryForNewMembers) {
 			const userJoinedAt = await this.Subscriptions.findOneByRoomIdAndUserId(query.rid, userId);
 
 			if (userJoinedAt) {
-				oldest = userJoinedAt.ts;
-				query.ts.$gte = oldest;
+				query.ts.$gte = userJoinedAt.ts;
 			}
 		}
 
 		return this.Messages.find(query, queryOptions).toArray();
+	}
+
+	async getUpdates({ rid, userId, timestamp, queryOptions }: getUpdatesArgs): Promise<any[] | undefined> {
+		if (!hasLicense('livechat-enterprise')) {
+			return;
+		}
+
+		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId);
+
+		let ts;
+		if (r.hideHistoryForNewMembers) {
+			const userJoinedAt = await this.Subscriptions.findOneByRoomIdAndUserId(rid, userId);
+
+			if (userJoinedAt) {
+				userJoinedAt.ts > timestamp ? ts = userJoinedAt : ts = timestamp;
+			}
+		}
+
+		return this.Messages.findForUpdates(rid, ts, queryOptions).toArray();
+	}
+
+	async getDeleted({ rid, userId, timestamp, query, queryOptions }: getDeletedArgs): Promise<any[] | undefined> {
+		if (!hasLicense('livechat-enterprise')) {
+			return;
+		}
+
+		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId);
+
+		let ts = timestamp;
+		if (r.hideHistoryForNewMembers) {
+			const userJoinedAt = await this.Subscriptions.findOneByRoomIdAndUserId(rid, userId);
+
+			if (userJoinedAt && userJoinedAt.ts > timestamp) {
+				ts = userJoinedAt.ts;
+			}
+		}
+
+		return this.Messages.trashFindDeletedAfter(ts, query, queryOptions)?.toArray();
+	}
+
+	async getFiles({ rid, userId, excludePinned, ignoreDiscussion, ignoreThreads, oldest, latest, inclusive, fromUsers, queryOptions }: getFilesArgs): Promise<any[] | undefined> {
+		if (!hasLicense('livechat-enterprise')) {
+			return;
+		}
+
+		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId);
+
+		const userJoinedAt = r.hideHistoryForNewMembers && await this.Subscriptions.findOneByRoomIdAndUserId(rid, userId);
+
+		let end;
+		if (!oldest || (userJoinedAt && userJoinedAt.ts > oldest)) {
+			end = userJoinedAt;
+		}
+
+		return this.Messages.findFilesByRoomId({
+			rid,
+			excludePinned,
+			ignoreDiscussion,
+			ignoreThreads,
+			oldest: end,
+			latest,
+			inclusive,
+			fromUsers,
+			queryOptions,
+		}).toArray();
+	}
+
+	async getThreadsByRoomId({ rid, userId, excludePinned, oldest, latest, inclusive, fromUsers, queryOptions }: getThreadsArgs): Promise<any[] | undefined> {
+		if (!hasLicense('livechat-enterprise')) {
+			return;
+		}
+
+		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId);
+
+		const userJoinedAt = r.hideHistoryForNewMembers && await this.Subscriptions.findOneByRoomIdAndUserId(rid, userId);
+
+		let end;
+		if (!oldest || (userJoinedAt && userJoinedAt.ts > oldest)) {
+			end = userJoinedAt;
+		}
+
+		return this.Messages.findFilesByRoomId({
+			rid,
+			excludePinned,
+			oldest: end,
+			latest,
+			inclusive,
+			fromUsers,
+			queryOptions,
+		}).toArray();
+	}
+
+	getById({ msgId, userId }: getByIdArgs): Promise<any[] | undefined> {
+		return this.customQuery({ query: { _id: msgId }, userId });
+	}
+
+	getThreadById({ tmid, userId, queryOptions }: getThreadByIdArgs): Promise<any[] | undefined> {
+		return this.customQuery({ query: { tmid, _hidden: { $ne: true } }, userId, queryOptions });
 	}
 }

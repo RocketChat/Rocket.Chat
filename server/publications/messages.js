@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Messages } from '../../app/models';
+import { Message } from '../sdk';
 
 Meteor.methods({
 	'messages/get'(rid, { lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads = false }) {
@@ -21,17 +22,16 @@ Meteor.methods({
 			});
 		}
 
-		const options = {
+		const queryOptions = {
 			sort: {
 				ts: -1,
 			},
 		};
 
-		// TODO apply logic for history visibility
 		if (lastUpdate instanceof Date) {
 			return {
-				updated: Messages.findForUpdates(rid, lastUpdate, options).fetch(),
-				deleted: Messages.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).fetch(),
+				updated: Promise.await(Message.getUpdates({ rid, userId: fromId, timestamp: lastUpdate, queryOptions })),
+				deleted: Promise.await(Message.getDeleted({ rid, userId: fromId, timestamp: lastUpdate, queryOptions: { ...queryOptions, fields: { _id: 1, _deletedAt: 1 } } })),
 			};
 		}
 

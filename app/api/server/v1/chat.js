@@ -513,13 +513,12 @@ API.v1.addRoute('chat.syncThreadsList', { authRequired: true }, {
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
-		const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
+		const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } }, { _updatedAt: { $gt: updatedSinceDate } });
 
-		// TODO apply logic for history visibility
 		return API.v1.success({
 			threads: {
-				update: Messages.find({ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } }, { fields, sort }).fetch(),
-				remove: Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, { fields, sort }).fetch(),
+				update: Promise.await(Message.customQuery({ query: threadQuery, queryOptions: { fields, sort } })),
+				remove: Promise.await(Message.getDeleted({ rid, userId: this.userId, timestamp: updatedSinceDate, query: threadQuery, queryOptions: { fields, sort } })),
 			},
 		});
 	},
@@ -604,11 +603,12 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
-		// TODO apply logic for history visibility
+		const threadQuery = Object.assign({}, query, tmid, { _updatedAt: { $gt: updatedSinceDate } });
+
 		return API.v1.success({
 			messages: {
-				update: Messages.find({ ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, { fields, sort }).fetch(),
-				remove: Messages.trashFindDeletedAfter(updatedSinceDate, { ...query, tmid }, { fields, sort }).fetch(),
+				update: Promise.await(Message.customQuery(threadQuery, { fields, sort })),
+				remove: Promise.await(Message.getDeleted({ rid: thread.rid, timestamp: updatedSinceDate, query: { ...query, tmid }, queryOptions: { fields, sort } })),
 			},
 		});
 	},

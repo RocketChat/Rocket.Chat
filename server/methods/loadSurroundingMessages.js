@@ -23,8 +23,7 @@ Meteor.methods({
 			return false;
 		}
 
-		// TODO apply logic for history visibility
-		message = Messages.findOneById(message._id);
+		message = Promise.await(Message.getById({ msgId: message._id, userId: fromId }));
 
 		if (!message || !message.rid) {
 			return false;

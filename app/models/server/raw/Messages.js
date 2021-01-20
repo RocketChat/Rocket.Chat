@@ -32,32 +32,47 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoom({ rid, queryOptions, text, oldest }) {
-		const query = { rid, drid: { $exists: true } };
+	findDiscussionByRoomId({ rid, oldest, latest, inclusive, text, excludePinned, ignoreThreads, fromUsers = [], queryOptions = {} }) {
+		const query = {
+			rid,
+			drid: { $exists: 1 },
+		};
+
+		if (oldest || latest) {
+			let ts;
+			if (oldest) {
+				inclusive
+					? ts.$gte = oldest
+					: ts.$gt = oldest;
+			}
+
+			if (latest) {
+				inclusive
+					? ts.$lte = latest
+					: ts.$lt = latest;
+			}
+
+			query.ts = ts;
+		}
+
+		if (excludePinned) {
+			query.pinned = { $ne: true };
+		}
 
 		if (text) {
 			query.$text.$search = text;
 		}
 
-		if (oldest) {
-			query.ts.$gt = oldest;
+		if (fromUsers.length) {
+			query['u.username'] = { $in: fromUsers };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: 0 };
+			query.tcount = { $exists: 0 };
 		}
 
 		return this.find(query, queryOptions);
-	}
-
-	findDiscussionsByRoomAndText(rid, text, options) {
-		const query = {
-			rid,
-			drid: { $exists: true },
-			...text && {
-				$text: {
-					$search: text,
-				},
-			},
-		};
-
-		return this.find(query, options);
 	}
 
 	findAllNumberOfTransferredRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
@@ -270,5 +285,99 @@ export class MessagesRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	findForUpdates(roomId, timestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			_updatedAt: {
+				$gt: timestamp,
+			},
+		};
+		return this.find(query, options);
+	}
+
+	findFilesByRoomId({ rid, excludePinned, ignoreDiscussion = true, fromUsers = [], ignoreThreads = true, queryOptions = {}, oldest, latest, inclusive }) {
+		const query = {
+			rid,
+			'file._id': { $exists: true },
+		};
+
+		if (oldest) {
+			if (inclusive) {
+				query.ts.$gte = oldest;
+			} else {
+				query.ts.$gt = oldest;
+			}
+		}
+
+		if (latest) {
+			if (inclusive) {
+				query.ts.$lte = latest;
+			} else {
+				query.ts.$lt = latest;
+			}
+		}
+
+		if (excludePinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: 0 };
+			query.tcount = { $exists: 0 };
+		}
+
+		if (ignoreDiscussion) {
+			query.drid = { $exists: 0 };
+		}
+
+		if (fromUsers.length) {
+			query['u.username'] = { $in: fromUsers };
+		}
+
+		return this.find(query, { fields: { 'file._id': 1 }, ...queryOptions });
+	}
+
+	findThreadsByRoomId({ rid, pinned, ignoreDiscussion = true, latest, oldest, inclusive, fromUsers = [], queryOptions }) {
+		const query = {
+			rid,
+			tlm: { $exists: 1 },
+			tcount: { $exists: 1 },
+		};
+
+		if (oldest || latest) {
+			let ts;
+			if (oldest) {
+				inclusive
+					? ts.$gte = oldest
+					: ts.$gt = oldest;
+			}
+
+			if (latest) {
+				inclusive
+					? ts.$lte = latest
+					: ts.$lt = latest;
+			}
+
+			query.ts = ts;
+		}
+
+		if (pinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (ignoreDiscussion) {
+			query.drid = { $exists: 0 };
+		}
+
+		if (fromUsers.length > 0) {
+			query['u.username'] = { $in: fromUsers };
+		}
+
+		return this.find(query, queryOptions);
 	}
 }

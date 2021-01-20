@@ -249,7 +249,6 @@ Meteor.methods({
 				};
 			}
 
-			// TODO apply logic for history visibility
 			result.message.docs = Promise.await(Message.customQuery({
 				query,
 				userId: user._id,
