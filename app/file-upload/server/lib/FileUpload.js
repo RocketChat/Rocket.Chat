@@ -94,15 +94,15 @@ export const FileUpload = {
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
-		const appResponses = Promise.await(
+		// App IPreFileUpload event hook
+		const response = Promise.await(
 			Apps.getBridges()
 				.getListenerBridge()
-				.fileUploadEvent('IPreFileUpload', { file, stream })
+				.fileUploadEvent('IPreFileUpload', { file, stream }),
 		);
-		const preventResponse = appResponses.find(({ prevent }) => prevent);
 
-		if (preventResponse) {
-			const { appId, i18nReason } = preventResponse;
+		if (response && response.prevent) {
+			const { appId, i18nReason } = response;
 			console.warn(`The app (${ appId }) prevented the file upload, reason: `, i18nReason);
 			throw new Meteor.Error('error-app-prevent-file-upload', i18nReason);
 		}
