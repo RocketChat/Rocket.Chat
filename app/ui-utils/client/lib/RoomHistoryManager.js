@@ -34,21 +34,19 @@ export const normalizeThreadMessage = ({ ...message }) => {
 };
 
 
-const waitUntilWrapperExists = async () => {
-	return document.querySelector('.messages-box .wrapper') || new Promise((resolve) => {
-		const observer = new MutationObserver(function(mutations, obs) {
-			const element = document.querySelector('.messages-box .wrapper');
-			if (element) {
-				obs.disconnect(); // stop observing
-				return resolve(element);
-			}
-		});
-		observer.observe(document, {
-			childList: true,
-			subtree: true,
-		});
+const waitUntilWrapperExists = async () => document.querySelector('.messages-box .wrapper') || new Promise((resolve) => {
+	const observer = new MutationObserver(function(mutations, obs) {
+		const element = document.querySelector('.messages-box .wrapper');
+		if (element) {
+			obs.disconnect(); // stop observing
+			return resolve(element);
+		}
 	});
-};
+	observer.observe(document, {
+		childList: true,
+		subtree: true,
+	});
+});
 
 export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
 	const userId = msg.u && msg.u._id;
@@ -257,7 +255,6 @@ export const RoomHistoryManager = new class {
 		const instance = Blaze.getView(w).templateInstance();
 
 		if (ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } })) {
-
 			const msgElement = $(`#${ message._id }`, w);
 			if (msgElement.length === 0) {
 				return;
