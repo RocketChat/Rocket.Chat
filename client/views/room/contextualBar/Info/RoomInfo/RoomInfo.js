@@ -45,7 +45,7 @@ export const RoomInfoIcon = ({ name }) => <Icon name={name} size='x22' />;
 export const Title = (props) => <UserCard.Username {...props}/>;
 
 export const RoomInfo = function RoomInfo({
-	name,
+	fname,
 	description,
 	archived,
 	broadcast,
@@ -91,7 +91,7 @@ export const RoomInfo = function RoomInfo({
 					</Box>}
 
 					<Box pbe='x24'>
-						<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
+						<RoomInfo.Title name={fname} status={<RoomInfo.Icon name={icon} />}>{fname}</RoomInfo.Title>
 					</Box>
 
 					{broadcast && broadcast !== '' && <Box pbe='x16'>
