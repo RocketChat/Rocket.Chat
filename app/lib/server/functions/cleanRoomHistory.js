@@ -16,7 +16,7 @@ export function cleanRoomHistory({ rid, latest, oldest, inclusive = true, limit 
 
 	let fileCount = 0;
 
-	Promise.await(Message.getFiles({
+	const files = Promise.await(Message.getFiles({
 		rid,
 		excludePinned,
 		ignoreDiscussion,
@@ -29,12 +29,15 @@ export function cleanRoomHistory({ rid, latest, oldest, inclusive = true, limit 
 			fields: { 'file._id': 1, pinned: 1 },
 			limit,
 		},
-	})).map((document) => {
+	}));
+
+	files.map((document) => {
 		FileUpload.getStore('Uploads').deleteById(document.file._id);
 		fileCount++;
 		if (filesOnly) {
 			Messages.update({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
 		}
+		return null;
 	});
 
 	if (filesOnly) {

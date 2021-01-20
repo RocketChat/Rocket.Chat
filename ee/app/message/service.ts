@@ -25,26 +25,26 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 		this.Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
 	}
 
-	async get(userId: string, filter: MessageFilter): Promise<any[] | undefined> {
-		console.log('MessageEnterprise', userId, filter);
+	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<any[] | undefined> {
+		console.log('MessageEnterprise', userId, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername });
 
 		if (!hasLicense('livechat-enterprise')) {
 			return;
 		}
 
-		const r = await this.Rooms.findOneByRoomIdAndUserId(filter.rid, userId);
+		const r = await this.Rooms.findOneByRoomIdAndUserId(rid, userId);
 		if (r.hideHistoryForNewMembers) {
-			const userJoinedAt = await this.Subscriptions.findOneByRoomIdAndUserId(filter.rid, userId);
+			const userJoinedAt = await this.Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 
-			if ((userJoinedAt && filter.oldest)
-				&& (userJoinedAt.ts > filter.oldest)) {
-				filter.oldest = userJoinedAt.ts;
+			if ((userJoinedAt && oldest)
+				&& (userJoinedAt.ts > oldest)) {
+				oldest = userJoinedAt.ts;
 			}
 		}
 
 		console.log('enterprise filter');
 
-		return this.Messages.findVisibleByRoomId(filter).toArray();
+		return this.Messages.findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }).toArray();
 	}
 
 	async getDiscussions(filter: DiscussionArgs): Promise<any[] | undefined> {
