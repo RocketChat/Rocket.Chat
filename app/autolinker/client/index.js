@@ -1,1 +1,1 @@
-import './client';
+export { createAutolinkerMessageRenderer } from './client';

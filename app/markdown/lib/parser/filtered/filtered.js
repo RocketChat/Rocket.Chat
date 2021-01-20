@@ -2,10 +2,10 @@
 * Filter markdown tags in message
 *	Use case: notifications
 */
-import { settings } from '../../../../settings';
-
-const filterMarkdownTags = function(message) {
-	const schemes = settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
+export const filtered = (message, options = {
+	supportSchemesForLink: 'http,https',
+}) => {
+	const schemes = options.supportSchemesForLink.split(',').join('|');
 
 	// Remove block code backticks
 	message = message.replace(/```/g, '');
@@ -37,10 +37,5 @@ const filterMarkdownTags = function(message) {
 	// Filter > quote
 	message = message.replace(/^>(.*)$/gm, '$1');
 
-	return message;
-};
-
-export const filtered = function(message) {
-	message = filterMarkdownTags(message);
 	return message;
 };

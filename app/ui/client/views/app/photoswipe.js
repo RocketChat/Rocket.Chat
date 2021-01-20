@@ -1,14 +1,18 @@
 import { Meteor } from 'meteor/meteor';
-import PhotoSwipe from 'photoswipe';
-import PhotoSwipeUI_Default from 'photoswipe/dist/photoswipe-ui-default';
-import 'photoswipe/dist/photoswipe.css';
-import s from 'underscore.string';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+
+import { escapeHTML } from '../../../../../lib/escapeHTML';
 
 Meteor.startup(() => {
 	let currentGallery = null;
-	const initGallery = (items, options) => {
+	const initGallery = async (items, options) => {
+		Blaze.render(Template.photoswipeContent, document.body);
+		const [PhotoSwipeImport, PhotoSwipeUI_DefaultImport] = await Promise.all([import('photoswipe'), import('photoswipe/dist/photoswipe-ui-default'), import('photoswipe/dist/photoswipe.css')]);
 		if (!currentGallery) {
-			currentGallery = new PhotoSwipe(document.getElementById('pswp'), PhotoSwipeUI_Default, items, options);
+			const PhotoSwipe = PhotoSwipeImport.default;
+			const PhotoSwipeUI_Default = PhotoSwipeUI_DefaultImport.default;
+			currentGallery = await new PhotoSwipe(document.getElementById('pswp'), PhotoSwipeUI_Default, items, options);
 			currentGallery.listen('destroy', () => {
 				currentGallery = null;
 			});
@@ -17,7 +21,7 @@ Meteor.startup(() => {
 	};
 
 	const defaultGalleryOptions = {
-		bgOpacity: 0.8,
+		bgOpacity: 0.7,
 		showHideOpacity: true,
 		counterEl: false,
 		shareEl: false,
@@ -27,15 +31,11 @@ Meteor.startup(() => {
 		event.preventDefault();
 		event.stopPropagation();
 
-		if (currentGallery) {
-			return;
-		}
-
 		const galleryOptions = {
 			...defaultGalleryOptions,
 			index: 0,
 			addCaptionHTMLFn(item, captionEl) {
-				captionEl.children[0].innerHTML =					`${ s.escapeHTML(item.title) }<br/><small>${ s.escapeHTML(item.description) }</small>`;
+				captionEl.children[0].innerHTML = `${ escapeHTML(item.title) }<br/><small>${ escapeHTML(item.description) }</small>`;
 				return true;
 			},
 		};
@@ -84,5 +84,4 @@ Meteor.startup(() => {
 	};
 
 	$(document).on('click', '.gallery-item', createEventListenerFor('.gallery-item'));
-	$(document).on('click', '.room-files-image', createEventListenerFor('.room-files-image'));
 });

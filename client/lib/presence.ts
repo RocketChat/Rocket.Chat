@@ -40,7 +40,7 @@ const getPresence = ((): ((uid: User['_id']) => void) => {
 				});
 
 				currentUids.forEach((uid) => {
-					emitter.emit(uid, { uid, status: 'offline' });
+					emitter.emit(uid, { _id: uid, status: 'offline' });
 				});
 
 				currentUids.clear();
@@ -99,10 +99,12 @@ const listen = (uid: User['_id'], handler: Handler<PresenceUpdate>): void => {
 };
 
 const stop = (uid: User['_id'], handler: Handler<PresenceUpdate>): void => {
-	emitter.off(uid, handler);
-	emitter.off(uid, update);
-	emitter.off('reset', handler);
-	emitter.emit('remove', uid);
+	setTimeout(() => {
+		emitter.off(uid, handler);
+		emitter.off(uid, update);
+		emitter.off('reset', handler);
+		emitter.emit('remove', uid);
+	}, 5000);
 };
 
 const reset = (): void => {

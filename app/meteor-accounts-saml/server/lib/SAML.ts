@@ -5,7 +5,6 @@ import { Random } from 'meteor/random';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import fiber from 'fibers';
-import s from 'underscore.string';
 
 import { settings } from '../../../settings/server';
 import { Users, Rooms, CredentialTokens } from '../../../models/server';
@@ -17,12 +16,14 @@ import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
+import { escapeHTML } from '../../../../lib/escapeHTML';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
 	res.writeHead(200, {
 		'Content-Type': 'text/html',
 	});
-	const content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${ s.escapeHTML(err) }</div></body></html>`;
+	const content = `<html><body><h2>Sorry, an annoying error occured</h2><div>${ escapeHTML(err) }</div></body></html>`;
 	res.end(content, 'utf-8');
 };
 
@@ -71,9 +72,7 @@ export class SAML {
 	}
 
 	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
-		// @ts-ignore RegExp.escape is a meteor method
-		const escapeRegexp = (email: string): string => RegExp.escape(email);
-		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite } = SAMLUtils.globalSettings;
+		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate } = SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
@@ -94,7 +93,7 @@ export class SAML {
 
 		// Second, try searching by username or email (according to the immutableProperty setting)
 		if (!user) {
-			const expression = userObject.emailList.map((email) => `^${ escapeRegexp(email) }$`).join('|');
+			const expression = userObject.emailList.map((email) => `^${ escapeRegExp(email) }$`).join('|');
 			const emailRegex = new RegExp(expression, 'i');
 
 			user = SAML.findUser(userObject.username, emailRegex);
@@ -145,7 +144,7 @@ export class SAML {
 			const userId = Accounts.insertUserDoc({}, newUser);
 			user = Users.findOne(userId);
 
-			if (userObject.channels) {
+			if (userObject.channels && channelsAttributeUpdate !== true) {
 				SAML.subscribeToSAMLChannels(userObject.channels, user);
 			}
 		}
@@ -185,6 +184,10 @@ export class SAML {
 
 		if (roleAttributeSync) {
 			updateData.roles = globalRoles;
+		}
+
+		if (userObject.channels && channelsAttributeUpdate === true) {
+			SAML.subscribeToSAMLChannels(userObject.channels, user);
 		}
 
 		Users.update({
@@ -445,6 +448,7 @@ export class SAML {
 	}
 
 	private static subscribeToSAMLChannels(channels: Array<string>, user: IUser): void {
+		const { includePrivateChannelsInUpdate } = SAMLUtils.globalSettings;
 		try {
 			for (let roomName of channels) {
 				roomName = roomName.trim();
@@ -453,15 +457,24 @@ export class SAML {
 				}
 
 				const room = Rooms.findOneByNameAndType(roomName, 'c', {});
-				if (!room) {
+				const privRoom = Rooms.findOneByNameAndType(roomName, 'p', {});
+
+				if (privRoom && includePrivateChannelsInUpdate === true) {
+					addUserToRoom(privRoom._id, user);
+					continue;
+				}
+
+				if (room) {
+					addUserToRoom(room._id, user);
+					continue;
+				}
+
+				if (!room && !privRoom) {
 					// If the user doesn't have an username yet, we can't create new rooms for them
 					if (user.username) {
 						createRoom('c', roomName, user.username);
 					}
-					continue;
 				}
-
-				addUserToRoom(room._id, user);
 			}
 		} catch (err) {
 			console.error(err);

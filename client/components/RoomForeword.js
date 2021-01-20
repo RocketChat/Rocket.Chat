@@ -13,7 +13,7 @@ const RoomForeword = ({ _id: rid }) => {
 	const user = useUser();
 	const room = useReactiveValue(useCallback(() => Rooms.findOne({ _id: rid }), [rid]));
 
-	if (room.t !== 'd') {
+	if (room?.t !== 'd') {
 		return t('Start_of_conversation');
 	}
 
@@ -32,22 +32,34 @@ const RoomForeword = ({ _id: rid }) => {
 
 							const avatarUrl = getUserAvatarURL(username, user?.avatarETag);
 
-							return <Avatar size='x48' title={username} url={avatarUrl} key={index} data-username={username} />;
-						})}
+							return (
+								<Avatar
+									key={index}
+									size='x48'
+									title={username}
+									url={avatarUrl}
+									data-username={username}
+								/>
+							);
+						},
+					)}
 				</Avatar.Stack>
 			</Margins>
 		</Flex.Item>
 		<Box color='default' fontScale='h1' flexGrow={1}>{t('Direct_message_you_have_joined')}</Box>
-		<Box is='div' mb='x8' flexGrow={1}>
-			{usernames.map((username, index) => <Margins inline='x4' key={index}>
-				<Tag
-					is='a'
-					fontScale='p2'
-					href={`/direct/${ username }`}
-					data-username={username}
-					className='mention-link mention-link--user'
-				>{username}</Tag>
-			</Margins>)}
+		<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>
+			{usernames.map((username, index) => (
+				<Margins inline='x4' key={index}>
+					<Box is='a' href={`/direct/${ username }`}>
+						<Tag
+							className='mention-link'
+							data-username={username}
+							medium
+						>
+							{username}
+						</Tag>
+					</Box>
+				</Margins>))}
 		</Box>
 	</Box>;
 };

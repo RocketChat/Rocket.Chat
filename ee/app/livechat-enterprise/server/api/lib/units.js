@@ -1,12 +1,17 @@
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
+import { escapeRegExp } from '../../../../../../lib/escapeRegExp';
 import LivechatUnit from '../../../../models/server/models/LivechatUnit';
 import LivechatUnitMonitors from '../../../../models/server/models/LivechatUnitMonitors';
 
-export async function findUnits({ userId, pagination: { offset, count, sort } }) {
+export async function findUnits({ userId, text, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'manage-livechat-units')) {
 		throw new Error('error-not-authorized');
 	}
-	const cursor = LivechatUnit.find({}, {
+	const filter = new RegExp(escapeRegExp(text), 'i');
+
+	const query = { ...text && { $or: [{ name: filter }] } };
+
+	const cursor = LivechatUnit.find(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,

@@ -1,7 +1,7 @@
 import { useMemo, lazy } from 'react';
 
 import { hasLicense } from '../../../app/license/client';
-import { registerForm } from '../../../../client/omnichannel/additionalForms';
+import { registerForm } from '../../../../client/views/omnichannel/additionalForms';
 
 hasLicense('livechat-enterprise').then((enabled) => {
 	if (!enabled) {
@@ -16,8 +16,8 @@ hasLicense('livechat-enterprise').then((enabled) => {
 	registerForm({ useEeTextInput: () => useMemo(() => lazy(() => import('./EeTextInput')), []) });
 	registerForm({ useDepartmentForwarding: () => useMemo(() => lazy(() => import('./DepartmentForwarding')), []) });
 	registerForm({ useDepartmentBusinessHours: () => useMemo(() => lazy(() => import('./DepartmentBusinessHours')), []) });
-	registerForm({ useCustomFieldsAdditionalForm: () => useMemo(() => lazy(() => import('./CustomFieldsAdditionalForm')), []) });
 	registerForm({ useBusinessHoursTimeZone: () => useMemo(() => lazy(() => import('./BusinessHoursTimeZone')), []) });
 	registerForm({ useBusinessHoursMultiple: () => useMemo(() => lazy(() => import('./BusinessHoursMultiple')), []) });
 	registerForm({ useCurrentChatTags: () => useMemo(() => lazy(() => import('../tags/CurrentChatTags')), []) });
+	registerForm({ useContactManager: () => useMemo(() => lazy(() => import('../additionalForms/ContactManager')), []) });
 });
