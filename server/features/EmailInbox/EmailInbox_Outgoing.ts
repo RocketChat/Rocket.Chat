@@ -118,7 +118,7 @@ callbacks.add('beforeSaveMessage', function(message: any, room: any) {
 
 	const replyToMessage = Messages.findOneById(match.groups.id);
 
-	if (!replyToMessage) {
+	if (!replyToMessage?.email?.messageId) {
 		return message;
 	}
 
