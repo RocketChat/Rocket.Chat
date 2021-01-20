@@ -8,6 +8,7 @@ import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Apps } from '../orchestrator';
+import { UiKitCoreApp } from '../../../../server/sdk';
 
 const apiServer = express();
 
@@ -60,126 +61,236 @@ router.use((req, res, next) => {
 
 apiServer.use('/api/apps/ui.interaction/', router);
 
+const getPayloadForType = (type, req) => {
+	if (type === UIKitIncomingInteractionType.BLOCK) {
+		const {
+			type,
+			actionId,
+			triggerId,
+			mid,
+			rid,
+			payload,
+			container,
+		} = req.body;
+
+		const { visitor, user } = req;
+		const room = rid; // orch.getConverters().get('rooms').convertById(rid);
+		const message = mid;
+
+		return {
+			type,
+			container,
+			actionId,
+			message,
+			triggerId,
+			payload,
+			user,
+			visitor,
+			room,
+		};
+	}
+
+	if (type === UIKitIncomingInteractionType.VIEW_CLOSED) {
+		const {
+			type,
+			actionId,
+			payload: {
+				view,
+				isCleared,
+			},
+		} = req.body;
+
+		const { user } = req;
+
+		return {
+			type,
+			actionId,
+			user,
+			payload: {
+				view,
+				isCleared,
+			},
+		};
+	}
+
+	if (type === UIKitIncomingInteractionType.VIEW_SUBMIT) {
+		const {
+			type,
+			actionId,
+			triggerId,
+			payload,
+		} = req.body;
+
+		const { user } = req;
+
+		return {
+			type,
+			actionId,
+			triggerId,
+			payload,
+			user,
+		};
+	}
+
+	throw new Error('Type not supported');
+};
+
+router.post('/:appId', async (req, res, next) => {
+	const {
+		appId,
+	} = req.params;
+
+	const isCore = await UiKitCoreApp.isRegistered(appId);
+	if (!isCore) {
+		console.log('not internal');
+		return next();
+	}
+
+	const {
+		type,
+	} = req.body;
+
+	console.log('execute internal app');
+
+	try {
+		const payload = {
+			...getPayloadForType(type, req),
+			appId,
+		};
+
+		console.log('payload', payload);
+
+		const result = await UiKitCoreApp[type](payload);
+
+		res.send(result);
+	} catch (e) {
+		console.error('ops', e);
+		res.status(500).send({ error: e.message });
+	}
+});
+
+const appsRoutes = (orch) => (req, res) => {
+	const {
+		appId,
+	} = req.params;
+
+	const {
+		type,
+	} = req.body;
+
+	switch (type) {
+		case UIKitIncomingInteractionType.BLOCK: {
+			const {
+				type,
+				actionId,
+				triggerId,
+				mid,
+				rid,
+				payload,
+				container,
+			} = req.body;
+
+			const { visitor } = req;
+			const room = orch.getConverters().get('rooms').convertById(rid);
+			const user = orch.getConverters().get('users').convertToApp(req.user);
+			const message = mid && orch.getConverters().get('messages').convertById(mid);
+
+			const action = {
+				type,
+				container,
+				appId,
+				actionId,
+				message,
+				triggerId,
+				payload,
+				user,
+				visitor,
+				room,
+			};
+
+			try {
+				const eventInterface = !visitor ? AppInterface.IUIKitInteractionHandler : AppInterface.IUIKitLivechatInteractionHandler;
+
+				const result = Promise.await(orch.triggerEvent(eventInterface, action));
+
+				res.send(result);
+			} catch (e) {
+				res.status(500).send(e.message);
+			}
+			break;
+		}
+
+		case UIKitIncomingInteractionType.VIEW_CLOSED: {
+			const {
+				type,
+				actionId,
+				payload: {
+					view,
+					isCleared,
+				},
+			} = req.body;
+
+			const user = orch.getConverters().get('users').convertToApp(req.user);
+
+			const action = {
+				type,
+				appId,
+				actionId,
+				user,
+				payload: {
+					view,
+					isCleared,
+				},
+			};
+
+			try {
+				Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+
+				res.sendStatus(200);
+			} catch (e) {
+				console.log(e);
+				res.status(500).send(e.message);
+			}
+			break;
+		}
+
+		case UIKitIncomingInteractionType.VIEW_SUBMIT: {
+			const {
+				type,
+				actionId,
+				triggerId,
+				payload,
+			} = req.body;
+
+			const user = orch.getConverters().get('users').convertToApp(req.user);
+
+			const action = {
+				type,
+				appId,
+				actionId,
+				triggerId,
+				payload,
+				user,
+			};
+
+			try {
+				const result = Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+
+				res.send(result);
+			} catch (e) {
+				res.status(500).send(e.message);
+			}
+			break;
+		}
+	}
+
+	// TODO: validate payloads per type
+};
+
 export class AppUIKitInteractionApi {
 	constructor(orch) {
 		this.orch = orch;
 
-		router.post('/:appId', (req, res) => {
-			const {
-				appId,
-			} = req.params;
-
-			const {
-				type,
-			} = req.body;
-
-			switch (type) {
-				case UIKitIncomingInteractionType.BLOCK: {
-					const {
-						type,
-						actionId,
-						triggerId,
-						mid,
-						rid,
-						payload,
-						container,
-					} = req.body;
-
-					const { visitor } = req;
-					const room = this.orch.getConverters().get('rooms').convertById(rid);
-					const user = this.orch.getConverters().get('users').convertToApp(req.user);
-					const message = mid && this.orch.getConverters().get('messages').convertById(mid);
-
-					const action = {
-						type,
-						container,
-						appId,
-						actionId,
-						message,
-						triggerId,
-						payload,
-						user,
-						visitor,
-						room,
-					};
-
-					try {
-						const eventInterface = !visitor ? AppInterface.IUIKitInteractionHandler : AppInterface.IUIKitLivechatInteractionHandler;
-
-						const result = Promise.await(this.orch.triggerEvent(eventInterface, action));
-
-						res.send(result);
-					} catch (e) {
-						res.status(500).send(e.message);
-					}
-					break;
-				}
-
-				case UIKitIncomingInteractionType.VIEW_CLOSED: {
-					const {
-						type,
-						actionId,
-						payload: {
-							view,
-							isCleared,
-						},
-					} = req.body;
-
-					const user = this.orch.getConverters().get('users').convertToApp(req.user);
-
-					const action = {
-						type,
-						appId,
-						actionId,
-						user,
-						payload: {
-							view,
-							isCleared,
-						},
-					};
-
-					try {
-						Promise.await(this.orch.triggerEvent('IUIKitInteractionHandler', action));
-
-						res.sendStatus(200);
-					} catch (e) {
-						console.log(e);
-						res.status(500).send(e.message);
-					}
-					break;
-				}
-
-				case UIKitIncomingInteractionType.VIEW_SUBMIT: {
-					const {
-						type,
-						actionId,
-						triggerId,
-						payload,
-					} = req.body;
-
-					const user = this.orch.getConverters().get('users').convertToApp(req.user);
-
-					const action = {
-						type,
-						appId,
-						actionId,
-						triggerId,
-						payload,
-						user,
-					};
-
-					try {
-						const result = Promise.await(this.orch.triggerEvent('IUIKitInteractionHandler', action));
-
-						res.send(result);
-					} catch (e) {
-						res.status(500).send(e.message);
-					}
-					break;
-				}
-			}
-
-			// TODO: validate payloads per type
-		});
+		router.post('/:appId', appsRoutes(orch));
 	}
 }

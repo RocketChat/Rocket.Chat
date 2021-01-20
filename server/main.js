@@ -13,6 +13,7 @@ import './startup/initialData';
 import './startup/instance';
 import './startup/presence';
 import './startup/serverRunning';
+import './startup/coreApps';
 import './configuration/accounts_meld';
 import './methods/OEmbedCacheCleanup';
 import './methods/addAllUserToRoom';
