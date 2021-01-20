@@ -125,10 +125,8 @@ async function onEmailReceived(email: ParsedMail, inbox: string, department?: st
 
 	let room = LivechatRooms.findOneByVisitorTokenAndEmailThread(guest.token, thread, {});
 	if (room?.closedAt) {
-		console.log('passing here');
 		room = await QueueManager.unarchiveRoom(room);
 	}
-	// const room = LivechatRooms.findOneOpenByVisitorTokenAndEmailThread(guest.token, thread, {});
 
 	let msg = email.text;
 
