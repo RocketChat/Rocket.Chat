@@ -23,9 +23,9 @@ const installApp = async ({ id, name, version, permissionsGranted }) => {
 const actions = {
 	purchase: installApp,
 	install: installApp,
-	update: async ({ id, name, version, permissionsGranted }) => {
+	update: async ({ id, name, marketplaceVersion, permissionsGranted }) => {
 		try {
-			const { status } = await Apps.updateApp(id, version, permissionsGranted);
+			const { status } = await Apps.updateApp(id, marketplaceVersion, permissionsGranted);
 			warnStatusChange(name, status);
 		} catch (error) {
 			handleAPIError(error);
@@ -91,7 +91,6 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 		}
 
 		showAppPermissionsReviewModal();
-		return;
 	}, [setLoading, checkUserLoggedIn, action, confirmAction, setModal, app.id, app.purchaseType, cancelAction]);
 
 	return <Box {...props}>
