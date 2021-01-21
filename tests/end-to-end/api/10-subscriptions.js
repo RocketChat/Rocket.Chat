@@ -65,7 +65,7 @@ describe('[Subscriptions]', function() {
 		});
 	});
 
-	describe('[/subscriptions.read]', () => {
+	describe.only('[/subscriptions.read]', () => {
 		let testChannel;
 		it('create a channel', (done) => {
 			createRoom({ type: 'c', name: `channel.test.${ Date.now() }` })
@@ -132,6 +132,21 @@ describe('[Subscriptions]', function() {
 				.end(done);
 		});
 
+		it('should fail on two params with different ids', (done) => {
+			request.post(api('subscriptions.read'))
+				.set(credentials)
+				.send({
+					rid: testDM._id,
+					roomId: testChannel._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Params reference to different rooms, use only one param or both params with the same room id');
+				})
+				.end(done);
+		});
+
 		it('should fail on mark inexistent public channel as read', (done) => {
 			request.post(api('subscriptions.read'))
 				.set(credentials)
@@ -141,7 +156,7 @@ describe('[Subscriptions]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('error', 'This room does not exist [error-room-does-not-exist]');
 				})
 				.end(done);
 		});
@@ -155,7 +170,7 @@ describe('[Subscriptions]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('error', 'This room does not exist [error-room-does-not-exist]');
 				})
 				.end(done);
 		});
@@ -169,7 +184,7 @@ describe('[Subscriptions]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('error', 'This room does not exist [error-room-does-not-exist]');
 				})
 				.end(done);
 		});
@@ -183,7 +198,7 @@ describe('[Subscriptions]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('error', 'Match error: Expected string, got number');
 				})
 				.end(done);
 		});
@@ -195,7 +210,7 @@ describe('[Subscriptions]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('error', 'At least one of "rid" or "roomId" params is required');
 				})
 				.end(done);
 		});
