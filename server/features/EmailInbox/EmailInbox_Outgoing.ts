@@ -4,18 +4,35 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../app/callbacks/server';
-import Messages from '../../../app/models/server/models/Messages';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { IUser } from '../../../definition/IUser';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import Rooms from '../../../app/models/server/models/Rooms';
-import Uploads from '../../../app/models/server/models/Uploads';
+import { Messages, Rooms, Uploads, Users } from '../../../app/models/server';
 import { Inbox, inboxes } from './EmailInbox';
+import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
-function sendEmail(inbox: Inbox, mail: Mail.Options): void {
+const user: IUser = Users.findOneById('rocket.cat');
+
+const sendErrorReplyMessage = (error: string, options: any): void => {
+	if (!options?.rid || !options?.msgId) {
+		return;
+	}
+
+	const message = {
+		groupable: false,
+		msg: `@${ options.sender } something went wrong when replying email, sorry. **Error:**: ${ error }`,
+		_id: String(Date.now()),
+		rid: options.rid,
+		ts: new Date(),
+	};
+
+	sendMessage(user, message, { _id: options.rid });
+};
+
+function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): void {
 	inbox.smtp.sendMail({
 		from: inbox.config.senderInfo ? {
 			name: inbox.config.senderInfo,
@@ -24,6 +41,14 @@ function sendEmail(inbox: Inbox, mail: Mail.Options): void {
 		...mail,
 	}).then((info) => {
 		console.log('Message sent: %s', info.messageId);
+	}).catch((error) => {
+		console.log('Error sending Email reply: %s', error.message);
+
+		if (!options?.msgId) {
+			return;
+		}
+
+		sendErrorReplyMessage(error.message, options);
 	});
 }
 
@@ -43,7 +68,11 @@ slashCommands.add('sendEmailAttachment', (command: any, params: string) => {
 	const inbox = inboxes.get(room.email.inbox);
 
 	if (!inbox) {
-		return;
+		return sendErrorReplyMessage(`Email inbox ${ room.email.inbox } not found or disabled.`, {
+			msgId: message._id,
+			sender: message.u.username,
+			rid: room._id,
+		});
 	}
 
 	const file = Uploads.findOneById(message.file._id);
@@ -62,6 +91,11 @@ slashCommands.add('sendEmailAttachment', (command: any, params: string) => {
 			references: [
 				room.email.thread,
 			],
+		},
+		{
+			msgId: message._id,
+			sender: message.u.username,
+			rid: message.rid,
 		});
 	});
 
@@ -114,6 +148,16 @@ callbacks.add('beforeSaveMessage', function(message: any, room: any) {
 	const inbox = inboxes.get(room.email.inbox);
 
 	if (!inbox) {
+		sendErrorReplyMessage(`Email inbox ${ room.email.inbox } not found or disabled.`, {
+			msgId: message._id,
+			sender: message.u.username,
+			rid: room._id,
+		});
+
+		return message;
+	}
+
+	if (!inbox) {
 		return message;
 	}
 
@@ -132,6 +176,11 @@ callbacks.add('beforeSaveMessage', function(message: any, room: any) {
 		],
 		to: room.email.replyTo,
 		subject: room.email.subject,
+	},
+	{
+		msgId: message._id,
+		sender: message.u.username,
+		rid: room._id,
 	});
 
 	message.msg = match.groups.text;
@@ -177,7 +226,6 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 	}
 
 	console.log(`Sending testing email to ${ address }`);
-
 	sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
