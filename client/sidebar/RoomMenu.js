@@ -43,11 +43,13 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
+	const canLeaveUnleavable = usePermission('leave-not-cl');
 
 	const canLeave = (() => {
 		if (type === 'c' && !canLeaveChannel) { return false; }
 		if (type === 'p' && !canLeavePrivate) { return false; }
-		return !(((cl != null) && !cl) || ['d', 'l'].includes(type));
+		if (cl != null && !cl && !canLeaveUnleavable) { return false; }
+		return !['d', 'l'].includes(type);
 	})();
 
 	const handleLeave = useMutableCallback(() => {

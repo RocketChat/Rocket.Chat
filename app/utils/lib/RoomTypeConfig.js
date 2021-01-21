@@ -19,6 +19,7 @@ export const RoomSettingsEnum = {
 	READ_ONLY: 'readOnly',
 	REACT_WHEN_READ_ONLY: 'reactWhenReadOnly',
 	ARCHIVE_OR_UNARCHIVE: 'archiveOrUnarchive',
+	CAN_LEAVE_OR_UNLEAVABLE: 'canLeaveOrUnleavable',
 	JOIN_CODE: 'joinCode',
 	BROADCAST: 'broadcast',
 	SYSTEM_MESSAGES: 'systemMessages',
