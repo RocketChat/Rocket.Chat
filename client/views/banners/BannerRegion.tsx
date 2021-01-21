@@ -2,27 +2,45 @@ import React, { FC, useCallback } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import * as banners from '../../lib/banners';
-import GenericBanner from './GenericBanner';
+import LegacyBanner from './LegacyBanner';
+import UiKitBanner from './UiKitBanner';
 
 const BannerRegion: FC = () => {
 	const payload = useSubscription(banners.subscription);
 
 	const handleAction = useCallback(() => {
-		if (payload?.action) {
-			payload.action?.call(undefined);
+		if (!payload) {
+			return;
 		}
+
+		if (!banners.isLegacyPayload(payload)) {
+			return;
+		}
+
+		payload.action?.call(undefined);
 	}, [payload]);
 
 	const handleClose = useCallback(() => {
-		if (payload?.onClose) {
+		if (!payload) {
+			return;
+		}
+
+		if (banners.isLegacyPayload(payload)) {
 			payload.onClose?.call(undefined);
 		}
+
 		banners.close();
 	}, [payload]);
 
-	return <>
-		{payload && <GenericBanner config={payload} onAction={handleAction} onClose={handleClose} />}
-	</>;
+	if (!payload) {
+		return null;
+	}
+
+	if (banners.isLegacyPayload(payload)) {
+		return <LegacyBanner config={payload} onAction={handleAction} onClose={handleClose} />;
+	}
+
+	return <UiKitBanner payload={payload} onClose={handleClose} />;
 };
 
 export default BannerRegion;
