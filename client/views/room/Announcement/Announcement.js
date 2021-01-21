@@ -33,7 +33,11 @@ export const Announcement = ({ children, onClickOpen }) => {
 export default ({ announcement, announcementDetails }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
-	const handleClick = () => {
+	const handleClick = (e) => {
+		if (e.target.href) {
+			return;
+		}
+
 		if (window.getSelection().toString() !== '') {
 			return;
 		}
