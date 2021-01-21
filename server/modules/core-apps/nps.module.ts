@@ -4,6 +4,7 @@ import { Db } from 'mongodb';
 
 import { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
 import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
+import { INpsVoteStatus } from '../../../definition/INps';
 
 export class Nps implements IUiKitCoreApp {
 	appId = 'nps-core';
@@ -26,6 +27,7 @@ export class Nps implements IUiKitCoreApp {
 			},
 			user: {
 				_id: userId,
+				roles,
 			},
 		} = payload;
 
@@ -35,8 +37,11 @@ export class Nps implements IUiKitCoreApp {
 			ts: new Date(),
 			npsId,
 			identifier,
+			roles,
 			score,
 			comment,
+			status: INpsVoteStatus.NEW,
+			_updatedAt: new Date(),
 		});
 		if (!result) {
 			throw new Error('Error saving NPS vote');

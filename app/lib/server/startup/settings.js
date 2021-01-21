@@ -979,9 +979,14 @@ settings.addGroup('General', function() {
 			public: true,
 		});
 	});
-	return this.section('Stream_Cast', function() {
+	this.section('Stream_Cast', function() {
 		return this.add('Stream_Cast_Address', '', {
 			type: 'string',
+		});
+	});
+	this.section('NPS', function() {
+		this.add('NPS_opt_out', false, {
+			type: 'boolean',
 		});
 	});
 });
