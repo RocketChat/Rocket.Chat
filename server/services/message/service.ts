@@ -105,13 +105,13 @@ export class MessageService extends ServiceClass implements IMessageService {
 		}).toArray();
 	}
 
-	async customQuery(args: CustomQueryArgs): Promise<any[]> {
-		const result = await MessageEnterprise.customQuery(args);
+	async customQuery({ query, userId, queryOptions }: CustomQueryArgs): Promise<any[]> {
+		const result = await MessageEnterprise.customQuery({ query, userId, queryOptions });
 		if (result) {
 			return result;
 		}
 
-		return this.Messages.find(args.query, args.queryOptions).toArray();
+		return this.Messages.find(query, queryOptions).toArray();
 	}
 
 	async getUpdates({ rid, userId, timestamp, queryOptions }: getUpdatesArgs): Promise<any[] | undefined> {

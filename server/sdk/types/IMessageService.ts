@@ -83,7 +83,7 @@ export type getByIdArgs = {
 export interface IMessageService extends IServiceClass {
 	get(userId: string, options: MessageFilter): Promise<any[] | undefined>;
 	getDiscussions(options: DiscussionArgs): Promise<any[] | undefined>;
-	customQuery(args: CustomQueryArgs): Promise<any[] | undefined>;
+	customQuery({ query, userId, queryOptions }: CustomQueryArgs): Promise<any[] | undefined>;
 	getUpdates({ rid, timestamp, queryOptions }: getUpdatesArgs): Promise<any[] | undefined>;
 	getDeleted({ rid, userId, timestamp, query, queryOptions }: getDeletedArgs): Promise<any[] | undefined>;
 	getFiles({ rid, userId, excludePinned, ignoreDiscussion, ignoreThreads, oldest, latest, inclusive, fromUsers, queryOptions }: getFilesArgs): Promise<any[] | undefined>;

@@ -543,7 +543,7 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
-		const ourQuery = Object.assign({}, query, { rid: thread.rid });
+		const ourQuery = Object.assign({}, query, { rid: thread.rid, tmid });
 
 		const messages = Promise.await(Message.customQuery({
 			query: ourQuery,
@@ -599,12 +599,12 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
-		const threadQuery = Object.assign({}, query, tmid, { _updatedAt: { $gt: updatedSinceDate } });
+		const threadQuery = Object.assign({}, query, { tmid }, { _updatedAt: { $gt: updatedSinceDate } });
 
 		return API.v1.success({
 			messages: {
-				update: Promise.await(Message.customQuery(threadQuery, { fields, sort })),
-				remove: Promise.await(Message.getDeleted({ rid: thread.rid, timestamp: updatedSinceDate, query: { ...query, tmid }, queryOptions: { fields, sort } })),
+				update: Promise.await(Message.customQuery({ query: threadQuery, queryOptions: { fields, sort } })),
+				remove: Promise.await(Message.getDeleted({ rid: thread.rid, timestamp: updatedSinceDate, query: threadQuery, queryOptions: { fields, sort } })),
 			},
 		});
 	},
