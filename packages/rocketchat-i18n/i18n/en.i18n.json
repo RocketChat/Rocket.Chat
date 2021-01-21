@@ -1551,6 +1551,7 @@
   "error-invalid-param": "Invalid param",
   "error-invalid-params": "Invalid params",
   "error-invalid-permission": "Invalid permission",
+  "error-invalid-port-number": "Invalid port number",
   "error-invalid-priority": "Invalid priority",
   "error-invalid-redirectUri": "Invalid redirectUri",
   "error-invalid-role": "Invalid role",

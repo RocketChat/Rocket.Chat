@@ -30,8 +30,20 @@ API.v1.addRoute('email-inbox', { authRequired: true }, {
 			description: Match.Maybe(String),
 			senderInfo: Match.Maybe(String),
 			department: Match.Maybe(String),
-			smtp: Object,
-			imap: Object,
+			smtp: Match.ObjectIncluding({
+				password: String,
+				port: Number,
+				secure: Boolean,
+				server: String,
+				username: String,
+			}),
+			imap: Match.ObjectIncluding({
+				password: String,
+				port: Number,
+				secure: Boolean,
+				server: String,
+				username: String,
+			}),
 		});
 
 		const emailInboxParams = this.bodyParams;
@@ -51,7 +63,7 @@ API.v1.addRoute('email-inbox/:_id', { authRequired: true }, {
 		});
 
 		const { _id } = this.urlParams;
-		if (!_id) { throw new Error('error-invalid-params'); }
+		if (!_id) { throw new Error('error-invalid-param'); }
 		const emailInboxes = Promise.await(findOneEmailInbox({ userId: this.userId, _id }));
 
 		return API.v1.success(emailInboxes);
@@ -65,7 +77,7 @@ API.v1.addRoute('email-inbox/:_id', { authRequired: true }, {
 		});
 
 		const { _id } = this.urlParams;
-		if (!_id) { throw new Error('error-invalid-params'); }
+		if (!_id) { throw new Error('error-invalid-param'); }
 
 		const emailInboxes = EmailInbox.findOneById(_id);
 

@@ -41,9 +41,9 @@ export async function insertOneOrUpdateEmailInbox(userId, emailInboxParams) {
 		return EmailInbox.insertOne(emailInboxParams);
 	}
 
-	const emailInboxes = await findOneEmailInbox({ userId, id: _id });
+	const emailInbox = await findOneEmailInbox({ userId, id: _id });
 
-	if (!emailInboxes) {
+	if (!emailInbox) {
 		throw new Error('error-invalid-email-inbox');
 	}
 

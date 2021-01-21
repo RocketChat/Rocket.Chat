@@ -283,7 +283,7 @@ export default function EmailInboxForm({ id, data }) {
 						<Field>
 							<Field.Label>{t('Port')}*</Field.Label>
 							<Field.Row>
-								<TextInput value={smtpPort} onChange={handleSmtpPort} />
+								<TextInput type='number' value={smtpPort} onChange={handleSmtpPort} />
 							</Field.Row>
 						</Field>
 						<Field>
@@ -317,7 +317,7 @@ export default function EmailInboxForm({ id, data }) {
 						<Field>
 							<Field.Label>{t('Port')}*</Field.Label>
 							<Field.Row>
-								<TextInput value={imapPort} onChange={handleImapPort} />
+								<TextInput type='number' value={imapPort} onChange={handleImapPort} />
 							</Field.Row>
 						</Field>
 						<Field>

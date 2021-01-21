@@ -8,14 +8,14 @@ export interface IEmailInbox {
 	department?: string;
 	smtp: {
 		server: string;
-		port: string;
+		port: number;
 		username: string;
 		password: string;
 		secure: boolean;
 	};
 	imap: {
 		server: string;
-		port: string;
+		port: number;
 		username: string;
 		password: string;
 		secure: boolean;
