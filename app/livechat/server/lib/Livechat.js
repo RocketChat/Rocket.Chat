@@ -1055,6 +1055,36 @@ export const Livechat = {
 		return true;
 	},
 
+	getTranscript({ token, rid, user }) {
+		check(rid, String);
+
+		const room = LivechatRooms.findOneById(rid);
+
+		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1, token: 1, language: 1, username: 1, name: 1 } });
+
+		// allow to only user to send transcripts from their own chats
+		if (!room || room.t !== 'l' || !room.v || room.v.token !== token) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		}
+
+		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat_video_call'];
+		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } });
+
+		const response = [];
+		messages.forEach((message) => {
+			response.push({ sender: message.u._id === visitor._id ? 'customer' : 'agent', message: message.msg, timestamp: message.ts });
+		});
+
+		let type = 'user';
+		if (!user) {
+			user = Users.findOneById('rocket.cat', { fields: { _id: 1, username: 1, name: 1 } });
+			type = 'visitor';
+		}
+
+		Messages.createTranscriptHistoryWithRoomIdMessageAndUser(room._id, '', user, { requestData: { type, visitor, user } });
+		return response;
+	},
+
 	requestTranscript({ rid, email, subject, user }) {
 		check(rid, String);
 		check(email, String);
