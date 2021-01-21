@@ -10,8 +10,8 @@ type GenericBannerProps = {
 		icon?: string;
 		modifiers?: ('large' | 'danger')[];
 		timer?: number;
-		action: () => void;
-		onClose: () => void;
+		action?: () => void;
+		onClose?: () => void;
 	};
 	onAction: () => void;
 	onClose: () => void;

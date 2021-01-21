@@ -31,7 +31,7 @@ export const portalsSubscription = createPortalsSubscription();
 
 let rootNode;
 
-const mountRoot = async () => {
+export const mountRoot = async () => {
 	if (rootNode) {
 		return;
 	}
