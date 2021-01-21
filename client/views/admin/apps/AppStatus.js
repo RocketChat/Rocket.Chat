@@ -95,7 +95,7 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [setLoading, checkUserLoggedIn, action, confirmAction, setModal, app.id, app.purchaseType, cancelAction]);
+	}, [setLoading, checkUserLoggedIn, action, setModal, app.id, app.purchaseType, cancelAction, isAppPurchased, showAppPermissionsReviewModal]);
 
 	return <Box {...props}>
 		{button && <Button primary disabled={loading} invisible={!showStatus && !loading} minHeight='x40' onClick={handleClick}>

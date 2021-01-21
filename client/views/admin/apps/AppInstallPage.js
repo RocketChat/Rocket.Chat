@@ -14,6 +14,61 @@ import { useSetModal } from '../../../contexts/ModalContext';
 
 const placeholderUrl = 'https://rocket.chat/apps/package.zip';
 
+async function fileToBuffer(file) {
+	return new Promise((resolve, reject) => {
+		const fileReader = new FileReader();
+		fileReader.onload = (e) => resolve(e.target.result);
+		fileReader.onerror = (e) => reject(e);
+		fileReader.readAsArrayBuffer(file);
+	});
+}
+
+function unzipAppBuffer(zippedAppBuffer) {
+	return unzipSync(new Uint8Array(zippedAppBuffer));
+}
+
+function getAppManifest(unzippedAppBuffer) {
+	if (!unzippedAppBuffer['app.json']) {
+		throw new Error('No app.json file found in the zip');
+	}
+
+	try {
+		return JSON.parse(strFromU8(unzippedAppBuffer['app.json']));
+	} catch (e) {
+		throw new Error('Failed to parse app.json', e);
+	}
+}
+
+function getPermissionsFromManifest(manifest) {
+	if (!manifest.permissions) {
+		return [];
+	}
+
+	if (!Array.isArray(manifest.permissions)) {
+		throw new Error('The "permissions" property from app.json is invalid');
+	}
+
+	return manifest.permissions;
+}
+
+async function getPermissionsFromZippedApp(zippedApp, isFromFileInput = true) {
+	let uint8buffer;
+	try {
+		if (isFromFileInput) {
+			uint8buffer = await fileToBuffer(zippedApp);
+		} else {
+			uint8buffer = Uint8Array.from(zippedApp);
+		}
+		const unzippedBuffer = unzipAppBuffer(uint8buffer);
+		const manifest = getAppManifest(unzippedBuffer);
+		const permissions = getPermissionsFromManifest(manifest);
+		return permissions;
+	} catch (e) {
+		console.error(e);
+		throw e;
+	}
+}
+
 function AppInstallPage() {
 	const t = useTranslation();
 
@@ -126,61 +181,6 @@ function AppInstallPage() {
 			</FieldGroup>
 		</Page.ScrollableContent>
 	</Page>;
-}
-
-async function fileToBuffer(file) {
-	return new Promise((resolve, reject) => {
-		const fileReader = new FileReader();
-		fileReader.onload = (e) => resolve(e.target.result);
-		fileReader.onerror = (e) => reject(e);
-		fileReader.readAsArrayBuffer(file);
-	})
-}
-
-function unzipAppBuffer(zippedAppBuffer) {
-	return unzipSync(new Uint8Array(zippedAppBuffer));
-}
-
-function getAppManifest(unzippedAppBuffer) {
-	if (!unzippedAppBuffer['app.json']) {
-		throw new Error('No app.json file found in the zip');
-	}
-
-	try {
-		return JSON.parse(strFromU8(unzippedAppBuffer['app.json']));
-	} catch (e) {
-		throw new Error('Failed to parse app.json', e);
-	}
-}
-
-function getPermissionsFromManifest(manifest) {
-	if (!manifest.permissions) {
-		return [];
-	}
-
-	if (!Array.isArray(manifest.permissions)) {
-		throw new Error('The "permissions" property from app.json is invalid');
-	}
-
-	return manifest.permissions;
-}
-
-async function getPermissionsFromZippedApp(zippedApp, isFromFileInput = true) {
-	let uint8buffer;
-	try{
-		if (isFromFileInput) {
-			uint8buffer = await fileToBuffer(zippedApp);
-		} else {
-			uint8buffer = Uint8Array.from(zippedApp);
-		}
-		const unzippedBuffer = unzipAppBuffer(uint8buffer);
-		const manifest = getAppManifest(unzippedBuffer);
-		const permissions = getPermissionsFromManifest(manifest);
-		return permissions;
-	} catch (e) {
-		console.error(e);
-		throw e;
-	}
 }
 
 export default AppInstallPage;

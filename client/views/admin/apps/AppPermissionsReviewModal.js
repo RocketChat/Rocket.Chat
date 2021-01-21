@@ -34,14 +34,13 @@ const AppPermissionsReviewModal = (props) => {
 		<Modal.Content fontScale='p1'>
 			<ul>
 				{
-					props.appPermissions.length ?
-						props.appPermissions.map((permission) =>
-						<li key={permission.name}>
-							<b>{ t(`Apps_Permissions_${ permission.name.replace('.', '_') }`) }</b>
-							{ permission.required && <span style={{ color: 'red' }}> ({ t('Required') })</span> }
-						</li>
-						) :
-						t('Apps_Permissions_No_Permissions_Required')
+					props.appPermissions.length
+						?	props.appPermissions.map((permission) =>
+							<li key={permission.name}>
+								<b>{ t(`Apps_Permissions_${ permission.name.replace('.', '_') }`) }</b>
+								{ permission.required && <span style={{ color: 'red' }}> ({ t('Required') })</span> }
+							</li>)
+						: t('Apps_Permissions_No_Permissions_Required')
 				}
 			</ul>
 		</Modal.Content>

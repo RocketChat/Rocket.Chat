@@ -26,7 +26,7 @@ export class AppsRestApi {
 	_handleFormField(request, formField, isFile = true) {
 		const busboy = new Busboy({ headers: request.headers });
 		return Meteor.wrapAsync((callback) => {
-			let receivedField = {};
+			const receivedField = {};
 			if (isFile) {
 				busboy.on('file', Meteor.bindEnvironment((fieldname, file) => {
 					if (fieldname !== formField) {
@@ -41,7 +41,7 @@ export class AppsRestApi {
 					file.on('end', Meteor.bindEnvironment(() => callback(undefined, Buffer.concat(fileData))));
 				}));
 			} else {
-				busboy.on('field', (fieldname, val) => receivedField[fieldname] = val);
+				busboy.on('field', (fieldname, val) => { receivedField[fieldname] = val; });
 				busboy.on('finish', Meteor.bindEnvironment(() => callback(undefined, receivedField)));
 			}
 			request.pipe(busboy);
@@ -197,7 +197,9 @@ export class AppsRestApi {
 					buff = result.content;
 
 					return API.v1.success({ buff });
-				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
+				}
+
+				if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
