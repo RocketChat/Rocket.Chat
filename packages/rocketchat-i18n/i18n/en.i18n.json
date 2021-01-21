@@ -1584,6 +1584,7 @@
   "error-returning-inquiry": "Error returning inquiry to the queue",
   "error-role-in-use": "Cannot delete role because it's in use",
   "error-role-name-required": "Role name is required",
+  "error-room-does-not-exist": "This room does not exist",
   "error-room-is-not-closed": "Room is not closed",
   "error-selected-agent-room-agent-are-same": "The selected agent and the room agent are the same",
   "error-starring-message": "Message could not be stared",

@@ -1399,6 +1399,7 @@
   "error-returning-inquiry": "Erro ao retornar a inquiry para a fila",
   "error-role-in-use": "Não é possível remover o papel pois ele está em uso",
   "error-role-name-required": "Nome do papel é obrigatório",
+  "error-room-does-not-exist": "Essa sala não existe",
   "error-room-is-not-closed": "Sala não está fechada",
   "error-selected-agent-room-agent-are-same": "O agente selecionado e o agente da sala são iguais",
   "error-tags-must-be-assigned-before-closing-chat": "É obrigatório atribuir tag(s) antes de encerrar a conversa",
