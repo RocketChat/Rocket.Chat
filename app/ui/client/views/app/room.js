@@ -27,7 +27,6 @@ import { callbacks } from '../../../../callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
-import { Markdown } from '../../../../markdown/client';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 
@@ -258,8 +257,7 @@ Template.roomOld.helpers({
 	},
 
 	announcement() {
-		const announcement = Template.instance().state.get('announcement');
-		return announcement ? Markdown.parse(announcement).replace(/^<p>|<\/p>$/, '') : undefined;
+		return Template.instance().state.get('announcement');
 	},
 
 	announcementDetails() {
