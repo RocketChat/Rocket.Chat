@@ -6,7 +6,7 @@ import LegacyBanner from './LegacyBanner';
 import UiKitBanner from './UiKitBanner';
 
 const BannerRegion: FC = () => {
-	const payload = useSubscription(banners.subscription);
+	const payload = useSubscription(banners.firstSubscription);
 
 	const handleAction = useCallback(() => {
 		if (!payload) {
