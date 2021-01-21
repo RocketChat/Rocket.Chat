@@ -301,19 +301,23 @@ export class MessagesRaw extends BaseRaw {
 			'file._id': { $exists: true },
 		};
 
-		if (oldest) {
-			if (inclusive) {
-				query.ts.$gte = oldest;
-			} else {
-				query.ts.$gt = oldest;
-			}
-		}
+		if (oldest || latest) {
+			query.ts = {};
 
-		if (latest) {
-			if (inclusive) {
-				query.ts.$lte = latest;
-			} else {
-				query.ts.$lt = latest;
+			if (oldest) {
+				if (inclusive) {
+					query.ts.$gte = oldest;
+				} else {
+					query.ts.$gt = oldest;
+				}
+			}
+
+			if (latest) {
+				if (inclusive) {
+					query.ts.$lte = latest;
+				} else {
+					query.ts.$lt = latest;
+				}
 			}
 		}
 

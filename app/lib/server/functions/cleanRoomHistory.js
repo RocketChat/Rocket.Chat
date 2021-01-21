@@ -6,7 +6,7 @@ import { Messages, Rooms, Subscriptions } from '../../../models/server';
 import { Notifications } from '../../../notifications/server';
 import { Message } from '../../../../server/sdk';
 
-export function cleanRoomHistory({ rid, latest, oldest, inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
+export function cleanRoomHistory({ rid, userId, latest, oldest, inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
@@ -18,6 +18,7 @@ export function cleanRoomHistory({ rid, latest, oldest, inclusive = true, limit 
 
 	const files = Promise.await(Message.getFiles({
 		rid,
+		userId,
 		excludePinned,
 		ignoreDiscussion,
 		oldest,
@@ -47,6 +48,7 @@ export function cleanRoomHistory({ rid, latest, oldest, inclusive = true, limit 
 	if (!ignoreDiscussion) {
 		Promise.await(Message.getDiscussions({
 			rid,
+			userId,
 			excludePinned,
 			latest,
 			oldest,
@@ -60,7 +62,7 @@ export function cleanRoomHistory({ rid, latest, oldest, inclusive = true, limit 
 
 	if (!ignoreThreads) {
 		const threads = new Set();
-		Promise.await(Message.getThreadsByRoomId({ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers }, { fields: { _id: 1 } }))
+		Promise.await(Message.getThreadsByRoomId({ rid, userId, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers }, { fields: { _id: 1 } }))
 			.map(({ _id }) => threads.add(_id));
 
 		if (threads.size > 0) {
