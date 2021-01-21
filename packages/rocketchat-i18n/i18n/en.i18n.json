@@ -1548,6 +1548,7 @@
   "error-invalid-method": "Invalid method",
   "error-invalid-name": "Invalid name",
   "error-invalid-password": "Invalid password",
+  "error-invalid-param": "Invalid param",
   "error-invalid-params": "Invalid params",
   "error-invalid-permission": "Invalid permission",
   "error-invalid-priority": "Invalid priority",
