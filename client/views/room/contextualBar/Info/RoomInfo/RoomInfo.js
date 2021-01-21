@@ -153,7 +153,7 @@ export default ({
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
-	const { type, fname, broadcast, archived, joined = true } = room; // TODO implement joined
+	const { type, name, fname = name, broadcast, archived, joined = true } = room; // TODO implement joined
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
