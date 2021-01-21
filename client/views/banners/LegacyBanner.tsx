@@ -1,23 +1,15 @@
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import React, { FC, useEffect } from 'react';
 
-type GenericBannerProps = {
-	config: {
-		closable?: boolean;
-		title?: string;
-		text?: string;
-		html?: string;
-		icon?: string;
-		modifiers?: ('large' | 'danger')[];
-		timer?: number;
-		action?: () => void;
-		onClose?: () => void;
-	};
+import { LegacyBannerPayload } from '../../lib/banners';
+
+type LegacyBannerProps = {
+	config: LegacyBannerPayload;
 	onAction: () => void;
 	onClose: () => void;
 };
 
-const GenericBanner: FC<GenericBannerProps> = ({ config, onAction, onClose }) => {
+const LegacyBanner: FC<LegacyBannerProps> = ({ config, onAction, onClose }) => {
 	const {
 		closable = true,
 		title,
@@ -59,4 +51,4 @@ const GenericBanner: FC<GenericBannerProps> = ({ config, onAction, onClose }) =>
 	</Banner>;
 };
 
-export default GenericBanner;
+export default LegacyBanner;
