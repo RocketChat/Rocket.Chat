@@ -1260,6 +1260,7 @@
   "Email_Placeholder": "Por favor, indique o seu endereço de e-mail...",
   "Email_Placeholder_any": "Digite endereços de e-mail ...",
   "email_plain_text_only": "Enviar emails apenas em texto puro",
+  "Email_sent": "Email enviado",
   "email_style_description": "Evite seletores aninhados",
   "email_style_label": "Estilo do Email",
   "Email_subject": "Assunto",

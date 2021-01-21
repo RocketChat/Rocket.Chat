@@ -5,8 +5,7 @@ import { ParsedMail, Attachment } from 'mailparser';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Livechat } from '../../../app/livechat/server/lib/Livechat';
-import LivechatVisitors from '../../../app/models/server/models/LivechatVisitors';
-import LivechatRooms from '../../../app/models/server/models/LivechatRooms';
+import { LivechatRooms, LivechatVisitors, Messages } from '../../../app/models/server';
 import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 
@@ -121,20 +120,6 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	}
 
 	const rid = room?._id ?? Random.id();
-
-	const attachments = [];
-	for await (const attachment of email.attachments) {
-		if (attachment.type !== 'attachment') {
-			continue;
-		}
-
-		try {
-			attachments.push(await uploadAttachment(attachment, rid, guest.token));
-		} catch (e) {
-			console.error('Error uploading attachment from email', e);
-		}
-	}
-
 	const msgId = Random.id();
 
 	Livechat.sendMessage({
@@ -144,7 +129,6 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			groupable: false,
 			msg,
 			attachments: [
-				...attachments,
 				{
 					actions: [{
 						type: 'button',
@@ -184,6 +168,31 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			},
 		},
 		agent: undefined,
+	}).then(async () => {
+		if (!email.attachments.length) {
+			return;
+		}
+
+		const attachments = [];
+		for await (const attachment of email.attachments) {
+			if (attachment.type !== 'attachment') {
+				continue;
+			}
+
+			try {
+				attachments.push(await uploadAttachment(attachment, rid, guest.token));
+			} catch (e) {
+				console.error('Error uploading attachment from email', e);
+			}
+		}
+
+		Messages.update({ _id: msgId }, {
+			$addToSet: {
+				attachments: {
+					$each: attachments,
+				},
+			},
+		});
 	}).catch((error) => {
 		console.log('Error receiving Email: %s', error.message);
 	});
