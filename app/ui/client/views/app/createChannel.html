@@ -51,6 +51,21 @@
 					{{/if}}
 					<div class="rc-switch">
 						<label class="rc-switch__label">
+							<input type="checkbox" class="rc-switch__input" name="hideHistory" checked={{hideHistory}}>
+							<span class="rc-switch__button">
+							<span class="rc-switch__button-inside"></span>
+						</span>
+							<span class="rc-switch__text">
+								{{_"Hide_history_from_new_members"}}
+							</span>
+						</label>
+						<span class="rc-switch__description">
+							{{hideHistoryDescription}}
+						</span>
+					</div>
+
+					<div class="rc-switch">
+						<label class="rc-switch__label">
 							<input type="checkbox" class="rc-switch__input" name="broadcast">
 							<span class="rc-switch__button">
 							<span class="rc-switch__button-inside"></span>
