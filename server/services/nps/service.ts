@@ -64,15 +64,7 @@ export class NPSService extends ServiceClass implements INPSService {
 			return;
 		}
 
-		const query = {
-			npsId: nps._id,
-			status: INpsVoteStatus.NEW,
-		};
-		const votes = await this.NpsVote
-			.find(query)
-			.sort({ ts: 1 })
-			.limit(1000)
-			.toArray();
+		const votes = await this.NpsVote.findNotSentByNpsId(nps._id).toArray();
 
 		const sending = await Promise.all(votes.map(async (vote) => this.NpsVote.col.findOneAndUpdate({
 			_id: vote._id,

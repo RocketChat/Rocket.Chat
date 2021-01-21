@@ -1,9 +1,21 @@
-import { UpdateWriteOpResult } from 'mongodb';
+import { UpdateWriteOpResult, Collection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { INps, NPSStatus } from '../../../../definition/INps';
 
-export class NpsRaw extends BaseRaw<INps> {
+type T = INps;
+export class NpsRaw extends BaseRaw<T> {
+	constructor(
+		public readonly col: Collection<T>,
+		public readonly trash?: Collection<T>,
+	) {
+		super(col, trash);
+
+		this.col.createIndexes([
+			{ key: { expireAt: 1, status: 1 } },
+		]);
+	}
+
 	// get expired surveys still in progress
 	async getOpenExpiredAndStartSending(): Promise<INps | undefined> {
 		const today = new Date();
