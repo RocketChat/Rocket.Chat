@@ -27,7 +27,7 @@ export const Announcement = ({ children, onClickOpen }) => {
 			color: ${ colors.b800 };
 		}`;
 
-	return <Box onClick={onClickOpen} pi='x24' alignItems='center' display='flex' fontScale='p2' textAlign='center' className={announcementBar}><Box withTruncatedText w='none'>{children}</Box></Box>;
+	return <Box onClick={onClickOpen} height='x40' pi='x24' alignItems='center' display='flex' fontScale='p2' textAlign='center' className={announcementBar}><Box withTruncatedText w='none'>{children}</Box></Box>;
 };
 
 export default ({ announcement, announcementDetails }) => {
