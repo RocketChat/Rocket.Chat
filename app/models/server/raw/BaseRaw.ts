@@ -9,10 +9,8 @@ import {
 	ObjectID,
 	ObjectId,
 	OptionalId,
-	UpdateManyOptions,
 	UpdateOneOptions,
 	UpdateQuery,
-	UpdateWriteOpResult,
 	WithId,
 	WriteOpResult,
 } from 'mongodb';
@@ -103,14 +101,6 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 
 	update(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<WriteOpResult> {
 		return this.col.update(filter, update, options);
-	}
-
-	updateOne(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<UpdateWriteOpResult> {
-		return this.col.updateOne(filter, update, options);
-	}
-
-	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
-		return this.col.updateMany(filter, update, options);
 	}
 
 	insertOne(doc: ModelOptionalId<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {

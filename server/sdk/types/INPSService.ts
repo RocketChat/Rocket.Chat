@@ -7,8 +7,15 @@ export type NPSVotePayload = {
 	score: number;
 	comment: string;
 };
+
+export type NPSCreatePayload = {
+	npsId: string;
+	startAt: Date;
+	expireAt: Date;
+	createdBy: Pick<IUser, '_id' | 'username'>;
+};
 export interface INPSService {
-	create(nps: { npsId: string; startAt: Date; expireAt: Date; createdBy: Pick<IUser, '_id' | 'username'> }): Promise<boolean>;
+	create(nps: NPSCreatePayload): Promise<boolean>;
 	vote(vote: NPSVotePayload): Promise<void>;
 	sendResults(): Promise<void>;
 }

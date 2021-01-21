@@ -6,8 +6,7 @@ import { NpsRaw } from '../../../app/models/server/raw/Nps';
 import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { NPSStatus, INpsVoteStatus } from '../../../definition/INps';
-import { IUser } from '../../../definition/IUser';
-import { INPSService, NPSVotePayload } from '../../sdk/types/INPSService';
+import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 
 export class NPSService extends ServiceClass implements INPSService {
@@ -27,7 +26,7 @@ export class NPSService extends ServiceClass implements INPSService {
 		this.Settings = new SettingsRaw(db.collection('rocketchat_settings'));
 	}
 
-	async create(nps: { npsId: string; startAt: Date; expireAt: Date; createdBy: Pick<IUser, '_id' | 'username'> }): Promise<boolean> {
+	async create(nps: NPSCreatePayload): Promise<boolean> {
 		const optOut = await this.Settings.getValueById('NPS_opt_out');
 		if (optOut) {
 			throw new Error('Server opted-out for NPS surveys');
@@ -40,23 +39,13 @@ export class NPSService extends ServiceClass implements INPSService {
 			createdBy,
 		} = nps;
 
-		const { result } = await this.Nps.updateOne({
+		const { result } = await this.Nps.save({
 			_id: npsId,
-		}, {
-			$set: {
-				startAt,
-				_updatedAt: new Date(),
-			},
-			$setOnInsert: {
-				expireAt,
-				createdBy,
-				createdAt: new Date(),
-				status: NPSStatus.OPEN,
-			},
-		}, {
-			upsert: true,
+			startAt,
+			expireAt,
+			createdBy,
+			status: NPSStatus.OPEN,
 		});
-
 		if (!result) {
 			throw new Error('Error creating NPS');
 		}
