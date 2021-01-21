@@ -64,7 +64,7 @@ API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 		}
 
 		if (rid && roomId && (rid !== roomId)) {
-			return API.v1.failure('Params "rid" and "roomId" reference to different rooms, use only one param or both params with the same room id');
+			return API.v1.failure('Params reference to different rooms, use only one param or both params with the same room id');
 		}
 
 		let finalRoomId = '';
