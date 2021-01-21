@@ -82,7 +82,7 @@ const UserCard = forwardRef(({
 		{ customStatus && <Info>{customStatus}</Info> }
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
-		{bio!==undefined ? bio && <Info withTruncatedText={false} style={clampStyle} height='x60'><MarkdownText content={bio}/></Info> : <Info withTruncatedText={false} style={clampStyle} height='x60'>{bioStructure}</Info>}
+		{bio !== undefined ? bio && <Info withTruncatedText={false} style={clampStyle} height='x60'><MarkdownText content={bio}/></Info> : <Info withTruncatedText={false} style={clampStyle} height='x60'>{bioStructure}</Info>}
 		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
 	{onClose && <Box><ActionButton ghost icon='cross' onClick={onClose}/></Box>}
