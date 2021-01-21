@@ -41,13 +41,13 @@ const initialValues = {
 	smtpPort: '',
 	smtpUsername: '',
 	smtpPassword: '',
-	smtpSslTls: false,
+	smtpSecure: false,
 	// IMAP
 	imapServer: '',
 	imapPort: '',
 	imapUsername: '',
 	imapPassword: '',
-	imapSslTls: false,
+	imapSecure: false,
 };
 
 const getInitialValues = (data) => {
@@ -78,13 +78,13 @@ const getInitialValues = (data) => {
 		smtpPort: smtp.port ?? '',
 		smtpUsername: smtp.username ?? '',
 		smtpPassword: smtp.password ?? '',
-		smtpSslTls: smtp.sslTls ?? false,
+		smtpSecure: smtp.secure ?? false,
 		// IMAP
 		imapServer: imap.server ?? '',
 		imapPort: imap.port ?? '',
 		imapUsername: imap.username ?? '',
 		imapPassword: imap.password ?? '',
-		imapSslTls: imap.sslTls ?? false,
+		imapSecure: imap.secure ?? false,
 	};
 };
 
@@ -122,13 +122,13 @@ export default function EmailInboxForm({ id, data }) {
 		handleSmtpPort,
 		handleSmtpUsername,
 		handleSmtpPassword,
-		handleSmtpSslTls,
+		handleSmtpSecure,
 		// IMAP
 		handleImapServer,
 		handleImapPort,
 		handleImapUsername,
 		handleImapPassword,
-		handleImapSslTls,
+		handleImapSecure,
 	} = handlers;
 	const {
 		active,
@@ -142,13 +142,13 @@ export default function EmailInboxForm({ id, data }) {
 		smtpPort,
 		smtpUsername,
 		smtpPassword,
-		smtpSslTls,
+		smtpSecure,
 		// IMAP
 		imapServer,
 		imapPort,
 		imapUsername,
 		imapPassword,
-		imapSslTls,
+		imapSecure,
 	} = values;
 
 	const router = useRoute('admin-email-inboxes');
@@ -192,8 +192,8 @@ export default function EmailInboxForm({ id, data }) {
 	});
 
 	const handleSave = useMutableCallback(async () => {
-		const smtp = { server: smtpServer, port: smtpPort, username: smtpUsername, password: smtpPassword, sslTls: smtpSslTls };
-		const imap = { server: imapServer, port: imapPort, username: imapUsername, password: imapPassword, sslTls: imapSslTls };
+		const smtp = { server: smtpServer, port: smtpPort, username: smtpUsername, password: smtpPassword, secure: smtpSecure };
+		const imap = { server: imapServer, port: imapPort, username: imapUsername, password: imapPassword, secure: imapSecure };
 		const payload = { active, name, email, description, senderInfo, department, smtp, imap };
 		if (id) {
 			payload._id = id;
@@ -301,7 +301,7 @@ export default function EmailInboxForm({ id, data }) {
 						<Field>
 							<Field.Label display='flex' justifyContent='space-between' w='full'>
 								{t('Connect_SSL_TLS')}
-								<ToggleSwitch checked={smtpSslTls} onChange={handleSmtpSslTls}/>
+								<ToggleSwitch checked={smtpSecure} onChange={handleSmtpSecure}/>
 							</Field.Label>
 						</Field>
 					</FieldGroup>
@@ -335,7 +335,7 @@ export default function EmailInboxForm({ id, data }) {
 						<Field>
 							<Field.Label display='flex' justifyContent='space-between' w='full'>
 								{t('Connect_SSL_TLS')}
-								<ToggleSwitch checked={imapSslTls} onChange={handleImapSslTls} />
+								<ToggleSwitch checked={imapSecure} onChange={handleImapSecure} />
 							</Field.Label>
 						</Field>
 					</FieldGroup>

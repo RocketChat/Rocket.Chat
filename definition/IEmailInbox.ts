@@ -8,22 +8,22 @@ export interface IEmailInbox {
 	department?: string;
 	smtp: {
 		server: string;
-		port: string; // TODO: Check if port should be string
+		port: string;
 		username: string;
 		password: string;
-		sslTls: boolean; // TODO: Rename to ssl only
+		secure: boolean;
 	};
 	imap: {
 		server: string;
 		port: string;
 		username: string;
 		password: string;
-		sslTls: boolean; // TODO: Rename to ssl only
+		secure: boolean;
 	};
 	_createdAt: Date;
 	_createdBy: {
 		_id: string;
-		username: string; // TODO: This will not be updated dynamically
+		username: string;
 	};
 	_updatedAt: Date;
 }
