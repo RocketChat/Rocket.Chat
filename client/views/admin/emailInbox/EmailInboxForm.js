@@ -192,8 +192,8 @@ export default function EmailInboxForm({ id, data }) {
 	});
 
 	const handleSave = useMutableCallback(async () => {
-		const smtp = { server: smtpServer, port: smtpPort, username: smtpUsername, password: smtpPassword, secure: smtpSecure };
-		const imap = { server: imapServer, port: imapPort, username: imapUsername, password: imapPassword, secure: imapSecure };
+		const smtp = { server: smtpServer, port: parseInt(smtpPort), username: smtpUsername, password: smtpPassword, secure: smtpSecure };
+		const imap = { server: imapServer, port: parseInt(imapPort), username: imapUsername, password: imapPassword, secure: imapSecure };
 		const payload = { active, name, email, description, senderInfo, department, smtp, imap };
 		if (id) {
 			payload._id = id;

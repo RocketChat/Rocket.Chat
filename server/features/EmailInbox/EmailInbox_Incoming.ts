@@ -184,5 +184,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			},
 		},
 		agent: undefined,
+	}).catch((error) => {
+		console.log('Error receiving Email: %s', error.message);
 	});
 }
