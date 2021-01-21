@@ -1,11 +1,13 @@
+import { createHash } from 'crypto';
+
 import { Db } from 'mongodb';
 
 import { NpsRaw } from '../../../app/models/server/raw/Nps';
 import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
-import { INpsStatus, INpsVoteStatus } from '../../../definition/INps';
+import { NPSStatus, INpsVoteStatus } from '../../../definition/INps';
 import { IUser } from '../../../definition/IUser';
-import { INPSService } from '../../sdk/types/INPSService';
+import { INPSService, NPSVotePayload } from '../../sdk/types/INPSService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 
 export class NPSService extends ServiceClass implements INPSService {
@@ -49,7 +51,7 @@ export class NPSService extends ServiceClass implements INPSService {
 				expireAt,
 				createdBy,
 				createdAt: new Date(),
-				status: INpsStatus.NEW,
+				status: NPSStatus.OPEN,
 			},
 		}, {
 			upsert: true,
@@ -62,18 +64,19 @@ export class NPSService extends ServiceClass implements INPSService {
 		return true;
 	}
 
-	async sendResults(npsId: string): Promise<boolean> {
-		await this.Nps.updateOne({
-			_id: npsId,
-			status: INpsStatus.IN_PROGRESS,
-		}, {
-			$set: {
-				status: INpsStatus.SENDING,
-			},
-		});
+	async sendResults(): Promise<void> {
+		const optOut = await this.Settings.getValueById('NPS_opt_out');
+		if (optOut) {
+			return;
+		}
+
+		const nps = await this.Nps.getOpenExpiredAndStartSending();
+		if (!nps) {
+			return;
+		}
 
 		const query = {
-			npsId,
+			npsId: nps._id,
 			status: INpsVoteStatus.NEW,
 		};
 		const votes = await this.NpsVote
@@ -95,8 +98,54 @@ export class NPSService extends ServiceClass implements INPSService {
 			votes: sending.filter(Boolean),
 		};
 
+		// TODO send to cloud
 		console.log('payload', payload);
+	}
 
-		return true;
+	async vote({
+		userId,
+		npsId,
+		roles,
+		score,
+		comment,
+	}: NPSVotePayload): Promise<void> {
+		const optOut = await this.Settings.getValueById('NPS_opt_out');
+		if (optOut) {
+			return;
+		}
+
+		const nps = await this.Nps.findOneById(npsId, { projection: { status: 1, startAt: 1, expireAt: 1 } });
+		if (!nps) {
+			return;
+		}
+
+		if (nps.status !== NPSStatus.OPEN) {
+			throw new Error('NPS not open for votes');
+		}
+
+		const today = new Date();
+		if (today > nps.expireAt) {
+			throw new Error('NPS expired');
+		}
+
+		if (today < nps.startAt) {
+			throw new Error('NPS survey not started');
+		}
+
+		const identifier = createHash('sha256').update(`${ userId }${ npsId }`).digest('hex');
+
+		const result = await this.NpsVote.insertOne({
+			ts: new Date(),
+			npsId,
+			identifier,
+			roles,
+			score,
+			comment,
+			status: INpsVoteStatus.NEW,
+			_updatedAt: new Date(),
+		});
+		if (!result) {
+			throw new Error('Error saving NPS vote');
+		}
 	}
 }

@@ -1,9 +1,8 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IUser } from './IUser';
 
-export enum INpsStatus {
-	NEW = 'new',
-	IN_PROGRESS = 'in-progress',
+export enum NPSStatus {
+	OPEN = 'open',
 	SENDING = 'sending',
 	SENT = 'sent',
 }
@@ -13,7 +12,7 @@ export interface INps extends IRocketChatRecord {
 	expireAt: Date; // date when banner should not be shown anymore
 	createdBy: Pick<IUser, '_id' | 'username'>;
 	createdAt: Date;
-	status: INpsStatus;
+	status: NPSStatus;
 }
 
 export enum INpsVoteStatus {

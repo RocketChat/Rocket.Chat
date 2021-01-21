@@ -1,19 +1,8 @@
-import { createHash } from 'crypto';
-
-import { Db } from 'mongodb';
-
 import { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
-import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
-import { INpsVoteStatus } from '../../../definition/INps';
+import { NPS } from '../../sdk';
 
 export class Nps implements IUiKitCoreApp {
 	appId = 'nps-core';
-
-	private NpsModel: NpsVoteRaw;
-
-	constructor(private db: Db) {
-		this.NpsModel = new NpsVoteRaw(this.db.collection('rocketchat_nps_vote'));
-	}
 
 	async blockAction(payload: any): Promise<any> {
 		console.log('blockAction ->', payload);
@@ -31,21 +20,13 @@ export class Nps implements IUiKitCoreApp {
 			},
 		} = payload;
 
-		const identifier = createHash('sha256').update(userId).digest('hex');
-
-		const result = await this.NpsModel.insertOne({
-			ts: new Date(),
+		await NPS.vote({
 			npsId,
-			identifier,
+			userId,
+			comment,
 			roles,
 			score,
-			comment,
-			status: INpsVoteStatus.NEW,
-			_updatedAt: new Date(),
 		});
-		if (!result) {
-			throw new Error('Error saving NPS vote');
-		}
 
 		return true;
 	}
