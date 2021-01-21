@@ -61,6 +61,10 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 			setPurchased(true);
 		}
 
+		if (!Array.isArray(app.permissions) || !app.permissions.length) {
+			return confirmAction();
+		}
+
 		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} cancel={cancelAction} confirm={confirmAction} />);
 	};
 
