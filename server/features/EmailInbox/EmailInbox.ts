@@ -33,7 +33,7 @@ export async function configureEmailInboxes(): Promise<void> {
 			password: emailInboxRecord.imap.password,
 			user: emailInboxRecord.imap.username,
 			host: emailInboxRecord.imap.server,
-			port: parseInt(emailInboxRecord.imap.port),
+			port: emailInboxRecord.imap.port,
 			tls: emailInboxRecord.imap.secure,
 			tlsOptions: {
 				rejectUnauthorized: false,
@@ -52,7 +52,7 @@ export async function configureEmailInboxes(): Promise<void> {
 
 		const smtp = nodemailer.createTransport({
 			host: emailInboxRecord.smtp.server,
-			port: parseInt(emailInboxRecord.smtp.port),
+			port: emailInboxRecord.smtp.port,
 			secure: emailInboxRecord.smtp.secure,
 			auth: {
 				user: emailInboxRecord.smtp.username,
