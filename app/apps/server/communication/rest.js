@@ -23,23 +23,27 @@ export class AppsRestApi {
 		this.loadAPI();
 	}
 
-	_handleFile(request, fileField) {
+	_handleFormField(request, formField, isFile = true) {
 		const busboy = new Busboy({ headers: request.headers });
-
 		return Meteor.wrapAsync((callback) => {
-			busboy.on('file', Meteor.bindEnvironment((fieldname, file) => {
-				if (fieldname !== fileField) {
-					return callback(new Meteor.Error('invalid-field', `Expected the field "${ fileField }" but got "${ fieldname }" instead.`));
-				}
+			let receivedField = {};
+			if (isFile) {
+				busboy.on('file', Meteor.bindEnvironment((fieldname, file) => {
+					if (fieldname !== formField) {
+						return callback(new Meteor.Error('invalid-field', `Expected the field "${ formField }" but got "${ fieldname }" instead.`));
+					}
 
-				const fileData = [];
-				file.on('data', Meteor.bindEnvironment((data) => {
-					fileData.push(data);
+					const fileData = [];
+					file.on('data', Meteor.bindEnvironment((data) => {
+						fileData.push(data);
+					}));
+
+					file.on('end', Meteor.bindEnvironment(() => callback(undefined, Buffer.concat(fileData))));
 				}));
-
-				file.on('end', Meteor.bindEnvironment(() => callback(undefined, Buffer.concat(fileData))));
-			}));
-
+			} else {
+				busboy.on('field', (fieldname, val) => receivedField[fieldname] = val);
+				busboy.on('finish', Meteor.bindEnvironment(() => callback(undefined, receivedField)));
+			}
 			request.pipe(busboy);
 		})();
 	}
@@ -58,7 +62,7 @@ export class AppsRestApi {
 	addManagementRoutes() {
 		const orchestrator = this._orch;
 		const manager = this._manager;
-		const fileHandler = this._handleFile;
+		const formFieldHandler = this._handleFormField;
 
 		const handleError = (message, e) => {
 			// when there is no `response` field in the error, it means the request
@@ -171,6 +175,7 @@ export class AppsRestApi {
 			post() {
 				let buff;
 				let marketplaceInfo;
+				let permissionsGranted;
 
 				if (this.bodyParams.url) {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
@@ -190,6 +195,8 @@ export class AppsRestApi {
 					}
 
 					buff = result.content;
+
+					return API.v1.success({ buff });
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
@@ -233,6 +240,7 @@ export class AppsRestApi {
 
 						buff = downloadResult.content;
 						marketplaceInfo = marketplaceResult.data[0];
+						permissionsGranted = this.bodyParams.permissionsGranted;
 					} catch (err) {
 						return API.v1.failure(err.message);
 					}
@@ -241,14 +249,15 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 					}
 
-					buff = fileHandler(this.request, 'app');
+					buff = formFieldHandler(this.request, 'app');
+					permissionsGranted = formFieldHandler(this.request, 'permissions', false);
 				}
 
 				if (!buff) {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff, { marketplaceInfo, enable: true, permissionsGranted: this.bodyParams.permissionsGranted }));
+				const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true }));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
@@ -457,7 +466,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 					}
 
-					buff = fileHandler(this.request, 'app');
+					buff = formFieldHandler(this.request, 'app');
 				}
 
 				if (!buff) {
