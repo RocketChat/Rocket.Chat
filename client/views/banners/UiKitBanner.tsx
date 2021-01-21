@@ -3,10 +3,10 @@ import { Banner, Icon } from '@rocket.chat/fuselage';
 import { UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
 import React, { FC, useMemo } from 'react';
 
-import { UiKitBannerPayload } from '../../lib/banners';
+import { IBanner } from '../../../definition/IBanner';
 
 type UiKitBannerProps = {
-	payload: UiKitBannerPayload;
+	payload: IBanner['view'];
 	onClose: () => void;
 };
 

@@ -1,8 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { IBlock } from '@rocket.chat/ui-kit';
 import { Subscription } from 'use-subscription';
 
 import { mountRoot } from '../reactAdapters';
+import { IBanner } from '../../definition/IBanner';
 
 export type LegacyBannerPayload = {
 	closable?: boolean;
@@ -16,15 +16,7 @@ export type LegacyBannerPayload = {
 	onClose?: () => void;
 };
 
-export type UiKitBannerPayload = {
-	inline?: boolean;
-	variant?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
-	icon?: string;
-	title?: string;
-	blocks: IBlock[];
-};
-
-type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;
+type BannerPayload = LegacyBannerPayload | IBanner['view'];
 
 export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload =>
 	!('blocks' in payload);

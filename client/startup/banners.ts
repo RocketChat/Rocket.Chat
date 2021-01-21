@@ -20,7 +20,7 @@ Meteor.startup(() => {
 			};
 
 			for (const banner of response.banners) {
-				console.log(banner);
+				banners.open(banner.view);
 			}
 		});
 	});
