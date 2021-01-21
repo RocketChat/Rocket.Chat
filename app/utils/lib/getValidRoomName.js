@@ -7,7 +7,7 @@ import { Rooms } from '../../models';
 export const getValidRoomName = (displayName, rid = '', options = {}) => {
 	let slugifiedName = displayName;
 
-	if (!settings.get('UI_Allow_room_names_with_special_chars')) {
+	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		if (options.allowDuplicates !== true) {
 			const room = Rooms.findOneByDisplayName(displayName);
 			if (room && room._id !== rid) {
