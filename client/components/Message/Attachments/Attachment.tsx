@@ -40,7 +40,7 @@ const Download: FC<ButtonProps & { href: string }> = (props) => {
 
 const Content: FC<BoxProps> = ({ ...props }) => <Box rcx-attachment__content width='full' mb='x4' {...props} />;
 const Details: FC<BoxProps> = ({ ...props }) => <Box rcx-attachment__details fontScale='p1' color='info' bg='neutral-100' pi='x16' pb='x16' {...props}/>;
-const Inner: FC<BoxProps> = ({ ...props }) => <Box mis='x16' {...props}/>;
+const Inner: FC<BoxProps> = ({ ...props }) => <Box {...props}/>;
 
 const Block: FC<{ pre?: JSX.Element | string; color?: string }> = ({ pre, color = 'neutral-600', children }) => <Attachment>{pre}<Box display='flex' flexDirection='row' pis='x16' borderRadius='x2' borderInlineStartStyle='solid' borderInlineStartWidth='x2' borderInlineStartColor={color} children={children}></Box></Attachment>;
 
