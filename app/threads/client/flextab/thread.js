@@ -8,7 +8,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { chatMessages, ChatMessages } from '../../../ui';
-import { call, keyCodes } from '../../../ui-utils/client';
+import { call, keyCodes, Layout } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
@@ -90,9 +90,10 @@ Template.thread.helpers({
 
 		const following = thread?.replies?.includes(Meteor.userId());
 
+		const isEmbedded = Layout.isEmbedded();
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		return {
-			showFormattingTips,
+			showFormattingTips: showFormattingTips && !isEmbedded,
 			tshow: instance.state.get('sendToChannel'),
 			subscription,
 			...!following && {
