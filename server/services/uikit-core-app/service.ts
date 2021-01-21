@@ -21,7 +21,6 @@ export class UiKitCoreApp extends ServiceClass implements IUiKitCoreAppService {
 	protected name = 'uikit-core-app';
 
 	async isRegistered(appId: string): Promise<boolean> {
-		console.log('isRegistered', appId, registeredApps);
 		return registeredApps.has(appId);
 	}
 

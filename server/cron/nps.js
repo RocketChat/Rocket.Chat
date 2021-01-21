@@ -13,13 +13,13 @@ export function npsCron(SyncedCron) {
 	const name = 'NPS';
 
 	let previousValue;
-	settings.get('NPS_opt_out', (key, value) => {
+	settings.get('NPS_survey_enabled', (key, value) => {
 		if (value === previousValue) {
 			return;
 		}
 		previousValue = value;
 
-		if (value) {
+		if (!value) {
 			SyncedCron.remove(name);
 			return;
 		}

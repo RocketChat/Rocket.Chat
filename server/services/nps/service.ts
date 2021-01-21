@@ -27,8 +27,8 @@ export class NPSService extends ServiceClass implements INPSService {
 	}
 
 	async create(nps: NPSCreatePayload): Promise<boolean> {
-		const optOut = await this.Settings.getValueById('NPS_opt_out');
-		if (optOut) {
+		const npsEnabled = await this.Settings.getValueById('NPS_survey_enabled');
+		if (!npsEnabled) {
 			throw new Error('Server opted-out for NPS surveys');
 		}
 
@@ -54,8 +54,8 @@ export class NPSService extends ServiceClass implements INPSService {
 	}
 
 	async sendResults(): Promise<void> {
-		const optOut = await this.Settings.getValueById('NPS_opt_out');
-		if (optOut) {
+		const npsEnabled = await this.Settings.getValueById('NPS_survey_enabled');
+		if (!npsEnabled) {
 			return;
 		}
 
@@ -90,8 +90,8 @@ export class NPSService extends ServiceClass implements INPSService {
 		score,
 		comment,
 	}: NPSVotePayload): Promise<void> {
-		const optOut = await this.Settings.getValueById('NPS_opt_out');
-		if (optOut) {
+		const npsEnabled = await this.Settings.getValueById('NPS_survey_enabled');
+		if (!npsEnabled) {
 			return;
 		}
 

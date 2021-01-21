@@ -985,7 +985,7 @@ settings.addGroup('General', function() {
 		});
 	});
 	this.section('NPS', function() {
-		this.add('NPS_opt_out', false, {
+		this.add('NPS_survey_enabled', true, {
 			type: 'boolean',
 		});
 	});
