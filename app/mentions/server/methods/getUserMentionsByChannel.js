@@ -5,7 +5,7 @@ import { Rooms, Users } from '../../../models';
 import { Message } from '../../../../server/sdk';
 
 Meteor.methods({
-	getUserMentionsByChannel({ roomId, queryOptions }) {
+	getUserMentionsByChannel({ roomId, options }) {
 		check(roomId, String);
 
 		if (!Meteor.userId()) {
@@ -23,7 +23,7 @@ Meteor.methods({
 		return Promise.await(Message.get(user.userId, {
 			rid: roomId,
 			mentionsUsername: user.username,
-			queryOptions,
+			options,
 		}));
 	},
 });
