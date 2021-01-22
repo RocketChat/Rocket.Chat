@@ -48,7 +48,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 		return { records, total };
 	}
 
-	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<{records: IMessage[]; total?: number}> {
+	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, pinned, mentionsUsername }: MessageFilter): Promise<{ records: IMessage[]; total?: number }> {
 		const result = await MessageEnterprise.get(userId, {
 			rid,
 			latest,
@@ -72,6 +72,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			queryOptions,
 			inclusive,
 			snippeted,
+			pinned,
 			mentionsUsername,
 		});
 
