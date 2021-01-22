@@ -75,7 +75,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			ignoreThreads,
 		});
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
@@ -98,7 +98,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 
 		const cursor = this.Messages.find(query, queryOptions);
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
@@ -122,7 +122,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 
 		const cursor = this.Messages.findForUpdates(rid, ts, queryOptions);
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
@@ -150,7 +150,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			return { records: [], total: 0 };
 		}
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
@@ -182,7 +182,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			queryOptions,
 		});
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
@@ -212,7 +212,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			queryOptions,
 		});
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };

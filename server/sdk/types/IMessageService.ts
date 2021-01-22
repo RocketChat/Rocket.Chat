@@ -1,12 +1,18 @@
+import { FindOneOptions } from 'mongodb';
+
 import { IServiceClass } from './ServiceClass';
 import { IMessage } from '../../../definition/IMessage';
+
+type QueryOptions = FindOneOptions<any> & {
+	returnTotal?: boolean;
+}
 
 export type MessageFilter = {
 	rid: string;
 	latest?: Date;
 	oldest?: Date;
 	excludeTypes?: string[];
-	queryOptions?: any;
+	queryOptions?: QueryOptions;
 	inclusive?: boolean;
 	snippeted?: boolean;
 	mentionsUsername?: string;
@@ -21,13 +27,13 @@ export type DiscussionArgs = {
 	oldest?: Date;
 	latest?: Date;
 	text?: string;
-	queryOptions?: any;
+	queryOptions?: QueryOptions;
 	userId: string;
 };
 
 export type CustomQueryArgs = {
 	query: any;
-	queryOptions?: any;
+	queryOptions?: QueryOptions;
 	userId: string;
 };
 
@@ -35,14 +41,14 @@ export type getUpdatesArgs = {
 	rid: string;
 	userId: string;
 	timestamp: Date;
-	queryOptions?: any;
+	queryOptions?: QueryOptions;
 };
 
 export type getDeletedArgs = {
 	rid: string;
 	timestamp: Date;
 	query: any;
-	queryOptions: any;
+	queryOptions?: QueryOptions;
 	userId: string;
 };
 
@@ -56,7 +62,7 @@ export type getFilesArgs = {
 	latest?: Date;
 	inclusive?: boolean;
 	fromUsers?: string[];
-	queryOptions: any;
+	queryOptions?: QueryOptions;
 };
 
 export type getThreadsArgs = {
@@ -67,13 +73,13 @@ export type getThreadsArgs = {
 	latest?: Date;
 	inclusive?: boolean;
 	fromUsers?: string[];
-	queryOptions: any;
+	queryOptions?: QueryOptions;
 };
 
 export type getThreadByIdArgs = {
 	tmid: string;
 	userId: string;
-	queryOptions: any;
+	queryOptions?: QueryOptions;
 }
 export interface IMessageService extends IServiceClass {
 	get(userId: string, options: MessageFilter): Promise<{records: IMessage[]; total?: number} | undefined>;

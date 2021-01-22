@@ -25,7 +25,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 
 		const cursor = this.Messages.findVisibleThreadByThreadId(tmid, queryOptions);
 		const records = await cursor.toArray();
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 
 		return { records, total };
 	}
@@ -42,7 +42,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			return { records: [], total: 0 };
 		}
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
@@ -75,7 +75,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			mentionsUsername,
 		});
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
@@ -110,7 +110,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			queryOptions,
 		});
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
@@ -124,7 +124,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 
 		const cursor = this.Messages.find(query, queryOptions);
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
@@ -139,7 +139,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 
 		const cursor = this.Messages.findForUpdates(rid, timestamp, queryOptions);
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
@@ -175,7 +175,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			queryOptions,
 		});
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
@@ -207,7 +207,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			queryOptions,
 		});
 
-		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const total = queryOptions?.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
