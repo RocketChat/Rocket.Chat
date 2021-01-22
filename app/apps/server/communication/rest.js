@@ -248,7 +248,8 @@ export class AppsRestApi {
 					buff = formData?.app;
 					permissionsGranted = (() => {
 						try {
-							return JSON.parse(formData?.permissions || '');
+							const permissions = JSON.parse(formData?.permissions || '');
+							return permissions.length ? permissions : undefined;
 						} catch {
 							return undefined;
 						}
