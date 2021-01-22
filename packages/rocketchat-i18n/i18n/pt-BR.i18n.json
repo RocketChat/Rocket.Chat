@@ -2465,6 +2465,8 @@
   "Older_than": "Mais velho que",
   "Omnichannel_Directory": "Diretório Omnichannel",
   "Omnichannel_Contact_Center": "Central de Contatos Omnichannel",
+  "Omnichannel_contact_manager_routing": "Atribuir novas conversas para o Gerente do Contato",
+  "Omnichannel_contact_manager_routing_Description": "Aloca novos chats para o Gerente do Contato(quando atribuído), desde que o Gerente do Contato esteja online quando a conversa é iniciado",
   "Omnichannel_External_Frame": "Frame Externo",
   "Omnichannel_External_Frame_Enabled": "Frame Externo habilitado",
   "Omnichannel_External_Frame_Encryption_JWK": "Chave de criptografia (JWK)",
