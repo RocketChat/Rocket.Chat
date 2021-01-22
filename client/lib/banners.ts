@@ -2,7 +2,6 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Subscription } from 'use-subscription';
 
 import { mountRoot } from '../reactAdapters';
-import { IBanner } from '../../definition/IBanner';
 
 export type LegacyBannerPayload = {
 	closable?: boolean;
@@ -15,8 +14,6 @@ export type LegacyBannerPayload = {
 	action?: () => void;
 	onClose?: () => void;
 };
-
-export type UiKitBannerPayload = { _id: IBanner['_id'] } & IBanner['view'];
 
 type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;
 

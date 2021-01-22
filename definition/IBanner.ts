@@ -1,13 +1,11 @@
-import { IBlock } from '@rocket.chat/ui-kit';
-
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IUser } from './IUser';
+import { UiKitBannerPayload } from './UIKit';
 
 export enum BannerPlatform {
 	Web = 'web',
 	Mobile = 'mobile',
 }
-
 export interface IBanner extends IRocketChatRecord {
 	platform: BannerPlatform[]; // pĺatforms a banner could be shown
 	expireAt: Date; // date when banner should not be shown anymore
@@ -15,13 +13,7 @@ export interface IBanner extends IRocketChatRecord {
 	roles?: string[]; // only show the banner to this roles
 	createdBy: Pick<IUser, '_id' | 'username' >;
 	createdAt: Date;
-	view: {
-		inline?: boolean;
-		variant?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
-		icon?: string;
-		title?: string;
-		blocks: IBlock[];
-	};
+	view: UiKitBannerPayload;
 }
 
 export interface IBannerDismiss extends IRocketChatRecord {
