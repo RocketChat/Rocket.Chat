@@ -23,27 +23,20 @@ export class AppsRestApi {
 		this.loadAPI();
 	}
 
-	_handleFormField(request, formField, isFile = true) {
+	_handleMultipartFormData(request) {
 		const busboy = new Busboy({ headers: request.headers });
 		return Meteor.wrapAsync((callback) => {
-			const receivedField = {};
-			if (isFile) {
-				busboy.on('file', Meteor.bindEnvironment((fieldname, file) => {
-					if (fieldname !== formField) {
-						return callback(new Meteor.Error('invalid-field', `Expected the field "${ formField }" but got "${ fieldname }" instead.`));
-					}
-
-					const fileData = [];
-					file.on('data', Meteor.bindEnvironment((data) => {
-						fileData.push(data);
-					}));
-
-					file.on('end', Meteor.bindEnvironment(() => callback(undefined, Buffer.concat(fileData))));
+			const formFields = {};
+			busboy.on('file', Meteor.bindEnvironment((fieldname, file) => {
+				const fileData = [];
+				file.on('data', Meteor.bindEnvironment((data) => {
+					fileData.push(data);
 				}));
-			} else {
-				busboy.on('field', (fieldname, val) => { receivedField[fieldname] = val; });
-				busboy.on('finish', Meteor.bindEnvironment(() => callback(undefined, receivedField)));
-			}
+
+				file.on('end', Meteor.bindEnvironment(() => { formFields[fieldname] = Buffer.concat(fileData); }));
+			}));
+			busboy.on('field', (fieldname, val) => { formFields[fieldname] = val; });
+			busboy.on('finish', Meteor.bindEnvironment(() => callback(undefined, formFields)));
 			request.pipe(busboy);
 		})();
 	}
@@ -62,7 +55,7 @@ export class AppsRestApi {
 	addManagementRoutes() {
 		const orchestrator = this._orch;
 		const manager = this._manager;
-		const formFieldHandler = this._handleFormField;
+		const multipartFormDataHandler = this._handleMultipartFormData;
 
 		const handleError = (message, e) => {
 			// when there is no `response` field in the error, it means the request
@@ -251,8 +244,15 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 					}
 
-					buff = formFieldHandler(this.request, 'app');
-					permissionsGranted = formFieldHandler(this.request, 'permissions', false);
+					const formData = multipartFormDataHandler(this.request);
+					buff = formData?.app;
+					permissionsGranted = (() => {
+						try {
+							return JSON.parse(formData?.permissions || '');
+						} catch {
+							return undefined;
+						}
+					})();
 				}
 
 				if (!buff) {
@@ -468,7 +468,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 					}
 
-					buff = formFieldHandler(this.request, 'app');
+					buff = multipartFormDataHandler(this.request)?.app;
 				}
 
 				if (!buff) {

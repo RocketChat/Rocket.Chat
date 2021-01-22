@@ -33,10 +33,10 @@ const actions = {
 	},
 };
 
-const AppStatus = ({ app, showStatus = true, ...props }) => {
+const AppStatus = ({ app, showStatus = true, isPurchased, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
-	const [isAppPurchased, setPurchased] = useSafely(useState(props.isPurchased));
+	const [isAppPurchased, setPurchased] = useSafely(useState(isPurchased));
 	const setModal = useSetModal();
 
 	const button = appButtonProps(app);
@@ -70,7 +70,7 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
 
-	const handleClick = useCallback(async (e) => {
+	const handleClick = async (e) => {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -95,7 +95,7 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 		}
 
 		showAppPermissionsReviewModal();
-	}, [setLoading, checkUserLoggedIn, action, setModal, app.id, app.purchaseType, cancelAction, isAppPurchased, showAppPermissionsReviewModal]);
+	};
 
 	return <Box {...props}>
 		{button && <Button primary disabled={loading} invisible={!showStatus && !loading} minHeight='x40' onClick={handleClick}>

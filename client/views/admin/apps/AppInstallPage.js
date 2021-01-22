@@ -101,8 +101,6 @@ function AppInstallPage() {
 		handleUrl,
 	} = handlers;
 
-	let appFile = file;
-
 	useEffect(() => {
 		queryUrl && handleUrl(queryUrl);
 	}, [queryUrl, handleUrl]);
@@ -112,7 +110,7 @@ function AppInstallPage() {
 	const sendFile = async (permissionsGranted, appFile) => {
 		const fileData = new FormData();
 		fileData.append('app', appFile, appFile.name);
-		fileData.append('permissions', permissionsGranted);
+		fileData.append('permissions', JSON.stringify(permissionsGranted));
 		const { app } = await uploadApp(fileData);
 		appsRoute.push({ context: 'details', id: app.id });
 		setModal(null);
@@ -123,26 +121,34 @@ function AppInstallPage() {
 		setModal(null);
 	}, [setInstalling, setModal]);
 
-	const install = useCallback(async () => {
+	const install = async () => {
 		setInstalling(true);
 
 		try {
 			let permissions;
+			let appFile;
 			if (url) {
 				const { buff: { data } } = await downloadApp({ url });
 				permissions = await getPermissionsFromZippedApp(data, false);
 				appFile = new File([Uint8Array.from(data)], 'app.zip', { type: 'application/zip' });
 			} else {
+				appFile = file;
 				permissions = await getPermissionsFromZippedApp(appFile);
 			}
 
-			setModal(<AppPermissionsReviewModal appPermissions={permissions} cancel={cancelAction} confirm={(permissions) => sendFile(permissions, appFile)} />);
+			setModal(
+				<AppPermissionsReviewModal
+					appPermissions={permissions}
+					cancel={cancelAction}
+					confirm={(permissions) => sendFile(permissions, appFile)}
+				/>,
+			);
 		} catch (error) {
 			handleInstallError(error);
 		} finally {
 			setInstalling(false);
 		}
-	}, [url, downloadApp, appFile, appsRoute, sendFile, cancelAction]);
+	};
 
 	const handleCancel = () => {
 		appsRoute.push();
