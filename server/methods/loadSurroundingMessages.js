@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Message } from '../sdk';
+import { Messages } from '../../app/models';
 import { settings } from '../../app/settings';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
@@ -22,7 +23,7 @@ Meteor.methods({
 			return false;
 		}
 
-		message = Promise.await(Message.getById({ msgId: message._id, userId: fromId }));
+		message = Messages.findOneById(message._id);
 
 		if (!message || !message.rid) {
 			return false;

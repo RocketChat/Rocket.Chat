@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models';
+import { Subscriptions, Uploads, Users, Rooms } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { settings } from '../../../settings';
@@ -235,7 +235,7 @@ API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
 
-		const messages = Promise.await(Message.customQuery({
+		const { records: messages, total } = Promise.await(Message.customQuery({
 			query: ourQuery,
 			userId: this.userId,
 			queryOptions: {
@@ -248,9 +248,9 @@ API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true }, {
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(messages, this.userId),
-			count: messages.count,
+			count: messages.length,
 			offset,
-			total: messages.length,
+			total,
 		});
 	},
 });
@@ -279,7 +279,7 @@ API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authRequired: tr
 		const { sort, fields, query } = this.parseJsonQuery();
 		const ourQuery = Object.assign({}, query, { rid: room._id });
 
-		const msgs = Promise.await(Message.customQuery({
+		const { records: msgs, total } = Promise.await(Message.customQuery({
 			query: ourQuery,
 			userId: this.userId,
 			queryOptions: {
@@ -294,7 +294,7 @@ API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authRequired: tr
 			messages: normalizeMessagesForUser(msgs, this.userId),
 			offset,
 			count: msgs.length,
-			total: Messages.find(ourQuery).count(),
+			total,
 		});
 	},
 });

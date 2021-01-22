@@ -121,7 +121,7 @@ export async function findDiscussionsFromRoom({ uid, roomId, text, pagination: {
 		throw new Error('error-not-allowed');
 	}
 
-	const messages = await Message.getDiscussions({
+	const { records: messages, total } = await Message.getDiscussions({
 		rid: roomId,
 		text,
 		queryOptions: {
@@ -133,8 +133,8 @@ export async function findDiscussionsFromRoom({ uid, roomId, text, pagination: {
 
 	return {
 		messages,
-		count: messages.count,
+		count: messages.length,
 		offset,
-		total: messages.length,
+		total,
 	};
 }

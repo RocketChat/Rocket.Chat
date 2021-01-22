@@ -75,20 +75,13 @@ export type getThreadByIdArgs = {
 	userId: string;
 	queryOptions: any;
 }
-
-export type getByIdArgs = {
-	msgId: string;
-	userId: string;
-};
-
 export interface IMessageService extends IServiceClass {
-	get(userId: string, options: MessageFilter): Promise<{records: IMessage[]; total: number} | undefined>;
-	getDiscussions(options: DiscussionArgs): Promise<any[] | undefined>;
-	customQuery({ query, userId, queryOptions }: CustomQueryArgs): Promise<any[] | undefined>;
-	getUpdates({ rid, timestamp, queryOptions }: getUpdatesArgs): Promise<any[] | undefined>;
-	getDeleted({ rid, userId, timestamp, query, queryOptions }: getDeletedArgs): Promise<any[] | undefined>;
-	getFiles({ rid, userId, excludePinned, ignoreDiscussion, ignoreThreads, oldest, latest, inclusive, fromUsers, queryOptions }: getFilesArgs): Promise<any[] | undefined>;
-	getThreadsByRoomId({ rid, userId, excludePinned, oldest, latest, inclusive, fromUsers, queryOptions }: getThreadsArgs): Promise<any[] | undefined>;
-	getThreadById({ tmid, userId, queryOptions }: getThreadByIdArgs): Promise<any[] | undefined>;
-	getById({ msgId, userId }: getByIdArgs): Promise<any[] | undefined>;
+	get(userId: string, options: MessageFilter): Promise<{records: IMessage[]; total?: number} | undefined>;
+	getDiscussions(options: DiscussionArgs): Promise<{records: IMessage[]; total?: number} | undefined>;
+	customQuery({ query, userId, queryOptions }: CustomQueryArgs): Promise<{records: IMessage[]; total?: number} | undefined>;
+	getUpdates({ rid, timestamp, queryOptions }: getUpdatesArgs): Promise<{records: IMessage[]; total?: number} | undefined>;
+	getDeleted({ rid, userId, timestamp, query, queryOptions }: getDeletedArgs): Promise<{records: IMessage[]; total?: number} | undefined>;
+	getFiles({ rid, userId, excludePinned, ignoreDiscussion, ignoreThreads, oldest, latest, inclusive, fromUsers, queryOptions }: getFilesArgs): Promise<{records: IMessage[]; total?: number} | undefined>;
+	getThreadsByRoomId({ rid, userId, excludePinned, oldest, latest, inclusive, fromUsers, queryOptions }: getThreadsArgs): Promise<{records: IMessage[]; total?: number} | undefined>;
+	getThreadById({ tmid, userId, queryOptions }: getThreadByIdArgs): Promise<{records: IMessage[]; total?: number} | undefined>;
 }

@@ -577,7 +577,7 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const messages = Promise.await(Message.customQuery({
+		const { records: messages, total } = Promise.await(Message.customQuery({
 			query: ourQuery,
 			userId: this.userId,
 			queryOptions: {
@@ -590,9 +590,9 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(messages, this.userId),
-			count: messages.count,
+			count: messages.length,
 			offset,
-			total: messages.length,
+			total,
 		});
 	},
 });

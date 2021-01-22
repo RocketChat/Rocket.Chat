@@ -459,7 +459,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 
 		const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };
 
-		const threads = Promise.await(Message.customQuery({
+		const { records: threads, total } = Promise.await(Message.customQuery({
 			query: threadQuery,
 			userId: this.userId,
 			queryOptions: {
@@ -472,9 +472,9 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 
 		return API.v1.success({
 			threads,
-			count: threads.count,
+			count: threads.length,
 			offset,
-			total: threads.length,
+			total,
 		});
 	},
 });
@@ -508,8 +508,8 @@ API.v1.addRoute('chat.syncThreadsList', { authRequired: true }, {
 
 		return API.v1.success({
 			threads: {
-				update: Promise.await(Message.customQuery({ query: threadQuery, queryOptions: { fields, sort } })),
-				remove: Promise.await(Message.getDeleted({ rid, userId: this.userId, timestamp: updatedSinceDate, query: threadQuery, queryOptions: { fields, sort } })),
+				update: Promise.await(Message.customQuery({ query: threadQuery, queryOptions: { returnTotal: false, fields, sort } })).records,
+				remove: Promise.await(Message.getDeleted({ rid, userId: this.userId, timestamp: updatedSinceDate, query: threadQuery, queryOptions: { returnTotal: false, fields, sort } })).records,
 			},
 		});
 	},
@@ -540,7 +540,7 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { rid: thread.rid, tmid });
 
-		const messages = Promise.await(Message.customQuery({
+		const { records: messages, total } = Promise.await(Message.customQuery({
 			query: ourQuery,
 			userId: this.userId,
 			queryOptions: {
@@ -553,9 +553,9 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 
 		return API.v1.success({
 			messages,
-			count: messages.count,
+			count: messages.length,
 			offset,
-			total: messages.length,
+			total,
 		});
 	},
 });
@@ -596,8 +596,8 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 
 		return API.v1.success({
 			messages: {
-				update: Promise.await(Message.customQuery({ query: threadQuery, queryOptions: { fields, sort } })),
-				remove: Promise.await(Message.getDeleted({ rid: thread.rid, timestamp: updatedSinceDate, query: threadQuery, queryOptions: { fields, sort } })),
+				update: Promise.await(Message.customQuery({ query: threadQuery, queryOptions: { returnTotal: false, fields, sort } })).records,
+				remove: Promise.await(Message.getDeleted({ rid: thread.rid, timestamp: updatedSinceDate, query: threadQuery, queryOptions: { returnTotal: false, fields, sort } })).records,
 			},
 		});
 	},

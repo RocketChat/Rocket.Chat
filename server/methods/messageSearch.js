@@ -253,10 +253,11 @@ Meteor.methods({
 				query,
 				userId: user._id,
 				queryOptions: {
+					returnTotal: false,
 					readPreference: readSecondaryPreferred(Messages.col.s.db),
 					...options,
 				},
-			}));
+			})).records;
 
 			return result;
 		}

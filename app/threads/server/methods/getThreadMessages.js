@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../../models/server';
+import { Messages, Rooms } from '../../../models/server';
 import { canAccessRoom } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { readThread } from '../functions';
@@ -18,7 +18,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'getThreadMessages' });
 		}
 
-		const thread = Promise.await(Message.getById({ msgId: tmid, userId: Meteor.userId }));
+		const thread = Messages.findOneById(tmid);
 		if (!thread) {
 			return [];
 		}

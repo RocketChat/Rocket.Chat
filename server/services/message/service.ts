@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { DiscussionArgs, IMessageService, MessageFilter, CustomQueryArgs, getUpdatesArgs, getDeletedArgs, getFilesArgs, getThreadsArgs, getByIdArgs, getThreadByIdArgs } from '../../sdk/types/IMessageService';
+import { DiscussionArgs, IMessageService, MessageFilter, CustomQueryArgs, getUpdatesArgs, getDeletedArgs, getFilesArgs, getThreadsArgs, getThreadByIdArgs } from '../../sdk/types/IMessageService';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { MessageEnterprise } from '../../sdk';
 import { IMessage } from '../../../definition/IMessage';
@@ -17,25 +17,20 @@ export class MessageService extends ServiceClass implements IMessageService {
 		this.Messages = new MessagesRaw(db.collection('rocketchat_message'));
 	}
 
-	async getThreadById({ tmid, userId, queryOptions }: getThreadByIdArgs): Promise<any[] | undefined> {
+	async getThreadById({ tmid, userId, queryOptions }: getThreadByIdArgs): Promise<{records: IMessage[]; total?: number} | undefined> {
 		const result = await MessageEnterprise.getThreadById({ tmid, userId, queryOptions });
 		if (result) {
 			return result;
 		}
 
-		return this.Messages.findVisibleThreadByThreadId(tmid, queryOptions).toArray();
+		const cursor = this.Messages.findVisibleThreadByThreadId(tmid, queryOptions);
+		const records = await cursor.toArray();
+		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+
+		return { records, total };
 	}
 
-	async getById({ msgId, userId }: getByIdArgs): Promise<any[] | undefined> {
-		const result = await MessageEnterprise.getById({ msgId, userId });
-		if (result) {
-			return result;
-		}
-
-		return this.Messages.findOneById(msgId);
-	}
-
-	async getDeleted({ rid, userId, timestamp, query, queryOptions }: getDeletedArgs): Promise<any[] | undefined> {
+	async getDeleted({ rid, userId, timestamp, query, queryOptions }: getDeletedArgs): Promise<{records: IMessage[]; total?: number} | undefined> {
 		const result = await MessageEnterprise.getDeleted({ rid, userId, timestamp, query, queryOptions });
 		if (result) {
 			return result;
@@ -44,17 +39,16 @@ export class MessageService extends ServiceClass implements IMessageService {
 		const cursor = await this.Messages.trashFindDeletedAfter(timestamp, query, queryOptions);
 
 		if (!cursor) {
-			return [];
+			return { records: [], total: 0 };
 		}
 
-		const count = cursor.count();
-		const trash = cursor.toArray();
-		Object.defineProperty(trash, 'count', { value: count });
+		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const records = await cursor.toArray();
 
-		return trash;
+		return { records, total };
 	}
 
-	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<{records: IMessage[]; total: number}> {
+	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<{records: IMessage[]; total?: number}> {
 		const result = await MessageEnterprise.get(userId, {
 			rid,
 			latest,
@@ -81,13 +75,13 @@ export class MessageService extends ServiceClass implements IMessageService {
 			mentionsUsername,
 		});
 
-		const total = await cursor.count();
+		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
 		const records = await cursor.toArray();
 
 		return { records, total };
 	}
 
-	async getDiscussions({ rid, excludePinned, ignoreThreads, latest, oldest, inclusive, fromUsers, text, queryOptions, userId }: DiscussionArgs): Promise<any[]> {
+	async getDiscussions({ rid, excludePinned, ignoreThreads, latest, oldest, inclusive, fromUsers, text, queryOptions, userId }: DiscussionArgs): Promise<{records: IMessage[]; total?: number}> {
 		const result = await MessageEnterprise.getDiscussions({
 			rid,
 			excludePinned,
@@ -116,14 +110,13 @@ export class MessageService extends ServiceClass implements IMessageService {
 			queryOptions,
 		});
 
-		const count = cursor.count();
-		const discussions = cursor.toArray();
-		Object.defineProperty(discussions, 'count', { value: count });
+		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const records = await cursor.toArray();
 
-		return discussions;
+		return { records, total };
 	}
 
-	async customQuery({ query, userId, queryOptions }: CustomQueryArgs): Promise<any[]> {
+	async customQuery({ query, userId, queryOptions }: CustomQueryArgs): Promise<{records: IMessage[]; total?: number}> {
 		const result = await MessageEnterprise.customQuery({ query, userId, queryOptions });
 		if (result) {
 			return result;
@@ -131,14 +124,13 @@ export class MessageService extends ServiceClass implements IMessageService {
 
 		const cursor = this.Messages.find(query, queryOptions);
 
-		const count = cursor.count();
-		const messages = cursor.toArray();
-		Object.defineProperty(messages, 'count', { value: count });
+		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const records = await cursor.toArray();
 
-		return messages;
+		return { records, total };
 	}
 
-	async getUpdates({ rid, userId, timestamp, queryOptions }: getUpdatesArgs): Promise<any[] | undefined> {
+	async getUpdates({ rid, userId, timestamp, queryOptions }: getUpdatesArgs): Promise<{records: IMessage[]; total?: number} | undefined> {
 		const result = await MessageEnterprise.getUpdates({ rid, userId, timestamp, queryOptions });
 
 		if (result) {
@@ -147,14 +139,13 @@ export class MessageService extends ServiceClass implements IMessageService {
 
 		const cursor = this.Messages.findForUpdates(rid, timestamp, queryOptions);
 
-		const count = cursor.count();
-		const messages = cursor.toArray();
-		Object.defineProperty(messages, 'count', { value: count });
+		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const records = await cursor.toArray();
 
-		return messages;
+		return { records, total };
 	}
 
-	async getFiles({ rid, userId, excludePinned, ignoreDiscussion, ignoreThreads, oldest, latest, inclusive, fromUsers, queryOptions }: getFilesArgs): Promise<any[] | undefined> {
+	async getFiles({ rid, userId, excludePinned, ignoreDiscussion, ignoreThreads, oldest, latest, inclusive, fromUsers, queryOptions }: getFilesArgs): Promise<{records: IMessage[]; total?: number} | undefined> {
 		const result = await MessageEnterprise.getFiles({
 			rid,
 			userId,
@@ -184,14 +175,13 @@ export class MessageService extends ServiceClass implements IMessageService {
 			queryOptions,
 		});
 
-		const count = cursor.count();
-		const messages = cursor.toArray();
-		Object.defineProperty(messages, 'count', { value: count });
+		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const records = await cursor.toArray();
 
-		return messages;
+		return { records, total };
 	}
 
-	async getThreadsByRoomId({ rid, userId, excludePinned, oldest, latest, inclusive, fromUsers, queryOptions }: getThreadsArgs): Promise<any[] | undefined> {
+	async getThreadsByRoomId({ rid, userId, excludePinned, oldest, latest, inclusive, fromUsers, queryOptions }: getThreadsArgs): Promise<{records: IMessage[]; total?: number} | undefined> {
 		const result = await MessageEnterprise.getFiles({
 			rid,
 			userId,
@@ -217,10 +207,9 @@ export class MessageService extends ServiceClass implements IMessageService {
 			queryOptions,
 		});
 
-		const count = cursor.count();
-		const threads = cursor.toArray();
-		Object.defineProperty(threads, 'count', { value: count });
+		const total = queryOptions.returnTotal === false ? undefined : await cursor.count();
+		const records = await cursor.toArray();
 
-		return threads;
+		return { records, total };
 	}
 }

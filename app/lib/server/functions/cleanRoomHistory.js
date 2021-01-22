@@ -54,10 +54,10 @@ export function cleanRoomHistory({ rid, userId, latest, oldest, inclusive = true
 			oldest,
 			inclusive,
 			fromUsers,
-			queryOptions: { fields: { drid: 1 }, ...limit && { limit } },
+			queryOptions: { returnTotal: false, fields: { drid: 1 }, ...limit && { limit } },
 			ignoreThreads,
 		}))
-			.map(({ drid }) => deleteRoom(drid));
+			.records.map(({ drid }) => deleteRoom(drid));
 	}
 
 	if (!ignoreThreads) {
