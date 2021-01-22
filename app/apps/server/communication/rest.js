@@ -189,10 +189,10 @@ export class AppsRestApi {
 
 					buff = result.content;
 
-					return API.v1.success({ buff });
-				}
-
-				if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
+					if (!process.env.TEST_MODE) {
+						return API.v1.success({ buff });
+					}
+				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
