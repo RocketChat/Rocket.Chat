@@ -4,9 +4,8 @@ import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
 import { Messages, Rooms, Subscriptions } from '../../../models/server';
 import { Notifications } from '../../../notifications/server';
-import { Message } from '../../../../server/sdk';
 
-export function cleanRoomHistory({ rid, userId, latest, oldest, inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
+export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
@@ -15,31 +14,20 @@ export function cleanRoomHistory({ rid, userId, latest, oldest, inclusive = true
 	const text = `_${ TAPi18n.__('File_removed_by_prune') }_`;
 
 	let fileCount = 0;
-
-	const { records: files } = Promise.await(Message.getFiles({
+	Messages.findFilesByRoomIdPinnedTimestampAndUsers(
 		rid,
-		userId,
 		excludePinned,
 		ignoreDiscussion,
-		oldest,
-		latest,
-		inclusive,
+		ts,
 		fromUsers,
 		ignoreThreads,
-		queryOptions: {
-			returnTotal: false,
-			fields: { 'file._id': 1, pinned: 1 },
-			limit,
-		},
-	}));
-
-	files.map((document) => {
+		{ fields: { 'file._id': 1, pinned: 1 }, limit },
+	).forEach((document) => {
 		FileUpload.getStore('Uploads').deleteById(document.file._id);
 		fileCount++;
 		if (filesOnly) {
 			Messages.update({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
 		}
-		return null;
 	});
 
 	if (filesOnly) {
@@ -47,24 +35,14 @@ export function cleanRoomHistory({ rid, userId, latest, oldest, inclusive = true
 	}
 
 	if (!ignoreDiscussion) {
-		Promise.await(Message.getDiscussions({
-			rid,
-			userId,
-			excludePinned,
-			latest,
-			oldest,
-			inclusive,
-			fromUsers,
-			queryOptions: { returnTotal: false, fields: { drid: 1 }, ...limit && { limit } },
-			ignoreThreads,
-		}))
-			.records.map(({ drid }) => deleteRoom(drid));
+		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, { fields: { drid: 1 }, ...limit && { limit } }, ignoreThreads).fetch()
+			.forEach(({ drid }) => deleteRoom(drid));
 	}
 
 	if (!ignoreThreads) {
 		const threads = new Set();
-		Promise.await(Message.getThreadsByRoomId({ rid, userId, excludePinned, ignoreDiscussion, ts, users: fromUsers, queryOptions: { returnTotal: false, fields: { _id: 1 } } }))
-			.records.map(({ _id }) => threads.add(_id));
+		Messages.findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers }, { fields: { _id: 1 } })
+			.forEach(({ _id }) => threads.add(_id));
 
 		if (threads.size > 0) {
 			Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
@@ -83,4 +61,4 @@ export function cleanRoomHistory({ rid, userId, latest, oldest, inclusive = true
 		});
 	}
 	return count;
-}
+};
