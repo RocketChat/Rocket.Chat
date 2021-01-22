@@ -295,7 +295,7 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, { fields: { 'file._id': 1 }, ...queryOptions });
 	}
 
-	findThreadsByRoomId({ rid, pinned, ignoreDiscussion = true, latest, oldest, inclusive, fromUsers = [], queryOptions }) {
+	findThreadsByRoomId({ rid, excludePinned, ignoreDiscussion = true, latest, oldest, inclusive, fromUsers = [], queryOptions }) {
 		const query = {
 			rid,
 			tlm: { $exists: 1 },
@@ -319,7 +319,7 @@ export class MessagesRaw extends BaseRaw {
 			query.ts = ts;
 		}
 
-		if (pinned) {
+		if (excludePinned) {
 			query.pinned = { $ne: true };
 		}
 

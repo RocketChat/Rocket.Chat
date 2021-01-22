@@ -197,7 +197,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			return result;
 		}
 
-		const cursor = this.Messages.findFilesByRoomId({
+		const cursor = this.Messages.findThreadsByRoomId({
 			rid,
 			excludePinned,
 			oldest,

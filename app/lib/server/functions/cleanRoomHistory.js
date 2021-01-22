@@ -63,7 +63,7 @@ export function cleanRoomHistory({ rid, userId, latest, oldest, inclusive = true
 
 	if (!ignoreThreads) {
 		const threads = new Set();
-		Promise.await(Message.getThreadsByRoomId({ rid, userId, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers, queryOptions: { returnTotal: false, fields: { _id: 1 } } }))
+		Promise.await(Message.getThreadsByRoomId({ rid, userId, excludePinned, ignoreDiscussion, ts, users: fromUsers, queryOptions: { returnTotal: false, fields: { _id: 1 } } }))
 			.records.map(({ _id }) => threads.add(_id));
 
 		if (threads.size > 0) {

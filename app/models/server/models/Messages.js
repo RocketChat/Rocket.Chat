@@ -915,7 +915,7 @@ export class Messages extends Base {
 		return this.remove({ rid: { $in: rids } });
 	}
 
-	findThreadsByRoomId({ rid, pinned, ignoreDiscussion = true, latest, oldest, inclusive, fromUsers = [], queryOptions }) {
+	findThreadsByRoomId({ rid, excludePinned, ignoreDiscussion = true, latest, oldest, inclusive, fromUsers = [], queryOptions }) {
 		const query = {
 			rid,
 			tlm: { $exists: 1 },
@@ -939,7 +939,7 @@ export class Messages extends Base {
 			query.ts = ts;
 		}
 
-		if (pinned) {
+		if (excludePinned) {
 			query.pinned = { $ne: true };
 		}
 

@@ -202,7 +202,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			end = userJoinedAt;
 		}
 
-		const cursor = this.Messages.findFilesByRoomId({
+		const cursor = this.Messages.findThreadsByRoomId({
 			rid,
 			excludePinned,
 			oldest: end,
