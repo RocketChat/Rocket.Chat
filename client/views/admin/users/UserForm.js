@@ -102,9 +102,12 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 			{useMemo(() => <Field>
 				<Field.Label>{t('Password')}</Field.Label>
 				<Field.Row>
-					<PasswordInput autoComplete='off' flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
+					<PasswordInput errors={errors && errors.password} autoComplete='off' flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
 				</Field.Row>
-			</Field>, [t, password, handlePassword])}
+				{errors && errors.password && <Field.Error>
+					{errors.password}
+				</Field.Error>}
+			</Field>, [t, password, handlePassword, errors])}
 			{useMemo(() => <Field>
 				<Field.Row>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>

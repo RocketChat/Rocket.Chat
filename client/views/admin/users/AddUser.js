@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback, useState } from 'react';
 import { Field, Box, Button } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -17,11 +18,12 @@ export function AddUser({ roles, ...props }) {
 	const { value: roleData } = useEndpointData('roles.list', '');
 	const [errors, setErrors] = useState({});
 
-	const validationKeys = useMemo(() => ({
-		name: (name) => setErrors((errors) => ({ ...errors, name: name.trim().length ? name : undefined })),
-		username: (username) => (username.trim() === '' ? setErrors({ ...errors, username: t('The_field_is_required', t('username')) }) : setErrors({ ...errors, username: '' })),
-		email: (email) => (email.trim() === '' ? setErrors({ ...errors, email: t('The_field_is_required', t('email')) }) : setErrors({ ...errors, email: '' })),
-	}), [errors, t]);
+	const validationKeys = {
+		name: (name) => setErrors((errors) => ({ ...errors, name: !name.trim().length ? t('The_field_is_required', t('name')) : undefined })),
+		username: (username) => setErrors((errors) => ({ ...errors, username: !username.trim().length ? t('The_field_is_required', t('username')) : undefined })),
+		email: (email) => setErrors((errors) => ({ ...errors, email: !email.trim().length ? t('The_field_is_required', t('email')) : undefined })),
+		password: (password) => setErrors((errors) => ({ ...errors, password: !password.trim().length ? t('The_field_is_required', t('password')) : undefined })),
+	};
 
 	const validateForm = ({ key, value }) => {
 		validationKeys[key] && validationKeys[key](value);
@@ -56,15 +58,13 @@ export function AddUser({ roles, ...props }) {
 
 	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully!'));
 
-	const handleSave = useCallback(async () => {
+	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
-			if (validationKeys[key]) {
-				validationKeys[key](value);
-			}
+			validateForm({ key, value });
 		});
 
-		const { name, username, email } = errors;
-		if ((name && name !== '') || (username && username !== '') || (email && email !== '')) {
+		const { name, username, password, email } = values;
+		if (name === '' || username === '' || password === '' || email === '') {
 			return false;
 		}
 
@@ -72,7 +72,7 @@ export function AddUser({ roles, ...props }) {
 		if (result.success) {
 			goToUser(result.user._id);
 		}
-	}, [goToUser, saveAction, values, validationKeys, errors]);
+	});
 
 	const availableRoles = useMemo(() => roleData?.roles?.map(({ _id, description }) => [_id, description || _id]) ?? [], [roleData]);
 

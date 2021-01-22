@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Box, Field, Margins, Button, Callout } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -50,11 +51,11 @@ export function EditUser({ data, roles, ...props }) {
 	const [avatarObj, setAvatarObj] = useState();
 	const [errors, setErrors] = useState({});
 
-	const validationKeys = useMemo(() => ({
-		name: (name) => (name.trim() === '' ? setErrors({ ...errors, name: t('The_field_is_required', t('name')) }) : setErrors({ ...errors, name: '' })),
-		username: (username) => (username.trim() === '' ? setErrors({ ...errors, username: t('The_field_is_required', t('username')) }) : setErrors({ ...errors, username: '' })),
-		email: (email) => (email.trim() === '' ? setErrors({ ...errors, email: t('The_field_is_required', t('email')) }) : setErrors({ ...errors, email: '' })),
-	}), [errors, t]);
+	const validationKeys = {
+		name: (name) => setErrors((errors) => ({ ...errors, name: !name.trim().length ? t('The_field_is_required', t('name')) : undefined })),
+		username: (username) => setErrors((errors) => ({ ...errors, username: !username.trim().length ? t('The_field_is_required', t('username')) : undefined })),
+		email: (email) => setErrors((errors) => ({ ...errors, email: !email.trim().length ? t('The_field_is_required', t('email')) : undefined })),
+	};
 
 	const validateForm = ({ key, value }) => {
 		validationKeys[key] && validationKeys[key](value);
@@ -99,13 +100,13 @@ export function EditUser({ data, roles, ...props }) {
 		return saveAvatarAction(avatarObj);
 	}, [avatarObj, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, data._id]);
 
-	const handleSave = useCallback(async () => {
+	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
 			validationKeys[key] && validationKeys[key](value);
 		});
 
-		const { name, username, email } = errors;
-		if ((name && name !== '') || (username && username !== '') || (email && email !== '')) {
+		const { name, username, email } = values;
+		if (name === '' || username === '' || email === '') {
 			return false;
 		}
 
