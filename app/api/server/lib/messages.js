@@ -133,12 +133,10 @@ export async function findDiscussionsFromRoom({ uid, roomId, text, pagination: {
 		},
 	});
 
-	const total = messages.length;
-
 	return {
 		messages,
-		count: messages.length,
+		count: messages.count,
 		offset,
-		total,
+		total: messages.length,
 	};
 }
