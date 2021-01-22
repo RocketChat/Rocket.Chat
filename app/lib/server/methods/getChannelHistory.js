@@ -9,7 +9,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { Message } from '../../../../server/sdk';
 
 Meteor.methods({
-	getChannelHistory({ rid, latest, oldest, offset = 0, count = 20, unreads, excludeTypes }) {
+	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads }) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
@@ -44,7 +44,7 @@ Meteor.methods({
 			queryOptions.fields = { editedAt: 0 };
 		}
 
-		const records = Promise.await(Message.get(fromUserId, { rid, latest, oldest, queryOptions, excludeTypes }));
+		const records = Promise.await(Message.get(fromUserId, { rid, latest, oldest, inclusive, queryOptions }));
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
 

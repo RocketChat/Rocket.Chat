@@ -959,7 +959,7 @@ export const Livechat = {
 
 		const showAgentInfo = settings.get('Livechat_show_agent_info');
 		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat_video_call'];
-		const messages = Messages.findVisibleByRoomId({ rid, excludeTypes: ignoredMessageTypes, queryOptions: { sort: { ts: 1 } } });
+		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } });
 
 		let html = '<div> <hr>';
 		messages.forEach((message) => {

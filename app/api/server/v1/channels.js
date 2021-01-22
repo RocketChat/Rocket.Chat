@@ -360,12 +360,6 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 			offset = parseInt(this.queryParams.offset);
 		}
 
-		const excludeTypes = [];
-		if (this.queryParams.excludeTypes) {
-			const t = this.queryParams.excludeTypes;
-			Array.isArray(t) ? excludeTypes.push(...t) : excludeTypes.push(...t.split(','));
-		}
-
 		const unreads = this.queryParams.unreads || false;
 
 		let result;
@@ -378,7 +372,6 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 				offset,
 				count,
 				unreads,
-				excludeTypes,
 			});
 		});
 
