@@ -18,7 +18,7 @@ export const allowAgentSkipQueue = (agent) => {
 		agentId: String,
 	}));
 
-	return settings.get('Livechat_assign_new_conversation_to_bot') && hasRole(agent.agentId, 'bot');
+	return hasRole(agent.agentId, 'bot');
 };
 
 export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {

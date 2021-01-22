@@ -30,8 +30,8 @@ export const QueueManager = {
 
 		LivechatRooms.updateRoomCount();
 
-		await callbacks.run('livechat.beforeRouteChat', inquiry);
 		const defaultAgent = RoutingManager.delegateAgent(agent, inquiry);
+		await callbacks.run('livechat.beforeRouteChat', inquiry, defaultAgent);
 		inquiry = LivechatInquiry.findOneById(inquiry._id);
 
 		if (inquiry.status === 'ready') {
