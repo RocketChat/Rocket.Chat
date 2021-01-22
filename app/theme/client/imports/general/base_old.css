@@ -1310,13 +1310,12 @@
 }
 
 .rc-old .container-bars {
-	position: absolute;
+	position: relative;
 	z-index: 2;
-	top: 5px; /* --header-height */
-	right: 10px;
-	left: 10px;
+	
+	margin: 5px 10px 0;
 
-	display: flex;
+	display: none;
 	visibility: hidden;
 	overflow: hidden;
 	flex-direction: column;
@@ -1334,6 +1333,7 @@
 	font-weight: bold;
 
 	&.show {
+		display: flex;
 		visibility: visible;
 
 		transform: translateY(0);
