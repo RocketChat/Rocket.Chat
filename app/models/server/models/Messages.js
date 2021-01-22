@@ -179,6 +179,7 @@ export class Messages extends Base {
 		};
 
 		if (oldest) {
+			query.ts = query.ts || {};
 			if (inclusive) {
 				query.ts.$gte = oldest;
 			} else {
@@ -187,6 +188,7 @@ export class Messages extends Base {
 		}
 
 		if (latest) {
+			query.ts = query.ts || {};
 			if (inclusive) {
 				query.ts.$lte = latest;
 			} else {
@@ -221,7 +223,7 @@ export class Messages extends Base {
 		};
 
 		if (oldest || latest) {
-			let ts;
+			const ts = {};
 			if (oldest) {
 				inclusive
 					? ts.$gte = oldest
@@ -966,7 +968,7 @@ export class Messages extends Base {
 		};
 
 		if (oldest || latest) {
-			let ts;
+			const ts = {};
 			if (oldest) {
 				inclusive
 					? ts.$gte = oldest

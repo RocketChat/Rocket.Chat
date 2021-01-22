@@ -39,7 +39,7 @@ export class MessagesRaw extends BaseRaw {
 		};
 
 		if (oldest || latest) {
-			let ts;
+			const ts = {};
 			if (oldest) {
 				inclusive
 					? ts.$gte = oldest
@@ -349,7 +349,7 @@ export class MessagesRaw extends BaseRaw {
 		};
 
 		if (oldest || latest) {
-			let ts;
+			const ts = {};
 			if (oldest) {
 				inclusive
 					? ts.$gte = oldest

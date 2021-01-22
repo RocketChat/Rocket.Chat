@@ -13,14 +13,14 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 		throw new Error('invalid-user');
 	}
 
-	const messages = Promise.await(Message.get(uid, {
+	const messages = await Message.get(uid, {
 		rid: roomId,
 		queryOptions: {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
 		},
-	}));
+	});
 
 	return {
 		messages,
