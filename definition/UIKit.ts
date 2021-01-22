@@ -33,3 +33,12 @@ type UIKitUserInteractionResultError = UIKitUserInteraction & {
 };
 
 export const isErrorType = (result: UIKitUserInteractionResult): result is UIKitUserInteractionResultError => result.type === UIKitInteractionType.ERRORS;
+
+
+export type UIKitActionEvent = {
+	blockId: string;
+	value?: unknown;
+	appId: string;
+	actionId: string;
+	viewId: string;
+}

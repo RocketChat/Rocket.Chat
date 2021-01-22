@@ -1,43 +1,17 @@
 /* eslint-disable new-cap */
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import { kitContext, UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
-import React, { Context, FC, useMemo, useEffect, useState } from 'react';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
+import React, { Context, FC, useMemo } from 'react';
 
 import * as banners from '../../lib/banners';
 // import { useEndpoint } from '../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import * as ActionManager from '../../../app/ui-message/client/ActionManager';
-import { isErrorType, UIKitUserInteractionResult, UiKitBannerProps, UiKitBannerPayload } from '../../../definition/UIKit';
-
-const useActionManagerState = (initialState: UiKitBannerPayload): UiKitBannerPayload => {
-	const [state, setState] = useState(initialState);
-
-	const { viewId } = state;
-
-	useEffect(() => {
-		const handleUpdate = ({ ...data }: UIKitUserInteractionResult): void => {
-			if (isErrorType(data)) {
-				const { errors } = data;
-				setState((state) => ({ ...state, errors }));
-				return;
-			}
-			setState(data);
-		};
-
-		ActionManager.on(viewId, handleUpdate);
-
-		return (): void => {
-			ActionManager.off(viewId, handleUpdate);
-		};
-	}, [viewId]);
-
-	return state;
-};
+import { UiKitBannerProps, UiKitBannerPayload } from '../../../definition/UIKit';
+import { useUIKitStateManager } from '../../UIKit/hooks/useUIKitStateManager';
+import { useUIKitHandleClose } from '../../UIKit/hooks/useUIKitHandleClose';
+import { useUIKitHandleAction } from '../../UIKit/hooks/useUIKitHandleAction';
 
 const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
-	const state = useActionManagerState(payload);
+	const state = useUIKitStateManager<UiKitBannerPayload>(payload);
 
 	const icon = useMemo(() => {
 		if (state.icon) {
@@ -47,42 +21,14 @@ const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
 		return null;
 	}, [state.icon]);
 
-	const dispatchToastMessage = useToastMessageDispatch();
+	const handleClose = useUIKitHandleClose(state, () => banners.close());
 
-	const handleClose = useMutableCallback(async () => {
-		try {
-			await ActionManager.triggerCancel({
-				appId: state.appId,
-				viewId: state.viewId,
-				view: {
-					...state,
-					id: state.viewId,
-					// state: groupStateByBlockId(values),
-				},
-				isCleared: true,
-			});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			banners.close();
-		}
-	});
+	const action = useUIKitHandleAction(state);
 
 	const contextValue = useMemo<typeof kitContext extends Context<infer V> ? V : never>(() => ({
-		action: async ({ blockId, value, appId, actionId }): Promise<void> => {
-			ActionManager.triggerBlockAction({
-				container: {
-					type: UIKitIncomingInteractionContainerType.VIEW,
-					id: state.appId,
-				},
-				actionId,
-				appId,
-				value,
-				blockId,
-			});
-		},
+		action,
 		appId: state.appId,
-	}), [state.appId]);
+	}), [action, state.appId]);
 
 	return <Banner
 		closeable
