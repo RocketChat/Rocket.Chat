@@ -33,10 +33,10 @@ const actions = {
 	},
 };
 
-const AppStatus = ({ app, showStatus = true, isPurchased, ...props }) => {
+const AppStatus = ({ app, showStatus = true, ...props }) => {
 	const t = useTranslation();
 	const [loading, setLoading] = useSafely(useState());
-	const [isAppPurchased, setPurchased] = useSafely(useState(isPurchased));
+	const [isAppPurchased, setPurchased] = useSafely(useState(app.isPurchased));
 	const setModal = useSetModal();
 
 	const button = appButtonProps(app);
