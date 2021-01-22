@@ -11,10 +11,14 @@ import { slashCommands } from '../../../app/utils/server';
 import { Messages, Rooms, Uploads, Users } from '../../../app/models/server';
 import { Inbox, inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { settings } from '../../../app/settings/server';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
 const user: IUser = Users.findOneById('rocket.cat');
+
+const language = settings.get('Language') || 'en';
+const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
 const sendErrorReplyMessage = (error: string, options: any): void => {
 	if (!options?.rid || !options?.msgId) {
@@ -127,7 +131,7 @@ callbacks.add('beforeSaveMessage', function(message: any, room: any) {
 		message.attachments.push({
 			actions: [{
 				type: 'button',
-				text: TAPi18n.__('Send_via_Email_as_attachment'),
+				text: t('Send_via_Email_as_attachment'),
 				msg: `/sendEmailAttachment ${ message._id }`,
 				msg_in_chat_window: true,
 				msg_processing_type: 'sendMessage',

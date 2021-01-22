@@ -8,6 +8,7 @@ import { Livechat } from '../../../app/livechat/server/lib/Livechat';
 import { LivechatRooms, LivechatVisitors, Messages } from '../../../app/models/server';
 import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
+import { settings } from '../../../app/settings/server';
 
 type FileAttachment = {
 	title: string;
@@ -23,6 +24,9 @@ type FileAttachment = {
 	video_type?: string;
 	video_size?: string;
 }
+
+const language = settings.get('Language') || 'en';
+const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
 function getGuestByEmail(email: string, name: string, department?: string): any {
 	const guest = LivechatVisitors.findOneGuestByEmailAddress(email);
@@ -132,7 +136,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				{
 					actions: [{
 						type: 'button',
-						text: TAPi18n.__('Reply_via_Email'),
+						text: t('Reply_via_Email'),
 						msg: 'msg',
 						msgId,
 						msg_in_chat_window: true,
