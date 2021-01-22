@@ -200,7 +200,7 @@ export class MessagesRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, mentionsUsername, snippeted }) {
+	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, mentionsUsername, snippeted, pinned }) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -219,6 +219,10 @@ export class MessagesRaw extends BaseRaw {
 
 		if (snippeted) {
 			query.snippeted = true;
+		}
+
+		if (pinned) {
+			query.pinned = true;
 		}
 
 		if (latest || oldest) {

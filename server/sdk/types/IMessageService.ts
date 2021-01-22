@@ -15,6 +15,7 @@ export type MessageFilter = {
 	queryOptions?: QueryOptions;
 	inclusive?: boolean;
 	snippeted?: boolean;
+	pinned?: boolean;
 	mentionsUsername?: string;
 };
 
