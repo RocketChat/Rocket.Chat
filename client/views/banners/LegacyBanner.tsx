@@ -1,15 +1,14 @@
 import { Banner, Icon } from '@rocket.chat/fuselage';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 
 import { LegacyBannerPayload } from '../../lib/banners';
+import * as banners from '../../lib/banners';
 
 type LegacyBannerProps = {
 	config: LegacyBannerPayload;
-	onAction: () => void;
-	onClose: () => void;
 };
 
-const LegacyBanner: FC<LegacyBannerProps> = ({ config, onAction, onClose }) => {
+const LegacyBanner: FC<LegacyBannerProps> = ({ config }) => {
 	const {
 		closable = true,
 		title,
@@ -28,13 +27,23 @@ const LegacyBanner: FC<LegacyBannerProps> = ({ config, onAction, onClose }) => {
 		}
 
 		const timer = setTimeout(() => {
-			onClose?.();
+			config.onClose?.call(undefined);
+			banners.close();
 		}, config.timer);
 
 		return (): void => {
 			clearTimeout(timer);
 		};
-	}, [config.timer, onClose]);
+	}, [config.onClose, config.timer]);
+
+	const handleAction = useCallback(() => {
+		config.action?.call(undefined);
+	}, [config.action]);
+
+	const handleClose = useCallback(() => {
+		config.onClose?.call(undefined);
+		banners.close();
+	}, [config.onClose]);
 
 	return <Banner
 		inline={inline}
@@ -43,8 +52,8 @@ const LegacyBanner: FC<LegacyBannerProps> = ({ config, onAction, onClose }) => {
 		icon={icon ? <Icon name={icon} size={20} /> : undefined}
 		title={title}
 		variant={variant}
-		onAction={onAction}
-		onClose={onClose}
+		onAction={handleAction}
+		onClose={handleClose}
 	>
 		{text}
 		{html && <div dangerouslySetInnerHTML={{ __html: html }} />}
