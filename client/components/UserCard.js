@@ -55,8 +55,7 @@ const UserCard = forwardRef(({
 		<Skeleton width='32%' mi='x2'/>
 		<Skeleton width='32%' mi='x2'/>
 	</>,
-	bio,
-	bioStructure = <>
+	bio = <>
 		<Skeleton width='100%'/>
 		<Skeleton width='100%'/>
 		<Skeleton width='100%'/>
@@ -82,7 +81,7 @@ const UserCard = forwardRef(({
 		{ customStatus && <Info>{customStatus}</Info> }
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
-		{bio !== undefined ? bio && <Info withTruncatedText={false} style={clampStyle} height='x60'><MarkdownText content={bio}/></Info> : <Info withTruncatedText={false} style={clampStyle} height='x60'>{bioStructure}</Info>}
+		{ bio && <Info withTruncatedText={false} style={clampStyle} height='x60'>{typeof bio === 'string' ? <MarkdownText content={bio}/> : bio}</Info> }
 		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
 	{onClose && <Box><ActionButton ghost icon='cross' onClick={onClose}/></Box>}
