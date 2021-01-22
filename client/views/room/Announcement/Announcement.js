@@ -9,11 +9,15 @@ import { useSetModal } from '../../../contexts/ModalContext';
 import MarkdownText from '../../../components/MarkdownText';
 
 export const Announcement = ({ children, onClickOpen }) => {
-	const clickable = css`
+	const announcementBar = css`
 		background-color: ${ colors.b200 };
 		color: ${ colors.b600 };
 		cursor: pointer;
 		transition: transform 0.2s ease-out;
+		a{
+			color: ${ colors.b600 } !important;
+			text-decoration: underline !important;
+		}
 		> * {
 			flex: auto;
 		}
@@ -23,13 +27,21 @@ export const Announcement = ({ children, onClickOpen }) => {
 			color: ${ colors.b800 };
 		}`;
 
-	return <Box onClick={onClickOpen} height='x40' alignItems='center' display='flex' fontScale='p2' textAlign='center' className={clickable}><Box withTruncatedText w='none'>{children}</Box></Box>;
+	return <Box onClick={onClickOpen} height='x40' pi='x24' alignItems='center' display='flex' fontScale='p2' textAlign='center' className={announcementBar}><Box withTruncatedText w='none'>{children}</Box></Box>;
 };
 
 export default ({ announcement, announcementDetails }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
-	const handleClick = () => {
+	const handleClick = (e) => {
+		if (e.target.href) {
+			return;
+		}
+
+		if (window.getSelection().toString() !== '') {
+			return;
+		}
+
 		announcementDetails ? announcementDetails() : setModal(<AnnouncementModal onClose={closeModal}>{announcement}</AnnouncementModal>);
 	};
 
