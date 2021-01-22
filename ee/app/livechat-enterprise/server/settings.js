@@ -82,7 +82,6 @@ export const createSettings = () => {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Routing',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: { $ne: 'Manual_Selection' } },
 		enterprise: true,
 		invalidValue: false,
 		modules: [
@@ -122,6 +121,17 @@ export const createSettings = () => {
 				],
 			});
 		});
+	});
+
+	settings.add('Omnichannel_contact_manager_routing', true, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Routing',
+		enterprise: true,
+		invalidValue: false,
+		modules: [
+			'livechat-enterprise',
+		],
 	});
 
 	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Balancing', i18nLabel: 'Load_Balancing' });
