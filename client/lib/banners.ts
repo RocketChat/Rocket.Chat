@@ -16,7 +16,7 @@ export type LegacyBannerPayload = {
 	onClose?: () => void;
 };
 
-type UiKitBannerPayload = { _id: IBanner['_id'] } & IBanner['view'];
+export type UiKitBannerPayload = { _id: IBanner['_id'] } & IBanner['view'];
 
 type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;
 
