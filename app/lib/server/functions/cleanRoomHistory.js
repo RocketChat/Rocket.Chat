@@ -16,7 +16,7 @@ export function cleanRoomHistory({ rid, userId, latest, oldest, inclusive = true
 
 	let fileCount = 0;
 
-	const files = Promise.await(Message.getFiles({
+	const { records: files } = Promise.await(Message.getFiles({
 		rid,
 		userId,
 		excludePinned,
@@ -27,6 +27,7 @@ export function cleanRoomHistory({ rid, userId, latest, oldest, inclusive = true
 		fromUsers,
 		ignoreThreads,
 		queryOptions: {
+			returnTotal: false,
 			fields: { 'file._id': 1, pinned: 1 },
 			limit,
 		},
@@ -62,8 +63,8 @@ export function cleanRoomHistory({ rid, userId, latest, oldest, inclusive = true
 
 	if (!ignoreThreads) {
 		const threads = new Set();
-		Promise.await(Message.getThreadsByRoomId({ rid, userId, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers }, { fields: { _id: 1 } }))
-			.map(({ _id }) => threads.add(_id));
+		Promise.await(Message.getThreadsByRoomId({ rid, userId, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers, queryOptions: { returnTotal: false, fields: { _id: 1 } } }))
+			.records.map(({ _id }) => threads.add(_id));
 
 		if (threads.size > 0) {
 			Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);

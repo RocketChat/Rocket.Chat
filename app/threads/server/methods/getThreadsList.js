@@ -24,6 +24,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'getThreadsList' });
 		}
 
-		return Promise.await(Message.getThreadsByRoomId({ rid, queryOptions: { skip, limit } }));
+		return Promise.await(Message.getThreadsByRoomId({ rid, queryOptions: { skip, limit } })).records;
 	},
 });

@@ -33,12 +33,13 @@ Meteor.methods({
 		readThread({ userId: user._id, rid: thread.rid, tmid });
 
 		const threadQueryOptions = {
+			returnTotal: false,
 			...skip && { skip },
 			...limit && { limit },
 			sort: { ts: -1 },
 		};
 
-		const result = Promise.await(Message.getThreadById({ tmid, queryOptions: threadQueryOptions }));
+		const { records: result } = Promise.await(Message.getThreadById({ tmid, queryOptions: threadQueryOptions }));
 
 		return [thread, ...result];
 	},
