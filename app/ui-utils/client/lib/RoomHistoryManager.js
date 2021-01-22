@@ -33,6 +33,21 @@ export const normalizeThreadMessage = ({ ...message }) => {
 	}
 };
 
+
+const waitUntilWrapperExists = async () => document.querySelector('.messages-box .wrapper') || new Promise((resolve) => {
+	const observer = new MutationObserver(function(mutations, obs) {
+		const element = document.querySelector('.messages-box .wrapper');
+		if (element) {
+			obs.disconnect(); // stop observing
+			return resolve(element);
+		}
+	});
+	observer.observe(document, {
+		childList: true,
+		subtree: true,
+	});
+});
+
 export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
 	const userId = msg.u && msg.u._id;
 
@@ -230,32 +245,30 @@ export const RoomHistoryManager = new class {
 		}
 	}
 
-	getSurroundingMessages(message, limit = defaultLimit) {
+	async getSurroundingMessages(message, limit = defaultLimit) {
 		if (!message || !message.rid) {
 			return;
 		}
 
-		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
+		const w = await waitUntilWrapperExists();
+
+		const instance = Blaze.getView(w).templateInstance();
 
 		if (ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } })) {
-			const wrapper = $('.messages-box .wrapper');
-			const msgElement = $(`#${ message._id }`, wrapper);
+			const msgElement = $(`#${ message._id }`, w);
 			if (msgElement.length === 0) {
 				return;
 			}
+
+			const wrapper = $('.messages-box .wrapper');
 			const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
 			wrapper.animate({
 				scrollTop: pos,
 			}, 500);
-			msgElement.addClass('highlight');
-
-			setTimeout(function() {
-				const messages = wrapper[0];
-				instance.atBottom = messages.scrollTop >= (messages.scrollHeight - messages.clientHeight);
-			});
 
 			return setTimeout(() => msgElement.removeClass('highlight'), 500);
 		}
+
 		const room = this.getRoom(message.rid);
 		room.isLoading.set(true);
 		let typeName = undefined;

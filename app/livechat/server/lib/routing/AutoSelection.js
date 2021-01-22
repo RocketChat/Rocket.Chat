@@ -26,10 +26,6 @@ class AutoSelection {
 
 		return Users.getNextAgent(ignoreAgentId);
 	}
-
-	delegateAgent(agent) {
-		return agent;
-	}
 }
 
 RoutingManager.registerMethod('Auto_Selection', AutoSelection);
