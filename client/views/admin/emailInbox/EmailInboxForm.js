@@ -38,13 +38,13 @@ const initialValues = {
 	department: '',
 	// SMTP
 	smtpServer: '',
-	smtpPort: '',
+	smtpPort: 587,
 	smtpUsername: '',
 	smtpPassword: '',
 	smtpSecure: false,
 	// IMAP
 	imapServer: '',
-	imapPort: '',
+	imapPort: 993,
 	imapUsername: '',
 	imapPassword: '',
 	imapSecure: false,
@@ -75,13 +75,13 @@ const getInitialValues = (data) => {
 		department: department ?? '',
 		// SMTP
 		smtpServer: smtp.server ?? '',
-		smtpPort: smtp.port ?? '',
+		smtpPort: smtp.port ?? 587,
 		smtpUsername: smtp.username ?? '',
 		smtpPassword: smtp.password ?? '',
 		smtpSecure: smtp.secure ?? false,
 		// IMAP
 		imapServer: imap.server ?? '',
-		imapPort: imap.port ?? '',
+		imapPort: imap.port ?? 993,
 		imapUsername: imap.username ?? '',
 		imapPassword: imap.password ?? '',
 		imapSecure: imap.secure ?? false,
