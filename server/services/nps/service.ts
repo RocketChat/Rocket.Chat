@@ -212,4 +212,8 @@ export class NPSService extends ServiceClass implements INPSService {
 			throw new Error('Error saving NPS vote');
 		}
 	}
+
+	async closeOpenSurveys(): Promise<void> {
+		await this.Nps.closeAllByStatus(NPSStatus.OPEN);
+	}
 }

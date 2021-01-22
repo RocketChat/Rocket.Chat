@@ -6,6 +6,7 @@ import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
+import { NPS, Banner } from '../../../../server/sdk';
 
 export function syncWorkspace(reconnectCheck = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
@@ -45,9 +46,31 @@ export function syncWorkspace(reconnectCheck = false) {
 	}
 
 	const { data } = result;
+	if (!data) {
+		return true;
+	}
 
-	if (data && data.publicKey) {
+	if (data.publicKey) {
 		Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
+	}
+
+	if (data.nps) {
+		const {
+			id: npsId,
+			startAt,
+			expireAt,
+		} = data.nps;
+
+		Promise.await(NPS.create({
+			npsId,
+			startAt,
+			expireAt,
+		}));
+	}
+
+	// add banners
+	if (data.banners) {
+		data.banners.forEach((banner) => Promise.await(Banner.create(banner)));
 	}
 
 	return true;

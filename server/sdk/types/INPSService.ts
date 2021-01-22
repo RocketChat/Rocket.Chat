@@ -18,4 +18,5 @@ export interface INPSService {
 	create(nps: NPSCreatePayload): Promise<boolean>;
 	vote(vote: NPSVotePayload): Promise<void>;
 	sendResults(): Promise<void>;
+	closeOpenSurveys(): Promise<void>;
 }
