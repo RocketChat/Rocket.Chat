@@ -1,5 +1,5 @@
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { Rooms, Messages, Users, Subscriptions } from '../../../models/server/raw';
+import { Rooms, Messages, Users } from '../../../models/server/raw';
 import { getValue } from '../../../settings/server/raw';
 import { Message } from '../../../../server/sdk';
 
@@ -13,10 +13,8 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 		throw new Error('invalid-user');
 	}
 
-	const oldest = Subscriptions.findOneByRoomIdAndUserId(roomId, uid).ts;
 	const messages = Promise.await(Message.get(uid, {
 		rid: roomId,
-		oldest,
 		queryOptions: {
 			sort: sort || { ts: -1 },
 			skip: offset,
