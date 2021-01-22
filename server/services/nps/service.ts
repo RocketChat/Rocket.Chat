@@ -1,7 +1,6 @@
 import { createHash } from 'crypto';
 
 import { Db } from 'mongodb';
-import { Random } from 'meteor/random';
 
 import { NpsRaw } from '../../../app/models/server/raw/Nps';
 import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
@@ -176,6 +175,10 @@ export class NPSService extends ServiceClass implements INPSService {
 			return;
 		}
 
+		if (!npsId || typeof npsId !== 'string') {
+			throw new Error('Invalid NPS id');
+		}
+
 		const nps = await this.Nps.findOneById(npsId, { projection: { status: 1, startAt: 1, expireAt: 1 } });
 		if (!nps) {
 			return;
@@ -196,7 +199,7 @@ export class NPSService extends ServiceClass implements INPSService {
 
 		const identifier = createHash('sha256').update(`${ userId }${ npsId }`).digest('hex');
 
-		const result = await this.NpsVote.insertOne({
+		const result = await this.NpsVote.save({
 			ts: new Date(),
 			npsId,
 			identifier,
@@ -204,7 +207,6 @@ export class NPSService extends ServiceClass implements INPSService {
 			score,
 			comment,
 			status: INpsVoteStatus.NEW,
-			_updatedAt: new Date(),
 		});
 		if (!result) {
 			throw new Error('Error saving NPS vote');
