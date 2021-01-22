@@ -18,7 +18,7 @@ export function EditUserWithData({ uid, ...props }) {
 	const { value: data, phase: state, error } = useEndpointData('users.info', useMemo(() => ({ userId: uid }), [uid]));
 
 	if ([state, roleState].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton/>;
+		return <Box p='x24'><FormSkeleton/></Box>;
 	}
 
 	if (error || roleError) {
@@ -48,8 +48,19 @@ export function EditUser({ data, roles, ...props }) {
 	const t = useTranslation();
 
 	const [avatarObj, setAvatarObj] = useState();
+	const [errors, setErrors] = useState({});
 
-	const { values, handlers, reset, hasUnsavedChanges } = useForm(getInitialValue(data));
+	const validationKeys = useMemo(() => ({
+		name: (name) => (name.trim() === '' ? setErrors({ ...errors, name: t('The_field_is_required', t('name')) }) : setErrors({ ...errors, name: '' })),
+		username: (username) => (username.trim() === '' ? setErrors({ ...errors, username: t('The_field_is_required', t('username')) }) : setErrors({ ...errors, username: '' })),
+		email: (email) => (email.trim() === '' ? setErrors({ ...errors, email: t('The_field_is_required', t('email')) }) : setErrors({ ...errors, email: '' })),
+	}), [errors, t]);
+
+	const validateForm = ({ key, value }) => {
+		validationKeys[key] && validationKeys[key](value);
+	};
+
+	const { values, handlers, reset, hasUnsavedChanges } = useForm(getInitialValue(data), validateForm);
 
 	const router = useRoute('admin-users');
 
@@ -89,6 +100,15 @@ export function EditUser({ data, roles, ...props }) {
 	}, [avatarObj, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, data._id]);
 
 	const handleSave = useCallback(async () => {
+		Object.entries(values).forEach(([key, value]) => {
+			validationKeys[key] && validationKeys[key](value);
+		});
+
+		const { name, username, email } = errors;
+		if ((name && name !== '') || (username && username !== '') || (email && email !== '')) {
+			return false;
+		}
+
 		const result = await saveAction();
 		if (result.success) {
 			if (avatarObj) {
@@ -96,7 +116,7 @@ export function EditUser({ data, roles, ...props }) {
 			}
 			goToUser(data._id);
 		}
-	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar]);
+	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
 
 	const availableRoles = roles.map(({ _id, description }) => [_id, description || _id]);
 
@@ -109,11 +129,11 @@ export function EditUser({ data, roles, ...props }) {
 			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
 				<Margins inlineEnd='x4'>
 					<Button flexGrow={1} type='reset' disabled={!canSaveOrReset} onClick={reset}>{t('Reset')}</Button>
-					<Button mie='none' flexGrow={1} disabled={!canSaveOrReset || values.email.length === 0} onClick={handleSave}>{t('Save')}</Button>
+					<Button mie='none' flexGrow={1} disabled={!canSaveOrReset} onClick={handleSave}>{t('Save')}</Button>
 				</Margins>
 			</Box>
 		</Field.Row>
-	</Field>, [handleSave, canSaveOrReset, reset, t, values]);
+	</Field>, [handleSave, canSaveOrReset, reset, t]);
 
-	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} prepend={prepend} append={append} {...props}/>;
+	return <UserForm errors={errors} formValues={values} formHandlers={handlers} availableRoles={availableRoles} prepend={prepend} append={append} {...props}/>;
 }
