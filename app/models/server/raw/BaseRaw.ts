@@ -1,4 +1,39 @@
-import { Collection, FindOneOptions, Cursor, WriteOpResult, DeleteWriteOpResultObject, FilterQuery, UpdateQuery, UpdateOneOptions } from 'mongodb';
+import {
+	Collection,
+	CollectionInsertOneOptions,
+	Cursor,
+	DeleteWriteOpResultObject,
+	FilterQuery,
+	FindOneOptions,
+	InsertOneWriteOpResult,
+	ObjectID,
+	ObjectId,
+	OptionalId,
+	UpdateManyOptions,
+	UpdateOneOptions,
+	UpdateQuery,
+	UpdateWriteOpResult,
+	WithId,
+	WriteOpResult,
+} from 'mongodb';
+
+// [extracted from @types/mongo] TypeScript Omit (Exclude to be specific) does not work for objects with an "any" indexed type, and breaks discriminated unions
+type EnhancedOmit<T, K> = string | number extends keyof T
+	? T // T has indexed type e.g. { _id: string; [k: string]: any; } or it is "any"
+	: T extends any
+		? Pick<T, Exclude<keyof T, K>> // discriminated unions
+		: never;
+
+// [extracted from @types/mongo]
+type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user has defined a type for _id
+	? {} extends U
+		? Exclude<U, {}>
+		: unknown extends U
+			? ObjectId
+			: U
+	: ObjectId;
+
+type ModelOptionalId<T> = EnhancedOmit<T, '_id'> & { _id?: ExtractIdType<T> };
 
 interface ITrash {
 	__collection__: string;
@@ -68,6 +103,24 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 
 	update(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<WriteOpResult> {
 		return this.col.update(filter, update, options);
+	}
+
+	updateOne(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<UpdateWriteOpResult> {
+		return this.col.updateOne(filter, update, options);
+	}
+
+	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
+		return this.col.updateMany(filter, update, options);
+	}
+
+	insertOne(doc: ModelOptionalId<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {
+		if (!doc._id || typeof doc._id !== 'string') {
+			const oid = new ObjectID();
+			doc = { _id: oid.toHexString(), ...doc };
+		}
+
+		// TODO reavaluate following type casting
+		return this.col.insertOne(doc as unknown as OptionalId<T>, options);
 	}
 
 	removeById(_id: string): Promise<DeleteWriteOpResultObject> {
