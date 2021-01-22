@@ -3,7 +3,7 @@ import { FindOneOptions } from 'mongodb';
 import { IServiceClass } from './ServiceClass';
 import { IMessage } from '../../../definition/IMessage';
 
-type QueryOptions = FindOneOptions<any> & {
+export type QueryOptions = FindOneOptions<any> & {
 	returnTotal?: boolean;
 }
 
