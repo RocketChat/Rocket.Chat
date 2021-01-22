@@ -11,8 +11,8 @@ const Avatar = ({ value, ...props }) => <UserAvatar size={Options.AvatarSize} us
 
 const UserAutoCompleteMultiple = React.memo((props) => {
 	const [filter, setFilter] = useState('');
-	const params = useDebouncedValue(filter, 1000);
-	const { value: data } = useEndpointData('users.autocomplete', useMemo(() => query(params), [params]));
+	const debouncedFilter = useDebouncedValue(filter, 1000);
+	const { value: data } = useEndpointData('users.autocomplete', useMemo(() => query(debouncedFilter), [debouncedFilter]));
 	const options = useMemo(() => (data && data.items.map((user) => ({ value: user.username, label: user.name }))) || [], [data]);
 	const onClickRemove = useMutableCallback((e) => {
 		e.stopPropagation();
