@@ -3,13 +3,12 @@ import React from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-const AppPermissionsReviewModal = (props) => {
-	const {
-		appPermissions,
-		cancel,
-		confirm,
-	} = props;
-
+const AppPermissionsReviewModal = ({
+	appPermissions,
+	cancel,
+	confirm,
+	modalProps = {},
+}) => {
 	const t = useTranslation();
 
 	const handleCloseButtonClick = () => {
@@ -25,7 +24,7 @@ const AppPermissionsReviewModal = (props) => {
 	};
 
 
-	return <Modal {...props}>
+	return <Modal {...modalProps}>
 		<Modal.Header>
 			<Icon color='danger' name='info-circled' size={20}/>
 			<Modal.Title>{t('Apps_Permissions_Review_Modal_Title')}</Modal.Title>
@@ -34,8 +33,8 @@ const AppPermissionsReviewModal = (props) => {
 		<Modal.Content fontScale='p1'>
 			<ul>
 				{
-					props.appPermissions.length
-						?	props.appPermissions.map((permission) =>
+					appPermissions.length
+						?	appPermissions.map((permission) =>
 							<li key={permission.name}>
 								<b>{ t(`Apps_Permissions_${ permission.name.replace('.', '_') }`) }</b>
 								{ permission.required && <span style={{ color: 'red' }}> ({ t('Required') })</span> }

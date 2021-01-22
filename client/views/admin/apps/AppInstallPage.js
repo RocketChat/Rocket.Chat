@@ -1,6 +1,5 @@
 import { Button, ButtonGroup, Icon, Field, FieldGroup, TextInput, Throbber } from '@rocket.chat/fuselage';
 import React, { useCallback, useEffect, useState } from 'react';
-import { unzipSync, strFromU8 } from 'fflate';
 
 import Page from '../../../components/Page';
 import { useRoute, useQueryStringParameter } from '../../../contexts/RouterContext';
@@ -11,63 +10,9 @@ import { useForm } from '../../../hooks/useForm';
 import { handleInstallError } from './helpers';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import { useSetModal } from '../../../contexts/ModalContext';
+import { getPermissionsFromZippedApp } from './lib/getPermissionsFromZippedApp';
 
 const placeholderUrl = 'https://rocket.chat/apps/package.zip';
-
-async function fileToBuffer(file) {
-	return new Promise((resolve, reject) => {
-		const fileReader = new FileReader();
-		fileReader.onload = (e) => resolve(e.target.result);
-		fileReader.onerror = (e) => reject(e);
-		fileReader.readAsArrayBuffer(file);
-	});
-}
-
-function unzipAppBuffer(zippedAppBuffer) {
-	return unzipSync(new Uint8Array(zippedAppBuffer));
-}
-
-function getAppManifest(unzippedAppBuffer) {
-	if (!unzippedAppBuffer['app.json']) {
-		throw new Error('No app.json file found in the zip');
-	}
-
-	try {
-		return JSON.parse(strFromU8(unzippedAppBuffer['app.json']));
-	} catch (e) {
-		throw new Error('Failed to parse app.json', e);
-	}
-}
-
-function getPermissionsFromManifest(manifest) {
-	if (!manifest.permissions) {
-		return [];
-	}
-
-	if (!Array.isArray(manifest.permissions)) {
-		throw new Error('The "permissions" property from app.json is invalid');
-	}
-
-	return manifest.permissions;
-}
-
-async function getPermissionsFromZippedApp(zippedApp, isFromFileInput = true) {
-	let uint8buffer;
-	try {
-		if (isFromFileInput) {
-			uint8buffer = await fileToBuffer(zippedApp);
-		} else {
-			uint8buffer = Uint8Array.from(zippedApp);
-		}
-		const unzippedBuffer = unzipAppBuffer(uint8buffer);
-		const manifest = getAppManifest(unzippedBuffer);
-		const permissions = getPermissionsFromManifest(manifest);
-		return permissions;
-	} catch (e) {
-		console.error(e);
-		throw e;
-	}
-}
 
 function AppInstallPage() {
 	const t = useTranslation();
@@ -128,9 +73,10 @@ function AppInstallPage() {
 			let permissions;
 			let appFile;
 			if (url) {
-				const { buff: { data } } = await downloadApp({ url });
-				permissions = await getPermissionsFromZippedApp(data, false);
-				appFile = new File([Uint8Array.from(data)], 'app.zip', { type: 'application/zip' });
+				const { buff } = await downloadApp({ url });
+				const fileData = Uint8Array.from(buff.data);
+				permissions = await getPermissionsFromZippedApp(fileData, false);
+				appFile = new File([fileData], 'app.zip', { type: 'application/zip' });
 			} else {
 				appFile = file;
 				permissions = await getPermissionsFromZippedApp(appFile);
