@@ -16,7 +16,7 @@ Template.readReceipts.helpers({
 		return (settings.get('UI_Use_Real_Name') && this.user.name) || this.user.username;
 	},
 	time() {
-		return moment(this.ts).format('L LTS');
+		return moment(this.ts).format(settings.get('Message_TimeAndDateFormat'));
 	},
 	isLoading() {
 		return Template.instance().loading.get();
