@@ -8,7 +8,6 @@ import { callbacks } from '../../../callbacks/server';
 import { Apps } from '../../../apps/server';
 
 export const deleteMessage = function(message, user) {
-	// TODO evaluate limit history visibility
 	const deletedMsg = Messages.findOneById(message._id);
 	const isThread = deletedMsg.tcount > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;

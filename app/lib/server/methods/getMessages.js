@@ -14,7 +14,6 @@ Meteor.methods({
 		const cache = {};
 
 		return messages.map((msgId) => {
-			// TODO evaluate limit history visibility
 			const msg = Messages.findOneById(msgId);
 
 			if (!msg || !msg.rid) {

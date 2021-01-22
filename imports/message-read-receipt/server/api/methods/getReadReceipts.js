@@ -13,7 +13,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-message', 'The required \'messageId\' param is missing.', { method: 'getReadReceipts' });
 		}
 
-		// TODO evaluate limit history visibility
 		const message = Messages.findOneById(messageId);
 
 		if (!message) {

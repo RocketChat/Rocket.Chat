@@ -19,7 +19,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'unfollowMessage' });
 		}
 
-		// TODO evaluate limit history visibility
 		const message = Messages.findOneById(mid, { fields: { rid: 1, tmid: 1 } });
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'followMessage' });

@@ -90,7 +90,6 @@ export const executeSetReaction = async function(reaction, messageId, shouldReac
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 	}
 
-	// TODO evaluate limit history visibility
 	const message = Messages.findOneById(messageId);
 
 	if (!message) {

@@ -191,7 +191,6 @@ API.v1.addRoute('chat.starMessage', { authRequired: true }, {
 			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
 		}
 
-		// TODO evaluate limit history visibility
 		const msg = Messages.findOneById(this.bodyParams.messageId);
 
 		if (!msg) {
@@ -214,7 +213,6 @@ API.v1.addRoute('chat.unPinMessage', { authRequired: true }, {
 			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
 		}
 
-		// TODO evaluate limit history visibility
 		const msg = Messages.findOneById(this.bodyParams.messageId);
 
 		if (!msg) {
@@ -233,7 +231,6 @@ API.v1.addRoute('chat.unStarMessage', { authRequired: true }, {
 			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is required.');
 		}
 
-		// TODO evaluate limit history visibility
 		const msg = Messages.findOneById(this.bodyParams.messageId);
 
 		if (!msg) {
@@ -258,7 +255,6 @@ API.v1.addRoute('chat.update', { authRequired: true }, {
 			text: String, // Using text to be consistant with chat.postMessage
 		}));
 
-		// TODO evaluate limit history visibility
 		const msg = Messages.findOneById(this.bodyParams.msgId);
 
 		// Ensure the message exists
@@ -289,7 +285,6 @@ API.v1.addRoute('chat.react', { authRequired: true }, {
 			throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is missing.');
 		}
 
-		// TODO evaluate limit history visibility
 		const msg = Messages.findOneById(this.bodyParams.messageId);
 
 		if (!msg) {

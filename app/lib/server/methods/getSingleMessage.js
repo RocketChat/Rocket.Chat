@@ -7,7 +7,6 @@ Meteor.methods({
 	getSingleMessage(msgId) {
 		check(msgId, String);
 
-		// TODO evaluate limit history visibility
 		const msg = Messages.findOneById(msgId);
 
 		if (!msg || !msg.rid) {
