@@ -1067,19 +1067,6 @@ describe('[Users]', function() {
 				.end(done);
 		});
 
-		it('should throw an error when user try change password without the actual password', (done) => {
-			request.post(api('users.updateOwnBasicInfo'))
-				.set(credentials)
-				.send({
-					data: {
-						newPassword: 'the new pass',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.end(done);
-		});
-
 		it('should throw an error when the name is only whitespaces', (done) => {
 			request.post(api('users.updateOwnBasicInfo'))
 				.set(credentials)

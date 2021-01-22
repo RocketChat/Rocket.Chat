@@ -1,6 +1,7 @@
 import { ButtonGroup, Button, Box, Icon } from '@rocket.chat/fuselage';
 import { SHA256 } from 'meteor/sha';
 import React, { useMemo, useState, useCallback } from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../components/Page';
 import AccountProfileForm from './AccountProfileForm';
@@ -113,59 +114,30 @@ const AccountProfilePage = () => {
 
 	const updateAvatar = useUpdateAvatar(avatar, user._id);
 
-	const onSave = useCallback(async () => {
-		const save = async (typedPassword) => {
-			try {
-				await saveFn({
-					...allowRealNameChange && { realname },
-					...allowEmailChange && getUserEmailAddress(user) !== email && { email },
-					...allowPasswordChange && { newPassword: password },
-					...canChangeUsername && { username },
-					...allowUserStatusMessageChange && { statusText },
-					...typedPassword && { typedPassword: SHA256(typedPassword) },
-					statusType,
-					nickname,
-					bio: bio || '',
-				}, customFields);
-				handlePassword('');
-				handleConfirmationPassword('');
-				const avatarResult = await updateAvatar();
-				if (avatarResult) { handleAvatar(''); }
-				commit();
-				dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-		};
+	const onSave = useMutableCallback(async () => {
+		try {
+			await saveFn({
+				...allowRealNameChange && { realname },
+				...allowEmailChange && getUserEmailAddress(user) !== email && { email },
+				...allowPasswordChange && { newPassword: password },
+				...canChangeUsername && { username },
+				...allowUserStatusMessageChange && { statusText },
+				statusType,
+				nickname,
+				bio: bio || '',
+			}, customFields);
+			handlePassword('');
+			handleConfirmationPassword('');
+			const avatarResult = await updateAvatar();
+			if (avatarResult) { handleAvatar(''); }
+			commit();
+			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	});
 
-		save();
-	}, [
-		saveFn,
-		allowEmailChange,
-		allowPasswordChange,
-		allowRealNameChange,
-		allowUserStatusMessageChange,
-		bio,
-		canChangeUsername,
-		email,
-		password,
-		realname,
-		statusText,
-		username,
-		user,
-		updateAvatar,
-		handleAvatar,
-		dispatchToastMessage,
-		t,
-		customFields,
-		statusType,
-		commit,
-		nickname,
-		handlePassword,
-		handleConfirmationPassword,
-	]);
-
-	const handleLogoutOtherLocations = useCallback(async () => {
+	const handleLogoutOtherLocations = useMutableCallback(async () => {
 		setLoggingOut(true);
 		try {
 			await logoutOtherClients();
@@ -174,9 +146,9 @@ const AccountProfilePage = () => {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 		setLoggingOut(false);
-	}, [logoutOtherClients, dispatchToastMessage, t]);
+	});
 
-	const handleDeleteOwnAccount = useCallback(async () => {
+	const handleDeleteOwnAccount = useMutableCallback(async () => {
 		const save = async (passwordOrUsername) => {
 			try {
 				await deleteOwnAccount(SHA256(passwordOrUsername));
@@ -215,7 +187,7 @@ const AccountProfilePage = () => {
 			text={t('If_you_are_sure_type_in_your_username')}
 			isPassword
 		/>);
-	}, [closeModal, deleteOwnAccount, dispatchToastMessage, erasureType, localPassword, t, setModal]);
+	});
 
 	return <Page>
 		<Page.Header title={t('Profile')}>

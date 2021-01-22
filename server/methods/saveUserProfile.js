@@ -74,16 +74,10 @@ Meteor.methods({
 			Meteor.call('setEmail', settings.email);
 		}
 
-		const canChangePasswordForOAuth = rcSettings.get('Accounts_AllowPasswordChangeForOAuthUsers');
-		if (canChangePasswordForOAuth || user.services?.password) {
+		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
+			const canChangePasswordForOAuth = rcSettings.get('Accounts_AllowPasswordChangeForOAuthUsers');
+			if (canChangePasswordForOAuth || user.services?.password) {
 			// Should be the last check to prevent error when trying to check password for users without password
-			if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
-				if (!compareUserPassword(user, { sha256: settings.typedPassword })) {
-					throw new Meteor.Error('error-invalid-password', 'Invalid password', {
-						method: 'saveUserProfile',
-					});
-				}
-
 				// don't let user change to same password
 				if (compareUserPassword(user, { plain: settings.newPassword })) {
 					throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {

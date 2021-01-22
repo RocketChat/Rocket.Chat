@@ -491,7 +491,6 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 				username: Match.Maybe(String),
 				nickname: Match.Maybe(String),
 				statusText: Match.Maybe(String),
-				currentPassword: Match.Maybe(String),
 				newPassword: Match.Maybe(String),
 			}),
 			customFields: Match.Maybe(Object),
@@ -504,7 +503,6 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 			nickname: this.bodyParams.data.nickname,
 			statusText: this.bodyParams.data.statusText,
 			newPassword: this.bodyParams.data.newPassword,
-			typedPassword: this.bodyParams.data.currentPassword,
 		};
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('saveUserProfile', userData, this.bodyParams.customFields));
