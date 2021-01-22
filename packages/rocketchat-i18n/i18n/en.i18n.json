@@ -2869,6 +2869,8 @@
   "Omnichannel_Directory": "Omnichannel Directory",
   "Omnichannel_appearance": "Omnichannel Appearance",
   "Omnichannel_Contact_Center": "Omnichannel Contact Center",
+  "Omnichannel_contact_manager_routing": "Assign new conversations to the contact manager",
+  "Omnichannel_contact_manager_routing_Description": "This setting allocates a chat to the assigned Contact Manager, as long as the Contact Manager is online when the chat starts",
   "Omnichannel_External_Frame": "External Frame",
   "Omnichannel_External_Frame_Enabled": "External frame enabled",
   "Omnichannel_External_Frame_Encryption_JWK": "Encryption key (JWK)",

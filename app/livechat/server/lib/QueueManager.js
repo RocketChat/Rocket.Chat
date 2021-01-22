@@ -1,24 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { LivechatRooms, LivechatInquiry } from '../../../models/server';
+import { LivechatRooms, LivechatInquiry, Users } from '../../../models/server';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
 
 
 const queueInquiry = async (room, inquiry, defaultAgent) => {
-	if (!defaultAgent) {
-		defaultAgent = RoutingManager.getMethod().delegateAgent(defaultAgent, inquiry);
-	}
+	const inquiryAgent = RoutingManager.delegateAgent(defaultAgent, inquiry);
+	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
+	inquiry = LivechatInquiry.findOneById(inquiry._id);
 
-	inquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, defaultAgent);
 	if (inquiry.status === 'ready') {
-		return RoutingManager.delegateInquiry(inquiry, defaultAgent);
-	}
-
-	if (inquiry.status === 'queued') {
-		Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
+		return RoutingManager.delegateInquiry(inquiry, inquiryAgent);
 	}
 };
 export const QueueManager = {
@@ -46,7 +41,6 @@ export const QueueManager = {
 		LivechatRooms.updateRoomCount();
 
 		await queueInquiry(room, inquiry, agent);
-
 		return room;
 	},
 
@@ -66,7 +60,10 @@ export const QueueManager = {
 			...department && { department },
 		};
 
-		const defaultAgent = servedBy && { agentId: servedBy._id, username: servedBy.username };
+		let defaultAgent;
+		if (servedBy && Users.findOneOnlineAgentByUsername(servedBy.username)) {
+			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
+		}
 
 		LivechatRooms.unarchiveOneById(rid);
 		const room = LivechatRooms.findOneById(rid);
