@@ -409,15 +409,14 @@ API.v1.addRoute('chat.getPinnedMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
-		// TODO evaluate limit history visibility
-		const cursor = Messages.findPinnedByRoom(room._id, {
-			skip: offset,
-			limit: count,
-		});
-
-		const total = cursor.count();
-
-		const messages = cursor.fetch();
+		const { records: messages, total } = Promise.await(Message.get(this.userId, {
+			rid: room._id,
+			pinned: true,
+			queryOptions: {
+				skip: offset,
+				limit: count,
+			},
+		}));
 
 		return API.v1.success({
 			messages,

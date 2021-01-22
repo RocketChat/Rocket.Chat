@@ -26,7 +26,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 		this.Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
 	}
 
-	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<{records: IMessage[]; total: number} | undefined> {
+	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, pinned, mentionsUsername }: MessageFilter): Promise<{ records: IMessage[]; total: number } | undefined> {
 		if (!hasLicense('livechat-enterprise')) {
 			return;
 		}
@@ -41,7 +41,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			}
 		}
 
-		const cursor = this.Messages.findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername });
+		const cursor = this.Messages.findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, pinned, mentionsUsername });
 		const total = await cursor.count();
 		const records = await cursor.toArray() as IMessage[];
 
