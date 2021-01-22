@@ -6,6 +6,21 @@ import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from '.
 import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
 
+
+const queueInquiry = async (room, inquiry, defaultAgent) => {
+	if (!defaultAgent) {
+		defaultAgent = RoutingManager.getMethod().delegateAgent(defaultAgent, inquiry);
+	}
+
+	inquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, defaultAgent);
+	if (inquiry.status === 'ready') {
+		return RoutingManager.delegateInquiry(inquiry, defaultAgent);
+	}
+
+	if (inquiry.status === 'queued') {
+		Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
+	}
+};
 export const QueueManager = {
 	async requestRoom({ guest, message, roomInfo, agent, extraData }) {
 		check(message, Match.ObjectIncluding({
@@ -26,23 +41,38 @@ export const QueueManager = {
 		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
 
 		const room = LivechatRooms.findOneById(createLivechatRoom(rid, name, guest, roomInfo, extraData));
-		let inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid, name, guest, message, extraData }));
+		const inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid, name, guest, message, extraData }));
 
 		LivechatRooms.updateRoomCount();
 
-		if (!agent) {
-			agent = RoutingManager.getMethod().delegateAgent(agent, inquiry);
+		await queueInquiry(room, inquiry, agent);
+
+		return room;
+	},
+
+	async unarchiveRoom(archivedRoom = {}) {
+		const { _id: rid, open, closedAt, fname: name, servedBy, v, departmentId: department, lastMessage: message } = archivedRoom;
+		if (!rid || !closedAt || !!open) {
+			return archivedRoom;
 		}
 
-		inquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, agent);
-		if (inquiry.status === 'ready') {
-			return RoutingManager.delegateInquiry(inquiry, agent);
+		const oldInquiry = LivechatInquiry.findOneByRoomId(rid);
+		if (oldInquiry) {
+			LivechatInquiry.removeByRoomId(rid);
 		}
 
-		if (inquiry.status === 'queued') {
-			Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
-		}
+		const guest = {
+			...v,
+			...department && { department },
+		};
 
+		const defaultAgent = servedBy && { agentId: servedBy._id, username: servedBy.username };
+
+		LivechatRooms.unarchiveOneById(rid);
+		const room = LivechatRooms.findOneById(rid);
+		const inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid, name, guest, message }));
+
+		await queueInquiry(room, inquiry, defaultAgent);
 		return room;
 	},
 };
