@@ -1,4 +1,5 @@
 import { Db } from 'mongodb';
+import { v4 as uuidv4 } from 'uuid';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { BannersRaw } from '../../../app/models/server/raw/Banners';
@@ -26,7 +27,10 @@ export class BannerService extends ServiceClass implements IBannerService {
 	}
 
 	async create(doc: Omit<IBanner, '_id'>): Promise<IBanner> {
-		const { insertedId } = await this.Banners.insertOne(doc);
+		const bannerId = uuidv4();
+
+		doc.view.appId = 'banner-core';
+		doc.view.viewId = bannerId;
 
 		const invalidPlatform = doc.platform?.some((platform) => !Object.values(BannerPlatform).includes(platform));
 		if (invalidPlatform) {
@@ -41,7 +45,12 @@ export class BannerService extends ServiceClass implements IBannerService {
 			throw new Error('Cannot create banner already expired');
 		}
 
-		const banner = await this.Banners.findOneById(insertedId);
+		await this.Banners.insertOne({
+			_id: bannerId,
+			...doc,
+		});
+
+		const banner = await this.Banners.findOneById(bannerId);
 		if (!banner) {
 			throw new Error('error-creating-banner');
 		}
@@ -66,6 +75,10 @@ export class BannerService extends ServiceClass implements IBannerService {
 	}
 
 	async dismiss(userId: string, bannerId: string): Promise<boolean> {
+		if (!userId || !bannerId) {
+			throw new Error('Invalid params');
+		}
+
 		const banner = await this.Banners.findOneById(bannerId);
 		if (!banner) {
 			throw new Error('Banner not found');

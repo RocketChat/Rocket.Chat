@@ -40,8 +40,9 @@ export class UiKitCoreApp extends ServiceClass implements IUiKitCoreAppService {
 		const { appId } = payload;
 
 		const service = getAppModule(appId);
-
-		console.log('viewClosed ->', payload);
+		if (!service) {
+			return;
+		}
 
 		return service.viewClosed(payload);
 	}

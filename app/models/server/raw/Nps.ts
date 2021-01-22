@@ -34,6 +34,27 @@ export class NpsRaw extends BaseRaw<T> {
 		return value;
 	}
 
+	// get expired surveys already sending results
+	async getOpenExpiredAlreadySending(): Promise<INps | null> {
+		const today = new Date();
+
+		const query = {
+			expireAt: { $lte: today },
+			status: NPSStatus.SENDING,
+		};
+
+		return this.col.findOne(query);
+	}
+
+	updateStatusById(_id: INps['_id'], status: INps['status']): Promise<UpdateWriteOpResult> {
+		const update = {
+			$set: {
+				status,
+			},
+		};
+		return this.col.updateOne({ _id }, update);
+	}
+
 	save({ _id, startAt, expireAt, createdBy, status }: Pick<INps, '_id' | 'startAt' | 'expireAt' | 'createdBy' | 'status'>): Promise<UpdateWriteOpResult> {
 		return this.col.updateOne({
 			_id,

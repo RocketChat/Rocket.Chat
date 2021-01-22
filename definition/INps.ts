@@ -5,6 +5,7 @@ export enum NPSStatus {
 	OPEN = 'open',
 	SENDING = 'sending',
 	SENT = 'sent',
+	CLOSED = 'closed',
 }
 
 export interface INps extends IRocketChatRecord {
@@ -30,4 +31,5 @@ export interface INpsVote extends IRocketChatRecord {
 	score: number;
 	comment: string;
 	status: INpsVoteStatus;
+	sentAt?: Date;
 }

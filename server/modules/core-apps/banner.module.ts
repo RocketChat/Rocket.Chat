@@ -29,10 +29,11 @@ export class BannerModule implements IUiKitCoreApp {
 
 	// when banner view is closed we need to dissmiss that banner for that user
 	async viewClosed(payload: any): Promise<any> {
-		// TODO validate payload
 		const {
 			payload: {
-				bannerId,
+				view: {
+					viewId: bannerId,
+				},
 			},
 			user: {
 				_id: userId,

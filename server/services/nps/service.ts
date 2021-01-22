@@ -1,13 +1,17 @@
 import { createHash } from 'crypto';
 
 import { Db } from 'mongodb';
+import { Random } from 'meteor/random';
 
 import { NpsRaw } from '../../../app/models/server/raw/Nps';
 import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
-import { NPSStatus, INpsVoteStatus } from '../../../definition/INps';
+import { NPSStatus, INpsVoteStatus, INpsVote } from '../../../definition/INps';
+import { BannerPlatform } from '../../../definition/IBanner';
 import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { Banner, NPS } from '../../sdk';
+import { sendToCloud } from './sendToCloud';
 
 export class NPSService extends ServiceClass implements INPSService {
 	protected name = 'nps';
@@ -30,6 +34,39 @@ export class NPSService extends ServiceClass implements INPSService {
 		const npsEnabled = await this.Settings.getValueById('NPS_survey_enabled');
 		if (!npsEnabled) {
 			throw new Error('Server opted-out for NPS surveys');
+		}
+
+		const any = await this.Nps.findOne({}, { projection: { _id: 1 } });
+		if (!any) {
+			const today = new Date();
+			const inTwoMonths = new Date();
+			inTwoMonths.setMonth(inTwoMonths.getMonth() + 2);
+
+			Banner.create({
+				platform: [BannerPlatform.Web],
+				createdAt: today,
+				expireAt: inTwoMonths,
+				startAt: today,
+				roles: ['admin'],
+				createdBy: {
+					_id: 'rocket.cat',
+					username: 'rocket.cat',
+				},
+				_updatedAt: new Date(),
+				view: {
+					blocks: [
+						{
+							type: 'section',
+							blockId: 'attention',
+							text: {
+								type: 'plain_text',
+								text: `NPS survey is scheduled to run at ${ inTwoMonths } for all users. It\'s possible to turn off the survey on 'Admin > General > NPS'?`,
+								emoji: false,
+							},
+						},
+					],
+				},
+			});
 		}
 
 		const {
@@ -59,28 +96,72 @@ export class NPSService extends ServiceClass implements INPSService {
 			return;
 		}
 
-		const nps = await this.Nps.getOpenExpiredAndStartSending();
+		const npsSending = await this.Nps.getOpenExpiredAlreadySending();
+		console.log('npsSending ->', npsSending);
+
+		const nps = npsSending || await this.Nps.getOpenExpiredAndStartSending();
+		console.log('nps ->', nps);
 		if (!nps) {
 			return;
 		}
 
-		const votes = await this.NpsVote.findNotSentByNpsId(nps._id).toArray();
+		const total = await this.NpsVote.findByNpsId(nps._id).count();
+		console.log('total ->', total);
 
-		const sending = await Promise.all(votes.map(async (vote) => this.NpsVote.col.findOneAndUpdate({
-			_id: vote._id,
-			status: INpsVoteStatus.NEW,
-		}, {
-			$set: {
-				status: INpsVoteStatus.SENDING,
-			},
-		})));
+		const votesToSend = await this.NpsVote.findNotSentByNpsId(nps._id).toArray();
+		console.log('votesToSend ->', votesToSend);
+
+		// if there is nothing to sent, check if something gone wrong
+		if (votesToSend.length === 0) {
+			// update old votes (sent 5 minutes ago or more) in 'sending' status back to 'new'
+			await this.NpsVote.updateOldSendingToNewByNpsId(nps._id);
+
+			NPS.sendResults();
+			return;
+		}
+
+		const today = new Date();
+
+		const sending = await Promise.all(votesToSend.map(async (vote) => {
+			const { value } = await this.NpsVote.col.findOneAndUpdate({
+				_id: vote._id,
+				status: INpsVoteStatus.NEW,
+			}, {
+				$set: {
+					status: INpsVoteStatus.SENDING,
+					sentAt: today,
+				},
+			});
+			return value;
+		}));
+		console.log('sending ->', sending);
+
+		const votes = sending.filter(Boolean) as INpsVote[];
+		console.log('votes ->', votes);
 
 		const payload = {
-			votes: sending.filter(Boolean),
+			total,
+			votes,
 		};
-
 		// TODO send to cloud
 		console.log('payload', payload);
+		sendToCloud(nps._id, payload);
+
+		const voteIds = votes.map(({ _id }) => _id);
+		console.log('voteIds ->', voteIds);
+		if (!voteIds) {
+			return;
+		}
+
+		this.NpsVote.updateVotesToSent(voteIds);
+
+		const missing = await this.NpsVote.findOneNotSentByNpsId(nps._id, { projection: { _id: 0, npsId: 1 } });
+		console.log('missing ->', missing);
+		if (missing) {
+			return;
+		}
+
+		await this.Nps.updateStatusById(nps._id, NPSStatus.SENT);
 	}
 
 	async vote({

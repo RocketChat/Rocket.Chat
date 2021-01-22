@@ -24,7 +24,7 @@ const fetchInitialBanners = async (): Promise<void> => {
 const handleNewBanner = async (event: { bannerId: string }): Promise<void> => {
 	const response = await APIClient.get('v1/banners.getNew', {
 		platform: BannerPlatform.Web,
-		bannerId: event.bannerId,
+		bid: event.bannerId,
 	}) as {
 		banners: IBanner[];
 	};

@@ -10,10 +10,10 @@ API.v1.addRoute('banners.getNew', { authRequired: true }, {
 	get() {
 		check(this.queryParams, Match.ObjectIncluding({
 			platform: String,
-			bannerId: Match.Maybe(String),
+			bid: Match.Maybe(String),
 		}));
 
-		const { platform, bannerId } = this.queryParams;
+		const { platform, bid: bannerId } = this.queryParams;
 		if (!platform) {
 			throw new Meteor.Error('error-missing-param', 'The required "platform" param is missing.');
 		}
