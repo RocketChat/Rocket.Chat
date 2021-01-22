@@ -46,7 +46,7 @@ API.v1.addRoute('validateInviteToken', { authRequired: false }, {
 	post() {
 		const { token } = this.bodyParams;
 
-		if (!token) {
+		if (!token || typeof token !== 'string') {
 			throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', { method: 'validateInviteToken', field: 'token' });
 		}
 
