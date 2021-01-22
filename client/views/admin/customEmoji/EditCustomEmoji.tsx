@@ -52,12 +52,12 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 	const saveAction = useEndpointUpload('emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
 
 	const handleSave = useCallback(async () => {
-		if (!emojiFile) {
+		if (!emojiFile && !newEmojiPreview) {
 			return;
 		}
 
 		const formData = new FormData();
-		formData.append('emoji', emojiFile);
+		if (emojiFile) { formData.append('emoji', emojiFile); }
 		formData.append('_id', _id);
 		formData.append('name', name);
 		formData.append('aliases', aliases);
@@ -65,7 +65,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		if (result.success) {
 			onChange();
 		}
-	}, [emojiFile, _id, name, aliases, saveAction, onChange]);
+	}, [emojiFile, _id, name, aliases, saveAction, onChange, newEmojiPreview]);
 
 	const deleteAction = useEndpointAction('POST', 'emoji-custom.delete', useMemo(() => ({ emojiId: _id }), [_id]));
 
