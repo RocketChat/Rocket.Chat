@@ -32,7 +32,7 @@ export function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 		};
 	}
 
-	const records = Promise.await(Message.get(userId, { rid, excludeTypes: hiddenMessageTypes, oldest: end, queryOptions: options }));
+	const { records } = Promise.await(Message.get(userId, { rid, excludeTypes: hiddenMessageTypes, oldest: end, queryOptions: options }));
 
 	const messages = normalizeMessagesForUser(records, userId);
 
@@ -44,7 +44,7 @@ export function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
-			const unreadMessages = Promise.await(Message.get(userId, {
+			const { records: unreadMessages, total } = Promise.await(Message.get(userId, {
 				rid,
 				excludeTypes: hiddenMessageTypes,
 				latest: ls,
@@ -58,7 +58,7 @@ export function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 			}));
 
 			firstUnread = unreadMessages[0];
-			unreadNotLoaded = unreadMessages.count;
+			unreadNotLoaded = total;
 		}
 	}
 

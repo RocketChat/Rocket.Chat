@@ -20,10 +20,12 @@ Meteor.methods({
 
 		const user = Users.findOneById(Meteor.userId());
 
-		return Promise.await(Message.get(user.userId, {
+		const { records } = Promise.await(Message.get(user.userId, {
 			rid: roomId,
 			mentionsUsername: user.username,
 			options,
 		}));
+
+		return records;
 	},
 });

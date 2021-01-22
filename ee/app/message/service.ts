@@ -7,6 +7,7 @@ import { MessageFilter, DiscussionArgs, CustomQueryArgs, getUpdatesArgs, getDele
 import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import { IMessageEnterprise } from '../../../server/sdk/types/IMessageEnterprise';
 import { hasLicense } from '../license/server/license';
+import { IMessage } from '../../../definition/IMessage';
 
 export class MessageEnterprise extends ServiceClass implements IMessageEnterprise {
 	protected name = 'ee-message';
@@ -25,7 +26,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 		this.Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
 	}
 
-	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<any[] | undefined> {
+	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<{records: IMessage[]; total: number} | undefined> {
 		if (!hasLicense('livechat-enterprise')) {
 			return;
 		}
@@ -41,11 +42,10 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 		}
 
 		const cursor = this.Messages.findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername });
-		const count = cursor.count();
-		const messages = cursor.toArray();
-		Object.defineProperty(messages, 'count', { value: count });
+		const total = await cursor.count();
+		const records = await cursor.toArray() as IMessage[];
 
-		return messages;
+		return { records, total };
 	}
 
 	async getDiscussions(filter: DiscussionArgs): Promise<any[] | undefined> {

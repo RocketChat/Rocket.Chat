@@ -44,7 +44,7 @@ Meteor.methods({
 			queryOptions.fields = { editedAt: 0 };
 		}
 
-		const records = Promise.await(Message.get(fromUserId, { rid, latest, oldest, inclusive, queryOptions }));
+		const { records } = Promise.await(Message.get(fromUserId, { rid, latest, oldest, inclusive, queryOptions }));
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
 
@@ -55,14 +55,14 @@ Meteor.methods({
 			if (oldest) {
 				const firstMsg = messages[messages.length - 1];
 				if (firstMsg && firstMsg.ts > oldest) {
-					const unreadMessages = Promise.await(Messages.get(fromUserId, {
+					const { records: unreadMessages, total } = Promise.await(Messages.get(fromUserId, {
 						rid,
 						oldest,
 						latest: firstMsg.ts,
 						queryOptions: { limit: 1, sort: { ts: 1 } },
 					}));
 					firstUnread = unreadMessages[0];
-					unreadNotLoaded = unreadMessages.length;
+					unreadNotLoaded = total;
 				}
 			}
 

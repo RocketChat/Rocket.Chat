@@ -4,6 +4,7 @@ import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { DiscussionArgs, IMessageService, MessageFilter, CustomQueryArgs, getUpdatesArgs, getDeletedArgs, getFilesArgs, getThreadsArgs, getByIdArgs, getThreadByIdArgs } from '../../sdk/types/IMessageService';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { MessageEnterprise } from '../../sdk';
+import { IMessage } from '../../../definition/IMessage';
 
 export class MessageService extends ServiceClass implements IMessageService {
 	protected name = 'message';
@@ -53,7 +54,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 		return trash;
 	}
 
-	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<any[]> {
+	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<{records: IMessage[]; total: number}> {
 		const result = await MessageEnterprise.get(userId, {
 			rid,
 			latest,
@@ -80,11 +81,10 @@ export class MessageService extends ServiceClass implements IMessageService {
 			mentionsUsername,
 		});
 
-		const count = cursor.count();
-		const messages = cursor.toArray();
-		Object.defineProperty(messages, 'count', { value: count });
+		const total = await cursor.count();
+		const records = await cursor.toArray();
 
-		return messages;
+		return { records, total };
 	}
 
 	async getDiscussions({ rid, excludePinned, ignoreThreads, latest, oldest, inclusive, fromUsers, text, queryOptions, userId }: DiscussionArgs): Promise<any[]> {

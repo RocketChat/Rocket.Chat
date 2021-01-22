@@ -40,6 +40,8 @@ Meteor.methods({
 			const sub = Subscriptions.findOneByRoomIdAndUserId(rid, fromId);
 			oldest = sub.ts;
 		}
-		return Promise.await(Message.get(fromId, { rid, oldest, queryOptions }));
+		const { records } = Promise.await(Message.get(fromId, { rid, oldest, queryOptions }));
+
+		return records;
 	},
 });

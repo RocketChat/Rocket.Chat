@@ -1,4 +1,5 @@
 import { IServiceClass } from './ServiceClass';
+import { IMessage } from '../../../definition/IMessage';
 
 export type MessageFilter = {
 	rid: string;
@@ -81,7 +82,7 @@ export type getByIdArgs = {
 };
 
 export interface IMessageService extends IServiceClass {
-	get(userId: string, options: MessageFilter): Promise<any[] | undefined>;
+	get(userId: string, options: MessageFilter): Promise<{records: IMessage[]; total: number} | undefined>;
 	getDiscussions(options: DiscussionArgs): Promise<any[] | undefined>;
 	customQuery({ query, userId, queryOptions }: CustomQueryArgs): Promise<any[] | undefined>;
 	getUpdates({ rid, timestamp, queryOptions }: getUpdatesArgs): Promise<any[] | undefined>;

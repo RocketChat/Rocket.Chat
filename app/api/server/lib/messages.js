@@ -13,7 +13,7 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 		throw new Error('invalid-user');
 	}
 
-	const messages = await Message.get(uid, {
+	const { records: messages, total } = await Message.get(uid, {
 		rid: roomId,
 		queryOptions: {
 			sort: sort || { ts: -1 },
@@ -24,9 +24,9 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 
 	return {
 		messages,
-		count: messages.count,
+		count: messages.length,
 		offset,
-		total: messages.length,
+		total,
 	};
 }
 
@@ -104,13 +104,13 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 		limit: count,
 	};
 
-	const messages = await Message.get(uid, { queryOptions });
+	const { records: messages, total } = await Message.get(uid, { queryOptions });
 
 	return {
 		messages,
-		count: messages.count,
+		count: messages.length,
 		offset,
-		total: messages.length,
+		total,
 	};
 }
 

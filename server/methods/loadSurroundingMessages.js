@@ -47,7 +47,7 @@ Meteor.methods({
 			};
 		}
 
-		const messages = Promise.await(Message.get(fromId, { rid: message.rid, latest: message.ts, queryOptions }));
+		const { records: messages } = Promise.await(Message.get(fromId, { rid: message.rid, latest: message.ts, queryOptions }));
 
 		const moreBefore = messages.length === queryOptions.limit;
 
@@ -58,7 +58,7 @@ Meteor.methods({
 		};
 
 		queryOptions.limit = Math.floor(limit / 2);
-		const afterMessages = Promise.await(Message.get(fromId, { rid: message.rid, oldest: message.ts, queryOptions }));
+		const { records: afterMessages } = Promise.await(Message.get(fromId, { rid: message.rid, oldest: message.ts, queryOptions }));
 
 		const moreAfter = afterMessages.length === queryOptions.limit;
 
