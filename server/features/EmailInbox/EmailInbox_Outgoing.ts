@@ -109,7 +109,7 @@ slashCommands.add('sendEmailAttachment', (command: any, params: string) => {
 				type: 'context',
 				elements: [{
 					type: 'mrkdwn',
-					text: `**To:** ${ room.email.replyTo }\n**Subject:** ${ room.email.subject }`,
+					text: `**${ t('To') }:** ${ room.email.replyTo }\n**${ t('Subject') }:** ${ room.email.subject }`,
 				}],
 			}],
 		},
@@ -195,7 +195,7 @@ callbacks.add('beforeSaveMessage', function(message: any, room: any) {
 		type: 'context',
 		elements: [{
 			type: 'mrkdwn',
-			text: `**To:** ${ room.email.replyTo }\n**Subject:** ${ room.email.subject }`,
+			text: `**${ t('To') }:** ${ room.email.replyTo }\n**${ t('Subject') }:** ${ room.email.subject }`,
 		}],
 	}, {
 		type: 'section',

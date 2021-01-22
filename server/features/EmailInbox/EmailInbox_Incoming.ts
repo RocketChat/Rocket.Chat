@@ -148,7 +148,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				type: 'context',
 				elements: [{
 					type: 'mrkdwn',
-					text: `**From:** ${ email.from.text }\n**Subject:** ${ email.subject }`,
+					text: `**${ t('From') }:** ${ email.from.text }\n**${ t('Subject') }:** ${ email.subject }`,
 				}],
 			}, {
 				type: 'section',
