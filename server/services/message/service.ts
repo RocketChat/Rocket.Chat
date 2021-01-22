@@ -40,11 +40,17 @@ export class MessageService extends ServiceClass implements IMessageService {
 			return result;
 		}
 
-		const trash = await this.Messages.trashFindDeletedAfter(timestamp, query, queryOptions);
+		const cursor = await this.Messages.trashFindDeletedAfter(timestamp, query, queryOptions);
 
-		return trash
-			? trash.toArray()
-			: [];
+		if (!cursor) {
+			return [];
+		}
+
+		const count = cursor.count();
+		const trash = cursor.toArray();
+		Object.defineProperty(trash, 'count', { value: count });
+
+		return trash;
 	}
 
 	async get(userId: string, { rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }: MessageFilter): Promise<any[]> {
@@ -63,7 +69,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			return result;
 		}
 
-		return this.Messages.findVisibleByRoomId({
+		const cursor = this.Messages.findVisibleByRoomId({
 			rid,
 			latest,
 			oldest,
@@ -72,7 +78,13 @@ export class MessageService extends ServiceClass implements IMessageService {
 			inclusive,
 			snippeted,
 			mentionsUsername,
-		}).toArray();
+		});
+
+		const count = cursor.count();
+		const messages = cursor.toArray();
+		Object.defineProperty(messages, 'count', { value: count });
+
+		return messages;
 	}
 
 	async getDiscussions({ rid, excludePinned, ignoreThreads, latest, oldest, inclusive, fromUsers, text, queryOptions, userId }: DiscussionArgs): Promise<any[]> {
@@ -92,7 +104,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			return result;
 		}
 
-		return this.Messages.findDiscussionByRoomId({
+		const cursor = this.Messages.findDiscussionByRoomId({
 			rid,
 			excludePinned,
 			ignoreThreads,
@@ -102,7 +114,13 @@ export class MessageService extends ServiceClass implements IMessageService {
 			fromUsers,
 			text,
 			queryOptions,
-		}).toArray();
+		});
+
+		const count = cursor.count();
+		const discussions = cursor.toArray();
+		Object.defineProperty(discussions, 'count', { value: count });
+
+		return discussions;
 	}
 
 	async customQuery({ query, userId, queryOptions }: CustomQueryArgs): Promise<any[]> {
@@ -111,7 +129,13 @@ export class MessageService extends ServiceClass implements IMessageService {
 			return result;
 		}
 
-		return this.Messages.find(query, queryOptions).toArray();
+		const cursor = this.Messages.find(query, queryOptions);
+
+		const count = cursor.count();
+		const messages = cursor.toArray();
+		Object.defineProperty(messages, 'count', { value: count });
+
+		return messages;
 	}
 
 	async getUpdates({ rid, userId, timestamp, queryOptions }: getUpdatesArgs): Promise<any[] | undefined> {
@@ -121,7 +145,13 @@ export class MessageService extends ServiceClass implements IMessageService {
 			return result;
 		}
 
-		return this.Messages.findForUpdates(rid, timestamp, queryOptions).toArray();
+		const cursor = this.Messages.findForUpdates(rid, timestamp, queryOptions);
+
+		const count = cursor.count();
+		const messages = cursor.toArray();
+		Object.defineProperty(messages, 'count', { value: count });
+
+		return messages;
 	}
 
 	async getFiles({ rid, userId, excludePinned, ignoreDiscussion, ignoreThreads, oldest, latest, inclusive, fromUsers, queryOptions }: getFilesArgs): Promise<any[] | undefined> {
@@ -142,7 +172,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			return result;
 		}
 
-		return this.Messages.findFilesByRoomId({
+		const cursor = this.Messages.findFilesByRoomId({
 			rid,
 			excludePinned,
 			ignoreDiscussion,
@@ -152,7 +182,13 @@ export class MessageService extends ServiceClass implements IMessageService {
 			inclusive,
 			fromUsers,
 			queryOptions,
-		}).toArray();
+		});
+
+		const count = cursor.count();
+		const messages = cursor.toArray();
+		Object.defineProperty(messages, 'count', { value: count });
+
+		return messages;
 	}
 
 	async getThreadsByRoomId({ rid, userId, excludePinned, oldest, latest, inclusive, fromUsers, queryOptions }: getThreadsArgs): Promise<any[] | undefined> {
@@ -171,7 +207,7 @@ export class MessageService extends ServiceClass implements IMessageService {
 			return result;
 		}
 
-		return this.Messages.findFilesByRoomId({
+		const cursor = this.Messages.findFilesByRoomId({
 			rid,
 			excludePinned,
 			oldest,
@@ -179,6 +215,12 @@ export class MessageService extends ServiceClass implements IMessageService {
 			inclusive,
 			fromUsers,
 			queryOptions,
-		}).toArray();
+		});
+
+		const count = cursor.count();
+		const threads = cursor.toArray();
+		Object.defineProperty(threads, 'count', { value: count });
+
+		return threads;
 	}
 }

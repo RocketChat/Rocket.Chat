@@ -248,7 +248,7 @@ API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true }, {
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(messages, this.userId),
-			count: messages.length,
+			count: messages.count,
 			offset,
 			total: messages.length,
 		});

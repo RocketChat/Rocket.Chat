@@ -58,7 +58,7 @@ export function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 			}));
 
 			firstUnread = unreadMessages[0];
-			unreadNotLoaded = unreadMessages.length;
+			unreadNotLoaded = unreadMessages.count;
 		}
 	}
 

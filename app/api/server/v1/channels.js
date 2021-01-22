@@ -595,13 +595,11 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 			},
 		}));
 
-		const total = messages.length;
-
 		return API.v1.success({
 			messages: normalizeMessagesForUser(messages, this.userId),
-			count: messages.length,
+			count: messages.count,
 			offset,
-			total,
+			total: messages.length,
 		});
 	},
 });

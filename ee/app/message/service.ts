@@ -40,7 +40,12 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			}
 		}
 
-		return this.Messages.findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername }).toArray();
+		const cursor = this.Messages.findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, snippeted, mentionsUsername });
+		const count = cursor.count();
+		const messages = cursor.toArray();
+		Object.defineProperty(messages, 'count', { value: count });
+
+		return messages;
 	}
 
 	async getDiscussions(filter: DiscussionArgs): Promise<any[] | undefined> {
@@ -59,7 +64,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			}
 		}
 
-		return this.Messages.findDiscussionByRoomId({
+		const cursor = this.Messages.findDiscussionByRoomId({
 			rid: filter.rid,
 			queryOptions: filter.queryOptions,
 			text: filter.text,
@@ -69,7 +74,13 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			excludePinned: filter.excludePinned,
 			fromUsers: filter.fromUsers,
 			ignoreThreads: filter.ignoreThreads,
-		}).toArray();
+		});
+
+		const count = cursor.count();
+		const messages = cursor.toArray();
+		Object.defineProperty(messages, 'count', { value: count });
+
+		return messages;
 	}
 
 	async customQuery({ query, queryOptions, userId }: CustomQueryArgs): Promise<any[] | undefined> {
@@ -87,7 +98,13 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			}
 		}
 
-		return this.Messages.find(query, queryOptions).toArray();
+		const cursor = this.Messages.find(query, queryOptions);
+
+		const count = cursor.count();
+		const messages = cursor.toArray();
+		Object.defineProperty(messages, 'count', { value: count });
+
+		return messages;
 	}
 
 	async getUpdates({ rid, userId, timestamp, queryOptions }: getUpdatesArgs): Promise<any[] | undefined> {
@@ -106,7 +123,13 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			}
 		}
 
-		return this.Messages.findForUpdates(rid, ts, queryOptions).toArray();
+		const cursor = this.Messages.findForUpdates(rid, ts, queryOptions);
+
+		const count = cursor.count();
+		const messages = cursor.toArray();
+		Object.defineProperty(messages, 'count', { value: count });
+
+		return messages;
 	}
 
 	async getDeleted({ rid, userId, timestamp, query, queryOptions }: getDeletedArgs): Promise<any[] | undefined> {
@@ -125,7 +148,17 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			}
 		}
 
-		return this.Messages.trashFindDeletedAfter(ts, query, queryOptions)?.toArray();
+		const cursor = this.Messages.trashFindDeletedAfter(ts, query, queryOptions);
+
+		if (!cursor) {
+			return [];
+		}
+
+		const count = cursor.count();
+		const messages = cursor.toArray();
+		Object.defineProperty(messages, 'count', { value: count });
+
+		return messages;
 	}
 
 	async getFiles({ rid, userId, excludePinned, ignoreDiscussion, ignoreThreads, oldest, latest, inclusive, fromUsers, queryOptions }: getFilesArgs): Promise<any[] | undefined> {
@@ -142,7 +175,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			end = userJoinedAt;
 		}
 
-		return this.Messages.findFilesByRoomId({
+		const cursor = this.Messages.findFilesByRoomId({
 			rid,
 			excludePinned,
 			ignoreDiscussion,
@@ -152,7 +185,13 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			inclusive,
 			fromUsers,
 			queryOptions,
-		}).toArray();
+		});
+
+		const count = cursor.count();
+		const messages = cursor.toArray();
+		Object.defineProperty(messages, 'count', { value: count });
+
+		return messages;
 	}
 
 	async getThreadsByRoomId({ rid, userId, excludePinned, oldest, latest, inclusive, fromUsers, queryOptions }: getThreadsArgs): Promise<any[] | undefined> {
@@ -169,7 +208,7 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			end = userJoinedAt;
 		}
 
-		return this.Messages.findFilesByRoomId({
+		const cursor = this.Messages.findFilesByRoomId({
 			rid,
 			excludePinned,
 			oldest: end,
@@ -177,7 +216,13 @@ export class MessageEnterprise extends ServiceClass implements IMessageEnterpris
 			inclusive,
 			fromUsers,
 			queryOptions,
-		}).toArray();
+		});
+
+		const count = cursor.count();
+		const messages = cursor.toArray();
+		Object.defineProperty(messages, 'count', { value: count });
+
+		return messages;
 	}
 
 	getById({ msgId, userId }: getByIdArgs): Promise<any[] | undefined> {

@@ -477,7 +477,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 
 		return API.v1.success({
 			threads,
-			count: threads.length,
+			count: threads.count,
 			offset,
 			total: threads.length,
 		});
@@ -556,13 +556,11 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 			},
 		}));
 
-		const total = messages.length;
-
 		return API.v1.success({
 			messages,
-			count: messages.length,
+			count: messages.count,
 			offset,
-			total,
+			total: messages.length,
 		});
 	},
 });

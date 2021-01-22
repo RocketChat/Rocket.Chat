@@ -24,13 +24,11 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 		},
 	}));
 
-	const total = messages.length;
-
 	return {
 		messages,
-		count: messages.length,
+		count: messages.count,
 		offset,
-		total,
+		total: messages.length,
 	};
 }
 
@@ -112,7 +110,7 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 
 	return {
 		messages,
-		count: messages.length,
+		count: messages.count,
 		offset,
 		total: messages.length,
 	};
