@@ -1,5 +1,20 @@
-import { UIKitInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
+
+import { UIKitInteractionType as UIKitInteractionTypeApi } from '@rocket.chat/apps-engine/definition/uikit';
 import { IBlock } from '@rocket.chat/ui-kit';
+
+enum UIKitInteractionTypeExtended {
+	BANNER_OPEN = 'banner.open',
+	BANNER_UPDATE = 'banner.update',
+	BANNER_CLOSE = 'banner.close',
+}
+
+export type UIKitInteractionType = UIKitInteractionTypeApi | UIKitInteractionTypeExtended;
+
+export const UIKitInteractionTypes = {
+	...UIKitInteractionTypeApi,
+	...UIKitInteractionTypeExtended,
+};
+
 
 export type UiKitPayload = {
 	viewId: string;
@@ -28,11 +43,11 @@ export type UiKitBannerProps = {
 export type UIKitUserInteractionResult = UIKitUserInteractionResultError | UIKitUserInteraction;
 
 type UIKitUserInteractionResultError = UIKitUserInteraction & {
-	type: UIKitInteractionType.ERRORS;
+	type: UIKitInteractionTypeApi.ERRORS;
 	errors?: Array<{[key: string]: string}>;
 };
 
-export const isErrorType = (result: UIKitUserInteractionResult): result is UIKitUserInteractionResultError => result.type === UIKitInteractionType.ERRORS;
+export const isErrorType = (result: UIKitUserInteractionResult): result is UIKitUserInteractionResultError => result.type === UIKitInteractionTypeApi.ERRORS;
 
 
 export type UIKitActionEvent = {

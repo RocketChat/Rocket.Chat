@@ -1,4 +1,4 @@
-import { UIKitInteractionType, UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
+import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Emitter } from '@rocket.chat/emitter';
@@ -7,6 +7,8 @@ import Notifications from '../../notifications/client/lib/Notifications';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { modal } from '../../ui-utils/client/lib/modal';
 import { APIClient } from '../../utils';
+import { UIKitInteractionTypes } from '../../../definition/UIKit';
+import * as banners from '../../../client/lib/banners';
 
 const events = new Emitter();
 
@@ -37,6 +39,7 @@ export const generateTriggerId = (appId) => {
 	return triggerId;
 };
 
+
 const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) => {
 	if (!triggersId.has(triggerId)) {
 		return;
@@ -57,7 +60,7 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return;
 	}
 
-	if ([UIKitInteractionType.ERRORS].includes(type)) {
+	if ([UIKitInteractionTypes.ERRORS].includes(type)) {
 		events.emit(viewId, {
 			type,
 			triggerId,
@@ -65,10 +68,10 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			appId,
 			...data,
 		});
-		return UIKitInteractionType.ERRORS;
+		return UIKitInteractionTypes.ERRORS;
 	}
 
-	if ([UIKitInteractionType.MODAL_UPDATE].includes(type)) {
+	if ([UIKitInteractionTypes.BANNER_UPDATE, UIKitInteractionTypes.MODAL_UPDATE].includes(type)) {
 		events.emit(viewId, {
 			type,
 			triggerId,
@@ -76,10 +79,10 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 			appId,
 			...data,
 		});
-		return UIKitInteractionType.MODAL_UPDATE;
+		return type;
 	}
 
-	if ([UIKitInteractionType.MODAL_OPEN].includes(type)) {
+	if ([UIKitInteractionTypes.MODAL_OPEN].includes(type)) {
 		const instance = modal.push({
 			template: 'ModalBlock',
 			modifier: 'uikit',
@@ -91,11 +94,31 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 				...data,
 			},
 		});
-		instances.set(viewId, instance);
-		return UIKitInteractionType.MODAL_OPEN;
+		instances.set(viewId, {
+			close() {
+				instance.close();
+				instances.delete(viewId);
+			},
+		});
+		return UIKitInteractionTypes.MODAL_OPEN;
 	}
 
-	return UIKitInteractionType.MODAL_ClOSE;
+	if ([UIKitInteractionTypes.BANNER_OPEN].includes(type)) {
+		banners.open(data);
+		instances.set(viewId, {
+			close() {
+				banners.close(viewId);
+			},
+		});
+		return UIKitInteractionTypes.BANNER_OPEN;
+	}
+
+	if ([UIKitIncomingInteractionType.BANNER_CLOSE].includes(type)) {
+		banners.closeById(viewId);
+		return UIKitIncomingInteractionType.BANNER_CLOSE;
+	}
+
+	return UIKitInteractionTypes.MODAL_ClOSE;
 };
 
 export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, container, ...rest }) => new Promise(async (resolve, reject) => {
@@ -114,6 +137,7 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 });
 
 export const triggerBlockAction = (options) => triggerAction({ type: UIKitIncomingInteractionType.BLOCK, ...options });
+
 export const triggerSubmitView = async ({ viewId, ...options }) => {
 	const close = () => {
 		const instance = instances.get(viewId);
@@ -126,13 +150,14 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 
 	try {
 		const result = await triggerAction({ type: UIKitIncomingInteractionType.VIEW_SUBMIT, viewId, ...options });
-		if (!result || UIKitInteractionType.MODAL_CLOSE === result) {
+		if (!result || UIKitInteractionTypes.MODAL_CLOSE === result) {
 			close();
 		}
 	} catch {
 		close();
 	}
 };
+
 export const triggerCancel = async ({ view, ...options }) => {
 	const instance = instances.get(view.id);
 	try {

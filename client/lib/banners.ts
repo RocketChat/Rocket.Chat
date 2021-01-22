@@ -2,6 +2,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Subscription } from 'use-subscription';
 
 import { mountRoot } from '../reactAdapters';
+import { UiKitBannerPayload } from '../../definition/UIKit';
 
 export type LegacyBannerPayload = {
 	closable?: boolean;
@@ -17,8 +18,7 @@ export type LegacyBannerPayload = {
 
 type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;
 
-export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload =>
-	!('_id' in payload) || !('blocks' in payload);
+export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload => !('blocks' in payload);
 
 const queue: BannerPayload[] = [];
 const emitter = new Emitter();
@@ -34,7 +34,7 @@ export const open = (payload: BannerPayload): void => {
 	let index = -1;
 
 	if (!isLegacyPayload(payload)) {
-		index = queue.findIndex((_payload) => !isLegacyPayload(_payload) && _payload._id === payload._id);
+		index = queue.findIndex((_payload) => !isLegacyPayload(_payload) && _payload.viewId === payload.viewId);
 	}
 
 	if (index < 0) {
@@ -48,6 +48,19 @@ export const open = (payload: BannerPayload): void => {
 	if (index === 0) {
 		emitter.emit('update-first');
 	}
+};
+
+
+export const closeById = (viewId: string): void => {
+	const index = queue.findIndex((banner) => !isLegacyPayload(banner) && banner.viewId === viewId);
+
+	if (index > -1) {
+		return;
+	}
+
+	queue.splice(index, 1);
+	emitter.emit('update');
+	emitter.emit('update-first');
 };
 
 export const close = (): void => {
