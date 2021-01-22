@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { LivechatRooms, LivechatInquiry } from '../../../models/server';
+import { LivechatRooms, LivechatInquiry, Users } from '../../../models/server';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
@@ -60,7 +60,10 @@ export const QueueManager = {
 			...department && { department },
 		};
 
-		const defaultAgent = servedBy && { agentId: servedBy._id, username: servedBy.username };
+		let defaultAgent;
+		if (servedBy && Users.findOneOnlineAgentByUsername(servedBy.username)) {
+			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
+		}
 
 		LivechatRooms.unarchiveOneById(rid);
 		const room = LivechatRooms.findOneById(rid);
