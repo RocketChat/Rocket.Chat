@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 import { Banner, Icon } from '@rocket.chat/fuselage';
-import { UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
-import React, { FC, useMemo } from 'react';
+import { kitContext, UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
+import React, { Context, FC, useMemo } from 'react';
 
 import { IBanner } from '../../../definition/IBanner';
 
@@ -19,6 +19,13 @@ const UiKitBanner: FC<UiKitBannerProps> = ({ payload, onClose }) => {
 		return null;
 	}, [payload.icon]);
 
+	const contextValue = useMemo<typeof kitContext extends Context<infer V> ? V : never>(() => ({
+		action: async (action): Promise<void> => {
+			console.log(action);
+		},
+		appId: 'core',
+	}), []);
+
 	return <Banner
 		closeable
 		icon={icon}
@@ -27,7 +34,9 @@ const UiKitBanner: FC<UiKitBannerProps> = ({ payload, onClose }) => {
 		variant={payload.variant}
 		onClose={onClose}
 	>
-		{renderUiKitBannerBlocks(payload.blocks, { engine: 'rocket.chat' })}
+		<kitContext.Provider value={contextValue}>
+			{renderUiKitBannerBlocks(payload.blocks, { engine: 'rocket.chat' })}
+		</kitContext.Provider>
 	</Banner>;
 };
 

@@ -24,7 +24,14 @@ export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBanner
 const queue: BannerPayload[] = [];
 const emitter = new Emitter();
 
-const push = (payload: BannerPayload): void => {
+export const firstSubscription: Subscription<BannerPayload | null> = {
+	getCurrentValue: () => queue[0] ?? null,
+	subscribe: (callback) => emitter.on('update-first', callback),
+};
+
+export const open = (payload: BannerPayload): void => {
+	mountRoot();
+
 	queue.push(payload);
 	emitter.emit('update');
 	emitter.emit('update-last');
@@ -34,7 +41,7 @@ const push = (payload: BannerPayload): void => {
 	}
 };
 
-const shift = (): void => {
+export const close = (): void => {
 	queue.shift();
 	emitter.emit('update');
 	emitter.emit('update-first');
@@ -44,16 +51,9 @@ const shift = (): void => {
 	}
 };
 
-export const firstSubscription: Subscription<BannerPayload | null> = {
-	getCurrentValue: () => queue[0] ?? null,
-	subscribe: (callback) => emitter.on('update-first', callback),
-};
-
-export const open = (payload: BannerPayload): void => {
-	mountRoot();
-	push(payload);
-};
-
-export const close = (): void => {
-	shift();
+export const clear = (): void => {
+	queue.splice(0, queue.length);
+	emitter.emit('update');
+	emitter.emit('update-first');
+	emitter.emit('update-last');
 };

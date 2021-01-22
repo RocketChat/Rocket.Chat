@@ -10,14 +10,14 @@ declare module '@rocket.chat/fuselage-ui-kit' {
 			value: unknown;
 			viewId: string;
 		}) => void | Promise<void>;
-		state: (state: {
+		state?: (state: {
 			blockId: string;
 			appId: string;
 			actionId: string;
 			value: unknown;
 		}) => void | Promise<void>;
 		appId: string;
-		errors: {
+		errors?: {
 			[fieldName: string]: string;
 		};
 	}>;
