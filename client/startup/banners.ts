@@ -14,7 +14,10 @@ const fetchInitialBanners = async (): Promise<void> => {
 	};
 
 	for (const banner of response.banners) {
-		banners.open(banner.view);
+		banners.open({
+			_id: banner._id,
+			...banner.view,
+		});
 	}
 };
 
@@ -27,7 +30,10 @@ const handleNewBanner = async (event: { bannerId: string }): Promise<void> => {
 	};
 
 	for (const banner of response.banners) {
-		banners.open(banner.view);
+		banners.open({
+			_id: banner._id,
+			...banner.view,
+		});
 	}
 };
 
