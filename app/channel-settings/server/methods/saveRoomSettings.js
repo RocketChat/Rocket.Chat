@@ -15,6 +15,7 @@ import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
+import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
 
@@ -56,12 +57,21 @@ const validators = {
 			});
 		}
 	},
-	encrypted({ value, room }) {
-		if (value !== room.encrypted && !roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
-				method: 'saveRoomSettings',
-				action: 'Change_Room_Encrypted',
-			});
+	encrypted({ userId, value, room, rid }) {
+		if (value !== room.encrypted) {
+			if (!roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
+				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Encrypted',
+				});
+			}
+
+			if (room.t !== 'd' && !hasPermission(userId, 'toggle-room-e2e-encryption', rid)) {
+				throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to toggle E2E encryption', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Encrypted',
+				});
+			}
 		}
 	},
 	retentionEnabled({ userId, value, room, rid }) {
@@ -198,8 +208,8 @@ const settingSavers = {
 	retentionOverrideGlobal({ value, rid }) {
 		Rooms.saveRetentionOverrideGlobalById(rid, value);
 	},
-	encrypted({ value, rid }) {
-		Rooms.saveEncryptedById(rid, value);
+	encrypted({ value, room, rid, user }) {
+		saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
 	favorite({ value, rid }) {
 		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);

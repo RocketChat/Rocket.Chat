@@ -45,7 +45,7 @@ export const RoomInfoIcon = ({ name }) => <Icon name={name} size='x22' />;
 export const Title = (props) => <UserCard.Username {...props}/>;
 
 export const RoomInfo = function RoomInfo({
-	name,
+	fname: name,
 	description,
 	archived,
 	broadcast,
