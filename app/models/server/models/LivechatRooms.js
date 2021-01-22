@@ -19,6 +19,7 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 		this.tryEnsureIndex({ servedBy: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v.token': 1, 'email.thread': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
 	}
 
@@ -167,6 +168,28 @@ export class LivechatRooms extends Base {
 
 		return this.findOne(query, options);
 	}
+
+	findOneByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
+		const query = {
+			t: 'l',
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneOpenByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
+		const query = {
+			t: 'l',
+			open: true,
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+		};
+
+		return this.findOne(query, options);
+	}
+
 
 	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
 		const query = {
@@ -701,6 +724,26 @@ export class LivechatRooms extends Base {
 				'v._id': _id,
 				'v.username': username,
 				'v.token': token,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	unarchiveOneById(roomId) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				open: true,
+			},
+			$unset: {
+				servedBy: 1,
+				closedAt: 1,
+				closedBy: 1,
+				closer: 1,
 			},
 		};
 
