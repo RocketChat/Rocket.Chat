@@ -15,6 +15,7 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 
 	const { records: messages, total } = await Message.get(uid, {
 		rid: roomId,
+		mentionsUsername: user.username,
 		queryOptions: {
 			sort: sort || { ts: -1 },
 			skip: offset,

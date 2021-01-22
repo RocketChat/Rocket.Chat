@@ -36,6 +36,7 @@ Meteor.methods({
 		limit -= 1;
 
 		const queryOptions = {
+			returnTotal: false,
 			sort: {
 				ts: -1,
 			},

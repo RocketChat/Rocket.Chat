@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Messages } from '../../app/models';
+import { Message } from '../sdk';
 import { settings } from '../../app/settings';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
@@ -23,6 +23,7 @@ Meteor.methods({
 		}
 
 		const queryOptions = {
+			returnTotal: false,
 			sort: {
 				ts: 1,
 			},
@@ -35,7 +36,7 @@ Meteor.methods({
 			};
 		}
 
-		const records = Promise.await(Messages.get(fromId, { rid, oldest: end, queryOptions }));
+		const { records } = Promise.await(Message.get(fromId, { rid, oldest: end, queryOptions }));
 
 		return {
 			messages: normalizeMessagesForUser(records, fromId),
