@@ -18,7 +18,7 @@ export function AddUser({ roles, ...props }) {
 	const [errors, setErrors] = useState({});
 
 	const validationKeys = useMemo(() => ({
-		name: (name) => (name.trim() === '' ? setErrors({ ...errors, name: t('The_field_is_required', t('name')) }) : setErrors({ ...errors, name: '' })),
+		name: (name) => setErrors((errors) => ({ ...errors, name: name.trim().length ? name : undefined })),
 		username: (username) => (username.trim() === '' ? setErrors({ ...errors, username: t('The_field_is_required', t('username')) }) : setErrors({ ...errors, username: '' })),
 		email: (email) => (email.trim() === '' ? setErrors({ ...errors, email: t('The_field_is_required', t('email')) }) : setErrors({ ...errors, email: '' })),
 	}), [errors, t]);
