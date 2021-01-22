@@ -9,7 +9,7 @@ export type AudioAttachmentProps = {
 	audio_url: string;
 	audio_type: string;
 	audio_size?: number;
-	file: FileProp;
+	file?: FileProp;
 } & AttachmentPropsBase;
 
 export const AudioAttachment: FC<AudioAttachmentProps> = ({
