@@ -105,7 +105,7 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 		limit: count,
 	};
 
-	const { records: messages, total } = await Message.get(uid, { queryOptions });
+	const { records: messages, total } = await Message.get(uid, { snippeted: true, queryOptions });
 
 	return {
 		messages,
