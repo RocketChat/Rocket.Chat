@@ -129,6 +129,12 @@ API.v1.addRoute('chat.pinMessage', { authRequired: true }, {
 
 API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 	post() {
+		const { alias, avatar } = this.bodyParams;
+
+		if ((alias || avatar) && !hasPermission(this.userId, 'message-impersonate')) {
+			return API.v1.failure('Unauthorized. You must have the permission "message-impersonate" to use custom alias and avatar.');
+		}
+
 		const messageReturn = processWebhookMessage(this.bodyParams, this.user)[0];
 
 		if (!messageReturn) {
@@ -174,6 +180,12 @@ API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
 	post() {
 		if (!this.bodyParams.message) {
 			throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
+		}
+
+		const { alias, avatar } = this.bodyParams;
+
+		if ((alias || avatar) && !hasPermission('message-impersonate')) {
+			return API.v1.failure('Unauthorized. You must have the permission "message-impersonate" to use custom alias and avatar.');
 		}
 
 		const sent = executeSendMessage(this.userId, this.bodyParams.message);

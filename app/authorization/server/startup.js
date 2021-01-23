@@ -63,6 +63,7 @@ Meteor.startup(function() {
 		{ _id: 'manage-selected-settings', 	         roles: ['admin'] },
 		{ _id: 'mention-all',                        roles: ['admin', 'owner', 'moderator', 'user'] },
 		{ _id: 'mention-here',                       roles: ['admin', 'owner', 'moderator', 'user'] },
+		{ _id: 'message-impersonate', roles: ['bot'] },
 		{ _id: 'mute-user',                          roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'remove-user',                        roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'run-import',                         roles: ['admin'] },
