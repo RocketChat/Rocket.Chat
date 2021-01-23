@@ -73,7 +73,7 @@ function AppInstallPage() {
 			let permissions;
 			let appFile;
 			if (url) {
-				const { buff } = await downloadApp({ url });
+				const { buff } = await downloadApp({ url, downloadOnly: true });
 				const fileData = Uint8Array.from(buff.data);
 				permissions = await getPermissionsFromZippedApp(fileData);
 				appFile = new File([fileData], 'app.zip', { type: 'application/zip' });

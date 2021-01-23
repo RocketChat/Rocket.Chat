@@ -189,7 +189,7 @@ export class AppsRestApi {
 
 					buff = result.content;
 
-					if (!process.env.TEST_MODE) {
+					if (this.bodyParams.downloadOnly) {
 						return API.v1.success({ buff });
 					}
 				} else if (this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
