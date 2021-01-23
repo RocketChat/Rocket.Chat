@@ -7,12 +7,11 @@ import { INpsVote } from '../../../definition/INps';
 
 type NPSResultPayload = {
 	total: number;
-	votes: (INpsVote | undefined)[];
+	votes: INpsVote[];
 }
 
 export const sendToCloud = Meteor.bindEnvironment(function sendToCloud(npsId: string, data: NPSResultPayload) {
 	const token: string = getWorkspaceAccessToken(true);
-
 	if (!token) {
 		return false;
 	}

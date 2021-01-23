@@ -28,12 +28,12 @@ export class NpsVoteRaw extends BaseRaw<T> {
 			.limit(1000);
 	}
 
-	findOneNotSentByNpsId(npsId: string, options?: FindOneOptions<T>): Promise<T | null> {
+	findByNpsIdAndStatus(npsId: string, status: INpsVoteStatus, options?: FindOneOptions<T>): Cursor<T> {
 		const query = {
 			npsId,
-			status: INpsVoteStatus.NEW,
+			status,
 		};
-		return this.col.findOne(query, options);
+		return this.col.find(query, options);
 	}
 
 	findByNpsId(npsId: string, options?: FindOneOptions<T>): Cursor<T> {
@@ -92,7 +92,7 @@ export class NpsVoteRaw extends BaseRaw<T> {
 				status: INpsVoteStatus.NEW,
 			},
 			$unset: {
-				sentAt: 1 as 1, // TODO why?
+				sentAt: 1 as 1, // why do you do this to me TypeScript?
 			},
 		};
 		return this.col.updateMany(query, update);

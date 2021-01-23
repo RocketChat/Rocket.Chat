@@ -68,26 +68,30 @@ export class NPSService extends ServiceClass implements INPSService {
 		}
 
 		const npsSending = await this.Nps.getOpenExpiredAlreadySending();
-		console.log('npsSending ->', npsSending);
 
 		const nps = npsSending || await this.Nps.getOpenExpiredAndStartSending();
-		console.log('nps ->', nps);
 		if (!nps) {
 			return;
 		}
 
 		const total = await this.NpsVote.findByNpsId(nps._id).count();
-		console.log('total ->', total);
 
 		const votesToSend = await this.NpsVote.findNotSentByNpsId(nps._id).toArray();
-		console.log('votesToSend ->', votesToSend);
 
 		// if there is nothing to sent, check if something gone wrong
 		if (votesToSend.length === 0) {
+			// check if still has votes left to send
+			const totalSent = await this.NpsVote.findByNpsIdAndStatus(nps._id, INpsVoteStatus.SENT).count();
+			if (totalSent === total) {
+				await this.Nps.updateStatusById(nps._id, NPSStatus.SENT);
+				return;
+			}
+
 			// update old votes (sent 5 minutes ago or more) in 'sending' status back to 'new'
 			await this.NpsVote.updateOldSendingToNewByNpsId(nps._id);
 
-			NPS.sendResults();
+			// try again in 5 minutes
+			setTimeout(() => NPS.sendResults(), 5 * 60 * 1000);
 			return;
 		}
 
@@ -102,23 +106,27 @@ export class NPSService extends ServiceClass implements INPSService {
 					status: INpsVoteStatus.SENDING,
 					sentAt: today,
 				},
+			}, {
+				projection: {
+					identifier: 1,
+					roles: 1,
+					score: 1,
+					comment: 1,
+				},
 			});
 			return value;
 		}));
-		console.log('sending ->', sending);
 
 		const votes = sending.filter(Boolean) as INpsVote[];
-		console.log('votes ->', votes);
+
+		const voteIds = votes.map(({ _id }) => _id);
 
 		const payload = {
 			total,
 			votes,
 		};
-		// TODO send to cloud
-		console.log('payload', payload);
 		sendToCloud(nps._id, payload);
 
-		const voteIds = votes.map(({ _id }) => _id);
 		console.log('voteIds ->', voteIds);
 		if (!voteIds) {
 			return;
@@ -126,9 +134,10 @@ export class NPSService extends ServiceClass implements INPSService {
 
 		this.NpsVote.updateVotesToSent(voteIds);
 
-		const missing = await this.NpsVote.findOneNotSentByNpsId(nps._id, { projection: { _id: 0, npsId: 1 } });
-		console.log('missing ->', missing);
-		if (missing) {
+		const totalSent = await this.NpsVote.findByNpsIdAndStatus(nps._id, INpsVoteStatus.SENT).count();
+		if (totalSent < total) {
+			// send more in five minutes
+			setTimeout(() => NPS.sendResults(), 5 * 60 * 1000);
 			return;
 		}
 
