@@ -25,7 +25,6 @@ export const getRegexHighlightEmoji = (highlight) => new RegExp(`(:)(${ escapeRe
 export const highlightWords = (msg, highlights) => highlights.reduce((msg, { highlight, regex, urlRegex, emojiRegex }) => {
 	const urlMatches = checkHighlightedWordsInUrls(msg, urlRegex);
 	const emojiMatches = checkHighlightedWordsInEmojis(msg, emojiRegex);
-	console.log("jijij");
 	if (!urlMatches && !emojiMatches) {
 		return msg.replace(regex, highlightTemplate);
 	}
