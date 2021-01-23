@@ -28,15 +28,14 @@ export class UiKitCoreApp extends ServiceClass implements IUiKitCoreAppService {
 		const { appId } = payload;
 
 		const service = getAppModule(appId);
+		if (!service) {
+			return;
+		}
 
-		console.log('blockAction ->', payload);
-
-		return service.blockAction(payload);
-		// return { ok: true };
+		return service.blockAction?.(payload);
 	}
 
 	async viewClosed(payload: any): Promise<any> {
-		console.log('viewClosed ->', payload);
 		const { appId } = payload;
 
 		const service = getAppModule(appId);
@@ -44,17 +43,17 @@ export class UiKitCoreApp extends ServiceClass implements IUiKitCoreAppService {
 			return;
 		}
 
-		return service.viewClosed(payload);
+		return service.viewClosed?.(payload);
 	}
 
 	async viewSubmit(payload: any): Promise<any> {
-		console.log('viewSubmit ->', payload);
 		const { appId } = payload;
 
 		const service = getAppModule(appId);
+		if (!service) {
+			return;
+		}
 
-		console.log('viewSubmit ->', payload);
-
-		return service.viewSubmit(payload);
+		return service.viewSubmit?.(payload);
 	}
 }

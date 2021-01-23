@@ -12,7 +12,7 @@ export class NpsRaw extends BaseRaw<T> {
 		super(col, trash);
 
 		this.col.createIndexes([
-			{ key: { expireAt: 1, status: 1 } },
+			{ key: { status: 1, expireAt: 1 } },
 		]);
 	}
 
@@ -21,8 +21,8 @@ export class NpsRaw extends BaseRaw<T> {
 		const today = new Date();
 
 		const query = {
-			expireAt: { $lte: today },
 			status: NPSStatus.OPEN,
+			expireAt: { $lte: today },
 		};
 		const update = {
 			$set: {
@@ -39,8 +39,8 @@ export class NpsRaw extends BaseRaw<T> {
 		const today = new Date();
 
 		const query = {
-			expireAt: { $lte: today },
 			status: NPSStatus.SENDING,
+			expireAt: { $lte: today },
 		};
 
 		return this.col.findOne(query);
@@ -72,5 +72,19 @@ export class NpsRaw extends BaseRaw<T> {
 		}, {
 			upsert: true,
 		});
+	}
+
+	closeAllByStatus(status: NPSStatus): Promise<UpdateWriteOpResult> {
+		const query = {
+			status,
+		};
+
+		const update = {
+			$set: {
+				status: NPSStatus.CLOSED,
+			},
+		};
+
+		return this.col.updateMany(query, update);
 	}
 }

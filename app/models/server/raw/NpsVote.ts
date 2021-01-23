@@ -42,6 +42,26 @@ export class NpsVoteRaw extends BaseRaw<T> {
 		return this.col.find(query, options);
 	}
 
+	save(vote: Omit<T, '_id' | '_updatedAt'>): Promise<UpdateWriteOpResult> {
+		const {
+			npsId,
+			identifier,
+		} = vote;
+
+		const query = {
+			npsId,
+			identifier,
+		};
+		const update = {
+			$set: {
+				...vote,
+				_updatedAt: new Date(),
+			},
+		};
+
+		return this.col.updateOne(query, update, { upsert: true });
+	}
+
 	updateVotesToSent(voteIds: string[]): Promise<UpdateWriteOpResult> {
 		const query = {
 			_id: { $in: voteIds },
