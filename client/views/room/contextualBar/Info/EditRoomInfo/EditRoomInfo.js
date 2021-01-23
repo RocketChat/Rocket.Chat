@@ -65,7 +65,7 @@ const useInitialValues = (room, settings) => {
 		roomName: t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(t, { type: t, ...room }),
 		roomType: t,
 		readOnly: !!ro,
-		reactWhenReadOnly: false,
+		reactWhenReadOnly: room.reactWhenReadOnly,
 		archived: !!archived,
 		roomTopic: topic ?? '',
 		roomDescription: description ?? '',
