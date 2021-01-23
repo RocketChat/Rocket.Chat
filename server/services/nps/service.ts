@@ -118,21 +118,17 @@ export class NPSService extends ServiceClass implements INPSService {
 		}));
 
 		const votes = sending.filter(Boolean) as INpsVote[];
+		if (votes.length > 0) {
+			const voteIds = votes.map(({ _id }) => _id);
 
-		const voteIds = votes.map(({ _id }) => _id);
+			const payload = {
+				total,
+				votes,
+			};
+			sendToCloud(nps._id, payload);
 
-		const payload = {
-			total,
-			votes,
-		};
-		sendToCloud(nps._id, payload);
-
-		console.log('voteIds ->', voteIds);
-		if (!voteIds) {
-			return;
+			this.NpsVote.updateVotesToSent(voteIds);
 		}
-
-		this.NpsVote.updateVotesToSent(voteIds);
 
 		const totalSent = await this.NpsVote.findByNpsIdAndStatus(nps._id, INpsVoteStatus.SENT).count();
 		if (totalSent < total) {
