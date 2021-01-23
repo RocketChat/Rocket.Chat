@@ -53,8 +53,7 @@ export const open = (payload: BannerPayload): void => {
 
 export const closeById = (viewId: string): void => {
 	const index = queue.findIndex((banner) => !isLegacyPayload(banner) && banner.viewId === viewId);
-
-	if (index > -1) {
+	if (index < 0) {
 		return;
 	}
 

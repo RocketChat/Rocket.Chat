@@ -1,7 +1,6 @@
 import { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
 import { Banner, NPS } from '../../sdk';
 import { createModal } from './nps/createModal';
-import { Notifications } from '../../../app/notifications/server';
 
 export class Nps implements IUiKitCoreApp {
 	appId = 'nps-core';
@@ -19,20 +18,14 @@ export class Nps implements IUiKitCoreApp {
 			user,
 		} = payload;
 
-		Notifications.notifyUser(user._id, 'uiInteraction', createModal({
+		return createModal({
 			appId: this.appId,
 			npsId,
 			bannerId,
 			triggerId,
 			score,
 			user,
-		}));
-
-		return {
-			type: 'banner.close',
-			triggerId,
-			viewId: bannerId,
-		};
+		});
 	}
 
 	async viewSubmit(payload: any): Promise<any> {

@@ -26,9 +26,12 @@ const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
 	const action = useUIKitHandleAction(state);
 
 	const contextValue = useMemo<typeof kitContext extends Context<infer V> ? V : never>(() => ({
-		action,
+		action: async (...args) => {
+			await action(...args);
+			banners.closeById(state.viewId);
+		},
 		appId: state.appId,
-	}), [action, state.appId]);
+	}), [action, state.appId, state.viewId]);
 
 	return <Banner
 		closeable
