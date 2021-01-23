@@ -107,14 +107,18 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		banners.open(data);
 		instances.set(viewId, {
 			close() {
-				banners.close(viewId);
+				banners.closeById(viewId);
 			},
 		});
 		return UIKitInteractionTypes.BANNER_OPEN;
 	}
 
 	if ([UIKitIncomingInteractionType.BANNER_CLOSE].includes(type)) {
-		banners.closeById(viewId);
+		const instance = instances.get(viewId);
+
+		if (instance) {
+			instance.close();
+		}
 		return UIKitIncomingInteractionType.BANNER_CLOSE;
 	}
 
@@ -144,7 +148,6 @@ export const triggerSubmitView = async ({ viewId, ...options }) => {
 
 		if (instance) {
 			instance.close();
-			instances.delete(viewId);
 		}
 	};
 
@@ -165,7 +168,6 @@ export const triggerCancel = async ({ view, ...options }) => {
 	} finally {
 		if (instance) {
 			instance.close();
-			instances.delete(view.id);
 		}
 	}
 };
