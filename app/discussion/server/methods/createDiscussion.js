@@ -38,7 +38,6 @@ const mentionMessage = (rid, { _id, username, name }, message_embedded) => {
 };
 
 const create = ({ prid, pmid, t_name, reply, users, user, encrypted, hideHistoryForNewMembers }) => {
-	console.log(hideHistoryForNewMembers, typeof hideHistoryForNewMembers);
 	// if you set both, prid and pmid, and the rooms doesnt match... should throw an error)
 	let message = false;
 	if (pmid) {
