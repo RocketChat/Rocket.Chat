@@ -6,8 +6,6 @@ export class Nps implements IUiKitCoreApp {
 	appId = 'nps-core';
 
 	async blockAction(payload: any): Promise<any> {
-		console.log('nps.blockAction ->', payload);
-
 		const {
 			triggerId,
 			actionId: bannerId,
@@ -29,8 +27,6 @@ export class Nps implements IUiKitCoreApp {
 	}
 
 	async viewSubmit(payload: any): Promise<any> {
-		console.log('viewSubmit.payload ->', JSON.stringify(payload, null, 2));
-
 		if (!payload.payload?.view?.state) {
 			throw new Error('Invalid payload');
 		}
