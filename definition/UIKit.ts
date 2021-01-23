@@ -1,6 +1,6 @@
 
 import { UIKitInteractionType as UIKitInteractionTypeApi } from '@rocket.chat/apps-engine/definition/uikit';
-import { IBlock } from '@rocket.chat/ui-kit';
+import { IDividerBlock, ISectionBlock, IActionsBlock, IContextBlock, IInputBlock } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 
 enum UIKitInteractionTypeExtended {
 	BANNER_OPEN = 'banner.open',
@@ -19,7 +19,7 @@ export const UIKitInteractionTypes = {
 export type UiKitPayload = {
 	viewId: string;
 	appId: string;
-	blocks: IBlock[];
+	blocks: (IDividerBlock | ISectionBlock | IActionsBlock | IContextBlock | IInputBlock)[];
 }
 
 export type UiKitBannerPayload = UiKitPayload & {

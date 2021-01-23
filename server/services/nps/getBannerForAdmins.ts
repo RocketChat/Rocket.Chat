@@ -1,11 +1,13 @@
+import { BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
+import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
 import { settings } from '../../../app/settings/server';
-import { BannerPlatform } from '../../../definition/IBanner';
+import { IBanner, BannerPlatform } from '../../../definition/IBanner';
 
-export const getBannerForAdmins = Meteor.bindEnvironment(() => {
+export const getBannerForAdmins = Meteor.bindEnvironment((): Omit<IBanner, '_id'> => {
 	const lng = settings.get('Language') || 'en';
 
 	const today = new Date();
@@ -27,10 +29,10 @@ export const getBannerForAdmins = Meteor.bindEnvironment(() => {
 			viewId: '',
 			appId: '',
 			blocks: [{
-				type: 'section',
+				type: BlockType.SECTION,
 				blockId: 'attention',
 				text: {
-					type: 'plain_text',
+					type: TextObjectType.PLAINTEXT,
 					text: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', { date: moment(inTwoMonths).format('YYYY-MM-DD'), lng }),
 					emoji: false,
 				},
