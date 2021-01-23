@@ -2,10 +2,12 @@ import { escapeRegExp } from '../../../lib/escapeRegExp';
 
 export const checkHighlightedWordsInUrls = (msg, urlRegex) => msg.match(urlRegex);
 
-export const removeHighlightedUrls = (msg, highlight, urlMatches) => {
+export const checkHighlightedWordsInEmojis = (msg, emojiRegex) => msg.match(emojiRegex);
+
+export const removeHighlightedUrlsOrEmojis = (msg, highlight, urlOrEmojiMatches) => {
 	const highlightRegex = new RegExp(highlight, 'gmi');
 
-	return urlMatches.reduce((msg, match) => {
+	return urlOrEmojiMatches.reduce((msg, match) => {
 		const withTemplate = match.replace(highlightRegex, `<span class="highlight-text">${ highlight }</span>`);
 		const regexWithTemplate = new RegExp(withTemplate, 'i');
 		return msg.replace(regexWithTemplate, match);
@@ -18,10 +20,17 @@ export const getRegexHighlight = (highlight) => new RegExp(`(^|\\b|[\\s\\n\\r\\t
 
 export const getRegexHighlightUrl = (highlight) => new RegExp(`https?:\/\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)(${ escapeRegExp(highlight) })\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)`, 'gmi');
 
-export const highlightWords = (msg, highlights) => highlights.reduce((msg, { highlight, regex, urlRegex }) => {
+export const getRegexHighlightEmoji = (highlight) => new RegExp(`(:)(${ escapeRegExp(highlight) })(:)`, 'gmi'); 
+
+export const highlightWords = (msg, highlights) => highlights.reduce((msg, { highlight, regex, urlRegex, emojiRegex }) => {
 	const urlMatches = checkHighlightedWordsInUrls(msg, urlRegex);
-	if (!urlMatches) {
+	const emojiMatches = checkHighlightedWordsInEmojis(msg, emojiRegex);
+	console.log("jijij");
+	if (!urlMatches && !emojiMatches) {
 		return msg.replace(regex, highlightTemplate);
 	}
-	return removeHighlightedUrls(msg.replace(regex, highlightTemplate), highlight, urlMatches);
+	if (!urlMatches) {
+		return removeHighlightedUrlsOrEmojis(msg.replace(regex, highlightTemplate), highlight, emojiMatches);
+	}
+	return removeHighlightedUrlsOrEmojis(msg.replace(regex, highlightTemplate), highlight, urlMatches);
 }, msg);
