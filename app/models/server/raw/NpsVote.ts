@@ -13,6 +13,7 @@ export class NpsVoteRaw extends BaseRaw<T> {
 
 		this.col.createIndexes([
 			{ key: { npsId: 1, status: 1, sentAt: 1 } },
+			{ key: { npsId: 1, identifier: 1 } },
 		]);
 	}
 
