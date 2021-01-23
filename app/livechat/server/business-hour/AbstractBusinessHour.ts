@@ -55,7 +55,7 @@ export abstract class AbstractBusinessHourType {
 		businessHourData.active = Boolean(businessHourData.active);
 		businessHourData = this.convertWorkHours(businessHourData);
 		if (businessHourData._id) {
-			await this.BusinessHourRepository.updateOneById(businessHourData._id, businessHourData);
+			await this.BusinessHourRepository.updateOne({ _id: businessHourData._id }, { $set: businessHourData });
 			return businessHourData._id;
 		}
 		const { insertedId } = await this.BusinessHourRepository.insertOne(businessHourData);
