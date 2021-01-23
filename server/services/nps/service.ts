@@ -6,11 +6,11 @@ import { NpsRaw } from '../../../app/models/server/raw/Nps';
 import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { NPSStatus, INpsVoteStatus, INpsVote } from '../../../definition/INps';
-import { BannerPlatform } from '../../../definition/IBanner';
 import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { Banner, NPS } from '../../sdk';
 import { sendToCloud } from './sendToCloud';
+import { getBannerForAdmins } from './getBannerForAdmins';
 
 export class NPSService extends ServiceClass implements INPSService {
 	protected name = 'nps';
@@ -37,35 +37,7 @@ export class NPSService extends ServiceClass implements INPSService {
 
 		const any = await this.Nps.findOne({}, { projection: { _id: 1 } });
 		if (!any) {
-			const today = new Date();
-			const inTwoMonths = new Date();
-			inTwoMonths.setMonth(inTwoMonths.getMonth() + 2);
-
-			Banner.create({
-				platform: [BannerPlatform.Web],
-				createdAt: today,
-				expireAt: inTwoMonths,
-				startAt: today,
-				roles: ['admin'],
-				createdBy: {
-					_id: 'rocket.cat',
-					username: 'rocket.cat',
-				},
-				_updatedAt: new Date(),
-				view: {
-					blocks: [
-						{
-							type: 'section',
-							blockId: 'attention',
-							text: {
-								type: 'plain_text',
-								text: `NPS survey is scheduled to run at ${ inTwoMonths } for all users. It\'s possible to turn off the survey on 'Admin > General > NPS'?`,
-								emoji: false,
-							},
-						},
-					],
-				},
-			});
+			Banner.create(getBannerForAdmins());
 		}
 
 		const {
