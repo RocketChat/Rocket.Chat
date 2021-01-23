@@ -33,7 +33,7 @@ function generateStatistics(logger) {
 }
 
 export function statsCron(SyncedCron, logger) {
-	if (!settings.get('Troubleshoot_Disable_Statistics_Generator')) {
+	if (settings.get('Troubleshoot_Disable_Statistics_Generator')) {
 		return;
 	}
 
