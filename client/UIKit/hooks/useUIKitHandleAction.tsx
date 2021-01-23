@@ -13,7 +13,7 @@ import { UiKitPayload, UIKitActionEvent } from '../../../definition/UIKit';
 const useUIKitHandleAction = <S extends UiKitPayload>(state: S): (event: UIKitActionEvent) => Promise<void> => useMutableCallback(async ({ blockId, value, appId, actionId }) => ActionManager.triggerBlockAction({
 	container: {
 		type: UIKitIncomingInteractionContainerType.VIEW,
-		id: state.appId,
+		id: state.viewId || state.appId,
 	},
 	actionId,
 	appId,

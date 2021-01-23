@@ -8,7 +8,9 @@ export class Nps implements IUiKitCoreApp {
 	async blockAction(payload: any): Promise<any> {
 		const {
 			triggerId,
-			actionId: bannerId,
+			container: {
+				id: bannerId,
+			},
 			payload: {
 				value: score,
 				blockId: npsId,
