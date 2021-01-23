@@ -108,6 +108,9 @@ Template.createChannel.helpers({
 	e2eEnabled() {
 		return settings.get('E2E_Enable');
 	},
+	hideHistoryVisible() {
+		return Template.instance().isEnterprise.get();
+	},
 	hideHistory() {
 		return Template.instance().hideHistory.get();
 	},
@@ -238,7 +241,7 @@ Template.createChannel.events({
 		const readOnly = instance.readOnly.get();
 		const broadcast = instance.broadcast.get();
 		const encrypted = instance.encrypted.get();
-		const hideHistoryForNewMembers = instance.hideHistory.get();
+		const hideHistoryForNewMembers = instance.isEnterprise.get() && instance.hideHistory.get();
 		const isPrivate = type === 'p';
 
 		if (instance.invalid.get() || instance.inUse.get()) {
@@ -314,11 +317,20 @@ Template.createChannel.onCreated(function() {
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.extensions_invalid = new ReactiveVar(false);
+	this.isEnterprise = new ReactiveVar(false);
 	this.change = _.debounce(() => {
 		let valid = true;
 		Object.keys(this.extensions_validations).map((key) => this.extensions_validations[key]).forEach((f) => { valid = f(this) && valid; });
 		this.extensions_invalid.set(!valid);
 	}, 300);
+
+	Meteor.call('license:isEnterprise', (err, result) => {
+		if (err) {
+			throw err;
+		}
+
+		this.isEnterprise.set(result);
+	});
 
 	Tracker.autorun(() => {
 		const broadcast = this.broadcast.get();
