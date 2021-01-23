@@ -26,6 +26,8 @@ export function buildWorkspaceRegistrationData() {
 
 	const website = settings.get('Website');
 
+	const npsEnabled = settings.get('NPS_survey_enabled');
+
 	const agreePrivacyTerms = settings.get('Cloud_Service_Agree_PrivacyTerms');
 
 	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
@@ -53,5 +55,6 @@ export function buildWorkspaceRegistrationData() {
 		licenseVersion: LICENSE_VERSION,
 		enterpriseReady: true,
 		setupComplete: settings.get('Show_Setup_Wizard') === 'completed',
+		npsEnabled,
 	};
 }
