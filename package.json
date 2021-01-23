@@ -293,8 +293,6 @@
 			"package-lock.json",
 			".snapcraft/snap/snapcraft.yaml",
 			".snapcraft/resources/prepareRocketChat",
-			".circleci/update-releases.sh",
-			".docker/Dockerfile",
 			".docker/Dockerfile.rhel",
 			"app/utils/rocketchat.info"
 		]
