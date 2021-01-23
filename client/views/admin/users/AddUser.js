@@ -43,7 +43,7 @@ export function AddUser({ roles, ...props }) {
 		id,
 	}), [router]);
 
-	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully'));
+	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully!'));
 
 	const handleSave = useCallback(async () => {
 		const result = await saveAction();
