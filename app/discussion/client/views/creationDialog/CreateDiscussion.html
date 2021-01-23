@@ -32,7 +32,17 @@
 						</label>
 					</div>
 				{{/unless}}
-
+				<div class="rc-switch">
+					<label class="rc-switch__label" tabindex="-1">
+						<input type="checkbox" class="rc-switch__input" id="encrypted" name="encrypted" checked={{encrypted}}>
+						<span class="rc-switch__button">
+						<span class="rc-switch__button-inside"></span>
+					</span>
+						<span class="rc-switch__text">
+							{{_ "Encrypted"}}
+						</span>
+					</label>
+				</div>
 				<div class="create-channel__inputs">
 					<div class="rc-input">
 						<label class="rc-input__label">
@@ -67,9 +77,12 @@
 						<label class="rc-input__label">
 							<div class="rc-input__title">{{_ "Discussion_first_message_title"}}</div>
 							<div class="rc-input__wrapper">
-								<textarea rows="5" name="discussion_message" id="discussion_message" class="rc-input__element" placeholder="{{_ 'New_discussion_first_message'}}"
+								<textarea rows="5" {{messageDisable}} name="discussion_message" id="discussion_message" class="rc-input__element" placeholder="{{_ 'New_discussion_first_message'}}"
 									maxlength="{{maxMessageLength}}"></textarea>
 							</div>
+							{{#if encrypted}}
+								<div class="rc-input__title">{{_ "Discussion_first_message_disabled_due_to_e2e"}}</div>
+							{{/if}}
 						</label>
 					</div>
 				</div>
