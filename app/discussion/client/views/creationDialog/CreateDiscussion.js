@@ -92,6 +92,15 @@ Template.CreateDiscussion.helpers({
 	nameSuggestion() {
 		return Template.instance().discussionName.get();
 	},
+	hideHistoryVisible() {
+		return Template.instance().isEnterprise.get();
+	},
+	hideHistory() {
+		return Template.instance().hideHistory.get();
+	},
+	hideHistoryDescription() {
+		return TAPi18n.__(Template.instance().hideHistory.get() ? 'Hiding_history_from_new_discussion_members' : 'Showing_history_to_new_discussion_members');
+	},
 });
 
 Template.CreateDiscussion.events({
@@ -113,6 +122,7 @@ Template.CreateDiscussion.events({
 		const t_name = instance.discussionName.get();
 		const users = instance.selectedUsers.get().map(({ username }) => username).filter((value, index, self) => self.indexOf(value) === index);
 		const encrypted = instance.encrypted.get();
+		const hideHistoryForNewMembers = instance.isEnterprise.get() && instance.hideHistory.get();
 
 		const prid = instance.parentChannelId.get();
 		const reply = encrypted ? undefined : instance.reply.get();
@@ -121,7 +131,7 @@ Template.CreateDiscussion.events({
 			const errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
 			return toastr.error(errorText);
 		}
-		const result = await call('createDiscussion', { prid, pmid, t_name, users, encrypted, reply });
+		const result = await call('createDiscussion', { prid, pmid, t_name, users, encrypted, reply, hideHistoryForNewMembers });
 
 		// callback to enable tracking
 		callbacks.run('afterDiscussion', Meteor.user(), result);
@@ -131,6 +141,9 @@ Template.CreateDiscussion.events({
 		}
 
 		roomTypes.openRouteLink(result.t, result);
+	},
+	'change [name="hideHistory"]'(e, t) {
+		t.hideHistory.set(e.target.checked);
 	},
 });
 
@@ -167,6 +180,8 @@ Template.CreateDiscussion.onCreated(function() {
 
 
 	this.selectedRoom = new ReactiveVar(room ? [room] : []);
+	this.hideHistory = new ReactiveVar(false);
+	this.isEnterprise = new ReactiveVar(false);
 
 
 	this.onClickTagRoom = () => {
@@ -180,6 +195,14 @@ Template.CreateDiscussion.onCreated(function() {
 		room.text = room.name;
 		this.selectedRoom.set([room]);
 	};
+
+	Meteor.call('license:isEnterprise', (err, result) => {
+		if (err) {
+			throw err;
+		}
+
+		this.isEnterprise.set(result);
+	});
 
 	this.autorun(() => {
 		const [room = {}] = this.selectedRoom.get();
