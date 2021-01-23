@@ -51,6 +51,7 @@ const useInitialValues = (room, settings) => {
 		sysMes,
 		encrypted,
 		retention = {},
+		reactWhenReadOnly,
 	} = room;
 
 	const {
@@ -66,7 +67,7 @@ const useInitialValues = (room, settings) => {
 		roomName: t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(t, { type: t, ...room }),
 		roomType: t,
 		readOnly: !!ro,
-		reactWhenReadOnly: false,
+		reactWhenReadOnly,
 		archived: !!archived,
 		roomTopic: topic ?? '',
 		roomDescription: description ?? '',
@@ -105,6 +106,7 @@ const useInitialValues = (room, settings) => {
 		t,
 		topic,
 		encrypted,
+		reactWhenReadOnly,
 	]);
 };
 
@@ -200,6 +202,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
+		// eslint-disable-next-line no-unused-vars
 		canViewReactWhenReadOnly,
 		canViewEncrypted,
 	] = useMemo(() => {
@@ -328,7 +331,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 					</Box>
 					<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
 				</Field>}
-				{canViewReactWhenReadOnly && <Field>
+				{readOnly && <Field>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('React_when_read_only')}</Field.Label>
 						<Field.Row>
