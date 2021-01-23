@@ -80,6 +80,8 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		switch (setting) {
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
+			case RoomSettingsEnum.HIDE_HISTORY_NEW_MEMBERS:
+				return false;
 			default:
 				return true;
 		}

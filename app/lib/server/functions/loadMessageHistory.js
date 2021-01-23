@@ -1,6 +1,7 @@
-import { settings } from '../../../settings';
-import { Messages, Rooms } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import { Message } from '../../../../server/sdk';
 
 const hideMessagesOfTypeServer = new Set();
 
@@ -10,10 +11,14 @@ settings.get('Hide_System_Messages', function(key, values) {
 	hiddenTypes.forEach((item) => hideMessagesOfTypeServer.add(item));
 });
 
-export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
-	const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
+export function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
+	const room = Rooms.findOne(rid, { fields: { sysMes: 1, hideHistoryForNewMembers: 1 } });
 
-	const hiddenMessageTypes = Array.isArray(room && room.sysMes) ? room.sysMes : Array.from(hideMessagesOfTypeServer.values()); // TODO probably remove on chained event system
+	// TODO probably remove on chained event system
+	const hiddenMessageTypes = Array.isArray(room && room.sysMes)
+		? room.sysMes
+		: Array.from(hideMessagesOfTypeServer.values());
+
 	const options = {
 		sort: {
 			ts: -1,
@@ -27,8 +32,10 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 		};
 	}
 
-	const records = end != null ? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hiddenMessageTypes, options).fetch() : Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options).fetch();
+	const { records } = Promise.await(Message.get(userId, { rid, excludeTypes: hiddenMessageTypes, oldest: end, queryOptions: options }));
+
 	const messages = normalizeMessagesForUser(records, userId);
+
 	let unreadNotLoaded = 0;
 	let firstUnread;
 
@@ -37,15 +44,21 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
-			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, hiddenMessageTypes, {
-				limit: 1,
-				sort: {
-					ts: 1,
+			const { records: unreadMessages, total } = Promise.await(Message.get(userId, {
+				rid,
+				excludeTypes: hiddenMessageTypes,
+				latest: ls,
+				oldest: firstMessage.ts,
+				queryOptions: {
+					limit: 1,
+					sort: {
+						ts: 1,
+					},
 				},
-			});
+			}));
 
-			firstUnread = unreadMessages.fetch()[0];
-			unreadNotLoaded = unreadMessages.count();
+			firstUnread = unreadMessages[0];
+			unreadNotLoaded = total;
 		}
 	}
 
@@ -54,4 +67,4 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 		firstUnread,
 		unreadNotLoaded,
 	};
-};
+}

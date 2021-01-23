@@ -108,6 +108,15 @@ Template.createChannel.helpers({
 	e2eEnabled() {
 		return settings.get('E2E_Enable');
 	},
+	hideHistoryVisible() {
+		return Template.instance().isEnterprise.get();
+	},
+	hideHistory() {
+		return Template.instance().hideHistory.get();
+	},
+	hideHistoryDescription() {
+		return t(Template.instance().hideHistory.get() ? 'Hiding_history_from_new_members' : 'Showing_history_to_new_members');
+	},
 	readOnly() {
 		return Template.instance().readOnly.get();
 	},
@@ -192,6 +201,10 @@ Template.createChannel.events({
 		t.encrypted.set(e.target.checked);
 		t.change();
 	},
+	'change [name="hideHistory"]'(e, t) {
+		t.hideHistory.set(e.target.checked);
+		t.change();
+	},
 	'change [name="readOnly"]'(e, t) {
 		t.readOnly.set(e.target.checked);
 	},
@@ -228,6 +241,7 @@ Template.createChannel.events({
 		const readOnly = instance.readOnly.get();
 		const broadcast = instance.broadcast.get();
 		const encrypted = instance.encrypted.get();
+		const hideHistoryForNewMembers = instance.isEnterprise.get() && instance.hideHistory.get();
 		const isPrivate = type === 'p';
 
 		if (instance.invalid.get() || instance.inUse.get()) {
@@ -238,7 +252,7 @@ Template.createChannel.events({
 		}
 
 		const extraData = Object.keys(instance.extensions_submits)
-			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted });
+			.reduce((result, key) => ({ ...result, ...instance.extensions_submits[key](instance) }), { broadcast, encrypted, hideHistoryForNewMembers });
 
 		Meteor.call(isPrivate ? 'createPrivateGroup' : 'createChannel', name, instance.selectedUsers.get().map((user) => user.username), readOnly, {}, extraData, function(err, result) {
 			if (err) {
@@ -299,14 +313,24 @@ Template.createChannel.onCreated(function() {
 	this.readOnly = new ReactiveVar(false);
 	this.broadcast = new ReactiveVar(false);
 	this.encrypted = new ReactiveVar(settings.get('E2E_Enabled_Default_PrivateRooms'));
+	this.hideHistory = new ReactiveVar(false);
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.extensions_invalid = new ReactiveVar(false);
+	this.isEnterprise = new ReactiveVar(false);
 	this.change = _.debounce(() => {
 		let valid = true;
 		Object.keys(this.extensions_validations).map((key) => this.extensions_validations[key]).forEach((f) => { valid = f(this) && valid; });
 		this.extensions_invalid.set(!valid);
 	}, 300);
+
+	Meteor.call('license:isEnterprise', (err, result) => {
+		if (err) {
+			throw err;
+		}
+
+		this.isEnterprise.set(result);
+	});
 
 	Tracker.autorun(() => {
 		const broadcast = this.broadcast.get();
