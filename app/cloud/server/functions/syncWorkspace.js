@@ -70,7 +70,9 @@ export function syncWorkspace(reconnectCheck = false) {
 
 	// add banners
 	if (data.banners) {
-		data.banners.forEach((banner) => Promise.await(Banner.create(banner)));
+		for (const banner of data.banners) {
+			Promise.await(Banner.create(banner));
+		}
 	}
 
 	return true;
