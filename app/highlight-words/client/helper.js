@@ -20,7 +20,7 @@ export const getRegexHighlight = (highlight) => new RegExp(`(^|\\b|[\\s\\n\\r\\t
 
 export const getRegexHighlightUrl = (highlight) => new RegExp(`https?:\/\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)(${ escapeRegExp(highlight) })\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)`, 'gmi');
 
-export const getRegexHighlightEmoji = (highlight) => new RegExp(`(:)(${ escapeRegExp(highlight) })(:)`, 'gmi'); 
+export const getRegexHighlightEmoji = (highlight) => new RegExp(`(:)(${ escapeRegExp(highlight) })(:)`, 'gmi');
 
 export const highlightWords = (msg, highlights) => highlights.reduce((msg, { highlight, regex, urlRegex, emojiRegex }) => {
 	const urlMatches = checkHighlightedWordsInUrls(msg, urlRegex);
