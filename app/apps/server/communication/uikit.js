@@ -142,7 +142,6 @@ router.post('/:appId', async (req, res, next) => {
 
 	const isCore = await UiKitCoreApp.isRegistered(appId);
 	if (!isCore) {
-		console.log('not internal');
 		return next();
 	}
 
@@ -150,15 +149,11 @@ router.post('/:appId', async (req, res, next) => {
 		type,
 	} = req.body;
 
-	console.log('execute internal app');
-
 	try {
 		const payload = {
 			...getPayloadForType(type, req),
 			appId,
 		};
-
-		console.log('payload', payload);
 
 		const result = await UiKitCoreApp[type](payload);
 
@@ -248,7 +243,7 @@ const appsRoutes = (orch) => (req, res) => {
 
 				res.sendStatus(200);
 			} catch (e) {
-				console.log(e);
+				console.error(e);
 				res.status(500).send(e.message);
 			}
 			break;
