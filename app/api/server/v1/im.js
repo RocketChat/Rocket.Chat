@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models';
+import { Subscriptions, Uploads, Users, Rooms } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { settings } from '../../../settings';
 import { API } from '../api';
 import { getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
+import { Message } from '../../../../server/sdk';
 
 function findDirectMessageRoom(params, user) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
@@ -234,18 +235,22 @@ API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { rid: findResult.room._id });
 
-		const messages = Messages.find(ourQuery, {
-			sort: sort || { ts: -1 },
-			skip: offset,
-			limit: count,
-			fields,
-		}).fetch();
+		const { records: messages, total } = Promise.await(Message.customQuery({
+			query: ourQuery,
+			userId: this.userId,
+			queryOptions: {
+				sort: sort || { ts: -1 },
+				skip: offset,
+				limit: count,
+				fields,
+			},
+		}));
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(messages, this.userId),
 			count: messages.length,
 			offset,
-			total: Messages.find(ourQuery).count(),
+			total,
 		});
 	},
 });
@@ -274,18 +279,22 @@ API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authRequired: tr
 		const { sort, fields, query } = this.parseJsonQuery();
 		const ourQuery = Object.assign({}, query, { rid: room._id });
 
-		const msgs = Messages.find(ourQuery, {
-			sort: sort || { ts: -1 },
-			skip: offset,
-			limit: count,
-			fields,
-		}).fetch();
+		const { records: msgs, total } = Promise.await(Message.customQuery({
+			query: ourQuery,
+			userId: this.userId,
+			queryOptions: {
+				sort: sort || { ts: -1 },
+				skip: offset,
+				limit: count,
+				fields,
+			},
+		}));
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(msgs, this.userId),
 			offset,
 			count: msgs.length,
-			total: Messages.find(ourQuery).count(),
+			total,
 		});
 	},
 });

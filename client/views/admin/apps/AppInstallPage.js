@@ -8,6 +8,9 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFileInput } from '../../../hooks/useFileInput';
 import { useForm } from '../../../hooks/useForm';
 import { handleInstallError } from './helpers';
+import AppPermissionsReviewModal from './AppPermissionsReviewModal';
+import { useSetModal } from '../../../contexts/ModalContext';
+import { getPermissionsFromZippedApp } from './lib/getPermissionsFromZippedApp';
 
 const placeholderUrl = 'https://rocket.chat/apps/package.zip';
 
@@ -15,6 +18,7 @@ function AppInstallPage() {
 	const t = useTranslation();
 
 	const appsRoute = useRoute('admin-apps');
+	const setModal = useSetModal();
 
 	const appId = useQueryStringParameter('id');
 	const queryUrl = useQueryStringParameter('url');
@@ -22,7 +26,7 @@ function AppInstallPage() {
 	const [installing, setInstalling] = useState(false);
 
 	const endpointAddress = appId ? `/apps/${ appId }` : '/apps';
-	const installApp = useEndpoint('POST', endpointAddress);
+	const downloadApp = useEndpoint('POST', endpointAddress);
 	const uploadApp = useUpload(endpointAddress);
 
 	const { values, handlers } = useForm({
@@ -48,26 +52,49 @@ function AppInstallPage() {
 
 	const [handleUploadButtonClick] = useFileInput(handleFile, 'app');
 
-	const install = useCallback(async () => {
+	const sendFile = async (permissionsGranted, appFile) => {
+		const fileData = new FormData();
+		fileData.append('app', appFile, appFile.name);
+		fileData.append('permissions', JSON.stringify(permissionsGranted));
+		const { app } = await uploadApp(fileData);
+		appsRoute.push({ context: 'details', id: app.id });
+		setModal(null);
+	};
+
+	const cancelAction = useCallback(() => {
+		setInstalling(false);
+		setModal(null);
+	}, [setInstalling, setModal]);
+
+	const install = async () => {
 		setInstalling(true);
 
 		try {
+			let permissions;
+			let appFile;
 			if (url) {
-				const { app } = await installApp({ url });
-				appsRoute.push({ context: 'details', id: app.id });
-				return;
+				const { buff } = await downloadApp({ url, downloadOnly: true });
+				const fileData = Uint8Array.from(buff.data);
+				permissions = await getPermissionsFromZippedApp(fileData);
+				appFile = new File([fileData], 'app.zip', { type: 'application/zip' });
+			} else {
+				appFile = file;
+				permissions = await getPermissionsFromZippedApp(appFile);
 			}
 
-			const fileData = new FormData();
-			fileData.append('app', file, file.name);
-			const { app } = await uploadApp(fileData);
-			appsRoute.push({ context: 'details', id: app.id });
+			setModal(
+				<AppPermissionsReviewModal
+					appPermissions={permissions}
+					cancel={cancelAction}
+					confirm={(permissions) => sendFile(permissions, appFile)}
+				/>,
+			);
 		} catch (error) {
 			handleInstallError(error);
 		} finally {
 			setInstalling(false);
 		}
-	}, [url, appsRoute, installApp, file, uploadApp]);
+	};
 
 	const handleCancel = () => {
 		appsRoute.push();
