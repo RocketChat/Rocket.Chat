@@ -3,8 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../../app/callbacks';
 import { Users } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
-import { allowAgentSkipQueue, getMaxNumberSimultaneousChat } from '../lib/Helper';
+import { getMaxNumberSimultaneousChat } from '../lib/Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 
 callbacks.add('livechat.checkAgentBeforeTakeInquiry', async (agent, inquiry) => {
 	if (!settings.get('Livechat_waiting_queue')) {
