@@ -1,4 +1,4 @@
-import { Collection, Cursor, FindOneOptions, UpdateWriteOpResult } from 'mongodb';
+import { ObjectId, Collection, Cursor, FindOneOptions, UpdateWriteOpResult } from 'mongodb';
 
 import { INpsVote, INpsVoteStatus } from '../../../../definition/INps';
 import { BaseRaw } from './BaseRaw';
@@ -57,6 +57,9 @@ export class NpsVoteRaw extends BaseRaw<T> {
 			$set: {
 				...vote,
 				_updatedAt: new Date(),
+			},
+			$setOnInsert: {
+				_id: new ObjectId().toHexString(),
 			},
 		};
 
