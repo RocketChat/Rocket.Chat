@@ -41,10 +41,7 @@ export class AppListenerBridge {
 				case AppInterface.IPostLivechatGuestSaved:
 				case AppInterface.IPostLivechatRoomSaved:
 					return 'livechatEvent';
-				case AppInterface.IUIKitInteractionHandler:
-				case AppInterface.IUIKitLivechatInteractionHandler:
-				case AppInterface.IPostExternalComponentOpened:
-				case AppInterface.IPostExternalComponentClosed:
+				default:
 					return 'defaultEvent';
 			}
 		})();
@@ -54,10 +51,6 @@ export class AppListenerBridge {
 
 	async defaultEvent(inte, payload) {
 		return this.orch.getManager().getListenerManager().executeListener(inte, payload);
-	}
-
-	async fileUploadEvent(inte, file) {
-		return this.orch.getManager().getListenerManager().executeListener(inte, file);
 	}
 
 	async messageEvent(inte, message) {

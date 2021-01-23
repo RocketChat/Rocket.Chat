@@ -10,6 +10,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
@@ -25,7 +26,7 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
-import { Apps } from '../../../apps/server';
+import { AppEvents, Apps } from '../../../apps/server';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -95,22 +96,20 @@ export const FileUpload = {
 		}
 
 		// App IPreFileUpload event hook
-		const response = Promise.await(
-			Apps.getBridges()
-				.getListenerBridge()
-				.fileUploadEvent('IPreFileUpload', { file, stream }),
-		);
+		try {
+			Promise.await(Apps.triggerEvent(AppEvents.IPreFileUpload, { file, stream }));
+		} catch (error) {
+			if (error instanceof AppsEngineException) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
 
-		if (response && response.prevent) {
-			const { appId, reason } = response;
-			console.warn(`The app (${ appId }) prevented the file upload, reason: `, reason);
-			throw new Meteor.Error('error-app-prevent-file-upload', reason);
+			throw error;
 		}
 
 		return true;
 	},
 
-	validateAvatarUpload(file) {
+	validateAvatarUpload({ file }) {
 		if (!Match.test(file.rid, String) && !Match.test(file.userId, String)) {
 			return false;
 		}
@@ -191,7 +190,7 @@ export const FileUpload = {
 		};
 	},
 
-	avatarsOnValidate(file) {
+	avatarsOnValidate({ file }) {
 		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
