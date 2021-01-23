@@ -46,8 +46,6 @@ export class Nps implements IUiKitCoreApp {
 		const {
 			[npsId]: {
 				score,
-			},
-			default: { // TODO remove default after fix from frontend
 				comment,
 			},
 		} = state;
