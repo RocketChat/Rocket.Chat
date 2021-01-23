@@ -12,7 +12,7 @@ import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 import { UiKitPayload } from '../../../definition/UIKit';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const emptyFn = (error: any, result: UIKitInteractionType | void): void => undefined;
+const emptyFn = (_error: any, _result: UIKitInteractionType | void): void => undefined;
 
 const useUIKitHandleClose = <S extends UiKitPayload>(state: S, fn = emptyFn): () => Promise<void | UIKitInteractionType> => {
 	const dispatchToastMessage = useToastMessageDispatch();
