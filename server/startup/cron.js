@@ -16,9 +16,9 @@ SyncedCron.config({
 });
 
 Meteor.defer(function() {
-	oembedCron(SyncedCron, logger);
+	oembedCron(SyncedCron);
 	statsCron(SyncedCron, logger);
-	npsCron(SyncedCron, logger);
+	npsCron(SyncedCron);
 
 	SyncedCron.start();
 });
