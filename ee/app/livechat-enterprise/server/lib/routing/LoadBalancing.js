@@ -27,10 +27,6 @@ class LoadBalancing {
 		const { agentId, username } = nextAgent;
 		return { agentId, username };
 	}
-
-	delegateAgent(agent) {
-		return agent;
-	}
 }
 
 RoutingManager.registerMethod('Load_Balancing', LoadBalancing);

@@ -1,4 +1,4 @@
-import { Collection, ObjectId } from 'mongodb';
+import { Collection, ObjectId, UpdateWriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import {
@@ -57,7 +57,7 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> {
 		});
 	}
 
-	async updateOneById(_id: string, data: Omit<ILivechatBusinessHour, '_id'>): Promise<any> {
+	async updateOneById(_id: string, data: Omit<ILivechatBusinessHour, '_id'>): Promise<UpdateWriteOpResult> {
 		const query = {
 			_id,
 		};
