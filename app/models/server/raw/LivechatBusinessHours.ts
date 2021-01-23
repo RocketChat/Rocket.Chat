@@ -1,4 +1,4 @@
-import { Collection, ObjectId, UpdateWriteOpResult } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import {

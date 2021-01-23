@@ -105,6 +105,14 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 		return this.col.update(filter, update, options);
 	}
 
+	updateOne(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<UpdateWriteOpResult> {
+		return this.col.updateOne(filter, update, options);
+	}
+
+	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
+		return this.col.updateMany(filter, update, options);
+	}
+
 	insertOne(doc: ModelOptionalId<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {
 		if (!doc._id || typeof doc._id !== 'string') {
 			const oid = new ObjectID();
@@ -113,14 +121,6 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 
 		// TODO reavaluate following type casting
 		return this.col.insertOne(doc as unknown as OptionalId<T>, options);
-	}
-
-	updateOne(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<UpdateWriteOpResult> {
-		return this.col.updateOne(filter, update, options);
-	}
-
-	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
-		return this.col.updateMany(filter, update, options);
 	}
 
 	removeById(_id: string): Promise<DeleteWriteOpResultObject> {
