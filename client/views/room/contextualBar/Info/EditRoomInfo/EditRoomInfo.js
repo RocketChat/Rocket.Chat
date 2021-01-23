@@ -50,6 +50,7 @@ const useInitialValues = (room, settings) => {
 		sysMes,
 		encrypted,
 		retention = {},
+		reactWhenReadOnly,
 	} = room;
 
 	const {
@@ -65,7 +66,7 @@ const useInitialValues = (room, settings) => {
 		roomName: t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(t, { type: t, ...room }),
 		roomType: t,
 		readOnly: !!ro,
-		reactWhenReadOnly: room.reactWhenReadOnly,
+		reactWhenReadOnly: reactWhenReadOnly,
 		archived: !!archived,
 		roomTopic: topic ?? '',
 		roomDescription: description ?? '',
