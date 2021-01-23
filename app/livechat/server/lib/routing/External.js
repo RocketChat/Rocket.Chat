@@ -51,10 +51,6 @@ class ExternalQueue {
 		}
 		throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 	}
-
-	delegateAgent(agent) {
-		return agent;
-	}
 }
 
 RoutingManager.registerMethod('External', ExternalQueue);

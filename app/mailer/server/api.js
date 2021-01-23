@@ -109,7 +109,7 @@ export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) 
 	}
 
 	if (!text) {
-		text = stripHtml(html);
+		text = stripHtml(html).result;
 	}
 
 	if (settings.get('email_plain_text_only')) {
@@ -127,7 +127,7 @@ export const send = ({ to, from, replyTo, subject, html, text, data, headers }) 
 		subject: replace(subject, data),
 		text: text
 			? replace(text, data)
-			: stripHtml(replace(html, data)),
+			: stripHtml(replace(html, data)).result,
 		html: wrap(html, data),
 		headers,
 	});

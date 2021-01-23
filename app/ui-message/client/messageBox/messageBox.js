@@ -106,15 +106,24 @@ Template.messageBox.onCreated(function() {
 });
 
 Template.messageBox.onRendered(function() {
-	const $input = $(this.find('.js-input-message'));
-	this.source = $input[0];
-	$input.on('dataChange', () => {
-		const messages = $input.data('reply') || [];
-		this.replyMessageData.set(messages);
-	});
+	let inputSetup = false;
+
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData();
 		const room = Session.get(`roomData${ rid }`);
+
+		if (!inputSetup) {
+			const $input = $(this.find('.js-input-message'));
+			this.source = $input[0];
+			if (this.source) {
+				inputSetup = true;
+			}
+			$input.on('dataChange', () => {
+				const messages = $input.data('reply') || [];
+				console.log('dataChange', messages);
+				this.replyMessageData.set(messages);
+			});
+		}
 
 		if (!room) {
 			return this.state.set({
