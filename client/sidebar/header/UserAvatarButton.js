@@ -43,7 +43,7 @@ export default React.memo(({ user = {} }) => {
 	return <Box position='relative' onClick={handleClick} className={css`cursor: pointer;`} data-qa='sidebar-avatar-button'>
 		<UserAvatar size='x24' username={username} etag={avatarETag}/>
 		<Box className={css`bottom: 0; right: 0;`} justifyContent='center' alignItems='center'display='flex' overflow='hidden' size='x12' borderWidth='x2' position='absolute' bg='neutral-200' borderColor='neutral-200' borderRadius='full' mie='neg-x2' mbe='neg-x2'>
-			<UserStatus style={{width: "0.550rem", height: "0.550rem", position: "fixed"}} small status={status}/>
+			<UserStatus style={{ width: '0.550rem', height: '0.550rem', position: 'fixed' }} small status={status}/>
 		</Box>
 	</Box>;
 });
