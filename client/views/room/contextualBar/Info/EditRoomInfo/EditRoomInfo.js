@@ -83,7 +83,7 @@ const useInitialValues = (room, settings) => {
 		...retentionPolicyEnabled && {
 			retentionEnabled: retention.enabled ?? retentionEnabledDefault,
 			retentionOverrideGlobal: !!retention.overrideGlobal,
-			retentionMaxAge: Math.min(retention.maxAge, maxAgeDefault) || maxAgeDefault,
+			retentionMaxAge: retention.maxAge ?? maxAgeDefault,
 			retentionExcludePinned: retention.excludePinned ?? excludePinnedDefault,
 			retentionFilesOnly: retention.filesOnly ?? filesOnlyDefault,
 		},
