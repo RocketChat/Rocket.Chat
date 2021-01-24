@@ -3193,7 +3193,7 @@
   "Remove_someone_from_room": "Remove someone from the room",
   "remove-closed-livechat-rooms": "Remove Closed Omnichannel Rooms",
   "remove-closed-livechat-rooms_description": "Permission to remove closed omnichannel rooms",
-  "remove-user": "Remove User"
+  "remove-user": "Remove User",
   "remove-user_description": "Permission to remove a user from a room",
   "Removed": "Removed",
   "Removed_User": "Removed User",
