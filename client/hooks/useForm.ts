@@ -79,7 +79,7 @@ const valueChanged = (fieldName: string, newValue: unknown): FormAction =>
 				...state.values,
 				[newField.name]: newField.currentValue,
 			},
-			hasUnsavedChanges: currentOtherRoles.includes(newField.currentValue) ? false : (newField.changed || fields.some((field) => field.changed )),
+			hasUnsavedChanges: currentOtherRoles.includes(newField.currentValue) ? false : (newField.changed || fields.some((field) => field.changed)),
 		};
 	};
 
