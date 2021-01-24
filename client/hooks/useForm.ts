@@ -1,5 +1,5 @@
 import { useCallback, useReducer, useMemo, ChangeEvent } from 'react';
-
+import { Roles } from '../../app/models/client';
 import { capitalize } from '../lib/capitalize';
 
 type Field = {
@@ -53,7 +53,7 @@ const valueChanged = (fieldName: string, newValue: unknown): FormAction =>
 	(state: FormState): FormState => {
 		let { fields } = state;
 		const field = fields.find(({ name }) => name === fieldName);
-
+		const currentOtherRoles = Roles.find({ description: { $ne: field?.initialValue }}).map(a => a.description);
 		if (!field || field.currentValue === newValue) {
 			return state;
 		}
@@ -79,7 +79,7 @@ const valueChanged = (fieldName: string, newValue: unknown): FormAction =>
 				...state.values,
 				[newField.name]: newField.currentValue,
 			},
-			hasUnsavedChanges: newField.changed || fields.some((field) => field.changed),
+			hasUnsavedChanges: currentOtherRoles.includes(newField.currentValue) ? false : (newField.changed || fields.some((field) => field.changed )),
 		};
 	};
 
