@@ -53,12 +53,8 @@ const initForm = (initialValues: Record<string, unknown>): FormState => {
 const valueChanged = (fieldName: string, newValue: unknown): FormAction =>
 	(state: FormState): FormState => {
 		let { fields } = state;
-		const field = fields.find(({ name }) => {
-			return name === fieldName;
-		});
-		const currentOtherRoles = Roles.find({ description: { $ne: field?.initialValue } }).map(a => 
-			return a.description;
-		});
+		const field = fields.find(({ name }) => name === fieldName);
+		const currentOtherRoles = Roles.find({ description: { $nin: [field?.initialValue, ''] } }).map((a) => a.description);
 		if (!field || field.currentValue === newValue) {
 			return state;
 		}
