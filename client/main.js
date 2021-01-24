@@ -4,7 +4,7 @@ import './lib/meteorCallWrapper';
 import './importPackages';
 import '../imports/startup/client';
 
-import '../ee/client';
+// import '../ee/client';
 import './templateHelpers';
 import './methods/deleteMessage';
 import './methods/hideRoom';

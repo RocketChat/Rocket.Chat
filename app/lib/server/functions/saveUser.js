@@ -9,7 +9,7 @@ import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
-import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
+// import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
 import { escapeHTML } from '../../../../lib/escapeHTML';
 
