@@ -55,7 +55,7 @@ const valueChanged = (fieldName: string, newValue: unknown): FormAction =>
 		let { fields } = state;
 		const field = fields.find(({ name }) => {
 			name === fieldName;
-		)};
+		});
 		const currentOtherRoles = Roles.find({ description: { $ne: field?.initialValue }}).map(a => a.description);
 		if (!field || field.currentValue === newValue) {
 			return state;
