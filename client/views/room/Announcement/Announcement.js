@@ -44,6 +44,7 @@ export default ({ announcement, announcementDetails }) => {
 
 		announcementDetails ? announcementDetails() : setModal(<AnnouncementModal onClose={closeModal}>{announcement}</AnnouncementModal>);
 	};
-	const announcementWithoutBreaks = announcement && announcement.replace(/(\r\n|\n|\r)/gm, " ");
+	const announcementWithoutBreaks = announcement && announcement.replace(/(\r\n|\n|\r)/gm, ' ');
+
 	return announcementWithoutBreaks ? <Announcement onClickOpen={handleClick}><MarkdownText content={announcementWithoutBreaks} /></Announcement> : false;
 };
