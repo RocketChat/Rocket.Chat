@@ -9,7 +9,7 @@ import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../settings/server';
 
 API.v1.addRoute('livechat/message', {
 	post() {
@@ -41,11 +41,10 @@ API.v1.addRoute('livechat/message', {
 				throw new Meteor.Error('room-closed');
 			}
 
-			if(settings.get('Livechat_enable_message_character_limit')) {
-				if(msg.length > parseInt(settings.get('Livechat_message_character_limit'))) {
+			if (settings.get('Livechat_enable_message_character_limit')) {
+				if (msg.length > parseInt(settings.get('Livechat_message_character_limit'))) {
 					throw new Meteor.Error('message-length-exceeds-character-limit');
 				}
-
 			}
 
 			const _id = this.bodyParams._id || Random.id();
