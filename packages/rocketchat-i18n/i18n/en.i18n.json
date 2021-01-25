@@ -2655,6 +2655,8 @@
   "Message_HideType_wm": "Hide \"Welcome\" messages",
   "Message_Id": "Message Id",
   "Message_Ignored": "This message was ignored",
+  "message-impersonate": "Impersonate Other Users",
+  "message-impersonate_description": "Permission to impersonate other users using message alias",
   "Message_info": "Message info",
   "Message_KeepHistory": "Keep Per Message Editing History",
   "Message_MaxAll": "Maximum Channel Size for ALL Message",

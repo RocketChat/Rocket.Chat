@@ -2292,6 +2292,8 @@
   "Message_HideType_ul": "Ocultar mensagens \"Deixar usuário\"",
   "Message_Id": "ID da mensagem",
   "Message_Ignored": "Esta mensagem foi ignorada",
+  "message-impersonate": "Impersonar Outros Usuários",
+  "message-impersonate_description": "Permissão para impersonar outros usuários usando a propriedade alias ou avatar no envio de uma mensagem",
   "Message_info": "Informação da mensagem",
   "Message_KeepHistory": "Manter Histórico de Mensagens",
   "Message_MaxAll": "Tamanho máximo de canais para a todas mensagens",
