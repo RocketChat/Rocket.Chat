@@ -107,6 +107,8 @@ export class PublicRoomType extends RoomTypeConfig {
 				return !room.broadcast && room.ro;
 			case RoomSettingsEnum.E2E:
 				return false;
+			case RoomSettingsEnum.HIDE_HISTORY_NEW_MEMBERS:
+				return true;
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			default:
 				return true;

@@ -21,7 +21,7 @@ const AttachmentProvider: FC<{}> = ({ children }) => {
 			width: 480,
 			height: 360,
 		},
-	}), [autoLoadEmbedMedias, collapsedByDefault, saveMobileBandwidth, reducedData]);
+	}), [collapsedByDefault, reducedData, autoLoadEmbedMedias, saveMobileBandwidth, isMobile]);
 
 	return <AttachmentContext.Provider children={children} value={contextValue} />;
 };

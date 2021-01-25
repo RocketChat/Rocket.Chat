@@ -10,7 +10,7 @@ export type VideoAttachmentProps = {
 	video_url: string;
 	video_type: string;
 	video_size: number;
-	file: FileProp;
+	file?: FileProp;
 } & AttachmentPropsBase;
 
 export const VideoAttachment: FC<VideoAttachmentProps> = ({ title,
