@@ -7,6 +7,7 @@ import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '..
 import { hasPermission, hasAtLeastOnePermission, canAccessRoom } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
+import { Message } from '../../../../server/sdk';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
@@ -525,18 +526,22 @@ API.v1.addRoute('groups.messages', { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { rid: findResult.rid });
 
-		const messages = Messages.find(ourQuery, {
-			sort: sort || { ts: -1 },
-			skip: offset,
-			limit: count,
-			fields,
-		}).fetch();
+		const { records: messages, total } = Promise.await(Message.customQuery({
+			query: ourQuery,
+			userId: this.userId,
+			queryOptions: {
+				sort: sort || { ts: -1 },
+				skip: offset,
+				limit: count,
+				fields,
+			},
+		}));
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(messages, this.userId),
 			count: messages.length,
 			offset,
-			total: Messages.find(ourQuery).count(),
+			total,
 		});
 	},
 });

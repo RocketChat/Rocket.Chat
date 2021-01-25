@@ -17,6 +17,7 @@ import { IIntegration } from '../../../definition/IIntegration';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 
 export type EventSignatures = {
+	'banner.new'(bannerId: string): void;
 	'emoji.deleteCustom'(emoji: IEmoji): void;
 	'emoji.updateCustom'(emoji: IEmoji): void;
 	'license.module'(data: { module: string; valid: boolean }): void;
