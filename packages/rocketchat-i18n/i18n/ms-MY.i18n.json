@@ -186,6 +186,7 @@
   "Accounts_UserAddedEmail_Description": "Anda boleh menggunakan pemegang tempat berikut: <br/><ul><li> [name], [fname], [lname] untuk nama pengguna penuh, nama pertama atau nama akhir, masing-masing. </li><li> [email] untuk e-mel pengguna. </li><li> [password] bagi kata laluan pengguna. </li><li> [Site_Name] dan [Site_URL] untuk Nama Permohonan dan URL masing-masing. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Anda telah ditambahkan pada [Site_Name]",
   "Activate": "Aktifkan",
+  "Active": "aktif",
   "Activity": "aktiviti",
   "Add": "Tambah",
   "Add_agent": "menambah ejen",

@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "يمكنك استخدام العناصر النائبة التالية: <br/><ul style=\";text-align:right;direction:rtl\"><li style=\";text-align:right;direction:rtl\"> [name]، [fname]، [lname] لاسم المستخدم الكامل أو الاسم الأول أو اسم العائلة، على التوالي. </li><li style=\";text-align:right;direction:rtl\"> [email] للبريد الإلكتروني الخاص بالمستخدم. </li><li style=\";text-align:right;direction:rtl\"> [password] لكلمة المرور الخاصة بالمستخدم. </li><li style=\";text-align:right;direction:rtl\"> [Site_Name] و [Site_URL] لاسم التطبيق وعنوان URL على التوالي. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "لقد تم إضافتك إلى [Site_Name]",
   "Activate": "تفعيل",
+  "Active": "نشطة",
   "Activity": "أنشطة",
   "Add": "إضافة",
   "Add_agent": "أضف وكيل",

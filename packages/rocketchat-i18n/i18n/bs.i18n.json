@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "Možete koristiti sljedeće oznake: <br/><ul><li> [name], [fname], [lname] za korisničko ime, ime, te prezime. </li><li> [email] za email korisnika. </li><li> [password] korisnikovu lozinku. </li><li> [Site_Name] i [Site_URL] za ime i URL stranice. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Dodani ste na [Site_Name]",
   "Activate": "Aktiviraj",
+  "Active": "Aktivno",
   "Activity": "Aktivnost",
   "Add": "Dodaj",
   "Add_agent": "Dodaj agenta",

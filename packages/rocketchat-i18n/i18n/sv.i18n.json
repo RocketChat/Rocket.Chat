@@ -197,6 +197,7 @@
   "Accounts_UserAddedEmail_Description": "Du kan använda följande platsmarkörer: <br/><ul><li> [name], [fname], [lname] för användarens fullständiga namn, förnamn eller efternamn. </li><li> [email] för användarens e-post. </li><li> [password] för användarens lösenord. </li><li> [Site_Name] och [Site_URL] för Programnamn och webbadress. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Du har lagts till [Site_Name]",
   "Activate": "Aktivera",
+  "Active": "Aktiv",
   "Activity": "Aktivitet",
   "Add": "Skapa",
   "Add_agent": "Skapa agent",

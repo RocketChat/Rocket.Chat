@@ -191,6 +191,7 @@
   "Accounts_UserAddedEmail_Description": "Jūs varat izmantot šādus vietturus :<br/><ul><li>[vārds], [fname], [lname] attiecīgi lietotāja pilnam vārdam, vārdam vai uzvārdam.</li><li>[e-pasts] lietotāja e-pastam.</li><li>[parole] lietotāja parolei.</li><li>[Vietnes nosaukums] un [Site_URL] attiecīgi lietotnes nosaukums un URL.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Jūs esat pievienots [Site_Name]",
   "Activate": "Aktivizēt",
+  "Active": "Aktīvs",
   "Activity": "Aktivitāte",
   "Add": "Pievienot",
   "Add_agent": "Pievienot aģentu",

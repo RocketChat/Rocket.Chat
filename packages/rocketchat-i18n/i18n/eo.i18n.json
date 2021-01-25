@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "Vi povas uzi la jenajn anstataŭilojn: <br/><ul><li>[nomo], [fname], [lname] por la plena nomo, unua nomo aŭ familinomo de la uzanto, respektive.</li><li>[retpoŝto] por la retpoŝto de la uzanto.</li><li>[pasvorto] por la pasvorto de la uzanto.</li><li>[Site_Name] kaj [Site_URL] por la Aplika nomo kaj URL respektive.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Vi estis aldonitaj al [Site_Name]",
   "Activate": "Aktivigi",
+  "Active": "Aktiva",
   "Activity": "Aktiveco",
   "Add": "Aldoni",
   "Add_agent": "Aldonu agento",

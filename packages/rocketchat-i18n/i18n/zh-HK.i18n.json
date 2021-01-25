@@ -201,6 +201,7 @@
   "Accounts_UserAddedEmail_Description": "您可以分别使用以下占位符：<br/><ul><li>[名称]，[名称]，[名称]分别为用户的全名，名字或姓氏。用户的电子邮件为</li><li>[email]。</li><li>[密码]作为用户的密码。分别为应用程序名称和URL分别为</li><li>[Site_Name]和[Site_URL]。</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "您已被添加到[Site_Name]",
   "Activate": "激活",
+  "Active": "积极",
   "Activity": "活动",
   "Add": "加",
   "Add_agent": "添加代理",

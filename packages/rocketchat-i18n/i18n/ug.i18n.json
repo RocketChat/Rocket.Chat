@@ -110,6 +110,7 @@
   "Accounts_UserAddedEmail_Description": "سىز تۆۋەنكى ئورۇن ئىگىلەش بەلگىسى ئىشلىتەلەيسىز：<br/><ul><li>[name], [fname], [lname] ئايرىم ھالدا ئابونتنىڭ تولۇق ئىسمى ، ئىسمى ياكى فامىلىسى بولىدۇ. </li><li>[email] ئابونتنىڭ ئىلخىتى بولىدۇ</li><li>[password] ئابونتنىڭ مەخپىي نومۇرى بولىدۇ </li><li>[Site_Name] ۋە [Site_URL] ئايرىم ھالدا توربەت ئىسمى ۋە تور بەر ئادرېسى بولىدۇ </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "گە قاچىلاندىڭىز [Site_Name] سىز",
   "Activate": "قوزغىتىش",
+  "Active": "ھەرىكەتتە",
   "Activity": "ھەرىكەتلىنىش",
   "Add": "قوشۇش",
   "Add_agent": "خېرىدار مۇلازىمىتى قوشۇش",

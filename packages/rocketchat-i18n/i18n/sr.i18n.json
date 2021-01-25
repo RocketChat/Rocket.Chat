@@ -124,6 +124,7 @@
   "Accounts_UserAddedEmail_Description": "Можете користити следеће симболе: <br/><ul><li> [name], [fname], [lname] за пуно име корисника, имену или презимену, респективно. </li><li> [email] е-поште корисника. </li><li> [password] за лозинку корисника. </li><li> [Site_Name] и [Site_URL] за апликације Име и УРЛ респективно. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Додати сте у [Site_Name]",
   "Activate": "Активирај",
+  "Active": "активан",
   "Activity": "Активност",
   "Add": "Додај",
   "Add_agent": "Додај агента",

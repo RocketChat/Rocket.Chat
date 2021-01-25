@@ -230,6 +230,7 @@
   "Accounts_UserAddedEmail_Description": "თქვენ შეგიძლიათ გამოიყენოთ შემდეგი ველები: <br/> <ul> <li> [name], [fname], [lname] მომხმარებლის სრული სახელი, სახელი ან გვარი, შესაბამისად. [Html2e] <li> [email] მომხმარებლის ელ.ფოსტისთვის. </li> <li> [Site_Name] და [Site_URL] განაცხადის სახელისა და მისამართების შესაბამისად. </li> </ul>",
   "Accounts_UserAddedEmailSubject_Default": "თქვენ დაგამატეს [Site_Name]",
   "Activate": "აქტივაცია",
+  "Active": "აქტიური",
   "Active_users": "აქტიური მომხმარებლები",
   "Activity": "აქტივობა",
   "Add": "დამატება",

@@ -179,6 +179,7 @@
   "Accounts_UserAddedEmail_Description": "Bạn có thể sử dụng các placeholder sau: <br/><ul><li>[name], [fname], [lname] tương ứng cho tên, họ hoặc họ của người dùng, tương ứng.</li><li>[email] cho email của người dùng.</li><li>[password] cho mật khẩu của người dùng.</li><li>[Site_Name] và [Site_URL] cho Tên Ứng dụng và URL tương ứng.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Bạn đã được thêm vào [Site_Name]",
   "Activate": "Đang hoạt động",
+  "Active": "Hoạt động",
   "Activity": "Hoạt động",
   "Add": "Thêm",
   "Add_agent": "Thêm nhân viên / agent",

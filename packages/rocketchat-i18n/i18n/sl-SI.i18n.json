@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "Uporabite lahko naslednje oznake mesta: <br/><ul><li>[name], [fname], [lname] za polno ime, ime ali priimek uporabnika.</li><li>[email] za uporabniški e-poštni naslov.</li><li>[password] za uporabniško geslo.</li><li>[Site_Name] in [Site_URL] za ime aplikacije in URL.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Dodani ste bili na [Site_Name]",
   "Activate": "Sproži",
+  "Active": "Aktiven",
   "Activity": "Aktivnost",
   "Add": "Dodaj",
   "Add_agent": "Dodaj agenta",

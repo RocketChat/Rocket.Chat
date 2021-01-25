@@ -196,6 +196,7 @@
   "Accounts_UserAddedEmail_Description": "È possibile utilizzare i seguenti marcatori: <br/><ul><li> [name], [fname], [lname] per il nome completo dell'utente, nome o cognome, rispettivamente. </li><li> [email] per l'e-mail dell'utente. </li><li> [password] per la password dell'utente. </li><li> [Site_Name] e [Site_URL] per il Nome applicazione e l'URL, rispettivamente. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Sei stato aggiunto su [Site_Name]",
   "Activate": "Attiva",
+  "Active": "Attivo",
   "Activity": "Attività",
   "Add": "Aggiungi",
   "Add_agent": "Aggiungi operatore",

@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "Galite atitinkamai nurodyti naudotojo vardą, pavardę ar vardą, naudodami šiuos užpildytojus: <br/><ul><li>[name], [fname], [lname].</li><li>[el. Paštas] naudotojo el. Laiškui.</li><li>[slaptažodis] vartotojo slaptažodžiui.</li><li>> [Site_Name] ir [Site_URL] atitinkamai programos pavadinimui ir URL.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Jūs įtraukėte į [Site_Name]",
   "Activate": "aktyvinti",
+  "Active": "Aktyvus",
   "Activity": "Veikla",
   "Add": "Pridurti",
   "Add_agent": "Pridėti agentą",

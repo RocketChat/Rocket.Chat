@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "Efallai y byddwch yn defnyddio'r canlynol: <br / ><ul><li>[name], [fname], [lname] ar gyfer enw llawn, enw cyntaf neu enw olaf y defnyddiwr, yn y drefn honno.</li><li>[e-bost] ar gyfer e-bost y defnyddiwr.</li><li>[password] ar gyfer cyfrinair y defnyddiwr.</li><li>[Site_Name] a [Site_URL] ar gyfer yr Enw Cais a'r URL yn y drefn honno.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Rydych chi wedi cael eich ychwanegu at [Site_Name]",
   "Activate": "Gweithredwch",
+  "Active": "Gweithredol",
   "Activity": "Gweithgaredd",
   "Add": "Ychwanegwch",
   "Add_agent": "Ychwanegu asiant",

@@ -187,6 +187,7 @@
   "Accounts_UserAddedEmail_Description": "คุณสามารถใช้ตัวยึดตำแหน่งต่อไปนี้: <br/><ul><li>[name], [fname], [lname] สำหรับชื่อเต็มของผู้ใช้ชื่อหรือนามสกุลตามลำดับ</li><li>[email] สำหรับอีเมลของผู้ใช้</li><li>[รหัสผ่าน] สำหรับรหัสผ่านของผู้ใช้</li><li>[Site_Name] และ [Site_URL] สำหรับชื่อแอ็พพลิเคชันและ URL ตามลำดับ</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "คุณได้รับการเพิ่มใน [Site_Name]",
   "Activate": "กระตุ้น",
+  "Active": "คล่องแคล่ว",
   "Activity": "กิจกรรม",
   "Add": "เพิ่ม",
   "Add_agent": "เพิ่มตัวแทน",

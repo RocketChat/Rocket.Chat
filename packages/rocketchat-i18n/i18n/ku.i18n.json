@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "Dibe ku divê tu guhêrbaran li jêr bi kar tînin:<br/><ul><li> [name], [fname], [lname] ji bo navê bikarhêner full, nav an paşnav, bi rêzê ve. </li><li> [email] ji bo email bikarhêner. </li><li> [password] ji bo şîfreya bikarhêner. </li><li> [Site_Name] û [Site_URL] ji bo Name Application û URL rêzê. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Hûn hatine zêdekirin [Site_Name]",
   "Activate": "de çalak bike",
+  "Active": "Jîr",
   "Activity": "Çalakî",
   "Add": "Lêzêdekirin",
   "Add_agent": "lê zêde bike agent",

@@ -216,6 +216,7 @@
   "Accounts_UserAddedEmail_Description": "អ្នកអាចប្រើកន្លែងដាក់ខាងក្រោម: <br/><ul><li> [name], [fname] [lname] សម្រាប់ឈ្មោះអ្នកប្រើពេញលេញ, ឈ្មោះជាលើកដំបូងឬឈ្មោះចុងក្រោយ, រៀងគ្នា។ </li><li> [email] សម្រាប់អ៊ីម៉ែលរបស់អ្នកប្រើ។ </li><li> [password] ពាក្យសម្ងាត់របស់អ្នកប្រើ។ </li><li> [Site_Name] និង [Site_URL] សម្រាប់ឈ្មោះកម្មវិធីនិង URL រៀងគ្នា។ </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "អ្នកត្រូវបានបន្ថែមទៅ [Site_Name]",
   "Activate": "ធ្វើ​ឱ្យ​សកម្ម",
+  "Active": "ដែលសកម្ម",
   "Activity": "សកម្មភាព",
   "Add": "បន្ថែម",
   "Add_agent": "បន្ថែមភ្នាក់ងារ",

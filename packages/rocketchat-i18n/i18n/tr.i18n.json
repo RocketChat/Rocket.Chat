@@ -210,6 +210,7 @@
   "Accounts_UserAddedEmail_Description": "<br/><ul><li> Kullanıcının tam adı, ad veya soyadı içrma Temsilcisi' Olmadan da Kabul Etin sırasıyla [name], [fname], [lname] kullanabilirsiniz. </li><li> Kullanıcının e-posta'sı için [email]. </li><li> Kullanıcının parolası için [password]. </li><li> Site adı ve Site URL'si için de [Site_Name] ve [Site_URL] kullanabilirsiniz.  </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "[Site_Name] adlı siteye eklendiniz",
   "Activate": "Etkinleştir",
+  "Active": "Etkin",
   "Activity": "Etkinlik",
   "Add": "Ekle",
   "Add_agent": "Temsilci Ekle",

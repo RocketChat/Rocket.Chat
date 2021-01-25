@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "Aveți dreptul să utilizați următoarele Placeholder: <br/><ul><li> [name], [fname], [lname] pentru numele utilizatorului completă, prenumele sau numele de familie, respectiv. </li><li> [email] pentru e-mail a utilizatorului. </li><li> [password] pentru parola utilizatorului. </li><li> [Site_Name] și [Site_URL] pentru Nume aplicație și, respectiv, URL-ul. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Ați fost adăugat la [Site_Name]",
   "Activate": "Activează",
+  "Active": "Activă",
   "Activity": "Activitate",
   "Add": "Adăugă",
   "Add_agent": "Adaugă agent",

@@ -198,6 +198,7 @@
   "Accounts_UserAddedEmail_Description": "ທ່ານອາດຈະນໍາໃຊ້ຕົວຍຶດຕໍາແຫນ່ງດັ່ງຕໍ່ໄປນີ້: <br/><ul><li> [name], [fname], [lname] ສໍາລັບຊື່ຜູ້ໃຊ້ຂອງໄດ້ຢ່າງເຕັມທີ່, ຊື່ທໍາອິດຫຼືຊື່ສຸດທ້າຍ, ຕາມລໍາດັບ. </li><li> [email] ສໍາລັບອີເມລຂອງຜູ້ໃຊ້ໄດ້. </li><li> [password] ສໍາລັບການລະຫັດຜ່ານຂອງຜູ້ໃຊ້ໄດ້. </li><li> [Site_Name] ແລະ [Site_URL] ສໍາລັບຄໍາຮ້ອງສະຫມັກຊື່ແລະ URL ຕາມລໍາດັບ. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "ທ່ານໄດ້ຮັບການເພີ່ມ [Site_Name]",
   "Activate": "ກະຕຸ້ນ",
+  "Active": "ການເຄື່ອນໄຫວ",
   "Activity": "ກິດຈະກໍາ",
   "Add": "ຕື່ມ",
   "Add_agent": "ຕື່ມການຕົວແທນ",

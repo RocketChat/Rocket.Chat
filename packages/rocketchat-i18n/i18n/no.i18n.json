@@ -220,6 +220,7 @@
   "Accounts_UserAddedEmail_Description": "Du kan bruke følgende plassholdere: <br/><ul><li>[navn], [fname], [lname] for brukerens fulle navn, fornavn eller etternavn.</li><li>[email] for brukerens e-postadresse.</li><li>[passord] for brukerens passord.</li><li>[Site_Name] og [Site_URL] for henholdsvis programnavnet og nettadressen.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Du har blitt lagt til i [Site_Name]",
   "Activate": "Aktiver",
+  "Active": "Aktiv",
   "Active_users": "Aktive brukere",
   "Activity": "Aktivitet",
   "Add": "Legg til",

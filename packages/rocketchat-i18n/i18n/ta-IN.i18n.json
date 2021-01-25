@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "நீங்கள் கீழ்கண்ட இடப்பயனர்கள் பயன்படுத்தலாம்: <br/><ul><li> [name], [fname], [lname] முறையே பயனர் முழு பெயர், முதல் பெயர் அல்லது கடைசி பெயர், ஐந்து. </li><li> பயனர் மின்னஞ்சல் ஐந்து [email]. </li><li> பயனரின் கடவுச்சொல்லை [password]. </li><li> [Site_Name] மற்றும் [Site_URL] முறையே விண்ணப்ப பெயர் மற்றும் URL க்கான. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "நீங்கள் சேர்க்கப் பட்டுள்ளது [Site_Name]",
   "Activate": "செயல்படுத்த",
+  "Active": "செயலில்",
   "Activity": "செயல்பாடு",
   "Add": "கூட்டு",
   "Add_agent": "முகவர் சேர்",

@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "Ju mund të përdorni placeholders e mëposhtme: <br/><ul><li> [name], [fname], [lname] për emrin e përdoruesit të plotë, emrin e parë ose emrin e fundit, respektivisht. </li><li> [email] për email të përdoruesit. </li><li> [password] për fjalëkalimin e përdoruesit. </li><li> [Site_Name] dhe [Site_URL] në emër Aplikimit dhe URL respektivisht. </li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Ju janë shtuar në [Site_Name]",
   "Activate": "Aktivizoj",
+  "Active": "aktiv",
   "Activity": "aktivitet",
   "Add": "shtoj",
   "Add_agent": "Shto agjent",

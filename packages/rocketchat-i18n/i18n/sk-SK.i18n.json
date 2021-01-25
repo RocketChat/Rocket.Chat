@@ -190,6 +190,7 @@
   "Accounts_UserAddedEmail_Description": "Môžete použiť nasledujúce zástupné symboly: <br/><ul><li>[meno], [fname], [lname] pre celé meno používateľa, krstné meno alebo priezvisko.</li><li>[email] pre e-mail používateľa.</li><li>[password] pre heslo používateľa.</li><li>[Site_Name] a [Site_URL] pre názov a adresu URL.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Boli ste pridaný na lokalitu [Site_Name]",
   "Activate": "Aktivovať",
+  "Active": "aktívny",
   "Activity": "Aktivita",
   "Add": "Pridať",
   "Add_agent": "Pridať agenta",

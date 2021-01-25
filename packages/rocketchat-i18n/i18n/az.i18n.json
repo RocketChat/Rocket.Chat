@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "Aşağıdakı yer tutuculardan istifadə edə bilərsiniz: <br/><ul><li>[ad], [fname], [lname] istifadəçinin tam adı, soyadı və soyadı üçün müvafiq olaraq. Istifadəçinin e-poçtu üçün</li><li>[email]. Istifadəçi şifrəsi üçün</li><li>[parol].</li><li>[Site_Name] və [Site_URL] üçün ərizə adı və URL sırasıyla.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Siz [Site_Name]",
   "Activate": "Aktivləşdir",
+  "Active": "Aktivdir",
   "Activity": "Fəaliyyət",
   "Add": "Əlavə et",
   "Add_agent": "Agenti əlavə edin",

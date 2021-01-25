@@ -188,6 +188,7 @@
   "Accounts_UserAddedEmail_Description": "U mag die volgende plekhouers gebruik: <br/><ul><li>[naam], [fname], [lname] vir die volle naam, voornaam of van die gebruiker se naam.</li><li>[e-pos] vir die gebruiker se e-pos.</li><li>[wagwoord] vir die gebruiker se wagwoord.</li><li>[Site_Name] en [Site_URL] vir die Aansoek Naam en URL onderskeidelik.</li></ul>",
   "Accounts_UserAddedEmailSubject_Default": "Jy is by [Site_Name] bygevoeg",
   "Activate": "aktiveer",
+  "Active": "aktiewe",
   "Activity": "aktiwiteit",
   "Add": "Voeg",
   "Add_agent": "Voeg agent by",
