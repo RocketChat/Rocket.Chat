@@ -30,8 +30,9 @@ Meteor.startup(function() {
 			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
 				return false;
 			}
+			const { t } = Rooms.findOne({ _id: msg.rid });
 
-			return hasAtLeastOnePermission('pin-message', msg.rid);
+			return hasAtLeastOnePermission('pin-message', msg.rid) || t === 'd';
 		},
 		order: 7,
 		group: 'menu',
@@ -55,8 +56,9 @@ Meteor.startup(function() {
 			if (!subscription || !settings.get('Message_AllowPinning') || !msg.pinned) {
 				return false;
 			}
+			const { t } = Rooms.findOne({ _id: msg.rid });
 
-			return hasAtLeastOnePermission('pin-message', msg.rid);
+			return hasAtLeastOnePermission('pin-message', msg.rid) || t === 'd';
 		},
 		order: 8,
 		group: 'menu',
