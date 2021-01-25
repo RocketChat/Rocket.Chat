@@ -17,6 +17,12 @@ describe('[Chat]', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
+	before(async () => {
+		await updatePermission('message-impersonate', ['admin', 'user']);
+	});
+	after(async () => {
+		await updatePermission('message-impersonate', ['bot']);
+	});
 
 	describe('/chat.postMessage', () => {
 		it('should throw an error when at least one of required parameters(channel, roomId) is not sent', (done) => {
@@ -898,6 +904,53 @@ describe('[Chat]', function() {
 						})
 						.end(done);
 				});
+			});
+		});
+
+		describe('message-impersonate permission', () => {
+			before(async () => {
+				await updatePermission('message-impersonate', ['bot']);
+			});
+			after(async () => {
+				await updatePermission('message-impersonate', ['admin', 'user']);
+			});
+
+			it('should fail if user does not have the message-impersonate permission and tries to send message with alias param', (done) => {
+				request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: 'Sample message',
+							alias: 'Gruggy',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Not enough permission');
+					})
+					.end(done);
+			});
+
+			it('should fail if user does not have the message-impersonate permission and tries to send message with avatar param', (done) => {
+				request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: 'Sample message',
+							avatar: 'http://site.com/logo.png',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Not enough permission');
+					})
+					.end(done);
 			});
 		});
 	});
