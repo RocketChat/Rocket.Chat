@@ -307,6 +307,9 @@ const handleSubmit = (event, instance) => {
 	const isSending = (sendOnEnterActive && !withModifier) || (!sendOnEnterActive && withModifier);
 
 	if (isSending) {
+		if (EmojiPicker.isOpened()) {
+			EmojiPicker.close();
+		}
 		instance.send(event);
 		return true;
 	}
