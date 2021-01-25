@@ -52,12 +52,10 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 	const saveAction = useEndpointUpload('emoji-custom.update', {}, t('Custom_Emoji_Updated_Successfully'));
 
 	const handleSave = useCallback(async () => {
-		if (!emojiFile) {
-			return;
-		}
-
 		const formData = new FormData();
-		formData.append('emoji', emojiFile);
+		if (emojiFile) {
+			formData.append('emoji', emojiFile);
+		}
 		formData.append('_id', _id);
 		formData.append('name', name);
 		formData.append('aliases', aliases);
