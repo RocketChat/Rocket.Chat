@@ -92,7 +92,7 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 			<Field.Row>
 				<ButtonGroup stretch w='full'>
 					<Button mie='x4' onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave} disabled={name === ''}>{t('Save')}</Button>
+					<Button primary onClick={handleSave} disabled={name === '' || !sound}>{t('Save')}</Button>
 				</ButtonGroup>
 			</Field.Row>
 		</Field>
