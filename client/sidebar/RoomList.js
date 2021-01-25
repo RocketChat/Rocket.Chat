@@ -1,6 +1,6 @@
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React, { useRef, useEffect } from 'react';
+import React, { forwardRef, useRef, useEffect } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import memoize from 'memoize-one';
 
@@ -98,6 +98,17 @@ export const normalizeSidebarMessage = (message, t) => {
 	}
 };
 
+const ScrollerWithCustomProps = forwardRef((props, ref) => <ScrollableContentWrapper
+	{...props}
+	ref={ref}
+	renderView={
+		({ style, ...props }) => (
+			<div {...props} className='teste' style={{ ...style, overflowX: 'hidden' }} />
+		)
+	}
+	renderTrackHorizontal={(props) => <div {...props} style={{ display: 'none' }} className='track-horizontal'/>}
+/>);
+
 export default () => {
 	useSidebarPaletteColor();
 	const listRef = useRef();
@@ -127,7 +138,7 @@ export default () => {
 		<Virtuoso
 			totalCount={roomsList.length}
 			data={roomsList}
-			components={{ Scroller: ScrollableContentWrapper }}
+			components={{ Scroller: ScrollerWithCustomProps }}
 			itemContent={(index, data) => <Row
 				data={itemData}
 				item={data}

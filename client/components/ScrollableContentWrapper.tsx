@@ -12,9 +12,11 @@ const styleDefault = {
 type CustomScrollbarsProps = {
 	style?: CSSProperties;
 	children?: React.ReactNode;
+	renderView?: typeof Scrollbars.defaultProps.renderView;
+	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
 }
 
-const ScrollableContentWrapper = forwardRef<HTMLElement | undefined, CustomScrollbarsProps>(({ children, style }, ref) => {
+const ScrollableContentWrapper = forwardRef<HTMLElement | undefined, CustomScrollbarsProps>(({ children, style, renderView, renderTrackHorizontal }, ref) => {
 	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]) as CSSProperties;
 
 	return <Scrollbars
@@ -22,12 +24,8 @@ const ScrollableContentWrapper = forwardRef<HTMLElement | undefined, CustomScrol
 		autoHideTimeout={2000}
 		autoHideDuration={500}
 		style={scrollbarsStyle}
-		renderView={
-			({ style, ...props }): JSX.Element => (
-				<div {...props} className='teste' style={{ ...style, overflowX: 'hidden' }} />
-			)
-		}
-		renderTrackHorizontal={(props): JSX.Element => <div {...props} style={{ display: 'none' }} className='track-horizontal'/>}
+		renderView={renderView}
+		renderTrackHorizontal={renderTrackHorizontal}
 		renderThumbVertical={
 			({ style, ...props }): JSX.Element => (
 				<div
