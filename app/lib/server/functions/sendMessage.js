@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { settings } from '../../../settings';
@@ -7,6 +8,8 @@ import { Apps } from '../../../apps/server';
 import { Markdown } from '../../../markdown/server';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
+import { hasPermission } from '../../../authorization/server';
+
 
 /**
  * IMPORTANT
@@ -139,6 +142,10 @@ const validateMessage = (message) => {
 		attachments: [Match.Any],
 		blocks: [Match.Any],
 	}));
+
+	if ((message.hasOwnProperty('alias') || message.hasOwnProperty('avatar')) && !hasPermission(Meteor.userId(), 'message-impersonate', message.rid)) {
+		throw new Error('Not enough permission');
+	}
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
 		validateBodyAttachments(message.attachments);
