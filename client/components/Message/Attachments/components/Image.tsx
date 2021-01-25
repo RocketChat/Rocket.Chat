@@ -50,8 +50,8 @@ export const Load: FC<BoxProps & { load: () => void }> = ({ load, ...props }) =>
         }
     `;
 	return <ImageBox className={clickable} {...props} onClick={load}>
-		<Icon name='image' color='neutral-700' size='x64'/>
-		<Box fontScale='h1' color='default'>{t('Click_to_load')}</Box>
+		<Icon name='image' color='neutral-700' size='x24'/>
+		<Box fontScale='c1' color='default'>{t('Click_to_load')}</Box>
 	</ImageBox>;
 };
 
