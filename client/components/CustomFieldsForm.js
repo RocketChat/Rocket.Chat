@@ -7,7 +7,7 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { capitalize } from '../lib/capitalize';
 import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
 
-const CustomTextInput = ({ name, required, minLength, maxLength, setState, state, className, setCustomFieldsError = () => [] }) => {
+const CustomTextInput = ({ label, name, required, minLength, maxLength, setState, state, className, setCustomFieldsError = () => [] }) => {
 	const t = useTranslation();
 
 	const [inputError, setInputError] = useState('');
@@ -34,15 +34,15 @@ const CustomTextInput = ({ name, required, minLength, maxLength, setState, state
 	}, [verify]);
 
 	return useMemo(() => <Field className={className}>
-		<Field.Label>{t(name)}{required && '*'}</Field.Label>
+		<Field.Label>{label || t(name)}{required && '*'}</Field.Label>
 		<Field.Row>
 			<TextInput name={name} error={inputError} maxLength={maxLength} flexGrow={1} value={state} onChange={(e) => setState(e.currentTarget.value)}/>
 		</Field.Row>
 		<Field.Error>{inputError}</Field.Error>
-	</Field>, [className, t, name, required, inputError, maxLength, state, setState]);
+	</Field>, [className, label, t, name, required, inputError, maxLength, state, setState]);
 };
 
-const CustomSelect = ({ name, required, options = {}, setState, state, className, setCustomFieldsError = () => [] }) => {
+const CustomSelect = ({ label, name, required, options = {}, setState, state, className, setCustomFieldsError = () => [] }) => {
 	const t = useTranslation();
 	const [selectError, setSelectError] = useState('');
 
@@ -58,12 +58,12 @@ const CustomSelect = ({ name, required, options = {}, setState, state, className
 	}, [verify]);
 
 	return useMemo(() => <Field className={className}>
-		<Field.Label>{t(name)}{required && '*'}</Field.Label>
+		<Field.Label>{label || t(name)}{required && '*'}</Field.Label>
 		<Field.Row>
 			<Select name={name} error={selectError} flexGrow={1} value={state} options={mappedOptions} onChange={(val) => setState(val)}/>
 		</Field.Row>
 		<Field.Error>{selectError}</Field.Error>
-	</Field>, [className, t, name, required, selectError, state, mappedOptions, setState]);
+	</Field>, [className, label, t, name, required, selectError, state, mappedOptions, setState]);
 };
 
 const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...props }) => Object.entries(customFields).map(([key, value]) => {
