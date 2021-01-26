@@ -6,6 +6,7 @@ import { hasPermission } from '../../../authorization';
 import { Subscriptions, Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import { Message } from '../../../../server/sdk';
 
 Meteor.methods({
 	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads }) {
@@ -26,17 +27,13 @@ Meteor.methods({
 			return false;
 		}
 
-		// Ensure latest is always defined.
-		if (_.isUndefined(latest)) {
-			latest = new Date();
-		}
-
 		// Verify oldest is a date if it exists
-		if (!_.isUndefined(oldest) && !_.isDate(oldest)) {
+		if ((oldest && !_.isDate(oldest)) || (latest && !_.isDate(latest))) {
 			throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
 		}
 
-		const options = {
+		const queryOptions = {
+			returnTotal: false,
 			sort: {
 				ts: -1,
 			},
@@ -45,19 +42,10 @@ Meteor.methods({
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			options.fields = { editedAt: 0 };
+			queryOptions.fields = { editedAt: 0 };
 		}
 
-		let records = [];
-		if (_.isUndefined(oldest) && inclusive) {
-			records = Messages.findVisibleByRoomIdBeforeTimestampInclusive(rid, latest, options).fetch();
-		} else if (_.isUndefined(oldest) && !inclusive) {
-			records = Messages.findVisibleByRoomIdBeforeTimestamp(rid, latest, options).fetch();
-		} else if (!_.isUndefined(oldest) && inclusive) {
-			records = Messages.findVisibleByRoomIdBetweenTimestampsInclusive(rid, oldest, latest, options).fetch();
-		} else {
-			records = Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, options).fetch();
-		}
+		const { records } = Promise.await(Message.get(fromUserId, { rid, latest, oldest, inclusive, queryOptions }));
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
 
@@ -65,12 +53,17 @@ Meteor.methods({
 			let unreadNotLoaded = 0;
 			let firstUnread = undefined;
 
-			if (!_.isUndefined(oldest)) {
+			if (oldest) {
 				const firstMsg = messages[messages.length - 1];
-				if (!_.isUndefined(firstMsg) && firstMsg.ts > oldest) {
-					const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, firstMsg.ts, { limit: 1, sort: { ts: 1 } });
-					firstUnread = unreadMessages.fetch()[0];
-					unreadNotLoaded = unreadMessages.count();
+				if (firstMsg && firstMsg.ts > oldest) {
+					const { records: unreadMessages, total } = Promise.await(Messages.get(fromUserId, {
+						rid,
+						oldest,
+						latest: firstMsg.ts,
+						queryOptions: { limit: 1, sort: { ts: 1 } },
+					}));
+					firstUnread = unreadMessages[0];
+					unreadNotLoaded = total;
 				}
 			}
 

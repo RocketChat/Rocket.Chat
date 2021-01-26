@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import moment from 'moment';
 
-import { hasRole } from '../../../../../app/authorization';
 import {
 	LivechatDepartment,
 	Users,
@@ -123,14 +121,6 @@ export const processWaitingQueue = async (department) => {
 
 	const { departmentId } = room || {};
 	await dispatchWaitingQueueStatus(departmentId);
-};
-
-export const allowAgentSkipQueue = (agent) => {
-	check(agent, Match.ObjectIncluding({
-		agentId: String,
-	}));
-
-	return settings.get('Livechat_assign_new_conversation_to_bot') && hasRole(agent.agentId, 'bot');
 };
 
 export const setPredictedVisitorAbandonmentTime = (room) => {
