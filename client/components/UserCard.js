@@ -74,9 +74,9 @@ const UserCard = forwardRef(({
 		</Box>}
 	</Box>
 	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
-		<Box withTruncatedText display='flex'>
+		<Box withTruncatedText display='flex' flexDirection='column'>
 			<Username status={status} name={name} title={username !== name ? username : undefined} />
-			{nickname && <Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText>({ nickname })</Box>}
+			{nickname && <Box title={t('Nickname')} color='hint' fontScale='p1' withTruncatedText>({ nickname })</Box>}
 		</Box>
 		{ customStatus && <Info>{customStatus}</Info> }
 		<Roles>{roles}</Roles>
