@@ -9,6 +9,7 @@ import {
 	ButtonGroup,
 	Button,
 	Callout,
+	CheckBox,
 } from '@rocket.chat/fuselage';
 import { FixedSizeList as List, areEqual } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -34,14 +35,16 @@ import InviteUsers from '../InviteUsers/InviteUsers';
 import AddUsers from '../AddUsers/AddUsers';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 
-export const createItemData = memoize((items, onClickView, rid) => ({
+export const createItemData = memoize((items, onClickView, rid, allRoles, roomRoles) => ({
 	items,
 	onClickView,
 	rid,
+	allRoles,
+	roomRoles,
 }));
 
 const Row = React.memo(({ data, index, style }) => {
-	const { onClickView, items, rid } = data;
+	const { onClickView, items, rid, allRoles, roomRoles } = data;
 	const user = items[index];
 
 	if (!user) {
@@ -56,7 +59,10 @@ const Row = React.memo(({ data, index, style }) => {
 		rid={rid}
 		status={user.status}
 		name={user.name}
+		roles={user.roles}
 		onClickView={onClickView}
+		allRoles={allRoles}
+		roomRoles={roomRoles}
 	/>;
 }, areEqual);
 
@@ -76,6 +82,10 @@ export const RoomMembers = ({
 	error,
 	loadMoreItems,
 	rid,
+	roomRoles,
+	allRoles,
+	setRoomRoles,
+	setAllRoles,
 }) => {
 	const t = useTranslation();
 
@@ -88,8 +98,7 @@ export const RoomMembers = ({
 
 	const { ref, contentBoxSize: { blockSize = 780 } = {} } = useResizeObserver({ debounceDelay: 100 });
 
-	const itemData = createItemData(members, onClickView, rid);
-
+	const itemData = createItemData(members, onClickView, rid, allRoles, roomRoles);
 	return (
 		<>
 			<VerticalBar.Header>
@@ -112,7 +121,15 @@ export const RoomMembers = ({
 						</Margins>
 					</Box>
 				</Box>
+				<Box display='flex' flexDirection='row' justifyContent='space-around'>
+					<Box>
+						<CheckBox name='Show_all_roles' checked={allRoles} onChange={setAllRoles}/> Show all roles
+					</Box>
+					<Box>
+						<CheckBox name='Show_room_roles' checked={roomRoles} onChange={setRoomRoles}/> Show room roles
+					</Box>
 
+				</Box>
 				{ error && <Box pi='x24' pb='x12'><Callout type='danger'>
 					{error}
 				</Callout></Box> }
@@ -190,6 +207,8 @@ export default ({
 
 	const [type, setType] = useLocalStorage('members-list-type', 'online');
 	const [text, setText] = useState('');
+	const [allRoles, setAllRoles] = useLocalStorage(false);
+	const [roomRoles, setRoomRoles] = useLocalStorage(false);
 
 	const debouncedText = useDebouncedValue(text, 500);
 	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [rid, type, debouncedText]);
@@ -197,6 +216,14 @@ export default ({
 	const { value, phase, more, error } = useGetUsersOfRoom(params);
 
 	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
+
+	const handleRoomRoles = () => {
+		setRoomRoles(!roomRoles);
+	};
+
+	const handleAllRoles = () => {
+		setAllRoles(!allRoles);
+	};
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
@@ -255,6 +282,10 @@ export default ({
 			onClickAdd={canAddUsers && addUser}
 			onClickInvite={canAddUsers && createInvite}
 			loadMoreItems={loadMoreItems}
+			allRoles={allRoles}
+			roomRoles={roomRoles}
+			setAllRoles={handleAllRoles}
+			setRoomRoles={handleRoomRoles}
 		/>
 	);
 };

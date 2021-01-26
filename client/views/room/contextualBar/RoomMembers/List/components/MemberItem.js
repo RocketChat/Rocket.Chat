@@ -3,6 +3,8 @@ import {
 	Option,
 	ActionButton,
 	Menu,
+	Tag,
+	Box,
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 
@@ -11,6 +13,7 @@ import { useUserInfoActions, useUserInfoActionsSpread } from '../../../../hooks/
 import UserAvatar from '../../../../../../components/avatar/UserAvatar';
 import { ReactiveUserStatus } from '../../../../../../components/UserStatus';
 import { usePreventProgation } from '../hooks/usePreventProgation';
+import { RoomRoles } from '../../../../../../../app/models/client';
 
 const UserActions = ({ username, _id, rid }) => {
 	const { menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions({ _id, username }, rid), 0);
@@ -26,13 +29,33 @@ const UserActions = ({ username, _id, rid }) => {
 	/>;
 };
 
-export const MemberItem = ({ _id, status, name, username, onClickView, style, rid }) => {
+export const MemberItem = ({ _id, status, name, username, onClickView, style, rid, roles, allRoles, roomRoles }) => {
 	const [showButton, setShowButton] = useState();
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 	const handleMenuEvent = { [isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton };
 
 	const onClick = usePreventProgation();
+	let roomUserRoles = [];
+	let allUserRoles = [];
+
+	if (roomRoles) {
+		roomUserRoles = RoomRoles.findOne({
+			'u._id': _id,
+		});
+	}
+	if (allRoles) {
+		allUserRoles = roles;
+	}
+
+	const rolesToShow = [...(allUserRoles && allUserRoles) || [], ...(roomUserRoles && roomUserRoles.roles) || []];
+	const uniqueRolesToShow = [...new Set(rolesToShow)];
+
+	const userRoles = uniqueRolesToShow.map((role, index) => <Tag key={index} disabled>{role}</Tag>);
+
+	const Roles = ({ children }) => <Box m='x8' display='flex' flexShrink={0}>
+		{children}
+	</Box>;
 
 	return (
 		<Option
@@ -48,6 +71,7 @@ export const MemberItem = ({ _id, status, name, username, onClickView, style, ri
 			</Option.Avatar>
 			<Option.Column><ReactiveUserStatus uid={_id} presence={status}/></Option.Column>
 			<Option.Content>{name} <Option.Description>({username})</Option.Description></Option.Content>
+			<Option.Content><Roles>{userRoles}</Roles></Option.Content>
 			<Option.Menu onClick={onClick}>
 				{showButton ? <UserActions username={username} rid={rid} _id={_id} /> : <ActionButton
 					ghost

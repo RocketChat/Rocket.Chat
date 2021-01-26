@@ -12,6 +12,7 @@ function findUsers({ rid, status, skip, limit, filter = '' }) {
 			nickname: 1,
 			status: 1,
 			avatarETag: 1,
+			roles: 1,
 		},
 		sort: {
 			statusConnection: -1,
@@ -46,7 +47,6 @@ Meteor.methods({
 		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
 
 		const users = await findUsers({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter });
-
 		return {
 			total,
 			records: users,
