@@ -42,7 +42,9 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
+		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
+
+		if (room.t !== 'd' && !hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
@@ -65,7 +67,6 @@ Meteor.methods({
 		if (settings.get('Message_KeepHistory')) {
 			Messages.cloneAndSaveAsHistoryById(message._id, me);
 		}
-		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
 
 		originalMessage.pinned = true;
 		originalMessage.pinnedAt = pinnedAt || Date.now;
@@ -123,7 +124,9 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
+		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
+
+		if (room.t !== 'd' && !hasPermission(Meteor.userId(), 'pin-message', message.rid)) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
@@ -154,7 +157,6 @@ Meteor.methods({
 			username: me.username,
 		};
 		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
-		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
 		if (isTheLastMessage(room, message)) {
 			Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
