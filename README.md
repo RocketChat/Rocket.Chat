@@ -15,8 +15,8 @@
 
 * [**NEW!** Rocket.Chat Moving to a Single Codebase](#moving-to-a-single-codebase)
 * [Community](#community)
-* [Mobile Apps](#mobile-apps)
 * [Desktop Apps](#desktop-apps)
+* [Mobile Apps](#mobile-apps)
 * [Deployment](#deployment)
    * [Snaps](#instant-server-installation-with-snaps)
    * [DigitalOcean](#digitalocean-droplet)
