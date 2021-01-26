@@ -16,7 +16,7 @@ type CustomScrollbarsProps = {
 	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
 }
 
-const ScrollableContentWrapper = forwardRef<HTMLElement | undefined, CustomScrollbarsProps>(({ children, style, renderView, renderTrackHorizontal }, ref) => {
+const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(({ children, style, renderView, renderTrackHorizontal }, ref) => {
 	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]) as CSSProperties;
 
 	return <Scrollbars

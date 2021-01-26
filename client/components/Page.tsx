@@ -86,7 +86,7 @@ type PageScrollableContentProps = {
 };
 
 const PageScrollableContent: FC<PageScrollableContentProps> = React.forwardRef(({ onScrollContent, ...props }, ref) => <Box display='flex' flexShrink={1} flexGrow={1} overflow='hidden'>
-	<ScrollableContentWrapper onScroll={onScrollContent} ref={ref}><Box p='x16' display='flex' flexDirection='column' flexGrow={1} {...props} /></ScrollableContentWrapper>
+	<ScrollableContentWrapper onScroll={onScrollContent} ref={ref as any}><Box p='x16' display='flex' flexDirection='column' flexGrow={1} {...props} /></ScrollableContentWrapper>
 </Box>);
 
 const PageScrollableContentWithShadow: FC<PageScrollableContentProps> = ({ onScrollContent, ...props }) => {
