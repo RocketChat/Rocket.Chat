@@ -7,6 +7,7 @@ import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import './visitorNavigation.html';
 import { APIClient } from '../../../../../utils/client';
+import { settings } from '../../../../../settings';
 
 const ITEMS_COUNT = 50;
 
@@ -40,7 +41,7 @@ Template.visitorNavigation.helpers({
 	},
 
 	accessDateTime() {
-		return moment(this.ts).format('L LTS');
+		return moment(this.ts).format(settings.get('Message_TimeAndDateFormat'));
 	},
 
 });

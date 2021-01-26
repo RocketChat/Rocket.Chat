@@ -119,14 +119,14 @@ Template.visitorInfo.helpers({
 		if (!this.createdAt) {
 			return '';
 		}
-		return moment(this.createdAt).format('L LTS');
+		return moment(this.createdAt).format(settings.get('Message_TimeAndDateFormat'));
 	},
 
 	lastLogin() {
 		if (!this.lastLogin) {
 			return '';
 		}
-		return moment(this.lastLogin).format('L LTS');
+		return moment(this.lastLogin).format(settings.get('Message_TimeAndDateFormat'));
 	},
 
 	editing() {
