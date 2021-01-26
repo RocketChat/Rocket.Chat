@@ -11,6 +11,7 @@ import GenericTable from '../../components/GenericTable';
 import FilterByText from '../../components/FilterByText';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import { settings } from '../../../app/settings';
 
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLoggedIn) => useMemo(() => ({
@@ -69,9 +70,9 @@ const ChatTable = () => {
 			</Box>
 		</Table.Cell>
 		<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
-		<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
+		<Table.Cell withTruncatedText>{moment(ts).format(settings.get('Message_TimeAndDateFormat'))}</Table.Cell>
 		<Table.Cell withTruncatedText>{moment(closedAt).from(moment(ts), true)}</Table.Cell>
-		<Table.Cell withTruncatedText>{moment(closedAt).format('L LTS')}</Table.Cell>
+		<Table.Cell withTruncatedText>{moment(closedAt).format(settings.get('Message_TimeAndDateFormat'))}</Table.Cell>
 	</Table.Row>, [onRowClick]);
 
 	return <GenericTable
