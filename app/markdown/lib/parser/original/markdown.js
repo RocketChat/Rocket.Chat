@@ -19,7 +19,17 @@ const addAsToken = function(message, html) {
 
 const URL = global.URL || require('url').URL || require('url').Url;
 
-const validateUrl = (url) => {
+const validateUrl = (url, message) => {
+	// Don't render markdown inside links
+	if (message?.tokens?.some((token) => url.includes(token.token))) {
+		return false;
+	}
+
+	// Valid urls don't contain whitespaces
+	if (/\s/.test(url.trim())) {
+		return false;
+	}
+
 	try {
 		new URL(url);
 		return true;
@@ -76,36 +86,37 @@ const parseNotEscaped = function(msg, message) {
 
 	// Support ![alt text](http://image url)
 	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\s]+)\\)`, 'gm'), (match, title, url) => {
-		if (!validateUrl(url)) {
+		if (!validateUrl(url, message)) {
 			return match;
 		}
+		url = encodeURI(url);
+
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
 		return addAsToken(message, `<a href="${ url }" title="${ title }" target="${ target }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ url });"></div></a>`);
 	});
 
 	// Support [Text](http://link)
 	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${ schemes }):\\/\\/[^\\s]+)\\)`, 'gm'), (match, title, url) => {
-		if (!validateUrl(url)) {
+		if (!validateUrl(url, message)) {
 			return match;
 		}
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
 		title = title.replace(/&amp;/g, '&');
 
-		let escapedUrl = url;
-		escapedUrl = escapedUrl.replace(/&amp;/g, '&');
+		const escapedUrl = encodeURI(url);
 
 		return addAsToken(message, `<a href="${ escapedUrl }" target="${ target }" rel="noopener noreferrer">${ title }</a>`);
 	});
 
 	// Support <http://link|Text>
-	msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${ schemes }):\\/\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
-		if (!validateUrl(url)) {
+	msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${ schemes }):\\\/\\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
+		if (!validateUrl(url, message)) {
 			return match;
 		}
+		url = encodeURI(url);
 		const target = url.indexOf(Meteor.absoluteUrl()) === 0 ? '' : '_blank';
 		return addAsToken(message, `<a href="${ url }" target="${ target }" rel="noopener noreferrer">${ title }</a>`);
 	});
-
 	return msg;
 };
 
