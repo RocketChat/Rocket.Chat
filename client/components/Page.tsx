@@ -93,7 +93,7 @@ const PageScrollableContentWithShadow: FC<PageScrollableContentProps> = ({ onScr
 	const [, setBorder] = useContext(PageContext);
 	return <PageScrollableContent
 		onScrollContent={({ top, ...args }): void => {
-			setBorder(!top);
+			setBorder(!!top);
 			onScrollContent && onScrollContent({ top, ...args });
 		}}
 		{ ...props }

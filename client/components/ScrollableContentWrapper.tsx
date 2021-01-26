@@ -1,5 +1,5 @@
 import React, { MutableRefObject, CSSProperties, useMemo, memo, forwardRef } from 'react';
-import { Scrollbars } from 'rc-scrollbars';
+import { Scrollbars, ScrollValues } from 'rc-scrollbars';
 
 const styleDefault = {
 	width: '100%',
@@ -12,11 +12,12 @@ const styleDefault = {
 type CustomScrollbarsProps = {
 	style?: CSSProperties;
 	children?: React.ReactNode;
+	onScroll?: ((values: ScrollValues) => void) | undefined;
 	renderView?: typeof Scrollbars.defaultProps.renderView;
 	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
 }
 
-const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(({ children, style, renderView, renderTrackHorizontal }, ref) => {
+const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(({ children, style, onScroll, renderView, renderTrackHorizontal }, ref) => {
 	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]) as CSSProperties;
 
 	return <Scrollbars
@@ -24,6 +25,7 @@ const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(
 		autoHideTimeout={2000}
 		autoHideDuration={500}
 		style={scrollbarsStyle}
+		onScrollFrame={onScroll}
 		renderView={renderView}
 		renderTrackHorizontal={renderTrackHorizontal}
 		renderThumbVertical={
