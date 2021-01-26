@@ -25,7 +25,8 @@ import { Rooms, Subscriptions, Messages } from '../../models';
 import { promises } from '../../promises/client';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications/client';
-import { Layout, call, modal, alerts } from '../../ui-utils';
+import { Layout, call, modal } from '../../ui-utils';
+import * as banners from '../../../client/lib/banners';
 
 import './events.js';
 import './tabbar';
@@ -198,7 +199,7 @@ class E2E {
 		this.log('-> Stop Client');
 		// This flag is used to avoid closing unrelated alerts.
 		if (showingE2EAlert) {
-			alerts.close();
+			banners.close();
 		}
 
 		Meteor._localStorage.removeItem('public_key');
@@ -428,12 +429,12 @@ class E2E {
 
 	openAlert(config) {
 		showingE2EAlert = true;
-		alerts.open(config);
+		banners.open(config);
 	}
 
 	closeAlert() {
 		if (showingE2EAlert) {
-			alerts.close();
+			banners.close();
 		}
 		showingE2EAlert = false;
 	}
