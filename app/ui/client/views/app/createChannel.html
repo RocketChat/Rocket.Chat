@@ -8,6 +8,49 @@
 		<div class="create-channel__wrapper">
 			<p class="create-channel__description">{{_ "Channels_are_where_your_team_communicate"}}</p>
 			<form id="create-channel" name="create-channel" class="create-channel__content">
+				<div class="create-channel__inputs">
+					<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Channel_name"}}</div>
+							<div class="rc-input__wrapper">
+								<div class="rc-input__icon">
+									{{> icon block="rc-input__icon-svg" icon=iconType }}
+								</div>
+								<input name="name" type="text" class="rc-input__element"
+									   placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus>
+							</div>
+						</label>
+						{{#if inUse}}
+							<div class="rc-input__error">
+								<div class="rc-input__error-icon">
+									{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
+								</div>
+								<div class="rc-input__error-message">{{_ "Channel_already_exist_static"}}</div>
+							</div>
+						{{/if}}
+					</div>
+					<div class="rc-input">
+						<label class="rc-input__label">
+							<div class="rc-input__title">{{_ "Invite_Users"}}</div>
+							<div class="rc-input__wrapper">
+								<div class="rc-input__icon">
+									{{> icon block="rc-input__icon-svg" icon="at"}}
+								</div>
+								<div class="rc-tags">
+									{{#each user in selectedUsers}}
+										{{> tag user}}
+									{{/each}}
+									<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
+								</div>
+							</div>
+							{{#with config}}
+								{{#if autocomplete 'isShowing'}}
+									{{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
+								{{/if}}
+							{{/with}}
+						</label>
+					</div>
+				</div>
 				<div class="create-channel__switches">
 					<div class="rc-switch">
 						<label class="rc-switch__label" tabindex="-1">
@@ -82,47 +125,7 @@
 					</div>
 				</div>
 				<div class="create-channel__inputs">
-					<div class="rc-input {{#if invalidChannel}}rc-input--error{{/if}}">
-						<label class="rc-input__label">
-							<div class="rc-input__title">{{_ "Channel_name"}}</div>
-							<div class="rc-input__wrapper">
-								<div class="rc-input__icon">
-									{{> icon block="rc-input__icon-svg" icon=iconType }}
-								</div>
-								<input name="name" type="text" class="rc-input__element"
-									   placeholder="{{_ "Channel_Name_Placeholder"}}" autofocus>
-							</div>
-						</label>
-						{{#if inUse}}
-							<div class="rc-input__error">
-								<div class="rc-input__error-icon">
-									{{> icon block="rc-input__error-icon" icon="warning" classes="rc-input__error-icon-svg"}}
-								</div>
-								<div class="rc-input__error-message">{{_ "Channel_already_exist_static"}}</div>
-							</div>
-						{{/if}}
-					</div>
-					<div class="rc-input">
-						<label class="rc-input__label">
-							<div class="rc-input__title">{{_ "Invite_Users"}}</div>
-							<div class="rc-input__wrapper">
-								<div class="rc-input__icon">
-									{{> icon block="rc-input__icon-svg" icon="at"}}
-								</div>
-								<div class="rc-tags">
-									{{#each user in selectedUsers}}
-										{{> tag user}}
-									{{/each}}
-									<input type="text" class="rc-tags__input" placeholder="{{_ "Username_Placeholder"}}" name="users" autocomplete="off"/>
-								</div>
-							</div>
-							{{#with config}}
-								{{#if autocomplete 'isShowing'}}
-									{{> popupList data=config items=items ready=(autocomplete 'isLoaded')}}
-								{{/if}}
-							{{/with}}
-						</label>
-					</div>
+					<input form='create-channel' class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}} value="{{_ "Create"}}" />
 				</div>
 				{{#if tokenAccessEnabled}}
 					<div class="create-channel__switches">
@@ -142,9 +145,6 @@
 						{{> tokenpass extensionsConfig}}
 					{{/if}}
 				{{/if}}
-				<div class="create-channel__inputs">
-					<input form='create-channel' class="rc-button rc-button--primary" type='submit' data-button="create" {{createIsDisabled}} value="{{_ "Create"}}" />
-				</div>
 			</form>
 		</div>
 		{{#each roomType in roomTypesAfterStandard}}
