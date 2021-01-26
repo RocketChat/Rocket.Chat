@@ -2,6 +2,7 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 import s from 'underscore.string';
 import _marked from 'marked';
+import dompurify from 'dompurify';
 
 import hljs from '../../hljs';
 import { settings } from '../../../../settings';
@@ -110,6 +111,8 @@ export const marked = (message) => {
 		sanitize: true,
 		highlight,
 	});
+
+	msg.html = dompurify.sanitize(msg.html);
 
 	return msg;
 };

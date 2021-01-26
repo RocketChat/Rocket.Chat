@@ -12,6 +12,13 @@ Meteor.methods({
 			});
 		}
 
+		if (typeof firstUnreadMessage?._id !== 'string') {
+			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
+				method: 'unreadMessages',
+				action: 'Unread_messages',
+			});
+		}
+
 		if (room) {
 			const lastMessage = Messages.findVisibleByRoomId(room, { limit: 1, sort: { ts: -1 } }).fetch()[0];
 
