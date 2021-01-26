@@ -979,15 +979,22 @@ export class SlackImporter extends Base {
 
 				super.updateProgress(ProgressStep.FINISHING);
 
+
 				try {
 					if (this.channels) {
 						this._archiveChannelsAsNeeded(startedByUserId, this.channels);
+						this._updateRoomsLastMessage(this.channels);
 					}
 					if (this.groups) {
 						this._archiveChannelsAsNeeded(startedByUserId, this.groups);
+						this._updateRoomsLastMessage(this.groups);
 					}
 					if (this.mpims) {
 						this._archiveChannelsAsNeeded(startedByUserId, this.mpims);
+						this._updateRoomsLastMessage(this.mpims);
+					}
+					if (this.dms) {
+						this._updateRoomsLastMessage(this.dms);
 					}
 				} catch (e) {
 					// If it failed to archive some channel, it's no reason to flag the import as incomplete
@@ -1014,6 +1021,14 @@ export class SlackImporter extends Base {
 				Meteor.runAsUser(startedByUserId, function() {
 					Meteor.call('archiveRoom', channel.rocketId);
 				});
+			}
+		});
+	}
+
+	_updateRoomsLastMessage(list) {
+		list.channels.forEach((channel) => {
+			if (channel.do_import && channel.rocketId) {
+				Rooms.resetLastMessageById(channel.rocketId);
 			}
 		});
 	}
