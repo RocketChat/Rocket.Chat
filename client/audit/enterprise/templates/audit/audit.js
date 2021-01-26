@@ -2,8 +2,8 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { hasAllPermission } from '../../../../../../app/authorization/client';
-import { messageContext } from '../../../../../../app/ui-utils/client/lib/messageContext';
+import { hasAllPermission } from '../../../../../app/authorization/client';
+import { messageContext } from '../../../../../app/ui-utils/client/lib/messageContext';
 import { call } from '../../utils.js';
 
 import './audit.html';

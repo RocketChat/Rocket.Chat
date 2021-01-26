@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 
 
-import '../../app/auditing/client/templates/audit/audit.html';
+import './enterprise/templates/audit/audit.html';
 
 const Result = React.memo(({ setDataRef }) => {
 	const ref = useRef();

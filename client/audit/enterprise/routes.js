@@ -2,12 +2,12 @@ import { HTML } from 'meteor/htmljs';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { createTemplateForComponent } from '../../../../client/reactAdapters';
+import { createTemplateForComponent } from '../../reactAdapters';
 
-createTemplateForComponent('auditPage', () => import('../../../../client/audit/AuditPage'), {
+createTemplateForComponent('auditPage', () => import('../AuditPage'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }), // eslint-disable-line new-cap
 });
-createTemplateForComponent('auditLogPage', () => import('../../../../client/audit/AuditLogPage'), {
+createTemplateForComponent('auditLogPage', () => import('../AuditLogPage'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }), // eslint-disable-line new-cap
 });
 

@@ -1,4 +1,4 @@
-export { call } from '../../../../app/ui-utils/client/lib/callMethod';
+export { call } from '../../../app/ui-utils/client/lib/callMethod';
 
 export const convertDate = (date) => {
 	const [y, m, d] = date.split('-');

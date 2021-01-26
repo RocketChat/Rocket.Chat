@@ -1,4 +1,4 @@
-import '../app/auditing/client/index';
+import '../../client/audit/enterprise/index';
 import '../app/authorization/client/index';
 import '../../client/canned-responses/index';
 import '../app/engagement-dashboard/client/index';
