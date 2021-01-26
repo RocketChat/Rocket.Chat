@@ -9,11 +9,12 @@ import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 const PermissionsRouter = () => {
 	const canViewPermission = usePermission('access-permissions');
 
+	const context = useRouteParameter('context');
+
 	if (!canViewPermission) {
 		return <NotAuthorizedPage />;
 	}
 
-	const context = useRouteParameter('context');
 	if (context === 'users-in-role') {
 		return <UsersInRole />;
 	}
