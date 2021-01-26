@@ -19,7 +19,7 @@ export type ImageProps = {
 	setLoadImage: () => void;
 } & Dimensions & ({ loadImage: true } | { loadImage: false; setLoadImage: () => void });
 
-const ImageBox: FC<BoxProps> = (props) => <Box display='flex' maxWidth='full' flexDirection='column' justifyContent='center' alignItems='center' alignContent='center' borderRadius='x2' borderWidth='x2' borderStyle='solid' borderColor='neutral-200' {...props}/>;
+const ImageBox: FC<BoxProps> = (props) => <Box display='flex' maxWidth='full' maxHeight='200px flexDirection='column' justifyContent='center' alignItems='center' alignContent='center' borderRadius='x2' borderWidth='x2' borderStyle='solid' borderColor='neutral-200' {...props}/>;
 
 export const Retry: FC<BoxProps & { retry: () => void }> = ({ retry, ...props }) => {
 	const t = useTranslation();
@@ -50,8 +50,8 @@ export const Load: FC<BoxProps & { load: () => void }> = ({ load, ...props }) =>
         }
     `;
 	return <ImageBox className={clickable} {...props} onClick={load}>
-		<Icon name='image' color='neutral-700' size='x24'/>
-		<Box fontScale='c1' color='default'>{t('Click_to_load')}</Box>
+		<Icon name='image' color='neutral-700' size='x64'/>
+		<Box fontScale='h1' color='default'>{t('Click_to_load')}</Box>
 	</ImageBox>;
 };
 
