@@ -4,8 +4,8 @@ import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
 import { CannedResponse } from '../../collections/CannedResponse';
-import { t, handleError } from '../../../../../../app/utils';
-import { chatMessages } from '../../../../../../app/ui/client';
+import { t, handleError } from '../../../../app/utils';
+import { chatMessages } from '../../../../app/ui/client';
 
 import './cannedResponses.html';
 

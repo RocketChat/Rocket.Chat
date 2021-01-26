@@ -1,5 +1,5 @@
-import { CachedCollectionManager } from '../../../../app/ui-cached-collection';
-import { callMethod } from '../../../../app/ui-utils/client/lib/callMethod';
+import { CachedCollectionManager } from '../../app/ui-cached-collection';
+import { callMethod } from '../../app/ui-utils/client/lib/callMethod';
 
 const allModules = new Promise<Set<string>>((resolve, reject) => {
 	CachedCollectionManager.onLogin(async () => {

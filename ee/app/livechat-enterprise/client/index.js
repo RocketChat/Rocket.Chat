@@ -1,4 +1,4 @@
-import { hasLicense } from '../../license/client';
+import { hasLicense } from '../../../../client/license';
 import '../lib/messageTypes';
 import './route';
 import './startup';

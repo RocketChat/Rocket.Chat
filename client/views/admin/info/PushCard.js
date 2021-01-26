@@ -8,7 +8,6 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import UsagePieGraph from './UsagePieGraph';
 // import PlanTag from '../../components/basic/PlanTag';
 // import { useSetting } from '../../contexts/SettingsContext';
-// import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
 // import OfflineLicenseModal from './OfflineLicenseModal';
 
 const PushCard = () => {

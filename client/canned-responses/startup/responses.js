@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { hasPermission } from '../../../../../app/authorization/client';
-import { settings } from '../../../../../app/settings/client';
-import { APIClient } from '../../../../../app/utils/client';
+import { hasPermission } from '../../../app/authorization/client';
+import { settings } from '../../../app/settings/client';
+import { APIClient } from '../../../app/utils/client';
 import { CannedResponse } from '../collections/CannedResponse';
 import { cannedResponsesStreamer } from '../streamer';
 

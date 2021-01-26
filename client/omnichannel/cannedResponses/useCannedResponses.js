@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { CannedResponse as CannedResponsesCollection } from '../../../ee/app/canned-responses/client/collections/CannedResponse';
+import { CannedResponse as CannedResponsesCollection } from '../../canned-responses/collections/CannedResponse';
 
 export const useCannedResponses = (filter, departmentId, _id) => useReactiveValue(useCallback(() => {
 	const query = {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { isEnterprise } from '../../ee/app/license/client';
+import { isEnterprise } from '../license';
 
 export const useIsEnterprise = () => {
 	const [validEnterprise, setValidEnterprise] = useState('loading');

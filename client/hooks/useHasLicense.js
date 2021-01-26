@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { hasLicense } from '../../ee/app/license/client';
+import { hasLicense } from '../license';
 
 export const useHasLicense = (licenseName) => {
 	const [license, setLicense] = useState('loading');

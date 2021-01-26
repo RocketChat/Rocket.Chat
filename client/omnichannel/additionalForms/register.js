@@ -1,6 +1,6 @@
 import { useMemo, lazy } from 'react';
 
-import { hasLicense } from '../../../ee/app/license/client';
+import { hasLicense } from '../../license';
 import { registerForm } from '../../views/omnichannel/additionalForms';
 
 hasLicense('livechat-enterprise').then((enabled) => {

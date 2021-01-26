@@ -1,4 +1,4 @@
-import { hasLicense } from '../../license/client';
+import { hasLicense } from '../../../../client/license';
 import { AccountBox } from '../../../../app/ui-utils/client';
 import { hasAllPermission } from '../../../../app/authorization/client';
 import './routes';

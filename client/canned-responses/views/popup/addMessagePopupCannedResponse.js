@@ -1,8 +1,8 @@
 import _ from 'underscore';
 
 import { CannedResponse } from '../../collections/CannedResponse';
-import { addMessagePopup } from '../../../../../../app/ui-message/client/popup/customMessagePopups';
-import { t } from '../../../../../../app/utils';
+import { addMessagePopup } from '../../../../app/ui-message/client/popup/customMessagePopups';
+import { t } from '../../../../app/utils';
 
 addMessagePopup((template) => ({
 	title: t('Canned Responses'),

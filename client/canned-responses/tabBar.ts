@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
-import { useHasLicense } from '../../../../client/hooks/useHasLicense';
-import { useSetting } from '../../../../client/contexts/SettingsContext';
-import { addAction } from '../../../../client/views/room/lib/Toolbox';
+import { useHasLicense } from '../hooks/useHasLicense';
+import { useSetting } from '../contexts/SettingsContext';
+import { addAction } from '../views/room/lib/Toolbox';
 
 addAction('canned-responses', () => {
 	const hasLicense = useHasLicense('canned-responses');
