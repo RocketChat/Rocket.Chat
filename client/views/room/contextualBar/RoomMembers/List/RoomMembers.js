@@ -123,7 +123,7 @@ export const RoomMembers = ({
 				</Box>
 				<Box display='flex' flexDirection='row' justifyContent='space-around'>
 					<Box>
-						<CheckBox name='Show_all_roles' checked={allRoles} onChange={setAllRoles}/> Show all roles
+						<CheckBox name='Show_server_roles' checked={allRoles} onChange={setAllRoles}/> Show server roles
 					</Box>
 					<Box>
 						<CheckBox name='Show_room_roles' checked={roomRoles} onChange={setRoomRoles}/> Show room roles
