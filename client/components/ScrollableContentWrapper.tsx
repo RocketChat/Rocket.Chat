@@ -9,10 +9,10 @@ const styleDefault = {
 	overflowY: 'hidden',
 };
 
-type CustomScrollbarsProps = {
+export type CustomScrollbarsProps = {
 	style?: CSSProperties;
 	children?: React.ReactNode;
-	onScroll?: ((values: ScrollValues) => void) | undefined;
+	onScroll?: (values: ScrollValues) => void;
 	renderView?: typeof Scrollbars.defaultProps.renderView;
 	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
 }
