@@ -4,10 +4,10 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
 import { createTemplateForComponent } from '../../../../client/reactAdapters';
 
-createTemplateForComponent('auditPage', () => import('../../../client/audit/AuditPage'), {
+createTemplateForComponent('auditPage', () => import('../../../../client/audit/AuditPage'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }), // eslint-disable-line new-cap
 });
-createTemplateForComponent('auditLogPage', () => import('../../../client/audit/AuditLogPage'), {
+createTemplateForComponent('auditLogPage', () => import('../../../../client/audit/AuditLogPage'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }), // eslint-disable-line new-cap
 });
 

@@ -11,7 +11,7 @@ const BusinessHoursPage = () => {
 
 	const router = useRoute('omnichannel-businessHours');
 
-	// const Table = useMemo(() => lazy(() => import('../../../../ee/client/omnichannel/BusinessHoursTable')), []);
+	const Table = useMemo(() => lazy(() => import('../../../omnichannel/BusinessHoursTable')), []);
 
 	const handleNew = useMutableCallback(() => {
 		router.push({

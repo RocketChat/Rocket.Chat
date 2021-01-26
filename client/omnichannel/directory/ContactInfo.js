@@ -12,7 +12,7 @@ import { useRoute } from '../../contexts/RouterContext';
 import { hasPermission } from '../../../app/authorization';
 import { useFormatDate } from '../../hooks/useFormatDate';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
-// import { ContactManagerInfo } from '../../../ee/client/omnichannel/ContactManager';
+import { ContactManagerInfo } from '../ContactManager';
 
 const wordBreak = css`
 	word-break: break-word;

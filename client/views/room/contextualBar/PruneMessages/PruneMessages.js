@@ -3,7 +3,7 @@ import { Field, ButtonGroup, Button, CheckBox, InputBox, Box, Margins, Callout }
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
 
-// import UserAutoCompleteMultiple from '../../../../../ee/client/audit/UserAutoCompleteMultiple';
+import UserAutoCompleteMultiple from '../../../../audit/UserAutoCompleteMultiple';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useUserRoom } from '../../../../contexts/UserContext';

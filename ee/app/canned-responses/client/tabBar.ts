@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useHasLicense } from '../../../client/hooks/useHasLicense';
+import { useHasLicense } from '../../../../client/hooks/useHasLicense';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
 

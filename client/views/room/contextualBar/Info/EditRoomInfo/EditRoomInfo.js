@@ -32,7 +32,7 @@ import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointA
 import { useUserRoom } from '../../../hooks/useUserRoom';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
-// import { useIsEnterprise } from '../../../../../../ee/client/hooks/useIsEnterprise';
+import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 
 const typeMap = {
 	c: 'Channels',

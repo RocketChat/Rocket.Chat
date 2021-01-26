@@ -8,7 +8,7 @@ import { UserStatus } from '../../../components/UserStatus';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute } from '../../../contexts/RouterContext';
-// import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
+import { useHasLicense } from '../../../hooks/useHasLicense';
 
 const TextSeparator = ({ label, value }) => <Box display='flex' flexDirection='row' mb='x4'>
 	<Box display='inline-flex' alignItems='center'>{label}</Box>

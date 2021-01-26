@@ -50,17 +50,17 @@ registerOmnichannelRoute('/managers', {
 
 registerOmnichannelRoute('/units/:context?/:id?', {
 	name: 'omnichannel-units',
-	// lazyRouteComponent: () => import('../../../ee/client/omnichannel/units/UnitsRoute'),
+	lazyRouteComponent: () => import('../../omnichannel/units/UnitsRoute'),
 });
 
 registerOmnichannelRoute('/tags/:context?/:id?', {
 	name: 'omnichannel-tags',
-	// lazyRouteComponent: () => import('../../../ee/client/omnichannel/tags/TagsRoute'),
+	lazyRouteComponent: () => import('../../omnichannel/tags/TagsRoute'),
 });
 
 registerOmnichannelRoute('/priorities/:context?/:id?', {
 	name: 'omnichannel-priorities',
-	// lazyRouteComponent: () => import('../../../ee/client/omnichannel/priorities/PrioritiesRoute'),
+	lazyRouteComponent: () => import('../../omnichannel/priorities/PrioritiesRoute'),
 });
 
 registerOmnichannelRoute('/triggers/:context?/:id?', {
@@ -91,4 +91,14 @@ registerOmnichannelRoute('/realtime-monitoring', {
 registerOmnichannelRoute('/analytics', {
 	name: 'omnichannel-analytics',
 	lazyRouteComponent: () => import('./analytics/AnalyticsPage'),
+});
+
+registerOmnichannelRoute('/monitors', {
+	name: 'omnichannel-monitors',
+	lazyRouteComponent: () => import('./monitors/MonitorsPage'),
+});
+
+registerOmnichannelRoute('/priorities/:context?/:id?', {
+	name: 'omnichannel-priorities',
+	lazyRouteComponent: () => import('../../omnichannel/priorities/PrioritiesRoute'),
 });
