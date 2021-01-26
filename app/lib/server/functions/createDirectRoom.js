@@ -44,6 +44,10 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 
 	const isNewRoom = !room;
 
+	if ('hideHistoryForNewMembers' in roomExtraData) {
+		delete roomExtraData.hideHistoryForNewMembers;
+	}
+
 	const roomInfo = {
 		...uids.length === 2 && { _id: uids.join('') }, // Deprecated: using users' _id to compose the room _id is deprecated
 		t: 'd',

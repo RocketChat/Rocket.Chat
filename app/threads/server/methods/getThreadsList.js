@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages, Rooms } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { canAccessRoom } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
+import { Message } from '../../../../server/sdk';
 
 const MAX_LIMIT = 100;
 
@@ -23,6 +24,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'getThreadsList' });
 		}
 
-		return Messages.findThreadsByRoomId(rid, skip, limit).fetch();
+		return Promise.await(Message.getThreadsByRoomId({ rid, queryOptions: { returnTotal: false, skip, limit } })).records;
 	},
 });

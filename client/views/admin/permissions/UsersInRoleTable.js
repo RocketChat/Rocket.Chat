@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Box, Table, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
+import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
 import { useMethod } from '../../../contexts/ServerContext';
@@ -13,7 +14,7 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 
 
 const UserRow = React.memo(({ _id, username, name, avatarETag, emails, onRemove }) => {
-	const email = emails?.find(({ address }) => !!address).address;
+	const email = getUserEmailAddress({ emails });
 
 	const handleRemove = useMutableCallback(() => {
 		onRemove(username);

@@ -15,10 +15,12 @@ import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
+import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
+import { isEnterprise } from '../../../../ee/app/license/server/license';
 
-const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
+const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite', 'hideHistoryForNewMembers'];
 
 const validators = {
 	default({ userId }) {
@@ -56,12 +58,21 @@ const validators = {
 			});
 		}
 	},
-	encrypted({ value, room }) {
-		if (value !== room.encrypted && !roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
-				method: 'saveRoomSettings',
-				action: 'Change_Room_Encrypted',
-			});
+	encrypted({ userId, value, room, rid }) {
+		if (value !== room.encrypted) {
+			if (!roomTypes.getConfig(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
+				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Encrypted',
+				});
+			}
+
+			if (room.t !== 'd' && !hasPermission(userId, 'toggle-room-e2e-encryption', rid)) {
+				throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to toggle E2E encryption', {
+					method: 'saveRoomSettings',
+					action: 'Change_Room_Encrypted',
+				});
+			}
 		}
 	},
 	retentionEnabled({ userId, value, room, rid }) {
@@ -107,6 +118,14 @@ const validators = {
 	roomAvatar({ userId, rid }) {
 		if (!hasPermission(userId, 'edit-room-avatar', rid)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing a room avatar is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Editing_room',
+			});
+		}
+	},
+	hideHistoryForNewMembers({ value }) {
+		if (!isEnterprise() && value) {
+			throw new Meteor.Error('error-action-not-allowed', 'Hiding the history for new users is not allowed.', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
@@ -198,14 +217,17 @@ const settingSavers = {
 	retentionOverrideGlobal({ value, rid }) {
 		Rooms.saveRetentionOverrideGlobalById(rid, value);
 	},
-	encrypted({ value, rid }) {
-		Rooms.saveEncryptedById(rid, value);
+	encrypted({ value, room, rid, user }) {
+		saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
 	favorite({ value, rid }) {
 		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
 	},
 	roomAvatar({ value, rid, user }) {
 		setRoomAvatar(rid, value, user);
+	},
+	hideHistoryForNewMembers({ value, rid }) {
+		Rooms.saveHideHistoryForNewMembers(rid, value);
 	},
 };
 

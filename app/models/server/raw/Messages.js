@@ -1,16 +1,6 @@
 import { BaseRaw } from './BaseRaw';
 
 export class MessagesRaw extends BaseRaw {
-	findVisibleByMentionAndRoomId(username, rid, options) {
-		const query = {
-			_hidden: { $ne: true },
-			'mentions.username': username,
-			rid,
-		};
-
-		return this.find(query, options);
-	}
-
 	findStarredByUserAtRoom(userId, roomId, options) {
 		const query = {
 			_hidden: { $ne: true },
@@ -42,24 +32,47 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoom(rid, options) {
-		const query = { rid, drid: { $exists: true } };
-
-		return this.find(query, options);
-	}
-
-	findDiscussionsByRoomAndText(rid, text, options) {
+	findDiscussionByRoomId({ rid, oldest, latest, inclusive, text, excludePinned, ignoreThreads, fromUsers = [], queryOptions = {} }) {
 		const query = {
 			rid,
-			drid: { $exists: true },
-			...text && {
-				$text: {
-					$search: text,
-				},
-			},
+			drid: { $exists: 1 },
 		};
 
-		return this.find(query, options);
+		if (oldest || latest) {
+			const ts = {};
+			if (oldest) {
+				inclusive
+					? ts.$gte = oldest
+					: ts.$gt = oldest;
+			}
+
+			if (latest) {
+				inclusive
+					? ts.$lte = latest
+					: ts.$lt = latest;
+			}
+
+			query.ts = ts;
+		}
+
+		if (excludePinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (text) {
+			query.$text.$search = text;
+		}
+
+		if (fromUsers.length) {
+			query['u.username'] = { $in: fromUsers };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: 0 };
+			query.tcount = { $exists: 0 };
+		}
+
+		return this.find(query, queryOptions);
 	}
 
 	findAllNumberOfTransferredRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
@@ -185,5 +198,156 @@ export class MessagesRaw extends BaseRaw {
 			params.push({ $limit: options.count });
 		}
 		return this.col.aggregate(params).toArray();
+	}
+
+	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, mentionsUsername, snippeted, pinned }) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+
+			rid,
+		};
+
+		if (Array.isArray(excludeTypes) && excludeTypes.length > 0) {
+			query.t = { $nin: excludeTypes };
+		}
+
+		if (mentionsUsername) {
+			query['mentions.username'] = mentionsUsername;
+		}
+
+		if (snippeted) {
+			query.snippeted = true;
+		}
+
+		if (pinned) {
+			query.pinned = true;
+		}
+
+		if (latest || oldest) {
+			query.ts = {};
+		}
+
+		if (latest) {
+			query.ts[inclusive ? '$lte' : '$lt'] = latest;
+		}
+
+		if (oldest) {
+			query.ts[inclusive ? '$gte' : '$gt'] = oldest;
+		}
+
+		return this.find(query, queryOptions);
+	}
+
+	findForUpdates(roomId, timestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			_updatedAt: {
+				$gt: timestamp,
+			},
+		};
+		return this.find(query, options);
+	}
+
+	findFilesByRoomId({ rid, excludePinned, ignoreDiscussion = true, fromUsers = [], ignoreThreads = true, queryOptions = {}, oldest, latest, inclusive }) {
+		const query = {
+			rid,
+			'file._id': { $exists: true },
+		};
+
+		if (oldest || latest) {
+			query.ts = {};
+
+			if (oldest) {
+				if (inclusive) {
+					query.ts.$gte = oldest;
+				} else {
+					query.ts.$gt = oldest;
+				}
+			}
+
+			if (latest) {
+				if (inclusive) {
+					query.ts.$lte = latest;
+				} else {
+					query.ts.$lt = latest;
+				}
+			}
+		}
+
+		if (excludePinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (ignoreThreads) {
+			query.tmid = { $exists: 0 };
+			query.tcount = { $exists: 0 };
+		}
+
+		if (ignoreDiscussion) {
+			query.drid = { $exists: 0 };
+		}
+
+		if (fromUsers.length) {
+			query['u.username'] = { $in: fromUsers };
+		}
+
+		return this.find(query, { fields: { 'file._id': 1 }, ...queryOptions });
+	}
+
+	findThreadsByRoomId({ rid, excludePinned, ignoreDiscussion = true, latest, oldest, inclusive, fromUsers = [], queryOptions }) {
+		const query = {
+			rid,
+			tlm: { $exists: 1 },
+			tcount: { $exists: 1 },
+		};
+
+		if (oldest || latest) {
+			const ts = {};
+			if (oldest) {
+				inclusive
+					? ts.$gte = oldest
+					: ts.$gt = oldest;
+			}
+
+			if (latest) {
+				inclusive
+					? ts.$lte = latest
+					: ts.$lt = latest;
+			}
+
+			query.ts = ts;
+		}
+
+		if (excludePinned) {
+			query.pinned = { $ne: true };
+		}
+
+		if (ignoreDiscussion) {
+			query.drid = { $exists: 0 };
+		}
+
+		if (fromUsers.length > 0) {
+			query['u.username'] = { $in: fromUsers };
+		}
+
+		return this.find(query, queryOptions);
+	}
+
+
+	findVisibleThreadByThreadId(tmid, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+
+			tmid,
+		};
+
+		return this.find(query, options);
 	}
 }

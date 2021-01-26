@@ -91,20 +91,26 @@ const DateRangePicker = ({ onChange = () => {}, ...props }) => {
 		},
 	}), [handleRange, t]);
 
-	return <Box display='flex' mie='x8' flexGrow={1} flexDirection='row' {...props}>
-		<Field mie='x4' flexShrink={1} flexGrow={1}>
-			<Field.Label>{t('Start')}</Field.Label>
-			<Field.Row>
-				<InputBox type='date' onChange={handleStart} max={todayDate} value={start}/>
-			</Field.Row>
-		</Field>
-		<Field mie='x4' flexShrink={1} flexGrow={1}>
-			<Field.Label>{t('End')}</Field.Label>
-			<Field.Row>
-				<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end}/>
-				<Menu options={options}/>
-			</Field.Row>
-		</Field>
+	return <Box {...props}>
+		<Box mi='neg-x4' height='full' display='flex' flexDirection='row'>
+			<Field mi='x4' flexShrink={1} flexGrow={1}>
+				<Field.Label>{t('Start')}</Field.Label>
+				<Field.Row>
+					<Box height='x40' display='flex' width='full'>
+						<InputBox type='date' onChange={handleStart} max={todayDate} value={start}/>
+					</Box>
+				</Field.Row>
+			</Field>
+			<Field mi='x4' flexShrink={1} flexGrow={1}>
+				<Field.Label>{t('End')}</Field.Label>
+				<Field.Row>
+					<Box height='x40' display='flex' width='full'>
+						<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end}/>
+					</Box>
+					<Menu mis='x8' options={options}/>
+				</Field.Row>
+			</Field>
+		</Box>
 	</Box>;
 };
 

@@ -23,6 +23,7 @@ export const RoomSettingsEnum = {
 	BROADCAST: 'broadcast',
 	SYSTEM_MESSAGES: 'systemMessages',
 	E2E: 'encrypted',
+	HIDE_HISTORY_NEW_MEMBERS: 'hideHistoryForNewMembers',
 };
 
 export const RoomMemberActions = {
