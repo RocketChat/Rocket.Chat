@@ -328,17 +328,7 @@ API.v1.addRoute('groups.history', { authRequired: true }, {
 	get() {
 		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId, checkedArchived: false });
 
-		let latestDate = new Date();
-		if (this.queryParams.latest) {
-			latestDate = new Date(this.queryParams.latest);
-		}
-
-		let oldestDate = undefined;
-		if (this.queryParams.oldest) {
-			oldestDate = new Date(this.queryParams.oldest);
-		}
-
-		const inclusive = this.queryParams.inclusive || false;
+		const { oldest, latest, inclusive, unreads } = this.queryParams;
 
 		let count = 20;
 		if (this.queryParams.count) {
@@ -350,11 +340,20 @@ API.v1.addRoute('groups.history', { authRequired: true }, {
 			offset = parseInt(this.queryParams.offset);
 		}
 
-		const unreads = this.queryParams.unreads || false;
+		const excludeTypes = findResult.sysMes || [];
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getChannelHistory', { rid: findResult.rid, latest: latestDate, oldest: oldestDate, inclusive, offset, count, unreads });
+			result = Meteor.call('getChannelHistory', {
+				rid: findResult.rid,
+				latest,
+				oldest,
+				inclusive,
+				offset,
+				count,
+				unreads,
+				excludeTypes,
+			});
 		});
 
 		if (!result) {

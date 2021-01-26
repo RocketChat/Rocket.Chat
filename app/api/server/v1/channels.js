@@ -18,12 +18,7 @@ function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 
 	const fields = { ...API.v1.defaultFieldsToExclude };
 
-	let room;
-	if (params.roomId) {
-		room = Rooms.findOneById(params.roomId, { fields });
-	} else if (params.roomName) {
-		room = Rooms.findOneByName(params.roomName, { fields });
-	}
+	const room = Rooms.findOneByIdOrName(params.roomId || params.roomName, { fields });
 
 	if (!room || (room.t !== 'c' && room.t !== 'l')) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
@@ -338,17 +333,7 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 	get() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
 
-		let latestDate;
-		if (this.queryParams.latest) {
-			latestDate = new Date(this.queryParams.latest);
-		}
-
-		let oldestDate;
-		if (this.queryParams.oldest) {
-			oldestDate = new Date(this.queryParams.oldest);
-		}
-
-		const inclusive = this.queryParams.inclusive || false;
+		const { oldest, latest, inclusive, unreads } = this.queryParams;
 
 		let count = 20;
 		if (this.queryParams.count) {
@@ -360,18 +345,21 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 			offset = parseInt(this.queryParams.offset);
 		}
 
-		const unreads = this.queryParams.unreads || false;
+		const excludeTypes = findResult.sysMes || [];
+
+		console.log(excludeTypes);
 
 		let result;
 		Meteor.runAsUser(this.userId, () => {
 			result = Meteor.call('getChannelHistory', {
 				rid: findResult._id,
-				latest: latestDate,
-				oldest: oldestDate,
+				latest,
+				oldest,
 				inclusive,
 				offset,
 				count,
 				unreads,
+				excludeTypes,
 			});
 		});
 
