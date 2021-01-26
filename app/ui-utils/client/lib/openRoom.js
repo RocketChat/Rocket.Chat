@@ -79,7 +79,7 @@ export const openRoom = async function(type, name) {
 			}
 
 
-			if (room._id === Session.get('openedRoom')) {
+			if (room._id === Session.get('openedRoom') && !FlowRouter.getQueryParam('msg')) {
 				return;
 			}
 
@@ -103,7 +103,7 @@ export const openRoom = async function(type, name) {
 			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
 			if (mainNode) {
-				if (roomDom.classList.contains('room-container .messages-box > .wrapper')) {
+				if (roomDom.classList.contains('.room-container .messages-box > .wrapper')) {
 					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop;
 				}
 			}
@@ -125,13 +125,16 @@ export const openRoom = async function(type, name) {
 				const messageId = FlowRouter.getQueryParam('msg');
 				const msg = { _id: messageId, rid: room._id };
 
-				const message = Messages.findOne({ ss_id: msg._id }) || (await call('getMessages', [msg._id]))[0];
+				const message = Messages.findOne({ _id: msg._id }) || (await call('getMessages', [msg._id]))[0];
 
 				if (message && (message.tmid || message.tcount)) {
 					return FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
 				}
 
 				RoomHistoryManager.getSurroundingMessages(msg);
+				FlowRouter.setQueryParams({
+					msg: undefined,
+				});
 			}
 
 			return callbacks.run('enter-room', sub);

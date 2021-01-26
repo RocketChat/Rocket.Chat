@@ -1,24 +1,11 @@
 <template name="roomOld">
 	<div class="main-content-flex">
 		<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
-			{{# if showTopNavbar}}
-				{{# headerRoom}}
-					{{#with flexData}}
-						<div class="rc-header__block rc-header__block-action">
-							{{> RoomsActionTab}}
-						</div>
-					{{/with}}
-				{{/headerRoom}}
-			{{/if}}
 			<div class="messages-container-wrapper">
 				<div class="messages-container-main dropzone {{dragAndDrop}}">
 					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 					{{#unless embeddedVersion}}
-						{{#if announcement}}
-						<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline announcement}}">
-							<p>{{{RocketChatMarkdownInline announcement}}}</p>
-						</div>
-						{{/if}}
+						{{> RoomAnnouncement announcement=announcement announcementDetails=announcementDetails }}
 					{{/unless}}
 					<div class="container-bars {{containerBarsShow unreadData uploading}}">
 						{{#with unreadData}}
@@ -128,7 +115,7 @@
 								{{/if}}
 
 								{{# with messageContext}}
-									{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room subscription=subscription settings=settings u=u}}{{/each}}
+									{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room  actions=actions subscription=subscription settings=settings u=u}}{{/each}}
 								{{/with}}
 
 								{{#if hasMoreNext}}
@@ -145,14 +132,6 @@
 						{{> messageBox messageboxData}}
 					</footer>
 				</div>
-				{{# with openedThread}}
-					{{> ThreadComponent}}
-				{{/with}}
-				{{# unless shouldCloseFlexTab}}
-					{{#with flexData}}
-						{{> contextualBar}}
-					{{/with}}
-				{{/unless}}
 			</div>
 		</section>
 	</div>

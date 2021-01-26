@@ -14,7 +14,7 @@ import { menu } from './menu';
 import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
@@ -49,6 +49,33 @@ export const RoomManager = new function() {
 	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
+
+	const handleTrackSettingsChange = (msg) => {
+		const openedRoom = Tracker.nonreactive(() => Session.get('openedRoom'));
+		if (openedRoom !== msg.rid) {
+			return;
+		}
+
+		Tracker.nonreactive(() => {
+			if (msg.t === 'room_changed_privacy') {
+				const type = FlowRouter.current().route.name === 'channel' ? 'c' : 'p';
+				RoomManager.close(type + FlowRouter.getParam('name'));
+
+				const subscription = ChatSubscription.findOne({ rid: msg.rid });
+				const route = subscription.t === 'c' ? 'channel' : 'group';
+				FlowRouter.go(route, { name: subscription.name }, FlowRouter.current().queryParams);
+			}
+
+			if (msg.t === 'r') {
+				const room = ChatRoom.findOne(msg.rid);
+				if (room.name !== FlowRouter.getParam('name')) {
+					RoomManager.close(room.t + FlowRouter.getParam('name'));
+					roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+				}
+			}
+		});
+	};
+
 	const Cls = class {
 		static initClass() {
 			this.prototype.openedRooms = openedRooms;
@@ -94,6 +121,8 @@ export const RoomManager = new function() {
 
 								msg.name = room.name;
 								Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+
+								handleTrackSettingsChange(msg);
 
 								callbacks.run('streamMessage', msg);
 

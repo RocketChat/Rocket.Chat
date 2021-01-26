@@ -1,22 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { UserPresence } from 'meteor/konecty:user-presence';
 
 import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
 import UsersSessionsModel from '../../app/models/server/models/UsersSessions';
 
 Meteor.startup(function() {
-	const instance = {
-		host: 'localhost',
-		port: String(process.env.PORT).trim(),
-	};
-
-	if (process.env.INSTANCE_IP) {
-		instance.host = String(process.env.INSTANCE_IP).trim();
-	}
-
-	InstanceStatus.registerInstance('rocket.chat', instance);
-
 	UserPresence.start();
 
 	const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined'

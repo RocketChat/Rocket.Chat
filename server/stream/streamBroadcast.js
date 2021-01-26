@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { UserPresence } from 'meteor/konecty:user-presence';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
-import _ from 'underscore';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
 
@@ -97,6 +96,9 @@ function startMatrixBroadcast() {
 				_dontPrintErrors: LoggerManager.logLevel < 2,
 			});
 
+			// remove not relevant info from instance record
+			delete record.extraInformation.os;
+
 			connections[instance].instanceRecord = record;
 			connections[instance].instanceId = record._id;
 
@@ -147,43 +149,6 @@ function startMatrixBroadcast() {
 	InstanceStatusModel.find(query, options).fetch().forEach(matrixBroadCastActions.added);
 }
 
-Meteor.methods({
-	broadcastAuth(remoteId, selfId) {
-		check(selfId, String);
-		check(remoteId, String);
-
-		const query = {
-			_id: remoteId,
-		};
-
-		if (selfId === InstanceStatus.id() && remoteId !== InstanceStatus.id() && InstanceStatus.getCollection().findOne(query)) {
-			this.connection.broadcastAuth = true;
-		}
-
-		return this.connection.broadcastAuth === true;
-	},
-
-	stream(streamName, eventName, args) {
-		if (!this.connection) {
-			return 'self-not-authorized';
-		}
-
-		if (this.connection.broadcastAuth !== true) {
-			return 'not-authorized';
-		}
-
-		const instance = StreamerCentral.instances[streamName];
-		if (!instance) {
-			return 'stream-not-exists';
-		}
-
-		if (instance.serverOnly) {
-			instance.__emit(eventName, ...args);
-		} else {
-			StreamerCentral.instances[streamName]._emit(eventName, args);
-		}
-	},
-});
 
 function startStreamCastBroadcast(value) {
 	const instance = 'StreamCast';
@@ -237,7 +202,7 @@ function startStreamCastBroadcast(value) {
 	return connection.subscribe('stream');
 }
 
-function startStreamBroadcast() {
+export function startStreamBroadcast() {
 	if (!process.env.INSTANCE_IP) {
 		process.env.INSTANCE_IP = 'localhost';
 	}
@@ -314,21 +279,75 @@ function startStreamBroadcast() {
 	});
 }
 
-Meteor.startup(function() {
-	return startStreamBroadcast();
-});
+function getConnection(address) {
+	const conn = connections[address];
+	if (!conn) {
+		return;
+	}
+
+	const {
+		instanceRecord,
+		broadcastAuth,
+	} = conn;
+
+	return {
+		address,
+		currentStatus: conn._stream.currentStatus,
+		instanceRecord,
+		broadcastAuth,
+	};
+}
+
+export function getInstanceConnection(instance) {
+	const subPath = getURL('', { cdn: false, full: false });
+	const address = `${ instance.extraInformation.host }:${ instance.extraInformation.port }${ subPath }`;
+
+	return getConnection(address);
+}
 
 Meteor.methods({
+	broadcastAuth(remoteId, selfId) {
+		check(selfId, String);
+		check(remoteId, String);
+
+		const query = {
+			_id: remoteId,
+		};
+
+		if (selfId === InstanceStatus.id() && remoteId !== InstanceStatus.id() && InstanceStatus.getCollection().findOne(query)) {
+			this.connection.broadcastAuth = true;
+		}
+
+		return this.connection.broadcastAuth === true;
+	},
+
+	stream(streamName, eventName, args) {
+		if (!this.connection) {
+			return 'self-not-authorized';
+		}
+
+		if (this.connection.broadcastAuth !== true) {
+			return 'not-authorized';
+		}
+
+		const instance = StreamerCentral.instances[streamName];
+		if (!instance) {
+			return 'stream-not-exists';
+		}
+
+		if (instance.serverOnly) {
+			instance.__emit(eventName, ...args);
+		} else {
+			StreamerCentral.instances[streamName]._emit(eventName, args);
+		}
+	},
+
 	'instances/get'() {
 		if (!hasPermission(Meteor.userId(), 'view-statistics')) {
 			throw new Meteor.Error('error-action-not-allowed', 'List instances is not allowed', {
 				method: 'instances/get',
 			});
 		}
-
-		return Object.keys(connections).map((address) => {
-			const conn = connections[address];
-			return Object.assign({ address, currentStatus: conn._stream.currentStatus }, _.pick(conn, 'instanceRecord', 'broadcastAuth'));
-		});
+		return Object.keys(connections).map(getConnection);
 	},
 });

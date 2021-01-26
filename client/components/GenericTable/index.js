@@ -6,7 +6,7 @@ import flattenChildren from 'react-keyed-flatten-children';
 import { useTranslation } from '../../contexts/TranslationContext';
 import HeaderCell from './HeaderCell';
 import LoadingRow from './LoadingRow';
-import ScrollableContentWrapper from '../basic/ScrollableContentWrapper';
+import ScrollableContentWrapper from '../ScrollableContentWrapper';
 
 const GenericTable = ({
 	children,
@@ -39,7 +39,7 @@ const GenericTable = ({
 		return Array.from({ length: 10 }, (_, i) => <LoadingRow key={i} cols={headerCells.length} />);
 	}, [header]);
 
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
+	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
 
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 

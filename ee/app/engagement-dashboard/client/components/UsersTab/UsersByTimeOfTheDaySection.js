@@ -48,7 +48,7 @@ export function UsersByTimeOfTheDaySection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('engagement-dashboard/users/users-by-time-of-the-day-in-a-week', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/users-by-time-of-the-day-in-a-week', params);
 
 	const [
 		dates,
@@ -109,7 +109,7 @@ export function UsersByTimeOfTheDaySection() {
 								padding={4}
 								margin={{
 									// TODO: Get it from theme
-									left: 40,
+									left: 60,
 									bottom: 20,
 								}}
 								colors={[
