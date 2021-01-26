@@ -1,11 +1,7 @@
 import { getModules, getTags } from './license';
+import { EnterpriseStatistics } from '../../../../server/sdk/types/IEnterprise';
 
-type ENTERPRISE_STATISTICS = {
-	modules: string[];
-	tags: string[];
-}
-
-export function getStatistics(): ENTERPRISE_STATISTICS {
+export function getStatistics(): EnterpriseStatistics {
 	const modules = getModules();
 	const tags = getTags().map(({ name }) => name);
 

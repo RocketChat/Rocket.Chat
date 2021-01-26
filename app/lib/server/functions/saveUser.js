@@ -9,9 +9,9 @@ import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
-// import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
 import { escapeHTML } from '../../../../lib/escapeHTML';
+import { Enterprise } from '../../../../server/sdk';
 
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 
@@ -99,7 +99,7 @@ function validateUserData(userId, userData) {
 	}
 
 	if (userData.roles) {
-		validateUserRoles(userId, userData);
+		Promise.await(Enterprise.validateUserRoles(userId, userData));
 	}
 
 	let nameValidation;
