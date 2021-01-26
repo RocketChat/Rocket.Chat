@@ -20,8 +20,6 @@
 * [Deployment](#deployment)
    * [Snaps](#instant-server-installation-with-snaps)
    * [DigitalOcean](#digitalocean-droplet)
-   * [Layershift](#layershift)
-   * [Yunohost.org](#yunohostorg)
    * [IndieHosters](#indiehosters)
    * [Cloudron.io](#cloudronio)
    * [Helm Kubernetes](#helm-kubernetes)
