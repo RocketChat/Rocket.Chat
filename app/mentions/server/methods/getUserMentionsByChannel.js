@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Rooms, Users, Messages } from '../../../models';
+import { Rooms, Users } from '../../../models';
+import { Message } from '../../../../server/sdk';
 
 Meteor.methods({
 	getUserMentionsByChannel({ roomId, options }) {
@@ -19,6 +20,12 @@ Meteor.methods({
 
 		const user = Users.findOneById(Meteor.userId());
 
-		return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).fetch();
+		const { records } = Promise.await(Message.get(user.userId, {
+			rid: roomId,
+			mentionsUsername: user.username,
+			options,
+		}));
+
+		return records;
 	},
 });
