@@ -16,6 +16,7 @@ import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
+import { saveRoomHideHistoryForNewMembers } from '../functions/saveRoomHideHistoryForNewMembers';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
 import { isEnterprise } from '../../../../ee/app/license/server/license';
@@ -226,8 +227,8 @@ const settingSavers = {
 	roomAvatar({ value, rid, user }) {
 		setRoomAvatar(rid, value, user);
 	},
-	hideHistoryForNewMembers({ value, rid }) {
-		Rooms.saveHideHistoryForNewMembers(rid, value);
+	hideHistoryForNewMembers({ value, room, rid, user }) {
+		saveRoomHideHistoryForNewMembers(rid, value, user, Boolean(room.hideHistoryForNewMembers) !== Boolean(value));
 	},
 };
 

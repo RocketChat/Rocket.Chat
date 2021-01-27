@@ -179,6 +179,26 @@ Meteor.startup(function() {
 			};
 		},
 	});
+	MessageTypes.registerType({
+		id: 'room_history_disabled',
+		system: true,
+		message: 'This_room_history_was_disabled_by__username_',
+		data(message) {
+			return {
+				username: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'room_history_enabled',
+		system: true,
+		message: 'This_room_history_was_enabled_by__username_',
+		data(message) {
+			return {
+				username: message.u.username,
+			};
+		},
+	});
 });
 
 export const MessageTypesValues = [
@@ -237,5 +257,13 @@ export const MessageTypesValues = [
 	{
 		key: 'room_e2e_disabled',
 		i18nLabel: 'Message_HideType_room_disabled_encryption',
+	},
+	{
+		key: 'room_history_disabled',
+		i18nLabel: 'Message_HideType_room_disabled_history',
+	},
+	{
+		key: 'room_history_enabled',
+		i18nLabel: 'Message_HideType_room_enabled_history',
 	},
 ];
