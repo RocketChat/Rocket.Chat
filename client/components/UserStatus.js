@@ -49,20 +49,20 @@ export const usePresence = (uid, presence) => {
 	return status;
 };
 
-export const usePresenceStatusText = (uid, defaultStatusText=null)=>{
-	const [statusText,setStatusText]=useSafely(useState(defaultStatusText));
-	useEffect(()=>{
-		const handle =({statusText=null})=>{
+export const usePresenceStatusText = (uid, defaultStatusText = null) => {
+	const [statusText, setStatusText] = useSafely(useState(defaultStatusText));
+	useEffect(() => {
+		const handle = ({ statusText = null }) => {
 			setStatusText(statusText);
-		}
-		Presence.listen(uid,handle);
-		return ()=>{
-			Presence.stop(uid,handle);
-		}
-	},[setStatusText,uid]);
-	
+		};
+		Presence.listen(uid, handle);
+		return () => {
+			Presence.stop(uid, handle);
+		};
+	}, [setStatusText, uid]);
+
 	return statusText;
-}
+};
 
 export const ReactiveUserStatus = React.memo(({ uid, presence, ...props }) => {
 	const status = usePresence(uid, presence);

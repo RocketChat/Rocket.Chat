@@ -31,7 +31,7 @@ const getPresence = ((): ((uid: User['_id']) => void) => {
 					ids: [...currentUids],
 				};
 
-				const {users} = await APIClient.v1.get('users.presence', params) as UsersPresencePayload;
+				const { users } = await APIClient.v1.get('users.presence', params) as UsersPresencePayload;
 
 				users.forEach((user) => {
 					if (!statuses.has(user._id)) {
@@ -86,8 +86,8 @@ type PresenceUpdate = Partial<Pick<User, '_id' | 'username' | 'status' | 'status
 const update: Handler<PresenceUpdate> = (update) => {
 	if (update?._id) {
 		statuses.set(update._id, update.status);
-		statusTexts.set(update._id,update.statusText);
-		
+		statusTexts.set(update._id, update.statusText);
+
 		uids.delete(update._id);
 	}
 };
@@ -98,7 +98,7 @@ const listen = (uid: User['_id'], handler: Handler<PresenceUpdate>): void => {
 	emitter.on('reset', handler);
 
 	if (statuses.has(uid)) {
-		return handler({ status: statuses.get(uid), statusText:statusTexts.get(uid) });
+		return handler({ status: statuses.get(uid), statusText: statusTexts.get(uid) });
 	}
 
 	getPresence(uid);

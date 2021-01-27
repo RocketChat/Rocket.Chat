@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { ActionButton } from '@rocket.chat/fuselage';
@@ -16,10 +16,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import MarkdownText from '../../../components/MarkdownText';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useUser } from '../../../contexts/UserContext';
-import {roomTypes} from '../../../../app/utils/client';
-import { useReactiveValue } from '/client/hooks/useReactiveValue';
-import {APIClient} from '../../../../app/utils/client'
-import { usePresenceStatusText } from '/client/components/UserStatus';
+import { usePresenceStatusText } from '../../../components/UserStatus';
 
 export default React.memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
@@ -46,37 +43,17 @@ const RoomHeader = ({ room }) => {
 	const otherUser = useMemo(() => {
 		// check if room is direct message with 2 members
 		if (room.t === 'd' && room.uids?.length === 2) {
-			const id = room.uids.find((uid) => uid !== user._id);
-			return { id };
+			const userId = room.uids.find((uid) => uid !== user._id);
+			return { userId };
 		}
 		return null;
 	}, [room, user]);
 
-	// const userData = useReactiveValue(useCallback(async ()=>{
-	// 	const data = await APIClient.v1['get']('users.info',findUserQuery);
-	// 	console.log(data);
-	// },[findUserQuery]))
+	const { value: data } = useEndpointData('users.info', otherUser);
 
-	// the room will not have a topic in direct messages.
-	// const roomTopic = (findUserQuery && data && data.user && data.user.statusText) || room.topic;
-	
-	
-	// const a = roomTypes.getUserStatusText(room.t,room._id); // a is undefined. ask why?
-	
-	const statusText = usePresenceStatusText(otherUser?.id,null);
-	
-	const roomTopic = statusText || room.topic;
+	const liveStatusText = usePresenceStatusText(otherUser?.userId, null);
 
-	console.log(statusText, 'is the status text\n\nand the room topic is',roomTopic);
-	
-	// if(otherUser){
-
-	// 	const b = usePresenceStatusText(user._id);
-	// 	console.log(b, 'AND THE ROOM IS\n\n');
-
-	// 	console.log(`my id is ${user._id} and the other is ${otherUser?.id}`);
-	// }
-
+	const roomTopic = liveStatusText || data?.user?.statusText || room.topic;
 
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room}/>;
