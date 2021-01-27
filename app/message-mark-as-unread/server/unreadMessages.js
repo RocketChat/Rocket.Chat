@@ -12,14 +12,7 @@ Meteor.methods({
 			});
 		}
 
-		if (typeof firstUnreadMessage?._id !== 'string') {
-			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
-				method: 'unreadMessages',
-				action: 'Unread_messages',
-			});
-		}
-
-		if (room) {
+		if (room && typeof room === 'string') {
 			const lastMessage = Messages.findVisibleByRoomId(room, { limit: 1, sort: { ts: -1 } }).fetch()[0];
 
 			if (lastMessage == null) {
@@ -30,6 +23,13 @@ Meteor.methods({
 			}
 
 			return Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
+		}
+
+		if (typeof firstUnreadMessage?._id !== 'string') {
+			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
+				method: 'unreadMessages',
+				action: 'Unread_messages',
+			});
 		}
 
 		const originalMessage = Messages.findOneById(firstUnreadMessage._id, {

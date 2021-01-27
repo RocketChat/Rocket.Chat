@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 import { Box } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 import marked from 'marked';
@@ -14,8 +13,11 @@ const options = {
 
 function MarkdownText({ content, preserveHtml = false, withRichContent = true, ...props }) {
 	const sanitizer = dompurify.sanitize;
-	const __html = useMemo(() => content && marked(preserveHtml ? content : sanitizer(content), options), [content, preserveHtml]);
-	return __html ? <Box dangerouslySetInnerHTML={{ __html }} withRichContent {...props} /> : null;
+	const __html = useMemo(() => {
+		const html = content && marked(content, options);
+		return preserveHtml ? html : html && sanitizer(html);
+	}, [content, preserveHtml, sanitizer]);
+	return __html ? <Box dangerouslySetInnerHTML={{ __html }} withRichContent={withRichContent} {...props} /> : null;
 }
 
 export default MarkdownText;
