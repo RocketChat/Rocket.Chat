@@ -260,13 +260,20 @@ export const RoomHistoryManager = new class {
 				return;
 			}
 
-			const wrapper = $('.messages-box .wrapper');
-			const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
-			wrapper.animate({
-				scrollTop: pos,
-			}, 500);
+			Tracker.afterFlush(() => {
+				const msg = document.getElementById(message._id);
+				msg.classList.add('highlight');
+				const removeClass = () => {
+					msg.classList.remove('highlight');
+					msg.removeEventListener('animationend', removeClass);
+				};
+				msg.addEventListener('animationend', removeClass);
+				setTimeout(() => {
+					msg.scrollIntoView();
+				}, 300);
+			});
 
-			return setTimeout(() => msgElement.removeClass('highlight'), 500);
+			return;
 		}
 
 		const room = this.getRoom(message.rid);
