@@ -45,7 +45,8 @@ export const RoomInfoIcon = ({ name }) => <Icon name={name} size='x22' />;
 export const Title = (props) => <UserCard.Username {...props}/>;
 
 export const RoomInfo = function RoomInfo({
-	fname: name,
+	fname,
+	name: oname,
 	description,
 	archived,
 	broadcast,
@@ -62,6 +63,8 @@ export const RoomInfo = function RoomInfo({
 	onClickDelete,
 }) {
 	const t = useTranslation();
+
+	const name = fname || oname;
 
 	const {
 		retentionPolicyEnabled,
@@ -153,7 +156,8 @@ export default ({
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
-	const { type, fname, broadcast, archived, joined = true } = room; // TODO implement joined
+	const { type, fname, name: oname, broadcast, archived, joined = true } = room; // TODO implement joined
+	const name = fname || oname;
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
@@ -207,7 +211,7 @@ export default ({
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.LEAVE_WARNING);
 
 		setModal(<WarningModal
-			text={t(warnText, fname)}
+			text={t(warnText, name)}
 			confirmText={t('Leave_room')}
 			close={closeModal}
 			cancel={closeModal}
@@ -230,7 +234,7 @@ export default ({
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.HIDE_WARNING);
 
 		setModal(<WarningModal
-			text={t(warnText, fname)}
+			text={t(warnText, name)}
 			confirmText={t('Yes_hide_it')}
 			close={closeModal}
 			cancel={closeModal}
