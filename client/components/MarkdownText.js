@@ -1,8 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 import marked from 'marked';
-
-import { escapeHTML } from '../../lib/escapeHTML';
+import dompurify from 'dompurify';
 
 const renderer = new marked.Renderer();
 
@@ -20,9 +19,12 @@ const options = {
 };
 
 function MarkdownText({ content, preserveHtml = false, withRichContent = true, ...props }) {
-	const __html = useMemo(() => content && marked(preserveHtml ? content : escapeHTML(content), options), [content, preserveHtml]);
-
-	return __html ? <Box dangerouslySetInnerHTML={{ __html }} {...withRichContent && { withRichContent }} {...props} /> : null;
+	const sanitizer = dompurify.sanitize;
+	const __html = useMemo(() => {
+		const html = content && marked(content, options);
+		return preserveHtml ? html : html && sanitizer(html);
+	}, [content, preserveHtml, sanitizer]);
+	return __html ? <Box dangerouslySetInnerHTML={{ __html }} withRichContent={withRichContent} {...props} /> : null;
 }
 
 export default MarkdownText;
