@@ -1845,7 +1845,7 @@
 	}
 
 	&.highlight {
-		animation: highlight 6s;
+		animation: highlight 3s;
 	}
 
 	&:nth-child(1) {
