@@ -52936,6 +52936,17 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "3.9.6": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
     }
   }
 }
