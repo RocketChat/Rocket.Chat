@@ -21,7 +21,7 @@ const URL = global.URL || require('url').URL || require('url').Url;
 
 const validateUrl = (url, message) => {
 	// Don't render markdown inside links
-	if (message?.tokens?.some((token) => url.includes(token.token))) {
+	if (message && message.tokens && message.tokens.some((token) => url.includes(token.token))) {
 		return false;
 	}
 
