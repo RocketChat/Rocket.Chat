@@ -42,7 +42,7 @@ export function UserAvatarEditor({ currentUsername, username, setAvatarObj, sugg
 	const [clickUpload] = useFileInput(setUploadedPreview);
 
 	const clickUrl = () => {
-		if (avatarFromUrl == ''){
+		if (avatarFromUrl === '') {
 			toastr.error('Please Enter a URL');
 			throw new Meteor.Error();
 		}
