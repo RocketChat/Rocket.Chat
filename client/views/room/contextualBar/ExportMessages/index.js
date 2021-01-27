@@ -133,21 +133,21 @@ const MailExportForm = ({ onCancel, rid }) => {
 			.removeClass('selected');
 	});
 
+	const handler = function() {
+		const { id } = this;
+
+		if (this.classList.contains('selected')) {
+			this.classList.remove('selected');
+			setSelected((selectedMessages) => selectedMessages.filter((message) => message !== id));
+		} else {
+			this.classList.add('selected');
+			setSelected((selectedMessages) => selectedMessages.concat(id));
+		}
+	};
+
 	useEffect(() => {
 		const $root = $(`#chat-window-${ rid }`);
 		$('.messages-box', $root).addClass('selectable');
-
-		const handler = function() {
-			const { id } = this;
-
-			if (this.classList.contains('selected')) {
-				this.classList.remove('selected');
-				setSelected((selectedMessages) => selectedMessages.filter((message) => message !== id));
-			} else {
-				this.classList.add('selected');
-				setSelected((selectedMessages) => selectedMessages.concat(id));
-			}
-		};
 		$('.messages-box .message', $root).on('click', handler);
 
 		return () => {
@@ -158,6 +158,12 @@ const MailExportForm = ({ onCancel, rid }) => {
 				.removeClass('selected');
 		};
 	}, [rid]);
+
+	useEffect(() => {
+		const $root = $(`#chat-window-${ rid }`);
+		$('.messages-box .message', $root).off('click');
+		$('.messages-box .message', $root).on('click', handler);
+	},[$('.messages-box .message', $(`#chat-window-${ rid }`)).length])
 
 	const {
 		handleToUsers,
