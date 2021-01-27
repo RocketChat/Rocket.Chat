@@ -1,6 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { Meteor } from 'meteor/meteor';
-import toastr from 'toastr';
 import { Box, Button, Icon, TextInput, Margins, Avatar } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -42,10 +40,6 @@ export function UserAvatarEditor({ currentUsername, username, setAvatarObj, sugg
 	const [clickUpload] = useFileInput(setUploadedPreview);
 
 	const clickUrl = () => {
-		if (avatarFromUrl == ''){
-			toastr.error('Please Enter a URL');
-			throw new Meteor.Error();
-		}
 		setNewAvatarSource(avatarFromUrl);
 		setAvatarObj({ avatarUrl: avatarFromUrl });
 	};
