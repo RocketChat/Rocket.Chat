@@ -14,7 +14,6 @@ import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesConte
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import RawText from '../../../../components/RawText';
 
-
 const clickable = css`
 	cursor: pointer;
 `;
