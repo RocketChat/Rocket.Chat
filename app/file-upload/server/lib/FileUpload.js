@@ -10,6 +10,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
@@ -25,6 +26,7 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
+import { AppEvents, Apps } from '../../../apps/server';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -55,7 +57,7 @@ export const FileUpload = {
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
-	validateFileUpload(file) {
+	validateFileUpload({ file, stream }) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -93,10 +95,21 @@ export const FileUpload = {
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
+		// App IPreFileUpload event hook
+		try {
+			Promise.await(Apps.triggerEvent(AppEvents.IPreFileUpload, { file, stream }));
+		} catch (error) {
+			if (error instanceof AppsEngineException) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
+
+			throw error;
+		}
+
 		return true;
 	},
 
-	validateAvatarUpload(file) {
+	validateAvatarUpload({ file }) {
 		if (!Match.test(file.rid, String) && !Match.test(file.userId, String)) {
 			return false;
 		}
@@ -177,7 +190,7 @@ export const FileUpload = {
 		};
 	},
 
-	avatarsOnValidate(file) {
+	avatarsOnValidate({ file }) {
 		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
@@ -588,7 +601,7 @@ export class FileUploadClass {
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter && filter.check) {
-			filter.check(fileData);
+			filter.check({ file: fileData, stream: streamOrBuffer });
 		}
 
 		return this._doInsert(fileData, streamOrBuffer, cb);

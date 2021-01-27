@@ -8,8 +8,6 @@
 }
 
 .rc-old code {
-	display: block;
-
 	margin: 5px 0;
 	padding: 0.5em;
 
@@ -1312,16 +1310,15 @@
 }
 
 .rc-old .container-bars {
-	position: absolute;
+	position: relative;
 	z-index: 2;
-	top: 5px; /* --header-height */
-	right: 10px;
-	left: 10px;
 
-	display: flex;
+	display: none;
 	visibility: hidden;
 	overflow: hidden;
 	flex-direction: column;
+
+	margin: 5px 10px 0;
 
 	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
 	transform: translateY(-10px);
@@ -1336,6 +1333,7 @@
 	font-weight: bold;
 
 	&.show {
+		display: flex;
 		visibility: visible;
 
 		transform: translateY(0);

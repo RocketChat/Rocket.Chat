@@ -9,7 +9,9 @@ export const AutoCompleteDepartment = React.memo((props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData('livechat/department', useMemo(() => ({ text: filter }), [filter]));
 
-	const options = useMemo(() => (data && [{ value: 'all', label: t('All') }, ...data.departments.map((department) => ({ value: department._id, label: department.name }))]) || [{ value: 'all', label: t('All') }], [data, t]);
+	const { label } = props;
+
+	const options = useMemo(() => (data && [{ value: 'All', label: label && t('All') }, ...data.departments.map((department) => ({ value: department._id, label: department.name }))]) || [{ value: 'All', label: label || t('All') }], [data, label, t]);
 
 	return <AutoComplete
 		{...props}
