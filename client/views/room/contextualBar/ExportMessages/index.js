@@ -12,6 +12,8 @@ import { useEndpoint } from '../../../../contexts/ServerContext';
 import { roomTypes, isEmail } from '../../../../../app/utils/client';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
+import RawText from '../../../../components/RawText';
+
 
 const clickable = css`
 	cursor: pointer;
@@ -232,7 +234,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 				</Field.Row>
 			</Field>
 
-			{errorMessage && <Callout type={'danger'} title={errorMessage} />}
+			{errorMessage && <Callout type={'danger'}><RawText>{errorMessage}</RawText></Callout>}
 
 			<ButtonGroup stretch mb='x12'>
 				<Button onClick={onCancel}>
