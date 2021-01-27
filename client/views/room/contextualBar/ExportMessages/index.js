@@ -163,7 +163,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 		const $root = $(`#chat-window-${ rid }`);
 		$('.messages-box .message', $root).off('click');
 		$('.messages-box .message', $root).on('click', handler);
-	},[$('.messages-box .message', $(`#chat-window-${ rid }`)).length])
+	}, [$('.messages-box .message', $(`#chat-window-${ rid }`)).length]);
 
 	const {
 		handleToUsers,
