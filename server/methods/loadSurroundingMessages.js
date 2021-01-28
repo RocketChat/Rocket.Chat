@@ -44,7 +44,7 @@ Meteor.methods({
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			queryOptions.fields = {
+			queryOptions.projection = {
 				editedAt: 0,
 			};
 		}
@@ -55,12 +55,15 @@ Meteor.methods({
 
 		messages.push(message);
 
-		queryOptions.sort = {
-			ts: 1,
+		const afterQueryOptions = {
+			...queryOptions,
+			sort: {
+				ts: 1,
+				limit: Math.floor(limit / 2),
+			},
 		};
 
-		queryOptions.limit = Math.floor(limit / 2);
-		const { records: afterMessages } = Promise.await(Message.get(fromId, { rid: message.rid, oldest: message.ts, queryOptions }));
+		const { records: afterMessages } = Promise.await(Message.get(fromId, { rid: message.rid, oldest: message.ts, queryOptions: afterQueryOptions }));
 
 		const moreAfter = afterMessages.length === queryOptions.limit;
 

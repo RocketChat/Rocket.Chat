@@ -31,7 +31,7 @@ Meteor.methods({
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			queryOptions.fields = {
+			queryOptions.projection = {
 				editedAt: 0,
 			};
 		}
