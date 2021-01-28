@@ -340,7 +340,7 @@ We are developing the APIs based on the competition, so stay tuned and you will 
 
 ## Documentation
 
-Check out [Rocket.Chat documentation](https://rocket.chat/docs/).
+Check out [Rocket.Chat documentation](https://docs.rocket.chat/).
 
 ## License
 
