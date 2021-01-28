@@ -142,6 +142,23 @@ describe('[Roles]', function() {
 		});
 	});
 
+	describe('POST [/roles.removeUserFromRole]', () => {
+		it('should unassign a role with User scope from an user', (done) => {
+			request.post(api('roles.removeUserFromRole'))
+				.set(credentials)
+				.send({
+					roleName: apiRoleNameUsers,
+					username: login.user,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
 	describe('GET [/roles.getUsersInRole]', () => {
 		let userCredentials;
 		before((done) => {
