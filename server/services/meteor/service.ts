@@ -19,7 +19,7 @@ import { matrixBroadCastActions } from '../../stream/streamBroadcast';
 import { integrations } from '../../../app/integrations/server/lib/triggerHandler';
 import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
 import notifications from '../../../app/notifications/server/lib/Notifications';
-import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
+import { configureEmailInboxes, selectInstaceToJob } from '../../features/EmailInbox/EmailInbox';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
@@ -236,6 +236,11 @@ export class MeteorService extends ServiceClass implements IMeteor {
 
 		this.onEvent('watch.emailInbox', async () => {
 			configureEmailInboxes();
+		});
+
+		this.onEvent('watch.instanceStatus', async ({ clientAction, id }): Promise<void> => {
+			// console.log(clientAction);
+			clientAction === 'updated' && selectInstaceToJob(id);
 		});
 	}
 

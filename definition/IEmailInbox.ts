@@ -1,5 +1,6 @@
 export interface IEmailInbox {
 	_id: string;
+	instance: string;
 	active: boolean;
 	name: string;
 	email: string;
