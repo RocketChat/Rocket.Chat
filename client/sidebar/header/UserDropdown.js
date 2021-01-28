@@ -14,7 +14,7 @@ import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { userStatus } from '../../../app/user-status';
 import { callbacks } from '../../../app/callbacks';
 import { popover, AccountBox, modal, SideNav } from '../../../app/ui-utils';
-import MarkdownText from '../../../client/components/MarkdownText';
+import MarkdownText from '../../components/MarkdownText';
 
 const ADMIN_PERMISSIONS = [
 	'view-logs',
