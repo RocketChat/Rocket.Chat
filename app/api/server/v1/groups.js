@@ -533,7 +533,7 @@ API.v1.addRoute('groups.messages', { authRequired: true }, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			},
 		}));
 

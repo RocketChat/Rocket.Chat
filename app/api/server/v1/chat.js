@@ -465,7 +465,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			},
 		}));
 
@@ -546,7 +546,7 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 				sort: sort || { ts: 1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			},
 		}));
 
@@ -591,10 +591,16 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
+		const queryOptions = {
+			returnTotal: false,
+			projection: fields,
+			sort,
+		};
+
 		return API.v1.success({
 			messages: {
-				update: Promise.await(Message.customQuery({ query: { ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, queryOptions: { returnTotal: false, fields, sort } })).records,
-				remove: Promise.await(Message.getDeleted({ rid: thread.rid, timestamp: updatedSinceDate, query: { ...query, tmid }, queryOptions: { returnTotal: false, fields, sort } })).records,
+				update: Promise.await(Message.customQuery({ query: { ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, queryOptions })).records,
+				remove: Promise.await(Message.getDeleted({ rid: thread.rid, timestamp: updatedSinceDate, query: { ...query, tmid }, queryOptions })).records,
 			},
 		});
 	},

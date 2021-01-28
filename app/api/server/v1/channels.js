@@ -584,7 +584,7 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				fields,
+				projection: fields,
 			},
 		}));
 
