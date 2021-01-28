@@ -93,11 +93,11 @@ function _searchInsiderUsers({ rid, text, usernames, options, users, insiderExtr
 	}
 }
 
-function _searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
+function _searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, outsiderExtraQuery, match = { startsWith: false, endsWith: false } }) {
 	// Then get the outsiders if allowed
 	if (canListOutsiders) {
 		const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
-		users.push(...Promise.await(Users.findByActiveUsersExcept(text, usernames, options, searchFields, undefined, match).toArray()).map(mapOutsiders));
+		users.push(...Promise.await(Users.findByActiveUsersExcept(text, usernames, options, searchFields, outsiderExtraQuery, match).toArray()).map(mapOutsiders));
 
 		// If the limit was reached, return
 		if (processLimitAndUsernames(options, usernames, users)) {
@@ -140,6 +140,11 @@ function searchUsers({ userId, rid, text, usernames }) {
 	}
 
 	const insiderExtraQuery = [];
+	const roomId = [rid];
+	const outsiderExtraQuery = [];
+	outsiderExtraQuery.push({
+		__rooms: { $nin: roomId },
+	});
 
 	if (rid) {
 		switch (room.t) {
@@ -161,7 +166,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 		}
 	}
 
-	const searchParams = { rid, text, usernames, options, users, canListOutsiders, insiderExtraQuery };
+	const searchParams = { rid, text, usernames, options, users, canListOutsiders, insiderExtraQuery, outsiderExtraQuery };
 
 	// Exact match for username only
 	if (rid) {
