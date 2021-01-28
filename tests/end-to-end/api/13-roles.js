@@ -157,6 +157,22 @@ describe('[Roles]', function() {
 				})
 				.end(done);
 		});
+
+		it('should unassign a role with Subscriptions scope from an user', (done) => {
+			request.post(api('roles.addUserToRole'))
+				.set(credentials)
+				.send({
+					roleName: apiRoleNameSubscriptions,
+					username: login.user,
+					roomId: group._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 	});
 
 	describe('GET [/roles.getUsersInRole]', () => {
