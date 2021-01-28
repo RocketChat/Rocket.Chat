@@ -54972,6 +54972,36 @@
           ]
         }
       ]
+    },
+    "3.11.0-rc.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.0-alpha.4469",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20450",
+          "title": "Regression: Bio page not rendering",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "20435",
+          "title": "regression: Announcement link open in new tab",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
