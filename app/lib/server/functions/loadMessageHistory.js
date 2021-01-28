@@ -27,12 +27,19 @@ export function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 	};
 
 	if (!settings.get('Message_ShowEditedStatus')) {
-		options.fields = {
+		options.projection = {
 			editedAt: 0,
 		};
 	}
 
-	const { records } = Promise.await(Message.get(userId, { rid, excludeTypes: hiddenMessageTypes, oldest: end, queryOptions: options }));
+	const filter = {
+		rid,
+		excludeTypes: hiddenMessageTypes,
+		queryOptions: options,
+		...end && { latest: end },
+	};
+
+	const { records } = Promise.await(Message.get(userId, filter));
 
 	const messages = normalizeMessagesForUser(records, userId);
 
@@ -47,8 +54,8 @@ export function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 			const { records: unreadMessages, total } = Promise.await(Message.get(userId, {
 				rid,
 				excludeTypes: hiddenMessageTypes,
-				latest: ls,
-				oldest: firstMessage.ts,
+				oldest: ls,
+				latest: firstMessage.ts,
 				queryOptions: {
 					limit: 1,
 					sort: {
