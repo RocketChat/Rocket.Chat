@@ -74,6 +74,24 @@ API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			roleName: String,
+			username: String,
+			roomId: Match.Maybe(String),
+		});
+
+		const user = this.getUserFromParams();
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('authorization:removeUserFromRole', this.bodyParams.roleName, user.username, this.bodyParams.roomId);
+		});
+
+		return API.v1.success();
+	},
+});
+
 API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 	get() {
 		const { roomId, role } = this.queryParams;
