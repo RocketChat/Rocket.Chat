@@ -90,11 +90,17 @@ Template.createChannel.helpers({
 		const inUse = instance.inUse.get();
 		return invalid || inUse;
 	},
-	typeLabel() {
-		return t(Template.instance().type.get() === 'p' ? t('Private_Channel') : t('Public_Channel'));
+	privateLabel() {
+		return t('Private_Channel');
 	},
-	typeDescription() {
-		return t(Template.instance().type.get() === 'p' ? t('Just_invited_people_can_access_this_channel') : t('Everyone_can_access_this_channel'));
+	publicLabel() {
+		return t('Public channel');
+	},
+	privateDescription() {
+		return t('Just_invited_people_can_access_this_channel');
+	},
+	publicDescription() {
+		return t('Everyone_can_access_this_channel');
 	},
 	broadcast() {
 		return Template.instance().broadcast.get();
@@ -128,6 +134,9 @@ Template.createChannel.helpers({
 	},
 	roomTypeIsP() {
 		return Template.instance().type.get() === 'p';
+	},
+	roomTypeIsC() {
+		return Template.instance().type.get() === 'c';
 	},
 	createIsDisabled() {
 		const instance = Template.instance();
@@ -189,8 +198,12 @@ Template.createChannel.events({
 		t.tokensRequired.set(e.currentTarget.checked);
 		t.change();
 	},
-	'change [name="type"]'(e, t) {
+	'change [name="privateType"]'(e, t) {
 		t.type.set(e.target.checked ? e.target.value : 'c');
+		t.change();
+	},
+	'change [name="publicType"]'(e, t) {
+		t.type.set(e.target.checked ? e.target.value : 'p');
 		t.change();
 	},
 	'change [name="broadcast"]'(e, t) {

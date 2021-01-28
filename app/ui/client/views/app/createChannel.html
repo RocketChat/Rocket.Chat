@@ -11,15 +11,27 @@
 				<div class="create-channel__switches">
 					<div class="rc-switch">
 						<label class="rc-switch__label" tabindex="-1">
-							<input type="checkbox" class="rc-switch__input" name="type" value="p" checked={{roomTypeIsP}} disabled="{{cantCreateBothTypes}}">
+							<input type="checkbox" class="rc-switch__input" name="privateType" value="p" checked={{roomTypeIsP}} disabled="{{cantCreateBothTypes}}">
 							<span class="rc-switch__button">
 								<span class="rc-switch__button-inside"></span>
 							</span>
 							<span class="rc-switch__text">
-								{{typeLabel}}
+								{{privateLabel}}
 							</span>
 						</label>
-						<span class="rc-switch__description">{{typeDescription}}</span>
+						<span class="rc-switch__description">{{privateDescription}}</span>
+					</div>
+					<div class="rc-switch">
+						<label class="rc-switch__label" tabindex="-1">
+							<input type="checkbox" class="rc-switch__input" name="publicType" value="c" checked={{roomTypeIsC}} disabled="{{cantCreateBothTypes}}">
+							<span class="rc-switch__button">
+								<span class="rc-switch__button-inside"></span>
+							</span>
+							<span class="rc-switch__text">
+								{{publicLabel}}
+							</span>
+						</label>
+						<span class="rc-switch__description">{{publicDescription}}</span>
 					</div>
 					<div class="rc-switch">
 						<label class="rc-switch__label">
