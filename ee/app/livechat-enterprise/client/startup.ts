@@ -5,7 +5,7 @@ import { settings } from '../../../../app/settings/client';
 import { businessHourManager } from '../../../../app/livechat/client/views/app/business-hours/BusinessHours';
 import { IBusinessHourBehavior } from '../../../../app/livechat/client/views/app/business-hours/IBusinessHourBehavior';
 import { EESingleBusinessHourBehaviour } from './SingleBusinessHour';
-import { hasLicense } from '../../license/client';
+import { hasLicense } from '../../../../client/license';
 
 const businessHours: Record<string, IBusinessHourBehavior> = {
 	Multiple: new MultipleBusinessHoursBehavior(),

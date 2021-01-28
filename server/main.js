@@ -1,10 +1,10 @@
-import '../ee/server/broker';
+// import '../ee/server/broker';
 import './importPackages';
 import '../imports/startup/server';
 
 import './services/startup';
 
-import '../ee/server';
+// import '../ee/server';
 import './lib/pushConfig';
 import './startup/migrations';
 import './startup/appcache';

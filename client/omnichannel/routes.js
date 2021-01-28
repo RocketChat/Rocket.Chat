@@ -3,6 +3,8 @@ import { HTML } from 'meteor/htmljs';
 import { createRouteGroup } from '../lib/createRouteGroup';
 import { createTemplateForComponent } from '../reactAdapters';
 
+import './additionalForms/register';
+
 createTemplateForComponent('omnichannelFlex', () => import('./sidebar/OmnichannelSidebar'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
 });
@@ -50,17 +52,17 @@ registerOmnichannelRoute('/managers', {
 
 registerOmnichannelRoute('/units/:context?/:id?', {
 	name: 'omnichannel-units',
-	lazyRouteComponent: () => import('../../../ee/client/omnichannel/units/UnitsRoute'),
+	lazyRouteComponent: () => import('./units/UnitsRoute'),
 });
 
 registerOmnichannelRoute('/tags/:context?/:id?', {
 	name: 'omnichannel-tags',
-	lazyRouteComponent: () => import('../../../ee/client/omnichannel/tags/TagsRoute'),
+	lazyRouteComponent: () => import('./tags/TagsRoute'),
 });
 
 registerOmnichannelRoute('/priorities/:context?/:id?', {
 	name: 'omnichannel-priorities',
-	lazyRouteComponent: () => import('../../../ee/client/omnichannel/priorities/PrioritiesRoute'),
+	lazyRouteComponent: () => import('./priorities/PrioritiesRoute'),
 });
 
 registerOmnichannelRoute('/triggers/:context?/:id?', {

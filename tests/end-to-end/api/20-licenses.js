@@ -4,7 +4,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { password } from '../../data/user.js';
 import { createUser, login as doLogin } from '../../data/users.helper';
 
-describe('licenses', function() {
+describe.skip('licenses', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));

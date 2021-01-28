@@ -1,7 +1,6 @@
-import '../app/auditing/client/index';
+import '../../client/audit/enterprise/index';
 import '../app/authorization/client/index';
-import '../app/canned-responses/client/index';
+import '../../client/canned-responses/index';
 import '../app/engagement-dashboard/client/index';
-import '../app/license/client/index';
+import '../../client/license/index';
 import '../app/livechat-enterprise/client/index';
-import './omnichannel';

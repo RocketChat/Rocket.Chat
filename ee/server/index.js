@@ -11,4 +11,5 @@ import '../app/ldap-enterprise/server/index';
 import '../app/livechat-enterprise/server/index';
 import '../app/settings/server/index';
 import './api';
+import './enterprise.internalService';
 import './startup';
