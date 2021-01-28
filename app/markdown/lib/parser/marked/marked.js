@@ -1,7 +1,7 @@
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import _marked from 'marked';
-
+import dompurify from 'dompurify';
 
 import hljs from '../../hljs';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
@@ -106,6 +106,8 @@ export const marked = (message, {
 		sanitize: true,
 		highlight,
 	});
+
+	message.html = dompurify.sanitize(message.html);
 
 	return message;
 };
