@@ -1,6 +1,25 @@
 
 # 3.11.0 (Under Release Candidate Process)
 
+## 3.11.0-rc.2
+`2021-01-27  ·  2 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- regression: Announcement link open in new tab ([#20435](https://github.com/RocketChat/Rocket.Chat/pull/20435))
+
+- Regression: Bio page not rendering ([#20450](https://github.com/RocketChat/Rocket.Chat/pull/20450))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@ggazzo](https://github.com/ggazzo)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 ## 3.11.0-rc.1
 `2021-01-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
