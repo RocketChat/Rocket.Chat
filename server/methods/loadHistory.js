@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Subscriptions } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization/server';
-import { settings } from '../../app/settings/server';
-import { loadMessageHistory } from '../../app/lib/server';
+import { Subscriptions } from '../../app/models';
+import { hasPermission } from '../../app/authorization';
+import { settings } from '../../app/settings';
+import { loadMessageHistory } from '../../app/lib';
 
 Meteor.methods({
 	loadHistory(rid, end, limit = 20, ls) {

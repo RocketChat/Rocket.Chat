@@ -757,7 +757,7 @@ describe('[Chat]', function() {
 								.to.have.string('<iframe style="max-width: 100%"');
 						})
 						.end(done);
-				}, 400);
+				}, 200);
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
@@ -781,7 +781,7 @@ describe('[Chat]', function() {
 								.to.have.property('contentType', 'image/jpeg');
 						})
 						.end(done);
-				}, 250);
+				}, 200);
 			});
 		});
 
