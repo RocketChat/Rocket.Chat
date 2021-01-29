@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 
-describe.only('banners', function() {
+describe('banners', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
