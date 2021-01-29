@@ -46,7 +46,6 @@ export async function configureEmailInboxes(): Promise<void> {
 			markSeen: true,
 		});
 
-		// imap.on('email', Meteor.bindEnvironment((email) => onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department)));
 		imap.on('email', Meteor.bindEnvironment((email) => EmailQueueManager.scheduleEmailMessage({
 			email: emailInboxRecord.email,
 			data: email,

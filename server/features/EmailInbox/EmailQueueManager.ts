@@ -29,9 +29,13 @@ class EmailQueueManagerClass {
 		}
 
 		this.scheduler.define(EMAIL_JOB_NAME, this.executeWorker.bind(this));
-		await this.scheduler.start();
-		await this.scheduler.every(EMAIL_SCHEDULER_TIMEOUT, EMAIL_JOB_NAME);
-		this.running = true;
+		try {
+			await this.scheduler.start();
+			await this.scheduler.every(EMAIL_SCHEDULER_TIMEOUT, EMAIL_JOB_NAME);
+			this.running = true;
+		} catch (error) {
+			console.error('Error starting scheduler job: %s', error.message);
+		}
 	}
 
 	public async stopWorker(): Promise<void> {
@@ -48,7 +52,6 @@ class EmailQueueManagerClass {
 			return;
 		}
 
-
 		const emailMessage = await EmailMessage.findNextInQueue();
 		if (!emailMessage) {
 			return;
@@ -64,23 +67,20 @@ class EmailQueueManagerClass {
 			});
 	}
 
-	async scheduleEmailMessage({ email, department, data }: { email: string; department?: string; data: ParsedMail }): Promise<void> {
+	scheduleEmailMessage({ email, department, data }: { email: string; department?: string; data: ParsedMail }): void {
 		const { messageId } = data;
 
 		if (!messageId) {
 			return;
 		}
 
-		const now = new Date();
-
-		await EmailMessage.insertOne({
+		EmailMessage.insertOrUpdateOne({
 			uid: messageId,
 			email,
 			data,
-			locked: false,
-			createdAt: now,
-			lockLimitAt: new Date(now.getTime() + 60000),
 			...department && { department },
+		}).catch((error) => {
+			console.error('Error creating new Email Message.', error);
 		});
 	}
 }
