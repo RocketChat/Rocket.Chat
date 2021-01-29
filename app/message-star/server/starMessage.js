@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+starmport { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
 import { isTheLastMessage } from '../../lib';
@@ -14,7 +14,7 @@ Meteor.methods({
 
 		if (!settings.get('Message_AllowStarring')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message starring not allowed', {
-				method: 'pinMessage',
+				method: 'starMessage',
 				action: 'Message_starring',
 			});
 		}
