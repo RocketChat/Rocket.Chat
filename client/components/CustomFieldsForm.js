@@ -15,7 +15,7 @@ const CustomTextInput = ({ label, name, required, minLength, maxLength, setState
 	const verify = useMemo(() => {
 		const errors = [];
 		if (!state && required) {
-			errors.push(t('The_field_is_required', name));
+			errors.push(t('The_field_is_required', label || name));
 		}
 
 		if (state.length < minLength && state.length > 0) {
@@ -23,7 +23,7 @@ const CustomTextInput = ({ label, name, required, minLength, maxLength, setState
 		}
 
 		return errors.join(', ');
-	}, [state, required, minLength, t, name]);
+	}, [state, required, minLength, t, label, name]);
 
 	useEffect(() => {
 		setCustomFieldsError((oldErrors) => (verify ? [...oldErrors, { name }] : oldErrors.filter((item) => item.name !== name)));
@@ -47,7 +47,7 @@ const CustomSelect = ({ label, name, required, options = {}, setState, state, cl
 	const [selectError, setSelectError] = useState('');
 
 	const mappedOptions = useMemo(() => Object.values(options).map((value) => [value, value]), [options]);
-	const verify = useMemo(() => (!state.length && required ? t('The_field_is_required', name) : ''), [name, required, state.length, t]);
+	const verify = useMemo(() => (!state.length && required ? t('The_field_is_required', label || name) : ''), [name, required, state.length, t]);
 
 	useEffect(() => {
 		setCustomFieldsError((oldErrors) => (verify ? [...oldErrors, { name }] : oldErrors.filter((item) => item.name !== name)));
