@@ -1,5 +1,5 @@
 export interface IEmailMessageHistory {
 	_id: string;
-	uid: string;
-	createdAt: Date;
+	email: string;
+	createdAt?: Date;
 }

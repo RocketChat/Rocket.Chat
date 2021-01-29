@@ -51,11 +51,12 @@ export async function configureEmailInboxes(): Promise<void> {
 				return;
 			}
 
-			EmailMessageHistory.insertOne({ uid: email.messageId })
-				.then(() => {
-					onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
-				// eslint-disable-next-line @typescript-eslint/no-empty-function
-				}).catch(() => {});
+			try {
+				await EmailMessageHistory.insertOne({ _id: email.messageId, email: emailInboxRecord.email });
+				onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
+			} catch (e) {
+				// In case the email message history has been received by other instance..
+			}
 		}));
 
 		imap.start();
