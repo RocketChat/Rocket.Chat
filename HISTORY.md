@@ -1,6 +1,33 @@
 
 # 3.11.0 (Under Release Candidate Process)
 
+## 3.11.0-rc.3
+`2021-01-29  ·  2 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- RoomManager validation broken on IE ([#20490](https://github.com/RocketChat/Rocket.Chat/pull/20490))
+
+- Sidebar palette color broken on IE ([#20457](https://github.com/RocketChat/Rocket.Chat/pull/20457))
+
+  ![image](https://user-images.githubusercontent.com/27704687/106056093-0a29b600-60cd-11eb-8038-eabbc0d8fb03.png)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Update Apps-Engine version ([#20482](https://github.com/RocketChat/Rocket.Chat/pull/20482))
+
+  Update Apps-Engine version with some fixes for the current RC cycle.
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+
 ## 3.11.0-rc.2
 `2021-01-27  ·  2 🔍  ·  3 👩‍💻👨‍💻`
 

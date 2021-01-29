@@ -55002,6 +55002,47 @@
           ]
         }
       ]
+    },
+    "3.11.0-rc.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.0-alpha.4534",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20457",
+          "title": "[FIX] Sidebar palette color broken on IE",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/106056093-0a29b600-60cd-11eb-8038-eabbc0d8fb03.png)",
+          "milestone": "3.10.6",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "20490",
+          "title": "[FIX] RoomManager validation broken on IE",
+          "userLogin": "dougfabris",
+          "milestone": "3.10.6",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "20482",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "description": "Update Apps-Engine version with some fixes for the current RC cycle.",
+          "milestone": "3.11.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
     }
   }
 }
