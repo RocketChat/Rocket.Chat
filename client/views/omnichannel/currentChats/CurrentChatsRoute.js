@@ -67,9 +67,10 @@ const useQuery = ({ guest, servedBy, department, status, from, to, tags, customF
 		...itemsPerPage && { count: itemsPerPage },
 		...current && { offset: current },
 	};
-
 	if (from && to) {
-		query.createdAt = JSON.stringify({ start: from, end: to });
+		query.createdAt = JSON.stringify({
+			start: moment(from).set({ hour: '00', minutes: '00', seconds: '00' }).format(),
+			end: moment(to).set({ hour: '23', minutes: '59', seconds: '59' }).format() });
 	}
 	if (status !== 'all') {
 		query.open = status === 'opened';
