@@ -377,7 +377,7 @@ If you are not a developer and just want to run the server - see [deployment met
 
 ## Branching Model
 
-See [Branches and Releases](https://rocket.chat/docs/developer-guides/branches-and-releases/).
+See [Branches and Releases](https://docs.rocket.chat/guides/developer/branches-and-releases).
 
 It is based on [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branching-model/), reference section below is derived from Vincent Driessen at nvie.
 
@@ -389,7 +389,7 @@ If you want to help, send an email to support at rocket.chat to be invited to th
 
 ## How to Contribute
 
-Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors' community. For more information, check out our [Contributing Guide](.github/CONTRIBUTING.md) and our [Official Documentation for Contributors](https://rocket.chat/docs/contributing/).
+Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors' community. For more information, check out our [Contributing Guide](.github/CONTRIBUTING.md) and our [Official Documentation for Contributors](https://docs.rocket.chat/contributors/contributing).
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 
