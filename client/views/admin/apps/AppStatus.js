@@ -61,8 +61,12 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 			setPurchased(true);
 		}
 
-		if (!Array.isArray(app.permissions) || !app.permissions.length) {
-			return confirmAction();
+		if (!app.permissions || app.permissions.length === 0) {
+			return confirmAction(app.permissions);
+		}
+
+		if (!Array.isArray(app.permissions)) {
+			handleError(new Error('The "permissions" property from app.json is invalid'));
 		}
 
 		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} cancel={cancelAction} confirm={confirmAction} />);
