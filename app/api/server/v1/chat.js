@@ -481,7 +481,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 API.v1.addRoute('chat.syncThreadsList', { authRequired: true }, {
 	get() {
 		const { rid } = this.queryParams;
-		const { query, fields, sort } = this.parseJsonQuery();
+		const { fields, sort } = this.parseJsonQuery();
 		const { updatedSince } = this.queryParams;
 		let updatedSinceDate;
 		if (!settings.get('Threads_enabled')) {
@@ -503,12 +503,18 @@ API.v1.addRoute('chat.syncThreadsList', { authRequired: true }, {
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
-		const threadQuery = { ...query, rid, tcount: { $exists: true } };
+		const threadQuery = { rid, tcount: { $exists: true } };
+
+		const queryOptions = {
+			returnTotal: false,
+			projection: fields,
+			sort,
+		};
 
 		return API.v1.success({
 			threads: {
-				update: Promise.await(Message.customQuery({ query: { ...threadQuery, _updatedAt: { $gt: updatedSinceDate } }, queryOptions: { returnTotal: false, fields, sort } })).records,
-				remove: Promise.await(Message.getDeleted({ rid, userId: this.userId, timestamp: updatedSinceDate, query: threadQuery, queryOptions: { returnTotal: false, fields, sort } })).records,
+				update: Promise.await(Message.customQuery({ query: { ...threadQuery, _updatedAt: { $gt: updatedSinceDate } }, queryOptions })).records,
+				remove: Promise.await(Message.getDeleted({ rid, userId: this.userId, timestamp: updatedSinceDate, query: threadQuery, queryOptions })).records,
 			},
 		});
 	},
@@ -562,7 +568,7 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 	get() {
 		const { tmid } = this.queryParams;
-		const { query, fields, sort } = this.parseJsonQuery();
+		const { fields, sort } = this.parseJsonQuery();
 		const { updatedSince } = this.queryParams;
 		let updatedSinceDate;
 		if (!settings.get('Threads_enabled')) {
@@ -599,8 +605,8 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 
 		return API.v1.success({
 			messages: {
-				update: Promise.await(Message.customQuery({ query: { ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, queryOptions })).records,
-				remove: Promise.await(Message.getDeleted({ rid: thread.rid, timestamp: updatedSinceDate, query: { ...query, tmid }, queryOptions })).records,
+				update: Promise.await(Message.customQuery({ query: { tmid, _updatedAt: { $gt: updatedSinceDate } }, queryOptions })).records,
+				remove: Promise.await(Message.getDeleted({ rid: thread.rid, timestamp: updatedSinceDate, query: { tmid }, queryOptions })).records,
 			},
 		});
 	},
