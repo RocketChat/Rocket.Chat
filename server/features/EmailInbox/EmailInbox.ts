@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 
-import { EmailInbox } from '../../../app/models/server/raw';
+import { EmailInbox, EmailMessageHistory } from '../../../app/models/server/raw';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
-import { EmailQueueManager } from './EmailQueueManager';
+import { onEmailReceived } from './EmailInbox_Incoming';
 
 export type Inbox = {
 	imap: IMAPInterceptor;
@@ -46,11 +46,18 @@ export async function configureEmailInboxes(): Promise<void> {
 			markSeen: true,
 		});
 
-		imap.on('email', Meteor.bindEnvironment((email) => EmailQueueManager.scheduleEmailMessage({
-			email: emailInboxRecord.email,
-			data: email,
-			...emailInboxRecord.department && { department: emailInboxRecord.department },
-		})));
+		imap.on('email', Meteor.bindEnvironment(async (email) => {
+			if (!email.messageId) {
+				return;
+			}
+
+			const history = await EmailMessageHistory.insertOne({ uid: email.messageId });
+			if (!history) {
+				return;
+			}
+
+			onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
+		}));
 
 		imap.start();
 
@@ -66,8 +73,6 @@ export async function configureEmailInboxes(): Promise<void> {
 
 		inboxes.set(emailInboxRecord.email, { imap, smtp, config: emailInboxRecord });
 	}
-
-	inboxes.size ? await EmailQueueManager.initWorker() : await EmailQueueManager.stopWorker();
 }
 
 Meteor.startup(() => {

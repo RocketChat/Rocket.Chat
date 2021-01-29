@@ -65,8 +65,8 @@ import OmnichannelQueueModel from '../models/OmnichannelQueue';
 import { OmnichannelQueueRaw } from './OmnichannelQueue';
 import EmailInboxModel from '../models/EmailInbox';
 import { EmailInboxRaw } from './EmailInbox';
-import EmailMessageModel from '../models/EmailMessage';
-import { EmailMessageRaw } from './EmailMessage';
+import EmailMessageHistoryModel from '../models/EmailMessageHistory';
+import { EmailMessageHistoryRaw } from './EmailMessageHistory';
 import { api } from '../../../../server/sdk/api';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 
@@ -105,7 +105,7 @@ export const IntegrationHistory = new IntegrationHistoryRaw(IntegrationHistoryMo
 export const Sessions = new SessionsRaw(SessionsModel.model.rawCollection(), trashCollection);
 export const OmnichannelQueue = new OmnichannelQueueRaw(OmnichannelQueueModel.model.rawCollection(), trashCollection);
 export const EmailInbox = new EmailInboxRaw(EmailInboxModel.model.rawCollection(), trashCollection);
-export const EmailMessage = new EmailMessageRaw(EmailMessageModel.model.rawCollection(), trashCollection);
+export const EmailMessageHistory = new EmailMessageHistoryRaw(EmailMessageHistoryModel.model.rawCollection(), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
