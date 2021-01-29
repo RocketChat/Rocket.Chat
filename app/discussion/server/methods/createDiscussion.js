@@ -37,7 +37,7 @@ const mentionMessage = (rid, { _id, username, name }, message_embedded) => {
 	return Messages.insert(welcomeMessage);
 };
 
-const create = ({ prid, pmid, t_name, reply, users, user, encrypted, hideHistoryForNewMembers }) => {
+const create = ({ prid, pmid, t_name, reply, users, user, encrypted }) => {
 	// if you set both, prid and pmid, and the rooms doesnt match... should throw an error)
 	let message = false;
 	if (pmid) {
@@ -106,7 +106,6 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted, hideHistory
 	const type = roomTypes.getConfig(p_room.t).getDiscussionType();
 	const description = p_room.encrypted ? '' : message.msg;
 	const topic = p_room.name;
-	const hideHistory = Boolean(hideHistoryForNewMembers ?? p_room.hideHistoryForNewMembers);
 
 	const discussion = createRoom(type, name, user.username, [...new Set(invitedUsers)], false, {
 		fname: t_name,
@@ -114,7 +113,6 @@ const create = ({ prid, pmid, t_name, reply, users, user, encrypted, hideHistory
 		topic, // TODO discussions remove
 		prid,
 		encrypted,
-		hideHistoryForNewMembers: hideHistory,
 	}, {
 		// overrides name validation to allow anything, because discussion's name is randomly generated
 		nameValidationRegex: /.*/,
@@ -151,7 +149,7 @@ Meteor.methods({
 	* @param {string[]} users - users to be added
 	* @param {boolean} encrypted - if the discussion's e2e encryption should be enabled.
 	*/
-	createDiscussion({ prid, pmid, t_name, reply, users, encrypted, hideHistoryForNewMembers }) {
+	createDiscussion({ prid, pmid, t_name, reply, users, encrypted }) {
 		if (!settings.get('Discussion_enabled')) {
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
@@ -165,6 +163,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
 
-		return create({ uid, prid, pmid, t_name, reply, users, user: Meteor.user(), encrypted, hideHistoryForNewMembers });
+		return create({ uid, prid, pmid, t_name, reply, users, user: Meteor.user(), encrypted });
 	},
 });
