@@ -1567,10 +1567,6 @@ settings.addGroup('Setup_Wizard', function() {
 					i18nLabel: 'Blockchain',
 				},
 				{
-					key: 'helpCenter',
-					i18nLabel: 'Help_Center',
-				},
-				{
 					key: 'contactCenter',
 					i18nLabel: 'Contact_Center',
 				},
