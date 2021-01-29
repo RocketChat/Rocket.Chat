@@ -28,12 +28,12 @@ Meteor.methods({
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			queryOptions.fields = {
+			queryOptions.projection = {
 				editedAt: 0,
 			};
 		}
 
-		const { records } = Promise.await(Message.get(fromId, { rid, queryOptions }));
+		const { records } = Promise.await(Message.get(fromId, { rid, queryOptions, oldest: start }));
 
 		return records;
 	},

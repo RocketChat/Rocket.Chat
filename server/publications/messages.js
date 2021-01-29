@@ -21,6 +21,8 @@ Meteor.methods({
 			});
 		}
 
+		const query = { rid };
+
 		const queryOptions = {
 			returnTotal: false,
 			sort: {
@@ -30,8 +32,8 @@ Meteor.methods({
 
 		if (lastUpdate instanceof Date) {
 			return {
-				updated: Promise.await(Message.getUpdates({ rid, userId: fromId, timestamp: lastUpdate, queryOptions })).records,
-				deleted: Promise.await(Message.getDeleted({ rid, userId: fromId, timestamp: lastUpdate, queryOptions: { ...queryOptions, fields: { _id: 1, _deletedAt: 1 } } })).records,
+				updated: Promise.await(Message.getUpdates({ rid, userId: fromId, timestamp: lastUpdate, query, queryOptions })).records,
+				deleted: Promise.await(Message.getDeleted({ rid, userId: fromId, timestamp: lastUpdate, query, queryOptions: { ...queryOptions, projection: { _id: 1, _deletedAt: 1 } } })).records,
 			};
 		}
 
