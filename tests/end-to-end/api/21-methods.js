@@ -12,6 +12,7 @@ describe('Meteor.methods', function() {
 		const date = {
 			$date: new Date().getTime(),
 		};
+		let postMessageDate = false;
 
 		before('@loadMissedMessages', (done) => {
 			request.post(api('groups.create'))
@@ -38,6 +39,24 @@ describe('Meteor.methods', function() {
 				.send({
 					message: {
 						text: 'Sample message',
+						rid,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					postMessageDate = { $date: new Date().getTime() };
+				})
+				.end(done);
+		});
+
+		before('@loadMissedMessages', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Second Sample message',
 						rid,
 					},
 				})
@@ -124,7 +143,7 @@ describe('Meteor.methods', function() {
 				.end(done);
 		});
 
-		it('should return a single message if using a time from before the message', (done) => {
+		it('should return two messages if using a time from before the first msg was sent', (done) => {
 			request.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
@@ -141,9 +160,33 @@ describe('Meteor.methods', function() {
 
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('result').that.is.a('array');
+					expect(data.result.length).to.be.equal(2);
+				})
+				.end(done);
+		});
+
+		it('should return a single message if using a time from in between the messages', (done) => {
+			request.post(methodCall('loadMissedMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadMissedMessages',
+						params: [rid, postMessageDate],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.a('array');
 					expect(data.result.length).to.be.equal(1);
 				})
 				.end(done);
 		});
+
+
 	});
 });
