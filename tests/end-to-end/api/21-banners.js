@@ -11,7 +11,7 @@ describe.only('banners', function() {
 		it('should fail if not logged in', (done) => {
 			request.get(api('banners.getNew'))
 				.query({
-					platform: 'os',
+					platform: 'web',
 				})
 				.expect(401)
 				.expect((res) => {
@@ -36,7 +36,7 @@ describe.only('banners', function() {
 			request.get(api('banners.getNew'))
 				.set(credentials)
 				.query({
-					platform: 'os',
+					platform: 'unknownPlatform',
 				})
 				.expect(400)
 				.expect((res) => {
@@ -58,6 +58,20 @@ describe.only('banners', function() {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'The required "platform" param is missing. [error-missing-param]');
 					expect(res.body).to.have.property('errorType', 'error-missing-param');
+				})
+				.end(done);
+		});
+
+		it('should return banners if platform param is valid', (done) => {
+			request.get(api('banners.getNew'))
+				.set(credentials)
+				.query({
+					platform: 'web',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('banners').and.to.be.an('array');
 				})
 				.end(done);
 		});
