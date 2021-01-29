@@ -186,7 +186,5 @@ describe('Meteor.methods', function() {
 				})
 				.end(done);
 		});
-
-
 	});
 });
