@@ -1,4 +1,4 @@
-starmport { Meteor } from 'meteor/meteor';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
 import { isTheLastMessage } from '../../lib';
