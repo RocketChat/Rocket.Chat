@@ -34,9 +34,9 @@ export const normalizeThreadMessage = ({ ...message }) => {
 };
 
 
-const waitUntilWrapperExists = async () => document.querySelector('.messages-box .wrapper') || new Promise((resolve) => {
+export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper') => document.querySelector(selector) || new Promise((resolve) => {
 	const observer = new MutationObserver(function(mutations, obs) {
-		const element = document.querySelector('.messages-box .wrapper');
+		const element = document.querySelector(selector);
 		if (element) {
 			obs.disconnect(); // stop observing
 			return resolve(element);
