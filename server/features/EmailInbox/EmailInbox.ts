@@ -51,12 +51,11 @@ export async function configureEmailInboxes(): Promise<void> {
 				return;
 			}
 
-			const history = await EmailMessageHistory.insertOne({ uid: email.messageId });
-			if (!history) {
-				return;
-			}
-
-			onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
+			EmailMessageHistory.insertOne({ uid: email.messageId })
+				.then(() => {
+					onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
+				// eslint-disable-next-line @typescript-eslint/no-empty-function
+				}).catch(() => {});
 		}));
 
 		imap.start();
