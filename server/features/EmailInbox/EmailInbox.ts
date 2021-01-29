@@ -5,7 +5,7 @@ import Mail from 'nodemailer/lib/mailer';
 import { EmailInbox } from '../../../app/models/server/raw';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
-import { onEmailReceived } from './EmailInbox_Incoming';
+import { EmailQueueManager } from './EmailQueueManager';
 
 export type Inbox = {
 	imap: IMAPInterceptor;
@@ -46,7 +46,12 @@ export async function configureEmailInboxes(): Promise<void> {
 			markSeen: true,
 		});
 
-		imap.on('email', Meteor.bindEnvironment((email) => onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department)));
+		// imap.on('email', Meteor.bindEnvironment((email) => onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department)));
+		imap.on('email', Meteor.bindEnvironment((email) => EmailQueueManager.scheduleEmailMessage({
+			email: emailInboxRecord.email,
+			data: email,
+			...emailInboxRecord.department && { department: emailInboxRecord.department },
+		})));
 
 		imap.start();
 
@@ -62,6 +67,8 @@ export async function configureEmailInboxes(): Promise<void> {
 
 		inboxes.set(emailInboxRecord.email, { imap, smtp, config: emailInboxRecord });
 	}
+
+	inboxes.size ? await EmailQueueManager.initWorker() : await EmailQueueManager.stopWorker();
 }
 
 Meteor.startup(() => {
