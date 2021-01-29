@@ -373,7 +373,7 @@ meteor debug
 ```
 You'll find a nodejs icon in the developer console.
 
-If you are not a developer and just want to run the server - see [deployment methods](https://rocket.chat/docs/installation/paas-deployments/).
+If you are not a developer and just want to run the server - see [deployment methods](https://docs.rocket.chat/installation/paas-deployments).
 
 ## Branching Model
 
