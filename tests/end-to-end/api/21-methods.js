@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { getCredentials, request, methodCall, api, credentials, apiPrivateChannelName } from '../../data/api-data.js';
+import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
 
 describe('Meteor.methods', function() {
 	this.retries(0);
@@ -14,18 +14,20 @@ describe('Meteor.methods', function() {
 		};
 		let postMessageDate = false;
 
+		const channelName = `methods-test-channel-${ Date.now() }`;
+
 		before('@loadMissedMessages', (done) => {
 			request.post(api('groups.create'))
 				.set(credentials)
 				.send({
-					name: apiPrivateChannelName,
+					name: channelName,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group._id');
-					expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
+					expect(res.body).to.have.nested.property('group.name', channelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.msgs', 0);
 					rid = res.body.group._id;
