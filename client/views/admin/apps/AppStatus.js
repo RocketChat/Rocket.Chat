@@ -3,7 +3,7 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, memo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange } from './helpers';
+import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange, handleInstallError } from './helpers';
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import IframeModal from './IframeModal';
 import CloudLoginModal from './CloudLoginModal';
@@ -61,8 +61,12 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 			setPurchased(true);
 		}
 
-		if (!Array.isArray(app.permissions) || !app.permissions.length) {
-			return confirmAction();
+		if (!app.permissions || app.permissions.length === 0) {
+			return confirmAction(app.permissions);
+		}
+
+		if (!Array.isArray(app.permissions)) {
+			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
 		}
 
 		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} cancel={cancelAction} confirm={confirmAction} />);
