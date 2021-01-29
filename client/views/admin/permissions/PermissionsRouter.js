@@ -8,10 +8,10 @@ import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 
 const PermissionsRouter = () => {
 	const canViewPermission = usePermission('access-permissions');
-	const canAccessSettingPermission = usePermission('access-setting-permissions')
+	const canViewSettingPermission = usePermission('access-setting-permissions');
 	const context = useRouteParameter('context');
 
-	if (!canViewPermission && !canAccessSettingPermission) {
+	if (!canViewPermission && !canViewSettingPermission) {
 		return <NotAuthorizedPage />;
 	}
 
