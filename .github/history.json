@@ -53966,16 +53966,6 @@
       ],
       "pull_requests": [
         {
-          "pr": "20253",
-          "title": "[NEW][ENTERPRISE] Hide message history for new channel members",
-          "userLogin": "sampaiodiego",
-          "contributors": [
-            "g-thome",
-            "sampaiodiego",
-            "pierre-lehnen-rc"
-          ]
-        },
-        {
           "pr": "20311",
           "title": "[FIX][ENTERPRISE] Auditing RoomAutocomplete",
           "userLogin": "ggazzo",
@@ -55040,6 +55030,80 @@
           "milestone": "3.11.0",
           "contributors": [
             "d-gubert"
+          ]
+        }
+      ]
+    },
+    "3.11.0-rc.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.0-alpha.4545",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20506",
+          "title": "[FIX][Apps] Don't show the \"review permissions\" modal when there's none to review",
+          "userLogin": "thassiov",
+          "milestone": "3.11.0",
+          "contributors": [
+            "thassiov",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20491",
+          "title": "Update Apps-Engine and permissions translations",
+          "userLogin": "d-gubert",
+          "description": "Update Apps-Engine version and apply changes in translations for the changed permissions. Please review the texts on the translation files to make sure they're clear.",
+          "milestone": "3.11.0",
+          "contributors": [
+            "d-gubert",
+            "lolimay",
+            "thassiov",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20492",
+          "title": "Regression: Add tests to new banners REST endpoints",
+          "userLogin": "lucassartor",
+          "description": "Add tests for the new `banners.*` endpoints: `banners.getNew` and `banners.dismiss`.",
+          "contributors": [
+            "lucassartor",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20509",
+          "title": "[IMPROVE] Autofocus on directory",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20510",
+          "title": "Update \"Industry\" setting",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "20495",
+          "title": "Regression: Fix duplicate email messages in multiple instances",
+          "userLogin": "renatobecker",
+          "milestone": "3.11.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "renatobecker"
           ]
         }
       ]

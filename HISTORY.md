@@ -1,6 +1,48 @@
 
 # 3.11.0 (Under Release Candidate Process)
 
+## 3.11.0-rc.4
+`2021-01-29  ·  1 🚀  ·  1 🐛  ·  4 🔍  ·  8 👩‍💻👨‍💻`
+
+### 🚀 Improvements
+
+
+- Autofocus on directory ([#20509](https://github.com/RocketChat/Rocket.Chat/pull/20509))
+
+### 🐛 Bug fixes
+
+
+- **Apps:** Don't show the "review permissions" modal when there's none to review ([#20506](https://github.com/RocketChat/Rocket.Chat/pull/20506))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Add tests to new banners REST endpoints ([#20492](https://github.com/RocketChat/Rocket.Chat/pull/20492))
+
+  Add tests for the new `banners.*` endpoints: `banners.getNew` and `banners.dismiss`.
+
+- Regression: Fix duplicate email messages in multiple instances ([#20495](https://github.com/RocketChat/Rocket.Chat/pull/20495))
+
+- Update "Industry" setting ([#20510](https://github.com/RocketChat/Rocket.Chat/pull/20510))
+
+- Update Apps-Engine and permissions translations ([#20491](https://github.com/RocketChat/Rocket.Chat/pull/20491))
+
+  Update Apps-Engine version and apply changes in translations for the changed permissions. Please review the texts on the translation files to make sure they're clear.
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@d-gubert](https://github.com/d-gubert)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@lolimay](https://github.com/lolimay)
+- [@lucassartor](https://github.com/lucassartor)
+- [@renatobecker](https://github.com/renatobecker)
+- [@thassiov](https://github.com/thassiov)
+
 ## 3.11.0-rc.3
 `2021-01-29  ·  2 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
@@ -69,7 +111,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 ## 3.11.0-rc.0
-`2021-01-23  ·  9 🎉  ·  8 🚀  ·  49 🐛  ·  26 🔍  ·  31 👩‍💻👨‍💻`
+`2021-01-23  ·  8 🎉  ·  8 🚀  ·  49 🐛  ·  26 🔍  ·  30 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
@@ -79,8 +121,6 @@
 - **Apps:** IPreFileUpload event ([#20285](https://github.com/RocketChat/Rocket.Chat/pull/20285))
 
 - **ENTERPRISE:** Automatic transfer of unanswered conversations to another agent ([#20090](https://github.com/RocketChat/Rocket.Chat/pull/20090))
-
-- **ENTERPRISE:** Hide message history for new channel members ([#20253](https://github.com/RocketChat/Rocket.Chat/pull/20253))
 
 - **ENTERPRISE:** Omnichannel Contact Manager as preferred agent for routing ([#20244](https://github.com/RocketChat/Rocket.Chat/pull/20244))
 
@@ -476,7 +516,6 @@
 
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
-- [@g-thome](https://github.com/g-thome)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@ggazzo](https://github.com/ggazzo)
 - [@lolimay](https://github.com/lolimay)
