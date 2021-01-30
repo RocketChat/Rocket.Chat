@@ -55107,6 +55107,48 @@
           ]
         }
       ]
+    },
+    "3.11.0-rc.5": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.0-alpha.4545",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20517",
+          "title": "Regression: Fix banners sync data types",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20433",
+          "title": "Regression: Fixed update room avatar issue.",
+          "userLogin": "Darshilp326",
+          "description": "Users can now update their room avatar without any error.\r\n\r\nhttps://user-images.githubusercontent.com/55157259/105951602-560d3880-6096-11eb-97a5-b5eb9a28b58d.mp4",
+          "milestone": "3.11.0",
+          "contributors": [
+            "Darshilp326",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20434",
+          "title": "Regression: ESLint Warning - explicit-function-return-type",
+          "userLogin": "aditya-mitra",
+          "description": "Added explicit Return Type (Promise<void>) on the function to fix eslint warning (`explicit-function-return-type`)",
+          "contributors": [
+            "aditya-mitra",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }

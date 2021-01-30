@@ -1,6 +1,37 @@
 
 # 3.11.0 (Under Release Candidate Process)
 
+## 3.11.0-rc.5
+`2021-01-30  ·  3 🔍  ·  4 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: ESLint Warning - explicit-function-return-type ([#20434](https://github.com/RocketChat/Rocket.Chat/pull/20434) by [@aditya-mitra](https://github.com/aditya-mitra))
+
+  Added explicit Return Type (Promise<void>) on the function to fix eslint warning (`explicit-function-return-type`)
+
+- Regression: Fix banners sync data types ([#20517](https://github.com/RocketChat/Rocket.Chat/pull/20517))
+
+- Regression: Fixed update room avatar issue. ([#20433](https://github.com/RocketChat/Rocket.Chat/pull/20433) by [@Darshilp326](https://github.com/Darshilp326))
+
+  Users can now update their room avatar without any error.
+
+  https://user-images.githubusercontent.com/55157259/105951602-560d3880-6096-11eb-97a5-b5eb9a28b58d.mp4
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Darshilp326](https://github.com/Darshilp326)
+- [@aditya-mitra](https://github.com/aditya-mitra)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.11.0-rc.4
 `2021-01-29  ·  1 🚀  ·  1 🐛  ·  4 🔍  ·  8 👩‍💻👨‍💻`
 
