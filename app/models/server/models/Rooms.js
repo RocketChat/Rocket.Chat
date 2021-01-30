@@ -1059,18 +1059,6 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	saveHideHistoryForNewMembers(_id, value) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				hideHistoryForNewMembers: value === true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	updateGroupDMsRemovingUsernamesByUsername(username) {
 		const query = {
 			t: 'd',
