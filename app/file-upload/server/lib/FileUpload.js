@@ -27,6 +27,7 @@ import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestr
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
 import { AppEvents, Apps } from '../../../apps/server';
+import { streamToBuffer } from './streamToBuffer';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -57,7 +58,7 @@ export const FileUpload = {
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
-	validateFileUpload({ file, stream }) {
+	validateFileUpload({ file, content }) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -97,7 +98,7 @@ export const FileUpload = {
 
 		// App IPreFileUpload event hook
 		try {
-			Promise.await(Apps.triggerEvent(AppEvents.IPreFileUpload, { file, stream }));
+			Promise.await(Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content }));
 		} catch (error) {
 			if (error instanceof AppsEngineException) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -596,12 +597,14 @@ export class FileUploadClass {
 	}
 
 	insert(fileData, streamOrBuffer, cb) {
-		fileData.size = parseInt(fileData.size) || 0;
+		if (streamOrBuffer instanceof stream) {
+			streamOrBuffer = Promise.await(streamToBuffer(streamOrBuffer));
+		}
 
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter && filter.check) {
-			filter.check({ file: fileData, stream: streamOrBuffer });
+			filter.check({ file: fileData, content: streamOrBuffer });
 		}
 
 		return this._doInsert(fileData, streamOrBuffer, cb);
