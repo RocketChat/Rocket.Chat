@@ -63,15 +63,26 @@ export function syncWorkspace(reconnectCheck = false) {
 
 		Promise.await(NPS.create({
 			npsId,
-			startAt,
-			expireAt,
+			startAt: new Date(startAt),
+			expireAt: new Date(expireAt),
 		}));
 	}
 
 	// add banners
 	if (data.banners) {
 		for (const banner of data.banners) {
-			Promise.await(Banner.create(banner));
+			const {
+				createdAt,
+				expireAt,
+				startAt,
+			} = banner;
+
+			Promise.await(Banner.create({
+				...banner,
+				createdAt: new Date(createdAt),
+				expireAt: new Date(expireAt),
+				startAt: new Date(startAt),
+			}));
 		}
 	}
 

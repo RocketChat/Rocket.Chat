@@ -190,7 +190,7 @@ export const FileUpload = {
 		};
 	},
 
-	avatarsOnValidate({ file }) {
+	avatarsOnValidate(file) {
 		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
