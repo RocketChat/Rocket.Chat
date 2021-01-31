@@ -1,5 +1,5 @@
 import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../components/MarkdownText';
@@ -28,6 +28,7 @@ function RoomTags({ room }) {
 
 function ChannelsTable() {
 	const t = useTranslation();
+	const refAutoFocus = useAutoFocus(true);
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
@@ -96,7 +97,7 @@ function ChannelsTable() {
 
 	return <GenericTable
 		header={header}
-		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Channels')} onChange={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Channels')} inputRef={refAutoFocus} onChange={onChange} {...props} />}
 		renderRow={renderRow}
 		results={data.result}
 		setParams={setParams}

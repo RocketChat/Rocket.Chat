@@ -1,5 +1,6 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Flex, Margins, Select, Skeleton } from '@rocket.chat/fuselage';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
@@ -9,6 +10,7 @@ import { Section } from '../Section';
 
 function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick }) {
 	const t = useTranslation();
+	const isLgScreen = useBreakpoints().includes('lg');
 
 	const currentDate = useMemo(() =>
 		moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
@@ -58,7 +60,8 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 							padding={0.25}
 							margin={{
 								// TODO: Get it from theme
-								bottom: 20,
+								bottom: 30,
+								right: 5,
 							}}
 							colors={[
 								// TODO: Get it from theme
@@ -72,7 +75,7 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 								tickSize: 0,
 								// TODO: Get it from theme
 								tickPadding: 4,
-								tickRotation: 0,
+								tickRotation: isLgScreen ? 0 : 25,
 								tickValues: 'every 2 hours',
 								format: (hour) => moment().set({ hour, minute: 0, second: 0 }).format('LT'),
 							}}

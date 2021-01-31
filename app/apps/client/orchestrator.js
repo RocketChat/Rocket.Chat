@@ -65,11 +65,12 @@ class AppClientOrchestrator {
 
 	getAppsFromMarketplace = async () => {
 		const appsOverviews = await APIClient.get('apps', { marketplace: 'true' });
-		return appsOverviews.map(({ latest, price, pricingPlans, purchaseType }) => ({
+		return appsOverviews.map(({ latest, price, pricingPlans, purchaseType, permissions }) => ({
 			...latest,
 			price,
 			pricingPlans,
 			purchaseType,
+			permissions,
 		}));
 	}
 
@@ -125,20 +126,22 @@ class AppClientOrchestrator {
 		return languages;
 	}
 
-	installApp = async (appId, version) => {
+	installApp = async (appId, version, permissionsGranted) => {
 		const { app } = await APIClient.post('apps/', {
 			appId,
 			marketplace: true,
 			version,
+			permissionsGranted,
 		});
 		return app;
 	}
 
-	updateApp = async (appId, version) => {
+	updateApp = async (appId, version, permissionsGranted) => {
 		const { app } = await APIClient.post(`apps/${ appId }`, {
 			appId,
 			marketplace: true,
 			version,
+			permissionsGranted,
 		});
 		return app;
 	}

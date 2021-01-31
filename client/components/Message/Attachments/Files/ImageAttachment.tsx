@@ -14,7 +14,7 @@ export type ImageAttachmentProps = {
 	image_url: string;
 	image_type: string;
 	image_size?: number;
-	file: FileProp;
+	file?: FileProp;
 } & AttachmentPropsBase;
 
 export const ImageAttachment: FC<ImageAttachmentProps> = ({

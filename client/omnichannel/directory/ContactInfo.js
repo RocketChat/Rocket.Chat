@@ -14,11 +14,28 @@ import { useFormatDate } from '../../hooks/useFormatDate';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { ContactManagerInfo } from '../../../ee/client/omnichannel/ContactManager';
 
+
 const wordBreak = css`
 	word-break: break-word;
 `;
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
+const CustomField = ({ id, value }) => {
+	const t = useTranslation();
+	const { value: data, phase: state, error } = useEndpointData(`livechat/custom-fields/${ id }`);
+	if (state === AsyncStatePhase.LOADING) {
+		return <FormSkeleton />;
+	}
+	if (error || !data || !data.customField) {
+		return <Box mbs='x16'>{t('Custom_Field_Not_Found')}</Box>;
+	}
+	const { label } = data.customField;
+	return label && <Box>
+		<Label>{label}</Label>
+		<Info>{value}</Info>
+	</Box>;
+};
+
 
 export function ContactInfo({ id }) {
 	const t = useTranslation();
@@ -86,14 +103,9 @@ export function ContactInfo({ id }) {
 					<Label>{t('Last_Chat')}</Label>
 					<Info>{formatDate(lastChat.ts)}</Info>
 				</>}
-				{canViewCustomFields() && livechatData && Object.keys(livechatData).map((key) => <Box key={key}>
-					{ checkIsVisibleAndScopeVisitor(key) && livechatData[key]
-					&& <>
-						<Label>{key}</Label>
-						<Info>{livechatData[key]}</Info>
-					</>
-					}
-				</Box>)
+				{ canViewCustomFields()
+					&& livechatData
+					&& Object.keys(livechatData).map((key) => checkIsVisibleAndScopeVisitor(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />)
 				}
 				{ contactManager && <>
 					<Label>{t('Contact_Manager')}</Label>
