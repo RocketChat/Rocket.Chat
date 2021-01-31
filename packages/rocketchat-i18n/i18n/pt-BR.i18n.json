@@ -1091,6 +1091,8 @@
   "Custom_Emoji_Info": "Informações do emoji customizado",
   "Custom_Emoji_Updated_Successfully": "Emoji customizado atualizado com sucesso",
   "Custom_Fields": "Campos Personalizados",
+  "Custom_Field_Removed": "Campo Personalizado removido",
+  "Custom_Field_Not_Found": "Campo Personalizado não encontrado",
   "Custom_oauth_helper": "Ao configurar o seu Provedor de OAuth, você terá que informar uma URL de retorno de chamada. Use <pre>%s</pre>.",
   "Custom_oauth_unique_name": "Nome exclusivo para oauth customizado",
   "Custom_Script_Logged_In": "Script Personalizado para usuários logados",
