@@ -7,7 +7,7 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { capitalize } from '../lib/capitalize';
 import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
 
-const CustomTextInput = ({ name, required, minLength, maxLength, setState, state, className, setCustomFieldsError = () => [] }) => {
+const CustomTextInput = ({ label, name, required, minLength, maxLength, setState, state, className, setCustomFieldsError = () => [] }) => {
 	const t = useTranslation();
 
 	const [inputError, setInputError] = useState('');
@@ -15,7 +15,7 @@ const CustomTextInput = ({ name, required, minLength, maxLength, setState, state
 	const verify = useMemo(() => {
 		const errors = [];
 		if (!state && required) {
-			errors.push(t('The_field_is_required', name));
+			errors.push(t('The_field_is_required', label || name));
 		}
 
 		if (state.length < minLength && state.length > 0) {
@@ -23,7 +23,7 @@ const CustomTextInput = ({ name, required, minLength, maxLength, setState, state
 		}
 
 		return errors.join(', ');
-	}, [state, required, minLength, t, name]);
+	}, [state, required, minLength, t, label, name]);
 
 	useEffect(() => {
 		setCustomFieldsError((oldErrors) => (verify ? [...oldErrors, { name }] : oldErrors.filter((item) => item.name !== name)));
@@ -34,20 +34,20 @@ const CustomTextInput = ({ name, required, minLength, maxLength, setState, state
 	}, [verify]);
 
 	return useMemo(() => <Field className={className}>
-		<Field.Label>{t(name)}{required && '*'}</Field.Label>
+		<Field.Label>{label || t(name)}{required && '*'}</Field.Label>
 		<Field.Row>
 			<TextInput name={name} error={inputError} maxLength={maxLength} flexGrow={1} value={state} onChange={(e) => setState(e.currentTarget.value)}/>
 		</Field.Row>
 		<Field.Error>{inputError}</Field.Error>
-	</Field>, [className, t, name, required, inputError, maxLength, state, setState]);
+	</Field>, [className, label, t, name, required, inputError, maxLength, state, setState]);
 };
 
-const CustomSelect = ({ name, required, options = {}, setState, state, className, setCustomFieldsError = () => [] }) => {
+const CustomSelect = ({ label, name, required, options = {}, setState, state, className, setCustomFieldsError = () => [] }) => {
 	const t = useTranslation();
 	const [selectError, setSelectError] = useState('');
 
 	const mappedOptions = useMemo(() => Object.values(options).map((value) => [value, value]), [options]);
-	const verify = useMemo(() => (!state.length && required ? t('The_field_is_required', name) : ''), [name, required, state.length, t]);
+	const verify = useMemo(() => (!state.length && required ? t('The_field_is_required', label || name) : ''), [name, required, state.length, t]);
 
 	useEffect(() => {
 		setCustomFieldsError((oldErrors) => (verify ? [...oldErrors, { name }] : oldErrors.filter((item) => item.name !== name)));
@@ -58,12 +58,12 @@ const CustomSelect = ({ name, required, options = {}, setState, state, className
 	}, [verify]);
 
 	return useMemo(() => <Field className={className}>
-		<Field.Label>{t(name)}{required && '*'}</Field.Label>
+		<Field.Label>{label || t(name)}{required && '*'}</Field.Label>
 		<Field.Row>
 			<Select name={name} error={selectError} flexGrow={1} value={state} options={mappedOptions} onChange={(val) => setState(val)}/>
 		</Field.Row>
 		<Field.Error>{selectError}</Field.Error>
-	</Field>, [className, t, name, required, selectError, state, mappedOptions, setState]);
+	</Field>, [className, label, t, name, required, selectError, state, mappedOptions, setState]);
 };
 
 const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...props }) => Object.entries(customFields).map(([key, value]) => {
