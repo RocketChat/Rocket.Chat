@@ -193,7 +193,7 @@ Add Rocket.Chat to this world famous time tested small enterprise server today.
 [![Koozali SME](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/koozali.png)](https://wiki.contribs.org/Rocket_Chat)
 
 ## Ubuntu VPS
-Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/).
+Follow these [deployment instructions](https://docs.rocket.chat/installation/manual-installation/ubuntu).
 
 ## D2C.io
 Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with a single click, check live logs and metrics:
