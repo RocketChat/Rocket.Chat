@@ -1688,6 +1688,7 @@
   "External_Queue_Service_URL": "External Queue Service URL",
   "External_Service": "External Service",
   "External_Users": "External Users",
+  "Extremely_likely": "Extremely likely",
   "Facebook_Page": "Facebook Page",
   "Failed": "Failed",
   "Failed_to_activate_invite_token": "Failed to activate invite token",
@@ -2848,6 +2849,7 @@
   "Not_found_or_not_allowed": "Not Found or Not Allowed",
   "Not_Imported_Messages_Title": "The following messages were not imported successfully",
   "Not_in_channel": "Not in channel",
+  "Not_likely": "Not likely",
   "Not_started": "Not started",
   "Not_verified": "Not verified",
   "Nothing": "Nothing",
@@ -4271,7 +4273,5 @@
   "Your_server_link": "Your server link",
   "Your_temporary_password_is_password": "Your temporary password is <strong>[password]</strong>.",
   "Your_TOTP_has_been_reset": "Your Two Factor TOTP has been reset.",
-  "Your_workspace_is_ready": "Your workspace is ready to use 🎉",
-  "Extremely_likely": "Extremely likely",
-  "Not_likely": "Not likely"
+  "Your_workspace_is_ready": "Your workspace is ready to use 🎉"
 }
