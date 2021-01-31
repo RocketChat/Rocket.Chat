@@ -30,6 +30,7 @@ const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
 			await action(...args);
 			banners.closeById(state.viewId);
 		},
+		state: (): void => undefined,
 		appId: state.appId,
 	}), [action, state.appId, state.viewId]);
 
