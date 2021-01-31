@@ -280,16 +280,18 @@ export const FileUpload = {
 				return fut.return();
 			}
 
+			const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
+
 			const identify = {
 				format: metadata.format,
 				size: {
-					width: metadata.width,
-					height: metadata.height,
+					width: rotated ? metadata.height : metadata.width,
+					height: rotated ? metadata.width : metadata.height,
 				},
 			};
 
 			const reorientation = (cb) => {
-				if (!metadata.orientation || metadata.orientation === 1 || settings.get('FileUpload_RotateImages') !== true) {
+				if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
 					return cb();
 				}
 				s.rotate()
