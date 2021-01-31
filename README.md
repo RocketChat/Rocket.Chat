@@ -107,7 +107,7 @@ Installing snaps is very quick. By running that command you have your full Rocke
 
 Our snap features a built-in reverse proxy that can request and maintain free Let's Encrypt SSL certificates. You can go from zero to a public-facing SSL-secured Rocket.Chat server in less than 5 minutes.
 
-Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/).
+Find out more information about our snaps [here](https://docs.rocket.chat/installation/snaps).
 
 ## DigitalOcean droplet
 
