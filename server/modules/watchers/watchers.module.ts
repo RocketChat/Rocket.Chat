@@ -30,6 +30,8 @@ import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartme
 import { IIntegration } from '../../../definition/IIntegration';
 import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 import { EventSignatures } from '../../sdk/lib/Events';
+import { IEmailInbox } from '../../../definition/IEmailInbox';
+import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -46,6 +48,7 @@ interface IModelsParam {
 	InstanceStatus: InstanceStatusRaw;
 	IntegrationHistory: IntegrationHistoryRaw;
 	Integrations: IntegrationsRaw;
+	EmailInbox: EmailInboxRaw;
 }
 
 interface IChange<T> {
@@ -77,6 +80,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		InstanceStatus,
 		IntegrationHistory,
 		Integrations,
+		EmailInbox,
 	} = models;
 
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
@@ -333,5 +337,19 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 
 		broadcast('watch.integrations', { clientAction, data, id });
+	});
+
+	watch<IEmailInbox>(EmailInbox, async ({ clientAction, id, data }) => {
+		if (clientAction === 'removed') {
+			broadcast('watch.emailInbox', { clientAction, id, data: { _id: id } });
+			return;
+		}
+
+		data = data ?? await EmailInbox.findOneById(id);
+		if (!data) {
+			return;
+		}
+
+		broadcast('watch.emailInbox', { clientAction, data, id });
 	});
 }

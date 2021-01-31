@@ -202,7 +202,8 @@ Template.visitorInfo.helpers({
 	},
 
 	canSendTranscript() {
-		return hasPermission('send-omnichannel-chat-transcript');
+		const room = Template.instance().room.get();
+		return !room.email && hasPermission('send-omnichannel-chat-transcript');
 	},
 
 	roomClosedDateTime() {

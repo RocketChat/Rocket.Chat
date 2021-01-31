@@ -50,16 +50,16 @@ const AnalyticsPage = () => {
 		<Page.Header title={t('Analytics')}/>
 		<Page.ScrollableContentWithShadow display='flex' flexDirection='column'>
 			<Margins block='x4'>
-				<Box display='flex' flexDirection='row' flexWrap='wrap' >
-					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
+				<Box display='flex' mi='neg-x4' flexDirection='row' flexWrap='wrap' >
+					<Box display='flex' mi='x4' flexGrow={1} flexDirection='column'>
 						<Label mb='x4' >{t('Type')}</Label>
 						<Select flexShrink={0} options={typeOptions} value={type} onChange={setType} />
 					</Box>
-					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
+					<Box display='flex' mi='x4' flexGrow={1} flexDirection='column'>
 						<Label mb='x4'>{t('Departments')}</Label>
 						<DepartmentAutoComplete flexShrink={0} placeholder={t('All')} value={departmentId} onChange={setDepartmentId}/>
 					</Box>
-					<DateRangePicker onChange={setDateRange}/>
+					<DateRangePicker mi='x4' flexGrow={1} onChange={setDateRange}/>
 				</Box>
 				<Box>
 					<Overview type={type} dateRange={dateRange} departmentId={departmentId}/>

@@ -3,6 +3,9 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms, LivechatInquiry, LivechatVisitors, Users } from '../../../../../app/models/server';
 
+let contactManagerPreferred = false;
+let lastChattedAgentPreferred = false;
+
 const normalizeDefaultAgent = (agent) => {
 	if (!agent) {
 		return;
@@ -12,26 +15,36 @@ const normalizeDefaultAgent = (agent) => {
 	return { agentId, username };
 };
 
+const getDefaultAgent = (username) => username && normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(username, { fields: { _id: 1, username: 1 } }));
+
 const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	if (defaultAgent || !defaultGuest) {
 		return defaultAgent;
 	}
 
-	if (!RoutingManager.getConfig().autoAssignAgent) {
+	const { _id: guestId } = defaultGuest;
+	const guest = LivechatVisitors.findOneById(guestId, { fields: { lastAgent: 1, token: 1, contactManager: 1 } });
+	if (!guest) {
 		return defaultAgent;
 	}
 
-	const { _id: guestId } = defaultGuest;
-	const guest = LivechatVisitors.findOneById(guestId, { fields: { lastAgent: 1, token: 1 } });
-	const { lastAgent: { username: usernameByVisitor } = {}, token } = guest;
+	const { lastAgent, token, contactManager } = guest;
+	const guestManager = contactManagerPreferred && getDefaultAgent(contactManager?.username);
+	if (guestManager) {
+		return guestManager;
+	}
 
-	const lastGuestAgent = usernameByVisitor && normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(usernameByVisitor, { fields: { _id: 1, username: 1 } }));
-	if (lastGuestAgent) {
-		return lastGuestAgent;
+	if (!lastChattedAgentPreferred) {
+		return defaultAgent;
+	}
+
+	const guestAgent = getDefaultAgent(lastAgent?.username);
+	if (guestAgent) {
+		return guestAgent;
 	}
 
 	const room = LivechatRooms.findOneLastServedAndClosedByVisitorToken(token, { fields: { servedBy: 1 } });
-	if (!room || !room.servedBy) {
+	if (!room?.servedBy) {
 		return defaultAgent;
 	}
 
@@ -74,14 +87,20 @@ const afterTakeInquiry = (inquiry, agent) => {
 	return inquiry;
 };
 settings.get('Livechat_last_chatted_agent_routing', function(key, value) {
-	if (!value) {
-		callbacks.remove('livechat.checkDefaultAgentOnNewRoom', 'livechat-check-default-agent-new-room');
+	lastChattedAgentPreferred = value;
+	if (!lastChattedAgentPreferred) {
 		callbacks.remove('livechat.onMaxNumberSimultaneousChatsReached', 'livechat-on-max-number-simultaneous-chats-reached');
 		callbacks.remove('livechat.afterTakeInquiry', 'livechat-save-default-agent-after-take-inquiry');
 		return;
 	}
 
-	callbacks.add('livechat.checkDefaultAgentOnNewRoom', checkDefaultAgentOnNewRoom, callbacks.priority.MEDIUM, 'livechat-check-default-agent-new-room');
-	callbacks.add('livechat.onMaxNumberSimultaneousChatsReached', onMaxNumberSimultaneousChatsReached, callbacks.priority.MEDIUM, 'livechat-on-max-number-simultaneous-chats-reached');
 	callbacks.add('livechat.afterTakeInquiry', afterTakeInquiry, callbacks.priority.MEDIUM, 'livechat-save-default-agent-after-take-inquiry');
+	callbacks.add('livechat.onMaxNumberSimultaneousChatsReached', onMaxNumberSimultaneousChatsReached, callbacks.priority.MEDIUM, 'livechat-on-max-number-simultaneous-chats-reached');
 });
+
+settings.get('Omnichannel_contact_manager_routing', function(key, value) {
+	contactManagerPreferred = value;
+});
+
+
+callbacks.add('livechat.checkDefaultAgentOnNewRoom', checkDefaultAgentOnNewRoom, callbacks.priority.MEDIUM, 'livechat-check-default-agent-new-room');
