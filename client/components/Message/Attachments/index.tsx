@@ -3,6 +3,7 @@ import React, { FC, memo } from 'react';
 import { QuoteAttachment, QuoteAttachmentProps } from './QuoteAttachment';
 import { FileAttachmentProps, isFileAttachment, FileAttachment } from './Files';
 import { DefaultAttachment, DefaultAttachmentProps } from './DefaultAttachment';
+import { useBlockRendered } from '../hooks/useBlockRendered';
 
 export type FileProp = {
 	_id: string;
@@ -28,6 +29,9 @@ const Item: FC<{attachment: AttachmentProps; file?: FileProp }> = memo(({ attach
 	return <DefaultAttachment {...attachment as any}/>;
 });
 
-const Attachments: FC<{ attachments: Array<AttachmentProps>; file?: FileProp}> = ({ attachments = null, file }): any => attachments && attachments.map((attachment, index) => <Item key={index} file={file} attachment={attachment} />);
+const Attachments: FC<{ attachments: Array<AttachmentProps>; file?: FileProp}> = ({ attachments = null, file }): any => {
+	const { className, ref } = useBlockRendered();
+	return <><div className={className} ref={ref as any} />{attachments && attachments.map((attachment, index) => <Item key={index} file={file} attachment={attachment} />)}</>;
+};
 
 export default Attachments;
