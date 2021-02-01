@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../settings/server/raw';
 
@@ -920,11 +922,17 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		if (createdAt) {
 			query.ts = {};
-			if (createdAt.start) {
-				query.ts.$gte = new Date(createdAt.start);
+			if (createdAt.start && createdAt.end) {
+				query.ts.$gte = moment(createdAt.start).toDate();
+				query.ts.$lte = moment(createdAt.end).toDate();
 			}
-			if (createdAt.end) {
-				query.ts.$lte = new Date(createdAt.end);
+			if (createdAt.start && !createdAt.end) {
+				query.ts.$gte = moment(createdAt.start).set({ hour: '00', minutes: '00', seconds: '00' }).toDate();
+				query.ts.$lte = moment(createdAt.start).set({ hour: '29', minutes: '59', seconds: '59' }).toDate();
+			}
+			if (createdAt.end && !createdAt.start) {
+				query.ts.$gte = moment(createdAt.end).toDate();
+				query.ts.$lte = moment().toDate();
 			}
 		}
 		if (closedAt) {
@@ -946,7 +954,6 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (roomIds) {
 			query._id = { $in: roomIds };
 		}
-
 		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });
 	}
 
