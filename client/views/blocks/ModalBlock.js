@@ -149,7 +149,7 @@ export function ModalBlock({
 		<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 			<Modal open id={id} ref={ref}>
 				<Modal.Header>
-					<Modal.Thumb url={getURL(`/api/apps/${ appId }/icon`)} />
+					{view.showIcon ? <Modal.Thumb url={getURL(`/api/apps/${ appId }/icon`)} /> : null}
 					<Modal.Title>{textParser([view.title])}</Modal.Title>
 					<Modal.Close tabIndex={-1} onClick={onClose} />
 				</Modal.Header>
