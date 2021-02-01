@@ -9,6 +9,7 @@ type FilterByTextProps = {
 	displayButton: boolean;
 	textButton: string;
 	onButtonClick: () => void;
+	inputRef: () => void;
 };
 
 const FilterByText: FC<FilterByTextProps> = ({
@@ -17,6 +18,7 @@ const FilterByText: FC<FilterByTextProps> = ({
 	displayButton: display = false,
 	textButton = '',
 	onButtonClick,
+	inputRef,
 	...props
 }) => {
 	const t = useTranslation();
@@ -36,7 +38,7 @@ const FilterByText: FC<FilterByTextProps> = ({
 	}, []);
 
 	return <Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' {...props}>
-		<TextInput placeholder={placeholder ?? t('Search')} autoFocus addon={<Icon name='magnifier' size='x20'/>} onChange={handleInputChange} value={text} />
+		<TextInput placeholder={placeholder ?? t('Search')} ref={inputRef} addon={<Icon name='magnifier' size='x20'/>} onChange={handleInputChange} value={text} />
 		<Button onClick={onButtonClick} display={display ? 'block' : 'none'} mis='x8' primary>{textButton}</Button>
 	</Box>;
 };

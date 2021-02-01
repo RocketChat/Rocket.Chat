@@ -10,6 +10,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
@@ -25,6 +26,8 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
+import { AppEvents, Apps } from '../../../apps/server';
+import { streamToBuffer } from './streamToBuffer';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -50,13 +53,12 @@ export const FileUpload = {
 		const stores = UploadFS.getStores();
 		delete stores[name];
 
-		// the class that is instantiated here is the one from ../../ufs/*/server
 		return new UploadFS.store[store](Object.assign({
 			name,
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
-	validateFileUpload(file) {
+	validateFileUpload({ file, content }) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -94,10 +96,21 @@ export const FileUpload = {
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
+		// App IPreFileUpload event hook
+		try {
+			Promise.await(Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content }));
+		} catch (error) {
+			if (error instanceof AppsEngineException) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
+
+			throw error;
+		}
+
 		return true;
 	},
 
-	validateAvatarUpload(file) {
+	validateAvatarUpload({ file }) {
 		if (!Match.test(file.rid, String) && !Match.test(file.userId, String)) {
 			return false;
 		}
@@ -268,16 +281,18 @@ export const FileUpload = {
 				return fut.return();
 			}
 
+			const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
+
 			const identify = {
 				format: metadata.format,
 				size: {
-					width: metadata.width,
-					height: metadata.height,
+					width: rotated ? metadata.height : metadata.width,
+					height: rotated ? metadata.width : metadata.height,
 				},
 			};
 
 			const reorientation = (cb) => {
-				if (!metadata.orientation || metadata.orientation === 1 || settings.get('FileUpload_RotateImages') !== true) {
+				if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
 					return cb();
 				}
 				s.rotate()
@@ -584,12 +599,14 @@ export class FileUploadClass {
 	}
 
 	insert(fileData, streamOrBuffer, cb) {
-		fileData.size = parseInt(fileData.size) || 0;
+		if (streamOrBuffer instanceof stream) {
+			streamOrBuffer = Promise.await(streamToBuffer(streamOrBuffer));
+		}
 
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter && filter.check) {
-			filter.check(fileData);
+			filter.check({ file: fileData, content: streamOrBuffer });
 		}
 
 		return this._doInsert(fileData, streamOrBuffer, cb);

@@ -241,7 +241,12 @@ button {
 
 		height: auto !important;
 	}
+
 	.rc-alerts {
 		display: none !important;
 	}
+}
+
+.gallery-item {
+	cursor: pointer;
 }

@@ -49,5 +49,12 @@
 		"contributors": [
 			"sampaiodiego"
 		]
+	}],
+	"3.10.5": [{
+		"title": "[FIX] Security Hotfix",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
 	}]
 }

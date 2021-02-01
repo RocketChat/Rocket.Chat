@@ -85,7 +85,7 @@ export const UserInfo = React.memo(function UserInfo({
 			<Info>{lastLogin ? timeAgo(lastLogin) : t('Never')}</Info>
 
 			{name && <>
-				<Label>{t('Full Name')}</Label>
+				<Label>{t('Full_Name')}</Label>
 				<Info>{name}</Info>
 			</>}
 
@@ -171,6 +171,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			nickname,
 		} = user;
 		return {
+			_id,
 			name: showRealNames ? name : username,
 			username,
 			lastLogin,
