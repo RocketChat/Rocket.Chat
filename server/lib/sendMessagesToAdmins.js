@@ -22,7 +22,7 @@ export function sendMessagesToAdmins({
 				}
 
 				if (!Array.isArray(msgs)) {
-					msgs = Array.from(msgs);
+					msgs = [msgs];
 				}
 
 				if (typeof banners === 'function') {
