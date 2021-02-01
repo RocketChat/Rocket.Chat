@@ -32,10 +32,10 @@ const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Eleme
 		hiddenActionRenderers.current = { ...hiddenActionRenderers.current, [item.id]: item.renderOption || renderMenuOption };
 		return [item.id, {
 			label: { title: t(item.title), icon: item.icon },
-			// ...item,
 			action: (): void => {
 				openTabBar(item.id);
 			},
+			...item,
 		}];
 	}));
 
@@ -81,6 +81,7 @@ const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Eleme
 		})}
 		{ actions.length > 6 && <Menu
 			tiny={!isMobile}
+			title={t('Options')}
 			maxHeight='initial'
 			className={className}
 			aria-keyshortcuts='alt'

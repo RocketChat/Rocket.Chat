@@ -69,5 +69,11 @@ export const {
 		href: 'admin-marketplace',
 		i18nLabel: 'Marketplace',
 		permissionGranted: () => hasPermission(['manage-apps']),
+	}, {
+		icon: 'mail',
+		href: 'admin-email-inboxes',
+		i18nLabel: 'Email_Inboxes',
+		tag: 'Alpha',
+		permissionGranted: () => hasPermission(['manage-email-inbox']),
 	},
 ]);
