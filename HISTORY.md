@@ -1,6 +1,49 @@
 
 # 3.11.0 (Under Release Candidate Process)
 
+## 3.11.0-rc.6
+`2021-01-31  ·  6 🔍  ·  6 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Apps-Engine - Convert streams to buffers on file upload ([#20523](https://github.com/RocketChat/Rocket.Chat/pull/20523))
+
+  This is an implementation to accommodate the changes in API for the `IPreFileUpload` hook in the Apps-Engine. Explanation on the reasoning for it is here https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/376
+
+- Regression: Custom field labels are not displayed properly on Omnichannel Contact Profile form ([#20393](https://github.com/RocketChat/Rocket.Chat/pull/20393))
+
+  ### Before
+  ![image](https://user-images.githubusercontent.com/2493803/105780399-20116c80-5f4f-11eb-9620-0901472e453b.png)
+
+  ![image](https://user-images.githubusercontent.com/2493803/105780420-2e5f8880-5f4f-11eb-8e93-8115ebc685be.png)
+
+  ### After
+
+  ![image](https://user-images.githubusercontent.com/2493803/105780832-1ccab080-5f50-11eb-8042-188dd0c41904.png)
+
+  ![image](https://user-images.githubusercontent.com/2493803/105780911-500d3f80-5f50-11eb-96e0-7df3f179dbd5.png)
+
+- Regression: Fix e2e paused state ([#20511](https://github.com/RocketChat/Rocket.Chat/pull/20511))
+
+- Regression: NPS ([#20514](https://github.com/RocketChat/Rocket.Chat/pull/20514))
+
+- Regression: Room not scrolling to bottom ([#20516](https://github.com/RocketChat/Rocket.Chat/pull/20516))
+
+- Regression: Set image sizes based on rotation ([#20531](https://github.com/RocketChat/Rocket.Chat/pull/20531))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rafaelblink](https://github.com/rafaelblink)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.11.0-rc.5
 `2021-01-30  ·  3 🔍  ·  4 👩‍💻👨‍💻`
 
