@@ -55149,6 +55149,78 @@
           ]
         }
       ]
+    },
+    "3.11.0-rc.6": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20531",
+          "title": "Regression: Set image sizes based on rotation",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20523",
+          "title": "Regression: Apps-Engine - Convert streams to buffers on file upload",
+          "userLogin": "d-gubert",
+          "description": "This is an implementation to accommodate the changes in API for the `IPreFileUpload` hook in the Apps-Engine. Explanation on the reasoning for it is here https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/376",
+          "milestone": "3.11.0",
+          "contributors": [
+            "d-gubert",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20516",
+          "title": "Regression: Room not scrolling to bottom",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20514",
+          "title": "Regression: NPS",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20511",
+          "title": "Regression: Fix e2e paused state",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20393",
+          "title": "Regression: Custom field labels are not displayed properly on Omnichannel Contact Profile form",
+          "userLogin": "rafaelblink",
+          "description": "### Before\r\n![image](https://user-images.githubusercontent.com/2493803/105780399-20116c80-5f4f-11eb-9620-0901472e453b.png)\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/105780420-2e5f8880-5f4f-11eb-8e93-8115ebc685be.png)\r\n\r\n### After\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/105780832-1ccab080-5f50-11eb-8042-188dd0c41904.png)\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/105780911-500d3f80-5f50-11eb-96e0-7df3f179dbd5.png)",
+          "milestone": "3.11.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
