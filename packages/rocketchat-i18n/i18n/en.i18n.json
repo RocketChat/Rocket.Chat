@@ -489,8 +489,6 @@
   "Apps_Permissions_persistence": "Store internal data in the database",
   "Apps_Permissions_scheduler": "Register and maintain scheduled jobs",
   "Apps_Permissions_ui_interact": "Interact with the UI",
-  "Required": "required",
-
   "Apps_Settings": "App's Settings",
   "Apps_User_Already_Exists": "The username \"__username__\" is already being used. Rename or remove the user using it to install this App",
   "Apps_WhatIsIt": "Apps: What Are They?",
@@ -3209,6 +3207,8 @@
   "Requested_At": "Requested At",
   "Requested_By": "Requested By",
   "Require": "Require",
+  "Required": "Required",
+  "required": "required",
   "Require_all_tokens": "Require all tokens",
   "Require_any_token": "Require any token",
   "Require_password_change": "Require password change",
