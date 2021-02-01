@@ -2,7 +2,13 @@ import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from '
 import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useResizeObserver, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import {
+	useDebouncedValue,
+	useResizeObserver,
+	useLocalStorage,
+	useMutableCallback,
+	useAutoFocus,
+} from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -208,7 +214,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 	const threadsRef = useRef();
 
 	const t = useTranslation();
-
+	const inputRef = useAutoFocus(true);
 	const [name] = useCurrentRoute();
 	const channelRoute = useRoute(name);
 	const onClick = useMutableCallback((e) => {
@@ -253,7 +259,7 @@ export function ThreadList({ total = 10, threads = [], room, unread = [], unread
 			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
 				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 					<Margins inline='x4'>
-						<TextInput placeholder={t('Search_Messages')} autoFocus value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+						<TextInput placeholder={t('Search_Messages')} autoFocus value={text} onChange={setText} ref={inputRef} addon={<Icon name='magnifier' size='x20'/>}/>
 						<Select flexGrow={0} width='110px' onChange={setType} value={type} options={options} />
 					</Margins>
 				</Box>

@@ -5,7 +5,7 @@ import React, { useCallback, useMemo, useState, useEffect, useRef, memo } from '
 import { Box, Icon, TextInput, Callout } from '@rocket.chat/fuselage';
 import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useDebouncedState, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useResizeObserver, useAutoFocus, useDebouncedState } from '@rocket.chat/fuselage-hooks';
 
 import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { Messages } from '../../../../../app/models/client';
@@ -185,7 +185,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 	const discussionsRef = useRef();
 
 	const t = useTranslation();
-
+	const inputRef = useAutoFocus(true);
 	const onClick = useCallback((e) => {
 		const { drid } = e.currentTarget.dataset;
 		FlowRouter.goToRoomById(drid);
@@ -213,7 +213,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0}>
 			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
-				<TextInput placeholder={t('Search_Messages')} value={text} autoFocus onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+				<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} ref={inputRef} addon={<Icon name='magnifier' size='x20'/>}/>
 			</Box>
 			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
