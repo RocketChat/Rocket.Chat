@@ -298,7 +298,7 @@ Template.createChannel.onCreated(function() {
 	this.type = new ReactiveVar(hasAllPermission(['create-p']) ? 'p' : 'c');
 	this.readOnly = new ReactiveVar(false);
 	this.broadcast = new ReactiveVar(false);
-	this.encrypted = new ReactiveVar(false);
+	this.encrypted = new ReactiveVar(settings.get('E2E_Enabled_Default_PrivateRooms'));
 	this.inUse = new ReactiveVar(undefined);
 	this.invalid = new ReactiveVar(false);
 	this.extensions_invalid = new ReactiveVar(false);
