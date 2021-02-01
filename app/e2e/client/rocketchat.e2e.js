@@ -508,7 +508,7 @@ Meteor.startup(function() {
 				e2eRoom.decryptPendingSubscription();
 			},
 			added: async (doc) => {
-				if (!doc.encrypted) {
+				if (!doc.encrypted && !doc.E2EKey) {
 					return;
 				}
 				return e2e.getInstanceByRoomId(doc.rid);

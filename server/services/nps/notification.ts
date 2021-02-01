@@ -6,19 +6,16 @@ import moment from 'moment';
 
 import { settings } from '../../../app/settings/server';
 import { IBanner, BannerPlatform } from '../../../definition/IBanner';
+import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins.js';
 
-export const getBannerForAdmins = Meteor.bindEnvironment((): Omit<IBanner, '_id'> => {
+export const getBannerForAdmins = Meteor.bindEnvironment((expireAt: Date): Omit<IBanner, '_id'> => {
 	const lng = settings.get('Language') || 'en';
-
-	const today = new Date();
-	const inTwoMonths = new Date();
-	inTwoMonths.setMonth(inTwoMonths.getMonth() + 2);
 
 	return {
 		platform: [BannerPlatform.Web],
-		createdAt: today,
-		expireAt: inTwoMonths,
-		startAt: today,
+		createdAt: new Date(),
+		expireAt,
+		startAt: new Date(),
 		roles: ['admin'],
 		createdBy: {
 			_id: 'rocket.cat',
@@ -33,10 +30,18 @@ export const getBannerForAdmins = Meteor.bindEnvironment((): Omit<IBanner, '_id'
 				blockId: 'attention',
 				text: {
 					type: TextObjectType.PLAINTEXT,
-					text: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', { date: moment(inTwoMonths).format('YYYY-MM-DD'), lng }),
+					text: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', { date: moment(expireAt).format('YYYY-MM-DD'), lng }),
 					emoji: false,
 				},
 			}],
 		},
 	};
+});
+
+export const notifyAdmins = Meteor.bindEnvironment((expireAt: Date) => {
+	sendMessagesToAdmins({
+		msgs: ({ adminUser }: { adminUser: any }): any => ({
+			msg: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', { date: moment(expireAt).format('YYYY-MM-DD'), lng: adminUser.language }),
+		}),
+	});
 });
