@@ -1,6 +1,9 @@
 
 # 3.11.0 (Under Release Candidate Process)
 
+## 3.11.0-rc.7
+`2021-01-31  ·  `
+
 ## 3.11.0-rc.6
 `2021-01-31  ·  6 🔍  ·  6 👩‍💻👨‍💻`
 
@@ -203,13 +206,11 @@
   ![image](https://user-images.githubusercontent.com/34130764/104880961-8104d780-5986-11eb-9d87-82b99814b028.png)
 
   Behavior based-on Routing method
-
-
+  
   1. Auto-selection, Load-Balancing, or External Service (`autoAssignAgent = true`)
-    This is straightforward,
+    This is straightforward, 
         - if the Contact-manager is online, the chat will be transferred to the Contact-Manger only
-        - if the Contact-manager is offline, the chat will be transferred to any other online-agent based on the Routing system
-
+        - if the Contact-manager is offline, the chat will be transferred to any other online-agent based on the Routing system  
   2. Manual-selection (`autoAssignAgent = false`)
         - If the Contact-Manager is online, the chat will appear in the Queue of Contact-Manager **ONLY**
         - If the Contact-Manager is offline, the chat will appear in the Queue of all related Agents/Manager ( like it's done right now )
@@ -323,7 +324,7 @@
 
 - Change header's favorite icon to filled star ([#20174](https://github.com/RocketChat/Rocket.Chat/pull/20174))
 
-  ### Before:
+  ### Before: 
   ![image](https://user-images.githubusercontent.com/27704687/104351819-a60bcd00-54e4-11eb-8b43-7d281a6e5dcb.png)
 
   ### After:
@@ -606,6 +607,24 @@
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 
+# 3.10.5
+`2021-01-27  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.21.0-alpha.4235`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.10.4
 `2021-01-14  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
@@ -856,14 +875,10 @@
 
 - Chore: Update Pull Request template ([#19768](https://github.com/RocketChat/Rocket.Chat/pull/19768))
 
-  Improve the template of Pull Requests in order to make it clear reducing duplicated information and removing the visible checklists that were generating noise and misunderstanding with the PR progress.
-
-  - Moved the checklists to inside comments
-
-  - Merge the changelog and proposed changes sections to have a single source of description that goes to the changelog
-
-  - Remove the screenshot section, they can be added inside the description
-
+  Improve the template of Pull Requests in order to make it clear reducing duplicated information and removing the visible checklists that were generating noise and misunderstanding with the PR progress.  
+  - Moved the checklists to inside comments  
+  - Merge the changelog and proposed changes sections to have a single source of description that goes to the changelog  
+  - Remove the screenshot section, they can be added inside the description  
   - Changed the proposed changes title to incentivizing the usage of images and videos
 
 - Frontend folder structure ([#19631](https://github.com/RocketChat/Rocket.Chat/pull/19631))
@@ -2193,10 +2208,8 @@
 
 - **2FA:** Password enforcement setting and 2FA protection when saving settings or resetting E2E encryption ([#18640](https://github.com/RocketChat/Rocket.Chat/pull/18640))
 
-  - Increase the 2FA remembering time from 5min to 30min
-
-  - Add new setting to enforce 2FA password fallback (enabled only for new installations)
-
+  - Increase the 2FA remembering time from 5min to 30min  
+  - Add new setting to enforce 2FA password fallback (enabled only for new installations)  
   - Require 2FA to save settings and reset E2E Encryption keys
 
 - **Omnichannel:** Allow set other agent status via method `livechat:changeLivechatStatus ` ([#18571](https://github.com/RocketChat/Rocket.Chat/pull/18571))
@@ -2564,12 +2577,9 @@
 
 - Mention autocomplete UI and performance improvements  ([#18309](https://github.com/RocketChat/Rocket.Chat/pull/18309))
 
-  * New setting to configure the number of suggestions `Admin > Layout > User Interface > Number of users' autocomplete suggestions` (default 5)
-
-  * The UI shows whenever the user is not a member of the room
-
-  * The UI shows when the suggestion came from the last messages for quick selection/reply
-
+  * New setting to configure the number of suggestions `Admin > Layout > User Interface > Number of users' autocomplete suggestions` (default 5)  
+  * The UI shows whenever the user is not a member of the room  
+  * The UI shows when the suggestion came from the last messages for quick selection/reply  
   * The suggestions follow this order:
     * The user with the exact username and member of the room
     * The user with the exact username but not a member of the room (if allowed to list non-members)
@@ -3427,12 +3437,9 @@
 
 - Notification sounds ([#17616](https://github.com/RocketChat/Rocket.Chat/pull/17616))
 
-  * Global CDN config was ignored when loading the sound files
-
-  * Upload of custom sounds wasn't getting the file extension correctly
-
-  * Some translations were missing
-
+  * Global CDN config was ignored when loading the sound files  
+  * Upload of custom sounds wasn't getting the file extension correctly  
+  * Some translations were missing  
   * Edit and delete of custom sounds were not working correctly
 
 - Omnichannel departments are not saved when the offline channel name is not defined ([#17553](https://github.com/RocketChat/Rocket.Chat/pull/17553))
@@ -3721,16 +3728,11 @@
 - Better Push and Email Notification logic ([#17357](https://github.com/RocketChat/Rocket.Chat/pull/17357))
 
   We are still using the same logic to define which notifications every new message will generate, it takes some servers' settings, users's preferences and subscriptions' settings in consideration to determine who will receive each notification type (desktop, audio, email and mobile push), but now it doesn't check the user's status (online, away, offline) for email and mobile push notifications but send those notifications to a new queue with the following rules:
-
-
-  - When the user is online the notification is scheduled to be sent in 120 seconds
-
-  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away
-
-  - When the user is offline the notification is scheduled to be sent right away
-
-  - When the user reads a channel all the notifications for that user are removed (clear queue)
-
+  
+  - When the user is online the notification is scheduled to be sent in 120 seconds  
+  - When the user is away the notification is scheduled to be sent in 120 seconds minus the amount of time he is away  
+  - When the user is offline the notification is scheduled to be sent right away  
+  - When the user reads a channel all the notifications for that user are removed (clear queue)  
   - When a notification is processed to be sent to a user and there are other scheduled notifications:
     - All the scheduled notifications for that user are rescheduled to now
     - The current notification goes back to the queue to be processed ordered by creation date
