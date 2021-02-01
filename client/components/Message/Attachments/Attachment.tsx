@@ -33,7 +33,7 @@ const Collapse: FC<ButtonProps & { collapsed?: boolean }> = ({ collapsed = false
 	return <Action title={collapsed ? t('Uncollapse') : t('Collapse')}icon={ !collapsed ? 'chevron-down' : 'chevron-left' }{...props} />;
 };
 
-const Download: FC<ButtonProps & { href: string; title: string }> = ({ title, ...props }) => {
+const Download: FC<ButtonProps & { href: string }> = ({ title, ...props }) => {
 	const t = useTranslation();
 	return <Action icon='download' title={t('Download')} is='a' target='_blank' download={title} {...props} />;
 };
