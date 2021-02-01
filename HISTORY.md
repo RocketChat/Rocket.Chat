@@ -1,194 +1,12 @@
 
-# 3.11.0 (Under Release Candidate Process)
-
-## 3.11.0-rc.7
-`2021-01-31  ·  `
-
-## 3.11.0-rc.6
-`2021-01-31  ·  6 🔍  ·  6 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Apps-Engine - Convert streams to buffers on file upload ([#20523](https://github.com/RocketChat/Rocket.Chat/pull/20523))
-
-  This is an implementation to accommodate the changes in API for the `IPreFileUpload` hook in the Apps-Engine. Explanation on the reasoning for it is here https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/376
-
-- Regression: Custom field labels are not displayed properly on Omnichannel Contact Profile form ([#20393](https://github.com/RocketChat/Rocket.Chat/pull/20393))
-
-  ### Before
-  ![image](https://user-images.githubusercontent.com/2493803/105780399-20116c80-5f4f-11eb-9620-0901472e453b.png)
-
-  ![image](https://user-images.githubusercontent.com/2493803/105780420-2e5f8880-5f4f-11eb-8e93-8115ebc685be.png)
-
-  ### After
-
-  ![image](https://user-images.githubusercontent.com/2493803/105780832-1ccab080-5f50-11eb-8042-188dd0c41904.png)
-
-  ![image](https://user-images.githubusercontent.com/2493803/105780911-500d3f80-5f50-11eb-96e0-7df3f179dbd5.png)
-
-- Regression: Fix e2e paused state ([#20511](https://github.com/RocketChat/Rocket.Chat/pull/20511))
-
-- Regression: NPS ([#20514](https://github.com/RocketChat/Rocket.Chat/pull/20514))
-
-- Regression: Room not scrolling to bottom ([#20516](https://github.com/RocketChat/Rocket.Chat/pull/20516))
-
-- Regression: Set image sizes based on rotation ([#20531](https://github.com/RocketChat/Rocket.Chat/pull/20531))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
-- [@rafaelblink](https://github.com/rafaelblink)
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 3.11.0-rc.5
-`2021-01-30  ·  3 🔍  ·  4 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: ESLint Warning - explicit-function-return-type ([#20434](https://github.com/RocketChat/Rocket.Chat/pull/20434) by [@aditya-mitra](https://github.com/aditya-mitra))
-
-  Added explicit Return Type (Promise<void>) on the function to fix eslint warning (`explicit-function-return-type`)
-
-- Regression: Fix banners sync data types ([#20517](https://github.com/RocketChat/Rocket.Chat/pull/20517))
-
-- Regression: Fixed update room avatar issue. ([#20433](https://github.com/RocketChat/Rocket.Chat/pull/20433) by [@Darshilp326](https://github.com/Darshilp326))
-
-  Users can now update their room avatar without any error.
-
-  https://user-images.githubusercontent.com/55157259/105951602-560d3880-6096-11eb-97a5-b5eb9a28b58d.mp4
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@Darshilp326](https://github.com/Darshilp326)
-- [@aditya-mitra](https://github.com/aditya-mitra)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.11.0-rc.4
-`2021-01-29  ·  1 🚀  ·  1 🐛  ·  4 🔍  ·  8 👩‍💻👨‍💻`
-
-### 🚀 Improvements
-
-
-- Autofocus on directory ([#20509](https://github.com/RocketChat/Rocket.Chat/pull/20509))
-
-### 🐛 Bug fixes
-
-
-- **Apps:** Don't show the "review permissions" modal when there's none to review ([#20506](https://github.com/RocketChat/Rocket.Chat/pull/20506))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Add tests to new banners REST endpoints ([#20492](https://github.com/RocketChat/Rocket.Chat/pull/20492))
-
-  Add tests for the new `banners.*` endpoints: `banners.getNew` and `banners.dismiss`.
-
-- Regression: Fix duplicate email messages in multiple instances ([#20495](https://github.com/RocketChat/Rocket.Chat/pull/20495))
-
-- Update "Industry" setting ([#20510](https://github.com/RocketChat/Rocket.Chat/pull/20510))
-
-- Update Apps-Engine and permissions translations ([#20491](https://github.com/RocketChat/Rocket.Chat/pull/20491))
-
-  Update Apps-Engine version and apply changes in translations for the changed permissions. Please review the texts on the translation files to make sure they're clear.
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@d-gubert](https://github.com/d-gubert)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@ggazzo](https://github.com/ggazzo)
-- [@lolimay](https://github.com/lolimay)
-- [@lucassartor](https://github.com/lucassartor)
-- [@renatobecker](https://github.com/renatobecker)
-- [@thassiov](https://github.com/thassiov)
-
-## 3.11.0-rc.3
-`2021-01-29  ·  2 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- RoomManager validation broken on IE ([#20490](https://github.com/RocketChat/Rocket.Chat/pull/20490))
-
-- Sidebar palette color broken on IE ([#20457](https://github.com/RocketChat/Rocket.Chat/pull/20457))
-
-  ![image](https://user-images.githubusercontent.com/27704687/106056093-0a29b600-60cd-11eb-8038-eabbc0d8fb03.png)
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Update Apps-Engine version ([#20482](https://github.com/RocketChat/Rocket.Chat/pull/20482))
-
-  Update Apps-Engine version with some fixes for the current RC cycle.
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@dougfabris](https://github.com/dougfabris)
-
-## 3.11.0-rc.2
-`2021-01-27  ·  2 🔍  ·  3 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- regression: Announcement link open in new tab ([#20435](https://github.com/RocketChat/Rocket.Chat/pull/20435))
-
-- Regression: Bio page not rendering ([#20450](https://github.com/RocketChat/Rocket.Chat/pull/20450))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@ggazzo](https://github.com/ggazzo)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 3.11.0-rc.1
-`2021-01-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix Cron statistics TypeError ([#20343](https://github.com/RocketChat/Rocket.Chat/pull/20343) by [@RonLek](https://github.com/RonLek))
-
-- Security sync ([#20430](https://github.com/RocketChat/Rocket.Chat/pull/20430))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@RonLek](https://github.com/RonLek)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.11.0-rc.0
-`2021-01-23  ·  8 🎉  ·  8 🚀  ·  49 🐛  ·  26 🔍  ·  30 👩‍💻👨‍💻`
+# 3.11.0
+`2021-01-31  ·  8 🎉  ·  9 🚀  ·  52 🐛  ·  44 🔍  ·  32 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.22.1`
 
 ### 🎉 New features
 
@@ -263,6 +81,8 @@
   Added a SAML setting to support updating room subscriptions each time a user logs in via SAML.
   Added a SAML setting to support including private rooms in SAML updated subscriptions (whether initial or on each logon).
 
+- Autofocus on directory ([#20509](https://github.com/RocketChat/Rocket.Chat/pull/20509))
+
 - Don't use global search by default ([#19777](https://github.com/RocketChat/Rocket.Chat/pull/19777) by [@i-kychukov](https://github.com/i-kychukov) & [@ikyuchukov](https://github.com/ikyuchukov))
 
   Global chat search is not set by default now.
@@ -294,6 +114,8 @@
 - "Open_thread" English tooltip correction ([#20164](https://github.com/RocketChat/Rocket.Chat/pull/20164) by [@aKn1ghtOut](https://github.com/aKn1ghtOut))
 
   Remove unnecessary spaces from the translation key, and added English translation value for the key.
+
+- **Apps:** Don't show the "review permissions" modal when there's none to review ([#20506](https://github.com/RocketChat/Rocket.Chat/pull/20506))
 
 - **ENTERPRISE:** Auditing RoomAutocomplete ([#20311](https://github.com/RocketChat/Rocket.Chat/pull/20311))
 
@@ -438,6 +260,8 @@
 
   Add a migration to fix the room's list for those who ran version 3.10.1 and got it scrambled when a new user was registered.
 
+- RoomManager validation broken on IE ([#20490](https://github.com/RocketChat/Rocket.Chat/pull/20490))
+
 - Saving with blank email in edit user ([#20259](https://github.com/RocketChat/Rocket.Chat/pull/20259) by [@RonLek](https://github.com/RonLek))
 
   Disallows showing a success popup when email field is made blank in Edit User and instead shows the relevant error popup.
@@ -446,6 +270,10 @@
   https://user-images.githubusercontent.com/28918901/104960749-dbd81680-59fa-11eb-9c7b-2b257936f894.mp4
 
 - Search list filter ([#19937](https://github.com/RocketChat/Rocket.Chat/pull/19937))
+
+- Sidebar palette color broken on IE ([#20457](https://github.com/RocketChat/Rocket.Chat/pull/20457))
+
+  ![image](https://user-images.githubusercontent.com/27704687/106056093-0a29b600-60cd-11eb-8038-eabbc0d8fb03.png)
 
 - Status circle in profile section ([#20016](https://github.com/RocketChat/Rocket.Chat/pull/20016) by [@yash-rajpal](https://github.com/yash-rajpal))
 
@@ -514,6 +342,10 @@
 
 - Language update from LingoHub 🤖 on 2021-01-18Z ([#20246](https://github.com/RocketChat/Rocket.Chat/pull/20246))
 
+- Regression: Add tests to new banners REST endpoints ([#20492](https://github.com/RocketChat/Rocket.Chat/pull/20492))
+
+  Add tests for the new `banners.*` endpoints: `banners.getNew` and `banners.dismiss`.
+
 - Regression: Announcement bar not showing properly Markdown content ([#20290](https://github.com/RocketChat/Rocket.Chat/pull/20290))
 
   **Before**:
@@ -522,7 +354,15 @@
   **After**:
   ![image](https://user-images.githubusercontent.com/27704687/105274050-2e404100-5b7b-11eb-93b2-b6282a7bed95.png)
 
+- regression: Announcement link open in new tab ([#20435](https://github.com/RocketChat/Rocket.Chat/pull/20435))
+
+- Regression: Apps-Engine - Convert streams to buffers on file upload ([#20523](https://github.com/RocketChat/Rocket.Chat/pull/20523))
+
+  This is an implementation to accommodate the changes in API for the `IPreFileUpload` hook in the Apps-Engine. Explanation on the reasoning for it is here https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/376
+
 - Regression: Attachments ([#20291](https://github.com/RocketChat/Rocket.Chat/pull/20291))
+
+- Regression: Bio page not rendering ([#20450](https://github.com/RocketChat/Rocket.Chat/pull/20450))
 
 - Regression: Change sort icon ([#20177](https://github.com/RocketChat/Rocket.Chat/pull/20177))
 
@@ -532,11 +372,48 @@
   ### After
   ![image](https://user-images.githubusercontent.com/40830821/104366542-4cad9900-54f8-11eb-83ca-acb99899515a.png)
 
+- Regression: Custom field labels are not displayed properly on Omnichannel Contact Profile form ([#20393](https://github.com/RocketChat/Rocket.Chat/pull/20393))
+
+  ### Before
+  ![image](https://user-images.githubusercontent.com/2493803/105780399-20116c80-5f4f-11eb-9620-0901472e453b.png)
+
+  ![image](https://user-images.githubusercontent.com/2493803/105780420-2e5f8880-5f4f-11eb-8e93-8115ebc685be.png)
+
+  ### After
+
+  ![image](https://user-images.githubusercontent.com/2493803/105780832-1ccab080-5f50-11eb-8042-188dd0c41904.png)
+
+  ![image](https://user-images.githubusercontent.com/2493803/105780911-500d3f80-5f50-11eb-96e0-7df3f179dbd5.png)
+
+- Regression: ESLint Warning - explicit-function-return-type ([#20434](https://github.com/RocketChat/Rocket.Chat/pull/20434) by [@aditya-mitra](https://github.com/aditya-mitra))
+
+  Added explicit Return Type (Promise<void>) on the function to fix eslint warning (`explicit-function-return-type`)
+
+- Regression: Fix banners sync data types ([#20517](https://github.com/RocketChat/Rocket.Chat/pull/20517))
+
+- Regression: Fix Cron statistics TypeError ([#20343](https://github.com/RocketChat/Rocket.Chat/pull/20343) by [@RonLek](https://github.com/RonLek))
+
+- Regression: Fix duplicate email messages in multiple instances ([#20495](https://github.com/RocketChat/Rocket.Chat/pull/20495))
+
+- Regression: Fix e2e paused state ([#20511](https://github.com/RocketChat/Rocket.Chat/pull/20511))
+
+- Regression: Fixed update room avatar issue. ([#20433](https://github.com/RocketChat/Rocket.Chat/pull/20433) by [@Darshilp326](https://github.com/Darshilp326))
+
+  Users can now update their room avatar without any error.
+
+  https://user-images.githubusercontent.com/55157259/105951602-560d3880-6096-11eb-97a5-b5eb9a28b58d.mp4
+
 - Regression: Info Page Icon style and usage graph breaking ([#20180](https://github.com/RocketChat/Rocket.Chat/pull/20180))
 
 - Regression: Lint warnings and some datepicker ([#20280](https://github.com/RocketChat/Rocket.Chat/pull/20280))
 
+- Regression: NPS ([#20514](https://github.com/RocketChat/Rocket.Chat/pull/20514))
+
 - Regression: reactAttachments cpu ([#20255](https://github.com/RocketChat/Rocket.Chat/pull/20255))
+
+- Regression: Room not scrolling to bottom ([#20516](https://github.com/RocketChat/Rocket.Chat/pull/20516))
+
+- Regression: Set image sizes based on rotation ([#20531](https://github.com/RocketChat/Rocket.Chat/pull/20531))
 
 - Regression: Unread superposing announcement. ([#20306](https://github.com/RocketChat/Rocket.Chat/pull/20306))
 
@@ -567,6 +444,18 @@
 
   ![image](https://user-images.githubusercontent.com/5263975/104783709-69023d80-5765-11eb-968f-a2b93fdfb51e.png)
 
+- Security sync ([#20430](https://github.com/RocketChat/Rocket.Chat/pull/20430))
+
+- Update "Industry" setting ([#20510](https://github.com/RocketChat/Rocket.Chat/pull/20510))
+
+- Update Apps-Engine and permissions translations ([#20491](https://github.com/RocketChat/Rocket.Chat/pull/20491))
+
+  Update Apps-Engine version and apply changes in translations for the changed permissions. Please review the texts on the translation files to make sure they're clear.
+
+- Update Apps-Engine version ([#20482](https://github.com/RocketChat/Rocket.Chat/pull/20482))
+
+  Update Apps-Engine version with some fixes for the current RC cycle.
+
 - Update password policy English translation ([#20118](https://github.com/RocketChat/Rocket.Chat/pull/20118) by [@zdumitru](https://github.com/zdumitru))
 
 </details>
@@ -577,6 +466,7 @@
 - [@Karting06](https://github.com/Karting06)
 - [@RonLek](https://github.com/RonLek)
 - [@aKn1ghtOut](https://github.com/aKn1ghtOut)
+- [@aditya-mitra](https://github.com/aditya-mitra)
 - [@bdelwood](https://github.com/bdelwood)
 - [@bhavayAnand9](https://github.com/bhavayAnand9)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
@@ -591,6 +481,7 @@
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
 - [@gabriellsh](https://github.com/gabriellsh)
