@@ -1,7 +1,6 @@
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { Rooms, Messages, Users } from '../../../models/server/raw';
 import { getValue } from '../../../settings/server/raw';
-import { Message } from '../../../../server/sdk';
 
 export async function findMentionedMessages({ uid, roomId, pagination: { offset, count, sort } }) {
 	const room = await Rooms.findOneById(roomId);
@@ -13,15 +12,15 @@ export async function findMentionedMessages({ uid, roomId, pagination: { offset,
 		throw new Error('invalid-user');
 	}
 
-	const { records: messages, total } = await Message.get(uid, {
-		rid: roomId,
-		mentionsUsername: user.username,
-		queryOptions: {
-			sort: sort || { ts: -1 },
-			skip: offset,
-			limit: count,
-		},
+	const cursor = await Messages.findVisibleByMentionAndRoomId(user.username, roomId, {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
 	});
+
+	const total = await cursor.count();
+
+	const messages = await cursor.toArray();
 
 	return {
 		messages,
@@ -99,13 +98,15 @@ export async function findSnippetedMessages({ uid, roomId, pagination: { offset,
 		throw new Error('error-not-allowed');
 	}
 
-	const queryOptions = {
+	const cursor = await Messages.findSnippetedByRoom(roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
-	};
+	});
 
-	const { records: messages, total } = await Message.get(uid, { snippeted: true, queryOptions });
+	const total = await cursor.count();
+
+	const messages = await cursor.toArray();
 
 	return {
 		messages,
@@ -122,15 +123,15 @@ export async function findDiscussionsFromRoom({ uid, roomId, text, pagination: {
 		throw new Error('error-not-allowed');
 	}
 
-	const { records: messages, total } = await Message.getDiscussions({
-		rid: roomId,
-		text,
-		queryOptions: {
-			sort: sort || { ts: -1 },
-			skip: offset,
-			limit: count,
-		},
+	const cursor = Messages.findDiscussionsByRoomAndText(roomId, text, {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
 	});
+
+	const total = await cursor.count();
+
+	const messages = await cursor.toArray();
 
 	return {
 		messages,

@@ -14,7 +14,7 @@ import { ToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 const renderMenuOption: OptionRenderer = (
 	{ label: { title, icon }, ...props }: any,
 ): ReactNode =>
-	<Option label={title} title={title} icon={icon} {...props}/>;
+	<Option label={title} icon={icon} {...props}/>;
 
 const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Element => {
 	const tab = useTab();

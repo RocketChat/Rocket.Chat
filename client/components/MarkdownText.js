@@ -23,7 +23,7 @@ const options = {
 function MarkdownText({ content, preserveHtml = false, withRichContent = true, ...props }) {
 	const sanitizer = dompurify.sanitize;
 	const __html = useMemo(() => {
-		const html = content && marked(content, options);
+		const html = content && typeof content === 'string' && marked(content, options);
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
 	}, [content, preserveHtml, sanitizer]);
 	return __html ? <Box dangerouslySetInnerHTML={{ __html }} withRichContent={withRichContent} {...props} /> : null;
