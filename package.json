@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "3.11.0-develop",
+	"version": "3.12.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -244,15 +244,14 @@
 		"prometheus-gc-stats": "^0.6.2",
 		"querystring": "^0.2.0",
 		"queue-fifo": "^0.2.6",
+		"rc-scrollbars": "^1.0.3",
 		"react": "^16.13.1",
 		"react-dom": "^16.13.1",
 		"react-keyed-flatten-children": "^1.3.0",
-		"react-window": "^1.8.5",
-		"react-window-infinite-loader": "^1.0.5",
+		"react-virtuoso": "^1.2.4",
 		"redis": "^2.8.0",
 		"semver": "^5.7.1",
 		"sharp": "^0.22.1",
-		"simplebar-react": "^2.3.0",
 		"speakeasy": "^2.0.0",
 		"stream-buffers": "^3.0.2",
 		"string-strip-html": "^7.0.3",
