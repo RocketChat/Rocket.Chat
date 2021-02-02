@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import {
 	Field,
 	TextInput,
+	PasswordInput,
 	ToggleSwitch,
 	MultiSelect,
 	Accordion,
@@ -353,7 +354,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Field.Row>
 					</Box>
 					<Field.Row>
-						<TextInput disabled={!joinCodeRequired} value={joinCode} onChange={handleJoinCode} placeholder={t('Reset_password')} flexGrow={1}/>
+						<PasswordInput disabled={!joinCodeRequired} value={joinCode} onChange={handleJoinCode} placeholder={t('Reset_password')} flexGrow={1}/>
 					</Field.Row>
 				</Field>}
 				{canViewHideSysMes && <Field>
