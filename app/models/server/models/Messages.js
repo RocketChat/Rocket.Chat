@@ -569,6 +569,7 @@ export class Messages extends Base {
 			},
 			$unset: {
 				blocks: 1,
+				tshow: 1,
 			},
 		};
 
