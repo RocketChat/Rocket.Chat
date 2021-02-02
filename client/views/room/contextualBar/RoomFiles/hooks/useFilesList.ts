@@ -5,9 +5,9 @@ import {
 	FilesListOptions,
 } from '../../../../../lib/lists/FilesList';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { useUserRoom } from '../../../../../contexts/UserContext';
+import { useUserRoom, useUserId } from '../../../../../contexts/UserContext';
 import { useScrollableMessageList } from '../../../../../hooks/lists/useScrollableMessageList';
-// import { useStreamUpdatesForMessageList } from '../../../../../hooks/lists/useStreamUpdatesForMessageList';
+import { useStreamUpdatesForMessageList } from '../../../../../hooks/lists/useStreamUpdatesForMessageList';
 import { getConfig } from '../../../../../../app/ui-utils/client/config';
 
 export const useFilesList = (
@@ -20,6 +20,7 @@ export const useFilesList = (
 	const [filesList] = useState(() => new FilesList(options));
 
 	const room = useUserRoom(options.rid);
+	const uid = useUserId();
 
 	useEffect(() => {
 		if (filesList.options !== options) {
@@ -43,6 +44,13 @@ export const useFilesList = (
 			const { files, total } = await getFiles({
 				roomId: options.rid,
 				count: end - start,
+				sort: JSON.stringify({ uploadedAt: -1 }),
+				query: JSON.stringify({
+					name: { $regex: options.text || '', $options: 'i' },
+					...options.type !== 'all' && {
+						typeGroup: options.type,
+					},
+				}),
 			});
 
 			return {
@@ -50,7 +58,7 @@ export const useFilesList = (
 				itemCount: total,
 			};
 		},
-		[getFiles, options.rid],
+		[getFiles, options.rid, options.type, options.text],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
@@ -61,7 +69,7 @@ export const useFilesList = (
 			return filesListSize ? parseInt(filesListSize, 10) : undefined;
 		}, []),
 	);
-	// useStreamUpdatesForMessageList(filesList, uid, options.rid);
+	useStreamUpdatesForMessageList(filesList, uid, options.rid);
 
 	return {
 		filesList,

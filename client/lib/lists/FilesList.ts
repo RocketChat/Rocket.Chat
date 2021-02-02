@@ -5,6 +5,8 @@ type FilesMessage = Omit<IMessage, 'rid'> & Required<Pick<IMessage, 'rid'>>;
 
 export type FilesListOptions = {
 	rid: IMessage['rid'];
+	type: string;
+	text: string;
 };
 
 const isFileMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is FilesMessage =>

@@ -132,8 +132,6 @@ RoomFiles.Item = FileItem;
 export default ({ rid }) => {
 	const uid = useUserId();
 	const onClickClose = useTabBarClose();
-	// const room = useUserRoom(rid);
-	// room.rid = rid;
 
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
@@ -147,7 +145,7 @@ export default ({ rid }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const { filesList, loadMoreItems } = useFilesList(useMemo(() => ({ rid }), [rid]));
+	const { filesList, loadMoreItems } = useFilesList(useMemo(() => ({ rid, type, text }), [rid, type, text]));
 	const { phase, items: filesItems, itemCount: totalItemCount } = useRecordList(filesList);
 
 	const handleDelete = useMutableCallback((_id) => {
