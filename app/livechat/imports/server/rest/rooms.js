@@ -1,4 +1,5 @@
 import { Match, check } from 'meteor/check';
+import moment from 'moment';
 
 import { hasPermission } from '../../../../authorization/server';
 import { API } from '../../../../api/server';
@@ -8,10 +9,10 @@ const validateDateParams = (property, date) => {
 	if (date) {
 		date = JSON.parse(date);
 	}
-	if (date && date.start && isNaN(Date.parse(date.start))) {
+	if (date && date.start && isNaN(Date.parse(date.start)) && !moment(date.start, 'YYYY-MM-DDTHH:mm:ss').isValid()) {
 		throw new Error(`The "${ property }.start" query parameter must be a valid date.`);
 	}
-	if (date && date.end && isNaN(Date.parse(date.end))) {
+	if (date && date.end && isNaN(Date.parse(date.end)) && !moment(date.end, 'YYYY-MM-DDTHH:mm:ss').isValid()) {
 		throw new Error(`The "${ property }.end" query parameter must be a valid date.`);
 	}
 	return date;
