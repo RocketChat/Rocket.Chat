@@ -6,7 +6,7 @@ import { isEmail } from '../../../../app/utils/lib/isEmail.js';
 import VerticalBar from '../../../components/VerticalBar';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
 
-export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, ...props }) {
+export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, errors, ...props }) {
 	const t = useTranslation();
 	const [hasCustomFields, setHasCustomFields] = useState(false);
 
@@ -52,26 +52,35 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 			{useMemo(() => <Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={name} onChange={handleName}/>
+					<TextInput error={errors && errors.name} flexGrow={1} value={name} onChange={handleName}/>
 				</Field.Row>
-			</Field>, [t, name, handleName])}
+				{errors && errors.name && <Field.Error>
+					{errors.name}
+				</Field.Error>}
+			</Field>, [t, name, handleName, errors])}
 			{useMemo(() => <Field>
 				<Field.Label>{t('Username')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={username} onChange={handleUsername} addon={<Icon name='at' size='x20'/>}/>
+					<TextInput error={errors && errors.username} flexGrow={1} value={username} onChange={handleUsername} addon={<Icon name='at' size='x20'/>}/>
 				</Field.Row>
-			</Field>, [t, username, handleUsername])}
+				{errors && errors.username && <Field.Error>
+					{errors.username}
+				</Field.Error>}
+			</Field>, [t, username, handleUsername, errors])}
 			{useMemo(() => <Field>
 				<Field.Label>{t('Email')}</Field.Label>
 				<Field.Row>
-					<TextInput flexGrow={1} value={email} error={!isEmail(email) && email.length > 0 ? 'error' : undefined} onChange={handleEmail} addon={<Icon name='mail' size='x20'/>}/>
+					<TextInput error={errors && errors.email} flexGrow={1} value={email} error={!isEmail(email) && email.length > 0 ? 'error' : undefined} onChange={handleEmail} addon={<Icon name='mail' size='x20'/>}/>
 				</Field.Row>
+				{errors && errors.email && <Field.Error>
+					{errors.email}
+				</Field.Error>}
 				<Field.Row>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mbs='x4'>
 						<Box>{t('Verified')}</Box><ToggleSwitch checked={verified} onChange={handleVerified} />
 					</Box>
 				</Field.Row>
-			</Field>, [t, email, handleEmail, verified, handleVerified])}
+			</Field>, [t, email, handleEmail, verified, handleVerified, errors])}
 			{useMemo(() => <Field>
 				<Field.Label>{t('StatusMessage')}</Field.Label>
 				<Field.Row>
@@ -93,9 +102,12 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 			{useMemo(() => <Field>
 				<Field.Label>{t('Password')}</Field.Label>
 				<Field.Row>
-					<PasswordInput autoComplete='off' flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
+					<PasswordInput errors={errors && errors.password} autoComplete='off' flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
 				</Field.Row>
-			</Field>, [t, password, handlePassword])}
+				{errors && errors.password && <Field.Error>
+					{errors.password}
+				</Field.Error>}
+			</Field>, [t, password, handlePassword, errors])}
 			{useMemo(() => <Field>
 				<Field.Row>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
