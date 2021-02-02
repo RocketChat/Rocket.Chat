@@ -211,10 +211,21 @@ settings.addGroup('Accounts', function() {
 			type: 'boolean',
 			public: true,
 		});
+		this.add('Accounts_Registration_Users_Default_Roles_Enabled', true, {
+			type: 'boolean',
+			public: true,
+		});
 		this.add('Accounts_Registration_AuthenticationServices_Default_Roles', 'user', {
 			type: 'string',
 			enableQuery: {
 				_id: 'Accounts_Registration_AuthenticationServices_Enabled',
+				value: true,
+			},
+		});
+		this.add('Accounts_Registration_Users_Default_Roles', 'user', {
+			type: 'string',
+			enableQuery: {
+				_id: 'Accounts_Registration_Users_Default_Roles_Enabled',
 				value: true,
 			},
 		});
