@@ -67,15 +67,12 @@ const useQuery = ({ guest, servedBy, department, status, from, to, tags, customF
 		...itemsPerPage && { count: itemsPerPage },
 		...current && { offset: current },
 	};
-	let createdAt = {};
-	createdAt = { ...from && {
-		start: moment(new Date(from)).set({ hour: '00', minutes: '00', seconds: '00' }).utc().format('YYYY-MM-DDTHH:mm:ss'),
-	},
-	...to && {
-		end: moment(new Date(to)).set({ hour: '23', minutes: '59', seconds: '59' }).utc().format('YYYY-MM-DDTHH:mm:ss'),
-	} };
-	if (Object.keys(createdAt).length > 0) {
-		query.createdAt = JSON.stringify(createdAt);
+
+	if (from || to) {
+		query.createdAt = JSON.stringify({
+			...from && { start: moment(new Date(from)).set({ hour: '00', minutes: '00', seconds: '00' }).format('YYYY-MM-DDTHH:mm:ss') },
+			...to && { end: moment(new Date(to)).set({ hour: '23', minutes: '59', seconds: '59' }).format('YYYY-MM-DDTHH:mm:ss') },
+		});
 	}
 	if (status !== 'all') {
 		query.open = status === 'opened';
