@@ -260,6 +260,12 @@ export const saveUser = function(userId, userData) {
 		}
 
 		const _id = Accounts.createUser(createUser);
+		const defaultUserRoles = String(settings.get('Accounts_Registration_Users_Default_Roles')).split(',').map((s) => s.trim());
+		if (userData.roles) {
+			userData.roles = [...new Set([...userData.roles, ...defaultUserRoles])];
+		} else {
+			userData = defaultUserRoles;
+		}
 
 		const updateUser = {
 			$set: {
@@ -268,6 +274,10 @@ export const saveUser = function(userId, userData) {
 				settings: userData.settings || {},
 			},
 		};
+
+		if (defaultUserRoles.length > 0) {
+			updateUser.$set.roles = defaultUserRoles;
+		}
 
 		if (typeof userData.requirePasswordChange !== 'undefined') {
 			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
