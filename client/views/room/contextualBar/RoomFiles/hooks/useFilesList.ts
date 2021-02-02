@@ -8,19 +8,18 @@ import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useScrollableMessageList } from '../../../../../hooks/lists/useScrollableMessageList';
 // import { useStreamUpdatesForMessageList } from '../../../../../hooks/lists/useStreamUpdatesForMessageList';
-import { IRoom } from '../../../../../../definition/IRoom';
 import { getConfig } from '../../../../../../app/ui-utils/client/config';
 
 export const useFilesList = (
 	options: FilesListOptions,
-	rid: IRoom['_id'],
 ): {
 		filesList: FilesList;
 		initialItemCount: number;
 		loadMoreItems: (start: number, end: number) => void;
 	} => {
-	const room = useUserRoom(rid);
 	const [filesList] = useState(() => new FilesList(options));
+
+	const room = useUserRoom(options.rid);
 
 	useEffect(() => {
 		if (filesList.options !== options) {
@@ -41,13 +40,13 @@ export const useFilesList = (
 
 	const fetchMessages = useCallback(
 		async (start, end) => {
-			const { messages, total } = await getFiles({
+			const { files, total } = await getFiles({
 				roomId: options.rid,
 				count: end - start,
 			});
 
 			return {
-				items: messages,
+				items: files,
 				itemCount: total,
 			};
 		},
