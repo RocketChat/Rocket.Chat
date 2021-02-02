@@ -64,7 +64,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 		<Margins block='x4'>
 			<UserCard.Username name={(showRealNames && name) || username || name} status={status} />
-			<Info>{customStatus}</Info>
+			<Info withTruncatedText={false}><MarkdownText content={customStatus} withRichContent={false}/></Info>
 
 			{!!roles && <>
 				<Label>{t('Roles')}</Label>
