@@ -11,7 +11,7 @@ import {
 import { Virtuoso } from 'react-virtuoso';
 import memoize from 'memoize-one';
 
-import { useUserId, useUserRoom } from '../../../../contexts/UserContext';
+import { useUserId } from '../../../../contexts/UserContext';
 import DeleteFileWarning from '../../../../components/DeleteFileWarning';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
