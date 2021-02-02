@@ -13,15 +13,13 @@ export function InviteUsers({ data, ...props }) {
 	const [text, setText] = useState('');
 	const sendInvites = useMethod('sendInvitationEmail');
 	const getEmails = useCallback((text) => text.split(/[\ ,;]+/i).filter((val) => isEmail(val)), []);
-	const handleClick = () => {
-		sendInvites(getEmails(text), (error, result) => {
-			if (result) {
-				return dispatchToastMessage({ type: 'success', message: t('Emails_sent_successfully!') });
-			}
-			if (error) {
-				return dispatchToastMessage({ type: 'error', message: error });
-			}
-		});
+	const handleClick = async () => {
+		try {
+			await sendInvites(getEmails(text));
+			dispatchToastMessage({ type: 'success', message: t('Emails_sent_successfully!') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error.message });
+		}
 	};
 	return <VerticalBar.ScrollableContent {...props}>
 		<Box is='h2' fontScale='h1' mb='x8'>{t('Send_invitation_email')}</Box>
