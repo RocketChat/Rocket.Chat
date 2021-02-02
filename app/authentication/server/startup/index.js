@@ -222,6 +222,11 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		if (defaultAuthServiceRoles.length > 0) {
 			roles = roles.concat(defaultAuthServiceRoles.map((s) => s.trim()));
 		}
+	} else {
+		const defaultUserRoles = String(settings.get('Accounts_Registration_Users_Default_Roles')).split(',');
+		if (defaultUserRoles.length > 0) {
+			roles = roles.concat(defaultUserRoles.map((s) => s.trim()));
+		}
 	}
 
 	if (!user.type) {
