@@ -14,6 +14,7 @@ import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { userStatus } from '../../../app/user-status';
 import { callbacks } from '../../../app/callbacks';
 import { popover, AccountBox, modal, SideNav } from '../../../app/ui-utils';
+import MarkdownText from '../../components/MarkdownText';
 
 const ADMIN_PERMISSIONS = [
 	'view-logs',
@@ -113,7 +114,7 @@ const UserDropdown = ({ user, onClose }) => {
 					</Margins>
 				</Box>
 				<Box color='hint' withTruncatedText display='inline-block'>
-					{statusText || t(status)}
+					<MarkdownText content={statusText || t(status)} withRichContent={false}/>
 				</Box>
 			</Box>
 		</Box>
