@@ -364,7 +364,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Field.Row>
 					</Box>
 					<Field.Row>
-						<MultiSelect options={sysMesOptions} disabled={!hideSysMes} value={systemMessages} onChange={handleSystemMessages} placeholder={t('Select_an_option')} flexGrow={1}/>
+						<MultiSelect maxWidth='100%' options={sysMesOptions} disabled={!hideSysMes} value={systemMessages} onChange={handleSystemMessages} placeholder={t('Select_an_option')} flexGrow={1}/>
 					</Field.Row>
 				</Field>}
 				{canViewEncrypted && <Field>
