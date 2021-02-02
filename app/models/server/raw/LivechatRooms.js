@@ -946,6 +946,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		if (roomIds) {
 			query._id = { $in: roomIds };
 		}
+
 		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });
 	}
 
