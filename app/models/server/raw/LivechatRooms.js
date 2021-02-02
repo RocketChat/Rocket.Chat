@@ -931,8 +931,8 @@ export class LivechatRoomsRaw extends BaseRaw {
 				query.ts.$lte = moment(createdAt.start).set({ hour: '29', minutes: '59', seconds: '59' }).toDate();
 			}
 			if (createdAt.end && !createdAt.start) {
-				query.ts.$gte = moment(createdAt.end).toDate();
-				query.ts.$lte = moment().toDate();
+				query.ts.$gte = moment('1800/01/01', 'YYYY-MM-DD').toDate();
+				query.ts.$lte = moment(createdAt.end).toDate();
 			}
 		}
 		if (closedAt) {
