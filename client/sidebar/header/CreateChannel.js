@@ -1,14 +1,32 @@
 import React from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
-// import { useForm } from '../../hooks/useForm';
+import UserAutoCompleteMultiple from '../../../ee/client/audit/UserAutoCompleteMultiple';
+import { useForm } from '../../hooks/useForm';
 
 const CreateChannel = ({
 	onClose,
 }) => {
 	const t = useTranslation();
-	// const form = useForm();
+	const initialValues = {
+		users: [],
+	};
+	const { values, handlers } = useForm(initialValues);
+
+	const { users } = values;
+	const { handleUsers } = handlers;
+
+	const onChangeUsers = useMutableCallback((value, action) => {
+		if (!action) {
+			if (users.includes(value)) {
+				return;
+			}
+			return handleUsers([...users, value]);
+		}
+		handleUsers(users.filter((current) => current !== value));
+	});
 
 	return <Modal>
 		<Modal.Header>
@@ -66,7 +84,7 @@ const CreateChannel = ({
 			<Field mbe='x24'>
 				<Field.Label>{`${ t('Add_members') } (${ t('optional') })`}</Field.Label>
 				<Field.Row>
-
+					<UserAutoCompleteMultiple value={users} onChange={onChangeUsers}/>
 				</Field.Row>
 			</Field>
 		</Modal.Content>
