@@ -254,5 +254,9 @@ export class ListenersModule {
 				...data,
 			});
 		});
+
+		service.onEvent('banner.new', (bannerId): void => {
+			notifications.notifyLoggedInThisInstance('new-banner', { bannerId });
+		});
 	}
 }
