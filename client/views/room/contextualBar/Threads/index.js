@@ -257,7 +257,7 @@ export function ThreadList({
 							value={text}
 							onChange={setText}
 							addon={<Icon name='magnifier' size='x20' />}
-              ref={inputRef}
+							ref={inputRef}
 						/>
 						<Select
 							flexGrow={0}
