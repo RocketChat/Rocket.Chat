@@ -766,7 +766,7 @@ Meteor.startup(() => {
 			}
 		};
 
-		this.sendToBottomIfNecessaryDebounced = () => {};
+		this.sendToBottomIfNecessaryDebounced = _.debounce(this.sendToBottomIfNecessary, 10);
 	}); // Update message to re-render DOM
 
 	Template.roomOld.onDestroyed(function() {
@@ -820,7 +820,6 @@ Meteor.startup(() => {
 			template.atBottom = template.isAtBottom(100);
 		};
 
-		template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 150);
 
 		if (window.MutationObserver) {
 			template.observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());

@@ -1,19 +1,18 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback, useDebouncedValue, useStableArray, useResizeObserver, useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useDebouncedValue, useStableArray, useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
 import { css } from '@rocket.chat/css-in-js';
-import { FixedSizeList as List } from 'react-window';
+import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
 import { ReactiveUserStatus } from '../../components/UserStatus';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useSetting } from '../../contexts/SettingsContext';
 import { roomTypes } from '../../../app/utils';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
-import { itemSizeMap, SideBarItemTemplateWithData } from '../RoomList';
+import { SideBarItemTemplateWithData } from '../RoomList';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
@@ -31,13 +30,13 @@ const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, u
 	sidebarViewMode,
 }));
 
-const Row = React.memo(({ data, index, style }) => {
-	const { items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended } = data;
-	const item = items[index];
+const Row = React.memo(({ item, data }) => {
+	const { t, SideBarItemTemplate, AvatarTemplate, useRealName, extended } = data;
+
 	if (item.t === 'd' && !item.u) {
-		return <UserItem id={`search-${ item._id }`} useRealName={useRealName} style={style} t={t} item={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+		return <UserItem id={`search-${ item._id }`} useRealName={useRealName} t={t} item={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 	}
-	return <SideBarItemTemplateWithData id={`search-${ item._id }`} tabIndex={-1} extended={extended} style={style} t={t} room={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+	return <SideBarItemTemplateWithData id={`search-${ item._id }`} tabIndex={-1} extended={extended} t={t} room={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 });
 
 const UserItem = React.memo(({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName, sidebarViewMode }) => {
@@ -48,6 +47,7 @@ const UserItem = React.memo(({ item, id, style, t, SideBarItemTemplate, AvatarTe
 
 	return <SideBarItemTemplate
 		is='a'
+		style={{ height: '100%' }}
 		id={id}
 		href={href}
 		title={title}
@@ -172,6 +172,17 @@ const toggleSelectionState = (next, current, input) => {
 	}
 };
 
+const ScrollerWithCustomProps = forwardRef((props, ref) => <ScrollableContentWrapper
+	{...props}
+	ref={ref}
+	renderView={
+		({ style, ...props }) => (
+			<div {...props} className='teste' style={{ ...style, overflowX: 'hidden' }} />
+		)
+	}
+	renderTrackHorizontal={(props) => <div {...props} style={{ display: 'none' }} className='track-horizontal'/>}
+/>);
+
 const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 	const listId = useUniqueId();
 	const t = useTranslation();
@@ -180,6 +191,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 	const autofocus = useAutoFocus();
 
 	const listRef = useRef();
+	const boxRef = useRef();
 
 	const selectedElement = useRef();
 	const itemIndexRef = useRef(0);
@@ -189,8 +201,6 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const avatarTemplate = useAvatarTemplate();
-
-	const itemSize = itemSizeMap(sidebarViewMode);
 
 	const extended = sidebarViewMode === 'extended';
 
@@ -202,17 +212,13 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 
 	const itemData = createItemData(items, t, sideBarItemTemplate, avatarTemplate, showRealName, extended, sidebarViewMode);
 
-	const { ref: boxRef, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
-
-	usePreventDefault(boxRef);
-
 	const changeSelection = useMutableCallback((dir) => {
 		let nextSelectedElement = null;
 
 		if (dir === 'up') {
-			nextSelectedElement = selectedElement.current.previousSibling;
+			nextSelectedElement = selectedElement.current.parentElement.previousSibling.querySelector('a');
 		} else {
-			nextSelectedElement = selectedElement.current.nextSibling;
+			nextSelectedElement = selectedElement.current.parentElement.nextSibling.querySelector('a');
 		}
 
 		if (nextSelectedElement) {
@@ -224,11 +230,17 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 
 	const resetCursor = useMutableCallback(() => {
 		itemIndexRef.current = 0;
-		listRef.current.scrollToItem(itemIndexRef.current);
-		selectedElement.current = boxRef.current.querySelector('a.rcx-sidebar-item');
+		listRef.current.scrollToIndex({ index: itemIndexRef.current });
+
+		selectedElement.current = boxRef.current?.querySelector('a.rcx-sidebar-item');
+
 		if (selectedElement.current) {
 			toggleSelectionState(selectedElement.current, undefined, autofocus.current);
 		}
+	});
+
+	useEffect(() => {
+		resetCursor();
 	});
 
 	useEffect(() => {
@@ -252,16 +264,16 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 			},
 			Tab: onClose,
 			ArrowUp: () => {
-				itemIndexRef.current = Math.max(itemIndexRef.current - 1, 0);
-				listRef.current.scrollToItem(itemIndexRef.current);
 				const currentElement = changeSelection('up');
+				itemIndexRef.current = Math.max(itemIndexRef.current - 1, 0);
+				listRef.current.scrollToIndex({ index: itemIndexRef.current });
 				selectedElement.current = currentElement;
 			},
 			ArrowDown: () => {
 				const currentElement = changeSelection('down');
-				selectedElement.current = currentElement;
 				itemIndexRef.current = Math.min(itemIndexRef.current + 1, items?.length + 1);
-				listRef.current.scrollToItem(itemIndexRef.current);
+				listRef.current.scrollToIndex({ index: itemIndexRef.current });
+				selectedElement.current = currentElement;
 			},
 			Enter: () => {
 				if (selectedElement.current) {
@@ -272,26 +284,24 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		return () => {
 			unsubscribe();
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [autofocus, changeSelection, items?.length, onClose, resetCursor, setFilterValue]);
+	}, [autofocus, changeSelection, items.length, onClose, resetCursor, setFilterValue]);
 
 	return <Box position='absolute' rcx-sidebar h='full' display='flex' flexDirection='column' zIndex={99} w='full' className={css`left: 0; top: 0;`} ref={ref}>
 		<Sidebar.TopBar.Section role='search' is='form'>
 			<TextInput aria-owns={listId} data-qa='sidebar-search-input' ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
 		</Sidebar.TopBar.Section>
-		<Box aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' ref={boxRef} data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncStatePhase.RESOLVED}>
-			<List
-				outerElementType={ScrollableContentWrapper}
-				height={blockSize}
-				itemCount={items?.length}
-				itemSize={itemSize}
-				itemData={itemData}
-				overscanCount={25}
-				width='100%'
+		<Box ref={boxRef} aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncStatePhase.RESOLVED}>
+			<Virtuoso
+				style={{ height: '100%', width: '100%' }}
+				totalCount={items?.length}
+				data={items}
+				components={{ Scroller: ScrollerWithCustomProps }}
+				itemContent={(index, data) => <Row
+					data={itemData}
+					item={data}
+				/>}
 				ref={listRef}
-			>
-				{Row}
-			</List>
+			/>
 		</Box>
 	</Box>;
 });
