@@ -10,7 +10,7 @@ export type VideoAttachmentProps = {
 	video_url: string;
 	video_type: string;
 	video_size: number;
-	file: FileProp;
+	file?: FileProp;
 } & AttachmentPropsBase;
 
 export const VideoAttachment: FC<VideoAttachmentProps> = ({ title,
@@ -30,7 +30,7 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({ title,
 			<Attachment.Title>{title}</Attachment.Title>
 			{size && <Attachment.Size size={size}/>}
 			{collapse}
-			{hasDownload && link && <Attachment.Download href={link}/>}
+			{hasDownload && link && <Attachment.Download title={title} href={link}/>}
 		</Attachment.Row>
 		{ !collapsed && <Attachment.Content width='full'>
 			<Box is='video' width='full' controls>

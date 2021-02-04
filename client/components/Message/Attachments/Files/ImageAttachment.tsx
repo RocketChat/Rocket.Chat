@@ -14,7 +14,7 @@ export type ImageAttachmentProps = {
 	image_url: string;
 	image_type: string;
 	image_size?: number;
-	file: FileProp;
+	file?: FileProp;
 } & AttachmentPropsBase;
 
 export const ImageAttachment: FC<ImageAttachmentProps> = ({
@@ -40,7 +40,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 			<Attachment.Title>{title}</Attachment.Title>
 			{size && <Attachment.Size size={size}/>}
 			{collapse}
-			{hasDownload && link && <Attachment.Download href={getURL(link)}/>}
+			{hasDownload && link && <Attachment.Download title={title} href={getURL(link)}/>}
 		</Attachment.Row>
 		{ !collapsed && <Attachment.Content>
 			<Image {...imageDimensions } loadImage={loadImage} setLoadImage={setLoadImage} src={ url} previewUrl={`data:image/png;base64,${ imagePreview }`} />
