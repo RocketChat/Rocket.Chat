@@ -244,9 +244,9 @@ describe('Sessions Aggregates', () => {
 	let db;
 
 	before(function() {
-		if (!process.env.CI) this.skip();
+		if (!process.env.CI) { this.skip(); }
 	});
-	
+
 	if (!process.env.MONGO_URL) {
 		before(function() {
 			this.timeout(120000);
@@ -255,8 +255,8 @@ describe('Sessions Aggregates', () => {
 		});
 
 		after(() => {
-			if (process.env.CI) mongoUnit.stop();
-		 });
+			if (process.env.CI) { mongoUnit.stop(); }
+		});
 	}
 
 	before(async () => {
