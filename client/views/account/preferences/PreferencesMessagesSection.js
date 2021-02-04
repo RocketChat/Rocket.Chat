@@ -6,7 +6,7 @@ import { useUserPreference } from '../../../contexts/UserContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useForm } from '../../../hooks/useForm';
 
-const PreferencesMessagesSection = ({ onChange, ...props }) => {
+const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 	const t = useTranslation();
 
 	const showRoles = useSetting('UI_DisplayRoles');
@@ -28,7 +28,7 @@ const PreferencesMessagesSection = ({ onChange, ...props }) => {
 		messageViewMode: useUserPreference('messageViewMode'),
 	};
 
-	const { values, handlers } = useForm(settings, onChange);
+	const { values, handlers, commit } = useForm(settings, onChange);
 
 	const {
 		unreadAlert,
@@ -81,6 +81,8 @@ const PreferencesMessagesSection = ({ onChange, ...props }) => {
 		[1, t('Cozy')],
 		[2, t('Compact')],
 	], [t]);
+
+	commitRef.current.messages = commit;
 
 	// TODO: Weird behaviour when saving clock mode, and then changing it.
 

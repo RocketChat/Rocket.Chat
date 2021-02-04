@@ -1,3 +1,12 @@
+declare module '@rocket.chat/fuselage-tokens/colors' {
+	type ColorsType = {
+		[key: string]: string;
+	};
+
+	const Colors: ColorsType;
+	export default Colors;
+}
+
 declare module '@rocket.chat/fuselage' {
 	import { css } from '@rocket.chat/css-in-js';
 	import { Placements } from '@rocket.chat/fuselage-hooks';
@@ -164,7 +173,13 @@ declare module '@rocket.chat/fuselage' {
 		Item: ForwardRefExoticComponent<AccordionItemProps>;
 	};
 
-	type AvatarProps = BoxProps;
+	type AvatarProps = Omit<BoxProps, 'title' | 'size'> & {
+		title?: string;
+		size?: 'x16' | 'x18' | 'x20' | 'x24' | 'x28' | 'x32' | 'x36' | 'x40' | 'x48' | 'x124' | 'x200' | 'x332';
+		rounded?: boolean;
+		objectFit?: boolean;
+		url: string;
+	};
 	export const Avatar: ForwardRefExoticComponent<AvatarProps> & {
 		Context: Context<{
 			baseUrl: string;
