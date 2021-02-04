@@ -1,20 +1,59 @@
-import React, { memo, useCallback } from 'react';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import { useMutableCallback, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import UserAutoCompleteMultiple from '../../../ee/client/audit/UserAutoCompleteMultiple';
+import { useSetting } from '../../contexts/SettingsContext';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import { useMethod } from '../../contexts/ServerContext';
+import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
+
 
 export const CreateChannel = ({
 	values,
 	handlers,
+	hasUnsavedChanges,
 	onChangeUsers,
+	onChangeType,
+	onChangeBroadcast,
+	canOnlyCreateOneType,
 	onCreate,
 	onClose,
 }) => {
 	const t = useTranslation();
+	const e2eEnabled = useSetting('E2E_Enable');
+	const e2eEnabledForDirectByDefault = useSetting('E2E_Enabled_Default_DirectRooms');
+	const namesValidation = useSetting('UTF8_Names_Validation');
+	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
+	const channelNameExists = useMethod('roomNameExists');
+	const channelNameRegex = useMemo(() => {
+		if (allowSpecialNames) {
+			return '';
+		}
+		const regex = new RegExp(`^${ namesValidation }$`);
+
+		return regex;
+	}, [allowSpecialNames, namesValidation]);
+
+	const [nameError, setNameError] = useState();
+
+	const checkName = useDebouncedCallback(async (name) => {
+		setNameError(false);
+		if (hasUnsavedChanges) { return; }
+		if (!name || name.length === 0) { return setNameError(t('Field_required')); }
+		if (!channelNameRegex.test(name)) { return setNameError(t('error-invalid-name')); }
+		const isNotAvailable = await channelNameExists(name);
+		if (isNotAvailable) { return setNameError(t('Channel_already_exist', name)); }
+	}, 100, [name]);
+
+	useComponentDidUpdate(() => {
+		checkName(values.name);
+	}, [checkName, values.name]);
+
+	const canSave = useMemo(() => hasUnsavedChanges && !nameError, [hasUnsavedChanges, nameError]);
 
 	return <Modal>
 		<Modal.Header>
@@ -24,13 +63,16 @@ export const CreateChannel = ({
 			<Field mbe='x24'>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput addon={<Icon name='lock' size='x20' />} placeholder={t('Channel_name')} onChange={handlers.handleName}/>
+					<TextInput error={hasUnsavedChanges && nameError} addon={<Icon name='lock' size='x20' />} placeholder={t('Channel_name')} onChange={handlers.handleName}/>
 				</Field.Row>
+				{hasUnsavedChanges && nameError && <Field.Error>
+					{nameError}
+				</Field.Error>}
 			</Field>
 			<Field mbe='x24'>
 				<Field.Label>{t('Topic')} <Box is='span' color='neutral-600'>({t('optional')})</Box></Field.Label>
 				<Field.Row>
-					<TextInput addon={<Icon name='lock' size='x20' />} placeholder={t('Channel_what_is_this_channel_about')} onChange={handlers.handleDescription}/>
+					<TextInput placeholder={t('Channel_what_is_this_channel_about')} onChange={handlers.handleDescription}/>
 				</Field.Row>
 			</Field>
 			<Field mbe='x24'>
@@ -39,34 +81,34 @@ export const CreateChannel = ({
 						<Field.Label>{t('Private')}</Field.Label>
 						<Field.Description>{values.type ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}</Field.Description>
 					</Box>
-					<ToggleSwitch onChange={handlers.handleType}/>
+					<ToggleSwitch checked={values.type} disabled={!!canOnlyCreateOneType} onChange={onChangeType}/>
 				</Box>
 			</Field>
-			<Field mbe='x24'>
+			<Field mbe='x24' disabled={values.broadcast}>
 				<Box display='flex' justifyContent='space-between' alignItems='start'>
 					<Box display='flex' flexDirection='column'>
 						<Field.Label>{t('Read_only')}</Field.Label>
 						<Field.Description>{t('All_users_in_the_channel_can_write_new_messages')}</Field.Description>
 					</Box>
-					<ToggleSwitch onChange={handlers.handleReadOnly}/>
+					<ToggleSwitch checked={values.readOnly} disabled={values.broadcast} onChange={handlers.handleReadOnly}/>
 				</Box>
 			</Field>
-			<Field mbe='x24'>
+			{e2eEnabled && !e2eEnabledForDirectByDefault && <Field disabled={!values.type || values.broadcast} mbe='x24'>
 				<Box display='flex' justifyContent='space-between' alignItems='start'>
 					<Box display='flex' flexDirection='column'>
 						<Field.Label>{t('Encrypted')}</Field.Label>
-						<Field.Description>{t('Encrypted_channel_Description')}</Field.Description>
+						<Field.Description>{values.type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}</Field.Description>
 					</Box>
-					<ToggleSwitch onChange={handlers.handleEncrypted} />
+					<ToggleSwitch checked={values.encrypted} disabled={!values.type || values.broadcast} onChange={handlers.handleEncrypted} />
 				</Box>
-			</Field>
+			</Field>}
 			<Field mbe='x24'>
 				<Box display='flex' justifyContent='space-between' alignItems='start'>
 					<Box display='flex' flexDirection='column'>
 						<Field.Label>{t('Broadcast')}</Field.Label>
 						<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
 					</Box>
-					<ToggleSwitch onChange={handlers.handleBroadcast} />
+					<ToggleSwitch onChange={onChangeBroadcast} />
 				</Box>
 			</Field>
 			<Field mbe='x24'>
@@ -79,7 +121,7 @@ export const CreateChannel = ({
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				<Button onClick={onClose}>{t('Cancel')}</Button>
-				<Button onClick={onCreate} primary>{t('Create')}</Button>
+				<Button disabled={!canSave} onClick={onCreate} primary>{t('Create')}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;
@@ -92,17 +134,29 @@ export default memo(({
 	const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
 	const setChannelDescription = useEndpointActionExperimental('POST', 'channels.setDescription');
 	const setPrivateChannelDescription = useEndpointActionExperimental('POST', 'groups.setDescription');
+	const canCreateChannel = usePermission('create-c');
+	const canCreatePrivateChannel = usePermission('create-p');
+	const canOnlyCreateOneType = useMemo(() => {
+		if (!canCreateChannel && canCreatePrivateChannel) {
+			return 'p';
+		}
+		if (canCreateChannel && !canCreatePrivateChannel) {
+			return 'c';
+		}
+		return false;
+	}, [canCreateChannel, canCreatePrivateChannel]);
+
 
 	const initialValues = {
 		users: [],
 		name: '',
 		description: '',
-		type: false,
+		type: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 		readOnly: false,
 		encrypted: false,
 		broadcast: false,
 	};
-	const { values, handlers } = useForm(initialValues);
+	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
 	const {
 		users,
@@ -115,6 +169,10 @@ export default memo(({
 	} = values;
 	const {
 		handleUsers,
+		handleEncrypted,
+		handleType,
+		handleBroadcast,
+		handleReadOnly,
 	} = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
@@ -125,6 +183,22 @@ export default memo(({
 			return handleUsers([...users, value]);
 		}
 		handleUsers(users.filter((current) => current !== value));
+	});
+
+	const onChangeType = useMutableCallback((value) => {
+		if (value) {
+			handleEncrypted(false);
+		}
+		return handleType(value);
+	});
+
+	const onChangeBroadcast = useMutableCallback((value) => {
+		if (value) {
+			handleEncrypted(false);
+			handleReadOnly(true);
+		}
+		handleReadOnly(value);
+		return handleBroadcast(value);
 	});
 
 	const onCreate = useCallback(async () => {
@@ -166,10 +240,17 @@ export default memo(({
 		users,
 	]);
 
+	console.log(hasUnsavedChanges);
+
+
 	return <CreateChannel
 		values={values}
 		handlers={handlers}
+		hasUnsavedChanges={hasUnsavedChanges}
 		onChangeUsers={onChangeUsers}
+		onChangeType={onChangeType}
+		onChangeBroadcast={onChangeBroadcast}
+		canOnlyCreateOneType={canOnlyCreateOneType}
 		onClose={onClose}
 		onCreate={onCreate}
 	/>;
