@@ -1,5 +1,6 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { Field, Box, Button } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -15,6 +16,18 @@ export function AddUser({ roles, ...props }) {
 	const router = useRoute('admin-users');
 
 	const { value: roleData } = useEndpointData('roles.list', '');
+	const [errors, setErrors] = useState({});
+
+	const validationKeys = {
+		name: (name) => setErrors((errors) => ({ ...errors, name: !name.trim().length ? t('The_field_is_required', t('name')) : undefined })),
+		username: (username) => setErrors((errors) => ({ ...errors, username: !username.trim().length ? t('The_field_is_required', t('username')) : undefined })),
+		email: (email) => setErrors((errors) => ({ ...errors, email: !email.trim().length ? t('The_field_is_required', t('email')) : undefined })),
+		password: (password) => setErrors((errors) => ({ ...errors, password: !password.trim().length ? t('The_field_is_required', t('password')) : undefined })),
+	};
+
+	const validateForm = ({ key, value }) => {
+		validationKeys[key] && validationKeys[key](value);
+	};
 
 	const {
 		values,
@@ -36,7 +49,7 @@ export function AddUser({ roles, ...props }) {
 		sendWelcomeEmail: true,
 		joinDefaultChannels: true,
 		customFields: {},
-	});
+	}, validateForm);
 
 	const goToUser = useCallback((id) => router.push({
 		context: 'info',
@@ -45,12 +58,21 @@ export function AddUser({ roles, ...props }) {
 
 	const saveAction = useEndpointAction('POST', 'users.create', values, t('User_created_successfully!'));
 
-	const handleSave = useCallback(async () => {
+	const handleSave = useMutableCallback(async () => {
+		Object.entries(values).forEach(([key, value]) => {
+			validateForm({ key, value });
+		});
+
+		const { name, username, password, email } = values;
+		if (name === '' || username === '' || password === '' || email === '') {
+			return false;
+		}
+
 		const result = await saveAction();
 		if (result.success) {
 			goToUser(result.user._id);
 		}
-	}, [goToUser, saveAction]);
+	});
 
 	const availableRoles = useMemo(() => roleData?.roles?.map(({ _id, description }) => [_id, description || _id]) ?? [], [roleData]);
 
@@ -63,5 +85,5 @@ export function AddUser({ roles, ...props }) {
 		</Field.Row>
 	</Field>, [hasUnsavedChanges, reset, t, handleSave]);
 
-	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} append={append} {...props}/>;
+	return <UserForm errors={errors} formValues={values} formHandlers={handlers} availableRoles={availableRoles} append={append} {...props}/>;
 }
