@@ -127,7 +127,7 @@ const UserDropdown = ({ user, onClose }) => {
 				const name = status.localizeName ? t(status.name) : status.name;
 				const modifier = status.statusType || user.status;
 
-				return <Option onClick={() => { setStatus(status.statusType, name); onClose(); }} key={index}>
+				return <Option onClick={() => { setStatus(status.statusType, ''); onClose(); }}>
 					<Option.Column><UserStatus status={modifier}/></Option.Column>
 					<Option.Content withTruncatedText fontScale='p2'>{name}</Option.Content>
 				</Option>;
