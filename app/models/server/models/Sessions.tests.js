@@ -243,6 +243,10 @@ const DATA = {
 describe('Sessions Aggregates', () => {
 	let db;
 
+	before(function() {
+		if (!process.env.CI) this.skip();
+	});
+	
 	if (!process.env.MONGO_URL) {
 		before(function() {
 			this.timeout(120000);
@@ -250,11 +254,13 @@ describe('Sessions Aggregates', () => {
 				.then((testMongoUrl) => { process.env.MONGO_URL = testMongoUrl; });
 		});
 
-		after(() => { mongoUnit.stop(); });
+		after(() => {
+			if (process.env.CI) mongoUnit.stop();
+		 });
 	}
 
 	before(async () => {
-		const client = await MongoClient.connect(process.env.MONGO_URL);
+		const client = await MongoClient.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
 		db = client.db('test');
 
 		after(() => {
