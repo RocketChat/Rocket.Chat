@@ -4,6 +4,7 @@ import { check } from 'meteor/check';
 import * as Mailer from '../../../mailer';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
+import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 let html = '';
 Meteor.startup(() => {
@@ -13,7 +14,7 @@ Meteor.startup(() => {
 });
 
 Meteor.methods({
-	sendInvitationEmail(emails) {
+	sendInvitationEmail(emails, language, realname) {
 		check(emails, [String]);
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -27,8 +28,14 @@ Meteor.methods({
 		}
 		const validEmails = emails.filter(Mailer.checkAddressFormat);
 
-		const subject = settings.get('Invitation_Subject');
+		let inviter;
+		if (!realname) {
+			inviter = Meteor.user().username;
+		} else {
+			inviter = realname;
+		}
 
+		const subject = settings.get('Invitation_Subject');
 		return validEmails.filter((email) => {
 			try {
 				return Mailer.send({
@@ -38,7 +45,11 @@ Meteor.methods({
 					html,
 					data: {
 						email,
+						Invite_Link: Meteor.runAsUser(Meteor.userId(), () => Meteor.call('getInviteLink')),
+						Username: inviter,
+						Avatar_Link: `${ settings.get('Site_Url').slice(0, -1) }${ getAvatarURL(Meteor.user().username) }`,
 					},
+					lng: language,
 				});
 			} catch ({ message }) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ message }`, {

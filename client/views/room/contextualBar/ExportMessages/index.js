@@ -12,6 +12,7 @@ import { useEndpoint } from '../../../../contexts/ServerContext';
 import { roomTypes, isEmail } from '../../../../../app/utils/client';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { offlineAction } from '../../../../../app/ui-utils';
 
 const clickable = css`
 	cursor: pointer;
@@ -168,6 +169,11 @@ const MailExportForm = ({ onCancel, rid }) => {
 	const roomsExport = useEndpoint('POST', 'rooms.export');
 
 	const handleSubmit = async () => {
+		// WIDECHAT
+		if (offlineAction('Sending mail')) {
+			return false;
+		}
+
 		if (toUsers.length === 0 && additionalEmails === '') {
 			setErrorMessage(t('Mail_Message_Missing_to'));
 			return;
