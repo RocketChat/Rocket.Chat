@@ -384,9 +384,8 @@ Template.message.helpers({
 		return this.msg.className;
 	},
 	channelName() {
-		const { subscription } = this;
-		// const subscription = Subscriptions.findOne({ rid: this.rid });
-		return subscription && subscription.name;
+		const { msg } = this;
+		return msg.r.name;
 	},
 	roomIcon() {
 		const { room } = this;
