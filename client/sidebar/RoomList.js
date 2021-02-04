@@ -39,7 +39,7 @@ export const itemSizeMap = (sidebarViewMode) => {
 
 const SidebarIcon = ({ room, small }) => {
 	const icon = useRoomIcon(room, small);
-	console.log(room);
+
 	return <Sidebar.Item.Icon {...icon.name && icon}>
 		{!icon.name && icon}
 	</Sidebar.Item.Icon>;

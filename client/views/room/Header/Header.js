@@ -51,7 +51,7 @@ const RoomTitle = ({ room }) => {
 const RoomHeader = ({ room }) => {
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room}/>;
-	console.log(room);
+
 	return <Header>
 		{ (isMobile || room.prid) && <Header.ToolBox>
 			{ isMobile && <Burger/>}
