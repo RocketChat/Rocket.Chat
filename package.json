@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "3.10.4",
+	"version": "3.10.5",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -180,6 +180,7 @@
 		"core-js": "^3.8.1",
 		"cors": "^2.8.5",
 		"csv-parse": "^4.12.0",
+		"dompurify": "^2.2.6",
 		"ejson": "^2.2.0",
 		"emailreplyparser": "^0.0.5",
 		"emojione": "^4.5.0",
