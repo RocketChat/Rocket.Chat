@@ -18,18 +18,15 @@ import {
 	RoomHistoryManager,
 	RoomManager,
 	readMessage,
-	modal,
 	Layout,
 } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
-import { renderMessageBody } from '../../../../../client/lib/renderMessageBody';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
-import { Markdown } from '../../../../markdown/client';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 
@@ -260,8 +257,15 @@ Template.roomOld.helpers({
 	},
 
 	announcement() {
-		const announcement = Template.instance().state.get('announcement');
-		return announcement ? Markdown.parse(announcement).replace(/^<p>|<\/p>$/, '') : undefined;
+		return Template.instance().state.get('announcement');
+	},
+
+	announcementDetails() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData) { return false; }
+		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
+			return () => callbacks.run(roomData.announcementDetails.callback, this._id);
+		}
 	},
 
 	messageboxData() {
@@ -512,22 +516,6 @@ Meteor.startup(() => {
 	Template.roomOld.events({
 		...getCommonRoomEvents(),
 		...dropzoneEvents,
-		'click .announcement'() {
-			const roomData = Session.get(`roomData${ this._id }`);
-			if (!roomData) { return false; }
-			if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
-				return callbacks.run(roomData.announcementDetails.callback, this._id);
-			}
-
-			modal.open({
-				title: t('Announcement'),
-				text: renderMessageBody({ msg: roomData.announcement }),
-				html: true,
-				showConfirmButton: false,
-				showCancelButton: true,
-				cancelButtonText: t('Close'),
-			});
-		},
 		'click .toggle-hidden'(e) {
 			const id = e.currentTarget.dataset.message;
 			document.querySelector(`#${ id }`).classList.toggle('message--ignored');
@@ -569,11 +557,6 @@ Meteor.startup(() => {
 
 		'rendered .js-block-wrapper'(e, template) {
 			template.sendToBottomIfNecessaryDebounced();
-		},
-		'click .js-navigate-to-discussion'(event) {
-			event.preventDefault();
-			const { msg: { drid } } = messageArgs(this);
-			FlowRouter.goToRoomById(drid);
 		},
 		'click .new-message'(event, instance) {
 			instance.atBottom = true;
@@ -783,7 +766,7 @@ Meteor.startup(() => {
 			}
 		};
 
-		this.sendToBottomIfNecessaryDebounced = () => {};
+		this.sendToBottomIfNecessaryDebounced = _.debounce(this.sendToBottomIfNecessary, 10);
 	}); // Update message to re-render DOM
 
 	Template.roomOld.onDestroyed(function() {
@@ -837,7 +820,6 @@ Meteor.startup(() => {
 			template.atBottom = template.isAtBottom(100);
 		};
 
-		template.sendToBottomIfNecessaryDebounced = _.debounce(template.sendToBottomIfNecessary, 150);
 
 		if (window.MutationObserver) {
 			template.observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());

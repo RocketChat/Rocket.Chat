@@ -69,10 +69,11 @@ export const statistics = {
 		statistics.activeGuests = Users.getActiveLocalGuestCount();
 		statistics.nonActiveUsers = Users.find({ active: false }).count();
 		statistics.appUsers = Users.find({ type: 'app' }).count();
-		statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
-		statistics.awayUsers = Meteor.users.find({ statusConnection: 'away' }).count();
+		statistics.onlineUsers = Meteor.users.find({ status: 'online' }).count();
+		statistics.awayUsers = Meteor.users.find({ status: 'away' }).count();
+		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
-		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers;
+		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
 
 		// Room statistics
 		statistics.totalRooms = Rooms.find().count();
