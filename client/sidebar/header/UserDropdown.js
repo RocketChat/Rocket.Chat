@@ -122,7 +122,7 @@ const UserDropdown = ({ user, onClose }) => {
 		<Divider mi='neg-x16' mb='x16' borderColor='muted'/>
 		<div style={style}>
 			<Box pi='x16' fontScale='c1' textTransform='uppercase'>{t('Status')}</Box>
-			{Object.keys(userStatus.list).map((key, index) => {
+			{Object.keys(userStatus.list).map((key) => {
 				const status = userStatus.list[key];
 				const name = status.localizeName ? t(status.name) : status.name;
 				const modifier = status.statusType || user.status;
