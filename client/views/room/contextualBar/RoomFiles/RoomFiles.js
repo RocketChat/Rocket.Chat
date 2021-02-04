@@ -79,8 +79,6 @@ export const RoomFiles = function RoomFiles({
 
 	const itemData = createItemData(onClickDelete, isDeletionAllowed);
 
-	// const lm = useMutableCallback((start) => loadMoreItems(start + 1, Math.min(50, start + 1 - filesItems.length)));
-
 	return (
 		<>
 			<VerticalBar.Header>
