@@ -45,7 +45,7 @@ const isActionAttachment = (attachment: AttachmentProps): attachment is ActionAt
 const applyMarkdownIfRequires = (list: DefaultAttachmentProps['mrkdwn_in']) => (key: MarkdownFields, text: string): JSX.Element | string => (list?.includes(key) ? <MarkdownText withRichContent={undefined} content={text}/> : text);
 
 export const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
-	const applyMardownFor = applyMarkdownIfRequires(attachment.mrkdwn_in);
+	const applyMardownFor = applyMarkdownIfRequires(attachment.mrkdwn_in || ['text']);
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
 	return <Attachment.Block color={attachment.color} pre={attachment.pretext && <Attachment.Text>{applyMardownFor('pretext', attachment.pretext)}</Attachment.Text>}>
 		<Attachment.Content>
