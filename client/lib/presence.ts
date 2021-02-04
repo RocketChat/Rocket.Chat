@@ -86,8 +86,8 @@ const update: Handler<UserPresence> = (update) => {
 };
 
 const listen = (uid: UserPresence['_id'], handler: Handler<UserPresence>): void => {
-	emitter.on(uid, handler);
 	emitter.on(uid, update);
+	emitter.on(uid, handler);
 	emitter.on('reset', handler);
 
 	if (store.has(uid)) {
