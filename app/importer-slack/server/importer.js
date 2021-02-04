@@ -286,7 +286,9 @@ export class SlackImporter extends Base {
 				this.logger.warn(`Failed to import user mention with name: ${ user }`);
 			}
 		});
-		message.mentions.push(...users);
+
+		const filteredUsers = users.filter((u) => u);
+		message.mentions.push(...filteredUsers);
 
 		if (!message.channels) {
 			message.channels = [];
@@ -302,7 +304,9 @@ export class SlackImporter extends Base {
 				this.logger.warn(`Failed to import channel mention with name: ${ chan }`);
 			}
 		});
-		message.channels.push(...channels);
+
+		const filteredChannels = channels.filter((c) => c);
+		message.channels.push(...filteredChannels);
 	}
 
 	processMessageSubType(message, room, msgDataDefaults, missedTypes) {
