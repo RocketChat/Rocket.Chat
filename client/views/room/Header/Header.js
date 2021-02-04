@@ -52,7 +52,7 @@ const RoomHeader = ({ room }) => {
 	const liveOtherUserStatusText = useUserData(otherUserQuery?.userId)?.statusText;
 
 	// if the other is offline, then liveOtherUserStatusText is undefined
-	const { value: data } = useEndpointData('users.info', otherUserQuery);
+	const { value: data } = useEndpointData('users.info', liveOtherUserStatusText === undefined ? otherUserQuery : null);
 
 	const roomTopic = liveOtherUserStatusText || data?.user?.statusText || room.topic;
 
