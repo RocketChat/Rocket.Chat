@@ -227,8 +227,9 @@ API.v1.addRoute('groups.create', { authRequired: true }, {
 		const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
 
 		let id;
+
 		Meteor.runAsUser(this.userId, () => {
-			id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly, this.bodyParams.customFields);
+			id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly, this.bodyParams.customFields, this.bodyParams.extraData);
 		});
 
 		return API.v1.success({
