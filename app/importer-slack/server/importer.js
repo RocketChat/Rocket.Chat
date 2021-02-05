@@ -1029,7 +1029,7 @@ export class SlackImporter extends Base {
 		this.mpimsLists = RawImports.find({ import: this.importRecord._id, type: 'mpims' }).fetch();
 
 		this._userDataCache = {};
-		this._anyExistingSlackMessage = true;
+		this._anyExistingSlackMessage = Boolean(Messages.findOne({ _id: /slack\-.*/ }));
 		this.reloadCount();
 
 		super.startImport(importSelection);
