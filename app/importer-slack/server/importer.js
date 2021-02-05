@@ -65,7 +65,16 @@ export class SlackImporter extends Base {
 			this.logger.debug(`loaded ${ data.length } ${ typeName }.`);
 
 			// Insert the channels records.
-			this.collection.insert({ import: this.importRecord._id, importer: this.name, type: typeName, channels: data });
+			if (Base.getBSONSize(data) > Base.getMaxBSONSize()) {
+				const tmp = Base.getBSONSafeArraysFromAnArray(data);
+				Object.keys(tmp).forEach((i) => {
+					const splitChannels = tmp[i];
+					this.collection.insert({ import: this.importRecord._id, importer: this.name, type: typeName, name: `${ typeName }/${ i }`, channels: splitChannels, i });
+				});
+			} else {
+				this.collection.insert({ import: this.importRecord._id, importer: this.name, type: typeName, channels: data });
+			}
+
 			this.updateRecord({ 'count.channels': tempGroups.length + tempChannels.length + tempDMs.length + tempMpims.length + data.length });
 			this.addCountToTotal(data.length);
 			return data;
@@ -181,7 +190,9 @@ export class SlackImporter extends Base {
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 		this.updateRecord({ 'count.messages': messagesCount, messagesstatus: null });
 
-		if ([tempUsers.length, tempChannels.length + tempGroups.length + tempDMs.length + tempMpims.length, messagesCount].some((e) => e === 0)) {
+		const roomCount = tempChannels.length + tempGroups.length + tempDMs.length + tempMpims.length;
+
+		if ([tempUsers.length, roomCount, messagesCount].some((e) => e === 0)) {
 			this.logger.warn(`Loaded ${ tempUsers.length } users, ${ tempChannels.length } channels, ${ tempGroups.length } groups, ${ tempDMs.length } DMs, ${ tempMpims.length } multi party IMs and ${ messagesCount } messages`);
 			super.updateProgress(ProgressStep.ERROR);
 			return this.getProgress();
@@ -199,14 +210,37 @@ export class SlackImporter extends Base {
 			];
 		})();
 
-		const selectionChannels = tempChannels.map((channel) => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
-		const selectionGroups = tempGroups.map((channel) => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, true));
-		const selectionMpims = tempMpims.map((channel) => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, true));
+		const selectionChannels = (() => {
+			if (roomCount <= 500) {
+				return tempChannels.map((channel) => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, false));
+			}
+
+			return [
+				new SelectionChannel('channels', 'Regular Channels', false, true, false),
+				new SelectionChannel('archived_channels', 'Archived Channels', true, true, false),
+			];
+		})();
+
+		const selectionGroups = (() => {
+			if (roomCount <= 500) {
+				return tempGroups.map((channel) => new SelectionChannel(channel.id, channel.name, channel.is_archived, true, true));
+			}
+
+			return [
+				new SelectionChannel('groups', 'Regular Groups', false, true, true),
+				new SelectionChannel('archived_groups', 'Archived Groups', true, true, true),
+			];
+		})();
+
+		const selectionMpims = [
+			new SelectionChannel('mpims', 'Multi Party DMs', false, true, true),
+			new SelectionChannel('archived_mimps', 'Archived Multi Party DMs', true, true, true),
+		];
 
 		const selectionMessages = this.importRecord.count.messages;
 		super.updateProgress(ProgressStep.USER_SELECTION);
 
-		return new Selection(this.name, selectionUsers, selectionChannels.concat(selectionGroups).concat(selectionMpims), selectionMessages);
+		return new Selection(this.name, selectionUsers, selectionMpims.concat(selectionChannels).concat(selectionGroups), selectionMessages);
 	}
 
 	performUserImport(user, startedByUserId) {
@@ -606,46 +640,44 @@ export class SlackImporter extends Base {
 	}
 
 	_importChannels(startedByUserId, channelNames) {
-		if (!this.channels || !this.channels.channels) {
-			return;
-		}
-
 		super.updateProgress(ProgressStep.IMPORTING_CHANNELS);
-		this.channels.channels.forEach((channel) => {
-			if (!channel.do_import) {
-				this.addCountCompleted(1);
-				return;
-			}
-
-			channelNames.push(channel.name);
-
-			Meteor.runAsUser(startedByUserId, () => {
-				const existingRoom = this._findExistingRoom(channel.name);
-
-				if (existingRoom || channel.is_general) {
-					if (channel.is_general && existingRoom && channel.name !== existingRoom.name) {
-						Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', channel.name);
-					}
-
-					channel.rocketId = channel.is_general ? 'GENERAL' : existingRoom._id;
-					Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
-				} else {
-					const users = this._getChannelUserList(channel);
-					const userId = this.getImportedRocketUserIdFromSlackUserId(channel.creator) || startedByUserId;
-
-					Meteor.runAsUser(userId, () => {
-						const returned = Meteor.call('createChannel', channel.name, users);
-						channel.rocketId = returned.rid;
-					});
-
-					this._updateImportedChannelTopicAndDescription(channel);
+		for (const list of this.channelsLists) {
+			list.channels.forEach((channel) => {
+				if (!channel.do_import) {
+					this.addCountCompleted(1);
+					return;
 				}
 
-				this.addCountCompleted(1);
-			});
-		});
+				channelNames.push(channel.name);
 
-		this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
+				Meteor.runAsUser(startedByUserId, () => {
+					const existingRoom = this._findExistingRoom(channel.name);
+
+					if (existingRoom || channel.is_general) {
+						if (channel.is_general && existingRoom && channel.name !== existingRoom.name) {
+							Meteor.call('saveRoomSettings', 'GENERAL', 'roomName', channel.name);
+						}
+
+						channel.rocketId = channel.is_general ? 'GENERAL' : existingRoom._id;
+						Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
+					} else {
+						const users = this._getChannelUserList(channel);
+						const userId = this.getImportedRocketUserIdFromSlackUserId(channel.creator) || startedByUserId;
+
+						Meteor.runAsUser(userId, () => {
+							const returned = Meteor.call('createChannel', channel.name, users);
+							channel.rocketId = returned.rid;
+						});
+
+						this._updateImportedChannelTopicAndDescription(channel);
+					}
+
+					this.addCountCompleted(1);
+				});
+			});
+
+			this.collection.update({ _id: list._id }, { $set: { channels: list.channels } });
+		}
 	}
 
 	_findExistingRoom(name) {
@@ -680,46 +712,45 @@ export class SlackImporter extends Base {
 		}, []);
 	}
 
-	_importPrivateGroupList(startedByUserId, list, channelNames) {
-		if (!list || !list.channels) {
-			return;
-		}
-
-		list.channels.forEach((channel) => {
-			if (!channel.do_import) {
-				this.addCountCompleted(1);
-				return;
-			}
-
-			channelNames.push(channel.name);
-
-			Meteor.runAsUser(startedByUserId, () => {
-				const existingRoom = this._findExistingRoom(channel.name);
-
-				if (existingRoom) {
-					channel.rocketId = existingRoom._id;
-					Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
-				} else {
-					const users = this._getChannelUserList(channel);
-
-					const userId = this.getImportedRocketUserIdFromSlackUserId(channel.creator) || startedByUserId;
-					Meteor.runAsUser(userId, () => {
-						const returned = Meteor.call('createPrivateGroup', channel.name, users);
-						channel.rocketId = returned.rid;
-					});
-
-					this._updateImportedChannelTopicAndDescription(channel);
+	_importPrivateGroupList(startedByUserId, listList, channelNames) {
+		for (const list of listList) {
+			list.channels.forEach((channel) => {
+				if (!channel.do_import) {
+					console.log('skipping group', channel);
+					this.addCountCompleted(1);
+					return;
 				}
 
-				this.addCountCompleted(1);
-			});
-		});
+				channelNames.push(channel.name);
 
-		this.collection.update({ _id: list._id }, { $set: { channels: list.channels } });
+				Meteor.runAsUser(startedByUserId, () => {
+					const existingRoom = this._findExistingRoom(channel.name);
+
+					if (existingRoom) {
+						channel.rocketId = existingRoom._id;
+						Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
+					} else {
+						const users = this._getChannelUserList(channel);
+
+						const userId = this.getImportedRocketUserIdFromSlackUserId(channel.creator) || startedByUserId;
+						Meteor.runAsUser(userId, () => {
+							const returned = Meteor.call('createPrivateGroup', channel.name, users);
+							channel.rocketId = returned.rid;
+						});
+
+						this._updateImportedChannelTopicAndDescription(channel);
+					}
+
+					this.addCountCompleted(1);
+				});
+			});
+
+			this.collection.update({ _id: list._id }, { $set: { channels: list.channels } });
+		}
 	}
 
 	_importGroups(startedByUserId, channelNames) {
-		this._importPrivateGroupList(startedByUserId, this.groups, channelNames);
+		this._importPrivateGroupList(startedByUserId, this.groupsLists, channelNames);
 	}
 
 	_updateImportedChannelTopicAndDescription(slackChannel) {
@@ -740,95 +771,91 @@ export class SlackImporter extends Base {
 	}
 
 	_importMpims(startedByUserId, channelNames) {
-		if (!this.mpims || !this.mpims.channels) {
-			return;
-		}
-
 		const maxUsers = settings.get('DirectMesssage_maxUsers') || 1;
 
-		this.mpims.channels.forEach((channel) => {
-			if (!channel.do_import) {
-				this.addCountCompleted(1);
-				return;
-			}
-
-			channelNames.push(channel.name);
-
-			Meteor.runAsUser(startedByUserId, () => {
-				const users = this._getChannelUserList(channel, true, true);
-				const existingRoom = Rooms.findOneDirectRoomContainingAllUserIDs(users, { fields: { _id: 1 } });
-
-				if (existingRoom) {
-					channel.rocketId = existingRoom._id;
-					Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
-				} else {
-					const userId = this.getImportedRocketUserIdFromSlackUserId(channel.creator) || startedByUserId;
-					Meteor.runAsUser(userId, () => {
-						// If there are too many users for a direct room, then create a private group instead
-						if (users.length > maxUsers) {
-							const usernames = users.map((user) => user.username);
-							const group = Meteor.call('createPrivateGroup', channel.name, usernames);
-							channel.rocketId = group.rid;
-							return;
-						}
-
-						const newRoom = createDirectRoom(users);
-						channel.rocketId = newRoom._id;
-					});
-
-					this._updateImportedChannelTopicAndDescription(channel);
+		for (const list of this.mpimsLists) {
+			list.channels.forEach((channel) => {
+				if (!channel.do_import) {
+					this.addCountCompleted(1);
+					return;
 				}
 
-				this.addCountCompleted(1);
-			});
-		});
+				channelNames.push(channel.name);
 
-		this.collection.update({ _id: this.mpims._id }, { $set: { channels: this.mpims.channels } });
+				Meteor.runAsUser(startedByUserId, () => {
+					const users = this._getChannelUserList(channel, true, true);
+					const existingRoom = Rooms.findOneDirectRoomContainingAllUserIDs(users, { fields: { _id: 1 } });
+
+					if (existingRoom) {
+						channel.rocketId = existingRoom._id;
+						Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
+					} else {
+						const userId = this.getImportedRocketUserIdFromSlackUserId(channel.creator) || startedByUserId;
+						Meteor.runAsUser(userId, () => {
+							// If there are too many users for a direct room, then create a private group instead
+							if (users.length > maxUsers) {
+								const usernames = users.map((user) => user.username);
+								const group = Meteor.call('createPrivateGroup', channel.name, usernames);
+								channel.rocketId = group.rid;
+								return;
+							}
+
+							const newRoom = createDirectRoom(users);
+							channel.rocketId = newRoom._id;
+						});
+
+						this._updateImportedChannelTopicAndDescription(channel);
+					}
+
+					this.addCountCompleted(1);
+				});
+			});
+
+			this.collection.update({ _id: list._id }, { $set: { channels: list.channels } });
+		}
 	}
 
 	_importDMs(startedByUserId, channelNames) {
-		if (!this.dms || !this.dms.channels) {
-			return;
-		}
+		for (const list of this.dmsLists) {
+			list.channels.forEach((channel) => {
+				channelNames.push(channel.id);
 
-		this.dms.channels.forEach((channel) => {
-			channelNames.push(channel.id);
-
-			if (!channel.members || channel.members.length !== 2) {
-				this.addCountCompleted(1);
-				return;
-			}
-
-			Meteor.runAsUser(startedByUserId, () => {
-				const user1 = this.getRocketUserFromUserId(channel.members[0]);
-				const user2 = this.getRocketUserFromUserId(channel.members[1]);
-
-				const existingRoom = Rooms.findOneDirectRoomContainingAllUserIDs([user1, user2], { fields: { _id: 1 } });
-
-				if (existingRoom) {
-					channel.rocketId = existingRoom._id;
-					Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
-				} else {
-					if (!user1) {
-						this.logger.error(`DM creation: User not found for id ${ channel.members[0] } and channel id ${ channel.id }`);
-						return;
-					}
-
-					if (!user2) {
-						this.logger.error(`DM creation: User not found for id ${ channel.members[1] } and channel id ${ channel.id }`);
-						return;
-					}
-
-					const roomInfo = Meteor.runAsUser(user1._id, () => Meteor.call('createDirectMessage', user2.username));
-					channel.rocketId = roomInfo.rid;
-					Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
+				if (!channel.members || channel.members.length !== 2) {
+					this.addCountCompleted(1);
+					return;
 				}
 
-				this.addCountCompleted(1);
-			});
-		});
+				Meteor.runAsUser(startedByUserId, () => {
+					const user1 = this.getRocketUserFromUserId(channel.members[0]);
+					const user2 = this.getRocketUserFromUserId(channel.members[1]);
 
-		this.collection.update({ _id: this.dms._id }, { $set: { channels: this.dms.channels } });
+					const existingRoom = Rooms.findOneDirectRoomContainingAllUserIDs([user1, user2], { fields: { _id: 1 } });
+
+					if (existingRoom) {
+						channel.rocketId = existingRoom._id;
+						Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
+					} else {
+						if (!user1) {
+							this.logger.error(`DM creation: User not found for id ${ channel.members[0] } and channel id ${ channel.id }`);
+							return;
+						}
+
+						if (!user2) {
+							this.logger.error(`DM creation: User not found for id ${ channel.members[1] } and channel id ${ channel.id }`);
+							return;
+						}
+
+						const roomInfo = Meteor.runAsUser(user1._id, () => Meteor.call('createDirectMessage', user2.username));
+						channel.rocketId = roomInfo.rid;
+						Rooms.update({ _id: channel.rocketId }, { $addToSet: { importIds: channel.id } });
+					}
+
+					this.addCountCompleted(1);
+				});
+			});
+
+			this.collection.update({ _id: list._id }, { $set: { channels: list.channels } });
+		}
 	}
 
 	_importMessages(startedByUserId, channelNames) {
@@ -899,42 +926,59 @@ export class SlackImporter extends Base {
 	}
 
 	_applyChannelSelection(importSelection) {
-		const iterateChannelList = (list, channel_id, do_import) => {
-			Object.keys(list).forEach((k) => {
-				const c = list[k];
-				if (c.id === channel_id) {
-					c.do_import = do_import;
+		const iterateChannelList = (listList, channel_id, do_import) => {
+			for (const list of listList) {
+				for (const c of list.channels) {
+					if (!c) {
+						continue;
+					}
+
+					if (channel_id === '*') {
+						if (!c.archived) {
+							c.do_import = do_import;
+						}
+					} else if (channel_id === '*/archived') {
+						if (c.archived) {
+							c.do_import = do_import;
+						}
+					} else if (c.id === channel_id) {
+						c.do_import = do_import;
+					}
 				}
-			});
+
+				this.collection.update({ _id: list._id }, { $set: { channels: list.channels } });
+			}
 		};
 
 		Object.keys(importSelection.channels).forEach((key) => {
 			const channel = importSelection.channels[key];
 
-			if (this.channels && this.channels.channels) {
-				iterateChannelList(this.channels.channels, channel.channel_id, channel.do_import);
-			}
-
-			if (this.groups && this.groups.channels) {
-				iterateChannelList(this.groups.channels, channel.channel_id, channel.do_import);
-			}
-
-			if (this.mpims && this.mpims.channels) {
-				iterateChannelList(this.mpims.channels, channel.channel_id, channel.do_import);
+			switch (channel.channel_id) {
+				case 'channels':
+					iterateChannelList(this.channelsLists, '*', channel.do_import);
+					break;
+				case 'archived_channels':
+					iterateChannelList(this.channelsLists, '*/archived', channel.do_import);
+					break;
+				case 'groups':
+					iterateChannelList(this.groupsLists, '*', channel.do_import);
+					break;
+				case 'archived_groups':
+					iterateChannelList(this.groupsLists, '*/archived', channel.do_import);
+					break;
+				case 'mpims':
+					iterateChannelList(this.mpimsLists, '*', channel.do_import);
+					break;
+				case 'archived_mpims':
+					iterateChannelList(this.mpimsLists, '*/archived', channel.do_import);
+					break;
+				default:
+					iterateChannelList(this.channelsLists, channel.channel_id, channel.do_import);
+					iterateChannelList(this.groupsLists, channel.channel_id, channel.do_import);
+					iterateChannelList(this.mpimsLists, channel.channel_id, channel.do_import);
+					break;
 			}
 		});
-
-		if (this.channels && this.channels.channels) {
-			this.collection.update({ _id: this.channels._id }, { $set: { channels: this.channels.channels } });
-		}
-
-		if (this.groups && this.groups.channels) {
-			this.collection.update({ _id: this.groups._id }, { $set: { channels: this.groups.channels } });
-		}
-
-		if (this.mpims && this.mpims.channels) {
-			this.collection.update({ _id: this.mpims._id }, { $set: { channels: this.mpims.channels } });
-		}
 	}
 
 	startImport(importSelection) {
@@ -946,10 +990,10 @@ export class SlackImporter extends Base {
 		}
 
 		this.userLists = RawImports.find({ import: this.importRecord._id, type: 'users' }).fetch();
-		this.channels = RawImports.findOne({ import: this.importRecord._id, type: 'channels' });
-		this.groups = RawImports.findOne({ import: this.importRecord._id, type: 'groups' });
-		this.dms = RawImports.findOne({ import: this.importRecord._id, type: 'DMs' });
-		this.mpims = RawImports.findOne({ import: this.importRecord._id, type: 'mpims' });
+		this.channelsLists = RawImports.find({ import: this.importRecord._id, type: 'channels' }).fetch();
+		this.groupsLists = RawImports.find({ import: this.importRecord._id, type: 'groups' }).fetch();
+		this.dmsLists = RawImports.find({ import: this.importRecord._id, type: 'DMs' }).fetch();
+		this.mpimsLists = RawImports.find({ import: this.importRecord._id, type: 'mpims' }).fetch();
 
 		this._userDataCache = {};
 		this._anyExistingSlackMessage = Boolean(Messages.findOne({ _id: /slack\-.*/ }));
@@ -981,21 +1025,14 @@ export class SlackImporter extends Base {
 
 
 				try {
-					if (this.channels) {
-						this._archiveChannelsAsNeeded(startedByUserId, this.channels);
-						this._updateRoomsLastMessage(this.channels);
-					}
-					if (this.groups) {
-						this._archiveChannelsAsNeeded(startedByUserId, this.groups);
-						this._updateRoomsLastMessage(this.groups);
-					}
-					if (this.mpims) {
-						this._archiveChannelsAsNeeded(startedByUserId, this.mpims);
-						this._updateRoomsLastMessage(this.mpims);
-					}
-					if (this.dms) {
-						this._updateRoomsLastMessage(this.dms);
-					}
+					this._archiveChannelsAsNeeded(startedByUserId, this.channelsLists);
+					this._archiveChannelsAsNeeded(startedByUserId, this.groupsLists);
+					this._archiveChannelsAsNeeded(startedByUserId, this.mpimsLists);
+
+					this._updateRoomsLastMessage(this.channelsLists);
+					this._updateRoomsLastMessage(this.groupsLists);
+					this._updateRoomsLastMessage(this.mpimsLists);
+					this._updateRoomsLastMessage(this.dmsLists);
 				} catch (e) {
 					// If it failed to archive some channel, it's no reason to flag the import as incomplete
 					// Just report the error but keep the import as successful.
@@ -1015,48 +1052,52 @@ export class SlackImporter extends Base {
 		return this.getProgress();
 	}
 
-	_archiveChannelsAsNeeded(startedByUserId, list) {
-		list.channels.forEach((channel) => {
-			if (channel.do_import && channel.is_archived && channel.rocketId) {
-				Meteor.runAsUser(startedByUserId, function() {
-					Meteor.call('archiveRoom', channel.rocketId);
-				});
-			}
-		});
+	_archiveChannelsAsNeeded(startedByUserId, listList) {
+		for (const list of listList) {
+			list.channels.forEach((channel) => {
+				if (channel.do_import && channel.is_archived && channel.rocketId) {
+					Meteor.runAsUser(startedByUserId, function() {
+						Meteor.call('archiveRoom', channel.rocketId);
+					});
+				}
+			});
+		}
 	}
 
-	_updateRoomsLastMessage(list) {
-		list.channels.forEach((channel) => {
-			if (channel.do_import && channel.rocketId) {
-				Rooms.resetLastMessageById(channel.rocketId);
-			}
-		});
+	_updateRoomsLastMessage(listList) {
+		for (const list of listList) {
+			list.channels.forEach((channel) => {
+				if (channel.do_import && channel.rocketId) {
+					Rooms.resetLastMessageById(channel.rocketId);
+				}
+			});
+		}
 	}
 
 	getSlackChannelFromName(channelName) {
-		if (this.channels && this.channels.channels) {
-			const channel = this.channels.channels.find((channel) => channel.name === channelName);
+		for (const list of this.channelsLists) {
+			const channel = list.channels.find((channel) => channel.name === channelName);
 			if (channel) {
 				return channel;
 			}
 		}
 
-		if (this.groups && this.groups.channels) {
-			const group = this.groups.channels.find((channel) => channel.name === channelName);
+		for (const list of this.groupsLists) {
+			const group = list.channels.find((channel) => channel.name === channelName);
 			if (group) {
 				return group;
 			}
 		}
 
-		if (this.mpims && this.mpims.channels) {
-			const group = this.mpims.channels.find((channel) => channel.name === channelName);
+		for (const list of this.mpimsLists) {
+			const group = list.channels.find((channel) => channel.name === channelName);
 			if (group) {
 				return group;
 			}
 		}
 
-		if (this.dms && this.dms.channels) {
-			const dm = this.dms.channels.find((channel) => channel.id === channelName);
+		for (const list of this.dmsLists) {
+			const dm = list.channels.find((channel) => channel.id === channelName);
 			if (dm) {
 				return dm;
 			}
