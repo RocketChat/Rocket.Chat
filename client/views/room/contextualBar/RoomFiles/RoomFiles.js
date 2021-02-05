@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { useMutableCallback, useLocalStorage, useDebouncedState, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useLocalStorage, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import {
 	Box,
 	Icon,
@@ -11,7 +11,7 @@ import {
 import { Virtuoso } from 'react-virtuoso';
 import memoize from 'memoize-one';
 
-import { useUserId, useUserRoom } from '../../../../contexts/UserContext';
+import { useUserId } from '../../../../contexts/UserContext';
 import DeleteFileWarning from '../../../../components/DeleteFileWarning';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
@@ -20,8 +20,8 @@ import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../components/VerticalBar';
 import FileItem from './components/FileItem';
-import { useFileList } from './hooks/useFileList';
-import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
+import { useFilesList } from './hooks/useFilesList';
+import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
@@ -79,8 +79,6 @@ export const RoomFiles = function RoomFiles({
 
 	const itemData = createItemData(onClickDelete, isDeletionAllowed);
 
-	const lm = useMutableCallback((start) => loadMoreItems(start + 1, Math.min(50, start + 1 - filesItems.length)));
-
 	return (
 		<>
 			<VerticalBar.Header>
@@ -111,7 +109,7 @@ export const RoomFiles = function RoomFiles({
 					<Virtuoso
 						style={{ height: '100%', width: '100%' }}
 						totalCount={total}
-						endReached={loading ? () => {} : lm}
+						endReached={loading ? () => {} : loadMoreItems}
 						overscan={50}
 						data={filesItems}
 						components={{ Scroller: ScrollableContentWrapper }}
@@ -132,9 +130,6 @@ RoomFiles.Item = FileItem;
 export default ({ rid }) => {
 	const uid = useUserId();
 	const onClickClose = useTabBarClose();
-	const room = useUserRoom(rid);
-	room.type = room.t;
-	room.rid = rid;
 
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
@@ -144,33 +139,12 @@ export default ({ rid }) => {
 	const [type, setType] = useLocalStorage('file-list-type', 'all');
 	const [text, setText] = useState('');
 
-	const [query, setQuery] = useDebouncedState({
-		roomId: rid,
-		sort: JSON.stringify({ uploadedAt: -1 }),
-		count: 50,
-		query: JSON.stringify({
-			...type !== 'all' && {
-				typeGroup: type,
-			},
-		}),
-	}, 500);
-
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	useComponentDidUpdate(() => setQuery((params) => ({
-		...params,
-		roomId: rid,
-		query: JSON.stringify({
-			name: { $regex: text || '', $options: 'i' },
-			...type !== 'all' && {
-				typeGroup: type,
-			},
-		}),
-	})), [rid, text, type, setQuery]);
-
-	const { value: data, phase: state, reload, more } = useFileList(room.type, query);
+	const { filesList, loadMoreItems } = useFilesList(useMemo(() => ({ rid, type, text }), [rid, type, text]));
+	const { phase, items: filesItems, itemCount: totalItemCount } = useRecordList(filesList);
 
 	const handleDelete = useMutableCallback((_id) => {
 		const onConfirm = async () => {
@@ -180,38 +154,24 @@ export default ({ rid }) => {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 			closeModal();
-			reload();
 		};
 
 		setModal(<DeleteFileWarning onConfirm={onConfirm} onCancel={closeModal} />);
 	}, []);
-
-	const loadMoreItems = useCallback(
-		(start, end) => {
-			more(
-				(params) => ({ ...params, offset: start, count: end - start }),
-				(prev, next) => ({
-					total: next.total,
-					files: [...prev.files, ...next.files],
-				}),
-			);
-		},
-		[more],
-	);
 
 	const isDeletionAllowed = useMessageDeletionIsAllowed(rid, uid);
 
 	return (
 		<RoomFiles
 			rid={rid}
-			loading={state === AsyncStatePhase.LOADING && true}
+			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
 			loadMoreItems={loadMoreItems}
 			setType={setType}
 			setText={handleTextChange}
-			filesItems={[AsyncStatePhase.UPDATING, AsyncStatePhase.RESOLVED].includes(state) && data?.files}
-			total={data?.total}
+			filesItems={filesItems}
+			total={totalItemCount}
 			onClickClose={onClickClose}
 			onClickDelete={handleDelete}
 			isDeletionAllowed={isDeletionAllowed}
