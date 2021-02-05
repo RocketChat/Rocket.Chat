@@ -105,6 +105,7 @@
   "Accounts_OAuth_Custom_id": "Id",
   "Accounts_OAuth_Custom_Identity_Path": "Identity Path",
   "Accounts_OAuth_Custom_Identity_Token_Sent_Via": "Identity Token Sent Via",
+  "Accounts_OAuth_Custom_Key_Field": "Key Field",
   "Accounts_OAuth_Custom_Login_Style": "Login Style",
   "Accounts_OAuth_Custom_Map_Channels": "Map Roles/Groups to channels",
   "Accounts_OAuth_Custom_Merge_Roles": "Merge Roles from SSO",
