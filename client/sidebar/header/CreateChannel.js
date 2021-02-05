@@ -1,3 +1,4 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { useMutableCallback, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch } from '@rocket.chat/fuselage';
@@ -205,6 +206,10 @@ export default memo(({
 	});
 
 	const onCreate = useCallback(async () => {
+		const goToRoom = (rid) => {
+			FlowRouter.goToRoomById(rid);
+		};
+
 		const params = {
 			name,
 			members: users,
@@ -218,8 +223,10 @@ export default memo(({
 
 		if (type) {
 			roomData = await createPrivateChannel(params);
+			goToRoom(roomData.group._id);
 		} else {
 			roomData = await createChannel(params);
+			goToRoom(roomData.channel._id);
 		}
 
 		if (roomData.success && roomData.group && description) {
@@ -242,9 +249,6 @@ export default memo(({
 		type,
 		users,
 	]);
-
-	console.log(hasUnsavedChanges);
-
 
 	return <CreateChannel
 		values={values}
