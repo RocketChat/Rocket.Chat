@@ -67,7 +67,7 @@ const RoomHeader = ({ room, topic }) => {
 
 	return <Header>
 		{ isMobile && <Header.ToolBox>
-			{ isMobile && <Burger/>}
+			<Burger/>
 		</Header.ToolBox> }
 		{ avatar && <Header.Avatar>{avatar}</Header.Avatar> }
 		<Header.Content>
