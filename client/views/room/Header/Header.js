@@ -48,7 +48,7 @@ const RoomTitle = ({ room }) => {
 		</>}
 		<Breadcrumbs.Item>
 			<HeaderIcon room={room}/>
-			<Breadcrumbs.Text>{room.name}</Breadcrumbs.Text>
+			<Header.Title>{room.name}</Header.Title>
 		</Breadcrumbs.Item>
 	</Breadcrumbs>;
 };
