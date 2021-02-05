@@ -12,14 +12,20 @@ import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';
 import MarkdownText from '../../../components/MarkdownText';
 import { roomTypes } from '../../../../app/utils';
-import { useUserRoom } from '../../../contexts/UserContext';
+import { useUserRoom, useUserId } from '../../../contexts/UserContext';
+import { useUserData } from '../../../hooks/useUserData';
 
 export default React.memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
 		return null;
 	}
-	return <RoomHeader room={room}/>;
+
+	if (room.t === 'd' && room.uids.length < 3) {
+		return <DirectRoomHeader room={room} />;
+	}
+
+	return <RoomHeader room={room} topic={room.topic} />;
 });
 
 const HeaderIcon = ({ room }) => {
@@ -47,8 +53,15 @@ const RoomTitle = ({ room }) => {
 	</Breadcrumbs>;
 };
 
+const DirectRoomHeader = ({ room }) => {
+	const userId = useUserId();
+	const directUserId = room.uids.filter((uid) => uid !== userId).shift();
+	const directUserData = useUserData(directUserId);
 
-const RoomHeader = ({ room }) => {
+	return <RoomHeader room={room} topic={directUserData?.statusText} />;
+};
+
+const RoomHeader = ({ room, topic }) => {
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room}/>;
 
@@ -65,7 +78,7 @@ const RoomHeader = ({ room }) => {
 				<Translate room={room} />
 			</Header.Content.Row>
 			<Header.Content.Row>
-				<Header.Subtitle>{room.topic && <MarkdownText withRichContent={false} content={room.topic}/>}</Header.Subtitle>
+				<Header.Subtitle>{topic && <MarkdownText withRichContent={false} content={topic}/>}</Header.Subtitle>
 			</Header.Content.Row>
 		</Header.Content>
 		<Header.ToolBox>
