@@ -53,9 +53,7 @@ export const CreateChannel = ({
 		checkName(values.name);
 	}, [checkName, values.name]);
 
-	const e2edisabled = useMemo(() => {
-		return !values.type || values.broadcast || !e2eEnabled || e2eEnabledForPrivateByDefault;
-	}, [e2eEnabled, e2eEnabledForPrivateByDefault, values.broadcast, values.type]);
+	const e2edisabled = useMemo(() => !values.type || values.broadcast || !e2eEnabled || e2eEnabledForPrivateByDefault, [e2eEnabled, e2eEnabledForPrivateByDefault, values.broadcast, values.type]);
 
 	const canSave = useMemo(() => hasUnsavedChanges && !nameError, [hasUnsavedChanges, nameError]);
 
