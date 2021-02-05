@@ -489,7 +489,7 @@ export class Rooms extends Base {
 	findByNameAndTypesNotInIds(name, types, ids, options) {
 		const query = {
 			_id: {
-				$ne: ids,
+				$nin: ids,
 			},
 			t: {
 				$in: types,
@@ -1053,18 +1053,6 @@ export class Rooms extends Base {
 		const update = {
 			$set: {
 				encrypted: value === true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	saveHideHistoryForNewMembers(_id, value) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				hideHistoryForNewMembers: value === true,
 			},
 		};
 

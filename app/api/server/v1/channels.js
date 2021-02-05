@@ -7,7 +7,6 @@ import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/s
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { settings } from '../../../settings';
-import { Message } from '../../../../server/sdk';
 
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -338,12 +337,12 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 	get() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams(), checkedArchived: false });
 
-		let latestDate;
+		let latestDate = new Date();
 		if (this.queryParams.latest) {
 			latestDate = new Date(this.queryParams.latest);
 		}
 
-		let oldestDate;
+		let oldestDate = undefined;
 		if (this.queryParams.oldest) {
 			oldestDate = new Date(this.queryParams.oldest);
 		}
@@ -577,16 +576,15 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const { records: messages, total } = Promise.await(Message.customQuery({
-			query: ourQuery,
-			userId: this.userId,
-			queryOptions: {
-				sort: sort || { ts: -1 },
-				skip: offset,
-				limit: count,
-				fields,
-			},
-		}));
+		const cursor = Messages.find(ourQuery, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			fields,
+		});
+
+		const total = cursor.count();
+		const messages = cursor.fetch();
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(messages, this.userId),
