@@ -20,12 +20,12 @@ export const CreateChannel = ({
 	onChangeType,
 	onChangeBroadcast,
 	canOnlyCreateOneType,
+	e2eEnabledForPrivateByDefault,
 	onCreate,
 	onClose,
 }) => {
 	const t = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
-	const e2eEnabledForDirectByDefault = useSetting('E2E_Enabled_Default_DirectRooms');
 	const namesValidation = useSetting('UTF8_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const channelNameExists = useMethod('roomNameExists');
@@ -52,6 +52,10 @@ export const CreateChannel = ({
 	useComponentDidUpdate(() => {
 		checkName(values.name);
 	}, [checkName, values.name]);
+
+	const e2edisabled = useMemo(() => {
+		return !values.type || values.broadcast || !e2eEnabled || e2eEnabledForPrivateByDefault;
+	}, [e2eEnabled, e2eEnabledForPrivateByDefault, values.broadcast, values.type]);
 
 	const canSave = useMemo(() => hasUnsavedChanges && !nameError, [hasUnsavedChanges, nameError]);
 
@@ -93,15 +97,15 @@ export const CreateChannel = ({
 					<ToggleSwitch checked={values.readOnly} disabled={values.broadcast} onChange={handlers.handleReadOnly}/>
 				</Box>
 			</Field>
-			{e2eEnabled && !e2eEnabledForDirectByDefault && <Field disabled={!values.type || values.broadcast} mbe='x24'>
+			<Field disabled={e2edisabled} mbe='x24'>
 				<Box display='flex' justifyContent='space-between' alignItems='start'>
 					<Box display='flex' flexDirection='column'>
 						<Field.Label>{t('Encrypted')}</Field.Label>
 						<Field.Description>{values.type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}</Field.Description>
 					</Box>
-					<ToggleSwitch checked={values.encrypted} disabled={!values.type || values.broadcast} onChange={handlers.handleEncrypted} />
+					<ToggleSwitch checked={values.encrypted} disabled={e2edisabled} onChange={handlers.handleEncrypted} />
 				</Box>
-			</Field>}
+			</Field>
 			<Field mbe='x24'>
 				<Box display='flex' justifyContent='space-between' alignItems='start'>
 					<Box display='flex' flexDirection='column'>
@@ -136,6 +140,7 @@ export default memo(({
 	const setPrivateChannelDescription = useEndpointActionExperimental('POST', 'groups.setDescription');
 	const canCreateChannel = usePermission('create-c');
 	const canCreatePrivateChannel = usePermission('create-p');
+	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
 	const canOnlyCreateOneType = useMemo(() => {
 		if (!canCreateChannel && canCreatePrivateChannel) {
 			return 'p';
@@ -153,7 +158,7 @@ export default memo(({
 		description: '',
 		type: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 		readOnly: false,
-		encrypted: false,
+		encrypted: e2eEnabledForPrivateByDefault,
 		broadcast: false,
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
@@ -251,6 +256,7 @@ export default memo(({
 		onChangeType={onChangeType}
 		onChangeBroadcast={onChangeBroadcast}
 		canOnlyCreateOneType={canOnlyCreateOneType}
+		e2eEnabledForPrivateByDefault={e2eEnabledForPrivateByDefault}
 		onClose={onClose}
 		onCreate={onCreate}
 	/>;
