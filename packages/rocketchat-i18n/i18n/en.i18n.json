@@ -1490,6 +1490,7 @@
   "Encrypted_channel_Description": "End to end encrypted channel. Search will not work with encrypted channels and notifications may not show the messages content.",
   "Encrypted_message": "Encrypted message",
   "Encrypted_setting_changed_successfully": "Encrypted setting changed successfully",
+  "Encrypted_not_available": "Not available for Public Channels",
   "Encryption_key_saved_successfully": "Your encryption key was saved successfully.",
   "EncryptionKey_Change_Disabled": "You can't set a password for your encryption key because your private key is not present on this client. In order to set a new password you need load your private key using your existing password or use a client where the key is already loaded.",
   "End": "End",
