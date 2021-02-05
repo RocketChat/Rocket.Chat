@@ -544,7 +544,12 @@ export class SlackImporter extends Base {
 					if (message.thread_ts && (String(message.thread_ts) !== String(message.ts))) {
 						msgObj.tmid = `slack-${ slackChannel.id }-${ message.thread_ts.replace(/\./g, '-') }`;
 					}
-					insertMessage(fileUser, msgObj, room, this._anyExistingSlackMessage);
+					try {
+						insertMessage(fileUser, msgObj, room, this._anyExistingSlackMessage);
+					} catch (e) {
+						this.logger.warn(`Failed to import the message file: ${ msgDataDefaults._id }-${ fileIndex }`);
+						this.logger.error(e);
+					}
 				});
 			}
 
@@ -603,6 +608,7 @@ export class SlackImporter extends Base {
 						insertMessage(this.getRocketUserFromUserId(message.user), msgObj, room, this._anyExistingSlackMessage);
 					} catch (e) {
 						this.logger.warn(`Failed to import the message: ${ msgDataDefaults._id }`);
+						this.logger.error(e);
 					}
 				}
 			}
@@ -876,7 +882,14 @@ export class SlackImporter extends Base {
 					const packId = pack.i ? `${ pack.date }.${ pack.i }` : pack.date;
 
 					this.updateRecord({ messagesstatus: `${ channel }/${ packId } (${ pack.messages.length })` });
-					pack.messages.forEach((message) => this.performMessageImport(message, room, missedTypes, slackChannel));
+					pack.messages.forEach((message) => {
+						try {
+							this.performMessageImport(message, room, missedTypes, slackChannel);
+						} catch (e) {
+							this.logger.warn(`Failed to import message with timestamp ${ String(message.ts) } to room ${ room._id }`);
+							this.logger.debug(e);
+						}
+					});
 				});
 			});
 		}
@@ -996,7 +1009,7 @@ export class SlackImporter extends Base {
 		this.mpimsLists = RawImports.find({ import: this.importRecord._id, type: 'mpims' }).fetch();
 
 		this._userDataCache = {};
-		this._anyExistingSlackMessage = Boolean(Messages.findOne({ _id: /slack\-.*/ }));
+		this._anyExistingSlackMessage = true;
 		this.reloadCount();
 
 		super.startImport(importSelection);
