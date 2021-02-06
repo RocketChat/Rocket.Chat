@@ -27,7 +27,7 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	const getURL = useMediaUrl();
 	return <Attachment>
 		<Attachment.Row>
-			<Attachment.Title>{title}</Attachment.Title>
+			<Attachment.Title>{decodeURIComponent(title || '')}</Attachment.Title>
 			{size && <Attachment.Size size={size}/>}
 			{collapse}
 			{hasDownload && link && <Attachment.Download title={title} href={link}/>}
