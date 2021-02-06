@@ -260,11 +260,17 @@ export const saveUser = function(userId, userData) {
 		}
 
 		const _id = Accounts.createUser(createUser);
-		const defaultUserRoles = String(settings.get('Accounts_Registration_Users_Default_Roles')).split(',').map((s) => s.trim());
-		if (userData.roles) {
-			userData.roles = [...new Set([...userData.roles, ...defaultUserRoles])];
-		} else {
-			userData = defaultUserRoles;
+
+		if (settings.get('Accounts_Registration_Users_Default_Roles_Enabled')) {
+			const defaultUserRoles = String(settings.get('Accounts_Registration_Users_Default_Roles')).split(',').map((s) => s.trim());
+			if (defaultUserRoles[0] === '') {
+				throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUser' });
+			}
+			if (userData.roles && defaultUserRoles.length > 0) {
+				userData.roles = [...new Set([...userData.roles, ...defaultUserRoles])];
+			} else {
+				userData.roles = defaultUserRoles;
+			}
 		}
 
 		const updateUser = {
@@ -274,10 +280,6 @@ export const saveUser = function(userId, userData) {
 				settings: userData.settings || {},
 			},
 		};
-
-		if (defaultUserRoles.length > 0) {
-			updateUser.$set.roles = defaultUserRoles;
-		}
 
 		if (typeof userData.requirePasswordChange !== 'undefined') {
 			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
