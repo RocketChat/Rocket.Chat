@@ -223,6 +223,9 @@ API.v1.addRoute('groups.create', { authRequired: true }, {
 		if (this.bodyParams.customFields && !(typeof this.bodyParams.customFields === 'object')) {
 			return API.v1.failure('Body param "customFields" must be an object if provided');
 		}
+		if (this.bodyParams.extraData && !(typeof this.bodyParams.extraData === 'object')) {
+			return API.v1.failure('Body param "extraData" must be an object if provided');
+		}
 
 		const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
 

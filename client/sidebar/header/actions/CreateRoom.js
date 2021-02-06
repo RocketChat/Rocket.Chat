@@ -29,14 +29,14 @@ const openPopover = (e, items) => popover.open({
 	offsetVertical: e.currentTarget.clientHeight + 10,
 });
 
-const useReactModal = (setModal) => useMutableCallback((e) => {
+const useReactModal = (setModal, Component) => useMutableCallback((e) => {
 	e.preventDefault();
 
 	const handleClose = () => {
 		setModal(null);
 	};
 
-	setModal(() => <CreateChannel
+	setModal(() => <Component
 		onClose={handleClose}
 	/>);
 });
@@ -68,7 +68,7 @@ const CreateRoom = (props) => {
 	const canCreateDirectMessages = usePermission('create-d');
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
 
-	const createChannel = useReactModal(setModal);
+	const createChannel = useReactModal(setModal, CreateChannel);
 	const createDirectMessage = useAction(t('Direct_Messages'), 'CreateDirectMessage');
 	const createDiscussion = useAction(t('Discussion_title'), 'CreateDiscussion');
 
