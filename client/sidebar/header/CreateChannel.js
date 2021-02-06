@@ -1,5 +1,5 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutableCallback, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch } from '@rocket.chat/fuselage';
 
@@ -10,8 +10,6 @@ import UserAutoCompleteMultiple from '../../../ee/client/audit/UserAutoCompleteM
 import { useSetting } from '../../contexts/SettingsContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useMethod } from '../../contexts/ServerContext';
-import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
-
 
 export const CreateChannel = ({
 	values,
@@ -50,7 +48,7 @@ export const CreateChannel = ({
 		if (isNotAvailable) { return setNameError(t('Channel_already_exist', name)); }
 	}, 100, [name]);
 
-	useComponentDidUpdate(() => {
+	useEffect(() => {
 		checkName(values.name);
 	}, [checkName, values.name]);
 
@@ -61,12 +59,13 @@ export const CreateChannel = ({
 	return <Modal>
 		<Modal.Header>
 			<Modal.Title>{t('Create_channel')}</Modal.Title>
+			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
 		<Modal.Content>
 			<Field mbe='x24'>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput error={hasUnsavedChanges && nameError} addon={<Icon name='lock' size='x20' />} placeholder={t('Channel_name')} onChange={handlers.handleName}/>
+					<TextInput error={hasUnsavedChanges && nameError} addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />} placeholder={t('Channel_name')} onChange={handlers.handleName}/>
 				</Field.Row>
 				{hasUnsavedChanges && nameError && <Field.Error>
 					{nameError}
@@ -116,9 +115,7 @@ export const CreateChannel = ({
 			</Field>
 			<Field mbe='x24'>
 				<Field.Label>{`${ t('Add_members') } (${ t('optional') })`}</Field.Label>
-				<Field.Row>
-					<UserAutoCompleteMultiple value={values.users} onChange={onChangeUsers}/>
-				</Field.Row>
+				<UserAutoCompleteMultiple value={values.users} onChange={onChangeUsers}/>
 			</Field>
 		</Modal.Content>
 		<Modal.Footer>
