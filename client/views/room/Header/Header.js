@@ -82,7 +82,7 @@ const DirectRoomHeader = ({ room }) => {
 	const directUserQuery = useMemo(() => ({ userId: directUserId }), [directUserId]);
 
 	const directUserData = useUserData(directUserId);
-	const { value: offlineDirectUserData } = useEndpointData('users.info', directUserQuery);
+	const { value: offlineDirectUserData } = useEndpointData('users.info', directUserData?.statusText === undefined ? directUserQuery : null);
 	const roomTopic = directUserData?.statusText || offlineDirectUserData?.user?.statusText;
 
 	return <RoomHeader room={room} topic={roomTopic} />;
