@@ -66,9 +66,8 @@ export default React.memo(({ rid }) => {
 	const subscription = useUserSubscription(rid);
 
 	const customSound = useCustomSound();
-
 	const handleClose = useTabBarClose();
-	const saveSettings = useEndpointActionExperimental('POST', 'rooms.saveNotification');
+	const saveSettings = useEndpointActionExperimental('POST', 'rooms.saveNotification', t('Room_updated_successfully'));
 
 	const { values, handlers, hasUnsavedChanges, commit } = useForm(
 		{
