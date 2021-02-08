@@ -220,7 +220,7 @@ settings.addGroup('Accounts', function() {
 		});
 		this.add('Accounts_Registration_Users_Default_Roles_Enabled', false, {
 			type: 'boolean',
-			public: false,
+			public: true,
 		});
 		this.add('Accounts_Registration_Users_Default_Roles', 'user', {
 			type: 'string',
