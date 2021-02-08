@@ -197,6 +197,43 @@ describe('[Users]', function() {
 		].forEach((field) => {
 			failUserWithCustomField(field);
 		});
+
+		describe('users default roles configuration', () => {
+			before(async () => {
+				await updateSetting('Accounts_Registration_Users_Default_Roles_Enabled', true);
+				await updateSetting('Accounts_Registration_Users_Default_Roles', ['admin']);
+			});
+
+			after(async () => {
+				await updateSetting('Accounts_Registration_Users_Default_Roles_Enabled', false);
+				await updateSetting('Accounts_Registration_Users_Default_Roles', ['user']);
+			});
+
+			const username = `defaultUserRole_${ apiUsername }`;
+			const email = `defaultUserRole_${ apiEmail }`;
+
+			it('should create a new user with default role', (done) => {
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email,
+						name: username,
+						username,
+						password,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						expect(res.body).to.have.nested.property('user.emails[0].address', email);
+						expect(res.body).to.have.nested.property('user.active', true);
+						expect(res.body).to.have.nested.property('user.name', username);
+						expect(res.body).to.not.have.nested.property('roles', ['admin']);
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('[/users.register]', () => {
