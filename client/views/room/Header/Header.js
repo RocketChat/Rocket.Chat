@@ -48,7 +48,7 @@ const RoomTitle = ({ room }) => {
 		</>}
 		<Breadcrumbs.Item>
 			<HeaderIcon room={room}/>
-			<Breadcrumbs.Text>{room.name}</Breadcrumbs.Text>
+			<Header.Title>{room.name}</Header.Title>
 		</Breadcrumbs.Item>
 	</Breadcrumbs>;
 };
@@ -66,8 +66,8 @@ const RoomHeader = ({ room, topic }) => {
 	const avatar = <RoomAvatar room={room}/>;
 
 	return <Header>
-		{ (isMobile || room.prid) && <Header.ToolBox>
-			{ isMobile && <Burger/>}
+		{ isMobile && <Header.ToolBox>
+			<Burger/>
 		</Header.ToolBox> }
 		{ avatar && <Header.Avatar>{avatar}</Header.Avatar> }
 		<Header.Content>
