@@ -2,7 +2,6 @@ import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/
 import { Modal, AnimatedVisibility, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { kitContext, UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
-import { uiKitText } from '@rocket.chat/ui-kit';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import { renderMessageBody } from '../../lib/renderMessageBody';
@@ -10,18 +9,10 @@ import { getURL } from '../../../app/utils/lib/getURL';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 
 // TODO: move this to fuselage-ui-kit itself
-modalParser.text = ({ text, type } = {}) => {
-	if (type !== 'mrkdwn') {
-		return text;
-	}
+modalParser.plainText = ({ text } = {}) => text;
 
-	return <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />;
-};
-
-const textParser = uiKitText({
-	plain_text: ({ text }) => text,
-	text: ({ text }) => text,
-});
+// TODO: move this to fuselage-ui-kit itself
+modalParser.mrkdwn = ({ text }) => <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />;
 
 const focusableElementsString = `
 	a[href]:not([tabindex="-1"]),
@@ -150,7 +141,7 @@ export function ModalBlock({
 			<Modal open id={id} ref={ref}>
 				<Modal.Header>
 					{view.showIcon ? <Modal.Thumb url={getURL(`/api/apps/${ appId }/icon`)} /> : null}
-					<Modal.Title>{textParser([view.title])}</Modal.Title>
+					<Modal.Title>{modalParser.text(view.title)}</Modal.Title>
 					<Modal.Close tabIndex={-1} onClick={onClose} />
 				</Modal.Header>
 				<Modal.Content>
@@ -165,8 +156,8 @@ export function ModalBlock({
 				</Modal.Content>
 				<Modal.Footer>
 					<ButtonGroup align='end'>
-						{view.close && <Button onClick={onCancel}>{textParser([view.close.text])}</Button>}
-						{view.submit && <Button primary onClick={onSubmit}>{textParser([view.submit.text])}</Button>}
+						{view.close && <Button onClick={onCancel}>{modalParser.text(view.close.text)}</Button>}
+						{view.submit && <Button primary onClick={onSubmit}>{modalParser.text(view.submit.text)}</Button>}
 					</ButtonGroup>
 				</Modal.Footer>
 			</Modal>
