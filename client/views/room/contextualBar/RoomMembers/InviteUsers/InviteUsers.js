@@ -30,7 +30,7 @@ export const InviteUsers = ({
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
-			<VerticalBar.ScrollableContent>
+			<VerticalBar.Content>
 				<Field>
 					<Field.Label flexGrow={0}>{t('Invite_Link')}</Field.Label>
 					<Field.Row>
@@ -45,7 +45,7 @@ export const InviteUsers = ({
 				<Box pb='x16'>
 					{onClickEdit && <Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>}
 				</Box>
-			</VerticalBar.ScrollableContent>
+			</VerticalBar.Content>
 		</Box>
 	);
 };
