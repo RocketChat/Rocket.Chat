@@ -106,7 +106,7 @@ export const marked = (message, {
 		highlight,
 	});
 
-	message.html = dompurify.sanitize(message.html);
+	message.html = dompurify.sanitize(message.html, { ADD_ATTR: ['target'] });
 
 	return message;
 };
