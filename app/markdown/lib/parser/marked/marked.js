@@ -108,7 +108,7 @@ export const marked = (message, {
 	});
 
 	if (Meteor.isServer) {
-		const JSDOM = require('jsdom');
+		const { JSDOM } = require('jsdom');
 		const createDOMPurify = require('dompurify');
 		const { window } = new JSDOM('');
 		const serverDomPurify = createDOMPurify(window);
