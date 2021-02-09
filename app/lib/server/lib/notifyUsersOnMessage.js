@@ -92,7 +92,8 @@ export function updateUsersSubscriptions(message, room) {
 		}
 
 		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
-		if (!toAll && !toHere && unreadCount === 'all_messages') {
+		// don't notify subscription if the message is a thread message
+		if (!toAll && !toHere && unreadCount === 'all_messages' && !message.tmid) {
 			Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id]);
 		}
 	}
