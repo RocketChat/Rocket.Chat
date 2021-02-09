@@ -87,6 +87,10 @@ export class NotificationsModule {
 			};
 
 			streamer.on(userId, userEvent);
+
+			publication.onStop(() => {
+				streamer.removeListener(userId, userEvent);
+			});
 		});
 
 		this.streamUser = new this.Streamer('notify-user');
