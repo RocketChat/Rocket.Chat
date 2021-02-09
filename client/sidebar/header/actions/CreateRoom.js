@@ -6,6 +6,8 @@ import { popover, modal } from '../../../../app/ui-utils';
 import { useAtLeastOnePermission, usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useSetModal } from '../../../contexts/ModalContext';
+import CreateChannel from '../CreateChannel';
 
 const CREATE_ROOM_PERMISSIONS = ['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user'];
 
@@ -27,6 +29,18 @@ const openPopover = (e, items) => popover.open({
 	offsetVertical: e.currentTarget.clientHeight + 10,
 });
 
+const useReactModal = (setModal, Component) => useMutableCallback((e) => {
+	e.preventDefault();
+
+	const handleClose = () => {
+		setModal(null);
+	};
+
+	setModal(() => <Component
+		onClose={handleClose}
+	/>);
+});
+
 const useAction = (title, content) => useMutableCallback((e) => {
 	e.preventDefault();
 	modal.open({
@@ -46,13 +60,15 @@ const useAction = (title, content) => useMutableCallback((e) => {
 
 const CreateRoom = (props) => {
 	const t = useTranslation();
+	const setModal = useSetModal();
+
 	const showCreate = useAtLeastOnePermission(CREATE_ROOM_PERMISSIONS);
 
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const canCreateDirectMessages = usePermission('create-d');
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
 
-	const createChannel = useAction(t('Create_A_New_Channel'), 'createChannel');
+	const createChannel = useReactModal(setModal, CreateChannel);
 	const createDirectMessage = useAction(t('Direct_Messages'), 'CreateDirectMessage');
 	const createDiscussion = useAction(t('Discussion_title'), 'CreateDiscussion');
 
