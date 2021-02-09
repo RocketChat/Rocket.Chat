@@ -35,6 +35,7 @@ export const createAutolinkerMessageRenderer = (config) =>
 							tag.setAttr('target', '');
 						}
 
+						message.tokens = message.tokens ?? [];
 						message.tokens.push({
 							token,
 							text: tag.toAnchorString(),

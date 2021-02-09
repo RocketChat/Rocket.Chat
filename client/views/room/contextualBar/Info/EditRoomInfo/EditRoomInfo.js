@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import {
 	Field,
 	TextInput,
+	PasswordInput,
 	ToggleSwitch,
 	MultiSelect,
 	Accordion,
@@ -30,6 +31,8 @@ import { useSetting } from '../../../../../contexts/SettingsContext';
 import { usePermission, useAtLeastOnePermission, useRole } from '../../../../../contexts/AuthorizationContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 import { useUserRoom } from '../../../hooks/useUserRoom';
+import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 
 const typeMap = {
 	c: 'Channels',
@@ -106,10 +109,9 @@ const useInitialValues = (room, settings) => {
 	]);
 };
 
-function EditChannelWithData({ rid, tabBar }) {
+function EditChannelWithData({ rid, onClickBack }) {
 	const room = useUserRoom(rid);
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
-	const onClickBack = useMutableCallback(() => tabBar && tabBar.setTemplate('RoomInfo'));
+	const onClickClose = useTabBarClose();
 
 	return (
 		<EditChannel
@@ -228,6 +230,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canEditPrivilegedSetting = usePermission('edit-privileged-setting', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(useMemo(() => ['archive-room', 'unarchive-room'], []));
 	const canDelete = usePermission(`delete-${ room.t }`);
+	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
 
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
@@ -237,6 +240,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 
 	const handleSave = useMutableCallback(async () => {
 		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;
+		delete data.archived;
 		const save = () => saveAction({
 			rid: room._id,
 			...data,
@@ -280,7 +284,9 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24' is='form' onSubmit={useMutableCallback((e) => e.preventDefault())} >
-				<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar}/>
+				<Box display='flex' justifyContent='center'>
+					<RoomAvatarEditor room={room} roomAvatar={roomAvatar} onChangeAvatar={handleRoomAvatar}/>
+				</Box>
 				<Field>
 					<Field.Label>{t('Name')}</Field.Label>
 					<Field.Row>
@@ -348,7 +354,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Field.Row>
 					</Box>
 					<Field.Row>
-						<TextInput disabled={!joinCodeRequired} value={joinCode} onChange={handleJoinCode} placeholder={t('Reset_password')} flexGrow={1}/>
+						<PasswordInput disabled={!joinCodeRequired} value={joinCode} onChange={handleJoinCode} placeholder={t('Reset_password')} flexGrow={1}/>
 					</Field.Row>
 				</Field>}
 				{canViewHideSysMes && <Field>
@@ -359,14 +365,14 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Field.Row>
 					</Box>
 					<Field.Row>
-						<MultiSelect options={sysMesOptions} disabled={!hideSysMes} value={systemMessages} onChange={handleSystemMessages} placeholder={t('Select_an_option')} flexGrow={1}/>
+						<MultiSelect maxWidth='100%' options={sysMesOptions} disabled={!hideSysMes} value={systemMessages} onChange={handleSystemMessages} placeholder={t('Select_an_option')} flexGrow={1}/>
 					</Field.Row>
 				</Field>}
 				{canViewEncrypted && <Field>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Encrypted')}</Field.Label>
 						<Field.Row>
-							<ToggleSwitch checked={encrypted} onChange={handleEncrypted}/>
+							<ToggleSwitch disabled={!canToggleEncryption} checked={encrypted} onChange={handleEncrypted}/>
 						</Field.Row>
 					</Box>
 				</Field>}

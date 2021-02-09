@@ -6,7 +6,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import VerticalBar from '../../../components/VerticalBar';
 import { UserInfo } from '../../room/contextualBar/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
-import { FormSkeleton } from './Skeleton';
+import { FormSkeleton } from '../../../components/Skeleton';
 import { formsSubscription } from '../additionalForms';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
@@ -43,14 +43,18 @@ export const AgentInfo = React.memo(function AgentInfo({
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
-		<UserInfo.Avatar size={'x332'} username={username}/>
+		<Box alignSelf='center'>
+			<UserInfo.Avatar size={'x332'} username={username}/>
+		</Box>
 
 		<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center' flexShrink={0}>
 			{children}
 		</ButtonGroup>
 
 		<Margins block='x4'>
-			<UserInfo.Username name={username} status={<UserStatus status={userStatus} />} />
+			<Box mb='x2'>
+				<UserInfo.Username name={username} status={<UserStatus status={userStatus} />} />
+			</Box>
 
 			{statusLivechat && <>
 				<UserInfo.Label>{t('Livechat_status')}</UserInfo.Label>

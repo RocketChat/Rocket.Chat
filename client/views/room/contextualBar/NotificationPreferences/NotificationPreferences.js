@@ -3,7 +3,7 @@ import { Button, ButtonGroup, FieldGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useForm } from '../../../../hooks/useForm';
-import { useUserSubscription, useUser } from '../../../../contexts/UserContext';
+import { useUserSubscription } from '../../../../contexts/UserContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useCustomSound } from '../../../../contexts/CustomSoundContext';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
@@ -11,7 +11,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import { Preferences } from './components/Preferences';
 import { NotificationByDevice } from './components/NotificationByDevice';
 import { NotificationToogle } from './components/NotificationToogle';
-
+import { useTabBarClose } from '../../providers/ToolboxProvider';
 
 export const NotificationPreferences = ({
 	handleClose,
@@ -21,7 +21,6 @@ export const NotificationPreferences = ({
 	handlePlaySound,
 	handleOptions,
 	handleSaveButton,
-	handleCancelButton,
 }) => {
 	const t = useTranslation();
 	return <>
@@ -54,37 +53,34 @@ export const NotificationPreferences = ({
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
-				<Button onClick={handleCancelButton}>{t('Cancel')}</Button>
+				{handleClose && <Button onClick={handleClose}>{t('Cancel')}</Button>}
 				<Button primary disabled={!formHasUnsavedChanges} onClick={handleSaveButton}>{t('Save')}</Button>
 			</ButtonGroup>
 		</VerticalBar.Footer>
 	</>;
 };
 
-export default React.memo(({ tabBar, rid }) => {
+export default React.memo(({ rid }) => {
 	const t = useTranslation();
 
 	const subscription = useUserSubscription(rid);
-	const userSettingsPreferences = useUser().settings.preferences;
 
 	const customSound = useCustomSound();
+	const handleClose = useTabBarClose();
+	const saveSettings = useEndpointActionExperimental('POST', 'rooms.saveNotification', t('Room_updated_successfully'));
 
-	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
-	const saveSettings = useEndpointActionExperimental('POST', 'rooms.saveNotification');
-
-	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm(
+	const { values, handlers, hasUnsavedChanges, commit } = useForm(
 		{
 			turnOn: !subscription.disableNotifications,
 			muteGroupMentions: subscription.muteGroupMentions,
 			showCounter: !subscription.hideUnreadStatus,
-			desktopAlert: subscription.desktopNotifications || userSettingsPreferences.desktopNotifications,
-			desktopAudio: subscription.audioNotifications || userSettingsPreferences.audioNotifications,
-			desktopSound: subscription.audioNotificationValue || userSettingsPreferences.newMessageNotification,
-			mobileAlert: subscription.mobilePushNotifications || userSettingsPreferences.mobileNotifications,
-			emailAlert: subscription.emailNotifications || userSettingsPreferences.emailNotificationMode,
+			desktopAlert: (subscription.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) || 'default',
+			desktopAudio: (subscription.audioPrefOrigin === 'subscription' && subscription.audioNotifications) || 'default',
+			desktopSound: subscription.audioNotificationValue || 'default',
+			mobileAlert: (subscription.mobilePrefOrigin === 'subscription' && subscription.mobilePushNotifications) || 'default',
+			emailAlert: (subscription.emailPrefOrigin === 'subscription' && subscription.emailNotifications) || 'default',
 		},
 	);
-
 
 	const defaultOption = [
 		['default', t('Default')],
@@ -100,7 +96,7 @@ export default React.memo(({ tabBar, rid }) => {
 		audio: defaultOption,
 		sound: [
 			['none None', t('None')],
-			['0 default', t('Default')],
+			['default', t('Default')],
 			...customSoundAsset,
 		],
 	};
@@ -137,7 +133,6 @@ export default React.memo(({ tabBar, rid }) => {
 			handlePlaySound={handlePlaySound}
 			handleOptions={handleOptions}
 			handleSaveButton={handleSaveButton}
-			handleCancelButton={reset}
 		/>
 	);
 });

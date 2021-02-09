@@ -8,4 +8,3 @@ import './issuelink';
 import './katex';
 import './markdown';
 import './mentionsMessage';
-import './spotify';

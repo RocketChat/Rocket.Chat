@@ -43,11 +43,11 @@ const MonitorsPage = () => {
 					<Icon name='plus' /> {t('New')}
 				</Button>
 			</Page.Header>
-			<Page.ScrollableContentWithShadow>
+			<Page.Content>
 				<TriggersTable reloadRef={reload}/>
-			</Page.ScrollableContentWithShadow>
+			</Page.Content>
 		</Page>
-		{context && <VerticalBar className={'contextual-bar'}>
+		{context && <VerticalBar>
 			<VerticalBar.Header>
 				{t('Trigger')}
 				<VerticalBar.Close onClick={handleCloseVerticalBar} />

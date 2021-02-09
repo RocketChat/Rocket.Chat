@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StatusBullet } from '@rocket.chat/fuselage';
-import { useSafely } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../contexts/TranslationContext';
-import { Presence } from '../lib/presence';
+import { usePresence } from '../hooks/usePresence';
 
 export const UserStatus = React.memo(({ small, status, ...props }) => {
 	const size = small ? 'small' : 'large';
@@ -34,20 +33,6 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-export const usePresence = (uid, presence) => {
-	const [status, setStatus] = useSafely(useState(presence));
-	useEffect(() => {
-		const handle = ({ status = 'loading' }) => {
-			setStatus(status);
-		};
-		Presence.listen(uid, handle);
-		return () => {
-			Presence.stop(uid, handle);
-		};
-	}, [setStatus, uid]);
-
-	return status;
-};
 
 export const ReactiveUserStatus = React.memo(({ uid, presence, ...props }) => {
 	const status = usePresence(uid, presence);

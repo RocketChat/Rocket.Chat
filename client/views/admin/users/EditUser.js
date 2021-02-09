@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Box, Field, Margins, Button, Callout } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -8,7 +9,7 @@ import { useRoute } from '../../../contexts/RouterContext';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
-import { FormSkeleton } from './Skeleton';
+import { FormSkeleton } from '../../../components/Skeleton';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
@@ -18,7 +19,7 @@ export function EditUserWithData({ uid, ...props }) {
 	const { value: data, phase: state, error } = useEndpointData('users.info', useMemo(() => ({ userId: uid }), [uid]));
 
 	if ([state, roleState].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton/>;
+		return <Box p='x24'><FormSkeleton/></Box>;
 	}
 
 	if (error || roleError) {
@@ -48,8 +49,19 @@ export function EditUser({ data, roles, ...props }) {
 	const t = useTranslation();
 
 	const [avatarObj, setAvatarObj] = useState();
+	const [errors, setErrors] = useState({});
 
-	const { values, handlers, reset, hasUnsavedChanges } = useForm(getInitialValue(data));
+	const validationKeys = {
+		name: (name) => setErrors((errors) => ({ ...errors, name: !name.trim().length ? t('The_field_is_required', t('name')) : undefined })),
+		username: (username) => setErrors((errors) => ({ ...errors, username: !username.trim().length ? t('The_field_is_required', t('username')) : undefined })),
+		email: (email) => setErrors((errors) => ({ ...errors, email: !email.trim().length ? t('The_field_is_required', t('email')) : undefined })),
+	};
+
+	const validateForm = ({ key, value }) => {
+		validationKeys[key] && validationKeys[key](value);
+	};
+
+	const { values, handlers, reset, hasUnsavedChanges } = useForm(getInitialValue(data), validateForm);
 
 	const router = useRoute('admin-users');
 
@@ -88,7 +100,16 @@ export function EditUser({ data, roles, ...props }) {
 		return saveAvatarAction(avatarObj);
 	}, [avatarObj, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, data._id]);
 
-	const handleSave = useCallback(async () => {
+	const handleSave = useMutableCallback(async () => {
+		Object.entries(values).forEach(([key, value]) => {
+			validationKeys[key] && validationKeys[key](value);
+		});
+
+		const { name, username, email } = values;
+		if (name === '' || username === '' || email === '') {
+			return false;
+		}
+
 		const result = await saveAction();
 		if (result.success) {
 			if (avatarObj) {
@@ -96,13 +117,13 @@ export function EditUser({ data, roles, ...props }) {
 			}
 			goToUser(data._id);
 		}
-	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar]);
+	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
 
 	const availableRoles = roles.map(({ _id, description }) => [_id, description || _id]);
 
 	const canSaveOrReset = hasUnsavedChanges || avatarObj;
 
-	const prepend = useMemo(() => <UserAvatarEditor username={data.username} etag={data.avatarETag} setAvatarObj={setAvatarObj}/>, [data.username, data.avatarETag]);
+	const prepend = useMemo(() => <UserAvatarEditor currentUsername={data.username} username={values.username} etag={data.avatarETag} setAvatarObj={setAvatarObj}/>, [data.username, data.avatarETag, values.username]);
 
 	const append = useMemo(() => <Field>
 		<Field.Row>
@@ -115,5 +136,5 @@ export function EditUser({ data, roles, ...props }) {
 		</Field.Row>
 	</Field>, [handleSave, canSaveOrReset, reset, t]);
 
-	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} prepend={prepend} append={append} {...props}/>;
+	return <UserForm errors={errors} formValues={values} formHandlers={handlers} availableRoles={availableRoles} prepend={prepend} append={append} {...props}/>;
 }

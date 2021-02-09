@@ -6,7 +6,6 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import UserCard from '../../../../components/UserCard';
-import { FormSkeleton } from '../../../admin/users/Skeleton';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useRolesDescription } from '../../../../contexts/AuthorizationContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
@@ -17,6 +16,8 @@ import UserActions from './actions/UserActions';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import { FormSkeleton } from '../../../../components/Skeleton';
+import { getUserEmailVerified } from '../../../../lib/getUserEmailVerified';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -32,6 +33,7 @@ export const UserInfo = React.memo(function UserInfo({
 	username,
 	bio,
 	email,
+	verified,
 	showRealNames,
 	status,
 	phone,
@@ -54,7 +56,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
-		<Box>
+		<Box alignSelf='center'>
 			<Avatar size={'x332'} username={username} etag={data?.avatarETag}/>
 		</Box>
 
@@ -70,7 +72,7 @@ export const UserInfo = React.memo(function UserInfo({
 			</>}
 
 			{Number.isInteger(utcOffset) && <>
-				<Label>{t('Local Time')}</Label>
+				<Label>{t('Local_Time')}</Label>
 				<Info><UTCClock utcOffset={utcOffset}/></Info>
 			</>}
 
@@ -83,7 +85,7 @@ export const UserInfo = React.memo(function UserInfo({
 			<Info>{lastLogin ? timeAgo(lastLogin) : t('Never')}</Info>
 
 			{name && <>
-				<Label>{t('Full Name')}</Label>
+				<Label>{t('Full_Name')}</Label>
 				<Info>{name}</Info>
 			</>}
 
@@ -105,10 +107,10 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{email && <> <Label>{t('Email')}</Label>
 				<Info display='flex' flexDirection='row' alignItems='center'>
-					<Box is='a' withTruncatedText href={`mailto:${ email.address }`}>{email.address}</Box>
+					<Box is='a' withTruncatedText href={`mailto:${ email }`}>{email}</Box>
 					<Margins inline='x4'>
-						{email.verified && <Tag variant='primary'>{t('Verified')}</Tag>}
-						{email.verified || <Tag disabled>{t('Not_verified')}</Tag>}
+						{verified && <Tag variant='primary'>{t('Verified')}</Tag>}
+						{verified || <Tag disabled>{t('Not_verified')}</Tag>}
 					</Margins>
 				</Info>
 			</>}
@@ -139,8 +141,7 @@ UserInfo.Info = Info;
 UserInfo.Label = Label;
 UserInfo.Username = Username;
 
-
-export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClose, video, showBackButton, ...props }) {
+export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = onClickClose, video, onClickBack, ...props }) {
 	const t = useTranslation();
 
 	const getRoles = useRolesDescription();
@@ -170,6 +171,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			nickname,
 		} = user;
 		return {
+			_id,
 			name: showRealNames ? name : username,
 			username,
 			lastLogin,
@@ -179,6 +181,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			bio,
 			phone: user.phone,
 			customFields: user.customFields,
+			verified: getUserEmailVerified(user),
 			email: getUserEmailAddress(user),
 			utcOffset,
 			createdAt: user.createdAt,
@@ -190,9 +193,10 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 	}, [value, showRealNames, getRoles]);
 
 	return (
-		<VerticalBar>
+		<>
 			<VerticalBar.Header>
-				{t('User_Info')}
+				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
+				<VerticalBar.Text>{t('User_Info')}</VerticalBar.Text>
 				{onClose && <VerticalBar.Close onClick={onClose} />}
 			</VerticalBar.Header>
 
@@ -212,7 +216,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 					p='x24'
 				/>
 			}
-		</VerticalBar>
+		</>
 	);
 });
 

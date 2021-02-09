@@ -52547,6 +52547,2702 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "0.74.4": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "apps_engine_version": "1.4.0",
+      "mongo_versions": [],
+      "pull_requests": []
+    },
+    "1.3.4": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "apps_engine_version": "1.5.1",
+      "mongo_versions": [],
+      "pull_requests": []
+    },
+    "2.4.13": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "apps_engine_version": "1.11.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.7.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.18.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.8.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.9.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.20.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19734",
+          "title": "[FIX] Image preview for image URLs on messages",
+          "userLogin": "g-thome",
+          "milestone": "3.9.1",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "19746",
+          "title": "[FIX] Sidebar presence will now correctly update for Omnichannel rooms",
+          "userLogin": "alansikora",
+          "milestone": "3.9.1",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "19749",
+          "title": "[FIX] Startup error when using MongoDB with a password containing special characters",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.9.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19725",
+          "title": "[FIX] Sidebar UI disappearing",
+          "userLogin": "gabriellsh",
+          "milestone": "3.9.1",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
+    },
+    "3.9.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19763",
+          "title": "[FIX] Some apps were not correctly enabled during startup in HA environments",
+          "userLogin": "thassiov",
+          "milestone": "3.9.2",
+          "contributors": [
+            "thassiov",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19862",
+          "title": "[FIX] Download my data with file uploads",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.9.2",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19842",
+          "title": "[FIX] Forgot password endpoint return status",
+          "userLogin": "g-thome",
+          "milestone": "3.9.2",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "19793",
+          "title": "[FIX][ENTERPRISE] Omnichannel Department form is not correctly storing the list of departments allowed for forwarding",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.2",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19762",
+          "title": "[FIX] 'Not Allowed' in message auditing",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.9.2",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "3.9.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19854",
+          "title": "[FIX] Problem with attachment render",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19817",
+          "title": "[FIX] Issue with special message rendering",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "1.3.5": {
+      "node_version": "8.11.4",
+      "npm_version": "6.4.1",
+      "apps_engine_version": "1.5.1",
+      "mongo_versions": [],
+      "pull_requests": [
+        {
+          "pr": "19817",
+          "title": "[FIX] Issue with special message rendering",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19854",
+          "title": "[FIX] Problem with attachment render",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "2.4.14": {
+      "node_version": "8.17.0",
+      "npm_version": "6.13.4",
+      "apps_engine_version": "1.11.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19854",
+          "title": "[FIX] Problem with attachment render",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19817",
+          "title": "[FIX] Issue with special message rendering",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "3.7.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.18.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19854",
+          "title": "[FIX] Problem with attachment render",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19817",
+          "title": "[FIX] Issue with special message rendering",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "3.8.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19854",
+          "title": "[FIX] Problem with attachment render",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19817",
+          "title": "[FIX] Issue with special message rendering",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        }
+      ]
+    },
+    "3.10.0-rc.0": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19931",
+          "title": "[NEW] Omnichannel Contact Center (Directory)",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.0",
+          "contributors": [
+            "rafaelblink",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "19902",
+          "title": "[FIX] Hightlights validation on Account Preferences page",
+          "userLogin": "aKn1ghtOut",
+          "description": "This PR fixes two issues in the account settings \"preferences\" panel.\r\nOnce set, the \"Highlighted Words\" setting cannot be reset to an empty string. This was fixed by changing the string validation from checking the length to checking the type of variable.\r\nSecondly, it tracks the changes to correctly identify if changes after the last \"save changes\" action have been made, using an \"updates\" state variable, instead of just comparing against the initialValue that does not change on clicking \"save changes\".",
+          "milestone": "3.10.0",
+          "contributors": [
+            "aKn1ghtOut",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19924",
+          "title": "[NEW] User preference for audio notifications",
+          "userLogin": "gabriellsh",
+          "description": "![image](https://user-images.githubusercontent.com/40830821/102808922-dfe32b00-439f-11eb-9268-6d0cf69dc64c.png)",
+          "contributors": [
+            "gabriellsh",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19036",
+          "title": "[FIX] Update base image in Dockerfile.rhel",
+          "userLogin": "andykrohg",
+          "contributors": [
+            "andykrohg"
+          ]
+        },
+        {
+          "pr": "19925",
+          "title": "[NEW] REST endpoints to add and retrieve Enterprise licenses",
+          "userLogin": "g-thome",
+          "contributors": [
+            "g-thome",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19898",
+          "title": "[FIX] Admin Users screen sorting showing deactivated users in wrong order",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "19926",
+          "title": "[NEW] REST Endpoint `instances.get`",
+          "userLogin": "g-thome",
+          "description": "Returns an array of instances on the cluster.",
+          "contributors": [
+            "g-thome",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19929",
+          "title": "Bump systeminformation from 4.30.1 to 4.33.0 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19834",
+          "title": "[FIX] Group DMs title when user changes his/her name",
+          "userLogin": "g-thome",
+          "contributors": [
+            "g-thome",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19928",
+          "title": "[IMPROVE] Show all screen when printing screen",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19808",
+          "title": "Rewrite: Room Header",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19850",
+          "title": "Chore: Add watch.settings to events whitelist",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "19843",
+          "title": "Improve: Report Weekly Active Users to statistics",
+          "userLogin": "rodrigok",
+          "description": "Add the fields `uniqueUsersOfLastWeek`, `uniqueDevicesOfLastWeek` and `uniqueOSOfLastWeek` to the statistics report among the daily and monthly already reported.",
+          "milestone": "3.10.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "19912",
+          "title": "Chore:  Fix Caddy download URL in Snaps",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19923",
+          "title": "[FIX] Issue with oembed",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19922",
+          "title": "Language update from LingoHub 🤖 on 2020-12-21Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19901",
+          "title": "Remove Heroku from readme",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19875",
+          "title": "[FIX] RoomForeword",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19879",
+          "title": "[FIX] User Info 'Local Time' translation keyword",
+          "userLogin": "J4r3tt",
+          "milestone": "3.10.0",
+          "contributors": [
+            "J4r3tt"
+          ]
+        },
+        {
+          "pr": "19886",
+          "title": "[FIX] Issue with oembed",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19892",
+          "title": "[NEW] Update Checker Description",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.10.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19763",
+          "title": "[FIX] Some apps were not correctly enabled during startup in HA environments",
+          "userLogin": "thassiov",
+          "milestone": "3.9.2",
+          "contributors": [
+            "thassiov",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19876",
+          "title": "Regression: Fix member list Actions",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19874",
+          "title": "Regression: Fix Room Files for DMs",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19580",
+          "title": "[IMPROVE] Rewrite Room Files as React Component",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19870",
+          "title": "[FIX] User email showing [object Object]",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19867",
+          "title": "Regression: RoomMembers Permission",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "19862",
+          "title": "[FIX] Download my data with file uploads",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.9.2",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19841",
+          "title": "[IMPROVE] Rewrite contextualbar RoomMembers as React Component ",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19863",
+          "title": "Chore: Change Youtube test to verify if has an iframe with max-width",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19854",
+          "title": "[FIX] Problem with attachment render",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19842",
+          "title": "[FIX] Forgot password endpoint return status",
+          "userLogin": "g-thome",
+          "milestone": "3.9.2",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "19844",
+          "title": "Bump ini from 1.3.5 to 1.3.8 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19768",
+          "title": "Chore: Update Pull Request template",
+          "userLogin": "rodrigok",
+          "description": "Improve the template of Pull Requests in order to make it clear reducing duplicated information and removing the visible checklists that were generating noise and misunderstanding with the PR progress.\r\n- Moved the checklists to inside comments\r\n- Merge the changelog and proposed changes sections to have a single source of description that goes to the changelog\r\n- Remove the screenshot section, they can be added inside the description\r\n- Changed the proposed changes title to incentivizing the usage of images and videos",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19598",
+          "title": "Chore: Remove extra parentheses from return type",
+          "userLogin": "ArnoSaine",
+          "contributors": [
+            "ArnoSaine",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19831",
+          "title": "Regression: Failed autolinker and markdown rendering",
+          "userLogin": "tassoevan",
+          "milestone": "3.10.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "19825",
+          "title": "[FIX] Spotify oEmbed",
+          "userLogin": "tassoevan",
+          "milestone": "3.10.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "19654",
+          "title": "Message parsing and rendering - Phase 1",
+          "userLogin": "tassoevan",
+          "milestone": "3.10.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19817",
+          "title": "[FIX] Issue with special message rendering",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19816",
+          "title": "Regression: UserInfoWithData endpoint variable",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "19793",
+          "title": "[FIX][ENTERPRISE] Omnichannel Department form is not correctly storing the list of departments allowed for forwarding",
+          "userLogin": "rafaelblink",
+          "milestone": "3.9.2",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19807",
+          "title": "Regression: User Info Context bar breaking.",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19803",
+          "title": "[IMPROVE] Rewrite contextualbar RoomMembers - AddUsers as React Component",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19762",
+          "title": "[FIX] 'Not Allowed' in message auditing",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.9.2",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19806",
+          "title": "Regression: fix broken members list",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19805",
+          "title": "[FIX] Custom Avatar",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "19796",
+          "title": "Improve Docker container size by adding chown to ADD command",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19787",
+          "title": "Regression: roomInfo folder structure",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19764",
+          "title": "[IMPROVE] Replace useClipboard",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19761",
+          "title": "Regression: contextualBar folder structure",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "19759",
+          "title": "[IMPROVE] Replace usePrefersReducedMotion",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "19734",
+          "title": "[FIX] Image preview for image URLs on messages",
+          "userLogin": "g-thome",
+          "milestone": "3.9.1",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "19746",
+          "title": "[FIX] Sidebar presence will now correctly update for Omnichannel rooms",
+          "userLogin": "alansikora",
+          "milestone": "3.9.1",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "19749",
+          "title": "[FIX] Startup error when using MongoDB with a password containing special characters",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.9.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19729",
+          "title": "[FIX] File Tab Order",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19727",
+          "title": "[FIX] Emails not showing up in Admin/Users",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19748",
+          "title": "Regression: Add Members showing the wrong template",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19753",
+          "title": "Regression:  \"My Account\" page doesn't load",
+          "userLogin": "g-thome",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "19516",
+          "title": "[FIX] Add fallback message when show notification content is disabled",
+          "userLogin": "youssef-md",
+          "milestone": "3.10.0",
+          "contributors": [
+            "youssef-md"
+          ]
+        },
+        {
+          "pr": "19631",
+          "title": "Frontend folder structure",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19736",
+          "title": "bump fuselage",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19496",
+          "title": "[IMPROVE] Removed useEndpointDataExperimental hook usage",
+          "userLogin": "tassoevan",
+          "milestone": "3.10.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "19723",
+          "title": "Merge EE and Community translations and LingoHub manual sync",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19725",
+          "title": "[FIX] Sidebar UI disappearing",
+          "userLogin": "gabriellsh",
+          "milestone": "3.9.1",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19672",
+          "title": "[IMPROVE] Rewrite NotificationPreferences to React component",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.10.0",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19701",
+          "title": "[NEW] Custom scroll",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19694",
+          "title": "[IMPROVE] Rewrite contextualbar RoomMembers - InviteUsers",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19674",
+          "title": "[IMPROVE] Rewrite contextualbar OTR panel",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19690",
+          "title": "[FIX] UIKit Modal not scrolling",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19720",
+          "title": "Merge master into develop & Set version to 3.10.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.10.0-rc.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19948",
+          "title": "Regression: Omnichannel Custom Fields Form no longer working after refactoring",
+          "userLogin": "renatobecker",
+          "description": "The Omnichannel `Custom Fields` form is not working anymore after some refactorings on client-side.\r\nWhen the user clicks on `Custom Field` in the Omnichannel menu, a blank page appears.",
+          "milestone": "3.10.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "19941",
+          "title": "Regression: UserCard \"See full profile\" link broken",
+          "userLogin": "dougfabris",
+          "milestone": "3.10.0",
+          "contributors": [
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19944",
+          "title": "Regression: Admin Sidebar Scroll",
+          "userLogin": "gabriellsh",
+          "milestone": "3.10.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
+    },
+    "3.10.0-rc.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19950",
+          "title": "Regression: Fix sorting indicators on Admin Users page",
+          "userLogin": "alansikora",
+          "milestone": "3.10.0",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "19978",
+          "title": "Regression: Fix oembed",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19935",
+          "title": "[FIX] Status on searchlist",
+          "userLogin": "gabriellsh",
+          "milestone": "3.9.4",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19830",
+          "title": "[FIX] Omnichannel Departments Canned Responses",
+          "userLogin": "gabriellsh",
+          "milestone": "3.9.4",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "renatobecker",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "19951",
+          "title": "Regression: Check permissions properly when fetching rooms in Omnichannel Directory",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19968",
+          "title": "Regression: Add missing translations on the Omnichannel Contact Center(Directory)",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "19946",
+          "title": "Regression: Header Styles fixes",
+          "userLogin": "ggazzo",
+          "milestone": "3.10.0",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19945",
+          "title": "[FIX] Room scrolling to top after returns to a opened room",
+          "userLogin": "ggazzo",
+          "milestone": "3.9.4",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.10.0-rc.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19981",
+          "title": "Regression: polishing licenses endpoints ",
+          "userLogin": "g-thome",
+          "contributors": [
+            "g-thome",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19980",
+          "title": "Regression: Double Scrollbars on tables",
+          "userLogin": "gabriellsh",
+          "description": "Before:\r\n![image](https://user-images.githubusercontent.com/40830821/103242719-0ec84680-4936-11eb-87a7-68b6eea8de7b.png)\r\n\r\n\r\nAfter:\r\n![image](https://user-images.githubusercontent.com/40830821/103242680-ee988780-4935-11eb-99e2-a95de99f78f1.png)",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19955",
+          "title": "Regression: Add currently running instance to instances.get endpoint",
+          "userLogin": "g-thome",
+          "milestone": "3.10.0",
+          "contributors": [
+            "g-thome",
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.10.0-rc.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.10.0": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.8.5": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19978",
+          "title": "Regression: Fix oembed",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.9.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "19978",
+          "title": "Regression: Fix oembed",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19830",
+          "title": "[FIX] Omnichannel Departments Canned Responses",
+          "userLogin": "gabriellsh",
+          "milestone": "3.9.4",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "renatobecker",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "19945",
+          "title": "[FIX] Room scrolling to top after returns to a opened room",
+          "userLogin": "ggazzo",
+          "milestone": "3.9.4",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19935",
+          "title": "[FIX] Status on searchlist",
+          "userLogin": "gabriellsh",
+          "milestone": "3.9.4",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.10.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20073",
+          "title": "[FIX] Actions from User Info panel",
+          "userLogin": "Darshilp326",
+          "description": "Users can be removed from channels without any error message.",
+          "milestone": "3.10.1",
+          "contributors": [
+            "Darshilp326"
+          ]
+        },
+        {
+          "pr": "20114",
+          "title": "[FIX] Messages being updated when not required after user changes his profile",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.10.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19953",
+          "title": "[FIX][ENTERPRISE] Omnichannel custom fields not storing additional form values ",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20089",
+          "title": "[FIX] Omnichannel rooms breaking after return to queue or forward",
+          "userLogin": "gabriellsh",
+          "milestone": "3.10.1",
+          "contributors": [
+            "gabriellsh",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20093",
+          "title": "[FIX] Omnichannel raw model importing meteor dependency",
+          "userLogin": "renatobecker",
+          "milestone": "3.10.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "20061",
+          "title": "[FIX] User Audio notification preference not being applied",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.10.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20003",
+          "title": "[FIX] OAuth users being asked to change password on second login",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.10.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20022",
+          "title": "[FIX] Omnichannel Agents unable to take new chats in the queue",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "20007",
+          "title": "[FIX] Omnichannel Business Hours form is not being rendered",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19965",
+          "title": "[FIX] Agent information panel not rendering",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19997",
+          "title": "[FIX] Creation of Omnichannel rooms not working correctly through the Apps when the agent parameter is set",
+          "userLogin": "murtaza98",
+          "milestone": "3.10.1",
+          "contributors": [
+            "murtaza98"
+          ]
+        }
+      ]
+    },
+    "3.10.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20122",
+          "title": "[FIX] Tabbar is opened",
+          "userLogin": "ggazzo",
+          "milestone": "3.10.2",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.10.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20128",
+          "title": "[FIX] User registration updating wrong subscriptions",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.10.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20200",
+          "title": "Chore: Change console.warning() to console.warn()",
+          "userLogin": "lucassartor",
+          "milestone": "3.10.4",
+          "contributors": [
+            "lucassartor"
+          ]
+        },
+        {
+          "pr": "20176",
+          "title": "[FIX] Room's list showing all rooms with same name",
+          "userLogin": "sampaiodiego",
+          "description": "Add a migration to fix the room's list for those who ran version 3.10.1 and got it scrambled when a new user was registered.",
+          "milestone": "3.10.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.11.0-rc.0": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.0-alpha.4469",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20311",
+          "title": "[FIX][ENTERPRISE] Auditing RoomAutocomplete",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20221",
+          "title": "[NEW] Banner system and NPS",
+          "userLogin": "sampaiodiego",
+          "description": "More robust and scalable banner system for alerting users.",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "20285",
+          "title": "[NEW] [Apps] IPreFileUpload event",
+          "userLogin": "lolimay",
+          "milestone": "3.11.0",
+          "contributors": [
+            "ggazzo",
+            "lolimay",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "20078",
+          "title": "[NEW][Apps] Apps Permission System",
+          "userLogin": "thassiov",
+          "contributors": [
+            "thassiov",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20244",
+          "title": "[NEW][ENTERPRISE] Omnichannel Contact Manager as preferred agent for routing",
+          "userLogin": "murtaza98",
+          "description": "If the `Contact-Manager` is assigned to a Visitor, the chat will automatically get transferred to the respective Contact-Manager, provided the Contact-Manager is online. In-case the Contact-Manager is offline, the chat will be transferred to any other online agent.\r\nWe have provided a setting to control this auto-assignment feature\r\n![image](https://user-images.githubusercontent.com/34130764/104880961-8104d780-5986-11eb-9d87-82b99814b028.png)\r\n\r\nBehavior based-on Routing method\r\n\r\n1. Auto-selection, Load-Balancing, or External Service (`autoAssignAgent = true`)\r\n    This is straightforward, \r\n      - if the Contact-manager is online, the chat will be transferred to the Contact-Manger only\r\n      - if the Contact-manager is offline, the chat will be transferred to any other online-agent based on the Routing system\r\n2. Manual-selection (`autoAssignAgent = false`)\r\n      - If the Contact-Manager is online, the chat will appear in the Queue of Contact-Manager **ONLY**\r\n      - If the Contact-Manager is offline, the chat will appear in the Queue of all related Agents/Manager ( like it's done right now )",
+          "milestone": "3.11.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "renatobecker",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "20101",
+          "title": "[NEW] Email Inboxes for Omnichannel",
+          "userLogin": "rafaelblink",
+          "description": "With this new feature, email accounts will receive email messages(threads) which will be transformed into Omnichannel chats. It'll be possible to set up multiple email accounts, test the connection with email server(email provider) and define the behaviour of each account.\r\n\r\nhttps://user-images.githubusercontent.com/2493803/105430398-242d4980-5c32-11eb-835a-450c94837d23.mp4\r\n\r\n### New item on admin menu\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/105428723-bc293400-5c2e-11eb-8c02-e8d36ea82726.png)\r\n\r\n\r\n### Send test email tooltip\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/104366986-eaa16380-54f8-11eb-9ba7-831cfde2319c.png)\r\n\r\n\r\n### Inbox Info\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/104366796-ab731280-54f8-11eb-9941-a3cc8eb610e1.png)\r\n\r\n### SMTP Info\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/104366868-c47bc380-54f8-11eb-969e-ccc29070957c.png)\r\n\r\n### IMAP Info\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/104366897-cd6c9500-54f8-11eb-80c4-97d5b0c002d5.png)\r\n\r\n### Messages\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/105428971-45d90180-5c2f-11eb-992a-022a3df94471.png)",
+          "milestone": "3.11.0",
+          "contributors": [
+            "rafaelblink",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "20201",
+          "title": "[NEW] Encrypted Discussions and new Encryption Permissions",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "gabriellsh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20246",
+          "title": "Language update from LingoHub 🤖 on 2021-01-18Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "20306",
+          "title": "Regression: Unread superposing announcement.",
+          "userLogin": "gabriellsh",
+          "description": "### Before\r\n![image](https://user-images.githubusercontent.com/40830821/105412619-c2f67d80-5c13-11eb-8204-5932ea880c8a.png)\r\n\r\n\r\n### After\r\n![image](https://user-images.githubusercontent.com/40830821/105411176-d1439a00-5c11-11eb-8d1b-ea27c8485214.png)",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "20290",
+          "title": "Regression: Announcement bar not showing properly Markdown content",
+          "userLogin": "dougfabris",
+          "description": "**Before**:\r\n![image](https://user-images.githubusercontent.com/27704687/105273746-a4907380-5b7a-11eb-8121-aff665251c44.png)\r\n\r\n**After**:\r\n![image](https://user-images.githubusercontent.com/27704687/105274050-2e404100-5b7b-11eb-93b2-b6282a7bed95.png)",
+          "milestone": "3.11.0",
+          "contributors": [
+            "dougfabris",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20291",
+          "title": "Regression: Attachments",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20272",
+          "title": "[FIX] Changed success message for adding custom sound.",
+          "userLogin": "Darshilp326",
+          "description": "https://user-images.githubusercontent.com/55157259/105151351-daf2d200-5b2b-11eb-8223-eae5d60f770d.mp4",
+          "contributors": [
+            "Darshilp326"
+          ]
+        },
+        {
+          "pr": "20259",
+          "title": "[FIX] Saving with blank email in edit user",
+          "userLogin": "RonLek",
+          "description": "Disallows showing a success popup when email field is made blank in Edit User and instead shows the relevant error popup.\r\n\r\n\r\nhttps://user-images.githubusercontent.com/28918901/104960749-dbd81680-59fa-11eb-9c7b-2b257936f894.mp4",
+          "contributors": [
+            "RonLek"
+          ]
+        },
+        {
+          "pr": "20287",
+          "title": "[FIX] Fields overflowing page",
+          "userLogin": "gabriellsh",
+          "description": "### Before\r\n![image](https://user-images.githubusercontent.com/40830821/105246952-c1b14c00-5b52-11eb-8671-cff88edf242d.png)\r\n\r\n### After\r\n![image](https://user-images.githubusercontent.com/40830821/105247125-0a690500-5b53-11eb-9f3c-d6a68108e336.png)",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "20265",
+          "title": "[FIX] Jump to message",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20280",
+          "title": "Regression: Lint warnings and some datepicker",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20277",
+          "title": "[FIX] Room special name in prompts",
+          "userLogin": "aKn1ghtOut",
+          "description": "The \"Hide room\" and \"Leave Room\" confirmation prompts use the \"name\" key from the room info. When the setting \"\r\nAllow Special Characters in Room Names\" is enabled, the prompts show the normalized names instead of those that contain the special characters.\r\n\r\nChanged the value being used from name to fname, which always has the user-set name.\r\n\r\nPrevious:\r\n![Screenshot from 2021-01-20 15-52-29](https://user-images.githubusercontent.com/38764067/105161642-9b31e780-5b37-11eb-8b0c-ec4b1414c948.png)\r\n\r\nUpdated:\r\n![Screenshot from 2021-01-20 15-50-19](https://user-images.githubusercontent.com/38764067/105161627-966d3380-5b37-11eb-9812-3dd9352b4f95.png)",
+          "contributors": [
+            "aKn1ghtOut"
+          ]
+        },
+        {
+          "pr": "20267",
+          "title": "[FIX] Engagement dashboard graphs labels superposing each other",
+          "userLogin": "gabriellsh",
+          "description": "Now after a certain breakpoint, the graphs should stack vertically, and overlapping text rotated.\r\n\r\n![image](https://user-images.githubusercontent.com/40830821/105098926-93b40500-5a89-11eb-9a56-2fc3b1552914.png)",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19996",
+          "title": "[FIX] Changed success message for ignoring member.",
+          "userLogin": "Darshilp326",
+          "description": "Different messages for ignoring/unignoring will be displayed.\r\n\r\nhttps://user-images.githubusercontent.com/55157259/103310307-4241c880-4a3d-11eb-8c6c-4c9b99d023db.mp4",
+          "contributors": [
+            "Darshilp326",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20028",
+          "title": "[FIX] User info 'Full Name' translation keyword",
+          "userLogin": "Karting06",
+          "description": "Fix the `Full Name` translation keyword, so that it can be translated.",
+          "milestone": "3.11.0",
+          "contributors": [
+            "Karting06"
+          ]
+        },
+        {
+          "pr": "20029",
+          "title": "[FIX] ViewLogs title translation keyword",
+          "userLogin": "Karting06",
+          "description": "Fix `View Logs` title translation keyword to enable translation of the title",
+          "contributors": [
+            "Karting06"
+          ]
+        },
+        {
+          "pr": "20098",
+          "title": "[FIX] Fix error that occurs on changing archive status of room",
+          "userLogin": "aKn1ghtOut",
+          "description": "This PR fixes an issue that happens when you try to edit the info of a room, and save changes after changing the value of \"Archived\". The archive functionality is handled separately from other room settings. The archived key is not used in the saveRoomSettings method but was still being sent over. Hence, the request was being considered invalid. I deleted the \"archived\" key from the data being sent in the request, making the request valid again.",
+          "contributors": [
+            "aKn1ghtOut",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20159",
+          "title": "[FIX] Remove duplicate blaze events call for EmojiActions from roomOld",
+          "userLogin": "aKn1ghtOut",
+          "description": "A few methods concerning Emojis are bound multiple times to the DOM using the Template events() call, once in the reactions init.js and the other time after they get exported from app/ui/client/views/app/lib/getCommonRoomEvents.js to whatever page binds all the functions. The getCommonRoomEvents methods are always bound, hence negating a need to bind in a lower-level component.",
+          "contributors": [
+            "aKn1ghtOut",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20164",
+          "title": "[FIX] \"Open_thread\" English tooltip correction",
+          "userLogin": "aKn1ghtOut",
+          "description": "Remove unnecessary spaces from the translation key, and added English translation value for the key.",
+          "contributors": [
+            "aKn1ghtOut"
+          ]
+        },
+        {
+          "pr": "20172",
+          "title": "[IMPROVE] Rewrite Announcement as React component",
+          "userLogin": "dougfabris",
+          "milestone": "3.11.0",
+          "contributors": [
+            "dougfabris",
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20199",
+          "title": "[FIX] Added Margin between status bullet and status label",
+          "userLogin": "yash-rajpal",
+          "description": "Added Margins between status bullet and status label",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "20220",
+          "title": "[FIX]Added success message on saving notification preference.",
+          "userLogin": "Darshilp326",
+          "description": "Added success message after saving notification preferences.\r\n\r\nhttps://user-images.githubusercontent.com/55157259/104774617-03ca3e80-579d-11eb-8fa4-990b108dd8d9.mp4",
+          "contributors": [
+            "Darshilp326"
+          ]
+        },
+        {
+          "pr": "20225",
+          "title": "[FIX] White screen after 2FA code entered",
+          "userLogin": "wggdeveloper",
+          "milestone": "3.10.5",
+          "contributors": [
+            "wggdeveloper",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20228",
+          "title": "[FIX] Added context check for closing active tabbar for member-list",
+          "userLogin": "yash-rajpal",
+          "description": "When we click on a username and then click on see user's full profile, a tab gets active and shows us the user's profile, the problem occurs when the tab is still active and we try to see another user's profile. In this case, tabbar gets closed.\r\nTo resolve this, added context check for closing action of active tabbar.",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "20245",
+          "title": "[FIX] Incorrect translations ZN",
+          "userLogin": "moniang",
+          "milestone": "3.11.0",
+          "contributors": [
+            "moniang"
+          ]
+        },
+        {
+          "pr": "20255",
+          "title": "Regression: reactAttachments cpu",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20196",
+          "title": "[FIX] Omnichannel - Contact Center form is not validating custom fields properly",
+          "userLogin": "rafaelblink",
+          "description": "The contact form is accepting undefined values in required custom fields when creating or editing contacts, and, the errror message isn't following Rocket.chat design system.\r\n\r\n### Before\r\n![image](https://user-images.githubusercontent.com/2493803/104522668-31688980-55dd-11eb-92c5-83f96073edc4.png)\r\n\r\n### After\r\n\r\n#### New\r\n![image](https://user-images.githubusercontent.com/2493803/104770494-68f74300-574f-11eb-94a3-c8fd73365308.png)\r\n\r\n\r\n#### Edit\r\n![image](https://user-images.githubusercontent.com/2493803/104770538-7b717c80-574f-11eb-829f-1ae304103369.png)",
+          "milestone": "3.11.0",
+          "contributors": [
+            "rafaelblink",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "20090",
+          "title": "[NEW][ENTERPRISE] Automatic transfer of unanswered conversations to another agent",
+          "userLogin": "murtaza98",
+          "milestone": "3.11.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "20123",
+          "title": "Rewrite Message action links",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20106",
+          "title": "Rewrite: Message Attachments",
+          "userLogin": "ggazzo",
+          "description": "![image](https://user-images.githubusercontent.com/5263975/104783709-69023d80-5765-11eb-968f-a2b93fdfb51e.png)",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20222",
+          "title": "Regression: User Dropdown margin",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "20119",
+          "title": "Rewrite Broadcast",
+          "userLogin": "ggazzo",
+          "description": "![image](https://user-images.githubusercontent.com/5263975/104035912-7fcaf200-51b1-11eb-91df-228c23d97448.png)",
+          "contributors": [
+            "ggazzo",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20121",
+          "title": "[IMPROVE] Message Collection Hooks",
+          "userLogin": "tassoevan",
+          "description": "Integrating a list of messages into a React component imposes some challenges. Its content is provided by some REST API calls and live-updated by streamer events. To avoid too much coupling with React Hooks, the structures `RecordList`, `MessageList` and their derivatives are simple event emitters created and connected on components via some simple hooks, like `useThreadsList()` and `useRecordList()`.",
+          "milestone": "3.11.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19899",
+          "title": "[FIX] Invalid filters on the Omnichannel Analytics page",
+          "userLogin": "murtaza98",
+          "milestone": "3.11.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "20180",
+          "title": "Regression: Info Page Icon style and usage graph breaking",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20200",
+          "title": "Chore: Change console.warning() to console.warn()",
+          "userLogin": "lucassartor",
+          "milestone": "3.10.4",
+          "contributors": [
+            "lucassartor"
+          ]
+        },
+        {
+          "pr": "20176",
+          "title": "[FIX] Room's list showing all rooms with same name",
+          "userLogin": "sampaiodiego",
+          "description": "Add a migration to fix the room's list for those who ran version 3.10.1 and got it scrambled when a new user was registered.",
+          "milestone": "3.10.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20177",
+          "title": "Regression: Change sort icon",
+          "userLogin": "gabriellsh",
+          "description": "### Before\r\n![image](https://user-images.githubusercontent.com/40830821/104366414-1bcd6400-54f8-11eb-9fc7-c6f13f07a61e.png)\r\n\r\n### After\r\n![image](https://user-images.githubusercontent.com/40830821/104366542-4cad9900-54f8-11eb-83ca-acb99899515a.png)",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "20181",
+          "title": "[FIX] Wrong userId when open own user profile",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "20124",
+          "title": "[FIX] Livechat.RegisterGuest method removing unset fields",
+          "userLogin": "renatobecker",
+          "description": "After changes made on https://github.com/RocketChat/Rocket.Chat/pull/19931, the `Livechat.RegisterGuest` method started removing properties from the visitor inappropriately. The properties that did not receive value were removed from the object.\r\nThose changes were made to support the new Contact Form, but now the form has its own method to deal with Contact data so those changes are no longer necessary.",
+          "milestone": "3.11.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "renatobecker",
+            "rafaelblink"
+          ]
+        },
+        {
+          "pr": "19900",
+          "title": "[IMPROVE] Rewrite Prune Messages as React component",
+          "userLogin": "dougfabris",
+          "milestone": "3.11.0",
+          "contributors": [
+            "dougfabris",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20174",
+          "title": "[FIX] Change header's favorite icon to filled star",
+          "userLogin": "dougfabris",
+          "description": "### Before: \r\n![image](https://user-images.githubusercontent.com/27704687/104351819-a60bcd00-54e4-11eb-8b43-7d281a6e5dcb.png)\r\n\r\n### After:\r\n![image](https://user-images.githubusercontent.com/27704687/104351632-67761280-54e4-11eb-87ba-25b940494bb5.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "19938",
+          "title": "[FIX] Initial values update on Account Preferences",
+          "userLogin": "dougfabris",
+          "milestone": "3.11.0",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19643",
+          "title": "[FIX] Unable to reset password by Email if upper case character is pr…",
+          "userLogin": "bhavayAnand9",
+          "milestone": "3.11.0",
+          "contributors": [
+            "bhavayAnand9"
+          ]
+        },
+        {
+          "pr": "18722",
+          "title": "[FIX] Video call message not translated",
+          "userLogin": "galshiff",
+          "description": "Fixed video call message not translated.",
+          "milestone": "3.11.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19517",
+          "title": "[NEW] Server Info page",
+          "userLogin": "gabriellsh",
+          "milestone": "3.11.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "20083",
+          "title": "[IMPROVE] Title for user avatar buttons",
+          "userLogin": "sushant52",
+          "description": "Made user avatar change buttons to be descriptive of what they do.",
+          "contributors": [
+            "sushant52"
+          ]
+        },
+        {
+          "pr": "20110",
+          "title": "[FIX] Admin User Info email verified status",
+          "userLogin": "bdelwood",
+          "milestone": "3.11.0",
+          "contributors": [
+            "bdelwood",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20116",
+          "title": "[IMPROVE] Tooltip added for Kebab menu on chat header",
+          "userLogin": "yash-rajpal",
+          "description": "Added the missing Tooltip for kebab menu on chat header.\r\n![tooltip after](https://user-images.githubusercontent.com/58601732/104031406-b07f4b80-51f2-11eb-87a4-1e8da78a254f.gif)",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "20134",
+          "title": "[FIX] Translate keyword for 'Showing results of' in tables",
+          "userLogin": "Karting06",
+          "description": "Change translation keyword in order to allow the translation of `Showing results %s - %s of %s` in tables.",
+          "milestone": "3.11.0",
+          "contributors": [
+            "Karting06"
+          ]
+        },
+        {
+          "pr": "20021",
+          "title": "[FIX] Markdown added for Header Room topic",
+          "userLogin": "yash-rajpal",
+          "description": "With the new 3.10.0 version update the Links in topic section below room name were not working, for more info refer issue #20018",
+          "milestone": "3.11.0",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "20016",
+          "title": "[FIX]  Status circle in profile section",
+          "userLogin": "yash-rajpal",
+          "description": "The Status Circle in status message text input is now centered vertically.",
+          "milestone": "3.11.0",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "19962",
+          "title": "[FIX] Normalize messages for users in endpoint chat.getStarredMessages",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.11.0",
+          "contributors": [
+            "tiagoevanp",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19942",
+          "title": "[FIX] minWidth in FileIcon to prevent layout to broke",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/102934691-69b7f480-4483-11eb-995b-a8a9b72246aa.png)",
+          "milestone": "3.11.0",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19489",
+          "title": "[IMPROVE] Add extra SAML settings to update room subs and add private room subs.",
+          "userLogin": "tlskinneriv",
+          "description": "Added a SAML setting to support updating room subscriptions each time a user logs in via SAML.\r\nAdded a SAML setting to support including private rooms in SAML updated subscriptions (whether initial or on each logon).",
+          "milestone": "3.11.0",
+          "contributors": [
+            "tlskinneriv",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20070",
+          "title": "[IMPROVE] Rewrite User Dropdown and Kebab menu.",
+          "userLogin": "gabriellsh",
+          "description": "![image](https://user-images.githubusercontent.com/40830821/103699786-3a74ad80-4f82-11eb-913e-2e09d5f7eac6.png)",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20146",
+          "title": "Language update from LingoHub 🤖 on 2021-01-11Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20128",
+          "title": "[FIX] User registration updating wrong subscriptions",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20117",
+          "title": "Rewrite Discussion Metric",
+          "userLogin": "ggazzo",
+          "description": "https://user-images.githubusercontent.com/5263975/104031909-23190880-51ac-11eb-93dd-5d4b5295886d.mp4",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "19777",
+          "title": "[IMPROVE] Don't use global search by default",
+          "userLogin": "ikyuchukov",
+          "description": "Global chat search is not set by default now.",
+          "contributors": [
+            "i-kychukov",
+            "ikyuchukov",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20122",
+          "title": "[FIX] Tabbar is opened",
+          "userLogin": "ggazzo",
+          "milestone": "3.10.2",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20073",
+          "title": "[FIX] Actions from User Info panel",
+          "userLogin": "Darshilp326",
+          "description": "Users can be removed from channels without any error message.",
+          "milestone": "3.10.1",
+          "contributors": [
+            "Darshilp326"
+          ]
+        },
+        {
+          "pr": "20118",
+          "title": "Update password policy English translation",
+          "userLogin": "zdumitru",
+          "contributors": [
+            "zdumitru",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20114",
+          "title": "[FIX] Messages being updated when not required after user changes his profile",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.10.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19953",
+          "title": "[FIX][ENTERPRISE] Omnichannel custom fields not storing additional form values ",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20089",
+          "title": "[FIX] Omnichannel rooms breaking after return to queue or forward",
+          "userLogin": "gabriellsh",
+          "milestone": "3.10.1",
+          "contributors": [
+            "gabriellsh",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19993",
+          "title": "[FIX] Meteor errors not translating for toast messages",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19992",
+          "title": "[FIX] Profile picture changing with username",
+          "userLogin": "gabriellsh",
+          "description": "![bug avatar](https://user-images.githubusercontent.com/40830821/103305935-24e40e80-49eb-11eb-9e35-9bd4c167898a.gif)",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "19937",
+          "title": "[FIX] Search list filter",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20045",
+          "title": "chore: Change return button",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20051",
+          "title": "Rewrite : Message Thread metrics",
+          "userLogin": "ggazzo",
+          "description": "![image](https://user-images.githubusercontent.com/5263975/103585504-e904e980-4ec1-11eb-8d8c-3113ac812ead.png)",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20093",
+          "title": "[FIX] Omnichannel raw model importing meteor dependency",
+          "userLogin": "renatobecker",
+          "milestone": "3.10.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "20061",
+          "title": "[FIX] User Audio notification preference not being applied",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.10.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20003",
+          "title": "[FIX] OAuth users being asked to change password on second login",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.10.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20055",
+          "title": "Bump axios from 0.18.0 to 0.18.1",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19916",
+          "title": "Add translation of Edit Status in all languages",
+          "userLogin": "sushant52",
+          "description": "Closes [#19915](https://github.com/RocketChat/Rocket.Chat/issues/19915)\r\nThe profile options menu is well translated in many languages. However, Edit Status is the only button which is not well translated. With this change, the whole profile options will be properly translated in a lot of languages.",
+          "contributors": [
+            "sushant52",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20047",
+          "title": "Chore: Recover and update Storybook",
+          "userLogin": "tassoevan",
+          "description": "It reenables Storybook's usage.",
+          "milestone": "3.11.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "20041",
+          "title": "Chore: Add tests for the api/licenses.* endpoints",
+          "userLogin": "lucassartor",
+          "description": "Adding api tests for the new `licenses.*` endpoints (`licenses.get` and `licenses.add`)",
+          "contributors": [
+            "lucassartor"
+          ]
+        },
+        {
+          "pr": "20034",
+          "title": "Language update from LingoHub 🤖 on 2021-01-04Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20022",
+          "title": "[FIX] Omnichannel Agents unable to take new chats in the queue",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "20007",
+          "title": "[FIX] Omnichannel Business Hours form is not being rendered",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20013",
+          "title": "Language update from LingoHub 🤖 on 2020-12-30Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19998",
+          "title": "Chore: Fix i18n duplicated keys",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "19965",
+          "title": "[FIX] Agent information panel not rendering",
+          "userLogin": "rafaelblink",
+          "milestone": "3.10.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19997",
+          "title": "[FIX] Creation of Omnichannel rooms not working correctly through the Apps when the agent parameter is set",
+          "userLogin": "murtaza98",
+          "milestone": "3.10.1",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "19988",
+          "title": "Chore: add tests to api/instances.get endpoint ",
+          "userLogin": "lucassartor",
+          "contributors": [
+            "lucassartor",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.8.6": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.8.7": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.8.8": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.9.5": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.9.6": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.9.7": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.10.5": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.11.0-rc.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.0-alpha.4469",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20430",
+          "title": "Security sync",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20343",
+          "title": "Regression: Fix Cron statistics TypeError",
+          "userLogin": "RonLek",
+          "contributors": [
+            "RonLek"
+          ]
+        }
+      ]
+    },
+    "3.11.0-rc.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.0-alpha.4469",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20450",
+          "title": "Regression: Bio page not rendering",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "20435",
+          "title": "regression: Announcement link open in new tab",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.11.0-rc.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.0-alpha.4534",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20457",
+          "title": "[FIX] Sidebar palette color broken on IE",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/106056093-0a29b600-60cd-11eb-8038-eabbc0d8fb03.png)",
+          "milestone": "3.10.6",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "20490",
+          "title": "[FIX] RoomManager validation broken on IE",
+          "userLogin": "dougfabris",
+          "milestone": "3.10.6",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "20482",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "description": "Update Apps-Engine version with some fixes for the current RC cycle.",
+          "milestone": "3.11.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        }
+      ]
+    },
+    "3.11.0-rc.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.0-alpha.4545",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20506",
+          "title": "[FIX][Apps] Don't show the \"review permissions\" modal when there's none to review",
+          "userLogin": "thassiov",
+          "milestone": "3.11.0",
+          "contributors": [
+            "thassiov",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20491",
+          "title": "Update Apps-Engine and permissions translations",
+          "userLogin": "d-gubert",
+          "description": "Update Apps-Engine version and apply changes in translations for the changed permissions. Please review the texts on the translation files to make sure they're clear.",
+          "milestone": "3.11.0",
+          "contributors": [
+            "d-gubert",
+            "lolimay",
+            "thassiov",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20492",
+          "title": "Regression: Add tests to new banners REST endpoints",
+          "userLogin": "lucassartor",
+          "description": "Add tests for the new `banners.*` endpoints: `banners.getNew` and `banners.dismiss`.",
+          "contributors": [
+            "lucassartor",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20509",
+          "title": "[IMPROVE] Autofocus on directory",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20510",
+          "title": "Update \"Industry\" setting",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "20495",
+          "title": "Regression: Fix duplicate email messages in multiple instances",
+          "userLogin": "renatobecker",
+          "milestone": "3.11.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "renatobecker"
+          ]
+        }
+      ]
+    },
+    "3.11.0-rc.5": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.0-alpha.4545",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20517",
+          "title": "Regression: Fix banners sync data types",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20433",
+          "title": "Regression: Fixed update room avatar issue.",
+          "userLogin": "Darshilp326",
+          "description": "Users can now update their room avatar without any error.\r\n\r\nhttps://user-images.githubusercontent.com/55157259/105951602-560d3880-6096-11eb-97a5-b5eb9a28b58d.mp4",
+          "milestone": "3.11.0",
+          "contributors": [
+            "Darshilp326",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20434",
+          "title": "Regression: ESLint Warning - explicit-function-return-type",
+          "userLogin": "aditya-mitra",
+          "description": "Added explicit Return Type (Promise<void>) on the function to fix eslint warning (`explicit-function-return-type`)",
+          "contributors": [
+            "aditya-mitra",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.11.0-rc.6": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20531",
+          "title": "Regression: Set image sizes based on rotation",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20523",
+          "title": "Regression: Apps-Engine - Convert streams to buffers on file upload",
+          "userLogin": "d-gubert",
+          "description": "This is an implementation to accommodate the changes in API for the `IPreFileUpload` hook in the Apps-Engine. Explanation on the reasoning for it is here https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/376",
+          "milestone": "3.11.0",
+          "contributors": [
+            "d-gubert",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20516",
+          "title": "Regression: Room not scrolling to bottom",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20514",
+          "title": "Regression: NPS",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20511",
+          "title": "Regression: Fix e2e paused state",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20393",
+          "title": "Regression: Custom field labels are not displayed properly on Omnichannel Contact Profile form",
+          "userLogin": "rafaelblink",
+          "description": "### Before\r\n![image](https://user-images.githubusercontent.com/2493803/105780399-20116c80-5f4f-11eb-9620-0901472e453b.png)\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/105780420-2e5f8880-5f4f-11eb-8e93-8115ebc685be.png)\r\n\r\n### After\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/105780832-1ccab080-5f50-11eb-8042-188dd0c41904.png)\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/105780911-500d3f80-5f50-11eb-96e0-7df3f179dbd5.png)",
+          "milestone": "3.11.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.11.0-rc.7": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.11.0": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
     }
   }
 }
