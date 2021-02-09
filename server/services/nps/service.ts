@@ -110,6 +110,7 @@ export class NPSService extends ServiceClass implements INPSService {
 				},
 			}, {
 				projection: {
+					_id: 0,
 					identifier: 1,
 					roles: 1,
 					score: 1,

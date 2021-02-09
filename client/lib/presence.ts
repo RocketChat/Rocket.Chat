@@ -125,6 +125,14 @@ const notify = (update: UserPresence): void => {
 	}
 };
 
+const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> => new Promise((resolve) => {
+	const callback: Handler<UserPresence> = (args): void => {
+		resolve(args);
+		stop(uid, callback);
+	};
+	listen(uid, callback);
+});
+
 export const Presence = {
 	listen,
 	stop,
@@ -132,4 +140,5 @@ export const Presence = {
 	restart,
 	notify,
 	store,
+	get,
 };
