@@ -20,7 +20,7 @@ import { useRoomIcon } from '../hooks/useRoomIcon';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
 import { escapeHTML } from '../../lib/escapeHTML';
 import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
-import UnreadCounter from './components/UnreadCounter'
+import UnreadCounter from './components/UnreadCounter';
 
 const sections = {
 	Omnichannel,
@@ -113,9 +113,6 @@ export default () => {
 	const t = useTranslation();
 
 	const roomsList = useRoomList();
-
-	console.log('the room list is ',roomsList)
-
 	const itemData = createItemData(extended, t, sideBarItemTemplate, avatarTemplate, openedRoom, sidebarViewMode, isAnonymous);
 
 	usePreventDefault(ref);
