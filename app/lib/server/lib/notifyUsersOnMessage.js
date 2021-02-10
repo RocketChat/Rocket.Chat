@@ -69,7 +69,8 @@ const getUserIdsFromHighlights = (rid, message) => {
 };
 
 export function updateUsersSubscriptions(message, room) {
-	if (room != null) {
+	// Don't increase unread counter on thread messages
+	if (room != null && !message.tmid) {
 		const {
 			toAll,
 			toHere,
@@ -92,8 +93,7 @@ export function updateUsersSubscriptions(message, room) {
 		}
 
 		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
-		// don't notify subscription if the message is a thread message
-		if (!toAll && !toHere && unreadCount === 'all_messages' && !message.tmid) {
+		if (!toAll && !toHere && unreadCount === 'all_messages') {
 			Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id]);
 		}
 	}
