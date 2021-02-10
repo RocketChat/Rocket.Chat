@@ -55243,6 +55243,71 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "3.11.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20653",
+          "title": "[FIX] Livechat bridge permission checkers",
+          "userLogin": "d-gubert",
+          "description": "Update to latest patch version of the Apps-Engine with a fix for the Livechat bridge, as seen in https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/379",
+          "milestone": "3.11.1",
+          "contributors": [
+            "d-gubert",
+            "lolimay",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20662",
+          "title": "[FIX] Omnichannel Routing System not assigning chats to Bot agents",
+          "userLogin": "renatobecker",
+          "description": "The `Omnichannel Routing System` is no longer assigning chats to `bot` agents when the `bot` agent is the default agent of the inquiry.",
+          "milestone": "3.11.1",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20585",
+          "title": "[FIX] Attachment download from title fixed",
+          "userLogin": "yash-rajpal",
+          "description": "Added target = '_self' to attachment link, this seems to fix the problem, without this attribute, error page is displayed.",
+          "milestone": "3.11.1",
+          "contributors": [
+            "yash-rajpal",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20654",
+          "title": "[FIX] Gif images aspect ratio on preview",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.11.1",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "20611",
+          "title": "[FIX] Update NPS banner when changing score",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.11.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
