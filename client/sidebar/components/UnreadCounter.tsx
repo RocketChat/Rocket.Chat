@@ -1,45 +1,43 @@
-import React, { FC } from "react";
+import React, { FC, MutableRefObject } from "react";
+import { Box, Button } from "@rocket.chat/fuselage";
+
 import { ISubscription } from "../../../definition/ISubscription";
+import { TranslationContextValue } from "../../contexts/TranslationContext";
 
 /**
  * show the unread counter as a seperate component implementation
- * - *2 new unread **private/public** rooms*
- * - *4 new mentions from 3 rooms*
- * - *5 new messages from 4 direct chats*
- * @param roomList past the roomList from the useRoomList hook
+ * - ***New messages***
+ * - ~*2 new unread **private/public** rooms*~
+ * - ~*4 new mentions from 3 rooms*~
+ * - ~*5 new messages from 4 direct chats*~
+ * @param roomsList past the roomsList from the useRoomList hook
  */
-const UnreadCounter: FC<ISubscription[]> = (roomList) => {
-  let userMentions: number = 0;
-  let directNewMessages: number = 0;
-  let unreadDirectRooms: number = 0;
-  let unreadPublicRooms: number = 0;
-  let unreadPrivateRooms: number = 0;
+const UnreadCounter: FC<{
+  roomsList: ISubscription[] | undefined;
+  t: TranslationContextValue["translate"];
+  virtuosoRef: MutableRefObject<any>;
+}> = ({ roomsList, t, virtuosoRef }) => {
+  if (!roomsList || !Array.isArray(roomsList)) return null;
 
-  roomList.forEach((room) => {
-    if (!((room.alert || room.unread) && !room.hideUnreadStatus)) {
-      return;
-    }
+  const hasUnread: boolean = roomsList.some(
+    (room) => (room.alert || room.unread) && !room.hideUnreadStatus
+  );
 
-    if (room.t === "c") {
-      unreadPublicRooms++;
-    }
+  if (!hasUnread) return null;
 
-    if (room.t === "p") {
-      unreadPrivateRooms++;
-    }
-
-    if (room.t === "d") {
-      unreadDirectRooms++;
-      directNewMessages += room.unread;
-    }
-
-    userMentions += room.userMentions;
-    
-  });
-
-  console.log('you have ',userMentions,directNewMessages,unreadDirectRooms,unreadPublicRooms,unreadPrivateRooms)
-
-  return <div>awesome</div>;
+  return (
+    <Box textAlign="center" fontStyle="italic">
+      <Button
+        nude
+        info
+        onClick={() =>
+          virtuosoRef.current.scrollToIndex({ index: 0, behavior: "smooth" })
+        }
+      >
+        {t("New_messages")}
+      </Button>
+    </Box>
+  );
 };
 
 export default UnreadCounter;

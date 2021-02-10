@@ -114,7 +114,7 @@ export default () => {
 
 	const roomsList = useRoomList();
 
-	UnreadCounter(roomsList)
+	console.log('the room list is ',roomsList)
 
 	const itemData = createItemData(extended, t, sideBarItemTemplate, avatarTemplate, openedRoom, sidebarViewMode, isAnonymous);
 
@@ -125,8 +125,12 @@ export default () => {
 		listRef.current?.resetAfterIndex(0);
 	}, [sidebarViewMode]);
 
+	const virtuosoRef = useRef(null);
+
 	return <Box h='full' w='full' ref={ref}>
+		<UnreadCounter roomsList={roomsList} t={t} virtuosoRef={virtuosoRef}/>
 		<Virtuoso
+			ref={virtuosoRef}
 			totalCount={roomsList.length}
 			data={roomsList}
 			components={{ Scroller: ScrollerWithCustomProps }}
@@ -228,8 +232,3 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 
 	return true;
 });
-
-/**
- * implementation - shows `2 new unread rooms`
- * @param {[]} roomList 
- * */
