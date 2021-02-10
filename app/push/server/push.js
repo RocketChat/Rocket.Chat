@@ -137,6 +137,11 @@ export class PushClass {
 				logger.warn('Error sending push to gateway (not authorized)', response);
 				return;
 			}
+			    
+			if (response?.statusCode === 429) {
+				logger.warn('gateway rejected the push notification due to being over the cap', response);
+				return;
+			}
 
 			if (!error) {
 				return;
