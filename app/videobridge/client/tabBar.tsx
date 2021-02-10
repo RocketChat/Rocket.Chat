@@ -7,6 +7,8 @@ import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/T
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import Header from '../../../client/components/Header';
 
+const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/Call/BBB'));
+
 addAction('bbb_video', ({ room }) => {
 	const enabled = useSetting('bigbluebutton_Enabled');
 	const t = useTranslation();
@@ -28,7 +30,7 @@ addAction('bbb_video', ({ room }) => {
 		id: 'bbb_video',
 		title: 'BBB Video Call',
 		icon: 'phone',
-		template: 'videoFlexTabBbb',
+		template: templateBBB,
 		order: live ? -1 : 0,
 		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>
 			{live ? <Header.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.Badge> : null}
@@ -37,7 +39,7 @@ addAction('bbb_video', ({ room }) => {
 	} : null), [enabled, groups, live, t]);
 });
 
-const template = lazy(() => import('../../../client/views/room/contextualBar/Call/Jitsi'));
+const templateJitsi = lazy(() => import('../../../client/views/room/contextualBar/Call/Jitsi'));
 
 addAction('video', ({ room }) => {
 	const enabled = useSetting('Jitsi_Enabled');
@@ -61,7 +63,7 @@ addAction('video', ({ room }) => {
 		id: 'video',
 		title: 'Call',
 		icon: 'phone',
-		template,
+		template: templateJitsi,
 		full: true,
 		order: live ? -1 : 0,
 		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>

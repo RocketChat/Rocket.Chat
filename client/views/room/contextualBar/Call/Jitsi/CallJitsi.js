@@ -12,6 +12,7 @@ import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../app/videobridge/
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useConnectionStatus } from '../../../../../contexts/ConnectionStatusContext';
 import { JitsiBridge } from './lib/JitsiBridge';
+import { useTabBarClose } from '../../../providers/ToolboxProvider';
 
 export const CallJitsi = ({
 	handleClose,
@@ -53,14 +54,14 @@ const querySettings = {
 	],
 };
 
-const CallJitsWithData = ({ tabBar, rid }) => {
+const CallJitsWithData = ({ rid }) => {
 	const user = useUser();
 	const { connected } = useConnectionStatus();
 	const [accessToken, setAccessToken] = useSafely(useState());
 	const [accepted, setAccepted] = useState(false);
 	const room = useUserRoom(rid);
 	const setModal = useSetModal();
-	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
+	const handleClose = useTabBarClose();
 	const closeModal = useMutableCallback(() => setModal(null));
 	const generateAccessToken = useMethod('jitsi:generateAccessToken');
 	const updateTimeout = useMethod('jitsi:updateTimeout');

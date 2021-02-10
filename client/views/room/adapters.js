@@ -73,13 +73,6 @@ createTemplateForComponent('OTR', () => import('./contextualBar/OTR'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 
-createTemplateForComponent('CallJitsi', () => import('./contextualBar/Call/Jitsi'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
-});
-
-// createTemplateForComponent('CallBbb', () => import('./Call/Bbb'), {
-// 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
-// });
 createTemplateForComponent('EditRoomInfo', () => import('./contextualBar/Info/EditRoomInfo'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
