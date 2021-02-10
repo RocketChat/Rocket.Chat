@@ -139,11 +139,11 @@ export class E2ERoom extends Emitter {
 	}
 
 	pause() {
-		this.setState(this.state === E2E_ROOM_STATES.READY ? E2E_ROOM_STATES.PAUSED : E2E_ROOM_STATES.DISABLED);
+		![E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED].includes(this.state) && this.setState(this.state === E2E_ROOM_STATES.READY ? E2E_ROOM_STATES.PAUSED : E2E_ROOM_STATES.DISABLED);
 	}
 
 	enable() {
-		this.setState(E2E_ROOM_STATES.READY);
+		![E2E_ROOM_STATES.READY].includes(this.state) && this.setState(E2E_ROOM_STATES.READY);
 	}
 
 	shouldConvertSentMessages() {

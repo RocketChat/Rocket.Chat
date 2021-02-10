@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import _marked from 'marked';
@@ -103,11 +104,18 @@ export const marked = (message, {
 		smartLists,
 		smartypants,
 		renderer,
-		sanitize: true,
 		highlight,
 	});
 
-	message.html = dompurify.sanitize(message.html);
+	if (Meteor.isServer) {
+		const { JSDOM } = require('jsdom');
+		const createDOMPurify = require('dompurify');
+		const { window } = new JSDOM('');
+		const serverDomPurify = createDOMPurify(window);
+		message.html = serverDomPurify.sanitize(message.html, { ADD_ATTR: ['target'] });
+	} else {
+		message.html = dompurify.sanitize(message.html, { ADD_ATTR: ['target'] });
+	}
 
 	return message;
 };

@@ -82,13 +82,17 @@ function AppInstallPage() {
 				permissions = await getPermissionsFromZippedApp(appFile);
 			}
 
-			setModal(
-				<AppPermissionsReviewModal
-					appPermissions={permissions}
-					cancel={cancelAction}
-					confirm={(permissions) => sendFile(permissions, appFile)}
-				/>,
-			);
+			if (!permissions || permissions.length === 0) {
+				await sendFile(permissions, appFile);
+			} else {
+				setModal(
+					<AppPermissionsReviewModal
+						appPermissions={permissions}
+						cancel={cancelAction}
+						confirm={(permissions) => sendFile(permissions, appFile)}
+					/>,
+				);
+			}
 		} catch (error) {
 			handleInstallError(error);
 		} finally {

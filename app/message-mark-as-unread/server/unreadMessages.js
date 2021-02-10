@@ -16,7 +16,7 @@ Meteor.methods({
 			const lastMessage = Messages.findVisibleByRoomId({ rid: room, queryOptions: { limit: 1, sort: { ts: -1 } } }).fetch()[0];
 
 			if (lastMessage == null) {
-				throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
+				throw new Meteor.Error('error-no-message-for-unread', 'There are no messages to mark unread', {
 					method: 'unreadMessages',
 					action: 'Unread_messages',
 				});

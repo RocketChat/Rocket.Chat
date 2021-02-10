@@ -103,9 +103,10 @@ export function ContactNewEdit({ id, data, reload, close }) {
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};
 		// eslint-disable-next-line no-return-assign
-		customFields.map(({ _id, visibility, options, scope, defaultValue, required }) =>
+		customFields.map(({ _id, label, visibility, options, scope, defaultValue, required }) =>
 			(visibility === 'visible' & scope === 'visitor')
 			&& (jsonObj[_id] = {
+				label,
 				type: options ? 'select' : 'text',
 				required,
 				defaultValue,
