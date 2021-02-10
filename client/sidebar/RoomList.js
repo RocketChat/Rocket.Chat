@@ -20,6 +20,7 @@ import { useRoomIcon } from '../hooks/useRoomIcon';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
 import { escapeHTML } from '../../lib/escapeHTML';
 import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
+import UnreadCounter from './components/UnreadCounter'
 
 const sections = {
 	Omnichannel,
@@ -112,6 +113,9 @@ export default () => {
 	const t = useTranslation();
 
 	const roomsList = useRoomList();
+
+	UnreadCounter(roomsList)
+
 	const itemData = createItemData(extended, t, sideBarItemTemplate, avatarTemplate, openedRoom, sidebarViewMode, isAnonymous);
 
 	usePreventDefault(ref);
@@ -224,3 +228,8 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 
 	return true;
 });
+
+/**
+ * implementation - shows `2 new unread rooms`
+ * @param {[]} roomList 
+ * */
