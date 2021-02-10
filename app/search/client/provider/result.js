@@ -20,8 +20,10 @@ Meteor.startup(function() {
 		context: ['search'],
 		action() {
 			const { msg: message } = messageArgs(this);
+			console.log(message);
 			if (message.tmid) {
-				return FlowRouter.go(FlowRouter.getRouteName(), {
+				console.log(FlowRouter.getRouteName());
+				return FlowRouter.go('channel', {
 					tab: 'thread',
 					context: message.tmid,
 					rid: message.rid,
