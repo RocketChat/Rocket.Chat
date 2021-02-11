@@ -32,6 +32,7 @@ import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointA
 import { useUserRoom } from '../../../hooks/useUserRoom';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
+import { offlineAction } from '../../../../../../app/ui-utils';
 
 const typeMap = {
 	c: 'Channels',
@@ -238,6 +239,10 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const archiveAction = useEndpointActionExperimental('POST', 'rooms.changeArchivationState', t(archiveMessage));
 
 	const handleSave = useMutableCallback(async () => {
+		// WIDECHAT
+		if (offlineAction('Editing room')) {
+			return;
+		}
 		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;
 		delete data.archived;
 		const save = () => saveAction({

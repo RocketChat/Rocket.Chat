@@ -12,8 +12,8 @@ import { settings } from '../../app/settings';
 import { callbacks } from '../../app/callbacks';
 
 Meteor.methods({
-	updateMessage(message) {
-		if (!Meteor.userId()) {
+	updateMessage(message, offlineTriggered = false) {
+		if (!Meteor.userId() || offlineTriggered) {
 			return false;
 		}
 
@@ -63,7 +63,14 @@ Meteor.methods({
 			};
 
 			message = callbacks.run('beforeSaveMessage', message);
-			const messageObject = { editedAt: message.editedAt, editedBy: message.editedBy, msg: message.msg };
+
+			const tempActions = originalMessage.tempActions || {};
+
+			if (!tempActions.send) {
+				tempActions.update = true;
+			}
+
+			const messageObject = { editedAt: message.editedAt, editedBy: message.editedBy, msg: message.msg, temp: true, tempActions };
 
 			if (originalMessage.attachments) {
 				if (originalMessage.attachments[0].description !== undefined) {
