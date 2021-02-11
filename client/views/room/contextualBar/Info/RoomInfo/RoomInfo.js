@@ -68,6 +68,7 @@ export const RoomInfo = function RoomInfo({
 		filesOnlyDefault,
 		excludePinnedDefault,
 		maxAgeDefault,
+		retentionEnabledDefault
 	} = retentionPolicy;
 
 	return (
@@ -113,7 +114,7 @@ export const RoomInfo = function RoomInfo({
 						<Info withTruncatedText={false}>{topic}</Info>
 					</Box>}
 
-					{retentionPolicyEnabled && (
+					{retentionPolicyEnabled && retentionEnabledDefault && (
 						<Callout type='warning'>
 							{filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</p>}
 							{filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</p>}
