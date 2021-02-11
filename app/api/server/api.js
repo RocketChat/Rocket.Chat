@@ -328,8 +328,15 @@ export class APIClass extends Restivus {
 				apiVersion: version,
 			});
 		}
+
+		const CORSEnabled = settings.get('API_Enable_CORS');
+
+		const origin = settings.get('API_CORS_Origin').split(',');
+		const multiOrigin = CORSEnabled && !origin.includes('*') && origin.length > 1;
+
 		routes.forEach((route) => {
 			// Note: This is required due to Restivus calling `addRoute` in the constructor of itself
+
 			Object.keys(endpoints).forEach((method) => {
 				const _options = { ...options };
 
@@ -392,6 +399,18 @@ export class APIClass extends Restivus {
 						}
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
+
+						if (multiOrigin) {
+							console.log('should support multi origin');
+
+							if (origin.includes(this.request.headers.origin)) {
+								console.log('allowed header');
+								this.response.setHeader('Access-Control-Allow-Origin', this.request.headers.origin);
+								this.response.setHeader('x-oloco-bixo', 'essa fera ai meu');
+							} else {
+								result = API.v1.failure();
+							}
+						}
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
 
@@ -656,7 +675,6 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 	if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
 		if (settings.get('API_Enable_CORS') === true) {
 			this.response.writeHead(200, {
-				'Access-Control-Allow-Origin': settings.get('API_CORS_Origin'),
 				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
 				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
 			});
@@ -687,8 +705,6 @@ const createApi = function _createApi(_api, options = {}) {
 		const origin = settings.get('API_CORS_Origin');
 
 		if (origin) {
-			_api._config.defaultHeaders['Access-Control-Allow-Origin'] = origin;
-
 			if (origin !== '*') {
 				_api._config.defaultHeaders.Vary = 'Origin';
 			}
