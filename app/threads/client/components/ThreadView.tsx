@@ -36,7 +36,7 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 
 	const t = useTranslation();
 
-	const expandLabel = expanded ? t('collapse') : t('expand');
+	const expandLabel = expanded ? t('Collapse') : t('Expand');
 	const expandIcon = expanded ? 'arrow-collapse' : 'arrow-expand';
 
 	const handleExpandActionClick = useCallback(() => {
@@ -69,9 +69,9 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 				<VerticalBar.Header>
 					<VerticalBar.Icon name='thread' />
 					<VerticalBar.Text dangerouslySetInnerHTML={{ __html: title }} />
-					{hasExpand && <VerticalBar.Action aria-label={expandLabel} name={expandIcon} onClick={handleExpandActionClick} />}
+					{hasExpand && <VerticalBar.Action title={expandLabel} name={expandIcon} onClick={handleExpandActionClick} />}
 					<VerticalBar.Actions>
-						<VerticalBar.Action aria-label={followLabel} name={followIcon} onClick={handleFollowActionClick} />
+						<VerticalBar.Action title={followLabel} name={followIcon} onClick={handleFollowActionClick} />
 						<VerticalBar.Close onClick={onClose} />
 					</VerticalBar.Actions>
 				</VerticalBar.Header>
