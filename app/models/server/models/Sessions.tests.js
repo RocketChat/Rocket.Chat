@@ -244,7 +244,9 @@ describe('Sessions Aggregates', () => {
 	let db;
 
 	before(function() {
-		if (!process.env.CI) { this.skip(); }
+		if (!process.env.CI) {
+			this.skip();
+		}
 	});
 
 	if (!process.env.MONGO_URL) {
