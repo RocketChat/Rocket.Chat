@@ -189,10 +189,10 @@ class E2E {
 
 		this.readyPromise.resolve();
 		this.log('startClient -> Done');
-		this.log('decryptPendingSubscriptions');
+		this.log('decryptSubscriptions');
 
-		this.decryptPendingSubscriptions();
-		this.log('decryptPendingSubscriptions -> Done');
+		this.decryptSubscriptions();
+		this.log('decryptSubscriptions -> Done');
 	}
 
 	async stopClient() {
@@ -417,11 +417,11 @@ class E2E {
 
 	async decryptSubscription(rid) {
 		const e2eRoom = await this.getInstanceByRoomId(rid);
-		this.log('decryptPendingSubscriptions ->', rid);
+		this.log('decryptSubscription ->', rid);
 		e2eRoom?.decryptPendingSubscription();
 	}
 
-	async decryptPendingSubscriptions() {
+	async decryptSubscriptions() {
 		Subscriptions.find({
 			encrypted: true,
 		}).forEach((room) => this.decryptSubscription(room._id));
@@ -491,7 +491,7 @@ Meteor.startup(function() {
 				}
 
 
-				doc.encrypted ? e2eRoom.enable() : e2eRoom.pause();
+				doc.encrypted ? e2eRoom.unPause() : e2eRoom.pause();
 
 				// Cover private groups and direct messages
 				if (!e2eRoom.isSupportedRoomType(doc.t)) {
