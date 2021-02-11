@@ -137,6 +137,9 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const onChange = useCallback(({ initialValue, value, key }) => {
 		const { current } = saveData;
 		if (JSON.stringify(initialValue) !== JSON.stringify(value)) {
+			if (key === 'systemMessages' && value?.length > 0) {
+				current.hideSysMes = true;
+			}
 			current[key] = value;
 		} else {
 			delete current[key];
