@@ -202,7 +202,7 @@ export class CachedCollection extends Emitter {
 			record._updatedAt = _updatedAt;
 
 			if (record.lastMessage && typeof record.lastMessage._updatedAt === 'string') {
-				record.lastMessage._updatedAt = _updatedAt;
+				record.lastMessage._updatedAt = new Date(record.lastMessage._updatedAt);
 			}
 
 			if (_updatedAt > this.updatedAt) {
