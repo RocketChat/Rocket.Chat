@@ -38,12 +38,13 @@ Meteor.methods({
 		const { api } = getBBBAPI();
 		const meetingID = settings.get('uniqueID') + rid;
 		const room = Rooms.findOneById(rid);
+		const welcome = settings.get('bigbluebutton_welcomeMessage');
 		const createUrl = api.urlFor('create', {
 			name: room.t === 'd' ? 'Direct' : room.name,
 			meetingID,
 			attendeePW: 'ap',
 			moderatorPW: 'mp',
-			welcome: '<br>Welcome to <b>%%CONFNAME%%</b>!',
+			welcome: welcome,
 			meta_html5chat: false,
 			meta_html5navbar: false,
 			meta_html5autoswaplayout: true,
