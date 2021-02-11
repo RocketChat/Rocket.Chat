@@ -68,7 +68,7 @@ export const RoomInfo = function RoomInfo({
 		filesOnlyDefault,
 		excludePinnedDefault,
 		maxAgeDefault,
-		retentionEnabledDefault
+		retentionEnabledDefault,
 	} = retentionPolicy;
 
 	return (
