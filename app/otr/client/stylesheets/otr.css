@@ -1,12 +1,14 @@
 .message {
 	&.otr-ack {
-		.info{
+		.info {
 			color: lightgreen;
 
 			&::before {
 				display: inline-block;
 				visibility: visible;
+
 				content: "\e952";
+
 				font-family: 'fontello';
 			}
 		}
