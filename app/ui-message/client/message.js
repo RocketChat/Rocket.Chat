@@ -31,7 +31,7 @@ const renderBody = (msg, settings) => {
 		msg = messageType.render(msg);
 	} else if (messageType.template) {
 		// render template
-	} else if (messageType.message) {
+	} else if (messageType.message && !isSystemMessage) {
 		msg.msg = escapeHTML(msg.msg);
 		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
@@ -43,7 +43,7 @@ const renderBody = (msg, settings) => {
 	}
 
 	if (isSystemMessage) {
-		msg.html = Markdown.parse(msg.html);
+		msg.html = Markdown.parseNotEscaped(msg.html);
 	}
 
 	if (searchedText) {
