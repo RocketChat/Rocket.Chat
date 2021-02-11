@@ -105,7 +105,6 @@
 		"mocha": "^8.1.1",
 		"mock-require": "^3.0.3",
 		"mongo-unit": "^2.0.1",
-		"node-sprite-generator": "^0.10.2",
 		"postcss": "^7.0.32",
 		"postcss-custom-properties": "^9.1.1",
 		"postcss-easy-import": "^3.0.0",
