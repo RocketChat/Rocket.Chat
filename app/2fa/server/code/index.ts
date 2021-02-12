@@ -15,6 +15,7 @@ import { IMethodConnection } from '../../../../definition/IMethodThisType';
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
 	disableRememberMe?: boolean;
+	requireSecondFactor?: boolean; // whether any two factor should be required
 }
 
 export const totpCheck = new TOTPCheck();
@@ -83,6 +84,11 @@ export function isAuthorizedForToken(connection: IMethodConnection, user: IUser,
 		return false;
 	}
 
+	// if any two factor is required, early abort
+	if (options.requireSecondFactor) {
+		return false;
+	}
+
 	if (tokenObject.bypassTwoFactor === true) {
 		return true;
 	}
@@ -148,7 +154,7 @@ function _checkCodeForUser({ user, code, method, options = {}, connection }: ICh
 	let selectedMethod = getMethodByNameOrFirstActiveForUser(user, method);
 
 	if (!selectedMethod) {
-		if (options.disablePasswordFallback || !passwordCheckFallback.isEnabled(user)) {
+		if (!options.requireSecondFactor && (options.disablePasswordFallback || !passwordCheckFallback.isEnabled(user, !!options.requireSecondFactor))) {
 			return true;
 		}
 		selectedMethod = passwordCheckFallback;
@@ -161,7 +167,7 @@ function _checkCodeForUser({ user, code, method, options = {}, connection }: ICh
 		throw new Meteor.Error('totp-required', 'TOTP Required', { method: selectedMethod.name, ...data, availableMethods });
 	}
 
-	const valid = selectedMethod.verify(user, code);
+	const valid = selectedMethod.verify(user, code, options.requireSecondFactor);
 
 	if (!valid) {
 		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', { method: selectedMethod.name });
