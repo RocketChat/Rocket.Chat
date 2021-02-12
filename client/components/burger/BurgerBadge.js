@@ -6,6 +6,8 @@ function BurgerBadge({ children }) {
 		style={{
 			position: 'absolute',
 			zIndex: '3',
+			bottom: '13px',
+			left: '10px',
 			insetInlineEnd: 'neg-x8',
 			insetBlockStart: 'neg-x4',
 		}}
