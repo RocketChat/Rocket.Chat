@@ -5,6 +5,7 @@ import { Random } from 'meteor/random';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { OAuth } from 'meteor/oauth';
 import s from 'underscore.string';
+import './swapSessionStorage';
 
 import { isURL } from '../../utils/lib/isURL';
 
