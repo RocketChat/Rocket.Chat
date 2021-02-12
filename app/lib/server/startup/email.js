@@ -291,7 +291,7 @@ settings.addGroup('Email', function() {
 		this.add('Direct_Reply_ReplyTo_Enable', false, {
 			type: 'boolean',
 			env: true,
-			i18nLabel: 'Show Reply-To header',
+			i18nLabel: 'Add Reply-To header',
 		});
 		this.add('Direct_Reply_ReplyTo', '', {
 			type: 'string',
