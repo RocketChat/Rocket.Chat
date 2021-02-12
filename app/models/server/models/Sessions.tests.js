@@ -242,7 +242,7 @@ const DATA = {
 
 describe('Sessions Aggregates', () => {
 	let db;
-	
+
 	if (!process.env.MONGO_URL) {
 		before(function() {
 			this.timeout(120000);
