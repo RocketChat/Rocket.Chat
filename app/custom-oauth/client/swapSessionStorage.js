@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 import { Reload } from 'meteor/reload';
 
-// This is a nasty workaround and should be removed as soon as possible
+// TODO: This is a nasty workaround and should be removed as soon as possible
 // Firefox is losing the sessionStorage data (v >= 79.0) after the redirect
 
 if (navigator.userAgent.indexOf('Firefox') !== -1) {
