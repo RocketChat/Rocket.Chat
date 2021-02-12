@@ -230,7 +230,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canChangeType = getCanChangeType(room, canCreateChannel, canCreateGroup, isAdmin);
 	const canSetRo = usePermission('set-readonly', room._id);
 	const canSetReactWhenRo = usePermission('set-react-when-readonly', room._id);
-	const canEditPrivilegedSetting = usePermission('edit-privileged-setting', room._id);
+	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(useMemo(() => ['archive-room', 'unarchive-room'], []));
 	const canDelete = usePermission(`delete-${ room.t }`);
 	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
@@ -394,7 +394,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 									<Field.Label>{t('RetentionPolicyRoom_OverrideGlobal')}</Field.Label>
 									<Field.Row>
-										<ToggleSwitch disabled={!retentionEnabled || !canEditPrivilegedSetting} checked={retentionOverrideGlobal} onChange={handleRetentionOverrideGlobal}/>
+										<ToggleSwitch disabled={!retentionEnabled || !canEditRoomRetentionPolicy} checked={retentionOverrideGlobal} onChange={handleRetentionOverrideGlobal} />
 									</Field.Row>
 								</Box>
 							</Field>
