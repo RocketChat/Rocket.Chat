@@ -67,7 +67,7 @@ const RoomHeader = ({ room, topic }) => {
 	const avatar = <RoomAvatar room={room}/>;
 	const hasBurgerMenuButton = useMediaQuery('(max-width: 780px)');
 	const showBurger = isMobile || hasBurgerMenuButton;
-	
+
 	return <Header>
 		{ showBurger && <Header.ToolBox>
 			<Burger/>
