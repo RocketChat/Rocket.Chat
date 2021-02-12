@@ -93,6 +93,7 @@ function _searchInsiderUsers({ rid, text, usernames, options, users, insiderExtr
 	}
 }
 
+
 function _searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
 	// Then get the outsiders if allowed
 	if (canListOutsiders) {
@@ -175,7 +176,7 @@ function searchUsers({ userId, rid, text, usernames }) {
 	if (users.length === 0 && canListOutsiders) {
 		const exactMatch = Promise.await(Users.findOneByUsernameIgnoringCase(text, { projection: options.projection, readPreference: options.readPreference }));
 		if (exactMatch) {
-			users.push(exactMatch);
+			users.push(mapOutsiders(exactMatch));
 			processLimitAndUsernames(options, usernames, users);
 		}
 	}

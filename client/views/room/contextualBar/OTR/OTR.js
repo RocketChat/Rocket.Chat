@@ -7,8 +7,8 @@ import OTRModal from './OTRModal';
 import { OTR as ORTInstance } from '../../../../../app/otr/client/rocketchat.otr';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../components/VerticalBar';
-import { usePresence } from '../../../../components/UserStatus';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { usePresence } from '../../../../hooks/usePresence';
 
 export const OTR = ({
 	isEstablishing,

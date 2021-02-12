@@ -60,10 +60,10 @@ const getDimensions = (width: Dimensions['width'], height: Dimensions['height'],
 	const ratio = height / width;
 
 	if (height >= width || Math.min(width, limits.width) * ratio > limits.height) {
-		return { width: width * Math.min(height, limits.height) / height, height: Math.min(height, limits.height) };
+		return { width: width * Math.min(height, limits.height) / height, height: 'auto' };
 	}
 
-	return { width: Math.min(width, limits.width), height: height * Math.min(width, limits.width) / width };
+	return { width: Math.min(width, limits.width), height: 'auto' };
 };
 
 const Image: FC<ImageProps> = ({ previewUrl, loadImage = true, setLoadImage, src, ...size }) => {

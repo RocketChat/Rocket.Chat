@@ -18,9 +18,8 @@ import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
-import { isEnterprise } from '../../../../ee/app/license/server/license';
 
-const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite', 'hideHistoryForNewMembers'];
+const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
 
 const validators = {
 	default({ userId }) {
@@ -123,14 +122,6 @@ const validators = {
 			});
 		}
 	},
-	hideHistoryForNewMembers({ value }) {
-		if (!isEnterprise() && value) {
-			throw new Meteor.Error('error-action-not-allowed', 'Hiding the history for new users is not allowed.', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-	},
 };
 
 const settingSavers = {
@@ -225,9 +216,6 @@ const settingSavers = {
 	},
 	roomAvatar({ value, rid, user }) {
 		setRoomAvatar(rid, value, user);
-	},
-	hideHistoryForNewMembers({ value, rid }) {
-		Rooms.saveHideHistoryForNewMembers(rid, value);
 	},
 };
 

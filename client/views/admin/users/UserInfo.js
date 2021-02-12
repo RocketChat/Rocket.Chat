@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -59,7 +58,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 	}, [approveManuallyUsers, data, showRealNames]);
 
 	if (state === AsyncStatePhase.LOADING) {
-		return <FormSkeleton/>;
+		return <Box p='x24'><FormSkeleton/></Box>;
 	}
 
 	if (error) {

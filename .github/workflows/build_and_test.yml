@@ -137,6 +137,13 @@ jobs:
       run: |
         meteor reset
 
+    - name: Try building micro services
+      run: |
+        cd ./ee/server/services
+        npm i
+        npm run build
+        rm -rf dist/
+
     - name: Build Rocket.Chat From Pull Request
       if: startsWith(github.ref, 'refs/pull/') == true
       env:
@@ -560,4 +567,4 @@ jobs:
 
         docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} .
 
-        docker push rocketchat/${{ matrix.service }}-service
+        docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}

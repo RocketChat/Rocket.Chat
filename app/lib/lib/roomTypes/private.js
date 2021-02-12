@@ -91,8 +91,6 @@ export class PrivateRoomType extends RoomTypeConfig {
 				return !room.broadcast && room.ro;
 			case RoomSettingsEnum.E2E:
 				return settings.get('E2E_Enable') === true;
-			case RoomSettingsEnum.HIDE_HISTORY_NEW_MEMBERS:
-				return true;
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			default:
 				return true;
