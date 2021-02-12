@@ -137,7 +137,11 @@ interface ICheckCodeForUser {
 	connection?: IMethodConnection;
 }
 
-function _checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): boolean {
+export function checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): boolean {
+	if (process.env.TEST_MODE && !options.requireSecondFactor) {
+		return true;
+	}
+
 	if (typeof user === 'string') {
 		user = getUserForCheck(user);
 	}
@@ -179,5 +183,3 @@ function _checkCodeForUser({ user, code, method, options = {}, connection }: ICh
 
 	return true;
 }
-
-export const checkCodeForUser = process.env.TEST_MODE ? (): boolean => true : _checkCodeForUser;
