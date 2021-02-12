@@ -567,4 +567,4 @@ jobs:
 
         docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} .
 
-        docker push rocketchat/${{ matrix.service }}-service
+        docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
