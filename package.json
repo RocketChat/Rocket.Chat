@@ -173,6 +173,7 @@
 		"bunyan": "^1.8.14",
 		"busboy": "^0.2.14",
 		"bytebuffer": "5.0.1",
+		"canvas": "^2.6.1",
 		"cas": "https://github.com/kcbanner/node-cas/tarball/fcd27dad333223b3b75a048bce27973fb3ca0f62",
 		"change-case": "^4.1.1",
 		"chart.js": "^2.9.3",
