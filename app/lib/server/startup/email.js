@@ -288,6 +288,11 @@ settings.addGroup('Email', function() {
 			placeholder: 'email@domain',
 			secret: true,
 		});
+		this.add('Direct_Reply_ReplyTo_Enable', false, {
+			type: 'boolean',
+			env: true,
+			i18nLabel: 'Show Reply-To header',
+		});
 		this.add('Direct_Reply_ReplyTo', '', {
 			type: 'string',
 			env: true,
