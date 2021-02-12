@@ -581,6 +581,10 @@ export class SlackImporter extends Base {
 				return;
 			}
 
+			if (channelNames.includes(channel.name)) {
+				this.logger.warn(`Duplicated channel name will be skipped: ${ channel.name }`);
+				return;
+			}
 			channelNames.push(channel.name);
 
 			Meteor.runAsUser(startedByUserId, () => {
@@ -655,6 +659,11 @@ export class SlackImporter extends Base {
 				return;
 			}
 
+			if (channelNames.includes(channel.name)) {
+				this.logger.warn(`Duplicated group name will be skipped: ${ channel.name }`);
+				return;
+			}
+
 			channelNames.push(channel.name);
 
 			Meteor.runAsUser(startedByUserId, () => {
@@ -716,6 +725,11 @@ export class SlackImporter extends Base {
 				return;
 			}
 
+			if (channelNames.includes(channel.name)) {
+				this.logger.warn(`Duplicated multi party IM name will be skipped: ${ channel.name }`);
+				return;
+			}
+
 			channelNames.push(channel.name);
 
 			Meteor.runAsUser(startedByUserId, () => {
@@ -756,6 +770,10 @@ export class SlackImporter extends Base {
 		}
 
 		this.dms.channels.forEach((channel) => {
+			if (channelNames.includes(channel.id)) {
+				this.logger.warn(`Duplicated DM id will be skipped (DMs): ${ channel.id }`);
+				return;
+			}
 			channelNames.push(channel.id);
 
 			if (!channel.members || channel.members.length !== 2) {
@@ -799,6 +817,10 @@ export class SlackImporter extends Base {
 		const missedTypes = {};
 		super.updateProgress(ProgressStep.IMPORTING_MESSAGES);
 		for (const channel of channelNames) {
+			if (!channel) {
+				continue;
+			}
+
 			const slackChannel = this.getSlackChannelFromName(channel);
 
 			const room = Rooms.findOneById(slackChannel.rocketId, { fields: { usernames: 1, t: 1, name: 1 } });
