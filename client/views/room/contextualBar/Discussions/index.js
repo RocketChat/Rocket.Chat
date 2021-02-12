@@ -150,7 +150,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 					<Virtuoso
 						style={{ height: blockSize, width: inlineSize, overflow: 'hidden' }}
 						totalCount={total}
-						endReached={ loading ? () => {} : loadMoreItems}
+						endReached={ loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 						overscan={25}
 						data={discussions}
 						components={{ Scroller: ScrollableContentWrapper }}

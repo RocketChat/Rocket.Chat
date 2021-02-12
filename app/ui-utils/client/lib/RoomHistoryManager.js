@@ -159,7 +159,8 @@ export const RoomHistoryManager = new class {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		const wrapper = $('.messages-box .wrapper').get(0);
+		const wrapper = await waitUntilWrapperExists();
+
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;
 			scroll = wrapper.scrollTop;
@@ -180,15 +181,14 @@ export const RoomHistoryManager = new class {
 			room.hasMore.set(false);
 		}
 
-		if (wrapper) {
-			waitAfterFlush(() => {
-				if (wrapper.children[0].scrollHeight <= wrapper.offsetHeight) {
-					return this.getMore(rid);
-				}
-				const heightDiff = wrapper.scrollHeight - previousHeight;
-				wrapper.scrollTop = scroll + heightDiff;
-			});
+		if (room.hasMore.get() && messages.filter((msg) => !msg.tmid || msg.tshow).length < limit) {
+			return this.getMore(rid);
 		}
+
+		waitAfterFlush(() => {
+			const heightDiff = wrapper.scrollHeight - previousHeight;
+			wrapper.scrollTop = scroll + heightDiff;
+		});
 
 		room.isLoading.set(false);
 		waitAfterFlush(() => {
