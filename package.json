@@ -283,7 +283,7 @@
 	},
 	"husky": {
 		"hooks": {
-			"pre-push": "meteor npm run lint && meteor npm run testunit"
+			"pre-push": "meteor npm run lint && meteor npm run testunit -- --exclude app/models/server/models/Sessions.tests.js"
 		}
 	},
 	"houston": {

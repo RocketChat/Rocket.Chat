@@ -250,11 +250,13 @@ describe('Sessions Aggregates', () => {
 				.then((testMongoUrl) => { process.env.MONGO_URL = testMongoUrl; });
 		});
 
-		after(() => { mongoUnit.stop(); });
+		after(() => {
+			mongoUnit.stop();
+		});
 	}
 
 	before(async () => {
-		const client = await MongoClient.connect(process.env.MONGO_URL);
+		const client = await MongoClient.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
 		db = client.db('test');
 
 		after(() => {
