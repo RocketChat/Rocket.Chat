@@ -20,12 +20,18 @@ const options = {
 	renderer,
 };
 
-function MarkdownText({ content, preserveHtml = false, withRichContent = true, ...props }) {
+function MarkdownText({ content, variant = 'document', preserveHtml = false, withRichContent = true, ...props }) {
 	const sanitizer = dompurify.sanitize;
+
+	if (variant === 'inline') {
+		options.renderer.paragraph = (text) => text;
+	}
+
 	const __html = useMemo(() => {
 		const html = content && typeof content === 'string' && marked(content, options);
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
 	}, [content, preserveHtml, sanitizer]);
+
 	return __html ? <Box dangerouslySetInnerHTML={{ __html }} withRichContent={withRichContent} {...props} /> : null;
 }
 
