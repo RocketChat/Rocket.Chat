@@ -21,7 +21,7 @@ export type ImageProps = {
 
 const ImageBox: FC<BoxProps> = (props) => <Box display='flex' maxWidth='full' flexDirection='column' justifyContent='center' alignItems='center' alignContent='center' borderRadius='x2' borderWidth='x2' borderStyle='solid' borderColor='neutral-200' {...props}/>;
 
-export const Retry: FC<BoxProps & { retry: () => void }> = ({ retry, ...props }) => {
+export const Retry: FC<BoxProps & { retry: () => void }> = ({ retry }) => {
 	const t = useTranslation();
 	const clickable = css`
         cursor: pointer;
@@ -32,7 +32,7 @@ export const Retry: FC<BoxProps & { retry: () => void }> = ({ retry, ...props })
             background: var(--rxc-color-neutral-300, ${ colors.n300 }) !important;
         }
     `;
-	return <ImageBox className={clickable} {...props} onClick={retry} height='200px'>
+	return <ImageBox className={clickable} onClick={retry} size={160}>
 		<Icon name='refresh' color='neutral-700' size='x64'/>
 		<Box fontScale='h1' color='default'>{t('Retry')}</Box>
 	</ImageBox>;
