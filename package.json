@@ -244,7 +244,7 @@
 		"prometheus-gc-stats": "^0.6.2",
 		"querystring": "^0.2.0",
 		"queue-fifo": "^0.2.6",
-		"rc-scrollbars": "^1.0.3",
+		"rc-scrollbars": "^1.1.2",
 		"react": "^16.13.1",
 		"react-dom": "^16.13.1",
 		"react-keyed-flatten-children": "^1.3.0",
@@ -283,7 +283,7 @@
 	},
 	"husky": {
 		"hooks": {
-			"pre-push": "meteor npm run lint && meteor npm run testunit"
+			"pre-push": "meteor npm run lint && meteor npm run testunit -- --exclude app/models/server/models/Sessions.tests.js"
 		}
 	},
 	"houston": {
