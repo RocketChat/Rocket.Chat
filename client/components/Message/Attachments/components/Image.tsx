@@ -68,15 +68,12 @@ const getDimensions = (width: Dimensions['width'], height: Dimensions['height'],
 
 const Image: FC<ImageProps> = ({ previewUrl, loadImage = true, setLoadImage, src, ...size }) => {
 	const limits = useAttachmentDimensions();
-	const { width = limits.width, height = limits.height } = size;
 	const [error, setError] = useState(false);
 
 	const { setHasError, setHasNoError } = useMemo(() => ({
 		setHasError: (): void => setError(true),
 		setHasNoError: (): void => setError(false),
 	}), []);
-
-	const dimensions = getDimensions(width, height, limits);
 
 	const background = previewUrl && `url(${ previewUrl }) center center / cover no-repeat fixed`;
 
@@ -85,7 +82,7 @@ const Image: FC<ImageProps> = ({ previewUrl, loadImage = true, setLoadImage, src
 	}
 
 	if (error) {
-		return <Retry { ...dimensions } retry={setHasNoError}/>;
+		return <Retry retry={setHasNoError}/>;
 	}
 
 	return <ImageBox className='gallery-item' onError={setHasError} {...previewUrl && { style: { background } } as any } { ...dimensions } src={src} is='img'/>;
