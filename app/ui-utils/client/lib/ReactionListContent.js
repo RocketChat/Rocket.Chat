@@ -1,16 +1,15 @@
 import React from 'react';
-import { Box, Tag, Modal, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Tag, Modal, ButtonGroup, Button, Scrollable } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
 import Emoji from '../../../../client/components/Emoji';
-import ScrollableContentWrapper from '../../../../client/components/ScrollableContentWrapper';
 import { openUserCard } from '../../../ui/client/lib/UserCard';
 
 export function Reactions({ reactions, onClick }) {
 	const useRealName = useSetting('UI_Use_Real_Name');
-	return <ScrollableContentWrapper>
+	return <Scrollable vertical>
 		<Box>
 			{Object.entries(reactions).map(([reaction, { names = [], usernames }]) => <Box key={reaction}>
 				<Box display='flex' flexWrap='wrap' overflowX='hidden' mb='x8'>
@@ -26,7 +25,7 @@ export function Reactions({ reactions, onClick }) {
 				</Box>
 			</Box>)}
 		</Box>
-	</ScrollableContentWrapper>;
+	</Scrollable>;
 }
 
 export function Username({ username, onClick, displayName }) {
