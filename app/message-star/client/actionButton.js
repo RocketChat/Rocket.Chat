@@ -30,7 +30,7 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			return !message.starred || !message.starred.find((star) => star._id === u._id);
+			return !(message.starred ? message.starred.length !== 0 : false) || !message.starred.find((star) => star._id === u._id);
 		},
 		order: 9,
 		group: 'menu',
@@ -55,7 +55,7 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			return message.starred && message.starred.find((star) => star._id === u._id);
+			return (message.starred ? message.starred.length !== 0 : false) && !!message.starred.find((star) => star._id === u._id);
 		},
 		order: 9,
 		group: 'menu',
