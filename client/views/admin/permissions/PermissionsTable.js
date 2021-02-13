@@ -14,6 +14,7 @@ import { useRoute } from '../../../contexts/RouterContext';
 import { ChatPermissions } from '../../../../app/authorization/client/lib/ChatPermissions';
 import { CONSTANTS, AuthorizationUtils } from '../../../../app/authorization/lib';
 import { Roles } from '../../../../app/models/client';
+import { usePermission } from '../../../contexts/AuthorizationContext';
 
 const useChangeRole = ({ onGrant, onRemove, permissionId }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -183,7 +184,10 @@ const FilterComponent = ({ onChange }) => {
 const PermissionsTable = () => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
-	const [type, setType] = useState('permissions');
+	const canViewPermission = usePermission('access-permissions');
+	const canViewSettingPermission = usePermission('access-setting-permissions');
+	const defaultType = canViewPermission ? 'permissions' : 'settings';
+	const [type, setType] = useState(defaultType);
 	const [params, setParams] = useState({ limit: 25, skip: 0 });
 
 	const router = useRoute('admin-permissions');
@@ -228,10 +232,10 @@ const PermissionsTable = () => {
 			</Page.Header>
 			<Margins blockEnd='x8'>
 				<Tabs>
-					<Tabs.Item selected={type === 'permissions'} onClick={handlePermissionsTab}>
+					<Tabs.Item selected={type === 'permissions'} onClick={handlePermissionsTab} disabled={!canViewPermission}>
 						{t('Permissions')}
 					</Tabs.Item>
-					<Tabs.Item selected={type === 'settings'} onClick={handleSettingsTab}>
+					<Tabs.Item selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
 						{t('Settings')}
 					</Tabs.Item>
 				</Tabs>
