@@ -41,10 +41,8 @@ API.v1.addRoute('livechat/message', {
 				throw new Meteor.Error('room-closed');
 			}
 
-			if (settings.get('Livechat_enable_message_character_limit')) {
-				if (msg.length > parseInt(settings.get('Livechat_message_character_limit'))) {
-					throw new Meteor.Error('message-length-exceeds-character-limit');
-				}
+			if (settings.get('Livechat_enable_message_character_limit') && msg.length > parseInt(settings.get('Livechat_message_character_limit'))) {
+				throw new Meteor.Error('message-length-exceeds-character-limit');
 			}
 
 			const _id = this.bodyParams._id || Random.id();
