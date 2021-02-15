@@ -60,4 +60,4 @@ export { chatMessages } from './views/app/room';
 export * from './lib/userPopoverStatus';
 
 createTemplateForComponent('RoomForeword', () => import('../../../client/components/RoomForeword'));
-createTemplateForComponent('tag', () => import('../../../client/components/UserTag'));
+createTemplateForComponent('tag', () => import('../../../client/components/Tag'));
