@@ -740,7 +740,7 @@ export class Users extends Base {
 		if (name) {
 			sort.sortable = name;
 		}
-		
+
 		const query = {
 			$and: [
 				{
@@ -771,9 +771,9 @@ export class Users extends Base {
 			{
 				$addFields: {
 					sortable: {
-						$toLower: "$name"
-					}
-				}
+						$toLower: '$name',
+					},
+				},
 			},
 			{ $sort: sort },
 			{
@@ -781,11 +781,11 @@ export class Users extends Base {
 					paginatedResults: [{ $skip: pagination.skip }, { $limit: pagination.limit }],
 					totalCount: [
 						{
-							$count: 'count'
-						}
-					]
-				}
-			}
+							$count: 'count',
+						},
+					],
+				},
+			},
 		]).toArray();
 	}
 

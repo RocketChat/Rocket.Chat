@@ -146,7 +146,7 @@ Meteor.methods({
 			result = Users.findByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
 		}
 
-		const dbResult = Promise.await(result)
+		const dbResult = Promise.await(result);
 
 		const total = dbResult[0].totalCount[0].count; // count ignores the `skip` and `limit` options
 		const results = dbResult[0].paginatedResults;
