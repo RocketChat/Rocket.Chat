@@ -1007,9 +1007,14 @@ settings.addGroup('General', function() {
 			public: true,
 		});
 	});
-	return this.section('Stream_Cast', function() {
+	this.section('Stream_Cast', function() {
 		return this.add('Stream_Cast_Address', '', {
 			type: 'string',
+		});
+	});
+	this.section('NPS', function() {
+		this.add('NPS_survey_enabled', true, {
+			type: 'boolean',
 		});
 	});
 });
@@ -1655,16 +1660,16 @@ settings.addGroup('Setup_Wizard', function() {
 			type: 'select',
 			values: [
 				{
-					key: 'advocacy',
-					i18nLabel: 'Advocacy',
+					key: 'aerospaceDefense',
+					i18nLabel: 'Aerospace_and_Defense',
 				},
 				{
 					key: 'blockchain',
 					i18nLabel: 'Blockchain',
 				},
 				{
-					key: 'helpCenter',
-					i18nLabel: 'Help_Center',
+					key: 'contactCenter',
+					i18nLabel: 'Contact_Center',
 				},
 				{
 					key: 'manufacturing',
@@ -1691,10 +1696,6 @@ settings.addGroup('Setup_Wizard', function() {
 					i18nLabel: 'Entertainment',
 				},
 				{
-					key: 'publicRelations',
-					i18nLabel: 'Public_Relations',
-				},
-				{
 					key: 'religious',
 					i18nLabel: 'Religious',
 				},
@@ -1711,28 +1712,24 @@ settings.addGroup('Setup_Wizard', function() {
 					i18nLabel: 'Real_Estate',
 				},
 				{
-					key: 'tourism',
-					i18nLabel: 'Tourism',
-				},
-				{
 					key: 'telecom',
 					i18nLabel: 'Telecom',
 				},
 				{
 					key: 'consumerGoods',
-					i18nLabel: 'Consumer_Goods',
+					i18nLabel: 'Consumer_Packaged_Goods',
 				},
 				{
 					key: 'financialServices',
 					i18nLabel: 'Financial_Services',
 				},
 				{
-					key: 'healthcarePharmaceutical',
-					i18nLabel: 'Healthcare_and_Pharmaceutical',
+					key: 'healthcare',
+					i18nLabel: 'Healthcare',
 				},
 				{
-					key: 'industry',
-					i18nLabel: 'Industry',
+					key: 'pharmaceutical',
+					i18nLabel: 'Pharmaceutical',
 				},
 				{
 					key: 'media',
@@ -1749,6 +1746,18 @@ settings.addGroup('Setup_Wizard', function() {
 				{
 					key: 'technologyProvider',
 					i18nLabel: 'Technology_Provider',
+				},
+				{
+					key: 'hospitalityBusinness',
+					i18nLabel: 'Hospitality_Businness',
+				},
+				{
+					key: 'itSecurity',
+					i18nLabel: 'It_Security',
+				},
+				{
+					key: 'utilities',
+					i18nLabel: 'Utilities',
 				},
 				{
 					key: 'other',

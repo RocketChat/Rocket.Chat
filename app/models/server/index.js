@@ -40,6 +40,7 @@ import ReadReceipts from './models/ReadReceipts';
 import LivechatExternalMessage from './models/LivechatExternalMessages';
 import OmnichannelQueue from './models/OmnichannelQueue';
 import Analytics from './models/Analytics';
+import EmailInbox from './models/EmailInbox';
 import PushNotificationSubscriptions from './models/PushNotificationSubscriptions';
 
 export { AppsLogsModel } from './models/apps-logs-model';
@@ -94,4 +95,5 @@ export {
 	LivechatInquiry,
 	Analytics,
 	OmnichannelQueue,
+	EmailInbox,
 };

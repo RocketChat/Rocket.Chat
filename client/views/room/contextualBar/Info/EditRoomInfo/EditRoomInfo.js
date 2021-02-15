@@ -31,6 +31,7 @@ import { usePermission, useAtLeastOnePermission, useRole } from '../../../../../
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 import { useUserRoom } from '../../../hooks/useUserRoom';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { offlineAction } from '../../../../../../app/ui-utils';
 
 const typeMap = {
@@ -229,6 +230,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canEditPrivilegedSetting = usePermission('edit-privileged-setting', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(useMemo(() => ['archive-room', 'unarchive-room'], []));
 	const canDelete = usePermission(`delete-${ room.t }`);
+	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
 
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
@@ -242,6 +244,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 			return;
 		}
 		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;
+		delete data.archived;
 		const save = () => saveAction({
 			rid: room._id,
 			...data,
@@ -373,7 +376,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Encrypted')}</Field.Label>
 						<Field.Row>
-							<ToggleSwitch checked={encrypted} onChange={handleEncrypted}/>
+							<ToggleSwitch disabled={!canToggleEncryption} checked={encrypted} onChange={handleEncrypted}/>
 						</Field.Row>
 					</Box>
 				</Field>}

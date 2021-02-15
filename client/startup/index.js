@@ -1,3 +1,4 @@
+import './banners';
 import './contextualBar';
 import './emailVerification';
 import './i18n';

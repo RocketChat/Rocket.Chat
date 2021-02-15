@@ -61,11 +61,11 @@ export function UserAvatarEditor({ currentUsername, username, setAvatarObj, sugg
 			<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis='x4'>
 				<Box display='flex' flexDirection='row' mbs='none'>
 					<Margins inline='x4'>
-						<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4'>
+						<Button square mis='none' onClick={clickReset} disabled={disabled} mie='x4' title={t('Accounts_SetDefaultAvatar')}>
 							<Avatar url={`/avatar/%40${ username }`}/>
 						</Button>
-						<Button square onClick={clickUpload} disabled={disabled}><Icon name='upload' size='x20'/></Button>
-						<Button square mie='none' onClick={clickUrl} disabled={disabled}><Icon name='permalink' size='x20'/></Button>
+						<Button square onClick={clickUpload} disabled={disabled} title={t('Upload')}><Icon name='upload' size='x20'/></Button>
+						<Button square mie='none' onClick={clickUrl} disabled={disabled} title={t('Add URL')}><Icon name='permalink' size='x20'/></Button>
 						{suggestions && <UserAvatarSuggestions suggestions={suggestions} setAvatarObj={setAvatarObj} setNewAvatarSource={setNewAvatarSource} disabled={disabled}/>}
 					</Margins>
 				</Box>

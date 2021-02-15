@@ -14,8 +14,16 @@ import { call, offlineAction } from '../../../../ui-utils/client';
 import './CreateDiscussion.html';
 
 Template.CreateDiscussion.helpers({
+	encrypted() {
+		return Template.instance().encrypted.get();
+	},
 	onSelectUser() {
 		return Template.instance().onSelectUser;
+	},
+	messageDisable() {
+		if (Template.instance().encrypted.get()) {
+			return 'disabled';
+		}
 	},
 	disabled() {
 		if (Template.instance().selectParent.get()) {
@@ -90,6 +98,9 @@ Template.CreateDiscussion.events({
 	'input #discussion_name'(e, t) {
 		t.discussionName.set(e.target.value);
 	},
+	'input #encrypted'(e, t) {
+		t.encrypted.set(!t.encrypted.get());
+	},
 	'input #discussion_message'(e, t) {
 		const { value } = e.target;
 		t.reply.set(value);
@@ -104,15 +115,17 @@ Template.CreateDiscussion.events({
 		const { pmid } = instance;
 		const t_name = instance.discussionName.get();
 		const users = instance.selectedUsers.get().map(({ username }) => username).filter((value, index, self) => self.indexOf(value) === index);
+		const encrypted = instance.encrypted.get();
 
 		const prid = instance.parentChannelId.get();
-		const reply = instance.reply.get();
+		const reply = encrypted ? undefined : instance.reply.get();
 
 		if (!prid) {
 			const errorText = TAPi18n.__('Invalid_room_name', `${ parentChannel }...`);
 			return toastr.error(errorText);
 		}
-		const result = await call('createDiscussion', { prid, pmid, t_name, reply, users });
+		const result = await call('createDiscussion', { prid, pmid, t_name, users, encrypted, reply });
+
 		// callback to enable tracking
 		callbacks.run('afterDiscussion', Meteor.user(), result);
 
@@ -147,6 +160,7 @@ Template.CreateDiscussion.onCreated(function() {
 
 	this.pmid = msg && msg._id;
 
+	this.encrypted = new ReactiveVar(room?.encrypted || false);
 	this.parentChannel = new ReactiveVar(roomName);
 	this.parentChannelId = new ReactiveVar(room && room.rid);
 

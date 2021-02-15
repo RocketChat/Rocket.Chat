@@ -103,7 +103,7 @@ export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) 
 	}
 
 	if (!text) {
-		text = stripHtml(html);
+		text = stripHtml(html).result;
 	}
 
 	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, text, headers }));
@@ -117,7 +117,7 @@ export const send = ({ to, from, replyTo, subject, html, text, data, headers }) 
 		subject: replace(subject, data),
 		text: text
 			? replace(text, data)
-			: stripHtml(replace(html, data)),
+			: stripHtml(replace(html, data)).result,
 		html: wrap(html, data),
 		headers,
 	});

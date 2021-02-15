@@ -54,7 +54,7 @@ export class LivechatDepartmentAgents extends Base {
 		this.remove({ departmentId });
 	}
 
-	getNextAgentForDepartment(departmentId) {
+	getNextAgentForDepartment(departmentId, ignoreAgentId) {
 		const agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
@@ -70,6 +70,7 @@ export class LivechatDepartmentAgents extends Base {
 			username: {
 				$in: onlineUsernames,
 			},
+			...ignoreAgentId && { agentId: { $ne: ignoreAgentId } },
 		};
 
 		const sort = {
@@ -137,7 +138,7 @@ export class LivechatDepartmentAgents extends Base {
 		return this.find(query);
 	}
 
-	getNextBotForDepartment(departmentId) {
+	getNextBotForDepartment(departmentId, ignoreAgentId) {
 		const agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
@@ -152,6 +153,7 @@ export class LivechatDepartmentAgents extends Base {
 			username: {
 				$in: botUsernames,
 			},
+			...ignoreAgentId && { agentId: { $ne: ignoreAgentId } },
 		};
 
 		const sort = {

@@ -33,7 +33,6 @@ import '../app/logger';
 import '../app/token-login/client';
 // import '../app/markdown/client';
 import '../app/mentions-flextab/client';
-import '../app/message-action';
 import '../app/message-attachments';
 import '../app/message-mark-as-unread/client';
 import '../app/message-pin/client';

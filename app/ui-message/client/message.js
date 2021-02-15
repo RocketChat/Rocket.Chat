@@ -112,6 +112,10 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.bot && 'bot';
 	},
+	hasAttachments() {
+		const { msg } = this;
+		return msg.attachments?.length;
+	},
 	roleTags() {
 		const { msg, hideRoles, settings } = this;
 		if (settings.hideRoles || hideRoles) {

@@ -13,6 +13,7 @@ import './startup/initialData';
 import './startup/instance';
 import './startup/presence';
 import './startup/serverRunning';
+import './startup/coreApps';
 import './configuration/accounts_meld';
 import './methods/OEmbedCacheCleanup';
 import './methods/addAllUserToRoom';
@@ -77,3 +78,5 @@ import './publications/spotlight';
 import './publications/subscription';
 import './routes/avatar';
 import './stream/streamBroadcast';
+
+import './features/EmailInbox/index';

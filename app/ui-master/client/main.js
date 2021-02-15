@@ -29,7 +29,7 @@ function customScriptsOnLogout() {
 	}
 }
 
-createTemplateForComponent('accountSecurity', () => import('../../../client/account/security/AccountSecurityPage'));
+createTemplateForComponent('accountSecurity', () => import('../../../client/views/account/security/AccountSecurityPage'));
 
 callbacks.add('afterLogoutCleanUp', () => customScriptsOnLogout(), callbacks.priority.LOW, 'custom-script-on-logout');
 
@@ -195,7 +195,7 @@ Template.main.helpers({
 		const user = Meteor.user();
 
 		// User is already using 2fa
-		if (!user || (user.services.totp !== undefined && user.services.totp.enabled)) {
+		if (!user || (user.services.totp !== undefined && user.services.totp.enabled) || (user.services.email2fa !== undefined && user.services.email2fa.enabled)) {
 			return false;
 		}
 

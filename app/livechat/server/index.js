@@ -6,7 +6,7 @@ import '../lib/messageTypes';
 import './config';
 import './roomType';
 import './hooks/beforeCloseRoom';
-import './hooks/beforeGetNextAgent';
+import './hooks/beforeDelegateAgent';
 import './hooks/leadCapture';
 import './hooks/markRoomResponded';
 import './hooks/offlineMessage';
