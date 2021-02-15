@@ -14,6 +14,7 @@ import { callbacks } from '../../../callbacks';
 import { roomTypes } from '../../../utils';
 import { call, callMethod } from './callMethod';
 import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
+import { waitUntilWrapperExists } from './RoomHistoryManager';
 
 window.currentTracker = undefined;
 
@@ -72,12 +73,10 @@ export const openRoom = async function(type, name) {
 			const room = roomTypes.findRoom(type, name, user) || await callMethod('getRoomByTypeAndName', type, name);
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
-
 			if (room._id !== name && type === 'd') { // Redirect old url using username to rid
 				RoomManager.close(type + name);
 				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 			}
-
 
 			if (room._id === Session.get('openedRoom') && !FlowRouter.getQueryParam('msg')) {
 				return;
@@ -87,6 +86,7 @@ export const openRoom = async function(type, name) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
 					BlazeLayout.render('main');
 				}
+
 				await replaceCenterDomBy(() => getDomOfLoading());
 				return;
 			}
@@ -100,12 +100,12 @@ export const openRoom = async function(type, name) {
 			if (window.currentTracker) {
 				window.currentTracker = undefined;
 			}
+
 			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
 			if (mainNode) {
-				if (roomDom.classList.contains('.room-container .messages-box > .wrapper')) {
-					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop;
-				}
+				const selector = await waitUntilWrapperExists('.messages-box .wrapper');
+				selector.scrollTop = roomDom.oldScrollTop;
 			}
 
 			Session.set('openedRoom', room._id);
