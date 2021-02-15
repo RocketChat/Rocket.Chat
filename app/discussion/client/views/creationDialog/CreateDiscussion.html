@@ -105,7 +105,7 @@
 				</div>
 				{{/if}}
 				<div class="rc-tags{{# unless icon}} rc-tags--no-icon{{/unless}}">
-					{{#each item in list}} {{> tag item}} {{/each}}
+					{{#each item in list}} {{> tag userData=item }} {{/each}}
 					<input type="text" id="{{name}}" class="rc-tags__input" placeholder="{{_ placeholder}}" name="{{name}}" autocomplete="off" {{disabled}} />
 				</div>
 			</div>
