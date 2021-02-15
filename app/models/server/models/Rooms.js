@@ -117,9 +117,9 @@ export class Rooms extends Base {
 	}
 
 	setLastMessageSnippeted(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
-		const query =	{ _id: roomId };
+		const query = { _id: roomId };
 
-		const msg = `\`\`\`${ message.msg }\`\`\``;
+		const msg = `\`\`\`${message.msg}\`\`\``;
 
 		const update = {
 			$set: {
@@ -209,7 +209,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
+	setAllowReactingWhenReadOnlyById = function (_id, allowReacting) {
 		const query = {
 			_id,
 		};
@@ -246,7 +246,7 @@ export class Rooms extends Base {
 	}
 
 
-	setSystemMessagesById = function(_id, systemMessages) {
+	setSystemMessagesById = function (_id, systemMessages) {
 		const query = {
 			_id,
 		};
@@ -255,10 +255,10 @@ export class Rooms extends Base {
 				sysMes: systemMessages,
 			},
 		} : {
-			$unset: {
-				sysMes: '',
-			},
-		};
+				$unset: {
+					sysMes: '',
+				},
+			};
 		return this.update(query, update);
 	}
 
@@ -460,6 +460,7 @@ export class Rooms extends Base {
 	}
 
 	findByNameOrFNameAndType(name, type, options) {
+		const { sort: { name: sortName, ...sort }, fields, ...pagination } = options;
 		const query = {
 			t: type,
 			$or: [{
@@ -469,8 +470,37 @@ export class Rooms extends Base {
 			}],
 		};
 
+		if (sortName) {
+			// preserve sort direction
+			sort.sortable = sortName;
+		}
+
+		return this.model.rawCollection().aggregate([
+			{ $match: query },
+			{
+				$addFields: {
+					sortable: {
+						$toLower: '$name'
+					},
+				}
+			},
+			{
+				$sort: sort,
+			},
+			{
+				$facet: {
+					paginatedResults: [{ $skip: pagination.skip }, { $limit: pagination.limit }],
+					totalCount: [
+						{
+							$count: 'count'
+						}
+					]
+				}
+			}
+		]).toArray();
+
 		// do not use cache
-		return this._db.find(query, options);
+		// return this._db.find(query, options);
 	}
 
 	findByNameAndTypeNotDefault(name, type, options) {
@@ -502,7 +532,7 @@ export class Rooms extends Base {
 	}
 
 	findChannelAndPrivateByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${ s.trim(escapeRegExp(name)) }`, 'i');
+		const nameRegex = new RegExp(`^${s.trim(escapeRegExp(name))}`, 'i');
 
 		const query = {
 			t: {
@@ -767,10 +797,10 @@ export class Rooms extends Base {
 				lastMessage,
 			},
 		} : {
-			$unset: {
-				lastMessage: 1,
-			},
-		};
+				$unset: {
+					lastMessage: 1,
+				},
+			};
 
 		return this.update(query, update);
 	}
@@ -962,7 +992,7 @@ export class Rooms extends Base {
 
 		const update = {
 			...favorite && defaultValue && { $set: { favorite } },
-			...(!favorite || !defaultValue) && { $unset: {	favorite: 1 } },
+			...(!favorite || !defaultValue) && { $unset: { favorite: 1 } },
 		};
 
 		return this.update(query, update);
@@ -1144,7 +1174,7 @@ export class Rooms extends Base {
 	// ############################
 	// Discussion
 	findDiscussionParentByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${ s.trim(escapeRegExp(name)) }`, 'i');
+		const nameRegex = new RegExp(`^${s.trim(escapeRegExp(name))}`, 'i');
 
 		const query = {
 			t: {

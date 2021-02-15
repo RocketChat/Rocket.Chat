@@ -80,7 +80,7 @@ Meteor.methods({
 				return;
 			}
 
-			const result = Rooms.findByNameOrFNameAndType(regex, 'c', {
+			const result = Promise.await(Rooms.findByNameOrFNameAndType(regex, 'c', {
 				...pagination,
 				sort: {
 					featured: -1,
@@ -100,11 +100,11 @@ Meteor.methods({
 					usersCount: 1,
 					prid: 1,
 				},
-			});
+			}));
 
 			return {
-				total: result.count(), // count ignores the `skip` and `limit` options
-				results: result.fetch(),
+				total: result[0].totalCount[0].count, // count ignores the `skip` and `limit` options
+				results: result[0].paginatedResults,
 			};
 		}
 
@@ -146,8 +146,10 @@ Meteor.methods({
 			result = Users.findByActiveLocalUsersExcept(text, [], options, forcedSearchFields, getFederationDomain());
 		}
 
-		const total = result.count(); // count ignores the `skip` and `limit` options
-		const results = result.fetch();
+		const dbResult = Promise.await(result)
+
+		const total = dbResult[0].totalCount[0].count; // count ignores the `skip` and `limit` options
+		const results = dbResult[0].paginatedResults;
 
 		// Try to find federated users, when applicable
 		if (isFederationEnabled() && type === 'users' && workspace === 'external' && text.indexOf('@') !== -1) {

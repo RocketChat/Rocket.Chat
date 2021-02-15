@@ -731,47 +731,62 @@ export class Users extends Base {
 	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
-		if (!_.isArray(exceptions)) {
+		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
 
-		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-		if (searchTerm === '') {
-			const query = {
-				$and: [
-					{
-						active: true,
-						username: { $exists: true, $nin: exceptions },
-					},
-					...extraQuery,
-				],
-			};
+		const { sort: { name, ...sort }, fields, ...pagination } = options;
 
-			return this._db.find(query, options);
+		if (name) {
+			sort.sortable = name;
 		}
-
-		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
-
-		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
-
-		const orStmt = _.reduce(searchFields, function(acc, el) {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, []);
-
+		
 		const query = {
 			$and: [
 				{
 					active: true,
 					username: { $exists: true, $nin: exceptions },
-					$or: orStmt,
 				},
 				...extraQuery,
 			],
 		};
 
-		// do not use cache
-		return this._db.find(query, options);
+		// create and append regex if searchTerm is something
+		if (searchTerm !== '') {
+			const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+
+			const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
+
+			const orStmt = _.reduce(searchFields, function(acc, el) {
+				acc.push({ [el.trim()]: termRegex });
+				return acc;
+			}, []);
+
+			query.$and[0].$or = orStmt;
+		}
+
+		return this.model.rawCollection().aggregate([
+			{ $match: query },
+			{ $project: fields },
+			{
+				$addFields: {
+					sortable: {
+						$toLower: "$name"
+					}
+				}
+			},
+			{ $sort: sort },
+			{
+				$facet: {
+					paginatedResults: [{ $skip: pagination.skip }, { $limit: pagination.limit }],
+					totalCount: [
+						{
+							$count: 'count'
+						}
+					]
+				}
+			}
+		]).toArray();
 	}
 
 	findByActiveLocalUsersExcept(searchTerm, exceptions, options, forcedSearchFields, localDomain) {
