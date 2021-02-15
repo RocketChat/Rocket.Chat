@@ -65,7 +65,7 @@ describe('[Subscriptions]', function() {
 		});
 	});
 
-	describe.only('[/subscriptions.read]', () => {
+	describe('[/subscriptions.read]', () => {
 		let testChannel;
 		it('create a channel', (done) => {
 			createRoom({ type: 'c', name: `channel.test.${ Date.now() }` })
