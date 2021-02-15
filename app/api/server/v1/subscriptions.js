@@ -66,10 +66,7 @@ API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 			return API.v1.failure('Params reference to different rooms, use only one param or both params with the same room id');
 		}
 
-		let finalRoomId = '';
-		rid && !roomId
-			? finalRoomId = rid
-			: finalRoomId = roomId;
+		const finalRoomId = rid || roomId;
 
 		Meteor.runAsUser(this.userId, () =>
 			Meteor.call('readMessages', finalRoomId),
