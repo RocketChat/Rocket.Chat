@@ -4,6 +4,7 @@ import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 import LivechatRooms from '../../../models/server/models/LivechatRooms';
 import LivechatVisitors from '../../../models/server/models/LivechatVisitors';
+import LivechatFilter from '../../../models/server/models/LivechatFilter';
 import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
 import Users from '../../../models/server/models/Users';
 
@@ -70,6 +71,36 @@ export class AppLivechatBridge {
 		});
 
 		return this.orch.getConverters().get('rooms').convertRoom(result.room);
+	}
+
+	async createFilter(filter, appId) {
+		this.orch.debugLog(`The App ${ appId } is creating a livechat filter.`);
+
+		const filterData = {
+			_id: filter.id || Random.id(),
+			name: filter.name,
+			description: filter.description,
+			enabled: filter.enabled,
+			regex: filter.regex,
+			slug: filter.slug,
+		};
+
+		return LivechatFilter.insert(filterData);
+	}
+
+	async updateFilter(filter, appId) {
+		this.orch.debugLog(`The App ${ appId } is updating a livechat filter.`);
+
+		const filterData = {
+			_id: filter.id,
+			name: filter.name,
+			description: filter.description,
+			enabled: filter.enabled,
+			regex: filter.regex,
+			slug: filter.slug,
+		};
+
+		return LivechatFilter.updateById(filterData._id, filterData);
 	}
 
 	async closeRoom(room, comment, appId) {

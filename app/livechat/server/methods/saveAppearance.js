@@ -29,6 +29,7 @@ Meteor.methods({
 			'Livechat_name_field_registration_form',
 			'Livechat_email_field_registration_form',
 			'Livechat_registration_form_message',
+			'Livechat_hide_sys_messages',
 		];
 
 		const valid = settings.every((setting) => validSettings.indexOf(setting._id) !== -1);

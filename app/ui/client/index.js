@@ -56,6 +56,7 @@ export { fileUpload } from './lib/fileUpload';
 export { MsgTyping } from './lib/msgTyping';
 export { KonchatNotification } from './lib/notification';
 export { Login, Button } from './lib/rocket';
+export { sendOfflineFileMessage } from './lib/sendOfflineFileMessage';
 export { AudioRecorder } from './lib/recorderjs/audioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';
 export { chatMessages } from './views/app/room';

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
+import { MessageTypesValues } from '../../lib/lib/MessageTypes';
 
 Meteor.startup(function() {
 	settings.addGroup('Omnichannel');
@@ -24,6 +25,17 @@ Meteor.startup(function() {
 		allowedTypes: ['color', 'expression'],
 		group: 'Omnichannel',
 		section: 'Livechat',
+		public: true,
+	});
+
+	settings.add('Livechat_hide_sys_messages', [], {
+		type: 'multiSelect',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		values: [
+			...MessageTypesValues,
+			{ key: 'livechat_transfer_history', i18nLabel: 'Message_HideType_livechat_transfer_history' },
+		],
 		public: true,
 	});
 
@@ -159,6 +171,24 @@ Meteor.startup(function() {
 		section: 'Livechat',
 		public: true,
 		i18nLabel: 'Show_preregistration_form',
+	});
+
+	settings.add('Livechat_start_session_on_new_chat', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+		i18nLabel: 'Livechat_Start_session_on_new_chat',
+	});
+
+	settings.add('Livechat_skip_registration_form_DomainsList', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		enableQuery: { _id: 'Livechat_registration_form', value: true },
+		public: true,
+		i18nLabel: 'Livechat_SkipRegistrationFormDomainsList',
+		i18nDescription: 'Domains_on_which_skip_livechat_registration_form',
 	});
 
 	settings.add('Livechat_name_field_registration_form', true, {
