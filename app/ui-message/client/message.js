@@ -451,8 +451,6 @@ Template.message.helpers({
 	},
 	showPin() {
 		const { msg } = this;
-		if(msg.pinned)
-		console.log("message Pinned", msg, msg.actionContext, this.context)
 		return msg.pinned && !(msg.actionContext === 'pinned' || this.context === 'pinned');
 	},
 	showStar() {
