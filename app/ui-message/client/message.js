@@ -449,6 +449,12 @@ Template.message.helpers({
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
 	},
+	showPin() {
+		const { msg } = this;
+		if(msg.pinned)
+		console.log("message Pinned", msg, msg.actionContext, this.context)
+		return msg.pinned && !(msg.actionContext === 'pinned' || this.context === 'pinned');
+	},
 	showStar() {
 		const { msg } = this;
 		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
