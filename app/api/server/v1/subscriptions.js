@@ -62,7 +62,7 @@ API.v1.addRoute('subscriptions.read', { authRequired: true }, {
 			return API.v1.failure('At least one of "rid" or "roomId" params is required');
 		}
 
-		if (rid && roomId && (rid !== roomId)) {
+		if (rid && roomId && rid !== roomId) {
 			return API.v1.failure('Params reference to different rooms, use only one param or both params with the same room id');
 		}
 
