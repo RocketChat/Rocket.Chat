@@ -199,33 +199,33 @@ function validateUserEditing(userId, userData) {
 }
 
 const handleBio = (updateUser, bio) => {
-		if (bio && bio.trim()) {
-			if (typeof bio !== 'string' || bio.length > 260) {
-				throw new Meteor.Error('error-invalid-field', 'bio', {
-					method: 'saveUserProfile',
-				});
-			}
-			updateUser.$set = updateUser.$set || {};
-			updateUser.$set.bio = bio;
-		} else {
-			updateUser.$unset = updateUser.$unset || {};
-			updateUser.$unset.bio = 1;
+	if (bio && bio.trim()) {
+		if (typeof bio !== 'string' || bio.length > 260) {
+			throw new Meteor.Error('error-invalid-field', 'bio', {
+				method: 'saveUserProfile',
+			});
 		}
+		updateUser.$set = updateUser.$set || {};
+		updateUser.$set.bio = bio;
+	} else {
+		updateUser.$unset = updateUser.$unset || {};
+		updateUser.$unset.bio = 1;
+	}
 };
 
 const handleNickname = (updateUser, nickname) => {
-		if (nickname && nickname.trim()) {
-			if (typeof nickname !== 'string' || nickname.length > 120) {
-				throw new Meteor.Error('error-invalid-field', 'nickname', {
-					method: 'saveUserProfile',
-				});
-			}
-			updateUser.$set = updateUser.$set || {};
-			updateUser.$set.nickname = nickname;
-		} else {
-			updateUser.$unset = updateUser.$unset || {};
-			updateUser.$unset.nickname = 1;
+	if (nickname && nickname.trim()) {
+		if (typeof nickname !== 'string' || nickname.length > 120) {
+			throw new Meteor.Error('error-invalid-field', 'nickname', {
+				method: 'saveUserProfile',
+			});
 		}
+		updateUser.$set = updateUser.$set || {};
+		updateUser.$set.nickname = nickname;
+	} else {
+		updateUser.$unset = updateUser.$unset || {};
+		updateUser.$unset.nickname = 1;
+	}
 };
 
 export const saveUser = function(userId, userData) {
