@@ -212,6 +212,9 @@ const handleBio = (updateUser, bio) => {
 			updateUser.$unset = updateUser.$unset || {};
 			updateUser.$unset.bio = 1;
 		}
+	} else {
+		updateUser.$unset = updateUser.$unset || {};
+		updateUser.$unset.bio = 1;
 	}
 };
 
