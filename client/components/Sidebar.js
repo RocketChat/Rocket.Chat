@@ -37,7 +37,6 @@ const GenericItem = ({ href, active, children, ...props }) => <Box
 		css`
 				&:hover,
 				&:focus,
-				&.active:focus,
 				&.active:hover {
 					background-color: var(--sidebar-background-light-hover);
 				}
