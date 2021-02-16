@@ -229,6 +229,9 @@ const handleNickname = (updateUser, nickname) => {
 			updateUser.$unset = updateUser.$unset || {};
 			updateUser.$unset.nickname = 1;
 		}
+	} else {
+		updateUser.$unset = updateUser.$unset || {};
+		updateUser.$unset.nickname = 1;
 	}
 };
 
