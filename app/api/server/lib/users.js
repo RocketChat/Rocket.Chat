@@ -28,3 +28,19 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 		items: users,
 	};
 }
+
+/**
+ * Returns a new query object with the inclusive fields only
+ * @param {Object} query search query for matching rows
+ */
+export function getInclusiveFields(query) {
+	const newQuery = {};
+
+	for (const [key, value] of Object.entries(query)) {
+		if (value === 1) {
+			newQuery[key] = value;
+		}
+	}
+
+	return newQuery;
+}

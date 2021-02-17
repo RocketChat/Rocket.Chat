@@ -5,6 +5,7 @@ import _ from 'underscore';
 import Busboy from 'busboy';
 
 import { Users, Subscriptions } from '../../../models/server';
+import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
@@ -19,7 +20,7 @@ import {
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
-import { findUsersToAutocomplete } from '../lib/users';
+import { findUsersToAutocomplete, getInclusiveFields } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
@@ -220,43 +221,6 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 	},
 });
 
-/**
- * custom sort
- * @typedef {({_id:string,username:string,name:string,status:string,roles:string[]})} user
- * @param {user} a
- * @param {user} b
- * @param {string[]} fields
- * @param {number[]} orders
- * @param {number} idx
- */
-function sortAB(a,b,fields,orders,idx){
-    const field = fields[idx];
-    const order = orders[idx];
-
-    if(a[field]?.toLowerCase() < b[field]?.toLowerCase()){
-        return -order;
-    }else if(a[field]?.toLowerCase() > b[field]?.toLowerCase()){
-        return order;
-    }else if(idx<=fields.length){ // compare with the next field (if it exists)
-        sortAB(a,b,fields,orders,idx+1);
-    }else{
-        return 0;
-    }
-
-}
-
-
-/**
- * @param {Array<{_id:string,username:string,name:string,status:string,roles:string[]}>} users
- * @param {Object} sortQuery
- */
-function sortUsers(users,sortQuery){
-    const fields = Object.keys(sortQuery);
-    const orders = Object.values(sortQuery);
-
-    users.sort((a,b)=>sortAB(a,b,fields,orders,0));
-}
-
 API.v1.addRoute('users.list', { authRequired: true }, {
 	get() {
 		if (!hasPermission(this.userId, 'view-d-room')) {
@@ -266,17 +230,34 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		const users = Users.find(query, {
-			// sort: sort || { username: 1 },
-			skip: offset,
-			limit: count,
-			fields,
-		}).fetch();
+		const inclusiveFields = getInclusiveFields(fields);
 
-        console.log('before',users.map(user=>user.name))
-		sortUsers(users,sort)
-		// console.log('the list of users are',require('util').inspect(users,false,10,true));
-        console.log('after',users.map(user=>user.name))
+		const actualSort = sort.name ? { nameInsensitive: sort.name, ...sort } : sort;
+
+		const users = Promise.await(UsersRaw.col
+			.aggregate([
+				{
+					$match: query,
+				},
+				{
+					$project: {
+						...inclusiveFields,
+						nameInsensitive: {
+							$toLower: '$name',
+						},
+					},
+				},
+				{
+					$skip: offset,
+				},
+				{
+					$limit: count,
+				},
+				{
+					$sort: actualSort,
+				},
+			])
+			.toArray());
 
 		return API.v1.success({
 			users,
