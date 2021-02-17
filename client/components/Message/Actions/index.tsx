@@ -18,6 +18,9 @@ type ActionOptions = {
 export const Action: FC<ActionOptions> = ({ id, icon, i18nLabel, label, mid, runAction }) => {
 	const t = useTranslation();
 
+	// Legacy icon
+	icon = icon && icon.replace(/videocam/, 'video');
+
 	return <Button id={id} data-mid={mid} data-actionlink={id} onClick={runAction} primary small>{icon && <Icon name={icon.replace('icon-', '')}/>}{i18nLabel ? t(i18nLabel) : label }</Button>;
 };
 
