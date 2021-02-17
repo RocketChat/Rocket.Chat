@@ -33,8 +33,6 @@ Meteor.methods({
 		readThread({ userId: user._id, rid: thread.rid, tmid });
 
 		const result = Messages.findVisibleThreadByThreadId(tmid, { ...skip && { skip }, ...limit && { limit }, sort: { ts: -1 } }).fetch();
-
-		// return [thread, ...result];
 		const combinedMessages = [thread, ...result];
 
 		normalizeMessagesForUser(combinedMessages, user._id);
