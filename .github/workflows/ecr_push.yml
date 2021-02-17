@@ -4,12 +4,14 @@ name: PUSH to Amazon ECR
 
 jobs:
   widechat-ecr-push:
+    name: ecr-push
     runs-on: ubuntu-latest
     # if: ${{ github.base_ref == 'develop' && github.event_name == 'pull_request' }}
     # needs: test
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
 
     # - name: Parse for PR num
     #   run: |
