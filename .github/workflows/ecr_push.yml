@@ -21,9 +21,12 @@ jobs:
     #     echo "pr_num is this: $pr_num"
     #     echo "PR_TAG=pr-num-$pr_num" >> $GITHUB_ENV
 
-    - name: Restore build
-      uses: actions/download-artifact@v1
+    - name: Download artifact
+      uses: dawidd6/action-download-artifact@v2
       with:
+        workflow: build_and_test.yml
+        workflow_conclusion: success
+        branch: develop_pwa
         name: build
         path: /tmp/build
 
