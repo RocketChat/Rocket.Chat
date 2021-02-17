@@ -581,18 +581,18 @@ jobs:
     - name: Configure AWS credentials in PROD
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.PROD_AWS_PROD_ACCESS_KEY_ID }}
+        aws-access-key-id: ${{ secrets.AWS_PROD_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
     - name: Login to Amazon ECR
-      id: login-ecr
+      id: login-ecr-prod
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: tag, and push image to Amazon ECR in PROD
       id: tag-image
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
         ECR_REPOSITORY: widechat
         IMAGE_TAG: ${{ PR_TAG }}
 
