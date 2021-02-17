@@ -1,12 +1,6 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { password } from '../../data/user';
-import { closeRoom, createRoom } from '../../data/rooms.helper';
-import { imgURL } from '../../data/interactions.js';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { sendSimpleMessage } from '../../data/chat.helper';
-import { createUser } from '../../data/users.helper';
 
 describe('Invites', function() {
 	let testInviteID;
@@ -160,7 +154,6 @@ describe('Invites', function() {
 	});
 
 	describe('POST [/validateInviteToken]', () => {
-
 		it('should warn if invalid token', (done) => {
 			request.post(api('validateInviteToken'))
 				.set(credentials)
