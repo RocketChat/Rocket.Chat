@@ -84,5 +84,5 @@ jobs:
       run: |
         # Tag docker image and push it to ECR
         docker tag ${{ steps.build-image-dev.outputs.DEV_IMAGE }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker push $ECR_PROD_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_PROD_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
