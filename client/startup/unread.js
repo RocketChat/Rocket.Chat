@@ -31,21 +31,22 @@ Meteor.startup(() => {
 
 		let unreadAlert = false;
 
-		const unreadCount = fetchSubscriptions().reduce((ret, subscription) => {
-			const room = ChatRoom.findOne({ _id: subscription.rid }, { fields: { usersCount: 1 } });
-			fireGlobalEvent('unread-changed-by-subscription', { ...subscription, usersCount: room && room.usersCount });
+		const unreadCount = fetchSubscriptions().reduce((ret, subscription) =>
+			Tracker.nonreactive(() => {
+				const room = ChatRoom.findOne({ _id: subscription.rid }, { fields: { usersCount: 1 } });
+				fireGlobalEvent('unread-changed-by-subscription', { ...subscription, usersCount: room && room.usersCount });
 
-			if (subscription.alert || subscription.unread > 0) {
-				// Increment the total unread count.
-				if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
-					if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
-						unreadAlert = '•';
+				if (subscription.alert || subscription.unread > 0) {
+					// Increment the total unread count.
+					if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
+						if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
+							unreadAlert = '•';
+						}
 					}
+					return ret + subscription.unread;
 				}
-				return ret + subscription.unread;
-			}
-			return ret;
-		}, 0);
+				return ret;
+			}), 0);
 
 		menu.updateUnreadBars();
 
