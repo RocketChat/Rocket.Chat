@@ -108,7 +108,10 @@ const Row = memo(function Row({
 	const { name = discussion.u.username } = discussion.u;
 
 	return <Discussion
-		{ ...discussion }
+		// { ...discussion }
+		replies={discussion.replies}
+		dcount={discussion.dcount}
+		dlm={discussion.dlm}
 		name={showRealNames ? name : discussion.u.username }
 		username={ discussion.u.username }
 		following={discussion.replies && discussion.replies.includes(userId)}
