@@ -165,7 +165,11 @@ const Row = memo(function Row({
 	const { name = thread.u.username } = thread.u;
 
 	return <Thread
-		{ ...thread }
+		tcount={thread.tcount}
+		tlm={thread.tlm}
+		ts={thread.ts}
+		u={thread.u}
+		replies={thread.replies}
 		name={showRealNames ? name : thread.u.username }
 		username={ thread.u.username }
 		unread={unread.includes(thread._id)}
