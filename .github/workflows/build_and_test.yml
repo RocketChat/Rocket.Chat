@@ -522,26 +522,17 @@ jobs:
         docker build -t ${IMAGE}:develop .
         docker push ${IMAGE}:develop
 
-  # TODO: configure for merges to develop when ready; configure for PROD as needed
+  # TODO: configure for merges to develop when ready
   # NOTE: Right now it will only push on every merge into develop_pwa because we have a standing PR from it -> develop.
   widechat-ecr-push:
     runs-on: ubuntu-latest
-    if: github.base_ref == 'develop'
+    if: ${{ github.base_ref == 'develop' && github.event_name == 'pull_request' }}
     needs: test
-    env:
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
     steps:
     - uses: actions/checkout@v2
 
-    # - name: Install jq
-    #   run: |
-    #     sudo apt-get -y -qq update
-    #     sudo apt-get -y -qq install jq
-
     - name: Parse for PR num
-      if: github.event_name == 'pull_request'
-
       run: |
         git_ref=${{ github.ref }}
         arrRef=(${git_ref//\// })
@@ -562,32 +553,51 @@ jobs:
         rm Rocket.Chat.tar.gz
         cp "${GITHUB_WORKSPACE}/.docker/Dockerfile" .
 
-    - name: AWS Deploy to ECR in DEV
-      if: github.event_name == 'pull_request'
-
-      uses: Terranovax/aws-ecr-deploy@v1
+    - name: Configure AWS credentials in DEV
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-        region: us-east-1
-        dockerfile: /tmp/build/Dockerfile
-        path: /tmp/build
-        repo: widechat
-        tags: ${{ env.PR_TAG }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR in DEV
+      id: build-image-dev
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: widechat
+        IMAGE_TAG: ${{ PR_TAG }}
+
+      run: |
+        # Build a docker container and push it to ECR
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=DEV_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
     ## Temporarily we will deploy the PR tags to PROD as well as DEV
-    - name: AWS Deploy to ECR in PROD
-      if: github.event_name == 'pull_request'
-
-      uses: Terranovax/aws-ecr-deploy@v1
+    - name: Configure AWS credentials in PROD
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        access_key_id: ${{ secrets.AWS_PROD_ACCESS_KEY_ID }}
-        secret_access_key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
-        account_id: ${{ secrets.AWS_PROD_ACCOUNT_ID }}
-        region: us-east-1
-        dockerfile: /tmp/build/Dockerfile
-        path: /tmp/build
-        repo: widechat
-        tags: ${{ env.PR_TAG }}
+        aws-access-key-id: ${{ secrets.PROD_AWS_PROD_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
 
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: tag, and push image to Amazon ECR in PROD
+      id: tag-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: widechat
+        IMAGE_TAG: ${{ PR_TAG }}
+
+      run: |
+        # Tag docker image and push it to ECR
+        docker tag ${{ steps.build-image-dev.outputs.DEV_IMAGE }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      
