@@ -569,7 +569,7 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: widechat
-        IMAGE_TAG: ${{ PR_TAG }}
+        IMAGE_TAG: ${{ env.PR_TAG }}
 
       run: |
         # Build a docker container and push it to ECR
@@ -594,7 +594,7 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
         ECR_REPOSITORY: widechat
-        IMAGE_TAG: ${{ PR_TAG }}
+        IMAGE_TAG: ${{ env.PR_TAG }}
 
       run: |
         # Tag docker image and push it to ECR
