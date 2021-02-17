@@ -466,7 +466,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 		const total = cursor.count();
 
 		const threads = cursor.fetch();
-
+		normalizeMessagesForUser(threads, user._id);
 		return API.v1.success({
 			threads,
 			count: threads.length,
