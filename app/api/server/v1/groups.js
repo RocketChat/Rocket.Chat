@@ -223,12 +223,16 @@ API.v1.addRoute('groups.create', { authRequired: true }, {
 		if (this.bodyParams.customFields && !(typeof this.bodyParams.customFields === 'object')) {
 			return API.v1.failure('Body param "customFields" must be an object if provided');
 		}
+		if (this.bodyParams.extraData && !(typeof this.bodyParams.extraData === 'object')) {
+			return API.v1.failure('Body param "extraData" must be an object if provided');
+		}
 
 		const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
 
 		let id;
+
 		Meteor.runAsUser(this.userId, () => {
-			id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly, this.bodyParams.customFields);
+			id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly, this.bodyParams.customFields, this.bodyParams.extraData);
 		});
 
 		return API.v1.success({
