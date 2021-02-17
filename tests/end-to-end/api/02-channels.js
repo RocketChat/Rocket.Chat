@@ -182,6 +182,21 @@ describe('[Channels]', function() {
 		});
 	});
 
+	it('/channels.online', (done) => {
+		request.get(api('channels.online'))
+			.set(credentials)
+			.query({
+				query: '{ "_id": "GENERAL" }',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('online').and.to.be.an('array');
+			})
+			.end(done);
+	});
+
 	it('/channels.invite', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
