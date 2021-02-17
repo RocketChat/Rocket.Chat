@@ -130,7 +130,7 @@ RoomFiles.Item = FileItem;
 export default ({ rid }) => {
 	const uid = useUserId();
 	const onClickClose = useTabBarClose();
-
+	const t = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -150,6 +150,7 @@ export default ({ rid }) => {
 		const onConfirm = async () => {
 			try {
 				await deleteFile(_id);
+				dispatchToastMessage({ type: 'success', message: t('Deleted') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
