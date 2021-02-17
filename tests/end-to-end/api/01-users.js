@@ -602,6 +602,161 @@ describe('[Users]', function() {
 		});
 	});
 
+	describe('[/users.resetAvatar]', () => {
+		let user;
+		before(async () => {
+			user = await createUser();
+		});
+
+		let userCredentials;
+		before(async () => {
+			userCredentials = await login(user.username, password);
+		});
+		before((done) => {
+			updatePermission('edit-other-user-info', ['admin', 'user']).then(done);
+		});
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+			await updatePermission('edit-other-user-info', ['admin']);
+		});
+		it('should set the avatar of the logged user by a local image', (done) => {
+			request.post(api('users.setAvatar'))
+				.set(userCredentials)
+				.attach('image', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should reset the avatar of the logged user', (done) => {
+			request.post(api('users.resetAvatar'))
+				.set(userCredentials)
+				.expect('Content-Type', 'application/json')
+				.send({
+					userId: userCredentials['X-User-Id'],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should reset the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-info)', (done) => {
+			request.post(api('users.resetAvatar'))
+				.set(userCredentials)
+				.send({
+					userId: credentials['X-User-Id'],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should reset the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-info)', (done) => {
+			request.post(api('users.resetAvatar'))
+				.set(credentials)
+				.send({
+					username: adminUsername,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it.skip('should prevent from resetting someone else\'s avatar when the logged user has not the necessary permission(edit-other-user-info)', (done) => {
+			updatePermission('edit-other-user-info', []).then(() => {
+				request.post(api('users.resetAvatar'))
+					.set(userCredentials)
+					.send({
+						userId: credentials['X-User-Id'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/users.getAvatar]', () => {
+		let user;
+		before(async () => {
+			user = await createUser();
+		});
+
+		let userCredentials;
+		before(async () => {
+			userCredentials = await login(user.username, password);
+		});
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+			await updatePermission('edit-other-user-info', ['admin']);
+		});
+		it('should get the url of the avatar of the logged user via userId', (done) => {
+			request.get(api('users.getAvatar'))
+				.set(userCredentials)
+				.query({
+					userId: userCredentials['X-User-Id'],
+				})
+				.expect(307)
+				.end(done);
+		});
+		it('should get the url of the avatar of the logged user via username', (done) => {
+			request.get(api('users.getAvatar'))
+				.set(userCredentials)
+				.query({
+					username: user.username,
+				})
+				.expect(307)
+				.end(done);
+		});
+	});
+
+	describe('[/users.deactivateIdle]', () => {
+		let user;
+		before(async () => {
+			user = await createUser();
+		});
+
+		let userCredentials;
+		before(async () => {
+			userCredentials = await login(user.username, password);
+		});
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+			await updatePermission('edit-other-user-info', ['admin']);
+		});
+		it('should get the url of the avatar of the logged user via userId', (done) => {
+			request.post(api('users.deactivateIdle'))
+				.set(userCredentials)
+				.send({
+					daysIdle: userCredentials['X-User-Id'],
+				})
+				.expect(307)
+				.end(done);
+		});
+		it('should get the url of the avatar of the logged user via username', (done) => {
+			request.get(api('users.getAvatar'))
+				.set(userCredentials)
+				.query({
+					username: user.username,
+				})
+				.expect(307)
+				.end(done);
+		});
+	});
+
 	describe('[/users.update]', () => {
 		before((done) => {
 			updateSetting('Accounts_AllowUserProfileChange', true)
