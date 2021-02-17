@@ -49,7 +49,7 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: Build, tag, and push image to Amazon ECR in DEV
-      id: build-image
+      id: build-image-dev
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: widechat
@@ -60,7 +60,7 @@ jobs:
         cd /tmp/build
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "::set-output name=DEV_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
     ## Temporarily we will deploy the PR tags to PROD as well as DEV
     - name: Configure AWS credentials in PROD
@@ -77,11 +77,12 @@ jobs:
     - name: tag, and push image to Amazon ECR in PROD
       id: tag-image
       env:
-        ECR_PROD_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
+        ECR_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
+        ECR_REPOSITORY: widechat
         IMAGE_TAG: ear-test
 
       run: |
         # Tag docker image and push it to ECR
-        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_PROD_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker tag ${{ steps.build-image-dev.outputs.DEV_IMAGE }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_PROD_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_PROD_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
