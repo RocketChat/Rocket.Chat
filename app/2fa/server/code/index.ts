@@ -137,6 +137,24 @@ interface ICheckCodeForUser {
 	connection?: IMethodConnection;
 }
 
+const getSecondFactorMethod = (user: IUser, method: string | undefined, options: ITwoFactorOptions): ICodeCheck | undefined => {
+	// try first getting one of the available methods or the one that was already provided
+	const selectedMethod = getMethodByNameOrFirstActiveForUser(user, method);
+	if (selectedMethod) {
+		return selectedMethod;
+	}
+
+	// if none found but a second factor is required, chose the password check
+	if (options.requireSecondFactor) {
+		return passwordCheckFallback;
+	}
+
+	// check if password fallback is enabled
+	if (!options.disablePasswordFallback && passwordCheckFallback.isEnabled(user, !!options.requireSecondFactor)) {
+		return passwordCheckFallback;
+	}
+};
+
 export function checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): boolean {
 	if (process.env.TEST_MODE && !options.requireSecondFactor) {
 		return true;
@@ -155,13 +173,10 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		return true;
 	}
 
-	let selectedMethod = getMethodByNameOrFirstActiveForUser(user, method);
-
+	// select a second factor method or return if none is found/available
+	const selectedMethod = getSecondFactorMethod(user, method, options);
 	if (!selectedMethod) {
-		if (!options.requireSecondFactor && (options.disablePasswordFallback || !passwordCheckFallback.isEnabled(user, !!options.requireSecondFactor))) {
-			return true;
-		}
-		selectedMethod = passwordCheckFallback;
+		return true;
 	}
 
 	if (!code) {
