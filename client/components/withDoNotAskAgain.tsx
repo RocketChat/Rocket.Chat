@@ -16,8 +16,8 @@ type DoNotAskAgainProps = {
 }
 
 export type RequiredModalProps = {
-	dontAskAgain: ReactElement;
-	confirm: DoNotAskAgainProps['confirm'];
+	dontAskAgain?: ReactElement;
+	confirm?: DoNotAskAgainProps['confirm'];
 }
 
 function withDoNotAskAgain<T extends RequiredModalProps>(WrappedComponent: ComponentType<any>): FC<DoNotAskAgainProps & Omit<T, keyof RequiredModalProps>> {
