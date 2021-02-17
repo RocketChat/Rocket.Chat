@@ -74,7 +74,7 @@ jobs:
       id: tag-image
       env:
         ECR_PROD_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
-        IMAGE_TAG: ${{ PR_TAG }}
+        IMAGE_TAG: ear-test
 
       run: |
         # Tag docker image and push it to ECR
