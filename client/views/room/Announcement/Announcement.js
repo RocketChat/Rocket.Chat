@@ -10,8 +10,8 @@ import MarkdownText from '../../../components/MarkdownText';
 
 export const Announcement = ({ children, onClickOpen }) => {
 	const announcementBar = css`
-		background-color: ${ colors.b200 };
-		color: ${ colors.b600 };
+		background-color: var(--rc-color-announcement-primary-background);
+		color: var(--rc-color-announcement-primary);
 		cursor: pointer;
 		transition: transform 0.2s ease-out;
 		a{
@@ -23,8 +23,8 @@ export const Announcement = ({ children, onClickOpen }) => {
 		}
 		&:hover,
 		&:focus {
-			background-color: ${ colors.b300 };
-			color: ${ colors.b800 };
+			background-color: var(--rc-color-announcement-secondary-background);
+			color: var(--rc-color-announcement-secondary);
 		}`;
 
 	return <Box onClick={onClickOpen} height='x40' pi='x24' alignItems='center' display='flex' fontScale='p2' textAlign='center' className={announcementBar}><Box withTruncatedText w='none'>{children}</Box></Box>;
