@@ -67,6 +67,7 @@
 		"@types/chai-spies": "^1.0.1",
 		"@types/clipboard": "^2.0.1",
 		"@types/ejson": "^2.1.2",
+		"@types/jsdom": "^16.2.6",
 		"@types/meteor": "^1.4.49",
 		"@types/mocha": "^8.0.3",
 		"@types/mock-require": "^2.0.0",
