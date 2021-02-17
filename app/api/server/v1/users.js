@@ -234,36 +234,43 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 
 		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
 
-		const users = Promise.await(UsersRaw.col
-			.aggregate([
-				{
-					$match: query,
-				},
-				{
-					$project: {
-						...inclusiveFields,
-						nameInsensitive: {
-							$toLower: '$name',
+		const result = Promise.await(
+			UsersRaw.col
+				.aggregate([
+					{
+						$match: query,
+					},
+					{
+						$project: {
+							...inclusiveFields,
+							nameInsensitive: {
+								$toLower: '$name',
+							},
 						},
 					},
-				},
-				{
-					$skip: offset,
-				},
-				{
-					$limit: count,
-				},
-				{
-					$sort: actualSort,
-				},
-			])
-			.toArray());
+					{
+						$skip: offset,
+					},
+					{
+						$limit: count,
+					},
+					{
+						$facet: {
+							sortedResults: [{ $sort: actualSort }],
+							totalCount: [{ $count: 'value' }],
+						},
+					},
+				])
+				.toArray(),
+		);
+
+		const { sortedResults: users, totalCount } = result[0];
 
 		return API.v1.success({
 			users,
 			count: users.length,
 			offset,
-			total: Users.find(query).count(),
+			total: totalCount[0].value,
 		});
 	},
 });
