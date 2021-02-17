@@ -573,6 +573,7 @@ jobs:
 
       run: |
         # Build a docker container and push it to ECR
+        cd /tmp/build
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=DEV_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
