@@ -232,7 +232,7 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 
 		const inclusiveFields = getInclusiveFields(fields);
 
-		const actualSort = sort.name ? { nameInsensitive: sort.name, ...sort } : sort;
+		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
 
 		const users = Promise.await(UsersRaw.col
 			.aggregate([
