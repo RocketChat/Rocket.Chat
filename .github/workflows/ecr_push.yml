@@ -1,5 +1,4 @@
-on:
-  on: workflow_dispatch
+on: workflow_dispatch
   # schedule:
   #   - cron: '0 0 * * 1' #on every Monday
 
