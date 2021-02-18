@@ -722,41 +722,6 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.deactivateIdle]', () => {
-		let user;
-		before(async () => {
-			user = await createUser();
-		});
-
-		let userCredentials;
-		before(async () => {
-			userCredentials = await login(user.username, password);
-		});
-		after(async () => {
-			await deleteUser(user);
-			user = undefined;
-			await updatePermission('edit-other-user-info', ['admin']);
-		});
-		it('should get the url of the avatar of the logged user via userId', (done) => {
-			request.post(api('users.deactivateIdle'))
-				.set(userCredentials)
-				.send({
-					daysIdle: userCredentials['X-User-Id'],
-				})
-				.expect(307)
-				.end(done);
-		});
-		it('should get the url of the avatar of the logged user via username', (done) => {
-			request.get(api('users.getAvatar'))
-				.set(userCredentials)
-				.query({
-					username: user.username,
-				})
-				.expect(307)
-				.end(done);
-		});
-	});
-
 	describe('[/users.update]', () => {
 		before((done) => {
 			updateSetting('Accounts_AllowUserProfileChange', true)
