@@ -233,6 +233,16 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		const nonEmptyQuery = getNonEmptyQuery(query);
 		const nonEmptyFields = getNonEmptyFields(fields);
 
+		console.log(`
+============================PASSED VALUES=====================
+		fields - ${ fields }
+		query - ${ query }
+		sort - ${ sort }
+		offset - ${ offset }
+		count - ${ count }
+===========================PASSED VALUES=======================
+		`);
+
 		const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
 		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
