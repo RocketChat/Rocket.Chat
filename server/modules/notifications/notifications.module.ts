@@ -79,7 +79,6 @@ export class NotificationsModule {
 			const userEvent = (clientAction: string, { rid }: {rid: string}): void => {
 				switch (clientAction) {
 					case 'removed':
-						// console.log('_afterPublish[userId].remove', userId);
 						streamer.removeListener(userId, userEvent);
 						const sub = [...streamer.subscriptions].find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
 						sub && streamer.removeSubscription(sub, eventName);
@@ -87,13 +86,9 @@ export class NotificationsModule {
 				}
 			};
 
-			// console.log('_afterPublish[userId]', userId);
 			streamer.on(userId, userEvent);
 
-			publication.onStop(() => {
-				// console.log('_afterPublish[userId].onStop', userId);
-				streamer.removeListener(userId, userEvent);
-			});
+			publication.onStop(() => streamer.removeListener(userId, userEvent));
 		});
 
 		this.streamUser = new this.Streamer('notify-user');
@@ -355,7 +350,6 @@ export class NotificationsModule {
 				).toArray();
 
 				subscriptions.forEach(({ rid }) => {
-					// console.log('subscription.on', rid);
 					streamer.on(rid, roomEvent);
 				});
 
@@ -367,7 +361,6 @@ export class NotificationsModule {
 					switch (clientAction) {
 						case 'inserted':
 							subscriptions.push({ rid });
-							// console.log('userEvent.on', rid);
 							streamer.on(rid, roomEvent);
 
 							// after a subscription is added need to emit the room again
@@ -375,21 +368,15 @@ export class NotificationsModule {
 							break;
 
 						case 'removed':
-							// console.log('userEvent.removed', rid);
 							streamer.removeListener(rid, roomEvent);
 							break;
 					}
 				};
-				// console.log('stream.on', userId);
 				streamer.on(userId, userEvent);
 
 				publication.onStop(() => {
-					// console.log('publication.onStop[userId]', userId);
 					streamer.removeListener(userId, userEvent);
-					subscriptions.forEach(({ rid }) => {
-						// console.log('publication.onStop[rid]', rid);
-						streamer.removeListener(rid, roomEvent);
-					});
+					subscriptions.forEach(({ rid }) => streamer.removeListener(rid, roomEvent));
 				});
 			}
 		});
