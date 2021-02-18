@@ -13,6 +13,7 @@ import {
 	useResizeObserver,
 	useLocalStorage,
 	useMutableCallback,
+	useAutoFocus,
 } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../components/VerticalBar';
@@ -201,7 +202,7 @@ export function ThreadList({
 	const threadsRef = useRef();
 
 	const t = useTranslation();
-
+	const inputRef = useAutoFocus(true);
 	const [name] = useCurrentRoute();
 	const channelRoute = useRoute(name);
 	const onClick = useMutableCallback((e) => {
@@ -256,6 +257,7 @@ export function ThreadList({
 							value={text}
 							onChange={setText}
 							addon={<Icon name='magnifier' size='x20' />}
+							ref={inputRef}
 						/>
 						<Select
 							flexGrow={0}
