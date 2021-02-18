@@ -152,7 +152,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: translatedText }));
 				}
 				if (result.statusCode === 456) {
-					SystemLogger.error('Error translating message', e);
+					SystemLogger.error('Error translating message', result.message);
 				}
 			} catch (e) {
 				SystemLogger.error('Error translating message', e);
