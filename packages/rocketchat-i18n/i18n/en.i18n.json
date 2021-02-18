@@ -461,7 +461,6 @@
   "Apps_Marketplace_Uninstall_App_Prompt": "Do you really want to uninstall this app?",
   "Apps_Marketplace_Uninstall_Subscribed_App_Anyway": "Uninstall it anyway",
   "Apps_Marketplace_Uninstall_Subscribed_App_Prompt": "This app has an active subscription and uninstalling will not cancel it. If you'd like to do that, please modify your subscription before uninstalling.",
-
   "Apps_Permissions_Review_Modal_Title": "This app requires the following permissions",
   "Apps_Permissions_No_Permissions_Required": "The App does not require additional permissions",
   "Apps_Permissions_user_read": "Access user information",
@@ -2403,7 +2402,7 @@
   "Livechat_AllowedDomainsList": "Livechat Allowed Domains",
   "Livechat_Appearance": "Livechat Appearance",
   "Livechat_auto_transfer_chat_timeout": "Timeout (in seconds) for automatic transfer of unanswered chats to another agent",
-  "Livechat_auto_transfer_chat_timeout_description" : "This event takes place only when the chat has just started. After the first transfering for inactivity, the room is no longer monitored.",
+  "Livechat_auto_transfer_chat_timeout_description": "This event takes place only when the chat has just started. After the first transfering for inactivity, the room is no longer monitored.",
   "Livechat_business_hour_type": "Business Hour Type (Single or Multiple)",
   "Livechat_chat_transcript_sent": "Chat transcript sent: __transcript__",
   "Livechat_custom_fields_options_placeholder": "Comma-separated list used to select a pre-configured value. Spaces between elements are not accepted.",
