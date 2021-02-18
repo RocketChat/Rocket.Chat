@@ -21,37 +21,44 @@ const recursiveRemove = (message, deep = 1) => {
 };
 
 callbacks.add('beforeSaveMessage', (msg) => {
-	if (msg && msg.urls) {
-		msg.urls.forEach((item) => {
-			if (item.url.indexOf(Meteor.absoluteUrl()) === 0) {
-				const urlObj = URL.parse(item.url);
-				if (urlObj.query) {
-					const queryString = QueryString.parse(urlObj.query);
-					if (_.isString(queryString.msg)) { // Jump-to query param
-						const jumpToMessage = recursiveRemove(Messages.findOneById(queryString.msg));
-						if (jumpToMessage) {
-							msg.attachments = msg.attachments || [];
+	// if no message is present, or the message doesn't have any URL, skip
+	if (!msg || (!msg.urls || !msg.urls.length)) { return msg }
 
-							const index = msg.attachments.findIndex((a) => a.message_link === item.url);
-							if (index > -1) {
-								msg.attachments.splice(index, 1);
-							}
+	msg.urls.forEach((item) => {
+		// if the URL is not internal, skip
+		if (!item.url.includes(Meteor.absoluteUrl())) { return }
+		const urlObj = URL.parse(item.url);
+		
+		// if the URL doesn't have query params (doesn't reference message) skip
+		if (!urlObj.query) { return }
+		const { msg: msgId } = QueryString.parse(urlObj.query);
 
-							msg.attachments.push({
-								text: jumpToMessage.msg,
-								translations: jumpToMessage.translations,
-								author_name: jumpToMessage.alias || jumpToMessage.u.username,
-								author_icon: getUserAvatarURL(jumpToMessage.u.username),
-								message_link: item.url,
-								attachments: jumpToMessage.attachments || [],
-								ts: jumpToMessage.ts,
-							});
-							item.ignoreParse = true;
-						}
-					}
-				}
+		if (!_.isString(msgId)) { return }
+		const jumpToMessage = recursiveRemove(Messages.findOneById(msgId));
+
+		// validates if user can see the message
+		// user has to belong to the room the message was first wrote in
+		const canAccessRoom = Meteor.call('canAccessRoom', jumpToMessage.rid, Meteor.userId())
+		if (jumpToMessage && canAccessRoom) {
+			msg.attachments = msg.attachments || [];
+
+			const index = msg.attachments.findIndex((a) => a.message_link === item.url);
+			if (index > -1) {
+				msg.attachments.splice(index, 1);
 			}
-		});
-	}
+
+			msg.attachments.push({
+				text: jumpToMessage.msg,
+				translations: jumpToMessage.translations,
+				author_name: jumpToMessage.alias || jumpToMessage.u.username,
+				author_icon: getUserAvatarURL(jumpToMessage.u.username),
+				message_link: item.url,
+				attachments: jumpToMessage.attachments || [],
+				ts: jumpToMessage.ts,
+			});
+			item.ignoreParse = true;
+		}
+	});
+	
 	return msg;
 }, callbacks.priority.LOW, 'jumpToMessage');
