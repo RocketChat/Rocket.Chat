@@ -3564,7 +3564,7 @@
   "SlackBridge_Out_Channels_Description": "Choose which channels will send messages back to Slack",
   "SlackBridge_Out_Enabled": "SlackBridge Out Enabled",
   "SlackBridge_Out_Enabled_Description": "Choose whether SlackBridge should also send your messages back to Slack",
-  "SlackBridge_Remove_Channel_Links_description": "Remove the internal link between Rocket.Chat channels and Slack channels. The links will afterwards be recreated based on the channel names.",
+  "SlackBridge_Remove_Channel_Links_Description": "Remove the internal link between Rocket.Chat channels and Slack channels. The links will afterwards be recreated based on the channel names.",
   "SlackBridge_start": "@%s has started a SlackBridge import at `#%s`. We'll let you know when it's finished.",
   "Slash_Gimme_Description": "Displays ༼ つ ◕_◕ ༽つ before your message",
   "Slash_LennyFace_Description": "Displays ( ͡° ͜ʖ ͡°) after your message",
