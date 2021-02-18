@@ -505,7 +505,7 @@ export class Rooms extends Base {
 	findByNameAndTypesNotInIds(name, types, ids, options) {
 		const query = {
 			_id: {
-				$ne: ids,
+				$nin: ids,
 			},
 			t: {
 				$in: types,
