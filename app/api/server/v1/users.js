@@ -228,7 +228,7 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		}
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields, query } = this.parseJsonQuery();
+		const { sort, fields = {}, query = {} } = this.parseJsonQuery();
 
 		const inclusiveFields = getInclusiveFields(fields);
 
