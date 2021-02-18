@@ -108,7 +108,6 @@ const Row = memo(function Row({
 	const { name = discussion.u.username } = discussion.u;
 
 	return <Discussion
-		// { ...discussion }
 		replies={discussion.replies}
 		dcount={discussion.dcount}
 		dlm={discussion.dlm}
