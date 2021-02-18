@@ -347,7 +347,7 @@ export function EditDepartment({ data, id, title, reload }) {
 					<Divider mb='x16' />
 					<Field>
 						<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
-						<Box display='flex' flexDirection='column' height='50vh'><DepartmentsAgentsTable agents={data && data.agents} setAgentListFinal={setAgentList}/></Box>
+						<Box display='flex' flexDirection='column' minHeight='50vh'><DepartmentsAgentsTable agents={data && data.agents} setAgentListFinal={setAgentList}/></Box>
 					</Field>
 				</FieldGroup>
 			</Page.ScrollableContentWithShadow>
