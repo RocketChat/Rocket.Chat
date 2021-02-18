@@ -42,7 +42,7 @@ export type DefaultAttachmentProps = {
 
 const isActionAttachment = (attachment: AttachmentProps): attachment is ActionAttachmentProps => 'actions' in attachment;
 
-const applyMarkdownIfRequires = (list: DefaultAttachmentProps['mrkdwn_in']) => (key: MarkdownFields, text: string): JSX.Element | string => (list?.includes(key) ? <MarkdownText withRichContent={undefined} content={text}/> : text);
+const applyMarkdownIfRequires = (list: DefaultAttachmentProps['mrkdwn_in'] = ['text', 'pretext']) => (key: MarkdownFields, text: string): JSX.Element | string => (list?.includes(key) ? <MarkdownText withRichContent={undefined} content={text}/> : text);
 
 export const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
 	const applyMardownFor = applyMarkdownIfRequires(attachment.mrkdwn_in);
