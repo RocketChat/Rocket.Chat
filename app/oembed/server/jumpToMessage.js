@@ -22,23 +22,23 @@ const recursiveRemove = (message, deep = 1) => {
 
 callbacks.add('beforeSaveMessage', (msg) => {
 	// if no message is present, or the message doesn't have any URL, skip
-	if (!msg || (!msg.urls || !msg.urls.length)) { return msg }
+	if (!msg || (!msg.urls || !msg.urls.length)) { return msg; }
 
 	msg.urls.forEach((item) => {
 		// if the URL is not internal, skip
-		if (!item.url.includes(Meteor.absoluteUrl())) { return }
+		if (!item.url.includes(Meteor.absoluteUrl())) { return; }
 		const urlObj = URL.parse(item.url);
-		
+
 		// if the URL doesn't have query params (doesn't reference message) skip
-		if (!urlObj.query) { return }
+		if (!urlObj.query) { return; }
 		const { msg: msgId } = QueryString.parse(urlObj.query);
 
-		if (!_.isString(msgId)) { return }
+		if (!_.isString(msgId)) { return; }
 		const jumpToMessage = recursiveRemove(Messages.findOneById(msgId));
 
 		// validates if user can see the message
 		// user has to belong to the room the message was first wrote in
-		const canAccessRoom = Meteor.call('canAccessRoom', jumpToMessage.rid, Meteor.userId())
+		const canAccessRoom = Meteor.call('canAccessRoom', jumpToMessage.rid, Meteor.userId());
 		if (jumpToMessage && canAccessRoom) {
 			msg.attachments = msg.attachments || [];
 
@@ -59,6 +59,6 @@ callbacks.add('beforeSaveMessage', (msg) => {
 			item.ignoreParse = true;
 		}
 	});
-	
+
 	return msg;
 }, callbacks.priority.LOW, 'jumpToMessage');
