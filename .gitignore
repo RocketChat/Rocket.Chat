@@ -80,3 +80,4 @@ tests/end-to-end/temporary_staged_test
 /private/livechat
 /storybook-static
 /tests/cypress/screenshots
+data/
