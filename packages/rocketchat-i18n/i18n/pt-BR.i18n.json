@@ -1584,6 +1584,7 @@
   "FileUpload_Webdav_Upload_Folder_Path_Description": "Caminho da pasta WebDAV para o qual os arquivos devem ser enviados",
   "FileUpload_Webdav_Username": "Nome de usuário do WebDAV",
   "Filter": "Filtrar",
+  "Filters": "Filtros",
   "Financial_Services": "Serviços financeiros",
   "First_Channel_After_Login": "Primeiro canal após o login",
   "First_response_time": "Primeiro tempo de resposta",
