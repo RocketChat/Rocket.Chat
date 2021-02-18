@@ -44,3 +44,41 @@ export function getInclusiveFields(query) {
 
 	return newQuery;
 }
+
+/**
+ * get the default fields if **fields** are empty (`{}`) or `undefined`/`null`
+ * @param {Object|null|undefined} fields the fields from parsed jsonQuery
+ */
+export function getNonEmptyFields(fields) {
+	if (!fields || Object.keys(fields).length === 0) {
+		return {
+			name: 1,
+			username: 1,
+			emails: 1,
+			roles: 1,
+			status: 1,
+			active: 1,
+			avatarETag: 1,
+		};
+	}
+
+	return fields;
+}
+
+/**
+ * get the default query if **query** is empty (`{}`) or `undefined`/`null`
+ * @param {Object|null|undefined} query the query from parsed jsonQuery
+ */
+export function getNonEmptyQuery(query) {
+	if (!query || Object.keys(query).length === 0) {
+		return {
+			$or: [
+				{ 'emails.address': { $regex: '', $options: 'i' } },
+				{ username: { $regex: '', $options: 'i' } },
+				{ name: { $regex: '', $options: 'i' } },
+			],
+		};
+	}
+
+	return query;
+}

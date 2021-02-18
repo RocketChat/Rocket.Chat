@@ -20,7 +20,7 @@ import {
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
-import { findUsersToAutocomplete, getInclusiveFields } from '../lib/users';
+import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
@@ -228,9 +228,12 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		}
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields = {}, query = {} } = this.parseJsonQuery();
+		const { sort, fields, query } = this.parseJsonQuery();
 
-		const inclusiveFields = getInclusiveFields(fields);
+		const nonEmptyQuery = getNonEmptyQuery(query);
+		const nonEmptyFields = getNonEmptyFields(fields);
+
+		const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
 		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
 
@@ -238,7 +241,7 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 			UsersRaw.col
 				.aggregate([
 					{
-						$match: query,
+						$match: nonEmptyQuery,
 					},
 					{
 						$project: inclusiveFields,
