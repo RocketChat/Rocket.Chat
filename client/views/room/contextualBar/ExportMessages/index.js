@@ -129,7 +129,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	const reset = useMutableCallback(() => {
 		setSelected([]);
-		$(`#chat-window-${ rid }.messages-box .message.selected`)
+		$('.messages-box .message', $(`#chat-window-${ rid }`))
 			.removeClass('selected');
 	});
 
