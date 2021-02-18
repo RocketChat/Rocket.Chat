@@ -61,10 +61,10 @@
 	--rc-color-primary-lightest: var(--color-gray-lightest);
 	--rc-color-content: var(--color-white);
 	--rc-color-link-active: var(--rc-color-button-primary);
-	--rc-color-announcement-primary: #095ad2;
-	--rc-color-announcement-primary-background: #d1ebfe;
-	--rc-color-announcement-secondary: #01336b;
-	--rc-color-announcement-secondary-background: #76b7fc;
+	--rc-color-announcement-text: #095ad2;
+	--rc-color-announcement-background: #d1ebfe;
+	--rc-color-announcement-text-hover: #01336b;
+	--rc-color-announcement-background-hover: #76b7fc;
 
 	/* #endregion */
 
