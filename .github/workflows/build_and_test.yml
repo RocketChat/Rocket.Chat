@@ -122,6 +122,12 @@ jobs:
 
     - run: meteor npm run typecheck
 
+    - name: Build Storybook to sanity check components
+      run: npm run build-storybook ; rm -rf ./storybook-static
+      env:
+        NODE_OPTIONS: --max_old_space_size=8192
+
+
     # To reduce memory need during actual build, build the packages solely first
     # - name: Build a Meteor cache
     #   run: |
@@ -567,4 +573,4 @@ jobs:
 
         docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} .
 
-        docker push rocketchat/${{ matrix.service }}-service
+        docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
