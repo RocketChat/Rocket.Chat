@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import _marked from 'marked';
-import dompurify from 'dompurify';
+import createDOMPurify from 'dompurify';
 
 import hljs from '../../hljs';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { unescapeHTML } from '../../../../../lib/unescapeHTML';
+import { getGlobalWindow } from '../../getGlobalWindow';
 
 const renderer = new _marked.Renderer();
 
@@ -107,15 +107,9 @@ export const marked = (message, {
 		highlight,
 	});
 
-	if (Meteor.isServer) {
-		const { JSDOM } = require('jsdom');
-		const createDOMPurify = require('dompurify');
-		const { window } = new JSDOM('');
-		const serverDomPurify = createDOMPurify(window);
-		message.html = serverDomPurify.sanitize(message.html, { ADD_ATTR: ['target'] });
-	} else {
-		message.html = dompurify.sanitize(message.html, { ADD_ATTR: ['target'] });
-	}
+	const window = getGlobalWindow();
+	const DomPurify = createDOMPurify(window);
+	message.html = DomPurify.sanitize(message.html, { ADD_ATTR: ['target'] });
 
 	return message;
 };
