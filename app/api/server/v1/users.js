@@ -241,8 +241,10 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 						$match: query,
 					},
 					{
-						$project: {
-							...inclusiveFields,
+						$project: inclusiveFields,
+					},
+					{
+						$addFields: {
 							nameInsensitive: {
 								$toLower: '$name',
 							},
