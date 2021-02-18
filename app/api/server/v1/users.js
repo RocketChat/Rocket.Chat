@@ -507,7 +507,15 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 			typedPassword: this.bodyParams.data.currentPassword,
 		};
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('saveUserProfile', userData, this.bodyParams.customFields));
+		// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that
+		const twoFactorOptions = !userData.typedPassword
+			? null
+			: {
+				twoFactorCode: userData.typedPassword,
+				twoFactorMethod: 'password',
+			};
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions));
 
 		return API.v1.success({ user: Users.findOneById(this.userId, { fields: API.v1.defaultFieldsToExclude }) });
 	},
