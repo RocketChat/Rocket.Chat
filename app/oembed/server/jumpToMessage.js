@@ -35,6 +35,9 @@ callbacks.add('beforeSaveMessage', (msg) => {
 
 		if (!_.isString(msgId)) { return; }
 		const jumpToMessage = recursiveRemove(Messages.findOneById(msgId));
+		if (!jumpToMessage) {
+			return;
+		}
 
 		// validates if user can see the message
 		// user has to belong to the room the message was first wrote in
