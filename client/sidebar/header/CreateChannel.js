@@ -65,7 +65,7 @@ export const CreateChannel = ({
 			<Field mbe='x24'>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput error={hasUnsavedChanges && nameError} addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />} placeholder={t('Channel_name')} onChange={handlers.handleName}/>
+					<TextInput error={hasUnsavedChanges ? nameError : undefined} addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />} placeholder={t('Channel_name')} onChange={handlers.handleName}/>
 				</Field.Row>
 				{hasUnsavedChanges && nameError && <Field.Error>
 					{nameError}
@@ -110,7 +110,7 @@ export const CreateChannel = ({
 						<Field.Label>{t('Broadcast')}</Field.Label>
 						<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
 					</Box>
-					<ToggleSwitch onChange={onChangeBroadcast} />
+					<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} />
 				</Box>
 			</Field>
 			<Field mbe='x24'>
@@ -154,7 +154,7 @@ export default memo(({
 		description: '',
 		type: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 		readOnly: false,
-		encrypted: e2eEnabledForPrivateByDefault,
+		encrypted: e2eEnabledForPrivateByDefault ?? false,
 		broadcast: false,
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
@@ -187,17 +187,12 @@ export default memo(({
 	});
 
 	const onChangeType = useMutableCallback((value) => {
-		if (value) {
-			handleEncrypted(false);
-		}
+		handleEncrypted(!value);
 		return handleType(value);
 	});
 
 	const onChangeBroadcast = useMutableCallback((value) => {
-		if (value) {
-			handleEncrypted(false);
-			handleReadOnly(true);
-		}
+		handleEncrypted(!value);
 		handleReadOnly(value);
 		return handleBroadcast(value);
 	});
