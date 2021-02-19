@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'eventemitter3';
 
 class StreamerCentralClass extends EventEmitter {
 	public instances: Record<string, Streamer> = {};
@@ -359,8 +359,8 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		});
 	}
 
-	emit(eventName: string, ...args: any[]): boolean {
-		return this._emit(eventName, args, undefined, true);
+	emit(eventName: string | symbol, ...args: any[]): boolean {
+		return this._emit(eventName as string, args, undefined, true);
 	}
 
 	__emit(eventName: string, ...args: any[]): boolean {
