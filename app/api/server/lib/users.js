@@ -50,35 +50,39 @@ export function getInclusiveFields(query) {
  * @param {Object|null|undefined} fields the fields from parsed jsonQuery
  */
 export function getNonEmptyFields(fields) {
+	const defaultFields = {
+		name: 1,
+		username: 1,
+		emails: 1,
+		roles: 1,
+		status: 1,
+		active: 1,
+		avatarETag: 1,
+	};
 	if (!fields || Object.keys(fields).length === 0) {
-		return {
-			name: 1,
-			username: 1,
-			emails: 1,
-			roles: 1,
-			status: 1,
-			active: 1,
-			avatarETag: 1,
-		};
+		return defaultFields;
 	}
 
-	return fields;
+	return { ...defaultFields, ...fields };
 }
 
 /**
  * get the default query if **query** is empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} query the query from parsed jsonQuery
  */
+
 export function getNonEmptyQuery(query) {
+	const defaultQuery = {
+		$or: [
+			{ 'emails.address': { $regex: '', $options: 'i' } },
+			{ username: { $regex: '', $options: 'i' } },
+			{ name: { $regex: '', $options: 'i' } },
+		],
+	};
+
 	if (!query || Object.keys(query).length === 0) {
-		return {
-			$or: [
-				{ 'emails.address': { $regex: '', $options: 'i' } },
-				{ username: { $regex: '', $options: 'i' } },
-				{ name: { $regex: '', $options: 'i' } },
-			],
-		};
+		return defaultQuery;
 	}
 
-	return query;
+	return { ...defaultQuery, ...query };
 }
