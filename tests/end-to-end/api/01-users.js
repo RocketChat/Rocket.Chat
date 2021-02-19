@@ -2407,6 +2407,133 @@ describe('[Users]', function() {
 		});
 	});
 
+	describe('[/users.deactivateIdle]', () => {
+		let testUser;
+		let testUserCredentials;
+		const testRoleName = `role.test.${ Date.now() }`;
+
+		before('Create a new role with Users scope', (done) => {
+			request.post(api('roles.create'))
+				.set(credentials)
+				.send({
+					name: testRoleName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		before('Create test user', (done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password })
+				.end((err, res) => {
+					testUser = res.body.user;
+					done();
+				});
+		});
+		before('Assign a role to test user', (done) => {
+			request.post(api('roles.addUserToRole'))
+				.set(credentials)
+				.send({
+					roleName: testRoleName,
+					username: testUser.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		before('Login as test user', (done) => {
+			request.post(api('login'))
+				.send({
+					user: testUser.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testUserCredentials = {};
+					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
+					testUserCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+
+		it('should fail to deactivate if user doesnt have edit-other-user-active-status permission', (done) => {
+			updatePermission('edit-other-user-active-status', []).then(() => {
+				request.post(api('users.deactivateIdle'))
+					.set(credentials)
+					.send({
+						daysIdle: 0,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should deactivate no users when no users in time range', (done) => {
+			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
+				request.post(api('users.deactivateIdle'))
+					.set(credentials)
+					.send({
+						daysIdle: 999999,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('count', 0);
+					})
+					.end(done);
+			});
+		});
+		it('should deactivate the test user when given its role and daysIdle = 0', (done) => {
+			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
+				request.post(api('users.deactivateIdle'))
+					.set(credentials)
+					.send({
+						daysIdle: 0,
+						role: testRoleName,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('count', 1);
+					})
+					.end(done);
+			});
+		});
+		it('should not deactivate the test user again when given its role and daysIdle = 0', (done) => {
+			updatePermission('edit-other-user-active-status', ['admin']).then(() => {
+				request.post(api('users.deactivateIdle'))
+					.set(credentials)
+					.send({
+						daysIdle: 0,
+						role: testRoleName,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('count', 0);
+					})
+					.end(done);
+			});
+		});
+	});
+
 	describe('[/users.requestDataDownload]', () => {
 		it('should return the request data with fullExport false when no query parameter was send', (done) => {
 			request.get(api('users.requestDataDownload'))
