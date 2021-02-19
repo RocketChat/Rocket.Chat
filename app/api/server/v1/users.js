@@ -230,20 +230,27 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		const nonEmptyQuery = getNonEmptyQuery(query);
-		const nonEmptyFields = getNonEmptyFields(fields);
-
 		console.log(`
 ============================PASSED VALUES=====================
-		fields - ${ fields }
-		query - ${ query }
+		fields - ${ require('util').inspect(fields, false, null, true) }
+		query - ${ require('util').inspect(query, false, null, true) }
 		sort - ${ sort }
 		offset - ${ offset }
 		count - ${ count }
 ===========================PASSED VALUES=======================
 		`);
 
+		const nonEmptyQuery = getNonEmptyQuery(query);
+		const nonEmptyFields = getNonEmptyFields(fields);
+
 		const inclusiveFields = getInclusiveFields(nonEmptyFields);
+
+		console.log(`
+===============================CHANGED ONES===============================
+		nonempty - ${ require('util').inspect(nonEmptyFields, false, null, true) }
+		inclusive - ${ require('util').inspect(inclusiveFields, false, null, true) }
+============================CHANGED ONES==================================
+		`);
 
 		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
 
