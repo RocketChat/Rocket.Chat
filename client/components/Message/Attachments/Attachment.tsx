@@ -20,7 +20,7 @@ export type AttachmentPropsBase = {
 
 const Row: FC<BoxProps> = (props) => <Box mi='neg-x2' mbe='x2' rcx-message-attachment display='flex' alignItems='center' {...props}/>;
 const Title: FC<BoxProps> = (props) => <Box withTruncatedText mi='x2' fontScale='c1' color='hint' {...props}></Box>;
-const Text: FC<BoxProps> = (props) => <Box withTruncatedText mbe='x4' mi='x2' fontScale='p1' color='default' {...props}></Box>;
+const Text: FC<BoxProps> = (props) => <Box mbe='x4' mi='x2' fontScale='p1' color='default' {...props}></Box>;
 
 const Size: FC<BoxProps & { size: number }> = ({ size, ...props }) => {
 	const format = useFormatMemorySize();
@@ -33,9 +33,9 @@ const Collapse: FC<ButtonProps & { collapsed?: boolean }> = ({ collapsed = false
 	return <Action title={collapsed ? t('Uncollapse') : t('Collapse')}icon={ !collapsed ? 'chevron-down' : 'chevron-left' }{...props} />;
 };
 
-const Download: FC<ButtonProps & { href: string }> = (props) => {
+const Download: FC<ButtonProps & { href: string }> = ({ title, ...props }) => {
 	const t = useTranslation();
-	return <Action icon='download' title={t('Download')} is='a' target='_blank' {...props} />;
+	return <Action icon='download' title={t('Download')} is='a' target='_blank' download={title} {...props} />;
 };
 
 const Content: FC<BoxProps> = ({ ...props }) => <Box rcx-attachment__content width='full' mb='x4' {...props} />;

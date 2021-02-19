@@ -1,5 +1,7 @@
 /* eslint-disable */
 
+// before using this script make sure to run: npm i --no-save node-sprite-generator
+
 // node --experimental-modules generateEmojiIndex.mjs
 import fs from 'fs';
 import nsg from 'node-sprite-generator';

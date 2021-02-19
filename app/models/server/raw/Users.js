@@ -68,7 +68,7 @@ export class UsersRaw extends BaseRaw {
 	findByActiveUsersExcept(searchTerm, exceptions, options, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
-		if (Array.isArray(exceptions)) {
+		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
 

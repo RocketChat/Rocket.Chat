@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Message } from '../sdk';
+import { Messages } from '../../app/models';
 import { settings } from '../../app/settings';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
@@ -22,8 +22,7 @@ Meteor.methods({
 			return false;
 		}
 
-		const queryOptions = {
-			returnTotal: false,
+		const options = {
 			sort: {
 				ts: 1,
 			},
@@ -31,12 +30,17 @@ Meteor.methods({
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			queryOptions.fields = {
+			options.fields = {
 				editedAt: 0,
 			};
 		}
 
-		const { records } = Promise.await(Message.get(fromId, { rid, oldest: end, queryOptions }));
+		let records;
+		if (end) {
+			records = Messages.findVisibleByRoomIdAfterTimestamp(rid, end, options).fetch();
+		} else {
+			records = Messages.findVisibleByRoomId(rid, options).fetch();
+		}
 
 		return {
 			messages: normalizeMessagesForUser(records, fromId),
