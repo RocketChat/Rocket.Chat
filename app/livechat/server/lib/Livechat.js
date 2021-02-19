@@ -143,12 +143,6 @@ export const Livechat = {
 
 		if (newRoom) {
 			Messages.setRoomIdByToken(guest.token, room._id);
-			const message = {
-				t: 'livechat-started',
-				msg: '',
-				groupable: false,
-			};
-			sendMessage(guest, message, room);
 		}
 
 		return { room, newRoom };
