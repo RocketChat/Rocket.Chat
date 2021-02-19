@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Button, FieldGroup, Box, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -61,7 +61,7 @@ const NewTriggerPage = ({ onSave }) => {
 
 	const { name, actions: { params: { msg } } } = values;
 
-	const canSave = name & msg;
+	const canSave = useMemo(() => name && msg, [name, msg]);
 
 	return 	<>
 		<FieldGroup>
