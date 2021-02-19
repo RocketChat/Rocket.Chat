@@ -275,7 +275,7 @@ export function ThreadList({
 				{!error && total > 0 && threads.length > 0 && <Virtuoso
 					style={{ height: blockSize, width: inlineSize }}
 					totalCount={total}
-					endReached={ loading ? () => {} : loadMoreItems}
+					endReached={ loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 					overscan={25}
 					data={threads}
 					components={{ Scroller: ScrollableContentWrapper }}
