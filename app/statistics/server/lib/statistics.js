@@ -74,6 +74,14 @@ export const statistics = {
 		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
+		statistics.languages = { en: 0 };
+
+		const languages = Users.getLanguages();
+		languages.forEach((i) => {
+			const l = i.language;
+			statistics.languages[l] ? statistics.languages[l]++ : statistics.languages[l] = 1;
+		});
+		statistics.languages.en += statistics.totalUsers - languages.count();
 
 		// Room statistics
 		statistics.totalRooms = Rooms.find().count();
