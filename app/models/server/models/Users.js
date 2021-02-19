@@ -586,6 +586,15 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByEmailAddressAndServiceNameIgnoringCase(emailAddress, userId, serviceName, options) {
+		const query = {
+			'emails.address': String(emailAddress).trim().toLowerCase(),
+			[`services.${ serviceName }.id`]: userId,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneByUsername(username, options) {
 		const query = { username };
 
@@ -1523,6 +1532,24 @@ Find users to send a message by email if:
 				},
 			},
 		});
+	}
+
+	findAllUsersWithPendingAvatar() {
+		const query = {
+			_pendingAvatarUrl: {
+				$exists: true,
+			},
+		};
+
+		const options = {
+			fields: {
+				_id: 1,
+				name: 1,
+				_pendingAvatarUrl: 1,
+			},
+		};
+
+		return this.find(query, options);
 	}
 }
 

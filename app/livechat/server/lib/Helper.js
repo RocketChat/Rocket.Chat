@@ -12,6 +12,7 @@ import { settings } from '../../../settings';
 import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
 
 export const allowAgentSkipQueue = (agent) => {
 	check(agent, Match.ObjectIncluding({
@@ -60,6 +61,8 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 		Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 		callbacks.run('livechat.newRoom', room);
 	});
+
+	sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
 
 	return roomId;
 };
