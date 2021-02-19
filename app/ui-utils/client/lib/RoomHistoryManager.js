@@ -159,6 +159,8 @@ export const RoomHistoryManager = new class {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
+		await waitUntilWrapperExists();
+
 		const wrapper = $('.messages-box .wrapper').get(0);
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;
