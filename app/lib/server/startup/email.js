@@ -478,7 +478,6 @@ settings.addGroup('Email', function() {
 		});
 		this.add('Add_Sender_To_ReplyTo', false, {
 			type: 'boolean',
-			env: true,
 		});
 	});
 });
