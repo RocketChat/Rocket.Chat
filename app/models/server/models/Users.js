@@ -1562,6 +1562,24 @@ Find users to send a message by email if:
 
 		return this.find(query);
 	}
+
+	findAllUsersWithPendingAvatar() {
+		const query = {
+			_pendingAvatarUrl: {
+				$exists: true,
+			},
+		};
+
+		const options = {
+			fields: {
+				_id: 1,
+				name: 1,
+				_pendingAvatarUrl: 1,
+			},
+		};
+
+		return this.find(query, options);
+	}
 }
 
 export default new Users(Meteor.users, true);
