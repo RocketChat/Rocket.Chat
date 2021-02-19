@@ -4,7 +4,7 @@ import QueryString from 'querystring';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Messages } from '../../models';
+import { Messages, Rooms } from '../../models';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
@@ -27,6 +27,7 @@ callbacks.add('beforeSaveMessage', (msg) => {
 		return msg;
 	}
 
+	const currentUser = Meteor.user();
 	msg.urls.forEach((item) => {
 		// if the URL is not internal, skip
 		if (!item.url.includes(Meteor.absoluteUrl())) {
@@ -53,26 +54,28 @@ callbacks.add('beforeSaveMessage', (msg) => {
 
 		// validates if user can see the message
 		// user has to belong to the room the message was first wrote in
-		const canAccessRoomForUser = canAccessRoom({ _id: jumpToMessage.rid }, Meteor.user());
-		if (jumpToMessage && canAccessRoomForUser) {
-			msg.attachments = msg.attachments || [];
-
-			const index = msg.attachments.findIndex((a) => a.message_link === item.url);
-			if (index > -1) {
-				msg.attachments.splice(index, 1);
-			}
-
-			msg.attachments.push({
-				text: jumpToMessage.msg,
-				translations: jumpToMessage.translations,
-				author_name: jumpToMessage.alias || jumpToMessage.u.username,
-				author_icon: getUserAvatarURL(jumpToMessage.u.username),
-				message_link: item.url,
-				attachments: jumpToMessage.attachments || [],
-				ts: jumpToMessage.ts,
-			});
-			item.ignoreParse = true;
+		const room = Rooms.findOneById(jumpToMessage.rid);
+		const canAccessRoomForUser = canAccessRoom(room, currentUser);
+		if (!canAccessRoomForUser) {
+			return;
 		}
+
+		msg.attachments = msg.attachments || [];
+		const index = msg.attachments.findIndex((a) => a.message_link === item.url);
+		if (index > -1) {
+			msg.attachments.splice(index, 1);
+		}
+
+		msg.attachments.push({
+			text: jumpToMessage.msg,
+			translations: jumpToMessage.translations,
+			author_name: jumpToMessage.alias || jumpToMessage.u.username,
+			author_icon: getUserAvatarURL(jumpToMessage.u.username),
+			message_link: item.url,
+			attachments: jumpToMessage.attachments || [],
+			ts: jumpToMessage.ts,
+		});
+		item.ignoreParse = true;
 	});
 
 	return msg;
