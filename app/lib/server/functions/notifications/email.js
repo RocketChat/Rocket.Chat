@@ -160,16 +160,13 @@ export function getEmailData({
 		headers: {},
 	};
 
-	if (sender.emails?.length > 0) {
+	if (sender.emails?.length > 0 && settings.get('Add_Sender_To_ReplyTo')) {
 		const [senderEmail] = sender.emails;
-
-		if (settings.get('Direct_Reply_ReplyTo_Enable')) {
-			email.headers['Reply-To'] = generateNameEmail(username, senderEmail.address);
-		}
+		email.headers['Reply-To'] = generateNameEmail(username, senderEmail.address);
 	}
 
 	// If direct reply enabled, email content with headers
-	if (settings.get('Direct_Reply_Enable') && settings.get('Direct_Reply_ReplyTo_Enable')) {
+	if (settings.get('Direct_Reply_Enable')) {
 		const replyto = settings.get('Direct_Reply_ReplyTo') || settings.get('Direct_Reply_Username');
 
 		// Reply-To header with format "username+messageId@domain"
