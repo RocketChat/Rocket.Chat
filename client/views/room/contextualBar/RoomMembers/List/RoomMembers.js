@@ -15,6 +15,7 @@ import {
 	useMutableCallback,
 	useDebouncedValue,
 	useLocalStorage,
+	useAutoFocus,
 } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
 
@@ -72,6 +73,7 @@ export const RoomMembers = ({
 	rid,
 }) => {
 	const t = useTranslation();
+	const inputRef = useAutoFocus(true);
 
 	const options = useMemo(() => [
 		['online', t('Online')],
@@ -93,7 +95,7 @@ export const RoomMembers = ({
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
-							<TextInput placeholder={t('Search_by_username')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+							<TextInput placeholder={t('Search_by_username')} value={text} ref={inputRef} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 							<Select
 								flexGrow={0}
 								width='110px'
