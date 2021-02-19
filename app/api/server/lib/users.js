@@ -59,6 +59,7 @@ export function getNonEmptyFields(fields) {
 		active: 1,
 		avatarETag: 1,
 	};
+
 	if (!fields || Object.keys(fields).length === 0) {
 		return defaultFields;
 	}
