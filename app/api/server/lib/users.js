@@ -71,7 +71,6 @@ export function getNonEmptyFields(fields) {
  * get the default query if **query** is empty (`{}`) or `undefined`/`null`
  * @param {Object|null|undefined} query the query from parsed jsonQuery
  */
-
 export function getNonEmptyQuery(query) {
 	const defaultQuery = {
 		$or: [
