@@ -1580,6 +1580,17 @@ Find users to send a message by email if:
 
 		return this.find(query, options);
 	}
+
+	getLanguages() {
+		const query = {
+			language: {
+				$exists: true,
+				$ne: '',
+			},
+		};
+
+		return this.find(query);
+	}
 }
 
 export default new Users(Meteor.users, true);
