@@ -12,6 +12,7 @@ import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { call } from './callMethod';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { escapeHTML } from '../../../../lib/escapeHTML';
+import { getUserPreference } from '../../../utils/client';
 
 export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {
@@ -175,13 +176,17 @@ export const RoomHistoryManager = new class {
 			room.loaded = 0;
 		}
 
-		room.loaded += messages.length;
+		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
+
+		const visibleMessages = messages.filter((msg) => !msg.tmid || showMessageInMainThread || msg.tshow);
+
+		room.loaded += visibleMessages.length;
 
 		if (messages.length < limit) {
 			room.hasMore.set(false);
 		}
 
-		if (room.hasMore.get() && messages.filter((msg) => !msg.tmid || msg.tshow).length < limit) {
+		if (room.hasMore.get() && (visibleMessages.length === 0 || room.loaded < limit)) {
 			return this.getMore(rid);
 		}
 
