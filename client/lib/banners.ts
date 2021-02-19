@@ -21,7 +21,10 @@ type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;
 export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload => !('blocks' in payload);
 
 const queue: BannerPayload[] = [];
-const emitter = new Emitter();
+const emitter = new Emitter<{
+	update: undefined;
+	'update-first': undefined;
+}>();
 
 export const firstSubscription: Subscription<BannerPayload | null> = {
 	getCurrentValue: () => queue[0] ?? null,
