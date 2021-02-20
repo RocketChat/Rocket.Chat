@@ -34,6 +34,7 @@ import '../app/importer-csv/server';
 import '../app/importer-hipchat/server';
 import '../app/importer-hipchat-enterprise/server';
 import '../app/importer-pending-files/server';
+import '../app/importer-pending-avatars/server';
 import '../app/importer-slack/server';
 import '../app/importer-slack-users/server';
 import '../app/integrations/server';
