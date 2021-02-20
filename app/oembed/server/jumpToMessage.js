@@ -4,9 +4,9 @@ import QueryString from 'querystring';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Messages, Rooms } from '../../models';
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
+import { Messages, Rooms, Users } from '../../models/server';
+import { settings } from '../../settings/server';
+import { callbacks } from '../../callbacks/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
 
@@ -27,7 +27,8 @@ callbacks.add('beforeSaveMessage', (msg) => {
 		return msg;
 	}
 
-	const currentUser = Meteor.user();
+	const currentUser = Users.findOneById(msg.u._id);
+
 	msg.urls.forEach((item) => {
 		// if the URL is not internal, skip
 		if (!item.url.includes(Meteor.absoluteUrl())) {
