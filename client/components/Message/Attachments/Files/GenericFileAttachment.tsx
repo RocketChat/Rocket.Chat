@@ -22,7 +22,7 @@ export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 }) =>
 	// const [collapsed, collapse] = useCollapse(collapsedDefault);
 	<Attachment>
-		{ description && <MarkdownText withRichContent={undefined} content={description} /> }
+		{ description && <MarkdownText content={description} /> }
 		<Attachment.Row>
 			<Attachment.Title { ...hasDownload && link && { is: 'a', href: link, color: undefined, target: '_blank', download: title } } >{title}</Attachment.Title>
 			{size && <Attachment.Size size={size}/>}

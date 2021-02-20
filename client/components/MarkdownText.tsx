@@ -5,9 +5,8 @@ import dompurify from 'dompurify';
 
 type MarkdownTextParams = {
 	content: string;
-	variant: string;
+	variant: 'inline' | 'inlineWithoutBreaks' | 'document';
 	preserveHtml: boolean;
-	withRichContent: boolean;
 };
 
 const documentRenderer = new marked.Renderer();
@@ -21,24 +20,24 @@ marked.InlineLexer.rules.gfm = {
 };
 
 const linkDocumentRenderer = documentRenderer.link;
-documentRenderer.link = (href, title, text): string => {
+documentRenderer.link = (href: string, title: string, text: string): string => {
 	const html = linkDocumentRenderer.call(documentRenderer, href, title, text);
 	return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
 };
 
 const linkInlineRenderer = inlineRenderer.link;
-inlineRenderer.link = (href, title, text): string => {
+inlineRenderer.link = (href: string, title: string, text: string): string => {
 	const html = linkInlineRenderer.call(inlineRenderer, href, title, text);
 	return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
 };
-inlineRenderer.paragraph = (text): string => text;
+inlineRenderer.paragraph = (text: string): string => text;
 
 const linkInlineWithoutBreaksRenderer = inlineWithoutBreaks.link;
-inlineWithoutBreaks.link = (href, title, text): string => {
+inlineWithoutBreaks.link = (href: string, title: string, text: string): string => {
 	const html = linkInlineWithoutBreaksRenderer.call(inlineRenderer, href, title, text);
 	return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
 };
-inlineWithoutBreaks.paragraph = (text): string => text;
+inlineWithoutBreaks.paragraph = (text: string): string => text;
 inlineWithoutBreaks.br = (): string => '';
 
 const defaultOptions = {
@@ -61,16 +60,17 @@ const inlineWithoutBreaksOptions = {
 	renderer: inlineWithoutBreaks,
 };
 
-const MarkdownText: FC<MarkdownTextParams> = ({
+const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	content,
 	variant = 'document',
 	preserveHtml = false,
-	withRichContent = true,
 	...props
 }) => {
 	const sanitizer = dompurify.sanitize;
 
 	let markedOptions: {};
+
+	const withRichContent = variant === 'document';
 	switch (variant) {
 		case 'inline':
 			markedOptions = inlineOptions;
@@ -78,6 +78,7 @@ const MarkdownText: FC<MarkdownTextParams> = ({
 		case 'inlineWithoutBreaks':
 			markedOptions = inlineWithoutBreaksOptions;
 			break;
+		case 'document':
 		default:
 			markedOptions = options;
 	}

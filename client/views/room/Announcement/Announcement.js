@@ -51,5 +51,5 @@ export default ({ announcement, announcementDetails }) => {
 	};
 	const announcementWithoutBreaks = announcement && announcement.replace(/(\r\n|\n|\r)/gm, ' ');
 
-	return announcementWithoutBreaks ? <Announcement onClickOpen={handleClick}><MarkdownText content={announcementWithoutBreaks} /></Announcement> : false;
+	return announcementWithoutBreaks ? <Announcement onClickOpen={handleClick}><MarkdownText variant='inlineWithoutBreaks' content={announcementWithoutBreaks} /></Announcement> : false;
 };
