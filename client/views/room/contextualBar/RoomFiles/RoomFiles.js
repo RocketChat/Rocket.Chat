@@ -110,7 +110,7 @@ export const RoomFiles = function RoomFiles({
 					<Virtuoso
 						style={{ height: '100%', width: '100%' }}
 						totalCount={total}
-						endReached={loading ? () => {} : loadMoreItems}
+						endReached={ loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 						overscan={50}
 						data={filesItems}
 						components={{ Scroller: ScrollableContentWrapper }}
