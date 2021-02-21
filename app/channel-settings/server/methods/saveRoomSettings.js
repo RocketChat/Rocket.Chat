@@ -129,14 +129,12 @@ const settingSavers = {
 		saveRoomName(rid, value, user);
 	},
 	roomTopic({ value, room, rid, user }) {
-
 		// room inits with room.topic as undefined. If value is empty string while room.topic is still undefined, do not set topic.
 		if (value !== room.topic && (value || room.topic)) {
 			saveRoomTopic(rid, value, user);
 		}
 	},
 	roomAnnouncement({ value, room, rid, user }) {
-
 		// room inits with room.announcement as undefined. If value is empty string while room.announcement is still undefined, do not set announcement.
 		if (value !== room.announcement && (value || room.announcement)) {
 			saveRoomAnnouncement(rid, value, user);
@@ -148,9 +146,8 @@ const settingSavers = {
 		}
 	},
 	roomDescription({ value, room, rid, user }) {
-
 		// room inits with room.description as undefined. If value is empty string while room.description is still undefined, do not set description.
-		if (value !== room.description  & (value || room.description)) {
+		if (value !== room.description && (value || room.description)) {
 			saveRoomDescription(rid, value, user);
 		}
 	},
