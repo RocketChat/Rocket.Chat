@@ -4,9 +4,7 @@ import { HTTP } from 'meteor/http';
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
-import { Settings } from '../../../models';
 import { settings } from '../../../settings';
-import { workspaceScopes } from '../oauthScopes';
 
 export function getWorkspaceAccessTokenWithScope(scope = '') {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
