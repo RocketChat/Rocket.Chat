@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ICloudWorkspaceBridge } from '@rocket.chat/apps-engine/server/bridges';
-import { IWorkspaceToken } from '@rocket.chat/apps-engine/definition/cloud';
+import { IWorkspaceToken } from '@rocket.chat/apps-engine/definition/cloud/IWorkspaceToken';
 
 import { getWorkspaceAccessTokenWithScope } from '../../../cloud/server';
 import { AppServerOrchestrator } from '../orchestrator';
