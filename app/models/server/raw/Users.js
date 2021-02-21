@@ -388,6 +388,19 @@ export class UsersRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
+	getUserLanguages() {
+		const pipeline = [
+			{
+				$group: {
+					_id: '$language',
+					total: { $sum: 1 },
+				},
+			},
+		];
+
+		return this.col.aggregate(pipeline).toArray();
+	}
+
 	updateStatusText(_id, statusText) {
 		const update = {
 			$set: {

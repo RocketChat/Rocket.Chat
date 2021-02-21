@@ -20,7 +20,7 @@ import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { NotificationQueue } from '../../../models/server/raw';
+import { NotificationQueue, Users as UsersRaw } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
@@ -34,6 +34,48 @@ const wizardFields = [
 	'Server_Type',
 	'Register_Server',
 ];
+
+const getUserLanguages = (() => {
+	let first = true;
+	let cache;
+	let lastCache;
+	const cacheTime = 60 * 60 * 24 * 5 * 1000; // cache is valid for 5 days
+
+	const getValues = () => {
+		const result = Promise.await(UsersRaw.getUserLanguages());
+
+		const languages = {};
+
+		result.forEach(({ _id, total }) => {
+			const lng = _id || 'none';
+			languages[lng] = (languages[lng] || 0) + total;
+		});
+
+		return languages;
+	};
+
+	return () => {
+		// first run is tipically on server startup, since this can be very expensive operation, we'll return the last saved statistic (if any)
+		if (first) {
+			first = false;
+
+			const { userLanguages = {} } = Statistics.findLast() || {};
+
+			return userLanguages;
+		}
+
+		// if cache is still valid, return it
+		if (lastCache && Date.now() - lastCache < cacheTime) {
+			return cache;
+		}
+
+		// fill up cache and set lastCache to now
+		cache = getValues();
+		lastCache = Date.now();
+
+		return cache;
+	};
+})();
 
 export const statistics = {
 	get: function _getStatistics() {
@@ -74,14 +116,7 @@ export const statistics = {
 		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
-		statistics.languages = { en: 0 };
-
-		const languages = Users.getLanguages();
-		languages.forEach((i) => {
-			const l = i.language;
-			statistics.languages[l] ? statistics.languages[l]++ : statistics.languages[l] = 1;
-		});
-		statistics.languages.en += statistics.totalUsers - languages.count();
+		statistics.userLanguages = getUserLanguages();
 
 		// Room statistics
 		statistics.totalRooms = Rooms.find().count();
