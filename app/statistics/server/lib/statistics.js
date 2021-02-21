@@ -35,47 +35,23 @@ const wizardFields = [
 	'Register_Server',
 ];
 
-const getUserLanguages = (() => {
-	let first = true;
-	let cache;
-	let lastCache;
-	const cacheTime = 60 * 60 * 24 * 5 * 1000; // cache is valid for 5 days
+const getUserLanguages = (totalUsers) => {
+	const result = Promise.await(UsersRaw.getUserLanguages());
 
-	const getValues = () => {
-		const result = Promise.await(UsersRaw.getUserLanguages());
-
-		const languages = {};
-
-		result.forEach(({ _id, total }) => {
-			const lng = _id || 'none';
-			languages[lng] = (languages[lng] || 0) + total;
-		});
-
-		return languages;
+	const languages = {
+		none: totalUsers,
 	};
 
-	return () => {
-		// first run is tipically on server startup, since this can be very expensive operation, we'll return the last saved statistic (if any)
-		if (first) {
-			first = false;
-
-			const { userLanguages = {} } = Statistics.findLast() || {};
-
-			return userLanguages;
+	result.forEach(({ _id, total }) => {
+		if (!_id) {
+			return;
 		}
+		languages[_id] = total;
+		languages.none -= total;
+	});
 
-		// if cache is still valid, return it
-		if (lastCache && Date.now() - lastCache < cacheTime) {
-			return cache;
-		}
-
-		// fill up cache and set lastCache to now
-		cache = getValues();
-		lastCache = Date.now();
-
-		return cache;
-	};
-})();
+	return languages;
+};
 
 export const statistics = {
 	get: function _getStatistics() {
@@ -116,7 +92,7 @@ export const statistics = {
 		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
-		statistics.userLanguages = getUserLanguages();
+		statistics.userLanguages = getUserLanguages(statistics.totalUsers);
 
 		// Room statistics
 		statistics.totalRooms = Rooms.find().count();

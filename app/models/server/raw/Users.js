@@ -391,6 +391,14 @@ export class UsersRaw extends BaseRaw {
 	getUserLanguages() {
 		const pipeline = [
 			{
+				$match: {
+					language: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+			},
+			{
 				$group: {
 					_id: '$language',
 					total: { $sum: 1 },
