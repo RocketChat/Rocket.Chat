@@ -7,6 +7,7 @@ type MarkdownTextParams = {
 	content: string;
 	variant: 'inline' | 'inlineWithoutBreaks' | 'document';
 	preserveHtml: boolean;
+	withTruncatedText: boolean;
 };
 
 const documentRenderer = new marked.Renderer();
@@ -19,26 +20,27 @@ marked.InlineLexer.rules.gfm = {
 	em: /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/,
 };
 
-const linkDocumentRenderer = documentRenderer.link;
-documentRenderer.link = (href: string, title: string, text: string): string => {
-	const html = linkDocumentRenderer.call(documentRenderer, href, title, text);
-	return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
+const linkMarked = (href: string | null, _title: string | null, text: string): string =>
+	`<a href="${ href }" target="_blank" rel="nofollow">${ text }</a> `;
+const paragraphMarked = (text: string): string => text;
+const brMarked = (): string => ' ';
+const listItemMarked = (text: string): string => {
+	if (/<(input.*?)>/g.test(text)) {
+		return `<span>${ text }</span> `;
+	}
+
+	return `<li>${ text }</li>`;
 };
 
-const linkInlineRenderer = inlineRenderer.link;
-inlineRenderer.link = (href: string, title: string, text: string): string => {
-	const html = linkInlineRenderer.call(inlineRenderer, href, title, text);
-	return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
-};
-inlineRenderer.paragraph = (text: string): string => text;
+documentRenderer.link = linkMarked;
 
-const linkInlineWithoutBreaksRenderer = inlineWithoutBreaks.link;
-inlineWithoutBreaks.link = (href: string, title: string, text: string): string => {
-	const html = linkInlineWithoutBreaksRenderer.call(inlineRenderer, href, title, text);
-	return html.replace(/^<a /, '<a target="_blank" rel="nofollow" ');
-};
-inlineWithoutBreaks.paragraph = (text: string): string => text;
-inlineWithoutBreaks.br = (): string => '';
+inlineRenderer.link = linkMarked;
+inlineRenderer.paragraph = paragraphMarked;
+
+inlineWithoutBreaks.link = linkMarked;
+inlineWithoutBreaks.paragraph = paragraphMarked;
+inlineWithoutBreaks.br = brMarked;
+inlineWithoutBreaks.listitem = listItemMarked;
 
 const defaultOptions = {
 	gfm: true,
@@ -63,6 +65,7 @@ const inlineWithoutBreaksOptions = {
 const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	content,
 	variant = 'document',
+	withTruncatedText = false,
 	preserveHtml = false,
 	...props
 }) => {
@@ -70,7 +73,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 
 	let markedOptions: {};
 
-	const withRichContent = variant === 'document';
+	const withRichContent = variant;
 	switch (variant) {
 		case 'inline':
 			markedOptions = inlineOptions;
@@ -88,7 +91,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
 	}, [content, preserveHtml, sanitizer, markedOptions]);
 
-	return __html ? <Box dangerouslySetInnerHTML={{ __html }} withRichContent={withRichContent} {...props} /> : null;
+	return __html ? <Box dangerouslySetInnerHTML={{ __html }} withTruncatedText={withTruncatedText} withRichContent={withRichContent} {...props} /> : null;
 };
 
 export default MarkdownText;
