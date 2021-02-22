@@ -25,17 +25,16 @@ const linkMarked = (href: string | null, _title: string | null, text: string): s
 const paragraphMarked = (text: string): string => text;
 const brMarked = (): string => ' ';
 const listItemMarked = (text: string): string => {
-	if (/<(input.*?)>/g.test(text)) {
-		return `<span>${ text }</span> `;
-	}
-
-	return `<li>${ text }</li>`;
+	const cleanText = text.replace(/<p.*?>|<\/p>/ig, '');
+	return `<li>${ cleanText }</li>`;
 };
 
 documentRenderer.link = linkMarked;
+documentRenderer.listitem = listItemMarked;
 
 inlineRenderer.link = linkMarked;
 inlineRenderer.paragraph = paragraphMarked;
+inlineRenderer.listitem = listItemMarked;
 
 inlineWithoutBreaks.link = linkMarked;
 inlineWithoutBreaks.paragraph = paragraphMarked;

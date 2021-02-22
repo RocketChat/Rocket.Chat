@@ -25,7 +25,7 @@ const AnnouncementModal: FC<AnnouncementModalParams> = ({
 				<Modal.Close onClick={onClose}/>
 			</Modal.Header>
 			<Modal.Content>
-				<Box textAlign='center'><MarkdownText content={children} /></Box>
+				<Box><MarkdownText content={children} /></Box>
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
