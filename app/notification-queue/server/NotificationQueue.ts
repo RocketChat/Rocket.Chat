@@ -41,7 +41,14 @@ class NotificationClass {
 			return;
 		}
 
-		setTimeout(this.worker.bind(this), this.cyclePause);
+		setTimeout(() => {
+			try {
+				this.worker();
+			} catch (e) {
+				console.error('Error sending notification', e);
+				this.executeWorkerLater();
+			}
+		}, this.cyclePause);
 	}
 
 	async worker(counter = 0): Promise<void> {

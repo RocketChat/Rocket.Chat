@@ -2,6 +2,7 @@ import { AppBridges } from '@rocket.chat/apps-engine/server/bridges';
 
 import { AppActivationBridge } from './activation';
 import { AppDetailChangesBridge } from './details';
+import { AppCloudBridge } from './cloud';
 import { AppCommandsBridge } from './commands';
 import { AppApisBridge } from './api';
 import { AppEnvironmentalVariableBridge } from './environmental';
@@ -39,6 +40,7 @@ export class RealAppBridges extends AppBridges {
 		this._uploadBridge = new AppUploadBridge(orch);
 		this._uiInteractionBridge = new UiInteractionBridge(orch);
 		this._schedulerBridge = new AppSchedulerBridge(orch);
+		this._cloudWorkspaceBridge = new AppCloudBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -107,5 +109,9 @@ export class RealAppBridges extends AppBridges {
 
 	getSchedulerBridge() {
 		return this._schedulerBridge;
+	}
+
+	getCloudWorkspaceBridge() {
+		return this._cloudWorkspaceBridge;
 	}
 }

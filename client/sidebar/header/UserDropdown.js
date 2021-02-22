@@ -122,14 +122,14 @@ const UserDropdown = ({ user, onClose }) => {
 		<Divider mi='neg-x16' mb='x16' borderColor='muted'/>
 		<div style={style}>
 			<Box pi='x16' fontScale='c1' textTransform='uppercase'>{t('Status')}</Box>
-			{Object.keys(userStatus.list).map((key, index) => {
+			{Object.keys(userStatus.list).map((key, i) => {
 				const status = userStatus.list[key];
 				const name = status.localizeName ? t(status.name) : status.name;
 				const modifier = status.statusType || user.status;
 
-				return <Option onClick={() => { setStatus(status.statusType, name); onClose(); }} key={index}>
+				return <Option onClick={() => { setStatus(status.statusType, ''); onClose(); }} key={i}>
 					<Option.Column><UserStatus status={modifier}/></Option.Column>
-					<Option.Content withTruncatedText fontScale='p2'>{name}</Option.Content>
+					<Option.Content>{name}</Option.Content>
 				</Option>;
 			})}
 			<Option icon='emoji' label={`${ t('Custom_Status') }...`} onClick={handleCustomStatus}/>

@@ -2,7 +2,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useCallback, useMemo, useState, memo } from 'react';
 import { Box, Icon, TextInput, Callout } from '@rocket.chat/fuselage';
 import { Virtuoso } from 'react-virtuoso';
-import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -108,7 +108,9 @@ const Row = memo(function Row({
 	const { name = discussion.u.username } = discussion.u;
 
 	return <Discussion
-		{ ...discussion }
+		replies={discussion.replies}
+		dcount={discussion.dcount}
+		dlm={discussion.dlm}
 		name={showRealNames ? name : discussion.u.username }
 		username={ discussion.u.username }
 		following={discussion.replies && discussion.replies.includes(userId)}
@@ -124,7 +126,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
 	const t = useTranslation();
-
+	const inputRef = useAutoFocus(true);
 	const onClick = useCallback((e) => {
 		const { drid } = e.currentTarget.dataset;
 		FlowRouter.goToRoomById(drid);
@@ -141,7 +143,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 		</VerticalBar.Header>
 		<VerticalBar.Content paddingInline={0} ref={ref}>
 			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
-				<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+				<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} ref={inputRef} addon={<Icon name='magnifier' size='x20'/>}/>
 			</Box>
 			<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
@@ -150,7 +152,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 					<Virtuoso
 						style={{ height: blockSize, width: inlineSize, overflow: 'hidden' }}
 						totalCount={total}
-						endReached={ loading ? () => {} : loadMoreItems}
+						endReached={ loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 						overscan={25}
 						data={discussions}
 						components={{ Scroller: ScrollableContentWrapper }}
