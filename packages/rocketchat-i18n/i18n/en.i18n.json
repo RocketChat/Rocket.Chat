@@ -509,6 +509,8 @@
   "Assign_admin": "Assigning admin",
   "Assign_new_conversations_to_bot_agent": "Assign new conversations to bot agent",
   "Assign_new_conversations_to_bot_agent_description": "The routing system will attempt to find a bot agent before addressing new conversations to a human agent.",
+  "Assign_new_conversations_to_department": "Assign new conversations to department",
+  "Assign_new_conversations_to_department_description": "The routing system will attempt to assign new conversation to this department",
   "assign-admin-role": "Assign Admin Role",
   "assign-admin-role_description": "Permission to assign the admin role to other users",
   "assign-roles": "Assign Roles",

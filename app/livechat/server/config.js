@@ -481,6 +481,14 @@ Meteor.startup(function() {
 		i18nDescription: 'Assign_new_conversations_to_bot_agent_description',
 	});
 
+	settings.add('Livechat_assign_new_conversation_to_department', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Routing',
+		i18nLabel: 'Assign_new_conversations_to_department',
+		i18nDescription: 'Assign_new_conversations_to_department_description',
+	});
+
 	settings.add('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0, {
 		type: 'int',
 		group: 'Omnichannel',

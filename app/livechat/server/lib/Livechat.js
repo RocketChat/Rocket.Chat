@@ -118,6 +118,15 @@ export const Livechat = {
 	getRequiredDepartment(onlineRequired = true) {
 		const departments = LivechatDepartment.findEnabledWithAgents();
 
+		const deparmentName = settings.get('Livechat_assign_new_conversation_to_department');
+
+		if (deparmentName) {
+			const department = departments.fetch().find((dept) => dept.name === deparmentName);
+			if (department) {
+				return department;
+			}
+		}
+
 		return departments.fetch().find((dept) => {
 			if (!dept.showOnRegistration) {
 				return false;
