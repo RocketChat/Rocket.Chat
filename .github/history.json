@@ -56417,6 +56417,71 @@
           ]
         }
       ]
+    },
+    "3.12.0-rc.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0-alpha.4655",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20871",
+          "title": "Regression: Fix scopes not being provided to getWorkspaceAccessToken",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.12.0",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "20869",
+          "title": "Regression: Keep user custom status after change presence",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20767",
+          "title": "[FIX] Markdown prop variants",
+          "userLogin": "dougfabris",
+          "description": "A new prop variants on Markdown component: **inline** and **inlineWithoutBreaks**",
+          "contributors": [
+            "dougfabris",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20868",
+          "title": "[FIX] Open Visitor Info when omnichannel chat was open",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "20860",
+          "title": "Regression: Prevent Message Attachment rendering",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20820",
+          "title": "[FIX] Download buttons on desktop app and CDN being ignored",
+          "userLogin": "ggazzo",
+          "milestone": "3.12.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
