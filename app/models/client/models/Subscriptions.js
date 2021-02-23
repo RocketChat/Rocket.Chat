@@ -16,7 +16,10 @@ Object.assign(Subscriptions, {
 			rid: roomId,
 		};
 
-		const subscription = this.findOne(query, { fields: { roles: 1 } });
+		const subscription = this.findOne(query, { fields: { roles: 1, t: 1, u: 1 } });
+		if (subscription && subscription.t === 'd' && subscription.u._id === userId) {
+			subscription.roles = ['owner'];
+		}
 
 		return subscription && Array.isArray(subscription.roles) && subscription.roles.includes(roleName);
 	}, { maxAge: 1000, cacheKey: JSON.stringify }),
