@@ -114,7 +114,7 @@ const UserDropdown = ({ user, onClose }) => {
 					</Margins>
 				</Box>
 				<Box color='hint' withTruncatedText display='inline-block'>
-					<MarkdownText content={statusText || t(status)} withRichContent={false}/>
+					<MarkdownText content={statusText || t(status)} variant='inlineWithoutBreaks'/>
 				</Box>
 			</Box>
 		</Box>
