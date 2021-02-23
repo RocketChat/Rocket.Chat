@@ -35,7 +35,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
 	return <Attachment>
-		<MarkdownText withRichContent={undefined} content={description} />
+		<MarkdownText variant='inline' content={description} />
 		<Attachment.Row>
 			<Attachment.Title>{title}</Attachment.Title>
 			{size && <Attachment.Size size={size}/>}

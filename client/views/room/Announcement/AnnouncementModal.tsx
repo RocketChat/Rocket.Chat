@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Button, ButtonGroup, Box, Modal } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import MarkdownText from '../../../components/MarkdownText';
 
-export default ({
+type AnnouncementModalParams = {
+	onClose: () => void;
+	confirmLabel?: string;
+	children?: string;
+}
+
+const AnnouncementModal: FC<AnnouncementModalParams> = ({
 	onClose,
 	confirmLabel = 'Close',
 	children,
@@ -19,7 +25,7 @@ export default ({
 				<Modal.Close onClick={onClose}/>
 			</Modal.Header>
 			<Modal.Content>
-				<Box textAlign='center'><MarkdownText content={children} /></Box>
+				<Box><MarkdownText content={children} /></Box>
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
@@ -29,3 +35,5 @@ export default ({
 		</Modal>
 	);
 };
+
+export default AnnouncementModal;
