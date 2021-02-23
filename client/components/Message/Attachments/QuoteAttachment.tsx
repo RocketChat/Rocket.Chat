@@ -39,7 +39,7 @@ export const QuoteAttachment: FC<QuoteAttachmentProps> = ({ author_icon: url, au
 					<Attachment.AuthorName {...authorLink && { is: 'a', href: authorLink, target: '_blank', color: undefined }}>{name}</Attachment.AuthorName>
 					<Box fontScale='c1' {...messageLink ? { is: 'a', href: messageLink } : { color: 'hint' }}>{format(ts)}</Box>
 				</Attachment.Author>
-				<MarkdownText mb='neg-x16' content={text} />
+				<MarkdownText variant='inline' content={text} />
 				{attachments && <Attachment.Inner><Attachments attachments={attachments} /></Attachment.Inner>}
 			</Attachment.Details>
 		</Attachment.Content>

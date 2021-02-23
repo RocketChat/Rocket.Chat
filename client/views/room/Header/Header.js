@@ -78,7 +78,7 @@ const RoomHeader = ({ room, topic }) => {
 				<Translate room={room} />
 			</Header.Content.Row>
 			<Header.Content.Row>
-				<Header.Subtitle>{topic && <MarkdownText withRichContent={false} content={topic}/>}</Header.Subtitle>
+				<Header.Subtitle>{topic && <MarkdownText variant='inlineWithoutBreaks' content={topic}/>}</Header.Subtitle>
 			</Header.Content.Row>
 		</Header.Content>
 		<Header.ToolBox>
