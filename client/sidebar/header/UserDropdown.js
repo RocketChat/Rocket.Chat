@@ -38,8 +38,8 @@ const style = {
 	marginRight: '-16px',
 };
 
-const setStatus = (status, statusText) => {
-	AccountBox.setStatus(status, statusText);
+const setStatus = (status) => {
+	AccountBox.setStatus(status);
 	callbacks.run('userStatusManuallySet', status);
 };
 
@@ -127,7 +127,7 @@ const UserDropdown = ({ user, onClose }) => {
 				const name = status.localizeName ? t(status.name) : status.name;
 				const modifier = status.statusType || user.status;
 
-				return <Option onClick={() => { setStatus(status.statusType, ''); onClose(); }} key={i}>
+				return <Option onClick={() => { setStatus(status.statusType); onClose(); }} key={i}>
 					<Option.Column><UserStatus status={modifier}/></Option.Column>
 					<Option.Content>{name}</Option.Content>
 				</Option>;
