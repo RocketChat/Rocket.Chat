@@ -20,7 +20,7 @@ import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { NotificationQueue } from '../../../models/server/raw';
+import { NotificationQueue, Users as UsersRaw } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
@@ -34,6 +34,24 @@ const wizardFields = [
 	'Server_Type',
 	'Register_Server',
 ];
+
+const getUserLanguages = (totalUsers) => {
+	const result = Promise.await(UsersRaw.getUserLanguages());
+
+	const languages = {
+		none: totalUsers,
+	};
+
+	result.forEach(({ _id, total }) => {
+		if (!_id) {
+			return;
+		}
+		languages[_id] = total;
+		languages.none -= total;
+	});
+
+	return languages;
+};
 
 export const statistics = {
 	get: function _getStatistics() {
@@ -74,6 +92,7 @@ export const statistics = {
 		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
+		statistics.userLanguages = getUserLanguages(statistics.totalUsers);
 
 		// Room statistics
 		statistics.totalRooms = Rooms.find().count();
