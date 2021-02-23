@@ -95,6 +95,22 @@ export class Rooms extends Base {
 		return this.update({ _id: roomId }, { $unset: { lastMessage: { reactions: 1 } } });
 	}
 
+	unsetAllImportIds() {
+		const query = {
+			importIds: {
+				$exists: true,
+			},
+		};
+
+		const update = {
+			$unset: {
+				importIds: 1,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	updateLastMessageStar(roomId, userId, starred) {
 		let update;
 		const query = { _id: roomId };
@@ -489,7 +505,7 @@ export class Rooms extends Base {
 	findByNameAndTypesNotInIds(name, types, ids, options) {
 		const query = {
 			_id: {
-				$ne: ids,
+				$nin: ids,
 			},
 			t: {
 				$in: types,
