@@ -53,11 +53,16 @@ export const createSettings = () => {
 		],
 	});
 
-	settings.add('Livechat_auto_close_abandoned_rooms', false, {
-		type: 'boolean',
+	settings.add('Livechat_abandoned_rooms_action', false, {
+		type: 'select',
 		group: 'Omnichannel',
 		section: 'Sessions',
-		i18nLabel: 'Enable_omnichannel_auto_close_abandoned_rooms',
+		values: [
+			{ key: 'none', i18nLabel: 'Do_Nothing' },
+			{ key: 'close', i18nLabel: 'Livechat_close_chat' },
+			{ key: 'on-hold', i18nLabel: 'Livechat_onHold_Chat' },
+		],
+		value: 'none',
 		enterprise: true,
 		invalidValue: false,
 		modules: [
@@ -70,7 +75,7 @@ export const createSettings = () => {
 		group: 'Omnichannel',
 		section: 'Sessions',
 		i18nLabel: 'Livechat_abandoned_rooms_closed_custom_message',
-		enableQuery: { _id: 'Livechat_auto_close_abandoned_rooms', value: true },
+		enableQuery: { _id: 'Livechat_abandoned_rooms_action', value: 'close' },
 		enterprise: true,
 		invalidValue: '',
 		modules: [
@@ -84,18 +89,6 @@ export const createSettings = () => {
 		section: 'Routing',
 		enterprise: true,
 		invalidValue: false,
-		modules: [
-			'livechat-enterprise',
-		],
-	});
-
-	settings.add('Livechat_auto_transfer_chat_timeout', 0, {
-		type: 'int',
-		group: 'Omnichannel',
-		section: 'Sessions',
-		i18nDescription: 'Livechat_auto_transfer_chat_timeout_description',
-		enterprise: true,
-		invalidValue: 0,
 		modules: [
 			'livechat-enterprise',
 		],
@@ -129,6 +122,54 @@ export const createSettings = () => {
 		section: 'Routing',
 		enterprise: true,
 		invalidValue: false,
+		modules: [
+			'livechat-enterprise',
+		],
+	});
+
+	settings.add('Livechat_auto_close_on_hold_chats_timeout', true, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enterprise: true,
+		value: 60,
+		invalidValue: 0,
+		modules: [
+			'livechat-enterprise',
+		],
+	});
+
+	settings.add('Livechat_allow_manual_on_hold', true, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enterprise: true,
+		value: true,
+		invalidValue: false,
+		modules: [
+			'livechat-enterprise',
+		],
+	});
+
+	settings.add('Livechat_manual_on_hold_timeout', true, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enterprise: true,
+		value: 60,
+		invalidValue: 0,
+		modules: [
+			'livechat-enterprise',
+		],
+	});
+
+	settings.add('Livechat_auto_transfer_chat_timeout', 0, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		i18nDescription: 'Livechat_auto_transfer_chat_timeout_description',
+		enterprise: true,
+		invalidValue: 0,
 		modules: [
 			'livechat-enterprise',
 		],
