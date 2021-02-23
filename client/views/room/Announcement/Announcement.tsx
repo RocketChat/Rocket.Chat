@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 import colors from '@rocket.chat/fuselage-tokens/colors';
@@ -8,7 +8,17 @@ import AnnouncementModal from './AnnouncementModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import MarkdownText from '../../../components/MarkdownText';
 
-export const Announcement = ({ children, onClickOpen }) => {
+type AnnouncementComponentParams = {
+	children: JSX.Element;
+	onClickOpen: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
+};
+
+type AnnouncementParams = {
+	announcement: string;
+	announcementDetails: () => void;
+}
+
+export const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onClickOpen }) => {
 	const announcementBar = css`
 		background-color: ${ colors.b200 };
 		background-color: var(--rc-color-announcement-background, ${ colors.b200 });
@@ -35,21 +45,22 @@ export const Announcement = ({ children, onClickOpen }) => {
 	return <Box onClick={onClickOpen} height='x40' pi='x24' alignItems='center' display='flex' fontScale='p2' textAlign='center' className={announcementBar}><Box withTruncatedText w='none'>{children}</Box></Box>;
 };
 
-export default ({ announcement, announcementDetails }) => {
+const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetails }) => {
 	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal());
-	const handleClick = (e) => {
-		if (e.target.href) {
+	const closeModal = useMutableCallback(() => setModal(null));
+	const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void => {
+		if ((e.target as HTMLAnchorElement).href) {
 			return;
 		}
 
-		if (window.getSelection().toString() !== '') {
+		if (window?.getSelection()?.toString() !== '') {
 			return;
 		}
 
 		announcementDetails ? announcementDetails() : setModal(<AnnouncementModal onClose={closeModal}>{announcement}</AnnouncementModal>);
 	};
-	const announcementWithoutBreaks = announcement && announcement.replace(/(\r\n|\n|\r)/gm, ' ');
 
-	return announcementWithoutBreaks ? <Announcement onClickOpen={handleClick}><MarkdownText content={announcementWithoutBreaks} /></Announcement> : false;
+	return announcement ? <AnnouncementComponent onClickOpen={(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void => handleClick(e)}><MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText /></AnnouncementComponent> : null;
 };
+
+export default Announcement;
