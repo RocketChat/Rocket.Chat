@@ -55,6 +55,7 @@ import './methods/removeOAuthService';
 import './methods/removeUserFromPushSubscription';
 import './methods/restartServer';
 import './methods/robotMethods';
+import './methods/savePostProcessedMessage';
 import './methods/savePushNotificationSubscription';
 import './methods/saveSetting';
 import './methods/saveSettings';
