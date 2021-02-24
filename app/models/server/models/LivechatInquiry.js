@@ -6,7 +6,6 @@ export class LivechatInquiry extends Base {
 
 		this.tryEnsureIndex({ rid: 1 }); // room id corresponding to this inquiry
 		this.tryEnsureIndex({ name: 1 }); // name of the inquiry (client name for now)
-		this.tryEnsureIndex({ message: 1 }); // message sent by the client
 		this.tryEnsureIndex({ ts: 1 }); // timestamp
 		this.tryEnsureIndex({ department: 1 });
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
