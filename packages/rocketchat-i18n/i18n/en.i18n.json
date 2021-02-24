@@ -2938,6 +2938,7 @@
   "Omnichannel_External_Frame_Encryption_JWK_Description": "If provided it will encrypt the user's token with the provided key and the external system will need to decrypt the data to access the token",
   "Omnichannel_External_Frame_URL": "External frame URL",
   "On": "On",
+  "On_Hold_Chats": "On Hold",
   "online": "online",
   "Online": "Online",
   "Only_authorized_users_can_write_new_messages": "Only authorized users can write new messages",
