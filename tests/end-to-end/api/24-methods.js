@@ -517,89 +517,83 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return nothing when user doesnt have any permission', (done) => {
-			updatePermission('view-privileged-setting', []).then(() => {
-				updatePermission('edit-privileged-setting', []).then(() => {
-					updatePermission('manage-selected-settings', []).then(() => {
-						request.post(methodCall('private-settings:get'))
-							.set(credentials)
-							.send({
-								message: JSON.stringify({
-									method: 'private-settings/get',
-									params: [date],
-								}),
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.a.property('success', true);
-								expect(res.body).to.have.a.property('message').that.is.a('string');
+			updatePermission('view-privileged-setting', [])
+				.then(updatePermission('edit-privileged-setting', []))
+				.then(updatePermission('manage-selected-settings', []))
+				.then(() => {
+					request.post(methodCall('private-settings:get'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'private-settings/get',
+								params: [date],
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
 
-								const data = JSON.parse(res.body.message);
-								expect(data).to.have.a.property('result').that.is.an('array');
-								expect(data.result.length).to.be.equal(0);
-							})
-							.end(done);
-					});
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data.result.length).to.be.equal(0);
+						})
+						.end(done);
 				});
-			});
 		});
 
 		it('should return properties when user has any related permissions', (done) => {
 			updatePermission('view-privileged-setting', ['admin']).then(() => {
-				updatePermission('edit-privileged-setting', []).then(() => {
-					updatePermission('manage-selected-settings', []).then(() => {
-						request.post(methodCall('private-settings:get'))
-							.set(credentials)
-							.send({
-								message: JSON.stringify({
-									method: 'private-settings/get',
-									params: [date],
-								}),
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.a.property('success', true);
-								expect(res.body).to.have.a.property('message').that.is.a('string');
+				request.post(methodCall('private-settings:get'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'private-settings/get',
+							params: [date],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
 
-								const data = JSON.parse(res.body.message);
-								expect(data).to.have.a.property('result').that.is.an('object');
-								expect(data.result).to.have.a.property('update').that.is.an('array');
-								expect(data.result.update.length).to.not.equal(0);
-							})
-							.end(done);
-					});
-				});
+						const data = JSON.parse(res.body.message);
+						expect(data).to.have.a.property('result').that.is.an('object');
+						expect(data.result).to.have.a.property('update').that.is.an('array');
+						expect(data.result.update.length).to.not.equal(0);
+					})
+					.end(done);
 			});
 		});
 
 		it('should return properties when user has all related permissions', (done) => {
-			updatePermission('view-privileged-setting', ['admin']).then(() => {
-				updatePermission('edit-privileged-setting', ['admin']).then(() => {
-					updatePermission('manage-selected-settings', ['admin']).then(() => {
-						request.post(methodCall('private-settings:get'))
-							.set(credentials)
-							.send({
-								message: JSON.stringify({
-									method: 'private-settings/get',
-									params: [date],
-								}),
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.a.property('success', true);
-								expect(res.body).to.have.a.property('message').that.is.a('string');
+			updatePermission('view-privileged-setting', ['admin'])
+				.then(updatePermission('edit-privileged-setting', ['admin']))
+				.then(updatePermission('manage-selected-settings', ['admin']))
+				.then(() => {
+					request.post(methodCall('private-settings:get'))
+						.set(credentials)
+						.send({
+							message: JSON.stringify({
+								method: 'private-settings/get',
+								params: [date],
+							}),
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+							expect(res.body).to.have.a.property('message').that.is.a('string');
 
-								const data = JSON.parse(res.body.message);
-								expect(data).to.have.a.property('result').that.is.an('object');
-								expect(data.result).to.have.a.property('update').that.is.an('array');
-								expect(data.result.update.length).to.not.equal(0);
-							})
-							.end(done);
-					});
+							const data = JSON.parse(res.body.message);
+							expect(data).to.have.a.property('result').that.is.an('object');
+							expect(data.result).to.have.a.property('update').that.is.an('array');
+							expect(data.result.update.length).to.not.equal(0);
+						})
+						.end(done);
 				});
-			});
 		});
 	});
 
