@@ -37,7 +37,7 @@ const AppPermissionsReviewModal = ({
 						?	appPermissions.map((permission) =>
 							<li key={permission.name}>
 								<b>{ t(`Apps_Permissions_${ permission.name.replace('.', '_') }`) }</b>
-								{ permission.required && <span style={{ color: 'red' }}> ({ t('Required') })</span> }
+								{ permission.required && <span style={{ color: 'red' }}> ({ t('required') })</span> }
 							</li>)
 						: t('Apps_Permissions_No_Permissions_Required')
 				}

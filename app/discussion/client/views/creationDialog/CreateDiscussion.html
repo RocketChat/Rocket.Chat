@@ -43,22 +43,6 @@
 						</span>
 					</label>
 				</div>
-				{{#if hideHistoryVisible}}
-					<div class="rc-switch">
-						<label class="rc-switch__label">
-							<input type="checkbox" class="rc-switch__input" name="hideHistory" checked={{hideHistory}}>
-							<span class="rc-switch__button">
-							<span class="rc-switch__button-inside"></span>
-						</span>
-							<span class="rc-switch__text">
-								{{_"Hide_history_from_new_members"}}
-							</span>
-						</label>
-						<span class="rc-switch__description">
-							{{hideHistoryDescription}}
-						</span>
-					</div>
-				{{/if}}
 				<div class="create-channel__inputs">
 					<div class="rc-input">
 						<label class="rc-input__label">
@@ -133,4 +117,18 @@
 		</label>
 		<div class="rc-input__description">{{ description }}</div>
 	</div>
+</template>
+
+<template name='tag'>
+	<span class="rc-tags__tag">
+		{{#if username}}
+			<span class="rc-tags__tag-image">
+				{{> avatar username=username}}
+			</span>
+			<span class="rc-tags__tag-text">{{username}}</span>
+		{{else}}
+			<span class="rc-tags__tag-text">{{text}}</span>
+		{{/if}}
+		{{> icon block="rc-tags__tag-icon" icon="cross"}}
+	</span>
 </template>
