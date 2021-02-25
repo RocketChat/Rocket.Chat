@@ -63,11 +63,11 @@
 	}
 
 	&:first-child {
-		margin-top: 0;
+		margin-top: 15px;
 	}
 
 	&:last-child {
-		margin-bottom: 0;
+		margin-bottom: 15px;
 	}
 
 	&:first-child::before {
@@ -1312,13 +1312,13 @@
 .rc-old .container-bars {
 	position: relative;
 	z-index: 2;
-	
-	margin: 5px 10px 0;
 
 	display: none;
 	visibility: hidden;
 	overflow: hidden;
 	flex-direction: column;
+
+	margin: 5px 10px 0;
 
 	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
 	transform: translateY(-10px);
