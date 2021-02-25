@@ -9,6 +9,73 @@ describe('Meteor.methods', function() {
 
 	before((done) => getCredentials(done));
 
+	describe('[@permissions:get]', () => {
+		const date = {
+			$date: new Date().getTime(),
+		};
+
+		it('should fail if not logged in', (done) => {
+			request.post(methodCall('permissions:get'))
+				.send({
+					message: JSON.stringify({
+						method: 'permissions/get',
+						params: [date],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should return all permissions', (done) => {
+			request.post(methodCall('permissions:get'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'permissions/get',
+						params: [],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data.result.length).to.be.above(1);
+				})
+				.end(done);
+		});
+
+		it('should return all permissions after the given date', (done) => {
+			request.post(methodCall('permissions:get'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'permissions/get',
+						params: [date],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('update').that.is.an('array');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[@loadMissedMessages]', () => {
 		let rid = false;
 		const date = {
@@ -342,6 +409,73 @@ describe('Meteor.methods', function() {
 					});
 				});
 			});
+		});
+	});
+
+	describe('[@subscriptions:get]', () => {
+		const date = {
+			$date: new Date().getTime(),
+		};
+
+		it('should fail if not logged in', (done) => {
+			request.post(methodCall('subscriptions:get'))
+				.send({
+					message: JSON.stringify({
+						method: 'subscriptions/get',
+						params: [date],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should return all subscriptions', (done) => {
+			request.post(methodCall('subscriptions:get'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'subscriptions/get',
+						params: [],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data.result.length).to.be.above(1);
+				})
+				.end(done);
+		});
+
+		it('should return all subscriptions after the given date', (done) => {
+			request.post(methodCall('subscriptions:get'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'subscriptions/get',
+						params: [date],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('update').that.is.an('array');
+				})
+				.end(done);
 		});
 	});
 });
