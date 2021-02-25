@@ -11,14 +11,14 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 
 Meteor.methods({
 	async sendFileMessage(roomId, store, file, msgData = {}) {
-		if (!Meteor.userId()) {
+		const user = Meteor.user();
+		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}
 
 		const room = await Rooms.findOneById(roomId);
-		const user = Meteor.user();
 
-		if (user?.type !== 'app' && canAccessRoom(room, user) !== true) {
+		if (user?.type !== 'app' && !canAccessRoom(room, user)) {
 			return false;
 		}
 
@@ -31,7 +31,7 @@ Meteor.methods({
 			tmid: Match.Optional(String),
 		});
 
-		Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
+		Uploads.updateFileComplete(file._id, user._id, _.omit(file, '_id'));
 
 		const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
 
@@ -50,8 +50,17 @@ Meteor.methods({
 			if (file.identify && file.identify.size) {
 				attachment.image_dimensions = file.identify.size;
 			}
+
 			try {
 				attachment.image_preview = await FileUpload.resizeImagePreview(file);
+
+				const thumbBuffer = await FileUpload.createImageThumbnail(file);
+				if (thumbBuffer) {
+					const thumbnail = FileUpload.uploadImageThumbnail(file, thumbBuffer, roomId, user._id);
+					const thumbUrl = FileUpload.getPath(`${ thumbnail._id }/${ encodeURI(file.name) }`);
+					attachment.image_url = thumbUrl;
+					attachment.image_type = thumbnail.type;
+				}
 			} catch (e) {
 				delete attachment.image_url;
 				delete attachment.image_type;

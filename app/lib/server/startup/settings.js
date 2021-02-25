@@ -998,6 +998,34 @@ settings.addGroup('Message', function() {
 			public: true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription',
 		});
+
+		this.add('Message_Attachments_Thumbnails_Enabled', false, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: "Message_Attachments_Thumbnails_EnabledDesc",
+		});
+	
+		this.add('Message_Attachments_Thumbnails_Width', 200, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Message_Attachments_Thumbnails_Enabled',
+					value: true,
+				},
+			],
+		});
+	
+		this.add('Message_Attachments_Thumbnails_Height', 200, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Message_Attachments_Thumbnails_Enabled',
+					value: true,
+				},
+			],
+		});
 	});
 	this.section('Message_Audio', function() {
 		this.add('Message_AudioRecorderEnabled', true, {

@@ -265,6 +265,39 @@ export const FileUpload = {
 		return result;
 	},
 
+	createImageThumbnail(file) {
+		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) return;
+
+		file = Uploads.findOneById(file._id);
+		file = FileUpload.addExtensionTo(file);
+		const store = FileUpload.getStore('Uploads');
+		const image = store._store.getReadStream(file._id, file);
+		const width = settings.get('Message_Attachments_Thumbnails_Width');
+		const height = settings.get('Message_Attachments_Thumbnails_Height');
+
+		const transformer = sharp()
+			.resize({ width, height, fit: 'inside' })
+			.webp()
+
+		const result = transformer.toBuffer().then((out) => out);
+		image.pipe(transformer);
+
+		return result;
+	},
+
+	uploadImageThumbnail(file, buffer, rid, userId) {
+		const store = FileUpload.getStore('Uploads');
+		const details = {
+			name: `thumb-${file.name}`,
+			size: buffer.length,
+			type: file.type,
+			rid,
+			userId,
+		};
+
+		return store.insertSync(details, buffer);
+	},
+
 	uploadsOnValidate(file) {
 		if (!/^image\/((x-windows-)?bmp|p?jpeg|png|gif)$/.test(file.type)) {
 			return;
