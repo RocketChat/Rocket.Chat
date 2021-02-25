@@ -266,7 +266,9 @@ export const FileUpload = {
 	},
 
 	createImageThumbnail(file) {
-		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) return;
+		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
+			return;
+		}
 
 		file = Uploads.findOneById(file._id);
 		file = FileUpload.addExtensionTo(file);
@@ -277,7 +279,7 @@ export const FileUpload = {
 
 		const transformer = sharp()
 			.resize({ width, height, fit: 'inside' })
-			.webp()
+			.webp();
 
 		const result = transformer.toBuffer().then((out) => out);
 		image.pipe(transformer);
@@ -288,7 +290,7 @@ export const FileUpload = {
 	uploadImageThumbnail(file, buffer, rid, userId) {
 		const store = FileUpload.getStore('Uploads');
 		const details = {
-			name: `thumb-${file.name}`,
+			name: `thumb-${ file.name }`,
 			size: buffer.length,
 			type: file.type,
 			rid,

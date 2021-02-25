@@ -1002,9 +1002,9 @@ settings.addGroup('Message', function() {
 		this.add('Message_Attachments_Thumbnails_Enabled', false, {
 			type: 'boolean',
 			public: true,
-			i18nDescription: "Message_Attachments_Thumbnails_EnabledDesc",
+			i18nDescription: 'Message_Attachments_Thumbnails_EnabledDesc',
 		});
-	
+
 		this.add('Message_Attachments_Thumbnails_Width', 200, {
 			type: 'int',
 			public: true,
@@ -1015,7 +1015,7 @@ settings.addGroup('Message', function() {
 				},
 			],
 		});
-	
+
 		this.add('Message_Attachments_Thumbnails_Height', 200, {
 			type: 'int',
 			public: true,
