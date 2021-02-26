@@ -9,6 +9,201 @@ describe('Meteor.methods', function() {
 
 	before((done) => getCredentials(done));
 
+	describe('[@loadHistory]', () => {
+		let rid = false;
+		let postMessageDate = false;
+		let lastMessage = false;
+
+		const channelName = `methods-test-channel-${ Date.now() }`;
+
+		before('create room', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					rid = res.body.group._id;
+				})
+				.end(done);
+		});
+
+		before('send sample message', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					postMessageDate = { $date: new Date().getTime() };
+				})
+				.end(done);
+		});
+
+		before('send another sample message', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Second Sample message',
+						rid,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					lastMessage = res.body.message;
+				})
+				.end(done);
+		});
+
+		it('should fail if not logged in', (done) => {
+			request.post(methodCall('loadHistory'))
+				.send({
+					message: JSON.stringify({
+						method: 'loadHistory',
+						params: [],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should fail if roomId not specified', (done) => {
+			request.post(methodCall('loadHistory'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadHistory',
+						params: [],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error).to.have.a.property('sanitizedError');
+					expect(data.error.sanitizedError).to.have.property('error', 400);
+				})
+				.end(done);
+		});
+
+		it('should return all messages for the specified room', (done) => {
+			request.post(methodCall('loadHistory'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadHistory',
+						params: [rid],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('messages').that.is.an('array');
+					expect(data.result.messages.length).to.equal(2);
+				})
+				.end(done);
+		});
+
+		it('should return only the first message', (done) => {
+			request.post(methodCall('loadHistory'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadHistory',
+						params: [rid, postMessageDate],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('messages').that.is.an('array');
+					expect(data.result.messages.length).to.equal(1);
+				})
+				.end(done);
+		});
+
+		it('should return only one message when limit = 1', (done) => {
+			request.post(methodCall('loadHistory'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadHistory',
+						params: [rid, { $date: new Date().getTime() }, 1],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('messages').that.is.an('array');
+					expect(data.result.messages.length).to.equal(1);
+				})
+				.end(done);
+		});
+
+		it('should return the messages since the last one', (done) => {
+			request.post(methodCall('loadHistory'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadHistory',
+						params: [rid, null, 20, lastMessage],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('messages').that.is.an('array');
+					expect(data.result.messages.length).to.equal(2);
+				})
+				.end(done);
+		});
+	});
+
 	describe('[@loadNextMessages]', () => {
 		let rid = false;
 		let postMessageDate = false;
