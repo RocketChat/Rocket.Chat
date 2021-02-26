@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
@@ -54,6 +55,19 @@ const renderBody = (msg, settings) => {
 };
 
 Template.message.helpers({
+	unread() {
+		const { msg, subscription } = this;
+		return subscription?.tunread?.includes(msg._id);
+	},
+	mention() {
+		const { msg, subscription } = this;
+		return subscription.tunreadUser?.includes(msg._id);
+	},
+
+	all() {
+		const { msg, subscription } = this;
+		return subscription.tunreadGroup?.includes(msg._id);
+	},
 	following() {
 		const { msg, u } = this;
 		return msg.replies && msg.replies.indexOf(u._id) > -1;
@@ -98,6 +112,10 @@ Template.message.helpers({
 	isBot() {
 		const { msg } = this;
 		return msg.bot && 'bot';
+	},
+	hasAttachments() {
+		const { msg } = this;
+		return msg.attachments?.length;
 	},
 	roleTags() {
 		const { msg, hideRoles, settings } = this;
@@ -217,25 +235,6 @@ Template.message.helpers({
 			}
 			return 'system';
 		}
-	},
-	unread() {
-		const { msg, subscription } = this;
-		if (!subscription?.tunread?.includes(msg._id)) {
-			return false;
-		}
-
-		const badgeClass = (() => {
-			if (subscription.tunreadUser?.includes(msg._id)) {
-				return 'badge--user-mentions';
-			}
-			if (subscription.tunreadGroup?.includes(msg._id)) {
-				return 'badge--group-mentions';
-			}
-		})();
-
-		return {
-			class: badgeClass,
-		};
 	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
@@ -453,7 +452,7 @@ Template.message.helpers({
 	},
 	showStar() {
 		const { msg } = this;
-		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
+		return msg.starred && msg.starred.length > 0 && msg.starred.find((star) => star._id === Meteor.userId()) && !(msg.actionContext === 'starred' || this.context === 'starred');
 	},
 });
 

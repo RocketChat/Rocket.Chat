@@ -30,7 +30,7 @@ registerOmnichannelRoute('/webhooks', {
 
 registerOmnichannelRoute('/customfields/:context?/:id?', {
 	name: 'omnichannel-customfields',
-	lazyRouteComponent: () => import('./customFields/CustomFieldsRouter'),
+	lazyRouteComponent: () => import('./customFields/CustomFieldsRoute'),
 });
 
 registerOmnichannelRoute('/appearance', {
@@ -78,7 +78,7 @@ registerOmnichannelRoute('/current', {
 	lazyRouteComponent: () => import('./currentChats/CurrentChatsRoute'),
 });
 
-registerOmnichannelRoute('/departments/:context?/:id?', {
+registerOmnichannelRoute('/departments/:context?/:id?/:tab?', {
 	name: 'omnichannel-departments',
 	lazyRouteComponent: () => import('./departments/DepartmentsRoute'),
 });

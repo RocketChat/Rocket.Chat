@@ -1,5 +1,15 @@
+declare module '@rocket.chat/fuselage-tokens/colors' {
+	type ColorsType = {
+		[key: string]: string;
+	};
+
+	const Colors: ColorsType;
+	export default Colors;
+}
+
 declare module '@rocket.chat/fuselage' {
 	import { css } from '@rocket.chat/css-in-js';
+	import { Placements } from '@rocket.chat/fuselage-hooks';
 	import {
 		AllHTMLAttributes,
 		Context,
@@ -12,6 +22,7 @@ declare module '@rocket.chat/fuselage' {
 		RefAttributes,
 		SetStateAction,
 		SVGAttributes,
+		FC,
 	} from 'react';
 
 	type CssClassName = ReturnType<typeof css>;
@@ -140,7 +151,7 @@ declare module '@rocket.chat/fuselage' {
 
 		elevation?: '0' | '1' | '2';
 		invisible?: boolean;
-		withRichContent?: boolean;
+		withRichContent?: boolean | string;
 		withTruncatedText?: boolean;
 		size?: CSSProperties['blockSize'];
 		minSize?: CSSProperties['blockSize'];
@@ -162,7 +173,13 @@ declare module '@rocket.chat/fuselage' {
 		Item: ForwardRefExoticComponent<AccordionItemProps>;
 	};
 
-	type AvatarProps = BoxProps;
+	type AvatarProps = Omit<BoxProps, 'title' | 'size'> & {
+		title?: string;
+		size?: 'x16' | 'x18' | 'x20' | 'x24' | 'x28' | 'x32' | 'x36' | 'x40' | 'x48' | 'x124' | 'x200' | 'x332';
+		rounded?: boolean;
+		objectFit?: boolean;
+		url: string;
+	};
 	export const Avatar: ForwardRefExoticComponent<AvatarProps> & {
 		Context: Context<{
 			baseUrl: string;
@@ -178,11 +195,21 @@ declare module '@rocket.chat/fuselage' {
 	};
 	export const Button: ForwardRefExoticComponent<ButtonProps>;
 
+	type ActionButtonProps = ButtonProps & {
+		icon: string;
+		mini?: boolean;
+		tiny?: boolean;
+	};
+
+	export const ActionButton: ForwardRefExoticComponent<ActionButtonProps>;
+
 	type ButtonGroupProps = BoxProps & {
 		align?: 'start' | 'center' | 'end';
 		stretch?: boolean;
 		wrap?: boolean;
 		vertical?: boolean;
+		small?: boolean;
+		medium?: boolean;
 	};
 	export const ButtonGroup: ForwardRefExoticComponent<ButtonGroupProps>;
 
@@ -342,5 +369,49 @@ declare module '@rocket.chat/fuselage' {
 	};
 	export const Select: ForwardRefExoticComponent<SelectProps>;
 
-	export const Divider: React.FC;
+	export const Divider: ForwardRefExoticComponent<BoxProps>;
+
+	type OptionProps = {
+		id?: string;
+		avatar?: typeof Avatar;
+		label?: string;
+		focus?: boolean;
+		selected?: boolean;
+		icon?: string;
+		className?: BoxProps['className'];
+		title?: string;
+		value?: any;
+	};
+
+	export const Option: ForwardRefExoticComponent<OptionProps>;
+
+	export type MenuProps = Omit<ActionButtonProps, 'icon'> & {
+		icon?: string;
+		options: {
+			[id: string]: {
+				label: {
+					title: string;
+					icon: string;
+				};
+				action: Function;
+			};
+		};
+		optionWidth?: BoxProps['width'];
+		placement?: Placements;
+		renderItem?: (props: OptionProps) => ReactNode;
+	}
+
+	export const Menu: ForwardRefExoticComponent<MenuProps>;
+
+	type BadgeProps = {
+		is?: ElementType;
+		variant?: 'primary' | 'danger' | 'warning';
+		disabled?: boolean;
+		className?: BoxClassName;
+		children?: any;
+		title?: any;
+	}
+
+	export const Badge: ForwardRefExoticComponent<BadgeProps>;
+
 }

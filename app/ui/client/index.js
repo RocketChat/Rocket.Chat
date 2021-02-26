@@ -12,7 +12,6 @@ import './views/404/roomNotFound.html';
 import './views/404/invalidSecretURL.html';
 import './views/404/invalidInvite.html';
 import './views/app/burger.html';
-import './views/app/createChannel.html';
 import './views/app/editStatus.html';
 import './views/app/editStatus.css';
 import './views/app/home.html';
@@ -28,7 +27,6 @@ import './views/app/photoswipe.html';
 import './views/cmsPage';
 import './views/404/roomNotFound';
 import './views/app/burger';
-import './views/app/createChannel';
 import './views/app/CreateDirectMessage';
 import './views/app/editStatus';
 import './views/app/home';
@@ -48,9 +46,6 @@ import './components/popupList';
 import './components/selectDropdown.html';
 
 import './components/header/header';
-import './components/header/headerRoom';
-import './components/contextualBar.html';
-import './components/contextualBar';
 import './components/tooltip';
 import './lib/Tooltip';
 

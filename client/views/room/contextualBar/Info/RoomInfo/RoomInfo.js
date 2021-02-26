@@ -19,6 +19,7 @@ import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManag
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import MarkdownText from '../../../../../components/MarkdownText';
+import { useTabBarClose } from '../../../providers/ToolboxProvider';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -44,7 +45,7 @@ export const RoomInfoIcon = ({ name }) => <Icon name={name} size='x22' />;
 export const Title = (props) => <UserCard.Username {...props}/>;
 
 export const RoomInfo = function RoomInfo({
-	name,
+	fname: name,
 	description,
 	archived,
 	broadcast,
@@ -79,7 +80,7 @@ export const RoomInfo = function RoomInfo({
 
 			<VerticalBar.ScrollableContent p='x24'>
 				<Box flexGrow={1}>
-					<Box pbe='x24'>
+					<Box pbe='x24' display='flex' justifyContent='center'>
 						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
 					</Box>
 
@@ -144,16 +145,15 @@ RoomInfo.Icon = RoomInfoIcon;
 
 export default ({
 	rid,
-	tabBar,
+	openEditing,
 }) => {
-	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
-	const openEditing = useMutableCallback(() => tabBar && tabBar.setTemplate('EditRoomInfo'));
+	const onClickClose = useTabBarClose();
 	const t = useTranslation();
 
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
-	const { type, name, broadcast, archived, joined = true } = room; // TODO implement joined
+	const { type, fname, broadcast, archived, joined = true } = room; // TODO implement joined
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
@@ -207,7 +207,7 @@ export default ({
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.LEAVE_WARNING);
 
 		setModal(<WarningModal
-			text={t(warnText, name)}
+			text={t(warnText, fname)}
 			confirmText={t('Leave_room')}
 			close={closeModal}
 			cancel={closeModal}
@@ -230,7 +230,7 @@ export default ({
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.HIDE_WARNING);
 
 		setModal(<WarningModal
-			text={t(warnText, name)}
+			text={t(warnText, fname)}
 			confirmText={t('Yes_hide_it')}
 			close={closeModal}
 			cancel={closeModal}

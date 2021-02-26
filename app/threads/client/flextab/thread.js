@@ -2,6 +2,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
 import { HTML } from 'meteor/htmljs';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
@@ -20,6 +21,7 @@ import { getUserPreference } from '../../../utils';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
 import './messageBoxFollow';
+import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 
 createTemplateForComponent('Checkbox', async () => {
 	const { CheckBox } = await import('@rocket.chat/fuselage');
@@ -38,6 +40,7 @@ createTemplateForComponent('ThreadComponent', () => import('../components/Thread
 
 Template.thread.events({
 	...dropzoneEvents,
+	...getCommonRoomEvents(),
 	'click .js-close'(e) {
 		e.preventDefault();
 		e.stopPropagation();
@@ -172,7 +175,7 @@ Template.thread.onRendered(function() {
 		this.callbackRemove = () => callbacks.remove('streamNewMessage', `thread-${ rid }`);
 
 		callbacks.add('streamNewMessage', _.debounce((msg) => {
-			if (rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
+			if (Session.get('openedRoom') !== msg.rid || rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
 				return;
 			}
 			Meteor.call('readThreads', tmid);

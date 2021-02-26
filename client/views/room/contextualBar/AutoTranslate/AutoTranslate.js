@@ -1,11 +1,12 @@
+import React, { useMemo, useEffect, useState } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useState, useEffect } from 'react';
 import { FieldGroup, Field, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 
+import { useUserSubscription } from '../../../../contexts/UserContext';
+import { useLanguage, useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { useLanguage, useTranslation } from '../../../../contexts/TranslationContext';
-import { useUserSubscription } from '../../../../contexts/UserContext';
+import { useTabBarClose } from '../../providers/ToolboxProvider';
 import VerticalBar from '../../../../components/VerticalBar';
 
 export const AutoTranslate = ({
@@ -24,8 +25,7 @@ export const AutoTranslate = ({
 			<VerticalBar.Text>{ t('Auto_Translate') }</VerticalBar.Text>
 			{handleClose && <VerticalBar.Close onClick={handleClose}/>}
 		</VerticalBar.Header>
-
-		<VerticalBar.ScrollableContent>
+		<VerticalBar.Content>
 			<FieldGroup>
 				<Field.Label htmlFor='automatic-translation'>{ t('Automatic_Translation') }</Field.Label>
 				<Field.Row>
@@ -37,11 +37,12 @@ export const AutoTranslate = ({
 					<Select id='language' value={language} disabled={!translateEnable} onChange={handleChangeLanguage} options={languages} />
 				</Field.Row>
 			</FieldGroup>
-		</VerticalBar.ScrollableContent>
+		</VerticalBar.Content>
 	</>;
 };
 
-export default React.memo(({ tabBar, rid }) => {
+export default React.memo(({ rid }) => {
+	const close = useTabBarClose();
 	const userLanguage = useLanguage();
 	const subscription = useUserSubscription(rid);
 
@@ -78,8 +79,6 @@ export default React.memo(({ tabBar, rid }) => {
 		});
 	});
 
-	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
-
 	useEffect(() => {
 		if (!subscription.autoTranslate) {
 			return;
@@ -96,6 +95,6 @@ export default React.memo(({ tabBar, rid }) => {
 		handleSwitch={ handleSwitch }
 		handleChangeLanguage={ handleChangeLanguage }
 		translateEnable={ !!subscription.autoTranslate }
-		handleClose={ handleClose }
+		handleClose={ close }
 	/>;
 });

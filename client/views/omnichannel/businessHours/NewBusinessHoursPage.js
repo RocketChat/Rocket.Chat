@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -34,6 +34,8 @@ const defaultBusinessHour = createDefaultBusinessHours();
 const NewBusinessHoursPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const [hasChanges, setHasChanges] = useState(false);
 
 	const saveData = useRef({ form: {} });
 
@@ -83,13 +85,13 @@ const NewBusinessHoursPage = () => {
 				<Button onClick={handleReturn}>
 					{t('Back')}
 				</Button>
-				<Button primary onClick={handleSave}>
+				<Button primary onClick={handleSave} disabled={!hasChanges}>
 					{t('Save')}
 				</Button>
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>
-			<BusinessHoursFormContainer data={defaultBusinessHour} saveRef={saveData}/>
+			<BusinessHoursFormContainer data={defaultBusinessHour} saveRef={saveData} onChange={setHasChanges}/>
 		</Page.ScrollableContentWithShadow>
 	</Page>;
 };

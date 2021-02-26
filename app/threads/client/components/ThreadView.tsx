@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, forwardRef } from 'react';
 import { Modal, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import { useLayoutContextualBarExpanded } from '../../../../client/providers/LayoutProvider';
 import VerticalBar from '../../../../client/components/VerticalBar';
 
 type ThreadViewProps = {
@@ -21,6 +22,8 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 	onToggleFollow,
 	onClose,
 }, ref) => {
+	const hasExpand = useLayoutContextualBarExpanded();
+
 	const style = useMemo(() => (document.dir === 'rtl'
 		? {
 			left: 0,
@@ -33,7 +36,7 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 
 	const t = useTranslation();
 
-	const expandLabel = expanded ? t('collapse') : t('expand');
+	const expandLabel = expanded ? t('Collapse') : t('Expand');
 	const expandIcon = expanded ? 'arrow-collapse' : 'arrow-expand';
 
 	const handleExpandActionClick = useCallback(() => {
@@ -48,29 +51,29 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 	}, [following, onToggleFollow]);
 
 	return <>
-		{expanded && <Modal.Backdrop onClick={onClose}/>}
+		{hasExpand && expanded && <Modal.Backdrop onClick={onClose}/>}
 
-		<Box width='380px' flexGrow={1} position={expanded ? 'static' : 'relative'}>
+		<Box flexGrow={1} position={expanded ? 'static' : 'relative'}>
 			<VerticalBar
 				className='rcx-thread-view'
-				position='absolute'
+				position={hasExpand && expanded ? 'fixed' : 'absolute'}
 				display='flex'
 				flexDirection='column'
-				width={expanded ? 'full' : 380}
-				maxWidth={855}
+				width={'full'}
+				maxWidth={hasExpand && expanded ? 855 : null}
 				overflow='hidden'
 				zIndex={100}
 				insetBlock={0}
-				// insetInlineEnd={0}
-				// borderStartStartRadius={4}
 				style={style} // workaround due to a RTL bug in Fuselage
 			>
 				<VerticalBar.Header>
 					<VerticalBar.Icon name='thread' />
 					<VerticalBar.Text dangerouslySetInnerHTML={{ __html: title }} />
-					<VerticalBar.Action aria-label={expandLabel} name={expandIcon} onClick={handleExpandActionClick} />
-					<VerticalBar.Action aria-label={followLabel} name={followIcon} onClick={handleFollowActionClick} />
-					<VerticalBar.Close onClick={onClose} />
+					{hasExpand && <VerticalBar.Action title={expandLabel} name={expandIcon} onClick={handleExpandActionClick} />}
+					<VerticalBar.Actions>
+						<VerticalBar.Action title={followLabel} name={followIcon} onClick={handleFollowActionClick} />
+						<VerticalBar.Close onClick={onClose} />
+					</VerticalBar.Actions>
 				</VerticalBar.Header>
 				<VerticalBar.Content
 					ref={ref}

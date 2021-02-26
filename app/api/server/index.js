@@ -37,5 +37,8 @@ import './v1/webdav';
 import './v1/oauthapps';
 import './v1/custom-sounds';
 import './v1/custom-user-status';
+import './v1/instances';
+import './v1/banners';
+import './v1/email-inbox';
 
 export { API, APIClass, defaultRateLimiterOptions } from './api';

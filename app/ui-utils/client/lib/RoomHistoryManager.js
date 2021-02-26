@@ -12,6 +12,7 @@ import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { call } from './callMethod';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { escapeHTML } from '../../../../lib/escapeHTML';
+import { getUserPreference } from '../../../utils/client';
 
 export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {
@@ -32,6 +33,21 @@ export const normalizeThreadMessage = ({ ...message }) => {
 		}
 	}
 };
+
+
+export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper') => document.querySelector(selector) || new Promise((resolve) => {
+	const observer = new MutationObserver(function(mutations, obs) {
+		const element = document.querySelector(selector);
+		if (element) {
+			obs.disconnect(); // stop observing
+			return resolve(element);
+		}
+	});
+	observer.observe(document, {
+		childList: true,
+		subtree: true,
+	});
+});
 
 export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
 	const userId = msg.u && msg.u._id;
@@ -144,7 +160,8 @@ export const RoomHistoryManager = new class {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		const wrapper = $('.messages-box .wrapper').get(0);
+		const wrapper = await waitUntilWrapperExists();
+
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;
 			scroll = wrapper.scrollTop;
@@ -159,21 +176,24 @@ export const RoomHistoryManager = new class {
 			room.loaded = 0;
 		}
 
-		room.loaded += messages.length;
+		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
+
+		const visibleMessages = messages.filter((msg) => !msg.tmid || showMessageInMainThread || msg.tshow);
+
+		room.loaded += visibleMessages.length;
 
 		if (messages.length < limit) {
 			room.hasMore.set(false);
 		}
 
-		if (wrapper) {
-			waitAfterFlush(() => {
-				if (wrapper.children[0].scrollHeight <= wrapper.offsetHeight) {
-					return this.getMore(rid);
-				}
-				const heightDiff = wrapper.scrollHeight - previousHeight;
-				wrapper.scrollTop = scroll + heightDiff;
-			});
+		if (room.hasMore.get() && (visibleMessages.length === 0 || room.loaded < limit)) {
+			return this.getMore(rid);
 		}
+
+		waitAfterFlush(() => {
+			const heightDiff = wrapper.scrollHeight - previousHeight;
+			wrapper.scrollTop = scroll + heightDiff;
+		});
 
 		room.isLoading.set(false);
 		waitAfterFlush(() => {
@@ -230,32 +250,30 @@ export const RoomHistoryManager = new class {
 		}
 	}
 
-	getSurroundingMessages(message, limit = defaultLimit) {
+	async getSurroundingMessages(message, limit = defaultLimit) {
 		if (!message || !message.rid) {
 			return;
 		}
 
-		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
+		const w = await waitUntilWrapperExists();
+
+		const instance = Blaze.getView(w).templateInstance();
 
 		if (ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } })) {
-			const wrapper = $('.messages-box .wrapper');
-			const msgElement = $(`#${ message._id }`, wrapper);
+			const msgElement = $(`#${ message._id }`, w);
 			if (msgElement.length === 0) {
 				return;
 			}
+
+			const wrapper = $('.messages-box .wrapper');
 			const pos = (wrapper.scrollTop() + msgElement.offset().top) - (wrapper.height() / 2);
 			wrapper.animate({
 				scrollTop: pos,
 			}, 500);
-			msgElement.addClass('highlight');
-
-			setTimeout(function() {
-				const messages = wrapper[0];
-				instance.atBottom = messages.scrollTop >= (messages.scrollHeight - messages.clientHeight);
-			});
 
 			return setTimeout(() => msgElement.removeClass('highlight'), 500);
 		}
+
 		const room = this.getRoom(message.rid);
 		room.isLoading.set(true);
 		let typeName = undefined;
