@@ -25,6 +25,7 @@ Meteor.startup(function() {
 	Accounts.onLogout((data) => {
 		const userId = data.user._id;
 		appTokensCollection.update({ userId }, { $unset: { authToken: '' } });
+	});
 
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
 
