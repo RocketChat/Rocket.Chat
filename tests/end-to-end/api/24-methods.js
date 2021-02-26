@@ -9,14 +9,163 @@ describe('Meteor.methods', function() {
 
 	before((done) => getCredentials(done));
 
+	describe('[@getMessages]', () => {
+		let rid = false;
+		let firstMessage = false;
+		let lastMessage = false;
+
+		let channelName = false;
+
+		before('create room', (done) => {
+			channelName = `methods-test-channel-${ Date.now() }`;
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					rid = res.body.group._id;
+				})
+				.end(done);
+		});
+
+		before('send sample message', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					firstMessage = res.body.message;
+				})
+				.end(done);
+		});
+
+		before('send another sample message', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Second Sample message',
+						rid,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					lastMessage = res.body.message;
+				})
+				.end(done);
+		});
+
+		it('should fail if not logged in', (done) => {
+			request.post(methodCall('getMessages'))
+				.send({
+					message: JSON.stringify({
+						method: 'getMessages',
+						params: [],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should fail if msgIds not specified', (done) => {
+			request.post(methodCall('getMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getMessages',
+						params: [],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error).to.have.a.property('sanitizedError');
+					expect(data.error.sanitizedError).to.have.property('error', 400);
+				})
+				.end(done);
+		});
+
+		it('should return the first message', (done) => {
+			request.post(methodCall('getMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getMessages',
+						params: [[firstMessage._id]],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data.result.length).to.equal(1);
+				})
+				.end(done);
+		});
+
+		it('should return both messages', (done) => {
+			request.post(methodCall('getMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getMessages',
+						params: [[firstMessage._id, lastMessage._id]],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data.result.length).to.equal(2);
+				})
+				.end(done);
+		});
+	});
+
 	describe('[@loadHistory]', () => {
 		let rid = false;
 		let postMessageDate = false;
 		let lastMessage = false;
 
-		const channelName = `methods-test-channel-${ Date.now() }`;
+		let channelName = false;
 
 		before('create room', (done) => {
+			channelName = `methods-test-channel-${ Date.now() }`;
 			request.post(api('groups.create'))
 				.set(credentials)
 				.send({
@@ -209,9 +358,10 @@ describe('Meteor.methods', function() {
 		let postMessageDate = false;
 		const startDate = { $date: new Date().getTime() };
 
-		const channelName = `methods-test-channel-${ Date.now() }`;
+		let channelName = false;
 
 		before('create room', (done) => {
+			channelName = `methods-test-channel-${ Date.now() }`;
 			request.post(api('groups.create'))
 				.set(credentials)
 				.send({
@@ -379,9 +529,10 @@ describe('Meteor.methods', function() {
 		let testUser;
 		let rid = false;
 
-		const channelName = `methods-test-channel-${ Date.now() }`;
+		let channelName = false;
 
 		before('create room', (done) => {
+			channelName = `methods-test-channel-${ Date.now() }`;
 			request.post(api('groups.create'))
 				.set(credentials)
 				.send({
