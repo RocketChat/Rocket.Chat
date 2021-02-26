@@ -151,7 +151,7 @@ declare module '@rocket.chat/fuselage' {
 
 		elevation?: '0' | '1' | '2';
 		invisible?: boolean;
-		withRichContent?: boolean;
+		withRichContent?: boolean | string;
 		withTruncatedText?: boolean;
 		size?: CSSProperties['blockSize'];
 		minSize?: CSSProperties['blockSize'];

@@ -10,6 +10,7 @@ import {
 	forwardRoomToDepartment,
 	removeAgentFromSubscription,
 	updateChatDepartment,
+	allowAgentSkipQueue,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry } from '../../../models/server';
@@ -44,7 +45,7 @@ export const RoutingManager = {
 
 	async delegateInquiry(inquiry, agent) {
 		const { department, rid } = inquiry;
-		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username))) {
+		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username) && !allowAgentSkipQueue(agent))) {
 			agent = await this.getNextAgent(department);
 		}
 

@@ -6,7 +6,6 @@ import { Messages } from '../../app/models/server/raw';
 import { settings } from '../../app/settings';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { escapeRegExp } from '../../lib/escapeRegExp';
-import { Message } from '../sdk';
 
 Meteor.methods({
 	messageSearch(text, rid, limit) {
@@ -249,17 +248,12 @@ Meteor.methods({
 				};
 			}
 
-			result.message.docs = Promise.await(Message.customQuery({
-				query,
-				userId: user._id,
-				queryOptions: {
-					returnTotal: false,
-					readPreference: readSecondaryPreferred(Messages.col.s.db),
-					...options,
-				},
-			})).records;
-
-			return result;
+			result.message.docs = Promise.await(Messages.find(query, {
+				readPreference: readSecondaryPreferred(Messages.col.s.db),
+				...options,
+			}).toArray());
 		}
+
+		return result;
 	},
 });
