@@ -101,7 +101,7 @@ export class ListenersModule {
 
 			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, _sub, eventName, args, allowed) => streamer.changedPayload(streamer.subscriptionName, 'id', {
 				eventName,
-				args: [args, allowed],
+				args: [...args, allowed],
 			}));
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);

@@ -5,6 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
@@ -32,7 +33,6 @@ import './events.js';
 import './tabbar';
 
 let failedToDecodeKey = false;
-let showingE2EAlert = false;
 
 const waitUntilFind = (fn) => new Promise((resolve) => {
 	Tracker.autorun((c) => {
@@ -40,16 +40,21 @@ const waitUntilFind = (fn) => new Promise((resolve) => {
 		return result && resolve(result) && c.stop();
 	});
 });
-
-class E2E {
+class E2E extends Emitter {
 	constructor() {
+		super();
 		this.started = false;
 		this.enabled = new ReactiveVar(false);
 		this._ready = new ReactiveVar(false);
 		this.instancesByRoomId = {};
 		this.readyPromise = new Deferred();
-		this.readyPromise.then(() => {
+
+		this.on('ready', () => {
 			this._ready.set(true);
+			this.log('startClient -> Done');
+			this.log('decryptPendingSubscriptions');
+			this.decryptPendingSubscriptions();
+			this.log('decryptPendingSubscriptions -> Done');
 		});
 	}
 
@@ -187,20 +192,17 @@ class E2E {
 			});
 		}
 
-		this.readyPromise.resolve();
 		this.log('startClient -> Done');
-		this.log('decryptPendingSubscriptions');
+		this.log('decryptSubscriptions');
 
-		this.decryptPendingSubscriptions();
-		this.log('decryptPendingSubscriptions -> Done');
+		this.decryptSubscriptions();
+		this.log('decryptSubscriptions -> Done');
+		this.emit('ready');
 	}
 
 	async stopClient() {
 		this.log('-> Stop Client');
-		// This flag is used to avoid closing unrelated alerts.
-		if (showingE2EAlert) {
-			banners.close();
-		}
+		this.closeAlert();
 
 		Meteor._localStorage.removeItem('public_key');
 		Meteor._localStorage.removeItem('private_key');
@@ -209,11 +211,6 @@ class E2E {
 		this.enabled.set(false);
 		this._ready.set(false);
 		this.started = false;
-
-		this.readyPromise = new Deferred();
-		this.readyPromise.then(() => {
-			this._ready.set(true);
-		});
 	}
 
 	async changePassword(newPassword) {
@@ -417,26 +414,22 @@ class E2E {
 
 	async decryptSubscription(rid) {
 		const e2eRoom = await this.getInstanceByRoomId(rid);
-		this.log('decryptPendingSubscriptions ->', rid);
+		this.log('decryptSubscription ->', rid);
 		e2eRoom?.decryptPendingSubscription();
 	}
 
-	async decryptPendingSubscriptions() {
+	async decryptSubscriptions() {
 		Subscriptions.find({
 			encrypted: true,
 		}).forEach((room) => this.decryptSubscription(room._id));
 	}
 
 	openAlert(config) {
-		showingE2EAlert = true;
-		banners.open(config);
+		banners.open({ id: 'e2e', ...config });
 	}
 
 	closeAlert() {
-		if (showingE2EAlert) {
-			banners.close();
-		}
-		showingE2EAlert = false;
+		banners.closeById('e2e');
 	}
 }
 
@@ -491,7 +484,7 @@ Meteor.startup(function() {
 				}
 
 
-				doc.encrypted ? e2eRoom.enable() : e2eRoom.pause();
+				doc.encrypted ? e2eRoom.unPause() : e2eRoom.pause();
 
 				// Cover private groups and direct messages
 				if (!e2eRoom.isSupportedRoomType(doc.t)) {

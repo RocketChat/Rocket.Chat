@@ -43,10 +43,10 @@ class NotificationClass {
 
 		setTimeout(() => {
 			try {
-				this.worker.bind(this);
+				this.worker();
 			} catch (e) {
 				console.error('Error sending notification', e);
-				this.executeWorkerLater.bind(this);
+				this.executeWorkerLater();
 			}
 		}, this.cyclePause);
 	}
