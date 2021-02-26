@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
+import { Accounts } from 'meteor/accounts-base';
 
 import { _matchToken, appTokensCollection } from './push';
 import { logger } from './logger';
@@ -12,6 +13,7 @@ Meteor.methods({
 		check(options, {
 			id: Match.Optional(String),
 			token: _matchToken,
+			authToken: String,
 			appName: String,
 			userId: Match.OneOf(String, null),
 			metadata: Match.Optional(Object),
@@ -48,6 +50,7 @@ Meteor.methods({
 			// Rig default doc
 			doc = {
 				token: options.token,
+				authToken: options.authToken,
 				appName: options.appName,
 				userId: options.userId,
 				enabled: true,
@@ -63,12 +66,15 @@ Meteor.methods({
 			// searching. The client could depend on the id eg. as reference so
 			// we respect this and try to create a document with the selected id;
 			appTokensCollection._collection.insert(doc);
+
+			Accounts.onLogout(() => appTokensCollection._collection.update(doc, { $unset: { authToken: '' } }));
 		} else {
 			// We found the app so update the updatedAt and set the token
 			appTokensCollection.update({ _id: doc._id }, {
 				$set: {
 					updatedAt: new Date(),
 					token: options.token,
+					authToken: options.authToken,
 				},
 			});
 		}
