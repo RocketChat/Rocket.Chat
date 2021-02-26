@@ -28,7 +28,11 @@ export const deleteMessage = function(message, user) {
 		}
 
 		if (message.file && message.file._id) {
-			Uploads.update(message.file._id, { $set: { _hidden: true } });
+			if (message.file.thumbId) {
+				Uploads.update({ _id: { $in: [message.file._id, message.file.thumbId] } }, { $set: { _hidden: true } });
+			} else {
+				Uploads.update(message.file._id, { $set: { _hidden: true } });
+			}
 		}
 	} else {
 		if (!showDeletedStatus) {
@@ -37,6 +41,9 @@ export const deleteMessage = function(message, user) {
 
 		if (message.file && message.file._id) {
 			FileUpload.getStore('Uploads').deleteById(message.file._id);
+			if (message.file.thumbId) {
+				FileUpload.getStore('Uploads').deleteById(message.file.thumbId);
+			}
 		}
 	}
 

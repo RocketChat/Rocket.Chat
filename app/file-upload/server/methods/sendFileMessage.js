@@ -43,6 +43,8 @@ Meteor.methods({
 			title_link_download: true,
 		};
 
+		let thumbId;
+
 		if (/^image\/.+/.test(file.type)) {
 			attachment.image_url = fileUrl;
 			attachment.image_type = file.type;
@@ -60,6 +62,7 @@ Meteor.methods({
 					const thumbUrl = FileUpload.getPath(`${ thumbnail._id }/${ encodeURI(file.name) }`);
 					attachment.image_url = thumbUrl;
 					attachment.image_type = thumbnail.type;
+					thumbId = thumbnail._id;
 				}
 			} catch (e) {
 				delete attachment.image_url;
@@ -84,6 +87,7 @@ Meteor.methods({
 			msg: '',
 			file: {
 				_id: file._id,
+				thumbId,
 				name: file.name,
 				type: file.type,
 			},

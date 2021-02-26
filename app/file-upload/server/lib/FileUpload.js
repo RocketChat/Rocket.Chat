@@ -278,8 +278,7 @@ export const FileUpload = {
 		const height = settings.get('Message_Attachments_Thumbnails_Height');
 
 		const transformer = sharp()
-			.resize({ width, height, fit: 'inside' })
-			.webp();
+			.resize({ width, height, fit: 'inside' });
 
 		const result = transformer.toBuffer().then((out) => out);
 		image.pipe(transformer);

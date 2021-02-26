@@ -999,7 +999,7 @@ settings.addGroup('Message', function() {
 			i18nDescription: 'Message_Attachments_GroupAttachDescription',
 		});
 
-		this.add('Message_Attachments_Thumbnails_Enabled', false, {
+		this.add('Message_Attachments_Thumbnails_Enabled', true, {
 			type: 'boolean',
 			public: true,
 			i18nDescription: 'Message_Attachments_Thumbnails_EnabledDesc',
