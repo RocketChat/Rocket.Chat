@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import { Accounts } from 'meteor/accounts-base';
 
 import { _matchToken, appTokensCollection } from './push';
 import { logger } from './logger';
@@ -66,8 +65,6 @@ Meteor.methods({
 			// searching. The client could depend on the id eg. as reference so
 			// we respect this and try to create a document with the selected id;
 			appTokensCollection._collection.insert(doc);
-
-			Accounts.onLogout(() => appTokensCollection._collection.update(doc, { $unset: { authToken: '' } }));
 		} else {
 			// We found the app so update the updatedAt and set the token
 			appTokensCollection.update({ _id: doc._id }, {
