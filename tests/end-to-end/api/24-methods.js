@@ -9,6 +9,108 @@ describe('Meteor.methods', function() {
 
 	before((done) => getCredentials(done));
 
+	describe('[@getThreadMessages]', () => {
+		let rid = false;
+		let firstMessage = false;
+
+		let channelName = false;
+
+		before('create room', (done) => {
+			channelName = `methods-test-channel-${ Date.now() }`;
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					rid = res.body.group._id;
+				})
+				.end(done);
+		});
+
+		before('send sample message', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					firstMessage = res.body.message;
+				})
+				.end(done);
+		});
+
+		before('send sample message into thread', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Second Sample message',
+						rid,
+						tmid: firstMessage._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should fail if not logged in', (done) => {
+			request.post(methodCall('getThreadMessages'))
+				.send({
+					message: JSON.stringify({
+						method: 'getThreadMessages',
+						params: [],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should return message thread', (done) => {
+			request.post(methodCall('getThreadMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getThreadMessages',
+						params: [{ tmid: firstMessage._id }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data.result.length).to.equal(2);
+				})
+				.end(done);
+		});
+	});
+
 	describe('[@getMessages]', () => {
 		let rid = false;
 		let firstMessage = false;
