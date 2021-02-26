@@ -276,7 +276,7 @@ describe('Meteor.methods', function() {
 
 		const channelName = `methods-test-channel-${ Date.now() }`;
 
-		before('@loadMissedMessages', (done) => {
+		before('create test group', (done) => {
 			request.post(api('groups.create'))
 				.set(credentials)
 				.send({
@@ -295,7 +295,7 @@ describe('Meteor.methods', function() {
 				.end(done);
 		});
 
-		before('@loadMissedMessages', (done) => {
+		before('send sample message', (done) => {
 			request.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -313,7 +313,7 @@ describe('Meteor.methods', function() {
 				.end(done);
 		});
 
-		before('@loadMissedMessages', (done) => {
+		before('send another sample message', (done) => {
 			request.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
