@@ -45,7 +45,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 	} = formHandlers;
 
 	const onLoadCustomFields = useCallback((hasCustomFields) => setHasCustomFields(hasCustomFields), []);
-
+	const roleKeys = Array.from(new Map(availableRoles).keys());
+	const rolesToShow = roles.filter(r => roleKeys.indexOf(r)>=0);
+	
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} { ...props }>
 		<FieldGroup>
 			{ prepend }
@@ -125,7 +127,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 			{useMemo(() => <Field>
 				<Field.Label>{t('Roles')}</Field.Label>
 				<Field.Row>
-					<MultiSelectFiltered options={availableRoles} value={roles} onChange={handleRoles} placeholder={t('Select_role')} flexShrink={1}/>
+					<MultiSelectFiltered options={availableRoles} value={rolesToShow} onChange={handleRoles} placeholder={t('Select_role')} flexShrink={1}/>
 				</Field.Row>
 			</Field>, [availableRoles, handleRoles, roles, t])}
 			{useMemo(() => handleJoinDefaultChannels && <Field>
