@@ -37,6 +37,7 @@ import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
+import '../../../livechat/client/views/app/livechatOnHold';
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
@@ -209,8 +210,14 @@ Template.messageBox.helpers({
 		}
 
 		const isBlockedOrBlocker = Template.instance().state.get('isBlockedOrBlocker');
+		console.log('---isBlockedOrBlocker', isBlockedOrBlocker);
 
 		if (isBlockedOrBlocker) {
+			return false;
+		}
+
+		console.log('---isWritable', subscription.isChatOnHold);
+		if (subscription.isChatOnHold) {
 			return false;
 		}
 
@@ -255,6 +262,14 @@ Template.messageBox.helpers({
 	},
 	isBlockedOrBlocker() {
 		return Template.instance().state.get('isBlockedOrBlocker');
+	},
+	isChatOnHold() {
+		const { rid, subscription } = Template.currentData();
+		console.log('----isChatOnHold', rid, subscription.isChatOnHold);
+		if (!rid) {
+			return false;
+		}
+		return !!subscription.isChatOnHold;
 	},
 	isSubscribed() {
 		const { subscription } = Template.currentData();
