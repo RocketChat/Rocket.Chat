@@ -66,7 +66,7 @@ export const UserInfo = React.memo(function UserInfo({
 			<UserCard.Username name={(showRealNames && name) || username || name} status={status} />
 			<Info>{customStatus}</Info>
 
-			{!!roles && <>
+			{roles.length !== 0 && <>
 				<Label>{t('Roles')}</Label>
 				<UserCard.Roles>{roles}</UserCard.Roles>
 			</>}
@@ -81,9 +81,10 @@ export const UserInfo = React.memo(function UserInfo({
 				<Info>{username}</Info>
 			</>}
 
-			<Label>{t('Last_login')}</Label>
-			<Info>{lastLogin ? timeAgo(lastLogin) : t('Never')}</Info>
-
+			{lastLogin && <>
+				<Label>{t('Last_login')}</Label>
+				<Info>{timeAgo(lastLogin)}</Info>
+			</>}
 			{name && <>
 				<Label>{t('Full_Name')}</Label>
 				<Info>{name}</Info>
@@ -120,8 +121,10 @@ export const UserInfo = React.memo(function UserInfo({
 				<Info>{value}</Info>
 			</React.Fragment>) }
 
-			<Label>{t('Created_at')}</Label>
-			<Info>{timeAgo(createdAt)}</Info>
+			{createdAt && <>
+				<Label>{t('Created_at')}</Label>
+				<Info>{timeAgo(createdAt)}</Info>
+			</>}
 
 		</Margins>
 
