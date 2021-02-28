@@ -55308,6 +55308,47 @@
           ]
         }
       ]
+    },
+    "3.11.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20727",
+          "title": "[FIX] Room owner not being able to override global retention policy",
+          "userLogin": "g-thome",
+          "description": "use correct permissions to check if room owner can override global retention policy",
+          "milestone": "3.11.2",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "20860",
+          "title": "[FIX] Prevent Message Attachment rendering",
+          "userLogin": "ggazzo",
+          "milestone": "3.11.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20740",
+          "title": "[FIX] External systems not being able to change Omnichannel Inquiry priorities ",
+          "userLogin": "renatobecker",
+          "description": "Due to a wrong property name, external applications were not able to change the priority of Omnichannel Inquires.",
+          "milestone": "3.11.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
     }
   }
 }
