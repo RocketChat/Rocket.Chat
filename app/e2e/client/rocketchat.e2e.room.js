@@ -26,6 +26,7 @@ import { Notifications } from '../../notifications/client';
 import { Rooms, Subscriptions, Messages } from '../../models';
 import { call } from '../../ui-utils';
 import { roomTypes, RoomSettingsEnum } from '../../utils';
+import { getConfig } from '../../ui-utils/client/config';
 
 export const E2E_ROOM_STATES = {
 	NO_PASSWORD_SET: 'NO_PASSWORD_SET',
@@ -64,15 +65,16 @@ const reduce = (prev, next) => {
 	}
 };
 
+const debug = [getConfig('debug'), getConfig('debug-e2e')].includes('true');
 export class E2ERoom extends Emitter {
 	log(...msg) {
-		if (this.roomId === Session.get('openedRoom')) {
+		if (debug) {
 			console.log('[E2E ROOM]', `[STATE: ${ this.state }]`, `[RID: ${ this.roomId }]`, ...msg);
 		}
 	}
 
 	error(...msg) {
-		if (this.roomId === Session.get('openedRoom')) {
+		if (debug) {
 			console.error('[E2E ROOM]', `[STATE: ${ this.state }]`, `[RID: ${ this.roomId }]`, ...msg);
 		}
 	}
