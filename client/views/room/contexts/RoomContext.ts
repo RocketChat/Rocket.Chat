@@ -1,5 +1,4 @@
 import { createContext } from 'react';
-// import { Handler } from '@rocket.chat/emitter';
 
 import { IRoom } from '../../../../definition/IRoom';
 
