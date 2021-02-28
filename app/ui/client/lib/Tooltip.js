@@ -1,5 +1,4 @@
 import { Tracker } from 'meteor/tracker';
-
 import _ from 'underscore';
 
 import { createEphemeralPortal } from '../../../../client/reactAdapters';
@@ -50,10 +49,10 @@ export const tooltipHandler = (e) => {
 		timeout = setTimeout(() => {
 			openToolTip(element.dataset.title, element);
 		}, 100);
-	};
+	}
 	closeTooltip();
 };
 
-document.body.addEventListener('mouseover', _.debounce((() => ((e) => {
+document.body.addEventListener('mouseover', _.debounce((() => (e) => {
 	tooltipHandler(e);
-}))(), 200));
+})(), 200));
