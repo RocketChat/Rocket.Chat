@@ -372,6 +372,7 @@ export class SAML {
 		});
 	}
 
+	// eslint-disable-next-line no-unused-vars
 	private static processValidateAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, _samlObject: ISAMLAction): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		SAMLUtils.relayState = req.body.RelayState;
