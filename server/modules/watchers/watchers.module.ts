@@ -128,6 +128,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			case 'updated': {
 				// Override data cuz we do not publish all fields
 				const subscription = await Subscriptions.findOneById(id, { projection: subscriptionFields });
+				console.log('---subscription found', subscription);
 				if (!subscription) {
 					return;
 				}

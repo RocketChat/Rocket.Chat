@@ -37,6 +37,7 @@ export const subscriptionFields = {
 	tunreadGroup: 1,
 	tunreadUser: 1,
 	v: 1,
+	isChatOnHold: 1,
 };
 
 export const roomFields = {

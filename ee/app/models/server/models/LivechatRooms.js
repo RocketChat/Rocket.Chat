@@ -46,6 +46,20 @@ LivechatRooms.prototype.findAbandonedOpenRooms = function(date) {
 	});
 };
 
+LivechatRooms.prototype.setIsChatOnHold = function(roomId) {
+	return this.update(
+		{ _id: roomId },
+		{ $set: { isChatOnHold: true } },
+	);
+};
+
+LivechatRooms.prototype.unsetIsChatOnHold = function(roomId) {
+	return this.update(
+		{ _id: roomId },
+		{ $unset: { isChatOnHold: 1 } },
+	);
+};
+
 LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function() {
 	return this.update({
 		open: true,

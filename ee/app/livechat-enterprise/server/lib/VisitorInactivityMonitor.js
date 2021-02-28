@@ -2,7 +2,7 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms, LivechatDepartment, Users } from '../../../../../app/models/server';
+import { LivechatRooms, LivechatDepartment, Users, Subscriptions } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 
 export class VisitorInactivityMonitor {
@@ -77,11 +77,31 @@ export class VisitorInactivityMonitor {
 		});
 	}
 
+	placeRoomOnHold(room) {
+		console.log('-------VisitorInactivityMonitor.onHoldRoom', room);
+		let resp = LivechatRooms.setIsChatOnHold(room._id);
+		console.log('----placeRoomOnHold rooms db response', resp);
+		resp = Subscriptions.setIsChatOnHold(room._id);
+		console.log('----placeRoomOnHold subscription db response', resp);
+	}
+
 	handleAbandonedRooms() {
-		if (!settings.get('Livechat_auto_close_abandoned_rooms')) {
+		const action = settings.get('Livechat_abandoned_rooms_action');
+		if (!action || action === 'none') {
 			return;
 		}
-		LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => this.closeRooms(room));
+		LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => {
+			switch (action) {
+				case 'close': {
+					this.closeRooms(room);
+					break;
+				}
+				case 'on-hold': {
+					this.placeRoomOnHold(room);
+					break;
+				}
+			}
+		});
 		this._initializeMessageCache();
 	}
 }
