@@ -1,6 +1,18 @@
 
 # 3.12.0 (Under Release Candidate Process)
 
+## 3.12.0-rc.3
+`2021-02-27  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.12.0-rc.2
 `2021-02-27  ·  1 🐛  ·  5 🔍  ·  5 👩‍💻👨‍💻`
 
