@@ -9,7 +9,6 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
-	Deferred,
 	toString,
 	toArrayBuffer,
 	joinVectorAndEcryptedData,
@@ -22,15 +21,17 @@ import {
 	importRawKey,
 	deriveKey,
 } from './helper';
+import * as banners from '../../../client/lib/banners';
 import { Rooms, Subscriptions, Messages } from '../../models';
 import { promises } from '../../promises/client';
 import { settings } from '../../settings';
 import { Notifications } from '../../notifications/client';
 import { Layout, call, modal } from '../../ui-utils';
-import * as banners from '../../../client/lib/banners';
-
 import './events.js';
 import './tabbar';
+import { getConfig } from '../../ui-utils/client/config';
+
+const debug = [getConfig('debug'), getConfig('debug-e2e')].includes('true');
 
 let failedToDecodeKey = false;
 
@@ -47,23 +48,23 @@ class E2E extends Emitter {
 		this.enabled = new ReactiveVar(false);
 		this._ready = new ReactiveVar(false);
 		this.instancesByRoomId = {};
-		this.readyPromise = new Deferred();
 
 		this.on('ready', () => {
 			this._ready.set(true);
 			this.log('startClient -> Done');
-			this.log('decryptPendingSubscriptions');
-			this.decryptPendingSubscriptions();
-			this.log('decryptPendingSubscriptions -> Done');
+			this.log('decryptSubscriptions');
+
+			this.decryptSubscriptions();
+			this.log('decryptSubscriptions -> Done');
 		});
 	}
 
 	log(...msg) {
-		console.log('[E2E]', ...msg);
+		debug && console.log('[E2E]', ...msg);
 	}
 
 	error(...msg) {
-		console.error('[E2E]', ...msg);
+		debug && console.error('[E2E]', ...msg);
 	}
 
 
@@ -75,10 +76,6 @@ class E2E extends Emitter {
 		return this.enabled.get() && this._ready.get();
 	}
 
-	async ready() {
-		return this.readyPromise;
-	}
-
 	getE2ERoom(rid) {
 		return this.instancesByRoomId[rid];
 	}
@@ -88,8 +85,6 @@ class E2E extends Emitter {
 	}
 
 	async getInstanceByRoomId(roomId) {
-		await this.ready();
-
 		const room = await waitUntilFind(() => Rooms.findOne({
 			_id: roomId,
 		}));
@@ -191,12 +186,6 @@ class E2E extends Emitter {
 				},
 			});
 		}
-
-		this.log('startClient -> Done');
-		this.log('decryptSubscriptions');
-
-		this.decryptSubscriptions();
-		this.log('decryptSubscriptions -> Done');
 		this.emit('ready');
 	}
 
@@ -415,7 +404,7 @@ class E2E extends Emitter {
 	async decryptSubscription(rid) {
 		const e2eRoom = await this.getInstanceByRoomId(rid);
 		this.log('decryptSubscription ->', rid);
-		e2eRoom?.decryptPendingSubscription();
+		e2eRoom?.decryptSubscription();
 	}
 
 	async decryptSubscriptions() {
@@ -498,7 +487,7 @@ Meteor.startup(function() {
 				if (!e2eRoom.isReady()) {
 					return;
 				}
-				e2eRoom.decryptPendingSubscription();
+				e2eRoom.decryptSubscription();
 			},
 			added: async (doc) => {
 				if (!doc.encrypted && !doc.E2EKey) {
