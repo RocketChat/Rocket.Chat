@@ -2,7 +2,7 @@ import { FC, LazyExoticComponent, ReactNode, MouseEvent } from 'react';
 import { BoxProps, OptionProps } from '@rocket.chat/fuselage';
 
 import { IRoom } from '../../../../../definition/IRoom';
-import { generator } from './generator';
+import { generator, Events as GeneratorEvents } from './generator';
 
 
 type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null
@@ -37,5 +37,7 @@ export type ToolboxActionConfig = {
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;
 
 const { listen, add: addAction, remove: deleteAction, store: actions } = generator<ToolboxAction>();
+
+export type Events = GeneratorEvents<ToolboxAction>;
 
 export { listen, addAction, deleteAction, actions };

@@ -41,6 +41,10 @@ export function api(path) {
 	return prefix + path;
 }
 
+export function methodCall(methodName) {
+	return api(`method.call/${ methodName }`);
+}
+
 export function log(res) {
 	console.log(res.req.path);
 	console.log({
