@@ -1,90 +1,12 @@
 
-# 3.12.0 (Under Release Candidate Process)
+# 3.12.0
+`2021-02-28  ·  5 🎉  ·  17 🚀  ·  74 🐛  ·  30 🔍  ·  29 👩‍💻👨‍💻`
 
-## 3.12.0-rc.4
-`2021-02-28  ·  `
-
-## 3.12.0-rc.3
-`2021-02-27  ·  1 🐛  ·  1 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.12.0-rc.2
-`2021-02-27  ·  1 🐛  ·  5 🔍  ·  5 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- Admin Panel pages not visible in Safari ([#20912](https://github.com/RocketChat/Rocket.Chat/pull/20912))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Added types to Emitters ([#20819](https://github.com/RocketChat/Rocket.Chat/pull/20819))
-
-- Fix: Add network observe plug to snap ([#20852](https://github.com/RocketChat/Rocket.Chat/pull/20852))
-
-- Language update from LingoHub 🤖 on 2021-02-22Z ([#20853](https://github.com/RocketChat/Rocket.Chat/pull/20853))
-
-- Regression: Messages not being encrypted E2E ([#20922](https://github.com/RocketChat/Rocket.Chat/pull/20922))
-
-- Update Apps-Engine version ([#20921](https://github.com/RocketChat/Rocket.Chat/pull/20921))
-
-  Update the Apps-Engine to latest version for the release.
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@geekgonecrazy](https://github.com/geekgonecrazy)
-- [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 3.12.0-rc.1
-`2021-02-23  ·  3 🐛  ·  3 🔍  ·  4 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- Download buttons on desktop app and CDN being ignored ([#20820](https://github.com/RocketChat/Rocket.Chat/pull/20820))
-
-- Markdown prop variants ([#20767](https://github.com/RocketChat/Rocket.Chat/pull/20767))
-
-  A new prop variants on Markdown component: **inline** and **inlineWithoutBreaks**
-
-- Open Visitor Info when omnichannel chat was open ([#20868](https://github.com/RocketChat/Rocket.Chat/pull/20868))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix scopes not being provided to getWorkspaceAccessToken ([#20871](https://github.com/RocketChat/Rocket.Chat/pull/20871))
-
-- Regression: Keep user custom status after change presence ([#20869](https://github.com/RocketChat/Rocket.Chat/pull/20869))
-
-- Regression: Prevent Message Attachment rendering ([#20860](https://github.com/RocketChat/Rocket.Chat/pull/20860))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@dougfabris](https://github.com/dougfabris)
-- [@geekgonecrazy](https://github.com/geekgonecrazy)
-- [@ggazzo](https://github.com/ggazzo)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 3.12.0-rc.0
-`2021-02-21  ·  5 🎉  ·  17 🚀  ·  69 🐛  ·  22 🔍  ·  29 👩‍💻👨‍💻`
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.23.0`
 
 ### 🎉 New features
 
@@ -227,6 +149,8 @@
 
   So unsetting data if data isn't available to save. Will also fix bio and other fields. :)
 
+- Admin Panel pages not visible in Safari ([#20912](https://github.com/RocketChat/Rocket.Chat/pull/20912))
+
 - Announcement with multiple lines fixed. ([#20381](https://github.com/RocketChat/Rocket.Chat/pull/20381) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   Announcements with multiple lines used to break UI for announcements bar. Fixed it by replacing all break lines in announcement with empty space (" ") . The announcement modal would work as usual and show all break lines.
@@ -290,6 +214,8 @@
   ![now](https://user-images.githubusercontent.com/55396651/106910840-a126eb80-6727-11eb-8bd6-d86383dd9181.png)
 
 - Don't ask again not rendering ([#20745](https://github.com/RocketChat/Rocket.Chat/pull/20745))
+
+- Download buttons on desktop app and CDN being ignored ([#20820](https://github.com/RocketChat/Rocket.Chat/pull/20820))
 
 - E2E issues ([#20704](https://github.com/RocketChat/Rocket.Chat/pull/20704))
 
@@ -363,6 +289,10 @@
 
   Added threads to mark unread action button.
 
+- Markdown prop variants ([#20767](https://github.com/RocketChat/Rocket.Chat/pull/20767))
+
+  A new prop variants on Markdown component: **inline** and **inlineWithoutBreaks**
+
 - Message payload from `__my_messages__` stream ([#20801](https://github.com/RocketChat/Rocket.Chat/pull/20801))
 
 - Missing height on departments agents table ([#20739](https://github.com/RocketChat/Rocket.Chat/pull/20739))
@@ -385,6 +315,8 @@
 - Omnichannel Routing System not assigning chats to Bot agents ([#20662](https://github.com/RocketChat/Rocket.Chat/pull/20662))
 
   The `Omnichannel Routing System` is no longer assigning chats to `bot` agents when the `bot` agent is the default agent of the inquiry.
+
+- Open Visitor Info when omnichannel chat was open ([#20868](https://github.com/RocketChat/Rocket.Chat/pull/20868))
 
 - OTR issue ([#20592](https://github.com/RocketChat/Rocket.Chat/pull/20592))
 
@@ -430,6 +362,8 @@
   ![image](https://user-images.githubusercontent.com/27704687/107578007-f2285b00-6bd1-11eb-9250-1e76ae67f9c9.png)
 
 - Save user password and email from My Account ([#20737](https://github.com/RocketChat/Rocket.Chat/pull/20737))
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
 
 - Selected hide system messages would now be viewed in vertical bar. ([#20358](https://github.com/RocketChat/Rocket.Chat/pull/20358) by [@Darshilp326](https://github.com/Darshilp326))
 
@@ -494,6 +428,8 @@
 
   https://user-images.githubusercontent.com/55157259/107410849-d1a9c380-6b33-11eb-8d10-3d225dc7a9db.mp4
 
+- Added types to Emitters ([#20819](https://github.com/RocketChat/Rocket.Chat/pull/20819))
+
 - Bump Livechat Widget ([#20843](https://github.com/RocketChat/Rocket.Chat/pull/20843))
 
   Update Livechat version to `1.8.0` .
@@ -517,11 +453,15 @@
 
 - Exclude user's own password from /me endpoint ([#20735](https://github.com/RocketChat/Rocket.Chat/pull/20735))
 
+- Fix: Add network observe plug to snap ([#20852](https://github.com/RocketChat/Rocket.Chat/pull/20852))
+
 - Improve: Add more API tests ([#20738](https://github.com/RocketChat/Rocket.Chat/pull/20738))
 
   Add end-to-end tests for untested endpoints.
 
 - Language update from LingoHub 🤖 on 2021-02-15Z ([#20757](https://github.com/RocketChat/Rocket.Chat/pull/20757))
+
+- Language update from LingoHub 🤖 on 2021-02-22Z ([#20853](https://github.com/RocketChat/Rocket.Chat/pull/20853))
 
 - Merge master into develop & Set version to 3.12.0-develop ([#20533](https://github.com/RocketChat/Rocket.Chat/pull/20533))
 
@@ -535,7 +475,15 @@
 
 - Regression: Fix notification worker not firing ([#20829](https://github.com/RocketChat/Rocket.Chat/pull/20829))
 
+- Regression: Fix scopes not being provided to getWorkspaceAccessToken ([#20871](https://github.com/RocketChat/Rocket.Chat/pull/20871))
+
 - Regression: Header Styles ([#20616](https://github.com/RocketChat/Rocket.Chat/pull/20616))
+
+- Regression: Keep user custom status after change presence ([#20869](https://github.com/RocketChat/Rocket.Chat/pull/20869))
+
+- Regression: Messages not being encrypted E2E ([#20922](https://github.com/RocketChat/Rocket.Chat/pull/20922))
+
+- Regression: Prevent Message Attachment rendering ([#20860](https://github.com/RocketChat/Rocket.Chat/pull/20860))
 
 - Remove `uiKitText` reference ([#20625](https://github.com/RocketChat/Rocket.Chat/pull/20625))
 
@@ -544,6 +492,10 @@
   ![image](https://user-images.githubusercontent.com/17487063/107058434-5f438700-67b3-11eb-8cf2-1ad3d5008aa8.png)
 
 - RoomFiles hook ([#20550](https://github.com/RocketChat/Rocket.Chat/pull/20550))
+
+- Update Apps-Engine version ([#20921](https://github.com/RocketChat/Rocket.Chat/pull/20921))
+
+  Update the Apps-Engine to latest version for the release.
 
 - Wrong method used while starring ([#20508](https://github.com/RocketChat/Rocket.Chat/pull/20508) by [@im-adithya](https://github.com/im-adithya))
 
