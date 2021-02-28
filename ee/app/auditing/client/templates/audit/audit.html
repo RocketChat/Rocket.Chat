@@ -6,7 +6,7 @@
 			<ul aria-live="polite">
 				{{#with messageContext}}
 					{{#each msg in messages}}
-						{{> nrr nrrargs 'message' shouldCollapseReplies=true msg=msg room=room subscription=subscription settings=settings u=u}}
+						{{> nrr nrrargs 'message' shouldCollapseReplies=true msg=msg room=room actions=actions subscription=subscription settings=settings u=u}}
 					{{/each}}
 				{{/with}}
 			</ul>
