@@ -1,6 +1,40 @@
 
 # 3.12.0 (Under Release Candidate Process)
 
+## 3.12.0-rc.2
+`2021-02-27  ·  1 🐛  ·  5 🔍  ·  5 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Admin Panel pages not visible in Safari ([#20912](https://github.com/RocketChat/Rocket.Chat/pull/20912))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Added types to Emitters ([#20819](https://github.com/RocketChat/Rocket.Chat/pull/20819))
+
+- Fix: Add network observe plug to snap ([#20852](https://github.com/RocketChat/Rocket.Chat/pull/20852))
+
+- Language update from LingoHub 🤖 on 2021-02-22Z ([#20853](https://github.com/RocketChat/Rocket.Chat/pull/20853))
+
+- Regression: Messages not being encrypted E2E ([#20922](https://github.com/RocketChat/Rocket.Chat/pull/20922))
+
+- Update Apps-Engine version ([#20921](https://github.com/RocketChat/Rocket.Chat/pull/20921))
+
+  Update the Apps-Engine to latest version for the release.
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 ## 3.12.0-rc.1
 `2021-02-23  ·  3 🐛  ·  3 🔍  ·  4 👩‍💻👨‍💻`
 
