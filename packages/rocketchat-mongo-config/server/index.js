@@ -30,7 +30,7 @@ tls.DEFAULT_ECDH_CURVE = 'auto';
 const mongoConnectionOptions = {
 	// add retryWrites=false if not present in MONGO_URL
 	...!process.env.MONGO_URL.includes('retryWrites') && { retryWrites: false },
-	ignoreUndefined: false,
+	// ignoreUndefined: false, // TODO evaluate adding this config
 };
 
 const mongoOptionStr = process.env.MONGO_OPTIONS;
