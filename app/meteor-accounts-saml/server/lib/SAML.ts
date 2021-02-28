@@ -376,7 +376,7 @@ export class SAML {
 		});
 	}
 
-	private static processValidateAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, samlObject: ISAMLAction): void {
+	private static processValidateAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, _samlObject: ISAMLAction): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		SAMLUtils.relayState = req.body.RelayState;
 		serviceProvider.validateResponse(req.body.SAMLResponse, (err, profile/* , loggedOut*/) => {
