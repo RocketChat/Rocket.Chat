@@ -20,7 +20,7 @@ apps:
     rocketchat-mongo:
         command: startmongo
         daemon: simple
-        plugs: [network, network-bind]
+        plugs: [network, network-bind, network-observe]
     rocketchat-caddy:
         command: env LC_ALL=C caddy -conf=$SNAP_DATA/Caddyfile
         daemon: simple
