@@ -117,7 +117,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{ customFields && Object.entries(customFields).map(([label, value]) => <React.Fragment key={label}>
 				<Label>{t(label)}</Label>
-				<Info>{value}</Info>
+				<Info><MarkdownText content={value} withRichContent={false}/></Info>
 			</React.Fragment>) }
 
 			<Label>{t('Created_at')}</Label>
