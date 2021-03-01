@@ -39,7 +39,7 @@ Meteor.methods({
 			});
 		}
 
-		if (Array.isArray(subscription.roles) === false || subscription.roles.includes('leader') === false) {
+		if (!Array.isArray(subscription.roles) || !subscription.roles.includes('leader')) {
 			throw new Meteor.Error('error-user-not-leader', 'User is not a leader', {
 				method: 'removeRoomLeader',
 			});
