@@ -749,7 +749,7 @@ export class Messages extends Base {
 			$set: {
 				post_processed_message,
 				pushm_post_processed: true,
-				msg: "",
+				msg: '',
 			},
 		};
 
