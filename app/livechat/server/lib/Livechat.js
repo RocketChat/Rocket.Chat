@@ -63,7 +63,7 @@ export const Livechat = {
 		}
 
 		const onlineAgents = Livechat.getOnlineAgents(department);
-		return (onlineAgents && onlineAgents.count() > 0) || settings.get('Livechat_accept_chats_with_no_agents');
+		return onlineAgents && onlineAgents.count() > 0;
 	},
 
 	getNextAgent(department) {
@@ -78,7 +78,11 @@ export const Livechat = {
 		return Users.findAgents();
 	},
 
-	getOnlineAgents(department) {
+	getOnlineAgents(department, agent) {
+		if (agent?.agentId) {
+			return Users.findOnlineAgents(agent.agentId);
+		}
+
 		if (department) {
 			return LivechatDepartmentAgents.getOnlineForDepartment(department);
 		}
@@ -192,7 +196,7 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ token, name, email, department, phone, username, livechatData, contactManager, connectionData } = {}) {
+	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
 		check(token, String);
 
 		let userId;
@@ -200,7 +204,6 @@ export const Livechat = {
 			$set: {
 				token,
 			},
-			$unset: { },
 		};
 
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
@@ -235,45 +238,29 @@ export const Livechat = {
 			}
 		}
 
-		if (name) {
-			updateUser.$set.name = name;
-		}
-
 		if (phone) {
 			updateUser.$set.phone = [
 				{ phoneNumber: phone.number },
 			];
-		} else {
-			updateUser.$unset.phone = 1;
 		}
 
 		if (email && email.trim() !== '') {
 			updateUser.$set.visitorEmails = [
 				{ address: email },
 			];
-		} else {
-			updateUser.$unset.visitorEmails = 1;
 		}
 
-		if (livechatData) {
-			updateUser.$set.livechatData = livechatData;
-		} else {
-			updateUser.$unset.livechatData = 1;
-		}
-
-		if (contactManager) {
-			updateUser.$set.contactManager = contactManager;
-		} else {
-			updateUser.$unset.contactManager = 1;
+		if (name) {
+			updateUser.$set.name = name;
 		}
 
 		if (!department) {
-			updateUser.$unset.department = 1;
+			Object.assign(updateUser, { $unset: { department: 1 } });
 		} else {
 			const dep = LivechatDepartment.findOneByIdOrName(department);
 			updateUser.$set.department = dep && dep._id;
 		}
-		if (_.isEmpty(updateUser.$unset)) { delete updateUser.$unset; }
+
 		LivechatVisitors.updateById(userId, updateUser);
 
 		return userId;
@@ -639,7 +626,6 @@ export const Livechat = {
 		try {
 			this.saveTransferHistory(room, transferData);
 			RoutingManager.unassignAgent(inquiry, departmentId);
-			Meteor.defer(() => callbacks.run('livechat.chatQueued', LivechatRooms.findOneById(rid)));
 		} catch (e) {
 			console.error(e);
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
@@ -975,7 +961,7 @@ export const Livechat = {
 		}
 
 		const showAgentInfo = settings.get('Livechat_show_agent_info');
-		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat_video_call'];
+		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
 		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } });
 
 		let html = '<div> <hr>';

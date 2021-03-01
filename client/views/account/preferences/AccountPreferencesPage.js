@@ -22,6 +22,7 @@ const AccountPreferencesPage = () => {
 	const [hasAnyChange, setHasAnyChange] = useState(false);
 
 	const saveData = useRef({});
+	const commitRef = useRef({});
 
 	const dataDownloadEnabled = useSetting('UserData_EnableDownload');
 
@@ -44,7 +45,7 @@ const AccountPreferencesPage = () => {
 	const handleSave = useCallback(async () => {
 		try {
 			const { current: data } = saveData;
-			if (data.highlights || data.hightlights === '') {
+			if (data.highlights || data.highlights === '') {
 				Object.assign(data, { highlights: data.highlights.split(/,|\n/).map((val) => val.trim()).filter(Boolean) });
 			}
 
@@ -56,6 +57,7 @@ const AccountPreferencesPage = () => {
 			await saveFn(data);
 			saveData.current = {};
 			setHasAnyChange(false);
+			Object.values(commitRef.current).forEach((fn) => fn());
 
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
 		} catch (e) {
@@ -74,13 +76,13 @@ const AccountPreferencesPage = () => {
 		<Page.ScrollableContentWithShadow>
 			<Box maxWidth='x600' w='full' alignSelf='center'>
 				<Accordion>
-					<PreferencesLocalizationSection onChange={onChange} defaultExpanded/>
-					<PreferencesGlobalSection onChange={onChange} />
-					<PreferencesUserPresenceSection onChange={onChange} />
-					<PreferencesNotificationsSection onChange={onChange} />
-					<PreferencesMessagesSection onChange={onChange} />
-					<PreferencesHighlightsSection onChange={onChange} />
-					<PreferencesSoundSection onChange={onChange} />
+					<PreferencesLocalizationSection commitRef={commitRef} onChange={onChange} defaultExpanded/>
+					<PreferencesGlobalSection commitRef={commitRef} onChange={onChange} />
+					<PreferencesUserPresenceSection commitRef={commitRef} onChange={onChange} />
+					<PreferencesNotificationsSection commitRef={commitRef} onChange={onChange} />
+					<PreferencesMessagesSection commitRef={commitRef} onChange={onChange} />
+					<PreferencesHighlightsSection commitRef={commitRef} onChange={onChange} />
+					<PreferencesSoundSection commitRef={commitRef} onChange={onChange} />
 					{dataDownloadEnabled && <PreferencesMyDataSection onChange={onChange} />}
 				</Accordion>
 			</Box>

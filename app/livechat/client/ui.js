@@ -15,7 +15,7 @@ Tracker.autorun((c) => {
 
 AccountBox.addItem({
 	name: 'Omnichannel',
-	icon: 'omnichannel',
+	icon: 'headset',
 	href: '/omnichannel/current',
 	sideNav: 'omnichannelFlex',
 	condition: () => settings.get('Livechat_enabled') && hasAllPermission('view-livechat-manager'),
@@ -30,4 +30,10 @@ MessageTypes.registerType({
 			comment: message.msg,
 		};
 	},
+});
+
+MessageTypes.registerType({
+	id: 'livechat-started',
+	system: true,
+	message: 'Chat_started',
 });

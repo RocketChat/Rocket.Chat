@@ -1,17 +1,12 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
-interface IServerStream {
-	on(eventName: string, callback: (data: any) => void): void;
-	off(eventName: string, callback: (data: any) => void): void;
-}
-
 type ServerContextValue = {
 	info: {};
 	absoluteUrl: (path: string) => string;
 	callMethod: (methodName: string, ...args: any[]) => Promise<any>;
 	callEndpoint: (httpMethod: 'GET' | 'POST' | 'DELETE', endpoint: string, ...args: any[]) => Promise<any>;
 	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
-	getStream: (streamName: string, options?: {}) => IServerStream;
+	getStream: (streamName: string, options?: {}) => <T>(eventName: string, callback: (data: T) => void) => () => void;
 };
 
 export const ServerContext = createContext<ServerContextValue>({
@@ -20,10 +15,7 @@ export const ServerContext = createContext<ServerContextValue>({
 	callMethod: async () => undefined,
 	callEndpoint: async () => undefined,
 	uploadToEndpoint: async () => undefined,
-	getStream: () => ({
-		on: (): void => undefined,
-		off: (): void => undefined,
-	}),
+	getStream: () => () => (): void => undefined,
 });
 
 export const useServerInformation = (): {} => useContext(ServerContext).info;
@@ -45,7 +37,10 @@ export const useUpload = (endpoint: string): (params: any, formData: any) => Pro
 	return useCallback((params, formData: any) => uploadToEndpoint(endpoint, params, formData), [endpoint, uploadToEndpoint]);
 };
 
-export const useStream = (streamName: string, options?: {}): IServerStream => {
+export const useStream = (
+	streamName: string,
+	options?: {},
+): <T>(eventName: string, callback: (data: T) => void) => (() => void) => {
 	const { getStream } = useContext(ServerContext);
 	return useMemo(() => getStream(streamName, options), [getStream, streamName, options]);
 };

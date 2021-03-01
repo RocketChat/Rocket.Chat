@@ -1,10 +1,10 @@
-import { settings } from '../../../settings';
-import { Users } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Users, Statistics } from '../../../models/server';
 import { statistics } from '../../../statistics';
 import { LICENSE_VERSION } from '../license';
 
 export function buildWorkspaceRegistrationData() {
-	const stats = statistics.get();
+	const stats = Statistics.findLast() || statistics.get();
 
 	const address = settings.get('Site_Url');
 	const siteName = settings.get('Site_Name');
@@ -25,6 +25,8 @@ export function buildWorkspaceRegistrationData() {
 	const accountName = settings.get('Organization_Name');
 
 	const website = settings.get('Website');
+
+	const npsEnabled = settings.get('NPS_survey_enabled');
 
 	const agreePrivacyTerms = settings.get('Cloud_Service_Agree_PrivacyTerms');
 
@@ -53,5 +55,6 @@ export function buildWorkspaceRegistrationData() {
 		licenseVersion: LICENSE_VERSION,
 		enterpriseReady: true,
 		setupComplete: settings.get('Show_Setup_Wizard') === 'completed',
+		npsEnabled,
 	};
 }

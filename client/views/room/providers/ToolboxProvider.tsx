@@ -1,8 +1,7 @@
 import React, { ReactNode, useContext, useMemo, useState, useCallback, useLayoutEffect } from 'react';
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { Handler } from '@rocket.chat/emitter';
 
-import { ToolboxContext } from '../lib/Toolbox/ToolboxContext';
+import { ToolboxContext, ToolboxEventHandler } from '../lib/Toolbox/ToolboxContext';
 import { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
 import { IRoom } from '../../../../definition/IRoom';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
@@ -37,7 +36,7 @@ const VirtualAction = React.memo(({ handleChange, room, action, id }: { id: stri
 	return null;
 });
 
-const useToolboxActions = (room: IRoom): { listen: (handler: Handler<any>) => Function; actions: Array<[string, ToolboxAction]> } => {
+const useToolboxActions = (room: IRoom): { listen: ToolboxEventHandler; actions: Array<[string, ToolboxAction]> } => {
 	const { listen, actions } = useContext(ToolboxContext);
 	const [state, setState] = useState<Array<[string, ToolboxAction]>>(Array.from(actions.entries()));
 
@@ -77,7 +76,7 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 	});
 
 	const open = useMutableCallback((actionId, context) => {
-		if (actionId === activeTabBar[0]?.id) {
+		if (actionId === activeTabBar[0]?.id && context === undefined) {
 			return close();
 		}
 		router.push({

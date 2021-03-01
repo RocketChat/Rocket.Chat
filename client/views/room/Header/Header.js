@@ -1,9 +1,7 @@
 import React from 'react';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { ActionButton } from '@rocket.chat/fuselage';
 
 import Header from '../../../components/Header';
+import Breadcrumbs from '../../../components/Breadcrumbs';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
@@ -12,45 +10,75 @@ import ToolBox from './ToolBox';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import MarkdownText from '../../../components/MarkdownText';
+import { roomTypes } from '../../../../app/utils';
+import { useUserSubscription, useUserId } from '../../../contexts/UserContext';
+import { useUserData } from '../../../hooks/useUserData';
 
 export default React.memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
 		return null;
 	}
-	return <RoomHeader room={room}/>;
+
+	if (room.t === 'd' && room.uids.length < 3) {
+		return <DirectRoomHeader room={room} />;
+	}
+
+	return <RoomHeader room={room} topic={room.topic} />;
 });
 
-const BackToRoom = React.memo(({ small, prid }) => {
-	const t = useTranslation();
-	const onClick = useMutableCallback(() => {
-		FlowRouter.goToRoomById(prid);
-	});
-	return <ActionButton mie='x4' icon='back' ghost small={small} title={t('Back_to_room')} onClick={onClick}/>;
-});
-
-
-const RoomHeader = ({ room }) => {
+const HeaderIcon = ({ room }) => {
 	const icon = useRoomIcon(room);
+
+	return <Breadcrumbs.Icon name={icon.name}>{!icon.name && icon}</Breadcrumbs.Icon>;
+};
+
+const RoomTitle = ({ room }) => {
+	const prevSubscription = useUserSubscription(room.prid);
+	const prevRoomHref = prevSubscription ? roomTypes.getRouteLink(prevSubscription.t, prevSubscription) : null;
+
+	return <Breadcrumbs>
+		{room.prid && prevSubscription && <>
+			<Breadcrumbs.Item>
+				<HeaderIcon room={prevSubscription}/>
+				<Breadcrumbs.Link href={prevRoomHref}>{prevSubscription.name}</Breadcrumbs.Link>
+			</Breadcrumbs.Item>
+			<Breadcrumbs.Separator />
+		</>}
+		<Breadcrumbs.Item>
+			<HeaderIcon room={room}/>
+			<Header.Title>{room.name}</Header.Title>
+		</Breadcrumbs.Item>
+	</Breadcrumbs>;
+};
+
+const DirectRoomHeader = ({ room }) => {
+	const userId = useUserId();
+	const directUserId = room.uids.filter((uid) => uid !== userId).shift();
+	const directUserData = useUserData(directUserId);
+
+	return <RoomHeader room={room} topic={directUserData?.statusText} />;
+};
+
+const RoomHeader = ({ room, topic }) => {
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room}/>;
+
 	return <Header>
-		{ (isMobile || room.prid) && <Header.ToolBox>
-			{ isMobile && <Burger/>}
-			{ room.prid && <BackToRoom small={!isMobile} prid={room.prid}/>}
+		{ isMobile && <Header.ToolBox>
+			<Burger/>
 		</Header.ToolBox> }
 		{ avatar && <Header.Avatar>{avatar}</Header.Avatar> }
 		<Header.Content>
 			<Header.Content.Row>
-				{ icon && <Header.Icon icon={icon}/> }
-				<Header.Title>{room.name}</Header.Title>
+				<RoomTitle room={room}/>
 				<Favorite room={room} />
 				<Encrypted room={room} />
 				<Translate room={room} />
 			</Header.Content.Row>
 			<Header.Content.Row>
-				<Header.Subtitle>{room.topic}</Header.Subtitle>
+				<Header.Subtitle>{topic && <MarkdownText variant='inlineWithoutBreaks' content={topic}/>}</Header.Subtitle>
 			</Header.Content.Row>
 		</Header.Content>
 		<Header.ToolBox>

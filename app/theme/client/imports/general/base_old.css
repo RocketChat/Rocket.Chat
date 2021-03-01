@@ -8,8 +8,6 @@
 }
 
 .rc-old code {
-	display: block;
-
 	margin: 5px 0;
 	padding: 0.5em;
 
@@ -65,11 +63,11 @@
 	}
 
 	&:first-child {
-		margin-top: 0;
+		margin-top: 15px;
 	}
 
 	&:last-child {
-		margin-bottom: 0;
+		margin-bottom: 15px;
 	}
 
 	&:first-child::before {
@@ -893,134 +891,6 @@
 	animation: highlight 6s infinite;
 }
 
-.rc-old .fixed-title {
-	display: flex;
-
-	height: calc(var(--header-min-height) + 1px);
-	padding: 0 10px 0 20px;
-
-	border-width: 0 0 1px;
-	align-items: center;
-	flex-flow: row nowrap;
-	flex-shrink: 0;
-
-	&.visible h2 {
-		overflow: visible;
-	}
-
-	& h2 {
-		overflow: hidden;
-		flex: 1;
-
-		width: 100%;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-
-		font-size: 22px;
-		font-weight: 500;
-		line-height: 29px;
-
-		& .icon-at,
-		& .icon-hash,
-		& .icon-lock {
-			margin-right: -7px;
-		}
-
-		& .icon-star,
-		& .icon-star-empty {
-			margin-right: -4px;
-		}
-
-		& .iframe-toolbar {
-			white-space: nowrap;
-			flex-grow: 0;
-		}
-	}
-
-	& .submit {
-		display: flex;
-
-		& .button {
-			margin-left: 1rem;
-
-			white-space: nowrap;
-		}
-	}
-
-	& .animated-hidden {
-		display: none;
-		visibility: hidden;
-	}
-
-	& input[type='text'] {
-		width: calc(100% - 100px);
-		margin-top: -4px;
-		margin-left: -3px;
-
-		vertical-align: top;
-
-		font-size: 20px;
-	}
-
-	& .icon-pencil {
-		display: inline-block;
-
-		margin-top: -7px;
-
-		vertical-align: text-top;
-
-		font-size: 16px;
-	}
-}
-
-.rc-old .announcement {
-	display: flex;
-
-	overflow: hidden;
-
-	height: 40px;
-	padding: 0 20px;
-
-	cursor: pointer;
-	text-align: center;
-
-	color: var(--rc-color-content);
-	background-color: var(--primary-background-color);
-
-	font-size: 1.2em;
-	line-height: 40px;
-	flex-flow: row nowrap;
-
-	&.warning {
-		background-color: var(--rc-color-alert);
-	}
-
-	&.error {
-		background-color: var(--rc-color-alert-message-warning);
-	}
-
-	& ~ .container-bars {
-		top: 45px;
-	}
-
-	a {
-		text-decoration: underline;
-
-		color: currentColor;
-	}
-
-	p {
-		overflow: hidden;
-		flex: auto;
-
-		width: 0; /* Grow via flex. */
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-}
-
 .cms-page {
 	display: flex;
 	flex-direction: column;
@@ -1440,16 +1310,15 @@
 }
 
 .rc-old .container-bars {
-	position: absolute;
+	position: relative;
 	z-index: 2;
-	top: 5px; /* --header-height */
-	right: 10px;
-	left: 10px;
 
-	display: flex;
+	display: none;
 	visibility: hidden;
 	overflow: hidden;
 	flex-direction: column;
+
+	margin: 5px 10px 0;
 
 	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
 	transform: translateY(-10px);
@@ -1464,6 +1333,7 @@
 	font-weight: bold;
 
 	&.show {
+		display: flex;
 		visibility: visible;
 
 		transform: translateY(0);
