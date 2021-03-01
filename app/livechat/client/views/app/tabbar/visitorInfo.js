@@ -206,6 +206,12 @@ Template.visitorInfo.helpers({
 		return !room.email && hasPermission('send-omnichannel-chat-transcript');
 	},
 
+	canPlaceChatOnHold() {
+		const room = Template.instance().room.get();
+		console.log('---canPlaceChatOnHold', room);
+		return !!room.canPlaceChatOnHold;
+	},
+
 	roomClosedDateTime() {
 		const { closedAt } = this;
 		return DateFormat.formatDateAndTime(closedAt);
