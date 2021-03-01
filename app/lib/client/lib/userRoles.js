@@ -35,6 +35,10 @@ Meteor.startup(function() {
 					}
 				} else if (role.type === 'changed') {
 					ChatMessage.update({ roles: role._id }, { $inc: { rerender: 1 } }, { multi: true });
+				} else if (role.type === 'kicked') {
+					if (role.scope) {
+						RoomRoles.update({ rid: role.scope, 'u._id': role.u._id }, { $set: { roles: [] } });
+					}
 				}
 			});
 		}
