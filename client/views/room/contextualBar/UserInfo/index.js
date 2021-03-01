@@ -53,6 +53,14 @@ export const UserInfo = React.memo(function UserInfo({
 	const t = useTranslation();
 
 	const timeAgo = useTimeAgo();
+	const customFieldsToShowSetting = useSetting('Accounts_CustomFieldsToShowInUserInfo');
+	const customFieldsToShow = [];
+	try {
+		const customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
+		customFieldsToShowObj && Object.values(customFieldsToShowObj).map((value) => customFieldsToShow.push(Object.values(value)[0]));
+	} catch (e) {
+		// Do Something
+	}
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
@@ -115,10 +123,10 @@ export const UserInfo = React.memo(function UserInfo({
 				</Info>
 			</>}
 
-			{ customFields && Object.entries(customFields).map(([label, value]) => <React.Fragment key={label}>
+			{ customFields && Object.entries(customFields).map(([label, value]) => (customFieldsToShow.includes(label) ? <> <React.Fragment key={label}>
 				<Label>{t(label)}</Label>
 				<Info>{value}</Info>
-			</React.Fragment>) }
+			</React.Fragment> </> : null)) }
 
 			<Label>{t('Created_at')}</Label>
 			<Info>{timeAgo(createdAt)}</Info>
