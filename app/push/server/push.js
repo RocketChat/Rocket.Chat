@@ -2,12 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { HTTP } from 'meteor/http';
+import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 
 import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
 import { logger, LoggerManager } from './logger';
 import { settings } from '../../settings/server';
+import { Users } from '../../models/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');
@@ -63,11 +65,11 @@ export class PushClass {
 	}
 
 	_replaceToken(currentToken, newToken) {
-		appTokensCollection.rawCollection().updateMany({ token: currentToken }, { $set: { token: newToken } });
+		appTokensCollection.updateMany({ token: currentToken }, { $set: { token: newToken } });
 	}
 
 	_removeToken(token) {
-		appTokensCollection.rawCollection().deleteOne({ token });
+		appTokensCollection.deleteOne({ token });
 	}
 
 	_shouldUseGateway() {
@@ -76,17 +78,41 @@ export class PushClass {
 			&& settings.get('Cloud_Service_Agree_PrivacyTerms');
 	}
 
+	_validateAuthTokenByPushToken(pushToken) {
+		const pushTokenQuery = appTokensCollection.findOne({ token: pushToken });
+
+		if (!pushTokenQuery) {
+			return;
+		}
+
+		console.log('token query result: ', pushTokenQuery);
+		const { authToken, userId } = pushTokenQuery;
+		const hashedToken = Accounts._hashLoginToken(authToken);
+		console.log('hashed token: ', hashedToken);
+
+		const user = Users.findOne({ _id: userId });
+
+		const hasToken = user
+			.services
+			.resume
+			.loginTokens
+			.filter((t) => t.hashedToken === hashedToken).length > 0;
+
+		console.log('should send notification? ', !!hasToken);
+		return !!hasToken;
+	}
+
 	sendNotificationNative(app, notification, countApn, countGcm) {
 		logger.debug('send to token', app.token);
 
-		if (app.token.apn) {
+		if (app.token.apn && this._validateAuthTokenByPushToken(app.token)) {
 			countApn.push(app._id);
 			// Send to APN
 			if (this.options.apn) {
 				notification.topic = app.appName;
 				sendAPN({ userToken: app.token.apn, notification, _removeToken: this._removeToken });
 			}
-		} else if (app.token.gcm) {
+		} else if (app.token.gcm && this._validateAuthTokenByPushToken(app.token)) {
 			countGcm.push(app._id);
 
 			// Send to GCM
@@ -159,13 +185,13 @@ export class PushClass {
 		for (const gateway of this.options.gateways) {
 			logger.debug('send to token', app.token);
 
-			if (app.token.apn) {
+			if (app.token.apn && this._validateAuthTokenByPushToken(app.token)) {
 				countApn.push(app._id);
 				notification.topic = app.appName;
 				return this.sendGatewayPush(gateway, 'apn', app.token.apn, notification);
 			}
 
-			if (app.token.gcm) {
+			if (app.token.gcm && this._validateAuthTokenByPushToken(app.token)) {
 				countGcm.push(app._id);
 				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, notification);
 			}
