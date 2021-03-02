@@ -64,11 +64,13 @@ Meteor.methods({
 			attachment.audio_size = file.size;
 		} else if (/^video\/.+/.test(file.type)) {
 			try {
-				// try to create thumbnail. If not, ignore the property (don't throw error)
+				// try to create thumbnail. If not, set the property to empty string (don't throw error)
 				const thumbnail = await FileUpload.getVideoPreview(file, { rid: roomId, type: 'image/jpeg', userId: user._id, name: `thumb-${ file.name }.jpg` });
 				const thumbUrl = FileUpload.getPath(`${ thumbnail._id }/${ encodeURI(thumbnail.name) }`);
 				attachment.image_preview = thumbUrl;
-			} catch (e) { }
+			} catch (e) {
+				attachment.image_preview = '';
+			}
 			attachment.video_url = fileUrl;
 			attachment.video_type = file.type;
 			attachment.video_size = file.size;

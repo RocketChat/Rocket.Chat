@@ -1,5 +1,7 @@
 import fs from 'fs';
 import stream from 'stream';
+import util from 'util';
+import path from 'path';
 
 import { Meteor } from 'meteor/meteor';
 import streamBuffers from 'stream-buffers';
@@ -11,6 +13,8 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import ffmpeg from 'fluent-ffmpeg';
+import ffmpeg_static from 'ffmpeg-static';
 
 import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
@@ -28,10 +32,6 @@ import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
 import { AppEvents, Apps } from '../../../apps/server';
 import { streamToBuffer } from './streamToBuffer';
-import ffmpeg from 'fluent-ffmpeg';
-import ffmpeg_static from 'ffmpeg-static';
-import util from 'util';
-import path from 'path';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -275,7 +275,7 @@ export const FileUpload = {
 
 		file = Uploads.findOneById(id);
 		file = FileUpload.addExtensionTo(file);
-		const tempFile = UploadFS.getTempFilePath(id)
+		const tempFile = UploadFS.getTempFilePath(id);
 		const video = FileUpload.getStore('Uploads')._store.getReadStream(id, file).pipe(fs.createWriteStream(tempFile));
 		const fileExtension = path.extname(file.path).split('.')[1];
 
@@ -285,27 +285,24 @@ export const FileUpload = {
 				writable.data = [];
 				writable._write = function(chunk) {
 					this.data.push(chunk);
-				}
-				const promise = new Promise((resolve, reject) => {
-					const conversion = ffmpeg()
+				};
+
+				return new Promise((resolve, reject) => {
+					ffmpeg()
 						.input(descriptorPath)
 						.inputFormat(fileExtension)
 						.setFfmpegPath(ffmpeg_static)
 						.seekInput('00:00.000')
 						.addOutputOption('-vframes', '1')
-						.addOutputOption('-movflags','frag_keyframe+empty_moov')
+						.addOutputOption('-movflags', 'frag_keyframe+empty_moov')
 						.outputFormat('image2')
 						.noAudio()
 						.size('50%')
 						.output(writable, { end: true })
 						.on('error', reject)
-						.on('end', (...args) => {
-							return resolve(Buffer.concat(writable.data));
-						})
+						.on('end', () => resolve(Buffer.concat(writable.data)))
 						.run();
-				})
-				
-				return promise;
+				});
 			})
 			.then((buffer) => {
 				// const fileStream = fs.createReadStream(filePath)
