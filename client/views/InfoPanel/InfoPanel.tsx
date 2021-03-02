@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import { Box, Icon, BoxProps } from '@rocket.chat/fuselage';
+import { Box, Icon, BoxProps, Button, ButtonProps, ButtonGroup, ButtonGroupProps } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
 type TitleProps = {
@@ -35,6 +35,13 @@ const Text: FC<BoxProps> = (props) => <Box
 	{...props}
 />;
 
+const Action: FC<ButtonProps & { icon: string; label: string }> = ({ label, icon, ...props }) => <Button title={label} aria-label={label} {...props} mi='x4'>
+	<Icon name={icon} size='x20' mie='x4' />
+	{label}
+</Button>;
+
+const ActionGroup: FC<ButtonGroupProps> = (props) => <Section><ButtonGroup flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center' {...props}/></Section>;
+
 const Field: FC = ({ children }) => <Box mb='x12'>{children}</Box>;
 
 const Avatar: FC = ({ children }) => <Section display='flex' justifyContent='center'>
@@ -47,7 +54,9 @@ Object.assign(InfoPanel, {
 	Text,
 	Avatar,
 	Field,
+	Action,
 	Section,
+	ActionGroup,
 });
 
 export default InfoPanel;

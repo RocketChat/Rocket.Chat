@@ -1,10 +1,11 @@
-import React from 'react';
-import { Box, Button, Callout } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
+import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import VerticalBar from '../../../components/VerticalBar';
 import InfoPanel, { RetentionPolicyCallout } from '../../InfoPanel';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
+import { useActionSpread } from '../../hooks/useActionSpread';
 
 const TeamsInfo = ({
 	name,
@@ -18,11 +19,11 @@ const TeamsInfo = ({
 	rid,
 	icon,
 	retentionPolicy = {},
-	// onClickHide,
+	onClickHide,
 	onClickClose,
-	// onClickLeave,
-	// onClickEdit,
-	// onClickDelete,
+	onClickLeave,
+	onClickEdit,
+	onClickDelete,
 }) => {
 	const t = useTranslation();
 
@@ -32,6 +33,54 @@ const TeamsInfo = ({
 		excludePinnedDefault,
 		maxAgeDefault,
 	} = retentionPolicy;
+
+	const memoizedActions = useMemo(() => ({
+		...onClickEdit && { edit: {
+			label: t('Edit'),
+			icon: 'edit',
+			action: onClickEdit,
+		} },
+		...onClickDelete && { delete: {
+			label: t('Delete'),
+			icon: 'trash',
+			action: onClickDelete,
+		} },
+		...onClickHide && { hide: {
+			label: t('Hide'),
+			action: onClickHide,
+			icon: 'eye-off',
+		} },
+		...onClickLeave && { leave: {
+			label: t('Leave'),
+			action: onClickLeave,
+			icon: 'sign-out',
+		} },
+	}), [t, onClickHide, onClickLeave, onClickEdit, onClickDelete]);
+
+	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
+
+	const menu = useMemo(() => {
+		if (!menuOptions) {
+			return null;
+		}
+
+		return <Menu
+			small={false}
+			flexShrink={0}
+			mi='x2'
+			key='menu'
+			ghost={false}
+			renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
+			options={menuOptions}
+		/>;
+	}, [menuOptions]);
+
+	const actions = useMemo(() => {
+		const mapAction = ([key, { label, icon, action }]) =>
+			<InfoPanel.Action key={key} label={label} onClick={action} icon={icon}/>;
+
+		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
+	}, [actionsDefinition, menu]);
 
 	return (
 		<>
@@ -47,6 +96,10 @@ const TeamsInfo = ({
 					<InfoPanel.Avatar>
 						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
 					</InfoPanel.Avatar>
+
+					<InfoPanel.ActionGroup>
+						{actions}
+					</InfoPanel.ActionGroup>
 
 					<InfoPanel.Section>
 						{ archived && <Box mb='x16'>

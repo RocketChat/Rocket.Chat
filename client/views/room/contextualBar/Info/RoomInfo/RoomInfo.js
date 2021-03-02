@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Box, Icon, Button, ButtonGroup, Divider, Callout } from '@rocket.chat/fuselage';
+import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../../components/VerticalBar';
@@ -19,6 +19,7 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import InfoPanel, { RetentionPolicyCallout } from '../../../../InfoPanel';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import { useActionSpread } from '../../../../hooks/useActionSpread';
 
 
 const retentionPolicyMaxAge = {
@@ -60,6 +61,54 @@ export const RoomInfo = function RoomInfo({
 		maxAgeDefault,
 	} = retentionPolicy;
 
+	const memoizedActions = useMemo(() => ({
+		...onClickEdit && { edit: {
+			label: t('Edit'),
+			icon: 'edit',
+			action: onClickEdit,
+		} },
+		...onClickDelete && { delete: {
+			label: t('Delete'),
+			icon: 'trash',
+			action: onClickDelete,
+		} },
+		...onClickHide && { hide: {
+			label: t('Hide'),
+			action: onClickHide,
+			icon: 'eye-off',
+		} },
+		...onClickLeave && { leave: {
+			label: t('Leave'),
+			action: onClickLeave,
+			icon: 'sign-out',
+		} },
+	}), [t, onClickHide, onClickLeave, onClickEdit, onClickDelete]);
+
+	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
+
+	const menu = useMemo(() => {
+		if (!menuOptions) {
+			return null;
+		}
+
+		return <Menu
+			small={false}
+			flexShrink={0}
+			mi='x2'
+			key='menu'
+			ghost={false}
+			renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
+			options={menuOptions}
+		/>;
+	}, [menuOptions]);
+
+	const actions = useMemo(() => {
+		const mapAction = ([key, { label, icon, action }]) =>
+			<InfoPanel.Action key={key} label={label} onClick={action} icon={icon}/>;
+
+		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
+	}, [actionsDefinition, menu]);
+
 	return (
 		<>
 			<VerticalBar.Header>
@@ -74,6 +123,10 @@ export const RoomInfo = function RoomInfo({
 					<InfoPanel.Avatar>
 						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
 					</InfoPanel.Avatar>
+
+					<InfoPanel.ActionGroup>
+						{actions}
+					</InfoPanel.ActionGroup>
 
 					<InfoPanel.Section>
 						{ archived && <Box mb='x16'>
@@ -114,19 +167,6 @@ export const RoomInfo = function RoomInfo({
 
 				</InfoPanel>
 			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
-				<ButtonGroup stretch>
-					{ onClickHide && <Button width='50%' onClick={onClickHide}><Box is='span' mie='x4'><Icon name='eye-off' size='x20' /></Box>{t('Hide')}</Button> }
-					{ onClickLeave && <Button width='50%' onClick={onClickLeave} danger><Box is='span' mie='x4'><Icon name='sign-out' size='x20' /></Box>{t('Leave')}</Button> }
-				</ButtonGroup>
-				{ (onClickEdit || onClickDelete) && <>
-					<Divider />
-					<ButtonGroup stretch>
-						{ onClickEdit && <Button width='50%' onClick={onClickEdit}><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>{t('Edit')}</Button> }
-						{ onClickDelete && <Button width='50%' onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Delete')}</Button>}
-					</ButtonGroup>
-				</>}
-			</VerticalBar.Footer>
 		</>
 	);
 };
