@@ -26,12 +26,12 @@ import { Notifications } from '../../notifications/client';
 import { Rooms, Subscriptions, Messages } from '../../models';
 import { call } from '../../ui-utils';
 import { roomTypes, RoomSettingsEnum } from '../../utils';
+import { getConfig } from '../../ui-utils/client/config';
 
 export const E2E_ROOM_STATES = {
 	NO_PASSWORD_SET: 'NO_PASSWORD_SET',
 	NOT_STARTED: 'NOT_STARTED',
 	DISABLED: 'DISABLED',
-	PAUSED: 'PAUSED',
 	HANDSHAKE: 'HANDSHAKE',
 	ESTABLISHING: 'ESTABLISHING',
 	CREATING_KEYS: 'CREATING_KEYS',
@@ -42,55 +42,39 @@ export const E2E_ROOM_STATES = {
 };
 
 const KEY_ID = Symbol('keyID');
+const PAUSED = Symbol('PAUSED');
 
 const reduce = (prev, next) => {
 	if (prev === next) {
 		return next === E2E_ROOM_STATES.ERROR;
 	}
 
-
-	switch (next) {
-		case E2E_ROOM_STATES.READY:
-			if (prev === E2E_ROOM_STATES.PAUSED) {
-				return E2E_ROOM_STATES.READY;
-			}
-			return E2E_ROOM_STATES.DISABLED;
-		case E2E_ROOM_STATES.PAUSED:
-			if (prev === E2E_ROOM_STATES.READY) {
-				return E2E_ROOM_STATES.PAUSED;
-			}
-			return E2E_ROOM_STATES.DISABLED;
-	}
 	switch (prev) {
-		case E2E_ROOM_STATES.PAUSED:
-			if (next === E2E_ROOM_STATES.READY) {
-				return E2E_ROOM_STATES.READY;
-			}
-			return false;
 		case E2E_ROOM_STATES.NOT_STARTED:
-			return [E2E_ROOM_STATES.ESTABLISHING, E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED, E2E_ROOM_STATES.KEYS_RECEIVED].includes(next) && next;
+			return [E2E_ROOM_STATES.ESTABLISHING, E2E_ROOM_STATES.DISABLED, E2E_ROOM_STATES.KEYS_RECEIVED].includes(next) && next;
 		case E2E_ROOM_STATES.READY:
 			return [E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED].includes(next) && next;
 		case E2E_ROOM_STATES.ERROR:
 			return [E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.NOT_STARTED].includes(next) && next;
 		case E2E_ROOM_STATES.WAITING_KEYS:
-			return [E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.ERROR, E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED].includes(next) && next;
+			return [E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.ERROR, E2E_ROOM_STATES.DISABLED].includes(next) && next;
 		case E2E_ROOM_STATES.ESTABLISHING:
-			return [E2E_ROOM_STATES.READY, E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.ERROR, E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED, E2E_ROOM_STATES.WAITING_KEYS].includes(next) && next;
+			return [E2E_ROOM_STATES.READY, E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.ERROR, E2E_ROOM_STATES.DISABLED, E2E_ROOM_STATES.WAITING_KEYS].includes(next) && next;
 		default:
 			return next;
 	}
 };
 
+const debug = [getConfig('debug'), getConfig('debug-e2e')].includes('true');
 export class E2ERoom extends Emitter {
 	log(...msg) {
-		if (this.roomId === Session.get('openedRoom')) {
+		if (debug) {
 			console.log('[E2E ROOM]', `[STATE: ${ this.state }]`, `[RID: ${ this.roomId }]`, ...msg);
 		}
 	}
 
 	error(...msg) {
-		if (this.roomId === Session.get('openedRoom')) {
+		if (debug) {
 			console.error('[E2E ROOM]', `[STATE: ${ this.state }]`, `[RID: ${ this.roomId }]`, ...msg);
 		}
 	}
@@ -119,7 +103,7 @@ export class E2ERoom extends Emitter {
 		this.typeOfRoom = t;
 
 		this.once(E2E_ROOM_STATES.READY, () => this.decryptPendingMessages());
-		this.once(E2E_ROOM_STATES.READY, () => this.decryptPendingSubscription());
+		this.once(E2E_ROOM_STATES.READY, () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
 			if (this.roomId === Session.get('openedRoom')) {
 				this.log(`[PREV: ${ prev }]`, 'State CHANGED');
@@ -139,7 +123,15 @@ export class E2ERoom extends Emitter {
 	}
 
 	pause() {
-		![E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED].includes(this.state) && this.setState(this.state === E2E_ROOM_STATES.READY ? E2E_ROOM_STATES.PAUSED : E2E_ROOM_STATES.DISABLED);
+		this[PAUSED] = true;
+	}
+
+	unPause() {
+		this[PAUSED] = false;
+	}
+
+	isPaused() {
+		return this[PAUSED];
 	}
 
 	enable() {
@@ -156,10 +148,6 @@ export class E2ERoom extends Emitter {
 
 	isDisabled() {
 		return [E2E_ROOM_STATES.DISABLED].includes(this.state);
-	}
-
-	isPaused() {
-		return [E2E_ROOM_STATES.PAUSED].includes(this.state);
 	}
 
 	wait(state) {
@@ -185,14 +173,14 @@ export class E2ERoom extends Emitter {
 		this[KEY_ID] = keyID;
 	}
 
-	async decryptPendingSubscription() {
+	async decryptSubscription() {
 		const subscription = Subscriptions.findOne({
 			rid: this.roomId,
 		});
 
 		const data = await (subscription.lastMessage?.msg && this.decrypt(subscription.lastMessage.msg));
 		if (!data?.text) {
-			this.log('decryptPendingSubscriptions nothing to do');
+			this.log('decryptSubscriptions nothing to do');
 			return;
 		}
 
@@ -204,7 +192,7 @@ export class E2ERoom extends Emitter {
 				'lastMessage.e2e': 'done',
 			},
 		});
-		this.log('decryptPendingSubscriptions Done');
+		this.log('decryptSubscriptions Done');
 	}
 
 	async decryptPendingMessages() {

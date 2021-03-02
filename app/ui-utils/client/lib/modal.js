@@ -209,16 +209,14 @@ Template.rc_modal.helpers({
 
 Template.rc_modal.onRendered(function() {
 	this.oldFocus = document.activeElement;
-	if (this.data.onRendered) {
-		this.data.onRendered();
-	}
-
 	if (this.data.input) {
 		$('.js-modal-input', this.firstNode).focus();
 	} else if (this.data.showConfirmButton && this.data.confirmOnEnter) {
 		$('.js-confirm', this.firstNode).focus();
 	}
-
+	if (this.data.onRendered) {
+		this.data.onRendered();
+	}
 	this.data.closeOnEscape && document.addEventListener('keydown', modal.onKeyDown);
 });
 

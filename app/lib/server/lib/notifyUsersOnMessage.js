@@ -69,7 +69,8 @@ const getUserIdsFromHighlights = (rid, message) => {
 };
 
 export function updateUsersSubscriptions(message, room) {
-	if (room != null) {
+	// Don't increase unread counter on thread messages
+	if (room != null && !message.tmid) {
 		const {
 			toAll,
 			toHere,

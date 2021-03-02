@@ -43,6 +43,7 @@ type TriggersFormProps = {
 
 const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) => {
 	const [nameError, setNameError] = useState('');
+	const [msgError, setMsgError] = useState('');
 	const t = useTranslation();
 	const {
 		name,
@@ -137,8 +138,11 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 		});
 	});
 	useComponentDidUpdate(() => {
-		setNameError(!name ? t('The_field_is_required', 'name') : '');
+		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
 	}, [t, name]);
+	useComponentDidUpdate(() => {
+		setMsgError(!actionMsg ? t('The_field_is_required', t('Message')) : '');
+	}, [t, actionMsg]);
 	return <>
 		<Field className={className}>
 			<Box display='flex' flexDirection='row'>
@@ -161,6 +165,9 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 			<Field.Row>
 				<TextInput value={name} error={nameError} onChange={handleName} placeholder={t('Name')}/>
 			</Field.Row>
+			<Field.Error>
+				{nameError}
+			</Field.Error>
 		</Field>
 		<Field className={className}>
 			<Field.Label>{t('Description')}</Field.Label>
@@ -189,8 +196,11 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 				<TextInput value={actionAgentName} onChange={handleActionAgentName} placeholder={t('Name_of_agent')}/>
 			</Field.Row>}
 			<Field.Row>
-				<TextAreaInput rows={3} value={actionMsg} onChange={handleActionMessage} placeholder={t('Message')}/>
+				<TextAreaInput rows={3} value={actionMsg} onChange={handleActionMessage} placeholder={`${ t('Message') }*`}/>
 			</Field.Row>
+			<Field.Error>
+				{msgError}
+			</Field.Error>
 		</Field>
 	</>;
 };

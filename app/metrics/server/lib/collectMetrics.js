@@ -31,6 +31,16 @@ const setPrometheusData = async () => {
 	metrics.ddpAuthenticatedSessions.set(authenticatedSessions.length);
 	metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map((s) => s.userId)).length);
 
+	// Apps metrics
+	const { totalInstalled, totalActive, totalFailed } = getAppsStatistics();
+
+	metrics.totalAppsInstalled.set(totalInstalled || 0);
+	metrics.totalAppsEnabled.set(totalActive || 0);
+	metrics.totalAppsFailed.set(totalFailed || 0);
+
+	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
+	metrics.oplogQueue.set(oplogQueue);
+
 	const statistics = Statistics.findLast();
 	if (!statistics) {
 		return;
@@ -62,16 +72,6 @@ const setPrometheusData = async () => {
 	metrics.totalPrivateGroupMessages.set(statistics.totalPrivateGroupMessages);
 	metrics.totalDirectMessages.set(statistics.totalDirectMessages);
 	metrics.totalLivechatMessages.set(statistics.totalLivechatMessages);
-
-	// Apps metrics
-	const { totalInstalled, totalActive, totalFailed } = getAppsStatistics();
-
-	metrics.totalAppsInstalled.set(totalInstalled || 0);
-	metrics.totalAppsEnabled.set(totalActive || 0);
-	metrics.totalAppsFailed.set(totalFailed || 0);
-
-	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
-	metrics.oplogQueue.set(oplogQueue);
 
 	metrics.pushQueue.set(statistics.pushQueue || 0);
 };
