@@ -1,11 +1,8 @@
 import React from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Box, Icon, Button, ButtonGroup, Divider, Callout } from '@rocket.chat/fuselage';
-import { css } from '@rocket.chat/css-in-js';
 
-import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import UserCard from '../../../../../components/UserCard';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
@@ -20,6 +17,9 @@ import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import InfoPanel, { RetentionPolicyCallout } from '../../../../InfoPanel';
+import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -33,19 +33,9 @@ const retentionPolicyAppliesTo = {
 	d: 'RetentionPolicy_AppliesToDMs',
 };
 
-const wordBreak = css`
-	word-break: break-word !important;
-`;
-
-const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
-const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
-
-export const RoomInfoIcon = ({ name }) => <Icon name={name} size='x22' />;
-
-export const Title = (props) => <UserCard.Username {...props}/>;
-
 export const RoomInfo = function RoomInfo({
-	fname: name,
+	name,
+	fname,
 	description,
 	archived,
 	broadcast,
@@ -79,49 +69,50 @@ export const RoomInfo = function RoomInfo({
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24'>
-				<Box flexGrow={1}>
-					<Box pbe='x24' display='flex' justifyContent='center'>
+				<InfoPanel flexGrow={1}>
+
+					<InfoPanel.Avatar>
 						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
-					</Box>
+					</InfoPanel.Avatar>
 
-					{ archived && <Box pbe='x24'>
-						<Callout type='warning'>
-							{t('Room_archived')}
-						</Callout>
-					</Box>}
+					<InfoPanel.Section>
+						{ archived && <Box mb='x16'>
+							<Callout type='warning'>
+								{t('Room_archived')}
+							</Callout>
+						</Box>}
+					</InfoPanel.Section>
 
-					<Box pbe='x24'>
-						<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
-					</Box>
+					<InfoPanel.Section>
+						<InfoPanel.Title title={fname || name} icon={icon} />
+					</InfoPanel.Section>
 
-					{broadcast && broadcast !== '' && <Box pbe='x16'>
-						<Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</Label>
-					</Box>}
+					<InfoPanel.Section>
+						{broadcast && broadcast !== '' && <InfoPanel.Field>
+							<InfoPanel.Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</InfoPanel.Label>
+						</InfoPanel.Field>}
 
-					{description && description !== '' && <Box pbe='x16'>
-						<Label>{t('Description')}</Label>
-						<Info withTruncatedText={false}>{description}</Info>
-					</Box>}
+						{description && description !== '' && <InfoPanel.Field>
+							<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}>{description}</InfoPanel.Text>
+						</InfoPanel.Field>}
 
-					{announcement && announcement !== '' && <Box pbe='x16'>
-						<Label>{t('Announcement')}</Label>
-						<Info withTruncatedText={false}>{announcement}</Info>
-					</Box>}
+						{announcement && announcement !== '' && <InfoPanel.Field>
+							<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}>{announcement}</InfoPanel.Text>
+						</InfoPanel.Field>}
 
-					{topic && topic !== '' && <Box pbe='x16'>
-						<Label>{t('Topic')}</Label>
-						<Info withTruncatedText={false}>{topic}</Info>
-					</Box>}
+						{topic && topic !== '' && <InfoPanel.Field>
+							<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}>{topic}</InfoPanel.Text>
+						</InfoPanel.Field>}
 
-					{retentionPolicyEnabled && (
-						<Callout type='warning'>
-							{filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</p>}
-							{filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</p>}
-							{!filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning', { time: maxAgeDefault })}</p>}
-							{!filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_Unpinned', { time: maxAgeDefault })}</p>}
-						</Callout>
-					)}
-				</Box>
+						{retentionPolicyEnabled && (
+							<RetentionPolicyCallout filesOnlyDefault={filesOnlyDefault} excludePinnedDefault={excludePinnedDefault} maxAgeDefault={maxAgeDefault} />
+						)}
+					</InfoPanel.Section>
+
+				</InfoPanel>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
@@ -139,9 +130,6 @@ export const RoomInfo = function RoomInfo({
 		</>
 	);
 };
-
-RoomInfo.Title = Title;
-RoomInfo.Icon = RoomInfoIcon;
 
 export default ({
 	rid,

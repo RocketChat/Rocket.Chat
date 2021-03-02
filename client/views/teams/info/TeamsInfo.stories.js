@@ -1,11 +1,12 @@
 import React from 'react';
 
-import { RoomInfo } from './RoomInfo';
-import VerticalBar from '../../../../../components/VerticalBar';
+import VerticalBar from '../../../components/VerticalBar';
+
+import TeamsInfo from '.';
 
 export default {
-	title: 'components/RoomInfo',
-	component: RoomInfo,
+	title: 'components/TeamsInfo',
+	component: TeamsInfo,
 };
 
 const room = {
@@ -16,7 +17,7 @@ const room = {
 };
 
 export const Default = () => <VerticalBar height={800}>
-	<RoomInfo
+	<TeamsInfo
 		{...room}
 		icon='lock'
 		onClickHide={alert}
@@ -28,7 +29,7 @@ export const Default = () => <VerticalBar height={800}>
 
 
 export const Archived = () => <VerticalBar height={800}>
-	<RoomInfo
+	<TeamsInfo
 		{...room}
 		icon='lock'
 		onClickHide={alert}
@@ -41,7 +42,7 @@ export const Archived = () => <VerticalBar height={800}>
 
 
 export const Broadcast = () => <VerticalBar height={800}>
-	<RoomInfo
+	<TeamsInfo
 		{...room}
 		icon='lock'
 		onClickHide={alert}

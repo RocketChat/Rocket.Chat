@@ -3705,6 +3705,8 @@
   "TargetRoom": "Target Room",
   "TargetRoom_Description": "The room where messages will be sent which are a result of this event being fired. Only one target room is allowed and it must exist.",
   "Team": "Team",
+  "Teams_channels": "Team's Channels",
+  "View_channels": "View Channels",
   "Technology_Provider": "Technology Provider",
   "Technology_Services": "Technology Services",
   "Telecom": "Telecom",
