@@ -82,7 +82,7 @@ const CreateRoom = (props) => {
 			action: createChannel,
 		},
 		canCreateDirectMessages && {
-			icon: 'baloon-arrow-left',
+			icon: 'team',
 			name: t('Direct_Messages'),
 			qa: 'sidebar-create-dm',
 			action: createDirectMessage,
