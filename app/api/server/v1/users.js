@@ -202,10 +202,10 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 			user.rooms = Subscriptions.findByUserId(user._id, {
 				fields: {
 					rid: 1,
-					bio: 1,
 					name: 1,
 					t: 1,
 					roles: 1,
+					unread: 1,
 				},
 				sort: {
 					t: 1,
