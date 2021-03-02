@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { Sidebar } from '@rocket.chat/fuselage';
+import { Sidebar, Menu, Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { popover, modal } from '../../../../app/ui-utils';
+import { modal } from '../../../../app/ui-utils';
 import { useAtLeastOnePermission, usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -15,23 +15,7 @@ const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 
-const openPopover = (e, items) => popover.open({
-	columns: [
-		{
-			groups: [
-				{
-					items,
-				},
-			],
-		},
-	],
-	currentTarget: e.currentTarget,
-	offsetVertical: e.currentTarget.clientHeight + 10,
-});
-
-const useReactModal = (setModal, Component) => useMutableCallback((e) => {
-	e.preventDefault();
-
+const useReactModal = (setModal, Component) => useMutableCallback(() => {
 	const handleClose = () => {
 		setModal(null);
 	};
@@ -41,8 +25,7 @@ const useReactModal = (setModal, Component) => useMutableCallback((e) => {
 	/>);
 });
 
-const useAction = (title, content) => useMutableCallback((e) => {
-	e.preventDefault();
+const useAction = (title, content) => useMutableCallback(() => {
 	modal.open({
 		title,
 		content,
@@ -76,33 +59,29 @@ const CreateRoom = (props) => {
 
 	const items = useMemo(() => [
 		canCreateChannel && {
-			icon: 'hashtag',
-			name: t('Channel'),
-			qa: 'sidebar-create-channel',
+			label: <Box><Icon name={'hashtag'} />{t('Channel')}</Box>,
 			action: createChannel,
 		},
 		canCreateDirectMessages && {
-			icon: 'team',
-			name: t('Direct_Messages'),
-			qa: 'sidebar-create-dm',
+			label: <Box><Icon name={'baloon-arrow-left'} />{t('Direct_Messages')}</Box>,
 			action: createDirectMessage,
 		},
 		discussionEnabled && canCreateDiscussion && {
-			icon: 'discussion',
-			name: t('Discussion'),
-			qa: 'sidebar-create-discussion',
+			label: <Box><Icon name={'discussion'} />{t('Discussion')}</Box>,
 			action: createDiscussion,
 		},
 	].filter(Boolean), [canCreateChannel, canCreateDirectMessages, canCreateDiscussion, createChannel, createDirectMessage, createDiscussion, discussionEnabled, t]);
 
-	const onClick = useMutableCallback((e) => {
-		if (items.length === 1) {
-			return items[0].action(e);
-		}
-		openPopover(e, items);
-	});
+	const menu = useMemo(() => <Menu
+		key='menu'
+		square
+		mi='x4'
+		icon='edit-rounded'
+		options={items}
+		{...props}
+	/>, [items, props]);
 
-	return showCreate ? <Sidebar.TopBar.Action {...props} icon='edit-rounded' onClick={onClick}/> : null;
+	return showCreate ? <Sidebar.TopBar.Action children={menu}></Sidebar.TopBar.Action> : null;
 };
 
 export default CreateRoom;
