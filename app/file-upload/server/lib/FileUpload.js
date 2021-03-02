@@ -30,7 +30,6 @@ import { AppEvents, Apps } from '../../../apps/server';
 import { streamToBuffer } from './streamToBuffer';
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpeg_static from 'ffmpeg-static';
-import { file as fileGenerator } from 'tmp-promise';
 import util from 'util';
 import path from 'path';
 
@@ -273,17 +272,14 @@ export const FileUpload = {
 	getVideoPreview(file, details) {
 		const { _id: id } = file;
 		const finished = util.promisify(stream.finished);
-		return fileGenerator()
-			.then(({ fd, path: descriptorPath, cleanup }) => {
-				file = Uploads.findOneById(id);
-				file = FileUpload.addExtensionTo(file);
-				const video = FileUpload.getStore('Uploads')._store.getReadStream(id, file);
-				const tempFile = fs.createWriteStream(null, { fd })
-				const fileExtension = path.extname(file.path).split('.')[1];
-				video.pipe(tempFile);
 
-				return Promise.all([finished(video), descriptorPath, fileExtension]);
-			})
+		file = Uploads.findOneById(id);
+		file = FileUpload.addExtensionTo(file);
+		const tempFile = UploadFS.getTempFilePath(id)
+		const video = FileUpload.getStore('Uploads')._store.getReadStream(id, file).pipe(fs.createWriteStream(tempFile));
+		const fileExtension = path.extname(file.path).split('.')[1];
+
+		return Promise.all([finished(video), tempFile, fileExtension])
 			.then(([, descriptorPath, fileExtension]) => {
 				const writable = new stream.Writable();
 				writable.data = [];
