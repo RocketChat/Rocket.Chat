@@ -28,6 +28,11 @@ import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
 import { AppEvents, Apps } from '../../../apps/server';
 import { streamToBuffer } from './streamToBuffer';
+import ffmpeg from 'fluent-ffmpeg';
+import ffmpeg_static from 'ffmpeg-static';
+import { file as fileGenerator } from 'tmp-promise';
+import util from 'util';
+import path from 'path';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -263,6 +268,53 @@ export const FileUpload = {
 		const result = transformer.toBuffer().then((out) => out.toString('base64'));
 		image.pipe(transformer);
 		return result;
+	},
+
+	getVideoPreview(file, details) {
+		const { _id: id } = file;
+		const finished = util.promisify(stream.finished);
+		return fileGenerator()
+			.then(({ fd, path: descriptorPath, cleanup }) => {
+				file = Uploads.findOneById(id);
+				file = FileUpload.addExtensionTo(file);
+				const video = FileUpload.getStore('Uploads')._store.getReadStream(id, file);
+				const tempFile = fs.createWriteStream(null, { fd })
+				const fileExtension = path.extname(file.path).split('.')[1];
+				video.pipe(tempFile);
+
+				return Promise.all([finished(video), descriptorPath, fileExtension]);
+			})
+			.then(([, descriptorPath, fileExtension]) => {
+				return Promise.all([fileGenerator(), descriptorPath, fileExtension])
+			})
+			.then(([{ path: outPath }, descriptorPath, fileExtension]) => {
+				const promise = new Promise((resolve, reject) => {
+					const conversion = ffmpeg()
+						.input(descriptorPath)
+						.inputFormat(fileExtension)
+						.setFfmpegPath(ffmpeg_static)
+						.seekInput('00:00.000')
+						.addOutputOption('-vframes', '1')
+						.addOutputOption('-movflags','frag_keyframe+empty_moov')
+						.outputFormat('image2')
+						.noAudio()
+						.size('50%')
+						.output(outPath)
+						.on('error', reject)
+						.on('end', (...args) => {
+							console.log(args)
+							return resolve();
+						})
+						.run();
+				})
+				
+				return Promise.all([promise, outPath]);
+			})
+			.then(([, filePath]) => {
+				const fileStream = fs.createReadStream(filePath)
+				const store = FileUpload.getStore('Uploads');
+				return store.insertSync(details, fileStream);
+			});
 	},
 
 	uploadsOnValidate(file) {
@@ -607,6 +659,11 @@ export class FileUploadClass {
 		const filter = this.store.getFilter();
 		if (filter && filter.check) {
 			filter.check({ file: fileData, content: streamOrBuffer });
+		}
+
+		// check if size is defined
+		if (!fileData.size) {
+			fileData.size = streamOrBuffer.length;
 		}
 
 		return this._doInsert(fileData, streamOrBuffer, cb);
