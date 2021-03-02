@@ -285,9 +285,11 @@ export const FileUpload = {
 				return Promise.all([finished(video), descriptorPath, fileExtension]);
 			})
 			.then(([, descriptorPath, fileExtension]) => {
-				return Promise.all([fileGenerator(), descriptorPath, fileExtension])
-			})
-			.then(([{ path: outPath }, descriptorPath, fileExtension]) => {
+				const writable = new stream.Writable();
+				writable.data = [];
+				writable._write = function(chunk) {
+					this.data.push(chunk);
+				}
 				const promise = new Promise((resolve, reject) => {
 					const conversion = ffmpeg()
 						.input(descriptorPath)
@@ -299,21 +301,20 @@ export const FileUpload = {
 						.outputFormat('image2')
 						.noAudio()
 						.size('50%')
-						.output(outPath)
+						.output(writable, { end: true })
 						.on('error', reject)
 						.on('end', (...args) => {
-							console.log(args)
-							return resolve();
+							return resolve(Buffer.concat(writable.data));
 						})
 						.run();
 				})
 				
-				return Promise.all([promise, outPath]);
+				return promise;
 			})
-			.then(([, filePath]) => {
-				const fileStream = fs.createReadStream(filePath)
+			.then((buffer) => {
+				// const fileStream = fs.createReadStream(filePath)
 				const store = FileUpload.getStore('Uploads');
-				return store.insertSync(details, fileStream);
+				return store.insertSync(details, buffer);
 			});
 	},
 
