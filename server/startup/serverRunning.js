@@ -4,14 +4,12 @@ import path from 'path';
 import semver from 'semver';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Accounts } from 'meteor/accounts-base';
 
 import { SystemLogger } from '../../app/logger';
 import { settings } from '../../app/settings/server';
 import { Info, getMongoInfo } from '../../app/utils/server';
 import { Users } from '../../app/models/server';
 import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
-import { appTokensCollection } from '../../app/push/server';
 
 const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
@@ -21,12 +19,7 @@ const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	process.exit(errorCode);
 };
 
-Meteor.startup(function() {
-	Accounts.onLogout((data) => {
-		const userId = data.user._id;
-		appTokensCollection.update({ userId }, { $unset: { authToken: '' } });
-	});
-
+Meteor.startup(function () {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
