@@ -65,11 +65,11 @@ export class PushClass {
 	}
 
 	_replaceToken(currentToken, newToken) {
-		appTokensCollection.updateMany({ token: currentToken }, { $set: { token: newToken } });
+		appTokensCollection.rawCollection().updateMany({ token: currentToken }, { $set: { token: newToken } });
 	}
 
 	_removeToken(token) {
-		appTokensCollection.deleteOne({ token });
+		appTokensCollection.rawCollection().deleteOne({ token });
 	}
 
 	_shouldUseGateway() {
