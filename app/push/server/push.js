@@ -85,10 +85,8 @@ export class PushClass {
 			return;
 		}
 
-		console.log('token query result: ', pushTokenQuery);
 		const { authToken, userId } = pushTokenQuery;
 		const hashedToken = Accounts._hashLoginToken(authToken);
-		console.log('hashed token: ', hashedToken);
 
 		const user = Users.findOne({ _id: userId });
 
@@ -98,8 +96,12 @@ export class PushClass {
 			.loginTokens
 			.filter((t) => t.hashedToken === hashedToken).length > 0;
 
-		console.log('should send notification? ', !!hasToken);
-		return !!hasToken;
+		if (!hasToken) {
+			this._removeToken(pushToken);
+			return false;
+		}
+
+		return true;
 	}
 
 	sendNotificationNative(app, notification, countApn, countGcm) {

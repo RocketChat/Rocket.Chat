@@ -19,7 +19,7 @@ const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	process.exit(errorCode);
 };
 
-Meteor.startup(function () {
+Meteor.startup(function() {
 	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
