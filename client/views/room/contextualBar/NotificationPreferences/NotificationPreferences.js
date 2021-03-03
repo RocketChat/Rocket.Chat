@@ -11,7 +11,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import { Preferences } from './components/Preferences';
 import { NotificationByDevice } from './components/NotificationByDevice';
 import { NotificationToogle } from './components/NotificationToogle';
-
+import { useTabBarClose } from '../../providers/ToolboxProvider';
 
 export const NotificationPreferences = ({
 	handleClose,
@@ -21,7 +21,6 @@ export const NotificationPreferences = ({
 	handlePlaySound,
 	handleOptions,
 	handleSaveButton,
-	handleCancelButton,
 }) => {
 	const t = useTranslation();
 	return <>
@@ -54,24 +53,23 @@ export const NotificationPreferences = ({
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
-				<Button onClick={handleCancelButton}>{t('Cancel')}</Button>
+				{handleClose && <Button onClick={handleClose}>{t('Cancel')}</Button>}
 				<Button primary disabled={!formHasUnsavedChanges} onClick={handleSaveButton}>{t('Save')}</Button>
 			</ButtonGroup>
 		</VerticalBar.Footer>
 	</>;
 };
 
-export default React.memo(({ tabBar, rid }) => {
+export default React.memo(({ rid }) => {
 	const t = useTranslation();
 
 	const subscription = useUserSubscription(rid);
 
 	const customSound = useCustomSound();
-
-	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
+	const handleClose = useTabBarClose();
 	const saveSettings = useEndpointActionExperimental('POST', 'rooms.saveNotification', t('Room_updated_successfully'));
 
-	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm(
+	const { values, handlers, hasUnsavedChanges, commit } = useForm(
 		{
 			turnOn: !subscription.disableNotifications,
 			muteGroupMentions: subscription.muteGroupMentions,
@@ -83,7 +81,6 @@ export default React.memo(({ tabBar, rid }) => {
 			emailAlert: (subscription.emailPrefOrigin === 'subscription' && subscription.emailNotifications) || 'default',
 		},
 	);
-
 
 	const defaultOption = [
 		['default', t('Default')],
@@ -136,7 +133,6 @@ export default React.memo(({ tabBar, rid }) => {
 			handlePlaySound={handlePlaySound}
 			handleOptions={handleOptions}
 			handleSaveButton={handleSaveButton}
-			handleCancelButton={reset}
 		/>
 	);
 });

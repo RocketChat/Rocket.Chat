@@ -41,12 +41,12 @@ export class Base {
 	 * The max BSON object size we can store in MongoDB is 16777216 bytes
 	 * but for some reason the mongo instanace which comes with Meteor
 	 * errors out for anything close to that size. So, we are rounding it
-	 * down to 8000000 bytes.
+	 * down to 6000000 bytes.
 	 *
 	 * @returns {number} 8000000 bytes.
 	 */
 	static getMaxBSONSize() {
-		return 8000000;
+		return 6000000;
 	}
 
 	/**

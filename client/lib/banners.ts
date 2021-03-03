@@ -5,6 +5,7 @@ import { mountRoot } from '../reactAdapters';
 import { UiKitBannerPayload } from '../../definition/UIKit';
 
 export type LegacyBannerPayload = {
+	id: string;
 	closable?: boolean;
 	title?: string;
 	text?: string;
@@ -21,7 +22,10 @@ type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;
 export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload => !('blocks' in payload);
 
 const queue: BannerPayload[] = [];
-const emitter = new Emitter();
+const emitter = new Emitter<{
+	update: undefined;
+	'update-first': undefined;
+}>();
 
 export const firstSubscription: Subscription<BannerPayload | null> = {
 	getCurrentValue: () => queue[0] ?? null,
@@ -31,13 +35,14 @@ export const firstSubscription: Subscription<BannerPayload | null> = {
 export const open = (payload: BannerPayload): void => {
 	mountRoot();
 
-	let index = -1;
+	let index = queue.findIndex((_payload) => {
+		if (isLegacyPayload(_payload)) {
+			return _payload.id === (payload as LegacyBannerPayload).id;
+		}
+		return (_payload as UiKitBannerPayload).viewId === (payload as UiKitBannerPayload).viewId;
+	});
 
-	if (!isLegacyPayload(payload)) {
-		index = queue.findIndex((_payload) => !isLegacyPayload(_payload) && _payload.viewId === payload.viewId);
-	}
-
-	if (index < 0) {
+	if (index === -1) {
 		index = queue.length;
 	}
 
@@ -51,15 +56,21 @@ export const open = (payload: BannerPayload): void => {
 };
 
 
-export const closeById = (viewId: string): void => {
-	const index = queue.findIndex((banner) => !isLegacyPayload(banner) && banner.viewId === viewId);
+export const closeById = (id: string): void => {
+	const index = queue.findIndex((banner) => {
+		if (!isLegacyPayload(banner)) {
+			return banner.viewId === id;
+		}
+		return banner.id === id;
+	});
+
 	if (index < 0) {
 		return;
 	}
 
 	queue.splice(index, 1);
 	emitter.emit('update');
-	emitter.emit('update-first');
+	index === 0 && emitter.emit('update-first');
 };
 
 export const close = (): void => {

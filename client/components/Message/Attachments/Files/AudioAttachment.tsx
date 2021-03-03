@@ -30,7 +30,7 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 			<Attachment.Title>{title}</Attachment.Title>
 			{size && <Attachment.Size size={size}/>}
 			{collapse}
-			{hasDownload && link && <Attachment.Download title={title} href={link}/>}
+			{hasDownload && link && <Attachment.Download title={title} href={getURL(link)}/>}
 		</Attachment.Row>
 		{ !collapsed && <Attachment.Content border='none'>
 			<audio controls>

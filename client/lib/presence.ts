@@ -1,9 +1,22 @@
-import { Emitter, EventType, Handler } from '@rocket.chat/emitter';
+import { Emitter, EventHandlerOf } from '@rocket.chat/emitter';
 
 import { APIClient } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
+import { USER_STATUS } from '../../definition/UserStatus';
 
-const emitter = new Emitter();
+type InternalEvents = {
+	remove: IUser['_id'];
+	reset: undefined;
+	restart: undefined;
+};
+
+type ExternalEvents = {
+	[key: string]: UserPresence | undefined;
+};
+
+type Events = InternalEvents & ExternalEvents;
+
+const emitter = new Emitter<Events>();
 
 const store = new Map<string, UserPresence>();
 
@@ -14,7 +27,7 @@ type UsersPresencePayload = {
 	full: boolean;
 };
 
-const isUid = (eventType: EventType): eventType is UserPresence['_id'] =>
+const isUid = (eventType: keyof Events): eventType is UserPresence['_id'] =>
 	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'restart', 'remove'].includes(eventType);
 
 const uids = new Set<UserPresence['_id']>();
@@ -41,7 +54,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 				});
 
 				currentUids.forEach((uid) => {
-					emitter.emit(uid, { _id: uid, status: 'offline' });
+					emitter.emit(uid, { _id: uid, status: USER_STATUS.OFFLINE });
 				});
 
 				currentUids.clear();
@@ -68,6 +81,10 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 
 	emitter.on('reset', () => {
 		store.clear();
+		emitter.events()
+			.filter(isUid).forEach((uid) => {
+				emitter.emit(uid, undefined);
+			});
 		emitter.once('restart', () => {
 			emitter.events()
 				.filter(isUid)
@@ -78,36 +95,35 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	return get;
 })();
 
-const update: Handler<UserPresence> = (update) => {
+const update: EventHandlerOf<ExternalEvents, string> = (update) => {
 	if (update?._id) {
 		store.set(update._id, update);
 		uids.delete(update._id);
 	}
 };
 
-const listen = (uid: UserPresence['_id'], handler: Handler<UserPresence>): void => {
+const listen = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void)): void => {
 	emitter.on(uid, update);
 	emitter.on(uid, handler);
-	emitter.on('reset', handler);
 
-	if (store.has(uid)) {
-		return handler(store.get(uid));
+	const user = store.has(uid) && store.get(uid);
+	if (user) {
+		return handler(user);
 	}
 
 	getPresence(uid);
 };
 
-const stop = (uid: UserPresence['_id'], handler: Handler<UserPresence>): void => {
+const stop = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void)): void => {
 	setTimeout(() => {
 		emitter.off(uid, handler);
 		emitter.off(uid, update);
-		emitter.off('reset', handler);
 		emitter.emit('remove', uid);
 	}, 5000);
 };
 
 const reset = (): void => {
-	emitter.emit('reset', {});
+	emitter.emit('reset');
 	store.clear();
 };
 
@@ -125,6 +141,14 @@ const notify = (update: UserPresence): void => {
 	}
 };
 
+const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> => new Promise((resolve) => {
+	const callback: EventHandlerOf<ExternalEvents, UserPresence['_id']> = (args): void => {
+		resolve(args);
+		stop(uid, callback);
+	};
+	listen(uid, callback);
+});
+
 export const Presence = {
 	listen,
 	stop,
@@ -132,4 +156,5 @@ export const Presence = {
 	restart,
 	notify,
 	store,
+	get,
 };

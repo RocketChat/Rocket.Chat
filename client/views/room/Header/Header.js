@@ -12,7 +12,7 @@ import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';
 import MarkdownText from '../../../components/MarkdownText';
 import { roomTypes } from '../../../../app/utils';
-import { useUserRoom, useUserId } from '../../../contexts/UserContext';
+import { useUserSubscription, useUserId } from '../../../contexts/UserContext';
 import { useUserData } from '../../../hooks/useUserData';
 
 export default React.memo(({ room }) => {
@@ -35,14 +35,14 @@ const HeaderIcon = ({ room }) => {
 };
 
 const RoomTitle = ({ room }) => {
-	const prevRoom = useUserRoom(room.prid);
-	const prevRoomHref = prevRoom ? roomTypes.getRouteLink(prevRoom.t, prevRoom) : null;
+	const prevSubscription = useUserSubscription(room.prid);
+	const prevRoomHref = prevSubscription ? roomTypes.getRouteLink(prevSubscription.t, prevSubscription) : null;
 
 	return <Breadcrumbs>
-		{room.prid && prevRoom && <>
+		{room.prid && prevSubscription && <>
 			<Breadcrumbs.Item>
-				<HeaderIcon room={prevRoom}/>
-				<Breadcrumbs.Link href={prevRoomHref}>{prevRoom.name}</Breadcrumbs.Link>
+				<HeaderIcon room={prevSubscription}/>
+				<Breadcrumbs.Link href={prevRoomHref}>{prevSubscription.name}</Breadcrumbs.Link>
 			</Breadcrumbs.Item>
 			<Breadcrumbs.Separator />
 		</>}
@@ -78,7 +78,7 @@ const RoomHeader = ({ room, topic }) => {
 				<Translate room={room} />
 			</Header.Content.Row>
 			<Header.Content.Row>
-				<Header.Subtitle>{topic && <MarkdownText withRichContent={false} content={topic}/>}</Header.Subtitle>
+				<Header.Subtitle>{topic && <MarkdownText variant='inlineWithoutBreaks' content={topic}/>}</Header.Subtitle>
 			</Header.Content.Row>
 		</Header.Content>
 		<Header.ToolBox>
