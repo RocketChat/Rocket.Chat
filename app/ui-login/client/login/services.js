@@ -71,6 +71,8 @@ Template.loginServices.events({
 		if (this.service == null || this.service.service == null) {
 			return;
 		}
+
+		localStorage.setItem('redirect_uri', window.location.href);
 		const loadingIcon = $(e.currentTarget).find('.loading-icon');
 		const serviceIcon = $(e.currentTarget).find('.service-icon');
 		loadingIcon.removeClass('hidden');

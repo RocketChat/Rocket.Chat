@@ -83,7 +83,12 @@ FlowRouter.route('/home', {
 					}
 				}
 
-				BlazeLayout.render('main', { center: 'home' });
+				if (!localStorage.getItem('redirect_uri')) {
+					BlazeLayout.render('main', { center: 'home' });
+				} else {
+					window.location.href = localStorage.getItem('redirect_uri');
+					localStorage.removeItem('redirect_uri');
+				}
 			});
 
 			return;
