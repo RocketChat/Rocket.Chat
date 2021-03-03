@@ -723,6 +723,8 @@
   "Chat_History": "Chat History",
   "Chat_Now": "Chat Now",
   "chat_on_hold_due_to_inactivity": "This chat is on-hold due to inactivity",
+  "Chat_On_Hold": "Chat On-Hold",
+  "Chat_On_Hold_Successfully": "This chat was successfully placed On-Hold",
   "Chat_queued": "Chat Queued",
   "Chat_removed": "Chat Removed",
   "Chat_start": "Chat Start",

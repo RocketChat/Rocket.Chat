@@ -5,6 +5,7 @@ import { Users } from '../../../../../app/models';
 import { LivechatInquiry, OmnichannelQueue } from '../../../../../app/models/server/raw';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
+import { LivechatRooms, Subscriptions } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
@@ -162,6 +163,16 @@ export const LivechatEnterprise = {
 	updateRoomPriority(roomId, user, priority) {
 		updateInquiryQueuePriority(roomId, priority);
 		updateRoomPriorityHistory(roomId, user, priority);
+	},
+
+	placeRoomOnHold(roomId) {
+		check(roomId, String);
+		console.log('-------LivechatEnterprise.placeRoomOnHold', roomId);
+		let resp = LivechatRooms.setIsChatOnHold(roomId);
+		console.log('----placeRoomOnHold rooms db response', resp);
+		resp = Subscriptions.setIsChatOnHold(roomId);
+		console.log('----placeRoomOnHold subscription db response', resp);
+		LivechatRooms.unsetCanPlaceOnHold(roomId);
 	},
 };
 

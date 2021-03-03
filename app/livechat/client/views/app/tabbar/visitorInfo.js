@@ -330,6 +330,25 @@ Template.visitorInfo.events({
 
 		instance.action.set('transcript');
 	},
+
+	'click .on-hold'(event) {
+		event.preventDefault();
+		console.log('--on-hold manual button clicked');
+
+		return Meteor.call('livechat:placeChatOnHold', this.rid, function(error/* , result*/) {
+			if (error) {
+				return handleError(error);
+			}
+
+			modal.open({
+				title: t('Chat_On_Hold'),
+				text: t('Chat_On_Hold_Successfully'),
+				type: 'success',
+				timer: 1500,
+				showConfirmButton: false,
+			});
+		});
+	},
 });
 
 Template.visitorInfo.onCreated(function() {
