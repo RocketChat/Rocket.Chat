@@ -65,7 +65,7 @@ export function UsersTable() {
 	const t = useTranslation();
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState([['status','desc'],['name', 'asc'], ['usernames', 'asc'],]);
+	const [sort, setSort] = useState([['status', 'desc'], ['name', 'asc'], ['usernames', 'asc']]);
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
