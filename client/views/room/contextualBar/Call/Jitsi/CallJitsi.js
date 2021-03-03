@@ -122,7 +122,7 @@ const CallJitsWithData = ({ rid }) => {
 			desktopSharingChromeExtId,
 			name: user.name || user.username,
 		}, HEARTBEAT);
-	}, [accessToken, desktopSharingChromeExtId, domain, isEnabledTokenAuth, openNewWindow, prefix, rid, room.name, room.t, room.usernames, ssl, sufix, uniqueID, useHashName, user.name, user.username]);
+	}, [accessToken, desktopSharingChromeExtId, domain, isEnabledTokenAuth, openNewWindow, prefix, rid, room.name, room.t, ssl, sufix, uniqueID, useHashName, user.name, user.username]);
 
 	const testAndHandleTimeout = useMutableCallback(() => {
 		if (new Date() - new Date(room.jitsiTimeout) > TIMEOUT) {
