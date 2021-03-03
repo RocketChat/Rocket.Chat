@@ -21,6 +21,8 @@ export const createPermissions = () => {
 		'view-livechat-rooms',
 		'close-livechat-room',
 		'close-others-livechat-room',
+		'onHold-livechat-room',
+		'onHold-others-livechat-room',
 		'save-others-livechat-room-info',
 		'remove-closed-livechat-rooms',
 		'view-livechat-analytics',
