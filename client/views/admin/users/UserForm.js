@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Field, TextInput, TextAreaInput, PasswordInput, MultiSelectFiltered, Box, ToggleSwitch, Icon, Divider, FieldGroup } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -45,6 +45,9 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 	} = formHandlers;
 
 	const onLoadCustomFields = useCallback((hasCustomFields) => setHasCustomFields(hasCustomFields), []);
+	const roleKeys = Array.from(new Map(availableRoles).keys());
+	const rolesToShow = roles.filter((r) => roleKeys.indexOf(r) >= 0);
+	useEffect(()=>handleRoles(rolesToShow), [])
 
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} { ...props }>
 		<FieldGroup>
@@ -123,8 +126,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 				</Field.Row>
 			</Field>, [t, setRandomPassword, handleSetRandomPassword])}
 			{useMemo(() => {
-				const roleKeys = Array.from(new Map(availableRoles).keys());
-				const rolesToShow = roles.filter((r) => roleKeys.indexOf(r) >= 0);
+				
 				return (
 					<Field>
 						<Field.Label>{t('Roles')}</Field.Label>
