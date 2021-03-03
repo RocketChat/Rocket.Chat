@@ -47,7 +47,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 	const onLoadCustomFields = useCallback((hasCustomFields) => setHasCustomFields(hasCustomFields), []);
 	const roleKeys = Array.from(new Map(availableRoles).keys());
 	const rolesToShow = roles.filter((r) => roleKeys.indexOf(r) >= 0);
-	useEffect(()=>handleRoles(rolesToShow), [])
+	useEffect(() => handleRoles(rolesToShow), []);
 
 	return <VerticalBar.ScrollableContent is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} { ...props }>
 		<FieldGroup>
@@ -125,16 +125,12 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 					</Box>
 				</Field.Row>
 			</Field>, [t, setRandomPassword, handleSetRandomPassword])}
-			{useMemo(() => {
-				
-				return (
-					<Field>
-						<Field.Label>{t('Roles')}</Field.Label>
-						<Field.Row>
-							<MultiSelectFiltered options={availableRoles} value={rolesToShow} onChange={handleRoles} placeholder={t('Select_role')} flexShrink={1}/>
-						</Field.Row>
-					</Field>);
-			}, [availableRoles, handleRoles, roles, t])}
+			{useMemo(() => <Field>
+				<Field.Label>{t('Roles')}</Field.Label>
+				<Field.Row>
+					<MultiSelectFiltered options={availableRoles} value={rolesToShow} onChange={handleRoles} placeholder={t('Select_role')} flexShrink={1}/>
+				</Field.Row>
+			</Field>, [availableRoles, handleRoles, t, rolesToShow])}
 			{useMemo(() => handleJoinDefaultChannels && <Field>
 				<Field.Row>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
