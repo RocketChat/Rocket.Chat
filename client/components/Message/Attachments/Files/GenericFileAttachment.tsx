@@ -24,7 +24,7 @@ export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 	// const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
 	return <Attachment>
-		{ description && <MarkdownText withRichContent={undefined} content={description} /> }
+		{ description && <MarkdownText content={description} /> }
 		<Attachment.Row>
 			{ hasDownload && link ? <Attachment.TitleLink link={getURL(link)} title={title} /> : <Attachment.Title>{title}</Attachment.Title> }
 			{size && <Attachment.Size size={size}/>}
