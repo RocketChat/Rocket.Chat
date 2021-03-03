@@ -65,7 +65,7 @@ export class AppsRestApi {
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
 
-			orchestrator.getRocketChatLogger().error(message, e.response.data);
+			orchestrator.getRocketChatLogger().warn(message, e.response.data);
 
 			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
 				return API.v1.internalError();
@@ -368,7 +368,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleWarn('Unable to access Marketplace. Does the server has access to the internet?:', e);
+						return handleWarn('Unable to access Marketplace:', e);
 					}
 
 					if (!result || result.statusCode !== 200 || result.data.length === 0) {
