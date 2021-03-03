@@ -41,6 +41,8 @@ const useAction = (title, content) => useMutableCallback(() => {
 	});
 });
 
+const MenuItemContent = ({ icon, name }) => <Box fontWeight='500' fontSize='x14'><Icon name={icon} size='x16' mie='x6' color='neutral' />{name}</Box>;
+
 const CreateRoom = (props) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
@@ -59,15 +61,15 @@ const CreateRoom = (props) => {
 
 	const items = useMemo(() => [
 		canCreateChannel && {
-			label: <Box><Icon name={'hashtag'} />{t('Channel')}</Box>,
+			label: <MenuItemContent name={t('Channel')} icon='hashtag' />,
 			action: createChannel,
 		},
 		canCreateDirectMessages && {
-			label: <Box><Icon name={'baloon-arrow-left'} />{t('Direct_Messages')}</Box>,
+			label: <MenuItemContent name={t('Direct_Messages')} icon='baloon-arrow-left' />,
 			action: createDirectMessage,
 		},
 		discussionEnabled && canCreateDiscussion && {
-			label: <Box><Icon name={'discussion'} />{t('Discussion')}</Box>,
+			label: <MenuItemContent name={t('Discussion')} icon='discussion' />,
 			action: createDiscussion,
 		},
 	].filter(Boolean), [canCreateChannel, canCreateDirectMessages, canCreateDiscussion, createChannel, createDirectMessage, createDiscussion, discussionEnabled, t]);
