@@ -2760,6 +2760,7 @@
   "Most_popular_channels_top_5": "Most popular channels (Top 5)",
   "Move_beginning_message": "`%s` - Move to the beginning of the message",
   "Move_end_message": "`%s` - Move to the end of the message",
+  "Move_queue": "Move to the queue",
   "Msgs": "Msgs",
   "multi": "multi",
   "multi_line": "multi line",

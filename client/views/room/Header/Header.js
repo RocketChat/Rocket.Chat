@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box } from '@rocket.chat/fuselage';
 
 import Header from '../../../components/Header';
 import Breadcrumbs from '../../../components/Breadcrumbs';
@@ -7,6 +8,7 @@ import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
 import ToolBox from './ToolBox';
+import QuickActions from './QuickActions';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';
@@ -76,6 +78,9 @@ const RoomHeader = ({ room, topic }) => {
 				<Favorite room={room} />
 				<Encrypted room={room} />
 				<Translate room={room} />
+				<Box mis='x20' display='flex'>
+					<QuickActions room={room}/>
+				</Box>
 			</Header.Content.Row>
 			<Header.Content.Row>
 				<Header.Subtitle>{topic && <MarkdownText variant='inlineWithoutBreaks' content={topic}/>}</Header.Subtitle>
