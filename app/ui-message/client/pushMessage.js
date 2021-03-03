@@ -9,7 +9,7 @@ Template.pushMessage.helpers({
 		const { _id, pushm_post_processed, pushm_scope, msg, post_processed_message } = this.msg;
 		if (!pushm_post_processed) {
 			navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
-				console.log("Pushing message to service worker for post processing");
+				console.log('Pushing message to service worker for post processing');
 				serviceWorkerRegistration.pushManager.dispatchMessage(pushm_scope, msg);
 				serviceWorkerRegistration.monitorNotification(pushm_scope).then((post_processed_message) => {
 					const newMsg = {};
