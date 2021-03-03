@@ -78,7 +78,7 @@ const UserCard = forwardRef(({
 			<Username status={status} name={name} title={username !== name ? username : undefined} />
 			{nickname && <Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText>({ nickname })</Box>}
 		</Box>
-		{ customStatus && <Info>{typeof customStatus === 'string' ? <MarkdownText content={customStatus} withRichContent={false}/> : customStatus}</Info> }
+		{ customStatus && <Info>{typeof customStatus === 'string' ? <MarkdownText content={customStatus} /> : customStatus}</Info> }
 		<Roles>{roles}</Roles>
 		<Info>{localTime}</Info>
 		{ bio && <Info withTruncatedText={false} style={clampStyle} height='x60'>{typeof bio === 'string' ? <MarkdownText content={bio}/> : bio}</Info> }

@@ -376,7 +376,7 @@ export class SAML {
 		});
 	}
 
-	private static processValidateAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, samlObject: ISAMLAction): void {
+	private static processValidateAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, _samlObject: ISAMLAction): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		SAMLUtils.relayState = req.body.RelayState;
 		serviceProvider.validateResponse(req.body.SAMLResponse, (err, profile/* , loggedOut*/) => {
@@ -390,20 +390,14 @@ export class SAML {
 					throw new Error('No user data collected from IdP response.');
 				}
 
-				let credentialToken = (profile.inResponseToId && profile.inResponseToId.value) || profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
+				// create a random token to store the login result
+				// to test an IdP initiated login on localhost, use the following URL (assuming SimpleSAMLPHP on localhost:8080):
+				// http://localhost:8080/simplesaml/saml2/idp/SSOService.php?spentityid=http://localhost:3000/_saml/metadata/test-sp
+				const credentialToken = Random.id();
+
 				const loginResult = {
 					profile,
 				};
-
-				if (!credentialToken) {
-					// If the login was initiated by the IDP, then we don't have a credentialToken as there was no AuthorizeRequest on our side
-					// so we create a random token now to use the same url to end the login
-					//
-					// to test an IdP initiated login on localhost, use the following URL (assuming SimpleSAMLPHP on localhost:8080):
-					// http://localhost:8080/simplesaml/saml2/idp/SSOService.php?spentityid=http://localhost:3000/_saml/metadata/test-sp
-					credentialToken = Random.id();
-					SAMLUtils.log('[SAML] Using random credentialToken: ', credentialToken);
-				}
 
 				this.storeCredential(credentialToken, loginResult);
 				const url = `${ Meteor.absoluteUrl('home') }?saml_idp_credentialToken=${ credentialToken }`;
