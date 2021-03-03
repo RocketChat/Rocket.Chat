@@ -83,6 +83,7 @@ export class VisitorInactivityMonitor {
 		console.log('----placeRoomOnHold rooms db response', resp);
 		resp = Subscriptions.setIsChatOnHold(room._id);
 		console.log('----placeRoomOnHold subscription db response', resp);
+		LivechatRooms.unsetCanPlaceOnHold(room._id);
 	}
 
 	handleAbandonedRooms() {

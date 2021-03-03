@@ -38,6 +38,9 @@ export interface IRoom extends IRocketChatRecord {
 			balance: number;
 		}[];
 	};
+
+	isChatOnHold?: boolean;
+	canPlaceChatOnHold?: boolean;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {

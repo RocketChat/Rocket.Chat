@@ -53,7 +53,7 @@ export const createSettings = () => {
 		],
 	});
 
-	settings.add('Livechat_abandoned_rooms_action', false, {
+	settings.add('Livechat_abandoned_rooms_action', 'none', {
 		type: 'select',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -62,13 +62,14 @@ export const createSettings = () => {
 			{ key: 'close', i18nLabel: 'Livechat_close_chat' },
 			{ key: 'on-hold', i18nLabel: 'Livechat_onHold_Chat' },
 		],
-		value: 'none',
 		enterprise: true,
-		invalidValue: false,
+		public: true,
+		invalidValue: 'none',
 		modules: [
 			'livechat-enterprise',
 		],
 	});
+
 
 	settings.add('Livechat_abandoned_rooms_closed_custom_message', '', {
 		type: 'string',
@@ -127,12 +128,11 @@ export const createSettings = () => {
 		],
 	});
 
-	settings.add('Livechat_auto_close_on_hold_chats_timeout', true, {
+	settings.add('Livechat_auto_close_on_hold_chats_timeout', 60, {
 		type: 'int',
 		group: 'Omnichannel',
 		section: 'Sessions',
 		enterprise: true,
-		value: 60,
 		invalidValue: 0,
 		modules: [
 			'livechat-enterprise',
@@ -151,13 +151,13 @@ export const createSettings = () => {
 		],
 	});
 
-	settings.add('Livechat_manual_on_hold_timeout', true, {
+	settings.add('Livechat_manual_on_hold_timeout', 60, {
 		type: 'int',
 		group: 'Omnichannel',
 		section: 'Sessions',
 		enterprise: true,
-		value: 60,
 		invalidValue: 0,
+		enableQuery: { _id: 'Livechat_allow_manual_on_hold', value: true },
 		modules: [
 			'livechat-enterprise',
 		],
