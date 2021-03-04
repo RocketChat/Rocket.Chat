@@ -153,6 +153,9 @@ const CallJitsWithData = ({ rid }) => {
 
 	const handleYes = useMutableCallback(() => {
 		setAccepted(true);
+		if (openNewWindow) {
+			handleClose();
+		}
 	});
 
 	useLayoutEffect(() => {
