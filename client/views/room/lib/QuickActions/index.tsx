@@ -22,6 +22,7 @@ export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
 export type QuickActionsActionConfig = {
 	id: string;
 	icon: string;
+	color?: string;
 	title: string;
 	anonymous?: boolean;
 	renderAction?: ActionRenderer;

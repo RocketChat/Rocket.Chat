@@ -6,7 +6,8 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 // used to open the menu option by keyboard
 import Header from '../../../../components/Header';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { ToolboxActionConfig, OptionRenderer } from '../../lib/Toolbox';
+import { OptionRenderer } from '../../lib/Toolbox';
+import { QuickActionsActionConfig } from '../../lib/QuickActions';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTab, useTabBarOpen } from '../../providers/ToolboxProvider';
 import { QuickActionsContext } from '../../lib/QuickActions/QuickActionsContext';
@@ -24,7 +25,7 @@ const QuickActions = ({ className }: { className: BoxProps['className'] }): JSX.
 	const hiddenActionRenderers = useRef<{[key: string]: OptionRenderer}>({});
 	const { actions: mapActions } = useContext(QuickActionsContext);
 	// console.log(className, mapActions);
-	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
+	const actions = (Array.from(mapActions.values()) as QuickActionsActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 
 
@@ -47,16 +48,17 @@ const QuickActions = ({ className }: { className: BoxProps['className'] }): JSX.
 	});
 
 	return <ButtonGroup mi='x4' medium>
-		{ visibleActions.map(({ renderAction, id, icon, title, action = actionDefault }, index) => {
+		{ visibleActions.map(({ renderAction, id, color, icon, title, action = actionDefault }, index) => {
 			const props = {
 				id,
 				icon,
+				color,
 				title: t(title),
 				className,
 				tabId: id,
 				index,
 				primary: id === tab?.id,
-				'data-toolbox': index,
+				'data-quick-actions': index,
 				action,
 				key: id,
 			};
