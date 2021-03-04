@@ -63,7 +63,7 @@ describe('Comparisons service', () => {
 	describe('isObject', () => {
 		it('should return true if value is an object or function', () => {
 			const obj = {};
-			const func = function() {};
+			const func = (a: any): any => a;
 
 			chai.expect(isObject(obj)).to.be.equal(true);
 			chai.expect(isObject(func)).to.be.equal(true);
@@ -79,14 +79,14 @@ describe('Comparisons service', () => {
 	describe('flatSome', () => {
 		it('should run .some on array', () => {
 			const arr = [1, 2, 4, 6, 9];
-			const isEven = (v: number) => v % 2 === 0;
+			const isEven = (v: number): boolean => v % 2 === 0;
 
 			chai.expect(flatSome(arr, isEven)).to.be.equal(true);
 		});
 
 		it('should run the function on the value when its not an array', () => {
 			const val = 1;
-			const isEven = (v: number) => v % 2 === 0;
+			const isEven = (v: number): boolean => v % 2 === 0;
 
 			chai.expect(flatSome(val, isEven)).to.be.equal(false);
 		});
@@ -95,7 +95,7 @@ describe('Comparisons service', () => {
 	describe('some', () => {
 		it('should run .some on array', () => {
 			const arr = [1, 2, 4, 6, 9];
-			const isEven = (v: number | number[]) => {
+			const isEven = (v: number | number[]): boolean => {
 				if (Array.isArray(v)) { return false; }
 				return v % 2 === 0;
 			};
@@ -105,7 +105,7 @@ describe('Comparisons service', () => {
 
 		it('should run the function on the value when its not an array', () => {
 			const val = 1;
-			const isEven = (v: number | number[]) => {
+			const isEven = (v: number | number[]): boolean => {
 				if (Array.isArray(v)) { return false; }
 				return v % 2 === 0;
 			};
