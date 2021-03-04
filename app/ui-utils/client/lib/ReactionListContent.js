@@ -1,20 +1,21 @@
 import React from 'react';
-import { Box, Tag, Modal, ButtonGroup, Button, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Tag, Modal, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
 import Emoji from '../../../../client/components/Emoji';
 import { openUserCard } from '../../../ui/client/lib/UserCard';
+import ScrollableContentWrapper from '../../../../client/components/ScrollableContentWrapper';
 
 export function Reactions({ reactions, onClick }) {
 	const useRealName = useSetting('UI_Use_Real_Name');
-	return <Scrollable vertical>
-		<Box>
+	return <Box display='flex' flexDirection='column' minHeight='22vh'>
+		<ScrollableContentWrapper>
 			{Object.entries(reactions).map(([reaction, { names = [], usernames }]) => <Box key={reaction}>
-				<Box display='flex' flexWrap='wrap' overflowX='hidden' mb='x8'>
+				<Box display='flex' alignItems='center' flexDirection='row' overflowX='hidden' mb='x8'>
 					<Emoji emojiHandle={reaction} />
-					<Box paddingBlock='x4' mis='x4'>
+					<Box display='flex' flexWrap='wrap' paddingBlock='x4' mis='x4'>
 						{usernames.map((username, i) => <Username
 							key={username}
 							displayName={useRealName ? names[i] || username : username}
@@ -24,13 +25,13 @@ export function Reactions({ reactions, onClick }) {
 					</Box>
 				</Box>
 			</Box>)}
-		</Box>
-	</Scrollable>;
+		</ScrollableContentWrapper>
+	</Box>;
 }
 
 export function Username({ username, onClick, displayName }) {
 	return (
-		<Box marginInlineEnd='x4' data-username={username} onClick={onClick} key={displayName}>
+		<Box mie='x4' mbe='x4' data-username={username} onClick={onClick} key={displayName}>
 			<Tag>{displayName}</Tag>
 		</Box>
 	);
