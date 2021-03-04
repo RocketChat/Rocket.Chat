@@ -11,6 +11,7 @@ import moment from 'moment';
 import { settings } from '../../settings/server';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
 import { FileUpload } from '../../file-upload/server';
+import { DataExport } from './DataExport';
 import * as Mailer from '../../mailer';
 import { readSecondaryPreferred } from '../../../server/database/readSecondaryPreferred';
 import { joinPath } from '../../../server/lib/fileUtils';
@@ -569,7 +570,7 @@ async function processDataDownloads() {
 		}
 
 		const subject = TAPi18n.__('UserDataDownload_EmailSubject');
-		const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: file.url });
+		const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: DataExport.getPath(file._id) });
 
 		sendEmail(operation.userData, subject, body);
 	}

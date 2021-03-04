@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { ExportOperations, UserDataFiles } from '../../app/models';
 import { settings } from '../../app/settings';
+import { DataExport } from '../../app/user-data-download/server/DataExport';
 
 let tempFolder = '/tmp/userData';
 if (settings.get('UserData_FileSystemPath') != null) {
@@ -34,7 +35,7 @@ Meteor.methods({
 						return {
 							requested: false,
 							exportOperation: lastOperation,
-							url: file.url,
+							url: DataExport.getPath(file._id),
 							pendingOperationsBeforeMyRequest: pendingOperationsBeforeMyRequestCount,
 						};
 					}
