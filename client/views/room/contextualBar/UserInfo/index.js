@@ -85,7 +85,7 @@ export const UserInfo = React.memo(function UserInfo({
 			<Info>{lastLogin ? timeAgo(lastLogin) : t('Never')}</Info>
 
 			{name && <>
-				<Label>{t('Full Name')}</Label>
+				<Label>{t('Full_Name')}</Label>
 				<Info>{name}</Info>
 			</>}
 
@@ -96,7 +96,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{bio && <>
 				<Label>{t('Bio')}</Label>
-				<Info withTruncatedText={false}><MarkdownText content={bio}/></Info>
+				<Info withTruncatedText={false}><MarkdownText variant='inline' content={bio}/></Info>
 			</>}
 
 			{phone && <> <Label>{t('Phone')}</Label>

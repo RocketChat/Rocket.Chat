@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations';
-import { Messages, Users } from '../../../app/models';
+import { Messages, Users, Permissions } from '../../../app/models';
 
 function createNewReactions(reactions) {
 	const newReactions = {};
@@ -47,11 +47,14 @@ function migrate() {
 	});
 }
 
+const roleName = 'admin';
+
 Migrations.add({
-	version: 213,
+	version: 214,
 	up() {
-		console.info('Now fixing message reactions ...');
+    console.info('Now fixing message reactions ...');
 		migrate();
 		console.info('Done fixing message reactions !');
+		Permissions.update({ _id: 'toggle-room-e2e-encryption' }, { $addToSet: { roles: roleName } });
 	},
 });

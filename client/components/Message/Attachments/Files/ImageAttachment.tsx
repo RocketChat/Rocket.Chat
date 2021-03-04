@@ -14,7 +14,7 @@ export type ImageAttachmentProps = {
 	image_url: string;
 	image_type: string;
 	image_size?: number;
-	file: FileProp;
+	file?: FileProp;
 } & AttachmentPropsBase;
 
 export const ImageAttachment: FC<ImageAttachmentProps> = ({
@@ -35,12 +35,12 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
 	return <Attachment>
-		<MarkdownText withRichContent={undefined} content={description} />
+		<MarkdownText variant='inline' content={description} />
 		<Attachment.Row>
 			<Attachment.Title>{title}</Attachment.Title>
 			{size && <Attachment.Size size={size}/>}
 			{collapse}
-			{hasDownload && link && <Attachment.Download href={getURL(link)}/>}
+			{hasDownload && link && <Attachment.Download title={title} href={getURL(link)}/>}
 		</Attachment.Row>
 		{ !collapsed && <Attachment.Content>
 			<Image {...imageDimensions } loadImage={loadImage} setLoadImage={setLoadImage} src={ url} previewUrl={`data:image/png;base64,${ imagePreview }`} />
