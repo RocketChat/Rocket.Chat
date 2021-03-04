@@ -34,7 +34,8 @@ addAction('rocket-close-chat', {
 	id: 'rocket-close-chat',
 	title: 'Close',
 	icon: 'baloon-close-top-right',
-	order: 5,
+	order: 4,
+	color: 'danger',
 });
 
 // addAction('user-info', {
