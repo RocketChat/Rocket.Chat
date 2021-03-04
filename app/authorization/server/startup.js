@@ -122,6 +122,14 @@ Meteor.startup(function() {
 		{ _id: 'send-omnichannel-chat-transcript',   roles: ['livechat-manager', 'admin'] },
 		{ _id: 'mail-messages',                      roles: ['admin'] },
 		{ _id: 'toggle-room-e2e-encryption',         roles: ['owner'] },
+		{ _id: 'create-team',         roles: ['admin', 'user'] },
+		{ _id: 'delete-team',         roles: ['admin', 'team-owner'] },
+		{ _id: 'edit-team',           roles: ['admin', 'team-owner'] },
+		{ _id: 'add-team-member',     roles: ['admin', 'team-owner', 'team-moderator'] },
+		{ _id: 'edit-team-member',    roles: ['admin', 'team-owner', 'team-moderator'] },
+		{ _id: 'add-team-channel',    roles: ['admin', 'team-owner', 'team-moderator'] },
+		{ _id: 'edit-team-channel',   roles: ['admin', 'team-owner', 'team-moderator'] },
+		{ _id: 'remove-team-channel', roles: ['admin', 'team-owner', 'team-moderator'] },
 	];
 
 	for (const permission of permissions) {
@@ -133,6 +141,9 @@ Meteor.startup(function() {
 		{ name: 'moderator',        scope: 'Subscriptions', description: 'Moderator' },
 		{ name: 'leader',           scope: 'Subscriptions', description: 'Leader' },
 		{ name: 'owner',            scope: 'Subscriptions', description: 'Owner' },
+		{ name: 'team-owner',       scope: 'Subscriptions', description: 'Team Owner' },
+		{ name: 'team-moderator',   scope: 'Subscriptions', description: 'Team Moderator' },
+		{ name: 'team-leader',      scope: 'Subscriptions', description: 'Team Leader' },
 		{ name: 'user',             scope: 'Users',         description: '' },
 		{ name: 'bot',              scope: 'Users',         description: '' },
 		{ name: 'app',              scope: 'Users',         description: '' },
