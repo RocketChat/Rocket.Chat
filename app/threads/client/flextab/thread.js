@@ -253,7 +253,7 @@ Template.thread.onRendered(function() {
 });
 
 Template.thread.onCreated(async function() {
-	const sendToChannel = settings.get('Accounts_Default_User_Preferences_showMessageInMainThread');
+	const sendToChannel = settings.get('Send_to_channel_default');
 	this.Threads = new Mongo.Collection(null);
 
 	this.state = new ReactiveDict({

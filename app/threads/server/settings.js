@@ -10,5 +10,11 @@ Meteor.startup(() => {
 			type: 'boolean',
 			public: true,
 		});
+		this.add('Send_to_channel_default', true, {
+			group: 'Threads',
+			i18nLabel: 'Also_send_to_channel_default',
+			type: 'boolean',
+			public: true,
+		});
 	});
 });
