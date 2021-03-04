@@ -44,15 +44,7 @@ export const removeUserFromRoom = function(rid, user, options = {}) {
 			// TODO: CACHE: maybe a queue?
 			callbacks.run('afterLeaveRoom', user, room);
 
-			try {
-				Promise.await(Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, user));
-			} catch (error) {
-				if (error instanceof AppsEngineException) {
-					throw new Meteor.Error('error-app-prevented', error.message);
-				}
-
-				throw error;
-			}
+			Promise.await(Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, user));
 		});
 	}
 };
