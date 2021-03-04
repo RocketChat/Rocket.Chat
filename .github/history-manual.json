@@ -56,5 +56,12 @@
 		"contributors": [
 			"sampaiodiego"
 		]
+	}],
+	"3.12.0-rc.3": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
 	}]
 }
