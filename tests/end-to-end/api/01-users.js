@@ -286,6 +286,7 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('user.rooms').and.to.be.an('array');
+					expect(res.body.user.rooms[0]).to.have.property('unread');
 				})
 				.end(done);
 		});
@@ -316,6 +317,7 @@ describe('[Users]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.rooms');
+						expect(res.body.user.rooms[0]).to.have.property('unread');
 					})
 					.end(done);
 			});
