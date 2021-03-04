@@ -198,15 +198,13 @@
 	}
 
 	&__content {
-
 		display: flex;
 		overflow-y: auto;
 		flex-direction: column;
-
 		flex: 1;
 
-		width: 100%;
-		padding: 25px 0;
+		margin: 0 -1.25rem;
+		padding: 1.25rem 1.25rem 0;
 	}
 
 	&--apps .preferences-page__header {
