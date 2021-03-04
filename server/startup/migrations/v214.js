@@ -52,7 +52,7 @@ const roleName = 'admin';
 Migrations.add({
 	version: 214,
 	up() {
-    console.info('Now fixing message reactions ...');
+		console.info('Now fixing message reactions ...');
 		migrate();
 		console.info('Done fixing message reactions !');
 		Permissions.update({ _id: 'toggle-room-e2e-encryption' }, { $addToSet: { roles: roleName } });
