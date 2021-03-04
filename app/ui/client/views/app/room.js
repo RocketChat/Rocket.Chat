@@ -266,7 +266,7 @@ Template.roomOld.helpers({
 	},
 
 	messageboxData() {
-		const { sendToBottomIfNecessaryDebounced, subscription } = Template.instance();
+		const { sendToBottomIfNecessary, subscription } = Template.instance();
 		const { _id: rid } = this;
 		const isEmbedded = Layout.isEmbedded();
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
@@ -283,7 +283,7 @@ Template.roomOld.helpers({
 
 				chatMessages[rid].initializeInput(input, { rid });
 			},
-			onResize: () => sendToBottomIfNecessaryDebounced && sendToBottomIfNecessaryDebounced(),
+			onResize: () => sendToBottomIfNecessary && sendToBottomIfNecessary(),
 			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
 			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
 			onSend: (...args) => chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
@@ -429,9 +429,6 @@ Template.roomOld.helpers({
 	},
 });
 
-let lastScrollTop;
-
-
 export const dropzoneEvents = {
 	'dragenter .dropzone'(e) {
 		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
@@ -549,15 +546,15 @@ Meteor.startup(() => {
 			RoomHistoryManager.clear(template && template.data && template.data._id);
 		},
 		'load .gallery-item'(e, template) {
-			template.sendToBottomIfNecessaryDebounced();
+			template.sendToBottomIfNecessary();
 		},
 
 		'rendered .js-block-wrapper'(e, template) {
-			template.sendToBottomIfNecessaryDebounced();
+			template.sendToBottomIfNecessary();
 		},
 		'click .new-message'(event, instance) {
 			instance.atBottom = true;
-			instance.sendToBottomIfNecessaryDebounced();
+			instance.sendToBottomIfNecessary();
 			chatMessages[RoomManager.openedRoom].input.focus();
 		},
 		'click .upload-progress-close'(e) {
@@ -581,26 +578,26 @@ Meteor.startup(() => {
 		'scroll .wrapper': _.throttle(function(e, t) {
 			const $roomLeader = $('.room-leader');
 			if ($roomLeader.length) {
-				if (e.target.scrollTop < lastScrollTop) {
+				if (e.target.scrollTop < t.lastScrollTop) {
 					t.hideLeaderHeader.set(false);
 				} else if (t.isAtBottom(100) === false && e.target.scrollTop > $roomLeader.height()) {
 					t.hideLeaderHeader.set(true);
 				}
 			}
-			lastScrollTop = e.target.scrollTop;
+			t.lastScrollTop = e.target.scrollTop;
 			const height = e.target.clientHeight;
 			const isLoading = RoomHistoryManager.isLoading(this._id);
 			const hasMore = RoomHistoryManager.hasMore(this._id);
 			const hasMoreNext = RoomHistoryManager.hasMoreNext(this._id);
 
 			if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
-				if (hasMore === true && lastScrollTop <= height / 3) {
+				if (hasMore === true && t.lastScrollTop <= height / 3) {
 					RoomHistoryManager.getMore(this._id);
-				} else if (hasMoreNext === true && Math.ceil(lastScrollTop) >= e.target.scrollHeight - height) {
+				} else if (hasMoreNext === true && Math.ceil(t.lastScrollTop) >= e.target.scrollHeight - height) {
 					RoomHistoryManager.getMoreNext(this._id);
 				}
 			}
-		}, 300),
+		}, 100),
 
 		'click .time a'(e) {
 			e.preventDefault();
@@ -762,8 +759,6 @@ Meteor.startup(() => {
 				this.sendToBottom();
 			}
 		};
-
-		this.sendToBottomIfNecessaryDebounced = _.debounce(this.sendToBottomIfNecessary, 10);
 	}); // Update message to re-render DOM
 
 	Template.roomOld.onDestroyed(function() {
@@ -809,7 +804,7 @@ Meteor.startup(() => {
 		};
 
 		template.sendToBottom = function() {
-			wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight;
+			wrapper.scrollTo(30, wrapper.scrollHeight);
 			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 		};
 
@@ -817,22 +812,14 @@ Meteor.startup(() => {
 			template.atBottom = template.isAtBottom(100);
 		};
 
+		template.observer = new ResizeObserver(() => template.sendToBottomIfNecessary());
 
-		if (window.MutationObserver) {
-			template.observer = new MutationObserver(() => template.sendToBottomIfNecessaryDebounced());
-
-			template.observer.observe(wrapperUl, { childList: true });
-		} else {
-			wrapperUl.addEventListener('DOMSubtreeModified', () => template.sendToBottomIfNecessaryDebounced());
-		}
-
-		template.onWindowResize = () => template.sendToBottomIfNecessaryDebounced();
-
-		window.addEventListener('resize', template.onWindowResize);
+		template.observer.observe(wrapperUl);
 
 		const wheelHandler = _.throttle(function() {
 			template.checkIfScrollIsAtBottom();
 		}, 100);
+
 		wrapper.addEventListener('mousewheel', wheelHandler);
 
 		wrapper.addEventListener('wheel', wheelHandler);
@@ -850,7 +837,7 @@ Meteor.startup(() => {
 			wrapper.addEventListener('scroll', wheelHandler);
 		});
 
-		lastScrollTop = $('.messages-box .wrapper').scrollTop();
+		this.lastScrollTop = $('.messages-box .wrapper').scrollTop();
 
 		const rtl = $('html').hasClass('rtl');
 
@@ -892,6 +879,18 @@ Meteor.startup(() => {
 			}
 			readMessage.read(rid);
 		}, 500);
+
+		this.autorun(() => {
+			if (rid !== Session.get('openedRoom')) {
+				return;
+			}
+
+			const room = Rooms.findOne({ _id: rid });
+
+			if (room?.t === 'l') {
+				roomTypes.getConfig(room.t).openCustomProfileTab(this, room, room.v.username);
+			}
+		});
 
 		this.autorun(() => {
 			if (!Object.values(roomTypes.roomTypes).map(({ route }) => route && route.name).filter(Boolean).includes(FlowRouter.getRouteName())) {
@@ -980,9 +979,6 @@ Meteor.startup(() => {
 				return FlowRouter.go('home');
 			}
 		});
-
-		const observer = new ResizeObserver(template.sendToBottomIfNecessary);
-		observer.observe(this.firstNode.querySelector('.wrapper ul'));
 	});
 });
 

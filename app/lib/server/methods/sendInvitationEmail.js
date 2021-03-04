@@ -28,6 +28,12 @@ Meteor.methods({
 		}
 		const validEmails = emails.filter(Mailer.checkAddressFormat);
 
+		if (!validEmails || validEmails.length === 0) {
+			throw new Meteor.Error('error-email-send-failed', 'No valid email addresses', {
+				method: 'sendInvitationEmail',
+			});
+		}
+
 		let inviter;
 		if (!realname) {
 			inviter = Meteor.user().username;

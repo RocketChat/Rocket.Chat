@@ -122,6 +122,12 @@ jobs:
 
     - run: meteor npm run typecheck
 
+    - name: Build Storybook to sanity check components
+      run: npm run build-storybook ; rm -rf ./storybook-static
+      env:
+        NODE_OPTIONS: --max_old_space_size=8192
+
+
     # To reduce memory need during actual build, build the packages solely first
     # - name: Build a Meteor cache
     #   run: |
@@ -136,6 +142,13 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
       run: |
         meteor reset
+
+    - name: Try building micro services
+      run: |
+        cd ./ee/server/services
+        npm i
+        npm run build
+        rm -rf dist/
 
     - name: Build Rocket.Chat From Pull Request
       if: startsWith(github.ref, 'refs/pull/') == true
@@ -601,4 +614,3 @@ jobs:
         # Tag docker image and push it to ECR
         docker tag ${{ steps.build-image-dev.outputs.DEV_IMAGE }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      
