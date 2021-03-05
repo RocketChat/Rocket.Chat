@@ -12,7 +12,7 @@ WebApp.connectHandlers.use(DataExport.getPath(), function(req, res, next) {
 	if (!settings.get('UserData_EnableDownload')) {
 		res.writeHead(403);
 		res.setHeader('Content-Type', 'text/html; charset=UTF-8');
-		return res.end(DataExport.getErrorPage(TAPi18n.__('FeatureDisabled'), TAPi18n.__('UserDataDownload_FeatureDisabled')));
+		return res.end(DataExport.getErrorPage(TAPi18n.__('Feature_Disabled'), TAPi18n.__('UserDataDownload_FeatureDisabled')));
 	}
 
 	if (match && match[1]) {

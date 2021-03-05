@@ -4065,7 +4065,7 @@
   "UserDataDownload_EmailBody": "Your data file is now ready to download. Click <a href=\"__download_link__\">here</a> to download it.",
   "UserDataDownload_EmailSubject": "Your Data File is Ready to Download",
   "UserDataDownload_FeatureDisabled": "Sorry, user data exports are not enabled on this server!",
-  "UserDataDownload_LoginNeeded": "You need to log into your Rocket.Chat account to download this data export. Click the link below to do that.",
+  "UserDataDownload_LoginNeeded": "You need to log into your Rocket.Chat account to download this data export. Click the link below to do that, then try again.",
   "UserDataDownload_Requested": "Download File Requested",
   "UserDataDownload_Requested_Text": "Your data file will be generated. A link to download it will be sent to your email address when ready. There are <strong>__pending_operations__</strong> queued operations to run before yours.",
   "UserDataDownload_RequestExisted_Text": "Your data file is already being generated. A link to download it will be sent to your email address when ready. There are <strong>__pending_operations__</strong> queued operations to run before yours.",
