@@ -34,4 +34,12 @@ export const DataExport = {
 		res.end();
 	},
 
+	getErrorPage(errorType, errorDescription) {
+		let errorHtml = Assets.getText('errors/error_template.html');
+		errorHtml = errorHtml.replace('$ERROR_TYPE$', errorType);
+		errorHtml = errorHtml.replace('$ERROR_DESCRIPTION$', errorDescription);
+		errorHtml = errorHtml.replace('$SERVER_URL$', __meteor_runtime_config__.ROOT_URL);
+		return errorHtml;
+	},
+
 };
