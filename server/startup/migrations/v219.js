@@ -1,5 +1,5 @@
-import { Migrations } from "../../../app/migrations";
-import { Messages, Users } from "../../../app/models";
+import { Migrations } from '../../../app/migrations';
+import { Messages, Users } from '../../../app/models';
 
 function createNewReactions(reactions) {
 	const newReactions = {};
@@ -16,9 +16,8 @@ function createNewReactions(reactions) {
 
 		// only push reaction of those users who can be found by their `usernames`
 		for (const username of usernames) {
-			const foundUser =
-				username &&
-				Users.findOne({ username }, { fields: { _id: 1, username: 1 } });
+			const foundUser =				username
+				&& Users.findOne({ username }, { fields: { _id: 1, username: 1 } });
 
 			if (foundUser) {
 				newUserIds.push(foundUser._id);
@@ -45,20 +44,16 @@ function migrateUserReactions() {
 				$set: {
 					reactions: newReactions,
 				},
-			}
+			},
 		);
 	});
 }
 
-// Migrations.add({
-// 	version: 219,
-// 	up() {},
-// });
-
-function offerMigrations() {
-	console.info("Now fixing message reactions ...");
-	migrateUserReactions();
-	console.info("Done fixing message reactions !");
-}
-
-offerMigrations();
+Migrations.add({
+	version: 219,
+	up() {
+		console.info('Now fixing message reactions ...');
+		migrateUserReactions();
+		console.info('Done fixing message reactions !');
+	},
+});
