@@ -2,7 +2,7 @@ import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 
-import TeamsInfo from '.';
+import TeamsInfo from './TeamsInfo';
 
 export default {
 	title: 'components/TeamsInfo',
