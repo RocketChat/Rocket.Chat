@@ -2410,6 +2410,7 @@
   "Livechat_allow_manual_on_hold": "Allow agents to manually place chat On Hold",
   "Livechat_AllowedDomainsList": "Livechat Allowed Domains",
   "Livechat_Appearance": "Livechat Appearance",
+  "Livechat_auto_close_on_hold_chats_custom_message": "Custom Message to be sent when a room in On-Hold queue gets automatically closed by the system",
   "Livechat_auto_close_on_hold_chats_timeout": "How long the chat will remain in the On Hold queue until it's automatically closed by the system (in minutes) ?",
   "Livechat_auto_transfer_chat_timeout": "Timeout (in seconds) for automatic transfer of unanswered chats to another agent",
   "Livechat_auto_transfer_chat_timeout_description": "This event takes place only when the chat has just started. After the first transfering for inactivity, the room is no longer monitored.",

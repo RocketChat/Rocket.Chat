@@ -30,6 +30,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:placeChatOnHold' });
 		}
 
-		return LivechatEnterprise.placeRoomOnHold(room._id);
+		return LivechatEnterprise.placeRoomOnHold(room);
 	},
 });

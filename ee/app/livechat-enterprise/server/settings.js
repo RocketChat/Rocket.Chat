@@ -139,6 +139,18 @@ export const createSettings = () => {
 		],
 	});
 
+	settings.add('Livechat_auto_close_on_hold_chats_custom_message', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enableQuery: { _id: 'Livechat_auto_close_on_hold_chats_timeout', value: { $gte: 1 } },
+		enterprise: true,
+		invalidValue: '',
+		modules: [
+			'livechat-enterprise',
+		],
+	});
+
 	settings.add('Livechat_allow_manual_on_hold', true, {
 		type: 'boolean',
 		group: 'Omnichannel',

@@ -28,7 +28,9 @@ import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
 import './hooks/scheduleAutoTransfer';
 import './hooks/scheduleManualOnHold';
+import './hooks/afterOnHold';
 import './lib/routing/LoadBalancing';
+import './lib/AutoCloseOnHoldScheduler';
 import { onLicense } from '../../license/server';
 import './business-hour';
 

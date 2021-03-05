@@ -11,6 +11,7 @@ import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorizat
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../app/callbacks';
 
 export const LivechatEnterprise = {
 	addMonitor(username) {
@@ -165,14 +166,22 @@ export const LivechatEnterprise = {
 		updateRoomPriorityHistory(roomId, user, priority);
 	},
 
-	placeRoomOnHold(roomId) {
-		check(roomId, String);
+	placeRoomOnHold(room) {
+		const { _id: roomId } = room;
+		if (!roomId) {
+			return;
+		}
 		console.log('-------LivechatEnterprise.placeRoomOnHold', roomId);
 		let resp = LivechatRooms.setIsChatOnHold(roomId);
 		console.log('----placeRoomOnHold rooms db response', resp);
 		resp = Subscriptions.setIsChatOnHold(roomId);
 		console.log('----placeRoomOnHold subscription db response', resp);
 		LivechatRooms.unsetCanPlaceOnHold(roomId);
+
+		Meteor.defer(() => {
+			console.log('---livechat:afterOnHold callback set');
+			callbacks.run('livechat:afterOnHold', room);
+		});
 	},
 };
 
