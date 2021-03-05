@@ -31,8 +31,8 @@ const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({
 			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
 				{dontAskAgain}
 				<ButtonGroup align='end'>
-					<Button ghost onClick={onCancel}>{t('Cancel')}</Button>
-					<Button primary danger onClick={confirm}>{t('Move_queue')}</Button>
+					<Button onClick={onCancel}>{t('Cancel')}</Button>
+					<Button primary onClick={confirm}>{t('Move_queue')}</Button>
 				</ButtonGroup>
 			</Box>
 		</Modal.Footer>

@@ -2,12 +2,12 @@
 
 // import { usePermission } from '../../../../contexts/AuthorizationContext';
 
-import { addAction } from '.';
+import { addAction, QuickActionsEnum } from '.';
 
 
 addAction('rocket-move-to-queue', {
 	groups: ['channel'],
-	id: 'rocket-move-to-queue',
+	id: QuickActionsEnum.MoveQueue,
 	title: 'Move_queue',
 	icon: 'burger-arrow-left',
 	order: 1,
@@ -15,7 +15,7 @@ addAction('rocket-move-to-queue', {
 
 addAction('rocket-chat-forward', {
 	groups: ['channel'],
-	id: 'rocket-chat-forward',
+	id: QuickActionsEnum.ChatForward,
 	title: 'Forward_chat',
 	icon: 'baloon-arrow-top-right',
 	order: 2,
@@ -23,7 +23,7 @@ addAction('rocket-chat-forward', {
 
 addAction('rocket-transcript', {
 	groups: ['channel'],
-	id: 'rocket-transcript',
+	id: QuickActionsEnum.Transcript,
 	title: 'Transcript',
 	icon: 'mail-arrow-top-right',
 	order: 3,
@@ -31,7 +31,7 @@ addAction('rocket-transcript', {
 
 addAction('rocket-close-chat', {
 	groups: ['channel'],
-	id: 'rocket-close-chat',
+	id: QuickActionsEnum.CloseChat,
 	title: 'Close',
 	icon: 'baloon-close-top-right',
 	order: 4,

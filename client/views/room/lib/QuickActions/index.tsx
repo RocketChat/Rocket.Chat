@@ -41,3 +41,10 @@ const { listen, add: addAction, remove: deleteAction, store: actions } = generat
 export type Events = GeneratorEvents<QuickActionsAction>;
 
 export { listen, addAction, deleteAction, actions };
+
+export enum QuickActionsEnum {
+	MoveQueue = 'rocket-move-to-queue',
+	ChatForward = 'rocket-chat-forward',
+	Transcript = 'rocket-transcript',
+	CloseChat = 'rocket-close-chat'
+}
