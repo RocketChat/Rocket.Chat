@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { Field, Button, TextInput, Icon, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../contexts/TranslationContext';
@@ -7,7 +7,7 @@ import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
 
 
 type TranscriptModalProps = {
-	email?: string;
+	email: string;
 	onSend: (email: string, subject: string) => void;
 	onCancel: () => void;
 };
@@ -23,7 +23,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', o
 		}
 	}, [ref]);
 
-	const { values, handlers } = useForm({ email: emailDefault, subject: '' });
+	const { values, handlers } = useForm({ email: emailDefault, subject: t('Transcript_of_your_livechat_conversation') });
 
 	const { email, subject } = values as { email: string; subject: string };
 	const { handleEmail, handleSubject } = handlers;
@@ -43,6 +43,8 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', o
 		setSubjectError(!subject ? t('The_field_is_required', t('Subject')) : '');
 	}, [t, subject]);
 
+	const canSave = useMemo(() => !!subject, [subject]);
+
 	return <Modal {...props}>
 		<Modal.Header>
 			<Icon name='mail-arrow-top-right' size={20}/>
@@ -50,16 +52,16 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', o
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			<Field>
+			<Field marginBlock='x15'>
 				<Field.Label>{t('Email')}*</Field.Label>
 				<Field.Row>
-					<TextInput disabled={!emailDefault} ref={ref} error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
+					<TextInput disabled={!!emailDefault} ref={ref} error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
 				</Field.Row>
 				<Field.Error>
 					{emailError}
 				</Field.Error>
 			</Field>
-			<Field>
+			<Field marginBlock='x15'>
 				<Field.Label>{t('Subject')}*</Field.Label>
 				<Field.Row>
 					<TextInput error={subjectError} flexGrow={1} value={subject} onChange={handleSubject} />
@@ -72,7 +74,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', o
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary onClick={handleSend}>{t('Send')}</Button>
+				<Button disabled={!canSave} primary onClick={handleSend}>{t('Send')}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;

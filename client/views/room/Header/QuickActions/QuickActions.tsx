@@ -4,6 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
+import toastr from 'toastr';
 
 import Header from '../../../../components/Header';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -12,9 +13,12 @@ import { useLayout } from '../../../../contexts/LayoutContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { QuickActionsContext } from '../../lib/QuickActions/QuickActionsContext';
 import ReturnChatQueueModal from '../../../../components/ReturnChatQueueModal';
+import TranscriptModal from '../../../../components/TranscriptModal';
 import { useSession } from '../../../../contexts/SessionContext';
 import { handleError } from '../../../../../app/utils/client';
 
+
+const emailTranscript = 'rafaelblink@gmail.com';
 
 const QuickActions = ({ className }: { className: BoxProps['className'] }): JSX.Element => {
 	const { isMobile } = useLayout();
@@ -28,21 +32,31 @@ const QuickActions = ({ className }: { className: BoxProps['className'] }): JSX.
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	const moveChat = (): void => Meteor.call('livechat:returnAsInquiry', currentRoom, function(error: any) {
-		if (error) {
-			handleError(error);
-		} else {
-			Session.set('openedRoom', null);
-			FlowRouter.go('/home');
-		}
 		closeModal();
+		if (error) {
+			return handleError(error);
+		}
+
+		Session.set('openedRoom', null);
+		FlowRouter.go('/home');
+	});
+
+	const requestTranscript = (subject: string, email: string): void => Meteor.call('livechat:requestTranscript', currentRoom, email, subject, (err: any) => {
+		closeModal();
+		if (err != null) {
+			return handleError(err);
+		}
+
+		toastr.success(t('Livechat_transcript_has_been_requested'));
 	});
 
 	const openModal = useMutableCallback((id: string) => {
-		console.log(id);
-		console.log('room: ', currentRoom);
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(<ReturnChatQueueModal onMoveChat={moveChat} onCancel={closeModal} />);
+				break;
+			case QuickActionsEnum.Transcript:
+				setModal(<TranscriptModal email={emailTranscript} onSend={requestTranscript} onCancel={closeModal} />);
 				break;
 			default:
 				break;
