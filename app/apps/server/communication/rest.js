@@ -57,7 +57,7 @@ export class AppsRestApi {
 		const manager = this._manager;
 		const multipartFormDataHandler = this._handleMultipartFormData;
 
-		const handleWarn = (message, e) => {
+		const handleError = (message, e) => {
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
 			if (!e.hasOwnProperty('response')) {
@@ -65,7 +65,7 @@ export class AppsRestApi {
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
 
-			orchestrator.getRocketChatLogger().warn(message, e.response.data);
+			orchestrator.getRocketChatLogger().error(message, e.response.data);
 
 			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
 				return API.v1.internalError();
@@ -96,7 +96,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleWarn('Unable to access Marketplace. Does the server has access to the internet?:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (!result || result.statusCode !== 200) {
@@ -368,7 +368,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleWarn('Unable to access Marketplace:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (!result || result.statusCode !== 200 || result.data.length === 0) {
@@ -394,7 +394,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleWarn('Unable to access Marketplace. Does the server has access to the internet?:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (result.statusCode !== 200 || result.data.length === 0) {
