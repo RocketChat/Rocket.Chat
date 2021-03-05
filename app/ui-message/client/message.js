@@ -297,12 +297,12 @@ Template.message.helpers({
 
 				const selectedDisplayNames = displayNames.slice(0, 15);
 
-				const idx = reaction.userIds.indexOf(myId);
+				const usernameIndex = reaction.userIds.indexOf(myId);
 
 				// if you have reacted, then 'You' have to be in the beginning of the array
-				if (idx !== -1) {
-					if (idx < 15) { // you are there in the 15 selectedDisplayNames
-						selectedDisplayNames.splice(idx, 1);
+				if (usernameIndex !== -1) {
+					if (usernameIndex < 15) { // you are there in the 15 selectedDisplayNames
+						selectedDisplayNames.splice(usernameIndex, 1);
 						selectedDisplayNames.unshift(t('You'));
 					} else { // remove the last one
 						selectedDisplayNames.pop();
@@ -325,7 +325,7 @@ Template.message.helpers({
 					count: displayNames.length,
 					usernames,
 					reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
-					userReacted: idx > -1,
+					userReacted: usernameIndex > -1,
 				};
 			});
 	},
