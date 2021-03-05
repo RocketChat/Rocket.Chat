@@ -105,12 +105,13 @@ const CallJitsWithData = ({ rid }) => {
 		}
 	}, [connected, handleClose]);
 
+	const rname = useHashName ? uniqueID + rid : encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+
 	const jitsi = useMemo(() => {
 		if (isEnabledTokenAuth && ! accessToken) {
 			return;
 		}
 
-		const rname = useHashName ? uniqueID + rid : encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
 		const jitsiRoomName = prefix + rname + sufix;
 
 		return new JitsiBridge({
@@ -122,7 +123,7 @@ const CallJitsWithData = ({ rid }) => {
 			desktopSharingChromeExtId,
 			name: user.name || user.username,
 		}, HEARTBEAT);
-	}, [accessToken, desktopSharingChromeExtId, domain, isEnabledTokenAuth, openNewWindow, prefix, rid, room.name, room.t, room.usernames, ssl, sufix, uniqueID, useHashName, user.name, user.username]);
+	}, [accessToken, desktopSharingChromeExtId, domain, isEnabledTokenAuth, openNewWindow, prefix, rname, ssl, sufix, user.name, user.username]);
 
 	const testAndHandleTimeout = useMutableCallback(() => {
 		if (new Date() - new Date(room.jitsiTimeout) > TIMEOUT) {
@@ -152,6 +153,9 @@ const CallJitsWithData = ({ rid }) => {
 
 	const handleYes = useMutableCallback(() => {
 		setAccepted(true);
+		if (openNewWindow) {
+			handleClose();
+		}
 	});
 
 	useLayoutEffect(() => {
