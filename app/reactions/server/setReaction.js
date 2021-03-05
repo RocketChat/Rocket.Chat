@@ -84,7 +84,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		if (!message.reactions[reaction]) {
 			message.reactions[reaction] = {
 				usernames: [],
-				userIds: [], // aditya-add-here
+				userIds: [],
 			};
 		}
 
@@ -96,7 +96,7 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		}
 
 		message.reactions[reaction].usernames.push(user.username);
-		message.reactions[reaction].userIds.push(user._id); // aditya-add-here
+		message.reactions[reaction].userIds.push(user._id);
 
 		Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
