@@ -35,15 +35,6 @@ function CreateRoomListItem({ text, icon, action }) {
 const style = {
 	textTransform: 'uppercase',
 };
-export function CreateRoomList() {
-	return <>
-		<div className='rc-popover__column'>
-			<CreateRoomOptions/>
-		</div>
-	</>;
-}
-
-CreateRoomList.displayName = 'CreateRoomList';
 
 const useAction = (title, content) => useMutableCallback((e) => {
 	e.preventDefault();
@@ -74,7 +65,7 @@ const useReactModal = (setModal, Component) => useMutableCallback((e) => {
 	/>);
 });
 
-function CreateRoomOptions() {
+function CreateRoomList() {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -88,7 +79,7 @@ function CreateRoomOptions() {
 
 	const discussionEnabled = useSetting('Discussion_enabled');
 
-	return <>
+	return <div className='rc-popover__column'>
 		<Margins block='x8'>
 			<Box is='p' style={style} fontScale='micro'>{t('Create_new')}</Box>
 		</Margins>
@@ -99,7 +90,7 @@ function CreateRoomOptions() {
 				{discussionEnabled && canCreateDiscussion && <CreateRoomListItem icon={'discussion'} text={t('Discussion')} action={createDiscussion} />}
 			</Margins>
 		</ul>
-	</>;
+	</div>;
 }
 
 export default CreateRoomList;
