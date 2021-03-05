@@ -12,7 +12,7 @@ WebApp.connectHandlers.use(DataExport.getPath(), function(req, res, next) {
 	if (!settings.get('UserData_EnableDownload')) {
 		res.writeHead(403);
 		res.setHeader('Content-Type', 'text/html; charset=UTF-8');
-		return res.end(DataExport.getErrorPage('Feature disabled', 'Sorry, user data exports are not enabled on this server!'));
+		return res.end(DataExport.getErrorPage(TAPi18n.__('FeatureDisabled'), TAPi18n.__('UserDataDownload_FeatureDisabled')));
 	}
 
 	if (match && match[1]) {
@@ -21,7 +21,7 @@ WebApp.connectHandlers.use(DataExport.getPath(), function(req, res, next) {
 			if (!DataExport.requestCanAccessFiles(req, file.userId)) {
 				res.setHeader('Content-Type', 'text/html; charset=UTF-8');
 				res.writeHead(403);
-				return res.end(DataExport.getErrorPage('Forbidden', 'You need to log into your Rocket.Chat account to download this data export. Click the link below to do that.'));
+				return res.end(DataExport.getErrorPage(TAPi18n.__('403'), TAPi18n.__('UserDataDownload_LoginNeeded')));
 			}
 
 			res.setHeader('Content-Security-Policy', 'default-src \'none\'');
