@@ -33,12 +33,12 @@ Meteor.methods({
 			return false;
 		}
 
-		const idx = message.reactions && message.reactions[reaction] && message.reactions[reaction].userIds.indexOf(user._id);
+		const reactionIdx = message.reactions && message.reactions[reaction] && message.reactions[reaction].userIds.indexOf(user._id);
 
-		if (idx && idx !== -1) {
+		if (reactionIdx && reactionIdx !== -1) {
 			// both userId and its corresponding username are at the same position
-			message.reactions[reaction].userIds.splice(idx, 1);
-			message.reactions[reaction].usernames.splice(idx, 1);
+			message.reactions[reaction].userIds.splice(reactionIdx, 1);
+			message.reactions[reaction].usernames.splice(reactionIdx, 1);
 
 			if (message.reactions[reaction].userIds.length === 0) {
 				delete message.reactions[reaction];
