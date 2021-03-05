@@ -14,7 +14,7 @@ const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 
-function CreateChannelListItem({ text, icon, action }) {
+function CreateRoomListItem({ text, icon, action }) {
 	return <Flex.Container>
 		<Box is='li' onClick={action}>
 			<Flex.Container>
@@ -35,15 +35,15 @@ function CreateChannelListItem({ text, icon, action }) {
 const style = {
 	textTransform: 'uppercase',
 };
-export function SortList() {
+export function CreateRoomList() {
 	return <>
 		<div className='rc-popover__column'>
-			<CreateRoomList/>
+			<CreateRoomOptions/>
 		</div>
 	</>;
 }
 
-SortList.displayName = 'SortList';
+CreateRoomList.displayName = 'CreateRoomList';
 
 const useAction = (title, content) => useMutableCallback((e) => {
 	e.preventDefault();
@@ -74,7 +74,7 @@ const useReactModal = (setModal, Component) => useMutableCallback((e) => {
 	/>);
 });
 
-function CreateRoomList() {
+function CreateRoomOptions() {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -94,12 +94,12 @@ function CreateRoomList() {
 		</Margins>
 		<ul className='rc-popover__list'>
 			<Margins block='x8'>
-				{canCreateChannel && <CreateChannelListItem icon={'hashtag'} text={t('Channel')} action={createChannel} />}
-				{canCreateDirectMessages && <CreateChannelListItem icon={'baloon-arrow-left'} text={t('Direct_Messages')} action={createDirectMessage} />}
-				{discussionEnabled && canCreateDiscussion && <CreateChannelListItem icon={'discussion'} text={t('Discussion')} action={createDiscussion} />}
+				{canCreateChannel && <CreateRoomListItem icon={'hashtag'} text={t('Channel')} action={createChannel} />}
+				{canCreateDirectMessages && <CreateRoomListItem icon={'baloon-arrow-left'} text={t('Direct_Messages')} action={createDirectMessage} />}
+				{discussionEnabled && canCreateDiscussion && <CreateRoomListItem icon={'discussion'} text={t('Discussion')} action={createDiscussion} />}
 			</Margins>
 		</ul>
 	</>;
 }
 
-export default SortList;
+export default CreateRoomList;
