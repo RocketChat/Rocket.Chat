@@ -87,21 +87,12 @@ Template.thread.helpers({
 		const instance = Template.instance();
 		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
 
-		const thread = instance.Threads.findOne({ _id: tmid }, { fields: { replies: 1 } });
-
-		const following = thread?.replies?.includes(Meteor.userId());
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		return {
 			showFormattingTips,
 			tshow: instance.state.get('sendToChannel'),
 			subscription,
-			...!following && {
-				customAction: {
-					template: 'messageBoxFollow',
-					data: { tmid },
-				},
-			},
 			rid,
 			tmid,
 			onSend: (...args) => {
