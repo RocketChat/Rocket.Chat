@@ -43,7 +43,7 @@ export const CreateChannel = ({
 		setNameError(false);
 		if (hasUnsavedChanges) { return; }
 		if (!name || name.length === 0) { return setNameError(t('Field_required')); }
-		if (!channelNameRegex.test(name)) { return setNameError(t('error-invalid-name')); }
+		if (!channelNameRegex.test(name) || ['admin', 'administrator', 'system', 'user'].includes(name.toLowerCase())) { return setNameError(t('error-invalid-name')); }
 		const isNotAvailable = await channelNameExists(name);
 		if (isNotAvailable) { return setNameError(t('Channel_already_exist', name)); }
 	}, 100, [name]);

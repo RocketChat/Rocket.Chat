@@ -35,6 +35,10 @@ Meteor.methods({
 			nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 		}
 
+		if (['admin', 'administrator', 'system', 'user'].includes(username.toLowerCase())) {
+			throw new Meteor.Error('username-invalid', `${ _.escape(username) } is not a valid username. This username is reserved and its use is not allowed.`);
+		}
+
 		if (!nameValidation.test(username)) {
 			throw new Meteor.Error('username-invalid', `${ _.escape(username) } is not a valid username, use only letters, numbers, dots, hyphens and underscores`);
 		}
