@@ -16,7 +16,7 @@ export interface ITeam extends IRocketChatRecord {
 export interface ITeamMember extends IRocketChatRecord {
 	teamId: string;
 	userId: string;
-	roles: Array<string>;
+	roles?: Array<string>;
 	createdBy: Pick<IUser, '_id' | 'username' >;
 	createdAt: Date;
 }

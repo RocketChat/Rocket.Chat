@@ -18,3 +18,19 @@ API.v1.addRoute('teams.list', { authRequired: true }, {
 		return API.v1.success({ teams });
 	},
 });
+
+API.v1.addRoute('teams.create', { authRequired: true }, {
+	post() {
+		const { name, type, members } = this.bodyParams;
+
+		const team = Promise.await(Team.create(this.userId, {
+			data: {
+				name,
+				type,
+			},
+			members,
+		}));
+
+		return API.v1.success({ team });
+	},
+});
