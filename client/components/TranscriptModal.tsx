@@ -4,15 +4,18 @@ import { Field, Button, TextInput, Icon, ButtonGroup, Modal } from '@rocket.chat
 import { useTranslation } from '../contexts/TranslationContext';
 import { useForm } from '../hooks/useForm';
 import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
+import { IRoom } from '../../definition/IRoom';
 
 
 type TranscriptModalProps = {
 	email: string;
+	room?: IRoom;
 	onSend: (email: string, subject: string) => void;
 	onCancel: () => void;
+	onDiscard: () => void;
 };
 
-const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', onSend, onCancel, ...props }) => {
+const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', room, onSend, onCancel, onDiscard, ...props }) => {
 	const t = useTranslation();
 
 	const ref = useRef<HTMLInputElement>();
@@ -29,11 +32,14 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', o
 	const { handleEmail, handleSubject } = handlers;
 	const [emailError, setEmailError] = useState('');
 	const [subjectError, setSubjectError] = useState('');
+	const { transcriptRequest } = room as IRoom;
 
 
 	const handleSend = useCallback(() => {
 		onSend(email, subject);
 	}, [email, onSend, subject]);
+
+	const handleDiscard = useCallback(() => onDiscard(), [onDiscard]);
 
 	useComponentDidUpdate(() => {
 		setEmailError(!email ? t('The_field_is_required', t('Email')) : '');
@@ -55,7 +61,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', o
 			<Field marginBlock='x15'>
 				<Field.Label>{t('Email')}*</Field.Label>
 				<Field.Row>
-					<TextInput disabled={!!emailDefault} ref={ref} error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
+					<TextInput disabled={!!emailDefault || !!transcriptRequest} ref={ref} error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
 				</Field.Row>
 				<Field.Error>
 					{emailError}
@@ -64,7 +70,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', o
 			<Field marginBlock='x15'>
 				<Field.Label>{t('Subject')}*</Field.Label>
 				<Field.Row>
-					<TextInput error={subjectError} flexGrow={1} value={subject} onChange={handleSubject} />
+					<TextInput disabled={!!transcriptRequest} error={subjectError} flexGrow={1} value={subject} onChange={handleSubject} />
 				</Field.Row>
 				<Field.Error>
 					{subjectError}
@@ -74,7 +80,10 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', o
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>
-				<Button disabled={!canSave} primary onClick={handleSend}>{t('Send')}</Button>
+				{ transcriptRequest
+					? <Button primary danger onClick={handleDiscard}>{t('Discard')}</Button>
+					: <Button disabled={!canSave} primary onClick={handleSend}>{t('Send')}</Button>
+				}
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;

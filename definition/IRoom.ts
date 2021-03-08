@@ -6,6 +6,12 @@ type RoomType = 'c' | 'd' | 'p' | 'l';
 
 export type RoomID = string;
 export type ChannelName = string;
+interface IRequestTranscript {
+	email: string;
+	requestedAt: Date;
+	requestedBy: IUser;
+	subject: string;
+}
 
 export interface IRoom extends IRocketChatRecord {
 	_id: RoomID;
@@ -38,6 +44,10 @@ export interface IRoom extends IRocketChatRecord {
 			balance: number;
 		}[];
 	};
+	v?: {
+		_id: string;
+	};
+	transcriptRequest?: IRequestTranscript;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
