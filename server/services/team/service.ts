@@ -2,7 +2,7 @@ import { Db } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam } from '../../../definition/ITeam';
-import { Authorization } from '../../sdk';
+import { Authorization, Room } from '../../sdk';
 import { ITeamCreateParams, ITeamService } from '../../sdk/types/ITeamService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 
@@ -17,15 +17,20 @@ export class TeamService extends ServiceClass implements ITeamService {
 		this.TeamModel = new TeamRaw(db.collection('rocketchat_team'));
 	}
 
-	async create({ uid, data, members}: ITeamCreateParams): Promise<ITeam> {
+	async create({ uid, data, members }: ITeamCreateParams): Promise<ITeam> {
 		const hasPermission = await Authorization.hasPermission(uid, 'create-team');
 		if (!hasPermission) {
 			throw new Error('no-permission');
 		}
 
-		const wut = await this.TeamModel.insertOne(data);
+		// create team
+		await this.TeamModel.insertOne(data);
 
-		console.log('wut ->', wut);
+		// TODO create team members
+		// this.TeamMembersModel.insertMany(listOfMembers);
+
+		// TODO create room and subscriptions
+		// await Room.create(data, members);
 
 		const team = {
 			_id: 'somethi',
