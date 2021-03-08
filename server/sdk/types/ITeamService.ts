@@ -1,6 +1,12 @@
 import { ITeam } from '../../../definition/ITeam';
 
+export interface ITeamCreateParams {
+	uid: string;
+	data: Omit<ITeam, '_id'>;
+	members?: Array<string>;
+}
+
 export interface ITeamService {
-	create(uid: string, team: Omit<ITeam, '_id'>): Promise<ITeam>;
+	create(params: ITeamCreateParams): Promise<ITeam>;
 	list(uid: string, filter?: string): Promise<Array<ITeam>>;
 }

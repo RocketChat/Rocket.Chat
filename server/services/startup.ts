@@ -17,4 +17,4 @@ api.registerService(new MeteorService());
 api.registerService(new UiKitCoreApp());
 api.registerService(new NPSService(db));
 api.registerService(new RoomService());
-api.registerService(new TeamService());
+api.registerService(new TeamService(db));
