@@ -6,6 +6,7 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 import { Attachment, AttachmentPropsBase } from './Attachment';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import MarkdownText from '../../MarkdownText';
+import { findSlice } from '../helpers/getUrlParamsQuote';
 
 import Attachments from '.';
 
@@ -31,6 +32,10 @@ const hover = css`
 
 export const QuoteAttachment: FC<QuoteAttachmentProps> = ({ author_icon: url, author_name: name, author_link: authorLink, message_link: messageLink, ts, text, attachments }) => {
 	const format = useTimeAgo();
+	const slice = findSlice(messageLink, text);
+	if (slice) {
+		text = `[...] ${ slice } [...]`;
+	}
 	return <>
 		<Attachment.Content className={hover} width='full'>
 			<Attachment.Details is='blockquote' borderRadius='x2' borderWidth='x2' borderStyle='solid' borderColor='neutral-200' borderInlineStartColor='neutral-600'>

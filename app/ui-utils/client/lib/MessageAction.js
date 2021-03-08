@@ -49,6 +49,15 @@ export const MessageAction = new class {
 
 	constructor() {
 		this.buttons = new ReactiveVar({});
+		this.selection = '';
+	}
+
+	setSelection(selection = '') {
+		this.selection = selection;
+	}
+
+	getSelection() {
+		return this.selection;
 	}
 
 	addButton(config) {
@@ -150,7 +159,13 @@ export const MessageAction = new class {
 Meteor.startup(async function() {
 	const { chatMessages } = await import('../../../ui');
 
+	const flushStartEnd = (msg) => {
+		delete msg.start;
+		delete msg.end;
+	};
+
 	const getChatMessagesFrom = (msg) => {
+		flushStartEnd(msg);
 		const { rid = Session.get('openedRoom'), tmid = msg._id } = msg;
 
 		return chatMessages[`${ rid }-${ tmid }`] || chatMessages[rid];
@@ -182,6 +197,43 @@ Meteor.startup(async function() {
 	});
 
 	MessageAction.addButton({
+		id: 'quote-message-fragment',
+		icon: 'quote',
+		label: 'Quote_fragment',
+		context: ['message', 'message-mobile', 'threads'],
+		action() {
+			const { msg: message } = messageArgs(this);
+			const { input } = getChatMessagesFrom(message);
+			const $input = $(input);
+			const substring = MessageAction.getSelection();
+
+			message.start = message.msg.indexOf(substring);
+			message.end = message.start + substring.length;
+
+			let messages = $input.data('reply') || [];
+			messages = addMessageToList(messages, message, substring);
+
+			$input
+				.focus()
+				.data('mention-user', false)
+				.data('reply', messages)
+				.trigger('dataChange');
+
+			MessageAction.setSelection();
+		},
+		condition({ msg: message, subscription }) {
+			const substring = MessageAction.getSelection();
+			if (subscription == null || !substring || message.msg.indexOf(substring) === -1) {
+				return false;
+			}
+
+			return true;
+		},
+		order: -4,
+		group: ['message', 'menu'],
+	});
+
+	MessageAction.addButton({
 		id: 'quote-message',
 		icon: 'quote',
 		label: 'Quote',
@@ -193,7 +245,7 @@ Meteor.startup(async function() {
 
 			let messages = $input.data('reply') || [];
 
-			messages = addMessageToList(messages, message, input);
+			messages = addMessageToList(messages, message);
 
 			$input
 				.focus()

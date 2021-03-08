@@ -53,6 +53,19 @@ const renderBody = (msg, settings) => {
 	return msg;
 };
 
+Template.message.events({
+	'mousedown #selectable'() {
+		document.getSelection().empty();
+		MessageAction.setSelection();
+	},
+	'mouseup #selectable'() {
+		const selected = document.getSelection().toString();
+		if (selected.length) {
+			MessageAction.setSelection(selected);
+		}
+	},
+});
+
 Template.message.helpers({
 	unread() {
 		const { msg, subscription } = this;
