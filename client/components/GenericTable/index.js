@@ -18,7 +18,6 @@ const GenericTable = ({
 	results,
 	setParams = () => { },
 	total,
-	pagination = true,
 	...props
 }, ref) => {
 	const t = useTranslation();
@@ -70,7 +69,7 @@ const GenericTable = ({
 						</Table>
 					</ScrollableContentWrapper>
 				</Box>
-				{pagination && <Pagination
+				<Pagination
 					divider
 					current={current}
 					itemsPerPage={itemsPerPage}
@@ -79,7 +78,7 @@ const GenericTable = ({
 					count={total || 0}
 					onSetItemsPerPage={setItemsPerPage}
 					onSetCurrent={setCurrent}
-				/>}
+				/>
 			</>
 		}
 	</>;

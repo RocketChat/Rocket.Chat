@@ -4,15 +4,10 @@ import React, { FC } from 'react';
 import { useTranslation } from '../contexts/TranslationContext';
 import { withDoNotAskAgain, RequiredModalProps } from './withDoNotAskAgain';
 
-enum Variant {
-	Danger = 'danger',
-	Warning = 'warning',
-	Info = 'info',
-	Success = 'success'
-}
+type VariantType = 'danger' | 'warning' | 'info' | 'success';
 
 type GenericModalProps = RequiredModalProps & {
-	variant?: Variant;
+	variant?: VariantType;
 	cancelText?: string;
 	confirmText?: string;
 	title?: string;
@@ -29,11 +24,11 @@ const iconMap = {
 	success: 'check',
 };
 
-const getButtonProps = (variant: Variant): ButtonProps => {
+const getButtonProps = (variant: VariantType): ButtonProps => {
 	switch (variant) {
-		case Variant.Danger:
+		case 'danger':
 			return { primary: true, danger: true };
-		case Variant.Warning:
+		case 'warning':
 			return { primary: true };
 		default:
 			return { };
@@ -41,7 +36,7 @@ const getButtonProps = (variant: Variant): ButtonProps => {
 };
 
 const GenericModal: FC<GenericModalProps> = ({
-	variant = Variant.Info,
+	variant = 'info',
 	children,
 	cancelText,
 	confirmText,
