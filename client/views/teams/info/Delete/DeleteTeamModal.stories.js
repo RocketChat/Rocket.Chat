@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { StepOne, StepTwo, StepThree, DeleteTeam } from './DeleteTeamModal';
+import DeleteTeam, { StepOne, StepTwo, StepThree } from '.';
 
 export default {
 	title: 'components/DeleteTeamModal',
-	component: StepOne,
+	component: DeleteTeam,
 };
 
 const commonProps = {
@@ -22,6 +22,7 @@ export const ModalStepOne = () => <StepOne
 
 export const ModalStepTwo = () => <StepTwo
 	rooms={rooms}
+	selectedRooms={{}}
 	{...commonProps}
 />;
 
