@@ -94,16 +94,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async list(uid: string): Promise<Array<ITeam>> {
-		return [{
-			_id: 'aa',
-			name: 'ok',
-			type: 0,
-			createdAt: new Date(),
-			createdBy: {
-				_id: 'rocket.cat',
-				username: 'rocket.cat',
-			},
-			_updatedAt: new Date(),
-		}];
+		const records = await this.TeamMembersModel.find({ userId: uid }, { projection: { teamId: 1 } }).toArray();
+
+		const teamIds = records.map(({ teamId }) => teamId);
+		if (teamIds.length === 0) {
+			return [];
+		}
+
+		return this.TeamModel.find({ _id: { $in: teamIds } }).toArray();
 	}
 }
