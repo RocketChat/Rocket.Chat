@@ -8,10 +8,13 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 	 *
 	 * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
 	 * @param {function} callback function that will return the publish's data
-	*/
+	 */
 	setPublish(roomType, callback) {
 		if (this.roomTypes[roomType] && this.roomTypes[roomType].publish != null) {
-			throw new Meteor.Error('route-publish-exists', 'Publish for the given type already exists');
+			throw new Meteor.Error(
+				'route-publish-exists',
+				'Publish for the given type already exists',
+			);
 		}
 		if (this.roomTypes[roomType] == null) {
 			this.roomTypes[roomType] = {};
@@ -21,7 +24,10 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 
 	setRoomFind(roomType, callback) {
 		if (this.roomTypes[roomType] && this.roomTypes[roomType].roomFind != null) {
-			throw new Meteor.Error('room-find-exists', 'Room find for the given type already exists');
+			throw new Meteor.Error(
+				'room-find-exists',
+				'Room find for the given type already exists',
+			);
 		}
 		if (this.roomTypes[roomType] == null) {
 			this.roomTypes[roomType] = {};
@@ -34,7 +40,11 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 	}
 
 	getRoomName(roomType, roomData) {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].roomName && this.roomTypes[roomType].roomName(roomData);
+		return (
+			this.roomTypes[roomType]
+			&& this.roomTypes[roomType].roomName
+			&& this.roomTypes[roomType].roomName(roomData)
+		);
 	}
 
 	/**
@@ -43,12 +53,17 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 	 * @param scope Meteor publish scope
 	 * @param {string} roomType room type (e.g.: c (for channels), d (for direct channels))
 	 * @param identifier identifier of the room
-	*/
+	 */
 	runPublish(scope, roomType, identifier) {
-		return this.roomTypes[roomType] && this.roomTypes[roomType].publish && this.roomTypes[roomType].publish.call(scope, identifier);
+		return (
+			this.roomTypes[roomType]
+			&& this.roomTypes[roomType].publish
+			&& this.roomTypes[roomType].publish.call(scope, identifier)
+		);
 	}
 }();
 
-export const searchableRoomTypes = () => Object.entries(roomTypes.roomTypes)
-	.filter((roomType) => roomType[1].includeInRoomSearch())
-	.map((roomType) => roomType[0]);
+export const searchableRoomTypes = () =>
+	Object.entries(roomTypes.roomTypes)
+		.filter((roomType) => roomType[1].includeInRoomSearch())
+		.map((roomType) => roomType[0]);

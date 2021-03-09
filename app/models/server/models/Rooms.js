@@ -290,12 +290,12 @@ export class Rooms extends Base {
 				$set: {
 					sysMes: systemMessages,
 				},
-				  }
+			}
 			: {
 				$unset: {
 					sysMes: '',
 				},
-				  };
+			};
 		return this.update(query, update);
 	};
 
@@ -574,18 +574,9 @@ export class Rooms extends Base {
 			default: {
 				$ne: true,
 			},
-			$or: [{
-				teamId: {
-					$exists: false,
-				},
-			}, {
-				teamId: {
-					$exists: true,
-				},
-				_id: {
-					$in: ids,
-				}
-			}],
+			teamId: {
+				$exists: false,
+			},
 		};
 
 		// do not use cache
@@ -600,18 +591,21 @@ export class Rooms extends Base {
 			t: {
 				$in: types,
 			},
-			$or: [{
-				teamId: {
-					$exists: false,
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
 				},
-			}, {
-				teamId: {
-					$exists: true,
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: ids,
+					},
 				},
-				_id: {
-					$in: ids,
-				}
-			}],
+			],
 			name,
 		};
 
@@ -898,12 +892,12 @@ export class Rooms extends Base {
 				$set: {
 					lastMessage,
 				},
-			  }
+			}
 			: {
 				$unset: {
 					lastMessage: 1,
 				},
-			  };
+			};
 
 		return this.update(query, update);
 	}

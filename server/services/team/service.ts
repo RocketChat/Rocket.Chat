@@ -85,7 +85,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async list(uid: string): Promise<Array<ITeam>> {
+	async list(_uid: string): Promise<Array<ITeam>> {
 		return [{
 			_id: 'aa',
 			name: 'ok',
