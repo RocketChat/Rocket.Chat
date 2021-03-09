@@ -13,6 +13,7 @@ import { useLayout } from '../../../../contexts/LayoutContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { QuickActionsContext } from '../../lib/QuickActions/QuickActionsContext';
 import ReturnChatQueueModal from '../../../../components/ReturnChatQueueModal';
+import ForwardChatModal from '../../../../components/ForwardChatModal';
 import TranscriptModal from '../../../../components/TranscriptModal';
 import { handleError } from '../../../../../app/utils/client';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
@@ -77,6 +78,9 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				break;
 			case QuickActionsEnum.Transcript:
 				setModal(<TranscriptModal room={room} email={email} onSend={requestTranscript} onDiscard={discardTranscript} onCancel={closeModal} />);
+				break;
+			case QuickActionsEnum.ChatForward:
+				setModal(<ForwardChatModal onForward={requestTranscript} onCancel={closeModal} />);
 				break;
 			default:
 				break;

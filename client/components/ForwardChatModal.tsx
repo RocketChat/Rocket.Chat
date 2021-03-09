@@ -4,7 +4,8 @@ import { Field, Button, TextInput, TextAreaInput, Icon, ButtonGroup, Modal } fro
 import { useTranslation } from '../contexts/TranslationContext';
 import { useForm } from '../hooks/useForm';
 import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
-
+import ModalSeparator from './ModalSeparator';
+import { AutoCompleteDepartment } from './AutoCompleteDepartment';
 
 type ForwardChatModalProps = {
 	onForward: (departmentName: string, username: string, comment?: string) => void;
@@ -45,31 +46,31 @@ const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...p
 	return <Modal {...props}>
 		<Modal.Header>
 			<Icon name='baloon-arrow-top-right' size={20}/>
-			<Modal.Title>{t('Transcript')}</Modal.Title>
+			<Modal.Title>{t('Forward_chat')}</Modal.Title>
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			<Field>
-				<Field.Label>{t('Forward_to_department')}*</Field.Label>
+			<Field mbe={'x30'}>
+				<Field.Label>{t('Forward_to_department')}</Field.Label>
 				<Field.Row>
-					<TextInput ref={ref} error={departmentError} flexGrow={1} value={departmentName} onChange={handleDepartmentName} />
+					<AutoCompleteDepartment flexShrink={1} placeholder={t('Department_name')} />
 				</Field.Row>
 				<Field.Error>
 					{departmentError}
 				</Field.Error>
 			</Field>
-			<p>or</p>
-			<Field>
-				<Field.Label>{t('Forward_to_user')}*</Field.Label>
+			<ModalSeparator text={t('or')} />
+			<Field mbs={'x30'}>
+				<Field.Label>{t('Forward_to_user')}</Field.Label>
 				<Field.Row>
-					<TextInput error={usernameError} flexGrow={1} value={username} onChange={handleUsername} />
+					<TextInput error={usernameError} flexGrow={1} value={username} onChange={handleUsername} placeholder={t('Username')} />
 				</Field.Row>
 				<Field.Error>
 					{usernameError}
 				</Field.Error>
 			</Field>
-			<Field>
-				<Field.Label>{t('Leave_a_comment')}*</Field.Label>
+			<Field marginBlock='x15'>
+				<Field.Label>{t('Leave_a_comment')}</Field.Label>
 				<Field.Row>
 					<TextAreaInput rows={3} flexGrow={1} value={comment} onChange={handleComment} />
 				</Field.Row>

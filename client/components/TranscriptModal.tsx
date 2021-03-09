@@ -61,7 +61,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 			<Field marginBlock='x15'>
 				<Field.Label>{t('Email')}*</Field.Label>
 				<Field.Row>
-					<TextInput disabled={!!emailDefault || !!transcriptRequest} ref={ref} error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
+					<TextInput disabled={!!emailDefault || !!transcriptRequest} error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
 				</Field.Row>
 				<Field.Error>
 					{emailError}
@@ -70,7 +70,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 			<Field marginBlock='x15'>
 				<Field.Label>{t('Subject')}*</Field.Label>
 				<Field.Row>
-					<TextInput disabled={!!transcriptRequest} error={subjectError} flexGrow={1} value={subject} onChange={handleSubject} />
+					<TextInput ref={ref} disabled={!!transcriptRequest} error={subjectError} flexGrow={1} value={subject} onChange={handleSubject} />
 				</Field.Row>
 				<Field.Error>
 					{subjectError}
