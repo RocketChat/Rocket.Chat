@@ -30,6 +30,7 @@ const RemoveUsersFirstStep: FC<RemoveUsersStepsParams> = ({
 	const t = useTranslation();
 
 	return <GenericModal
+		variant='warning'
 		icon='warning'
 		title={t('What would you like to do?')}
 		onClose={onClose}
@@ -51,6 +52,7 @@ const RemoveUsersSecondStep: FC<RemoveUsersStepsParams> = ({
 	const t = useTranslation();
 
 	return <GenericModal
+		variant='danger'
 		cancelText='Back'
 		confirmText='Remove'
 		icon='info'
