@@ -6,8 +6,8 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 
 export const StepTwo = ({
 	rooms,
-	params,
-	onChangeParams,
+	// params,
+	// onChangeParams,
 	onToggleAllRooms,
 	onChangeRoomSelection,
 	onConfirm,
