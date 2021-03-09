@@ -1,12 +1,28 @@
 import { IRoom } from '../../../definition/IRoom';
 
+interface ISubscriptionExtraData {
+	open: boolean;
+	ls: Date;
+	prid: string;
+}
+
+interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
+	nameValidationRegex?: string;
+	creator: string;
+	subscriptionExtra?: ISubscriptionExtraData;
+}
+
+interface ICreateRoomExtraData extends Record<string, string> {
+	teamId: string;
+}
+
 export interface ICreateRoomParams {
 	type: IRoom['t'];
 	name: IRoom['name'];
 	members?: Array<string>; // member's usernames
 	readOnly?: boolean;
-	extraData?: Record<string, any>; // TODO map possible values
-	options?: Record<string, any>; // TODO maps possible values
+	extraData?: Partial<ICreateRoomExtraData>;
+	options?: ICreateRoomOptions;
 }
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
