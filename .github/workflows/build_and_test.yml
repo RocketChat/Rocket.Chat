@@ -191,7 +191,8 @@ jobs:
     strategy:
       matrix:
         node-version: ["12.18.4"]
-        mongodb-version: ["3.4", "3.6", "4.0"]
+        mongodb-version: ["4.0"]
+        # mongodb-version: ["3.4", "3.6", "4.0"]
 
     steps:
     - name: Launch MongoDB
@@ -216,9 +217,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Setup Chrome
-      run: |
-        npm i chromedriver
+    # - name: Setup Chrome
+    #   run: |
+    #     npm i chromedriver
 
     - name: Configure Replica Set
       run: |
@@ -227,12 +228,12 @@ jobs:
 
     - uses: actions/checkout@v2
 
-    - name: Cache cypress
-      id: cache-cypress
-      uses: actions/cache@v2
-      with:
-        path: /home/runner/.cache/Cypress
-        key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+    # - name: Cache cypress
+    #   id: cache-cypress
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: /home/runner/.cache/Cypress
+    #     key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache node modules
       if: steps.cache-cypress.outputs.cache-hit == 'true'
@@ -247,15 +248,37 @@ jobs:
       run: |
         npm install
 
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python --version
+        python -m pip install --upgrade pip
+        pip --version
+        pip install -U selenium
+        pip install pytest pytest-html
+
     - name: Test
       env:
         TEST_MODE: "true"
         MONGO_URL: mongodb://localhost:27017/rocketchat
         MONGO_OPLOG_URL: mongodb://localhost:27017/local
       run: |
-        echo -e 'pcm.!default {\n type hw\n card 0\n}\n\nctl.!default {\n type hw\n card 0\n}' > ~/.asoundrc
-        Xvfb -screen 0 1024x768x24 :99 &
-        for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
+        RUN_TESTS=no node .scripts/start.js &
+
+        # wait until port is bind
+        timeout 60 bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 3000
+
+        cd ..
+        git clone --depth=1 https://github.com/RocketChat/QA.Automation.git
+        cd QA.Automation
+        pytest Tests
+        pytest -v -s Tests
+        py.test -v -s Tests
+
 
 #   notification:
 #     runs-on: ubuntu-latest

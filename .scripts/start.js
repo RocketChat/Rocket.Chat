@@ -135,7 +135,9 @@ function startChimp() {
 function chimpNoMirror() {
 	appOptions.waitForMessage = 'SERVER RUNNING';
 	startApp(function() {
-		startChimp();
+		if (process.env.RUN_TESTS !== 'no') {
+			startChimp();
+		}
 	});
 }
 
