@@ -21,13 +21,14 @@ API.v1.addRoute('teams.list', { authRequired: true }, {
 
 API.v1.addRoute('teams.create', { authRequired: true }, {
 	post() {
-		const { name, type, members } = this.bodyParams;
+		const { name, type, members, room } = this.bodyParams;
 
 		const team = Promise.await(Team.create(this.userId, {
-			data: {
+			team: {
 				name,
 				type,
 			},
+			room,
 			members,
 		}));
 

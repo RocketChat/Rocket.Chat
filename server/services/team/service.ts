@@ -7,6 +7,7 @@ import { ITeamCreateParams, ITeamService } from '../../sdk/types/ITeamService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
+import { IRoom } from '../../../definition/IRoom';
 
 export class TeamService extends ServiceClass implements ITeamService {
 	protected name = 'team';
@@ -25,7 +26,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		this.Users = new UsersRaw(db.collection('users'));
 	}
 
-	async create(uid: string, { data, members }: ITeamCreateParams): Promise<ITeam> {
+	async create(uid: string, { team, room, members }: ITeamCreateParams): Promise<ITeam> {
 		const hasPermission = await Authorization.hasPermission(uid, 'create-team');
 		if (!hasPermission) {
 			throw new Error('no-permission');
@@ -42,7 +43,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const memberUsernames = membersResult.map(({ username }) => username);
 
 		const teamData = {
-			...data,
+			...team,
 			createdAt: new Date(),
 			createdBy,
 			_updatedAt: new Date(), // TODO how to avoid having to do this?
@@ -71,13 +72,20 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		await this.TeamMembersModel.insertMany(membersList);
 
-		const roomType = data.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
-		await Room.create(uid, {
+		const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
+
+		const newRoom = {
+			...room,
 			type: roomType,
-			name: data.name,
+			name: team.name,
 			members: memberUsernames,
-			extraData: { teamId },
-		});
+			extraData: {
+				...room.extraData,
+				teamId,
+			},
+		};
+
+		await Room.create(uid, newRoom);
 
 		return {
 			_id: teamId,
@@ -85,17 +93,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async list(_uid: string): Promise<Array<ITeam>> {
-		return [{
-			_id: 'aa',
-			name: 'ok',
-			type: 0,
-			createdAt: new Date(),
-			createdBy: {
-				_id: 'rocket.cat',
-				username: 'rocket.cat',
-			},
-			_updatedAt: new Date(),
-		}];
+	async list(userId: string): Promise<Array<ITeam>> {
+		const records = await this.TeamMembersModel.find({ userId }, { projection: { teamId: 1 } }).toArray();
+
+		const teamIds = records.map(({ teamId }) => teamId);
+		if (teamIds.length === 0) {
+			return [];
+		}
+
+		return this.TeamModel.find({ _id: { $in: teamIds } }).toArray();
 	}
 }
