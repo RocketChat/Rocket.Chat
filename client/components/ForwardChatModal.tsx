@@ -26,7 +26,8 @@ const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...p
 	const { values, handlers } = useForm({ departmentName: '', username: '', commend: '' });
 
 	const { departmentName, username, comment } = values as { departmentName: string; username: string; comment: string };
-	const { handleDepartmentName, handleUsername, handleComment } = handlers;
+	const { handleUsername, handleComment } = handlers;
+	// const { handleDepartmentName, handleUsername, handleComment } = handlers;
 	const [departmentError, setDepartmentError] = useState('');
 	const [usernameError, setUsernameError] = useState('');
 

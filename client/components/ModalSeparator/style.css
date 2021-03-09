@@ -1,14 +1,20 @@
 .modal-separator {
+	display: flex;
+
 	text-align: center;
-	display:flex;
+	text-transform: uppercase;
+
+	font-size: 0.625rem;
 	font-weight: normal;
-    text-transform: uppercase;
-    font-size: 0.625rem;
 }
 
-.modal-separator:before, .modal-separator:after {
-	content:'';
-	flex:1;
-    border-bottom: solid 2px #F2F3F5;
-	margin:auto 0.8em;
-  }
+.modal-separator::before,
+.modal-separator::after {
+	flex: 1;
+
+	margin: auto 0.8em;
+
+	content: '';
+
+	border-bottom: solid 2px #f2f3f5;
+}
