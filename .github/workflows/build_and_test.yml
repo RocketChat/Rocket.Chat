@@ -217,23 +217,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    # - name: Setup Chrome
-    #   run: |
-    #     npm i chromedriver
-
     - name: Configure Replica Set
       run: |
         docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
         docker exec mongo mongo --eval 'rs.status()'
 
     - uses: actions/checkout@v2
-
-    # - name: Cache cypress
-    #   id: cache-cypress
-    #   uses: actions/cache@v2
-    #   with:
-    #     path: /home/runner/.cache/Cypress
-    #     key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
     - name: Cache node modules
       if: steps.cache-cypress.outputs.cache-hit == 'true'
@@ -259,7 +248,7 @@ jobs:
         python -m pip install --upgrade pip
         pip --version
         pip install -U selenium
-        pip install pytest pytest-html
+        pip install pytest pytest-html allure
 
     - name: Test
       env:
