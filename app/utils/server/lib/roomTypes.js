@@ -48,3 +48,7 @@ export const roomTypes = new class roomTypesServer extends RoomTypesCommon {
 		return this.roomTypes[roomType] && this.roomTypes[roomType].publish && this.roomTypes[roomType].publish.call(scope, identifier);
 	}
 }();
+
+export const searchableRoomTypes = () => Object.entries(roomTypes.roomTypes)
+	.filter((roomType) => roomType[1].includeInRoomSearch())
+	.map((roomType) => roomType[0]);

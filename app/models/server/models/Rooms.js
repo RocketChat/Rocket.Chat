@@ -30,16 +30,18 @@ export class Rooms extends Base {
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
-			$or: [{
-				_id: _idOrName,
-			}, {
-				name: _idOrName,
-			}],
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
 		};
 
 		return this.findOne(query, options);
 	}
-
 
 	setJitsiTimeout(_id, time) {
 		const query = {
@@ -88,11 +90,17 @@ export class Rooms extends Base {
 	}
 
 	setReactionsInLastMessage(roomId, lastMessage) {
-		return this.update({ _id: roomId }, { $set: { 'lastMessage.reactions': lastMessage.reactions } });
+		return this.update(
+			{ _id: roomId },
+			{ $set: { 'lastMessage.reactions': lastMessage.reactions } },
+		);
 	}
 
 	unsetReactionsInLastMessage(roomId) {
-		return this.update({ _id: roomId }, { $unset: { lastMessage: { reactions: 1 } } });
+		return this.update(
+			{ _id: roomId },
+			{ $unset: { lastMessage: { reactions: 1 } } },
+		);
 	}
 
 	unsetAllImportIds() {
@@ -132,8 +140,15 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setLastMessageSnippeted(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
-		const query =	{ _id: roomId };
+	setLastMessageSnippeted(
+		roomId,
+		message,
+		snippetName,
+		snippetedBy,
+		snippeted,
+		snippetedAt,
+	) {
+		const query = { _id: roomId };
 
 		const msg = `\`\`\`${ message.msg }\`\`\``;
 
@@ -165,13 +180,16 @@ export class Rooms extends Base {
 	}
 
 	setLastMessageAsRead(roomId) {
-		return this.update({
-			_id: roomId,
-		}, {
-			$unset: {
-				'lastMessage.unread': 1,
+		return this.update(
+			{
+				_id: roomId,
 			},
-		});
+			{
+				$unset: {
+					'lastMessage.unread': 1,
+				},
+			},
+		);
 	}
 
 	setSentiment(roomId, sentiment) {
@@ -211,7 +229,9 @@ export class Rooms extends Base {
 
 	setReadOnlyById(_id, readOnly, hasPermission) {
 		if (!hasPermission) {
-			throw new Error('You must provide "hasPermission" function to be able to call this method');
+			throw new Error(
+				'You must provide "hasPermission" function to be able to call this method',
+			);
 		}
 		const query = {
 			_id,
@@ -235,7 +255,7 @@ export class Rooms extends Base {
 			},
 		};
 		return this.update(query, update);
-	}
+	};
 
 	setAvatarData(_id, origin, etag) {
 		const update = {
@@ -261,22 +281,23 @@ export class Rooms extends Base {
 		return this.update({ _id }, update);
 	}
 
-
 	setSystemMessagesById = function(_id, systemMessages) {
 		const query = {
 			_id,
 		};
-		const update = systemMessages && systemMessages.length > 0 ? {
-			$set: {
-				sysMes: systemMessages,
-			},
-		} : {
-			$unset: {
-				sysMes: '',
-			},
-		};
+		const update = systemMessages && systemMessages.length > 0
+			? {
+				$set: {
+					sysMes: systemMessages,
+				},
+				  }
+			: {
+				$unset: {
+					sysMes: '',
+				},
+				  };
 		return this.update(query, update);
-	}
+	};
 
 	setE2eKeyId(_id, e2eKeyId, options) {
 		const query = {
@@ -306,7 +327,9 @@ export class Rooms extends Base {
 
 		let channelName = s.trim(name);
 		try {
-			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
+			channelName = getValidRoomName(channelName, null, {
+				allowDuplicates: true,
+			});
 		} catch (e) {
 			console.error(e);
 		}
@@ -339,6 +362,9 @@ export class Rooms extends Base {
 		const query = {
 			name,
 			t: type,
+			teamId: {
+				$exists: false,
+			},
 		};
 
 		return this.findOne(query, options);
@@ -388,7 +414,8 @@ export class Rooms extends Base {
 	}
 
 	findBySubscriptionUserId(userId, options) {
-		const data = Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
+		const data = Subscriptions.findByUserId(userId, { fields: { rid: 1 } })
+			.fetch()
 			.map((item) => item.rid);
 
 		const query = {
@@ -401,7 +428,10 @@ export class Rooms extends Base {
 	}
 
 	findBySubscriptionTypeAndUserId(type, userId, options) {
-		const data = Subscriptions.findByUserIdAndType(userId, type, { fields: { rid: 1 } }).fetch()
+		const data = Subscriptions.findByUserIdAndType(userId, type, {
+			fields: { rid: 1 },
+		})
+			.fetch()
 			.map((item) => item.rid);
 
 		const query = {
@@ -415,12 +445,16 @@ export class Rooms extends Base {
 	}
 
 	findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options) {
-		const ids = Subscriptions.findByUserId(userId, { fields: { rid: 1 } }).fetch()
+		const ids = Subscriptions.findByUserId(userId, { fields: { rid: 1 } })
+			.fetch()
 			.map((item) => item.rid);
 
 		const query = {
 			_id: {
 				$in: ids,
+			},
+			teamId: {
+				$exists: false,
 			},
 			_updatedAt: {
 				$gt: _updatedAt,
@@ -478,11 +512,55 @@ export class Rooms extends Base {
 	findByNameOrFNameAndType(name, type, options) {
 		const query = {
 			t: type,
-			$or: [{
-				name,
-			}, {
-				fname: name,
-			}],
+			teamId: {
+				$exists: false,
+			},
+			$or: [
+				{
+					name,
+				},
+				{
+					fname: name,
+				},
+			],
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
+	findByNameOrFNameAndTypeExcludingTeams(name, type, teamIds, options) {
+		const query = {
+			t: type,
+			$and: [
+				{
+					$or: [
+						{
+							name,
+						},
+						{
+							fname: name,
+						},
+					],
+				},
+				{
+					$or: [
+						{
+							teamId: {
+								$exists: false,
+							},
+						},
+						{
+							teamId: {
+								$exists: true,
+							},
+							id: {
+								$in: teamIds,
+							},
+						},
+					],
+				},
+			],
 		};
 
 		// do not use cache
@@ -496,6 +574,18 @@ export class Rooms extends Base {
 			default: {
 				$ne: true,
 			},
+			$or: [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: ids,
+				}
+			}],
 		};
 
 		// do not use cache
@@ -510,6 +600,18 @@ export class Rooms extends Base {
 			t: {
 				$in: types,
 			},
+			$or: [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: ids,
+				}
+			}],
 			name,
 		};
 
@@ -572,10 +674,7 @@ export class Rooms extends Base {
 	findByTypeAndNameOrId(type, identifier, options) {
 		const query = {
 			t: type,
-			$or: [
-				{ name: identifier },
-				{ _id: identifier },
-			],
+			$or: [{ name: identifier }, { _id: identifier }],
 		};
 
 		return this.findOne(query, options);
@@ -619,17 +718,23 @@ export class Rooms extends Base {
 	}
 
 	findGroupDMsByUids(uids, options) {
-		return this.find({
-			usersCount: { $gt: 2 },
-			uids,
-		}, options);
+		return this.find(
+			{
+				usersCount: { $gt: 2 },
+				uids,
+			},
+			options,
+		);
 	}
 
 	find1On1ByUserId(userId, options) {
-		return this.find({
-			uids: userId,
-			usersCount: 2,
-		}, options);
+		return this.find(
+			{
+				uids: userId,
+				usersCount: 2,
+			},
+			options,
+		);
 	}
 
 	// UPDATE
@@ -709,8 +814,15 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
-		if (inc == null) { inc = 1; }
+	incMsgCountAndSetLastMessageById(
+		_id,
+		inc,
+		lastMessageTimestamp,
+		lastMessage,
+	) {
+		if (inc == null) {
+			inc = 1;
+		}
 		const query = { _id };
 
 		const update = {
@@ -776,17 +888,22 @@ export class Rooms extends Base {
 
 	resetLastMessageById(_id, messageId) {
 		const query = { _id };
-		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
+		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(
+			_id,
+			messageId,
+		);
 
-		const update = lastMessage ? {
-			$set: {
-				lastMessage,
-			},
-		} : {
-			$unset: {
-				lastMessage: 1,
-			},
-		};
+		const update = lastMessage
+			? {
+				$set: {
+					lastMessage,
+				},
+			  }
+			: {
+				$unset: {
+					lastMessage: 1,
+				},
+			  };
 
 		return this.update(query, update);
 	}
@@ -978,7 +1095,7 @@ export class Rooms extends Base {
 
 		const update = {
 			...favorite && defaultValue && { $set: { favorite } },
-			...(!favorite || !defaultValue) && { $unset: {	favorite: 1 } },
+			...(!favorite || !defaultValue) && { $unset: { favorite: 1 } },
 		};
 
 		return this.update(query, update);
@@ -1092,7 +1209,14 @@ export class Rooms extends Base {
 	}
 
 	// INSERT
-	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
+	createWithTypeNameUserAndUsernames(
+		type,
+		name,
+		fname,
+		user,
+		usernames,
+		extraData,
+	) {
 		const room = {
 			name,
 			fname,
