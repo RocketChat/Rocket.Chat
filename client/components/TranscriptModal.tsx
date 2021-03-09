@@ -76,6 +76,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 					{subjectError}
 				</Field.Error>
 			</Field>
+			{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
