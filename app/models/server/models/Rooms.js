@@ -30,14 +30,11 @@ export class Rooms extends Base {
 
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
-			$or: [
-				{
+			$or: [{
 					_id: _idOrName,
-				},
-				{
+				}, {
 					name: _idOrName,
-				},
-			],
+			}],
 		};
 
 		return this.findOne(query, options);
@@ -90,17 +87,11 @@ export class Rooms extends Base {
 	}
 
 	setReactionsInLastMessage(roomId, lastMessage) {
-		return this.update(
-			{ _id: roomId },
-			{ $set: { 'lastMessage.reactions': lastMessage.reactions } },
-		);
+		return this.update({ _id: roomId }, { $set: { 'lastMessage.reactions': lastMessage.reactions } });
 	}
 
 	unsetReactionsInLastMessage(roomId) {
-		return this.update(
-			{ _id: roomId },
-			{ $unset: { lastMessage: { reactions: 1 } } },
-		);
+		return this.update({ _id: roomId }, { $unset: { lastMessage: { reactions: 1 } } });
 	}
 
 	unsetAllImportIds() {
@@ -140,14 +131,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setLastMessageSnippeted(
-		roomId,
-		message,
-		snippetName,
-		snippetedBy,
-		snippeted,
-		snippetedAt,
-	) {
+	setLastMessageSnippeted(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
 		const query = { _id: roomId };
 
 		const msg = `\`\`\`${ message.msg }\`\`\``;
@@ -180,16 +164,13 @@ export class Rooms extends Base {
 	}
 
 	setLastMessageAsRead(roomId) {
-		return this.update(
-			{
-				_id: roomId,
+		return this.update({
+			_id: roomId,
+		}, {
+			$unset: {
+				'lastMessage.unread': 1,
 			},
-			{
-				$unset: {
-					'lastMessage.unread': 1,
-				},
-			},
-		);
+		});
 	}
 
 	setSentiment(roomId, sentiment) {
@@ -229,9 +210,7 @@ export class Rooms extends Base {
 
 	setReadOnlyById(_id, readOnly, hasPermission) {
 		if (!hasPermission) {
-			throw new Error(
-				'You must provide "hasPermission" function to be able to call this method',
-			);
+			throw new Error('You must provide "hasPermission" function to be able to call this method');
 		}
 		const query = {
 			_id,
@@ -285,17 +264,16 @@ export class Rooms extends Base {
 		const query = {
 			_id,
 		};
-		const update = systemMessages && systemMessages.length > 0
-			? {
-				$set: {
-					sysMes: systemMessages,
-				},
-			}
-			: {
-				$unset: {
-					sysMes: '',
-				},
-			};
+		const update = systemMessages && systemMessages.length > 0 ? {
+			$set: {
+				sysMes: systemMessages,
+			},
+		} : {
+			$unset: {
+				sysMes: '',
+			},
+		};
+
 		return this.update(query, update);
 	};
 
@@ -327,9 +305,7 @@ export class Rooms extends Base {
 
 		let channelName = s.trim(name);
 		try {
-			channelName = getValidRoomName(channelName, null, {
-				allowDuplicates: true,
-			});
+			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
 		} catch (e) {
 			console.error(e);
 		}
@@ -414,7 +390,7 @@ export class Rooms extends Base {
 	}
 
 	findBySubscriptionUserId(userId, options) {
-		const data = Subscriptions.findByUserId(userId, { fields: { rid: 1 } })
+		const data = Subscriptions.cachedFindByUserId(userId, { fields: { rid: 1 } })
 			.fetch()
 			.map((item) => item.rid);
 
@@ -526,44 +502,6 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameOrFNameAndTypeExcludingTeams(name, type, teamIds, options) {
-		const query = {
-			t: type,
-			$and: [
-				{
-					$or: [
-						{
-							name,
-						},
-						{
-							fname: name,
-						},
-					],
-				},
-				{
-					$or: [
-						{
-							teamId: {
-								$exists: false,
-							},
-						},
-						{
-							teamId: {
-								$exists: true,
-							},
-							id: {
-								$in: teamIds,
-							},
-						},
-					],
-				},
-			],
-		};
-
-		// do not use cache
-		return this._db.find(query, options);
-	}
-
 	findByNameAndTypeNotDefault(name, type, options) {
 		const query = {
 			t: type,
@@ -618,6 +556,18 @@ export class Rooms extends Base {
 				$in: ['c', 'p'],
 			},
 			name: nameRegex,
+			$or: [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: sIds,
+				},
+			}],
 		};
 
 		return this.find(query, options);
@@ -709,23 +659,17 @@ export class Rooms extends Base {
 	}
 
 	findGroupDMsByUids(uids, options) {
-		return this.find(
-			{
-				usersCount: { $gt: 2 },
-				uids,
-			},
-			options,
-		);
+		return this.find({
+			usersCount: { $gt: 2 },
+			uids,
+		}, options);
 	}
 
 	find1On1ByUserId(userId, options) {
-		return this.find(
-			{
-				uids: userId,
-				usersCount: 2,
-			},
-			options,
-		);
+		return this.find({
+			uids: userId,
+			usersCount: 2,
+		}, options);
 	}
 
 	// UPDATE
@@ -805,12 +749,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountAndSetLastMessageById(
-		_id,
-		inc,
-		lastMessageTimestamp,
-		lastMessage,
-	) {
+	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
 		if (inc == null) {
 			inc = 1;
 		}
@@ -879,22 +818,17 @@ export class Rooms extends Base {
 
 	resetLastMessageById(_id, messageId) {
 		const query = { _id };
-		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(
-			_id,
-			messageId,
-		);
+		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 
-		const update = lastMessage
-			? {
-				$set: {
-					lastMessage,
-				},
-			}
-			: {
-				$unset: {
-					lastMessage: 1,
-				},
-			};
+		const update = lastMessage ? {
+			$set: {
+				lastMessage,
+			},
+		} : {
+			$unset: {
+				lastMessage: 1,
+			},
+		};
 
 		return this.update(query, update);
 	}
@@ -1200,14 +1134,7 @@ export class Rooms extends Base {
 	}
 
 	// INSERT
-	createWithTypeNameUserAndUsernames(
-		type,
-		name,
-		fname,
-		user,
-		usernames,
-		extraData,
-	) {
+	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
 		const room = {
 			name,
 			fname,

@@ -473,7 +473,7 @@ API.v1.addRoute('channels.list', { authRequired: true }, {
 			}
 
 			// teams filter - I would love to have a way to apply this filter @ db level :(
-			const ids = Subscriptions.findByUserId(this.userId, { fields: { rid: 1 } })
+			const ids = Subscriptions.cachedFindByUserId(this.userId, { fields: { rid: 1 } })
 				.fetch()
 				.map((item) => item.rid);
 
