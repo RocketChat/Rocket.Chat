@@ -31,9 +31,9 @@ export class Rooms extends Base {
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
 			$or: [{
-					_id: _idOrName,
-				}, {
-					name: _idOrName,
+				_id: _idOrName,
+			}, {
+				name: _idOrName,
 			}],
 		};
 
@@ -548,7 +548,7 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(name, options) {
+	findChannelAndPrivateByNameStarting(name, sIds, options) {
 		const nameRegex = new RegExp(`^${ s.trim(escapeRegExp(name)) }`, 'i');
 
 		const query = {
