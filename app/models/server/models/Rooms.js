@@ -488,14 +488,11 @@ export class Rooms extends Base {
 			teamId: {
 				$exists: false,
 			},
-			$or: [
-				{
-					name,
-				},
-				{
-					fname: name,
-				},
-			],
+			$or: [{
+				name,
+			}, {
+				fname: name,
+			}],
 		};
 
 		// do not use cache
