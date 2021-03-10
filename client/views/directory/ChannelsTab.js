@@ -1,5 +1,5 @@
 import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../components/MarkdownText';
@@ -28,6 +28,7 @@ function RoomTags({ room }) {
 
 function ChannelsTable() {
 	const t = useTranslation();
+	const refAutoFocus = useAutoFocus(true);
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
@@ -77,7 +78,7 @@ function ChannelsTable() {
 						<Box display='flex' alignItems='center'>
 							<Icon name={roomTypes.getIcon(room)} color='hint' /> <Box fontScale='p2' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
 						</Box>
-						{topic && <MarkdownText fontScale='p1' color='hint' style={style} withRichContent={false} content={topic} />}
+						{topic && <MarkdownText variant='inlineWithoutBreaks' fontScale='p1' color='hint' style={style} content={topic} />}
 					</Box>
 				</Box>
 			</Table.Cell>
@@ -96,7 +97,7 @@ function ChannelsTable() {
 
 	return <GenericTable
 		header={header}
-		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Channels')} onChange={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Channels')} inputRef={refAutoFocus} onChange={onChange} {...props} />}
 		renderRow={renderRow}
 		results={data.result}
 		setParams={setParams}

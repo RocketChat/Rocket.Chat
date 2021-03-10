@@ -739,6 +739,7 @@ describe('[Chat]', function() {
 
 				ytEmbedMsgId = ytPostResponse.body.message._id;
 				imgUrlMsgId = imgUrlResponse.body.message._id;
+				imgUrlMsgId = imgUrlResponse.body.message._id;
 			});
 
 			it('should have an iframe oembed with style max-width', (done) => {
@@ -763,7 +764,7 @@ describe('[Chat]', function() {
 								.to.have.string('<iframe style="max-width: 100%"');
 						})
 						.end(done);
-				}, 400);
+				}, 200);
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
@@ -787,7 +788,7 @@ describe('[Chat]', function() {
 								.to.have.property('contentType', 'image/jpeg');
 						})
 						.end(done);
-				}, 250);
+				}, 200);
 			});
 		});
 
@@ -1525,6 +1526,112 @@ describe('[Chat]', function() {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('[/chat.unStarMessage]', () => {
+		it('should return an error when starMessage is not allowed in this server', (done) => {
+			updateSetting('Message_AllowStarring', false).then(() => {
+				request.post(api('chat.unStarMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+
+		it('should unstar Message successfully', (done) => {
+			updateSetting('Message_AllowStarring', true).then(() => {
+				request.post(api('chat.unStarMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.ignoreUser]', () => {
+		it('should fail if invalid roomId', (done) => {
+			request.get(api('chat.ignoreUser'))
+				.set(credentials)
+				.query({
+					rid: 'invalid',
+					userId: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-subscription');
+				})
+				.end(() => {
+					done();
+				});
+		});
+		it('should fail if invalid userId', (done) => {
+			request.get(api('chat.ignoreUser'))
+				.set(credentials)
+				.query({
+					rid: 'rocket.catrocketchat.internal.admin.test',
+					userId: 'invalid',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-subscription');
+				})
+				.end(() => {
+					done();
+				});
+		});
+		it('should successfully ignore user', (done) => {
+			request.get(api('chat.ignoreUser'))
+				.set(credentials)
+				.query({
+					rid: 'rocket.catrocketchat.internal.admin.test',
+					userId: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(() => {
+					done();
+				});
+		});
+		it('should successfully unignore user', (done) => {
+			request.get(api('chat.ignoreUser'))
+				.set(credentials)
+				.query({
+					rid: 'rocket.catrocketchat.internal.admin.test',
+					userId: 'rocket.cat',
+					ignore: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(() => {
+					done();
+				});
 		});
 	});
 

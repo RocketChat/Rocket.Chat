@@ -42,7 +42,7 @@ export type DefaultAttachmentProps = {
 
 const isActionAttachment = (attachment: AttachmentProps): attachment is ActionAttachmentProps => 'actions' in attachment;
 
-const applyMarkdownIfRequires = (list: DefaultAttachmentProps['mrkdwn_in']) => (key: MarkdownFields, text: string): JSX.Element | string => (list?.includes(key) ? <MarkdownText withRichContent={undefined} content={text}/> : text);
+const applyMarkdownIfRequires = (list: DefaultAttachmentProps['mrkdwn_in'] = ['text', 'pretext']) => (key: MarkdownFields, text: string): JSX.Element | string => (list?.includes(key) ? <MarkdownText variant='inline' content={text}/> : text);
 
 export const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
 	const applyMardownFor = applyMarkdownIfRequires(attachment.mrkdwn_in);
@@ -57,7 +57,15 @@ export const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
 			{!collapsed && <>
 				{attachment.text && <Attachment.Text>{applyMardownFor('text', attachment.text)}</Attachment.Text>}
 				{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
-				{attachment.fields && <FieldsAttachment fields={attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={undefined} content={value} /> }))} />}
+				{attachment.fields && <FieldsAttachment fields={attachment.fields.map(({ value, ...rest }) => {
+					const cleanValue = (value as string).replace(/(.*)/g, (line: string) => {
+						if (line.trim() === '') {
+							return `${ line }  <br/>`;
+						}
+						return `${ line }  `;
+					});
+					return { ...rest, value: <MarkdownText variant='inline' content={cleanValue} /> };
+				})} />}
 				{attachment.image_url && <Attachment.Image {...attachment.image_dimensions as any} src={attachment.image_url} />}
 				{/* DEPRECATED */}
 				{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}

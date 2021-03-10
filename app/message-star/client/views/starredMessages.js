@@ -12,7 +12,6 @@ import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonR
 
 const LIMIT_DEFAULT = 50;
 
-Template.starredMessages.events(getCommonRoomEvents());
 Template.starredMessages.helpers({
 	hasMessages() {
 		return Template.instance().messages.find().count();

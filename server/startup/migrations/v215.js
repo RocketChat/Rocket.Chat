@@ -1,11 +1,20 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Permissions } from '../../../app/models/server';
+import { Settings } from '../../../app/models/server';
 
-const roleName = 'user';
+const removed = ['advocacy', 'industry', 'publicRelations', 'healthcarePharmaceutical', 'helpCenter'];
 
 Migrations.add({
 	version: 215,
 	up() {
-		Permissions.update({ _id: 'message-impersonate' }, { $addToSet: { roles: roleName } });
+		const current = Settings.findOneById('Industry');
+		if (removed.includes(current.value)) {
+			Settings.update({
+				_id: 'Industry',
+			}, {
+				$set: {
+					value: 'other',
+				},
+			});
+		}
 	},
 });
