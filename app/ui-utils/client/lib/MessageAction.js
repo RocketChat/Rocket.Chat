@@ -124,6 +124,14 @@ export const MessageAction = new class {
 		return this.buttons.set({});
 	}
 
+	removeLinkPreview(msgId) {
+		if (!msgId) {
+			throw new Error('invalid-parameter');
+		}
+
+		call('removeLinkPreview', msgId);
+	}
+
 	async getPermaLink(msgId) {
 		if (!msgId) {
 			throw new Error('invalid-parameter');
@@ -220,6 +228,22 @@ Meteor.startup(async function() {
 		order: -3,
 		group: ['message', 'menu'],
 	});
+
+	MessageAction.addButton({
+		id: 'close-preview',
+		icon: 'removepreview',
+		label: 'Remove Preview',
+		context: ['message', 'message-mobile', 'threads'],
+		action() {
+			const { msg: message } = messageArgs(this);
+			const permalink = MessageAction.removeLinkPreview(message._id);
+		},
+		condition({ subscription }) {
+			return !!subscription;
+		},
+		order: -4,
+		group: ['message']		
+	})
 
 	MessageAction.addButton({
 		id: 'permalink',
