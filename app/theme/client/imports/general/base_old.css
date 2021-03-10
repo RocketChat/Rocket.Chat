@@ -63,11 +63,11 @@
 	}
 
 	&:first-child {
-		margin-top: 0;
+		margin-top: 15px;
 	}
 
 	&:last-child {
-		margin-bottom: 0;
+		margin-bottom: 15px;
 	}
 
 	&:first-child::before {

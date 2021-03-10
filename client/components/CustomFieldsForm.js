@@ -47,7 +47,7 @@ const CustomSelect = ({ label, name, required, options = {}, setState, state, cl
 	const [selectError, setSelectError] = useState('');
 
 	const mappedOptions = useMemo(() => Object.values(options).map((value) => [value, value]), [options]);
-	const verify = useMemo(() => (!state.length && required ? t('The_field_is_required', label || name) : ''), [name, required, state.length, t]);
+	const verify = useMemo(() => (!state.length && required ? t('The_field_is_required', label || name) : ''), [name, label, required, state.length, t]);
 
 	useEffect(() => {
 		setCustomFieldsError((oldErrors) => (verify ? [...oldErrors, { name }] : oldErrors.filter((item) => item.name !== name)));

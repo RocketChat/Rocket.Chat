@@ -18,7 +18,7 @@ function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
 
-class AppServerOrchestrator {
+export class AppServerOrchestrator {
 	constructor() {
 		this._isInitialized = false;
 	}

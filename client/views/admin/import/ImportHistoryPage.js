@@ -21,6 +21,7 @@ function ImportHistoryPage() {
 	const getCurrentImportOperation = useEndpoint('GET', 'getCurrentImportOperation');
 	const getLatestImportOperations = useEndpoint('GET', 'getLatestImportOperations');
 	const downloadPendingFiles = useEndpoint('POST', 'downloadPendingFiles');
+	const downloadPendingAvatars = useEndpoint('POST', 'downloadPendingAvatars');
 
 	const newImportRoute = useRoute('admin-import-new');
 	const importProgressRoute = useRoute('admin-import-progress');
@@ -61,7 +62,27 @@ function ImportHistoryPage() {
 			setLoading(true);
 			const { count } = await downloadPendingFiles();
 
-			if (count) {
+			if (!count) {
+				dispatchToastMessage({ type: 'info', message: t('No_files_left_to_download') });
+				setLoading(false);
+				return;
+			}
+
+			dispatchToastMessage({ type: 'info', message: t('File_Downloads_Started') });
+			importProgressRoute.push();
+		} catch (error) {
+			console.error(error);
+			dispatchToastMessage({ type: 'error', message: t('Failed_To_Download_Files') });
+			setLoading(false);
+		}
+	};
+
+	const handleDownloadPendingAvatarsClick = async () => {
+		try {
+			setLoading(true);
+			const { count } = await downloadPendingAvatars();
+
+			if (!count) {
 				dispatchToastMessage({ type: 'info', message: t('No_files_left_to_download') });
 				setLoading(false);
 				return;
@@ -84,6 +105,8 @@ function ImportHistoryPage() {
 				<Button primary disabled={isLoading} onClick={handleNewImportClick}>{t('Import_New_File')}</Button>
 				{hasAnySuccessfulSlackImport
 					&& <Button disabled={isLoading} onClick={handleDownloadPendingFilesClick}>{t('Download_Pending_Files')}</Button>}
+				{hasAnySuccessfulSlackImport
+					&& <Button disabled={isLoading} onClick={handleDownloadPendingAvatarsClick}>{t('Download_Pending_Avatars')}</Button>}
 			</ButtonGroup>
 		</Page.Header>
 		<Page.ScrollableContentWithShadow>

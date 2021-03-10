@@ -111,14 +111,12 @@ Meteor.methods({
 		const endApiResult = HTTP.get(endApi);
 
 		if (endApiResult.statusCode !== 200) {
-			// TODO improve error logging
-			console.log({ endApiResult });
-			return;
+			saveStreamingOptions(rid, {});
+			throw new Meteor.Error(endApiResult);
 		}
-
 		const doc = parseString(endApiResult.content);
 
-		if (doc.response.returncode[0] === 'FAILED') {
+		if (['SUCCESS', 'FAILED'].includes(doc.response.returncode[0])) {
 			saveStreamingOptions(rid, {});
 		}
 	},
