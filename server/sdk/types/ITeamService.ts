@@ -1,7 +1,9 @@
 import { ITeam } from '../../../definition/ITeam';
+import { ICreateRoomParams } from './IRoomService';
 
 export interface ITeamCreateParams {
-	data: Pick<ITeam, 'name' | 'type'>;
+	team: Pick<ITeam, 'name' | 'type'>;
+	room: Omit<ICreateRoomParams, 'type'>;
 	members?: Array<string>; // list of user _ids
 }
 
