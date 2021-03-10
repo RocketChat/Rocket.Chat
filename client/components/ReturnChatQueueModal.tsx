@@ -28,7 +28,7 @@ const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({
 			{t('Would_you_like_to_return_the_queue')}
 		</Modal.Content>
 		<Modal.Footer>
-			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
+			<Box>
 				{dontAskAgain}
 				<ButtonGroup align='end'>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
