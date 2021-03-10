@@ -129,7 +129,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-const validateMessage = (message) => {
+const validateMessage = (message, userId) => {
 	check(message, objectMaybeIncluding({
 		_id: String,
 		msg: String,
@@ -143,7 +143,7 @@ const validateMessage = (message) => {
 		blocks: [Match.Any],
 	}));
 
-	if ((message.hasOwnProperty('alias') || message.hasOwnProperty('avatar')) && !hasPermission(Meteor.userId(), 'message-impersonate', message.rid)) {
+	if ((message.alias || message.avatar) && !hasPermission(userId, 'message-impersonate', message.rid)) {
 		throw new Error('Not enough permission');
 	}
 
@@ -157,7 +157,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		return false;
 	}
 
-	validateMessage(message);
+	validateMessage(message, user._id);
 
 	if (!message.ts) {
 		message.ts = new Date();
@@ -206,7 +206,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 			message = Object.assign(message, result);
 
 			// Some app may have inserted malicious/invalid values in the message, let's check it again
-			validateMessage(message);
+			validateMessage(message, user._id);
 		}
 	}
 
