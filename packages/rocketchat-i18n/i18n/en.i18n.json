@@ -1302,6 +1302,7 @@
   "delete-user_description": "Permission to delete users",
   "Deleted": "Deleted!",
   "Department": "Department",
+  "Department_name": "Department name",
   "Department_removed": "Department removed",
   "Departments": "Departments",
   "Deployment_ID": "Deployment ID",

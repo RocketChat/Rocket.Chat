@@ -71,6 +71,33 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		toastr.success(t('Livechat_transcript_request_has_been_canceled'));
 	});
 
+	const forwardChat = (departmentId?: string, userId?: string, comment?: string): void => {
+		console.log(departmentId, userId, comment);
+		if (departmentId && userId) {
+			return;
+		}
+		const transferData: { roomId: string; comment?: string; departmentId?: string; userId?: string } = {
+			roomId: room._id,
+			comment,
+		};
+
+
+		if (departmentId) { transferData.departmentId = departmentId; }
+		if (userId) { transferData.userId = userId; }
+
+		Meteor.call('livechat:transfer', transferData, (error: any, result: any) => {
+			if (error) {
+				toastr.error(t(error.error));
+			} else if (result) {
+				closeModal();
+				toastr.success(t('Transferred'));
+				FlowRouter.go('/');
+			} else {
+				toastr.warning(t('No_available_agents_to_transfer'));
+			}
+		});
+	};
+
 	const openModal = useMutableCallback((id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
@@ -80,7 +107,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				setModal(<TranscriptModal room={room} email={email} onSend={requestTranscript} onDiscard={discardTranscript} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.ChatForward:
-				setModal(<ForwardChatModal onForward={requestTranscript} onCancel={closeModal} />);
+				setModal(<ForwardChatModal onForward={forwardChat} onCancel={closeModal} />);
 				break;
 			default:
 				break;

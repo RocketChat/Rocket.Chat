@@ -1,14 +1,15 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { Field, Button, TextInput, TextAreaInput, Icon, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import React, { FC, useCallback, useEffect, useRef } from 'react';
+import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { useForm } from '../hooks/useForm';
-import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
+// import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
 import ModalSeparator from './ModalSeparator';
-import { AutoCompleteDepartment } from './AutoCompleteDepartment';
+import DepartmentAutoComplete from '../views/omnichannel/DepartmentAutoComplete';
+import { UserAutoComplete } from './AutoComplete';
 
 type ForwardChatModalProps = {
-	onForward: (departmentName: string, username: string, comment?: string) => void;
+	onForward: (departmentName?: string, userId?: string, comment?: string) => void;
 	onCancel: () => void;
 };
 
@@ -23,26 +24,25 @@ const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...p
 		}
 	}, [ref]);
 
-	const { values, handlers } = useForm({ departmentName: '', username: '', commend: '' });
+	const { values, handlers } = useForm({ departmentName: '', userId: '', comment: '' });
 
-	const { departmentName, username, comment } = values as { departmentName: string; username: string; comment: string };
-	const { handleUsername, handleComment } = handlers;
-	// const { handleDepartmentName, handleUsername, handleComment } = handlers;
-	const [departmentError, setDepartmentError] = useState('');
-	const [usernameError, setUsernameError] = useState('');
-
+	const { departmentName, userId, comment } = values as { departmentName: string; userId: string; comment: string };
+	const { handleDepartmentName, handleUserId, handleComment } = handlers;
 
 	const handleSend = useCallback(() => {
-		onForward(departmentName, username, comment);
-	}, [onForward, departmentName, username, comment]);
+		onForward(departmentName, userId, comment);
+	}, [onForward, departmentName, userId, comment]);
 
-	useComponentDidUpdate(() => {
-		setDepartmentError(!departmentName ? t('The_field_is_required', t('Department')) : '');
-	}, [t, departmentName]);
 
-	useComponentDidUpdate(() => {
-		setUsernameError(!username ? t('The_field_is_required', t('Username')) : '');
-	}, [t, username]);
+	const onChangeDepartment = (departmentId: string): void => {
+		handleDepartmentName(departmentId);
+		handleUserId('');
+	};
+
+	const onChangeUserId = (userId: string): void => {
+		handleUserId(userId);
+		handleDepartmentName('');
+	};
 
 	return <Modal {...props}>
 		<Modal.Header>
@@ -54,21 +54,15 @@ const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...p
 			<Field mbe={'x30'}>
 				<Field.Label>{t('Forward_to_department')}</Field.Label>
 				<Field.Row>
-					<AutoCompleteDepartment flexShrink={1} placeholder={t('Department_name')} />
+					<DepartmentAutoComplete value={departmentName} onChange={onChangeDepartment} flexShrink={1} placeholder={t('Department_name')} />
 				</Field.Row>
-				<Field.Error>
-					{departmentError}
-				</Field.Error>
 			</Field>
 			<ModalSeparator text={t('or')} />
 			<Field mbs={'x30'}>
 				<Field.Label>{t('Forward_to_user')}</Field.Label>
 				<Field.Row>
-					<TextInput error={usernameError} flexGrow={1} value={username} onChange={handleUsername} placeholder={t('Username')} />
+					<UserAutoComplete flexGrow={1} value={userId} onChange={onChangeUserId} placeholder={t('Username')} />
 				</Field.Row>
-				<Field.Error>
-					{usernameError}
-				</Field.Error>
 			</Field>
 			<Field marginBlock='x15'>
 				<Field.Label>{t('Leave_a_comment')}</Field.Label>
