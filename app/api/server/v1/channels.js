@@ -472,6 +472,24 @@ API.v1.addRoute('channels.list', { authRequired: true }, {
 				ourQuery._id = { $in: roomIds };
 			}
 
+			// teams filter - I would love to have a way to apply this filter @ db level :(
+			const ids = Subscriptions.findByUserId(this.userId, { fields: { rid: 1 } })
+				.fetch()
+				.map((item) => item.rid);
+
+			ourQuery.$or = [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: ids,
+				},
+			}];
+
 			const cursor = Rooms.find(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
@@ -628,6 +646,8 @@ API.v1.addRoute('channels.online', { authRequired: true }, {
 		const { query } = this.parseJsonQuery();
 		const ourQuery = Object.assign({}, query, { t: 'c' });
 
+		// TODO: bear in mind that this endpoint will return results for the first channel
+		// if the `_id` or `name` are not present in `ourQuery`
 		const room = Rooms.findOne(ourQuery);
 
 		if (room == null) {

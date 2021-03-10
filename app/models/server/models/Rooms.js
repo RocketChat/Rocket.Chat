@@ -453,9 +453,6 @@ export class Rooms extends Base {
 			_id: {
 				$in: ids,
 			},
-			teamId: {
-				$exists: false,
-			},
 			_updatedAt: {
 				$gt: _updatedAt,
 			},
