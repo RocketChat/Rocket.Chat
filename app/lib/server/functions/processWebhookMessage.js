@@ -102,7 +102,8 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 		if (messageObj.pushm && messageObj.pushm === 'true') {
 			message.pushm = true;
 			message.pushm_post_processed = false;
-			message.pushm_scope = messageObj.scope;
+			message.pushm_scope = messageObj.pushm_scope;
+			message.pushm_origin = messageObj.pushm_origin;
 		}
 
 		const messageReturn = sendMessage(user, message, room);

@@ -6,12 +6,13 @@ import './pushMessage.html';
 
 Template.pushMessage.helpers({
 	data() {
-		const { _id, pushm_post_processed, pushm_scope, msg, post_processed_message } = this.msg;
+		const { _id, pushm_post_processed, pushm_scope, pushm_origin, msg, post_processed_message } = this.msg;
+
 		if (!pushm_post_processed) {
 			navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
 				console.log('Pushing message to service worker for post processing');
 				serviceWorkerRegistration.pushManager.dispatchMessage(pushm_scope, msg);
-				serviceWorkerRegistration.monitorNotification(pushm_scope).then((post_processed_message) => {
+				serviceWorkerRegistration.monitorNotification(pushm_origin).then((post_processed_message) => {
 					const newMsg = {};
 					console.log(post_processed_message);
 					newMsg.title = post_processed_message.title;
