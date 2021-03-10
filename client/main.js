@@ -1,3 +1,4 @@
+import '../ee/client/echd';
 import './polyfills';
 
 import './lib/meteorCallWrapper';

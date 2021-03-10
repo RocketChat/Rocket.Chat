@@ -20,6 +20,18 @@ declare module 'meteor/meteor' {
 
 			_livedata_data(message: IDDPUpdatedMessage): void;
 
+			_stream: {
+				eventCallbacks: {
+					message: Array<(data: string) => void>;
+				};
+				socket: {
+					onmessage: (data: {type: string; data: string}) => void;
+					_didMessage: (data: string) => void;
+					send: (data: string) => void;
+				};
+				_launchConnectionAsync: () => void;
+			};
+
 			onMessage(message: string): void;
 		}
 
