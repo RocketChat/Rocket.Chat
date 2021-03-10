@@ -8,11 +8,6 @@ import { Team } from '../../../../server/sdk';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
-		// check(this.queryParams, Match.ObjectIncluding({
-		// 	platform: String,
-		// 	bid: Match.Maybe(String),
-		// }));
-
 		const teams = Promise.await(Team.list(this.userId));
 
 		return API.v1.success({ teams });
@@ -22,6 +17,10 @@ API.v1.addRoute('teams.list', { authRequired: true }, {
 API.v1.addRoute('teams.create', { authRequired: true }, {
 	post() {
 		const { name, type, members, room } = this.bodyParams;
+
+		if (!name) {
+			return API.v1.failure('Body param "name" is required');
+		}
 
 		const team = Promise.await(Team.create(this.userId, {
 			team: {
