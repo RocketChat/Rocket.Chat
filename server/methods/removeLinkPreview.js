@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Messages, Reports } from '../../app/models';
+import { Messages } from '../../app/models';
 
 Meteor.methods({
 	removeLinkPreview(messageId) {
@@ -19,7 +19,7 @@ Meteor.methods({
 				method: 'reportMessage',
 			});
 		}
-		
+
 		Messages.removeLinkPreview(message._id);
 
 		return true;

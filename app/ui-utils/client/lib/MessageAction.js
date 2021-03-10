@@ -236,14 +236,14 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
-			const permalink = MessageAction.removeLinkPreview(message._id);
+			MessageAction.removeLinkPreview(message._id);
 		},
 		condition({ subscription }) {
 			return !!subscription;
 		},
 		order: -4,
-		group: ['message']		
-	})
+		group: ['message'],
+	});
 
 	MessageAction.addButton({
 		id: 'permalink',
