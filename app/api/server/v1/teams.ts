@@ -22,14 +22,6 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 			return API.v1.failure('Body param "name" is required');
 		}
 
-		if (!room) {
-			return API.v1.failure('Body param "room" is required');
-		}
-
-		if (!members) {
-			return API.v1.failure('Body param "members" is required');
-		}
-
 		const team = Promise.await(Team.create(this.userId, {
 			team: {
 				name,

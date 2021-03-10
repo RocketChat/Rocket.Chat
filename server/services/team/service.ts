@@ -26,7 +26,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		this.Users = new UsersRaw(db.collection('users'));
 	}
 
-	async create(uid: string, { team, room, members }: ITeamCreateParams): Promise<ITeam> {
+	async create(uid: string, { team, room = { extraData: {} }, members }: ITeamCreateParams): Promise<ITeam> {
 		const hasPermission = await Authorization.hasPermission(uid, 'create-team');
 		if (!hasPermission) {
 			throw new Error('no-permission');
