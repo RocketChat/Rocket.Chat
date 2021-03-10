@@ -248,7 +248,9 @@ jobs:
         python -m pip install --upgrade pip
         pip --version
         pip install -U selenium
-        pip install pytest pytest-html allure
+        pip install pytest pytest-html
+	sudo apt-get update -y
+	sudo apt-get install -y allure
 
     - name: Test
       env:
@@ -264,10 +266,8 @@ jobs:
         cd ..
         git clone --depth=1 https://github.com/RocketChat/QA.Automation.git
         cd QA.Automation
-        pytest Tests
-        pytest -v -s Tests
-        py.test -v -s Tests
-
+        pytest -v -s --alluredir="./reports/allure_reports" Tests
+        
 
 #   notification:
 #     runs-on: ubuntu-latest
