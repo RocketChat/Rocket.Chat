@@ -9,20 +9,15 @@ const sessionPromise = new Promise<ClientSession | void>((resolve) => { resolveS
 function init(session: ClientSession): void {
 	Meteor.connection._stream._launchConnectionAsync();
 
-	// Meteor.connection._stream.socket._options.debug = true;
-
 	const _didMessage = Meteor.connection._stream.socket._didMessage.bind(Meteor.connection._stream.socket);
 	const send = Meteor.connection._stream.socket.send.bind(Meteor.connection._stream.socket);
 
-	Meteor.connection._stream.socket._didMessage = async (data: string): Promise<void> => {
-		// console.log('received', { data });
+	Meteor.connection._stream.socket._didMessage = async (data): Promise<void> => {
 		const decryptedData = await session.decrypt(data);
-		console.log('received', { decryptedData });
-		_didMessage(decryptedData);
+		decryptedData.split('\n').forEach((d) => _didMessage(d));
 	};
 
-	Meteor.connection._stream.socket.send = async (data: string): Promise<void> => {
-		// console.log('sending', data);
+	Meteor.connection._stream.socket.send = async (data): Promise<void> => {
 		send(await session.encrypt(data));
 	};
 }
@@ -45,10 +40,7 @@ async function initEncryptedSession(): Promise<void> {
 			return Meteor.connection._stream._launchConnectionAsync();
 		}
 
-		const serverKey = await response.text();
-		console.log({ serverKey });
-
-		await session.setServerKey(serverKey);
+		await session.setServerKey(await response.text());
 		resolveSession(session);
 		init(session);
 	} catch (e) {
@@ -69,10 +61,8 @@ APIClient._jqueryCall = async (method, endpoint, params, body, headers = {}): Pr
 		return _jqueryCall(method, endpoint, params, body, headers);
 	}
 
-	console.log('override', method, endpoint);
 	const result = await _jqueryCall(method, endpoint, params, body, headers, 'text');
 	const decrypted = await session.decrypt(result);
 	const parsed = JSON.parse(decrypted);
-	console.log(parsed);
 	return parsed;
 };
