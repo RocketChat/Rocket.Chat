@@ -10,4 +10,5 @@ export interface ITeamCreateParams {
 export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
 	list(uid: string, filter?: string): Promise<Array<ITeam>>;
+	listAll(): Promise<Array<ITeam>>;
 }
