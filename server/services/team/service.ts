@@ -1,4 +1,5 @@
 import { Db } from 'mongodb';
+import { Meteor } from 'meteor/meteor';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
@@ -58,7 +59,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			if (e.code === 11000) {
 				throw new Meteor.Error('error-duplicate-team-name', `A team with name ${ team.name } already exists`);
 			} else {
-				throw new Meteor.Error('error-team-creation', `An error occured while creating the team.`);
+				throw new Meteor.Error('error-team-creation', 'An error occured while creating the team.');
 			}
 		}
 

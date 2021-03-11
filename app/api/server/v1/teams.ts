@@ -47,5 +47,5 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		const members = Promise.await(Team.members(this.userId, teamId));
 
 		return API.v1.success({ members });
-	}
+	},
 });

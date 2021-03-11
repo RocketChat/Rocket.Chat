@@ -16,6 +16,6 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		]);
 
 		// teamId => userId should be unique
-		this.col.createIndex({ teamId: 1, userId: 1}, { unique: true });
+		this.col.createIndex({ teamId: 1, userId: 1 }, { unique: true });
 	}
 }

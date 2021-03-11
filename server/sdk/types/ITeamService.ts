@@ -5,7 +5,7 @@ export interface ITeamCreateParams {
 	team: Pick<ITeam, 'name' | 'type'>;
 	room: Omit<ICreateRoomParams, 'type'>;
 	members?: Array<string>; // list of user _ids
-	owner?: string // the team owner. If not present, owner = requester
+	owner?: string; // the team owner. If not present, owner = requester
 }
 
 export interface ITeamService {
