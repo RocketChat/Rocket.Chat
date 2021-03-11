@@ -26,7 +26,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		this.Users = new UsersRaw(db.collection('users'));
 	}
 
-	async create(uid: string, { team, room, members }: ITeamCreateParams): Promise<ITeam> {
+	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members }: ITeamCreateParams): Promise<ITeam> {
 		const hasPermission = await Authorization.hasPermission(uid, 'create-team');
 		if (!hasPermission) {
 			throw new Error('no-permission');
@@ -94,6 +94,12 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async list(userId: string): Promise<Array<ITeam>> {
+		const canViewAllTeams = await Authorization.hasPermission(userId, 'view-all-teams');
+
+		if (canViewAllTeams) {
+			return this.TeamModel.find().toArray();
+		}
+
 		const records = await this.TeamMembersModel.find({ userId }, { projection: { teamId: 1 } }).toArray();
 
 		const teamIds = records.map(({ teamId }) => teamId);
