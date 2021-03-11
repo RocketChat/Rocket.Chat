@@ -10,7 +10,7 @@ import './messageBoxAudioMessage.html';
 const startRecording = () => new Promise((resolve, reject) =>
 	AudioRecorder.start((result) => (result ? resolve() : reject())));
 
-const stopRecording = () => new Promise((resolve, reject) => AudioRecorder.stop((result) => (result ? resolve() : reject())));
+const stopRecording = () => new Promise((resolve) => AudioRecorder.stop(resolve));
 
 const recordingInterval = new ReactiveVar(null);
 const recordingRoomId = new ReactiveVar(null);
