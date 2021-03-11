@@ -70,9 +70,9 @@ export class E2ERoom extends Emitter {
 			this.error(`invalid state ${ prev } -> ${ state }`);
 			return;
 		}
-		this.state = state;
+		this.state = next;
 		this.emit('STATE_CHANGED', prev, next, this);
-		this.emit(state, this);
+		this.emit(next, this);
 	}
 
 	constructor(userId, roomId, t) {

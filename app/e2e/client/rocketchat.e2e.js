@@ -63,28 +63,26 @@ class E2E extends Emitter {
 		return this.enabled.get() && this._ready.get();
 	}
 
-	getE2ERoom(rid) {
+	async getInstanceByRoomId(rid) {
+		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
+
+		if (room.t !== 'd' && room.t !== 'p') {
+			return null;
+		}
+
+		if (room.encrypted !== true && !room.e2eKeyId) {
+			return null;
+		}
+
+		if (!this.instancesByRoomId[rid]) {
+			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), rid, room.t);
+		}
+
 		return this.instancesByRoomId[rid];
 	}
 
 	removeInstanceByRoomId(rid) {
 		delete this.instancesByRoomId[rid];
-	}
-
-	async getInstanceByRoomId(rid) {
-		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
-
-		if (room.t !== 'd' && room.t !== 'p') {
-			return;
-		}
-
-		if (room.encrypted !== true && !room.e2eKeyId) {
-			return;
-		}
-
-		this.instancesByRoomId[rid] = this.instancesByRoomId[rid] ?? new E2ERoom(Meteor.userId(), rid, room.t);
-
-		return this.instancesByRoomId[rid];
 	}
 
 	async startClient() {
@@ -361,7 +359,7 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		const e2eRoom = this.getE2ERoom(message.rid);
+		const e2eRoom = await this.getInstanceByRoomId(message.rid);
 
 		if (!e2eRoom) {
 			return message;

@@ -85,8 +85,8 @@ Meteor.startup(function() {
 			},
 		});
 
-		promises.add('onClientMessageReceived', (msg) => {
-			const e2eRoom = e2e.getE2ERoom(msg.rid);
+		promises.add('onClientMessageReceived', async (msg) => {
+			const e2eRoom = await e2e.getInstanceByRoomId(msg.rid);
 			if (!e2eRoom || !e2eRoom.shouldConvertReceivedMessages()) {
 				return msg;
 			}
@@ -95,19 +95,18 @@ Meteor.startup(function() {
 
 		// Encrypt messages before sending
 		promises.add('onClientBeforeSendMessage', async function(message) {
-			const e2eRoom = e2e.getE2ERoom(message.rid);
+			const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
 			if (!e2eRoom || !e2eRoom.shouldConvertSentMessages()) {
 				return message;
 			}
+
 			// Should encrypt this message.
-			return e2eRoom
-				.encrypt(message)
-				.then((msg) => {
-					message.msg = msg;
-					message.t = 'e2e';
-					message.e2e = 'pending';
-					return message;
-				});
+			const msg = await e2eRoom.encrypt(message);
+
+			message.msg = msg;
+			message.t = 'e2e';
+			message.e2e = 'pending';
+			return message;
 		}, promises.priority.HIGH, 'e2e');
 	});
 });
