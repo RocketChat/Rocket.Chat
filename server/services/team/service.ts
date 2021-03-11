@@ -1,6 +1,7 @@
 import { Db } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
+import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { ITeam, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
 import { Authorization, Room } from '../../sdk';
 import { ITeamCreateParams, ITeamService } from '../../sdk/types/ITeamService';
@@ -14,6 +15,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 	private TeamModel: TeamRaw;
 
+	private RoomsModel: RoomsRaw;
+
 	private Users: UsersRaw;
 
 	private TeamMembersModel: TeamMemberRaw;
@@ -21,6 +24,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 	constructor(db: Db) {
 		super();
 
+		this.RoomsModel = new RoomsRaw(db.collection('rocketchat_room'));
 		this.TeamModel = new TeamRaw(db.collection('rocketchat_team'));
 		this.TeamMembersModel = new TeamMemberRaw(db.collection('rocketchat_team_member'));
 		this.Users = new UsersRaw(db.collection('users'));
@@ -91,6 +95,88 @@ export class TeamService extends ServiceClass implements ITeamService {
 			_id: teamId,
 			...teamData,
 		};
+	}
+
+	async addRoom(uid: string, rid: string, teamId: string): Promise<IRoom> {
+		// TODO: what permissions do I need here?
+		// const hasPermission = await Authorization.hasPermission(uid, 'add-room-to-team');
+		// if (!hasPermission) {
+		// 	throw new Error('no-permission');
+		// }
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+		if (!rid) {
+			throw new Error('missing-roomId');
+		}
+		if (!uid) {
+			throw new Error('missing-userId');
+		}
+		const room = await this.RoomsModel.findOneByRoomIdAndUserId(rid, uid);
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+		const team = await this.TeamModel.findOneById(teamId);
+		if (!team) {
+			throw new Error('invalid-team');
+		}
+		if (room.teamId) {
+			throw new Error('room-already-on-team');
+		}
+		this.RoomsModel.updateOne({ _id: room._id }, { $set: { teamId } });
+		return {
+			...room,
+		};
+	}
+
+	async removeRoom(uid: string, rid: string, teamId: string): Promise<IRoom> {
+		// TODO: same as above: what permissions do I need here?
+		// const hasPermission = await Authorization.hasPermission(uid, 'add-room-to-team');
+		// if (!hasPermission) {
+		// 	throw new Error('no-permission');
+		// }
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+		if (!rid) {
+			throw new Error('missing-roomId');
+		}
+		if (!uid) {
+			throw new Error('missing-userId');
+		}
+		const room = await this.RoomsModel.findOneByRoomIdAndUserId(rid, uid);
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+		const team = await this.TeamModel.findOneById(teamId);
+		if (!team) {
+			throw new Error('invalid-team');
+		}
+		if (room.teamId !== teamId) {
+			throw new Error('room-not-on-that-team');
+		}
+		this.RoomsModel.updateOne({ _id: room._id }, { $unset: { teamId } });
+		return {
+			...room,
+		};
+	}
+
+	async listRooms(uid: string, teamId: string): Promise<Array<IRoom>> {
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+		const team = await this.TeamModel.findOneById(teamId);
+		if (!team) {
+			throw new Error('invalid-team');
+		}
+		if (team.type === TEAM_TYPE.PRIVATE) {
+			// TODO: should I be able to list the rooms of a private team if i'm not on it and have admin privileges?
+			// TODO: if team is private, check if user is on it
+			console.log(uid); // TODO: remove this
+			throw new Error('no-permission');
+		}
+
+		return this.RoomsModel.findByTeamId(teamId).toArray();
 	}
 
 	async list(uid: string): Promise<Array<ITeam>> {
