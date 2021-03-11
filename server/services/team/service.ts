@@ -127,7 +127,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		return this.TeamMembersModel.find({ teamId }).toArray();
-  }
+	}
 
 	async listAll(): Promise<Array<ITeam>> {
 		return this.TeamModel.find().toArray();
