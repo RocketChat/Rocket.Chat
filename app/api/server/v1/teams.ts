@@ -16,7 +16,7 @@ API.v1.addRoute('teams.list', { authRequired: true }, {
 
 API.v1.addRoute('teams.create', { authRequired: true }, {
 	post() {
-		const { name, type, members, room } = this.bodyParams;
+		const { name, type, members, room, owner } = this.bodyParams;
 
 		if (!name) {
 			return API.v1.failure('Body param "name" is required');
@@ -29,6 +29,7 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 			},
 			room,
 			members,
+			owner,
 		}));
 
 		return API.v1.success({ team });

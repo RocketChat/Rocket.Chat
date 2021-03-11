@@ -26,7 +26,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		this.Users = new UsersRaw(db.collection('users'));
 	}
 
-	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members }: ITeamCreateParams): Promise<ITeam> {
+	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
 		const hasPermission = await Authorization.hasPermission(uid, 'create-team');
 		if (!hasPermission) {
 			throw new Error('no-permission');
@@ -49,21 +49,31 @@ export class TeamService extends ServiceClass implements ITeamService {
 			_updatedAt: new Date(), // TODO how to avoid having to do this?
 		};
 
-		// create team
-		const result = await this.TeamModel.insertOne(teamData);
-		const teamId = result.insertedId;
+		let teamId: string;
+		try {
+			const result = await this.TeamModel.insertOne(teamData);
+			teamId = result.insertedId;
+		} catch (e) {
+			// TODO should we throw a generic error instead of saying that the team already exists?
+			if (e.code === 11000) {
+				throw new Meteor.Error('error-duplicate-team-name', `A team with name ${ team.name } already exists`);
+			} else {
+				throw new Meteor.Error('error-team-creation', `An error occured while creating the team.`);
+			}
+		}
 
-		const membersList: Array<Omit<ITeamMember, '_id'>> = members?.map((memberId) => ({
-			teamId,
-			userId: memberId,
-			createdAt: new Date(),
-			createdBy,
-			_updatedAt: new Date(), // TODO how to avoid having to do this?
-		})) || [];
+		const membersList: Array<Omit<ITeamMember, '_id'>> = members?.filter((memberId) => ![uid, owner].includes(memberId))
+			.map((memberId) => ({
+				teamId,
+				userId: memberId,
+				createdAt: new Date(),
+				createdBy,
+				_updatedAt: new Date(), // TODO how to avoid having to do this?
+			})) || [];
 
 		membersList.push({
 			teamId,
-			userId: uid,
+			userId: owner || uid,
 			roles: ['owner'],
 			createdAt: new Date(),
 			createdBy,
@@ -85,7 +95,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			},
 		};
 
-		await Room.create(uid, newRoom);
+		await Room.create(owner || uid, newRoom);
 
 		return {
 			_id: teamId,

@@ -11,6 +11,8 @@ export class TeamRaw extends BaseRaw<T> {
 	) {
 		super(col, trash);
 
+		this.col.createIndex({ name: 1 }, { unique: true });
+
 		// this.col.createIndexes([
 		// 	{ key: { status: 1, expireAt: 1 } },
 		// ]);
