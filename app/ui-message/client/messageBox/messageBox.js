@@ -120,7 +120,6 @@ Template.messageBox.onRendered(function() {
 			}
 			$input.on('dataChange', () => {
 				const messages = $input.data('reply') || [];
-				console.log('dataChange', messages);
 				this.replyMessageData.set(messages);
 			});
 		}
