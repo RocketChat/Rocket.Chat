@@ -4,6 +4,7 @@ import { Promise } from 'meteor/promise';
 
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
+import { hasPermission } from '../../../authorization/server';
 // import { BannerPlatform } from '../../../../definition/IBanner';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
@@ -11,6 +12,16 @@ API.v1.addRoute('teams.list', { authRequired: true }, {
 		const teams = Promise.await(Team.list(this.userId));
 
 		return API.v1.success({ teams });
+	},
+});
+
+API.v1.addRoute('teams.listAll', { authRequired: true }, {
+	get() {
+		if (!hasPermission(this.userId, 'view-all-teams')) {
+			return API.v1.unauthorized();
+		}
+
+		return API.v1.success(Team.listAll());
 	},
 });
 
