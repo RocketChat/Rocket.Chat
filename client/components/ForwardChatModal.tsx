@@ -50,10 +50,6 @@ const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...p
 	});
 
 	useEffect(() => {
-<<<<<<< HEAD
-=======
-		console.log('Do something after counter has changed', username);
->>>>>>> new-quick-action-buttons
 		if (!username) { return; }
 		const fetchData = async (): Promise<void> => {
 			const { user } = await userInfo();
