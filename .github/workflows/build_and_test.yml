@@ -394,6 +394,7 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'us-east-1'
         GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
         REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
         REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
