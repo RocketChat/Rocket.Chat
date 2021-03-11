@@ -94,6 +94,12 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async list(uid: string): Promise<Array<ITeam>> {
+		const canViewAllTeams = await Authorization.hasPermission(uid, 'view-all-teams');
+
+		if (canViewAllTeams) {
+			return this.TeamModel.find().toArray();
+		}
+
 		const records = await this.TeamMembersModel.find({ userId: uid }, { projection: { teamId: 1 } }).toArray();
 
 		const teamIds = records.map(({ teamId }) => teamId);
