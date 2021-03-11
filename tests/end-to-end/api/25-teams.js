@@ -12,10 +12,6 @@ describe('[Teams]', () => {
 				.send({
 					name: 'community',
 					type: 0,
-					room: {
-						readonly: false,
-						members: credentials['X-User-Id'],
-					},
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
