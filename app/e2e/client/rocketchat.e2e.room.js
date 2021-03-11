@@ -28,7 +28,7 @@ import { call } from '../../ui-utils';
 import { roomTypes, RoomSettingsEnum } from '../../utils';
 import { getConfig } from '../../ui-utils/client/config';
 
-export const E2E_ROOM_STATES = {
+const E2E_ROOM_STATES = {
 	NO_PASSWORD_SET: 'NO_PASSWORD_SET',
 	NOT_STARTED: 'NOT_STARTED',
 	DISABLED: 'DISABLED',
@@ -53,7 +53,7 @@ const reduce = (prev, next) => {
 		case E2E_ROOM_STATES.NOT_STARTED:
 			return [E2E_ROOM_STATES.ESTABLISHING, E2E_ROOM_STATES.DISABLED, E2E_ROOM_STATES.KEYS_RECEIVED].includes(next) && next;
 		case E2E_ROOM_STATES.READY:
-			return [E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.DISABLED].includes(next) && next;
+			return [E2E_ROOM_STATES.DISABLED].includes(next) && next;
 		case E2E_ROOM_STATES.ERROR:
 			return [E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.NOT_STARTED].includes(next) && next;
 		case E2E_ROOM_STATES.WAITING_KEYS:
@@ -123,10 +123,12 @@ export class E2ERoom extends Emitter {
 	}
 
 	pause() {
+		console.log('pause');
 		this[PAUSED] = true;
 	}
 
 	unPause() {
+		console.log('unPause');
 		this[PAUSED] = false;
 	}
 
@@ -158,7 +160,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	isReady() {
-		return [E2E_ROOM_STATES.PAUSED, E2E_ROOM_STATES.READY].includes(this.state);
+		return this.state === E2E_ROOM_STATES.READY;
 	}
 
 	isWaitingKeys() {
