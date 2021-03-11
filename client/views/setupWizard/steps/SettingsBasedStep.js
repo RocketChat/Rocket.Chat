@@ -134,7 +134,9 @@ function SettingsBasedStep({ step, title, active }) {
 								placeholder={t('Select_an_option')}
 								value={value}
 								onChange={(value) => setFieldValue(_id, value)}
-								options={values.map(({ i18nLabel, key }) => [key, t(i18nLabel)])}
+								options={values
+									.map(({ i18nLabel, key }) => [key, t(i18nLabel)])
+									.sort(([, a], [, b]) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))}
 							/>}
 
 							{type === 'boolean' && <Select
