@@ -35,3 +35,17 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 		return API.v1.success({ team });
 	},
 });
+
+API.v1.addRoute('teams.members', { authRequired: true }, {
+	get() {
+		const { teamId } = this.queryParams;
+
+		if (!teamId) {
+			return API.v1.failure('Team ID is required');
+		}
+
+		const members = Promise.await(Team.members(this.userId, teamId));
+
+		return API.v1.success({ members });
+	}
+});

@@ -119,4 +119,18 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		return this.TeamModel.find({ _id: { $in: teamIds } }).toArray();
 	}
+
+	async members(userId: string, teamId: string): Promise<Array<ITeamMember>> {
+		const isMember = await this.TeamMembersModel.findOne({ userId, teamId });
+		const hasPermission = await Authorization.hasAtLeastOnePermission(userId, ['add-team-member', 'edit-team-member', 'view-all-teams']);
+		if (!hasPermission) {
+			throw new Error('no-permission');
+		}
+
+		if (!isMember && !hasPermission) {
+			return [];
+		}
+
+		return this.TeamMembersModel.find({ teamId }).toArray();
+	}
 }
