@@ -29,7 +29,7 @@ describe('[Teams]', () => {
 				.send({
 					name: 'test-team',
 					type: 0,
-					owner: 'rocket.cat'
+					owner: 'rocket.cat',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -56,7 +56,7 @@ describe('[Teams]', () => {
 				})
 				.then(() => done())
 				.catch(done);
-		})
+		});
 
 		it('should throw an error if the team already exists', (done) => {
 			request.post(api('teams.create'))
@@ -70,9 +70,9 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
-					expect(res.body.error).to.be.equal('A team with name community already exists [error-duplicate-team-name]')
+					expect(res.body.error).to.be.equal('A team with name community already exists [error-duplicate-team-name]');
 				})
 				.end(done);
-		})
+		});
 	});
 });
