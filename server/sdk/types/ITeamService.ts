@@ -9,8 +9,9 @@ export interface ITeamCreateParams {
 }
 export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
-	addRoom(uid: string, rid: string, teamId: string): Promise<IRoom>;
+	addRoom(uid: string, rid: string, teamId: string, isDefault: boolean): Promise<IRoom>;
 	removeRoom(uid: string, rid: string, teamId: string): Promise<IRoom>;
 	listRooms(uid: string, teamId: string): Promise<Array<IRoom>>;
+	updateRoom(uid: string, rid: string, isDefault: boolean): Promise<IRoom>;
 	list(uid: string, filter?: string): Promise<Array<ITeam>>;
 }

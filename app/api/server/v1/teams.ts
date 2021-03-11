@@ -38,9 +38,9 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 
 API.v1.addRoute('teams.addRoom', { authRequired: true }, {
 	post() {
-		const { roomId, teamId } = this.bodyParams;
+		const { roomId, teamId, isDefault } = this.bodyParams;
 
-		const room = Promise.await(Team.addRoom(this.userId, roomId, teamId));
+		const room = Promise.await(Team.addRoom(this.userId, roomId, teamId, isDefault));
 
 		return API.v1.success({ room });
 	},
@@ -51,6 +51,16 @@ API.v1.addRoute('teams.removeRoom', { authRequired: true }, {
 		const { roomId, teamId } = this.bodyParams;
 
 		const room = Promise.await(Team.removeRoom(this.userId, roomId, teamId));
+
+		return API.v1.success({ room });
+	},
+});
+
+API.v1.addRoute('teams.updateRoom', { authRequired: true }, {
+	post() {
+		const { roomId, isDefault } = this.bodyParams;
+
+		const room = Promise.await(Team.updateRoom(this.userId, roomId, isDefault));
 
 		return API.v1.success({ room });
 	},
