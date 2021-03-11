@@ -10,7 +10,7 @@ import './messageBoxAudioMessage.html';
 const startRecording = () => new Promise((resolve, reject) =>
 	AudioRecorder.start((result) => (result ? resolve() : reject())));
 
-const stopRecording = () => new Promise((resolve) => AudioRecorder.stop(resolve));
+const stopRecording = () => new Promise((resolve, reject) => AudioRecorder.stop((result) => (result ? resolve() : reject())));
 
 const recordingInterval = new ReactiveVar(null);
 const recordingRoomId = new ReactiveVar(null);
@@ -132,12 +132,16 @@ Template.messageBoxAudioMessage.events({
 
 		instance.time.set('00:00');
 
-		const blob = await stopRecording();
+		try {
+			const blob = await stopRecording();
 
-		instance.state.set(null);
+			const { rid, tmid } = this;
 
-		const { rid, tmid } = this;
+			await uploadFileWithMessage(rid, tmid, { file: { file: blob }, fileName: `${ t('Audio record') }.mp3` });
 
-		await uploadFileWithMessage(rid, tmid, { file: { file: blob }, fileName: `${ t('Audio record') }.mp3` });
+			instance.state.set(null);
+		} catch (error) {
+			instance.state.set('recording');
+		}
 	},
 });
