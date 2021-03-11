@@ -1,12 +1,13 @@
-import React, { FC, useCallback, useEffect, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { useForm } from '../hooks/useForm';
-// import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
 import ModalSeparator from './ModalSeparator';
 import DepartmentAutoComplete from '../views/omnichannel/DepartmentAutoComplete';
 import { UserAutoComplete } from './AutoComplete';
+import { useEndpointAction } from '../hooks/useEndpointAction';
 
 type ForwardChatModalProps = {
 	onForward: (departmentName?: string, userId?: string, comment?: string) => void;
@@ -24,25 +25,39 @@ const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...p
 		}
 	}, [ref]);
 
-	const { values, handlers } = useForm({ departmentName: '', userId: '', comment: '' });
+	const { values, handlers } = useForm({ departmentName: '', username: '', comment: '' });
+	const { departmentName, username, comment } = values as { departmentName: string; username: string; comment: string };
+	const [userId, setUserId] = useState('');
 
-	const { departmentName, userId, comment } = values as { departmentName: string; userId: string; comment: string };
-	const { handleDepartmentName, handleUserId, handleComment } = handlers;
+	const { handleDepartmentName, handleUsername, handleComment } = handlers;
+	const userInfo = useEndpointAction('GET', `users.info?username=${ username }`);
+
 
 	const handleSend = useCallback(() => {
 		onForward(departmentName, userId, comment);
 	}, [onForward, departmentName, userId, comment]);
 
 
-	const onChangeDepartment = (departmentId: string): void => {
+	const onChangeDepartment = useMutableCallback((departmentId: string): void => {
 		handleDepartmentName(departmentId);
-		handleUserId('');
-	};
+		handleUsername('');
+		setUserId('');
+	});
 
-	const onChangeUserId = (userId: string): void => {
-		handleUserId(userId);
+	const onChangeUsername = useMutableCallback((username: string): void => {
+		handleUsername(username);
 		handleDepartmentName('');
-	};
+	});
+
+	useEffect(() => {
+		console.log('Do something after counter has changed', username);
+		if (!username) { return; }
+		const fetchData = async (): Promise<void> => {
+			const { user } = await userInfo();
+			setUserId(user._id);
+		};
+		fetchData();
+	}, [username]);
 
 	return <Modal {...props}>
 		<Modal.Header>
@@ -61,7 +76,7 @@ const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...p
 			<Field mbs={'x30'}>
 				<Field.Label>{t('Forward_to_user')}</Field.Label>
 				<Field.Row>
-					<UserAutoComplete flexGrow={1} value={userId} onChange={onChangeUserId} placeholder={t('Username')} />
+					<UserAutoComplete flexGrow={1} value={username} onChange={onChangeUsername} placeholder={t('Username')} />
 				</Field.Row>
 			</Field>
 			<Field marginBlock='x15'>
