@@ -1,4 +1,4 @@
-import { ITeam } from '../../../definition/ITeam';
+import { ITeam, IListResponse, IPaginationOptions } from '../../../definition/ITeam';
 import { ICreateRoomParams } from './IRoomService';
 
 export interface ITeamCreateParams {
@@ -9,6 +9,6 @@ export interface ITeamCreateParams {
 
 export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
-	list(uid: string, filter?: string): Promise<Array<ITeam>>;
-	listAll(): Promise<Array<ITeam>>;
+	list(uid: string, options?: IPaginationOptions): Promise<IListResponse>;
+	listAll(options?: IPaginationOptions): Promise<IListResponse>;
 }

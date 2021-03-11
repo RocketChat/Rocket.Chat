@@ -1,17 +1,21 @@
 import { Promise } from 'meteor/promise';
-// import { Meteor } from 'meteor/meteor';
-// import { Match, check } from 'meteor/check';
 
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasPermission } from '../../../authorization/server';
-// import { BannerPlatform } from '../../../../definition/IBanner';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
-		const teams = Promise.await(Team.list(this.userId));
+		const { offset, count } = this.getPaginationItems();
 
-		return API.v1.success({ teams });
+		const { records, total } = Promise.await(Team.list(this.userId, { offset, count }));
+
+		return API.v1.success({
+			teams: records,
+			total,
+			count: records.length,
+			offset,
+		});
 	},
 });
 
@@ -21,7 +25,16 @@ API.v1.addRoute('teams.listAll', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		return API.v1.success(Team.listAll());
+		const { offset, count } = this.getPaginationItems();
+
+		const { records, total } = Promise.await(Team.listAll({ offset, count }));
+
+		return API.v1.success({
+			teams: records,
+			total,
+			count: records.length,
+			offset,
+		});
 	},
 });
 

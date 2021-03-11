@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb';
+import { Collection, FindOneOptions, Cursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeamMember } from '../../../../definition/ITeam';
@@ -14,5 +14,9 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		this.col.createIndexes([
 			{ key: { teamId: 1 } },
 		]);
+	}
+
+	findByUserId(userId: string, options?: FindOneOptions<T>): Cursor<T> {
+		return this.col.find({ userId }, options);
 	}
 }
