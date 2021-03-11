@@ -7,7 +7,7 @@ import { Subscriptions, Rooms, Settings, TeamMembers } from './service';
 
 const roomAccessValidators: RoomAccessValidator[] = [
 	async function(room, user): Promise<boolean> {
-		if (!room.teamId) {
+		if (!room?.teamId) {
 			return false;
 		}
 
@@ -17,7 +17,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	async function(room, user): Promise<boolean> {
-		if (!room?._id || room.t !== 'c' || room.teamId) {
+		if (!room?._id || room.t !== 'c' || room?.teamId) {
 			return false;
 		}
 
@@ -31,7 +31,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	async function(room, user): Promise<boolean> {
-		if (!room?._id || !user?._id || room.teamId) {
+		if (!room?._id || !user?._id || room?.teamId) {
 			return false;
 		}
 		if (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) {
@@ -41,13 +41,15 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	async function(room, user): Promise<boolean> {
-		if (!room?.prid || room.teamId) {
+		if (!room?.prid || room?.teamId) {
 			return false;
 		}
+
 		const parentRoom = await Rooms.findOne(room.prid);
 		if (!parentRoom) {
 			return false;
 		}
+
 		return Authorization.canAccessRoom(parentRoom, user);
 	},
 
