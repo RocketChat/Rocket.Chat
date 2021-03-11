@@ -26,57 +26,40 @@ import { Notifications } from '../../notifications/client';
 import { Rooms, Subscriptions, Messages } from '../../models';
 import { call } from '../../ui-utils';
 import { roomTypes, RoomSettingsEnum } from '../../utils';
-import { getConfig } from '../../ui-utils/client/config';
-
-const E2E_ROOM_STATES = {
-	NO_PASSWORD_SET: 'NO_PASSWORD_SET',
-	NOT_STARTED: 'NOT_STARTED',
-	DISABLED: 'DISABLED',
-	HANDSHAKE: 'HANDSHAKE',
-	ESTABLISHING: 'ESTABLISHING',
-	CREATING_KEYS: 'CREATING_KEYS',
-	WAITING_KEYS: 'WAITING_KEYS',
-	KEYS_RECEIVED: 'KEYS_RECEIVED',
-	READY: 'READY',
-	ERROR: 'ERROR',
-};
+import { log, logError } from './logger';
+import { E2ERoomState } from './E2ERoomState';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
 
 const reduce = (prev, next) => {
 	if (prev === next) {
-		return next === E2E_ROOM_STATES.ERROR;
+		return next === E2ERoomState.ERROR;
 	}
 
 	switch (prev) {
-		case E2E_ROOM_STATES.NOT_STARTED:
-			return [E2E_ROOM_STATES.ESTABLISHING, E2E_ROOM_STATES.DISABLED, E2E_ROOM_STATES.KEYS_RECEIVED].includes(next) && next;
-		case E2E_ROOM_STATES.READY:
-			return [E2E_ROOM_STATES.DISABLED].includes(next) && next;
-		case E2E_ROOM_STATES.ERROR:
-			return [E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.NOT_STARTED].includes(next) && next;
-		case E2E_ROOM_STATES.WAITING_KEYS:
-			return [E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.ERROR, E2E_ROOM_STATES.DISABLED].includes(next) && next;
-		case E2E_ROOM_STATES.ESTABLISHING:
-			return [E2E_ROOM_STATES.READY, E2E_ROOM_STATES.KEYS_RECEIVED, E2E_ROOM_STATES.ERROR, E2E_ROOM_STATES.DISABLED, E2E_ROOM_STATES.WAITING_KEYS].includes(next) && next;
+		case E2ERoomState.NOT_STARTED:
+			return [E2ERoomState.ESTABLISHING, E2ERoomState.DISABLED, E2ERoomState.KEYS_RECEIVED].includes(next) && next;
+		case E2ERoomState.READY:
+			return [E2ERoomState.DISABLED].includes(next) && next;
+		case E2ERoomState.ERROR:
+			return [E2ERoomState.KEYS_RECEIVED, E2ERoomState.NOT_STARTED].includes(next) && next;
+		case E2ERoomState.WAITING_KEYS:
+			return [E2ERoomState.KEYS_RECEIVED, E2ERoomState.ERROR, E2ERoomState.DISABLED].includes(next) && next;
+		case E2ERoomState.ESTABLISHING:
+			return [E2ERoomState.READY, E2ERoomState.KEYS_RECEIVED, E2ERoomState.ERROR, E2ERoomState.DISABLED, E2ERoomState.WAITING_KEYS].includes(next) && next;
 		default:
 			return next;
 	}
 };
 
-const debug = [getConfig('debug'), getConfig('debug-e2e')].includes('true');
 export class E2ERoom extends Emitter {
 	log(...msg) {
-		if (debug) {
-			console.log('[E2E ROOM]', `[STATE: ${ this.state }]`, `[RID: ${ this.roomId }]`, ...msg);
-		}
+		log('E2E ROOM', `[STATE: ${ this.state }]`, `[RID: ${ this.roomId }]`, ...msg);
 	}
 
 	error(...msg) {
-		if (debug) {
-			console.error('[E2E ROOM]', `[STATE: ${ this.state }]`, `[RID: ${ this.roomId }]`, ...msg);
-		}
+		logError('E2E ROOM', `[STATE: ${ this.state }]`, `[RID: ${ this.roomId }]`, ...msg);
 	}
 
 	setState(state) {
@@ -102,24 +85,24 @@ export class E2ERoom extends Emitter {
 
 		this.typeOfRoom = t;
 
-		this.once(E2E_ROOM_STATES.READY, () => this.decryptPendingMessages());
-		this.once(E2E_ROOM_STATES.READY, () => this.decryptSubscription());
+		this.once(E2ERoomState.READY, () => this.decryptPendingMessages());
+		this.once(E2ERoomState.READY, () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
 			if (this.roomId === Session.get('openedRoom')) {
 				this.log(`[PREV: ${ prev }]`, 'State CHANGED');
 			}
 		});
 		this.on('STATE_CHANGED', () => this.handshake());
-		this.setState(E2E_ROOM_STATES.NOT_STARTED);
+		this.setState(E2ERoomState.NOT_STARTED);
 	}
 
 
 	disable() {
-		this.setState(E2E_ROOM_STATES.DISABLED);
+		this.setState(E2ERoomState.DISABLED);
 	}
 
 	keyReceived() {
-		this.setState(E2E_ROOM_STATES.KEYS_RECEIVED);
+		this.setState(E2ERoomState.KEYS_RECEIVED);
 	}
 
 	pause() {
@@ -137,7 +120,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	enable() {
-		![E2E_ROOM_STATES.READY].includes(this.state) && this.setState(E2E_ROOM_STATES.READY);
+		![E2ERoomState.READY].includes(this.state) && this.setState(E2ERoomState.READY);
 	}
 
 	shouldConvertSentMessages() {
@@ -149,7 +132,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	isDisabled() {
-		return [E2E_ROOM_STATES.DISABLED].includes(this.state);
+		return [E2ERoomState.DISABLED].includes(this.state);
 	}
 
 	wait(state) {
@@ -160,11 +143,11 @@ export class E2ERoom extends Emitter {
 	}
 
 	isReady() {
-		return this.state === E2E_ROOM_STATES.READY;
+		return this.state === E2ERoomState.READY;
 	}
 
 	isWaitingKeys() {
-		return this.state === E2E_ROOM_STATES.WAITING_KEYS;
+		return this.state === E2ERoomState.WAITING_KEYS;
 	}
 
 	get keyID() {
@@ -206,17 +189,17 @@ export class E2ERoom extends Emitter {
 	// Initiates E2E Encryption
 	async handshake() {
 		switch (this.state) {
-			case E2E_ROOM_STATES.KEYS_RECEIVED:
-			case E2E_ROOM_STATES.NOT_STARTED:
-				this.setState(E2E_ROOM_STATES.ESTABLISHING);
+			case E2ERoomState.KEYS_RECEIVED:
+			case E2ERoomState.NOT_STARTED:
+				this.setState(E2ERoomState.ESTABLISHING);
 				try {
 					const groupKey = Subscriptions.findOne({ rid: this.roomId }).E2EKey;
 					if (groupKey) {
 						await this.importGroupKey(groupKey);
-						return this.setState(E2E_ROOM_STATES.READY);
+						return this.setState(E2ERoomState.READY);
 					}
 				} catch (error) {
-					this.setState(E2E_ROOM_STATES.ERROR);
+					this.setState(E2ERoomState.ERROR);
 					// this.error = error;
 					return this.error('Error fetching group key: ', error);
 				}
@@ -224,16 +207,16 @@ export class E2ERoom extends Emitter {
 				try {
 					const room = Rooms.findOne({ _id: this.roomId });
 					if (!room.e2eKeyId) { // TODO CHECK_PERMISSION
-						this.setState(E2E_ROOM_STATES.CREATING_KEYS);
+						this.setState(E2ERoomState.CREATING_KEYS);
 						await this.createGroupKey();
-						return this.setState(E2E_ROOM_STATES.READY);
+						return this.setState(E2ERoomState.READY);
 					}
-					this.setState(E2E_ROOM_STATES.WAITING_KEYS);
+					this.setState(E2ERoomState.WAITING_KEYS);
 					this.log('Requesting room key');
 					Notifications.notifyUsersOfRoom(this.roomId, 'e2ekeyRequest', this.roomId, room.e2eKeyId);
 				} catch (error) {
 					// this.error = error;
-					this.setState(E2E_ROOM_STATES.ERROR);
+					this.setState(E2ERoomState.ERROR);
 				}
 		}
 	}
