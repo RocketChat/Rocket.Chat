@@ -152,7 +152,7 @@ export class SAMLUtils {
 	}
 
 	public static inflateXml(base64Data: string, successCallback: (xml: string) => void, errorCallback: (err: string | object | null) => void): void {
-		const buffer = new Buffer(base64Data, 'base64');
+		const buffer = Buffer.from(base64Data, 'base64');
 		zlib.inflateRaw(buffer, (err, decoded) => {
 			if (err) {
 				this.log(`Error while inflating. ${ err }`);

@@ -182,7 +182,7 @@ export class SAMLServiceProvider {
 	}
 
 	public validateResponse(samlResponse: string, callback: IResponseValidateCallback): void {
-		const xml = new Buffer(samlResponse, 'base64').toString('utf8');
+		const xml = Buffer.from(samlResponse, 'base64').toString('utf8');
 
 		const parser = new ResponseParser(this.serviceProviderOptions);
 		return parser.validate(xml, callback);
