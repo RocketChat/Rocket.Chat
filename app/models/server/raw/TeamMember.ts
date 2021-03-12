@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, Cursor } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeamMember } from '../../../../definition/ITeam';
@@ -32,7 +32,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		return this.col.find({ teamId }, options);
 	}
 
-	createOneByTeamIdAndUserId(teamId: string, userId: string, createdBy: Pick<IUser, '_id' | 'username'>) {
+	createOneByTeamIdAndUserId(teamId: string, userId: string, createdBy: Pick<IUser, '_id' | 'username'>): Promise<InsertOneWriteOpResult<T>> {
 		return this.insertOne({
 			teamId,
 			userId,
@@ -42,7 +42,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		});
 	}
 
-	updateRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>) {
+	updateRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
 		return this.col.updateOne({
 			teamId,
 			userId,
@@ -53,7 +53,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		});
 	}
 
-	removeRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>) {
+	removeRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
 		return this.col.updateOne({
 			teamId,
 			userId,

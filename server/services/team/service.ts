@@ -1,4 +1,4 @@
-import { Db, InsertOneWriteOpResult } from 'mongodb';
+import { Db, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
@@ -179,10 +179,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
-		return this.TeamModel.findOneByMainRoomId(roomId, { projection: { _id: 1 } })
+		return this.TeamModel.findOneByMainRoomId(roomId, { projection: { _id: 1 } });
 	}
 
-	async addRolesToMember(teamId: string, userId: string, roles: Array<string>) {
+	async addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult | undefined> {
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, { projection: { _id: 1 } });
 
 		if (!isMember) {
@@ -193,7 +193,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamMembersModel.updateRolesByTeamIdAndUserId(teamId, userId, roles);
 	}
 
-	async removeRolesFromMember(teamId: string, userId: string, roles: Array<string>) {
+	async removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult | undefined> {
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, { projection: { _id: 1 } });
 
 		if (!isMember) {

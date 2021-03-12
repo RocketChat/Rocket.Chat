@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, Cursor } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeam } from '../../../../definition/ITeam';
@@ -30,13 +30,13 @@ export class TeamRaw extends BaseRaw<T> {
 		return this.col.findOne({ roomId }, options);
 	}
 
-	updateMainRoomForTeam(id: string, roomId: string) {
+	updateMainRoomForTeam(id: string, roomId: string): Promise<UpdateWriteOpResult> {
 		return this.col.updateOne({
-			_id: id
+			_id: id,
 		}, {
 			$set: {
 				roomId,
-			}
-		})
+			},
+		});
 	}
 }
