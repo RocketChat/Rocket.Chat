@@ -25,4 +25,18 @@ export class TeamRaw extends BaseRaw<T> {
 	findOneByName(name: string, options?: FindOneOptions<T>): Promise<T | null> {
 		return this.col.findOne({ name }, options);
 	}
+
+	findOneByMainRoomId(roomId: string, options?: FindOneOptions<T>): Promise<T | null> {
+		return this.col.findOne({ roomId }, options);
+	}
+
+	updateMainRoomForTeam(id: string, roomId: string) {
+		return this.col.updateOne({
+			_id: id
+		}, {
+			$set: {
+				roomId,
+			}
+		})
+	}
 }
