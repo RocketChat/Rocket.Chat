@@ -1,5 +1,4 @@
 import { Db } from 'mongodb';
-import { Meteor } from 'meteor/meteor';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
@@ -7,6 +6,7 @@ import { Authorization, Room } from '../../sdk';
 import { ITeamCreateParams, ITeamService } from '../../sdk/types/ITeamService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
+import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { IRoom } from '../../../definition/IRoom';
 
@@ -19,18 +19,32 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 	private TeamMembersModel: TeamMemberRaw;
 
+	// TODO not sure we should have the collection here or call the Room service for getting Room data
+	private Rooms: RoomsRaw;
+
 	constructor(db: Db) {
 		super();
 
 		this.TeamModel = new TeamRaw(db.collection('rocketchat_team'));
 		this.TeamMembersModel = new TeamMemberRaw(db.collection('rocketchat_team_member'));
 		this.Users = new UsersRaw(db.collection('users'));
+		this.Rooms = new RoomsRaw(db.collection('rocketchat_room'));
 	}
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
 		const hasPermission = await Authorization.hasPermission(uid, 'create-team');
 		if (!hasPermission) {
 			throw new Error('no-permission');
+		}
+
+		const existingTeam = await this.TeamModel.findOneByName(team.name, { projection: { _id: 1 } });
+		if (existingTeam) {
+			throw new Error('team-name-already-exists');
+		}
+
+		const existingRoom = await this.Rooms.findOneByName(team.name, { projection: { _id: 1 } });
+		if (existingRoom) {
+			throw new Error('room-name-already-exists');
 		}
 
 		const createdBy = await this.Users.findOneById(uid, { projection: { username: 1 } });
@@ -50,58 +64,52 @@ export class TeamService extends ServiceClass implements ITeamService {
 			_updatedAt: new Date(), // TODO how to avoid having to do this?
 		};
 
-		let teamId: string;
 		try {
 			const result = await this.TeamModel.insertOne(teamData);
-			teamId = result.insertedId;
-		} catch (e) {
-			// TODO should we throw a generic error instead of saying that the team already exists?
-			if (e.code === 11000) {
-				throw new Meteor.Error('error-duplicate-team-name', `A team with name ${ team.name } already exists`);
-			} else {
-				throw new Meteor.Error('error-team-creation', 'An error occured while creating the team.');
-			}
-		}
+			const teamId = result.insertedId;
 
-		const membersList: Array<Omit<ITeamMember, '_id'>> = members?.filter((memberId) => ![uid, owner].includes(memberId))
-			.map((memberId) => ({
+			const membersList: Array<Omit<ITeamMember, '_id'>> = members?.filter((memberId) => ![uid, owner].includes(memberId))
+				.map((memberId) => ({
+					teamId,
+					userId: memberId,
+					createdAt: new Date(),
+					createdBy,
+					_updatedAt: new Date(), // TODO how to avoid having to do this?
+				})) || [];
+
+			membersList.push({
 				teamId,
-				userId: memberId,
+				userId: owner || uid,
+				roles: ['owner'],
 				createdAt: new Date(),
 				createdBy,
 				_updatedAt: new Date(), // TODO how to avoid having to do this?
-			})) || [];
+			});
 
-		membersList.push({
-			teamId,
-			userId: owner || uid,
-			roles: ['owner'],
-			createdAt: new Date(),
-			createdBy,
-			_updatedAt: new Date(), // TODO how to avoid having to do this?
-		});
+			await this.TeamMembersModel.insertMany(membersList);
 
-		await this.TeamMembersModel.insertMany(membersList);
+			const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
-		const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
+			const newRoom = {
+				...room,
+				type: roomType,
+				name: team.name,
+				members: memberUsernames,
+				extraData: {
+					...room.extraData,
+					teamId,
+				},
+			};
 
-		const newRoom = {
-			...room,
-			type: roomType,
-			name: team.name,
-			members: memberUsernames,
-			extraData: {
-				...room.extraData,
-				teamId,
-			},
-		};
+			await Room.create(owner || uid, newRoom);
 
-		await Room.create(owner || uid, newRoom);
-
-		return {
-			_id: teamId,
-			...teamData,
-		};
+			return {
+				_id: teamId,
+				...teamData,
+			};
+		} catch (e) {
+			throw new Error('error-team-creation');
+		}
 	}
 
 	async list(uid: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeam>> {
@@ -139,7 +147,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async members(userId: string, teamId: string): Promise<Array<ITeamMember>> {
-		const isMember = await this.TeamMembersModel.findOne({ userId, teamId });
+		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId);
 		const hasPermission = await Authorization.hasAtLeastOnePermission(userId, ['add-team-member', 'edit-team-member', 'view-all-teams']);
 		if (!hasPermission) {
 			throw new Error('no-permission');
@@ -149,6 +157,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 			return [];
 		}
 
-		return this.TeamMembersModel.find({ teamId }).toArray();
+		return this.TeamMembersModel.findByTeamId(teamId).toArray();
 	}
 }

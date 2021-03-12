@@ -5,12 +5,14 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 describe('[Teams]', () => {
 	before((done) => getCredentials(done));
 
+	const community = `community${ Date.now() }`;
+
 	describe('/teams.create', () => {
 		it('should create a public team', (done) => {
 			request.post(api('teams.create'))
 				.set(credentials)
 				.send({
-					name: 'community',
+					name: community,
 					type: 0,
 				})
 				.expect('Content-Type', 'application/json')
@@ -27,7 +29,7 @@ describe('[Teams]', () => {
 			request.post(api('teams.create'))
 				.set(credentials)
 				.send({
-					name: 'test-team',
+					name: `test-team-${ Date.now() }`,
 					type: 0,
 					owner: 'rocket.cat',
 				})
@@ -62,7 +64,7 @@ describe('[Teams]', () => {
 			request.post(api('teams.create'))
 				.set(credentials)
 				.send({
-					name: 'community',
+					name: community,
 					type: 0,
 				})
 				.expect('Content-Type', 'application/json')
@@ -70,7 +72,7 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
-					expect(res.body.error).to.be.equal('A team with name community already exists [error-duplicate-team-name]');
+					expect(res.body.error).to.be.equal('team-name-already-exists');
 				})
 				.end(done);
 		});
