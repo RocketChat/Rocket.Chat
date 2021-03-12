@@ -4,7 +4,6 @@ import { Field, Button, TextInput, Icon, ButtonGroup, Modal } from '@rocket.chat
 import { useTranslation } from '../contexts/TranslationContext';
 import { useForm } from '../hooks/useForm';
 import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
-import { IRoom } from '../../definition/IRoom';
 
 
 type TranscriptModalProps = {
@@ -26,7 +25,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 		}
 	}, [ref]);
 
-	const { values, handlers } = useForm({ email: emailDefault, subject: t('Transcript_of_your_livechat_conversation') });
+	const { values, handlers } = useForm({ email: emailDefault || '', subject: t('Transcript_of_your_livechat_conversation') });
 
 	const { email, subject } = values as { email: string; subject: string };
 	const { handleEmail, handleSubject } = handlers;
@@ -50,6 +49,13 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 	}, [t, subject]);
 
 	const canSave = useMemo(() => !!subject, [subject]);
+
+	useEffect(() => {
+		if (transcriptRequest) {
+			handleEmail(transcriptRequest.email);
+			handleSubject(transcriptRequest.subject);
+		}
+	});
 
 	return <Modal {...props}>
 		<Modal.Header>
