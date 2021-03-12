@@ -20,3 +20,15 @@ export interface ITeamMember extends IRocketChatRecord {
 	createdBy: Pick<IUser, '_id' | 'username' >;
 	createdAt: Date;
 }
+
+// TODO move this definition to a more broader file
+export interface IPaginationOptions {
+	offset: number;
+	count: number;
+}
+
+// TODO move this definition to a more broader file
+export interface IRecordsWithTotal<T> {
+	records: Array<T>;
+	total: number;
+}

@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb';
+import { Collection, FindOneOptions, Cursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeam } from '../../../../definition/ITeam';
@@ -11,8 +11,18 @@ export class TeamRaw extends BaseRaw<T> {
 	) {
 		super(col, trash);
 
+		this.col.createIndex({ name: 1 }, { unique: true });
+
 		// this.col.createIndexes([
 		// 	{ key: { status: 1, expireAt: 1 } },
 		// ]);
+	}
+
+	findByIds(ids: Array<string>, options?: FindOneOptions<T>): Cursor<T> {
+		return this.col.find({ _id: { $in: ids } }, options);
+	}
+
+	findOneByName(name: string, options?: FindOneOptions<T>): Promise<T | null> {
+		return this.col.findOne({ name }, options);
 	}
 }
