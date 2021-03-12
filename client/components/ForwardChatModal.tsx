@@ -56,6 +56,7 @@ const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...p
 			setUserId(user._id);
 		};
 		fetchData();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [username]);
 
 	return <Modal {...props}>

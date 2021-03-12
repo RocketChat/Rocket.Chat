@@ -1,4 +1,4 @@
-import React, { memo, useContext, useCallback, useState, useEffect } from 'react';
+import React, { memo, useContext, useCallback, useState, useEffect, useMemo } from 'react';
 import { BoxProps, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
@@ -18,6 +18,8 @@ import TranscriptModal from '../../../../components/TranscriptModal';
 import { handleError } from '../../../../../app/utils/client';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { IRoom } from '../../../../../definition/IRoom';
+import { useAtLeastOnePermission, usePermission, useRole } from '../../../../contexts/AuthorizationContext';
+import { useUserId } from '../../../../contexts/UserContext';
 
 
 const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['className'] }): JSX.Element => {
@@ -29,6 +31,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 	const [email, setEmail] = useState('');
 	const visitorRoomId = room.v?._id;
+	const uid = useUserId();
 
 	const getVisitorInfo = useEndpointAction('GET', `livechat/visitors.info?visitorId=${ visitorRoomId }`);
 
@@ -120,6 +123,33 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		openModal(id);
 	});
 
+	const hasManagerRole = useRole('livechat-manager');
+
+	const roomOpen = room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasManagerRole);
+
+	const canForwardGuest = usePermission('transfer-livechat-guest');
+
+	const canSendTranscript = usePermission('send-omnichannel-chat-transcript');
+
+	const hasPermissionButtons = (id: string): boolean => {
+		switch (id) {
+			case QuickActionsEnum.MoveQueue:
+				break;
+			case QuickActionsEnum.ChatForward:
+				return canForwardGuest;
+			case QuickActionsEnum.Transcript:
+				return !!email && canSendTranscript;
+			default:
+				break;
+		}
+		return false;
+	};
+
+	const hasPermissionGroup = useAtLeastOnePermission(
+		useMemo(() => [
+			'close-others-livechat-room', 'transfer-livechat-guest',
+		], []),
+	);
 
 	return <ButtonGroup mi='x4' medium>
 		{ visibleActions.map(({ id, color, icon, title, action = actionDefault }, index) => {
@@ -137,7 +167,11 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				key: id,
 			};
 
-			return <Header.ToolBoxAction {...props} />;
+			if (!hasPermissionGroup || !hasPermissionButtons(id)) {
+				return;
+			}
+
+			return roomOpen && <Header.ToolBoxAction {...props} />;
 		})}
 	</ButtonGroup>;
 };

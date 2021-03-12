@@ -48,6 +48,10 @@ export interface IRoom extends IRocketChatRecord {
 		_id: string;
 	};
 	transcriptRequest?: IRequestTranscript;
+	open?: boolean;
+	servedBy?: {
+		_id: string;
+	};
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
