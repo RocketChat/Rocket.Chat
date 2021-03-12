@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, Cursor } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeamMember } from '../../../../definition/ITeam';
@@ -29,5 +29,9 @@ export class TeamMemberRaw extends BaseRaw<T> {
 
 	findByTeamId(teamId: string, options?: FindOneOptions<T>): Cursor<T> {
 		return this.col.find({ teamId }, options);
+	}
+
+	updateOneByUserIdAndTeamId(userId: string, teamId: string, update: Partial<T>): Promise<UpdateWriteOpResult> {
+		return this.col.updateOne({ userId, teamId }, { $set: update });
 	}
 }

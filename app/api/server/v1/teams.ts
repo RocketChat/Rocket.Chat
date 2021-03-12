@@ -62,14 +62,58 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 
 API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
-		const { teamId } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+		const { teamId, teamName } = this.queryParams;
 
-		if (!teamId) {
-			return API.v1.failure('Team ID is required');
-		}
+		const { records, total } = Promise.await(Team.members(this.userId, teamId, teamName, { offset, count }));
 
-		const members = Promise.await(Team.members(this.userId, teamId));
+		return API.v1.success({
+			members: records,
+			total,
+			count: records.length,
+			offset,
+		});
+	},
+});
 
-		return API.v1.success({ members });
+API.v1.addRoute('teams.addMembers', { authRequired: true }, {
+	post() {
+		const { teamId, teamName, members } = this.bodyParams;
+
+		Promise.await(Team.addMembers(this.userId, teamId, teamName, members));
+
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('teams.updateMember', { authRequired: true }, {
+	post() {
+		const { teamId, teamName, member } = this.bodyParams;
+
+		Promise.await(Team.updateMember(this.userId, teamId, teamName, member));
+
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
+	post() {
+		const { teamId, teamName, members } = this.bodyParams;
+
+		Promise.await(Team.removeMembers(this.userId, teamId, teamName, members));
+
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('teams.leave', { authRequired: true }, {
+	post() {
+		const { teamId, teamName } = this.bodyParams;
+
+		Promise.await(Team.removeMembers(this.userId, teamId, teamName, [{
+			userId: this.userId,
+		}]));
+
+		return API.v1.success();
 	},
 });
