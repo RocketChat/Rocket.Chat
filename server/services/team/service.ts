@@ -1,7 +1,6 @@
 import { Db } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
-import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
 import { Authorization, Room } from '../../sdk';
 import { ITeamCreateParams, ITeamService } from '../../sdk/types/ITeamService';
@@ -211,7 +210,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 		if (room.teamId !== teamId) {
 			throw new Error('room-not-on-that-team');
 		}
-		room.teamId = null;
+		delete room.teamId;
+		delete room.teamDefault;
 		this.RoomsModel.updateOne({ _id: room._id }, { $unset: { teamId, teamDefault: '' } });
 		return {
 			...room,
