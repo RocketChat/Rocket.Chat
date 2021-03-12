@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
-import { ITeam, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
+import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
 import { Authorization, Room } from '../../sdk';
 import { ITeamCreateParams, ITeamService } from '../../sdk/types/ITeamService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
@@ -93,20 +93,37 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async list(userId: string): Promise<Array<ITeam>> {
-		const canViewAllTeams = await Authorization.hasPermission(userId, 'view-all-teams');
+	async list(uid: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeam>> {
+		const userTeams = await this.TeamMembersModel.findByUserId(uid, { projection: { teamId: 1 } }).toArray();
 
-		if (canViewAllTeams) {
-			return this.TeamModel.find().toArray();
-		}
-
-		const records = await this.TeamMembersModel.find({ userId }, { projection: { teamId: 1 } }).toArray();
-
-		const teamIds = records.map(({ teamId }) => teamId);
+		const teamIds = userTeams.map(({ teamId }) => teamId);
 		if (teamIds.length === 0) {
-			return [];
+			return {
+				total: 0,
+				records: [],
+			};
 		}
 
-		return this.TeamModel.find({ _id: { $in: teamIds } }).toArray();
+		const cursor = this.TeamModel.findByIds(teamIds, {
+			limit: count,
+			skip: offset,
+		});
+
+		return {
+			total: await cursor.count(),
+			records: await cursor.toArray(),
+		};
+	}
+
+	async listAll({ offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeam>> {
+		const cursor = this.TeamModel.find({}, {
+			limit: count,
+			skip: offset,
+		});
+
+		return {
+			total: await cursor.count(),
+			records: await cursor.toArray(),
+		};
 	}
 }
