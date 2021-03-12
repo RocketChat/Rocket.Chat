@@ -60,7 +60,6 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 	},
 });
 
-<<<<<<< HEAD
 API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
 		const { teamId } = this.queryParams;
@@ -72,7 +71,9 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		const members = Promise.await(Team.members(this.userId, teamId));
 
 		return API.v1.success({ members });
-=======
+	},
+});
+
 API.v1.addRoute('teams.info', { authRequired: true }, {
 	get() {
 		const { teamId, teamName } = this.requestParams();
@@ -86,6 +87,5 @@ API.v1.addRoute('teams.info', { authRequired: true }, {
 			: Promise.await(Team.getInfoByName(teamName));
 
 		return API.v1.success({ teamInfo });
->>>>>>> edbf42aa8 (add teams.info endpoint)
 	},
 });
