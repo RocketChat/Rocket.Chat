@@ -8,6 +8,7 @@ import { promises } from '../../app/promises/client';
 import { Notifications } from '../../app/notifications/client';
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 import { Subscriptions } from '../../app/models';
+import { waitUntilFind } from '../../app/e2e/client/waitUntilFind';
 
 const handle = async (roomId, keyId) => {
 	const e2eRoom = await e2e.getInstanceByRoomId(roomId);
@@ -45,33 +46,35 @@ Meteor.startup(function() {
 
 		Notifications.onUser('e2ekeyRequest', handle);
 
-
 		observable = Subscriptions.find().observe({
 			changed: async (doc) => {
 				if (!doc.encrypted && !doc.E2EKey) {
-					return e2e.removeInstanceByRoomId(doc.rid);
+					e2e.removeInstanceByRoomId(doc.rid);
+					return;
 				}
-				const e2eRoom = await e2e.getInstanceByRoomId(doc.rid);
 
+				const e2eRoom = await e2e.getInstanceByRoomId(doc.rid);
 				if (!e2eRoom) {
 					return;
 				}
 
-
-				doc.encrypted ? e2eRoom.unPause() : e2eRoom.pause();
-
 				// Cover private groups and direct messages
 				if (!e2eRoom.isSupportedRoomType(doc.t)) {
-					return e2eRoom.disable();
+					e2eRoom.disable();
+					return;
 				}
-
 
 				if (doc.E2EKey && e2eRoom.isWaitingKeys()) {
-					return e2eRoom.keyReceived();
+					e2eRoom.keyReceived();
+					return;
 				}
+
 				if (!e2eRoom.isReady()) {
 					return;
 				}
+
+				doc.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+
 				e2eRoom.decryptSubscription();
 			},
 			added: async (doc) => {
@@ -96,7 +99,12 @@ Meteor.startup(function() {
 		// Encrypt messages before sending
 		promises.add('onClientBeforeSendMessage', async function(message) {
 			const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
-			if (!e2eRoom || !e2eRoom.shouldConvertSentMessages()) {
+
+			const subscription = await waitUntilFind(() => Subscriptions.findOne({ rid: message.rid }));
+
+			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+
+			if (!e2eRoom || !await e2eRoom.shouldConvertSentMessages()) {
 				return message;
 			}
 
