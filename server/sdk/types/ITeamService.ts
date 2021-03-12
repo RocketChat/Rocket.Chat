@@ -18,7 +18,7 @@ export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
 	list(uid: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
-	members(uid: string, teamId: string, teamName: string, options?: IPaginationOptions): Promise<IListResponse>;
+	members(uid: string, teamId: string, teamName: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeamMember>>;
 	addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(uid: string, teamId: string, teamName: string, members: ITeamMemberParams): Promise<void>;
 	removeMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
