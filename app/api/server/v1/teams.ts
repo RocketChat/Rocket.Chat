@@ -76,7 +76,7 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 
 API.v1.addRoute('teams.info', { authRequired: true }, {
 	get() {
-		const { teamId, teamName } = this.requestParams();
+		const { teamId, teamName } = this.queryParams;
 
 		if (!teamId && !teamName) {
 			return API.v1.failure('Provide either the "teamId" or "teamName"');
