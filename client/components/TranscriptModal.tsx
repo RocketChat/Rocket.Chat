@@ -4,6 +4,7 @@ import { Field, Button, TextInput, Icon, ButtonGroup, Modal } from '@rocket.chat
 import { useTranslation } from '../contexts/TranslationContext';
 import { useForm } from '../hooks/useForm';
 import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
+import { IRoom } from '../../definition/IRoom';
 
 
 type TranscriptModalProps = {
