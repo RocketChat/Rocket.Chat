@@ -7,7 +7,7 @@ import { Subscriptions, Rooms, Settings, TeamMembers } from './service';
 
 const roomAccessValidators: RoomAccessValidator[] = [
 	async function(room, user): Promise<boolean> {
-		if (!room?.teamId || !user._id) {
+		if (!room?.teamId || !user?._id) {
 			return false;
 		}
 
