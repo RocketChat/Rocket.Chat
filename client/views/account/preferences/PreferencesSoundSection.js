@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Tooltip, Box } from '@rocket.chat/fuselage';
+import { Accordion, Field, Select, FieldGroup, ToggleSwitch, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
@@ -66,7 +66,7 @@ const PreferencesSoundSection = ({ onChange, commitRef, ...props }) => {
 				</Field.Label>
 				<Field.Row >
 					<Box is='input' flexGrow={1} type='range' value={notificationsSoundVolume} onChange={onChangeNotificationsSoundVolume} min='0' max='100'/>
-					<Tooltip placement='right-middle' mis='x8'>{notificationsSoundVolume}</Tooltip>
+					<Box borderRadius='x2' color='white' padding='10px' backgroundColor='default'>{notificationsSoundVolume}</Box>
 				</Field.Row>
 			</Field>, [notificationsSoundVolume, onChangeNotificationsSoundVolume, t])}
 		</FieldGroup>
