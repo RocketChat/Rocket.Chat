@@ -24,13 +24,10 @@ export type QuickActionsActionConfig = {
 	icon: string;
 	color?: string;
 	title: string;
-	anonymous?: boolean;
-	renderAction?: ActionRenderer;
 	full?: true;
-	renderOption?: OptionRenderer;
 	order?: number;
+	renderAction?: ActionRenderer;
 	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple'>;
-	hotkey?: string;
 	action?: (e: MouseEvent<HTMLElement>) => void;
 }
 

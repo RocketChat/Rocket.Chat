@@ -66,7 +66,7 @@ const DirectRoomHeader = ({ room }) => {
 const RoomHeader = ({ room, topic }) => {
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room}/>;
-
+	const { t } = room;
 	return <Header>
 		{ isMobile && <Header.ToolBox>
 			<Burger/>
@@ -78,9 +78,9 @@ const RoomHeader = ({ room, topic }) => {
 				<Favorite room={room} />
 				<Encrypted room={room} />
 				<Translate room={room} />
-				<Box mis='x20' display='flex'>
+				{ t === 'l' && <Box mis='x20' display='flex'>
 					<QuickActions room={room}/>
-				</Box>
+				</Box> }
 			</Header.Content.Row>
 			<Header.Content.Row>
 				<Header.Subtitle>{topic && <MarkdownText variant='inlineWithoutBreaks' content={topic}/>}</Header.Subtitle>
