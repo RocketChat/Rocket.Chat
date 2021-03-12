@@ -1,6 +1,6 @@
 import React, { FC, memo } from 'react';
+import { Box } from '@rocket.chat/fuselage';
 
-import {Box} from '@rocket.chat/fuselage'
 import { QuoteAttachment, QuoteAttachmentProps } from './QuoteAttachment';
 import { FileAttachmentProps, isFileAttachment, FileAttachment } from './Files';
 import { DefaultAttachment, DefaultAttachmentProps } from './DefaultAttachment';
