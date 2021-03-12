@@ -204,11 +204,11 @@ export function ThreadList({
 }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const threadsRef = useRef();
-
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
 	const [name] = useCurrentRoute();
 	const channelRoute = useRoute(name);
+	threads.sort((a, b) => unread.includes(b._id) - unread.includes(a._id));
 	const onClick = useMutableCallback((e) => {
 		const { id: context } = e.currentTarget.dataset;
 		channelRoute.push({
