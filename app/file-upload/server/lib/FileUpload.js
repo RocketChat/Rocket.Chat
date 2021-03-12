@@ -270,12 +270,17 @@ export const FileUpload = {
 			return;
 		}
 
+		const width = settings.get('Message_Attachments_Thumbnails_Width');
+		const height = settings.get('Message_Attachments_Thumbnails_Height');
+
+		if (file.identify.size && file.identify.size.height < height && file.identify.size.width < width) {
+			return;
+		}
+
 		file = Uploads.findOneById(file._id);
 		file = FileUpload.addExtensionTo(file);
 		const store = FileUpload.getStore('Uploads');
 		const image = store._store.getReadStream(file._id, file);
-		const width = settings.get('Message_Attachments_Thumbnails_Width');
-		const height = settings.get('Message_Attachments_Thumbnails_Height');
 
 		const transformer = sharp()
 			.resize({ width, height, fit: 'inside' });

@@ -1005,7 +1005,7 @@ settings.addGroup('Message', function() {
 			i18nDescription: 'Message_Attachments_Thumbnails_EnabledDesc',
 		});
 
-		this.add('Message_Attachments_Thumbnails_Width', 200, {
+		this.add('Message_Attachments_Thumbnails_Width', 480, {
 			type: 'int',
 			public: true,
 			enableQuery: [
@@ -1016,7 +1016,7 @@ settings.addGroup('Message', function() {
 			],
 		});
 
-		this.add('Message_Attachments_Thumbnails_Height', 200, {
+		this.add('Message_Attachments_Thumbnails_Height', 360, {
 			type: 'int',
 			public: true,
 			enableQuery: [
