@@ -131,14 +131,18 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const canSendTranscript = usePermission('send-omnichannel-chat-transcript');
 
+	const canCloseRoom = usePermission('close-others-livechat-room');
+
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				break;
+				return true;
 			case QuickActionsEnum.ChatForward:
 				return canForwardGuest;
 			case QuickActionsEnum.Transcript:
 				return !!email && canSendTranscript;
+			case QuickActionsEnum.CloseChat:
+				return canCloseRoom;
 			default:
 				break;
 		}
