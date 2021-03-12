@@ -130,6 +130,7 @@ Meteor.startup(function() {
 		{ _id: 'add-team-channel',    roles: ['admin', 'team-owner', 'team-moderator'] },
 		{ _id: 'edit-team-channel',   roles: ['admin', 'team-owner', 'team-moderator'] },
 		{ _id: 'remove-team-channel', roles: ['admin', 'team-owner', 'team-moderator'] },
+		{ _id: 'view-all-team-channels', roles: ['admin', 'team-owner', 'team-moderator'] },
 	];
 
 	for (const permission of permissions) {

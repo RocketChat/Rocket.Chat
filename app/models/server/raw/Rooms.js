@@ -2,7 +2,7 @@ import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
-	findOneByRoomIdAndUserId(rid, uid, options) {
+	findOneByRoomIdAndUserId(rid, uid, options = {}) {
 		const query = {
 			_id: rid,
 			'u._id': uid,
@@ -79,6 +79,18 @@ export class RoomsRaw extends BaseRaw {
 	findByTeamId(teamId, options = {}) {
 		const query = {
 			teamId,
+		};
+
+		return this.find(query, options);
+	}
+
+	findByTeamIdAndUserId(uid, teamId, options = {}) {
+		const query = {
+			teamId,
+			$or: [
+				{ t: 'c' },
+				{ 'u._id': uid },
+			],
 		};
 
 		return this.find(query, options);

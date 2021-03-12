@@ -194,7 +194,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
-		const team = await this.TeamModel.findOneById(teamId);
+		const team = await this.TeamModel.findOneById(teamId, {});
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -203,8 +203,11 @@ export class TeamService extends ServiceClass implements ITeamService {
 			// TODO: if team is private, check if user is on it before showing the rooms
 			throw new Error('no-permission');
 		}
-
-		return this.RoomsModel.findByTeamId(teamId).toArray();
+		const hasAllRoomsPermission = await Authorization.hasPermission(uid, 'view-all-team-channels');
+		if (hasAllRoomsPermission) {
+			return this.RoomsModel.findByTeamId(teamId).toArray();
+		}
+		return this.RoomsModel.findByTeamIdAndUserId(uid, teamId).toArray();
 	}
 
 	async list(uid: string): Promise<Array<ITeam>> {
