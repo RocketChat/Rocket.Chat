@@ -1,5 +1,6 @@
 import React, { FC, memo } from 'react';
 
+import {Box} from '@rocket.chat/fuselage'
 import { QuoteAttachment, QuoteAttachmentProps } from './QuoteAttachment';
 import { FileAttachmentProps, isFileAttachment, FileAttachment } from './Files';
 import { DefaultAttachment, DefaultAttachmentProps } from './DefaultAttachment';
@@ -31,7 +32,7 @@ const Item: FC<{attachment: AttachmentProps; file?: FileProp }> = memo(({ attach
 
 const Attachments: FC<{ attachments: Array<AttachmentProps>; file?: FileProp}> = ({ attachments = null, file }): any => {
 	const { className, ref } = useBlockRendered();
-	return <><div className={className} ref={ref as any} />{attachments && attachments.map((attachment, index) => <Item key={index} file={file} attachment={attachment} />)}</>;
+	return <Box display='flex' flexWrap='wrap'><div className={className} ref={ref as any} />{attachments && attachments.map((attachment, index) => <Item key={index} file={file} attachment={attachment} />)}</Box>;
 };
 
 export default Attachments;
