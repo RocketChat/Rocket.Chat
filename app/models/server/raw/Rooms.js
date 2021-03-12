@@ -211,4 +211,8 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.col.aggregate(params).toArray();
 	}
+
+	findOneByName(name, options = {}) {
+		return this.col.findOne({ name }, options);
+	}
 }
