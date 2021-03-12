@@ -40,7 +40,7 @@ API.v1.addRoute('teams.listAll', { authRequired: true }, {
 
 API.v1.addRoute('teams.create', { authRequired: true }, {
 	post() {
-		const { name, type, members, room } = this.bodyParams;
+		const { name, type, members, room, owner } = this.bodyParams;
 
 		if (!name) {
 			return API.v1.failure('Body param "name" is required');
@@ -53,8 +53,23 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 			},
 			room,
 			members,
+			owner,
 		}));
 
 		return API.v1.success({ team });
+	},
+});
+
+API.v1.addRoute('teams.members', { authRequired: true }, {
+	get() {
+		const { teamId } = this.queryParams;
+
+		if (!teamId) {
+			return API.v1.failure('Team ID is required');
+		}
+
+		const members = Promise.await(Team.members(this.userId, teamId));
+
+		return API.v1.success({ members });
 	},
 });
