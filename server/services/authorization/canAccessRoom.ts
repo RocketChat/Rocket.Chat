@@ -7,11 +7,11 @@ import { Subscriptions, Rooms, Settings, TeamMembers } from './service';
 
 const roomAccessValidators: RoomAccessValidator[] = [
 	async function(room, user): Promise<boolean> {
-		if (!room?.teamId) {
+		if (!room?.teamId || !user._id) {
 			return false;
 		}
 
-		const team = await TeamMembers.findOne({ userId: user._id, teamId: room.teamId });
+		const team = await TeamMembers.findOneByUserIdAndTeamId(user._id, room.teamId, { projection: { _id: 1 } });
 
 		return !!team;
 	},
