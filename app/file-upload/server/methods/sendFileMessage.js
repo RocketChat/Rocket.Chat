@@ -66,7 +66,7 @@ Meteor.methods({
 					attachment.image_dimensions = {
 						width: settings.get('Message_Attachments_Thumbnails_Width'),
 						height: settings.get('Message_Attachments_Thumbnails_Height'),
-					}
+					};
 					thumbId = thumbnail._id;
 				}
 			} catch (e) {
