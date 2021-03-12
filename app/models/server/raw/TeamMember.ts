@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb';
+import { Collection, FindOneOptions, Cursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeamMember } from '../../../../definition/ITeam';
@@ -17,5 +17,9 @@ export class TeamMemberRaw extends BaseRaw<T> {
 
 		// teamId => userId should be unique
 		this.col.createIndex({ teamId: 1, userId: 1 }, { unique: true });
+	}
+
+	findByUserId(userId: string, options?: FindOneOptions<T>): Cursor<T> {
+		return this.col.find({ userId }, options);
 	}
 }

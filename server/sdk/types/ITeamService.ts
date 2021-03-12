@@ -1,4 +1,4 @@
-import { ITeam, ITeamMember } from '../../../definition/ITeam';
+import { ITeam, ITeamMember, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
 import { ICreateRoomParams } from './IRoomService';
 
 export interface ITeamCreateParams {
@@ -10,7 +10,7 @@ export interface ITeamCreateParams {
 
 export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
-	list(uid: string, filter?: string): Promise<Array<ITeam>>;
+	list(uid: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
+	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	members(uid: string, teamId: string): Promise<Array<ITeamMember>>;
-	listAll(): Promise<Array<ITeam>>;
 }
