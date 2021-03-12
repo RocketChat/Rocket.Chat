@@ -1,4 +1,4 @@
-import { ITeam, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
+import { ITeam, ITeamMember, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
 import { ICreateRoomParams } from './IRoomService';
 
 export interface ITeamCreateParams {
