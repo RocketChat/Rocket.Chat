@@ -252,8 +252,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-team');
 		}
 		const hasAdminPermission = await Authorization.hasPermission(uid, 'view-all-teams');
-		if (team.type === TEAM_TYPE.PRIVATE && !hasAdminPermission) {
-			// TODO: if team is private, check if user is on it before showing the rooms
+		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
+		if (team.type === TEAM_TYPE.PRIVATE && !hasAdminPermission && !isMember) {
 			throw new Error('no-permission');
 		}
 		const hasAllRoomsPermission = await Authorization.hasPermission(uid, 'view-all-team-channels');
