@@ -2,7 +2,7 @@ import { Db } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
-import { Authorization, Room } from '../../sdk';
+import { Room } from '../../sdk';
 import { ITeamCreateParams, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
@@ -32,11 +32,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
-		const hasPermission = await Authorization.hasPermission(uid, 'create-team');
-		if (!hasPermission) {
-			throw new Error('no-permission');
-		}
-
 		const existingTeam = await this.TeamModel.findOneByName(team.name, { projection: { _id: 1 } });
 		if (existingTeam) {
 			throw new Error('team-name-already-exists');
@@ -146,12 +141,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async members(userId: string, teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMember>> {
-		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId);
-		const hasPermission = await Authorization.hasAtLeastOnePermission(userId, ['add-team-member', 'edit-team-member', 'view-all-teams']);
-		if (!hasPermission) {
-			throw new Error('no-permission');
-		}
+	async members(uid: string, teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMember>> {
+		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
 
 		if (!teamId) {
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
@@ -162,7 +153,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			teamId = teamIdName._id;
 		}
 
-		if (!isMember && !hasPermission) {
+		if (!isMember) {
 			return {
 				total: 0,
 				records: [],
@@ -181,11 +172,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
-		const hasPermission = await Authorization.hasAtLeastOnePermission(uid, ['add-team-member', 'edit-team-member', 'view-all-teams']);
-		if (!hasPermission) {
-			throw new Error('no-permission');
-		}
-
 		const createdBy = await this.Users.findOneById(uid, { projection: { username: 1 } });
 		if (!createdBy) {
 			throw new Error('invalid-user');
@@ -212,12 +198,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await this.TeamMembersModel.insertMany(membersList);
 	}
 
-	async updateMember(uid: string, teamId: string, teamName: string, member: ITeamMemberParams): Promise<void> {
-		const hasPermission = await Authorization.hasAtLeastOnePermission(uid, ['edit-team-member', 'view-all-teams']);
-		if (!hasPermission) {
-			throw new Error('no-permission');
-		}
-
+	async updateMember(teamId: string, teamName: string, member: ITeamMemberParams): Promise<void> {
 		if (!teamId) {
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
 			if (!teamIdName) {
@@ -242,12 +223,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await this.TeamMembersModel.updateOneByUserIdAndTeamId(member.userId, teamId, memberUpdate);
 	}
 
-	async removeMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
-		const hasPermission = await Authorization.hasAtLeastOnePermission(uid, ['edit-team-member', 'view-all-teams']);
-		if (!hasPermission) {
-			throw new Error('no-permission');
-		}
-
+	async removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
 		if (!teamId) {
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
 			if (!teamIdName) {
