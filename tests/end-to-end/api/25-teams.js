@@ -77,4 +77,108 @@ describe('[Teams]', () => {
 				.end(done);
 		});
 	});
+
+	describe('/teams.addMembers', () => {
+		it('should add members to a public team', (done) => {
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					teamName: community,
+					members: [
+						{
+							userId: 'test-123',
+							roles: ['member'],
+						},
+						{
+							userId: 'test-456',
+							roles: ['member'],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('/teams.members', () => {
+		it('should list all the members from a public team', (done) => {
+			request.get(api(`teams.members?teamName=${ community }`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 2);
+					expect(res.body).to.have.property('offset', 0);
+					expect(res.body).to.have.property('total', 2);
+					expect(res.body).to.have.property('members');
+					expect(res.body).to.have.nested.property('user');
+					expect(res.body).to.have.nested.property('createdBy');
+					expect(res.body).to.have.nested.property('roles');
+					expect(res.body).to.have.nested.property('createdAt');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/teams.updateMember', () => {
+		it('should update member\'s data in a public team', (done) => {
+			request.post(api('teams.updateMember'))
+				.set(credentials)
+				.send({
+					teamName: community,
+					member:
+						{
+							userId: 'test-123',
+							roles: ['member', 'owner'],
+						},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('/teams.removeMembers', () => {
+		it('should remove one member from a public team', (done) => {
+			request.post(api('teams.removeMembers'))
+				.set(credentials)
+				.send({
+					teamName: community,
+					member:
+						{
+							userId: 'test-456',
+						},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('/teams.leave', () => {
+		it('should remove the calling user from the team', (done) => {
+			request.post(api('teams.leave'))
+				.set(credentials)
+				.send({
+					teamName: community,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
 });
