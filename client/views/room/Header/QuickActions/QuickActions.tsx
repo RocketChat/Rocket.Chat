@@ -20,7 +20,7 @@ import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { IRoom } from '../../../../../definition/IRoom';
 import { useAtLeastOnePermission, usePermission, useRole } from '../../../../contexts/AuthorizationContext';
 import { useUserId } from '../../../../contexts/UserContext';
-
+import { useOmnichannel } from '../../../../contexts/OmnichannelContext';
 
 const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['className'] }): JSX.Element => {
 	const setModal = useSetModal();
@@ -133,10 +133,12 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const canCloseRoom = usePermission('close-others-livechat-room');
 
+	const canReturnQueue = useOmnichannel().routeConfig?.returnQueue;
+
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				return true;
+				return !!canReturnQueue;
 			case QuickActionsEnum.ChatForward:
 				return canForwardGuest;
 			case QuickActionsEnum.Transcript:
