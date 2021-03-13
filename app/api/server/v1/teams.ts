@@ -105,7 +105,7 @@ API.v1.addRoute('teams.updateMember', { authRequired: true }, {
 
 		const { teamId, teamName, member } = this.bodyParams;
 
-		Promise.await(Team.updateMember(this.userId, teamId, teamName, member));
+		Promise.await(Team.updateMember(teamId, teamName, member));
 
 		return API.v1.success();
 	},
@@ -119,7 +119,7 @@ API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
 
 		const { teamId, teamName, members } = this.bodyParams;
 
-		Promise.await(Team.removeMembers(this.userId, teamId, teamName, members));
+		Promise.await(Team.removeMembers(teamId, teamName, members));
 
 		return API.v1.success();
 	},
@@ -129,7 +129,7 @@ API.v1.addRoute('teams.leave', { authRequired: true }, {
 	post() {
 		const { teamId, teamName } = this.bodyParams;
 
-		Promise.await(Team.removeMembers(this.userId, teamId, teamName, [{
+		Promise.await(Team.removeMembers(teamId, teamName, [{
 			userId: this.userId,
 		}]));
 
