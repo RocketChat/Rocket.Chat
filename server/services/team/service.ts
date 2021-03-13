@@ -246,8 +246,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		let cursor;
 		if (getAllRooms) {
 			cursor = this.RoomsModel.findByTeamId(teamId, { limit: count, skip: offset });
-		}
-		else {
+		} else {
 			cursor = this.RoomsModel.findByTeamIdAndUserId(uid, teamId, { limit: count, skip: offset });
 		}
 		return {
