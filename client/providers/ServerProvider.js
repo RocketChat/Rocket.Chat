@@ -19,7 +19,7 @@ const callMethod = (methodName, ...args) => new Promise((resolve, reject) => {
 });
 
 const callEndpoint = (httpMethod, endpoint, ...args) => {
-	const allowedHttpMethods = ['get', 'post', 'delete'];
+	const allowedHttpMethods = ['get', 'post', 'put', 'delete'];
 	if (!httpMethod || !allowedHttpMethods.includes(httpMethod.toLowerCase())) {
 		throw new Error('Invalid http method provided to "useEndpoint"');
 	}

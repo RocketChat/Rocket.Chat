@@ -27,6 +27,15 @@ export const APIClient = {
 		return APIClient._jqueryCall('POST', endpoint, params, body);
 	},
 
+	put(endpoint, params, body) {
+		if (!body) {
+			body = params;
+			params = {};
+		}
+
+		return APIClient._jqueryCall('PUT', endpoint, params, body);
+	},
+
 	upload(endpoint, params, formData, xhrOptions) {
 		if (!formData) {
 			formData = params;
@@ -165,6 +174,10 @@ export const APIClient = {
 		},
 
 		post(endpoint, params, body) {
+			return APIClient.post(`v1/${ endpoint }`, params, body);
+		},
+
+		put(endpoint, params, body) {
 			return APIClient.post(`v1/${ endpoint }`, params, body);
 		},
 
