@@ -109,6 +109,18 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	unsetTeamById(rid, options = {}) {
+		return this.updateOne({ _id: rid }, { $unset: { teamId: '', teamDefault: '' } }, options);
+	}
+
+	setTeamById(rid, teamId, teamDefault, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamId, teamDefault } }, options);
+	}
+
+	setTeamDefaultById(rid, teamDefault, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
+	}
+
 	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
 		const lookup = {
 			$lookup: {

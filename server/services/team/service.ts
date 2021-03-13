@@ -150,10 +150,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async addRoom(uid: string, rid: string, teamId: string, isDefault: boolean): Promise<IRoom> {
-		const hasPermission = await Authorization.hasPermission(uid, 'add-team-channel');
-		if (!hasPermission) {
-			throw new Error('no-permission');
-		}
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
@@ -179,17 +175,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 		room.teamId = teamId;
 		room.teamDefault = isDefault;
-		this.RoomsModel.updateOne({ _id: room._id }, { $set: { teamId, teamDefault: isDefault } });
+		this.RoomsModel.setTeamById(room._id, teamId, isDefault);
 		return {
 			...room,
 		};
 	}
 
 	async removeRoom(uid: string, rid: string, teamId: string): Promise<IRoom> {
-		const hasPermission = await Authorization.hasPermission(uid, 'remove-team-channel');
-		if (!hasPermission) {
-			throw new Error('no-permission');
-		}
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
@@ -212,17 +204,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 		delete room.teamId;
 		delete room.teamDefault;
-		this.RoomsModel.updateOne({ _id: room._id }, { $unset: { teamId, teamDefault: '' } });
+		this.RoomsModel.unsetTeamById(room._id);
 		return {
 			...room,
 		};
 	}
 
 	async updateRoom(uid: string, rid: string, isDefault: boolean): Promise<IRoom> {
-		const hasPermission = await Authorization.hasPermission(uid, 'edit-team-channel');
-		if (!hasPermission) {
-			throw new Error('no-permission');
-		}
 		if (!rid) {
 			throw new Error('missing-roomId');
 		}
@@ -237,13 +225,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('room-not-on-team');
 		}
 		room.teamDefault = isDefault;
-		this.RoomsModel.updateOne({ _id: room._id }, { $set: { teamDefault: isDefault } });
+		this.RoomsModel.setTeamDefaultById(rid, isDefault);
 		return {
 			...room,
 		};
 	}
 
-	async listRooms(uid: string, teamId: string): Promise<Array<IRoom>> {
+	async listRooms(uid: string, teamId: string, getAllRooms: boolean, allowPrivateTeam: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<IRoom>> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
@@ -251,16 +239,19 @@ export class TeamService extends ServiceClass implements ITeamService {
 		if (!team) {
 			throw new Error('invalid-team');
 		}
-		const hasAdminPermission = await Authorization.hasPermission(uid, 'view-all-teams');
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
-		if (team.type === TEAM_TYPE.PRIVATE && !hasAdminPermission && !isMember) {
-			throw new Error('no-permission');
+		if (team.type === TEAM_TYPE.PRIVATE && !allowPrivateTeam && !isMember) {
+			throw new Error('user-not-on-private-team');
 		}
-		const hasAllRoomsPermission = await Authorization.hasPermission(uid, 'view-all-team-channels');
-		if (hasAllRoomsPermission) {
-			return this.RoomsModel.findByTeamId(teamId).toArray();
+		let cursor;
+		if (getAllRooms) {
+			cursor = this.RoomsModel.findByTeamId(teamId, { limit: count, skip: offset });
 		}
-		return this.RoomsModel.findByTeamIdAndUserId(uid, teamId).toArray();
+		cursor = this.RoomsModel.findByTeamIdAndUserId(uid, teamId, { limit: count, skip: offset });
+		return {
+			total: await cursor.count(),
+			records: await cursor.toArray(),
+		};
 	}
 
 	async members(userId: string, teamId: string): Promise<Array<ITeamMember>> {

@@ -10,6 +10,7 @@ describe('[Teams]', () => {
 	let publicTeam = null;
 	let privateTeam = null;
 	let publicRoom = null;
+	let publicRoom2 = null;
 	let privateRoom = null;
 
 	describe('/teams.create', () => {
@@ -125,6 +126,26 @@ describe('[Teams]', () => {
 				.end(done);
 		});
 
+		before('create another public channel', (done) => {
+			const channelName = `community-channel-public${ Date.now() }`;
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', channelName);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+					publicRoom2 = res.body.channel;
+				})
+				.end(done);
+		});
+
 		it('should throw an error if no permission', (done) => {
 			updatePermission('add-team-channel', []).then(() => {
 				request.post(api('teams.addRoom'))
@@ -134,11 +155,11 @@ describe('[Teams]', () => {
 						teamId: publicTeam._id,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-						expect(res.body.error).to.be.equal('no-permission');
+						expect(res.body.error).to.be.equal('unauthorized');
 					})
 					.end(done);
 			});
@@ -183,6 +204,26 @@ describe('[Teams]', () => {
 					.end(done);
 			});
 		});
+
+		it('should add public room to private team', (done) => {
+			updatePermission('add-team-channel', ['admin']).then(() => {
+				request.post(api('teams.addRoom'))
+					.set(credentials)
+					.send({
+						roomId: publicRoom2._id,
+						teamId: privateTeam._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('room');
+						expect(res.body.room).to.have.property('teamId', privateTeam._id);
+						expect(res.body.room).to.have.property('teamDefault', false);
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('/teams.updateRoom', () => {
@@ -195,11 +236,11 @@ describe('[Teams]', () => {
 						isDefault: true,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-						expect(res.body.error).to.be.equal('no-permission');
+						expect(res.body.error).to.be.equal('unauthorized');
 					})
 					.end(done);
 			});
@@ -267,7 +308,7 @@ describe('[Teams]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-						expect(res.body.error).to.be.equal('no-permission');
+						expect(res.body.error).to.be.equal('user-not-on-private-team');
 					})
 					.end(done);
 			});
@@ -341,11 +382,11 @@ describe('[Teams]', () => {
 						teamId: publicTeam._id,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-						expect(res.body.error).to.be.equal('no-permission');
+						expect(res.body.error).to.be.equal('unauthorized');
 					})
 					.end(done);
 			});
