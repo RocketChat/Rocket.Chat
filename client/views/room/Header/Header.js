@@ -15,6 +15,7 @@ import { roomTypes } from '../../../../app/utils';
 import { useUserSubscription, useUserId } from '../../../contexts/UserContext';
 import { useUserData } from '../../../hooks/useUserData';
 
+
 export default React.memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
@@ -37,7 +38,6 @@ const HeaderIcon = ({ room }) => {
 const RoomTitle = ({ room }) => {
 	const prevSubscription = useUserSubscription(room.prid);
 	const prevRoomHref = prevSubscription ? roomTypes.getRouteLink(prevSubscription.t, prevSubscription) : null;
-
 	return <Breadcrumbs>
 		{room.prid && prevSubscription && <>
 			<Breadcrumbs.Item>
@@ -64,7 +64,8 @@ const DirectRoomHeader = ({ room }) => {
 const RoomHeader = ({ room, topic }) => {
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room}/>;
-
+	const subscription = useUserSubscription(room._id);
+	// console.log(sub);
 	return <Header>
 		{ isMobile && <Header.ToolBox>
 			<Burger/>
@@ -73,7 +74,7 @@ const RoomHeader = ({ room, topic }) => {
 		<Header.Content>
 			<Header.Content.Row>
 				<RoomTitle room={room}/>
-				<Favorite room={room} />
+				{subscription ? <Favorite room={room} /> : null}
 				<Encrypted room={room} />
 				<Translate room={room} />
 			</Header.Content.Row>
