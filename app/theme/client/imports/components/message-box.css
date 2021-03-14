@@ -147,7 +147,7 @@
 		&:hover,
 		&:focus,
 		&.active {
-			color: black;
+			color: red;
 			transform: scale(1.5);
 		}
 	}
