@@ -2,8 +2,9 @@ import { Db } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
-import { Room } from '../../sdk';
+import { Authorization, Room } from '../../sdk';
 import { ITeamCreateParams, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
+import { IUser } from '../../../definition/IUser';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
@@ -57,13 +58,18 @@ export class TeamService extends ServiceClass implements ITeamService {
 			createdAt: new Date(),
 			createdBy,
 			_updatedAt: new Date(), // TODO how to avoid having to do this?
+			roomId: '', // this will be populated at the end
 		};
 
 		try {
 			const result = await this.TeamModel.insertOne(teamData);
 			const teamId = result.insertedId;
+			// the same uid can be passed at 3 positions: owner, member list or via caller
+			// if the owner is present, remove it from the members list
+			// if the owner is not present, remove the caller from the members list
+			const excludeFromMembers = owner ? [owner] : [uid];
 
-			const membersList: Array<Omit<ITeamMember, '_id'>> = members?.filter((memberId) => ![uid, owner].includes(memberId))
+			const membersList: Array<Omit<ITeamMember, '_id'>> = members?.filter((memberId) => !excludeFromMembers.includes(memberId))
 				.map((memberId) => ({
 					teamId,
 					userId: memberId,
@@ -93,10 +99,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 				extraData: {
 					...room.extraData,
 					teamId,
+					teamMain: true,
 				},
 			};
 
-			await Room.create(owner || uid, newRoom);
+			const createdRoom = await Room.create(owner || uid, newRoom);
+
+			await this.TeamModel.updateMainRoomForTeam(teamId, createdRoom._id);
 
 			return {
 				_id: teamId,
@@ -248,5 +257,53 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 			this.TeamMembersModel.removeById(existingMember._id);
 		}
+	}
+
+	async addMember({ _id, username }: IUser, userId: string, teamId: string): Promise<boolean | ITeamMember> {
+		const isAlreadyAMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, { projection: { _id: 1 } });
+
+		if (isAlreadyAMember) {
+			return false;
+		}
+
+		return (await this.TeamMembersModel.createOneByTeamIdAndUserId(teamId, userId, { _id, username })).ops[0];
+	}
+
+	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
+		return this.TeamModel.findOneByMainRoomId(roomId, { projection: { _id: 1 } });
+	}
+
+	async addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
+		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, { projection: { _id: 1 } });
+
+		if (!isMember) {
+			// TODO should this throw an error instead?
+			return false;
+		}
+
+		return !!await this.TeamMembersModel.updateRolesByTeamIdAndUserId(teamId, userId, roles);
+	}
+
+	async removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
+		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, { projection: { _id: 1 } });
+
+		if (!isMember) {
+			// TODO should this throw an error instead?
+			return false;
+		}
+
+		return !!await this.TeamMembersModel.removeRolesByTeamIdAndUserId(teamId, userId, roles);
+	}
+
+	async getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined> {
+		return this.TeamModel.findOne({
+			name: teamName,
+		}, { projection: { usernames: 0 } });
+	}
+
+	async getInfoById(teamId: string): Promise<Partial<ITeam> | undefined> {
+		return this.TeamModel.findOne({
+			_id: teamId,
+		}, { projection: { usernames: 0 } });
 	}
 }

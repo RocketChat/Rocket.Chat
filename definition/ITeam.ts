@@ -9,6 +9,7 @@ export enum TEAM_TYPE {
 export interface ITeam extends IRocketChatRecord {
 	name: string;
 	type: TEAM_TYPE;
+	roomId: string;
 	createdBy: Pick<IUser, '_id' | 'username' >;
 	createdAt: Date;
 }

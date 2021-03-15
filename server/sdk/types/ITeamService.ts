@@ -22,4 +22,6 @@ export interface ITeamService {
 	addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, teamName: string, members: ITeamMemberParams): Promise<void>;
 	removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
+	getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined>;
+	getInfoById(teamId: string): Promise<Partial<ITeam> | undefined>;
 }
