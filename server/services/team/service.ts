@@ -2,7 +2,7 @@ import { Db } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
-import { Authorization, Room } from '../../sdk';
+import { Room } from '../../sdk';
 import { ITeamCreateParams, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
 import { IUser } from '../../../definition/IUser';
 import { ServiceClass } from '../../sdk/types/ServiceClass';

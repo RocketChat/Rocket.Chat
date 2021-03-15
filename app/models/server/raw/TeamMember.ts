@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, Cursor, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeamMember } from '../../../../definition/ITeam';
@@ -34,7 +34,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 
 	updateOneByUserIdAndTeamId(userId: string, teamId: string, update: Partial<T>): Promise<UpdateWriteOpResult> {
 		return this.col.updateOne({ userId, teamId }, { $set: update });
-  }
+	}
 
 	createOneByTeamIdAndUserId(teamId: string, userId: string, createdBy: Pick<IUser, '_id' | 'username'>): Promise<InsertOneWriteOpResult<T>> {
 		return this.insertOne({
