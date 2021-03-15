@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeamMember } from '../../../../definition/ITeam';
