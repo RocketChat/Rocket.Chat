@@ -10,12 +10,13 @@ import { IRoom } from '../../definition/IRoom';
 type TranscriptModalProps = {
 	email: string;
 	room?: IRoom;
-	onSend: (email: string, subject: string) => void;
+	onRequest: (email: string, subject: string) => void;
+	onSend?: (email: string, subject: string, token: string) => void;
 	onCancel: () => void;
 	onDiscard: () => void;
 };
 
-const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', room, onSend, onCancel, onDiscard, ...props }) => {
+const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', room, onRequest, onSend, onCancel, onDiscard, ...props }) => {
 	const t = useTranslation();
 
 	const ref = useRef<HTMLInputElement>();
@@ -33,11 +34,17 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 	const [emailError, setEmailError] = useState('');
 	const [subjectError, setSubjectError] = useState('');
 	const { transcriptRequest } = room as IRoom;
+	const roomOpen = room && room.open;
+	const token = room?.v?.token;
 
+
+	const handleRequest = useCallback(() => {
+		onRequest(email, subject);
+	}, [email, onRequest, subject]);
 
 	const handleSend = useCallback(() => {
-		onSend(email, subject);
-	}, [email, onSend, subject]);
+		onSend && token && onSend(email, subject, token);
+	}, [email, onSend, subject, token]);
 
 	const handleDiscard = useCallback(() => onDiscard(), [onDiscard]);
 
@@ -88,9 +95,13 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>
-				{ transcriptRequest
-					? <Button primary danger onClick={handleDiscard}>{t('Discard')}</Button>
-					: <Button disabled={!canSave} primary onClick={handleSend}>{t('Send')}</Button>
+				{
+					roomOpen && transcriptRequest
+						? <Button primary danger onClick={handleDiscard}>{t('Discard')}</Button>
+						: <Button disabled={!canSave} primary onClick={handleRequest}>{t('Request')}</Button>
+				}
+				{
+					!roomOpen && <Button disabled={!canSave} primary onClick={handleSend}>{t('Send')}</Button>
 				}
 			</ButtonGroup>
 		</Modal.Footer>

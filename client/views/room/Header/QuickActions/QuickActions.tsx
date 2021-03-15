@@ -66,6 +66,15 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		Session.set('openedRoom', null);
 	});
 
+	const sendTranscript = (email: string, subject: string, token: string): void => Meteor.call('livechat:sendTranscript', token, room._id, email, subject, (err: any) => {
+		closeModal();
+		if (err != null) {
+			return handleError(err);
+		}
+
+		toastr.success(t('Your_email_has_been_queued_for_sending'));
+	});
+
 	const discardTranscript = (): void => Meteor.call('livechat:discardTranscript', room._id, (error: any) => {
 		closeModal();
 		if (error != null) {
@@ -107,7 +116,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				setModal(<ReturnChatQueueModal onMoveChat={moveChat} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.Transcript:
-				setModal(<TranscriptModal room={room} email={email} onSend={requestTranscript} onDiscard={discardTranscript} onCancel={closeModal} />);
+				setModal(<TranscriptModal room={room} email={email} onRequest={requestTranscript} onSend={sendTranscript} onDiscard={discardTranscript} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.ChatForward:
 				setModal(<ForwardChatModal onForward={forwardChat} onCancel={closeModal} />);
@@ -138,13 +147,13 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				return !!canReturnQueue;
+				return !!roomOpen && !!canReturnQueue;
 			case QuickActionsEnum.ChatForward:
-				return canForwardGuest;
+				return !!roomOpen && canForwardGuest;
 			case QuickActionsEnum.Transcript:
 				return !!email && canSendTranscript;
 			case QuickActionsEnum.CloseChat:
-				return canCloseRoom;
+				return !!roomOpen && canCloseRoom;
 			default:
 				break;
 		}
@@ -177,7 +186,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				return;
 			}
 
-			return roomOpen && <Header.ToolBoxAction {...props} />;
+			return <Header.ToolBoxAction {...props} />;
 		})}
 	</ButtonGroup>;
 };
