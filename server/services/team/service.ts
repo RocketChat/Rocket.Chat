@@ -159,4 +159,16 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		return this.TeamMembersModel.findByTeamId(teamId).toArray();
 	}
+
+	async getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined> {
+		return this.TeamModel.findOne({
+			name: teamName,
+		}, { projection: { usernames: 0 } });
+	}
+
+	async getInfoById(teamId: string): Promise<Partial<ITeam> | undefined> {
+		return this.TeamModel.findOne({
+			_id: teamId,
+		}, { projection: { usernames: 0 } });
+	}
 }

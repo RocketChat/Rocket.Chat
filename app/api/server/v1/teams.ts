@@ -73,3 +73,19 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		return API.v1.success({ members });
 	},
 });
+
+API.v1.addRoute('teams.info', { authRequired: true }, {
+	get() {
+		const { teamId, teamName } = this.queryParams;
+
+		if (!teamId && !teamName) {
+			return API.v1.failure('Provide either the "teamId" or "teamName"');
+		}
+
+		const teamInfo = teamId
+			? Promise.await(Team.getInfoById(teamId))
+			: Promise.await(Team.getInfoByName(teamName));
+
+		return API.v1.success({ teamInfo });
+	},
+});
