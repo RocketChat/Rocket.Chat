@@ -51,7 +51,7 @@ function AdminUserInformationStep({ step, title, active }) {
 		callbacks.run('usernameSet');
 	};
 
-	const regexpForUsernameValidation = useSetting('UTF8_Names_Validation');
+	const regexpForUsernameValidation = useSetting('UTF8_User_Names_Validation');
 	const usernameRegExp = useMemo(() => new RegExp(`^${ regexpForUsernameValidation }$`), [regexpForUsernameValidation]);
 	const emailRegExp = useMemo(() => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i, []);
 
