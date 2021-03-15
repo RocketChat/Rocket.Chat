@@ -38,6 +38,8 @@ export interface IRoom extends IRocketChatRecord {
 			balance: number;
 		}[];
 	};
+
+	teamId?: string;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
