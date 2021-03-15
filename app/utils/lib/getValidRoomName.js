@@ -27,7 +27,7 @@ export const getValidRoomName = (displayName, rid = '', options = {}) => {
 		nameValidation = new RegExp(options.nameValidationRegex);
 	} else {
 		try {
-			nameValidation = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
+			nameValidation = new RegExp(`^${ settings.get('UTF8_Channel_Names_Validation') }$`);
 		} catch (error) {
 			nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 		}
