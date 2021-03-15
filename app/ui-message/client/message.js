@@ -282,6 +282,11 @@ Template.message.helpers({
 			return false;
 		}
 
+		//check if oembed has been removed
+		if (msg.removeLinkPreview) {
+			return false;
+		}
+
 		// check if oembed is disabled for message's sender
 		if ((settings.API_EmbedDisabledFor || '').split(',').map((username) => username.trim()).includes(msg.u && msg.u.username)) {
 			return false;
