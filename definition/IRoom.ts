@@ -45,7 +45,7 @@ export interface IRoom extends IRocketChatRecord {
 		}[];
 	};
 	v?: {
-		_id: string;
+		_id?: string;
 		token?: string;
 		status?: string;
 	};
