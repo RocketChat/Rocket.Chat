@@ -3,11 +3,21 @@ import { Authorization } from '../../sdk';
 import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomTokenpass } from './canAccessRoomTokenpass';
-import { Subscriptions, Rooms, Settings } from './service';
+import { Subscriptions, Rooms, Settings, TeamMembers } from './service';
 
 const roomAccessValidators: RoomAccessValidator[] = [
 	async function(room, user): Promise<boolean> {
-		if (!room?._id || room.t !== 'c') {
+		if (!room?.teamId || !user?._id) {
+			return false;
+		}
+
+		const team = await TeamMembers.findOneByUserIdAndTeamId(user._id, room.teamId, { projection: { _id: 1 } });
+
+		return !!team;
+	},
+
+	async function(room, user): Promise<boolean> {
+		if (!room?._id || room.t !== 'c' || room?.teamId) {
 			return false;
 		}
 
@@ -21,7 +31,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	async function(room, user): Promise<boolean> {
-		if (!room?._id || !user?._id) {
+		if (!room?._id || !user?._id || room?.teamId) {
 			return false;
 		}
 		if (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) {
@@ -31,15 +41,18 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	async function(room, user): Promise<boolean> {
-		if (!room?.prid) {
+		if (!room?.prid || room?.teamId) {
 			return false;
 		}
+
 		const parentRoom = await Rooms.findOne(room.prid);
 		if (!parentRoom) {
 			return false;
 		}
+
 		return Authorization.canAccessRoom(parentRoom, user);
 	},
+
 	canAccessRoomLivechat,
 	canAccessRoomTokenpass,
 ];
