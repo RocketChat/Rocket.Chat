@@ -169,14 +169,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamMembersModel.findByTeamId(teamId).toArray();
 	}
 
-	async addMember({ _id, username }: IUser, userId: string, teamId: string): Promise<boolean> {
+	async addMember({ _id, username }: IUser, userId: string, teamId: string): Promise<boolean | ITeamMember> {
 		const isAlreadyAMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, { projection: { _id: 1 } });
 
 		if (isAlreadyAMember) {
 			return false;
 		}
 
-		return !!await this.TeamMembersModel.createOneByTeamIdAndUserId(teamId, userId, { _id, username });
+		return (await this.TeamMembersModel.createOneByTeamIdAndUserId(teamId, userId, { _id, username })).ops[0];
 	}
 
 	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
