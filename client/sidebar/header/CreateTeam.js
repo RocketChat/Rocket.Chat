@@ -149,6 +149,7 @@ export default memo(({
 		members,
 		name,
 		type,
+		description,
 		readOnly,
 		broadcast,
 		encrypted,
@@ -194,6 +195,7 @@ export default memo(({
 			room: {
 				readOnly,
 				extraData: {
+					description,
 					broadcast,
 					encrypted,
 				},
@@ -205,7 +207,7 @@ export default memo(({
 		goToRoom(roomData.team._id);
 
 		onClose();
-	}, [name, members, type, readOnly, broadcast, encrypted, createTeam, onClose]);
+	}, [name, members, type, readOnly, description, broadcast, encrypted, createTeam, onClose]);
 
 	return <CreateTeam
 		values={values}
