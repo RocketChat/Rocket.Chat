@@ -918,16 +918,16 @@ settings.addGroup('General', function() {
 		multiline: true,
 	});
 	this.section('UTF8', function() {
-		this.add('UTF8_User_Names_Validation','[0-9a-zA-Z-_.]+',{
+		this.add('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
-			public:true,
-			i18nDescription: 'UTF8_User_Names_Validation_Description'
+			public: true,
+			i18nDescription: 'UTF8_User_Names_Validation_Description',
 		});
-		this.add('UTF8_Channel_Names_Validation','[0-9a-zA-Z-_.]+',{
-			type:'string',
-			public:true,
-			i18nDescription:'UTF8_Channel_Names_Validation_Description'
-		})
+		this.add('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+', {
+			type: 'string',
+			public: true,
+			i18nDescription: 'UTF8_Channel_Names_Validation_Description',
+		});
 		return this.add('UTF8_Names_Slugify', true, {
 			type: 'boolean',
 			public: true,
