@@ -71,16 +71,18 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 		// .slice(0, 5)
 		.forEach(({ username, nickname, name, status, avatarETag, outside }) => {
 			// if (records.length < 5) {
-			records.push({
-				_id: username,
-				username,
-				nickname,
-				name,
-				status,
-				avatarETag,
-				outside,
-				sort: 3,
-			});
+			if (!usernames.includes(username)) {
+				records.push({
+					_id: username,
+					username,
+					nickname,
+					name,
+					status,
+					avatarETag,
+					outside,
+					sort: 3,
+				});
+			}
 			// }
 		});
 
