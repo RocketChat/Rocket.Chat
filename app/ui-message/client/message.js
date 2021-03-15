@@ -282,7 +282,7 @@ Template.message.helpers({
 			return false;
 		}
 
-		//check if oembed has been removed
+		// check if oembed has been removed
 		if (msg.removeLinkPreview) {
 			return false;
 		}
