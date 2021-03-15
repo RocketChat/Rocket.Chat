@@ -13,4 +13,5 @@ export interface ITeamService {
 	list(uid: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	members(uid: string, teamId: string): Promise<Array<ITeamMember>>;
+	update(team: ITeam): void;
 }

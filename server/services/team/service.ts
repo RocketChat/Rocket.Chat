@@ -159,4 +159,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		return this.TeamMembersModel.findByTeamId(teamId).toArray();
 	}
+
+	async update(team: ITeam): Promise<void> {
+		const update: Partial<ITeam> = team;
+		delete update._id;
+		this.TeamModel.updateOne({ _id: team._id }, update);
+	}
 }

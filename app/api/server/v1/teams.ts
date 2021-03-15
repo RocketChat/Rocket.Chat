@@ -1,4 +1,5 @@
 import { Promise } from 'meteor/promise';
+import { Match, check } from 'meteor/check';
 
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
@@ -71,5 +72,28 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		const members = Promise.await(Team.members(this.userId, teamId));
 
 		return API.v1.success({ members });
+	},
+});
+
+API.v1.addRoute('teams.update', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			teamId: String,
+			data: Match.ObjectIncluding({
+				name: Match.Maybe(String),
+				type: Match.Maybe(Number),
+				room: Match.Maybe(Object),
+				members: Match.Maybe(Array),
+			}),
+		});
+
+		const { teamId, data } = this.bodyParams;
+
+		const teamData = {
+			_id: teamId,
+			...data,
+		};
+
+		Team.update(teamData);
 	},
 });
