@@ -45,6 +45,7 @@ describe('[Teams]', () => {
 					return request.get(api('teams.members'))
 						.set(credentials)
 						.query({ teamId })
+						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
@@ -100,14 +101,42 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.end(done);
+				.then(() =>
+					request.get(api('teams.members'))
+						.set(credentials)
+						.query({
+							teamName: community,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((response) => {
+							expect(response.body).to.have.property('success', true);
+							expect(response.body).to.have.property('members');
+							expect(response.body.members).to.have.length(3);
+
+							const firstMember = response.body.members[1];
+							expect(firstMember.userId).to.be.equal('test-123');
+							expect(firstMember.roles).to.have.length(1);
+							expect(firstMember.roles[0]).to.be.equal('member');
+
+							const secondMember = response.body.members[1];
+							expect(secondMember.userId).to.be.equal('test-456');
+							expect(secondMember.roles).to.have.length(1);
+							expect(secondMember.roles[0]).to.be.equal('member');
+						}),
+				)
+				.then(() => done())
+				.catch(done);
 		});
 	});
 
 	describe('/teams.members', () => {
 		it('should list all the members from a public team', (done) => {
-			request.get(api(`teams.members?teamName=${ community }`))
+			request.get(api('teams.members'))
 				.set(credentials)
+				.query({
+					teamName: community,
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -142,7 +171,28 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.end(done);
+				.then(() =>
+					request.get(api('teams.members'))
+						.set(credentials)
+						.query({
+							teamName: community,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((response) => {
+							expect(response.body).to.have.property('success', true);
+							expect(response.body).to.have.property('members');
+							expect(response.body.members).to.have.length(3);
+
+							const firstMember = response.body.members[1];
+							expect(firstMember.userId).to.be.equal('test-123');
+							expect(firstMember.roles).to.have.length(2);
+							expect(firstMember.roles[0]).to.be.equal('member');
+							expect(firstMember.roles[1]).to.be.equal('owner');
+						}),
+				)
+				.then(() => done())
+				.catch(done);
 		});
 	});
 
@@ -162,7 +212,25 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.end(done);
+				.then(() =>
+					request.get(api('teams.members'))
+						.set(credentials)
+						.query({
+							teamName: community,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((response) => {
+							expect(response.body).to.have.property('success', true);
+							expect(response.body).to.have.property('members');
+							expect(response.body.members).to.have.length(2);
+
+							const firstMember = response.body.members[1];
+							expect(firstMember.userId).to.be.equal('test-123');
+						}),
+				)
+				.then(() => done())
+				.catch(done);
 		});
 	});
 
@@ -178,7 +246,25 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.end(done);
+				.then(() =>
+					request.get(api('teams.members'))
+						.set(credentials)
+						.query({
+							teamName: community,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((response) => {
+							expect(response.body).to.have.property('success', true);
+							expect(response.body).to.have.property('members');
+							expect(response.body.members).to.have.length(1);
+
+							const firstMember = response.body.members[0];
+							expect(firstMember.userId).to.be.equal('test-123');
+						}),
+				)
+				.then(() => done())
+				.catch(done);
 		});
 	});
 });
