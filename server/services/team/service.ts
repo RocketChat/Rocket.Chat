@@ -1,4 +1,4 @@
-import { Db, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
+import { Db } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
@@ -63,6 +63,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			createdAt: new Date(),
 			createdBy,
 			_updatedAt: new Date(), // TODO how to avoid having to do this?
+			roomId: '', // this will be populated at the end
 		};
 
 		try {
@@ -168,40 +169,40 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamMembersModel.findByTeamId(teamId).toArray();
 	}
 
-	async addMember({ _id, username }: IUser, userId: string, teamId: string): Promise<InsertOneWriteOpResult<ITeamMember> | null | undefined> {
+	async addMember({ _id, username }: IUser, userId: string, teamId: string): Promise<boolean | ITeamMember> {
 		const isAlreadyAMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, { projection: { _id: 1 } });
 
 		if (isAlreadyAMember) {
-			return;
+			return false;
 		}
 
-		return this.TeamMembersModel.createOneByTeamIdAndUserId(teamId, userId, { _id, username });
+		return (await this.TeamMembersModel.createOneByTeamIdAndUserId(teamId, userId, { _id, username })).ops[0];
 	}
 
 	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
 		return this.TeamModel.findOneByMainRoomId(roomId, { projection: { _id: 1 } });
 	}
 
-	async addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult | undefined> {
+	async addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, { projection: { _id: 1 } });
 
 		if (!isMember) {
 			// TODO should this throw an error instead?
-			return;
+			return false;
 		}
 
-		return this.TeamMembersModel.updateRolesByTeamIdAndUserId(teamId, userId, roles);
+		return !!await this.TeamMembersModel.updateRolesByTeamIdAndUserId(teamId, userId, roles);
 	}
 
-	async removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult | undefined> {
+	async removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, { projection: { _id: 1 } });
 
 		if (!isMember) {
 			// TODO should this throw an error instead?
-			return;
+			return false;
 		}
 
-		return this.TeamMembersModel.removeRolesByTeamIdAndUserId(teamId, userId, roles);
+		return !!await this.TeamMembersModel.removeRolesByTeamIdAndUserId(teamId, userId, roles);
 	}
 
 	async getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined> {
