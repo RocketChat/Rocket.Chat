@@ -213,7 +213,6 @@ const AccountProfilePage = () => {
 			onCancel={closeModal}
 			title={title}
 			text={t('If_you_are_sure_type_in_your_username')}
-			isPassword
 		/>);
 	}, [closeModal, deleteOwnAccount, dispatchToastMessage, erasureType, localPassword, t, setModal]);
 
