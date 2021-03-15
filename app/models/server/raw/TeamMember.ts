@@ -1,7 +1,8 @@
-import { Collection, FindOneOptions, Cursor } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeamMember } from '../../../../definition/ITeam';
+import { IUser } from '../../../../definition/IUser';
 
 type T = ITeamMember;
 export class TeamMemberRaw extends BaseRaw<T> {
@@ -29,5 +30,37 @@ export class TeamMemberRaw extends BaseRaw<T> {
 
 	findByTeamId(teamId: string, options?: FindOneOptions<T>): Cursor<T> {
 		return this.col.find({ teamId }, options);
+	}
+
+	createOneByTeamIdAndUserId(teamId: string, userId: string, createdBy: Pick<IUser, '_id' | 'username'>): Promise<InsertOneWriteOpResult<T>> {
+		return this.insertOne({
+			teamId,
+			userId,
+			createdAt: new Date(),
+			_updatedAt: new Date(),
+			createdBy,
+		});
+	}
+
+	updateRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
+		return this.col.updateOne({
+			teamId,
+			userId,
+		}, {
+			$addToSet: {
+				roles: { $each: roles },
+			},
+		});
+	}
+
+	removeRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
+		return this.col.updateOne({
+			teamId,
+			userId,
+		}, {
+			$pull: {
+				roles: { $in: roles },
+			},
+		});
 	}
 }
