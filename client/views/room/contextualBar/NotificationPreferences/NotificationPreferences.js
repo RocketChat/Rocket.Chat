@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ButtonGroup, FieldGroup, Icon } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, FieldGroup, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useForm } from '../../../../hooks/useForm';
@@ -21,8 +21,21 @@ export const NotificationPreferences = ({
 	handlePlaySound,
 	handleOptions,
 	handleSaveButton,
+	hasSubscription,
 }) => {
 	const t = useTranslation();
+	if (!hasSubscription) {
+		return <>
+			<VerticalBar.Header>
+				<VerticalBar.Icon name='bell'/>
+				<VerticalBar.Text>{t('Notifications_Preferences')}</VerticalBar.Text>
+				{handleClose && <VerticalBar.Close onClick={handleClose}/>}
+			</VerticalBar.Header>
+			<VerticalBar.ScrollableContent>
+				<Box>{t('error-user-not-in-room')}</Box>
+			</VerticalBar.ScrollableContent>
+		</>;
+	}
 	return <>
 		<VerticalBar.Header>
 			<VerticalBar.Icon name='bell'/>
@@ -62,13 +75,20 @@ export const NotificationPreferences = ({
 
 export default React.memo(({ rid }) => {
 	const t = useTranslation();
+	const handleClose = useTabBarClose();
 
 	const subscription = useUserSubscription(rid);
+	if (!subscription) {
+		return (
+			<NotificationPreferences
+				hasSubscription={false}
+				handleClose={handleClose}
+			/>
+		);
+	}
 
 	const customSound = useCustomSound();
-	const handleClose = useTabBarClose();
 	const saveSettings = useEndpointActionExperimental('POST', 'rooms.saveNotification', t('Room_updated_successfully'));
-
 	const { values, handlers, hasUnsavedChanges, commit } = useForm(
 		{
 			turnOn: !subscription.disableNotifications,
@@ -123,7 +143,6 @@ export default React.memo(({ rid }) => {
 		commit();
 	});
 
-
 	return (
 		<NotificationPreferences
 			handleClose={handleClose}
@@ -133,6 +152,7 @@ export default React.memo(({ rid }) => {
 			handlePlaySound={handlePlaySound}
 			handleOptions={handleOptions}
 			handleSaveButton={handleSaveButton}
+			hasSubscription={true}
 		/>
 	);
 });
