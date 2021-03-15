@@ -14,7 +14,7 @@ import CreateRoomListItem from './CreateRoomListItem';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 
-const CREATE_TEAM_PERMISSIONS = ['create-t'];
+const CREATE_TEAM_PERMISSIONS = ['create-team'];
 
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 

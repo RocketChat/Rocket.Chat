@@ -15,10 +15,10 @@ export const CreateTeam = ({
 	values,
 	handlers,
 	hasUnsavedChanges,
-	onChangeUsers,
+	onChangeMembers,
 	onChangeType,
 	onChangeBroadcast,
-	canOnlyCreateOneType,
+	canCreateTeam,
 	e2eEnabledForPrivateByDefault,
 	onCreate,
 	onClose,
@@ -83,7 +83,7 @@ export const CreateTeam = ({
 						<Field.Label>{t('Private')}</Field.Label>
 						<Field.Description>{values.type ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}</Field.Description>
 					</Box>
-					<ToggleSwitch checked={values.type} disabled={!!canOnlyCreateOneType} onChange={onChangeType}/>
+					<ToggleSwitch checked={values.type} onChange={onChangeType}/>
 				</Box>
 			</Field>
 			<Field mbe='x24' disabled={values.broadcast}>
@@ -115,13 +115,13 @@ export const CreateTeam = ({
 			</Field>
 			<Field mbe='x24'>
 				<Field.Label>{`${ t('Add_members') } (${ t('optional') })`}</Field.Label>
-				<UserAutoCompleteMultiple value={values.users} onChange={onChangeUsers}/>
+				<UserAutoCompleteMultiple value={values.members} onChange={onChangeMembers}/>
 			</Field>
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				<Button onClick={onClose}>{t('Cancel')}</Button>
-				<Button disabled={!canSave} onClick={onCreate} primary>{t('Create')}</Button>
+				<Button disabled={!canSave && !canCreateTeam} onClick={onCreate} primary>{t('Create')}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;
@@ -131,30 +131,14 @@ export default memo(({
 	onClose,
 }) => {
 	const createTeam = useEndpointActionExperimental('POST', 'teams.create');
-	// const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
-	const setChannelDescription = useEndpointActionExperimental('POST', 'teams.setDescription');
-	// const setPrivateChannelDescription = useEndpointActionExperimental('POST', 'groups.setDescription');
-	const canCreateTeam = usePermission('create-t');
-	// const canCreatePrivateChannel = usePermission('create-p');
+	const canCreateTeam = usePermission('create-team');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
-	const canOnlyCreateOneType = useMemo(() => {
-		// if (!canCreateTeam && canCreatePrivateChannel) {
-		// return 'p';
-		// }
-		// if (canCreateTeam && !canCreatePrivateChannel) {
-		if (canCreateTeam) {
-			return 't';
-		}
-		// }
-		// return false;
-	}, [canCreateTeam]);
-
 
 	const initialValues = {
-		users: [],
+		members: [],
 		name: '',
 		description: '',
-		type: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
+		type: true,
 		readOnly: false,
 		encrypted: e2eEnabledForPrivateByDefault ?? false,
 		broadcast: false,
@@ -162,30 +146,29 @@ export default memo(({
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
 	const {
-		users,
+		members,
 		name,
-		description,
 		type,
 		readOnly,
 		broadcast,
 		encrypted,
 	} = values;
 	const {
-		handleUsers,
+		handleMembers,
 		handleEncrypted,
 		handleType,
 		handleBroadcast,
 		handleReadOnly,
 	} = handlers;
 
-	const onChangeUsers = useMutableCallback((value, action) => {
+	const onChangeMembers = useMutableCallback((value, action) => {
 		if (!action) {
-			if (users.includes(value)) {
+			if (members.includes(value)) {
 				return;
 			}
-			return handleUsers([...users, value]);
+			return handleMembers([...members, value]);
 		}
-		handleUsers(users.filter((current) => current !== value));
+		handleMembers(members.filter((current) => current !== value));
 	});
 
 	const onChangeType = useMutableCallback((value) => {
@@ -206,40 +189,32 @@ export default memo(({
 
 		const params = {
 			name,
-			members: users,
-			readOnly,
-			extraData: {
-				broadcast,
-				encrypted,
+			members,
+			type: type ? 1 : 0,
+			room: {
+				readOnly,
+				extraData: {
+					broadcast,
+					encrypted,
+				},
 			},
 		};
-		let roomData;
 
-		if (type) {
-			// roomData = await createPrivateChannel(params);
-			// goToRoom(roomData.group._id);
-		} else {
-			roomData = await createTeam(params);
-			goToRoom(roomData.team._id);
-		}
-
-		if (roomData.success && roomData.group && description) {
-		// 	setPrivateChannelDescription({ description, roomName: roomData.group.name });
-		} else if (roomData.success && roomData.team && description) {
-			setChannelDescription({ description, roomName: roomData.team.name });
-		}
+		const roomData = await createTeam(params);
+		console.log(roomData);
+		goToRoom(roomData.team._id);
 
 		onClose();
-	}, [broadcast, createTeam, description, encrypted, name, onClose, readOnly, setChannelDescription, type, users]);
+	}, [name, members, type, readOnly, broadcast, encrypted, createTeam, onClose]);
 
 	return <CreateTeam
 		values={values}
 		handlers={handlers}
 		hasUnsavedChanges={hasUnsavedChanges}
-		onChangeUsers={onChangeUsers}
+		onChangeMembers={onChangeMembers}
 		onChangeType={onChangeType}
 		onChangeBroadcast={onChangeBroadcast}
-		canOnlyCreateOneType={canOnlyCreateOneType}
+		canCreateTeam={canCreateTeam}
 		e2eEnabledForPrivateByDefault={e2eEnabledForPrivateByDefault}
 		onClose={onClose}
 		onCreate={onCreate}
