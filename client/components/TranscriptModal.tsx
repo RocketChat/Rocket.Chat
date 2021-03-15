@@ -33,7 +33,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 	const { handleEmail, handleSubject } = handlers;
 	const [emailError, setEmailError] = useState('');
 	const [subjectError, setSubjectError] = useState('');
-	const { transcriptRequest } = room as IRoom;
+	const { transcriptRequest } = room as unknown as IRoom;
 	const roomOpen = room && room.open;
 	const token = room?.v?.token;
 

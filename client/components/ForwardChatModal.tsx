@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../contexts/TranslationContext';
@@ -80,9 +80,9 @@ const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...p
 				</Field.Row>
 			</Field>
 			<Field marginBlock='x15'>
-				<Field.Label>{t('Leave_a_comment')}</Field.Label>
+				<Field.Label>{t('Leave_a_comment')} <Box is='span' color='neutral-600'>({t('Optional')})</Box></Field.Label>
 				<Field.Row>
-					<TextAreaInput rows={3} flexGrow={1} value={comment} onChange={handleComment} />
+					<TextAreaInput rows={8} flexGrow={1} value={comment} onChange={handleComment} />
 				</Field.Row>
 			</Field>
 		</Modal.Content>
