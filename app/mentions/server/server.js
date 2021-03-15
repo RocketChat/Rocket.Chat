@@ -9,7 +9,7 @@ import { Users, Subscriptions, Rooms } from '../../models';
 import { api } from '../../../server/sdk/api';
 
 const mention = new MentionsServer({
-	pattern: () => settings.get('UTF8_Names_Validation'),
+	pattern: () => settings.get('UTF8_User_Names_Validation'),
 	messageMaxAll: () => settings.get('Message_MaxAll'),
 	getUsers: (usernames) => Meteor.users.find({ username: { $in: _.unique(usernames) } }, { fields: { _id: true, username: true, name: 1 } }).fetch(),
 	getUser: (userId) => Users.findOneById(userId),
