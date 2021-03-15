@@ -210,9 +210,11 @@ class Administration extends Page {
 
 	get generalStreamCastAdressReset() { return browser.element('[data-qa-reset-setting-id="Stream_Cast_Address"]'); }
 
-	get generalUTF8Regex() { return browser.element('[data-qa-setting-id="UTF8_Names_Validation"]'); }
+	get generalUTF8UsernamesRegex() { return browser.element('[data-qa-setting-id="UTF8_User_Names_Validation"]'); }
 
-	get generalUTF8RegexReset() { return browser.element('[data-qa-reset-setting-id="UTF8_Names_Validation"]'); }
+	get generalUTF8ChannelsRegex() { return browser.element('[data-qa-setting-id="UTF8_Channel_Names_Validation"]'); }
+
+	get generalUTF8RegexReset() { return browser.element('[data-qa-reset-setting-id="UTF8_User_Names_Validation"]'); }
 
 	get generalUTF8NamesSlug() { return browser.element('[data-qa-setting-id="UTF8_Names_Slugify"]'); }
 
