@@ -13,4 +13,6 @@ export interface ITeamService {
 	list(uid: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	members(uid: string, teamId: string): Promise<Array<ITeamMember>>;
+	getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined>;
+	getInfoById(teamId: string): Promise<Partial<ITeam> | undefined>;
 }
