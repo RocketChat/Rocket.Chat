@@ -11,6 +11,16 @@ export class RoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findManyByRoomIds(roomIds, options = {}) {
+		const query = {
+			_id: {
+				$in: roomIds,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
 		const aggregate = [
 			{
@@ -84,13 +94,10 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByTeamIdAndUserId(uid, teamId, options = {}) {
+	findPublicByTeamId(uid, teamId, options = {}) {
 		const query = {
 			teamId,
-			$or: [
-				{ t: 'c' },
-				{ 'u._id': uid },
-			],
+			t: 'c',
 		};
 
 		return this.find(query, options);

@@ -7,6 +7,7 @@ import { ITeamCreateParams, ITeamService } from '../../sdk/types/ITeamService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
+import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { IRoom } from '../../../definition/IRoom';
 
@@ -16,6 +17,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 	private TeamModel: TeamRaw;
 
 	private RoomsModel: RoomsRaw;
+
+	private SubscriptionsModel: SubscriptionsRaw;
 
 	private Users: UsersRaw;
 
@@ -28,6 +31,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		super();
 
 		this.RoomsModel = new RoomsRaw(db.collection('rocketchat_room'));
+		this.SubscriptionsModel = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
 		this.TeamModel = new TeamRaw(db.collection('rocketchat_team'));
 		this.TeamMembersModel = new TeamMemberRaw(db.collection('rocketchat_team_member'));
 		this.Users = new UsersRaw(db.collection('users'));
@@ -243,15 +247,23 @@ export class TeamService extends ServiceClass implements ITeamService {
 		if (team.type === TEAM_TYPE.PRIVATE && !allowPrivateTeam && !isMember) {
 			throw new Error('user-not-on-private-team');
 		}
-		let cursor;
+		const teamRoomsCursor = this.RoomsModel.findByTeamId(teamId, { limit: count, skip: offset });
 		if (getAllRooms) {
-			cursor = this.RoomsModel.findByTeamId(teamId, { limit: count, skip: offset });
-		} else {
-			cursor = this.RoomsModel.findByTeamIdAndUserId(uid, teamId, { limit: count, skip: offset });
+			return {
+				total: await teamRoomsCursor.count(),
+				records: await teamRoomsCursor.toArray(),
+			};
 		}
+		const teamRooms = await teamRoomsCursor.toArray();
+		const privateTeamRoomIds = teamRooms.filter((room) => room.t === 'p').map((room) => room._id);
+		const publicTeamRoomIds = teamRooms.filter((room) => room.t === 'c').map((room) => room._id);
+
+		const subscriptionsCursor = this.SubscriptionsModel.findByUserIdAndRoomIds(uid, privateTeamRoomIds, { limit: count, skip: offset });
+		const subscriptionRoomIds = (await subscriptionsCursor.toArray()).map((subscription) => subscription.rid);
+		const availableRoomsCursor = this.RoomsModel.findManyByRoomIds([...subscriptionRoomIds, ...publicTeamRoomIds], { limit: count, skip: offset });
 		return {
-			total: await cursor.count(),
-			records: await cursor.toArray(),
+			total: await availableRoomsCursor.count(),
+			records: await availableRoomsCursor.toArray(),
 		};
 	}
 
