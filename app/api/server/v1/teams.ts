@@ -65,7 +65,6 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 
 API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
-
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName } = this.queryParams;
 
