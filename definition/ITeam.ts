@@ -32,3 +32,8 @@ export interface IRecordsWithTotal<T> {
 	records: Array<T>;
 	total: number;
 }
+
+export interface ITeamUpdate {
+	name: string;
+	type: TEAM_TYPE;
+}

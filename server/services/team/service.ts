@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
-import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
+import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions, ITeamUpdate } from '../../../definition/ITeam';
 import { Authorization, Room } from '../../sdk';
 import { ITeamCreateParams, ITeamService } from '../../sdk/types/ITeamService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
@@ -160,9 +160,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamMembersModel.findByTeamId(teamId).toArray();
 	}
 
-	async update(team: ITeam): Promise<void> {
-		const update: Partial<ITeam> = team;
-		delete update._id;
-		this.TeamModel.updateOne({ _id: team._id }, update);
+	async update(teamId: string, updateData: ITeamUpdate): Promise<void> {
+		this.TeamModel.updateOne({ _id: teamId }, updateData);
 	}
 }

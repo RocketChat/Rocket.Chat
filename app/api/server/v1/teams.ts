@@ -87,11 +87,6 @@ API.v1.addRoute('teams.update', { authRequired: true }, {
 
 		const { teamId, data } = this.bodyParams;
 
-		const teamData = {
-			_id: teamId,
-			...data,
-		};
-
-		Team.update(teamData);
+		Team.update(teamId, { name: data.name, type: data.type });
 	},
 });
