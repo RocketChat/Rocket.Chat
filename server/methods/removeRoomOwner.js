@@ -5,6 +5,7 @@ import { hasPermission, getUsersInRole } from '../../app/authorization';
 import { Users, Subscriptions, Messages } from '../../app/models';
 import { settings } from '../../app/settings';
 import { api } from '../sdk/api';
+import { Team } from '../sdk';
 
 Meteor.methods({
 	removeRoomOwner(rid, userId) {
@@ -63,6 +64,11 @@ Meteor.methods({
 			},
 			role: 'owner',
 		});
+
+		const team = Promise.await(Team.getOneByRoomId(rid));
+		if (team) {
+			Promise.await(Team.removeRolesFromMember(team._id, userId, ['owner']));
+		}
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
