@@ -218,7 +218,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async deleteById(teamId: string): Promise<boolean> {
-		return !!await this.TeamModel.deleteOneById(teamId) || false;
+		return !!await this.TeamModel.deleteOneById(teamId);
 	}
 
 	async deleteByName(teamName: string): Promise<boolean> {
