@@ -82,8 +82,6 @@ API.v1.addRoute('teams.update', { authRequired: true }, {
 			data: Match.ObjectIncluding({
 				name: Match.Maybe(String),
 				type: Match.Maybe(Number),
-				room: Match.Maybe(Object),
-				members: Match.Maybe(Array),
 			}),
 		});
 
