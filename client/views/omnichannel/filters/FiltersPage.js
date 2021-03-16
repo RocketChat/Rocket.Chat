@@ -5,12 +5,12 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import FiltersTable from './FiltersTable';
 import EditFilterPage from './EditFilterPage';
 import NewFilterPage from './NewFilterPage';
-import VerticalBar from '../../components/VerticalBar';
-import Page from '../../components/Page';
-import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
-import { usePermission } from '../../contexts/AuthorizationContext';
+import VerticalBar from '../../../components/VerticalBar';
+import Page from '../../../components/Page';
+import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { usePermission } from '../../../contexts/AuthorizationContext';
 
 const MonitorsPage = () => {
 	const t = useTranslation();
@@ -43,13 +43,13 @@ const MonitorsPage = () => {
 					<Icon name='plus' size='x16' />
 				</Button>
 			</Page.Header>
-			<Page.ScrollableContentWithShadow>
+			<Page.Content>
 				<FiltersTable reloadRef={reload}/>
-			</Page.ScrollableContentWithShadow>
+			</Page.Content>
 		</Page>
 		{context && <VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
-				{t('Trigger')}
+				{t('Filter')}
 				<VerticalBar.Close onClick={handleCloseVerticalBar} />
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>

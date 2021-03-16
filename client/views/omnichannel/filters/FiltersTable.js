@@ -2,15 +2,16 @@ import { Table, Callout, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useMemo } from 'react';
 
-import GenericTable from '../../components/GenericTable';
-import DeleteWarningModal from '../../components/DeleteWarningModal';
-import { useRoute } from '../../contexts/RouterContext';
-import { useSetModal } from '../../contexts/ModalContext';
-import { useMethod } from '../../contexts/ServerContext';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useResizeInlineBreakpoint } from '../../hooks/useResizeInlineBreakpoint';
-import { useEndpointData, ENDPOINT_STATES } from '../../hooks/useEndpointData';
+import GenericTable from '../../../components/GenericTable';
+import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import { useRoute } from '../../../contexts/RouterContext';
+import { useSetModal } from '../../../contexts/ModalContext';
+import { useMethod } from '../../../contexts/ServerContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 const FiltersRow = memo(function FiltersRow(props) {
 	const {
@@ -58,7 +59,10 @@ const FiltersRow = memo(function FiltersRow(props) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteFilter} onCancel={() => setModal()}/>);
+		setModal(<DeleteWarningModal
+			onDelete={onDeleteFilter}
+			onCancel={() => setModal()}
+		/>);
 	});
 
 	return <Table.Row
@@ -95,11 +99,11 @@ const FiltersTableContainer = ({ reloadRef }) => {
 		itemsPerPage,
 	} = params;
 
-	const { data, state, reload } = useEndpointData('livechat/filters', useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]));
+	const { value: data, phase: state, reload } = useEndpointData('livechat/filters', useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]));
 
 	reloadRef.current = reload;
 
-	if (state === ENDPOINT_STATES.ERROR) {
+	if (state === AsyncStatePhase.REJECTED) {
 		return <Callout>
 			{t('Error')}: error
 		</Callout>;

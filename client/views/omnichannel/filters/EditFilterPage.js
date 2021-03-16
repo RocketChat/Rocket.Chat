@@ -1,25 +1,26 @@
 import React from 'react';
-import { Button, Callout, FieldGroup, ButtonGroup } from '@rocket.chat/fuselage';
+import { Margins, Callout, FieldGroup, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import FiltersForm from './FiltersForm';
-import PageSkeleton from '../../components/PageSkeleton';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useMethod } from '../../contexts/ServerContext';
-import { useForm } from '../../hooks/useForm';
-import { useEndpointData, ENDPOINT_STATES } from '../../hooks/useEndpointData';
-import { useRoute } from '../../contexts/RouterContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import PageSkeleton from '../../../components/PageSkeleton';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useMethod } from '../../../contexts/ServerContext';
+import { useForm } from '../../../hooks/useForm';
+import { useRoute } from '../../../contexts/RouterContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
 const EditFilterPageContainer = ({ id, onSave }) => {
 	const t = useTranslation();
-	const { data, state } = useEndpointData(`livechat/filters/${ id }`);
+	const { value: data, phase: state } = useEndpointData(`livechat/filters/${ id }`);
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === AsyncStatePhase.LOADING) {
 		return <PageSkeleton />;
 	}
 
-	if (state === ENDPOINT_STATES.ERROR || !data?.filter) {
+	if (state === AsyncStatePhase.REJECTED || !data?.filter) {
 		return <Callout>
 			{t('Error')}: error
 		</Callout>;
@@ -50,7 +51,7 @@ const EditFilterPage = ({ data, onSave }) => {
 
 	const save = useMethod('livechat:saveFilter');
 
-	const { values, handlers } = useForm(getInitialValues(data));
+	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data));
 
 	const handleSave = useMutableCallback(async () => {
 		try {
@@ -66,15 +67,21 @@ const EditFilterPage = ({ data, onSave }) => {
 		}
 	});
 
+	const { name } = values;
+
+	const canSave = name && hasUnsavedChanges;
+
 	return 	<>
 		<FieldGroup>
 			<FiltersForm values={values} handlers={handlers}/>
 		</FieldGroup>
-		<ButtonGroup align='end'>
-			<Button primary onClick={handleSave}>
-				{t('Save')}
-			</Button>
-		</ButtonGroup>
+		<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
+			<Margins inlineEnd='x4'>
+				<Button flexGrow={1} primary onClick={handleSave} disabled={!canSave}>
+					{t('Save')}
+				</Button>
+			</Margins>
+		</Box>
 	</>;
 };
 
