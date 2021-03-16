@@ -46,7 +46,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		const existingRoom = await this.Rooms.findOneByName(team.name, { projection: { _id: 1 } });
-		if (existingRoom) {
+		if (existingRoom && !room.id) {
 			throw new Error('room-name-already-exists');
 		}
 
@@ -96,23 +96,27 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 			await this.TeamMembersModel.insertMany(membersList);
 
-			const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
+			let roomId = room.id;
+			if (!roomId) {
+				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
-			const newRoom = {
-				...room,
-				type: roomType,
-				name: team.name,
-				members: memberUsernames,
-				extraData: {
-					...room.extraData,
-					teamId,
-					teamMain: true,
-				},
-			};
+				const newRoom = {
+					...room,
+					type: roomType,
+					name: team.name,
+					members: memberUsernames,
+					extraData: {
+						...room.extraData,
+						teamId,
+						teamMain: true,
+					},
+				};
 
-			const createdRoom = await Room.create(owner || uid, newRoom);
+				const createdRoom = await Room.create(owner || uid, newRoom);
+				roomId = createdRoom._id;
+			}
 
-			await this.TeamModel.updateMainRoomForTeam(teamId, createdRoom._id);
+			await this.TeamModel.updateMainRoomForTeam(teamId, roomId);
 
 			return {
 				_id: teamId,
@@ -442,5 +446,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findOne({
 			_id: teamId,
 		}, { projection: { usernames: 0 } });
+	}
+
+	async deleteById(teamId: string): Promise<boolean> {
+		return !!await this.TeamModel.deleteOneById(teamId);
+	}
+
+	async deleteByName(teamName: string): Promise<boolean> {
+		return !!await this.TeamModel.deleteOneByName(teamName);
 	}
 }

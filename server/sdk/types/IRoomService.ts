@@ -12,7 +12,7 @@ interface ICreateRoomOptions extends Partial<Record<string, string | ISubscripti
 	subscriptionExtra?: ISubscriptionExtraData;
 }
 
-interface ICreateRoomExtraData extends Record<string, string | boolean> {
+export interface ICreateRoomExtraData extends Record<string, string | boolean> {
 	teamId: string;
 	teamMain: boolean;
 }
