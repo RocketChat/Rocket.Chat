@@ -2,9 +2,13 @@ import { ITeam, ITeamMember, IRecordsWithTotal, IPaginationOptions } from '../..
 import { IRoom } from '../../../definition/IRoom';
 import { ICreateRoomParams } from './IRoomService';
 
+export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
+	id?: string;
+}
+
 export interface ITeamCreateParams {
 	team: Pick<ITeam, 'name' | 'type'>;
-	room: Omit<ICreateRoomParams, 'type'>;
+	room: ITeamCreateRoom;
 	members?: Array<string>; // list of user _ids
 	owner?: string; // the team owner. If not present, owner = requester
 }
@@ -29,4 +33,6 @@ export interface ITeamService {
 	removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
 	getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined>;
 	getInfoById(teamId: string): Promise<Partial<ITeam> | undefined>;
+	deleteById(teamId: string): Promise<boolean>;
+	deleteByName(teamName: string): Promise<boolean>;
 }

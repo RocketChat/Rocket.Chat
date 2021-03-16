@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult, DeleteWriteOpResultObject } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeam } from '../../../../definition/ITeam';
@@ -38,5 +38,15 @@ export class TeamRaw extends BaseRaw<T> {
 				roomId,
 			},
 		});
+	}
+
+	deleteOneById(id: string): Promise<DeleteWriteOpResultObject> {
+		return this.col.deleteOne({
+			_id: id,
+		});
+	}
+
+	deleteOneByName(name: string): Promise<DeleteWriteOpResultObject> {
+		return this.col.deleteOne({ name });
 	}
 }
