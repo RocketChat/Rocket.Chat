@@ -3,16 +3,16 @@ import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import VerticalBar from '../../components/VerticalBar';
-import UserCard from '../../components/UserCard';
-import { FormSkeleton } from './Skeleton';
-import { useEndpointData } from '../../hooks/useEndpointData';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useRoute } from '../../contexts/RouterContext';
-import { hasPermission } from '../../../app/authorization';
-import { useFormatDate } from '../../hooks/useFormatDate';
-import { AsyncStatePhase } from '../../hooks/useAsyncState';
-import { ContactManagerInfo } from '../../../ee/client/omnichannel/ContactManager';
+import VerticalBar from '../../../../components/VerticalBar';
+import UserCard from '../../../../components/UserCard';
+import { FormSkeleton } from '../../Skeleton';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useRoute } from '../../../../contexts/RouterContext';
+import { hasPermission } from '../../../../../app/authorization';
+import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { ContactManagerInfo } from '../../../../../ee/client/omnichannel/ContactManager';
 
 
 const wordBreak = css`

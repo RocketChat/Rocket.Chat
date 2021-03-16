@@ -3,14 +3,14 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import { Table, Tag, Box } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointData } from '../../hooks/useEndpointData';
-import GenericTable from '../../components/GenericTable';
-import FilterByText from '../../components/FilterByText';
-import { usePermission } from '../../contexts/AuthorizationContext';
-import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import GenericTable from '../../../components/GenericTable';
+import FilterByText from '../../../components/FilterByText';
+import { usePermission } from '../../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import { useRoute } from '../../../contexts/RouterContext';
 
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLoggedIn) => useMemo(() => ({
@@ -30,6 +30,8 @@ const ChatTable = () => {
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const userIdLoggedIn = Meteor.userId();
 	const query = useQuery(debouncedParams, debouncedSort, userIdLoggedIn);
+	const directoryRoute = useRoute('omnichannel-directory');
+
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -41,9 +43,15 @@ const ChatTable = () => {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((_id) => {
-		FlowRouter.go('live', { id: _id });
-	});
+	const onRowClick = useMutableCallback((id) => directoryRoute.push({
+		tab: 'chats',
+		context: 'info',
+		id,
+	}));
+
+	// const onRowClick = useMutableCallback((id) => console.log(id));
+
+	// console.log(directoryRoute);
 
 	const { value: data } = useEndpointData('livechat/rooms', query);
 
@@ -58,7 +66,7 @@ const ChatTable = () => {
 	const renderRow = useCallback(({ _id, fname, ts, closedAt, department, tags }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
 		<Table.Cell withTruncatedText>
 			<Box display='flex' flexDirection='column'>
-				<Box color='default' withTruncatedText>{fname}</Box>
+				<Box withTruncatedText>{fname}</Box>
 				{tags && <Box color='hint' display='flex' flex-direction='row'>
 					{tags.map((tag) => (
 						<Box style={{ marginTop: 4, whiteSpace: 'nowrap', overflow: tag.length > 10 ? 'hidden' : 'visible', textOverflow: 'ellipsis' }} key={tag} mie='x4'>

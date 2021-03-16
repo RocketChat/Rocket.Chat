@@ -4,11 +4,12 @@ import { Tabs, Icon, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/Page';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
-import ContactTab from './ContactTab';
+import ContactTab from './contacts/ContactTab';
 import VerticalBar from '../../components/VerticalBar';
-import { ContactNewEdit, ContactEditWithData } from './ContactForm';
-import { ContactInfo } from './ContactInfo';
-import ChatTab from './ChatTab';
+import { ContactNewEdit, ContactEditWithData } from './contacts/contextualBar/ContactForm';
+import { ContactInfo } from './contacts/contextualBar/ContactInfo';
+import ChatTab from './chats/ChatTab';
+import { ChatInfo } from './chats/contextualBar/ChatInfo';
 
 
 const OmnichannelDirectoryPage = () => {
@@ -25,34 +26,55 @@ const OmnichannelDirectoryPage = () => {
 
 	const [contactReload, setContactReload] = useState();
 
+	const handleContactsVerticalBarCloseButtonClick = () => {
+		directoryRoute.push({});
+	};
+
+	const handleChatsVerticalBarCloseButtonClick = () => {
+		directoryRoute.push({ tab: 'chats' });
+	};
+
 	useEffect(() => {
 		if (!tab) {
 			return directoryRoute.replace({ tab: defaultTab });
 		}
 	}, [directoryRoute, tab, defaultTab]);
 
-	const ContactContextualBar = useCallback(() => {
+	const ContactContextualBar = useCallback(() => <VerticalBar className={'contextual-bar'}>
+		<VerticalBar.Header>
+			{context === 'new' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('New_Contact')}</Box>}
+			{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Profile')}</Box>}
+			{context === 'edit' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='pencil' size='x20' /> {t('Edit_Contact_Profile')}</Box>}
+			<VerticalBar.Close onClick={handleContactsVerticalBarCloseButtonClick} />
+		</VerticalBar.Header>
+		{context === 'new' && <ContactNewEdit reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />}
+		{context === 'info' && <ContactInfo reload={contactReload} id={id} />}
+		{context === 'edit' && <ContactEditWithData id={id} reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />}
+	</VerticalBar>);
+
+	const ChatsContextualBar = useCallback(() => <VerticalBar className={'contextual-bar'}>
+		<VerticalBar.Header>
+			{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='info-circled' size='x20' /> {t('Room_Info')}</Box>}
+			<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
+		</VerticalBar.Header>
+		{context === 'info' && <ChatInfo id={id} />}
+	</VerticalBar>);
+
+	const ContextualBar = useCallback(() => {
 		if (!context) {
 			return '';
 		}
-		const handleVerticalBarCloseButtonClick = () => {
-			directoryRoute.push({});
-		};
+		console.log(context, tab);
 
-		return <VerticalBar className={'contextual-bar'}>
-			<VerticalBar.Header>
-				{context === 'new' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('New_Contact')}</Box>}
-				{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Profile')}</Box>}
-				{context === 'edit' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='pencil' size='x20' /> {t('Edit_Contact_Profile')}</Box>}
-				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
-			</VerticalBar.Header>
-
-			{context === 'new' && <ContactNewEdit reload={contactReload} close={handleVerticalBarCloseButtonClick} />}
-			{context === 'info' && <ContactInfo reload={contactReload} id={id} />}
-			{context === 'edit' && <ContactEditWithData id={id} reload={contactReload} close={handleVerticalBarCloseButtonClick} />}
-
-		</VerticalBar>;
-	}, [context, t, contactReload, directoryRoute, id]);
+		switch (tab) {
+			case 'contacts':
+				return <ContactContextualBar />;
+			case 'chats':
+				return <ChatsContextualBar />;
+			default:
+				return '';
+		}
+	}, [context, tab]);
 
 	return <Page flexDirection='row'>
 		<Page>
@@ -68,7 +90,7 @@ const OmnichannelDirectoryPage = () => {
 				}
 			</Page.Content>
 		</Page>
-		<ContactContextualBar />
+		<ContextualBar />
 	</Page>;
 };
 

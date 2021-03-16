@@ -2,14 +2,14 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Table } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointData } from '../../hooks/useEndpointData';
-import GenericTable from '../../components/GenericTable';
-import FilterByText from '../../components/FilterByText';
-import { useRoute } from '../../contexts/RouterContext';
-import { useFormatDate } from '../../hooks/useFormatDate';
-import { usePermission } from '../../contexts/AuthorizationContext';
-import { NotAuthorizedPage } from '../../components/NotAuthorizedPage';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import GenericTable from '../../../components/GenericTable';
+import FilterByText from '../../../components/FilterByText';
+import { useRoute } from '../../../contexts/RouterContext';
+import { useFormatDate } from '../../../hooks/useFormatDate';
+import { usePermission } from '../../../contexts/AuthorizationContext';
+import { NotAuthorizedPage } from '../../../components/NotAuthorizedPage';
 
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
