@@ -65,9 +65,6 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 
 API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
-		if (!hasAtLeastOnePermission(this.userId, ['add-team-member', 'edit-team-member', 'view-all-teams'])) {
-			return API.v1.unauthorized();
-		}
 
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName } = this.queryParams;
