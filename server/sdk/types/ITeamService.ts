@@ -1,9 +1,15 @@
 import { ITeam, ITeamMember, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
-import { ICreateRoomParams } from './IRoomService';
+import { ICreateRoomExtraData } from './IRoomService';
+
+export interface ITeamCreateRoom {
+	name: string;
+	id?: string;
+	extraData?: Partial<ICreateRoomExtraData>;
+}
 
 export interface ITeamCreateParams {
 	team: Pick<ITeam, 'name' | 'type'>;
-	room: Omit<ICreateRoomParams, 'type'>;
+	room: ITeamCreateRoom;
 	members?: Array<string>; // list of user _ids
 	owner?: string; // the team owner. If not present, owner = requester
 }

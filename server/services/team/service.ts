@@ -32,7 +32,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		this.Rooms = new RoomsRaw(db.collection('rocketchat_room'));
 	}
 
-	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
+	async create(uid: string, { team, room, members, owner }: ITeamCreateParams): Promise<ITeam> {
 		const hasPermission = await Authorization.hasPermission(uid, 'create-team');
 		if (!hasPermission) {
 			throw new Error('no-permission');
@@ -44,7 +44,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		const existingRoom = await this.Rooms.findOneByName(team.name, { projection: { _id: 1 } });
-		if (existingRoom) {
+		if (existingRoom && !room.id) {
 			throw new Error('room-name-already-exists');
 		}
 
@@ -94,23 +94,27 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 			await this.TeamMembersModel.insertMany(membersList);
 
-			const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
+			let roomId = room.id;
+			if (!roomId) {
+				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
-			const newRoom = {
-				...room,
-				type: roomType,
-				name: team.name,
-				members: memberUsernames,
-				extraData: {
-					...room.extraData,
-					teamId,
-					teamMain: true,
-				},
-			};
+				const newRoom = {
+					...room,
+					type: roomType,
+					name: team.name,
+					members: memberUsernames,
+					extraData: {
+						...room.extraData,
+						teamId,
+						teamMain: true,
+					},
+				};
 
-			const createdRoom = await Room.create(owner || uid, newRoom);
+				const createdRoom = await Room.create(owner || uid, newRoom);
+				roomId = createdRoom._id;
+			}
 
-			await this.TeamModel.updateMainRoomForTeam(teamId, createdRoom._id);
+			await this.TeamModel.updateMainRoomForTeam(teamId, roomId);
 
 			return {
 				_id: teamId,
