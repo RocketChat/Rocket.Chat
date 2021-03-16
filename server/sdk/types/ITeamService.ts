@@ -8,6 +8,13 @@ export interface ITeamCreateParams {
 	members?: Array<string>; // list of user _ids
 	owner?: string; // the team owner. If not present, owner = requester
 }
+
+export interface ITeamMemberParams {
+	userId?: string;
+	userName?: string;
+	roles?: Array<string>;
+}
+
 export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
 	addRoom(uid: string, rid: string, teamId: string, isDefault: boolean): Promise<IRoom>;
@@ -16,5 +23,10 @@ export interface ITeamService {
 	updateRoom(uid: string, rid: string, isDefault: boolean): Promise<IRoom>;
 	list(uid: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
-	members(uid: string, teamId: string): Promise<Array<ITeamMember>>;
+	members(teamId: string, teamName: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeamMember>>;
+	addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
+	updateMember(teamId: string, teamName: string, members: ITeamMemberParams): Promise<void>;
+	removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
+	getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined>;
+	getInfoById(teamId: string): Promise<Partial<ITeam> | undefined>;
 }
