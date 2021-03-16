@@ -1,15 +1,16 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutableCallback, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Box, Modal, ButtonGroup, Button, TextInput, Field, ToggleSwitch } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useForm } from '../../hooks/useForm';
-import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
-import UserAutoCompleteMultiple from '../../../ee/client/audit/UserAutoCompleteMultiple';
-import { useSetting } from '../../contexts/SettingsContext';
-import { usePermission } from '../../contexts/AuthorizationContext';
-import { useMethod } from '../../contexts/ServerContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useForm } from '../../../../hooks/useForm';
+import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
+import UserAutoCompleteMultiple from '../../../../../ee/client/audit/UserAutoCompleteMultiple';
+import { useSetting } from '../../../../contexts/SettingsContext';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
+import { useMethod } from '../../../../contexts/ServerContext';
+import TeamNameInput from './TeamNameInput';
 
 export const CreateTeam = ({
 	values,
@@ -65,7 +66,7 @@ export const CreateTeam = ({
 			<Field mbe='x24'>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput error={hasUnsavedChanges ? nameError : undefined} addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />} onChange={handlers.handleName}/>
+					<TeamNameInput private={values.type} error={hasUnsavedChanges ? nameError : undefined} onChange={handlers.handleName} />
 				</Field.Row>
 				{hasUnsavedChanges && nameError && <Field.Error>
 					{nameError}
