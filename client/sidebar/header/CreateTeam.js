@@ -40,7 +40,7 @@ export const CreateTeam = ({
 	const [nameError, setNameError] = useState();
 
 	const checkName = useDebouncedCallback(async (name) => {
-		setNameError(false);
+		setNameError('');
 		if (hasUnsavedChanges) { return; }
 		if (!name || name.length === 0) { return setNameError(t('Field_required')); }
 		if (!teamNameRegex.test(name)) { return setNameError(t('error-invalid-name')); }
