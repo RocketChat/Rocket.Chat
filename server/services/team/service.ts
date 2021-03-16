@@ -39,7 +39,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		this.Rooms = new RoomsRaw(db.collection('rocketchat_room'));
 	}
 
-	async create(uid: string, { team, room = { name: team.name, extraData: {}, id: undefined }, members, owner }: ITeamCreateParams): Promise<ITeam> {
+	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
 		const existingTeam = await this.TeamModel.findOneByName(team.name, { projection: { _id: 1 } });
 		if (existingTeam) {
 			throw new Error('team-name-already-exists');
