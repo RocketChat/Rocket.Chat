@@ -213,3 +213,23 @@ API.v1.addRoute('teams.info', { authRequired: true }, {
 		return API.v1.success({ teamInfo });
 	},
 });
+
+API.v1.addRoute('teams.delete', { authRequired: true }, {
+	post() {
+		if (!hasPermission(this.userId, 'delete-team')) {
+			return API.v1.unauthorized();
+		}
+
+		const { teamId, teamName } = this.queryParams;
+
+		if (!teamId && !teamName) {
+			return API.v1.failure('Provide either the "teamId" or "teamName"');
+		}
+
+		teamId
+			? Promise.await(Team.deleteById(teamId))
+			: Promise.await(Team.deleteByName(teamName));
+
+		return API.v1.success();
+	},
+});
