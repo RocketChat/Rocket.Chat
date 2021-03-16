@@ -15,7 +15,6 @@ class AutoCloseOnHoldSchedulerClass {
 	running: boolean;
 
 	public init(): void {
-		console.log('----staring AutoCloseOnHoldSchedulerClass');
 		if (this.running) {
 			return;
 		}
@@ -47,8 +46,6 @@ class AutoCloseOnHoldSchedulerClass {
 	}
 
 	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
-		console.log('---executeJob called', data);
-
 		const { roomId, comment } = data;
 
 		const payload = {
@@ -59,16 +56,12 @@ class AutoCloseOnHoldSchedulerClass {
 			visitor: undefined,
 		};
 
-		console.log('--payload', payload);
-
-		const result = Livechat.closeRoom(payload);
-		console.log('---result', result);
+		Livechat.closeRoom(payload);
 	}
 }
 
 export const AutoCloseOnHoldScheduler = new AutoCloseOnHoldSchedulerClass();
 
 Meteor.startup(() => {
-	console.log('---from meteor startup - AutoCloseOnHoldScheduler');
 	AutoCloseOnHoldScheduler.init();
 });

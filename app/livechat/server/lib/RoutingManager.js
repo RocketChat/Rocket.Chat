@@ -49,8 +49,6 @@ export const RoutingManager = {
 			agent = await this.getNextAgent(department);
 		}
 
-		console.log('---delegateInquiry called');
-
 		if (!agent) {
 			return LivechatRooms.findOneById(rid);
 		}
@@ -123,7 +121,6 @@ export const RoutingManager = {
 			rid: String,
 			status: String,
 		}));
-		console.log('---takeInquiry called', inquiry, agent);
 
 		const { _id, rid } = inquiry;
 		const room = LivechatRooms.findOneById(rid);

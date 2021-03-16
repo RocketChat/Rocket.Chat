@@ -171,15 +171,11 @@ export const LivechatEnterprise = {
 		if (!roomId) {
 			return;
 		}
-		console.log('-------LivechatEnterprise.placeRoomOnHold', roomId);
-		let resp = LivechatRooms.setIsChatOnHold(roomId);
-		console.log('----placeRoomOnHold rooms db response', resp);
-		resp = Subscriptions.setIsChatOnHold(roomId);
-		console.log('----placeRoomOnHold subscription db response', resp);
+		LivechatRooms.setOnHold(roomId);
+		Subscriptions.setOnHold(roomId);
 		LivechatRooms.unsetCanPlaceOnHold(roomId);
 
 		Meteor.defer(() => {
-			console.log('---livechat:afterOnHold callback set');
 			callbacks.run('livechat:afterOnHold', room);
 		});
 	},

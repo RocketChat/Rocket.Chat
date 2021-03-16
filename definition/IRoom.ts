@@ -39,7 +39,7 @@ export interface IRoom extends IRocketChatRecord {
 		}[];
 	};
 
-	isChatOnHold?: boolean;
+	onHold?: boolean;
 	canPlaceChatOnHold?: boolean;
 }
 

@@ -18,20 +18,16 @@ const handleAfterOnHold = async (room: any = {}): Promise<any> => {
 	}
 
 	await AutoCloseOnHoldScheduler.scheduleRoom(room._id, autoCloseOnHoldChatTimeout, customCloseMessage);
-	console.log('-auto close job scheduled');
 };
 
 settings.get('Livechat_auto_close_on_hold_chats_timeout', (_, value) => {
-	console.log('---setting Livechat_auto_close_on_hold_chats_timeout called', value);
 	autoCloseOnHoldChatTimeout = value as number;
 	if (!value || value <= 0) {
 		callbacks.remove('livechat:afterOnHold', 'livechat-auto-close-on-hold');
 	}
-	console.log('--adding callback');
 	callbacks.add('livechat:afterOnHold', handleAfterOnHold, callbacks.priority.HIGH, 'livechat-auto-close-on-hold');
 });
 
 settings.get('Livechat_auto_close_on_hold_chats_custom_message', (_, value) => {
-	console.log('---setting Livechat_auto_close_on_hold_chats_custom_message called', value);
 	customCloseMessage = value as string || DEFAULT_CLOSED_MESSAGE;
 });

@@ -32,7 +32,7 @@ export interface ISubscription extends IRocketChatRecord {
 
 	roles?: string[];
 
-	isChatOnHold?: boolean;
+	onHold?: boolean;
 }
 
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {

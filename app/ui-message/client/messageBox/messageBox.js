@@ -121,7 +121,6 @@ Template.messageBox.onRendered(function() {
 			}
 			$input.on('dataChange', () => {
 				const messages = $input.data('reply') || [];
-				console.log('dataChange', messages);
 				this.replyMessageData.set(messages);
 			});
 		}
@@ -210,14 +209,12 @@ Template.messageBox.helpers({
 		}
 
 		const isBlockedOrBlocker = Template.instance().state.get('isBlockedOrBlocker');
-		console.log('---isBlockedOrBlocker', isBlockedOrBlocker);
 
 		if (isBlockedOrBlocker) {
 			return false;
 		}
 
-		console.log('---isWritable', subscription.isChatOnHold);
-		if (subscription.isChatOnHold) {
+		if (subscription?.onHold) {
 			return false;
 		}
 
@@ -263,13 +260,12 @@ Template.messageBox.helpers({
 	isBlockedOrBlocker() {
 		return Template.instance().state.get('isBlockedOrBlocker');
 	},
-	isChatOnHold() {
+	onHold() {
 		const { rid, subscription } = Template.currentData();
-		console.log('----isChatOnHold', rid, subscription.isChatOnHold);
 		if (!rid) {
 			return false;
 		}
-		return !!subscription.isChatOnHold;
+		return !!subscription?.onHold;
 	},
 	isSubscribed() {
 		const { subscription } = Template.currentData();

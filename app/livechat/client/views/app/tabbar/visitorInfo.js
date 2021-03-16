@@ -208,7 +208,6 @@ Template.visitorInfo.helpers({
 
 	canPlaceChatOnHold() {
 		const room = Template.instance().room.get();
-		console.log('---canPlaceChatOnHold', room);
 		return !!room.canPlaceChatOnHold;
 	},
 
@@ -333,7 +332,6 @@ Template.visitorInfo.events({
 
 	'click .on-hold'(event) {
 		event.preventDefault();
-		console.log('--on-hold manual button clicked');
 
 		modal.open({
 			title: t('Would_you_like_to_place_chat_on_hold'),

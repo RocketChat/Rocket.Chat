@@ -8,7 +8,6 @@ import { call } from '../../../../ui-utils/client';
 Template.livechatOnHold.helpers({
 	roomOpen() {
 		const room = Template.instance().room.get();
-		console.log('---roomOpen', room.open);
 		return room && room.open === true;
 	},
 
@@ -18,13 +17,12 @@ Template.livechatOnHold.helpers({
 });
 
 Template.livechatOnHold.events({
-	async 'click .js-take-it'(event, instance) {
+	async 'click .js-resume-it'(event, instance) {
 		event.preventDefault();
 		event.stopPropagation();
 
 		const room = instance.room.get();
 
-		console.log('---button clicked', room);
 		await call('livechat:resumeOnHold', room._id, { clientAction: true });
 	},
 });
@@ -32,12 +30,11 @@ Template.livechatOnHold.events({
 Template.livechatOnHold.onCreated(function() {
 	this.rid = Template.currentData().rid;
 	this.room = new ReactiveVar();
+	this.preparing = new ReactiveVar(true);
 
 	this.autorun(() => {
+		this.preparing.set(true);
 		this.room.set(ChatRoom.findOne({ _id: Template.currentData().rid }));
+		this.preparing.set(false);
 	});
-});
-
-Template.livechatOnHold.onDestroyed(function() {
-
 });

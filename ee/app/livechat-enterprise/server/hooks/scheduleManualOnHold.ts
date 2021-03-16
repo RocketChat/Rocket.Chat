@@ -3,13 +3,13 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../../app/callbacks/server';
 import { settings } from '../../../../../app/settings/server';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
-import { OnHoldChatScheduler } from '../lib/OnHoldScheduler';
+import { ManualOnHoldChatScheduler } from '../lib/ManualOnHoldScheduler';
 
 let manualOnHoldTimeout = -1;
 let manualOnHoldEnabled = false;
 
 const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promise<any> => {
-	const { _id: rid, isChatOnHold } = room;
+	const { _id: rid, onHold } = room;
 	if (!rid) {
 		return message;
 	}
@@ -28,7 +28,7 @@ const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promis
 	}
 
 	// TODO: find a better place to add this
-	if (message.token && isChatOnHold) {
+	if (message.token && onHold) {
 		await AutoCloseOnHoldScheduler.unscheduleRoom(rid);
 		await Meteor.call('livechat:resumeOnHold', room._id, { clientAction: false });
 		return message;
@@ -38,40 +38,23 @@ const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promis
 		return message;
 	}
 
-	switch (!!message.token) {
-		case true: {
-			// message sent by visitor
-			console.log('---cancelling all job', rid);
-			await OnHoldChatScheduler.unscheduleRoom(rid);
-			break;
-		}
-		case false: {
-			// message sent by agent
-			console.log('---scheduling job', rid);
-			await OnHoldChatScheduler.scheduleRoom(rid, manualOnHoldTimeout === 0 ? 2 : manualOnHoldTimeout);
-			break;
-		}
-	}
+	message.token ? await ManualOnHoldChatScheduler.unscheduleRoom(rid) : await ManualOnHoldChatScheduler.scheduleRoom(rid, manualOnHoldTimeout === 0 ? 2 : manualOnHoldTimeout);
 
 	return message;
 };
 
 
 settings.get('Livechat_allow_manual_on_hold', (_, value) => {
-	console.log('---setting allow manual onhold called', value);
 	manualOnHoldEnabled = value as boolean;
 	if (!manualOnHoldTimeout) {
-		console.log('--removeing callback');
 		callbacks.remove('afterSaveMessage', 'livechat-manual-on-hold');
 		return;
 	}
 
-	console.log('--adding callback');
 	callbacks.add('afterSaveMessage', handleAfterSaveMessage, callbacks.priority.HIGH, 'livechat-manual-on-hold');
 });
 
 
 settings.get('Livechat_manual_on_hold_timeout', (_, value) => {
-	console.log('---setting Livechat_manual_on_hold_timeout called', value);
 	manualOnHoldTimeout = value as number ? value as number : -1;
 });

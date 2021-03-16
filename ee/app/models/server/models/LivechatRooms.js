@@ -46,22 +46,21 @@ LivechatRooms.prototype.findAbandonedOpenRooms = function(date) {
 	});
 };
 
-LivechatRooms.prototype.setIsChatOnHold = function(roomId) {
+LivechatRooms.prototype.setOnHold = function(roomId) {
 	return this.update(
 		{ _id: roomId },
-		{ $set: { isChatOnHold: true } },
+		{ $set: { onHold: true } },
 	);
 };
 
-LivechatRooms.prototype.unsetIsChatOnHold = function(roomId) {
+LivechatRooms.prototype.unsetOnHold = function(roomId) {
 	return this.update(
 		{ _id: roomId },
-		{ $unset: { isChatOnHold: 1 } },
+		{ $unset: { onHold: 1 } },
 	);
 };
 
 LivechatRooms.prototype.setCanPlaceOnHold = function(roomId) {
-	console.log('---within model', roomId);
 	return this.update(
 		{ _id: roomId },
 		{ $set: { canPlaceChatOnHold: true } },
@@ -91,6 +90,18 @@ LivechatRooms.prototype.unsetPredictedVisitorAbandonmentByRoomId = function(room
 		_id: roomId,
 	}, {
 		$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
+	});
+};
+
+LivechatRooms.prototype.unsetAllOnHoldFieldsByRoomId = function(roomId) {
+	return this.update({
+		_id: roomId,
+	}, {
+		$unset: {
+			'omnichannel.predictedVisitorAbandonmentAt': 1,
+			onHold: 1,
+			canPlaceChatOnHold: 1,
+		},
 	});
 };
 

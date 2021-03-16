@@ -32,6 +32,7 @@ import './hooks/scheduleManualOnHold';
 import './hooks/afterOnHold';
 import './lib/routing/LoadBalancing';
 import './lib/AutoCloseOnHoldScheduler';
+import './lib/ManualOnHoldScheduler';
 import { onLicense } from '../../license/server';
 import './business-hour';
 

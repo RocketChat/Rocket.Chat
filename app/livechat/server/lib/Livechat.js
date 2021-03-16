@@ -372,7 +372,6 @@ export const Livechat = {
 
 		sendMessage(user || visitor, message, room);
 
-		console.log('---close room servedBy', servedBy);
 		if (servedBy) {
 			Subscriptions.removeByRoomIdAndUserId(rid, servedBy._id);
 		}

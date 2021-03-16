@@ -1331,18 +1331,18 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	setIsChatOnHold(roomId) {
+	setOnHold(roomId) {
 		return this.update(
 			{ rid: roomId },
-			{ $set: { isChatOnHold: true } },
+			{ $set: { onHold: true } },
 			{ multi: true },
 		);
 	}
 
-	unsetIsChatOnHold(roomId) {
+	unsetOnHold(roomId) {
 		return this.update(
 			{ rid: roomId },
-			{ $unset: { isChatOnHold: 1 } },
+			{ $unset: { onHold: 1 } },
 			{ multi: true },
 		);
 	}

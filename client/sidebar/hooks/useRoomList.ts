@@ -33,8 +33,7 @@ export const useRoomList = (): Array<ISubscription> => {
 			const direct = new Set();
 			const discussion = new Set();
 			const conversation = new Set();
-			const omnichannelOnHold = new Set();
-			console.log(rooms);
+			const onHold = new Set();
 
 			rooms.forEach((room) => {
 				if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
@@ -57,13 +56,12 @@ export const useRoomList = (): Array<ISubscription> => {
 					_private.add(room);
 				}
 
-				if (room.t === 'l' && room.isChatOnHold) {
-					return showOmnichannel && omnichannelOnHold.add(room);
+				if (room.t === 'l' && room.onHold) {
+					return showOmnichannel && onHold.add(room);
 				}
 
 				if (room.t === 'l') {
 					return showOmnichannel && omnichannel.add(room);
-					// return showOmnichannel && !room.isChatOnHold && omnichannel.add(room);
 				}
 
 				if (room.t === 'd') {
@@ -73,15 +71,13 @@ export const useRoomList = (): Array<ISubscription> => {
 				conversation.add(room);
 			});
 
-			console.log('----omnichannelOnHold', omnichannelOnHold);
-			console.log('-----inquiries', inquiries);
 
 			const groups = new Map();
-			showOmnichannel && (inquiries.enabled || omnichannelOnHold.size) && groups.set('Omnichannel', []);
-			showOmnichannel && !inquiries.enabled && !omnichannelOnHold.size && groups.set('Omnichannel', omnichannel);
+			showOmnichannel && (inquiries.enabled || onHold.size) && groups.set('Omnichannel', []);
+			showOmnichannel && !inquiries.enabled && !onHold.size && groups.set('Omnichannel', omnichannel);
 			showOmnichannel && inquiries.enabled && inquiries.queue.length && groups.set('Incoming_Livechats', inquiries.queue);
-			showOmnichannel && (inquiries.enabled || omnichannelOnHold.size) && omnichannel.size && groups.set('Open_Livechats', omnichannel);
-			showOmnichannel && omnichannelOnHold.size && groups.set('On_Hold_Chats', omnichannelOnHold);
+			showOmnichannel && (inquiries.enabled || onHold.size) && omnichannel.size && groups.set('Open_Livechats', omnichannel);
+			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
 			showDiscussion && discussion.size && groups.set('Discussions', discussion);

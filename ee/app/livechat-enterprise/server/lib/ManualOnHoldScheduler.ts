@@ -7,7 +7,7 @@ import { LivechatRooms } from '../../../../../app/models/server';
 
 const SCHEDULER_NAME = 'omnichannel_manual_on_hold_scheduler';
 
-class OnHoldSchedulerClass {
+class ManualOnHoldSchedulerClass {
 	scheduler: Agenda;
 
 	running: boolean;
@@ -15,7 +15,6 @@ class OnHoldSchedulerClass {
 	user: {};
 
 	public init(): void {
-		console.log('----staring OnHoldSchedulerClass');
 		if (this.running) {
 			return;
 		}
@@ -50,18 +49,14 @@ class OnHoldSchedulerClass {
 	}
 
 	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
-		console.log('---executeJob called', data);
-
 		const { roomId } = data;
 
-		const result = await (LivechatRooms as any).setCanPlaceOnHold(roomId);
-		console.log('---result', result);
+		await (LivechatRooms as any).setCanPlaceOnHold(roomId);
 	}
 }
 
-export const OnHoldChatScheduler = new OnHoldSchedulerClass();
+export const ManualOnHoldChatScheduler = new ManualOnHoldSchedulerClass();
 
 Meteor.startup(() => {
-	console.log('---from meteor startup - OnHoldChatScheduler');
-	// OnHoldChatScheduler.init();
+	ManualOnHoldChatScheduler.init();
 });

@@ -9,35 +9,29 @@ import { dispatchInquiryPosition } from '../lib/Helper';
 
 Meteor.methods({
 	async 'livechat:resumeOnHold'(roomId, options = { clientAction: false }) {
-		console.log('--livechat:resumeOnHold called');
-
 		const room = await LivechatRooms.findOneById(roomId);
-		console.log('--room found', room);
 		if (!room || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:resumeOnHold' });
 		}
 
-		if (!room.isChatOnHold) {
+		if (!room.onHold) {
 			throw new Meteor.Error('room-closed', 'Room is not OnHold', { method: 'livechat:resumeOnHold' });
 		}
 
 		const { servedBy: { _id: agentId = null, username = null } = {} } = room;
 		let agent: any = { agentId, username };
-		const inquiry = await LivechatInquiry.findOneByRoomId(roomId);
+		const inquiry = await LivechatInquiry.findOneByRoomId(roomId, {});
 		const { departmentId } = inquiry;
 
 		try {
-			console.log('---b4 livechat.checkAgentBeforeTakeInquiry', agent, inquiry);
 			agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', agent, inquiry);
 		} catch (e) {
-			console.log('--error', e);
+			console.log(e);
 			if (options.clientAction) {
 				throw new Meteor.Error('error-max-number-simultaneous-chats-reached', 'Not allowed');
 			}
 			agent = null;
 		}
-
-		console.log('----resumeOnHold agent', agent);
 
 		if (!agent) {
 			Livechat.returnRoomAsInquiry(room._id, departmentId);
@@ -52,11 +46,7 @@ Meteor.methods({
 			}
 		}
 
-		let resp = (LivechatRooms as any).unsetIsChatOnHold(roomId);
-		console.log('----resumeOnHold rooms db response', resp);
-		resp = Subscriptions.unsetIsChatOnHold(roomId);
-		console.log('----resumeOnHold subscription db response', resp);
-		(LivechatRooms as any).unsetCanPlaceOnHold(roomId);
-		(LivechatRooms as any).unsetPredictedVisitorAbandonmentByRoomId(roomId);
+		(LivechatRooms as any).unsetAllOnHoldFieldsByRoomId(roomId);
+		Subscriptions.unsetOnHold(roomId);
 	},
 });

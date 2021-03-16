@@ -6,7 +6,6 @@ import { LivechatRooms, Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
-import { OnHoldChatScheduler } from './OnHoldScheduler';
 
 const schedulerUser = Users.findOneById('rocket.cat');
 const SCHEDULER_NAME = 'omnichannel_scheduler';
@@ -86,7 +85,5 @@ class AutoTransferChatSchedulerClass {
 export const AutoTransferChatScheduler = new AutoTransferChatSchedulerClass();
 
 Meteor.startup(() => {
-	console.log('---AutoTransferChatScheduler called');
 	AutoTransferChatScheduler.init();
-	OnHoldChatScheduler.init();
 });
