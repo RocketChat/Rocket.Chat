@@ -222,6 +222,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async deleteByName(teamName: string): Promise<boolean> {
-		return !!await this.TeamModel.deleteOneByName(teamName) || false;
+		return !!await this.TeamModel.deleteOneByName(teamName);
 	}
 }
