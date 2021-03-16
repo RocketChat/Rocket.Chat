@@ -45,15 +45,15 @@ describe('[Teams]', () => {
 					return request.get(api('teams.members'))
 						.set(credentials)
 						.query({ teamId })
-						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
-							expect(response.body.members).to.have.lengthOf(1);
-							expect(response.body.members[0].userId).to.be.equal('rocket.cat');
-							expect(response.body.members[0].roles).to.have.lengthOf(1);
-							expect(response.body.members[0].roles).to.eql(['owner']);
+
+							const member = response.body.members[0];
+							expect(member.userId).to.be.equal('rocket.cat');
+							expect(member.roles).to.have.length(1);
+							expect(member.roles[0]).to.be.equal('owner');
 						});
 				})
 				.then(() => done())
@@ -80,7 +80,7 @@ describe('[Teams]', () => {
 
 	describe('/teams.addMembers', () => {
 		it('should add members to a public team', (done) => {
-			request.post(api('teams.create'))
+			request.post(api('teams.addMembers'))
 				.set(credentials)
 				.send({
 					teamName: community,
@@ -112,12 +112,12 @@ describe('[Teams]', () => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 							expect(response.body.members).to.have.lengthOf(3);
-							expect(response.body.members[0].userId).to.eql('test-123');
-							expect(response.body.members[0].roles).to.have.lengthOf(1);
-							expect(response.body.members[0].roles).to.eql(['member']);
-							expect(response.body.members[1].userId).to.eql('test-456');
+							expect(response.body.members[1].userId).to.eql('test-123');
 							expect(response.body.members[1].roles).to.have.lengthOf(1);
 							expect(response.body.members[1].roles).to.eql(['member']);
+							expect(response.body.members[2].userId).to.eql('test-456');
+							expect(response.body.members[2].roles).to.have.lengthOf(1);
+							expect(response.body.members[2].roles).to.eql(['member']);
 						}),
 				)
 				.then(() => done())
@@ -136,14 +136,14 @@ describe('[Teams]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count', 2);
+					expect(res.body).to.have.property('count', 3);
 					expect(res.body).to.have.property('offset', 0);
-					expect(res.body).to.have.property('total', 2);
+					expect(res.body).to.have.property('total', 3);
 					expect(res.body).to.have.property('members');
-					expect(res.body).to.have.nested.property('user');
-					expect(res.body).to.have.nested.property('createdBy');
-					expect(res.body).to.have.nested.property('roles');
-					expect(res.body).to.have.nested.property('createdAt');
+					expect(res.body.members).to.have.length(3);
+					expect(res.body.members[0]).to.have.property('_id');
+					expect(res.body.members[0]).to.have.property('roles');
+					expect(res.body.members[0]).to.have.property('createdAt');
 				})
 				.end(done);
 		});
@@ -194,10 +194,11 @@ describe('[Teams]', () => {
 				.set(credentials)
 				.send({
 					teamName: community,
-					member:
+					members: [
 						{
 							userId: 'test-456',
 						},
+					],
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
