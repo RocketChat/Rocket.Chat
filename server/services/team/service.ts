@@ -2,8 +2,8 @@ import { Db } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
-import { Authorization, Room } from '../../sdk';
-import { ITeamCreateParams, ITeamService } from '../../sdk/types/ITeamService';
+import { Room } from '../../sdk';
+import { ITeamCreateParams, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
 import { IUser } from '../../../definition/IUser';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
@@ -33,11 +33,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
-		const hasPermission = await Authorization.hasPermission(uid, 'create-team');
-		if (!hasPermission) {
-			throw new Error('no-permission');
-		}
-
 		const existingTeam = await this.TeamModel.findOneByName(team.name, { projection: { _id: 1 } });
 		if (existingTeam) {
 			throw new Error('team-name-already-exists');
@@ -155,18 +150,104 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async members(userId: string, teamId: string): Promise<Array<ITeamMember>> {
-		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId);
-		const hasPermission = await Authorization.hasAtLeastOnePermission(userId, ['add-team-member', 'edit-team-member', 'view-all-teams']);
-		if (!hasPermission) {
-			throw new Error('no-permission');
+	async members(teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMember>> {
+		if (!teamId) {
+			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
+			if (!teamIdName) {
+				throw new Error('team-does-not-exist');
+			}
+
+			teamId = teamIdName._id;
 		}
 
-		if (!isMember && !hasPermission) {
-			return [];
+		const cursor = this.TeamMembersModel.findByTeamId(teamId, {
+			limit: count,
+			skip: offset,
+		});
+
+		return {
+			total: await cursor.count(),
+			records: await cursor.toArray(),
+		};
+	}
+
+	async addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
+		const createdBy = await this.Users.findOneById(uid, { projection: { username: 1 } });
+		if (!createdBy) {
+			throw new Error('invalid-user');
 		}
 
-		return this.TeamMembersModel.findByTeamId(teamId).toArray();
+		if (!teamId) {
+			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
+			if (!teamIdName) {
+				throw new Error('team-does-not-exist');
+			}
+
+			teamId = teamIdName._id;
+		}
+
+		const membersList: Array<Omit<ITeamMember, '_id'>> = members?.map((member) => ({
+			teamId,
+			userId: member.userId ? member.userId : '',
+			roles: member.roles ? member.roles : [],
+			createdAt: new Date(),
+			createdBy,
+			_updatedAt: new Date(), // TODO how to avoid having to do this?
+		})) || [];
+
+		await this.TeamMembersModel.insertMany(membersList);
+	}
+
+	async updateMember(teamId: string, teamName: string, member: ITeamMemberParams): Promise<void> {
+		if (!teamId) {
+			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
+			if (!teamIdName) {
+				throw new Error('team-does-not-exist');
+			}
+
+			teamId = teamIdName._id;
+		}
+
+		if (!member.userId) {
+			member.userId = await this.Users.findOneByUsername(member.userName);
+			if (!member.userId) {
+				throw new Error('invalid-user');
+			}
+		}
+
+		const memberUpdate: Partial<ITeamMember> = {
+			roles: member.roles ? member.roles : [],
+			_updatedAt: new Date(),
+		};
+
+		await this.TeamMembersModel.updateOneByUserIdAndTeamId(member.userId, teamId, memberUpdate);
+	}
+
+	async removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
+		if (!teamId) {
+			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
+			if (!teamIdName) {
+				throw new Error('team-does-not-exist');
+			}
+
+			teamId = teamIdName._id;
+		}
+
+		for await (const member of members) {
+			if (!member.userId) {
+				member.userId = await this.Users.findOneByUsername(member.userName);
+				if (!member.userId) {
+					throw new Error('invalid-user');
+				}
+			}
+
+			const existingMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(member.userId, teamId);
+			if (!existingMember) {
+				throw new Error('member-does-not-exist');
+			}
+
+			this.TeamMembersModel.removeById(existingMember._id);
+		}
 	}
 
 	async addMember({ _id, username }: IUser, userId: string, teamId: string): Promise<boolean | ITeamMember> {
