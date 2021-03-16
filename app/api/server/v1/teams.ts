@@ -113,7 +113,7 @@ API.v1.addRoute('teams.updateMember', { authRequired: true }, {
 
 API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
 	post() {
-		if (!hasAtLeastOnePermission(this.userId, ['edit-team-member', 'view-all-teams'])) {
+		if (!hasAtLeastOnePermission(this.userId, ['edit-team-member'])) {
 			return API.v1.unauthorized();
 		}
 
