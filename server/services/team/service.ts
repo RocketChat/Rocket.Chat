@@ -216,4 +216,12 @@ export class TeamService extends ServiceClass implements ITeamService {
 			_id: teamId,
 		}, { projection: { usernames: 0 } });
 	}
+
+	async deleteById(teamId: string): Promise<boolean> {
+		return !!await this.TeamModel.deleteOneById(teamId) || false;
+	}
+
+	async deleteByName(teamName: string): Promise<boolean> {
+		return !!await this.TeamModel.deleteOneByName(teamName) || false;
+	}
 }

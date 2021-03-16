@@ -15,4 +15,6 @@ export interface ITeamService {
 	members(uid: string, teamId: string): Promise<Array<ITeamMember>>;
 	getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined>;
 	getInfoById(teamId: string): Promise<Partial<ITeam> | undefined>;
+	deleteById(teamId: string): Promise<boolean>;
+	deleteByName(teamName: string): Promise<boolean>;
 }
