@@ -8,6 +8,7 @@ import { IUser } from '../../../definition/IUser';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
+import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { IRoom } from '../../../definition/IRoom';
 
@@ -15,6 +16,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 	protected name = 'team';
 
 	private TeamModel: TeamRaw;
+
+	private RoomsModel: RoomsRaw;
+
+	private SubscriptionsModel: SubscriptionsRaw;
 
 	private Users: UsersRaw;
 
@@ -26,6 +31,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 	constructor(db: Db) {
 		super();
 
+		this.RoomsModel = new RoomsRaw(db.collection('rocketchat_room'));
+		this.SubscriptionsModel = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
 		this.TeamModel = new TeamRaw(db.collection('rocketchat_team'));
 		this.TeamMembersModel = new TeamMemberRaw(db.collection('rocketchat_team_member'));
 		this.Users = new UsersRaw(db.collection('users'));
@@ -147,6 +154,120 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return {
 			total: await cursor.count(),
 			records: await cursor.toArray(),
+		};
+	}
+
+	async addRoom(uid: string, rid: string, teamId: string, isDefault: boolean): Promise<IRoom> {
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+		if (!rid) {
+			throw new Error('missing-roomId');
+		}
+		if (!uid) {
+			throw new Error('missing-userId');
+		}
+		const room = await this.RoomsModel.findOneByRoomIdAndUserId(rid, uid);
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+		const team = await this.TeamModel.findOneById(teamId);
+		if (!team) {
+			throw new Error('invalid-team');
+		}
+		if (room.teamId) {
+			throw new Error('room-already-on-team');
+		}
+		if (isDefault == null) {
+			isDefault = false;
+		}
+		room.teamId = teamId;
+		room.teamDefault = isDefault;
+		this.RoomsModel.setTeamById(room._id, teamId, isDefault);
+		return {
+			...room,
+		};
+	}
+
+	async removeRoom(uid: string, rid: string, teamId: string): Promise<IRoom> {
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+		if (!rid) {
+			throw new Error('missing-roomId');
+		}
+		if (!uid) {
+			throw new Error('missing-userId');
+		}
+		const room = await this.RoomsModel.findOneByRoomIdAndUserId(rid, uid);
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+		const team = await this.TeamModel.findOneById(teamId);
+		if (!team) {
+			throw new Error('invalid-team');
+		}
+		if (room.teamId !== teamId) {
+			throw new Error('room-not-on-that-team');
+		}
+		delete room.teamId;
+		delete room.teamDefault;
+		this.RoomsModel.unsetTeamById(room._id);
+		return {
+			...room,
+		};
+	}
+
+	async updateRoom(uid: string, rid: string, isDefault: boolean): Promise<IRoom> {
+		if (!rid) {
+			throw new Error('missing-roomId');
+		}
+		if (!uid) {
+			throw new Error('missing-userId');
+		}
+		const room = await this.RoomsModel.findOneByRoomIdAndUserId(rid, uid);
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+		if (!room.teamId) {
+			throw new Error('room-not-on-team');
+		}
+		room.teamDefault = isDefault;
+		this.RoomsModel.setTeamDefaultById(rid, isDefault);
+		return {
+			...room,
+		};
+	}
+
+	async listRooms(uid: string, teamId: string, getAllRooms: boolean, allowPrivateTeam: boolean): Promise<IRecordsWithTotal<IRoom>> {
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+		const team = await this.TeamModel.findOneById(teamId, {});
+		if (!team) {
+			throw new Error('invalid-team');
+		}
+		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
+		if (team.type === TEAM_TYPE.PRIVATE && !allowPrivateTeam && !isMember) {
+			throw new Error('user-not-on-private-team');
+		}
+		const teamRoomsCursor = this.RoomsModel.findByTeamId(teamId);
+		if (getAllRooms) {
+			return {
+				total: await teamRoomsCursor.count(),
+				records: await teamRoomsCursor.toArray(),
+			};
+		}
+		const teamRooms = await teamRoomsCursor.toArray();
+		const privateTeamRoomIds = teamRooms.filter((room) => room.t === 'p').map((room) => room._id);
+		const publicTeamRoomIds = teamRooms.filter((room) => room.t === 'c').map((room) => room._id);
+
+		const subscriptionsCursor = this.SubscriptionsModel.findByUserIdAndRoomIds(uid, privateTeamRoomIds);
+		const subscriptionRoomIds = (await subscriptionsCursor.toArray()).map((subscription) => subscription.rid);
+		const availableRoomsCursor = this.RoomsModel.findManyByRoomIds([...subscriptionRoomIds, ...publicTeamRoomIds]);
+		return {
+			total: await availableRoomsCursor.count(),
+			records: await availableRoomsCursor.toArray(),
 		};
 	}
 
