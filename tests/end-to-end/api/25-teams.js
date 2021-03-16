@@ -50,11 +50,10 @@ describe('[Teams]', () => {
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
-
-							const member = response.body.members[0];
-							expect(member.userId).to.be.equal('rocket.cat');
-							expect(member.roles).to.have.length(1);
-							expect(member.roles[0]).to.be.equal('owner');
+							expect(response.body.members).to.have.lengthOf(1);
+							expect(response.body.members[0].userId).to.be.equal('rocket.cat');
+							expect(response.body.members[0].roles).to.have.lengthOf(1);
+							expect(response.body.members[0].roles).to.eql(['owner']);
 						});
 				})
 				.then(() => done())
@@ -112,17 +111,13 @@ describe('[Teams]', () => {
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
-							expect(response.body.members).to.have.length(3);
-
-							const firstMember = response.body.members[1];
-							expect(firstMember.userId).to.be.equal('test-123');
-							expect(firstMember.roles).to.have.length(1);
-							expect(firstMember.roles[0]).to.be.equal('member');
-
-							const secondMember = response.body.members[1];
-							expect(secondMember.userId).to.be.equal('test-456');
-							expect(secondMember.roles).to.have.length(1);
-							expect(secondMember.roles[0]).to.be.equal('member');
+							expect(response.body.members).to.have.lengthOf(3);
+							expect(response.body.members[0].userId).to.eql('test-123');
+							expect(response.body.members[0].roles).to.have.lengthOf(1);
+							expect(response.body.members[0].roles).to.eql(['member']);
+							expect(response.body.members[1].userId).to.eql('test-456');
+							expect(response.body.members[1].roles).to.have.lengthOf(1);
+							expect(response.body.members[1].roles).to.eql(['member']);
 						}),
 				)
 				.then(() => done())
@@ -183,12 +178,9 @@ describe('[Teams]', () => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 							expect(response.body.members).to.have.length(3);
-
-							const firstMember = response.body.members[1];
-							expect(firstMember.userId).to.be.equal('test-123');
-							expect(firstMember.roles).to.have.length(2);
-							expect(firstMember.roles[0]).to.be.equal('member');
-							expect(firstMember.roles[1]).to.be.equal('owner');
+							expect(response.body.members[1].userId).to.eql('test-123');
+							expect(response.body.members[1].roles).to.have.lengthOf(2);
+							expect(response.body.members[1].roles).to.eql(['member', 'owner']);
 						}),
 				)
 				.then(() => done())
@@ -223,10 +215,8 @@ describe('[Teams]', () => {
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
-							expect(response.body.members).to.have.length(2);
-
-							const firstMember = response.body.members[1];
-							expect(firstMember.userId).to.be.equal('test-123');
+							expect(response.body.members).to.have.lengthOf(2);
+							expect(response.body.members[1].userId).to.eql('test-123');
 						}),
 				)
 				.then(() => done())
@@ -257,10 +247,8 @@ describe('[Teams]', () => {
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
-							expect(response.body.members).to.have.length(1);
-
-							const firstMember = response.body.members[0];
-							expect(firstMember.userId).to.be.equal('test-123');
+							expect(response.body.members).to.have.lengthOf(1);
+							expect(response.body.members[0].userId).to.eql('test-123');
 						}),
 				)
 				.then(() => done())
