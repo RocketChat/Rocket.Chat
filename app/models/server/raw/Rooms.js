@@ -109,7 +109,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-  findChannelAndPrivateByNameStarting(name, sIds, options) {
+	findChannelAndPrivateByNameStarting(name, sIds, options) {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
 		const query = {
