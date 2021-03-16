@@ -85,7 +85,7 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 
 API.v1.addRoute('teams.addMembers', { authRequired: true }, {
 	post() {
-		if (!hasAtLeastOnePermission(this.userId, ['add-team-member', 'edit-team-member', 'view-all-teams'])) {
+		if (!hasAtLeastOnePermission(this.userId, ['add-team-member', 'edit-team-member'])) {
 			return API.v1.unauthorized();
 		}
 
