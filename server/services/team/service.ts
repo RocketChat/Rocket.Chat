@@ -150,7 +150,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async members(teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMember>> {
+	async members(uid: string, teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMember>> {
 		if (!teamId) {
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
 			if (!teamIdName) {
@@ -158,6 +158,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 			}
 
 			teamId = teamIdName._id;
+		}
+
+		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
+		if (!isMember) {
+			return {
+				total: 0,
+				records: [],
+			};
 		}
 
 		const cursor = this.TeamMembersModel.findByTeamId(teamId, {

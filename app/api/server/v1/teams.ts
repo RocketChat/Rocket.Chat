@@ -68,7 +68,7 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName } = this.queryParams;
 
-		const { records, total } = Promise.await(Team.members(teamId, teamName, { offset, count }));
+		const { records, total } = Promise.await(Team.members(this.userId, teamId, teamName, { offset, count }));
 
 		return API.v1.success({
 			members: records,

@@ -31,7 +31,6 @@ describe('[Teams]', () => {
 				.send({
 					name: `test-team-${ Date.now() }`,
 					type: 0,
-					owner: 'rocket.cat',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -51,7 +50,7 @@ describe('[Teams]', () => {
 							expect(response.body).to.have.property('members');
 
 							const member = response.body.members[0];
-							expect(member.userId).to.be.equal('rocket.cat');
+							expect(member).to.have.property('userId');
 							expect(member.roles).to.have.length(1);
 							expect(member.roles[0]).to.be.equal('owner');
 						});
@@ -237,23 +236,7 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.then(() =>
-					request.get(api('teams.members'))
-						.set(credentials)
-						.query({
-							teamName: community,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
-							expect(response.body).to.have.property('members');
-							expect(response.body.members).to.have.lengthOf(1);
-							expect(response.body.members[0].userId).to.eql('test-123');
-						}),
-				)
-				.then(() => done())
-				.catch(done);
+				.end(done);
 		});
 	});
 });
