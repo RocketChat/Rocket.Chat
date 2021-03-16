@@ -3,7 +3,7 @@ import { Box, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 
-import { modal } from '../../../../app/ui-utils';
+import { modal, popover } from '../../../../app/ui-utils';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useAtLeastOnePermission, usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
@@ -24,6 +24,7 @@ const style = {
 
 const useAction = (title, content) => useMutableCallback((e) => {
 	e.preventDefault();
+	popover.close();
 	modal.open({
 		title,
 		content,
@@ -39,29 +40,34 @@ const useAction = (title, content) => useMutableCallback((e) => {
 	});
 });
 
-const useReactModal = (setModal, Component) => useMutableCallback((e) => {
-	e.preventDefault();
+const useReactModal = (Component) => {
+	const setModal = useSetModal();
 
-	const handleClose = () => {
-		setModal(null);
-	};
+	return useMutableCallback((e) => {
+		popover.close();
 
-	setModal(() => <Component
-		onClose={handleClose}
-	/>);
-});
+		e.preventDefault();
+
+		const handleClose = () => {
+			setModal(null);
+		};
+
+		setModal(() => <Component
+			onClose={handleClose}
+		/>);
+	});
+};
 
 function CreateRoomList() {
 	const t = useTranslation();
-	const setModal = useSetModal();
 
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const canCreateTeam = useAtLeastOnePermission(CREATE_TEAM_PERMISSIONS);
 	const canCreateDirectMessages = usePermission('create-d');
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
 
-	const createChannel = useReactModal(setModal, CreateChannel);
-	const createTeam = useReactModal(setModal, CreateTeam);
+	const createChannel = useReactModal(CreateChannel);
+	const createTeam = useReactModal(CreateTeam);
 	const createDirectMessage = useAction(t('Direct_Messages'), 'CreateDirectMessage');
 	const createDiscussion = useAction(t('Discussion_title'), 'CreateDiscussion');
 
