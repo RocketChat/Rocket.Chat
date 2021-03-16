@@ -15,6 +15,7 @@ import { QuickActionsContext } from '../../lib/QuickActions/QuickActionsContext'
 import ReturnChatQueueModal from '../../../../components/ReturnChatQueueModal';
 import ForwardChatModal from '../../../../components/ForwardChatModal';
 import TranscriptModal from '../../../../components/TranscriptModal';
+import CloseChatModal from '../../../../components/CloseChatModal';
 import { handleError } from '../../../../../app/utils/client';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { IRoom } from '../../../../../definition/IRoom';
@@ -31,6 +32,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 	const [email, setEmail] = useState('');
 	const visitorRoomId = room.v?._id;
+	const rid = room._id;
 	const uid = useUserId();
 
 	const getVisitorInfo = useEndpointAction('GET', `livechat/visitors.info?visitorId=${ visitorRoomId }`);
@@ -47,7 +49,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const moveChat = (): void => Meteor.call('livechat:returnAsInquiry', room._id, function(error: any) {
+	const moveChat = (): void => Meteor.call('livechat:returnAsInquiry', rid, function(error: any) {
 		closeModal();
 		if (error) {
 			return handleError(error);
@@ -57,7 +59,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		FlowRouter.go('/home');
 	});
 
-	const requestTranscript = (email: string, subject: string): void => Meteor.call('livechat:requestTranscript', room._id, email, subject, (err: any) => {
+	const requestTranscript = (email: string, subject: string): void => Meteor.call('livechat:requestTranscript', rid, email, subject, (err: any) => {
 		closeModal();
 		if (err != null) {
 			return handleError(err);
@@ -66,7 +68,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		Session.set('openedRoom', null);
 	});
 
-	const sendTranscript = (email: string, subject: string, token: string): void => Meteor.call('livechat:sendTranscript', token, room._id, email, subject, (err: any) => {
+	const sendTranscript = (email: string, subject: string, token: string): void => Meteor.call('livechat:sendTranscript', token, rid, email, subject, (err: any) => {
 		closeModal();
 		if (err != null) {
 			return handleError(err);
@@ -75,7 +77,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		toastr.success(t('Your_email_has_been_queued_for_sending'));
 	});
 
-	const discardTranscript = (): void => Meteor.call('livechat:discardTranscript', room._id, (error: any) => {
+	const discardTranscript = (): void => Meteor.call('livechat:discardTranscript', rid, (error: any) => {
 		closeModal();
 		if (error != null) {
 			return handleError(error);
@@ -84,12 +86,11 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 	});
 
 	const forwardChat = (departmentId?: string, userId?: string, comment?: string): void => {
-		console.log(departmentId, userId, comment);
 		if (departmentId && userId) {
 			return;
 		}
 		const transferData: { roomId: string; comment?: string; departmentId?: string; userId?: string } = {
-			roomId: room._id,
+			roomId: rid,
 			comment,
 		};
 
@@ -110,6 +111,15 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		});
 	};
 
+	const confirmClose = (comment: string): void => Meteor.call('livechat:closeRoom', rid, comment, { clientAction: true }, (error: any) => {
+		closeModal();
+		if (error) {
+			return handleError(error);
+		}
+
+		toastr.success(t('Chat_closed_successfully'));
+	});
+
 	const openModal = useMutableCallback((id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
@@ -120,6 +130,9 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				break;
 			case QuickActionsEnum.ChatForward:
 				setModal(<ForwardChatModal onForward={forwardChat} onCancel={closeModal} />);
+				break;
+			case QuickActionsEnum.CloseChat:
+				setModal(<CloseChatModal onConfirm={confirmClose} onCancel={closeModal} />);
 				break;
 			default:
 				break;
