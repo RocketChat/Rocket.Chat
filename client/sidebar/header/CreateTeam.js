@@ -203,8 +203,8 @@ export default memo(({
 		};
 
 		const roomData = await createTeam(params);
-		console.log(roomData);
-		goToRoom(roomData.team._id);
+
+		goToRoom(roomData.team.rid);
 
 		onClose();
 	}, [name, members, type, readOnly, description, broadcast, encrypted, createTeam, onClose]);
