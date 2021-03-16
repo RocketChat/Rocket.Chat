@@ -234,7 +234,7 @@ export class Rooms extends Base {
 			},
 		};
 		return this.update(query, update);
-	};
+	}
 
 	setAvatarData(_id, origin, etag) {
 		const update = {
@@ -275,7 +275,7 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update);
-	};
+	}
 
 	setE2eKeyId(_id, e2eKeyId, options) {
 		const query = {

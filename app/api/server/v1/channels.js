@@ -646,8 +646,6 @@ API.v1.addRoute('channels.online', { authRequired: true }, {
 		const { query } = this.parseJsonQuery();
 		const ourQuery = Object.assign({}, query, { t: 'c' });
 
-		// TODO: bear in mind that this endpoint will return results for the first channel
-		// if the `_id` or `name` are not present in `ourQuery`
 		const room = Rooms.findOne(ourQuery);
 
 		if (room == null) {
