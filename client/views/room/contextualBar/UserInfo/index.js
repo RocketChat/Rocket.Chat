@@ -3,7 +3,6 @@ import { Box, Margins, Tag, Button, Icon } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useSetting } from '../../../../contexts/SettingsContext';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
@@ -146,8 +145,6 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 
 	const getRoles = useRolesDescription();
 
-	const showRealNames = useSetting('UI_Use_Real_Name');
-
 	const { value, phase: state, error } = useEndpointData(
 		'users.info',
 		useMemo(
@@ -172,7 +169,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 		} = user;
 		return {
 			_id,
-			name: showRealNames ? name : username,
+			name,
 			username,
 			lastLogin,
 			roles: roles && getRoles(roles).map((role, index) => (
@@ -190,7 +187,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 			customStatus: statusText,
 			nickname,
 		};
-	}, [value, showRealNames, getRoles]);
+	}, [value, getRoles]);
 
 	return (
 		<>
