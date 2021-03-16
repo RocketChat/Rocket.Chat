@@ -234,4 +234,15 @@ export class RoomsRaw extends BaseRaw {
 	findOneByName(name, options = {}) {
 		return this.col.findOne({ name }, options);
 	}
+
+	findDefaultRoomsForTeam(teamId) {
+		return this.col.find({
+			teamId,
+			teamDefault: true,
+			t: 'c',
+			teamMain: {
+				$exists: false,
+			},
+		});
+	}
 }
