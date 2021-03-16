@@ -11,8 +11,9 @@ Template.pushMessage.helpers({
 		if (!pushm_post_processed) {
 			navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
 				console.log('Pushing message to service worker for post processing');
+				const promise = serviceWorkerRegistration.monitorNotification(pushm_origin);
 				serviceWorkerRegistration.pushManager.dispatchMessage(pushm_scope, msg);
-				serviceWorkerRegistration.monitorNotification(pushm_origin).then((post_processed_message) => {
+				promise.then((post_processed_message) => {
 					const newMsg = {};
 					console.log(post_processed_message);
 					newMsg.title = post_processed_message.title;
