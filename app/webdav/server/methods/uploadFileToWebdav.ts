@@ -24,7 +24,7 @@ Meteor.methods({
 		}
 
 		const uploadFolder = 'Rocket.Chat Uploads/';
-		const buffer = new Buffer(fileData);
+		const buffer = Buffer.from(fileData);
 
 		try {
 			const cred = getWebdavCredentials(account);

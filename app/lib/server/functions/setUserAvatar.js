@@ -51,7 +51,7 @@ export const setUserAvatar = function(user, dataURI, contentType, service) {
 		contentType = fileData.contentType;
 	}
 
-	const buffer = new Buffer(image, encoding);
+	const buffer = Buffer.from(image, encoding);
 	const fileStore = FileUpload.getStore('Avatars');
 	fileStore.deleteByName(user.username);
 
