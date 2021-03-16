@@ -24,6 +24,7 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async (agent, inquiry) => 
 	const { agentId } = agent;
 
 	const maxNumberSimultaneousChat = getMaxNumberSimultaneousChat({ agentId, departmentId });
+	console.log('----maxNumberSimultaneousChat', maxNumberSimultaneousChat);
 	if (maxNumberSimultaneousChat === 0) {
 		return agent;
 	}
@@ -32,6 +33,8 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async (agent, inquiry) => 
 	if (!user) {
 		return null;
 	}
+
+	console.log('---max limit', maxNumberSimultaneousChat, '---curr', user.queueInfo);
 
 	const { queueInfo: { chats = 0 } = {} } = user;
 	if (maxNumberSimultaneousChat <= chats) {

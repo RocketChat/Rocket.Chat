@@ -12,6 +12,7 @@ import './methods/savePriority';
 import './methods/removePriority';
 import './methods/removeBusinessHour';
 import './methods/onHold';
+import './methods/resumeOnHold';
 import LivechatUnit from '../../models/server/models/LivechatUnit';
 import LivechatTag from '../../models/server/models/LivechatTag';
 import LivechatUnitMonitors from '../../models/server/models/LivechatUnitMonitors';

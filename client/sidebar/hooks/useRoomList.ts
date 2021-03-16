@@ -74,12 +74,13 @@ export const useRoomList = (): Array<ISubscription> => {
 			});
 
 			console.log('----omnichannelOnHold', omnichannelOnHold);
+			console.log('-----inquiries', inquiries);
 
 			const groups = new Map();
-			showOmnichannel && inquiries.enabled && groups.set('Omnichannel', []);
-			showOmnichannel && !inquiries.enabled && groups.set('Omnichannel', omnichannel);
+			showOmnichannel && (inquiries.enabled || omnichannelOnHold.size) && groups.set('Omnichannel', []);
+			showOmnichannel && !inquiries.enabled && !omnichannelOnHold.size && groups.set('Omnichannel', omnichannel);
 			showOmnichannel && inquiries.enabled && inquiries.queue.length && groups.set('Incoming_Livechats', inquiries.queue);
-			showOmnichannel && inquiries.enabled && omnichannel.size && groups.set('Open_Livechats', omnichannel);
+			showOmnichannel && (inquiries.enabled || omnichannelOnHold.size) && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && omnichannelOnHold.size && groups.set('On_Hold_Chats', omnichannelOnHold);
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);

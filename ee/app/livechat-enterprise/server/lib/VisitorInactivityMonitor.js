@@ -1,11 +1,10 @@
-import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { callbacks } from '../../../../../app/callbacks';
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms, LivechatDepartment, Users, Subscriptions } from '../../../../../app/models/server';
+import { LivechatRooms, LivechatDepartment, Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
+import { LivechatEnterprise } from './LivechatEnterprise';
 
 export class VisitorInactivityMonitor {
 	constructor() {
@@ -80,17 +79,8 @@ export class VisitorInactivityMonitor {
 	}
 
 	placeRoomOnHold(room) {
-		console.log('-------VisitorInactivityMonitor.onHoldRoom', room);
-		let resp = LivechatRooms.setIsChatOnHold(room._id);
-		console.log('----placeRoomOnHold rooms db response', resp);
-		resp = Subscriptions.setIsChatOnHold(room._id);
-		console.log('----placeRoomOnHold subscription db response', resp);
-		LivechatRooms.unsetCanPlaceOnHold(room._id);
-
-		Meteor.defer(() => {
-			console.log('---livechat:afterOnHold callback set');
-			callbacks.run('livechat:afterOnHold', room);
-		});
+		LivechatEnterprise.placeRoomOnHold(room);
+		LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
 	}
 
 	handleAbandonedRooms() {

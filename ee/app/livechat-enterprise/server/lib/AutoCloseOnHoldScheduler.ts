@@ -34,9 +34,7 @@ class AutoCloseOnHoldSchedulerClass {
 		await this.unscheduleRoom(roomId);
 
 		const jobName = `${ SCHEDULER_NAME }-${ roomId }`;
-		// TODO: remove this
 		const when = moment(new Date()).add(timeout, 's').toDate();
-		// const when = moment(new Date()).add(timeout, 'm').toDate();
 
 		this.scheduler.define(jobName, this.executeJob.bind(this));
 		await this.scheduler.schedule(when, jobName, { roomId, comment });

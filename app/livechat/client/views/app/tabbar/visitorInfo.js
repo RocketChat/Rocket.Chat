@@ -335,11 +335,17 @@ Template.visitorInfo.events({
 		event.preventDefault();
 		console.log('--on-hold manual button clicked');
 
-		return Meteor.call('livechat:placeChatOnHold', this.rid, function(error/* , result*/) {
+		modal.open({
+			title: t('Would_you_like_to_place_chat_on_hold'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: t('Yes'),
+		}, () => Meteor.call('livechat:placeChatOnHold', this.rid, function(error/* , result*/) {
 			if (error) {
 				return handleError(error);
 			}
-
 			modal.open({
 				title: t('Chat_On_Hold'),
 				text: t('Chat_On_Hold_Successfully'),
@@ -347,7 +353,7 @@ Template.visitorInfo.events({
 				timer: 1500,
 				showConfirmButton: false,
 			});
-		});
+		}));
 	},
 });
 

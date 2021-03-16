@@ -86,6 +86,14 @@ LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function() {
 	});
 };
 
+LivechatRooms.prototype.unsetPredictedVisitorAbandonmentByRoomId = function(roomId) {
+	return this.update({
+		_id: roomId,
+	}, {
+		$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
+	});
+};
+
 LivechatRooms.prototype.unsetPriorityById = function(priorityId) {
 	return this.update({
 		open: true,

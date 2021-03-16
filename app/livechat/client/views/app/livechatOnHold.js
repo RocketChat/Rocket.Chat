@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import { ChatRoom } from '../../../../models';
 import './livechatOnHold.html';
+import { call } from '../../../../ui-utils/client';
 
 Template.livechatOnHold.helpers({
 	roomOpen() {
@@ -21,7 +22,10 @@ Template.livechatOnHold.events({
 		event.preventDefault();
 		event.stopPropagation();
 
-		console.log('---button clicked', instance);
+		const room = instance.room.get();
+
+		console.log('---button clicked', room);
+		await call('livechat:resumeOnHold', room._id, { clientAction: true });
 	},
 });
 

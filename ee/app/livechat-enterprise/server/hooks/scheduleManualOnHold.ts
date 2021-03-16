@@ -1,14 +1,15 @@
+import { Meteor } from 'meteor/meteor';
+
 import { callbacks } from '../../../../../app/callbacks/server';
 import { settings } from '../../../../../app/settings/server';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 import { OnHoldChatScheduler } from '../lib/OnHoldScheduler';
-import { LivechatRooms, Subscriptions } from '../../../../../app/models/server';
 
 let manualOnHoldTimeout = -1;
 let manualOnHoldEnabled = false;
 
 const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promise<any> => {
-	const { _id: rid } = room;
+	const { _id: rid, isChatOnHold } = room;
 	if (!rid) {
 		return message;
 	}
@@ -27,12 +28,10 @@ const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promis
 	}
 
 	// TODO: find a better place to add this
-	if (message.token) {
+	if (message.token && isChatOnHold) {
 		await AutoCloseOnHoldScheduler.unscheduleRoom(rid);
-		let resp = (LivechatRooms as any).unsetIsChatOnHold(rid);
-		console.log('----handleAfterSaveMessage rooms db response', resp);
-		resp = Subscriptions.unsetIsChatOnHold(rid);
-		console.log('----handleAfterSaveMessage subscription db response', resp);
+		await Meteor.call('livechat:resumeOnHold', room._id, { clientAction: false });
+		return message;
 	}
 
 	if (!manualOnHoldEnabled || manualOnHoldTimeout < 0) {
