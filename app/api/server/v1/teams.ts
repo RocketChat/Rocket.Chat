@@ -85,6 +85,10 @@ API.v1.addRoute('teams.update', { authRequired: true }, {
 			}),
 		});
 
+		if (!hasPermission(this.userId, 'edit-team')) {
+			return API.v1.unauthorized();
+		}
+
 		const { teamId, data } = this.bodyParams;
 
 		Team.update(teamId, { name: data.name, type: data.type });
