@@ -9,7 +9,7 @@ import { useAtLeastOnePermission, usePermission } from '../../../contexts/Author
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import CreateChannel from '../CreateChannel';
-import CreateTeam from '../CreateTeam';
+import CreateTeam from '../../../views/teams/CreateTeam';
 import CreateRoomListItem from './CreateRoomListItem';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
