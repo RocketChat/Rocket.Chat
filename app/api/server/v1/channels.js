@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
-import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
+import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../authorization/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { settings } from '../../../settings';
+import { Team } from '../../../../server/sdk';
 
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -1068,5 +1069,53 @@ API.v1.addRoute('channels.anonymousread', { authRequired: false }, {
 			offset,
 			total,
 		});
+	},
+});
+
+API.v1.addRoute('channels.convertToTeam', { authRequired: true }, {
+	post() {
+		if (!hasAllPermission(this.userId, ['create-team', 'edit-room'])) {
+			return API.v1.unauthorized();
+		}
+
+		const { channelId, channelName } = this.bodyParams;
+
+		if (!channelId && !channelName) {
+			return API.v1.failure('The parameter "channelId" or "channelName" is required');
+		}
+
+		const room = findChannelByIdOrName({
+			params: {
+				roomId: channelId,
+				roomName: channelName,
+			},
+			userId: this.userId,
+		});
+
+		if (!room) {
+			return API.v1.failure('Channel not found');
+		}
+
+		const subscriptions = Subscriptions.findByRoomId(room._id, {
+			fields: { 'u._id': 1 },
+		});
+
+		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
+
+		const teamData = {
+			team: {
+				name: room.name,
+				type: room.t === 'c' ? 0 : 1,
+			},
+			members,
+			room: {
+				name: room.name,
+				id: room._id,
+			},
+		};
+
+		const team = Promise.await(Team.create(this.userId, teamData));
+
+		return API.v1.success({ team });
 	},
 });

@@ -2,13 +2,23 @@ import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
-	findOneByRoomIdAndUserId(rid, uid, options) {
+	findOneByRoomIdAndUserId(rid, uid, options = {}) {
 		const query = {
-			rid,
+			_id: rid,
 			'u._id': uid,
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findManyByRoomIds(roomIds, options = {}) {
+		const query = {
+			_id: {
+				$in: roomIds,
+			},
+		};
+
+		return this.find(query, options);
 	}
 
 	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
@@ -82,7 +92,24 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(name, sIds, options) {
+	findByTeamId(teamId, options = {}) {
+		const query = {
+			teamId,
+		};
+
+		return this.find(query, options);
+	}
+
+	findPublicByTeamId(uid, teamId, options = {}) {
+		const query = {
+			teamId,
+			t: 'c',
+		};
+
+		return this.find(query, options);
+	}
+
+  findChannelAndPrivateByNameStarting(name, sIds, options) {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
 		const query = {
@@ -105,6 +132,18 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	unsetTeamById(rid, options = {}) {
+		return this.updateOne({ _id: rid }, { $unset: { teamId: '', teamDefault: '' } }, options);
+	}
+
+	setTeamById(rid, teamId, teamDefault, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamId, teamDefault } }, options);
+	}
+
+	setTeamDefaultById(rid, teamDefault, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
 	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
@@ -208,5 +247,9 @@ export class RoomsRaw extends BaseRaw {
 		}
 
 		return this.col.aggregate(params).toArray();
+	}
+
+	findOneByName(name, options = {}) {
+		return this.col.findOne({ name }, options);
 	}
 }
