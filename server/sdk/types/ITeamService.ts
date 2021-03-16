@@ -2,9 +2,13 @@ import { ITeam, ITeamMember, IRecordsWithTotal, IPaginationOptions } from '../..
 import { IRoom } from '../../../definition/IRoom';
 import { ICreateRoomParams } from './IRoomService';
 
+export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
+	id?: string;
+}
+
 export interface ITeamCreateParams {
 	team: Pick<ITeam, 'name' | 'type'>;
-	room: Omit<ICreateRoomParams, 'type'>;
+	room: ITeamCreateRoom;
 	members?: Array<string>; // list of user _ids
 	owner?: string; // the team owner. If not present, owner = requester
 }
