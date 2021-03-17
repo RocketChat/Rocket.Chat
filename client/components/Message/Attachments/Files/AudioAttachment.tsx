@@ -9,7 +9,7 @@ export type AudioAttachmentProps = {
 	audio_url: string;
 	audio_type: string;
 	audio_size?: number;
-	file: FileProp;
+	file?: FileProp;
 } & AttachmentPropsBase;
 
 export const AudioAttachment: FC<AudioAttachmentProps> = ({
@@ -30,7 +30,7 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 			<Attachment.Title>{title}</Attachment.Title>
 			{size && <Attachment.Size size={size}/>}
 			{collapse}
-			{hasDownload && link && <Attachment.Download href={link}/>}
+			{hasDownload && link && <Attachment.Download title={title} href={getURL(link)}/>}
 		</Attachment.Row>
 		{ !collapsed && <Attachment.Content border='none'>
 			<audio controls>

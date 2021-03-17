@@ -1,24 +1,22 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import React, { useCallback, useMemo, useState, useRef, memo } from 'react';
+import React, { useCallback, useMemo, useState, memo } from 'react';
 import { Box, Icon, TextInput, Callout } from '@rocket.chat/fuselage';
-import { FixedSizeList as List } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
-import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { Virtuoso } from 'react-virtuoso';
+import { useDebouncedValue, useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId, useUserSubscription } from '../../../../contexts/UserContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
-import { MessageSkeleton } from '../../components/Message';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import DiscussionListMessage from './components/Message';
 import { clickableItem } from '../../../../lib/clickableItem';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import { renderMessageBody } from '../../../../lib/renderMessageBody';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useDiscussionsList } from './useDiscussionsList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 
@@ -28,7 +26,6 @@ function mapProps(WrappedComponent) {
 
 const Discussion = React.memo(mapProps(clickableItem(DiscussionListMessage)));
 
-const Skeleton = React.memo(clickableItem(MessageSkeleton));
 
 const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
 const roomFields = { t: 1, name: 1 };
@@ -98,9 +95,7 @@ export const normalizeThreadMessage = ({ ...message }) => {
 };
 
 const Row = memo(function Row({
-	data,
-	index,
-	style,
+	discussion,
 	showRealNames,
 	userId,
 	onClick,
@@ -108,19 +103,16 @@ const Row = memo(function Row({
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 
-	if (!data[index]) {
-		return <Skeleton style={style}/>;
-	}
-	const discussion = data[index];
 	const msg = normalizeThreadMessage(discussion);
 
 	const { name = discussion.u.username } = discussion.u;
 
 	return <Discussion
-		{ ...discussion }
+		replies={discussion.replies}
+		dcount={discussion.dcount}
+		dlm={discussion.dlm}
 		name={showRealNames ? name : discussion.u.username }
 		username={ discussion.u.username }
-		style={style}
 		following={discussion.replies && discussion.replies.includes(userId)}
 		data-drid={discussion.drid}
 		msg={msg}
@@ -130,62 +122,49 @@ const Row = memo(function Row({
 	/>;
 });
 
-export function DiscussionList({ total = 10, initial = 10, discussions = [], loadMoreItems, loading, onClose, error, userId, text, setText }) {
+export function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, onClose, error, userId, text, setText }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
-	const discussionsRef = useRef();
 
 	const t = useTranslation();
-
+	const inputRef = useAutoFocus(true);
 	const onClick = useCallback((e) => {
 		const { drid } = e.currentTarget.dataset;
 		FlowRouter.goToRoomById(drid);
 	}, []);
-
-	discussionsRef.current = discussions;
-
-	const rowRenderer = useCallback(({ data, index, style }) => <Row
-		data={data}
-		index={index}
-		style={style}
-		showRealNames={showRealNames}
-		userId={userId}
-		onClick={onClick}
-	/>, [onClick, showRealNames, userId]);
-
-	const isItemLoaded = useCallback((index) => index < discussionsRef.current.length, []);
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
-
+	const {
+		ref,
+		contentBoxSize: { inlineSize = 378, blockSize = 1 } = {},
+	} = useResizeObserver({ debounceDelay: 200 });
 	return <>
 		<VerticalBar.Header>
 			<VerticalBar.Icon name='discussion'/>
 			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>{t('Discussions')}</Box>
 			<VerticalBar.Close onClick={onClose}/>
 		</VerticalBar.Header>
-		<VerticalBar.Content paddingInline={0}>
+		<VerticalBar.Content paddingInline={0} ref={ref}>
 			<Box display='flex' flexDirection='row' p='x24' borderBlockEndWidth='x2' borderBlockEndStyle='solid' borderBlockEndColor='neutral-200' flexShrink={0}>
-				<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+				<TextInput placeholder={t('Search_Messages')} value={text} onChange={setText} ref={inputRef} addon={<Icon name='magnifier' size='x20'/>}/>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} ref={ref} overflow='hidden' display='flex'>
+			<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Discussions_found')}</Box>}
-				{!error && total > 0 && <InfiniteLoader
-					isItemLoaded={isItemLoaded}
-					itemCount={total}
-					loadMoreItems={ loading ? () => {} : loadMoreItems}
-				>
-					{({ onItemsRendered, ref }) => (<List
-						outerElementType={ScrollableContentWrapper}
-						height={blockSize}
-						width={inlineSize}
-						itemCount={total}
-						itemData={discussions}
-						itemSize={124}
-						ref={ref}
-						minimumBatchSize={initial}
-						onItemsRendered={onItemsRendered}
-					>{rowRenderer}</List>
-					)}
-				</InfiniteLoader>}
+				{!error && total > 0 && discussions.length > 0 && <>
+					<Virtuoso
+						style={{ height: blockSize, width: inlineSize, overflow: 'hidden' }}
+						totalCount={total}
+						endReached={ loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
+						overscan={25}
+						data={discussions}
+						components={{ Scroller: ScrollableContentWrapper }}
+						itemContent={(index, data) => <Row
+							discussion={data}
+							showRealNames={showRealNames}
+							userId={userId}
+							onClick={onClick}
+						/>}
+					/>
+				</>
+				}
 			</Box>
 		</VerticalBar.Content>
 	</>;

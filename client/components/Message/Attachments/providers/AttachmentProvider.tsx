@@ -14,14 +14,14 @@ const AttachmentProvider: FC<{}> = ({ children }) => {
 	const saveMobileBandwidth = !!useUserPreference<boolean>('saveMobileBandwidth');
 
 	const contextValue: AttachmentContextValue = useMemo(() => ({
-		getURL: getURL as (url: string) => string,
+		getURL: (url: string): string => getURL(url, { full: true }),
 		collapsedByDefault,
 		autoLoadEmbedMedias: !reducedData && autoLoadEmbedMedias && (!saveMobileBandwidth || !isMobile),
 		dimensions: {
 			width: 480,
 			height: 360,
 		},
-	}), [autoLoadEmbedMedias, collapsedByDefault, saveMobileBandwidth, reducedData]);
+	}), [collapsedByDefault, reducedData, autoLoadEmbedMedias, saveMobileBandwidth, isMobile]);
 
 	return <AttachmentContext.Provider children={children} value={contextValue} />;
 };
