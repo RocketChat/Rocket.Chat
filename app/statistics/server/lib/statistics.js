@@ -24,6 +24,7 @@ import { NotificationQueue, Users as UsersRaw } from '../../../models/server/raw
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
+import { Team } from '../../../../server/sdk';
 
 const wizardFields = [
 	'Organization_Type',
@@ -102,6 +103,9 @@ export const statistics = {
 		statistics.totalLivechat = Rooms.findByType('l').count();
 		statistics.totalDiscussions = Rooms.countDiscussions();
 		statistics.totalThreads = Messages.countThreads();
+
+		// Teams statistics
+		statistics.teams = Promise.await(Team.getStatistics());
 
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
