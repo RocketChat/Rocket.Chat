@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { Tabs, Icon, Box } from '@rocket.chat/fuselage';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/Page';
@@ -40,7 +41,11 @@ const OmnichannelDirectoryPage = () => {
 		}
 	}, [directoryRoute, tab, defaultTab]);
 
-	const ContactContextualBar = useCallback(() => <VerticalBar className={'contextual-bar'}>
+	const openInRoom = () => {
+		FlowRouter.go('live', { id });
+	};
+
+	const ContactContextualBar = () => <VerticalBar className={'contextual-bar'}>
 		<VerticalBar.Header>
 			{context === 'new' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('New_Contact')}</Box>}
 			{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Profile')}</Box>}
@@ -50,21 +55,21 @@ const OmnichannelDirectoryPage = () => {
 		{context === 'new' && <ContactNewEdit reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />}
 		{context === 'info' && <ContactInfo reload={contactReload} id={id} />}
 		{context === 'edit' && <ContactEditWithData id={id} reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />}
-	</VerticalBar>);
+	</VerticalBar>;
 
-	const ChatsContextualBar = useCallback(() => <VerticalBar className={'contextual-bar'}>
+	const ChatsContextualBar = () => <VerticalBar className={'contextual-bar'}>
 		<VerticalBar.Header>
 			{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='info-circled' size='x20' /> {t('Room_Info')}</Box>}
+			{context === 'info' && <VerticalBar.Action title={t('Open_room')} name={'new-window'} onClick={openInRoom} />}
 			<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
 		</VerticalBar.Header>
 		{context === 'info' && <ChatInfo id={id} />}
-	</VerticalBar>);
+	</VerticalBar>;
 
-	const ContextualBar = useCallback(() => {
+	const ContextualBar = () => {
 		if (!context) {
 			return '';
 		}
-		console.log(context, tab);
 
 		switch (tab) {
 			case 'contacts':
@@ -74,7 +79,7 @@ const OmnichannelDirectoryPage = () => {
 			default:
 				return '';
 		}
-	}, [context, tab]);
+	};
 
 	return <Page flexDirection='row'>
 		<Page>
