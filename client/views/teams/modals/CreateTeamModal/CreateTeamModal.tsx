@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { useMutableCallback, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import React, { FC, memo, Ref, useCallback, useEffect, useMemo, useState } from 'react';
+import { useMutableCallback, useDebouncedCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { Box, Modal, ButtonGroup, Button, TextInput, Field, ToggleSwitch } from '@rocket.chat/fuselage';
 
 import { IUser } from '../../../../../definition/IUser';
@@ -239,6 +239,8 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 
 	const t = useTranslation();
 
+	const focusRef = useAutoFocus() as Ref<HTMLElement>;
+
 	return <Modal>
 		<Modal.Header>
 			<Modal.Title>{t('Teams.New.Title')}</Modal.Title>
@@ -248,7 +250,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 			<Field mbe='x24'>
 				<Field.Label>{t('Teams.New.Name.Label')}</Field.Label>
 				<Field.Row>
-					<TeamNameInput private={type} error={hasUnsavedChanges ? nameError : undefined} value={name} onChange={onChangeName} />
+					<TeamNameInput ref={focusRef} private={type} error={hasUnsavedChanges ? nameError : undefined} value={name} onChange={onChangeName} />
 				</Field.Row>
 				{hasUnsavedChanges && nameError && <Field.Error>
 					{nameError}
