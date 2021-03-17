@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Rooms, Messages, Subscriptions } from '../../../models';
 import { callbacks } from '../../../callbacks';
+import { Team } from '../../../../server/sdk';
 
 export const removeUserFromRoom = function(rid, user, options = {}) {
 	const room = Rooms.findOneById(rid);
@@ -27,6 +28,10 @@ export const removeUserFromRoom = function(rid, user, options = {}) {
 		}
 
 		Subscriptions.removeByRoomIdAndUserId(rid, user._id);
+
+		if (room.teamId && room.teamMain) {
+			Promise.await(Team.removeMember(room.teamId, user._id));
+		}
 
 		Meteor.defer(function() {
 			// TODO: CACHE: maybe a queue?
