@@ -24,7 +24,7 @@ import { NotificationQueue, Users as UsersRaw } from '../../../models/server/raw
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Team } from '../../../../server/sdk'
+import { Team } from '../../../../server/sdk';
 
 const wizardFields = [
 	'Organization_Type',

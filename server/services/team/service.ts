@@ -466,7 +466,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		stats.totalTeams = await teams.count();
 		stats.teamStats = [];
-		
+
 		for await (const team of teamsArray) {
 			// exclude the main room from the stats
 			const teamRooms = await this.RoomsModel.find({ teamId: team._id, teamMain: { $exists: false } }).toArray();
@@ -474,7 +474,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			const [totalMessagesInTeam, defaultRooms, totalMembers] = await Promise.all([
 				this.MessagesModel.find({ rid: { $in: roomIds } }).count(),
 				this.RoomsModel.findDefaultRoomsForTeam(team._id).count(),
-				this.TeamMembersModel.findByTeamId(team._id).count()
+				this.TeamMembersModel.findByTeamId(team._id).count(),
 			]);
 
 			const teamData = {
@@ -494,4 +494,3 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return stats;
 	}
 }
- 
