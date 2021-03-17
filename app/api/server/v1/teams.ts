@@ -117,7 +117,6 @@ API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 			getAllRooms = true;
 		}
 
-
 		const { records, total } = Promise.await(Team.listRooms(this.userId, teamId, getAllRooms, allowPrivateTeam, { offset, count }));
 
 		return API.v1.success({
