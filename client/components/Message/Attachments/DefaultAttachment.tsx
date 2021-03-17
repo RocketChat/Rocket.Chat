@@ -57,7 +57,15 @@ export const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
 			{!collapsed && <>
 				{attachment.text && <Attachment.Text>{applyMardownFor('text', attachment.text)}</Attachment.Text>}
 				{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
-				{attachment.fields && <FieldsAttachment fields={attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText variant='inline' content={value as string} /> }))} />}
+				{attachment.fields && <FieldsAttachment fields={attachment.fields.map(({ value, ...rest }) => {
+					const cleanValue = (value as string).replace(/(.*)/g, (line: string) => {
+						if (line.trim() === '') {
+							return `${ line }  <br/>`;
+						}
+						return `${ line }  `;
+					});
+					return { ...rest, value: <MarkdownText variant='inline' content={cleanValue} /> };
+				})} />}
 				{attachment.image_url && <Attachment.Image {...attachment.image_dimensions as any} src={attachment.image_url} />}
 				{/* DEPRECATED */}
 				{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}

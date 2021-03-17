@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, Cursor, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, InsertOneWriteOpResult, UpdateWriteOpResult, DeleteWriteOpResultObject } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeamMember } from '../../../../definition/ITeam';
@@ -78,6 +78,13 @@ export class TeamMemberRaw extends BaseRaw<T> {
 			$pull: {
 				roles: { $in: roles },
 			},
+		});
+	}
+
+	deleteByUserIdAndTeamId(userId: string, teamId: string): Promise<DeleteWriteOpResultObject> {
+		return this.col.deleteOne({
+			teamId,
+			userId,
 		});
 	}
 }

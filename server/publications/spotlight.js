@@ -6,7 +6,7 @@ import { hasAllPermission, hasPermission, canAccessRoom } from '../../app/author
 import { Subscriptions, Rooms } from '../../app/models/server';
 import { Users } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
-import { roomTypes } from '../../app/utils/server';
+import { searchableRoomTypes } from '../../app/utils/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { escapeRegExp } from '../../lib/escapeRegExp';
 
@@ -46,17 +46,15 @@ function searchRooms({ userId, text }) {
 	}
 
 	if (hasAllPermission(userId, ['view-outside-room', 'view-c-room'])) {
-		const searchableRoomTypes = Object.entries(roomTypes.roomTypes)
-			.filter((roomType) => roomType[1].includeInRoomSearch())
-			.map((roomType) => roomType[0]);
+		const searchableRoomTypeIds = searchableRoomTypes();
 
-		const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypes, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
-		const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypes, roomOptions);
+		const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypeIds, { fields: { rid: 1 } }).fetch().map((s) => s.rid);
+		const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions);
 		if (exactRoom) {
 			roomIds.push(exactRoom.rid);
 		}
 
-		return fetchRooms(userId, Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypes, roomIds, roomOptions).fetch());
+		return fetchRooms(userId, Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions).fetch());
 	}
 
 	return [];
