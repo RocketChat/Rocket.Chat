@@ -30,7 +30,7 @@ export const removeUserFromRoom = function(rid, user, options = {}) {
 		Subscriptions.removeByRoomIdAndUserId(rid, user._id);
 
 		if (room.teamId && room.teamMain) {
-			Promise.await(Team.removeMembers(room.teamId, user._id));
+			Promise.await(Team.removeMember(room.teamId, user._id));
 		}
 
 		Meteor.defer(function() {
