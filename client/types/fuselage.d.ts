@@ -254,6 +254,7 @@ declare module '@rocket.chat/fuselage' {
 	export const Field: ForwardRefExoticComponent<FieldProps> & {
 		Row: ForwardRefExoticComponent<BoxProps>;
 		Label: ForwardRefExoticComponent<BoxProps>;
+		Description: ForwardRefExoticComponent<BoxProps>;
 		Hint: ForwardRefExoticComponent<BoxProps>;
 		Error: ForwardRefExoticComponent<BoxProps>;
 	};

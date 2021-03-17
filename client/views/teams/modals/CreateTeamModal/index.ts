@@ -1,1 +1,1 @@
-export { default } from './CreateTeam';
+export { default } from './CreateTeamModal';
