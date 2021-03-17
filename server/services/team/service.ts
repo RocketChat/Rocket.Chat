@@ -250,7 +250,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
-		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1, type: 1 }});
+		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1, type: 1 } });
 		if (!team) {
 			throw new Error('invalid-team');
 		}

@@ -115,7 +115,7 @@ API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 		let getAllRooms = false;
 		if (hasPermission(this.userId, 'view-all-team-channels')) {
 			getAllRooms = true;
-		} 
+		}
 
 
 		const { records, total } = Promise.await(Team.listRooms(this.userId, teamId, getAllRooms, allowPrivateTeam, { offset, count }));
