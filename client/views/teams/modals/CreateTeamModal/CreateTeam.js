@@ -6,11 +6,11 @@ import { Box, Modal, ButtonGroup, Button, TextInput, Field, ToggleSwitch } from 
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
-import UserAutoCompleteMultiple from '../../../../../ee/client/audit/UserAutoCompleteMultiple';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../../contexts/ServerContext';
 import TeamNameInput from './TeamNameInput';
+import UsersInput from './UsersInput';
 
 export const CreateTeam = ({
 	values,
@@ -116,7 +116,7 @@ export const CreateTeam = ({
 			</Field>
 			<Field mbe='x24'>
 				<Field.Label>{`${ t('Add_members') } (${ t('optional') })`}</Field.Label>
-				<UserAutoCompleteMultiple value={values.members} onChange={onChangeMembers}/>
+				<UsersInput value={values.members} onChange={onChangeMembers} />
 			</Field>
 		</Modal.Content>
 		<Modal.Footer>
