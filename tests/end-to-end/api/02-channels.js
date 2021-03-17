@@ -1499,4 +1499,46 @@ describe('[Channels]', function() {
 			});
 		});
 	});
+
+	describe.only('/channels.convertToTeam', () => {
+		before(async () => {
+			const { body } = await request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({ name: `channel-${ Date.now() }` });
+
+			this.newChannel = body.channel;
+		});
+
+		it('should successfully convert a channel to a team', (done) => {
+			console.log('channel: ', this.newChannel);
+			request.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelId: this.newChannel._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should fail to convert channel without the required parameters', (done) => {
+			request.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({})
+				.expect(400)
+				.end(done);
+		});
+
+		it('should fail to convert channel if it\'s already taken', (done) => {
+			request.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelId: this.newChannel._id })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+				})
+				.end(done);
+		});
+	});
 });
