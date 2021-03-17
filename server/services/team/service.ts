@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
-import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
+import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions, ITeamStats } from '../../../definition/ITeam';
 import { Room } from '../../sdk';
 import { ITeamCreateParams, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
 import { IUser } from '../../../definition/IUser';
@@ -10,6 +10,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
+import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { IRoom } from '../../../definition/IRoom';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 
@@ -26,6 +27,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 	private TeamMembersModel: TeamMemberRaw;
 
+	private MessagesModel: MessagesRaw;
+
 	// TODO not sure we should have the collection here or call the Room service for getting Room data
 	private Rooms: RoomsRaw;
 
@@ -38,6 +41,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		this.TeamMembersModel = new TeamMemberRaw(db.collection('rocketchat_team_member'));
 		this.Users = new UsersRaw(db.collection('users'));
 		this.Rooms = new RoomsRaw(db.collection('rocketchat_room'));
+		this.MessagesModel = new MessagesRaw(db.collection('rocketchat_message'));
 	}
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
@@ -454,4 +458,40 @@ export class TeamService extends ServiceClass implements ITeamService {
 	async deleteByName(teamName: string): Promise<boolean> {
 		return !!await this.TeamModel.deleteOneByName(teamName);
 	}
+
+	async getStatistics(): Promise<ITeamStats> {
+		const stats = {} as ITeamStats;
+		const teams = await this.TeamModel.find({});
+		const teamsArray = await teams.toArray();
+
+		stats.totalTeams = await teams.count();
+		stats.teamStats = [];
+		
+		for await (const team of teamsArray) {
+			// exclude the main room from the stats
+			const teamRooms = await this.RoomsModel.find({ teamId: team._id, teamMain: { $exists: false } }).toArray();
+			const roomIds = teamRooms.map((r) => r._id);
+			const [totalMessagesInTeam, defaultRooms, totalMembers] = await Promise.all([
+				this.MessagesModel.find({ rid: { $in: roomIds } }).count(),
+				this.RoomsModel.findDefaultRoomsForTeam(team._id).count(),
+				this.TeamMembersModel.findByTeamId(team._id).count()
+			]);
+
+			const teamData = {
+				teamId: team._id,
+				mainRoom: team.roomId,
+				totalRooms: teamRooms.length,
+				totalMessages: totalMessagesInTeam,
+				totalPublicRooms: teamRooms.filter((r) => r.t === 'c').length,
+				totalPrivateRooms: teamRooms.filter((r) => r.t !== 'c').length,
+				totalDefaultRooms: defaultRooms,
+				totalMembers,
+			};
+
+			stats.teamStats.push(teamData);
+		}
+
+		return stats;
+	}
 }
+ 

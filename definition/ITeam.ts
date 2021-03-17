@@ -33,3 +33,18 @@ export interface IRecordsWithTotal<T> {
 	records: Array<T>;
 	total: number;
 }
+
+export interface ITeamStatData {
+	teamId: string;
+	mainRoom: string;
+	totalRooms: number;
+	totalMessages: number;
+	totalPublicRooms: number;
+	totalPrivateRooms: number;
+	totalDefaultRooms: number;
+	totalMembers: number;
+}
+export interface ITeamStats {
+	totalTeams: number;
+	teamStats: Array<ITeamStatData>;
+}
