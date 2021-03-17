@@ -12,7 +12,6 @@ import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../../contexts/ServerContext';
 import TeamNameInput from './TeamNameInput';
 import UsersInput from './UsersInput';
-import { IRoom } from '../../../../../definition/IRoom';
 
 type CreateTeamModalState = {
 	name: any;
@@ -160,10 +159,6 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 	const createTeam = useEndpointActionExperimental('POST', 'teams.create');
 
 	const onCreate = useCallback(async () => {
-		const goToRoom = (rid: IRoom['_id']): void => {
-			FlowRouter.goToRoomById(rid);
-		};
-
 		const params = {
 			name,
 			members,
@@ -178,9 +173,9 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 			},
 		};
 
-		const roomData = await createTeam(params);
+		const data = await createTeam(params);
 
-		goToRoom(roomData.team.rid);
+		FlowRouter.goToRoomById(data.team.roomId);
 
 		onClose();
 	}, [name, members, type, readOnly, description, broadcast, encrypted, createTeam, onClose]);
@@ -279,7 +274,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 				<Box display='flex' justifyContent='space-between' alignItems='start'>
 					<Box display='flex' flexDirection='column'>
 						<Field.Label>{t('Teams_New_Read_only_Label')}</Field.Label>
-						<Field.Description>{t('Teams_New_Description')}</Field.Description>
+						<Field.Description>{t('Teams_New_Read_only_Description')}</Field.Description>
 					</Box>
 					<ToggleSwitch checked={readOnly} disabled={!canChangeReadOnly} onChange={onChangeReadOnly}/>
 				</Box>
