@@ -3705,41 +3705,22 @@
   "TargetRoom": "Target Room",
   "TargetRoom_Description": "The room where messages will be sent which are a result of this event being fired. Only one target room is allowed and it must exist.",
   "Team": "Team",
-  "Teams": {
-    "Errors": {
-      "Already_exists": "The team `__name__` already exists."
-    },
-    "New": {
-      "Title": "Create Team",
-      "Name": {
-        "Label": "Name"
-      },
-      "Description": {
-        "Placeholder": "What is this team about"
-      },
-      "Private": {
-        "Label": "Private",
-        "Description_Enabled": "Only invited people can join",
-        "Description_Disabled": "When disabled, anyone can join the team"
-      },
-      "Read_only": {
-        "Label": "Read Only",
-        "Description": "All users in this team can write messages"
-      },
-      "Encrypted": {
-        "Label": "Encrypted",
-        "Description_Enabled": "End to end encrypted team. Search will not work with encrypted Teams and notifications may not show the messages content.",
-        "Description_Disabled": "Only available for private team"
-      },
-      "Broadcast": {
-        "Label": "Broadcast",
-        "Description": "Only authorized users can write new messages, but the other users will be able to reply"
-      },
-      "Add_members": {
-        "Label": "Add Members"
-      }
-    }
-  },
+  "Teams_Errors_Already_exists": "The team `__name__` already exists.",
+  "Teams_New_Title": "Create Team",
+  "Teams_New_Name_Label": "Name",
+  "Teams_New_Description_Label": "Topic",
+  "Teams_New_Description_Placeholder": "What is this team about",
+  "Teams_New_Private_Label": "Private",
+  "Teams_New_Private_Description_Enabled": "Only invited people can join",
+  "Teams_New_Private_Description_Disabled": "When disabled, anyone can join the team",
+  "Teams_New_Read_only_Label": "Read Only",
+  "Teams_New_Read_only_Description": "All users in this team can write messages",
+  "Teams_New_Encrypted_Label": "Encrypted",
+  "Teams_New_Encrypted_Description_Enabled": "End to end encrypted team. Search will not work with encrypted Teams and notifications may not show the messages content.",
+  "Teams_New_Encrypted_Description_Disabled": "Only available for private team",
+  "Teams_New_Broadcast_Label": "Broadcast",
+  "Teams_New_Broadcast_Description": "Only authorized users can write new messages, but the other users will be able to reply",
+  "Teams_New_Add_members_Label": "Add Members",
   "Technology_Provider": "Technology Provider",
   "Technology_Services": "Technology Services",
   "Telecom": "Telecom",
