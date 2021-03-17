@@ -120,6 +120,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			}
 
 			await this.TeamModel.updateMainRoomForTeam(teamId, roomId);
+			teamData.roomId = roomId;
 
 			return {
 				_id: teamId,
