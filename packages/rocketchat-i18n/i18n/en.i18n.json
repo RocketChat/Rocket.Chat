@@ -1169,7 +1169,6 @@
   "Cozy": "Cozy",
   "Create": "Create",
   "Create_channel": "Create Channel",
-  "Create_team": "Create Team",
   "Create_A_New_Channel": "Create a New Channel",
   "Create_new": "Create new",
   "Create_unique_rules_for_this_channel": "Create unique rules for this channel",
@@ -3706,9 +3705,40 @@
   "TargetRoom": "Target Room",
   "TargetRoom_Description": "The room where messages will be sent which are a result of this event being fired. Only one target room is allowed and it must exist.",
   "Team": "Team",
-  "Team_what_is_this_team_about": "What is this team about",
   "Teams": {
-    "already_exists": "The team `__name__` already exists."
+    "Errors": {
+      "Already_exists": "The team `__name__` already exists."
+    },
+    "New": {
+      "Title": "Create Team",
+      "Name": {
+        "Label": "Name"
+      },
+      "Description": {
+        "Placeholder": "What is this team about"
+      },
+      "Private": {
+        "Label": "Private",
+        "Description_Enabled": "Only invited people can join",
+        "Description_Disabled": "When disabled, anyone can join the team"
+      },
+      "Read_only": {
+        "Label": "Read Only",
+        "Description": "All users in this team can write messages"
+      },
+      "Encrypted": {
+        "Label": "Encrypted",
+        "Description_Enabled": "End to end encrypted team. Search will not work with encrypted Teams and notifications may not show the messages content.",
+        "Description_Disabled": "Only available for private team"
+      },
+      "Broadcast": {
+        "Label": "Broadcast",
+        "Description": "Only authorized users can write new messages, but the other users will be able to reply"
+      },
+      "Add_members": {
+        "Label": "Add Members"
+      }
+    }
   },
   "Technology_Provider": "Technology Provider",
   "Technology_Services": "Technology Services",

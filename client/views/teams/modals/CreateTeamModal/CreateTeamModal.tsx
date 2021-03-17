@@ -112,7 +112,7 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 
 		const isNotAvailable = await teamNameExists(name);
 		if (isNotAvailable) {
-			setNameError(t('Teams.already_exists', { name }));
+			setNameError(t('Teams.Errors.Already_exists', { name }));
 		}
 	}, 230, [name]);
 
@@ -241,12 +241,12 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 
 	return <Modal>
 		<Modal.Header>
-			<Modal.Title>{t('Create_team')}</Modal.Title>
+			<Modal.Title>{t('Teams.New.Title')}</Modal.Title>
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
 		<Modal.Content>
 			<Field mbe='x24'>
-				<Field.Label>{t('Name')}</Field.Label>
+				<Field.Label>{t('Teams.New.Name.Label')}</Field.Label>
 				<Field.Row>
 					<TeamNameInput private={type} error={hasUnsavedChanges ? nameError : undefined} value={name} onChange={onChangeName} />
 				</Field.Row>
@@ -258,7 +258,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 				<Field.Label>{t('Topic')} <Box is='span' color='neutral-600'>({t('optional')})</Box></Field.Label>
 				<Field.Row>
 					<TextInput
-						placeholder={t('Team_what_is_this_team_about')}
+						placeholder={t('Teams.New.Description.Placeholder')}
 						value={description}
 						onChange={onChangeDescription}
 					/>
@@ -267,8 +267,8 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 			<Field mbe='x24'>
 				<Box display='flex' justifyContent='space-between' alignItems='start'>
 					<Box display='flex' flexDirection='column'>
-						<Field.Label>{t('Private')}</Field.Label>
-						<Field.Description>{type ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}</Field.Description>
+						<Field.Label>{t('Teams.New.Private.Label')}</Field.Label>
+						<Field.Description>{type ? t('Teams.New.Private.Description_Enabled') : t('Teams.New.Private.Description_Disabled')}</Field.Description>
 					</Box>
 					<ToggleSwitch checked={type} onChange={onChangeType}/>
 				</Box>
@@ -276,8 +276,8 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 			<Field mbe='x24' disabled={!canChangeReadOnly}>
 				<Box display='flex' justifyContent='space-between' alignItems='start'>
 					<Box display='flex' flexDirection='column'>
-						<Field.Label>{t('Read_only')}</Field.Label>
-						<Field.Description>{t('All_users_in_the_channel_can_write_new_messages')}</Field.Description>
+						<Field.Label>{t('Teams.New.Read_only.Label')}</Field.Label>
+						<Field.Description>{t('Teams.New.Description')}</Field.Description>
 					</Box>
 					<ToggleSwitch checked={readOnly} disabled={!canChangeReadOnly} onChange={onChangeReadOnly}/>
 				</Box>
@@ -285,8 +285,8 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 			<Field disabled={!canChangeEncrypted} mbe='x24'>
 				<Box display='flex' justifyContent='space-between' alignItems='start'>
 					<Box display='flex' flexDirection='column'>
-						<Field.Label>{t('Encrypted')}</Field.Label>
-						<Field.Description>{type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}</Field.Description>
+						<Field.Label>{t('Teams.New.Encrypted.Label')}</Field.Label>
+						<Field.Description>{type ? t('Teams.New.Encrypted.Description_Enabled') : t('Teams.New.Encrypted.Description_Disabled')}</Field.Description>
 					</Box>
 					<ToggleSwitch checked={encrypted} disabled={!canChangeEncrypted} onChange={onChangeEncrypted} />
 				</Box>
@@ -294,14 +294,14 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 			<Field mbe='x24'>
 				<Box display='flex' justifyContent='space-between' alignItems='start'>
 					<Box display='flex' flexDirection='column'>
-						<Field.Label>{t('Broadcast')}</Field.Label>
-						<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
+						<Field.Label>{t('Teams.New.Broadcast.Label')}</Field.Label>
+						<Field.Description>{t('Teams.New.Broadcast.Description')}</Field.Description>
 					</Box>
 					<ToggleSwitch checked={broadcast} onChange={onChangeBroadcast} />
 				</Box>
 			</Field>
 			<Field mbe='x24'>
-				<Field.Label>{t('Add_members')} <Box is='span' color='neutral-600'>({t('optional')})</Box></Field.Label>
+				<Field.Label>{t('Teams.New.Add_members.Label')} <Box is='span' color='neutral-600'>({t('optional')})</Box></Field.Label>
 				<UsersInput value={members} onChange={onChangeMembers} />
 			</Field>
 		</Modal.Content>
