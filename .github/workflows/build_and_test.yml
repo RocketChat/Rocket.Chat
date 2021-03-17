@@ -249,8 +249,8 @@ jobs:
         pip --version
         pip install -U selenium
         pip install pytest pytest-html
-        sudo apt-get update -y
-        sudo apt-get install -y allure
+        pip install allure-pytest
+       
 
     - name: Test
       env:
