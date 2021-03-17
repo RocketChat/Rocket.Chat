@@ -36,8 +36,8 @@
 			&:hover,
 			&:focus,
 			&.active {
-				color: var(--message-box-markdown-hover-color);
-			}
+				color:var(--message-box-markdown-hover-color);
+				transform: scale(1.3);			}
 		}
 
 		&-link {
@@ -47,7 +47,7 @@
 		}
 
 		&-icon {
-			font-size: 1rem;
+			font-size: 1.2rem;
 			fill: currentColor;
 		}
 	}
@@ -143,12 +143,6 @@
 
 		& .rc-input__icon-svg--plus {
 			transition: transform 0.1s linear;
-		}
-		&:hover,
-		&:focus,
-		&.active {
-			color: red;
-			transform: scale(1.5);
 		}
 	}
 
