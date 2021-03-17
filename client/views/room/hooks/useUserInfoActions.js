@@ -167,7 +167,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 
 	const openDirectMessageOption = useMemo(() => shouldOpenDirectMessage && {
 		label: t('Direct_Message'),
-		icon: 'chat',
+		icon: 'balloon',
 		action: openDirectDm,
 	}, [openDirectDm, shouldOpenDirectMessage, t]);
 
