@@ -265,7 +265,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 				records: await teamRoomsCursor.toArray(),
 			};
 		}
-		const teamRooms = await this.RoomsModel.findByTeamId(teamId, { skip, limit, projection: { _id: 1, t: 1 } }).toArray();
+		const teamRooms = await this.RoomsModel.findByTeamId(teamId, { projection: { _id: 1, t: 1 } }).toArray();
 		const privateTeamRoomIds = teamRooms.filter((room) => room.t === 'p').map((room) => room._id);
 		const publicTeamRoomIds = teamRooms.filter((room) => room.t === 'c').map((room) => room._id);
 
