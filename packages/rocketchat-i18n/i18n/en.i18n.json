@@ -3706,6 +3706,7 @@
   "TargetRoom": "Target Room",
   "TargetRoom_Description": "The room where messages will be sent which are a result of this event being fired. Only one target room is allowed and it must exist.",
   "Team": "Team",
+  "Team_Info": "Team Info",
   "Teams_channels": "Team's Channels",
   "Teams_about_the_channels": "And about the Channels?",
   "Teams_delete_team_warning": "This can’t be undone. Once you delete a Team, all chat content and configuration will be deleted.\n\n In the next step, you can choose if you will keep or delete Channels.",
