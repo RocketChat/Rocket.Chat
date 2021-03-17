@@ -262,10 +262,7 @@ Template.messageBox.helpers({
 	},
 	onHold() {
 		const { rid, subscription } = Template.currentData();
-		if (!rid) {
-			return false;
-		}
-		return !!subscription?.onHold;
+		return rid && !!subscription?.onHold;
 	},
 	isSubscribed() {
 		const { subscription } = Template.currentData();

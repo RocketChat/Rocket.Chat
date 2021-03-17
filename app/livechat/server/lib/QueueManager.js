@@ -7,7 +7,7 @@ import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
 
 
-export const queueInquiry = async (room, inquiry, defaultAgent) => {
+const queueInquiry = async (room, inquiry, defaultAgent) => {
 	const inquiryAgent = RoutingManager.delegateAgent(defaultAgent, inquiry);
 	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
 	inquiry = LivechatInquiry.findOneById(inquiry._id);

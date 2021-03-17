@@ -1,8 +1,11 @@
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import { callbacks } from '../../../../../app/callbacks/server';
 import { settings } from '../../../../../app/settings/server';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 
-const DEFAULT_CLOSED_MESSAGE = 'Chat is closed because of inactivity';
+
+const DEFAULT_CLOSED_MESSAGE = TAPi18n.__('Closed_automatically');
 
 let autoCloseOnHoldChatTimeout = 0;
 let customCloseMessage = DEFAULT_CLOSED_MESSAGE;
