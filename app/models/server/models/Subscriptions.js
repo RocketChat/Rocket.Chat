@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import _ from 'underscore';
+import mem from 'mem';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
@@ -422,10 +423,12 @@ export class Subscriptions extends Base {
 
 	// FIND
 	findByUserId(userId, options) {
-		const query =			{ 'u._id': userId };
+		const query = { 'u._id': userId };
 
 		return this.find(query, options);
 	}
+
+	cachedFindByUserId = mem(this.findByUserId.bind(this), { maxAge: 5000 });
 
 	findByUserIdExceptType(userId, typeException, options) {
 		const query = {

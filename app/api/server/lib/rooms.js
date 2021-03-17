@@ -1,5 +1,6 @@
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Rooms } from '../../../models/server/raw';
+import { Subscriptions } from '../../../models';
 
 export async function findAdminRooms({ uid, filter, types = [], pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(uid, 'view-room-administration')) {
@@ -102,8 +103,11 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 			name: 1,
 		},
 	};
+	const userRooms = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
+		.fetch()
+		.map((item) => item.rid);
 
-	const rooms = await Rooms.findChannelAndPrivateByNameStarting(selector.name, options).toArray();
+	const rooms = await Rooms.findChannelAndPrivateByNameStarting(selector.name, userRooms, options).toArray();
 
 	return {
 		items: rooms,
