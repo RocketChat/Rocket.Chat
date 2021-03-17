@@ -340,18 +340,19 @@ Template.visitorInfo.events({
 			confirmButtonColor: '#3085d6',
 			cancelButtonColor: '#d33',
 			confirmButtonText: t('Yes'),
-		}, () => Meteor.call('livechat:placeChatOnHold', this.rid, function(error/* , result*/) {
-			if (error) {
-				return handleError(error);
+		},
+		async () => {
+			const { success } = await APIClient.v1.get(`livechat/placeChatOnHold?roomId=${ this.rid }`);
+			if (success) {
+				modal.open({
+					title: t('Chat_On_Hold'),
+					text: t('Chat_On_Hold_Successfully'),
+					type: 'success',
+					timer: 1500,
+					showConfirmButton: false,
+				});
 			}
-			modal.open({
-				title: t('Chat_On_Hold'),
-				text: t('Chat_On_Hold_Successfully'),
-				type: 'success',
-				timer: 1500,
-				showConfirmButton: false,
-			});
-		}));
+		});
 	},
 });
 

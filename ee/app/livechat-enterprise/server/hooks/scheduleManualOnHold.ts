@@ -46,7 +46,7 @@ const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promis
 
 settings.get('Livechat_allow_manual_on_hold', (_, value) => {
 	manualOnHoldEnabled = value as boolean;
-	if (!manualOnHoldTimeout) {
+	if (!manualOnHoldEnabled) {
 		callbacks.remove('afterSaveMessage', 'livechat-manual-on-hold');
 		return;
 	}
