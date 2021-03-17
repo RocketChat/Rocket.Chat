@@ -66,6 +66,9 @@ export class RoomsRaw extends BaseRaw {
 				$in: types,
 			},
 			prid: { $exists: discussion },
+			teamId: {
+				$exists: false,
+			},
 		};
 		return this.find(query, options);
 	}
@@ -82,6 +85,9 @@ export class RoomsRaw extends BaseRaw {
 					usernames: nameRegex,
 				},
 			],
+			teamId: {
+				$exists: false,
+			},
 		};
 		return this.find(query, options);
 	}
@@ -98,6 +104,31 @@ export class RoomsRaw extends BaseRaw {
 		const query = {
 			teamId,
 			t: 'c',
+		};
+
+		return this.find(query, options);
+	}
+
+  findChannelAndPrivateByNameStarting(name, sIds, options) {
+		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			t: {
+				$in: ['c', 'p'],
+			},
+			name: nameRegex,
+			$or: [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: sIds,
+				},
+			}],
 		};
 
 		return this.find(query, options);
