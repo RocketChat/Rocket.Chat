@@ -47,7 +47,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		const existingRoom = await this.Rooms.findOneByName(team.name, { projection: { _id: 1 } });
-		if (existingRoom && !room.id) {
+		if (existingRoom && existingRoom._id !== room.id) {
 			throw new Error('room-name-already-exists');
 		}
 
