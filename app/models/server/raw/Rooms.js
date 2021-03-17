@@ -109,7 +109,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-  findChannelAndPrivateByNameStarting(name, sIds, options) {
+	findChannelAndPrivateByNameStarting(name, sIds, options) {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
 		const query = {
@@ -144,18 +144,6 @@ export class RoomsRaw extends BaseRaw {
 
 	setTeamDefaultById(rid, teamDefault, options = {}) {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
-	}
-
-	findChannelAndPrivateByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
-		const query = {
-			t: {
-				$in: ['c', 'p'],
-			},
-			name: nameRegex,
-		};
-
-		return this.find(query, options);
 	}
 
 	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
