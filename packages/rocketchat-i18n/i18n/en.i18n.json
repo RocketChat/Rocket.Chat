@@ -3707,6 +3707,9 @@
   "TargetRoom_Description": "The room where messages will be sent which are a result of this event being fired. Only one target room is allowed and it must exist.",
   "Team": "Team",
   "Team_what_is_this_team_about": "What is this team about",
+  "Teams": {
+    "already_exists": "The team `__name__` already exists."
+  },
   "Technology_Provider": "Technology Provider",
   "Technology_Services": "Technology Services",
   "Telecom": "Telecom",

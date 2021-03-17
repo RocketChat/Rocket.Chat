@@ -96,23 +96,25 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 	const checkName = useDebouncedCallback(async (name: string) => {
 		setNameError(undefined);
 
-		if (hasUnsavedChanges) {
+		if (!hasUnsavedChanges) {
 			return;
 		}
 
 		if (!name || name.length === 0) {
-			return setNameError(t('Field_required'));
+			setNameError(t('Field_required'));
+			return;
 		}
 
 		if (teamNameRegex && !teamNameRegex.test(name)) {
-			return setNameError(t('error-invalid-name'));
+			setNameError(t('error-invalid-name'));
+			return;
 		}
 
 		const isNotAvailable = await teamNameExists(name);
 		if (isNotAvailable) {
-			return setNameError(t('Channel_already_exist', name));
+			setNameError(t('Teams.already_exists', { name }));
 		}
-	}, 100, [name]);
+	}, 230, [name]);
 
 	useEffect(() => {
 		checkName(name);
