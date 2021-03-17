@@ -11,6 +11,7 @@ import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { IRoom } from '../../../definition/IRoom';
+import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 
 export class TeamService extends ServiceClass implements ITeamService {
 	protected name = 'team';
@@ -76,7 +77,9 @@ export class TeamService extends ServiceClass implements ITeamService {
 			// if the owner is not present, remove the caller from the members list
 			const excludeFromMembers = owner ? [owner] : [uid];
 
-			const membersList: Array<Omit<ITeamMember, '_id'>> = members?.filter((memberId) => !excludeFromMembers.includes(memberId))
+			// filter empty strings and falsy values from members list
+			const membersList: Array<Omit<ITeamMember, '_id'>> = members?.filter(Boolean)
+				.filter((memberId) => !excludeFromMembers.includes(memberId))
 				.map((memberId) => ({
 					teamId,
 					userId: memberId,
@@ -321,6 +324,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		})) || [];
 
 		await this.TeamMembersModel.insertMany(membersList);
+		await this.addMembersToDefaultRooms(createdBy, teamId, membersList);
 	}
 
 	async updateMember(teamId: string, teamName: string, member: ITeamMemberParams): Promise<void> {
@@ -346,6 +350,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 
 		await this.TeamMembersModel.updateOneByUserIdAndTeamId(member.userId, teamId, memberUpdate);
+	}
+
+	async removeMember(teamId: string, userId: string): Promise<void> {
+		await this.TeamMembersModel.deleteByUserIdAndTeamId(userId, teamId);
 	}
 
 	async removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
@@ -375,14 +383,17 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 	}
 
-	async addMember({ _id, username }: IUser, userId: string, teamId: string): Promise<boolean | ITeamMember> {
+	async addMember(inviter: IUser, userId: string, teamId: string): Promise<boolean> {
 		const isAlreadyAMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, { projection: { _id: 1 } });
 
 		if (isAlreadyAMember) {
 			return false;
 		}
 
-		return (await this.TeamMembersModel.createOneByTeamIdAndUserId(teamId, userId, { _id, username })).ops[0];
+		const member = (await this.TeamMembersModel.createOneByTeamIdAndUserId(teamId, userId, { _id: inviter._id, username: inviter.username })).ops[0];
+		await this.addMembersToDefaultRooms(inviter, teamId, [member]);
+
+		return true;
 	}
 
 	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
@@ -421,6 +432,19 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findOne({
 			_id: teamId,
 		}, { projection: { usernames: 0 } });
+	}
+
+	async addMembersToDefaultRooms(inviter: IUser, teamId: string, members: Array<Partial<ITeamMember>>): Promise<void> {
+		const defaultRooms = await this.RoomsModel.findDefaultRoomsForTeam(teamId).toArray();
+		const users = await this.Users.findActiveByIds(members.map((member) => member.userId)).toArray();
+
+		defaultRooms.map(async (room) => {
+			// at this point, users are already part of the team so we won't check for membership
+			for await (const user of users) {
+				// add each user to the default room
+				await addUserToRoom(room._id, user, inviter, false);
+			}
+		});
 	}
 
 	async deleteById(teamId: string): Promise<boolean> {
