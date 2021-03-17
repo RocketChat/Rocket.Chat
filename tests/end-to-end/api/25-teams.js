@@ -58,7 +58,16 @@ describe('[Teams]', () => {
 							expect(response.body).to.have.property('members');
 
 							const member = response.body.members[0];
-							expect(member).to.have.property('userId');
+							expect(member).to.have.property('user');
+							expect(member).to.have.property('roles');
+							expect(member).to.have.property('createdBy');
+							expect(member).to.have.property('createdAt');
+							expect(member.user).to.have.property('_id');
+							expect(member.user).to.have.property('username');
+							expect(member.user).to.have.property('name');
+							expect(member.user).to.have.property('status');
+							expect(member.createdBy).to.have.property('_id');
+							expect(member.createdBy).to.have.property('username');
 							expect(member.roles).to.have.length(1);
 							expect(member.roles[0]).to.be.equal('owner');
 						});
@@ -471,13 +480,14 @@ describe('[Teams]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count', 3);
+					expect(res.body).to.have.property('count', 1);
 					expect(res.body).to.have.property('offset', 0);
 					expect(res.body).to.have.property('total', 3);
 					expect(res.body).to.have.property('members');
-					expect(res.body.members).to.have.length(3);
-					expect(res.body.members[0]).to.have.property('_id');
+					expect(res.body.members).to.have.length(1);
+					expect(res.body.members[0]).to.have.property('user');
 					expect(res.body.members[0]).to.have.property('roles');
+					expect(res.body.members[0]).to.have.property('createdBy');
 					expect(res.body.members[0]).to.have.property('createdAt');
 				})
 				.end(done);
@@ -513,7 +523,7 @@ describe('[Teams]', () => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 							expect(response.body.members).to.have.length(3);
-							expect(response.body.members[1].userId).to.eql('test-123');
+							expect(response.body.members[1].user).to.eql('test-123');
 							expect(response.body.members[1].roles).to.have.lengthOf(2);
 							expect(response.body.members[1].roles).to.eql(['member', 'owner']);
 						}),

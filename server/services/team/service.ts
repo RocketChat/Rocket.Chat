@@ -3,7 +3,7 @@ import { Db } from 'mongodb';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
 import { Room } from '../../sdk';
-import { ITeamCreateParams, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
+import { ITeamCreateParams, ITeamMemberInfo, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
 import { IUser } from '../../../definition/IUser';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
@@ -275,7 +275,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async members(uid: string, teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMember>> {
+	async members(uid: string, teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		if (!teamId) {
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
 			if (!teamIdName) {
@@ -293,31 +293,33 @@ export class TeamService extends ServiceClass implements ITeamService {
 			};
 		}
 
-		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, {
-			limit: count,
-			skip: offset,
-		});
+		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset);
 
 		const records = await cursor.toArray();
-		for await (const member of members) {
-			if (!member.userId) {
-				member.userId = await this.Users.findOneByUsername(member.userName);
-				if (!member.userId) {
-					throw new Error('invalid-user');
-				}
+		const results: ITeamMemberInfo[] = [];
+		for await (const record of records) {
+			const user = await this.Users.findOneById(record.userId);
+			if (user) {
+				results.push({
+					user: {
+						_id: user._id,	
+						username: user.username,
+						name: user.name,
+						status: user.status,
+					},
+					roles: record.roles,
+					createdBy: {
+						_id: record.createdBy._id,
+						username: record.createdBy.username,
+					},
+					createdAt: record.createdAt,
+				});
 			}
-
-			const existingMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(member.userId, teamId);
-			if (!existingMember) {
-				throw new Error('member-does-not-exist');
-			}
-
-			this.TeamMembersModel.removeById(existingMember._id);
 		}
 
 		return {
 			total: await cursor.count(),
-			records
+			records: results,
 		};
 	}
 
