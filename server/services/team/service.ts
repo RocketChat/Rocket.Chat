@@ -246,11 +246,11 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async listRooms(uid: string, teamId: string, getAllRooms: boolean, allowPrivateTeam: boolean): Promise<IRecordsWithTotal<IRoom>> {
+	async listRooms(uid: string, teamId: string, getAllRooms: boolean, allowPrivateTeam: boolean, { offset: skip, count: limit }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<IRoom>> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
-		const team = await this.TeamModel.findOneById(teamId, {});
+		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1, type: 1 }});
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -258,7 +258,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		if (team.type === TEAM_TYPE.PRIVATE && !allowPrivateTeam && !isMember) {
 			throw new Error('user-not-on-private-team');
 		}
-		const teamRoomsCursor = this.RoomsModel.findByTeamId(teamId);
+		const teamRoomsCursor = this.RoomsModel.findByTeamId(teamId, { skip, limit });
 		if (getAllRooms) {
 			return {
 				total: await teamRoomsCursor.count(),
