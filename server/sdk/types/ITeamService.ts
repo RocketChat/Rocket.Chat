@@ -35,6 +35,7 @@ export interface ITeamService {
 	getInfoById(teamId: string): Promise<Partial<ITeam> | undefined>;
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
+	unsetTeamIdOfRooms(teamId: string): void;
 	getOneById(teamId: string): Promise<ITeam | undefined>;
 	getOneByName(teamName: string): Promise<ITeam | null>;
 }

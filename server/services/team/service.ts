@@ -230,7 +230,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async unsetTeamIdOfRooms(teamId: string): void {
+	async unsetTeamIdOfRooms(teamId: string): Promise<void> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
@@ -463,7 +463,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			// at this point, users are already part of the team so we won't check for membership
 			for await (const user of users) {
 				// add each user to the default room
-				await addUserToRoom(room._id, user, inviter, false);
+				addUserToRoom(room._id, user, inviter, false);
 			}
 		});
 	}
@@ -478,7 +478,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 	async getStatistics(): Promise<ITeamStats> {
 		const stats = {} as ITeamStats;
-		const teams = await this.TeamModel.find({});
+		const teams = this.TeamModel.find({});
 		const teamsArray = await teams.toArray();
 
 		stats.totalTeams = await teams.count();

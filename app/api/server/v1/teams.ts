@@ -3,6 +3,7 @@ import { Promise } from 'meteor/promise';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { Rooms } from '../../../models/server';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
@@ -231,6 +232,7 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 			return API.v1.failure('Team not found.');
 		}
 
+		Rooms.removeById(team.roomId);
 		Promise.await(Team.unsetTeamIdOfRooms(team._id));
 		Promise.await(Team.deleteById(team._id));
 
