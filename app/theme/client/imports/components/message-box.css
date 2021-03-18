@@ -144,6 +144,11 @@
 		& .rc-input__icon-svg--plus {
 			transition: transform 0.1s linear;
 		}
+			
+		&:hover,
+		&:focus{
+			color:black ;	
+		}
 	}
 
 	&__action-menu {
