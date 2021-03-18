@@ -384,6 +384,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 				throw new Error('member-does-not-exist');
 			}
 
+			if (existingMember.roles?.includes('owner')) {
+				const owners = this.TeamMembersModel.findByTeamIdAndRoles(teamId, existingMember.roles);
+				const totalOwners = await owners.count();
+				if (totalOwners === 1) {
+					throw new Error('last-owner-can-not-be-removed');
+				}
+			}
+
 			this.TeamMembersModel.removeById(existingMember._id);
 		}
 	}
