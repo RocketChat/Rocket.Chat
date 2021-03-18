@@ -211,6 +211,10 @@ API.v1.addRoute('teams.info', { authRequired: true }, {
 			? Promise.await(Team.getInfoById(teamId))
 			: Promise.await(Team.getInfoByName(teamName));
 
+		if (!teamInfo) {
+			return API.v1.failure('Team not found');
+		}
+
 		return API.v1.success({ teamInfo });
 	},
 });
@@ -221,7 +225,7 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const { teamId, teamName, roomsToRemove } = this.queryParams;
+		const { teamId, teamName, roomsToRemove } = this.bodyParams;
 
 		if (!teamId && !teamName) {
 			return API.v1.failure('Provide either the "teamId" or "teamName"');

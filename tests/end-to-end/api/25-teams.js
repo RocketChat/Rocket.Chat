@@ -592,4 +592,64 @@ describe('[Teams]', () => {
 				.catch(done);
 		});
 	});
+
+	describe('/teams.delete', () => {
+		const tempTeamName = `temporaryTeam-${ Date.now() }`;
+
+		it('should delete an empty team', (done) => {
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: tempTeamName,
+					type: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.then(() => {
+					request.get(api('teams.info'))
+						.set(credentials)
+						.query({
+							teamName: tempTeamName,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((response) => {
+							expect(response.body).to.have.property('success', true);
+							expect(response.body).to.have.property('teamInfo');
+							expect(response.body.teamInfo).to.have.property('_id');
+						})
+						.then(() => {
+							request.post(api('teams.delete'))
+								.set(credentials)
+								.send({
+									teamName: tempTeamName,
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', true);
+								})
+								.then(() =>
+									request.get(api('teams.info'))
+										.set(credentials)
+										.query({
+											teamName: tempTeamName,
+										})
+										.expect('Content-Type', 'application/json')
+										.expect(400)
+										.expect((response) => {
+											expect(response.body).to.have.property('success', false);
+											expect(response.body).to.have.property('error');
+											expect(response.body.error).to.be.equal('Team not found');
+										})
+										.then(() => done())
+										.catch(done)
+								)
+								.catch(done);
+						})
+						.catch(done);
+				})
+				.catch(done);
+		});
+	});
 });
