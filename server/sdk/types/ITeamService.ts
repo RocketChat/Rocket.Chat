@@ -1,6 +1,7 @@
 import { ITeam, ITeamMember, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
 import { ICreateRoomParams } from './IRoomService';
+import { FindOneOptions } from 'mongodb';
 
 export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
 	id?: string;
@@ -27,6 +28,7 @@ export interface ITeamService {
 	updateRoom(uid: string, rid: string, isDefault: boolean): Promise<IRoom>;
 	list(uid: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
+	search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
 	members(teamId: string, teamName: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeamMember>>;
 	addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, teamName: string, members: ITeamMemberParams): Promise<void>;

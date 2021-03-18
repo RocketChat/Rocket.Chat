@@ -22,6 +22,16 @@ export class TeamRaw extends BaseRaw<T> {
 		return this.col.find({ _id: { $in: ids } }, options);
 	}
 
+	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>, options?: FindOneOptions<T>): Cursor<T> {
+		return this.col.find({ name, $or: [{
+			type: 0,
+		}, {
+			_id: {
+				$in: teamIds,
+			},
+		}] }, options);
+	}
+
 	findOneByName(name: string, options?: FindOneOptions<T>): Promise<T | null> {
 		return this.col.findOne({ name }, options);
 	}
