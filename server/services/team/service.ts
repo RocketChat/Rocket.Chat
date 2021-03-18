@@ -363,7 +363,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 	async removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
 		if (!teamId) {
-			console.log(teamName);
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
 			if (!teamIdName) {
 				throw new Error('team-does-not-exist');
