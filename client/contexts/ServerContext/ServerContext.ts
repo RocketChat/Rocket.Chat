@@ -1,5 +1,7 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
+import { ServerMethodFunction, ServerMethods } from './ServerMethods';
+
 type ServerContextValue = {
 	info: {};
 	absoluteUrl: (path: string) => string;
@@ -22,9 +24,15 @@ export const useServerInformation = (): {} => useContext(ServerContext).info;
 
 export const useAbsoluteUrl = (): ((path: string) => string) => useContext(ServerContext).absoluteUrl;
 
-export const useMethod = (methodName: string): (...args: any[]) => Promise<any> => {
+export const useMethod = <MethodName extends keyof ServerMethods>(
+	methodName: MethodName,
+): ServerMethodFunction<MethodName> => {
 	const { callMethod } = useContext(ServerContext);
-	return useCallback((...args: any[]) => callMethod(methodName, ...args), [callMethod, methodName]);
+	return useCallback(
+		(...args: Parameters<ServerMethods[MethodName]>) =>
+			callMethod(methodName, ...args) as Promise<ReturnType<ServerMethods[MethodName]>>,
+		[callMethod, methodName],
+	);
 };
 
 export const useEndpoint = (httpMethod: 'GET' | 'POST' | 'DELETE', endpoint: string): (...args: any[]) => Promise<any> => {

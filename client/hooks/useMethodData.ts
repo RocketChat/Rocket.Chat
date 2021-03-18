@@ -1,13 +1,13 @@
 import { useCallback, useEffect } from 'react';
 
-import { useMethod } from '../contexts/ServerContext';
+import { ServerMethods, useMethod } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { AsyncState, useAsyncState } from './useAsyncState';
 
 const defaultArgs: unknown[] = [];
 
 export const useMethodData = <T>(
-	methodName: string,
+	methodName: keyof ServerMethods,
 	args: any[] = defaultArgs,
 	initialValue?: T | (() => T),
 ): AsyncState<T> & { reload: () => void } => {
