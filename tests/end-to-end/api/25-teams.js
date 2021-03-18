@@ -15,6 +15,26 @@ describe('[Teams]', () => {
 	let testUser;
 	let testUser2;
 
+	before('Create test users', (done) => {
+		let username = `user.test.${ Date.now() }`;
+		let email = `${ username }@rocket.chat`;
+		request.post(api('users.create'))
+			.set(credentials)
+			.send({ email, name: username, username, password: username })
+			.end((err, res) => {
+				testUser = res.body.user;
+			});
+		username = `user.test.${ Date.now() }`;
+		email = `${ username }@rocket.chat`;
+		request.post(api('users.create'))
+			.set(credentials)
+			.send({ email, name: username, username, password: username })
+			.end((err, res) => {
+				testUser2 = res.body.user;
+				done();
+			});
+	});
+
 	describe('/teams.create', () => {
 		it('should create a public team', (done) => {
 			request.post(api('teams.create'))
@@ -425,22 +445,17 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.addMembers', () => {
-		before('Create test users', (done) => {
-			let username = `user.test.${ Date.now() }`;
-			let email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
+		let testTeam;
+		before('Create test team', (done) => {
+			const teamName = `test-team-${ Date.now() }`;
+			request.post(api('teams.create'))
 				.set(credentials)
-				.send({ email, name: username, username, password: username })
+				.send({
+					name: teamName,
+					type: 0,
+				})
 				.end((err, res) => {
-					testUser = res.body.user;
-				});
-			username = `user.test.${ Date.now() }`;
-			email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password: username })
-				.end((err, res) => {
-					testUser2 = res.body.user;
+					testTeam = res.body.team;
 					done();
 				});
 		});
@@ -448,7 +463,7 @@ describe('[Teams]', () => {
 			request.post(api('teams.addMembers'))
 				.set(credentials)
 				.send({
-					teamName: community,
+					teamName: testTeam.name,
 					members: [
 						{
 							userId: testUser._id,
@@ -469,7 +484,7 @@ describe('[Teams]', () => {
 					request.get(api('teams.members'))
 						.set(credentials)
 						.query({
-							teamName: community,
+							teamName: testTeam.name,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -495,11 +510,43 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.members', () => {
+		let testTeam;
+		before('Create test team', (done) => {
+			const teamName = `test-team-${ Date.now() }`;
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
+					done();
+				});
+		});
+		before('Add members to team', (done) => {
+			request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamName: testTeam.name,
+					members: [
+						{
+							userId: testUser._id,
+							roles: ['member'],
+						},
+						{
+							userId: testUser2._id,
+							roles: ['member'],
+						},
+					],
+				})
+				.end(done);
+		});
 		it('should list all the members from a public team', (done) => {
 			request.get(api('teams.members'))
 				.set(credentials)
 				.query({
-					teamName: community,
+					teamName: testTeam.name,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -526,11 +573,43 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.updateMember', () => {
+		let testTeam;
+		before('Create test team', (done) => {
+			const teamName = `test-team-${ Date.now() }`;
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
+					done();
+				});
+		});
+		before('Add members to team', (done) => {
+			request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamName: testTeam.name,
+					members: [
+						{
+							userId: testUser._id,
+							roles: ['member'],
+						},
+						{
+							userId: testUser2._id,
+							roles: ['member'],
+						},
+					],
+				})
+				.end(done);
+		});
 		it('should update member\'s data in a public team', (done) => {
 			request.post(api('teams.updateMember'))
 				.set(credentials)
 				.send({
-					teamName: community,
+					teamName: testTeam.name,
 					member:
 						{
 							userId: testUser._id,
@@ -546,7 +625,7 @@ describe('[Teams]', () => {
 					request.get(api('teams.members'))
 						.set(credentials)
 						.query({
-							teamName: community,
+							teamName: testTeam.name,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -567,11 +646,43 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.removeMembers', () => {
+		let testTeam;
+		before('Create test team', (done) => {
+			const teamName = `test-team-${ Date.now() }`;
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
+					done();
+				});
+		});
+		before('Add members to team', (done) => {
+			request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamName: testTeam.name,
+					members: [
+						{
+							userId: testUser._id,
+							roles: ['member'],
+						},
+						{
+							userId: testUser2._id,
+							roles: ['member'],
+						},
+					],
+				})
+				.end(done);
+		});
 		it('should remove one member from a public team', (done) => {
 			request.post(api('teams.removeMembers'))
 				.set(credentials)
 				.send({
-					teamName: community,
+					teamName: testTeam.name,
 					members: [
 						{
 							userId: testUser._id,
@@ -587,7 +698,7 @@ describe('[Teams]', () => {
 					request.get(api('teams.members'))
 						.set(credentials)
 						.query({
-							teamName: community,
+							teamName: testTeam.name,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -604,11 +715,43 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.leave', () => {
+		let testTeam;
+		before('Create test team', (done) => {
+			const teamName = `test-team-${ Date.now() }`;
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
+					done();
+				});
+		});
+		before('Add members to team', (done) => {
+			request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamName: testTeam.name,
+					members: [
+						{
+							userId: testUser._id,
+							roles: ['member'],
+						},
+						{
+							userId: testUser2._id,
+							roles: ['member'],
+						},
+					],
+				})
+				.end(done);
+		});
 		it('should remove the calling user from the team', (done) => {
 			request.post(api('teams.leave'))
 				.set(credentials)
 				.send({
-					teamName: community,
+					teamName: testTeam.name,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
