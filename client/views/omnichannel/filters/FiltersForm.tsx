@@ -1,7 +1,7 @@
 import React, { FC, FormEvent } from 'react';
 import { Box, Field, TextInput, ToggleSwitch, BoxClassName } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 
 type FiltersFormProps = {
 	values: {

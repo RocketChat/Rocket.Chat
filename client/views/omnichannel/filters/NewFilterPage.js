@@ -3,11 +3,11 @@ import { Button, FieldGroup, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import FiltersForm from './FiltersForm';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useMethod } from '../../contexts/ServerContext';
-import { useForm } from '../../hooks/useForm';
-import { useRoute } from '../../contexts/RouterContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useMethod } from '../../../contexts/ServerContext';
+import { useForm } from '../../../hooks/useForm';
+import { useRoute } from '../../../contexts/RouterContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 
 const NewFilterPage = ({ onSave }) => {
 	const dispatchToastMessage = useToastMessageDispatch();

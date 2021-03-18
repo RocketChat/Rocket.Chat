@@ -2,7 +2,7 @@ import React from 'react';
 import { FieldGroup, Box } from '@rocket.chat/fuselage';
 
 import FiltersForm from './FiltersForm';
-import { useForm } from '../../hooks/useForm';
+import { useForm } from '../../../hooks/useForm';
 
 export default {
 	title: 'omnichannel/FiltersForm',
