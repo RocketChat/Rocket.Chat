@@ -18,6 +18,7 @@ import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { getUserEmailVerified } from '../../../../lib/getUserEmailVerified';
+import { useUserId } from '../../../../contexts/UserContext';
 
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
 
@@ -30,6 +31,7 @@ const Avatar = ({ username, ...props }) => <UserAvatar title={username} username
 const Username = ({ username, status, ...props }) => <UserCard.Username name={username} status={status} {...props}/>;
 
 export const UserInfo = React.memo(function UserInfo({
+	_id,
 	username,
 	bio,
 	email,
@@ -53,6 +55,7 @@ export const UserInfo = React.memo(function UserInfo({
 	const t = useTranslation();
 
 	const timeAgo = useTimeAgo();
+	const uid = useUserId();
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
 
@@ -60,7 +63,7 @@ export const UserInfo = React.memo(function UserInfo({
 			<Avatar size={'x332'} username={username} etag={data?.avatarETag}/>
 		</Box>
 
-		{actions}
+		{_id !== uid ? actions : null}
 
 		<Margins block='x4'>
 			<UserCard.Username name={(showRealNames && name) || username || name} status={status} />
