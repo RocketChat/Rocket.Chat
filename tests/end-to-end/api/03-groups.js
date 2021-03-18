@@ -1287,7 +1287,7 @@ describe('[Groups]', function() {
 		it('should fail to convert group if it\'s already taken', (done) => {
 			request.post(api('groups.convertToTeam'))
 				.set(credentials)
-				.send({ roomId: this.newChannel._id })
+				.send({ roomId: this.newGroup._id })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', false);
