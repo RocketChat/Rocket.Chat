@@ -148,6 +148,12 @@
 				color: var(--rc-status-invisible);
 			}
 		}
+
+		&:hover,
+		&:focus,
+		&.active {
+			color: #000;
+		}
 	}
 
 	&__label {
