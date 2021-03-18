@@ -21,7 +21,8 @@ const groupsDict = {
 const VirtualAction = React.memo(({ handleChange, room, action, id }: { id: string; action: ToolboxAction; room: IRoom; handleChange: Function}): null => {
 	const config = typeof action === 'function' ? action({ room }) : action;
 
-	const group = groupsDict[room.t];
+	const group = room.teamMain ? 'team' : groupsDict[room.t];
+
 	const visible = config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
 
 	useLayoutEffect(() => {
