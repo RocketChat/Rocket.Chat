@@ -444,7 +444,6 @@ describe('[Teams]', () => {
 					done();
 				});
 		});
-		
 		it('should add members to a public team', (done) => {
 			request.post(api('teams.addMembers'))
 				.set(credentials)
