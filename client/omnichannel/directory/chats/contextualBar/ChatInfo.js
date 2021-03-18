@@ -75,7 +75,7 @@ export function ChatInfo({ id }) {
 	const formatDateAndTime = useFormatDateAndTime();
 
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
-	const { room: { ts, tags, closedAt, departmentId, v, servedBy } } = data || { room: { v: { } } };
+	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic } } = data || { room: { v: { } } };
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
@@ -91,7 +91,7 @@ export function ChatInfo({ id }) {
 		<VerticalBar.ScrollableContent p='x24'>
 			<Margins block='x4'>
 				<ContactField contact={v} room={data.room} />
-				<AgentField agent={servedBy} />
+				{servedBy && <AgentField agent={servedBy} />}
 				{ departmentId && <DepartmentField departmentId={departmentId} /> }
 				{tags && tags.length > 0 && <>
 					<Label>{t('Tags')}</Label>
@@ -102,6 +102,14 @@ export function ChatInfo({ id }) {
 							</Box>
 						))}
 					</Info>
+				</>}
+				{topic && <>
+					<Label>{t('Topic')}</Label>
+					<Info>{topic}</Info>
+				</>}
+				{ts && metrics?.reaction?.fd && <>
+					<Label>{t('Queue_Time')}</Label>
+					<Info>{moment(ts).from(moment(metrics.reaction.fd), true)}</Info>
 				</>}
 				{closedAt && <>
 					<Label>{t('Chat_Duration')}</Label>
@@ -114,6 +122,13 @@ export function ChatInfo({ id }) {
 				{closedAt && <>
 					<Label>{t('Closed_At')}</Label>
 					<Info>{formatDateAndTime(closedAt)}</Info>
+				</>}
+				{metrics?.v?.lq && <>
+					<Label>{t('Inactivity_Time')}</Label>
+					{closedAt
+						? <Info>{moment(closedAt).from(moment(metrics.v.lq), true)}</Info>
+						: <Info>{moment(metrics.v.lq).fromNow()}</Info>
+					}
 				</>}
 			</Margins>
 		</VerticalBar.ScrollableContent>

@@ -60,7 +60,7 @@ const OmnichannelDirectoryPage = () => {
 	const ChatsContextualBar = () => <VerticalBar className={'contextual-bar'}>
 		<VerticalBar.Header>
 			{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='info-circled' size='x20' /> {t('Room_Info')}</Box>}
-			{context === 'info' && <VerticalBar.Action title={t('Open_room')} name={'new-window'} onClick={openInRoom} />}
+			{context === 'info' && <VerticalBar.Action title={t('View_full_conversation')} name={'new-window'} onClick={openInRoom} />}
 			<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
 		</VerticalBar.Header>
 		{context === 'info' && <ChatInfo id={id} />}
