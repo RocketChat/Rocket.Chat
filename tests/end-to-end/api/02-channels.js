@@ -1500,7 +1500,7 @@ describe('[Channels]', function() {
 		});
 	});
 
-	describe.only('/channels.convertToTeam', () => {
+	describe('/channels.convertToTeam', () => {
 		before((done) => {
 			request.post(api('channels.create'))
 				.set(credentials)
