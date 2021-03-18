@@ -1500,7 +1500,7 @@ describe('[Channels]', function() {
 		});
 	});
 
-	describe('/channels.convertToTeam', () => {
+	describe.only('/channels.convertToTeam', () => {
 		before(async () => {
 			const { body } = await request
 				.post(api('channels.create'))
@@ -1510,15 +1510,49 @@ describe('[Channels]', function() {
 			this.newChannel = body.channel;
 		});
 
+		it('should fail to convert channel if lacking edit-room permission', (done) => {
+			updatePermission('create-team', []).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('channels.convertToTeam'))
+						.set(credentials)
+						.send({ channelId: this.newChannel._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should fail to convert channel if lacking create-team permission', (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', []).then(() => {
+					request.post(api('channels.convertToTeam'))
+						.set(credentials)
+						.send({ channelId: this.newChannel._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
 		it('should successfully convert a channel to a team', (done) => {
-			request.post(api('channels.convertToTeam'))
-				.set(credentials)
-				.send({ channelId: this.newChannel._id })
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-				})
-				.end(done);
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('channels.convertToTeam'))
+						.set(credentials)
+						.send({ channelId: this.newChannel._id })
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+						})
+						.end(done);
+				});
+			});
 		});
 
 		it('should fail to convert channel without the required parameters', (done) => {

@@ -1265,15 +1265,49 @@ describe('[Groups]', function() {
 			this.newGroup = body.group;
 		});
 
+		it('should fail to convert group if lacking edit-room permission', (done) => {
+			updatePermission('create-team', []).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('groups.convertToTeam'))
+						.set(credentials)
+						.send({ roomId: this.newGroup._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should fail to convert group if lacking create-team permission', (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', []).then(() => {
+					request.post(api('groups.convertToTeam'))
+						.set(credentials)
+						.send({ roomId: this.newGroup._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
 		it('should successfully convert a group to a team', (done) => {
-			request.post(api('groups.convertToTeam'))
-				.set(credentials)
-				.send({ roomId: this.newGroup._id })
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-				})
-				.end(done);
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('groups.convertToTeam'))
+						.set(credentials)
+						.send({ roomId: this.newGroup._id })
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+						})
+						.end(done);
+				});
+			});
 		});
 
 		it('should fail to convert group without the required parameters', (done) => {
