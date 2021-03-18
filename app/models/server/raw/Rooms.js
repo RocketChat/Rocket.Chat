@@ -103,6 +103,17 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findByTeamIdAndRoomsId(teamId, rids, options = {}) {
+		const query = {
+			teamId,
+			_id: {
+				$in: rids,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	findPublicByTeamId(uid, teamId, options = {}) {
 		const query = {
 			teamId,

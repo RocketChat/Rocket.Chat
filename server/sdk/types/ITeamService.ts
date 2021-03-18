@@ -38,4 +38,5 @@ export interface ITeamService {
 	unsetTeamIdOfRooms(teamId: string): void;
 	getOneById(teamId: string): Promise<ITeam | undefined>;
 	getOneByName(teamName: string): Promise<ITeam | null>;
+	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 }

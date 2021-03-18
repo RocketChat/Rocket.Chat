@@ -291,6 +291,23 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
+	async getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>> {
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+
+		if (!rids) {
+			return [];
+		}
+
+		if (!Array.isArray(rids)) {
+			throw new Error('invalid-list-of-rooms');
+		}
+
+		const rooms = await this.RoomsModel.findByTeamIdAndRoomsId(teamId, rids, { projection: { _id: 1 } }).toArray();
+		return rooms.map(({_id} : { _id: string}) => _id)
+	}
+
 	async members(teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMember>> {
 		if (!teamId) {
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });

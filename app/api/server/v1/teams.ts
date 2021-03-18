@@ -221,10 +221,14 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const { teamId, teamName } = this.queryParams;
+		const { teamId, teamName, roomsToRemove } = this.queryParams;
 
 		if (!teamId && !teamName) {
 			return API.v1.failure('Provide either the "teamId" or "teamName"');
+		}
+
+		if (roomsToRemove && !Array.isArray(roomsToRemove)) {
+			return API.v1.failure('The list of rooms to remove is invalid.');
 		}
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
@@ -232,8 +236,20 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 			return API.v1.failure('Team not found.');
 		}
 
+		const rooms = Promise.await(Team.getMatchingTeamRooms(team._id, roomsToRemove));
+
+		// Remove the team's main room
 		Rooms.removeById(team.roomId);
+
+		// If we got a list of rooms to delete along with the team, remove them first
+		if (rooms.length) {
+			Rooms.removeByIds(rooms);
+		}
+
+		// Move every other room back to the workspace
 		Promise.await(Team.unsetTeamIdOfRooms(team._id));
+
+		// And finally delete the team itself
 		Promise.await(Team.deleteById(team._id));
 
 		return API.v1.success();
