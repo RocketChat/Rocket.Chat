@@ -577,39 +577,39 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-			.then(() =>
-				request.post(api('teams.removeMembers'))
-					.set(credentials)
-					.send({
-						teamName: testTeam.name,
-						members: [
-							{
-								userId: credentials['X-User-Id'],
-							},
-						],
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.then(() =>
-						request.get(api('teams.members'))
-							.set(credentials)
-							.query({
-								teamName: testTeam.name,
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((response) => {
-								expect(response.body).to.have.property('success', true);
-								expect(response.body).to.have.property('members');
-								expect(response.body.members).to.have.lengthOf(1);
-							}),
-					),
-			)
-			.then(() => done())
-			.catch(done);
+				.then(() =>
+					request.post(api('teams.removeMembers'))
+						.set(credentials)
+						.send({
+							teamName: testTeam.name,
+							members: [
+								{
+									userId: credentials['X-User-Id'],
+								},
+							],
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.then(() =>
+							request.get(api('teams.members'))
+								.set(credentials)
+								.query({
+									teamName: testTeam.name,
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((response) => {
+									expect(response.body).to.have.property('success', true);
+									expect(response.body).to.have.property('members');
+									expect(response.body.members).to.have.lengthOf(1);
+								}),
+						),
+				)
+				.then(() => done())
+				.catch(done);
 		});
 	});
 
@@ -661,34 +661,34 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-			.then(() =>
-				request.post(api('teams.leave'))
-					.set(credentials)
-					.send({
-						teamName: testTeam.name,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.then(() =>
-						request.get(api('teams.members'))
-							.set(credentials)
-							.query({
-								teamName: testTeam.name,
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((response) => {
-								expect(response.body).to.have.property('success', true);
-								expect(response.body).to.have.property('members');
-								expect(response.body.members).to.have.length(1);
-							}),
-					),
-			)
-			.then(() => done())
-			.catch(done);
+				.then(() =>
+					request.post(api('teams.leave'))
+						.set(credentials)
+						.send({
+							teamName: testTeam.name,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.then(() =>
+							request.get(api('teams.members'))
+								.set(credentials)
+								.query({
+									teamName: testTeam.name,
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((response) => {
+									expect(response.body).to.have.property('success', true);
+									expect(response.body).to.have.property('members');
+									expect(response.body.members).to.have.length(1);
+								}),
+						),
+				)
+				.then(() => done())
+				.catch(done);
 		});
 	});
 });
