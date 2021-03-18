@@ -22,7 +22,8 @@ export function AddUser({ roles, ...props }) {
 		name: (name) => setErrors((errors) => ({ ...errors, name: !name.trim().length ? t('The_field_is_required', t('name')) : undefined })),
 		username: (username) => setErrors((errors) => ({ ...errors, username: !username.trim().length ? t('The_field_is_required', t('username')) : undefined })),
 		email: (email) => setErrors((errors) => ({ ...errors, email: !email.trim().length ? t('The_field_is_required', t('email')) : undefined })),
-		password: (password) => setErrors((errors) => ({ ...errors, password: !password.trim().length ? t('The_field_is_required', t('password')) : undefined })),
+		password: (password) => setErrors((errors) => ({ ...errors, password: !(password.trim().length || values.setRandomPassword) ? t('The_field_is_required', t('password')) : undefined })),
+		setRandomPassword: (setRandomPassword) => setErrors((errors) => ({ ...errors, password: !(values.password.trim().length || setRandomPassword) ? t('The_field_is_required', t('password')) : undefined })),
 	};
 
 	const validateForm = ({ key, value }) => {
