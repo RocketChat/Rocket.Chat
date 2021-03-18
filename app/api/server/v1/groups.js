@@ -880,7 +880,7 @@ API.v1.addRoute('groups.convertToTeam', { authRequired: true }, {
 			members,
 			room: {
 				name: room.name,
-				id: room._id,
+				id: room.rid,
 			},
 		};
 

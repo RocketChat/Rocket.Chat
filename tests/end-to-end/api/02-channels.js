@@ -1500,7 +1500,7 @@ describe('[Channels]', function() {
 		});
 	});
 
-	describe.only('/channels.convertToTeam', () => {
+	describe('/channels.convertToTeam', () => {
 		before(async () => {
 			const { body } = await request
 				.post(api('channels.create'))
@@ -1511,7 +1511,6 @@ describe('[Channels]', function() {
 		});
 
 		it('should successfully convert a channel to a team', (done) => {
-			console.log('channel: ', this.newChannel);
 			request.post(api('channels.convertToTeam'))
 				.set(credentials)
 				.send({ channelId: this.newChannel._id })
@@ -1536,7 +1535,7 @@ describe('[Channels]', function() {
 				.send({ channelId: this.newChannel._id })
 				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 				})
 				.end(done);
 		});

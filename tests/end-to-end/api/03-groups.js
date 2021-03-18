@@ -1254,4 +1254,45 @@ describe('[Groups]', function() {
 			expect(roomInfo.group).to.have.a.property('encrypted', false);
 		});
 	});
+
+	describe('/groups.convertToTeam', () => {
+		before(async () => {
+			const { body } = await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({ name: `group-${ Date.now() }` });
+
+			this.newGroup = body.group;
+		});
+
+		it('should successfully convert a group to a team', (done) => {
+			request.post(api('groups.convertToTeam'))
+				.set(credentials)
+				.send({ roomId: this.newGroup._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should fail to convert group without the required parameters', (done) => {
+			request.post(api('groups.convertToTeam'))
+				.set(credentials)
+				.send({})
+				.expect(400)
+				.end(done);
+		});
+
+		it('should fail to convert group if it\'s already taken', (done) => {
+			request.post(api('groups.convertToTeam'))
+				.set(credentials)
+				.send({ roomId: this.newChannel._id })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
+				})
+				.end(done);
+		});
+	});
 });
