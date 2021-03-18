@@ -1,7 +1,8 @@
+import { FindOneOptions } from 'mongodb';
+
 import { ITeam, ITeamMember, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
 import { ICreateRoomParams } from './IRoomService';
-import { FindOneOptions } from 'mongodb';
 
 export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
 	id?: string;
