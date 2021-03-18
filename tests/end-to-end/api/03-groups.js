@@ -1256,13 +1256,16 @@ describe('[Groups]', function() {
 	});
 
 	describe('/groups.convertToTeam', () => {
-		before(async () => {
-			const { body } = await request
+		before((done) => {
+			request
 				.post(api('groups.create'))
 				.set(credentials)
-				.send({ name: `group-${ Date.now() }` });
-
-			this.newGroup = body.group;
+				.send({ name: `group-${ Date.now() }` })
+				.expect(200)
+				.expect((response) => {
+					this.newGroup = response.body.group;
+				})
+				.then(() => done());
 		});
 
 		it('should fail to convert group if lacking edit-room permission', (done) => {

@@ -1501,13 +1501,14 @@ describe('[Channels]', function() {
 	});
 
 	describe.only('/channels.convertToTeam', () => {
-		before(async () => {
-			const { body } = await request
-				.post(api('channels.create'))
+		before((done) => {
+			request.post(api('channels.create'))
 				.set(credentials)
-				.send({ name: `channel-${ Date.now() }` });
-
-			this.newChannel = body.channel;
+				.send({ name: `channel-${ Date.now() }` })
+				.then((response) => {
+					this.newChannel = response.body.channel;
+				})
+				.then(() => done());
 		});
 
 		it('should fail to convert channel if lacking edit-room permission', (done) => {
