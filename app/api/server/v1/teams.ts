@@ -226,9 +226,13 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 			return API.v1.failure('Provide either the "teamId" or "teamName"');
 		}
 
-		teamId
-			? Promise.await(Team.deleteById(teamId))
-			: Promise.await(Team.deleteByName(teamName));
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('Team not found.');
+		}
+
+		Promise.await(Team.unsetTeamIdOfRooms(team._id));
+		Promise.await(Team.deleteById(team._id));
 
 		return API.v1.success();
 	},

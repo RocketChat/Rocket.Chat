@@ -137,6 +137,18 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	unsetTeamId(teamId, options = {}) {
+		const query = { teamId };
+		const update = {
+			$unset: {
+				teamId: '',
+				teamDefault: '',
+			},
+		};
+
+		return this.update(query, update, options);
+	}
+
 	unsetTeamById(rid, options = {}) {
 		return this.updateOne({ _id: rid }, { $unset: { teamId: '', teamDefault: '' } }, options);
 	}

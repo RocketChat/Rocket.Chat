@@ -230,6 +230,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
+	async unsetTeamIdOfRooms(teamId: string): void {
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+
+		await this.RoomsModel.unsetTeamId(teamId);
+	}
+
 	async updateRoom(uid: string, rid: string, isDefault: boolean): Promise<IRoom> {
 		if (!rid) {
 			throw new Error('missing-roomId');
@@ -399,6 +407,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await this.addMembersToDefaultRooms(inviter, teamId, [member]);
 
 		return true;
+	}
+
+	async getOneById(teamId: string): Promise<ITeam | undefined> {
+		return await this.TeamModel.findOneById(teamId);
+	}
+
+	async getOneByName(teamName: string): Promise<ITeam | null> {
+		return await this.TeamModel.findOneByName(teamName);
 	}
 
 	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
