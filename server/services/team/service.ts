@@ -305,7 +305,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		const rooms = await this.RoomsModel.findByTeamIdAndRoomsId(teamId, rids, { projection: { _id: 1 } }).toArray();
-		return rooms.map(({_id} : { _id: string}) => _id)
+		return rooms.map(({ _id }: { _id: string}) => _id);
 	}
 
 	async members(teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMember>> {
@@ -427,11 +427,11 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async getOneById(teamId: string): Promise<ITeam | undefined> {
-		return await this.TeamModel.findOneById(teamId);
+		return this.TeamModel.findOneById(teamId);
 	}
 
 	async getOneByName(teamName: string): Promise<ITeam | null> {
-		return await this.TeamModel.findOneByName(teamName);
+		return this.TeamModel.findOneByName(teamName);
 	}
 
 	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
