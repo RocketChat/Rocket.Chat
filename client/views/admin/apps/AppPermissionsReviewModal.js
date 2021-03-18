@@ -26,7 +26,7 @@ const AppPermissionsReviewModal = ({
 
 	return <Modal {...modalProps}>
 		<Modal.Header>
-			<Icon color='warning' name='modal-warning' size={20}/>
+			<Icon color='warning' name='modal-warning' size={25}/>
 			<Modal.Title>{t('Apps_Permissions_Review_Modal_Title')}</Modal.Title>
 			<Modal.Close onClick={handleCloseButtonClick}/>
 		</Modal.Header>
