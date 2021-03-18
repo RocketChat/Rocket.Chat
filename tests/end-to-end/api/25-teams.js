@@ -596,7 +596,6 @@ describe('[Teams]', () => {
 	describe('/teams.delete', () => {
 		describe('deleting an empty team', () => {
 			let roomId;
-			let teamId;
 			const tempTeamName = `temporaryTeam-${ Date.now() }`;
 
 			before('create team', (done) => {
@@ -615,7 +614,6 @@ describe('[Teams]', () => {
 						expect(resp.body.team).to.have.property('_id');
 						expect(resp.body.team).to.have.property('roomId');
 
-						teamId = resp.body.team._id;
 						roomId = resp.body.team.roomId;
 					})
 					.then(() => done());
@@ -632,7 +630,7 @@ describe('[Teams]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					})
-					.then(() =>
+					.then(() => {
 						request.get(api('teams.info'))
 							.set(credentials)
 							.query({
@@ -658,9 +656,9 @@ describe('[Teams]', () => {
 										expect(response.body).to.have.property('error');
 										expect(response.body.error).to.include('[error-room-not-found]');
 									})
-									.then(() => done())
-							})
-					)
+									.then(() => done());
+							});
+					})
 					.catch(done);
 			});
 		});
@@ -765,7 +763,7 @@ describe('[Teams]', () => {
 					.set(credentials)
 					.send({
 						teamName: tempTeamName,
-						roomsToRemove: [channel2Id]
+						roomsToRemove: [channel2Id],
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -799,11 +797,11 @@ describe('[Teams]', () => {
 										expect(response.body.channel).to.have.property('_id', channel1Id);
 										expect(response.body.channel).to.not.have.property('teamId');
 									})
-									.then(() => done())
-							})
+									.then(() => done());
+							});
 					})
 					.catch(done);
-			})
+			});
 		});
 	});
 });
