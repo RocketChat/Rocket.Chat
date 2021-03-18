@@ -305,7 +305,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			if (user) {
 				results.push({
 					user: {
-						_id: user._id,	
+						_id: user._id,
 						username: user.username,
 						name: user.name,
 						status: user.status,

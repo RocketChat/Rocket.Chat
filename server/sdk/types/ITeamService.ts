@@ -29,7 +29,7 @@ export interface IUserInfo {
 export interface ITeamMemberInfo {
 	user: IUserInfo;
 	roles?: string[];
-	createdBy: Omit<IUserInfo, "name" | "status">;
+	createdBy: Omit<IUserInfo, 'name' | 'status'>;
 	createdAt: Date;
 }
 

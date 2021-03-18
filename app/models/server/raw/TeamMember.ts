@@ -41,7 +41,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 				roles: 1,
 				createdBy: 1,
 				createdAt: 1,
-			}
+			},
 		} as FindOneOptions<T>);
 	}
 

@@ -12,6 +12,8 @@ describe('[Teams]', () => {
 	let publicRoom = null;
 	let publicRoom2 = null;
 	let privateRoom = null;
+	let testUser;
+	let testUser2;
 
 	describe('/teams.create', () => {
 		it('should create a public team', (done) => {
@@ -306,7 +308,7 @@ describe('[Teams]', () => {
 		it('should throw an error if team is private and no permission', (done) => {
 			updatePermission('view-all-teams', []).then(() => {
 				request.get(api('teams.listRooms'))
-					.set(credentials)
+					.set(testUserCredentials)
 					.query({
 						teamId: privateTeam._id,
 					})
@@ -324,7 +326,7 @@ describe('[Teams]', () => {
 		it('should return only public rooms for public team', (done) => {
 			updatePermission('view-all-team-channels', []).then(() => {
 				request.get(api('teams.listRooms'))
-					.set(testUserCredentials)
+					.set(credentials)
 					.query({
 						teamId: publicTeam._id,
 					})
@@ -353,7 +355,7 @@ describe('[Teams]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.be.an('array');
-						expect(res.body.rooms.length).to.equal(3);
+						expect(res.body.rooms.length).to.equal(2);
 					})
 					.end(done);
 			});
@@ -423,6 +425,26 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.addMembers', () => {
+		before('Create test users', (done) => {
+			let username = `user.test.${ Date.now() }`;
+			let email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password: username })
+				.end((err, res) => {
+					testUser = res.body.user;
+				});
+			username = `user.test.${ Date.now() }`;
+			email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password: username })
+				.end((err, res) => {
+					testUser2 = res.body.user;
+					done();
+				});
+		});
+		
 		it('should add members to a public team', (done) => {
 			request.post(api('teams.addMembers'))
 				.set(credentials)
@@ -430,11 +452,11 @@ describe('[Teams]', () => {
 					teamName: community,
 					members: [
 						{
-							userId: 'test-123',
+							userId: testUser._id,
 							roles: ['member'],
 						},
 						{
-							userId: 'test-456',
+							userId: testUser2._id,
 							roles: ['member'],
 						},
 					],
@@ -455,12 +477,16 @@ describe('[Teams]', () => {
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
-							expect(response.body.members).to.have.lengthOf(3);
-							expect(response.body.members[1].userId).to.eql('test-123');
-							expect(response.body.members[1].roles).to.have.lengthOf(1);
+							expect(response.body.members).to.have.length(3);
+							expect(response.body.members[1]).to.have.property('user');
+							expect(response.body.members[1]).to.have.property('roles');
+							expect(response.body.members[1]).to.have.property('createdBy');
+							expect(response.body.members[1]).to.have.property('createdAt');
+							expect(response.body.members[1].user).to.have.property('_id', testUser._id);
+							expect(response.body.members[1].roles).to.have.length(1);
 							expect(response.body.members[1].roles).to.eql(['member']);
-							expect(response.body.members[2].userId).to.eql('test-456');
-							expect(response.body.members[2].roles).to.have.lengthOf(1);
+							expect(response.body.members[2].user).to.have.property('_id', testUser2._id);
+							expect(response.body.members[2].roles).to.have.length(1);
 							expect(response.body.members[2].roles).to.eql(['member']);
 						}),
 				)
@@ -480,15 +506,21 @@ describe('[Teams]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('count', 3);
 					expect(res.body).to.have.property('offset', 0);
 					expect(res.body).to.have.property('total', 3);
 					expect(res.body).to.have.property('members');
-					expect(res.body.members).to.have.length(1);
+					expect(res.body.members).to.have.length(3);
 					expect(res.body.members[0]).to.have.property('user');
 					expect(res.body.members[0]).to.have.property('roles');
 					expect(res.body.members[0]).to.have.property('createdBy');
 					expect(res.body.members[0]).to.have.property('createdAt');
+					expect(res.body.members[0].user).to.have.property('_id');
+					expect(res.body.members[0].user).to.have.property('username');
+					expect(res.body.members[0].user).to.have.property('name');
+					expect(res.body.members[0].user).to.have.property('status');
+					expect(res.body.members[0].createdBy).to.have.property('_id');
+					expect(res.body.members[0].createdBy).to.have.property('username');
 				})
 				.end(done);
 		});
@@ -502,7 +534,7 @@ describe('[Teams]', () => {
 					teamName: community,
 					member:
 						{
-							userId: 'test-123',
+							userId: testUser._id,
 							roles: ['member', 'owner'],
 						},
 				})
@@ -523,8 +555,10 @@ describe('[Teams]', () => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 							expect(response.body.members).to.have.length(3);
-							expect(response.body.members[1].user).to.eql('test-123');
-							expect(response.body.members[1].roles).to.have.lengthOf(2);
+							expect(response.body.members[1].user._id).to.eql(testUser._id);
+							expect(response.body.members[1].user.username).to.eql(testUser.username);
+							expect(response.body.members[1].user.name).to.eql(testUser.name);
+							expect(response.body.members[1].roles).to.have.length(2);
 							expect(response.body.members[1].roles).to.eql(['member', 'owner']);
 						}),
 				)
@@ -541,7 +575,7 @@ describe('[Teams]', () => {
 					teamName: community,
 					members: [
 						{
-							userId: 'test-456',
+							userId: testUser._id,
 						},
 					],
 				})
@@ -561,8 +595,8 @@ describe('[Teams]', () => {
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
-							expect(response.body.members).to.have.lengthOf(2);
-							expect(response.body.members[1].userId).to.eql('test-123');
+							expect(response.body.members).to.have.length(2);
+							expect(response.body.members[1].user._id).to.eql(testUser2._id);
 						}),
 				)
 				.then(() => done())
