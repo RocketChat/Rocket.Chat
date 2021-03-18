@@ -290,7 +290,7 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		<Sidebar.TopBar.Section role='search' is='form'>
 			<TextInput aria-owns={listId} data-qa='sidebar-search-input' ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
 		</Sidebar.TopBar.Section>
-		<Box ref={boxRef} aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncStatePhase.RESOLVED}>
+		<Box ref={boxRef} aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' data-qa='sidebar-search-result' aria-busy={status !== AsyncStatePhase.RESOLVED}>
 			<Virtuoso
 				style={{ height: '100%', width: '100%' }}
 				totalCount={items?.length}
