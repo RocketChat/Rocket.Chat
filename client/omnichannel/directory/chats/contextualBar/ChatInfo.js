@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { Box, Margins, Tag } from '@rocket.chat/fuselage';
+import { Box, Margins, Tag, Avatar } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
 import VerticalBar from '../../../../components/VerticalBar';
@@ -8,9 +8,11 @@ import UserCard from '../../../../components/UserCard';
 import { FormSkeleton } from '../../Skeleton';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { ContactManagerInfo } from '../../../../../ee/client/omnichannel/ContactManager';
+import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { UserStatus } from '../../../../components/UserStatus';
+import { roomTypes } from '../../../../../app/utils/client';
 
 
 const wordBreak = css`
@@ -32,23 +34,37 @@ const DepartmentField = ({ departmentId }) => {
 	</>;
 };
 
-const ContactField = ({ name, uid }) => {
+const ContactField = ({ contact, room }) => {
 	const t = useTranslation();
-	const { value: data, phase: state } = useEndpointData(`omnichannel/contact?contactId=${ uid }`);
+	const { username, status } = contact;
+	const { fname, t: type } = room;
+	const avatarUrl = roomTypes.getConfig(type).getAvatarPath(room);
+
+	return <>
+		<Label>{t('Contact')}</Label>
+		<Info style={{ display: 'flex' }}>
+			<Avatar size='x40' title={fname} url={avatarUrl} />
+			<UserCard.Username mis='x10' name={username} status={<UserStatus status={status} />} />
+		</Info>
+	</>;
+};
+
+const AgentField = ({ agent }) => {
+	const t = useTranslation();
+	const { username } = agent;
+	const { value, phase: state } = useEndpointData(`users.info?username=${ username }`);
+
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
-	const { contact: { contactManager } } = data || { contact: { contactManager: {} } };
-	if (contactManager) {
-		return <>
-			<Label>{t('Contact')}</Label>
-			<ContactManagerInfo username={contactManager.username} />
-		</>;
-	}
+
+	const { user: { status } } = value || { user: { } };
+
 	return <>
-		<Label>{t('Contact')}</Label>
-		<Info>
-			{name}
+		<Label>{t('Agent')}</Label>
+		<Info style={{ display: 'flex' }}>
+			<UserAvatar size='x40' title={username} username={username} />
+			<UserCard.Username mis='x10' name={username} status={<UserStatus status={status} />} />
 		</Info>
 	</>;
 };
@@ -56,10 +72,10 @@ const ContactField = ({ name, uid }) => {
 export function ChatInfo({ id }) {
 	const t = useTranslation();
 
-	const formatDate = useFormatDate();
+	const formatDateAndTime = useFormatDateAndTime();
 
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
-	const { room: { fname, ts, tags, closedAt, departmentId, v: { _id } } } = data || { room: { v: { } } };
+	const { room: { ts, tags, closedAt, departmentId, v, servedBy } } = data || { room: { v: { } } };
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
@@ -74,7 +90,8 @@ export function ChatInfo({ id }) {
 	return <>
 		<VerticalBar.ScrollableContent p='x24'>
 			<Margins block='x4'>
-				<ContactField uid={_id} name={fname} />
+				<ContactField contact={v} room={data.room} />
+				<AgentField agent={servedBy} />
 				{ departmentId && <DepartmentField departmentId={departmentId} /> }
 				{tags && tags.length > 0 && <>
 					<Label>{t('Tags')}</Label>
@@ -92,11 +109,11 @@ export function ChatInfo({ id }) {
 				</>}
 				{ts && <>
 					<Label>{t('Created_at')}</Label>
-					<Info>{formatDate(ts)}</Info>
+					<Info>{formatDateAndTime(ts)}</Info>
 				</>}
 				{closedAt && <>
 					<Label>{t('Closed_At')}</Label>
-					<Info>{formatDate(closedAt)}</Info>
+					<Info>{formatDateAndTime(closedAt)}</Info>
 				</>}
 			</Margins>
 		</VerticalBar.ScrollableContent>
