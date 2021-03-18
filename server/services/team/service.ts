@@ -363,6 +363,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 	async removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
 		if (!teamId) {
+			console.log(teamName);
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
 			if (!teamIdName) {
 				throw new Error('team-does-not-exist');
@@ -382,6 +383,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 			const existingMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(member.userId, teamId);
 			if (!existingMember) {
 				throw new Error('member-does-not-exist');
+			}
+
+			if (existingMember.roles?.includes('owner')) {
+				const owners = await this.TeamMembersModel.findByTeamIdAndRoles(teamId, existingMember.roles);
+				const totalOwners = await owners.count();
+				if (totalOwners === 1){
+					throw new Error('last-owner-can-not-be-removed');
+				}
 			}
 
 			this.TeamMembersModel.removeById(existingMember._id);

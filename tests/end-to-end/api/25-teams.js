@@ -525,14 +525,50 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.removeMembers', () => {
-		it('should remove one member from a public team', (done) => {
+		let testTeam;
+		before('Create test team', (done) => {
+			const teamName = `test-team-${ Date.now() }`;
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
+					done();
+				});
+		});
+		it('should not be able to remove the last owner', (done) => {
 			request.post(api('teams.removeMembers'))
 				.set(credentials)
 				.send({
-					teamName: community,
+					teamName: testTeam.name,
 					members: [
 						{
-							userId: 'test-456',
+							userId: credentials['X-User-Id'],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body.error).to.be.equal('last-owner-can-not-be-removed');
+				})
+				.then(() => done())
+				.catch(done);
+		});
+		it('should remove one member from a public team', (done) => {
+			request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamName: testTeam.name,
+					members: [
+						{
+							userId: 'test-123',
+							roles: ['owner'],
 						},
 					],
 				})
@@ -541,55 +577,118 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.then(() =>
-					request.get(api('teams.members'))
-						.set(credentials)
-						.query({
-							teamName: community,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
-							expect(response.body).to.have.property('members');
-							expect(response.body.members).to.have.lengthOf(2);
-							expect(response.body.members[1].userId).to.eql('test-123');
-						}),
-				)
-				.then(() => done())
-				.catch(done);
+			.then(() =>
+				request.post(api('teams.removeMembers'))
+					.set(credentials)
+					.send({
+						teamName: testTeam.name,
+						members: [
+							{
+								userId: credentials['X-User-Id'],
+							},
+						],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.then(() =>
+						request.get(api('teams.members'))
+							.set(credentials)
+							.query({
+								teamName: testTeam.name,
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((response) => {
+								expect(response.body).to.have.property('success', true);
+								expect(response.body).to.have.property('members');
+								expect(response.body.members).to.have.lengthOf(1);
+							}),
+					),
+			)
+			.then(() => done())
+			.catch(done);
 		});
 	});
 
 	describe('/teams.leave', () => {
-		it('should remove the calling user from the team', (done) => {
+		let testTeam;
+		before('Create test team', (done) => {
+			const teamName = `test-team-${ Date.now() }`;
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
+					done();
+				});
+		});
+		it('should not be able to remove the last owner', (done) => {
 			request.post(api('teams.leave'))
 				.set(credentials)
 				.send({
-					teamName: community,
+					teamName: testTeam.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body.error).to.be.equal('last-owner-can-not-be-removed');
+				})
+				.then(() => done())
+				.catch(done);
+		});
+		it('should remove the calling user from the team', (done) => {
+			request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamName: testTeam.name,
+					members: [
+						{
+							userId: 'test-123',
+							roles: ['owner'],
+						},
+					],
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.then(() =>
-					request.get(api('teams.members'))
-						.set(credentials)
-						.query({
-							teamName: community,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((response) => {
-							expect(response.body).to.have.property('success', true);
-							expect(response.body).to.have.property('members');
-							expect(response.body.members).to.have.lengthOf(1);
-							expect(response.body.members[0].userId).to.eql('test-123');
-						}),
-				)
-				.then(() => done())
-				.catch(done);
+			.then(() =>
+				request.post(api('teams.leave'))
+					.set(credentials)
+					.send({
+						teamName: testTeam.name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.then(() =>
+						request.get(api('teams.members'))
+							.set(credentials)
+							.query({
+								teamName: testTeam.name,
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((response) => {
+								expect(response.body).to.have.property('success', true);
+								expect(response.body).to.have.property('members');
+								expect(response.body.members).to.have.length(1);
+							}),
+					),
+			)
+			.then(() => done())
+			.catch(done);
 		});
 	});
 });
