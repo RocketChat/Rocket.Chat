@@ -385,7 +385,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			}
 
 			if (existingMember.roles?.includes('owner')) {
-				const owners = await this.TeamMembersModel.findByTeamIdAndRoles(teamId, existingMember.roles);
+				const owners = this.TeamMembersModel.findByTeamIdAndRoles(teamId, existingMember.roles);
 				const totalOwners = await owners.count();
 				if (totalOwners === 1) {
 					throw new Error('last-owner-can-not-be-removed');
