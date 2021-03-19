@@ -18,7 +18,7 @@ const Favorite = ({ room: { _id, f: favorited = false } }) => {
 		toggleFavorite(_id, !favorited);
 	});
 	const favoriteLabel = favorited ? t('Unfavorite') : t('Favorite');
-	return isFavoritesEnabled && <Header.State title={favoriteLabel} icon={favorited ? 'star-filled' : 'star'} onClick={handleFavoriteClick} color={favorited ? colors.y500 : null } tiny ghost/>;
+	return isFavoritesEnabled && <Header.State data-title={favoriteLabel} icon={favorited ? 'star-filled' : 'star'} onClick={handleFavoriteClick} color={favorited ? colors.y500 : null } tiny ghost/>;
 };
 
 export default memo(Favorite);
