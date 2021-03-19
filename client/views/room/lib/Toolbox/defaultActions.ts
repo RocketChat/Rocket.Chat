@@ -15,11 +15,20 @@ addAction('rocket-search', {
 });
 
 addAction('user-info', {
-	groups: ['direct', 'live'],
+	groups: ['direct'],
 	id: 'user-info',
 	title: 'User_Info',
 	icon: 'user',
 	template: lazy(() => import('../../MemberListRouter')),
+	order: 5,
+});
+
+addAction('contact-info', {
+	groups: ['live'],
+	id: 'contact-info',
+	title: 'Contact_Info',
+	icon: 'user',
+	template: lazy(() => import('../../../../omnichannel/directory/contacts/contextualBar')),
 	order: 5,
 });
 
