@@ -1,4 +1,4 @@
-FROM node:12.18.4-buster-slim
+FROM node:12.21.0-buster-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
