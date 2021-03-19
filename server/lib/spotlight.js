@@ -177,6 +177,10 @@ export class Spotlight {
 		}
 	}
 
+	_performExtraUserSearches(/* userId, searchParams */) {
+		// Overwrite this method to include extra searches
+	}
+
 	searchUsers({ userId, rid, text, usernames }) {
 		const users = [];
 
@@ -284,6 +288,10 @@ export class Spotlight {
 
 		// Contains for outsiders
 		if (this._searchOutsiderUsers(searchParams)) {
+			return users;
+		}
+
+		if (this._performExtraUserSearches(userId, searchParams)) {
 			return users;
 		}
 
