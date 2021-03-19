@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, Cursor } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult, DeleteWriteOpResultObject } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeam } from '../../../../definition/ITeam';
@@ -24,5 +24,29 @@ export class TeamRaw extends BaseRaw<T> {
 
 	findOneByName(name: string, options?: FindOneOptions<T>): Promise<T | null> {
 		return this.col.findOne({ name }, options);
+	}
+
+	findOneByMainRoomId(roomId: string, options?: FindOneOptions<T>): Promise<T | null> {
+		return this.col.findOne({ roomId }, options);
+	}
+
+	updateMainRoomForTeam(id: string, roomId: string): Promise<UpdateWriteOpResult> {
+		return this.col.updateOne({
+			_id: id,
+		}, {
+			$set: {
+				roomId,
+			},
+		});
+	}
+
+	deleteOneById(id: string): Promise<DeleteWriteOpResultObject> {
+		return this.col.deleteOne({
+			_id: id,
+		});
+	}
+
+	deleteOneByName(name: string): Promise<DeleteWriteOpResultObject> {
+		return this.col.deleteOne({ name });
 	}
 }
