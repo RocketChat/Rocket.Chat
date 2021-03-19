@@ -80,18 +80,15 @@ export function ChatInfo({ id, route }) {
 	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
 
-	const onEditClick = useMutableCallback(() => {
-		console.log(route);
-		return routePath.push(
-			route ? {
-				context: 'edit',
-				id,
-			} : {
-				tab: 'chats',
-				context: 'edit',
-				id,
-			});
-	});
+	const onEditClick = useMutableCallback(() => routePath.push(
+		route ? {
+			context: 'edit',
+			id,
+		} : {
+			tab: 'chats',
+			context: 'edit',
+			id,
+		}));
 
 
 	if (state === AsyncStatePhase.LOADING) {
