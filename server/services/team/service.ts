@@ -230,6 +230,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
+	async unsetTeamIdOfRooms(teamId: string): Promise<void> {
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+
+		await this.RoomsModel.unsetTeamId(teamId);
+	}
+
 	async updateRoom(uid: string, rid: string, isDefault: boolean): Promise<IRoom> {
 		if (!rid) {
 			throw new Error('missing-roomId');
@@ -281,6 +289,23 @@ export class TeamService extends ServiceClass implements ITeamService {
 			total: await availableRoomsCursor.count(),
 			records: await availableRoomsCursor.toArray(),
 		};
+	}
+
+	async getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>> {
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+
+		if (!rids) {
+			return [];
+		}
+
+		if (!Array.isArray(rids)) {
+			throw new Error('invalid-list-of-rooms');
+		}
+
+		const rooms = await this.RoomsModel.findByTeamIdAndRoomsId(teamId, rids, { projection: { _id: 1 } }).toArray();
+		return rooms.map(({ _id }: { _id: string}) => _id);
 	}
 
 	async members(teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMember>> {
@@ -409,6 +434,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return true;
 	}
 
+	async getOneById(teamId: string): Promise<ITeam | undefined> {
+		return this.TeamModel.findOneById(teamId);
+	}
+
+	async getOneByName(teamName: string): Promise<ITeam | null> {
+		return this.TeamModel.findOneByName(teamName);
+	}
+
 	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
 		return this.TeamModel.findOneByMainRoomId(roomId, { projection: { _id: 1 } });
 	}
@@ -455,7 +488,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			// at this point, users are already part of the team so we won't check for membership
 			for await (const user of users) {
 				// add each user to the default room
-				await addUserToRoom(room._id, user, inviter, false);
+				addUserToRoom(room._id, user, inviter, false);
 			}
 		});
 	}
@@ -470,7 +503,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 	async getStatistics(): Promise<ITeamStats> {
 		const stats = {} as ITeamStats;
-		const teams = await this.TeamModel.find({});
+		const teams = this.TeamModel.find({});
 		const teamsArray = await teams.toArray();
 
 		stats.totalTeams = await teams.count();
