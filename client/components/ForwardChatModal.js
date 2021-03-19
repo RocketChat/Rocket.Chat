@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -9,15 +9,10 @@ import DepartmentAutoComplete from '../views/omnichannel/DepartmentAutoComplete'
 import { UserAutoComplete } from './AutoComplete';
 import { useEndpointAction } from '../hooks/useEndpointAction';
 
-type ForwardChatModalProps = {
-	onForward: (departmentName?: string, userId?: string, comment?: string) => void;
-	onCancel: () => void;
-};
-
-const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...props }) => {
+const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 	const t = useTranslation();
 
-	const ref = useRef<HTMLInputElement>();
+	const ref = useRef();
 
 	useEffect(() => {
 		if (typeof ref?.current?.focus === 'function') {
@@ -26,7 +21,7 @@ const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...p
 	}, [ref]);
 
 	const { values, handlers } = useForm({ departmentName: '', username: '', comment: '' });
-	const { departmentName, username, comment } = values as { departmentName: string; username: string; comment: string };
+	const { departmentName, username, comment } = values;
 	const [userId, setUserId] = useState('');
 
 	const { handleDepartmentName, handleUsername, handleComment } = handlers;
@@ -38,20 +33,20 @@ const ForwardChatModal: FC<ForwardChatModalProps> = ({ onForward, onCancel, ...p
 	}, [onForward, departmentName, userId, comment]);
 
 
-	const onChangeDepartment = useMutableCallback((departmentId: string): void => {
+	const onChangeDepartment = useMutableCallback((departmentId) => {
 		handleDepartmentName(departmentId);
 		handleUsername('');
 		setUserId('');
 	});
 
-	const onChangeUsername = useMutableCallback((username: string): void => {
+	const onChangeUsername = useMutableCallback((username) => {
 		handleUsername(username);
 		handleDepartmentName('');
 	});
 
 	useEffect(() => {
 		if (!username) { return; }
-		const fetchData = async (): Promise<void> => {
+		const fetchData = async () => {
 			const { user } = await userInfo();
 			setUserId(user._id);
 		};
