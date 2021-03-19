@@ -9,8 +9,10 @@ import { useFileInput } from '../../../hooks/useFileInput';
 import { useForm } from '../../../hooks/useForm';
 import { handleInstallError } from './helpers';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
+import AppUpdateModal from './AppUpdateModal';
 import { useSetModal } from '../../../contexts/ModalContext';
-import { getPermissionsFromZippedApp } from './lib/getPermissionsFromZippedApp';
+import { getManifestFromZippedApp } from './lib/getManifestFromZippedApp';
+import { Apps } from '../../../../app/apps/client/orchestrator';
 
 const placeholderUrl = 'https://rocket.chat/apps/package.zip';
 
@@ -66,32 +68,59 @@ function AppInstallPage() {
 		setModal(null);
 	}, [setInstalling, setModal]);
 
+	const isAppInstalled = async (appId) => {
+		try {
+			const app = await Apps.getApp(appId);
+			return !!app || false;
+		} catch (e) {
+			return false;
+		}
+	};
+
+	const handleAppPermissionsReview = async (permissions, appFile, update) => {
+
+		if (!permissions || permissions.length === 0) {
+			await sendFile(permissions, appFile, update);
+		} else {
+			setModal(
+				<AppPermissionsReviewModal
+					appPermissions={permissions}
+					cancel={cancelAction}
+					confirm={(permissions) => sendFile(permissions, appFile, update)}
+				/>,
+			);
+		}
+	};
+
 	const install = async () => {
 		setInstalling(true);
 
 		try {
-			let permissions;
+			let manifest;
 			let appFile;
 			if (url) {
 				const { buff } = await downloadApp({ url, downloadOnly: true });
 				const fileData = Uint8Array.from(buff.data);
-				permissions = await getPermissionsFromZippedApp(fileData);
+				manifest = await getManifestFromZippedApp(fileData);
 				appFile = new File([fileData], 'app.zip', { type: 'application/zip' });
 			} else {
 				appFile = file;
-				permissions = await getPermissionsFromZippedApp(appFile);
+				manifest = await getManifestFromZippedApp(appFile);
 			}
 
-			if (!permissions || permissions.length === 0) {
-				await sendFile(permissions, appFile);
-			} else {
+			const { permissions, id } = manifest;
+
+			const isInstalled = await isAppInstalled(id);
+
+			if (isInstalled) {
 				setModal(
-					<AppPermissionsReviewModal
-						appPermissions={permissions}
+					<AppUpdateModal
 						cancel={cancelAction}
-						confirm={(permissions) => sendFile(permissions, appFile)}
+						confirm={() => handleAppPermissionsReview(permissions, appFile, true)}
 					/>,
 				);
+			} else {
+				await handleAppPermissionsReview(permissions, appFile);
 			}
 		} catch (error) {
 			handleInstallError(error);
