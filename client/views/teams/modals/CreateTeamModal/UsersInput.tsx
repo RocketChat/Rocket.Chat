@@ -2,7 +2,6 @@ import { AutoComplete, Box, Option, Options, Chip, AutoCompleteProps } from '@ro
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 
-import { IUser } from '../../../../../definition/IUser';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 
@@ -11,20 +10,11 @@ type UsersInputProps = {
 	onChange: (value: unknown, action: 'remove' | undefined) => void;
 };
 
-type UsersAutoCompleteEndpoint = {
-	params: {
-		selector: string;
-	};
-	value: {
-		items: IUser[];
-	};
-};
-
 const useUsersAutoComplete = (term: string): AutoCompleteProps['options'] => {
-	const params = useMemo<UsersAutoCompleteEndpoint['params']>(() => ({
+	const params = useMemo(() => ({
 		selector: JSON.stringify({ term }),
 	}), [term]);
-	const { value: data } = useEndpointData<UsersAutoCompleteEndpoint['value']>('users.autocomplete', params);
+	const { value: data } = useEndpointData('users.autocomplete', params);
 
 	return useMemo<AutoCompleteProps['options']>(() => {
 		if (!data) {
