@@ -398,6 +398,18 @@ export class Rooms extends Base {
 			_id: {
 				$in: data,
 			},
+			$or: [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: data,
+				},
+			}],
 		};
 
 		return this.find(query, options);
@@ -432,6 +444,18 @@ export class Rooms extends Base {
 			_updatedAt: {
 				$gt: _updatedAt,
 			},
+			$or: [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: ids,
+				},
+			}],
 		};
 
 		return this.find(query, options);

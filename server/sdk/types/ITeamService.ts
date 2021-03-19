@@ -1,6 +1,6 @@
 import { FindOneOptions } from 'mongodb';
 
-import { ITeam, ITeamMember, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
+import { ITeam, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
 import { ICreateRoomParams } from './IRoomService';
 
@@ -21,6 +21,20 @@ export interface ITeamMemberParams {
 	roles?: Array<string>;
 }
 
+export interface IUserInfo {
+	_id: string;
+	username?: string;
+	name: string;
+	status: string;
+}
+
+export interface ITeamMemberInfo {
+	user: IUserInfo;
+	roles?: string[];
+	createdBy: Omit<IUserInfo, 'name' | 'status'>;
+	createdAt: Date;
+}
+
 export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
 	addRoom(uid: string, rid: string, teamId: string, isDefault: boolean): Promise<IRoom>;
@@ -30,7 +44,7 @@ export interface ITeamService {
 	list(uid: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
-	members(teamId: string, teamName: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeamMember>>;
+	members(uid: string, teamId: string, teamName: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
 	addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, teamName: string, members: ITeamMemberParams): Promise<void>;
 	removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
@@ -38,4 +52,8 @@ export interface ITeamService {
 	getInfoById(teamId: string): Promise<Partial<ITeam> | undefined>;
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
+	unsetTeamIdOfRooms(teamId: string): void;
+	getOneById(teamId: string): Promise<ITeam | undefined>;
+	getOneByName(teamName: string): Promise<ITeam | null>;
+	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 }
