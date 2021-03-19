@@ -17,11 +17,12 @@ import ForwardChatModal from '../../../../components/ForwardChatModal';
 import TranscriptModal from '../../../../components/TranscriptModal';
 import CloseChatModal from '../../../../components/CloseChatModal';
 import { handleError } from '../../../../../app/utils/client';
-import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { IRoom } from '../../../../../definition/IRoom';
 import { useAtLeastOnePermission, usePermission, useRole } from '../../../../contexts/AuthorizationContext';
 import { useUserId } from '../../../../contexts/UserContext';
 import { useOmnichannel } from '../../../../contexts/OmnichannelContext';
+import { useEndpoint } from '../../../../contexts/ServerContext';
+
 
 const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['className'] }): JSX.Element => {
 	const setModal = useSetModal();
@@ -35,7 +36,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 	const rid = room._id;
 	const uid = useUserId();
 
-	const getVisitorInfo = useEndpointAction('GET', `livechat/visitors.info?visitorId=${ visitorRoomId }`);
+	const getVisitorInfo = useEndpoint('GET', `livechat/visitors.info?visitorId=${ visitorRoomId }`);
 
 	const getVisitorEmail = useMutableCallback(async () => {
 		if (!visitorRoomId) { return; }

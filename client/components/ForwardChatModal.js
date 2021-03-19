@@ -7,7 +7,7 @@ import { useForm } from '../hooks/useForm';
 import ModalSeparator from './ModalSeparator';
 import DepartmentAutoComplete from '../views/omnichannel/DepartmentAutoComplete';
 import { UserAutoComplete } from './AutoComplete';
-import { useEndpointAction } from '../hooks/useEndpointAction';
+import { useEndpoint } from '../contexts/ServerContext';
 
 const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 	const t = useTranslation();
@@ -25,7 +25,7 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 	const [userId, setUserId] = useState('');
 
 	const { handleDepartmentName, handleUsername, handleComment } = handlers;
-	const userInfo = useEndpointAction('GET', `users.info?username=${ username }`);
+	const userInfo = useEndpoint('GET', `users.info?username=${ username }`);
 
 
 	const handleSend = useCallback(() => {
