@@ -537,6 +537,83 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
+	it('/groups.online', (done) => {
+		request.get(api('groups.online'))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('online').and.to.be.an('array');
+			})
+			.end(done);
+	});
+
+	it('/groups.members', (done) => {
+		request.get(api('groups.members'))
+			.set(credentials)
+			.query({
+				roomId: group._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('members').and.to.be.an('array');
+			})
+			.end(done);
+	});
+
+	it('/groups.files', (done) => {
+		request.get(api('groups.files'))
+			.set(credentials)
+			.query({
+				roomId: group._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('files').and.to.be.an('array');
+			})
+			.end(done);
+	});
+
+	describe('/groups.listAll', () => {
+		it('should fail if the user doesnt have view-room-administration permission', (done) => {
+			updatePermission('view-room-administration', []).then(() => {
+				request.get(api('groups.listAll'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should succeed if user has view-room-administration permission', (done) => {
+			updatePermission('view-room-administration', ['admin']).then(() => {
+				request.get(api('groups.listAll'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('groups').and.to.be.an('array');
+					})
+					.end(done);
+			});
+		});
+	});
+
 	it('/groups.counters', (done) => {
 		request.get(api('groups.counters'))
 			.set(credentials)

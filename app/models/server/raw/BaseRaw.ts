@@ -144,13 +144,4 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 
 		return await this.trash?.findOne<T>(query, options) ?? undefined;
 	}
-
-	trashFindDeletedAfter(deletedAt: Date, query: any, options: any): Cursor<T> | undefined {
-		query.__collection__ = this.name;
-		query._deletedAt = {
-			$gt: deletedAt,
-		};
-
-		return this.trash?.find<T>(query, options);
-	}
 }
