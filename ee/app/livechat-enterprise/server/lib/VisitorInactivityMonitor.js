@@ -79,8 +79,7 @@ export class VisitorInactivityMonitor {
 	}
 
 	placeRoomOnHold(room) {
-		LivechatEnterprise.placeRoomOnHold(room);
-		LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
+		LivechatEnterprise.placeRoomOnHold(room) && LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
 	}
 
 	handleAbandonedRooms() {

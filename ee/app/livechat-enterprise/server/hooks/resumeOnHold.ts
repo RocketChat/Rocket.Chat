@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../app/callbacks/server';
-import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 
 const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promise<any> => {
 	const { _id: rid, onHold } = room;
@@ -24,7 +23,6 @@ const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promis
 
 	// if a visitor sends a message in room which is On Hold
 	if (message.token && onHold) {
-		await AutoCloseOnHoldScheduler.unscheduleRoom(rid);
 		await Meteor.call('livechat:resumeOnHold', room._id, { clientAction: false });
 	}
 

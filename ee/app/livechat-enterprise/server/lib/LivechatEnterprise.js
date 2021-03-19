@@ -167,9 +167,9 @@ export const LivechatEnterprise = {
 	},
 
 	placeRoomOnHold(room) {
-		const { _id: roomId } = room;
-		if (!roomId) {
-			return;
+		const { _id: roomId, onHold } = room;
+		if (!roomId || onHold) {
+			return false;
 		}
 		LivechatRooms.setOnHold(roomId);
 		Subscriptions.setOnHold(roomId);
@@ -177,6 +177,8 @@ export const LivechatEnterprise = {
 		Meteor.defer(() => {
 			callbacks.run('livechat:afterOnHold', room);
 		});
+
+		return true;
 	},
 };
 
