@@ -26,7 +26,7 @@ const BreadcrumbsLink = (props) => <BreadcrumbsText
 const BreadcrumbsText = (props) => <Box display='inline' is='span' mi='x2' color='default' {...props} />;
 
 const BreadcrumbsItem = (props) => <Box mi='neg-x2' display='inline-flex' flexDirection='row' alignItems='center' color='info' fontScale='s2' {...props} />;
-const BreadcrumbsTag = (props) => <Box backgroundColor='neutral-400' mis='x8' display='inline-flex' flexDirection='row' alignItems='center' color='neutral-700' fontSize='x12' borderRadius='x4' p='x4' fontWeight='600'{...props} />;
+const BreadcrumbsTag = (props) => <Box backgroundColor='neutral-400' mis='x8' display='inline-flex' flexDirection='row' alignItems='center' color='neutral-700' fontSize='x12' borderRadius='x4' p='x4' lineHeight='x16' fontWeight='600' height='x20'{...props} />;
 
 const Breadcrumbs = ({ children }) => <Box withTruncatedText mie='x2' display='flex' flexDirection='row' alignItems='center'>{children}</Box>;
 

@@ -44,7 +44,7 @@ const ParentRoom = ({ room }) => {
 
 	const prevSubscription = useUserSubscription(room.prid ? room.prid : team.roomId);
 	const prevRoomHref = prevSubscription ? roomTypes.getRouteLink(prevSubscription.t, prevSubscription) : null;
-	const teamIcon = team && team.t === 0 ? 'team' : 'team-private';
+	const teamIcon = team && team.t === 0 ? 'team' : 'team-lock';
 	const parentIcon = useRoomIcon(prevSubscription);
 	const icon = room.prid ? parentIcon : { name: teamIcon };
 
