@@ -245,14 +245,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 			...room,
 		};
 	}
-  
-  async unsetTeamIdOfRooms(teamId: string): Promise<void> {
-	  if (!teamId) {
-		  throw new Error('missing-teamId');
-    }
 
-    await this.RoomsModel.unsetTeamId(teamId);
-  }
+	async unsetTeamIdOfRooms(teamId: string): Promise<void> {
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+
+		await this.RoomsModel.unsetTeamId(teamId);
+	}
 
 	async updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom = false): Promise<IRoom> {
 		if (!rid) {
