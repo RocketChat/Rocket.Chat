@@ -1,10 +1,10 @@
 import React, { FC, useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { Field, Button, TextInput, Icon, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../contexts/TranslationContext';
-import { useForm } from '../hooks/useForm';
-import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
-import { IRoom } from '../../definition/IRoom';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useForm } from '../../../hooks/useForm';
+import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
+import { IRoom } from '../../../../definition/IRoom';
 
 
 type TranscriptModalProps = {

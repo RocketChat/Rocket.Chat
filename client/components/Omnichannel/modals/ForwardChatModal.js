@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { useTranslation } from '../contexts/TranslationContext';
-import { useForm } from '../hooks/useForm';
-import ModalSeparator from './ModalSeparator';
-import DepartmentAutoComplete from '../views/omnichannel/DepartmentAutoComplete';
-import { UserAutoComplete } from './AutoComplete';
-import { useEndpoint } from '../contexts/ServerContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useForm } from '../../../hooks/useForm';
+import ModalSeparator from '../../ModalSeparator';
+import DepartmentAutoComplete from '../../../views/omnichannel/DepartmentAutoComplete';
+import { UserAutoComplete } from '../../AutoComplete';
+import { useEndpoint } from '../../../contexts/ServerContext';
 
 const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 	const t = useTranslation();

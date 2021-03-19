@@ -6,22 +6,22 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import toastr from 'toastr';
 
-import Header from '../../../../components/Header';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { QuickActionsActionConfig, QuickActionsEnum } from '../../lib/QuickActions';
-import { useLayout } from '../../../../contexts/LayoutContext';
-import { useSetModal } from '../../../../contexts/ModalContext';
-import { QuickActionsContext } from '../../lib/QuickActions/QuickActionsContext';
-import ReturnChatQueueModal from '../../../../components/ReturnChatQueueModal';
-import ForwardChatModal from '../../../../components/ForwardChatModal';
-import TranscriptModal from '../../../../components/TranscriptModal';
-import CloseChatModal from '../../../../components/CloseChatModal';
-import { handleError } from '../../../../../app/utils/client';
-import { IRoom } from '../../../../../definition/IRoom';
-import { useAtLeastOnePermission, usePermission, useRole } from '../../../../contexts/AuthorizationContext';
-import { useUserId } from '../../../../contexts/UserContext';
-import { useOmnichannel } from '../../../../contexts/OmnichannelContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
+import Header from '../../../../../components/Header';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { QuickActionsActionConfig, QuickActionsEnum } from '../../../lib/QuickActions';
+import { useLayout } from '../../../../../contexts/LayoutContext';
+import { useSetModal } from '../../../../../contexts/ModalContext';
+import { QuickActionsContext } from '../../../lib/QuickActions/QuickActionsContext';
+import ReturnChatQueueModal from '../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
+import ForwardChatModal from '../../../../../components/Omnichannel/modals/ForwardChatModal';
+import TranscriptModal from '../../../../../components/Omnichannel/modals/TranscriptModal';
+import CloseChatModal from '../../../../../components/Omnichannel/modals/CloseChatModal';
+import { handleError } from '../../../../../../app/utils/client';
+import { IRoom } from '../../../../../../definition/IRoom';
+import { useAtLeastOnePermission, usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
+import { useUserId } from '../../../../../contexts/UserContext';
+import { useOmnichannel } from '../../../../../contexts/OmnichannelContext';
+import { useEndpoint } from '../../../../../contexts/ServerContext';
 
 
 const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['className'] }): JSX.Element => {

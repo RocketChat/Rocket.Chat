@@ -8,7 +8,7 @@ import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
 import ToolBox from './ToolBox';
-import QuickActions from './QuickActions';
+import QuickActions from './Omnichannel/QuickActions';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';

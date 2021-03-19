@@ -1,8 +1,8 @@
 import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
-import { withDoNotAskAgain, RequiredModalProps } from './withDoNotAskAgain';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { withDoNotAskAgain, RequiredModalProps } from '../../withDoNotAskAgain';
 
 type ReturnChatQueueModalProps = RequiredModalProps & {
 	onMoveChat: () => void;
