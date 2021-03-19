@@ -85,6 +85,7 @@ Meteor.startup(function() {
 			const { connectToCloud = false, workspaceRegistered = false } = data;
 			if (connectToCloud === true && workspaceRegistered !== true) {
 				banners.open({
+					id: 'cloud-registration',
 					title: t('Cloud_registration_pending_title'),
 					html: t('Cloud_registration_pending_html'),
 					modifiers: ['large', 'danger'],

@@ -884,6 +884,19 @@ Meteor.startup(() => {
 		}, 500);
 
 		this.autorun(() => {
+			if (rid !== Session.get('openedRoom')) {
+				return;
+			}
+
+			let room = Rooms.findOne({ _id: rid }, { fields: { t: 1 } });
+
+			if (room?.t === 'l') {
+				room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
+				roomTypes.getConfig(room.t).openCustomProfileTab(this, room, room.v.username);
+			}
+		});
+
+		this.autorun(() => {
 			if (!Object.values(roomTypes.roomTypes).map(({ route }) => route && route.name).filter(Boolean).includes(FlowRouter.getRouteName())) {
 				return;
 			}
