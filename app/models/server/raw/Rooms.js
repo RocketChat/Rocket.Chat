@@ -260,7 +260,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.col.find({
 			teamId,
 			teamDefault: true,
-			t: 'c',
 			teamMain: {
 				$exists: false,
 			},
