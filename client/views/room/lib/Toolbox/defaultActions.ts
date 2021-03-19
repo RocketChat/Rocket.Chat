@@ -15,7 +15,7 @@ addAction('rocket-search', {
 });
 
 addAction('user-info', {
-	groups: ['direct'],
+	groups: ['direct', 'live'],
 	id: 'user-info',
 	title: 'User_Info',
 	icon: 'user',
