@@ -158,18 +158,7 @@ export const createSettings = () => {
 		enterprise: true,
 		value: true,
 		invalidValue: false,
-		modules: [
-			'livechat-enterprise',
-		],
-	});
-
-	settings.add('Livechat_manual_on_hold_timeout', 60, {
-		type: 'int',
-		group: 'Omnichannel',
-		section: 'Sessions',
-		enterprise: true,
-		invalidValue: 0,
-		enableQuery: { _id: 'Livechat_allow_manual_on_hold', value: true },
+		public: true,
 		modules: [
 			'livechat-enterprise',
 		],

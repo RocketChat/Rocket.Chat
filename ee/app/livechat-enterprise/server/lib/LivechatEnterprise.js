@@ -173,7 +173,6 @@ export const LivechatEnterprise = {
 		}
 		LivechatRooms.setOnHold(roomId);
 		Subscriptions.setOnHold(roomId);
-		LivechatRooms.unsetCanPlaceOnHold(roomId);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat:afterOnHold', room);

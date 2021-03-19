@@ -60,20 +60,6 @@ LivechatRooms.prototype.unsetOnHold = function(roomId) {
 	);
 };
 
-LivechatRooms.prototype.setCanPlaceOnHold = function(roomId) {
-	return this.update(
-		{ _id: roomId },
-		{ $set: { canPlaceChatOnHold: true } },
-	);
-};
-
-LivechatRooms.prototype.unsetCanPlaceOnHold = function(roomId) {
-	return this.update(
-		{ _id: roomId },
-		{ $unset: { canPlaceChatOnHold: 1 } },
-	);
-};
-
 LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function() {
 	return this.update({
 		open: true,
@@ -100,7 +86,6 @@ LivechatRooms.prototype.unsetAllOnHoldFieldsByRoomId = function(roomId) {
 		$unset: {
 			'omnichannel.predictedVisitorAbandonmentAt': 1,
 			onHold: 1,
-			canPlaceChatOnHold: 1,
 		},
 	});
 };

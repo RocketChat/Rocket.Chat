@@ -208,7 +208,7 @@ Template.visitorInfo.helpers({
 
 	canPlaceChatOnHold() {
 		const room = Template.instance().room.get();
-		return !!room.canPlaceChatOnHold;
+		return room.open && !room.onHold && settings.get('Livechat_allow_manual_on_hold') && room.lastMessage && !room.lastMessage?.token;
 	},
 
 	roomClosedDateTime() {

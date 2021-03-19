@@ -40,7 +40,6 @@ export interface IRoom extends IRocketChatRecord {
 	};
 
 	onHold?: boolean;
-	canPlaceChatOnHold?: boolean;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {

@@ -74,10 +74,6 @@
 					<button class='button rc-button rc-button--secondary button-block edit-livechat'><span><i class='icon-edit'></i> {{_ "Edit"}}</span></button>
 				{{/if}}
 
-				{{#if canPlaceChatOnHold}}
-					<button class="button rc-button rc-button--secondary button-block on-hold"><span><i class="icon-pause"></i> {{_ "On_Hold_Chats"}}</span></button>
-				{{/if}}
-
 				{{#if roomOpen}}
 					{{#if canCloseRoom}}
 						<button class='button rc-button rc-button--secondary button-block close-livechat'><span><i class='icon-cancel'></i> {{_ "Close"}}</span></button>
@@ -92,6 +88,10 @@
 
 				{{#if canSendTranscript}}
 					<button class="button rc-button rc-button--secondary button-block send-transcript"><span><i class="icon-mail"></i> {{_ "Transcript"}}</span></button>
+				{{/if}}
+
+				{{#if canPlaceChatOnHold}}
+					<button class="button rc-button rc-button--secondary button-block on-hold"><span><i class="icon-pause"></i> {{_ "On_Hold_Chats"}}</span></button>
 				{{/if}}
 			</nav>
 		{{/if}}

@@ -27,11 +27,10 @@ import './hooks/onLoadConfigApi';
 import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
 import './hooks/scheduleAutoTransfer';
-import './hooks/scheduleManualOnHold';
+import './hooks/resumeOnHold';
 import './hooks/afterOnHold';
 import './lib/routing/LoadBalancing';
 import './lib/AutoCloseOnHoldScheduler';
-import './lib/ManualOnHoldScheduler';
 import { onLicense } from '../../license/server';
 import './business-hour';
 
