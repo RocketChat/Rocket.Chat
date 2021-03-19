@@ -12,6 +12,29 @@ describe('[Teams]', () => {
 	let publicRoom = null;
 	let publicRoom2 = null;
 	let privateRoom = null;
+	let testUser;
+	let testUser2;
+
+	before('Create test users', (done) => {
+		let username = `user.test.${ Date.now() }`;
+		let email = `${ username }@rocket.chat`;
+		request.post(api('users.create'))
+			.set(credentials)
+			.send({ email, name: username, username, password: username })
+			.then((res) => {
+				testUser = res.body.user;
+
+				username = `user.test.${ Date.now() }`;
+				email = `${ username }@rocket.chat`;
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({ email, name: username, username, password: username })
+					.end((err, res) => {
+						testUser2 = res.body.user;
+						done();
+					});
+			});
+	});
 
 	describe('/teams.create', () => {
 		it('should create a public team', (done) => {
@@ -38,7 +61,6 @@ describe('[Teams]', () => {
 				.send({
 					name: `test-team-${ Date.now() }`,
 					type: 1,
-					owner: 'rocket.cat',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -59,7 +81,16 @@ describe('[Teams]', () => {
 							expect(response.body).to.have.property('members');
 
 							const member = response.body.members[0];
-							expect(member.userId).to.be.equal('rocket.cat');
+							expect(member).to.have.property('user');
+							expect(member).to.have.property('roles');
+							expect(member).to.have.property('createdBy');
+							expect(member).to.have.property('createdAt');
+							expect(member.user).to.have.property('_id');
+							expect(member.user).to.have.property('username');
+							expect(member.user).to.have.property('name');
+							expect(member.user).to.have.property('status');
+							expect(member.createdBy).to.have.property('_id');
+							expect(member.createdBy).to.have.property('username');
 							expect(member.roles).to.have.length(1);
 							expect(member.roles[0]).to.be.equal('owner');
 						});
@@ -298,7 +329,7 @@ describe('[Teams]', () => {
 		it('should throw an error if team is private and no permission', (done) => {
 			updatePermission('view-all-teams', []).then(() => {
 				request.get(api('teams.listRooms'))
-					.set(credentials)
+					.set(testUserCredentials)
 					.query({
 						teamId: privateTeam._id,
 					})
@@ -316,7 +347,7 @@ describe('[Teams]', () => {
 		it('should return only public rooms for public team', (done) => {
 			updatePermission('view-all-team-channels', []).then(() => {
 				request.get(api('teams.listRooms'))
-					.set(testUserCredentials)
+					.set(credentials)
 					.query({
 						teamId: publicTeam._id,
 					})
@@ -345,7 +376,7 @@ describe('[Teams]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.be.an('array');
-						expect(res.body.rooms.length).to.equal(3);
+						expect(res.body.rooms.length).to.equal(2);
 					})
 					.end(done);
 			});
@@ -415,18 +446,32 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.addMembers', () => {
+		let testTeam;
+		before('Create test team', (done) => {
+			const teamName = `test-team-${ Date.now() }`;
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
+					done();
+				});
+		});
 		it('should add members to a public team', (done) => {
 			request.post(api('teams.addMembers'))
 				.set(credentials)
 				.send({
-					teamName: community,
+					teamName: testTeam.name,
 					members: [
 						{
-							userId: 'test-123',
+							userId: testUser._id,
 							roles: ['member'],
 						},
 						{
-							userId: 'test-456',
+							userId: testUser2._id,
 							roles: ['member'],
 						},
 					],
@@ -440,20 +485,38 @@ describe('[Teams]', () => {
 					request.get(api('teams.members'))
 						.set(credentials)
 						.query({
-							teamName: community,
+							teamName: testTeam.name,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
-							expect(response.body.members).to.have.lengthOf(3);
-							expect(response.body.members[1].userId).to.eql('test-123');
-							expect(response.body.members[1].roles).to.have.lengthOf(1);
-							expect(response.body.members[1].roles).to.eql(['member']);
-							expect(response.body.members[2].userId).to.eql('test-456');
-							expect(response.body.members[2].roles).to.have.lengthOf(1);
-							expect(response.body.members[2].roles).to.eql(['member']);
+							expect(response.body.members).to.have.length(3);
+							expect(response.body.members[1]).to.have.property('user');
+							expect(response.body.members[1]).to.have.property('roles');
+							expect(response.body.members[1]).to.have.property('createdBy');
+							expect(response.body.members[1]).to.have.property('createdAt');
+
+							const members = response.body.members.map(({ user, roles }) => ({
+								_id: user._id,
+								username: user.username,
+								name: user.name,
+								roles,
+							}));
+
+							expect(members).to.own.deep.include({
+								_id: testUser._id,
+								username: testUser.username,
+								name: testUser.name,
+								roles: ['member'],
+							});
+							expect(members).to.own.deep.include({
+								_id: testUser2._id,
+								username: testUser2.username,
+								name: testUser2.name,
+								roles: ['member'],
+							});
 						}),
 				)
 				.then(() => done())
@@ -462,11 +525,43 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.members', () => {
+		let testTeam;
+		before('Create test team', (done) => {
+			const teamName = `test-team-${ Date.now() }`;
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
+					done();
+				});
+		});
+		before('Add members to team', (done) => {
+			request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamName: testTeam.name,
+					members: [
+						{
+							userId: testUser._id,
+							roles: ['member'],
+						},
+						{
+							userId: testUser2._id,
+							roles: ['member'],
+						},
+					],
+				})
+				.end(done);
+		});
 		it('should list all the members from a public team', (done) => {
 			request.get(api('teams.members'))
 				.set(credentials)
 				.query({
-					teamName: community,
+					teamName: testTeam.name,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -477,23 +572,62 @@ describe('[Teams]', () => {
 					expect(res.body).to.have.property('total', 3);
 					expect(res.body).to.have.property('members');
 					expect(res.body.members).to.have.length(3);
-					expect(res.body.members[0]).to.have.property('_id');
+					expect(res.body.members[0]).to.have.property('user');
 					expect(res.body.members[0]).to.have.property('roles');
+					expect(res.body.members[0]).to.have.property('createdBy');
 					expect(res.body.members[0]).to.have.property('createdAt');
+					expect(res.body.members[0].user).to.have.property('_id');
+					expect(res.body.members[0].user).to.have.property('username');
+					expect(res.body.members[0].user).to.have.property('name');
+					expect(res.body.members[0].user).to.have.property('status');
+					expect(res.body.members[0].createdBy).to.have.property('_id');
+					expect(res.body.members[0].createdBy).to.have.property('username');
 				})
 				.end(done);
 		});
 	});
 
 	describe('/teams.updateMember', () => {
+		let testTeam;
+		before('Create test team', (done) => {
+			const teamName = `test-team-${ Date.now() }`;
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
+					done();
+				});
+		});
+		before('Add members to team', (done) => {
+			request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamName: testTeam.name,
+					members: [
+						{
+							userId: testUser._id,
+							roles: ['member'],
+						},
+						{
+							userId: testUser2._id,
+							roles: ['member'],
+						},
+					],
+				})
+				.end(done);
+		});
 		it('should update member\'s data in a public team', (done) => {
 			request.post(api('teams.updateMember'))
 				.set(credentials)
 				.send({
-					teamName: community,
+					teamName: testTeam.name,
 					member:
 						{
-							userId: 'test-123',
+							userId: testUser._id,
 							roles: ['member', 'owner'],
 						},
 				})
@@ -506,7 +640,7 @@ describe('[Teams]', () => {
 					request.get(api('teams.members'))
 						.set(credentials)
 						.query({
-							teamName: community,
+							teamName: testTeam.name,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -514,9 +648,20 @@ describe('[Teams]', () => {
 							expect(response.body).to.have.property('success', true);
 							expect(response.body).to.have.property('members');
 							expect(response.body.members).to.have.length(3);
-							expect(response.body.members[1].userId).to.eql('test-123');
-							expect(response.body.members[1].roles).to.have.lengthOf(2);
-							expect(response.body.members[1].roles).to.eql(['member', 'owner']);
+
+							const members = response.body.members.map(({ user, roles }) => ({
+								_id: user._id,
+								username: user.username,
+								name: user.name,
+								roles,
+							}));
+
+							expect(members).to.own.deep.include({
+								_id: testUser._id,
+								username: testUser.username,
+								name: testUser.name,
+								roles: ['member', 'owner'],
+							});
 						}),
 				)
 				.then(() => done())
@@ -539,6 +684,7 @@ describe('[Teams]', () => {
 					done();
 				});
 		});
+
 		it('should not be able to remove the last owner', (done) => {
 			request.post(api('teams.removeMembers'))
 				.set(credentials)
@@ -560,6 +706,7 @@ describe('[Teams]', () => {
 				.then(() => done())
 				.catch(done);
 		});
+
 		it('should remove one member from a public team', (done) => {
 			request.post(api('teams.addMembers'))
 				.set(credentials)
@@ -567,15 +714,14 @@ describe('[Teams]', () => {
 					teamName: testTeam.name,
 					members: [
 						{
-							userId: 'test-123',
-							roles: ['owner'],
+							userId: testUser._id,
+							roles: ['member'],
+						},
+						{
+							userId: testUser2._id,
+							roles: ['member', 'owner'],
 						},
 					],
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 				})
 				.then(() =>
 					request.post(api('teams.removeMembers'))
@@ -584,7 +730,7 @@ describe('[Teams]', () => {
 							teamName: testTeam.name,
 							members: [
 								{
-									userId: credentials['X-User-Id'],
+									userId: testUser2._id,
 								},
 							],
 						})
@@ -604,11 +750,11 @@ describe('[Teams]', () => {
 								.expect((response) => {
 									expect(response.body).to.have.property('success', true);
 									expect(response.body).to.have.property('members');
-									expect(response.body.members).to.have.lengthOf(1);
+									expect(response.body.members).to.have.length(2);
 								}),
-						),
+						)
+						.then(() => done()),
 				)
-				.then(() => done())
 				.catch(done);
 		});
 	});
@@ -628,6 +774,7 @@ describe('[Teams]', () => {
 					done();
 				});
 		});
+
 		it('should not be able to remove the last owner', (done) => {
 			request.post(api('teams.leave'))
 				.set(credentials)
@@ -644,6 +791,7 @@ describe('[Teams]', () => {
 				.then(() => done())
 				.catch(done);
 		});
+
 		it('should remove the calling user from the team', (done) => {
 			request.post(api('teams.addMembers'))
 				.set(credentials)
@@ -651,15 +799,14 @@ describe('[Teams]', () => {
 					teamName: testTeam.name,
 					members: [
 						{
-							userId: 'test-123',
-							roles: ['owner'],
+							userId: testUser._id,
+							roles: ['member'],
+						},
+						{
+							userId: testUser2._id,
+							roles: ['member', 'owner'],
 						},
 					],
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 				})
 				.then(() =>
 					request.post(api('teams.leave'))
@@ -672,22 +819,8 @@ describe('[Teams]', () => {
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 						})
-						.then(() =>
-							request.get(api('teams.members'))
-								.set(credentials)
-								.query({
-									teamName: testTeam.name,
-								})
-								.expect('Content-Type', 'application/json')
-								.expect(200)
-								.expect((response) => {
-									expect(response.body).to.have.property('success', true);
-									expect(response.body).to.have.property('members');
-									expect(response.body.members).to.have.length(1);
-								}),
-						),
+						.then(() => done()),
 				)
-				.then(() => done())
 				.catch(done);
 		});
 	});

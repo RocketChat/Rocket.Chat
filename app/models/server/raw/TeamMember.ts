@@ -32,8 +32,21 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		return this.col.find({ teamId }, options);
 	}
 
-	findByTeamIdAndRoles(teamId: string, roles?: string[], options?: FindOneOptions<T>): Cursor<T> {
-		return this.col.find({ teamId, roles }, options);
+	findByTeamIdAndRole(teamId: string, role?: string, options?: FindOneOptions<T>): Cursor<T> {
+		return this.col.find({ teamId, roles: role }, options);
+	}
+
+	findMembersInfoByTeamId(teamId: string, limit: number, skip: number): Cursor<T> {
+		return this.col.find({ teamId }, {
+			limit,
+			skip,
+			projection: {
+				userId: 1,
+				roles: 1,
+				createdBy: 1,
+				createdAt: 1,
+			},
+		} as FindOneOptions<T>);
 	}
 
 	updateOneByUserIdAndTeamId(userId: string, teamId: string, update: Partial<T>): Promise<UpdateWriteOpResult> {
