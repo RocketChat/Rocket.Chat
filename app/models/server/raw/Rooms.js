@@ -95,6 +95,20 @@ export class RoomsRaw extends BaseRaw {
 	findByTeamId(teamId, options = {}) {
 		const query = {
 			teamId,
+			teamMain: {
+				$exists: false,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findByTeamIdAndRoomsId(teamId, rids, options = {}) {
+		const query = {
+			teamId,
+			_id: {
+				$in: rids,
+			},
 		};
 
 		return this.find(query, options);
@@ -132,6 +146,18 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	unsetTeamId(teamId, options = {}) {
+		const query = { teamId };
+		const update = {
+			$unset: {
+				teamId: '',
+				teamDefault: '',
+			},
+		};
+
+		return this.update(query, update, options);
 	}
 
 	unsetTeamById(rid, options = {}) {
