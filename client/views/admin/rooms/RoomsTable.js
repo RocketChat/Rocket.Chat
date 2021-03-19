@@ -11,7 +11,7 @@ import { useRoute } from '../../../contexts/RouterContext';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
-export const DEFAULT_TYPES = ['d', 'p', 'c'];
+export const DEFAULT_TYPES = ['d', 'p', 'c', 'team'];
 
 export const roomTypeI18nMap = {
 	l: 'Omnichannel',
@@ -19,11 +19,12 @@ export const roomTypeI18nMap = {
 	d: 'Direct',
 	p: 'Group',
 	discussion: 'Discussion',
+	team: 'Team',
 };
 
 const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const [text, setText] = useState('');
-	const [types, setTypes] = useState({ d: false, c: false, p: false, l: false, discussions: false });
+	const [types, setTypes] = useState({ d: false, c: false, p: false, l: false, discussions: false, teams: false });
 
 	const t = useTranslation();
 
@@ -43,6 +44,7 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const idPrivate = useUniqueId();
 	const idOmnichannel = useUniqueId();
 	const idDiscussions = useUniqueId();
+	const idTeam = useUniqueId();
 
 	return <Box mb='x16' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
 		<TextInput flexShrink={0} placeholder={t('Search_Rooms')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
@@ -68,6 +70,10 @@ const FilterByTypeAndText = ({ setFilter, ...props }) => {
 					<Field.Row>
 						<CheckBox checked={types.discussions} id={idDiscussions} onChange={() => handleCheckBox('discussions')}/>
 						<Field.Label htmlFor={idDiscussions}>{t('Discussions')}</Field.Label>
+					</Field.Row>
+					<Field.Row>
+						<CheckBox checked={types.teams} id={idTeam} onChange={() => handleCheckBox('teams')}/>
+						<Field.Label htmlFor={idTeam}>{t('Teams')}</Field.Label>
 					</Field.Row>
 				</Margins>
 			</Box>
