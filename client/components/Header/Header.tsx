@@ -23,7 +23,7 @@ const ToolBoxAction: FC = ({ id, icon, color, title, action, className, tabId, i
 	ghost
 	tiny
 	overflow='visible'
-	color={color && color}
+	color={!!color && color}
 	{...props}
 />;
 
