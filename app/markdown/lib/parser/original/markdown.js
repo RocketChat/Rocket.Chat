@@ -113,7 +113,7 @@ const parseNotEscaped = (message, {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
-		url = encodeURI(url);
+		url =  /\%/i.test(url) ? url : encodeURI(url);
 		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
 		return addAsToken(message, `<a href="${ url }" target="${ target }" rel="noopener noreferrer">${ title }</a>`);
 	});
