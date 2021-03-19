@@ -37,7 +37,6 @@ import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
-import '../../../livechat/client/views/app/livechatOnHold';
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();

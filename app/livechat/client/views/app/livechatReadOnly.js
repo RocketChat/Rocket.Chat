@@ -28,6 +28,10 @@ Template.livechatReadOnly.helpers({
 	isPreparing() {
 		return Template.instance().preparing.get();
 	},
+
+	isOnHold() {
+		return Template.currentData().onHold;
+	},
 });
 
 Template.livechatReadOnly.events({
@@ -39,6 +43,15 @@ Template.livechatReadOnly.events({
 		const { _id } = inquiry;
 		await call('livechat:takeInquiry', _id);
 		instance.loadInquiry(inquiry.rid);
+	},
+
+	async 'click .js-resume-it'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const room = instance.room.get();
+
+		await call('livechat:resumeOnHold', room._id, { clientAction: true });
 	},
 });
 

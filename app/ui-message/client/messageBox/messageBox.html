@@ -84,11 +84,7 @@
 					{{#if isBlockedOrBlocker}}
 						{{_ "room_is_blocked"}}
 					{{else}}
-						{{#if onHold}}
-							{{> livechatOnHold rid=rid isSubscribed=isSubscribed}}
-						{{else}}
-							{{> messageBoxReadOnly rid=rid isSubscribed=isSubscribed}}
-						{{/if}}
+						{{> messageBoxReadOnly rid=rid isSubscribed=isSubscribed onHold=onHold }}
 					{{/if}}
 				</div>
 			{{/if}}
