@@ -3,7 +3,7 @@ import { Db } from 'mongodb';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions, ITeamStats } from '../../../definition/ITeam';
 import { Room } from '../../sdk';
-import { ITeamCreateParams, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
+import { ITeamCreateParams, ITeamMemberInfo, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
 import { IUser } from '../../../definition/IUser';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
@@ -308,7 +308,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return rooms.map(({ _id }: { _id: string}) => _id);
 	}
 
-	async members(teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMember>> {
+	async members(uid: string, teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		if (!teamId) {
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
 			if (!teamIdName) {
@@ -318,14 +318,41 @@ export class TeamService extends ServiceClass implements ITeamService {
 			teamId = teamIdName._id;
 		}
 
-		const cursor = this.TeamMembersModel.findByTeamId(teamId, {
-			limit: count,
-			skip: offset,
-		});
+		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
+		if (!isMember) {
+			return {
+				total: 0,
+				records: [],
+			};
+		}
+
+		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset);
+
+		const records = await cursor.toArray();
+		const results: ITeamMemberInfo[] = [];
+		for await (const record of records) {
+			const user = await this.Users.findOneById(record.userId);
+			if (user) {
+				results.push({
+					user: {
+						_id: user._id,
+						username: user.username,
+						name: user.name,
+						status: user.status,
+					},
+					roles: record.roles,
+					createdBy: {
+						_id: record.createdBy._id,
+						username: record.createdBy.username,
+					},
+					createdAt: record.createdAt,
+				});
+			}
+		}
 
 		return {
 			total: await cursor.count(),
-			records: await cursor.toArray(),
+			records: results,
 		};
 	}
 
@@ -410,7 +437,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			}
 
 			if (existingMember.roles?.includes('owner')) {
-				const owners = this.TeamMembersModel.findByTeamIdAndRoles(teamId, existingMember.roles);
+				const owners = this.TeamMembersModel.findByTeamIdAndRole(teamId, 'owner');
 				const totalOwners = await owners.count();
 				if (totalOwners === 1) {
 					throw new Error('last-owner-can-not-be-removed');
