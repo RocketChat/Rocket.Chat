@@ -54,11 +54,16 @@ function AppInstallPage() {
 
 	const [handleUploadButtonClick] = useFileInput(handleFile, 'app');
 
-	const sendFile = async (permissionsGranted, appFile) => {
+	const sendFile = async (permissionsGranted, appFile, appId) => {
+		let app;
 		const fileData = new FormData();
 		fileData.append('app', appFile, appFile.name);
 		fileData.append('permissions', JSON.stringify(permissionsGranted));
-		const { app } = await uploadApp(fileData);
+		if (appId) {
+			const updateViaUploadApp = useUpload(`/apps/${ appId }`);
+		} else {
+			await uploadApp(fileData);
+		}
 		appsRoute.push({ context: 'details', id: app.id });
 		setModal(null);
 	};
@@ -77,16 +82,15 @@ function AppInstallPage() {
 		}
 	};
 
-	const handleAppPermissionsReview = async (permissions, appFile, update) => {
-
+	const handleAppPermissionsReview = async (permissions, appFile, appId) => {
 		if (!permissions || permissions.length === 0) {
-			await sendFile(permissions, appFile, update);
+			await sendFile(permissions, appFile, appId);
 		} else {
 			setModal(
 				<AppPermissionsReviewModal
 					appPermissions={permissions}
 					cancel={cancelAction}
-					confirm={(permissions) => sendFile(permissions, appFile, update)}
+					confirm={(permissions) => sendFile(permissions, appFile, appId)}
 				/>,
 			);
 		}
@@ -116,7 +120,7 @@ function AppInstallPage() {
 				setModal(
 					<AppUpdateModal
 						cancel={cancelAction}
-						confirm={() => handleAppPermissionsReview(permissions, appFile, true)}
+						confirm={() => handleAppPermissionsReview(permissions, appFile, id)}
 					/>,
 				);
 			} else {
