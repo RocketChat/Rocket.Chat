@@ -165,7 +165,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async addRoom(uid: string, rid: string, teamId: string, isDefault: boolean = false): Promise<IRoom> {
+	async addRoom(uid: string, rid: string, teamId: string, isDefault = false): Promise<IRoom> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
@@ -200,7 +200,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async removeRoom(uid: string, rid: string, teamId: string, canRemoveAnyRoom: boolean = false): Promise<IRoom> {
+	async removeRoom(uid: string, rid: string, teamId: string, canRemoveAnyRoom = false): Promise<IRoom> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
@@ -223,7 +223,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		if (!room) {
 			throw new Error('invalid-room');
 		}
-		
+
 		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1 } });
 		if (!team) {
 			throw new Error('invalid-team');
@@ -241,7 +241,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom: boolean = false): Promise<IRoom> {
+	async updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom = false): Promise<IRoom> {
 		if (!rid) {
 			throw new Error('missing-roomId');
 		}
