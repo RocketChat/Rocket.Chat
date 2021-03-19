@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { Box, Margins, Tag, Avatar, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import UserCard from '../../../../components/UserCard';
@@ -13,6 +14,7 @@ import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { UserStatus } from '../../../../components/UserStatus';
 import { roomTypes } from '../../../../../app/utils/client';
+import { useRoute } from '../../../../contexts/RouterContext';
 
 
 const wordBreak = css`
@@ -76,6 +78,13 @@ export function ChatInfo({ id }) {
 
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
 	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic } } = data || { room: { v: { } } };
+	const directoryRoute = useRoute('omnichannel-directory');
+
+	const onEditClick = useMutableCallback(() => directoryRoute.push({
+		tab: 'chats',
+		context: 'edit',
+		id,
+	}));
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
@@ -132,7 +141,7 @@ export function ChatInfo({ id }) {
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
-				<Button><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
+				<Button onClick={onEditClick}><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
 			</ButtonGroup>
 		</VerticalBar.Footer>
 	</>;

@@ -11,6 +11,7 @@ import { ContactNewEdit, ContactEditWithData } from './contacts/contextualBar/Co
 import { ContactInfo } from './contacts/contextualBar/ContactInfo';
 import ChatTab from './chats/ChatTab';
 import { ChatInfo } from './chats/contextualBar/ChatInfo';
+import { EditRoomContextBar } from '../../views/admin/rooms/EditRoom';
 
 
 const OmnichannelDirectoryPage = () => {
@@ -64,6 +65,7 @@ const OmnichannelDirectoryPage = () => {
 			<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
 		</VerticalBar.Header>
 		{context === 'info' && <ChatInfo id={id} />}
+		{context === 'edit' && <EditRoomContextBar rid={id} />}
 	</VerticalBar>;
 
 	const ContextualBar = () => {
