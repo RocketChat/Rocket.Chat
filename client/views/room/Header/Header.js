@@ -40,10 +40,13 @@ const RoomTitle = ({ room }) => <>
 </>;
 
 const ParentRoom = ({ room }) => {
-	const prid = room.prid ? room.prid : 'findTeam(room.teamId).roomId';
-	const prevSubscription = useUserSubscription(prid);
+	const team = room.prid ? undefined : 'findTeam(room.teamId).roomId';
+
+	const prevSubscription = useUserSubscription(room.prid ? room.prid : team.roomId);
 	const prevRoomHref = prevSubscription ? roomTypes.getRouteLink(prevSubscription.t, prevSubscription) : null;
-	const icon = useRoomIcon(prevSubscription);
+	const teamIcon = team && team.t === 0 ? 'team' : 'team-private';
+	const parentIcon = useRoomIcon(prevSubscription);
+	const icon = room.prid ? parentIcon : { name: teamIcon };
 
 	return prevSubscription && <>
 		<Breadcrumbs.Tag>
