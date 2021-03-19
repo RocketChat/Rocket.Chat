@@ -85,8 +85,6 @@ export function ChatInfo({ id }) {
 		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
 	}
 
-	console.log(data.room);
-
 	return <>
 		<VerticalBar.ScrollableContent p='x24'>
 			<Margins block='x4'>

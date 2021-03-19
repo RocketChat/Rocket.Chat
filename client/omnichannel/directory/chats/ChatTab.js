@@ -49,10 +49,6 @@ const ChatTable = () => {
 		id,
 	}));
 
-	// const onRowClick = useMutableCallback((id) => console.log(id));
-
-	// console.log(directoryRoute);
-
 	const { value: data } = useEndpointData('livechat/rooms', query);
 
 	const header = useMemo(() => [
