@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { Box, Margins, Tag, Avatar } from '@rocket.chat/fuselage';
+import { Box, Margins, Tag, Avatar, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
 import VerticalBar from '../../../../components/VerticalBar';
@@ -130,5 +130,10 @@ export function ChatInfo({ id }) {
 				</>}
 			</Margins>
 		</VerticalBar.ScrollableContent>
+		<VerticalBar.Footer>
+			<ButtonGroup stretch>
+				{/* <Button><Icon name='pencil' size='x20'/> {t('Edit')}</Button> */}
+			</ButtonGroup>
+		</VerticalBar.Footer>
 	</>;
 }
