@@ -132,7 +132,7 @@ export function ChatInfo({ id }) {
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
-				{/* <Button><Icon name='pencil' size='x20'/> {t('Edit')}</Button> */}
+				<Button><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
 			</ButtonGroup>
 		</VerticalBar.Footer>
 	</>;
