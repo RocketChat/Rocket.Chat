@@ -71,20 +71,28 @@ const AgentField = ({ agent }) => {
 	</>;
 };
 
-export function ChatInfo({ id }) {
+export function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
 
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
 	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic } } = data || { room: { v: { } } };
-	const directoryRoute = useRoute('omnichannel-directory');
+	const routePath = useRoute(route || 'omnichannel-directory');
 
-	const onEditClick = useMutableCallback(() => directoryRoute.push({
-		tab: 'chats',
-		context: 'edit',
-		id,
-	}));
+	const onEditClick = useMutableCallback(() => {
+		console.log(route);
+		return routePath.push(
+			route ? {
+				context: 'edit',
+				id,
+			} : {
+				tab: 'chats',
+				context: 'edit',
+				id,
+			});
+	});
+
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
