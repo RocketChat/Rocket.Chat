@@ -2,7 +2,7 @@ import { addAction, QuickActionsEnum } from '.';
 
 
 addAction(QuickActionsEnum.MoveQueue, {
-	groups: ['channel'],
+	groups: ['live'],
 	id: QuickActionsEnum.MoveQueue,
 	title: 'Move_queue',
 	icon: 'burger-arrow-left',
@@ -10,15 +10,15 @@ addAction(QuickActionsEnum.MoveQueue, {
 });
 
 addAction(QuickActionsEnum.ChatForward, {
-	groups: ['channel'],
+	groups: ['live'],
 	id: QuickActionsEnum.ChatForward,
 	title: 'Forward_chat',
-	icon: 'baloon-arrow-top-right',
+	icon: 'balloon-arrow-top-right',
 	order: 2,
 });
 
 addAction(QuickActionsEnum.Transcript, {
-	groups: ['channel'],
+	groups: ['live'],
 	id: QuickActionsEnum.Transcript,
 	title: 'Transcript',
 	icon: 'mail-arrow-top-right',
@@ -26,10 +26,10 @@ addAction(QuickActionsEnum.Transcript, {
 });
 
 addAction(QuickActionsEnum.CloseChat, {
-	groups: ['channel'],
+	groups: ['live'],
 	id: QuickActionsEnum.CloseChat,
 	title: 'Close',
-	icon: 'baloon-close-top-right',
+	icon: 'balloon-close-top-right',
 	order: 4,
 	color: 'danger',
 });

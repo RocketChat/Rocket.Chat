@@ -10,18 +10,9 @@ export type QuickActionsEventHandler = (handler: EventHandlerOf<Events, 'change'
 export type ChannelContextValue = {
 	actions: Map<QuickActionsActionConfig['id'], QuickActionsAction>;
 	listen: QuickActionsEventHandler;
-	tabBar?: any;
-	context?: any;
-	open: Function;
-	openUserInfo: Function;
-	close: Function;
-	activeTabBar?: QuickActionsActionConfig;
 }
 
 export const QuickActionsContext = createContext<ChannelContextValue>({
 	actions,
 	listen,
-	open: () => null,
-	openUserInfo: () => null,
-	close: () => null,
 });

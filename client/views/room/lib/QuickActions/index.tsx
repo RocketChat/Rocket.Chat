@@ -2,7 +2,7 @@ import { ReactNode, MouseEvent } from 'react';
 import { BoxProps, OptionProps } from '@rocket.chat/fuselage';
 
 import { IRoom } from '../../../../../definition/IRoom';
-import { generator, Events as GeneratorEvents } from './generator';
+import { generator, Events as GeneratorEvents } from '../Toolbox/generator';
 
 
 type QuickActionsHook = ({ room }: { room: IRoom }) => QuickActionsActionConfig | null
@@ -27,7 +27,7 @@ export type QuickActionsActionConfig = {
 	full?: true;
 	order?: number;
 	renderAction?: ActionRenderer;
-	groups: Array<'group' | 'channel' | 'live' | 'direct' | 'direct_multiple'>;
+	groups: Array<'live'>;
 	action?: (e: MouseEvent<HTMLElement>) => void;
 }
 
