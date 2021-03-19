@@ -6,9 +6,9 @@ import { Subscriptions, LivechatRooms } from '../../../../../app/models/server';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 
-API.v1.addRoute('livechat/placeChatOnHold', { authRequired: true }, {
-	get() {
-		const { roomId } = this.queryParams;
+API.v1.addRoute('livechat/room.onHold', { authRequired: true }, {
+	post() {
+		const { roomId } = this.bodyParams;
 		if (!roomId || roomId.trim() === '') {
 			return API.v1.failure('Invalid room Id');
 		}

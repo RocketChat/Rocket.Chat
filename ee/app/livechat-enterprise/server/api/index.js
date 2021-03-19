@@ -6,4 +6,4 @@ import './priorities';
 import './tags';
 import './units';
 import './business-hours';
-import './on-hold';
+import './rooms';

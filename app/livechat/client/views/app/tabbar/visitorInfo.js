@@ -342,7 +342,7 @@ Template.visitorInfo.events({
 			confirmButtonText: t('Yes'),
 		},
 		async () => {
-			const { success } = await APIClient.v1.get(`livechat/placeChatOnHold?roomId=${ this.rid }`);
+			const { success } = await APIClient.v1.post('livechat/room.onHold', { roomId: this.rid });
 			if (success) {
 				modal.open({
 					title: t('Chat_On_Hold'),

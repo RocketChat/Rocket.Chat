@@ -50,7 +50,7 @@ class AutoCloseOnHoldSchedulerClass {
 
 		const payload = {
 			user: schedulerUser,
-			room: await LivechatRooms.findOneById(roomId),
+			room: LivechatRooms.findOneById(roomId),
 			comment,
 			options: {},
 			visitor: undefined,

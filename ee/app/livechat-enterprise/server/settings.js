@@ -128,7 +128,7 @@ export const createSettings = () => {
 		],
 	});
 
-	settings.add('Livechat_auto_close_on_hold_chats_timeout', 60, {
+	settings.add('Livechat_auto_close_on_hold_chats_timeout', 3600, {
 		type: 'int',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -151,12 +151,11 @@ export const createSettings = () => {
 		],
 	});
 
-	settings.add('Livechat_allow_manual_on_hold', true, {
+	settings.add('Livechat_allow_manual_on_hold', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Sessions',
 		enterprise: true,
-		value: true,
 		invalidValue: false,
 		public: true,
 		modules: [
