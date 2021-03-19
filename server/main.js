@@ -51,6 +51,7 @@ import './methods/openRoom';
 import './methods/readMessages';
 import './methods/readThreads';
 import './methods/registerUser';
+import './methods/removeLinkPreview';
 import './methods/removeRoomLeader';
 import './methods/removeRoomModerator';
 import './methods/removeRoomOwner';
