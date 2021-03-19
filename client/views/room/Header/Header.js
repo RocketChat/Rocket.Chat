@@ -34,23 +34,23 @@ const HeaderIcon = ({ room }) => {
 	return <Breadcrumbs.Icon name={icon.name}>{!icon.name && icon}</Breadcrumbs.Icon>;
 };
 
-const RoomTitle = ({ room }) => {
-	const prevSubscription = useUserSubscription(room.prid);
-	const prevRoomHref = prevSubscription ? roomTypes.getRouteLink(prevSubscription.t, prevSubscription) : null;
+const RoomTitle = ({ room }) => <>
+	<HeaderIcon room={room}/>
+	<Header.Title>{room.name}</Header.Title>
+</>;
 
-	return <Breadcrumbs>
-		{room.prid && prevSubscription && <>
-			<Breadcrumbs.Item>
-				<HeaderIcon room={prevSubscription}/>
-				<Breadcrumbs.Link href={prevRoomHref}>{prevSubscription.name}</Breadcrumbs.Link>
-			</Breadcrumbs.Item>
-			<Breadcrumbs.Separator />
-		</>}
-		<Breadcrumbs.Item>
-			<HeaderIcon room={room}/>
-			<Header.Title>{room.name}</Header.Title>
-		</Breadcrumbs.Item>
-	</Breadcrumbs>;
+const ParentRoom = ({ room }) => {
+	const prid = room.prid ? room.prid : 'findTeam(room.teamId).roomId';
+	const prevSubscription = useUserSubscription(prid);
+	const prevRoomHref = prevSubscription ? roomTypes.getRouteLink(prevSubscription.t, prevSubscription) : null;
+	const icon = useRoomIcon(prevSubscription);
+
+	return prevSubscription && <>
+		<Breadcrumbs.Tag>
+			<Breadcrumbs.IconSmall name={icon.name}>{!icon.name && icon}</Breadcrumbs.IconSmall>
+			<Breadcrumbs.Link href={prevRoomHref}>{prevSubscription.name}</Breadcrumbs.Link>
+		</Breadcrumbs.Tag>
+	</>;
 };
 
 const DirectRoomHeader = ({ room }) => {
@@ -74,6 +74,7 @@ const RoomHeader = ({ room, topic }) => {
 			<Header.Content.Row>
 				<RoomTitle room={room}/>
 				<Favorite room={room} />
+				{(room.prid || room.teamId) && <ParentRoom room={room} />}
 				<Encrypted room={room} />
 				<Translate room={room} />
 			</Header.Content.Row>
