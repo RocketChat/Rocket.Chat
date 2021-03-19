@@ -440,7 +440,7 @@ export class Subscriptions extends Base {
 	}
 
 	findByUserIdWithRoomInfo(userId, options) {
-		const userSubs = this.find({ 'u._id': userId });
+		const userSubs = this.find({ 'u._id': userId }, options);
 		const roomIds = userSubs.map((sub) => sub.rid);
 		const rooms = Rooms.findByIds(roomIds, { projection: { _id: 1, teamId: 1, teamMain: 1 } }).fetch();
 
