@@ -3,7 +3,7 @@ import { Db } from 'mongodb';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions, ITeamStats } from '../../../definition/ITeam';
 import { Room } from '../../sdk';
-import { ITeamCreateParams, ITeamMemberInfo, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
+import { ITeamCreateParams, ITeamInfo, ITeamMemberInfo, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
 import { IUser } from '../../../definition/IUser';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
@@ -135,7 +135,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 	}
 
-	async list(uid: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeam>> {
+	async list(uid: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamInfo>> {
 		const userTeams = await this.TeamMembersModel.findByUserId(uid, { projection: { teamId: 1 } }).toArray();
 
 		const teamIds = userTeams.map(({ teamId }) => teamId);
@@ -151,9 +151,25 @@ export class TeamService extends ServiceClass implements ITeamService {
 			skip: offset,
 		});
 
+		const records = await cursor.toArray();
+		const results: ITeamInfo[] = [];
+		for await (const record of records) {
+			const rooms = this.RoomsModel.findByTeamId(record._id);
+			results.push({
+				_id: record._id,
+				_updatedAt: record._updatedAt,
+				name: record.name,
+				type: record.type,
+				roomId: record.roomId,
+				createdBy: record.createdBy,
+				createdAt: record.createdAt,
+				rooms: await rooms.count(),
+			});
+		}
+
 		return {
 			total: await cursor.count(),
-			records: await cursor.toArray(),
+			records: results,
 		};
 	}
 
