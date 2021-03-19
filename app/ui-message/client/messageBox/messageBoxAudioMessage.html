@@ -1,5 +1,4 @@
 <template name="messageBoxAudioMessage" args="rid">
-	{{#if isAllowed}}
 		<div class="rc-message-box__audio-message {{stateClass}}">
 			<div class="rc-message-box__icon rc-message-box__audio-message-cancel js-audio-message-cancel">
 				{{> icon block="rc-input__icon-svg" icon="circle-cross"}}
@@ -18,5 +17,4 @@
 				{{> icon block="rc-input__icon-svg" icon="loading"}}
 			</div>
 		</div>
-	{{/if}}
 </template>
