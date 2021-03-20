@@ -169,13 +169,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		for await (const record of records) {
 			const rooms = this.RoomsModel.findByTeamId(record._id);
 			results.push({
-				_id: record._id,
-				_updatedAt: record._updatedAt,
-				name: record.name,
-				type: record.type,
-				roomId: record.roomId,
-				createdBy: record.createdBy,
-				createdAt: record.createdAt,
+				...record,
 				rooms: await rooms.count(),
 			});
 		}
