@@ -1,7 +1,7 @@
 import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
-import RoomLinkList from './RoomLinkList';
+import RoomLinkList from '../RoomLinkList';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
 export const StepThree = ({ deletedRooms, keptRooms, onConfirm, onCancel }) => {
@@ -17,14 +17,20 @@ export const StepThree = ({ deletedRooms, keptRooms, onConfirm, onCancel }) => {
 		cancelText={t('Back')}
 	>
 		<p>{t('Teams_delete_team')}</p>
-		<p>
-			{t('Teams_deleted_channels')}{' '}
-			<RoomLinkList rooms={deletedRooms}/>
-		</p>
-		<p>
-			{t('Teams_kept_channels')}{' '}
-			<RoomLinkList rooms={keptRooms}/>
-		</p>
+		{!!Object.values(deletedRooms).length && <>
+			<br />
+			<p>
+				{t('Teams_deleted_channels')}{' '}
+				<RoomLinkList rooms={deletedRooms}/>
+			</p>
+		</>}
+		{!!Object.values(keptRooms).length && <>
+			<br />
+			<p>
+				{t('Teams_kept_channels')}{' '}
+				<RoomLinkList rooms={keptRooms}/>
+			</p>
+		</>}
 
 	</GenericModal>;
 };

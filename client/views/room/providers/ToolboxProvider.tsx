@@ -18,9 +18,9 @@ const groupsDict = {
 };
 
 const getGroup = (room: IRoom): string => {
-	console.log(room);
+	console.log('getGroup', room);
 	return 'team';
-	// if (room.teamId) {
+	// if (room.teamMain) {
 	// 	return 'team';
 	// }
 
@@ -33,6 +33,7 @@ const VirtualAction = React.memo(({ handleChange, room, action, id }: { id: stri
 
 	const group = getGroup(room);
 	console.log(group);
+	console.log('VirtualAction', room);
 	const visible = config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
 
 	useLayoutEffect(() => {
