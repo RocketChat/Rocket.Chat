@@ -17,7 +17,7 @@ Meteor.methods({
 
 		const { servedBy: { _id: agentId, username } } = room;
 
-		const inquiry = LivechatInquiry.findOneByRoomId(roomId);
+		const inquiry = LivechatInquiry.findOneByRoomId(roomId, {});
 		if (!inquiry) {
 			throw new Meteor.Error('inquiry-not-found', 'Error! No inquiry found for this room', { method: 'livechat:resumeOnHold' });
 		}
