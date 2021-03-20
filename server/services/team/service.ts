@@ -215,18 +215,18 @@ export class TeamService extends ServiceClass implements ITeamService {
 		if (!uid) {
 			throw new Error('missing-userId');
 		}
-		if (!canRemoveAnyRoom) {
-			const room = await this.RoomsModel.findOneById(rid);
-			const user = await this.Users.findOneById(uid);
-			const canSeeRoom = await canAccessRoom(room, user);
-			if (!canSeeRoom) {
-				throw new Error('user-not-member-of-room');
-			}
-		}
 
 		const room = await this.RoomsModel.findOneById(rid);
 		if (!room) {
 			throw new Error('invalid-room');
+		}
+
+		if (!canRemoveAnyRoom) {
+			const user = await this.Users.findOneById(uid);
+			const canSeeRoom = await canAccessRoom(room, user);
+			if (!canSeeRoom) {
+				throw new Error('invalid-room');
+			}
 		}
 
 		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1 } });
@@ -261,19 +261,20 @@ export class TeamService extends ServiceClass implements ITeamService {
 		if (!uid) {
 			throw new Error('missing-userId');
 		}
-		if (!canUpdateAnyRoom) {
-			const room = await this.RoomsModel.findOneById(rid);
-			const user = await this.Users.findOneById(uid);
-			const canSeeRoom = await canAccessRoom(room, user);
-			if (!canSeeRoom) {
-				throw new Error('user-not-member-of-room');
-			}
-		}
 
 		const room = await this.RoomsModel.findOneById(rid);
 		if (!room) {
 			throw new Error('invalid-room');
 		}
+
+		if (!canUpdateAnyRoom) {
+			const user = await this.Users.findOneById(uid);
+			const canSeeRoom = await canAccessRoom(room, user);
+			if (!canSeeRoom) {
+				throw new Error('invalid-room');
+			}
+		}
+
 		if (!room.teamId) {
 			throw new Error('room-not-on-team');
 		}
