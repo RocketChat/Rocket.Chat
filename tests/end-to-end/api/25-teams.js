@@ -357,7 +357,8 @@ describe('[Teams]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.be.an('array');
-						expect(res.body.rooms.length).to.equal(2);
+						// main room should not be returned here
+						expect(res.body.rooms.length).to.equal(1);
 					})
 					.end(done);
 			});
