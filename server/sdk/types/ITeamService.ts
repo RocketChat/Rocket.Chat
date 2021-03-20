@@ -35,6 +35,10 @@ export interface ITeamMemberInfo {
 	createdAt: Date;
 }
 
+export interface ITeamInfo extends ITeam {
+	rooms: number;
+}
+
 export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
 	addRoom(uid: string, rid: string, teamId: string, isDefault: boolean): Promise<IRoom>;
