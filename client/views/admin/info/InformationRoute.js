@@ -73,6 +73,10 @@ const InformationRoute = React.memo(function InformationRoute() {
 		downloadJsonAs(statistics, 'statistics');
 	};
 
+	if (!canViewStatistics) {
+		return <NotAuthorizedPage />;
+	}
+
 	if (error) {
 		return <Page>
 			<Page.Header title={t('Info')}>
