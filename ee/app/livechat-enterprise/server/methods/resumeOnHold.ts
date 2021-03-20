@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { LivechatRooms } from '../../../../../app/models/server';
-import { QueueManager } from '../../lib/QueueManager';
+import { LivechatRooms, LivechatInquiry, Subscriptions } from '../../../../../app/models/server';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 
 Meteor.methods({
 	async 'livechat:resumeOnHold'(roomId, options = { clientAction: false }) {
@@ -15,8 +15,18 @@ Meteor.methods({
 			throw new Meteor.Error('room-closed', 'Room is not OnHold', { method: 'livechat:resumeOnHold' });
 		}
 
-		await AutoCloseOnHoldScheduler.unscheduleRoom(room._id);
+		const { servedBy: { _id: agentId, username } } = room;
 
-		(QueueManager as any).resumeOnHoldChat(room, options);
+		const inquiry = LivechatInquiry.findOneByRoomId(roomId);
+		if (!inquiry) {
+			throw new Meteor.Error('inquiry-not-found', 'Error! No inquiry found for this room', { method: 'livechat:resumeOnHold' });
+		}
+
+		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
+
+		await RoutingManager.takeInquiry(inquiry, { agentId, username }, options);
+
+		(LivechatRooms as any).unsetAllOnHoldFieldsByRoomId(roomId);
+		Subscriptions.unsetOnHold(roomId);
 	},
 });
