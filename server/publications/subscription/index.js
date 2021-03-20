@@ -11,7 +11,7 @@ Meteor.methods({
 
 		const options = { fields: subscriptionFields };
 
-		const records = Subscriptions.findByUserId(Meteor.userId(), options).fetch();
+		const records = Subscriptions.findByUserIdWithRoomInfo(Meteor.userId(), options);
 
 		if (updatedAt instanceof Date) {
 			return {

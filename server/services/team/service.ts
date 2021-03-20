@@ -1,4 +1,4 @@
-import { Db } from 'mongodb';
+import { Db, FindOneOptions } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions, ITeamStats } from '../../../definition/ITeam';
@@ -14,6 +14,7 @@ import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { IRoom } from '../../../definition/IRoom';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { canAccessRoom } from '../authorization/canAccessRoom';
+import { escapeRegExp } from '../../../lib/escapeRegExp';
 
 export class TeamService extends ServiceClass implements ITeamService {
 	protected name = 'team';
@@ -134,6 +135,17 @@ export class TeamService extends ServiceClass implements ITeamService {
 		} catch (e) {
 			throw new Error('error-team-creation');
 		}
+	}
+
+	async search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]> {
+		if (typeof term === 'string') {
+			term = new RegExp(`^${ escapeRegExp(term) }`, 'i');
+		}
+
+		const userTeams = await this.TeamMembersModel.findByUserId(userId, { projection: { teamId: 1 } }).toArray();
+		const teamIds = userTeams.map(({ teamId }) => teamId);
+
+		return this.TeamModel.findByNameAndTeamIds(term, teamIds, options).toArray();
 	}
 
 	async list(uid: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeam>> {
