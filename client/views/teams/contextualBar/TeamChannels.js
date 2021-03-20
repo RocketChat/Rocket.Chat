@@ -13,6 +13,7 @@ import ScrollableContentWrapper from '../../../components/ScrollableContentWrapp
 import VerticalBar from '../../../components/VerticalBar';
 import AddExistingModal from '../modals/AddExistingModal';
 import { TeamChannelItems } from './TeamChannelItem';
+import CreateChannel from '../../../sidebar/header/CreateChannel';
 
 const Row = memo(({ room }) => {
 	if (!room) {
@@ -100,7 +101,7 @@ export const TeamChannels = ({
 
 TeamChannels.Option = TeamChannelItems;
 
-const useReactModal = (Component) => {
+const useReactModal = (Component, props) => {
 	const setModal = useSetModal();
 
 	return useMutableCallback((e) => {
@@ -112,6 +113,7 @@ const useReactModal = (Component) => {
 
 		setModal(() => <Component
 			onClose={handleClose}
+			{...props}
 		/>);
 	});
 };
@@ -141,9 +143,7 @@ export default ({ rid, tabBar }) => {
 
 	const addExisting = useReactModal(AddExistingModal);
 
-	const createNew = useMutableCallback(() => {
-
-	});
+	const createNew = useReactModal(CreateChannel, { teamId: 'aaaaa' });
 
 	return (
 		<TeamChannels

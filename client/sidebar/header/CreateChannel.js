@@ -129,6 +129,7 @@ export const CreateChannel = ({
 
 export default memo(({
 	onClose,
+	teamId = '',
 }) => {
 	const createChannel = useEndpointActionExperimental('POST', 'channels.create');
 	const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
@@ -206,6 +207,7 @@ export default memo(({
 			name,
 			members: users,
 			readOnly,
+			...teamId && { teamId },
 			extraData: {
 				broadcast,
 				encrypted,
@@ -238,6 +240,7 @@ export default memo(({
 		readOnly,
 		setChannelDescription,
 		setPrivateChannelDescription,
+		teamId,
 		type,
 		users,
 	]);
