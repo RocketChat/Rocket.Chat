@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, FC, useCallback } from 'react';
 import { Box, ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
 
 import { useForm } from '../../../../hooks/useForm';
@@ -6,24 +6,35 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 // import { useEndpoint } from '../../../../contexts/ServerContext';
 import ChannelsInput from './ChannelsInput';
 
-const useExistingModalState = () => {
+type ExistingModalState = {
+	onAdd: any;
+	channels: any;
+	onChangeChannels: any;
+	hasUnsavedChanges: boolean;
+}
+
+type AddExistingModalProps = {
+	onClose: () => void;
+};
+
+const useExistingModalState = (): ExistingModalState => {
 	// const addRoomEndpoint = useEndpoint('POST', 'teams.addRooms');
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
 		channels: [],
 	});
 
-	const { channels } = values;
+	const { channels } = values as {channels: string[]};
 	const { handleChannels } = handlers;
 
-	const onChangeChannels = useCallback((value, action) => {
+	const onChangeChannels = useCallback((value: any, action: string) => {
 		if (!action) {
-			if (channels.includes(value)) {
+			if (channels.filter((current: any) => current._id === value._id).length > 0) {
 				return;
 			}
 			return handleChannels([...channels, value]);
 		}
-		handleChannels(channels.filter(({ _id }) => _id !== value));
+		handleChannels(channels.filter((current: any) => current._id !== value));
 	}, [handleChannels, channels]);
 
 	const onAdd = useCallback(() => {
@@ -35,7 +46,7 @@ const useExistingModalState = () => {
 	return { onAdd, channels, onChangeChannels, hasUnsavedChanges };
 };
 
-const AddExistingModal = ({ onClose }) => {
+const AddExistingModal: FC<AddExistingModalProps> = ({ onClose }) => {
 	const t = useTranslation();
 	const { onAdd, channels, onChangeChannels, hasUnsavedChanges } = useExistingModalState();
 

@@ -57,15 +57,15 @@ const ChannelsInput: FC<ChannelsInputProps> = ({ onChange, ...props }) => {
 
 	const renderSelected = useCallback<FC<{ value?: AutoCompleteValueProps[] }>>(
 		({ value: selected }) => <>
-			{selected?.map(({ _id, name, t }) => <Chip key={_id} {...props} height='x20' value={_id} onClick={onClickSelected} mie='x4'>
+			{selected?.map(({ _id, name, t }) => <Chip key={_id} height='x20' value={_id} onClick={onClickSelected} mie='x4'>
 				<Icon name={t === 'c' ? 'hash' : 'hashtag-lock'} size='x12' />
 				<Box is='span' margin='none' mis='x4'>{name}</Box>
 			</Chip>)}
-		</>, [onClickSelected, props],
+		</>, [onClickSelected],
 	);
 
-	const renderItem = useCallback<FC<{ value: string }>>(
-		({ value, ...props }) => <Option key={value} {...props} avatar={<RoomAvatar room={value} size={Options.AvatarSize} />} />, [],
+	const renderItem = useCallback<FC<{ value: AutoCompleteValueProps }>>(
+		({ value: { _id, name, t }, ...props }) => <Option key={_id} {...props} avatar={<RoomAvatar room={{ _id, name, t }} size={Options.AvatarSize} />} />, [],
 	);
 
 	return <AutoComplete
