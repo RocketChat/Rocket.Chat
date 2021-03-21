@@ -137,6 +137,33 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 	}
 
+	async findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]> {
+		const unfilteredTeams = await this.TeamMembersModel.findByUserId(userId, { projection: { teamId: 1, roles: 1 } }).toArray();
+		const unfilteredTeamIds = unfilteredTeams.map(({ teamId }) => teamId);
+
+		let teamIds;
+
+		if (callerId) {
+			const publicTeams = await this.TeamModel.findByIdsAndType(unfilteredTeamIds, TEAM_TYPE.PUBLIC, { projection: { teamId: 1 } }).toArray();
+			const publicTeamIds = publicTeams.map(({ _id }) => _id);
+			const privateTeamIds = unfilteredTeamIds.filter((teamId) => !publicTeamIds.includes(teamId));
+
+			const privateTeams = await this.TeamMembersModel.findByUserIdAndTeamIds(callerId, privateTeamIds, { projection: { teamId: 1 } }).toArray();
+			const visibleTeamIds = privateTeams.map(({ teamId }) => teamId).concat(publicTeamIds);
+			teamIds = unfilteredTeamIds.filter((teamId) => visibleTeamIds.includes(teamId));
+		} else {
+			teamIds = unfilteredTeamIds;
+		}
+
+		const ownedTeams = unfilteredTeams.filter(({ roles = [] }) => roles.includes('owner')).map(({ teamId }) => teamId);
+
+		const results = await this.TeamModel.findByIds(teamIds).toArray();
+		return results.map((team) => ({
+			...team,
+			isOwner: ownedTeams.includes(team._id),
+		}));
+	}
+
 	async search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]> {
 		if (typeof term === 'string') {
 			term = new RegExp(`^${ escapeRegExp(term) }`, 'i');
