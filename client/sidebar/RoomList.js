@@ -1,5 +1,5 @@
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useResizeObserver, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { forwardRef, useRef, useEffect } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import memoize from 'memoize-one';
@@ -20,6 +20,7 @@ import { useRoomIcon } from '../hooks/useRoomIcon';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
 import { escapeHTML } from '../../lib/escapeHTML';
 import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
+import { useLayout } from '../contexts/LayoutContext';
 
 const sections = {
 	Omnichannel,
@@ -154,6 +155,7 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 	const title = roomTypes.getRoomName(room.t, room);
 	const icon = <SidebarIcon room={room} small={sidebarViewMode !== 'medium'}/>;
 	const href = roomTypes.getRouteLink(room.t, room);
+	const { sidebar } = useLayout();
 
 	const {
 		lastMessage,
@@ -177,6 +179,7 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }}/> : null;
 	const variant = ((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
 	const badges = unread > 0 || threadUnread ? <Badge style={{ flexShrink: 0 }} variant={ variant }>{unread + tunread?.length}</Badge> : null;
+	const toggleSidebar = useMutableCallback(() => sidebar.toggle());
 
 	return <SideBarItemTemplate
 		is='a'
@@ -185,6 +188,7 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 		aria-level='2'
 		unread={!hideUnreadStatus && (alert || unread)}
 		threadUnread={threadUnread}
+		onClick={toggleSidebar}
 		selected={selected}
 		href={href}
 		aria-label={title}
