@@ -109,6 +109,15 @@
 		font-size: var(--popover-item-text-size);
 		align-items: center;
 
+		&:hover,
+		&:focus,
+		&.active {
+			padding-left: 4px;
+
+			border-radius: 4px;
+			background-color: var(--color-gray-lightest);
+		}
+
 		&--alert {
 			color: var(--rc-color-error);
 
