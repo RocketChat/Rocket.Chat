@@ -3,6 +3,7 @@ import { Promise } from 'meteor/promise';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { Rooms } from '../../../models/server';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
@@ -77,6 +78,20 @@ API.v1.addRoute('teams.addRoom', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('teams.addRooms', { authRequired: true }, {
+	post() {
+		const { rooms, teamId } = this.bodyParams;
+
+		if (!hasPermission(this.userId, 'add-team-channel')) {
+			return API.v1.unauthorized();
+		}
+
+		const validRooms = Promise.await(Team.addRooms(this.userId, rooms, teamId));
+
+		return API.v1.success({ rooms: validRooms });
+	},
+});
+
 API.v1.addRoute('teams.removeRoom', { authRequired: true }, {
 	post() {
 		const { roomId, teamId } = this.bodyParams;
@@ -85,7 +100,9 @@ API.v1.addRoute('teams.removeRoom', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const room = Promise.await(Team.removeRoom(this.userId, roomId, teamId));
+		const canRemoveAny = !!hasPermission(this.userId, 'view-all-team-channels');
+
+		const room = Promise.await(Team.removeRoom(this.userId, roomId, teamId, canRemoveAny));
 
 		return API.v1.success({ room });
 	},
@@ -98,8 +115,9 @@ API.v1.addRoute('teams.updateRoom', { authRequired: true }, {
 		if (!hasPermission(this.userId, 'edit-team-channel')) {
 			return API.v1.unauthorized();
 		}
+		const canUpdateAny = !!hasPermission(this.userId, 'view-all-team-channels');
 
-		const room = Promise.await(Team.updateRoom(this.userId, roomId, isDefault));
+		const room = Promise.await(Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny));
 
 		return API.v1.success({ room });
 	},
@@ -108,6 +126,7 @@ API.v1.addRoute('teams.updateRoom', { authRequired: true }, {
 API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 	get() {
 		const { teamId } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
 
 		const allowPrivateTeam = hasPermission(this.userId, 'view-all-teams');
 
@@ -116,14 +135,13 @@ API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 			getAllRooms = true;
 		}
 
-
-		const { records, total } = Promise.await(Team.listRooms(this.userId, teamId, getAllRooms, allowPrivateTeam));
+		const { records, total } = Promise.await(Team.listRooms(this.userId, teamId, getAllRooms, allowPrivateTeam, { offset, count }));
 
 		return API.v1.success({
 			rooms: records,
 			total,
 			count: records.length,
-			offset: 0,
+			offset,
 		});
 	},
 });
@@ -133,7 +151,7 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName } = this.queryParams;
 
-		const { records, total } = Promise.await(Team.members(teamId, teamName, { offset, count }));
+		const { records, total } = Promise.await(Team.members(this.userId, teamId, teamName, { offset, count }));
 
 		return API.v1.success({
 			members: records,
@@ -210,6 +228,10 @@ API.v1.addRoute('teams.info', { authRequired: true }, {
 			? Promise.await(Team.getInfoById(teamId))
 			: Promise.await(Team.getInfoByName(teamName));
 
+		if (!teamInfo) {
+			return API.v1.failure('Team not found');
+		}
+
 		return API.v1.success({ teamInfo });
 	},
 });
@@ -220,15 +242,36 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const { teamId, teamName } = this.queryParams;
+		const { teamId, teamName, roomsToRemove } = this.bodyParams;
 
 		if (!teamId && !teamName) {
 			return API.v1.failure('Provide either the "teamId" or "teamName"');
 		}
 
-		teamId
-			? Promise.await(Team.deleteById(teamId))
-			: Promise.await(Team.deleteByName(teamName));
+		if (roomsToRemove && !Array.isArray(roomsToRemove)) {
+			return API.v1.failure('The list of rooms to remove is invalid.');
+		}
+
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('Team not found.');
+		}
+
+		const rooms = Promise.await(Team.getMatchingTeamRooms(team._id, roomsToRemove));
+
+		// Remove the team's main room
+		Rooms.removeById(team.roomId);
+
+		// If we got a list of rooms to delete along with the team, remove them first
+		if (rooms.length) {
+			Rooms.removeByIds(rooms);
+		}
+
+		// Move every other room back to the workspace
+		Promise.await(Team.unsetTeamIdOfRooms(team._id));
+
+		// And finally delete the team itself
+		Promise.await(Team.deleteById(team._id));
 
 		return API.v1.success();
 	},
