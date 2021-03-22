@@ -24,6 +24,7 @@ import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
+import { Team } from '../../../../server/sdk';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -872,5 +873,20 @@ API.v1.addRoute('users.resetTOTP', { authRequired: true, twoFactorRequired: true
 		Promise.await(resetTOTP(user._id, true));
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.listTeams', { authRequired: true }, {
+	get() {
+		const { userId } = this.bodyParams;
+
+		// If the caller has permission to view all teams, there's no need to filter the teams
+		const adminId = hasPermission(this.userId, 'view-all-teams') ? '' : this.userId;
+
+		const teams = Promise.await(Team.findBySubscribedUserIds(userId, adminId));
+
+		return API.v1.success({
+			teams,
+		});
 	},
 });
