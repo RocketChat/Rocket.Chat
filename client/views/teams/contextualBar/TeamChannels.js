@@ -129,14 +129,15 @@ export default ({ rid, tabBar }) => {
 
 	const fetchData = useCallback(async (/* start, end*/) => {
 		const { room: { teamId } } = await roomInfoEndpoint({ roomId: rid });
-		await roomListEndpoint({ teamId });
-		const { channels, total } = await roomListEndpoint();
-		const channelsDated = channels.map((channel) => {
-			channel._updatedAt = new Date(channel._updatedAt);
-			return { ...channel };
+		console.log(teamId);
+		const { rooms, total } = await roomListEndpoint({ teamId });
+		// const { channels: rooms, total } = await roomListEndpoint();
+		const roomsDated = rooms.map((rooms) => {
+			rooms._updatedAt = new Date(rooms._updatedAt);
+			return { ...rooms };
 		});
 		return {
-			items: channelsDated,
+			items: roomsDated,
 			itemCount: total,
 		};
 	}, [rid, roomInfoEndpoint, roomListEndpoint]);
