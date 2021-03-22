@@ -219,6 +219,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
+	async listByNames(names: Array<string>, options?: FindOneOptions<ITeam>) {
+		return this.TeamModel.findByNames(names, options).toArray();
+	}
+
 	async addRoom(uid: string, rid: string, teamId: string, isDefault = false): Promise<IRoom> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
@@ -383,7 +387,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return rooms.map(({ _id }: { _id: string}) => _id);
 	}
 
-	async members(uid: string, teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
+	async members(uid: string, teamId: string, teamName: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		if (!teamId) {
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
 			if (!teamIdName) {
@@ -394,7 +398,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
-		if (!isMember) {
+		if (!isMember && !canSeeAll) {
 			return {
 				total: 0,
 				records: [],
