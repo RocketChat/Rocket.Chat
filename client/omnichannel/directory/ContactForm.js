@@ -141,6 +141,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		setPhoneError(t('Phone_already_exists'));
 	});
 
+	const isPhone = (phone) => /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g.test(phone);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -151,7 +152,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		setEmailError(email && !isEmail(email) ? t('Validate_email_address') : null);
 	}, [t, email]);
 	useComponentDidUpdate(() => {
-		!phone && setPhoneError(null);
+		setPhoneError(phone && !isPhone(phone) ? t('Validate_phone_number') : null);
 	}, [phone]);
 
 	const handleSave = useMutableCallback(async (e) => {
@@ -165,7 +166,10 @@ export function ContactNewEdit({ id, data, reload, close }) {
 			setEmailError(t('Validate_email_address'));
 			error = true;
 		}
-
+		if (phone && !isPhone(phone)) {
+			setPhoneError(t('Validate_phone_number'));
+			error = true;
+		}
 		if (error) {
 			return;
 		}
