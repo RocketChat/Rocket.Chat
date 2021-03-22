@@ -446,8 +446,8 @@ export class Subscriptions extends Base {
 
 		return userSubs.map((sub) => {
 			const roomSub = rooms.find((r) => r._id === sub.rid);
-			sub.teamMain = roomSub.teamMain || false;
-			sub.teamId = roomSub.teamId || undefined;
+			sub.teamMain = roomSub?.teamMain || false;
+			sub.teamId = roomSub?.teamId || undefined;
 			return sub;
 		});
 	}
