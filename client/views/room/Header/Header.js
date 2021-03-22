@@ -56,7 +56,7 @@ const ParentRoom = ({ room }) => {
 const ParentTeam = ({ room }) => {
 	const query = useMemo(() => ({ teamId: room.teamId }), [room.teamId]);
 
-	const { value, phase, error } = useEndpointData('teams.info', query);
+	const { value, phase } = useEndpointData('teams.info', query);
 	const { value: userTeams, phase: userTeamsPhase } = useEndpointData('users.listTeams', { userId: Meteor.userId() });
 
 	const teamLoading = phase === AsyncStatePhase.LOADING;
