@@ -24,7 +24,7 @@ Meteor.methods({
 
 		await RoutingManager.takeInquiry(inquiry, { agentId, username }, options);
 
-		const updatedRoom = LivechatRooms.findById(roomId, null);
+		const updatedRoom = LivechatRooms.findOneById(roomId);
 		updatedRoom && Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));
 	},
 });
