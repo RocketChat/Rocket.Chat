@@ -1,2 +1,3 @@
 export * from './ServerContext';
-export * from './ServerMethods';
+export * from './endpoints';
+export * from './methods';

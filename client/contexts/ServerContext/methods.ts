@@ -125,4 +125,10 @@ export type ServerMethods = {
 	'uploadCustomSound': (...args: any[]) => any;
 };
 
-export type ServerMethodFunction<MethodName extends keyof ServerMethods> = (...args: Parameters<ServerMethods[MethodName]>) => Promise<ReturnType<ServerMethods[MethodName]>>;
+export type ServerMethodName = keyof ServerMethods;
+
+export type ServerMethodParameters<MethodName extends ServerMethodName> = Parameters<ServerMethods[MethodName]>;
+
+export type ServerMethodReturn<MethodName extends ServerMethodName> = ReturnType<ServerMethods[MethodName]>;
+
+export type ServerMethodFunction<MethodName extends ServerMethodName> = (...args: ServerMethodParameters<MethodName>) => Promise<ServerMethodReturn<MethodName>>;
