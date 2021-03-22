@@ -293,7 +293,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	const agent = { agentId, username };
 	// There are some Enterprise features that may interrupt the fowarding process
 	// Due to that we need to check whether the agent has been changed or not
-	const roomTaken = await RoutingManager.takeInquiry(inquiry, agent);
+	const roomTaken = await RoutingManager.takeInquiry(inquiry, agent, { isForwarding: true });
 	if (!roomTaken) {
 		return false;
 	}
@@ -378,7 +378,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	// Fake the department to forward the inquiry - Case the forward process does not success
 	// the inquiry will stay in the same original department
 	inquiry.department = departmentId;
-	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent);
+	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent, { isForwarding: true });
 	if (!roomTaken) {
 		return false;
 	}

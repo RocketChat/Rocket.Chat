@@ -43,7 +43,7 @@ export const RoutingManager = {
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
-	async delegateInquiry(inquiry, agent) {
+	async delegateInquiry(inquiry, agent = null, options = {}) {
 		const { department, rid } = inquiry;
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username) && !allowAgentSkipQueue(agent))) {
 			agent = await this.getNextAgent(department);
@@ -53,7 +53,7 @@ export const RoutingManager = {
 			return LivechatRooms.findOneById(rid);
 		}
 
-		return this.takeInquiry(inquiry, agent);
+		return this.takeInquiry(inquiry, agent, options);
 	},
 
 	assignAgent(inquiry, agent) {
@@ -110,7 +110,7 @@ export const RoutingManager = {
 		return true;
 	},
 
-	async takeInquiry(inquiry, agent, options = { clientAction: false }) {
+	async takeInquiry(inquiry, agent, options = { clientAction: false, isForwarding: false }) {
 		check(agent, Match.ObjectIncluding({
 			agentId: String,
 			username: String,
@@ -134,7 +134,9 @@ export const RoutingManager = {
 
 		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', { agent, inquiry, options });
 		if (!agent) {
-			await callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
+			if (!options.isForwarding) {
+				await callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
+			}
 			return null;
 		}
 
