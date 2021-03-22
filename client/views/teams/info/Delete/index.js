@@ -6,10 +6,10 @@ import StepThree from './StepThree';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import DeleteTeamModal from './DeleteTeamModal';
 
-const DeleteTeamModalWithRooms = ({ teamId, onClose, onConfirm, onCancel }) => {
+const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }) => {
 	const { value } = useEndpointData('teams.listRooms', useMemo(() => ({ teamId }), [teamId]));
 
-	return <DeleteTeamModal onClose={onClose} onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms} />;
+	return <DeleteTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms} />;
 };
 
 export { StepOne, StepTwo, StepThree };

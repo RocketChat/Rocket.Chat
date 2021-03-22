@@ -4,7 +4,7 @@ import GenericModal from '../../../../components/GenericModal';
 import RoomLinkList from '../RoomLinkList';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
-export const StepThree = ({ deletedRooms, keptRooms, onConfirm, onClose, onCancel }) => {
+export const StepThree = ({ deletedRooms, keptRooms, onConfirm, onReturn, onCancel }) => {
 	const t = useTranslation();
 
 	return <GenericModal
@@ -12,10 +12,10 @@ export const StepThree = ({ deletedRooms, keptRooms, onConfirm, onClose, onCance
 		icon='trash'
 		title={t('Deleting')}
 		onConfirm={() => onConfirm(Object.values(deletedRooms).map(({ _id }) => _id))}
-		onCancel={onCancel}
+		onCancel={onReturn}
 		confirmText={t('Remove')}
 		cancelText={t('Back')}
-		onClose={onClose}
+		onClose={onCancel}
 	>
 		<p>{t('Teams_delete_team')}</p>
 		{!!Object.values(deletedRooms).length && <>

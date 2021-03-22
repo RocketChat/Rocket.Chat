@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { StepOne, StepTwo, StepThree } from '.';
 
-export const DeleteTeamModal = ({ onCancel, onConfirm, onClose, rooms }) => {
+export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	const [step, setStep] = useState(1);
 	const [deletedRooms, setDeletedRooms] = useState({});
 	const [keptRooms, setKeptRooms] = useState({});
@@ -47,7 +47,6 @@ export const DeleteTeamModal = ({ onCancel, onConfirm, onClose, rooms }) => {
 		return <StepTwo
 			rooms={rooms}
 			onCancel={onCancel}
-			onClose={onClose}
 			params={{}}
 			selectedRooms={deletedRooms}
 			onToggleAllRooms={onToggleAllRooms}
@@ -60,14 +59,14 @@ export const DeleteTeamModal = ({ onCancel, onConfirm, onClose, rooms }) => {
 	if (step === 3) {
 		return <StepThree
 			onConfirm={onConfirm}
-			onClose={onClose}
-			onCancel={onReturn}
+			onReturn={onReturn}
+			onCancel={onCancel}
 			deletedRooms={deletedRooms}
 			keptRooms={keptRooms}
 		/>;
 	}
 
-	return <StepOne onClose={onClose} onConfirm={onContinue} onCancel={onCancel} />;
+	return <StepOne onConfirm={onContinue} onCancel={onCancel} />;
 };
 
 

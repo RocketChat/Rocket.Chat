@@ -4,7 +4,7 @@ import { Box } from '@rocket.chat/fuselage';
 import GenericModal from '../../../../components/GenericModal';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
-const StepOne = ({ onConfirm, onClose, onCancel }) => {
+const StepOne = ({ onConfirm, onCancel }) => {
 	const t = useTranslation();
 	return <GenericModal
 		variant='warning'
@@ -12,7 +12,6 @@ const StepOne = ({ onConfirm, onClose, onCancel }) => {
 		onConfirm={onConfirm}
 		onCancel={onCancel}
 		onClose={onCancel}
-		onClose={onClose}
 	>
 		<Box withRichContent>{t('Teams_delete_team_warning')}</Box>
 	</GenericModal>;
