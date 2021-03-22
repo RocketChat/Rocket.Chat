@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { Meteor } from 'meteor/meteor';
 
 import Header from '../../../components/Header';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
@@ -40,22 +43,35 @@ const RoomTitle = ({ room }) => <>
 </>;
 
 const ParentRoom = ({ room }) => {
-	const team = room.prid ? undefined : 'findTeam(room.teamId).roomId';
-
-	const prevSubscription = useUserSubscription(room.prid ? room.prid : team.roomId);
+	const prevSubscription = useUserSubscription(room.prid);
 	const prevRoomHref = prevSubscription ? roomTypes.getRouteLink(prevSubscription.t, prevSubscription) : null;
-	const teamIcon = team && team.t === 0 ? 'team' : 'team-lock';
-	const parentIcon = useRoomIcon(prevSubscription);
-	const icon = room.prid ? parentIcon : { name: teamIcon };
-
 	return prevSubscription && <>
 		<Breadcrumbs.Tag>
-			<Breadcrumbs.IconSmall name={icon.name}>{!icon.name && icon}</Breadcrumbs.IconSmall>
+			<HeaderIcon room={prevSubscription}/>
 			<Breadcrumbs.Link href={prevRoomHref}>{prevSubscription.name}</Breadcrumbs.Link>
 		</Breadcrumbs.Tag>
 	</>;
 };
 
+const ParentTeam = ({ room }) => {
+	const query = useMemo(() => ({ teamId: room.teamId }), [room.teamId]);
+
+	const { value, phase, error } = useEndpointData('teams.info', query);
+	const { value: userTeams, phase: userTeamsPhase } = useEndpointData('users.listTeams', { userId: Meteor.userId() });
+
+	const teamLoading = phase === AsyncStatePhase.LOADING;
+	const userTeamsLoading = userTeamsPhase === AsyncStatePhase.LOADING;
+	const belongsToTeam = userTeams?.teams?.find((team) => team._id === room.teamId);
+
+	const teamMainRoom = useUserSubscription(value?.teamInfo?.roomId);
+	const teamMainRoomHref = teamMainRoom ? roomTypes.getRouteLink(teamMainRoom.t, teamMainRoom) : null;
+	const teamIcon = value?.t === 0 ? 'team' : 'team-lock';
+
+	return teamLoading || userTeamsLoading ? null : <Breadcrumbs.Tag>
+		<Breadcrumbs.IconSmall name={teamIcon}></Breadcrumbs.IconSmall>
+		<Breadcrumbs.Link href={belongsToTeam && teamMainRoomHref}>{teamMainRoom?.name}</Breadcrumbs.Link>
+	</Breadcrumbs.Tag>;
+};
 const DirectRoomHeader = ({ room }) => {
 	const userId = useUserId();
 	const directUserId = room.uids.filter((uid) => uid !== userId).shift();
@@ -77,7 +93,7 @@ const RoomHeader = ({ room, topic }) => {
 			<Header.Content.Row>
 				<RoomTitle room={room}/>
 				<Favorite room={room} />
-				{(room.prid || room.teamId) && <ParentRoom room={room} />}
+				{(room.prid || room.teamId) && ((room.prid && <ParentRoom room={room} />) || (room.teamId && <ParentTeam room={room} />))}
 				<Encrypted room={room} />
 				<Translate room={room} />
 			</Header.Content.Row>
