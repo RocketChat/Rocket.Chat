@@ -1274,6 +1274,18 @@ export class Subscriptions extends Base {
 		return result;
 	}
 
+	removeByRoomIdsAndUserId(rids, userId) {
+		const result = this.remove({ rid: { $in: rids }, 'u._id': userId });
+
+		if (Match.test(result, Number) && result > 0) {
+			Rooms.incUsersCountByIds(rids, -1);
+		}
+
+		Users.removeRoomsByRoomIdsAndUserId(rids, userId);
+
+		return result;
+	}
+
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
