@@ -55,9 +55,10 @@ const ParentRoom = ({ room }) => {
 
 const ParentTeam = ({ room }) => {
 	const query = useMemo(() => ({ teamId: room.teamId }), [room.teamId]);
+	const userTeamQuery = useMemo(() => ({ userId: Meteor.userId() }), []);
 
 	const { value, phase } = useEndpointData('teams.info', query);
-	const { value: userTeams, phase: userTeamsPhase } = useEndpointData('users.listTeams', { userId: Meteor.userId() });
+	const { value: userTeams, phase: userTeamsPhase } = useEndpointData('users.listTeams', userTeamQuery);
 
 	const teamLoading = phase === AsyncStatePhase.LOADING;
 	const userTeamsLoading = userTeamsPhase === AsyncStatePhase.LOADING;
