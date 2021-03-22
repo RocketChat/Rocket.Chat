@@ -26,10 +26,10 @@ type AutoCompleteValueProps = {
 	t: string;
 }
 
-const useChannelsAutoComplete = (term: string): AutoCompleteProps['options'] => {
+const useChannelsAutoComplete = (name: string): AutoCompleteProps['options'] => {
 	const params = useMemo<ChannelsAutoCompleteEndpoint['params']>(() => ({
-		selector: JSON.stringify({ term }),
-	}), [term]);
+		selector: JSON.stringify({ name }),
+	}), [name]);
 	const { value: data } = useEndpointData('rooms.autocomplete.channelAndPrivate', params);
 
 	return useMemo<AutoCompleteProps['options']>(() => {
