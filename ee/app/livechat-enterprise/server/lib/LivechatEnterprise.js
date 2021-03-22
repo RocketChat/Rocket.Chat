@@ -12,6 +12,7 @@ import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriorit
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../app/callbacks';
+import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 
 export const LivechatEnterprise = {
 	addMonitor(username) {
@@ -179,6 +180,17 @@ export const LivechatEnterprise = {
 		});
 
 		return true;
+	},
+
+	async releaseOnHoldChat(room) {
+		const { _id: roomId, onHold } = room;
+		if (!roomId || !onHold) {
+			return;
+		}
+
+		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
+		LivechatRooms.unsetAllOnHoldFieldsByRoomId(roomId);
+		Subscriptions.unsetOnHold(roomId);
 	},
 };
 
