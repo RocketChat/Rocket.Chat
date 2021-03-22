@@ -13,6 +13,11 @@ type ConfirmationModalProps = {
 const ConfirmationModal: FC<ConfirmationModalProps> = ({ onClose, onConfirmAction, labelButton, content }) => {
 	const t = useTranslation();
 
+	const handleConfirm = (): void => {
+		onConfirmAction();
+		onClose();
+	};
+
 	return <Modal>
 		<Modal.Header>
 			<Modal.Title display='flex'><Box mie='x12' ><Icon size='x20' name='modal-warning' color='warning-700'/></Box>{t('Confirmation')}</Modal.Title>
@@ -24,7 +29,7 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({ onClose, onConfirmActio
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				<Button onClick={onClose}>{t('Cancel')}</Button>
-				<Button onClick={onConfirmAction} primary danger>{labelButton}</Button>
+				<Button onClick={handleConfirm} primary danger>{labelButton}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;

@@ -3,6 +3,7 @@ import { ActionButton, Box, Icon, Menu, Option } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpoint } from '../../../contexts/ServerContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import ConfirmationModal from '../modals/ConfirmationModal';
@@ -24,6 +25,8 @@ export const useReactModal = (Component, props) => {
 
 const useRoomActions = (room) => {
 	const t = useTranslation();
+	const removeRoomEndpoint = useEndpoint('POST', 'teams.removeRoom');
+	const deleteRoomEndpoint = useEndpoint('POST', room.t === 'c' ? 'channels.delete' : 'groups.delete');
 
 	const AutoJoinAtion = () => {
 		// TODO
@@ -31,7 +34,7 @@ const useRoomActions = (room) => {
 
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {
 		onConfirmAction: () => {
-			// TODO
+			removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
 		},
 		labelButton: t('Remove'),
 		content: <Box is='span' size='14px'>{t('Team_Remove_from_team_modal_content')}</Box>,
@@ -39,7 +42,7 @@ const useRoomActions = (room) => {
 
 	const DeleteChannelAction = useReactModal(ConfirmationModal, {
 		onConfirmAction: () => {
-			// TODO
+			deleteRoomEndpoint({ roomId: room._id });
 		},
 		labelButton: t('Delete'),
 		content: <>
@@ -100,7 +103,7 @@ export const TeamChannelItem = ({ room }) => {
 				<RoomAvatar room={room} size='x28' />
 			</Option.Avatar>
 			<Option.Column>{room.t === 'c' ? <Icon name='hash' size='x15'/> : <Icon name='hashtag-lock' size='x15'/>}</Option.Column>
-			<Option.Content>{room.name}</Option.Content>
+			<Option.Content>{room.fname || room.name}</Option.Content>
 			<Option.Menu>
 				{showButton ? <RoomActions room={room} /> : <ActionButton
 					ghost
