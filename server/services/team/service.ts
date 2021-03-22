@@ -219,7 +219,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async listByNames(names: Array<string>, options?: FindOneOptions<ITeam>) {
+	async listByNames(names: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]> {
 		return this.TeamModel.findByNames(names, options).toArray();
 	}
 
