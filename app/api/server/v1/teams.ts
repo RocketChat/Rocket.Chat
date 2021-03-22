@@ -128,6 +128,27 @@ API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('teams.listRoomsOfUser', { authRequired: true }, {
+	get() {
+		const { teamId, userId } = this.queryParams;
+
+		const allowPrivateTeam = hasPermission(this.userId, 'view-all-teams');
+
+		if (!hasPermission(this.userId, 'view-all-team-channels')) {
+			return API.v1.unauthorized();
+		}
+
+		const { records, total } = Promise.await(Team.listRoomsOfUser(this.userId, teamId, userId, allowPrivateTeam));
+
+		return API.v1.success({
+			rooms: records,
+			total,
+			count: records.length,
+			offset: 0,
+		});
+	},
+});
+
 API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
