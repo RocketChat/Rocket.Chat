@@ -92,7 +92,7 @@ const D: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 		return (): void => {
 			popout.close();
 		};
-	}, [room?.streamingOptions?.type, startCall]);
+	}, [room?.streamingOptions?.type, startCall, openNewWindow]);
 
 	const canManageCall = room?.t === 'd' || hasCallManagement;
 
