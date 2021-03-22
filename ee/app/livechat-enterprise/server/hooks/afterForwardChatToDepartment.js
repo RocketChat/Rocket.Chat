@@ -10,6 +10,9 @@ callbacks.add('livechat.afterForwardChatToDepartment', (options) => {
 	if (!room) {
 		return;
 	}
+
+	callbacks.run('livechat:afterOnHoldChatResumed', room);
+
 	setPredictedVisitorAbandonmentTime(room);
 
 	const department = LivechatDepartment.findOneById(newDepartmentId, { fields: { ancestors: 1 } });
