@@ -38,7 +38,7 @@ const useChannelsAutoComplete = (term: string): AutoCompleteProps['options'] => 
 		}
 
 		return data.items.map((room: IRoom) => ({
-			label: room.name ?? '',
+			label: room.fname ?? room.name,
 			value: room ?? '',
 		})) || [];
 	}, [data]);

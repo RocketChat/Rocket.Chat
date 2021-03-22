@@ -11,6 +11,7 @@ export interface IRoom extends IRocketChatRecord {
 	_id: RoomID;
 	t: RoomType;
 	name: string;
+	fname: string;
 	msgs: number;
 	default?: true;
 	broadcast?: true;
