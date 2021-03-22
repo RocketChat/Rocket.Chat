@@ -16,3 +16,4 @@ import './onCloseLivechat';
 import './onSaveVisitorInfo';
 import './onBusinessHourStart';
 import './onAgentAssignmentFailed';
+import './afterOnHoldChatResumed';
