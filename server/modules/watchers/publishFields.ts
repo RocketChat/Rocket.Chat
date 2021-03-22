@@ -88,6 +88,8 @@ export const roomFields = {
 	servedBy: 1,
 	priorityId: 1,
 	transcriptRequest: 1,
+	teamId: 1,
+	teamMain: 1,
 
 	// fields used by DMs
 	usernames: 1,

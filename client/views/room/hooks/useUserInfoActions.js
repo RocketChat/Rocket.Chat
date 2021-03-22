@@ -17,7 +17,6 @@ import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction'
 import { useUserRoom } from './useUserRoom';
 import { escapeHTML } from '../../../../lib/escapeHTML';
 
-
 const useUserHasRoomRole = (uid, rid, role) => useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role }), [uid, rid, role]));
 
 const getShouldOpenDirectMessage = (currentSubscription, usernameSubscription, canOpenDirectMessage, username) => {
@@ -76,25 +75,6 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 		</Modal.Footer>
 	</Modal>;
 };
-
-
-const mapOptions = ([key, { action, label, icon }]) => [
-	key,
-	{
-		label: { label, icon }, // TODO fuselage
-		action,
-	},
-];
-
-export const useUserInfoActionsSpread = (actions, size = 2) => useMemo(() => {
-	const entries = Object.entries(actions);
-
-	const options = entries.slice(0, size);
-	const menuOptions = entries.slice(size, entries.length).map(mapOptions);
-	const menu = menuOptions.length && Object.fromEntries(entries.slice(size, entries.length).map(mapOptions));
-
-	return { actions: options, menu };
-}, [actions, size]);
 
 export const useUserInfoActions = (user = {}, rid) => {
 	const t = useTranslation();
@@ -167,7 +147,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 
 	const openDirectMessageOption = useMemo(() => shouldOpenDirectMessage && {
 		label: t('Direct_Message'),
-		icon: 'chat',
+		icon: 'balloon',
 		action: openDirectDm,
 	}, [openDirectDm, shouldOpenDirectMessage, t]);
 
