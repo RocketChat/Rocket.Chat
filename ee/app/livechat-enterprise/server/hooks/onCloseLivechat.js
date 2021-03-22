@@ -4,8 +4,6 @@ import { dispatchWaitingQueueStatus } from '../lib/Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 
 const onCloseLivechat = (room) => {
-	callbacks.run('livechat:afterOnHoldChatResumed', room);
-
 	if (!settings.get('Livechat_waiting_queue')) {
 		return room;
 	}
