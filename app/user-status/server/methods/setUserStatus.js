@@ -14,7 +14,6 @@ Meteor.methods({
 		if (statusType) {
 			Meteor.call('UserPresence:setDefaultStatus', statusType);
 		}
-
 		
 		if (statusText || statusText === '') {
 			check(statusText, String);
