@@ -230,10 +230,10 @@ export default ({
 
 	const onClickLeave = useMutableCallback(() => {
 		const onConfirm = async (roomsLeft) => {
-			const roomsToLeave = Array.isArray(roomsLeft) && roomsLeft.length > 0 ? roomsLeft : null;
+			const rooms = Array.isArray(roomsLeft) && roomsLeft.length > 0 ? roomsLeft : null;
 
 			try {
-				await leaveTeam({ teamId: room.teamId, roomsToLeave });
+				await leaveTeam({ teamId: room.teamId, rooms });
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
