@@ -17,6 +17,8 @@ import DeleteWarningModal from '../../../components/DeleteWarningModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { settings } from '../../../../app/settings';
+
 
 export function RemoveChatButton({ _id, reload }) {
 	const removeChat = useMethod('livechat:removeRoom');
@@ -139,8 +141,8 @@ function CurrentChatsRoute() {
 		<Table.Cell withTruncatedText>{fname}</Table.Cell>
 		<Table.Cell withTruncatedText>{department ? department.name : ''}</Table.Cell>
 		<Table.Cell withTruncatedText>{servedBy && servedBy.username}</Table.Cell>
-		<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
-		<Table.Cell withTruncatedText>{moment(lm).format('L LTS')}</Table.Cell>
+		<Table.Cell withTruncatedText>{moment(ts).format(settings.get('Message_TimeAndDateFormat'))}</Table.Cell>
+		<Table.Cell withTruncatedText>{moment(lm).format(settings.get('Message_TimeAndDateFormat'))}</Table.Cell>
 		<Table.Cell withTruncatedText>{open ? t('Open') : t('Closed')}</Table.Cell>
 		{!open && <RemoveChatButton _id={_id} reload={reload}/>}
 	</Table.Row>, [onRowClick, reload, t]);
