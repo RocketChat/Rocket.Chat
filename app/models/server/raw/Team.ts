@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult, DeleteWriteOpResultObject } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult, DeleteWriteOpResultObject, FilterQuery } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeam } from '../../../../definition/ITeam';
@@ -18,8 +18,25 @@ export class TeamRaw extends BaseRaw<T> {
 		// ]);
 	}
 
-	findByIds(ids: Array<string>, options?: FindOneOptions<T>): Cursor<T> {
-		return this.col.find({ _id: { $in: ids } }, options);
+	findByIds(ids: Array<string>, options?: FindOneOptions<T>, query?: FilterQuery<T>): Cursor<T> {
+		return this.col.find({ _id: { $in: ids }, ...query }, options);
+	}
+
+	findByIdsAndType(ids: Array<string>, type: number, options?: FindOneOptions<T>): Cursor<T> {
+		return this.col.find({ _id: { $in: ids }, type }, options);
+	}
+
+	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>, options?: FindOneOptions<T>): Cursor<T> {
+		return this.col.find({
+			name,
+			$or: [{
+				type: 0,
+			}, {
+				_id: {
+					$in: teamIds,
+				},
+			}],
+		}, options);
 	}
 
 	findOneByName(name: string, options?: FindOneOptions<T>): Promise<T | null> {

@@ -8,8 +8,9 @@ import { Rooms } from '../../../models/server';
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
 
-		const { records, total } = Promise.await(Team.list(this.userId, { offset, count }));
+		const { records, total } = Promise.await(Team.list(this.userId, { offset, count }, { sort, query, fields }));
 
 		return API.v1.success({
 			teams: records,
@@ -78,6 +79,20 @@ API.v1.addRoute('teams.addRoom', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('teams.addRooms', { authRequired: true }, {
+	post() {
+		const { rooms, teamId } = this.bodyParams;
+
+		if (!hasPermission(this.userId, 'add-team-channel')) {
+			return API.v1.unauthorized();
+		}
+
+		const validRooms = Promise.await(Team.addRooms(this.userId, rooms, teamId));
+
+		return API.v1.success({ rooms: validRooms });
+	},
+});
+
 API.v1.addRoute('teams.removeRoom', { authRequired: true }, {
 	post() {
 		const { roomId, teamId } = this.bodyParams;
@@ -86,7 +101,9 @@ API.v1.addRoute('teams.removeRoom', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const room = Promise.await(Team.removeRoom(this.userId, roomId, teamId));
+		const canRemoveAny = !!hasPermission(this.userId, 'view-all-team-channels');
+
+		const room = Promise.await(Team.removeRoom(this.userId, roomId, teamId, canRemoveAny));
 
 		return API.v1.success({ room });
 	},
@@ -99,8 +116,9 @@ API.v1.addRoute('teams.updateRoom', { authRequired: true }, {
 		if (!hasPermission(this.userId, 'edit-team-channel')) {
 			return API.v1.unauthorized();
 		}
+		const canUpdateAny = !!hasPermission(this.userId, 'view-all-team-channels');
 
-		const room = Promise.await(Team.updateRoom(this.userId, roomId, isDefault));
+		const room = Promise.await(Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny));
 
 		return API.v1.success({ room });
 	},

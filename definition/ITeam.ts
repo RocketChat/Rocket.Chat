@@ -1,10 +1,13 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IUser } from './IUser';
+import { SortOptionObject, FilterQuery, SchemaMember } from 'mongodb';
 
 export enum TEAM_TYPE {
 	PUBLIC = 0,
 	PRIVATE = 1,
 }
+
+export type SortType = -1|1;
 
 export interface ITeam extends IRocketChatRecord {
 	name: string;
@@ -26,6 +29,13 @@ export interface ITeamMember extends IRocketChatRecord {
 export interface IPaginationOptions {
 	offset: number;
 	count: number;
+}
+
+// TODO move this definition to a more broader file
+export interface IQueryOptions<T> {
+	sort: SortOptionObject<T>;
+	query?: FilterQuery<T>;
+	fields: SchemaMember<T, number | boolean>;
 }
 
 // TODO move this definition to a more broader file

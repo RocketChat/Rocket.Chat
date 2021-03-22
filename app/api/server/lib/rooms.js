@@ -29,7 +29,9 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 
 	const name = filter && filter.trim();
 	const discussion = types && types.includes('discussions');
-	const showTypes = Array.isArray(types) ? types.filter((type) => type !== 'discussions') : [];
+	const includeTeams = types && types.includes('teams');
+	const typesToRemove = ['discussions', 'teams'];
+	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
 	const options = {
 		fields,
 		sort: sort || { default: -1, name: 1 },
@@ -37,7 +39,7 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 		limit: count,
 	};
 
-	let cursor = Rooms.findByNameContaining(name, discussion, options);
+	let cursor = Rooms.findByNameContaining(name, discussion, includeTeams, options);
 
 	if (name && showTypes.length) {
 		cursor = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, options);
@@ -94,6 +96,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 	const options = {
 		fields: {
 			_id: 1,
+			fname: 1,
 			name: 1,
 			t: 1,
 			avatarETag: 1,
