@@ -176,7 +176,8 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }}/> : null;
 	const variant = ((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
-	const badges = unread > 0 || threadUnread ? <Badge style={{ flexShrink: 0 }} variant={ variant }>{unread + tunread?.length}</Badge> : null;
+	const isUnread = unread > 0 || threadUnread;
+	const badges = !hideUnreadStatus && isUnread ? <Badge style={{ flexShrink: 0 }} variant={ variant }>{unread + tunread?.length}</Badge> : null;
 
 	return <SideBarItemTemplate
 		is='a'

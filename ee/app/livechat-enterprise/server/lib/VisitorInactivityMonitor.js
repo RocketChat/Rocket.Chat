@@ -4,6 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms, LivechatDepartment, Users } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
+import { LivechatEnterprise } from './LivechatEnterprise';
 
 export class VisitorInactivityMonitor {
 	constructor() {
@@ -77,11 +78,27 @@ export class VisitorInactivityMonitor {
 		});
 	}
 
+	placeRoomOnHold(room) {
+		LivechatEnterprise.placeRoomOnHold(room) && LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
+	}
+
 	handleAbandonedRooms() {
-		if (!settings.get('Livechat_auto_close_abandoned_rooms')) {
+		const action = settings.get('Livechat_abandoned_rooms_action');
+		if (!action || action === 'none') {
 			return;
 		}
-		LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => this.closeRooms(room));
+		LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => {
+			switch (action) {
+				case 'close': {
+					this.closeRooms(room);
+					break;
+				}
+				case 'on-hold': {
+					this.placeRoomOnHold(room);
+					break;
+				}
+			}
+		});
 		this._initializeMessageCache();
 	}
 }

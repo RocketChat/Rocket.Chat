@@ -5,6 +5,7 @@ import _ from 'underscore';
 import Busboy from 'busboy';
 
 import { Users, Subscriptions } from '../../../models/server';
+import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
@@ -19,7 +20,7 @@ import {
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
-import { findUsersToAutocomplete } from '../lib/users';
+import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
@@ -229,18 +230,52 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		const users = Users.find(query, {
-			sort: sort || { username: 1 },
-			skip: offset,
-			limit: count,
-			fields,
-		}).fetch();
+		const nonEmptyQuery = getNonEmptyQuery(query);
+		const nonEmptyFields = getNonEmptyFields(fields);
+
+		const inclusiveFields = getInclusiveFields(nonEmptyFields);
+
+		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
+
+		const result = Promise.await(
+			UsersRaw.col
+				.aggregate([
+					{
+						$match: nonEmptyQuery,
+					},
+					{
+						$project: inclusiveFields,
+					},
+					{
+						$addFields: {
+							nameInsensitive: {
+								$toLower: '$name',
+							},
+						},
+					},
+					{
+						$skip: offset,
+					},
+					{
+						$limit: count,
+					},
+					{
+						$facet: {
+							sortedResults: [{ $sort: actualSort }],
+							totalCount: [{ $count: 'value' }],
+						},
+					},
+				])
+				.toArray(),
+		);
+
+		const { sortedResults: users, totalCount } = result[0];
 
 		return API.v1.success({
 			users,
 			count: users.length,
 			offset,
-			total: Users.find(query).count(),
+			total: totalCount[0].value,
 		});
 	},
 });
