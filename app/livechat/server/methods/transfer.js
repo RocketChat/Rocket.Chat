@@ -28,10 +28,6 @@ Meteor.methods({
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:transfer' });
 		}
 
-		if (room.onHold) {
-			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:transfer' });
-		}
-
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription && !hasPermission(Meteor.userId(), 'transfer-livechat-guest')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:transfer' });

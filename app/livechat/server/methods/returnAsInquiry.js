@@ -19,10 +19,6 @@ Meteor.methods({
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnAsInquiry' });
 		}
 
-		if (room.onHold) {
-			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:returnAsInquiry' });
-		}
-
 		return Livechat.returnRoomAsInquiry(rid, departmentId);
 	},
 });
