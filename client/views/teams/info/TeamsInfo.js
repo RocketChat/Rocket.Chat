@@ -177,10 +177,10 @@ export const TeamsInfo = ({
 	);
 };
 
-export default ({
+export default function TeamsInfoWithLogic({
 	room,
 	openEditing,
-}) => {
+}) {
 	const onClickClose = useTabBarClose();
 	const t = useTranslation();
 
@@ -290,4 +290,4 @@ export default ({
 			topic={room.topic && <MarkdownText content={room.topic}/>}
 		/>
 	);
-};
+}

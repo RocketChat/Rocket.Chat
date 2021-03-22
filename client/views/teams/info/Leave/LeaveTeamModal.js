@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { StepOne, StepTwo } from '.';
@@ -19,13 +19,14 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 
 	const onReturn = useMutableCallback(() => setStep(step - 1));
 
-	const onChangeRoomSelection = useMutableCallback((room) => {
-		if (selectedRooms[room.rid]) {
-			setSelectedRooms((selectedRooms) => ({ ...selectedRooms, [room.rid]: undefined }));
-			return;
-		}
-		setSelectedRooms((selectedRooms) => ({ ...selectedRooms, [room.rid]: room }));
-	});
+	const onChangeRoomSelection = useCallback((room) => {
+		setSelectedRooms((selectedRooms) => {
+			if (selectedRooms[room.rid]) {
+				return { ...selectedRooms, [room.rid]: undefined };
+			}
+			return { ...selectedRooms, [room.rid]: room };
+		});
+	}, []);
 
 	const onToggleAllRooms = useMutableCallback(() => {
 		if (Object.values(selectedRooms).filter(Boolean).length === 0) {

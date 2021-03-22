@@ -9,7 +9,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import TeamsInfo from './TeamsInfo';
 import VerticalBar from '../../../components/VerticalBar';
 
-export default ({ rid }) => {
+export default function TeamsInfoWithRooms({ rid }) {
 	const [editing, setEditing] = useState(false);
 	const onClickBack = useMutableCallback(() => setEditing(false));
 	const t = useTranslation();
@@ -37,4 +37,4 @@ export default ({ rid }) => {
 	}
 
 	return editing ? <EditChannelWithData onClickBack={onClickBack} rid={rid} /> : <TeamsInfo openEditing={setEditing} room={value.room} />;
-};
+}

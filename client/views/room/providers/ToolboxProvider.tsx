@@ -130,8 +130,6 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 		openUserInfo,
 	}), [listen, list, activeTabBar, open, close, openUserInfo]);
 
-	console.log('contextValue', contextValue);
-
 	return <ToolboxContext.Provider value={contextValue}>
 		{ actions.filter(([, action]) => uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && (action as ToolboxActionConfig).anonymous)).map(([id, item]) => <VirtualAction action={item} room={room} id={id} key={id} handleChange={handleChange} />) }
 		{children}
