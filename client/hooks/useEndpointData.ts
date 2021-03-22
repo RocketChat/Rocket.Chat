@@ -10,6 +10,7 @@ export const useEndpointData = <T>(
 	endpoint: string,
 	params: Record<string, unknown> = defaultParams,
 	initialValue?: T | (() => T),
+	noOfRoomsDeleted?: number,
 ): AsyncState<T> & { reload: () => void } => {
 	const { resolve, reject, reset, ...state } = useAsyncState<T>(initialValue);
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -31,7 +32,7 @@ export const useEndpointData = <T>(
 
 	useEffect(() => {
 		fetchData();
-	}, [fetchData]);
+	}, [fetchData, noOfRoomsDeleted]);
 
 	return {
 		...state,
