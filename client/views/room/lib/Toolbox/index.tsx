@@ -3,14 +3,16 @@ import { BoxProps, OptionProps } from '@rocket.chat/fuselage';
 
 import { IRoom } from '../../../../../definition/IRoom';
 import { generator, Events as GeneratorEvents } from './generator';
+import { TranslationKey } from '../../../../contexts/TranslationContext';
 
 
 type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null
 
-type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups'> & {
+type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' | 'title'> & {
 	className: BoxProps['className'];
 	tabId: ToolboxActionConfig['id'] | undefined;
 	index: number;
+	title: string;
 }
 
 export type ActionRenderer = (props: ActionRendererProps) => ReactNode;
@@ -22,7 +24,7 @@ export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
 export type ToolboxActionConfig = {
 	id: string;
 	icon: string;
-	title: string;
+	title: TranslationKey;
 	anonymous?: boolean;
 	renderAction?: ActionRenderer;
 	full?: true;
