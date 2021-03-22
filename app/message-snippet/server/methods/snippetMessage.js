@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Subscriptions, Messages, Users, Rooms } from '../../../models';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { promises } from '../../../promises/server';
 import { isTheLastMessage } from '../../../lib';
 
 Meteor.methods({
@@ -38,7 +38,9 @@ Meteor.methods({
 			username: me.username,
 		};
 
-		message = callbacks.run('beforeSaveMessage', message);
+		// TODO: evaluate substitution
+		// message = callbacks.run('beforeSaveMessage', message);
+		message = Promise.await(promises.run('beforeSaveMessage', message));
 
 		// Create the SnippetMessage
 		Messages.setSnippetedByIdAndUserId(message, filename, message.snippetedBy,

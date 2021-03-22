@@ -460,7 +460,15 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return rooms.map(({ _id }: { _id: string}) => _id);
 	}
 
-	async members(uid: string, teamId: string, teamName: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { query }: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
+	async IsUserFromTeamWithId(uid: string, teamId: string): Promise<boolean> {
+		return !!this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
+	}
+
+	async IsUserFromTeamNamed(uid: string, teamName: string): Promise<boolean> {
+		return !!this.TeamMembersModel.findOneByUserIdAndTeamName(uid, teamName);
+	}
+
+	async members(teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		if (!teamId) {
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
 			if (!teamIdName) {
@@ -619,6 +627,12 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 	async getOneByName(teamName: string): Promise<ITeam | null> {
 		return this.TeamModel.findOneByName(teamName);
+	}
+
+	async getOneByNames(teamNames: string[]): Promise<ITeam|undefined> {
+		return this.TeamModel.findOne({
+			name: { $in: teamNames },
+		});
 	}
 
 	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
