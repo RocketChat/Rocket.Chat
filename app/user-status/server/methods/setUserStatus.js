@@ -16,15 +16,18 @@ Meteor.methods({
 		}
 
 		
-		check(statusText, String);
-		
-		if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-					method: 'setUserStatus',
-			});
-		}
+		if (statusText || statusText === '') {
+			check(statusText, String);
 
-		setStatusText(userId, statusText);
+			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+					method: 'setUserStatus',
+				});
+			}
+			setStatusText(userId, statusText);
+		} else {
+			setStatusText(userId, statusText);
+		}
 		
 	},
 });
