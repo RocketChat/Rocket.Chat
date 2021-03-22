@@ -53,19 +53,6 @@ export const TeamsInfo = ({
 }) => {
 	const t = useTranslation();
 
-	console.log('TeamsInfo visual', {
-		name,
-		fname,
-		description,
-		archived,
-		broadcast,
-		announcement,
-		topic,
-		type,
-		rid,
-		icon,
-	});
-
 	const {
 		retentionPolicyEnabled,
 		filesOnlyDefault,
@@ -197,8 +184,6 @@ export default ({
 	const onClickClose = useTabBarClose();
 	const t = useTranslation();
 
-	// const room = useUserRoom(rid);
-	console.log('teams info default', room);
 	room.type = room.t;
 	room.rid = room._id;
 	const { /* type, fname, */ broadcast, archived /* , joined = true */ } = room; // TODO implement joined
@@ -230,8 +215,9 @@ export default ({
 	// mutalble callback open modal
 	const onClickDelete = useMutableCallback(() => {
 		const onConfirm = async (deletedRooms) => {
+			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : null;
 			try {
-				await deleteTeam({ teamId: room.teamId, deletedRooms });
+				await deleteTeam({ teamId: room.teamId, roomsToRemove });
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -244,8 +230,10 @@ export default ({
 
 	const onClickLeave = useMutableCallback(() => {
 		const onConfirm = async (roomsLeft) => {
+			const roomsToLeave = Array.isArray(roomsLeft) && roomsLeft.length > 0 ? roomsLeft : null;
+
 			try {
-				await leaveTeam({ teamId: room.teamId, roomsLeft });
+				await leaveTeam({ teamId: room.teamId, roomsToLeave });
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

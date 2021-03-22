@@ -18,7 +18,7 @@ export const StepTwo = ({ lastOwnerRooms, keptRooms, onConfirm, onCancel, onClos
 		onConfirm={onConfirm}
 		onCancel={onCancel}
 		onClose={onClose}
-		confirmText={t('Remove')}
+		confirmText={t('Leave')}
 		cancelText={t('Back')}
 	>
 		{showLastOwnerWarning && <>

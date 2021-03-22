@@ -3724,7 +3724,7 @@
   "TargetRoom": "Target Room",
   "TargetRoom_Description": "The room where messages will be sent which are a result of this event being fired. Only one target room is allowed and it must exist.",
   "Team": "Team",
-  "Team_Info": "Team Info",
+  "Teams_Info": "Team's Information",
   "Teams_channels": "Team's Channels",
   "Teams_leave": "Leave Team",
   "Teams_leave_channels": "Select the Team’s Channels you would like to leave.",

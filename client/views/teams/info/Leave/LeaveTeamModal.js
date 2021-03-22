@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { StepOne, StepTwo } from '.';
 
 export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
-	const [step, setStep] = useState(1);
+	const [step, setStep] = useState(() => {
+		if (rooms.length === 0) {
+			return 2;
+		}
+		return 1;
+	});
 	const [selectedRooms, setSelectedRooms] = useState({});
 	const [keptRooms, setKeptRooms] = useState({});
 
@@ -34,12 +39,6 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 		setKeptRooms(keptRooms);
 		onContinue();
 	});
-
-	useEffect(() => {
-		if (step === 1 && rooms.length === 1) {
-			onContinue();
-		}
-	}, [step, rooms, onContinue]);
 
 	if (step === 2) {
 		return <StepTwo

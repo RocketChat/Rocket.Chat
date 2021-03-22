@@ -11,6 +11,7 @@ export const StepTwo = ({
 	onToggleAllRooms,
 	onChangeRoomSelection,
 	onConfirm,
+	onClose,
 	onCancel,
 	selectedRooms,
 }) => {
@@ -21,7 +22,7 @@ export const StepTwo = ({
 		title={t('Teams_about_the_channels')}
 		onConfirm={onConfirm}
 		onCancel={onCancel}
-		onClose={onCancel}
+		onClose={onClose}
 		confirmText={t('Continue')}
 	>
 		{t('Teams_delete_team_choose_channels')}

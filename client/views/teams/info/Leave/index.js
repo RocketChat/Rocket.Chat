@@ -1,8 +1,7 @@
-import React, { useMemo, useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { UserContext } from '../../../../contexts/UserContext';
 import LeaveTeamModal from './LeaveTeamModal';
@@ -41,14 +40,7 @@ const useJoinedRoomsWithLastOwner = (teamId) => {
 };
 
 const LeaveTeamModalWithRooms = ({ teamId, onCancel, onConfirm }) => {
-	// const { value, phase, error } = useEndpointData('teams.listRooms', useMemo(() => ({ teamId }), [teamId]));
 	const rooms = useJoinedRoomsWithLastOwner(teamId);
-	console.log(rooms);
-	// console.log({
-	// 	value,
-	// 	phase,
-	// 	error,
-	// });
 
 	return <LeaveTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={rooms} />;
 };
