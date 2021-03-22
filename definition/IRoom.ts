@@ -40,6 +40,7 @@ export interface IRoom extends IRocketChatRecord {
 		}[];
 	};
 
+	teamMain?: boolean;
 	teamId?: string;
 	teamDefault?: boolean;
 }

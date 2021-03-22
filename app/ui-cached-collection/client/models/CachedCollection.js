@@ -125,7 +125,7 @@ export class CachedCollection extends Emitter {
 		userRelated = true,
 		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
-		version = 15,
+		version = 16,
 		maxCacheTime = 60 * 60 * 24 * 30,
 		onSyncData = (/* action, record */) => {},
 	}) {
