@@ -86,7 +86,9 @@ API.v1.addRoute('teams.removeRoom', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const room = Promise.await(Team.removeRoom(this.userId, roomId, teamId));
+		const canRemoveAny = !!hasPermission(this.userId, 'view-all-team-channels');
+
+		const room = Promise.await(Team.removeRoom(this.userId, roomId, teamId, canRemoveAny));
 
 		return API.v1.success({ room });
 	},
@@ -99,8 +101,9 @@ API.v1.addRoute('teams.updateRoom', { authRequired: true }, {
 		if (!hasPermission(this.userId, 'edit-team-channel')) {
 			return API.v1.unauthorized();
 		}
+		const canUpdateAny = !!hasPermission(this.userId, 'view-all-team-channels');
 
-		const room = Promise.await(Team.updateRoom(this.userId, roomId, isDefault));
+		const room = Promise.await(Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny));
 
 		return API.v1.success({ room });
 	},

@@ -73,22 +73,42 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, options = {}) {
+	findByNameContaining(name, discussion = false, teams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
-		const query = {
-			prid: { $exists: discussion },
+		const teamCondition = teams ? {
 			$or: [
-				{ name: nameRegex },
 				{
-					t: 'd',
-					usernames: nameRegex,
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamMain: true,
 				},
 			],
+		} : {
 			teamId: {
 				$exists: false,
 			},
 		};
+
+		const query = {
+			prid: { $exists: discussion },
+			$and: [
+				{
+					$or: [
+						{ name: nameRegex },
+						{
+							t: 'd',
+							usernames: nameRegex,
+						},
+					],
+				},
+				teamCondition,
+			],
+		};
+
 		return this.find(query, options);
 	}
 
@@ -283,7 +303,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.col.find({
 			teamId,
 			teamDefault: true,
-			t: 'c',
 			teamMain: {
 				$exists: false,
 			},

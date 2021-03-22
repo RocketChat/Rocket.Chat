@@ -357,7 +357,8 @@ describe('[Teams]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
 						expect(res.body.rooms).to.be.an('array');
-						expect(res.body.rooms.length).to.equal(2);
+						// main room should not be returned here
+						expect(res.body.rooms.length).to.equal(1);
 					})
 					.end(done);
 			});
@@ -582,6 +583,44 @@ describe('[Teams]', () => {
 					expect(res.body.members[0].user).to.have.property('status');
 					expect(res.body.members[0].createdBy).to.have.property('_id');
 					expect(res.body.members[0].createdBy).to.have.property('username');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/teams.list', () => {
+		before('Create test team', (done) => {
+			const teamName = `test-team-${ Date.now() }`;
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.end(done);
+		});
+		it('should list all teams', (done) => {
+			request.get(api('teams.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('offset', 0);
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('teams');
+					expect(res.body.teams).to.have.length.greaterThan(1);
+					expect(res.body.teams[0]).to.include.property('_id');
+					expect(res.body.teams[0]).to.include.property('_updatedAt');
+					expect(res.body.teams[0]).to.include.property('name');
+					expect(res.body.teams[0]).to.include.property('type');
+					expect(res.body.teams[0]).to.include.property('roomId');
+					expect(res.body.teams[0]).to.include.property('createdBy');
+					expect(res.body.teams[0].createdBy).to.include.property('_id');
+					expect(res.body.teams[0].createdBy).to.include.property('username');
+					expect(res.body.teams[0]).to.include.property('createdAt');
+					expect(res.body.teams[0]).to.include.property('rooms');
 				})
 				.end(done);
 		});
