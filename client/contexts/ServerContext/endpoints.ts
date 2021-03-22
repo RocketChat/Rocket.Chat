@@ -9,6 +9,7 @@ import { ExternalComponentsEndpoint as AppsExternalComponentsEndpoint } from './
 import { ManualRegisterEndpoint as CloudManualRegisterEndpoint } from './endpoints/v1/cloud/manualRegister';
 import { FilesEndpoint as GroupsFilesEndpoint } from './endpoints/v1/groups/files';
 import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
+import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
 import { FilesEndpoint as ChannelsFilesEndpoint } from './endpoints/v1/channels/files';
 import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-custom/list';
 import { GetDiscussionsEndpoint as ChatGetDiscussionsEndpoint } from './endpoints/v1/chat/getDiscussions';
@@ -30,6 +31,7 @@ export type ServerEndpoints = {
 	'custom-user-status.list': CustomUserStatusListEndpoint;
 	'/apps/externalComponents': AppsExternalComponentsEndpoint;
 	'rooms.autocomplete.channelAndPrivate': RoomsAutocompleteEndpoint;
+	'teams.addRooms': TeamsAddRoomsEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;

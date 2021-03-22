@@ -118,7 +118,7 @@ export const useReactModal = (Component, props) => {
 	});
 };
 
-export default ({ rid, tabBar }) => {
+export default ({ rid, teamId, tabBar }) => {
 	const [type, setType] = useLocalStorage('channels-list-type', 'all');
 	const [text, setText] = useState('');
 	const [roomList] = useState(() => new RecordList());
@@ -151,9 +151,9 @@ export default ({ rid, tabBar }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const addExisting = useReactModal(AddExistingModal);
+	const addExisting = useReactModal(AddExistingModal, { teamId });
 
-	const createNew = useReactModal(CreateChannel, { teamId: 'aaaaa' });
+	const createNew = useReactModal(CreateChannel, { teamId });
 
 	return (
 		<TeamChannels

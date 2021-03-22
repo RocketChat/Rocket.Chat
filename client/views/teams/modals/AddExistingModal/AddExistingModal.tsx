@@ -3,7 +3,7 @@ import { Box, ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
 
 import { useForm } from '../../../../hooks/useForm';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-// import { useEndpoint } from '../../../../contexts/ServerContext';
+import { useEndpoint } from '../../../../contexts/ServerContext';
 import ChannelsInput from './ChannelsInput';
 
 type ExistingModalState = {
@@ -15,10 +15,11 @@ type ExistingModalState = {
 
 type AddExistingModalProps = {
 	onClose: () => void;
+	teamId: string;
 };
 
-const useExistingModalState = (): ExistingModalState => {
-	// const addRoomEndpoint = useEndpoint('POST', 'teams.addRooms');
+const useExistingModalState = (onClose: () => void, teamId: string): ExistingModalState => {
+	const addRoomEndpoint = useEndpoint('POST', 'teams.addRooms');
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
 		channels: [],
@@ -38,17 +39,19 @@ const useExistingModalState = (): ExistingModalState => {
 	}, [handleChannels, channels]);
 
 	const onAdd = useCallback(() => {
-		// addRoomEndpoint({
-
-		// });
-	}, []);
+		addRoomEndpoint({
+			rooms: channels,
+			teamId,
+		});
+		onClose();
+	}, [addRoomEndpoint, channels, onClose, teamId]);
 
 	return { onAdd, channels, onChangeChannels, hasUnsavedChanges };
 };
 
-const AddExistingModal: FC<AddExistingModalProps> = ({ onClose }) => {
+const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId }) => {
 	const t = useTranslation();
-	const { onAdd, channels, onChangeChannels, hasUnsavedChanges } = useExistingModalState();
+	const { onAdd, channels, onChangeChannels, hasUnsavedChanges } = useExistingModalState(onClose, teamId);
 
 	const isAddButtonEnabled = hasUnsavedChanges;
 
