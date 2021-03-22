@@ -11,7 +11,7 @@ import { ContactNewEdit, ContactEditWithData } from './contacts/contextualBar/Co
 import { ContactInfo } from './contacts/contextualBar/ContactInfo';
 import ChatTab from './chats/ChatTab';
 import { ChatInfo } from './chats/contextualBar/ChatInfo';
-import { EditRoomContextBar } from '../../views/admin/rooms/EditRoom';
+import { RoomEditWithData } from './chats/contextualBar/ChatRoomEdit';
 
 
 const OmnichannelDirectoryPage = () => {
@@ -60,12 +60,16 @@ const OmnichannelDirectoryPage = () => {
 
 	const ChatsContextualBar = () => <VerticalBar className={'contextual-bar'}>
 		<VerticalBar.Header>
-			{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='info-circled' size='x20' /> {t('Room_Info')}</Box>}
-			{context === 'info' && <VerticalBar.Action title={t('View_full_conversation')} name={'new-window'} onClick={openInRoom} />}
+			{context === 'info'
+			&& <>
+				<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='info-circled' size='x20' /> {t('Room_Info')}</Box>
+				<VerticalBar.Action title={t('View_full_conversation')} name={'new-window'} onClick={openInRoom} />
+			</> }
+			{context === 'edit' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='pencil' size='x20' /> {t('Room_Edit')}</Box>}
 			<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
 		</VerticalBar.Header>
 		{context === 'info' && <ChatInfo id={id} />}
-		{context === 'edit' && <EditRoomContextBar rid={id} />}
+		{context === 'edit' && <RoomEditWithData id={id} close={handleChatsVerticalBarCloseButtonClick} />}
 	</VerticalBar>;
 
 	const ContextualBar = () => {
