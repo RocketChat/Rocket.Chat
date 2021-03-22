@@ -464,6 +464,25 @@ describe('[Chat]', function() {
 		});
 	});
 
+	describe.only('/chat.syncMessages', () => {
+		it('should retrieve messages for sync successfully', (done) => {
+			request.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					lastUpdate: new Date(),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('result.updated');
+					expect(res.body).to.have.nested.property('result.deleted');
+				})
+				.end(done);
+		});
+	});
+
 	describe('/chat.getMessage', () => {
 		it('should retrieve the message successfully', (done) => {
 			request.get(api('chat.getMessage'))
@@ -758,7 +777,7 @@ describe('[Chat]', function() {
 								.to.have.string('<iframe style="max-width: 100%"');
 						})
 						.end(done);
-				}, 200);
+				}, 400);
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
@@ -782,7 +801,7 @@ describe('[Chat]', function() {
 								.to.have.property('contentType', 'image/jpeg');
 						})
 						.end(done);
-				}, 200);
+				}, 250);
 			});
 		});
 

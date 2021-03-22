@@ -33,6 +33,7 @@ import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointA
 import { useUserRoom } from '../../../hooks/useUserRoom';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
+import { useIsEnterprise } from '../../../../../../ee/client/hooks/useIsEnterprise';
 
 const typeMap = {
 	c: 'Channels',
@@ -50,6 +51,7 @@ const useInitialValues = (room, settings) => {
 		announcement,
 		joinCodeRequired,
 		sysMes,
+		hideHistoryForNewMembers,
 		encrypted,
 		retention = {},
 	} = room;
@@ -78,6 +80,7 @@ const useInitialValues = (room, settings) => {
 		systemMessages: Array.isArray(sysMes) ? sysMes : [],
 		hideSysMes: !!sysMes?.length,
 		encrypted,
+		hideHistoryForNewMembers,
 		...retentionPolicyEnabled && {
 			retentionEnabled: retention.enabled ?? retentionEnabledDefault,
 			retentionOverrideGlobal: !!retention.overrideGlobal,
@@ -106,6 +109,7 @@ const useInitialValues = (room, settings) => {
 		t,
 		topic,
 		encrypted,
+		hideHistoryForNewMembers,
 	]);
 };
 
@@ -170,6 +174,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		retentionMaxAge,
 		retentionExcludePinned,
 		retentionFilesOnly,
+		hideHistoryForNewMembers,
 	} = values;
 
 	const {
@@ -192,7 +197,10 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		handleRetentionMaxAge,
 		handleRetentionExcludePinned,
 		handleRetentionFilesOnly,
+		handleHideHistoryForNewMembers,
 	} = handlers;
+
+	const isEnterprise = useIsEnterprise();
 
 	const [
 		canViewName,
@@ -206,6 +214,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewJoinCode,
 		canViewReactWhenReadOnly,
 		canViewEncrypted,
+		canViewHideHistoryForNewMembers,
 	] = useMemo(() => {
 		const isAllowed = roomTypes.getConfig(room.t)?.allowRoomSettingChange || (() => {});
 		return [
@@ -220,6 +229,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 			isAllowed(room, RoomSettingsEnum.JOIN_CODE),
 			isAllowed(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
 			isAllowed(room, RoomSettingsEnum.E2E),
+			isAllowed(room, RoomSettingsEnum.HIDE_HISTORY_NEW_MEMBERS),
 		];
 	}, [room]);
 
@@ -376,6 +386,14 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						<Field.Label>{t('Encrypted')}</Field.Label>
 						<Field.Row>
 							<ToggleSwitch disabled={!canToggleEncryption} checked={encrypted} onChange={handleEncrypted}/>
+						</Field.Row>
+					</Box>
+				</Field>}
+				{canViewHideHistoryForNewMembers && isEnterprise && <Field>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+						<Field.Label>{t('Hide_history_from_new_members')}</Field.Label>
+						<Field.Row>
+							<ToggleSwitch checked={hideHistoryForNewMembers} onChange={handleHideHistoryForNewMembers}/>
 						</Field.Row>
 					</Box>
 				</Field>}

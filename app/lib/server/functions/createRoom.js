@@ -41,6 +41,10 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 		delete extraData.reactWhenReadOnly;
 	}
 
+	if (extraData.hideHistoryForNewMembers !== true) {
+		delete extraData.hideHistoryForNewMembers;
+	}
+
 	const now = new Date();
 
 	const validRoomNameOptions = {};

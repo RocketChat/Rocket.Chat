@@ -126,6 +126,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 				return false;
 			case RoomSettingsEnum.E2E:
 				return settings.get('E2E_Enable') === true;
+			case RoomSettingsEnum.HIDE_HISTORY_NEW_MEMBERS:
+				return false;
 			default:
 				return true;
 		}
