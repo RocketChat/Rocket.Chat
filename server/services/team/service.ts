@@ -254,6 +254,51 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
+	async addRooms(uid: string, rooms: Array<string>, teamId: string): Promise<Array<IRoom>> {
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+		if (!rooms) {
+			throw new Error('missing-rooms');
+		}
+		if (!uid) {
+			throw new Error('missing-userId');
+		}
+
+		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1 } });
+		if (!team) {
+			throw new Error('invalid-team');
+		}
+
+		// at this point, we already checked for the permission
+		// so we just need to check if the user can see the room
+		const user = await this.Users.findOneById(uid);
+		const rids = rooms.filter((rid) => rid && typeof rid === 'string');
+		const validRooms = await this.RoomsModel.findManyByRoomIds(rids).toArray();
+		if (validRooms.length < rids.length) {
+			throw new Error('invalid-room');
+		}
+
+		// validate access for every room first
+		validRooms.forEach(async (room) => {
+			const canSeeRoom = await canAccessRoom(room, user);
+			if (!canSeeRoom) {
+				throw new Error('invalid-room');
+			}
+		});
+
+		for (const room of validRooms) {
+			if (room.teamId) {
+				throw new Error('room-already-on-team');
+			}
+
+			room.teamId = teamId;
+		}
+
+		this.RoomsModel.setTeamByIds(rids, teamId);
+		return validRooms;
+	}
+
 	async removeRoom(uid: string, rid: string, teamId: string, canRemoveAnyRoom = false): Promise<IRoom> {
 		if (!teamId) {
 			throw new Error('missing-teamId');

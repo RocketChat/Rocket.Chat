@@ -42,6 +42,7 @@ export interface ITeamInfo extends ITeam {
 export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
 	addRoom(uid: string, rid: string, teamId: string, isDefault: boolean): Promise<IRoom>;
+	addRooms(uid: string, rooms: Array<string>, teamId: string): Promise<Array<IRoom>>;
 	removeRoom(uid: string, rid: string, teamId: string, canRemoveAnyRoom: boolean): Promise<IRoom>;
 	listRooms(uid: string, teamId: string, getAllRooms: boolean, allowPrivateTeam: boolean, pagination: IPaginationOptions): Promise<IRecordsWithTotal<IRoom>>;
 	updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom: boolean): Promise<IRoom>;
