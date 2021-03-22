@@ -1,23 +1,89 @@
 import React, { useState } from 'react';
-import { ActionButton, Icon, /* Menu,*/ Option } from '@rocket.chat/fuselage';
-import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import { ActionButton, Box, Icon, Menu, Option } from '@rocket.chat/fuselage';
+import { usePrefersReducedMotion, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-// import { useUserInfoActions, useUserInfoActionsSpread } from '../../../hooks/useUserInfoActions';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useSetModal } from '../../../contexts/ModalContext';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
+import ConfirmationModal from '../modals/ConfirmationModal';
 
-// const UserActions = ({ room }) => {
-// 	const { menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions({ _id, username }, rid), 0);
-// 	if (!menuOptions) {
-// 		return null;
-// 	}
-// 	return <Menu
-// 		flexShrink={0}
-// 		key='menu'
-// 		tiny
-// 		renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
-// 		options={menuOptions}
-// 	/>;
-// };
+export const useReactModal = (Component, props) => {
+	const setModal = useSetModal();
+
+	return useMutableCallback(() => {
+		const handleClose = () => {
+			setModal(null);
+		};
+
+		setModal(() => <Component
+			onClose={handleClose}
+			{...props}
+		/>);
+	});
+};
+
+const useRoomActions = (room) => {
+	const t = useTranslation();
+
+	const AutoJoinAtion = () => {
+		// TODO
+	};
+
+	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {
+		onConfirmAction: () => {
+			// TODO
+		},
+		labelButton: t('Remove'),
+		content: <Box is='span' size='14px'>{t('Team_Remove_from_team_modal_content')}</Box>,
+	});
+
+	const DeleteChannelAction = useReactModal(ConfirmationModal, {
+		onConfirmAction: () => {
+			// TODO
+		},
+		labelButton: t('Delete'),
+		content: <>
+			<Box is='span' size='14px' color='danger-500' fontWeight='600'>{t('Team_Delete_Channel_modal_content_danger')}</Box>
+			<Box is='span' size='14px'> {t('Team_Delete_Channel_modal_content')}</Box>
+		</>,
+	});
+
+	return [
+		{
+			label: {
+				label: t('Team_Auto-join'),
+				icon: room.t === 'c' ? 'hash' : 'hashtag-lock',
+			},
+			action: AutoJoinAtion,
+		},
+		{
+			label: {
+				label: t('Team_Remove_from_team'),
+				icon: 'cross',
+			},
+			action: RemoveFromTeamAction,
+		},
+		{
+			label: {
+				label: t('Delete'),
+				icon: 'trash',
+			},
+			action: DeleteChannelAction,
+		},
+	];
+};
+
+const RoomActions = ({ room }) => {
+	const menuOptions = useRoomActions(room);
+
+	return <Menu
+		flexShrink={0}
+		key='menu'
+		tiny
+		renderItem={({ label: { label, icon }, ...props }) => (icon.match(/hash/) ? <Option {...props} label={label} icon={icon} /> : <Box color='danger-600'><Option {...props} label={label} icon={icon} /></Box>)}
+		options={menuOptions}
+	/>;
+};
 
 export const TeamChannelItem = ({ room }) => {
 	const [showButton, setShowButton] = useState();
@@ -34,11 +100,9 @@ export const TeamChannelItem = ({ room }) => {
 				<RoomAvatar room={room} size='x28' />
 			</Option.Avatar>
 			<Option.Column>{room.t === 'c' ? <Icon name='hash' size='x15'/> : <Icon name='hashtag-lock' size='x15'/>}</Option.Column>
-			<Option.Content>
-				<Option.Description>({room.name})</Option.Description>
-			</Option.Content>
+			<Option.Content>{room.name}</Option.Content>
 			<Option.Menu>
-				{showButton ? /* <UserActions username={username} rid={rid} _id={_id} /> */ null : <ActionButton
+				{showButton ? <RoomActions room={room} /> : <ActionButton
 					ghost
 					tiny
 					icon='kebab'

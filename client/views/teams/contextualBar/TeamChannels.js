@@ -12,7 +12,7 @@ import { RecordList } from '../../../lib/lists/RecordList.ts';
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../components/VerticalBar';
 import AddExistingModal from '../modals/AddExistingModal';
-import { TeamChannelItems } from './TeamChannelItem';
+import { TeamChannelItem } from './TeamChannelItem';
 import CreateChannel from '../../../sidebar/header/CreateChannel';
 
 const Row = memo(({ room }) => {
@@ -99,9 +99,9 @@ export const TeamChannels = ({
 	);
 };
 
-TeamChannels.Option = TeamChannelItems;
+TeamChannels.Option = TeamChannelItem;
 
-const useReactModal = (Component, props) => {
+export const useReactModal = (Component, props) => {
 	const setModal = useSetModal();
 
 	return useMutableCallback((e) => {
@@ -125,10 +125,20 @@ export default ({ rid, tabBar }) => {
 
 	const roomInfoEndpoint = useEndpoint('GET', 'rooms.info');
 	const roomListEndpoint = useEndpoint('GET', 'teams.listRooms');
+	// const roomListEndpoint = useEndpoint('GET', 'channels.list');
 
-	const fetchData = useCallback(async () => {
+	const fetchData = useCallback(async (/* start, end*/) => {
 		const { room: { teamId } } = await roomInfoEndpoint({ roomId: rid });
 		await roomListEndpoint({ teamId });
+		const { channels, total } = await roomListEndpoint();
+		const channelsDated = channels.map((channel) => {
+			channel._updatedAt = new Date(channel._updatedAt);
+			return { ...channel };
+		});
+		return {
+			items: channelsDated,
+			itemCount: total,
+		};
 	}, [rid, roomInfoEndpoint, roomListEndpoint]);
 
 	const { loadMoreItems } = useScrollableRecordList(
