@@ -96,6 +96,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 	const options = {
 		fields: {
 			_id: 1,
+			fname: 1,
 			name: 1,
 			t: 1,
 			avatarETag: 1,
