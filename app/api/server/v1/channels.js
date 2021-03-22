@@ -187,7 +187,7 @@ function createChannelValidator(params) {
 	}
 
 	if (params.teams.value && !Array.isArray(params.teams.value)) {
-		throw new Error(`Param ${ params.teams.key } must be an array`)
+		throw new Error(`Param ${ params.teams.key } must be an array`);
 	}
 }
 
@@ -228,7 +228,7 @@ API.v1.addRoute('channels.create', { authRequired: true }, {
 				teams: {
 					value: bodyParams.teams,
 					key: 'teams',
-				}
+				},
 			});
 		} catch (e) {
 			if (e.message === 'unauthorized') {
