@@ -217,10 +217,10 @@ export default memo(({
 
 		if (type) {
 			roomData = await createPrivateChannel(params);
-			goToRoom(roomData.group._id);
+			!teamId && goToRoom(roomData.group._id);
 		} else {
 			roomData = await createChannel(params);
-			goToRoom(roomData.channel._id);
+			!teamId && goToRoom(roomData.channel._id);
 		}
 
 		if (roomData.success && roomData.group && description) {

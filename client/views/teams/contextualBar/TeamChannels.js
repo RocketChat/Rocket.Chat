@@ -118,19 +118,16 @@ export const useReactModal = (Component, props) => {
 	});
 };
 
-export default ({ rid, teamId, tabBar }) => {
+export default ({ teamId, tabBar }) => {
 	const [type, setType] = useLocalStorage('channels-list-type', 'all');
 	const [text, setText] = useState('');
 	const [roomList] = useState(() => new RecordList());
 
-	const roomInfoEndpoint = useEndpoint('GET', 'rooms.info');
 	const roomListEndpoint = useEndpoint('GET', 'teams.listRooms');
-	// const roomListEndpoint = useEndpoint('GET', 'channels.list');
 
 	const fetchData = useCallback(async (/* start, end*/) => {
-		const { room: { teamId } } = await roomInfoEndpoint({ roomId: rid });
 		const { rooms, total } = await roomListEndpoint({ teamId });
-		// const { channels: rooms, total } = await roomListEndpoint();
+
 		const roomsDated = rooms.map((rooms) => {
 			rooms._updatedAt = new Date(rooms._updatedAt);
 			return { ...rooms };
@@ -139,7 +136,7 @@ export default ({ rid, teamId, tabBar }) => {
 			items: roomsDated,
 			itemCount: total,
 		};
-	}, [rid, roomInfoEndpoint, roomListEndpoint]);
+	}, [roomListEndpoint, teamId]);
 
 	const { loadMoreItems } = useScrollableRecordList(
 		roomList,

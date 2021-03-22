@@ -5,6 +5,7 @@ import { useForm } from '../../../../hooks/useForm';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import ChannelsInput from './ChannelsInput';
+import { IRoom } from '../../../../../definition/IRoom';
 
 type ExistingModalState = {
 	onAdd: any;
@@ -25,7 +26,7 @@ const useExistingModalState = (onClose: () => void, teamId: string): ExistingMod
 		channels: [],
 	});
 
-	const { channels } = values as {channels: string[]};
+	const { channels } = values as {channels: IRoom[]};
 	const { handleChannels } = handlers;
 
 	const onChangeChannels = useCallback((value: any, action: string) => {
@@ -40,7 +41,7 @@ const useExistingModalState = (onClose: () => void, teamId: string): ExistingMod
 
 	const onAdd = useCallback(() => {
 		addRoomEndpoint({
-			rooms: channels,
+			rooms: channels.map((channel) => channel._id),
 			teamId,
 		});
 		onClose();
