@@ -21,9 +21,7 @@ Meteor.methods({
 				});
 			}
 			setStatusText(userId, statusText);
-		} else {
-			setStatusText(userId, statusText);
-		}	
+		} else {setStatusText(userId, statusText);}	
 	},
 });
 
