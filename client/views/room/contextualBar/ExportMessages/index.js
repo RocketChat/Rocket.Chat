@@ -11,7 +11,7 @@ import { useEndpoint } from '../../../../contexts/ServerContext';
 import { roomTypes, isEmail } from '../../../../../app/utils/client';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
-import UserAutoCompleteMultiple from "../../../../../ee/client/audit/UserAutoCompleteMultiple";
+import UserAutoCompleteMultiple from '../../../../../ee/client/audit/UserAutoCompleteMultiple';
 
 const clickable = css`
 	cursor: pointer;
