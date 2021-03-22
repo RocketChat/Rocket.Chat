@@ -3544,7 +3544,7 @@
   "Showing_archived_results": "<p>Mostrant <b>%s</b> resultats arxivats</p>",
   "Showing_online_users": "Mostrant-ne <b>__total_showing__</b>, En línia: __online__, Total: __total__ usuaris",
   "Showing_results": "<p>Mostrant <b>%s</b> resultats</p>",
-  "Showing_results_of": "Mostrant resultats% s -% s de% s",
+  "Showing_results_of": "Mostrant resultats %s -%s de %s",
   "Sidebar": "Barra lateral",
   "Sidebar_list_mode": "Mode de llista de canals de la barra lateral",
   "Sign_in_to_start_talking": "Identifica't per començar a parlar",
