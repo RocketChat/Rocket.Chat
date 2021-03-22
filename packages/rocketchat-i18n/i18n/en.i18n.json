@@ -2680,6 +2680,7 @@
   "Message_HideType_room_archived": "Hide \"Room Archived\" messages",
   "Message_HideType_room_changed_avatar": "Hide \"Room avatar changed\" messages",
   "Message_HideType_room_changed_privacy": "Hide \"Room type changed\" messages",
+  "Message_HideType_room_changed_topic": "Hide \"Room topic changed\" messages",
   "Message_HideType_room_enabled_encryption": "Hide \"Room encryption enabled\" messages",
   "Message_HideType_room_disabled_encryption": "Hide \"Room encryption disabled\" messages",
   "Message_HideType_room_unarchived": "Hide \"Room Unarchived\" messages",
