@@ -29,26 +29,23 @@ const useSettingsGroups = (filter: string): ISetting[] => {
 				getMatchableStrings(setting).some((text) => filterRegex.test(text));
 		} catch (e) {
 			return (setting: ISetting): boolean =>
-				getMatchableStrings(setting).some((text) => text.slice(0, filter.length) === filter);
+				getMatchableStrings(setting).some((text) => text.toLocaleLowerCase().slice(0, filter.length) === filter.toLocaleLowerCase());
 		}
 	}, [filter, t]);
 
 	return useMemo(() => {
-		const groupIds = Array.from(new Set(
-			settings
-				.filter(filterPredicate)
-				.map((setting) => {
-					if (setting.type === 'group') {
-						return setting._id;
-					}
+		const groupIds = [...new Set(settings
+			.map((setting) => {
+				if (setting.type === 'group') {
+					return setting._id;
+				}
 
-					return setting.group;
-				}),
-		));
+				return setting.group;
+			}))];
 
 		return settings
-			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
-			.sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)));
+			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id)).sort((a, b) => t(a.i18nLabel || a._id).localeCompare(t(b.i18nLabel || b._id)))
+			.filter(filterPredicate);
 	}, [settings, filterPredicate, t]);
 };
 
