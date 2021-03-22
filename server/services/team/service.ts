@@ -540,8 +540,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return true;
 	}
 
-	async getOneById(teamId: string): Promise<ITeam | undefined> {
-		return this.TeamModel.findOneById(teamId);
+	async getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | undefined> {
+		return this.TeamModel.findOneById(teamId, options);
 	}
 
 	async getOneByName(teamName: string): Promise<ITeam | null> {
