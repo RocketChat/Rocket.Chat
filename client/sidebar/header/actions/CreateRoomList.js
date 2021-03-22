@@ -9,7 +9,7 @@ import { useAtLeastOnePermission, usePermission } from '../../../contexts/Author
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import CreateChannel from '../CreateChannel';
-import CreateTeam from '../CreateTeam';
+import CreateTeamModal from '../../../views/teams/modals/CreateTeamModal';
 import CreateRoomListItem from './CreateRoomListItem';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
@@ -67,7 +67,7 @@ function CreateRoomList() {
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
 
 	const createChannel = useReactModal(CreateChannel);
-	const createTeam = useReactModal(CreateTeam);
+	const createTeam = useReactModal(CreateTeamModal);
 	const createDirectMessage = useAction(t('Direct_Messages'), 'CreateDirectMessage');
 	const createDiscussion = useAction(t('Discussion_title'), 'CreateDiscussion');
 

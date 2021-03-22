@@ -866,7 +866,7 @@ API.v1.addRoute('groups.convertToTeam', { authRequired: true }, {
 			return API.v1.failure('Private group not found');
 		}
 
-		const subscriptions = Subscriptions.findByRoomId(room._id, {
+		const subscriptions = Subscriptions.findByRoomId(room.rid, {
 			fields: { 'u._id': 1 },
 		});
 
@@ -880,7 +880,7 @@ API.v1.addRoute('groups.convertToTeam', { authRequired: true }, {
 			members,
 			room: {
 				name: room.name,
-				id: room._id,
+				id: room.rid,
 			},
 		};
 
