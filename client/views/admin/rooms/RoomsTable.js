@@ -11,7 +11,7 @@ import { useRoute } from '../../../contexts/RouterContext';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
-export const DEFAULT_TYPES = ['d', 'p', 'c', 'team'];
+export const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
 
 export const roomTypeI18nMap = {
 	l: 'Omnichannel',
