@@ -25,6 +25,8 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 		msgs: 1,
 		archived: 1,
 		tokenpass: 1,
+		teamId: 1,
+		teamMain: 1,
 	};
 
 	const name = filter && filter.trim();
@@ -39,12 +41,14 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 		limit: count,
 	};
 
-	let cursor = Rooms.findByNameContaining(name, discussion, includeTeams, options);
+	let cursor;
 
 	if (name && showTypes.length) {
-		cursor = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, options);
+		cursor = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, options);
 	} else if (showTypes.length) {
-		cursor = Rooms.findByTypes(showTypes, discussion, options);
+		cursor = Rooms.findByTypes(showTypes, discussion, includeTeams, options);
+	} else {
+		cursor = Rooms.findByNameContaining(name, discussion, includeTeams, options);
 	}
 
 	const total = await cursor.count();
