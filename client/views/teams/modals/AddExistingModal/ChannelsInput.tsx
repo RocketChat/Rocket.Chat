@@ -11,7 +11,7 @@ type ChannelsInputProps = {
 	onChange: (value: unknown, action: 'remove' | undefined) => void;
 };
 
-type UsersAutoCompleteEndpoint = {
+type ChannelsAutoCompleteEndpoint = {
 	params: {
 		selector: string;
 	};
@@ -27,17 +27,17 @@ type AutoCompleteValueProps = {
 }
 
 const useChannelsAutoComplete = (term: string): AutoCompleteProps['options'] => {
-	const params = useMemo<UsersAutoCompleteEndpoint['params']>(() => ({
+	const params = useMemo<ChannelsAutoCompleteEndpoint['params']>(() => ({
 		selector: JSON.stringify({ term }),
 	}), [term]);
-	const { value: data } = useEndpointData<UsersAutoCompleteEndpoint['value']>('rooms.autocomplete.channelAndPrivate', params);
+	const { value: data } = useEndpointData('rooms.autocomplete.channelAndPrivate', params);
 
 	return useMemo<AutoCompleteProps['options']>(() => {
 		if (!data) {
 			return [];
 		}
 
-		return data.items.map((room) => ({
+		return data.items.map((room: IRoom) => ({
 			label: room.name ?? '',
 			value: room ?? '',
 		})) || [];
