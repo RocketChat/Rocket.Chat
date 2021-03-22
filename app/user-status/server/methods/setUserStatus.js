@@ -10,14 +10,11 @@ Meteor.methods({
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUserStatus' });
 		}
-
 		if (statusType) {
 			Meteor.call('UserPresence:setDefaultStatus', statusType);
 		}
-		
 		if (statusText || statusText === '') {
 			check(statusText, String);
-
 			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 					method: 'setUserStatus',
@@ -26,8 +23,7 @@ Meteor.methods({
 			setStatusText(userId, statusText);
 		} else {
 			setStatusText(userId, statusText);
-		}
-		
+		}	
 	},
 });
 
