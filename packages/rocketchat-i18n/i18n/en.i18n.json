@@ -3726,6 +3726,7 @@
   "Team_Auto-join": "Auto-join",
   "Team_Add_existing": "Add Existing",
   "Team_Add_existing_channels": "Add Existing Channels",
+  "Team_Channels": "Team Channels",
   "Team_Remove_from_team": "Remove from team",
   "Team_Remove_from_team_modal_content": "Would you like to remove this Channel from Design? The Channel will be moved back to the workspace.",
   "Team_Delete_Channel_modal_content": "Would you like to delete this Channel?",
