@@ -15,17 +15,17 @@ Meteor.methods({
 			Meteor.call('UserPresence:setDefaultStatus', statusType);
 		}
 
-		if (statusText || statusText === '') {
-			check(statusText, String);
-
-			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		
+		check(statusText, String);
+		
+		if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 					method: 'setUserStatus',
-				});
-			}
-
-			setStatusText(userId, statusText);
+			});
 		}
+
+		setStatusText(userId, statusText);
+		
 	},
 });
 
