@@ -72,6 +72,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
+			{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 			<Field marginBlock='x15'>
 				<Field.Label>{t('Email')}*</Field.Label>
 				<Field.Row>
@@ -90,7 +91,6 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 					{subjectError}
 				</Field.Error>
 			</Field>
-			{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
