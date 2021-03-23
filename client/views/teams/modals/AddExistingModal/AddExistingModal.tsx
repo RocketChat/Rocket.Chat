@@ -6,6 +6,7 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import RoomsInput from './RoomsInput';
 import { IRoom } from '../../../../../definition/IRoom';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 
 type AddExistingModalState = {
 	onAdd: any;
@@ -43,13 +44,19 @@ const useAddExistingModalState = (onClose: () => void, teamId: string): AddExist
 		handleRooms(rooms.filter((current: any) => current._id !== value));
 	}, [handleRooms, rooms]);
 
-	const onAdd = useCallback(() => {
-		addRoomEndpoint({
-			rooms: rooms.map((room) => room._id),
-			teamId,
-		});
-		onClose();
-	}, [addRoomEndpoint, rooms, onClose, teamId]);
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const onAdd = useCallback(async () => {
+		try {
+			await addRoomEndpoint({
+				rooms: rooms.map((room) => room._id),
+				teamId,
+			});
+			onClose();
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage]);
 
 	return { onAdd, rooms, onChange, hasUnsavedChanges };
 };
