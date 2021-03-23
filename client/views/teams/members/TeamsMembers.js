@@ -21,7 +21,7 @@ const useGetUsersOfRoom = (params) => {
 	return useDataWithLoadMore(useCallback((args) => method(...args), [method]), params);
 };
 
-export default ({
+const TeamMembers = ({
 	rid,
 }) => {
 	const [state, setState] = useState({});
@@ -100,3 +100,5 @@ export default ({
 		/>
 	);
 };
+
+export default TeamMembers;

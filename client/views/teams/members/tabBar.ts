@@ -1,4 +1,4 @@
-import { FC, lazy, LazyExoticComponent } from 'react';
+import { lazy } from 'react';
 
 import { addAction } from '../../room/lib/Toolbox';
 
@@ -9,6 +9,6 @@ addAction('team-members', {
 	full: true,
 	title: 'Teams_members',
 	icon: 'members',
-	template: lazy(() => import('./index')) as LazyExoticComponent<FC>,
+	template: lazy(() => import('./index')),
 	order: 7,
 });
