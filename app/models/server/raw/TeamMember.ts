@@ -1,4 +1,4 @@
-import { Collection, FindOneOptions, Cursor, InsertOneWriteOpResult, UpdateWriteOpResult, DeleteWriteOpResultObject } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, InsertOneWriteOpResult, UpdateWriteOpResult, DeleteWriteOpResultObject, FilterQuery } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ITeamMember } from '../../../../definition/ITeam';
@@ -47,8 +47,8 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		return this.col.find(query, options);
 	}
 
-	findMembersInfoByTeamId(teamId: string, limit: number, skip: number): Cursor<T> {
-		return this.col.find({ teamId }, {
+	findMembersInfoByTeamId(teamId: string, limit: number, skip: number, query?: FilterQuery<T>): Cursor<T> {
+		return this.col.find({ teamId, ...query }, {
 			limit,
 			skip,
 			projection: {

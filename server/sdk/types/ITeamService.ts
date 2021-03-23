@@ -1,6 +1,6 @@
 import { FindOneOptions } from 'mongodb';
 
-import { ITeam, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
+import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
 import { ICreateRoomParams } from './IRoomService';
 
@@ -47,10 +47,11 @@ export interface ITeamService {
 	listRooms(uid: string, teamId: string, getAllRooms: boolean, allowPrivateTeam: boolean, pagination: IPaginationOptions): Promise<IRecordsWithTotal<IRoom>>;
 	listRoomsOfUser(uid: string, teamId: string, userId: string, allowPrivateTeam: boolean, pagination: IPaginationOptions): Promise<IRecordsWithTotal<IRoom>>;
 	updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom: boolean): Promise<IRoom>;
-	list(uid: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
+	list(uid: string, paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
+	listByNames(names: Array<string>, options?: FindOneOptions<ITeam>): Promise<Array<ITeam>>;
 	search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
-	members(uid: string, teamId: string, teamName: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
+	members(uid: string, teamId: string, teamName: string, canSeeAll: boolean, options?: IPaginationOptions, queryOptions?: IQueryOptions<ITeamMember>): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
 	addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, teamName: string, members: ITeamMemberParams): Promise<void>;
 	removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
@@ -59,7 +60,7 @@ export interface ITeamService {
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
 	unsetTeamIdOfRooms(teamId: string): void;
-	getOneById(teamId: string): Promise<ITeam | undefined>;
+	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | undefined>;
 	getOneByName(teamName: string): Promise<ITeam | null>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 }

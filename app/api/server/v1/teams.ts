@@ -8,8 +8,9 @@ import { Rooms, Subscriptions } from '../../../models/server';
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
+		const { sort, query } = this.parseJsonQuery();
 
-		const { records, total } = Promise.await(Team.list(this.userId, { offset, count }));
+		const { records, total } = Promise.await(Team.list(this.userId, { offset, count }, { sort, query }));
 
 		return API.v1.success({
 			teams: records,
@@ -172,8 +173,10 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName } = this.queryParams;
+		const { query } = this.parseJsonQuery();
+		const canSeeAllMembers = hasPermission(this.userId, 'view-all-teams');
 
-		const { records, total } = Promise.await(Team.members(this.userId, teamId, teamName, { offset, count }));
+		const { records, total } = Promise.await(Team.members(this.userId, teamId, teamName, canSeeAllMembers, { offset, count }, { query }));
 
 		return API.v1.success({
 			members: records,

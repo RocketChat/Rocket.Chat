@@ -1,7 +1,7 @@
 import { Db, FindOneOptions } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
-import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions, ITeamStats } from '../../../definition/ITeam';
+import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamStats } from '../../../definition/ITeam';
 import { Room } from '../../sdk';
 import { ITeamCreateParams, ITeamInfo, ITeamMemberInfo, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
 import { IUser } from '../../../definition/IUser';
@@ -106,7 +106,9 @@ export class TeamService extends ServiceClass implements ITeamService {
 			await this.TeamMembersModel.insertMany(membersList);
 
 			let roomId = room.id;
-			if (!roomId) {
+			if (roomId) {
+				await this.RoomsModel.setTeamMainById(roomId, teamId);
+			} else {
 				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
 				const newRoom = {
@@ -175,7 +177,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findByNameAndTeamIds(term, teamIds, options).toArray();
 	}
 
-	async list(uid: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamInfo>> {
+	async list(uid: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { sort, query }: IQueryOptions<ITeam> = { sort: {} }): Promise<IRecordsWithTotal<ITeamInfo>> {
 		const userTeams = await this.TeamMembersModel.findByUserId(uid, { projection: { teamId: 1 } }).toArray();
 
 		const teamIds = userTeams.map(({ teamId }) => teamId);
@@ -187,9 +189,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		const cursor = this.TeamModel.findByIds(teamIds, {
+			sort,
 			limit: count,
 			skip: offset,
-		});
+		}, query);
 
 		const records = await cursor.toArray();
 		const results: ITeamInfo[] = [];
@@ -217,6 +220,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 			total: await cursor.count(),
 			records: await cursor.toArray(),
 		};
+	}
+
+	async listByNames(names: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]> {
+		return this.TeamModel.findByNames(names, options).toArray();
 	}
 
 	async addRoom(uid: string, rid: string, teamId: string, isDefault = false): Promise<IRoom> {
@@ -453,7 +460,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return rooms.map(({ _id }: { _id: string}) => _id);
 	}
 
-	async members(uid: string, teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
+	async members(uid: string, teamId: string, teamName: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { query }: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		if (!teamId) {
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
 			if (!teamIdName) {
@@ -464,14 +471,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
-		if (!isMember) {
+		if (!isMember && !canSeeAll) {
 			return {
 				total: 0,
 				records: [],
 			};
 		}
 
-		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset);
+		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset, query);
 
 		const records = await cursor.toArray();
 		const results: ITeamMemberInfo[] = [];
@@ -606,8 +613,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return true;
 	}
 
-	async getOneById(teamId: string): Promise<ITeam | undefined> {
-		return this.TeamModel.findOneById(teamId);
+	async getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | undefined> {
+		return this.TeamModel.findOneById(teamId, options);
 	}
 
 	async getOneByName(teamName: string): Promise<ITeam | null> {
