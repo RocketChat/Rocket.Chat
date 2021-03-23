@@ -2922,7 +2922,7 @@
   "Notify_all_in_this_room": "Notify all in this room",
   "NPS_survey_enabled": "Enable NPS Survey",
   "NPS_survey_enabled_Description": "Allow NPS survey run for all users. Admins will receive an alert 2 months upfront the survey is launched",
-  "NPS_survey_is_scheduled_to-run-at__date__for_all_users": "NPS survey is scheduled to run at __date__ for all users. It's possible to turn off the survey on 'Admin > General > NPS'?",
+  "NPS_survey_is_scheduled_to-run-at__date__for_all_users": "NPS survey is scheduled to run at __date__ for all users. It's possible to turn off the survey on 'Admin > General > NPS'",
   "Num_Agents": "# Agents",
   "Number_in_seconds": "Number in seconds",
   "Number_of_events": "Number of events",
