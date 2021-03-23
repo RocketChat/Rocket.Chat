@@ -1,4 +1,4 @@
-import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
+import { Box, Margins, Table, Avatar, Tag } from '@rocket.chat/fuselage';
 import { useMediaQuery, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
@@ -32,9 +32,7 @@ function TeamsTable() {
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
-
-	const query = useQuery(params, sort);
-
+	
 	const onHeaderClick = useCallback((id) => {
 		const [sortBy, sortDirection] = sort;
 
@@ -47,19 +45,18 @@ function TeamsTable() {
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
-		<GenericTable.HeaderCell key={'usersCount'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount' style={{ width: '100px' }}>{t('Users')}</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell key={'channelsCount'} direction={sort[1]} active={sort[0] === 'channelsCount'} onClick={onHeaderClick} sort='channelsCount' style={{ width: '100px' }}>{t('Channels')}</GenericTable.HeaderCell>,
 		mediaQuery && <GenericTable.HeaderCell key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '150px' }}>{t('Created_at')}</GenericTable.HeaderCell>,
-		mediaQuery && <GenericTable.HeaderCell key={'lastMessage'} direction={sort[1]} active={sort[0] === 'lastMessage'} onClick={onHeaderClick} sort='lastMessage' style={{ width: '150px' }}>{t('Last_Message')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const channelsRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
 
-	// teams.list does not support queries for now
-	// const { value: data = { result: [] } } = useEndpointData('teams.list', query);
+	const query = useQuery(params, sort);
 
-	const { value: data = { result: [] } } = useEndpointData('teams.list');
+	const { value: data = { result: [] } } = useEndpointData('teams.list', query);
+
+	console.log(data)
 
 	const onClick = useMemo(() => (name, type) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {
@@ -69,7 +66,7 @@ function TeamsTable() {
 
 	const formatDate = useFormatDate();
 	const renderRow = useCallback((team) => {
-		const { _id, createdAt, name, type, usersCount, channelsCount, lastMessage, roomId } = team;
+		const { _id, createdAt, name, type, rooms, roomId } = team;
 		const t = type === 0 ? 'c' : 'p';
 		const avatarUrl = roomTypes.getConfig(t).getAvatarPath({ _id: roomId });
 
@@ -87,16 +84,10 @@ function TeamsTable() {
 				</Box>
 			</Table.Cell>
 			<Table.Cell fontScale='p1' color='hint' style={style}>
-				{usersCount}
-			</Table.Cell>
-			<Table.Cell fontScale='p1' color='hint' style={style}>
-				{channelsCount}
+				{rooms}
 			</Table.Cell>
 			{ mediaQuery && <Table.Cell fontScale='p1' color='hint' style={style}>
 				{formatDate(createdAt)}
-			</Table.Cell>}
-			{ mediaQuery && <Table.Cell fontScale='p1' color='hint' style={style}>
-				{lastMessage && formatDate(lastMessage.ts)}
 			</Table.Cell>}
 		</Table.Row>;
 	}
@@ -104,7 +95,7 @@ function TeamsTable() {
 
 	return <GenericTable
 		header={header}
-		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Teams')} inputRef={refAutoFocus} onChange={onChange} {...props} />}
+		// renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Teams')} inputRef={refAutoFocus} onChange={onChange} {...props} />}
 		renderRow={renderRow}
 		results={data.teams}
 		setParams={setParams}
