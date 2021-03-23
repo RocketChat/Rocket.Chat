@@ -97,11 +97,10 @@ export const RoomInfo = function RoomInfo({
 			action: onClickLeave,
 			icon: 'sign-out',
 		} },
-	}), [t, onClickHide, onClickLeave, onClickEdit, onClickDelete, onClickMoveToTeam]);
+	}), [onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave]);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
 
-	console.log(menuOptions);
 	const menu = useMemo(() => {
 		if (!menuOptions) {
 			return null;
