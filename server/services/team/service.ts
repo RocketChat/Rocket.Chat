@@ -682,4 +682,45 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		return stats;
 	}
+
+	async autocomplete(uid: string, name: string): Promise<IRoom[]> {
+		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
+
+		const subscriptions = await this.SubscriptionsModel.find({ 'u._id': uid }, { projection: { rid: 1 } }).toArray();
+		console.log(subscriptions);
+		const subscriptionIds = subscriptions.map(({ rid }) => rid);
+
+		const rooms = await this.RoomsModel.find({
+			teamMain: true,
+			$and: [{
+				$or: [{
+					name: nameRegex,
+				}, {
+					fname: nameRegex,
+				}],
+			}, {
+				$or: [{
+					t: 'c',
+				}, {
+					_id: { $in: subscriptionIds },
+				}],
+			}],
+		}, {
+			fields: {
+				_id: 1,
+				fname: 1,
+				teamId: 1,
+				name: 1,
+				t: 1,
+				avatarETag: 1,
+			},
+			limit: 10,
+			sort: {
+				name: 1,
+				fname: 1,
+			},
+		}).toArray();
+
+		return rooms;
+	}
 }

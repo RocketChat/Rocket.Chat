@@ -280,3 +280,13 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 		return API.v1.success();
 	},
 });
+
+API.v1.addRoute('teams.autocomplete', { authRequired: true }, {
+	get() {
+		const { name, userId } = this.queryParams;
+
+		const teams = Promise.await(Team.autocomplete(userId, name));
+
+		return API.v1.success({ teams });
+	},
+});
