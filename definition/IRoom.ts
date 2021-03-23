@@ -43,6 +43,7 @@ export interface IRoom extends IRocketChatRecord {
 	teamMain?: boolean;
 	teamId?: string;
 	teamDefault?: boolean;
+	onHold?: boolean;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {

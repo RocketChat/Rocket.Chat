@@ -57,7 +57,7 @@
 		"@octokit/rest": "^16.43.2",
 		"@rocket.chat/eslint-config": "^0.3.0",
 		"@rocket.chat/icons": "^0.6.3-dev.202",
-		"@rocket.chat/livechat": "^1.8.0",
+		"@rocket.chat/livechat": "^1.9.0",
 		"@settlin/spacebars-loader": "^1.0.8",
 		"@storybook/addon-essentials": "^6.1.11",
 		"@storybook/addons": "^6.1.11",

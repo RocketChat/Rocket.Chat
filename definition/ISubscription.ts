@@ -33,6 +33,8 @@ export interface ISubscription extends IRocketChatRecord {
 	prid?: RoomID;
 
 	roles?: string[];
+
+	onHold?: boolean;
 }
 
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {
