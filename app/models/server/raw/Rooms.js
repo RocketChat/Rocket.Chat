@@ -148,6 +148,9 @@ export class RoomsRaw extends BaseRaw {
 				$in: ['c', 'p'],
 			},
 			name: nameRegex,
+			teamMain: {
+				$exists: false,
+			},
 			$or: [{
 				teamId: {
 					$exists: false,
