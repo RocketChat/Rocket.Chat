@@ -150,14 +150,14 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 				{total === 0 && <Box p='x24'>{t('No_Discussions_found')}</Box>}
 				{!error && total > 0 && discussions.length > 0 && <>
 					<Virtuoso
-						style={{ height: blockSize, width: inlineSize, overflow: 'hidden' }}
+						style={{ minHeight:"100%", blockSize, width: inlineSize, overflow: 'hidden' }}
 						totalCount={total}
 						endReached={ loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 						overscan={25}
 						data={discussions}
 						components={{ Scroller: ScrollableContentWrapper }}
-						itemContent={(index, data) => <Row
-							discussion={data}
+						itemContent={(index) => <Row
+							discussion={discussions[index]}
 							showRealNames={showRealNames}
 							userId={userId}
 							onClick={onClick}
