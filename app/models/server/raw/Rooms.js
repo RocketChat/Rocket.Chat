@@ -148,6 +148,9 @@ export class RoomsRaw extends BaseRaw {
 				$in: ['c', 'p'],
 			},
 			name: nameRegex,
+			teamMain: {
+				$exists: false,
+			},
 			$or: [{
 				teamId: {
 					$exists: false,
@@ -183,6 +186,10 @@ export class RoomsRaw extends BaseRaw {
 
 	setTeamById(rid, teamId, teamDefault, options = {}) {
 		return this.updateOne({ _id: rid }, { $set: { teamId, teamDefault } }, options);
+	}
+
+	setTeamMainById(rid, teamId, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamId, teamMain: true } }, options);
 	}
 
 	setTeamByIds(rids, teamId, options = {}) {

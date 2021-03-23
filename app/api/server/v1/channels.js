@@ -185,6 +185,10 @@ function createChannelValidator(params) {
 	if (params.customFields && params.customFields.value && !(typeof params.customFields.value === 'object')) {
 		throw new Error(`Param "${ params.customFields.key }" must be an object if provided`);
 	}
+
+	if (params.teams.value && !Array.isArray(params.teams.value)) {
+		throw new Error(`Param ${ params.teams.key } must be an array`);
+	}
 }
 
 function createChannel(userId, params) {
@@ -221,6 +225,10 @@ API.v1.addRoute('channels.create', { authRequired: true }, {
 					value: bodyParams.members,
 					key: 'members',
 				},
+				teams: {
+					value: bodyParams.teams,
+					key: 'teams',
+				},
 			});
 		} catch (e) {
 			if (e.message === 'unauthorized') {
@@ -232,6 +240,21 @@ API.v1.addRoute('channels.create', { authRequired: true }, {
 
 		if (error) {
 			return error;
+		}
+
+		if (bodyParams.teams) {
+			const canSeeAllTeams = hasPermission(this.userId, 'view-all-teams');
+			const teams = Promise.await(Team.listByNames(bodyParams.teams, { projection: { _id: 1 } }));
+			const teamMembers = [];
+
+			for (const team of teams) {
+				const { records: members } = Promise.await(Team.members(this.userId, team._id, undefined, canSeeAllTeams, { offset: 0, count: Number.MAX_SAFE_INTEGER }));
+				const uids = members.map((member) => member.user.username);
+				teamMembers.push(...uids);
+			}
+
+			const membersToAdd = new Set([...teamMembers, ...bodyParams.members]);
+			bodyParams.members = [...membersToAdd];
 		}
 
 		return API.v1.success(API.channels.create.execute(userId, bodyParams));

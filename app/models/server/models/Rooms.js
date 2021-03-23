@@ -577,6 +577,9 @@ export class Rooms extends Base {
 				$in: ['c', 'p'],
 			},
 			name: nameRegex,
+			teamMain: {
+				$exists: false,
+			},
 			$or: [{
 				teamId: {
 					$exists: false,
