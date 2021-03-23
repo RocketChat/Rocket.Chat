@@ -151,9 +151,10 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName } = this.queryParams;
+		const { query } = this.parseJsonQuery();
 		const canSeeAllMembers = hasPermission(this.userId, 'view-all-teams');
 
-		const { records, total } = Promise.await(Team.members(this.userId, teamId, teamName, canSeeAllMembers, { offset, count }));
+		const { records, total } = Promise.await(Team.members(this.userId, teamId, teamName, canSeeAllMembers, { offset, count }, { query }));
 
 		return API.v1.success({
 			members: records,
