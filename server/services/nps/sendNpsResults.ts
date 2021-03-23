@@ -10,16 +10,16 @@ type NPSResultPayload = {
 	votes: INpsVote[];
 }
 
-export const sendToCloud = Meteor.bindEnvironment(function sendToCloud(npsId: string, data: NPSResultPayload) {
-	const token: string = getWorkspaceAccessToken(true);
+export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(npsId: string, data: NPSResultPayload) {
+	const token: string = getWorkspaceAccessToken();
 	if (!token) {
 		return false;
 	}
 
-	const cloudUrl = settings.get('Cloud_Url');
+	const npsUrl = settings.get('Nps_Url');
 
 	try {
-		return HTTP.post(`${ cloudUrl }/v1/nps/surveys/${ npsId }/results`, {
+		return HTTP.post(`${ npsUrl }/v1/surveys/${ npsId }/results`, {
 			headers: {
 				Authorization: `Bearer ${ token }`,
 			},
