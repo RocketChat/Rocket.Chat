@@ -15,17 +15,17 @@ import AddExistingModal from '../modals/AddExistingModal';
 import { TeamChannelItem } from './TeamChannelItem';
 import CreateChannel from '../../../sidebar/header/CreateChannel';
 
-const Row = memo(({ room }) => {
+const Row = memo(function Row({ room }) {
 	if (!room) {
-		return <TeamChannels.Option.Skeleton />;
+		return <BaseTeamChannels.Option.Skeleton />;
 	}
 
-	return <TeamChannels.Option
+	return <BaseTeamChannels.Option
 		room={room}
 	/>;
 });
 
-export const TeamChannels = ({
+const BaseTeamChannels = ({
 	loading,
 	channels = [],
 	text,
@@ -99,7 +99,7 @@ export const TeamChannels = ({
 	);
 };
 
-TeamChannels.Option = TeamChannelItem;
+BaseTeamChannels.Option = TeamChannelItem;
 
 export const useReactModal = (Component, props) => {
 	const setModal = useSetModal();
@@ -118,7 +118,7 @@ export const useReactModal = (Component, props) => {
 	});
 };
 
-export default ({ teamId, tabBar }) => {
+function TeamChannels({ teamId, tabBar }) {
 	const [type, setType] = useLocalStorage('channels-list-type', 'all');
 	const [text, setText] = useState('');
 	const [roomList] = useState(() => new RecordList());
@@ -153,7 +153,7 @@ export default ({ teamId, tabBar }) => {
 	const createNew = useReactModal(CreateChannel, { teamId });
 
 	return (
-		<TeamChannels
+		<BaseTeamChannels
 			loading={phase === 'loading'}
 			type={type}
 			text={text}
@@ -167,4 +167,6 @@ export default ({ teamId, tabBar }) => {
 			loadMoreItems={loadMoreItems}
 		/>
 	);
-};
+}
+
+export default TeamChannels;
