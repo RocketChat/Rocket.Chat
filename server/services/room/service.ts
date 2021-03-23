@@ -32,7 +32,7 @@ export class RoomService extends ServiceClass implements IRoomService {
 		}
 
 		// TODO convert `createRoom` function to "raw" and move to here
-		return createRoom(type, name, user.username, members, readOnly, extraData, options) as unknown as IRoom;
+		return createRoom(type, name, user.username, members, readOnly, extraData as { teamId: string }, options) as unknown as IRoom;
 	}
 
 	async addMember(uid: string, rid: string): Promise<boolean> {
