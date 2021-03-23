@@ -2,7 +2,6 @@ import { Box, Margins, Table, Avatar, Tag } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
-// import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
@@ -54,8 +53,6 @@ function TeamsTable() {
 	const query = useQuery(params, sort);
 
 	const { value: data = { result: [] } } = useEndpointData('teams.list', query);
-
-	console.log(data);
 
 	const onClick = useMemo(() => (name, type) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {
