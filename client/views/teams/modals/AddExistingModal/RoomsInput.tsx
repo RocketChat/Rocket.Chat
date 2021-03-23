@@ -5,6 +5,7 @@ import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 import { IRoom } from '../../../../../definition/IRoom';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { roomTypes } from '../../../../../app/utils/client';
 
 type RoomsInputProps = {
 	value: IRoom[];
@@ -27,7 +28,7 @@ const useRoomsAutoComplete = (name: string): {
 		}
 
 		return data.items.map((room: IRoom) => ({
-			label: room.fname ?? room.name,
+			label: roomTypes.getRoomName(room.t, room),
 			value: room._id,
 		}));
 	}, [data]);
