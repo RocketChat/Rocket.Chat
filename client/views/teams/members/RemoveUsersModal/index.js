@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react';
 
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import RemoveUsersModal from './RemoveUsersModal';
+import BaseRemoveUsersModal from './RemoveUsersModal';
 import { useUserData } from '../../../../hooks/useUserData';
 
-const RemoveUsersModalWithRooms = ({ teamId, userId, onClose, onCancel, onConfirm }) => {
+const RemoveUsersModal = ({ teamId, userId, onClose, onCancel, onConfirm }) => {
 	const { value } = useEndpointData('teams.listRoomsOfUser', useMemo(() => ({ teamId, userId }), [teamId, userId]));
 
 	const { username } = useUserData(userId);
 
-	return value?.rooms ? <RemoveUsersModal
+	return value?.rooms ? <BaseRemoveUsersModal
 		onClose={onClose}
 		username={username}
 		onCancel={onCancel}
@@ -18,4 +18,4 @@ const RemoveUsersModalWithRooms = ({ teamId, userId, onClose, onCancel, onConfir
 	/> : null;
 };
 
-export default RemoveUsersModalWithRooms;
+export default RemoveUsersModal;

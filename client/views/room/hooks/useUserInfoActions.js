@@ -16,7 +16,7 @@ import { roomTypes, RoomMemberActions } from '../../../../app/utils';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useUserRoom } from './useUserRoom';
 import { escapeHTML } from '../../../../lib/escapeHTML';
-import RemoveUsersModalWithRooms from '../../teams/members/RemoveUsers';
+import RemoveUsersModal from '../../teams/members/RemoveUsersModal';
 
 const useUserHasRoomRole = (uid, rid, role) => useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role }), [uid, rid, role]));
 
@@ -294,7 +294,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 	const removeUserAction = useEndpointActionExperimental('POST', `${ endpointPrefix }.kick`, t('User_has_been_removed_from_s', roomName));
 	const removeUserOptionAction = useMutableCallback(() => {
 		if (room.teamMain && room.teamId) {
-			return setModal(<RemoveUsersModalWithRooms
+			return setModal(<RemoveUsersModal
 				teamId={room?.teamId}
 				userId={user?._id}
 				onClose={closeModal}
