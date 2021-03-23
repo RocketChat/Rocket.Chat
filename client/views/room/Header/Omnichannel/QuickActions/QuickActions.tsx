@@ -130,8 +130,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 			await closeChat(rid, comment, { clientAction: true });
 			closeModal();
 			toastr.success(t('Chat_closed_successfully'));
-		}
-		catch (error) {
+		} catch (error) {
 			handleError(error);
 		}
 	}, [closeChat, closeModal, rid, t]);
