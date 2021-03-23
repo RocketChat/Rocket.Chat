@@ -16,7 +16,10 @@ import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManag
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import MarkdownText from '../../../../../components/MarkdownText';
+import ChannelToTeamModal from '../../../../teams/modals/ChannelToTeamModal/ChannelToTeamModal';
+import ConvertToTeamModal from '../../../../teams/modals/ConvertToTeamModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 import InfoPanel, { RetentionPolicyCallout } from '../../../../InfoPanel';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
@@ -51,6 +54,8 @@ export const RoomInfo = function RoomInfo({
 	onClickLeave,
 	onClickEdit,
 	onClickDelete,
+	onClickMoveToTeam,
+	onClickConvertToTeam,
 }) {
 	const t = useTranslation();
 
@@ -72,6 +77,16 @@ export const RoomInfo = function RoomInfo({
 			icon: 'trash',
 			action: onClickDelete,
 		} },
+		...onClickMoveToTeam && { move: {
+			label: t('Teams_move_channel_to_team'),
+			icon: 'team',
+			action: onClickMoveToTeam,
+		} },
+		...onClickConvertToTeam && { convert: {
+			label: t('Teams_convert_channel_to_team'),
+			icon: 'team',
+			action: onClickConvertToTeam,
+		} },
 		...onClickHide && { hide: {
 			label: t('Hide'),
 			action: onClickHide,
@@ -82,7 +97,7 @@ export const RoomInfo = function RoomInfo({
 			action: onClickLeave,
 			icon: 'sign-out',
 		} },
-	}), [t, onClickHide, onClickLeave, onClickEdit, onClickDelete]);
+	}), [onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave]);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
 
@@ -200,9 +215,18 @@ export default ({
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
+	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRoom', t('Success'));
+	const convertRoomToTeam = useEndpointActionExperimental(
+		'POST',
+		type === 'c' ? 'channels.convertToTeam' : 'groups.convertToTeam',
+		t('Success'),
+	);
+
 	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
 
 	const canEdit = usePermission('edit-room', rid);
+
+	const canConvertRoomToTeam = usePermission('create-team');
 
 	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
@@ -267,6 +291,43 @@ export default ({
 		/>);
 	});
 
+	const onMoveToTeam = useMutableCallback(async () => {
+		const onConfirm = async (teamId) => {
+			try {
+				await moveChannelToTeam({ roomId: rid, teamId });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				closeModal();
+			}
+		};
+
+		setModal(<ChannelToTeamModal
+			rid={rid}
+			onClose={closeModal}
+			onCancel={closeModal}
+			onConfirm={onConfirm}
+		/>);
+	});
+
+	const onConvertToTeam = useMutableCallback(async () => {
+		const data = type === 'c' ? { channelId: rid } : { roomId: rid };
+		const onConfirm = async () => {
+			try {
+				await convertRoomToTeam(data);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				closeModal();
+			}
+		};
+
+		setModal(<ConvertToTeamModal
+			onClose={closeModal}
+			onConfirm={onConfirm}
+		/>);
+	});
+
 	return (
 		<RoomInfo
 			archived={archived}
@@ -278,6 +339,8 @@ export default ({
 			onClickDelete={canDelete && handleDelete}
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}
+			onClickMoveToTeam={!room.teamId && onMoveToTeam}
+			onClickConvertToTeam={!room.teamId && canConvertRoomToTeam && onConvertToTeam}
 			{...room}
 			announcement={room.announcement && <MarkdownText content={room.announcement}/>}
 			description={room.description && <MarkdownText content={room.description}/>}

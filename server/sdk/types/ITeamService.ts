@@ -63,4 +63,5 @@ export interface ITeamService {
 	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | undefined>;
 	getOneByName(teamName: string): Promise<ITeam | null>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
+	autocomplete(uid: string, name: string): Promise<Array<IRoom>>;
 }
