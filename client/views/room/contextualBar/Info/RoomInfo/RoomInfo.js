@@ -19,7 +19,7 @@ import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManag
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import MarkdownText from '../../../../../components/MarkdownText';
-import ChannelToTeamModal from '../../../../teams/ChannelToTeamModal/ChannelToTeamModal';
+import ChannelToTeamModal from '../../../../teams/modals/ChannelToTeamModal/ChannelToTeamModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 
