@@ -14,7 +14,7 @@ addAction('game-center', () => {
 	const hasError = !!error;
 	return useMemo(() =>
 		(enabled
-		&& state === AsyncStatePhase.LOADING
+		&& state === AsyncStatePhase.RESOLVED
 		&& !hasError
 		&& hasExternalComponents
 			? {
