@@ -134,9 +134,7 @@ function SettingsBasedStep({ step, title, active }) {
 								placeholder={t('Select_an_option')}
 								value={value}
 								onChange={(value) => setFieldValue(_id, value)}
-								options={values
-									.map(({ i18nLabel, key }) => [key, t(i18nLabel)])
-									.sort(([, a], [, b]) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))}
+								options={values.map(({ i18nLabel, key }) => [key, t(i18nLabel)])}
 							/>}
 
 							{type === 'boolean' && <Select
@@ -159,9 +157,7 @@ function SettingsBasedStep({ step, title, active }) {
 								placeholder={t('Default')}
 								value={value}
 								onChange={(value) => setFieldValue(_id, value)}
-								options = {languages
-									.map(({ key, name }) => [key, name])
-									.sort(([a], [b]) => a - b)}
+								options = {languages.map(({ key, name }) => [key, name])}
 							/>}
 						</Field.Row>
 					</Field>,
