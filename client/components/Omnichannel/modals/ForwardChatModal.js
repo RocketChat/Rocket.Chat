@@ -19,7 +19,7 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 	const [userId, setUserId] = useState('');
 
 	const { handleDepartmentName, handleUsername, handleComment } = handlers;
-	const userInfo = useEndpointData('GET', `users.info?username=${ username }`);
+	const { value } = useEndpointData('GET', `users.info?username=${ username }`);
 
 
 	const handleSend = useMutableCallback(() => {
@@ -41,7 +41,7 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 	useEffect(() => {
 		if (!username) { return; }
 		const fetchData = async () => {
-			const { user } = await userInfo();
+			const { user } = value;
 			setUserId(user._id);
 		};
 		fetchData();

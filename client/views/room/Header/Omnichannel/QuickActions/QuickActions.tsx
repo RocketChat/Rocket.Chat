@@ -20,7 +20,7 @@ import { handleError } from '../../../../../../app/utils/client';
 import { IRoom } from '../../../../../../definition/IRoom';
 import { useAtLeastOnePermission, usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
 import { useUserId } from '../../../../../contexts/UserContext';
-import { useOmnichannel } from '../../../../../contexts/OmnichannelContext';
+import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
 
 
@@ -156,12 +156,12 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const canCloseRoom = usePermission('close-others-livechat-room');
 
-	const canReturnQueue = useOmnichannel().routeConfig?.returnQueue;
+	const omnichannelRouteConfig = useOmnichannelRouteConfig();
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				return !!roomOpen && !!canReturnQueue;
+				return !!roomOpen && !!omnichannelRouteConfig?.returnQueue;
 			case QuickActionsEnum.ChatForward:
 				return !!roomOpen && canForwardGuest;
 			case QuickActionsEnum.Transcript:
