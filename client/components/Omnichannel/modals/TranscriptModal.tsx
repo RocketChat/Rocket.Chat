@@ -1,5 +1,6 @@
-import React, { FC, useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useState, useMemo } from 'react';
 import { Field, Button, TextInput, Icon, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
@@ -19,13 +20,7 @@ type TranscriptModalProps = {
 const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', room, onRequest, onSend, onCancel, onDiscard, ...props }) => {
 	const t = useTranslation();
 
-	const ref = useRef<HTMLInputElement>();
-
-	useEffect(() => {
-		if (typeof ref?.current?.focus === 'function') {
-			ref.current.focus();
-		}
-	}, [ref]);
+	const inputRef = useAutoFocus(true);
 
 	const { values, handlers } = useForm({ email: emailDefault || '', subject: t('Transcript_of_your_livechat_conversation') });
 
@@ -85,7 +80,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 			<Field marginBlock='x15'>
 				<Field.Label>{t('Subject')}*</Field.Label>
 				<Field.Row>
-					<TextInput ref={ref} disabled={!!transcriptRequest} error={subjectError} flexGrow={1} value={subject} onChange={handleSubject} />
+					<TextInput ref={inputRef} disabled={!!transcriptRequest} error={subjectError} flexGrow={1} value={subject} onChange={handleSubject} />
 				</Field.Row>
 				<Field.Error>
 					{subjectError}

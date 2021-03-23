@@ -1,5 +1,6 @@
-import React, { FC, useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import React, { FC, useCallback, useState, useMemo } from 'react';
 import { Field, Button, TextInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
@@ -14,13 +15,7 @@ type CloseChatModalProps = {
 const CloseChatModal: FC<CloseChatModalProps> = ({ onCancel, onConfirm, ...props }) => {
 	const t = useTranslation();
 
-	const ref = useRef<HTMLInputElement>();
-
-	useEffect(() => {
-		if (typeof ref?.current?.focus === 'function') {
-			ref.current.focus();
-		}
-	}, [ref]);
+	const inputRef = useAutoFocus(true);
 
 	const { values, handlers } = useForm({ comment: '' });
 
@@ -50,7 +45,7 @@ const CloseChatModal: FC<CloseChatModalProps> = ({ onCancel, onConfirm, ...props
 			<Field marginBlock='x15'>
 				<Field.Label>{t('Comment')}*</Field.Label>
 				<Field.Row>
-					<TextInput error={commentError} flexGrow={1} value={comment} onChange={handleComment} placeholder={t('Please_add_a_comment')} />
+					<TextInput ref={inputRef} error={commentError} flexGrow={1} value={comment} onChange={handleComment} placeholder={t('Please_add_a_comment')} />
 				</Field.Row>
 				<Field.Error>
 					{commentError}

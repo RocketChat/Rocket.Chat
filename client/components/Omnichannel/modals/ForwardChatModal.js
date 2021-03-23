@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
@@ -12,13 +12,7 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 	const t = useTranslation();
 
-	const ref = useRef();
-
-	useEffect(() => {
-		if (typeof ref?.current?.focus === 'function') {
-			ref.current.focus();
-		}
-	}, [ref]);
+	const inputRef = useAutoFocus(true);
 
 	const { values, handlers } = useForm({ departmentName: '', username: '', comment: '' });
 	const { departmentName, username, comment } = values;
@@ -28,7 +22,7 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 	const userInfo = useEndpointData('GET', `users.info?username=${ username }`);
 
 
-	const handleSend = useCallback(() => {
+	const handleSend = useMutableCallback(() => {
 		onForward(departmentName, userId, comment);
 	}, [onForward, departmentName, userId, comment]);
 
@@ -77,7 +71,7 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 			<Field marginBlock='x15'>
 				<Field.Label>{t('Leave_a_comment')} <Box is='span' color='neutral-600'>({t('Optional')})</Box></Field.Label>
 				<Field.Row>
-					<TextAreaInput rows={8} flexGrow={1} value={comment} onChange={handleComment} />
+					<TextAreaInput ref={inputRef} rows={8} flexGrow={1} value={comment} onChange={handleComment} />
 				</Field.Row>
 			</Field>
 		</Modal.Content>
