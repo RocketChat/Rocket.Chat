@@ -68,7 +68,7 @@ const ParentTeam = ({ room }) => {
 	const teamMainRoomHref = teamMainRoom ? roomTypes.getRouteLink(teamMainRoom.t, teamMainRoom) : null;
 	const teamIcon = value?.t === 0 ? 'team' : 'team-lock';
 
-	return teamLoading || userTeamsLoading ? null : <Breadcrumbs.Tag>
+	return teamLoading || userTeamsLoading || room.teamMain ? null : <Breadcrumbs.Tag>
 		<Breadcrumbs.IconSmall name={teamIcon}></Breadcrumbs.IconSmall>
 		<Breadcrumbs.Link href={belongsToTeam && teamMainRoomHref}>{teamMainRoom?.name}</Breadcrumbs.Link>
 	</Breadcrumbs.Tag>;
