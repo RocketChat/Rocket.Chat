@@ -1,26 +1,25 @@
 import React, { useMemo } from 'react';
+import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
-import VerticalBar from '../../../../../components/VerticalBar';
-import { useUserRoom } from '../../../../../contexts/UserContext';
-import { useMethod } from '../../../../../contexts/ServerContext';
-import DeleteChannelWarning from '../../../../../components/DeleteChannelWarning';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useSetting } from '../../../../../contexts/SettingsContext';
-import { useRoute } from '../../../../../contexts/RouterContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { roomTypes, UiTextContext } from '../../../../../../app/utils';
-import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
-import { usePermission } from '../../../../../contexts/AuthorizationContext';
-import WarningModal from '../../../../admin/apps/WarningModal';
-import MarkdownText from '../../../../../components/MarkdownText';
-import { useTabBarClose } from '../../../providers/ToolboxProvider';
-import InfoPanel, { RetentionPolicyCallout } from '../../../../InfoPanel';
-import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
-import { useActionSpread } from '../../../../hooks/useActionSpread';
-
+import VerticalBar from '../../../components/VerticalBar';
+import RoomAvatar from '../../../components/avatar/RoomAvatar';
+import MarkdownText from '../../../components/MarkdownText';
+import DeleteTeamModal from './Delete';
+import LeaveTeamModal from './Leave';
+import InfoPanel, { RetentionPolicyCallout } from '../../InfoPanel';
+import { roomTypes, UiTextContext } from '../../../../app/utils';
+import { useTabBarClose } from '../../room/providers/ToolboxProvider';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { GenericModalDoNotAskAgain } from '../../../components/GenericModal';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useActionSpread } from '../../hooks/useActionSpread';
+import { useRoute } from '../../../contexts/RouterContext';
+import { useMethod } from '../../../contexts/ServerContext';
+import { useSetModal } from '../../../contexts/ModalContext';
+import { useSetting } from '../../../contexts/SettingsContext';
+import { usePermission } from '../../../contexts/AuthorizationContext';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -34,7 +33,7 @@ const retentionPolicyAppliesTo = {
 	d: 'RetentionPolicy_AppliesToDMs',
 };
 
-export const RoomInfo = function RoomInfo({
+export const TeamsInfo = ({
 	name,
 	fname,
 	description,
@@ -51,7 +50,7 @@ export const RoomInfo = function RoomInfo({
 	onClickLeave,
 	onClickEdit,
 	onClickDelete,
-}) {
+}) => {
 	const t = useTranslation();
 
 	const {
@@ -113,7 +112,7 @@ export const RoomInfo = function RoomInfo({
 		<>
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='info-circled'/>
-				<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
+				<VerticalBar.Text>{t('Teams_Info')}</VerticalBar.Text>
 				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>
 
@@ -160,6 +159,13 @@ export const RoomInfo = function RoomInfo({
 							<InfoPanel.Text withTruncatedText={false}>{topic}</InfoPanel.Text>
 						</InfoPanel.Field>}
 
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Teams_channels')}</InfoPanel.Label>
+							<InfoPanel.Text>
+								<Button small>{t('View_channels')}</Button>
+							</InfoPanel.Text>
+						</InfoPanel.Field>
+
 						{retentionPolicyEnabled && (
 							<RetentionPolicyCallout filesOnlyDefault={filesOnlyDefault} excludePinnedDefault={excludePinnedDefault} maxAgeDefault={maxAgeDefault} />
 						)}
@@ -171,17 +177,16 @@ export const RoomInfo = function RoomInfo({
 	);
 };
 
-export default ({
-	rid,
+export default function TeamsInfoWithLogic({
+	room,
 	openEditing,
-}) => {
+}) {
 	const onClickClose = useTabBarClose();
 	const t = useTranslation();
 
-	const room = useUserRoom(rid);
 	room.type = room.t;
-	room.rid = rid;
-	const { type, fname, broadcast, archived, joined = true } = room; // TODO implement joined
+	room.rid = room._id;
+	const { /* type, fname, */ broadcast, archived /* , joined = true */ } = room; // TODO implement joined
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
@@ -195,21 +200,24 @@ export default ({
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
-	const deleteRoom = useMethod('eraseRoom');
-	const hideRoom = useMethod('hideRoom');
-	const leaveRoom = useMethod('leaveRoom');
+
+	const deleteTeam = useEndpointActionExperimental('POST', 'teams.delete');
+	const leaveTeam = useEndpointActionExperimental('POST', 'teams.leave');
+	const hideTeam = useMethod('hideRoom');
+
 	const router = useRoute('home');
 
-	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
+	const canDelete = usePermission('delete-team', room._id);
+	const canEdit = usePermission('edit-team', room._id);
 
-	const canEdit = usePermission('edit-room', rid);
+	// const canLeave = usePermission('leave-team'); /* && room.cl !== false && joined */
 
-	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
-
-	const handleDelete = useMutableCallback(() => {
-		const onConfirm = async () => {
+	// mutalble callback open modal
+	const onClickDelete = useMutableCallback(() => {
+		const onConfirm = async (deletedRooms) => {
+			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : null;
 			try {
-				await deleteRoom(rid);
+				await deleteTeam({ teamId: room.teamId, roomsToRemove });
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -217,37 +225,29 @@ export default ({
 			closeModal();
 		};
 
-		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={closeModal} />);
+		setModal(<DeleteTeamModal onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId} />);
 	});
 
-	const handleLeave = useMutableCallback(() => {
-		const leave = async () => {
+	const onClickLeave = useMutableCallback(() => {
+		const onConfirm = async (roomsLeft) => {
+			const rooms = Array.isArray(roomsLeft) && roomsLeft.length > 0 ? roomsLeft : null;
+
 			try {
-				await leaveRoom(rid);
+				await leaveTeam({ teamId: room.teamId, rooms });
 				router.push({});
-				RoomManager.close(rid);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 			closeModal();
 		};
 
-		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.LEAVE_WARNING);
-
-		setModal(<WarningModal
-			text={t(warnText, fname)}
-			confirmText={t('Leave_room')}
-			close={closeModal}
-			cancel={closeModal}
-			cancelText={t('Cancel')}
-			confirm={leave}
-		/>);
+		setModal(<LeaveTeamModal onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId} />);
 	});
 
 	const handleHide = useMutableCallback(async () => {
 		const hide = async () => {
 			try {
-				await hideRoom(rid);
+				await hideTeam(room._id);
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -255,33 +255,39 @@ export default ({
 			closeModal();
 		};
 
-		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.HIDE_WARNING);
+		const warnText = roomTypes.getConfig(room.t).getUiText(UiTextContext.HIDE_WARNING);
 
-		setModal(<WarningModal
-			text={t(warnText, fname)}
+		setModal(<GenericModalDoNotAskAgain
+			variant='danger'
 			confirmText={t('Yes_hide_it')}
-			close={closeModal}
-			cancel={closeModal}
 			cancelText={t('Cancel')}
-			confirm={hide}
-		/>);
+			onClose={closeModal}
+			onCancel={closeModal}
+			onConfirm={hide}
+			dontAskAgain={{
+				action: 'hideRoom',
+				label: t('Hide_room'),
+			}}
+		>
+			{t(warnText, room.fname)}
+		</ GenericModalDoNotAskAgain>);
 	});
 
 	return (
-		<RoomInfo
+		<TeamsInfo
 			archived={archived}
 			broadcast={broadcast}
-			icon={room.t === 'p' ? 'lock' : 'hashtag'}
+			icon={'team'}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickEdit={canEdit && openEditing}
 			onClickClose={onClickClose}
-			onClickDelete={canDelete && handleDelete}
-			onClickLeave={canLeave && handleLeave}
-			onClickHide={joined && handleHide}
+			onClickDelete={canDelete && onClickDelete}
+			onClickLeave={/* canLeave && */onClickLeave}
+			onClickHide={/* joined && */handleHide}
 			{...room}
 			announcement={room.announcement && <MarkdownText content={room.announcement}/>}
 			description={room.description && <MarkdownText content={room.description}/>}
 			topic={room.topic && <MarkdownText content={room.topic}/>}
 		/>
 	);
-};
+}

@@ -6,7 +6,7 @@ import { addAction } from '.';
 
 
 addAction('rocket-search', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
 	id: 'rocket-search',
 	title: 'Search_Messages',
 	icon: 'magnifier',
@@ -35,7 +35,7 @@ addAction('user-info-group', {
 addAction('members-list', ({ room }) => {
 	const hasPermission = usePermission('view-broadcast-member-list', room._id);
 	return useMemo(() => (!room.broadcast || hasPermission ? {
-		groups: ['channel', 'group'],
+		groups: ['channel', 'group', 'team'],
 		id: 'members-list',
 		title: 'Members',
 		icon: 'team',
@@ -45,7 +45,7 @@ addAction('members-list', ({ room }) => {
 });
 
 addAction('uploaded-files-list', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
 	id: 'uploaded-files-list',
 	title: 'Files',
 	icon: 'clip',
@@ -54,7 +54,7 @@ addAction('uploaded-files-list', {
 });
 
 addAction('keyboard-shortcut-list', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
 	id: 'keyboard-shortcut-list',
 	title: 'Keyboard_Shortcuts_Title',
 	icon: 'keyboard',
