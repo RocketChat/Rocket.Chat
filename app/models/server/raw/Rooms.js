@@ -42,8 +42,15 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(name, types, discussion = false, options = {}) {
+	findByNameContainingAndTypes(name, types, discussion = false, teams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
+
+		const teamCondition = teams ? {} : {
+			teamMain: {
+				$exists: false,
+			},
+		};
+
 		const query = {
 			t: {
 				$in: types,
@@ -56,25 +63,36 @@ export class RoomsRaw extends BaseRaw {
 					usernames: nameRegex,
 				},
 			],
+			...teamCondition,
 		};
 		return this.find(query, options);
 	}
 
-	findByTypes(types, discussion = false, options = {}) {
+	findByTypes(types, discussion = false, teams = false, options = {}) {
+		const teamCondition = teams ? {} : {
+			teamMain: {
+				$exists: false,
+			},
+		};
+
 		const query = {
 			t: {
 				$in: types,
 			},
 			prid: { $exists: discussion },
-			teamId: {
-				$exists: false,
-			},
+			...teamCondition,
 		};
 		return this.find(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, options = {}) {
+	findByNameContaining(name, discussion = false, teams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
+
+		const teamCondition = teams ? {} : {
+			teamMain: {
+				$exists: false,
+			},
+		};
 
 		const query = {
 			prid: { $exists: discussion },
@@ -85,10 +103,9 @@ export class RoomsRaw extends BaseRaw {
 					usernames: nameRegex,
 				},
 			],
-			teamId: {
-				$exists: false,
-			},
+			...teamCondition,
 		};
+
 		return this.find(query, options);
 	}
 
@@ -166,6 +183,10 @@ export class RoomsRaw extends BaseRaw {
 
 	setTeamById(rid, teamId, teamDefault, options = {}) {
 		return this.updateOne({ _id: rid }, { $set: { teamId, teamDefault } }, options);
+	}
+
+	setTeamByIds(rids, teamId, options = {}) {
+		return this.updateMany({ _id: { $in: rids } }, { $set: { teamId } }, options);
 	}
 
 	setTeamDefaultById(rid, teamDefault, options = {}) {
@@ -283,7 +304,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.col.find({
 			teamId,
 			teamDefault: true,
-			t: 'c',
 			teamMain: {
 				$exists: false,
 			},

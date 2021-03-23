@@ -25,11 +25,15 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 		msgs: 1,
 		archived: 1,
 		tokenpass: 1,
+		teamId: 1,
+		teamMain: 1,
 	};
 
 	const name = filter && filter.trim();
 	const discussion = types && types.includes('discussions');
-	const showTypes = Array.isArray(types) ? types.filter((type) => type !== 'discussions') : [];
+	const includeTeams = types && types.includes('teams');
+	const typesToRemove = ['discussions', 'teams'];
+	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
 	const options = {
 		fields,
 		sort: sort || { default: -1, name: 1 },
@@ -37,12 +41,14 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 		limit: count,
 	};
 
-	let cursor = Rooms.findByNameContaining(name, discussion, options);
+	let cursor;
 
 	if (name && showTypes.length) {
-		cursor = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, options);
+		cursor = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, options);
 	} else if (showTypes.length) {
-		cursor = Rooms.findByTypes(showTypes, discussion, options);
+		cursor = Rooms.findByTypes(showTypes, discussion, includeTeams, options);
+	} else {
+		cursor = Rooms.findByNameContaining(name, discussion, includeTeams, options);
 	}
 
 	const total = await cursor.count();
@@ -94,6 +100,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 	const options = {
 		fields: {
 			_id: 1,
+			fname: 1,
 			name: 1,
 			t: 1,
 			avatarETag: 1,

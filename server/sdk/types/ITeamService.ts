@@ -1,3 +1,5 @@
+import { FindOneOptions } from 'mongodb';
+
 import { ITeam, IRecordsWithTotal, IPaginationOptions } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
 import { ICreateRoomParams } from './IRoomService';
@@ -33,14 +35,20 @@ export interface ITeamMemberInfo {
 	createdAt: Date;
 }
 
+export interface ITeamInfo extends ITeam {
+	rooms: number;
+}
+
 export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
 	addRoom(uid: string, rid: string, teamId: string, isDefault: boolean): Promise<IRoom>;
-	removeRoom(uid: string, rid: string, teamId: string): Promise<IRoom>;
+	addRooms(uid: string, rooms: Array<string>, teamId: string): Promise<Array<IRoom>>;
+	removeRoom(uid: string, rid: string, teamId: string, canRemoveAnyRoom: boolean): Promise<IRoom>;
 	listRooms(uid: string, teamId: string, getAllRooms: boolean, allowPrivateTeam: boolean, pagination: IPaginationOptions): Promise<IRecordsWithTotal<IRoom>>;
-	updateRoom(uid: string, rid: string, isDefault: boolean): Promise<IRoom>;
+	updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom: boolean): Promise<IRoom>;
 	list(uid: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
+	search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
 	members(uid: string, teamId: string, teamName: string, options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
 	addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, teamName: string, members: ITeamMemberParams): Promise<void>;

@@ -3,7 +3,7 @@ import { Promise } from 'meteor/promise';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Rooms } from '../../../models/server';
+import { Rooms, Subscriptions } from '../../../models/server';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
@@ -78,6 +78,20 @@ API.v1.addRoute('teams.addRoom', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('teams.addRooms', { authRequired: true }, {
+	post() {
+		const { rooms, teamId } = this.bodyParams;
+
+		if (!hasPermission(this.userId, 'add-team-channel')) {
+			return API.v1.unauthorized();
+		}
+
+		const validRooms = Promise.await(Team.addRooms(this.userId, rooms, teamId));
+
+		return API.v1.success({ rooms: validRooms });
+	},
+});
+
 API.v1.addRoute('teams.removeRoom', { authRequired: true }, {
 	post() {
 		const { roomId, teamId } = this.bodyParams;
@@ -86,7 +100,9 @@ API.v1.addRoute('teams.removeRoom', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const room = Promise.await(Team.removeRoom(this.userId, roomId, teamId));
+		const canRemoveAny = !!hasPermission(this.userId, 'view-all-team-channels');
+
+		const room = Promise.await(Team.removeRoom(this.userId, roomId, teamId, canRemoveAny));
 
 		return API.v1.success({ room });
 	},
@@ -99,8 +115,9 @@ API.v1.addRoute('teams.updateRoom', { authRequired: true }, {
 		if (!hasPermission(this.userId, 'edit-team-channel')) {
 			return API.v1.unauthorized();
 		}
+		const canUpdateAny = !!hasPermission(this.userId, 'view-all-team-channels');
 
-		const room = Promise.await(Team.updateRoom(this.userId, roomId, isDefault));
+		const room = Promise.await(Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny));
 
 		return API.v1.success({ room });
 	},
@@ -189,11 +206,15 @@ API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
 
 API.v1.addRoute('teams.leave', { authRequired: true }, {
 	post() {
-		const { teamId, teamName } = this.bodyParams;
+		const { teamId, teamName, rooms } = this.bodyParams;
 
 		Promise.await(Team.removeMembers(teamId, teamName, [{
 			userId: this.userId,
 		}]));
+
+		if (rooms?.length) {
+			Subscriptions.removeByRoomIdsAndUserId(rooms, this.userId);
+		}
 
 		return API.v1.success();
 	},
