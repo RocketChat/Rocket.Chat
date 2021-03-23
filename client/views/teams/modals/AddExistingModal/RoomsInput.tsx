@@ -8,7 +8,7 @@ import { useEndpointData } from '../../../../hooks/useEndpointData';
 
 type RoomsInputProps = {
 	value: IRoom[];
-	onChange: (value: unknown, action: 'remove' | undefined) => void;
+	onChange: (value: IRoom, action: 'remove' | undefined) => void;
 };
 
 // TODO: Make AutoComplete accept arbitrary kinds of values

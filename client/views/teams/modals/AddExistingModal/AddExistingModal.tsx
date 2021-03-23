@@ -9,8 +9,8 @@ import { IRoom } from '../../../../../definition/IRoom';
 
 type AddExistingModalState = {
 	onAdd: any;
-	channels: IRoom[];
-	onChangeChannels: any;
+	rooms: IRoom[];
+	onChange: (value: IRoom, action: 'remove' | undefined) => void;
 	hasUnsavedChanges: boolean;
 }
 
@@ -23,43 +23,43 @@ const useAddExistingModalState = (onClose: () => void, teamId: string): AddExist
 	const addRoomEndpoint = useEndpoint('POST', 'teams.addRooms');
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
-		channels: [] as IRoom[],
+		rooms: [] as IRoom[],
 	});
 
-	const { channels } = values as { channels: IRoom[] };
-	const { handleChannels } = handlers;
+	const { rooms } = values as { rooms: IRoom[] };
+	const { handleRooms } = handlers;
 
-	const onChangeChannels = useCallback((value: IRoom, action: string) => {
+	const onChange = useCallback<AddExistingModalState['onChange']>((value, action) => {
 		if (!action) {
-			if (channels.some((current: IRoom) => current._id === value._id)) {
+			if (rooms.some((current: IRoom) => current._id === value._id)) {
 				return;
 			}
 
-			handleChannels([...channels, value]);
+			handleRooms([...rooms, value]);
 
 			return;
 		}
 
-		handleChannels(channels.filter((current: any) => current._id !== value));
-	}, [handleChannels, channels]);
+		handleRooms(rooms.filter((current: any) => current._id !== value));
+	}, [handleRooms, rooms]);
 
 	const onAdd = useCallback(() => {
 		addRoomEndpoint({
-			rooms: channels.map((channel) => channel._id),
+			rooms: rooms.map((room) => room._id),
 			teamId,
 		});
 		onClose();
-	}, [addRoomEndpoint, channels, onClose, teamId]);
+	}, [addRoomEndpoint, rooms, onClose, teamId]);
 
-	return { onAdd, channels, onChangeChannels, hasUnsavedChanges };
+	return { onAdd, rooms, onChange, hasUnsavedChanges };
 };
 
 const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId }) => {
 	const t = useTranslation();
 	const {
-		channels,
+		rooms,
 		onAdd,
-		onChangeChannels,
+		onChange,
 		hasUnsavedChanges,
 	} = useAddExistingModalState(onClose, teamId);
 
@@ -73,7 +73,7 @@ const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId }) => {
 		<Modal.Content>
 			<Field mbe='x24'>
 				<Field.Label>{t('Channels')}</Field.Label>
-				<RoomsInput value={channels} onChange={onChangeChannels} />
+				<RoomsInput value={rooms} onChange={onChange} />
 			</Field>
 		</Modal.Content>
 		<Modal.Footer>
