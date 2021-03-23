@@ -347,7 +347,7 @@ describe('[Teams]', () => {
 		it('should return only public rooms for public team', (done) => {
 			updatePermission('view-all-team-channels', []).then(() => {
 				request.get(api('teams.listRooms'))
-					.set(credentials)
+					.set(testUserCredentials)
 					.query({
 						teamId: publicTeam._id,
 					})
@@ -365,9 +365,9 @@ describe('[Teams]', () => {
 		});
 
 		it('should return all rooms for public team', (done) => {
-			updatePermission('view-all-team-channels', ['admin']).then(() => {
+			updatePermission('view-all-team-channels', ['user']).then(() => {
 				request.get(api('teams.listRooms'))
-					.set(credentials)
+					.set(testUserCredentials)
 					.query({
 						teamId: publicTeam._id,
 					})
