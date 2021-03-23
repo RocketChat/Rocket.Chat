@@ -175,7 +175,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findByNameAndTeamIds(term, teamIds, options).toArray();
 	}
 
-	async list(uid: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { sort, query, fields }: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeamInfo>> {
+	async list(uid: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { sort, query }: IQueryOptions<ITeam> = { sort: {} }): Promise<IRecordsWithTotal<ITeamInfo>> {
 		const userTeams = await this.TeamMembersModel.findByUserId(uid, { projection: { teamId: 1 } }).toArray();
 
 		const teamIds = userTeams.map(({ teamId }) => teamId);
@@ -188,7 +188,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		const cursor = this.TeamModel.findByIds(teamIds, {
 			sort,
-			projection: fields,
 			limit: count,
 			skip: offset,
 		}, query);
