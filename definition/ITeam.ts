@@ -34,7 +34,7 @@ export interface IPaginationOptions {
 
 // TODO move this definition to a more broader file
 export interface IQueryOptions<T> {
-	sort: SortOptionObject<T>;
+	sort?: SortOptionObject<T>;
 	query?: FilterQuery<T>;
 	fields?: SchemaMember<T, number | boolean>;
 }
