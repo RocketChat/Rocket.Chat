@@ -283,7 +283,7 @@
 	},
 	"meteor": {
 		"mainModule": {
-			"client": "client/main.js",
+			"client": "client/main.ts",
 			"server": "server/main.js"
 		}
 	},
