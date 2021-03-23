@@ -30,6 +30,7 @@ const VirtualAction = React.memo(({ handleChange, room, action, id }: { id: stri
 	const config = typeof action === 'function' ? action({ room }) : action;
 
 	const group = getGroup(room);
+
 	const visible = config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
 
 	useLayoutEffect(() => {

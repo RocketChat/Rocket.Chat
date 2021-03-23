@@ -21,5 +21,5 @@ import './startup';
 import './views/admin';
 import './views/login';
 import './views/room/adapters';
-import './adapters';
 import './views/teams';
+import './adapters';

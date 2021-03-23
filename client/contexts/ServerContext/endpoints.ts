@@ -2,12 +2,14 @@ import { FollowMessageEndpoint as ChatFollowMessageEndpoint } from './endpoints/
 import { GetMessageEndpoint as ChatGetMessageEndpoint } from './endpoints/v1/chat/getMessage';
 import { UnfollowMessageEndpoint as ChatUnfollowMessageEndpoint } from './endpoints/v1/chat/unfollowMessage';
 import { AutocompleteEndpoint as UsersAutocompleteEndpoint } from './endpoints/v1/users/autocomplete';
+import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
 import { ListEndpoint as CustomUserStatusListEndpoint } from './endpoints/v1/custom-user-status/list';
 import { ExternalComponentsEndpoint as AppsExternalComponentsEndpoint } from './endpoints/apps/externalComponents';
 import { ManualRegisterEndpoint as CloudManualRegisterEndpoint } from './endpoints/v1/cloud/manualRegister';
 import { FilesEndpoint as GroupsFilesEndpoint } from './endpoints/v1/groups/files';
 import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
+import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
 import { FilesEndpoint as ChannelsFilesEndpoint } from './endpoints/v1/channels/files';
 import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-custom/list';
 import { GetDiscussionsEndpoint as ChatGetDiscussionsEndpoint } from './endpoints/v1/chat/getDiscussions';
@@ -28,6 +30,8 @@ export type ServerEndpoints = {
 	'livechat/appearance': LivechatAppearanceEndpoint;
 	'custom-user-status.list': CustomUserStatusListEndpoint;
 	'/apps/externalComponents': AppsExternalComponentsEndpoint;
+	'rooms.autocomplete.channelAndPrivate': RoomsAutocompleteEndpoint;
+	'teams.addRooms': TeamsAddRoomsEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;

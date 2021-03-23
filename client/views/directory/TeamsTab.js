@@ -91,7 +91,6 @@ function TeamsTable() {
 
 	return <GenericTable
 		header={header}
-		// renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Teams')} inputRef={refAutoFocus} onChange={onChange} {...props} />}
 		renderRow={renderRow}
 		results={data.teams}
 		setParams={setParams}
