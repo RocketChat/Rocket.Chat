@@ -15,9 +15,9 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 
 	const lastOwnerRooms = rooms.filter(({ isLastOwner }) => isLastOwner);
 
-	const onContinue = useMutableCallback(() => setStep(step + 1));
+	const onContinue = useCallback(() => setStep((step) => step + 1), []);
 
-	const onReturn = useMutableCallback(() => setStep(step - 1));
+	const onReturn = useCallback(() => setStep((step) => step - 1), []);
 
 	const onChangeRoomSelection = useCallback((room) => {
 		setSelectedRooms((selectedRooms) => {
@@ -29,10 +29,13 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 	}, []);
 
 	const onToggleAllRooms = useMutableCallback(() => {
-		if (Object.values(selectedRooms).filter(Boolean).length === 0) {
-			return setSelectedRooms(Object.fromEntries(rooms.filter(({ isLastOwner }) => !isLastOwner).map((room) => [room.rid, room])));
-		}
-		setSelectedRooms({});
+		setSelectedRooms((selectedRooms) => {
+			if (Object.values(selectedRooms).filter(Boolean).length === 0) {
+				return Object.fromEntries(rooms.filter(({ isLastOwner }) => !isLastOwner).map((room) => [room.rid, room]));
+			}
+
+			return {};
+		});
 	});
 
 	const onSelectRooms = useMutableCallback(() => {
