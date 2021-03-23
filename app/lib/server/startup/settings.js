@@ -2714,6 +2714,17 @@ settings.addGroup('Setup_Wizard', function() {
 	});
 
 	this.section('Cloud_Info', function() {
+		this.add('Nps_Url', 'https://nps.rocket.chat', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+			secret: true,
+		});
+
 		this.add('Cloud_Url', 'https://cloud.rocket.chat', {
 			type: 'string',
 			hidden: true,
