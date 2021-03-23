@@ -3732,7 +3732,7 @@
   "Team_Delete_Channel_modal_content_danger": "This can’t be undone.",
   "Team_Delete_Channel_modal_content": "Would you like to delete this Channel?",
   "Team_Info": "Team Info",
-  "Team_Remove_from_team_modal_content": "Would you like to remove this Channel from Design? The Channel will be moved back to the workspace.",
+  "Team_Remove_from_team_modal_content": "Would you like to remove this Channel from __teamName__? The Channel will be moved back to the workspace.",
   "Team_Remove_from_team": "Remove from team",
   "Team_what_is_this_team_about": "What is this team about",
   "Team": "Team",

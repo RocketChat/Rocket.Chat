@@ -7,6 +7,7 @@ import { useEndpoint } from '../../../contexts/ServerContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import ConfirmationModal from '../modals/ConfirmationModal';
+import { roomTypes } from '../../../../app/utils/client';
 
 export const useReactModal = (Component, props) => {
 	const setModal = useSetModal();
@@ -34,7 +35,7 @@ const RoomActions = ({ room }) => {
 			removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
 		},
 		labelButton: t('Remove'),
-		content: <Box is='span' size='14px'>{t('Team_Remove_from_team_modal_content')}</Box>,
+		content: <Box is='span' size='14px'>{t('Team_Remove_from_team_modal_content', { teamName: roomTypes.getRoomName(room.t, room) })}</Box>,
 	});
 
 	const DeleteChannelAction = useReactModal(ConfirmationModal, {

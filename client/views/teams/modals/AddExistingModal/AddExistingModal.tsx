@@ -4,12 +4,12 @@ import { ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
 import { useForm } from '../../../../hooks/useForm';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
-import ChannelsInput from './ChannelsInput';
+import RoomsInput from './RoomsInput';
 import { IRoom } from '../../../../../definition/IRoom';
 
-type ExistingModalState = {
+type AddExistingModalState = {
 	onAdd: any;
-	channels: any;
+	channels: IRoom[];
 	onChangeChannels: any;
 	hasUnsavedChanges: boolean;
 }
@@ -19,23 +19,27 @@ type AddExistingModalProps = {
 	teamId: string;
 };
 
-const useExistingModalState = (onClose: () => void, teamId: string): ExistingModalState => {
+const useAddExistingModalState = (onClose: () => void, teamId: string): AddExistingModalState => {
 	const addRoomEndpoint = useEndpoint('POST', 'teams.addRooms');
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
-		channels: [],
+		channels: [] as IRoom[],
 	});
 
-	const { channels } = values as {channels: IRoom[]};
+	const { channels } = values as { channels: IRoom[] };
 	const { handleChannels } = handlers;
 
-	const onChangeChannels = useCallback((value: any, action: string) => {
+	const onChangeChannels = useCallback((value: IRoom, action: string) => {
 		if (!action) {
-			if (channels.filter((current: any) => current._id === value._id).length > 0) {
+			if (channels.some((current: IRoom) => current._id === value._id)) {
 				return;
 			}
-			return handleChannels([...channels, value]);
+
+			handleChannels([...channels, value]);
+
+			return;
 		}
+
 		handleChannels(channels.filter((current: any) => current._id !== value));
 	}, [handleChannels, channels]);
 
@@ -52,7 +56,12 @@ const useExistingModalState = (onClose: () => void, teamId: string): ExistingMod
 
 const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId }) => {
 	const t = useTranslation();
-	const { onAdd, channels, onChangeChannels, hasUnsavedChanges } = useExistingModalState(onClose, teamId);
+	const {
+		channels,
+		onAdd,
+		onChangeChannels,
+		hasUnsavedChanges,
+	} = useAddExistingModalState(onClose, teamId);
 
 	const isAddButtonEnabled = hasUnsavedChanges;
 
@@ -64,7 +73,7 @@ const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId }) => {
 		<Modal.Content>
 			<Field mbe='x24'>
 				<Field.Label>{t('Channels')}</Field.Label>
-				<ChannelsInput value={channels} onChange={onChangeChannels} />
+				<RoomsInput value={channels} onChange={onChangeChannels} />
 			</Field>
 		</Modal.Content>
 		<Modal.Footer>
