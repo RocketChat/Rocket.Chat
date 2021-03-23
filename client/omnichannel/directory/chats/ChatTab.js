@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Table, Tag, Box } from '@rocket.chat/fuselage';
 import moment from 'moment';
@@ -22,7 +22,7 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLo
 	...current && { offset: current },
 }), [column, current, direction, itemsPerPage, userIdLoggedIn, text]);
 
-const ChatTable = () => {
+const ChatTable = ({ setChatReload }) => {
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['closedAt', 'desc']);
 	const t = useTranslation();
@@ -49,7 +49,11 @@ const ChatTable = () => {
 		id,
 	}));
 
-	const { value: data } = useEndpointData('livechat/rooms', query);
+	const { value: data, reload } = useEndpointData('livechat/rooms', query);
+
+	useEffect(() => {
+		setChatReload(() => reload);
+	}, [reload, setChatReload]);
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'fname'} direction={sort[1]} active={sort[0] === 'fname'} onClick={onHeaderClick} sort='fname' w='x400'>{t('Contact_Name')}</GenericTable.HeaderCell>,

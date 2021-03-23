@@ -27,6 +27,7 @@ const OmnichannelDirectoryPage = () => {
 	const handleTabClick = useCallback((tab) => () => directoryRoute.push({ tab }), [directoryRoute]);
 
 	const [contactReload, setContactReload] = useState();
+	const [chatReload, setChatReload] = useState();
 
 	const handleContactsVerticalBarCloseButtonClick = () => {
 		directoryRoute.push({});
@@ -65,11 +66,11 @@ const OmnichannelDirectoryPage = () => {
 				<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='info-circled' size='x20' /> {t('Room_Info')}</Box>
 				<VerticalBar.Action title={t('View_full_conversation')} name={'new-window'} onClick={openInRoom} />
 			</> }
-			{context === 'edit' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='pencil' size='x20' /> {t('Room_Edit')}</Box>}
+			{context === 'edit' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='pencil' size='x20' /> {t('edit-room')}</Box>}
 			<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
 		</VerticalBar.Header>
 		{context === 'info' && <ChatInfo id={id} />}
-		{context === 'edit' && <RoomEditWithData id={id} close={handleChatsVerticalBarCloseButtonClick} />}
+		{context === 'edit' && <RoomEditWithData id={id} close={handleChatsVerticalBarCloseButtonClick} reload={chatReload} />}
 	</VerticalBar>;
 
 	const ContextualBar = () => {
@@ -97,7 +98,7 @@ const OmnichannelDirectoryPage = () => {
 			<Page.Content>
 				{
 					(tab === 'contacts' && <ContactTab setContactReload={setContactReload} />)
-					|| (tab === 'chats' && <ChatTab />)
+					|| (tab === 'chats' && <ChatTab setChatReload={setChatReload} />)
 				}
 			</Page.Content>
 		</Page>
