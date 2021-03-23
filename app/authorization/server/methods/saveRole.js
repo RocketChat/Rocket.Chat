@@ -4,6 +4,7 @@ import { Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
+import { getRoles } from '../functions/getRoles';
 
 Meteor.methods({
 	'authorization:saveRole'(roleData) {
@@ -16,6 +17,13 @@ Meteor.methods({
 
 		if (!roleData.name) {
 			throw new Meteor.Error('error-role-name-required', 'Role name is required', {
+				method: 'authorization:saveRole',
+			});
+		}
+		const roles = getRoles();
+
+		if (roles.some((role) => role.name === roleData.name.toLowerCase())) {
+			throw new Meteor.Error('error-role-already-present', 'Role is already present', {
 				method: 'authorization:saveRole',
 			});
 		}
