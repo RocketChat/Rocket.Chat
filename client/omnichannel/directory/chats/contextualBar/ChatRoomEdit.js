@@ -53,8 +53,6 @@ const getInitialValuesRoom = (room) => {
 		return initialValuesRoom;
 	}
 
-	console.log(room);
-
 	const { topic, tags } = room;
 
 	return {
@@ -109,8 +107,6 @@ export function RoomEdit({ room, visitor, reload, close }) {
 	const { values, handlers } = useForm(getInitialValuesUser(visitor));
 	const { values: valuesRoom, handlers: handlersRoom } = useForm(getInitialValuesRoom(room));
 	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
-
-	console.log(valuesRoom);
 
 	const {
 		handleName,
