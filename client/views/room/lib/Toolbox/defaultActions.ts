@@ -23,10 +23,10 @@ addAction('user-info', {
 	order: 5,
 });
 
-addAction('contact-info', {
+addAction('contact-profile', {
 	groups: ['live'],
-	id: 'contact-info',
-	title: 'Contact_Info',
+	id: 'contact-profile',
+	title: 'Contact_Profile',
 	icon: 'user',
 	template: lazy(() => import('../../../../omnichannel/directory/contacts/contextualBar')),
 	order: 5,
