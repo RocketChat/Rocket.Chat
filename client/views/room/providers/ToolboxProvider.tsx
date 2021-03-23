@@ -18,13 +18,11 @@ const groupsDict = {
 };
 
 const getGroup = (room: IRoom): string => {
-	console.log(room);
-	return 'team';
-	// if (room.teamId) {
-	// 	return 'team';
-	// }
+	if (room.teamId) {
+		return 'team';
+	}
 
-	// return groupsDict[room.t];
+	return groupsDict[room.t];
 };
 
 

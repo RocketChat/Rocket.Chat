@@ -218,9 +218,13 @@ API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const { teamId, teamName, members } = this.bodyParams;
+		const { teamId, teamName, members, rooms } = this.bodyParams;
 
 		Promise.await(Team.removeMembers(teamId, teamName, members));
+
+		if (rooms?.length) {
+			Subscriptions.removeByRoomIdsAndUserId(rooms, this.userId);
+		}
 
 		return API.v1.success();
 	},

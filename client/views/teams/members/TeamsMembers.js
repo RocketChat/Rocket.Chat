@@ -11,12 +11,10 @@ import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext'
 import UserInfoWithData from '../../room/contextualBar/UserInfo';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { RoomMembers } from '../../room/contextualBar/RoomMembers/List/RoomMembers';
-import { useMethod } from '../../../contexts/ServerContext.ts';
+import { useMethod } from '../../../contexts/ServerContext';
 import { useDataWithLoadMore } from '../../room/contextualBar/hooks/useDataWithLoadMore';
-import { TeamsMembersItem } from './TeamsMembersItem';
-
-const AddUsers = () => 'test';
-const InviteUsers = () => 'test';
+import AddUsers from '../../room/contextualBar/RoomMembers/AddUsers';
+import InviteUsers from '../../room/contextualBar/RoomMembers/InviteUsers';
 
 const useGetUsersOfRoom = (params) => {
 	const method = useMethod('getUsersOfRoom');
@@ -29,6 +27,7 @@ export default ({
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
+
 	room.type = room.t;
 	room.rid = rid;
 
@@ -82,24 +81,6 @@ export default ({
 		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
 	}
 
-	const TeamsMembersRow = React.memo(({ user, data, index }) => {
-		const { onClickView, rid } = data;
-
-		if (!user) {
-			return <TeamsMembersItem.Skeleton />;
-		}
-
-		return <TeamsMembersItem
-			index={index}
-			username={user.username}
-			_id={user._id}
-			rid={rid}
-			status={user.status}
-			name={user.name}
-			onClickView={onClickView}
-		/>;
-	});
-
 	return (
 		<RoomMembers
 			rid={rid}
@@ -116,7 +97,6 @@ export default ({
 			onClickAdd={canAddUsers && addUser}
 			onClickInvite={canAddUsers && createInvite}
 			loadMoreItems={loadMoreItems}
-			renderRow={TeamsMembersRow}
 		/>
 	);
 };
