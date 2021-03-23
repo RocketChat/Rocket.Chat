@@ -1,6 +1,5 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-
 import { uploadFileWithMessage } from '../../../ui/client/lib/fileUpload';
 import { settings } from '../../../settings';
 import { AudioRecorder } from '../../../ui';
@@ -15,6 +14,13 @@ const stopRecording = () => new Promise((resolve) => AudioRecorder.stop(resolve)
 const recordingInterval = new ReactiveVar(null);
 const recordingRoomId = new ReactiveVar(null);
 
+//for different browser support
+navigator.getUserMedia =
+	navigator.getUserMedia ||
+	navigator.webkitGetUserMedia ||
+	navigator.mozGetUserMedia ||
+	navigator.msGetUserMedia;
+
 Template.messageBoxAudioMessage.onCreated(async function() {
 	this.state = new ReactiveVar(null);
 	this.time = new ReactiveVar('00:00');
@@ -22,7 +28,7 @@ Template.messageBoxAudioMessage.onCreated(async function() {
 
 	if (navigator.permissions) {
 		try {
-			const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+			const permissionStatus = await navigator.getUserMedia({ audio: true })
 			this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
 			permissionStatus.onchange = () => {
 				this.isMicrophoneDenied.set(permissionStatus.state === 'denied');
