@@ -18,6 +18,10 @@ export class TeamRaw extends BaseRaw<T> {
 		// ]);
 	}
 
+	findByNames(names: Array<string>, options?: FindOneOptions<T>): Cursor<T> {
+		return this.col.find({ name: { $in: names } }, options);
+	}
+
 	findByIds(ids: Array<string>, options?: FindOneOptions<T>): Cursor<T> {
 		return this.col.find({ _id: { $in: ids } }, options);
 	}
