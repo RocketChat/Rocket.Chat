@@ -73,6 +73,19 @@ export class LivechatInquiry extends Base {
 		});
 	}
 
+	/*
+	* mark inquiry as ready
+	*/
+	readyInquiry(inquiryId) {
+		return this.update({
+			_id: inquiryId,
+		}, {
+			$set: {
+				status: 'ready',
+			},
+		});
+	}
+
 	changeDepartmentIdByRoomId(rid, department) {
 		const query = {
 			rid,

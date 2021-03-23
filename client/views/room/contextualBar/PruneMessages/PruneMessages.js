@@ -152,7 +152,7 @@ export default ({
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
-	const { name } = room;
+	const { name, usernames } = room;
 
 	const setModal = useSetModal();
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
@@ -272,7 +272,7 @@ export default ({
 		} else {
 			setCallOutText(t('Prune_Warning_all', {
 				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, name],
+				sprintf: [filesOrMessages, name || usernames?.join(' x ')],
 			}) + exceptPinned + ifFrom);
 		}
 
@@ -290,7 +290,7 @@ export default ({
 		}
 
 		setValidateText();
-	}, [newerDate, olderDate, fromDate, toDate, attached, name, t, pinned, users]);
+	}, [newerDate, olderDate, fromDate, toDate, attached, name, t, pinned, users, usernames]);
 
 	return (
 		<PruneMessages
