@@ -1713,10 +1713,6 @@ settings.addGroup('Setup_Wizard', function() {
 			type: 'select',
 			values: [
 				{
-					key: 'worldwide',
-					i18nLabel: 'Worldwide',
-				},
-				{
 					key: 'afghanistan',
 					i18nLabel: 'Country_Afghanistan',
 				},
@@ -2671,6 +2667,10 @@ settings.addGroup('Setup_Wizard', function() {
 				{
 					key: 'zimbabwe',
 					i18nLabel: 'Country_Zimbabwe',
+				},
+				{
+					key: 'worldwide',
+					i18nLabel: 'Worldwide',
 				},
 			],
 			wizard: {
