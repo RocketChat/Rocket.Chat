@@ -106,7 +106,9 @@ export class TeamService extends ServiceClass implements ITeamService {
 			await this.TeamMembersModel.insertMany(membersList);
 
 			let roomId = room.id;
-			if (!roomId) {
+			if (roomId) {
+				await this.RoomsModel.setTeamMainById(roomId, teamId);
+			} else {
 				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
 				const newRoom = {

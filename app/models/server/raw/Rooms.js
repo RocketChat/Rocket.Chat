@@ -185,6 +185,10 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne({ _id: rid }, { $set: { teamId, teamDefault } }, options);
 	}
 
+	setTeamMainById(rid, teamId, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamId, teamMain: true } }, options);
+	}
+
 	setTeamByIds(rids, teamId, options = {}) {
 		return this.updateMany({ _id: { $in: rids } }, { $set: { teamId } }, options);
 	}
