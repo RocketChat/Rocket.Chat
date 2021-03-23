@@ -3,7 +3,7 @@ import { Promise } from 'meteor/promise';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Rooms } from '../../../models/server';
+import { Rooms, Subscriptions } from '../../../models/server';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
@@ -151,8 +151,9 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName } = this.queryParams;
+		const canSeeAllMembers = hasPermission(this.userId, 'view-all-teams');
 
-		const { records, total } = Promise.await(Team.members(this.userId, teamId, teamName, { offset, count }));
+		const { records, total } = Promise.await(Team.members(this.userId, teamId, teamName, canSeeAllMembers, { offset, count }));
 
 		return API.v1.success({
 			members: records,
@@ -207,11 +208,15 @@ API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
 
 API.v1.addRoute('teams.leave', { authRequired: true }, {
 	post() {
-		const { teamId, teamName } = this.bodyParams;
+		const { teamId, teamName, rooms } = this.bodyParams;
 
 		Promise.await(Team.removeMembers(teamId, teamName, [{
 			userId: this.userId,
 		}]));
+
+		if (rooms?.length) {
+			Subscriptions.removeByRoomIdsAndUserId(rooms, this.userId);
+		}
 
 		return API.v1.success();
 	},
