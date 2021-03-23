@@ -52,7 +52,7 @@ const GenericModal: FC<GenericModalProps> = ({
 
 	return <Modal {...props}>
 		<Modal.Header>
-			{icon === null && <Icon color={variant} name={icon ?? iconMap[variant]} size={24}/>}
+			{icon !== null && <Icon color={variant} name={icon ?? iconMap[variant]} size={24}/>}
 			<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
 			<Modal.Close onClick={onClose}/>
 		</Modal.Header>
