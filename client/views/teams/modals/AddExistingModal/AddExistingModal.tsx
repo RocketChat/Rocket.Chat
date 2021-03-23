@@ -1,5 +1,5 @@
 import React, { memo, FC, useCallback } from 'react';
-import { Box, ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
 
 import { useForm } from '../../../../hooks/useForm';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -63,7 +63,7 @@ const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId }) => {
 		</Modal.Header>
 		<Modal.Content>
 			<Field mbe='x24'>
-				<Field.Label>{t('Teams_New_Add_members_Label')} <Box is='span' color='neutral-600'>({t('optional')})</Box></Field.Label>
+				<Field.Label>{t('Channels')}</Field.Label>
 				<ChannelsInput value={channels} onChange={onChangeChannels} />
 			</Field>
 		</Modal.Content>
