@@ -8,8 +8,9 @@ import { Rooms, Subscriptions } from '../../../models/server';
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
+		const { sort, query } = this.parseJsonQuery();
 
-		const { records, total } = Promise.await(Team.list(this.userId, { offset, count }));
+		const { records, total } = Promise.await(Team.list(this.userId, { offset, count }, { sort, query }));
 
 		return API.v1.success({
 			teams: records,

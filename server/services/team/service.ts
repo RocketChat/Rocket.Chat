@@ -1,7 +1,7 @@
 import { Db, FindOneOptions } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
-import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions, ITeamStats } from '../../../definition/ITeam';
+import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamStats } from '../../../definition/ITeam';
 import { Room } from '../../sdk';
 import { ITeamCreateParams, ITeamInfo, ITeamMemberInfo, ITeamMemberParams, ITeamService } from '../../sdk/types/ITeamService';
 import { IUser } from '../../../definition/IUser';
@@ -175,7 +175,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findByNameAndTeamIds(term, teamIds, options).toArray();
 	}
 
-	async list(uid: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamInfo>> {
+	async list(uid: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { sort, query }: IQueryOptions<ITeam> = { sort: {} }): Promise<IRecordsWithTotal<ITeamInfo>> {
 		const userTeams = await this.TeamMembersModel.findByUserId(uid, { projection: { teamId: 1 } }).toArray();
 
 		const teamIds = userTeams.map(({ teamId }) => teamId);
@@ -187,9 +187,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		const cursor = this.TeamModel.findByIds(teamIds, {
+			sort,
 			limit: count,
 			skip: offset,
-		});
+		}, query);
 
 		const records = await cursor.toArray();
 		const results: ITeamInfo[] = [];
