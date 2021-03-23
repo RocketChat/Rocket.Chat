@@ -12,7 +12,6 @@ const StepOne = ({ onConfirm, onCancel }) => {
 		onConfirm={onConfirm}
 		onCancel={onCancel}
 		onClose={onCancel}
-		onClose={onCancel}
 	>
 		<Box withRichContent>{t('Teams_delete_team_warning')}</Box>
 	</GenericModal>;

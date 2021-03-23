@@ -30,7 +30,6 @@ const VirtualAction = React.memo(({ handleChange, room, action, id }: { id: stri
 	const config = typeof action === 'function' ? action({ room }) : action;
 
 	const group = getGroup(room);
-	console.log(group);
 	const visible = config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
 
 	useLayoutEffect(() => {
@@ -130,8 +129,6 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 		close,
 		openUserInfo,
 	}), [listen, list, activeTabBar, open, close, openUserInfo]);
-
-	console.log('contextValue', contextValue);
 
 	return <ToolboxContext.Provider value={contextValue}>
 		{ actions.filter(([, action]) => uid || (allowAnonymousRead && action.hasOwnProperty('anonymous') && (action as ToolboxActionConfig).anonymous)).map(([id, item]) => <VirtualAction action={item} room={room} id={id} key={id} handleChange={handleChange} />) }

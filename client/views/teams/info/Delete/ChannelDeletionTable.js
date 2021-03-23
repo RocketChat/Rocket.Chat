@@ -58,8 +58,9 @@ const ChannelDeletionTable = ({
 			fixed={false}
 			pagination={false}
 		>
-			{(room) => <ChannelRow
+			{({ key, ...room }) => <ChannelRow
 				room={room}
+				key={key}
 				onChange={onChangeRoomSelection}
 				selected={!!selectedRooms[room.rid]}
 			/>}
