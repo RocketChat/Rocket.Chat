@@ -6,6 +6,12 @@ type RoomType = 'c' | 'd' | 'p' | 'l';
 
 export type RoomID = string;
 export type ChannelName = string;
+interface IRequestTranscript {
+	email: string;
+	requestedAt: Date;
+	requestedBy: IUser;
+	subject: string;
+}
 
 export interface IRoom extends IRocketChatRecord {
 	_id: RoomID;
@@ -43,6 +49,16 @@ export interface IRoom extends IRocketChatRecord {
 	teamMain?: boolean;
 	teamId?: string;
 	teamDefault?: boolean;
+	v?: {
+		_id?: string;
+		token?: string;
+		status?: string;
+	};
+	transcriptRequest?: IRequestTranscript;
+	open?: boolean;
+	servedBy?: {
+		_id: string;
+	};
 	onHold?: boolean;
 }
 

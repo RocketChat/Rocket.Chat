@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Meteor } from 'meteor/meteor';
+import { Box } from '@rocket.chat/fuselage';
 
 import Header from '../../../components/Header';
 import Breadcrumbs from '../../../components/Breadcrumbs';
@@ -10,6 +11,7 @@ import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
 import ToolBox from './ToolBox';
+import QuickActions from './Omnichannel/QuickActions';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useLayout } from '../../../contexts/LayoutContext';
 import Burger from './Burger';
@@ -84,7 +86,7 @@ const DirectRoomHeader = ({ room }) => {
 const RoomHeader = ({ room, topic }) => {
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room}/>;
-
+	const showQuickActions = roomTypes.showQuickActionButtons(room.t);
 	return <Header>
 		{ isMobile && <Header.ToolBox>
 			<Burger/>
@@ -97,6 +99,9 @@ const RoomHeader = ({ room, topic }) => {
 				{(room.prid || room.teamId) && ((room.prid && <ParentRoom room={room} />) || (room.teamId && <ParentTeam room={room} />))}
 				<Encrypted room={room} />
 				<Translate room={room} />
+				{ showQuickActions && <Box mis='x20' display='flex'>
+					<QuickActions room={room}/>
+				</Box> }
 			</Header.Content.Row>
 			<Header.Content.Row>
 				<Header.Subtitle>{topic && <MarkdownText variant='inlineWithoutBreaks' content={topic}/>}</Header.Subtitle>
