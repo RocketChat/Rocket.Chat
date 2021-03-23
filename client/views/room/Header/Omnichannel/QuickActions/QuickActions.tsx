@@ -1,7 +1,6 @@
 import React, { memo, useContext, useCallback, useState, useEffect, useMemo } from 'react';
 import { BoxProps, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import toastr from 'toastr';
@@ -21,7 +20,7 @@ import { IRoom } from '../../../../../../definition/IRoom';
 import { useAtLeastOnePermission, usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
 import { useUserId } from '../../../../../contexts/UserContext';
 import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
-import { useEndpoint } from '../../../../../contexts/ServerContext';
+import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
 
 
 const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['className'] }): JSX.Element => {
@@ -50,43 +49,59 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const moveChat = (): void => Meteor.call('livechat:returnAsInquiry', rid, function(error: any) {
-		closeModal();
-		if (error) {
-			return handleError(error);
+	const methodReturn = useMethod('livechat:returnAsInquiry');
+
+	const handleMoveChat = useCallback(async () => {
+		try {
+			await methodReturn(rid);
+			closeModal();
+			Session.set('openedRoom', null);
+			FlowRouter.go('/home');
+		} catch (error) {
+			handleError(error);
 		}
+	}, [closeModal, methodReturn, rid]);
 
-		Session.set('openedRoom', null);
-		FlowRouter.go('/home');
-	});
+	const requestTranscript = useMethod('livechat:requestTranscript');
 
-	const requestTranscript = (email: string, subject: string): void => Meteor.call('livechat:requestTranscript', rid, email, subject, (err: any) => {
-		closeModal();
-		if (err != null) {
-			return handleError(err);
+	const handleRequestTranscript = useCallback(async (email: string, subject: string) => {
+		try {
+			await requestTranscript(rid, email, subject);
+			closeModal();
+			Session.set('openedRoom', null);
+			FlowRouter.go('/home');
+			toastr.success(t('Livechat_transcript_has_been_requested'));
+		} catch (error) {
+			handleError(error);
 		}
-		toastr.success(t('Livechat_transcript_has_been_requested'));
-		Session.set('openedRoom', null);
-	});
+	}, [closeModal, requestTranscript, rid, t]);
 
-	const sendTranscript = (email: string, subject: string, token: string): void => Meteor.call('livechat:sendTranscript', token, rid, email, subject, (err: any) => {
-		closeModal();
-		if (err != null) {
-			return handleError(err);
+	const sendTranscript = useMethod('livechat:sendTranscript');
+
+	const handleSendTranscript = useCallback(async (email: string, subject: string, token: string) => {
+		try {
+			await sendTranscript(token, rid, email, subject);
+			closeModal();
+		} catch (error) {
+			handleError(error);
 		}
+	}, [closeModal, rid, sendTranscript]);
 
-		toastr.success(t('Your_email_has_been_queued_for_sending'));
-	});
+	const discardTranscript = useMethod('livechat:discardTranscript');
 
-	const discardTranscript = (): void => Meteor.call('livechat:discardTranscript', rid, (error: any) => {
-		closeModal();
-		if (error != null) {
-			return handleError(error);
+	const handleDiscardTranscript = useCallback(async () => {
+		try {
+			await discardTranscript(rid);
+			toastr.success(t('Livechat_transcript_request_has_been_canceled'));
+			closeModal();
+		} catch (error) {
+			handleError(error);
 		}
-		toastr.success(t('Livechat_transcript_request_has_been_canceled'));
-	});
+	}, [closeModal, discardTranscript, rid, t]);
 
-	const forwardChat = (departmentId?: string, userId?: string, comment?: string): void => {
+	const forwardChat = useMethod('livechat:transfer');
+
+	const handleForwardChat = useCallback(async (departmentId?: string, userId?: string, comment?: string) => {
 		if (departmentId && userId) {
 			return;
 		}
@@ -95,45 +110,45 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 			comment,
 		};
 
-
 		if (departmentId) { transferData.departmentId = departmentId; }
 		if (userId) { transferData.userId = userId; }
 
-		Meteor.call('livechat:transfer', transferData, (error: any, result: any) => {
-			if (error) {
-				toastr.error(t(error.error));
-			} else if (result) {
-				closeModal();
-				toastr.success(t('Transferred'));
-				FlowRouter.go('/');
-			} else {
-				toastr.warning(t('No_available_agents_to_transfer'));
-			}
-		});
-	};
-
-	const confirmClose = (comment: string): void => Meteor.call('livechat:closeRoom', rid, comment, { clientAction: true }, (error: any) => {
-		closeModal();
-		if (error) {
-			return handleError(error);
+		try {
+			await forwardChat(transferData);
+			closeModal();
+			toastr.success(t('Transferred'));
+			FlowRouter.go('/');
+		} catch (error) {
+			handleError(error);
 		}
+	}, [closeModal, forwardChat, rid, t]);
 
-		toastr.success(t('Chat_closed_successfully'));
-	});
+	const closeChat = useMethod('livechat:closeRoom');
+
+	const handleClose = useCallback(async (comment: string) => {
+		try {
+			await closeChat(rid, comment, { clientAction: true });
+			closeModal();
+			toastr.success(t('Chat_closed_successfully'));
+		}
+		catch (error) {
+			handleError(error);
+		}
+	}, [closeChat, closeModal, rid, t]);
 
 	const openModal = useMutableCallback((id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				setModal(<ReturnChatQueueModal onMoveChat={moveChat} onCancel={closeModal} />);
+				setModal(<ReturnChatQueueModal onMoveChat={handleMoveChat} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.Transcript:
-				setModal(<TranscriptModal room={room} email={email} onRequest={requestTranscript} onSend={sendTranscript} onDiscard={discardTranscript} onCancel={closeModal} />);
+				setModal(<TranscriptModal room={room} email={email} onRequest={handleRequestTranscript} onSend={handleSendTranscript} onDiscard={handleDiscardTranscript} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.ChatForward:
-				setModal(<ForwardChatModal onForward={forwardChat} onCancel={closeModal} />);
+				setModal(<ForwardChatModal onForward={handleForwardChat} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.CloseChat:
-				setModal(<CloseChatModal onConfirm={confirmClose} onCancel={closeModal} />);
+				setModal(<CloseChatModal onConfirm={handleClose} onCancel={closeModal} />);
 				break;
 			default:
 				break;
