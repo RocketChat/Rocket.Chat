@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Rooms, Messages, Subscriptions } from '../../../models';
 import { callbacks } from '../../../callbacks';
+import { api } from '../../../../server/sdk/api';
 
 export const removeUserFromRoom = function(rid, user, options = {}) {
 	const room = Rooms.findOneById(rid);
@@ -27,7 +28,15 @@ export const removeUserFromRoom = function(rid, user, options = {}) {
 		}
 
 		Subscriptions.removeByRoomIdAndUserId(rid, user._id);
-
+		api.broadcast('user.roleUpdate', {
+			type: 'kicked',
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			scope: room._id,
+		});
 		Meteor.defer(function() {
 			// TODO: CACHE: maybe a queue?
 			callbacks.run('afterLeaveRoom', user, room);

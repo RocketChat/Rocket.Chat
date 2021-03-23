@@ -5,6 +5,7 @@ import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../
 import { Users, Subscriptions, Rooms, Messages } from '../../app/models';
 import { callbacks } from '../../app/callbacks';
 import { roomTypes, RoomMemberActions } from '../../app/utils/server';
+import { api } from '../sdk/api';
 
 Meteor.methods({
 	removeUserFromRoom(data) {
@@ -74,7 +75,15 @@ Meteor.methods({
 		Meteor.defer(function() {
 			callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 		});
-
+		api.broadcast('user.roleUpdate', {
+			type: 'kicked',
+			u: {
+				_id: removedUser._id,
+				username: removedUser.username,
+				name: removedUser.name,
+			},
+			scope: room._id,
+		});
 		return true;
 	},
 });
