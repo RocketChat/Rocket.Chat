@@ -103,7 +103,7 @@ const parseNotEscaped = (message, {
 		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
 		title = title.replace(/&amp;/g, '&');
 
-		const escapedUrl = /\%/i.test(url) ? url : encodeURI(url);
+		const escapedUrl = encodeURI(decodeURI(url));
 
 
 		return addAsToken(message, `<a href="${ escapedUrl }" target="${ target }" rel="noopener noreferrer">${ title }</a>`);
