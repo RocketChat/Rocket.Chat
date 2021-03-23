@@ -687,7 +687,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
 		const subscriptions = await this.SubscriptionsModel.find({ 'u._id': uid }, { projection: { rid: 1 } }).toArray();
-		console.log(subscriptions);
 		const subscriptionIds = subscriptions.map(({ rid }) => rid);
 
 		const rooms = await this.RoomsModel.find({
