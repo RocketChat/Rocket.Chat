@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ActionButton, Box, Icon, Menu, Option } from '@rocket.chat/fuselage';
+import React, { useMemo, useState } from 'react';
+import { ActionButton, Box, CheckBox, Icon, Menu, Option } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -23,14 +23,11 @@ export const useReactModal = (Component, props) => {
 	});
 };
 
-const useRoomActions = (room) => {
+const RoomActions = ({ room }) => {
 	const t = useTranslation();
+	const updateRoomEndpoint = useEndpoint('POST', 'teams.updateRoom');
 	const removeRoomEndpoint = useEndpoint('POST', 'teams.removeRoom');
 	const deleteRoomEndpoint = useEndpoint('POST', room.t === 'c' ? 'channels.delete' : 'groups.delete');
-
-	const AutoJoinAtion = () => {
-		// TODO
-	};
 
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {
 		onConfirmAction: () => {
@@ -51,13 +48,20 @@ const useRoomActions = (room) => {
 		</>,
 	});
 
-	return [
-		{
+	const menuOptions = useMemo(() => {
+		const AutoJoinAction = () => {
+			updateRoomEndpoint({
+				roomId: room._id,
+				isDefault: !room.teamDefault,
+			});
+		};
+
+		return [{
 			label: {
 				label: t('Team_Auto-join'),
 				icon: room.t === 'c' ? 'hash' : 'hashtag-lock',
 			},
-			action: AutoJoinAtion,
+			action: AutoJoinAction,
 		},
 		{
 			label: {
@@ -72,18 +76,17 @@ const useRoomActions = (room) => {
 				icon: 'trash',
 			},
 			action: DeleteChannelAction,
-		},
-	];
-};
-
-const RoomActions = ({ room }) => {
-	const menuOptions = useRoomActions(room);
+		}];
+	}, [DeleteChannelAction, RemoveFromTeamAction, room._id, room.t, room.teamDefault, t, updateRoomEndpoint]);
 
 	return <Menu
 		flexShrink={0}
 		key='menu'
 		tiny
-		renderItem={({ label: { label, icon }, ...props }) => (icon.match(/hash/) ? <Option {...props} label={label} icon={icon} /> : <Box color='danger-600'><Option {...props} label={label} icon={icon} /></Box>)}
+		renderItem={({ label: { label, icon }, ...props }) =>
+			(icon.match(/hash/)
+				? <Option {...props} label={label} icon={icon}><CheckBox checked={room.teamDefault} /></Option>
+				: <Box color='danger-600'><Option {...props} label={label} icon={icon} /></Box>)}
 		options={menuOptions}
 	/>;
 };
