@@ -23,6 +23,15 @@ addAction('user-info', {
 	order: 5,
 });
 
+addAction('contact-profile', {
+	groups: ['live'],
+	id: 'contact-profile',
+	title: 'Contact_Profile',
+	icon: 'user',
+	template: lazy(() => import('../../../../omnichannel/directory/contacts/contextualBar')),
+	order: 5,
+});
+
 addAction('user-info-group', {
 	groups: ['direct_multiple'],
 	id: 'user-info-group',

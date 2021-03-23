@@ -89,7 +89,7 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 	const openUserInfo = useCallback((username) => {
 		switch (room.t) {
 			case 'l':
-				open('visitor-info', username);
+				open('room-info', username);
 				break;
 			case 'd':
 				open('user-info', username);

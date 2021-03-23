@@ -2007,9 +2007,6 @@
 
 		& .title {
 			position: absolute;
-			left: 5px;
-
-			width: 60px;
 
 			text-align: right;
 			justify-content: flex-end;
@@ -2040,6 +2037,11 @@
 
 				margin-left: 1px;
 			}
+		}
+
+		&:not(.message--ignored) .title {
+			left: 5px;
+			width: 60px;
 		}
 
 		&:hover .edited {
