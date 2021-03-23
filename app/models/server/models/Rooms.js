@@ -808,6 +808,22 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	incUsersCountByIds(ids, inc = 1) {
+		const query = {
+			_id: {
+				$in: ids,
+			},
+		};
+
+		const update = {
+			$inc: {
+				usersCount: inc,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	incUsersCountNotDMsByIds(ids, inc = 1) {
 		const query = {
 			_id: {
