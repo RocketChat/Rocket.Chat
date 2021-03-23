@@ -19,7 +19,9 @@ import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManag
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import MarkdownText from '../../../../../components/MarkdownText';
+import ChannelToTeamModal from '../../../../teams/ChannelToTeamModal/ChannelToTeamModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -60,6 +62,7 @@ export const RoomInfo = function RoomInfo({
 	onClickLeave,
 	onClickEdit,
 	onClickDelete,
+	onClickMoveToTeam,
 }) {
 	const t = useTranslation();
 
@@ -135,6 +138,9 @@ export const RoomInfo = function RoomInfo({
 						{ onClickDelete && <Button width='50%' onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Delete')}</Button>}
 					</ButtonGroup>
 				</>}
+				<ButtonGroup stretch>
+					{ onClickHide && <Button width='50%' onClick={onClickMoveToTeam}><Box is='span' mie='x4'><Icon name='team' size='x20' /></Box>{t('Move to Team')}</Button> }
+				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>
 	);
@@ -171,6 +177,8 @@ export default ({
 	const hideRoom = useMethod('hideRoom');
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
+
+	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRoom', t('Success'));
 
 	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
 
@@ -239,6 +247,25 @@ export default ({
 		/>);
 	});
 
+	const onMoveToTeam = useMutableCallback(async () => {
+		const onConfirm = async (teamId) => {
+			try {
+				await moveChannelToTeam({ roomId: rid, teamId });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				closeModal();
+			}
+		};
+
+		setModal(<ChannelToTeamModal
+			rid={rid}
+			onClose={closeModal}
+			onCancel={closeModal}
+			onConfirm={onConfirm}
+		/>);
+	});
+
 	return (
 		<RoomInfo
 			archived={archived}
@@ -250,6 +277,7 @@ export default ({
 			onClickDelete={canDelete && handleDelete}
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}
+			onClickMoveToTeam={onMoveToTeam}
 			{...room}
 			announcement={room.announcement && <MarkdownText content={room.announcement}/>}
 			description={room.description && <MarkdownText content={room.description}/>}
