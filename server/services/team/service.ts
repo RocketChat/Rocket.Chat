@@ -411,6 +411,31 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
+	async listRoomsOfUser(uid: string, teamId: string, userId: string, allowPrivateTeam: boolean, { offset: skip, count: limit }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<IRoom>> {
+		if (!teamId) {
+			throw new Error('missing-teamId');
+		}
+		const team = await this.TeamModel.findOneById(teamId, {});
+		if (!team) {
+			throw new Error('invalid-team');
+		}
+		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
+		if (team.type === TEAM_TYPE.PRIVATE && !allowPrivateTeam && !isMember) {
+			throw new Error('user-not-on-private-team');
+		}
+
+		const teamRooms = await this.RoomsModel.findByTeamId(teamId, { projection: { _id: 1, t: 1 } }).toArray();
+		const teamRoomIds = teamRooms.filter((room) => room.t === 'p' || room.t === 'c').map((room) => room._id);
+
+		const subscriptionsCursor = this.SubscriptionsModel.findByUserIdAndRoomIds(userId, teamRoomIds);
+		const subscriptionRoomIds = (await subscriptionsCursor.toArray()).map((subscription) => subscription.rid);
+		const availableRoomsCursor = this.RoomsModel.findManyByRoomIds(subscriptionRoomIds, { skip, limit });
+		return {
+			total: await availableRoomsCursor.count(),
+			records: await availableRoomsCursor.toArray(),
+		};
+	}
+
 	async getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>> {
 		if (!teamId) {
 			throw new Error('missing-teamId');

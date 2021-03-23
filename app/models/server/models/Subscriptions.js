@@ -446,8 +446,8 @@ export class Subscriptions extends Base {
 
 		return userSubs.map((sub) => {
 			const roomSub = rooms.find((r) => r._id === sub.rid);
-			sub.teamMain = roomSub.teamMain || false;
-			sub.teamId = roomSub.teamId || undefined;
+			sub.teamMain = roomSub?.teamMain || false;
+			sub.teamId = roomSub?.teamId || undefined;
 			return sub;
 		});
 	}
@@ -1270,6 +1270,18 @@ export class Subscriptions extends Base {
 		const result = this.remove({ rid: { $in: rids } });
 
 		Users.removeRoomByRoomIds(rids);
+
+		return result;
+	}
+
+	removeByRoomIdsAndUserId(rids, userId) {
+		const result = this.remove({ rid: { $in: rids }, 'u._id': userId });
+
+		if (Match.test(result, Number) && result > 0) {
+			Rooms.incUsersCountByIds(rids, -1);
+		}
+
+		Users.removeRoomsByRoomIdsAndUserId(rids, userId);
 
 		return result;
 	}

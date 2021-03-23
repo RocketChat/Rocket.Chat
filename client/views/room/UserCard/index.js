@@ -8,7 +8,8 @@ import UserCard from '../../../components/UserCard';
 import { Backdrop } from '../../../components/Backdrop';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { LocalTime } from '../../../components/UTCClock';
-import { useUserInfoActions, useUserInfoActionsSpread } from '../hooks/useUserInfoActions';
+import { useUserInfoActions } from '../hooks/useUserInfoActions';
+import { useActionSpread } from '../../hooks/useActionSpread';
 import { useRolesDescription } from '../../../contexts/AuthorizationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -69,7 +70,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 		onClose && onClose();
 	});
 
-	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions(user, rid));
+	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(useUserInfoActions(user, rid));
 
 	const menu = useMemo(() => {
 		if (!menuOptions) {

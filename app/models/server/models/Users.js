@@ -443,6 +443,15 @@ export class Users extends Base {
 		}, { multi: true });
 	}
 
+	removeRoomsByRoomIdsAndUserId(rids, userId) {
+		return this.update({
+			_id: userId,
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
+	}
+
 	update2FABackupCodesByUserId(userId, backupCodes) {
 		return this.update({
 			_id: userId,

@@ -18,15 +18,13 @@ const groupsDict = {
 };
 
 const getGroup = (room: IRoom): string => {
-	console.log(room.t);
+	if (room.teamMain) {
+		return 'team';
+	}
 
-	return 'team';
-	// if (room.teamMain) {
-	// 	return 'team';
-	// }
-
-	// return groupsDict[room.t];
+	return groupsDict[room.t];
 };
+
 
 const VirtualAction = React.memo(({ handleChange, room, action, id }: { id: string; action: ToolboxAction; room: IRoom; handleChange: Function}): null => {
 	const config = typeof action === 'function' ? action({ room }) : action;

@@ -23,3 +23,4 @@ import './views/login';
 import './views/room/adapters';
 import './views/teams';
 import './adapters';
+import './views/teams';
