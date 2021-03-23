@@ -21,7 +21,7 @@ export type AttachmentPropsBase = {
 const Row: FC<BoxProps> = (props) => <Box mi='neg-x2' mbe='x2' rcx-message-attachment display='flex' alignItems='center' {...props}/>;
 
 const Title: FC<BoxProps> = (props) => <Box withTruncatedText mi='x2' fontScale='c1' color='hint' {...props}></Box>;
-const TitleLink: FC<{ link: string; title?: string }> = ({ link, title }) => <Title is='a' href={`${ link }?donwload`} color={undefined} target='_blank' download={title} rel='noopener noreferrer'>{title}</Title>;
+const TitleLink: FC<{ link: string; title?: string }> = ({ link, title }) => <Title is='a' href={`${ link }?download`} color={undefined} target='_blank' download={title} rel='noopener noreferrer'>{title}</Title>;
 const Text: FC<BoxProps> = (props) => <Box mbe='x4' mi='x2' fontScale='p1' color='default' {...props}></Box>;
 
 const Size: FC<BoxProps & { size: number }> = ({ size, ...props }) => {
