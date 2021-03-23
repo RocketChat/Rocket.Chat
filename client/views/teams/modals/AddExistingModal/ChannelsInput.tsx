@@ -39,7 +39,7 @@ const useChannelsAutoComplete = (name: string): AutoCompleteProps['options'] => 
 
 		return data.items.map((room: IRoom) => ({
 			label: room.fname ?? room.name,
-			value: room ?? '',
+			value: room,
 		})) || [];
 	}, [data]);
 };
@@ -70,6 +70,7 @@ const ChannelsInput: FC<ChannelsInputProps> = ({ onChange, ...props }) => {
 
 	return <AutoComplete
 		{...props}
+		getValue={({ value: room }): IRoom['_id'] => (room as IRoom)._id}
 		filter={filter}
 		options={options}
 		renderSelected={renderSelected}
