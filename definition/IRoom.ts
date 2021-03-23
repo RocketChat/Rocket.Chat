@@ -54,6 +54,7 @@ export interface IRoom extends IRocketChatRecord {
 	servedBy?: {
 		_id: string;
 	};
+	onHold?: boolean;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
