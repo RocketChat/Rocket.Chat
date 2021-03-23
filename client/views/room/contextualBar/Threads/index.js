@@ -118,14 +118,14 @@ export function withData(WrappedComponent) {
 	};
 }
 
-const handleFollowButton = (e) => {
+const handleFollowButton = (e, mid) => {
 	e.preventDefault();
 	e.stopPropagation();
 	call(
 		![true, 'true'].includes(e.currentTarget.dataset.following)
 			? 'followMessage'
 			: 'unfollowMessage',
-		{ mid: e.currentTarget.dataset.id },
+		{ mid },
 	);
 };
 
@@ -181,7 +181,8 @@ const Row = memo(function Row({
 		msg={msg}
 		t={t}
 		formatDate={formatDate}
-		handleFollowButton={handleFollowButton} onClick={onClick}
+		handleFollowButton={(e) => handleFollowButton(e, thread._id)}
+		onClick={onClick}
 	/>;
 });
 
@@ -295,7 +296,7 @@ export function ThreadList({
 				/>}
 			</Box>
 		</VerticalBar.Content>
-		{ mid && <VerticalBar.InnerContent><ThreadComponent mid={mid} jump={jump} room={room}/></VerticalBar.InnerContent> }
+		{ mid && <VerticalBar.InnerContent><ThreadComponent onClickBack={onClick} mid={mid} jump={jump} room={room}/></VerticalBar.InnerContent> }
 	</>;
 }
 

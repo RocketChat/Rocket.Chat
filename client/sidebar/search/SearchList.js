@@ -177,7 +177,7 @@ const ScrollerWithCustomProps = forwardRef((props, ref) => <ScrollableContentWra
 	ref={ref}
 	renderView={
 		({ style, ...props }) => (
-			<div {...props} className='teste' style={{ ...style, overflowX: 'hidden' }} />
+			<div {...props} style={{ ...style }} />
 		)
 	}
 	renderTrackHorizontal={(props) => <div {...props} style={{ display: 'none' }} className='track-horizontal'/>}
