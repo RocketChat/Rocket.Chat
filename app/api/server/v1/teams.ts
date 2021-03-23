@@ -146,6 +146,28 @@ API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('teams.listRoomsOfUser', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { teamId, userId } = this.queryParams;
+
+		const allowPrivateTeam = hasPermission(this.userId, 'view-all-teams');
+
+		if (!hasPermission(this.userId, 'view-all-team-channels')) {
+			return API.v1.unauthorized();
+		}
+
+		const { records, total } = Promise.await(Team.listRoomsOfUser(this.userId, teamId, userId, allowPrivateTeam, { offset, count }));
+
+		return API.v1.success({
+			rooms: records,
+			total,
+			count: records.length,
+			offset: 0,
+		});
+	},
+});
+
 API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
@@ -196,9 +218,13 @@ API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const { teamId, teamName, members } = this.bodyParams;
+		const { teamId, teamName, members, rooms } = this.bodyParams;
 
 		Promise.await(Team.removeMembers(teamId, teamName, members));
+
+		if (rooms?.length) {
+			Subscriptions.removeByRoomIdsAndUserId(rooms, this.userId);
+		}
 
 		return API.v1.success();
 	},

@@ -69,7 +69,7 @@ const ChannelDesertionTable = ({
 				room={room}
 				key={key}
 				onChange={onChangeRoomSelection}
-				selected={!!selectedRooms[room.rid]}
+				selected={!!selectedRooms[room._id]}
 				lastOwnerWarning={lastOwnerWarning}
 			/>}
 		</GenericTable>
