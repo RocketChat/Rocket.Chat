@@ -9,6 +9,7 @@ import { canAccessRoom } from './canAccessRoom';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
+import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';
@@ -16,6 +17,7 @@ import './canAccessRoomTokenpass';
 export let Subscriptions: SubscriptionsRaw;
 export let Settings: SettingsRaw;
 export let Rooms: RoomsRaw;
+export let TeamMembers: TeamMemberRaw;
 
 // Register as class
 export class Authorization extends ServiceClass implements IAuthorization {
@@ -38,6 +40,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
 		Settings = new SettingsRaw(db.collection('rocketchat_settings'));
 		Rooms = new RoomsRaw(db.collection('rocketchat_room'));
+		TeamMembers = new TeamMemberRaw(db.collection('rocketchat_team_member'));
 
 		const clearCache = (): void => {
 			mem.clear(this.getRolesCached);

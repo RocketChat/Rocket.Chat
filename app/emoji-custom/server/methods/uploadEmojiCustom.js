@@ -15,7 +15,7 @@ Meteor.methods({
 		emojiData.name = limax(emojiData.name, { replacement: '_' });
 		// delete aliases for notification purposes. here, it is a string rather than an array
 		delete emojiData.aliases;
-		const file = new Buffer(binaryContent, 'binary');
+		const file = Buffer.from(binaryContent, 'binary');
 
 		const rs = RocketChatFile.bufferToStream(file);
 		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
