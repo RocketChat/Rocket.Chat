@@ -18,7 +18,7 @@ const groupsDict = {
 };
 
 const getGroup = (room: IRoom): string => {
-	if (room.teamId) {
+	if (room.teamMain) {
 		return 'team';
 	}
 
