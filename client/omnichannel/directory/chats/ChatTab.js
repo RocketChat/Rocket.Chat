@@ -1,16 +1,16 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Table, Tag, Box } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointData } from '../../hooks/useEndpointData';
-import GenericTable from '../../components/GenericTable';
-import FilterByText from '../../components/FilterByText';
-import { usePermission } from '../../contexts/AuthorizationContext';
-import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import GenericTable from '../../../components/GenericTable';
+import FilterByText from '../../../components/FilterByText';
+import { usePermission } from '../../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import { useRoute } from '../../../contexts/RouterContext';
 
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLoggedIn) => useMemo(() => ({
@@ -22,7 +22,7 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLo
 	...current && { offset: current },
 }), [column, current, direction, itemsPerPage, userIdLoggedIn, text]);
 
-const ChatTable = () => {
+const ChatTable = ({ setChatReload }) => {
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['closedAt', 'desc']);
 	const t = useTranslation();
@@ -30,6 +30,8 @@ const ChatTable = () => {
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const userIdLoggedIn = Meteor.userId();
 	const query = useQuery(debouncedParams, debouncedSort, userIdLoggedIn);
+	const directoryRoute = useRoute('omnichannel-directory');
+
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -41,11 +43,17 @@ const ChatTable = () => {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((_id) => {
-		FlowRouter.go('live', { id: _id });
-	});
+	const onRowClick = useMutableCallback((id) => directoryRoute.push({
+		tab: 'chats',
+		context: 'info',
+		id,
+	}));
 
-	const { value: data } = useEndpointData('livechat/rooms', query);
+	const { value: data, reload } = useEndpointData('livechat/rooms', query);
+
+	useEffect(() => {
+		setChatReload(() => reload);
+	}, [reload, setChatReload]);
 
 	const header = useMemo(() => [
 		<GenericTable.HeaderCell key={'fname'} direction={sort[1]} active={sort[0] === 'fname'} onClick={onHeaderClick} sort='fname' w='x400'>{t('Contact_Name')}</GenericTable.HeaderCell>,
@@ -58,7 +66,7 @@ const ChatTable = () => {
 	const renderRow = useCallback(({ _id, fname, ts, closedAt, department, tags }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
 		<Table.Cell withTruncatedText>
 			<Box display='flex' flexDirection='column'>
-				<Box color='default' withTruncatedText>{fname}</Box>
+				<Box withTruncatedText>{fname}</Box>
 				{tags && <Box color='hint' display='flex' flex-direction='row'>
 					{tags.map((tag) => (
 						<Box style={{ marginTop: 4, whiteSpace: 'nowrap', overflow: tag.length > 10 ? 'hidden' : 'visible', textOverflow: 'ellipsis' }} key={tag} mie='x4'>
