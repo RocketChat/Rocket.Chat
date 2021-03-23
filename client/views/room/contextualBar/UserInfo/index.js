@@ -64,7 +64,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 		<Margins block='x4'>
 			<UserCard.Username name={(showRealNames && name) || username || name} status={status} />
-			<Info>{customStatus}</Info>
+			<Info withTruncatedText={false}>{customStatus}</Info>
 
 			{!!roles && <>
 				<Label>{t('Roles')}</Label>
@@ -96,7 +96,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{bio && <>
 				<Label>{t('Bio')}</Label>
-				<Info withTruncatedText={false}><MarkdownText content={bio}/></Info>
+				<Info withTruncatedText={false}><MarkdownText variant='inline' content={bio}/></Info>
 			</>}
 
 			{phone && <> <Label>{t('Phone')}</Label>
