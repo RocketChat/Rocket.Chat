@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Announcement } from './Announcement';
+import Announcement from '.';
 
 export default {
 	title: 'components/Announcement',
@@ -8,4 +8,4 @@ export default {
 };
 
 export const Default = () =>
-	<Announcement onClickOpen={alert}>Lorem Ipsum Indolor</Announcement>;
+	<Announcement announcement='Lorem Ipsum Indolor' />;

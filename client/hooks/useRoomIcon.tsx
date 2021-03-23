@@ -16,6 +16,10 @@ export const useRoomIcon = (room: IRoom, small = true): JSX.Element | { name: st
 		return { name: 'baloons' };
 	}
 
+	if (room.teamMain) {
+		return { name: room.t === 'p' ? 'team-lock' : 'team' };
+	}
+
 	switch (room.t) {
 		case 'p':
 			return { name: 'hashtag-lock' };

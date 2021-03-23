@@ -18,7 +18,7 @@ addAction('game-center', () => {
 		&& !hasError
 		&& hasExternalComponents
 			? {
-				groups: ['channel', 'group', 'direct'],
+				groups: ['channel', 'group', 'direct', 'team'],
 				id: 'game-center',
 				title: 'Apps_Game_Center',
 				icon: 'game',

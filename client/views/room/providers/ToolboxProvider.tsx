@@ -17,11 +17,19 @@ const groupsDict = {
 	c: 'channel',
 };
 
+const getGroup = (room: IRoom): string => {
+	if (room.teamMain) {
+		return 'team';
+	}
+
+	return groupsDict[room.t];
+};
+
 
 const VirtualAction = React.memo(({ handleChange, room, action, id }: { id: string; action: ToolboxAction; room: IRoom; handleChange: Function}): null => {
 	const config = typeof action === 'function' ? action({ room }) : action;
 
-	const group = groupsDict[room.t];
+	const group = getGroup(room);
 	const visible = config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
 
 	useLayoutEffect(() => {

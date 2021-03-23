@@ -9,13 +9,13 @@ export default {
 };
 
 const room = {
-	name: 'rocketchat-frontend-team',
+	fname: 'rocketchat-frontend-team',
 	description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit libero',
 	announcement: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit libero',
 	topic: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit libero',
 };
 
-export const Default = () => <VerticalBar>
+export const Default = () => <VerticalBar height={800}>
 	<RoomInfo
 		{...room}
 		icon='lock'
@@ -27,7 +27,7 @@ export const Default = () => <VerticalBar>
 </VerticalBar>;
 
 
-export const Archived = () => <VerticalBar>
+export const Archived = () => <VerticalBar height={800}>
 	<RoomInfo
 		{...room}
 		icon='lock'
@@ -40,7 +40,7 @@ export const Archived = () => <VerticalBar>
 </VerticalBar>;
 
 
-export const Broadcast = () => <VerticalBar>
+export const Broadcast = () => <VerticalBar height={800}>
 	<RoomInfo
 		{...room}
 		icon='lock'

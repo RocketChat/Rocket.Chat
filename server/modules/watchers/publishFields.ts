@@ -48,6 +48,8 @@ export const roomFields = {
 	u: 1,
 	lm: 1,
 	// usernames: 1,
+	teamId: 1,
+	teamMain: 1,
 	topic: 1,
 	announcement: 1,
 	announcementDetails: 1,
