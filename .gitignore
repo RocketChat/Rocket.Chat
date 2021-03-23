@@ -80,3 +80,5 @@ tests/end-to-end/temporary_staged_test
 /private/livechat
 /storybook-static
 /tests/cypress/screenshots
+coverage
+.nyc_output

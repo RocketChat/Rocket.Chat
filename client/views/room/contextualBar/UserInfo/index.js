@@ -64,7 +64,11 @@ export const UserInfo = React.memo(function UserInfo({
 
 		<Margins block='x4'>
 			<UserCard.Username name={(showRealNames && name) || username || name} status={status} />
+<<<<<<< HEAD
 			<Info withTruncatedText={false}><MarkdownText content={customStatus} variant='inline'/></Info>
+=======
+			<Info withTruncatedText={false}>{customStatus}</Info>
+>>>>>>> develop
 
 			{!!roles && <>
 				<Label>{t('Roles')}</Label>
@@ -96,7 +100,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{bio && <>
 				<Label>{t('Bio')}</Label>
-				<Info withTruncatedText={false}><MarkdownText content={bio}/></Info>
+				<Info withTruncatedText={false}><MarkdownText variant='inline' content={bio}/></Info>
 			</>}
 
 			{phone && <> <Label>{t('Phone')}</Label>
@@ -117,7 +121,7 @@ export const UserInfo = React.memo(function UserInfo({
 
 			{ customFields && Object.entries(customFields).map(([label, value]) => <React.Fragment key={label}>
 				<Label>{t(label)}</Label>
-				<Info>{value}</Info>
+				<Info withTruncatedText={false}>{value}</Info>
 			</React.Fragment>) }
 
 			<Label>{t('Created_at')}</Label>

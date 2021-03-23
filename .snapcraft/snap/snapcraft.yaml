@@ -7,7 +7,7 @@
 # 5.  `snapcraft snap`
 
 name: rocketchat-server
-version: 3.12.0-develop
+version: 3.13.0-develop
 summary: Rocket.Chat server
 description: Have your own Slack like online chat, built with Meteor. https://rocket.chat/
 confinement: strict
@@ -20,7 +20,7 @@ apps:
     rocketchat-mongo:
         command: startmongo
         daemon: simple
-        plugs: [network, network-bind]
+        plugs: [network, network-bind, network-observe]
     rocketchat-caddy:
         command: env LC_ALL=C caddy -conf=$SNAP_DATA/Caddyfile
         daemon: simple

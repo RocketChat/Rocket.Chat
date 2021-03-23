@@ -91,7 +91,6 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 	if (type === 'c') {
 		callbacks.run('beforeCreateChannel', owner, room);
 	}
-
 	room = Rooms.createWithFullRoomData(room);
 
 	for (const username of members) {

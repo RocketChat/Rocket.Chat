@@ -61,7 +61,7 @@ export class AppsRestApi {
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
 			if (!e.hasOwnProperty('response')) {
-				orchestrator.getRocketChatLogger().error(message, e.message);
+				orchestrator.getRocketChatLogger().warn(message, e.message);
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
 
@@ -96,7 +96,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleError('Error getting the App information from the Marketplace:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (!result || result.statusCode !== 200) {
@@ -368,7 +368,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleError('Error getting the App information from the Marketplace:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (!result || result.statusCode !== 200 || result.data.length === 0) {
@@ -394,7 +394,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleError('Error getting the App update info from the Marketplace:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (result.statusCode !== 200 || result.data.length === 0) {
@@ -449,7 +449,6 @@ export class AppsRestApi {
 							npmRequestOptions: { encoding: null },
 						});
 					} catch (e) {
-						console.log(e, e.response.content.toString());
 						orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
 						return API.v1.internalError();
 					}

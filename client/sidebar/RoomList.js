@@ -6,7 +6,6 @@ import memoize from 'memoize-one';
 
 import { usePreventDefault } from './hooks/usePreventDefault';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
-import { ReactiveUserStatus, colors } from '../components/UserStatus';
 import { useTranslation } from '../contexts/TranslationContext';
 import { roomTypes } from '../../app/utils';
 import { useUserPreference, useUserId } from '../contexts/UserContext';
@@ -17,6 +16,7 @@ import { useTemplateByViewMode } from './hooks/useTemplateByViewMode';
 import { useShortcutOpenMenu } from './hooks/useShortcutOpenMenu';
 import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 import { useRoomList } from './hooks/useRoomList';
+import { useRoomIcon } from '../hooks/useRoomIcon';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
 import { escapeHTML } from '../../lib/escapeHTML';
 import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
@@ -38,24 +38,11 @@ export const itemSizeMap = (sidebarViewMode) => {
 };
 
 const SidebarIcon = ({ room, small }) => {
-	switch (room.t) {
-		case 'p':
-		case 'c':
-			return <Sidebar.Item.Icon aria-hidden='true' name={roomTypes.getIcon(room)} />;
-		case 'l':
-			return <Sidebar.Item.Icon aria-hidden='true' name='headset' color={colors[room.v.status]}/>;
-		case 'd':
-			if (room.uids && room.uids.length > 2) {
-				return <Sidebar.Item.Icon aria-hidden='true' name='team'/>;
-			}
-			if (room.uids && room.uids.length > 0) {
-				// If the filter fn removes all ids, it's own direct message
-				return room.uids && room.uids.length && <Sidebar.Item.Icon><ReactiveUserStatus small={small && 'small'} uid={room.uids.filter((uid) => uid !== room.u._id)[0] || room.u._id} /></Sidebar.Item.Icon>;
-			}
-			return <Sidebar.Item.Icon aria-hidden='true' name={roomTypes.getIcon(room)}/>;
-		default:
-			return null;
-	}
+	const icon = useRoomIcon(room, small);
+
+	return <Sidebar.Item.Icon {...icon.name && icon}>
+		{!icon.name && icon}
+	</Sidebar.Item.Icon>;
 };
 
 export const createItemData = memoize((extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, isAnonymous) => ({
@@ -103,7 +90,7 @@ const ScrollerWithCustomProps = forwardRef((props, ref) => <ScrollableContentWra
 	ref={ref}
 	renderView={
 		({ style, ...props }) => (
-			<div {...props} className='teste' style={{ ...style, overflowX: 'hidden' }} />
+			<div {...props} style={{ ...style }} />
 		)
 	}
 	renderTrackHorizontal={(props) => <div {...props} style={{ display: 'none' }} className='track-horizontal'/>}
@@ -189,7 +176,8 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }}/> : null;
 	const variant = ((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
-	const badges = unread > 0 || threadUnread ? <Badge style={{ flexShrink: 0 }} variant={ variant }>{unread + tunread?.length}</Badge> : null;
+	const isUnread = unread > 0 || threadUnread;
+	const badges = !hideUnreadStatus && isUnread ? <Badge style={{ flexShrink: 0 }} variant={ variant }>{unread + tunread?.length}</Badge> : null;
 
 	return <SideBarItemTemplate
 		is='a'

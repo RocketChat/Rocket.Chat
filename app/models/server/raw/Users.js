@@ -68,7 +68,7 @@ export class UsersRaw extends BaseRaw {
 	findByActiveUsersExcept(searchTerm, exceptions, options, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
-		if (Array.isArray(exceptions)) {
+		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
 
@@ -191,7 +191,7 @@ export class UsersRaw extends BaseRaw {
 		const aggregate = [
 			{ $match: { _id: userId, status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
 			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
-			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $eq: ['$$sub.t', 'l'] } } } } } },
+			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }] } } } } } },
 			{ $sort: { 'queueInfo.chats': 1, lastAssignTime: 1, lastRoutingTime: 1, username: 1 } },
 		];
 
@@ -386,6 +386,27 @@ export class UsersRaw extends BaseRaw {
 			params.push({ $limit: options.count });
 		}
 		return this.col.aggregate(params).toArray();
+	}
+
+	getUserLanguages() {
+		const pipeline = [
+			{
+				$match: {
+					language: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+			},
+			{
+				$group: {
+					_id: '$language',
+					total: { $sum: 1 },
+				},
+			},
+		];
+
+		return this.col.aggregate(pipeline).toArray();
 	}
 
 	updateStatusText(_id, statusText) {
