@@ -160,12 +160,12 @@ export const TeamsInfo = ({
 							<InfoPanel.Text withTruncatedText={false}>{topic}</InfoPanel.Text>
 						</InfoPanel.Field>}
 
-						<InfoPanel.Field>
+						{onClickViewChannels && <InfoPanel.Field>
 							<InfoPanel.Label>{t('Teams_channels')}</InfoPanel.Label>
 							<InfoPanel.Text>
 								<Button onClick={onClickViewChannels} small>{t('View_channels')}</Button>
 							</InfoPanel.Text>
-						</InfoPanel.Field>
+						</InfoPanel.Field>}
 
 						{retentionPolicyEnabled && (
 							<RetentionPolicyCallout filesOnlyDefault={filesOnlyDefault} excludePinnedDefault={excludePinnedDefault} maxAgeDefault={maxAgeDefault} />
@@ -275,7 +275,7 @@ export default function TeamsInfoWithLogic({
 		</ GenericModalDoNotAskAgain>);
 	});
 
-	const onClickViewChannels = useCallback(() => openTabbar('team-channels'), []);
+	const onClickViewChannels = useCallback(() => openTabbar('team-channels'), [openTabbar]);
 
 	return (
 		<TeamsInfo
