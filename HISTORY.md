@@ -1,6 +1,21 @@
 
 # 3.13.0 (Under Release Candidate Process)
 
+## 3.13.0-rc.1
+`2021-03-24  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix non encrypted rooms failing sending messages ([#21287](https://github.com/RocketChat/Rocket.Chat/pull/21287))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 ## 3.13.0-rc.0
 `2021-03-23  ·  7 🎉  ·  12 🚀  ·  32 🐛  ·  8 🔍  ·  36 👩‍💻👨‍💻`
 
@@ -398,6 +413,42 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 3.12.1
+`2021-03-08  ·  1 🚀  ·  2 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.23.0`
+
+### 🚀 Improvements
+
+
+- Close Call contextual bar after starting jitsi call. ([#21004](https://github.com/RocketChat/Rocket.Chat/pull/21004) by [@yash-rajpal](https://github.com/yash-rajpal))
+
+  After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.
+  So, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.
+
+### 🐛 Bug fixes
+
+
+- Missing spaces on attachment  ([#21020](https://github.com/RocketChat/Rocket.Chat/pull/21020))
+
+- Stopping Jitsi reload ([#20973](https://github.com/RocketChat/Rocket.Chat/pull/20973) by [@yash-rajpal](https://github.com/yash-rajpal))
+
+  The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.
+  So removing this dep from useMemo dependencies
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@tassoevan](https://github.com/tassoevan)
 
 # 3.12.0
 `2021-02-28  ·  5 🎉  ·  17 🚀  ·  74 🐛  ·  30 🔍  ·  29 👩‍💻👨‍💻`
