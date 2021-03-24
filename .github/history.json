@@ -56582,6 +56582,676 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "3.10.6": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.11.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20727",
+          "title": "[FIX] Room owner not being able to override global retention policy",
+          "userLogin": "g-thome",
+          "description": "use correct permissions to check if room owner can override global retention policy",
+          "milestone": "3.11.2",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "20860",
+          "title": "[FIX] Prevent Message Attachment rendering",
+          "userLogin": "ggazzo",
+          "milestone": "3.11.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20740",
+          "title": "[FIX] External systems not being able to change Omnichannel Inquiry priorities ",
+          "userLogin": "renatobecker",
+          "description": "Due to a wrong property name, external applications were not able to change the priority of Omnichannel Inquires.",
+          "milestone": "3.11.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        }
+      ]
+    },
+    "3.13.0-rc.0": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.0-alpha.4777",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "20881",
+          "title": "[FIX] Follow thread action on threads list ",
+          "userLogin": "dougfabris",
+          "description": "https://user-images.githubusercontent.com/27704687/108925036-a4bcdc80-761a-11eb-83b8-2df8960f74cb.mp4",
+          "milestone": "3.13.0",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20966",
+          "title": "[NEW] Teams",
+          "userLogin": "gabriellsh",
+          "milestone": "3.13.0",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "tiagoevanp",
+            "r0zbot",
+            "g-thome",
+            "pierre-lehnen-rc",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "20917",
+          "title": "[NEW][APPS] New event interfaces for pre/post user leaving a room",
+          "userLogin": "lucassartor",
+          "description": "Added events and errors that trigger when a user leaves a room. \r\nThat way it can communicate with the Apps-Engine by the `IPreRoomUserLeave` and `IPostRoomUserLeave` event interfaces.",
+          "milestone": "3.13.0",
+          "contributors": [
+            "lucassartor",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21073",
+          "title": "Change the order of Sort Setup Wizard options ",
+          "userLogin": "tassoevan",
+          "description": "Sort options in select fields of settings during Setup Wizard according to browser's locale.",
+          "milestone": "3.13.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20440",
+          "title": "[FIX] Empty URL in user avatar doesn't show error and enables save",
+          "userLogin": "im-adithya",
+          "description": "Added toast and disabled save.",
+          "milestone": "3.13.0",
+          "contributors": [
+            "im-adithya",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21123",
+          "title": "[NEW] Quick action buttons for Omnichannel",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.0",
+          "contributors": [
+            "rafaelblink",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21199",
+          "title": "[IMPROVE] Re-design Omnichannel Room Info Panel",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21263",
+          "title": "Improve: NPS survey fetch",
+          "userLogin": "geekgonecrazy",
+          "milestone": "3.13.0",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19583",
+          "title": "[FIX] Make custom emoji file required",
+          "userLogin": "m-shreyansh",
+          "contributors": [
+            "m-shreyansh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20025",
+          "title": "[IMPROVE] Adds toast after follow/unfollow messages and following icon for followed messages without threads.",
+          "userLogin": "RonLek",
+          "description": "There was no alert on following/unfollowing a message previously. Also, it was impossible to make out a followed message with no threads from an unfollowed one. \r\n\r\nThis PR would show an alert on following/unfollowing a message and also display a small bell icon (similar to the ones for starred and pinned messages) when a message with no thread is followed.\r\n\r\nhttps://user-images.githubusercontent.com/28918901/103813540-43e73e00-5086-11eb-8592-2877eb650f3e.mp4",
+          "contributors": [
+            "RonLek",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "19977",
+          "title": "[FIX] Reply count of message is decreased after a message from thread is deleted",
+          "userLogin": "yash-rajpal",
+          "description": "The reply count now is decreased if a message from a thread is deleted.",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20352",
+          "title": "[FIX] Removing truncation from profile",
+          "userLogin": "aKn1ghtOut",
+          "description": "Truncating text in profile view was making some information completely inaccessible. Removed it from the user status and the custom fields where if the information is longer, the user would actually want to see all of it.\r\n\r\n### Before\r\n![Screenshot from 2021-01-24 20-54-44](https://user-images.githubusercontent.com/38764067/105634935-7e264d00-5e86-11eb-8a6c-9f2a363e0f6c.png)\r\n\r\n### After\r\n![Screenshot from 2021-01-24 20-54-06](https://user-images.githubusercontent.com/38764067/105634940-82eb0100-5e86-11eb-8b90-e97a43c5e938.png)",
+          "contributors": [
+            "aKn1ghtOut"
+          ]
+        },
+        {
+          "pr": "20359",
+          "title": "[FIX] Custom emojis to override default",
+          "userLogin": "aKn1ghtOut",
+          "description": "Due to the sequence of the imports and how the emojiRenderer prioritizes lists, the custom emojis could not override the emojione emojis. Making two small changes fixed the issue.\r\n\r\nWith the custom emoji for `:facepalm:` added, you can check out the result below:\r\n### Before\r\n![Screenshot from 2021-01-25 02-20-04](https://user-images.githubusercontent.com/38764067/105643088-dfb0e080-5eb3-11eb-8a00-582c53fbe9a4.png)\r\n\r\n### After\r\n![Screenshot from 2021-01-25 02-18-58](https://user-images.githubusercontent.com/38764067/105643076-cdcf3d80-5eb3-11eb-84b8-5dbc4f1135df.png)",
+          "contributors": [
+            "aKn1ghtOut"
+          ]
+        },
+        {
+          "pr": "20370",
+          "title": "[IMPROVE] Added modal-box for preview after recording audio.",
+          "userLogin": "Darshilp326",
+          "description": "A modal box will be displayed so that users can change the filename and add description.\r\n\r\n**Before**\r\n\r\nhttps://user-images.githubusercontent.com/55157259/105687301-4e2a8880-5f1e-11eb-873d-dc8a880a2fc8.mp4\r\n\r\n**After**\r\n\r\nhttps://user-images.githubusercontent.com/55157259/105687342-597db400-5f1e-11eb-8b61-8f9d9ebad0c4.mp4",
+          "contributors": [
+            "Darshilp326"
+          ]
+        },
+        {
+          "pr": "20742",
+          "title": "[IMPROVE] Add spacing between elements in Profile Page",
+          "userLogin": "cyberShaw",
+          "contributors": [
+            "cyberShaw"
+          ]
+        },
+        {
+          "pr": "21084",
+          "title": "[FIX] Ensure E2E is enabled/disabled on sending message",
+          "userLogin": "tassoevan",
+          "description": "Rooms which were encrypted somewhere in the past still could encrypt messages due to a race condition due to a query over `Subscriptions` collection.",
+          "milestone": "3.12.2",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "21091",
+          "title": "[FIX] [Apps] Fix Game Center icon disappeared after the React refactor",
+          "userLogin": "lolimay",
+          "milestone": "3.13.0",
+          "contributors": [
+            "lolimay",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21096",
+          "title": "[FIX] Correct Typo - donwload to download",
+          "userLogin": "aditya-mitra",
+          "description": "Correct the spelling of _donwload_ to _download_ in `TitleLink` of Attachments.",
+          "contributors": [
+            "aditya-mitra"
+          ]
+        },
+        {
+          "pr": "21183",
+          "title": "[FIX] Set establishing to false if OTR timeouts",
+          "userLogin": "Darshilp326",
+          "description": "Set establishing false if OTR timeouts.\r\n\r\nhttps://user-images.githubusercontent.com/55157259/111617086-b30cab80-8808-11eb-8740-3b4ffacfc322.mp4",
+          "contributors": [
+            "Darshilp326"
+          ]
+        },
+        {
+          "pr": "20030",
+          "title": "[NEW] Add Omnichannel Livechat Trigger option for when user opens the chat window",
+          "userLogin": "reda-alaoui",
+          "contributors": [
+            "reda-alaoui",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21264",
+          "title": "Bump Livechat Widget",
+          "userLogin": "renatobecker",
+          "description": "Update Livechat version to 1.9.0",
+          "milestone": "3.13.0",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "20770",
+          "title": "[Fix] Broken useEffect opened new BBB Tab twice",
+          "userLogin": "Cosnavel",
+          "contributors": [
+            "Cosnavel",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20882",
+          "title": "[IMPROVE] Back to threads list button on threads contextual bar",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/108926702-ad62e200-761d-11eb-8c18-5406246a6955.png)",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20354",
+          "title": "[FIX] Missing Keywords in Permissions",
+          "userLogin": "im-adithya",
+          "description": "The keywords were added to the i18n folder. (Default only)",
+          "contributors": [
+            "im-adithya",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21069",
+          "title": "[FIX] Broken message fields attachment handling",
+          "userLogin": "tassoevan",
+          "description": "Avoids an `undefined` value to break a rendered attachment.",
+          "milestone": "3.12.2",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21071",
+          "title": "[FIX] Sidebar scroll missing full height",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/110708646-c05ae200-81d9-11eb-86da-1d6a2e99b6e5.png)",
+          "milestone": "3.13.0",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20569",
+          "title": "[FIX] OEmbedURLWidget - Show Full Embedded Text Description",
+          "userLogin": "aditya-mitra",
+          "description": "Embeds were cutoff when either _urls had a long description_.\r\nThis was handled by removing `overflow:hidden;text-overflow:ellipsis;` from the inline styles in [`oembedUrlWidget.html`](https://github.com/RocketChat/Rocket.Chat/blob/develop/app/oembed/client/oembedUrlWidget.html#L28).\r\n\r\n### Earlier\r\n\r\n![earlier](https://user-images.githubusercontent.com/55396651/107110825-00dcde00-6871-11eb-866e-13cabc5b0d05.png)\r\n\r\n### Now\r\n\r\n![now](https://user-images.githubusercontent.com/55396651/107110794-ca06c800-6870-11eb-9b3b-168679936612.png)",
+          "contributors": [
+            "aditya-mitra",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20743",
+          "title": "[FIX] Correct Inline reactions behaviour",
+          "userLogin": "aKn1ghtOut",
+          "description": "The $().data function was returning outdated values for re-assigned emoji buttons with new data. Changed that to use the .attr() function. This works perfectly.",
+          "contributors": [
+            "aKn1ghtOut"
+          ]
+        },
+        {
+          "pr": "20753",
+          "title": "[FIX] Reactions list showing users in reactions option of message action.",
+          "userLogin": "Darshilp326",
+          "description": "Reactions list shows emojis with respected users who have reacted with that emoji.\r\n\r\nhttps://user-images.githubusercontent.com/55157259/107857609-5870e000-6e55-11eb-8137-494a9f71b171.mp4",
+          "contributors": [
+            "Darshilp326",
+            "dougfabris",
+            "web-flow",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "20790",
+          "title": "[IMPROVE] Sort Users List In Case Insensitive Manner",
+          "userLogin": "aditya-mitra",
+          "description": "The users listed in the admin panel were sorted in a case-sensitive manner , where the capitals came first and then the small letters (like - *A B C a b c*). This Change fixes this by sorting the names in a caseinsensitive manner (now - *A a B b C c*).\r\n\r\n### Before\r\n\r\n![before](https://user-images.githubusercontent.com/55396651/108189880-3fa74980-7137-11eb-99da-6498707b4bf8.png)\r\n\r\n\r\n### With This Change\r\n\r\n![after](https://user-images.githubusercontent.com/55396651/108190177-9dd42c80-7137-11eb-8b4e-b7cef4ba512f.png)",
+          "milestone": "3.12.0",
+          "contributors": [
+            "aditya-mitra"
+          ]
+        },
+        {
+          "pr": "20867",
+          "title": "[FIX] Added hideUnreadStatus check before showing unread messages on roomList",
+          "userLogin": "yash-rajpal",
+          "description": "Added hide unread counter check, if the show unread messages is turned off, now unread messages badge won't be shown to user.",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "20873",
+          "title": "[FIX] undefined in PruneMessages deleting DM",
+          "userLogin": "vova-zush",
+          "description": "Fix undefined in Prune Messages in direct",
+          "contributors": [
+            "vova-zush"
+          ]
+        },
+        {
+          "pr": "20897",
+          "title": "[FIX] Correct direction for admin mapview text",
+          "userLogin": "aKn1ghtOut",
+          "description": "![Screenshot from 2021-02-25 02-49-21](https://user-images.githubusercontent.com/38764067/109068512-f8602080-7715-11eb-8e22-d610f9d046d8.png)\r\n![Screenshot from 2021-02-25 02-49-46](https://user-images.githubusercontent.com/38764067/109068516-fa29e400-7715-11eb-9119-1c79abce278f.png)\r\n![Screenshot from 2021-02-25 02-49-57](https://user-images.githubusercontent.com/38764067/109068519-fbf3a780-7715-11eb-8b3d-0dc32f898725.png)\r\n\r\nThe text says the share button will be on the left of the messagebox once enabled. However, it actually is on the right.",
+          "contributors": [
+            "aKn1ghtOut"
+          ]
+        },
+        {
+          "pr": "20928",
+          "title": "[FIX] Correct ignored message CSS",
+          "userLogin": "aKn1ghtOut",
+          "description": "Modified the CSS to not affect the ignored sequential messages exactly like the non-ignored messages, which is what was causing the second and further ignored message o appear weirdly when unhidden one by one.",
+          "contributors": [
+            "aKn1ghtOut"
+          ]
+        },
+        {
+          "pr": "20992",
+          "title": "[FIX] [APPS] Warn message while installing app in air-gapped environment",
+          "userLogin": "lucassartor",
+          "description": "Change **error** message to a **warn** message when uploading a  `.zip` file app into a air-gapped environment.\r\n\r\nThe **error** message was giving the impression for the user that the app wasn't properly being installed , which it wasn't the case:\r\n![error](https://user-images.githubusercontent.com/49413772/109855273-d3e4d680-7c36-11eb-824b-ad455d24710c.PNG)\r\n\r\nA more detailed **warn** message can fix that impression for the user:\r\n![warn](https://user-images.githubusercontent.com/49413772/109855383-f2e36880-7c36-11eb-8d61-c442980bd8fd.PNG)",
+          "milestone": "3.13.0",
+          "contributors": [
+            "lucassartor"
+          ]
+        },
+        {
+          "pr": "21062",
+          "title": "[NEW] Ability to hide 'Room topic changed' system messages",
+          "userLogin": "Tirieru",
+          "contributors": [
+            "Tirieru"
+          ]
+        },
+        {
+          "pr": "20945",
+          "title": "[NEW][Enterprise] Omnichannel On-Hold Queue",
+          "userLogin": "murtaza98",
+          "description": "### About this feature\r\nThis feature has been introduced to deal with Inactive chats. A chat is considered Inactive if an Omnichannel End User (aka Visitor) has not replied back to an agent in some time. These types of inactive chats become very important when an organisation has a limit set for `Max Simultaneous Chats per agent` which is defined by the following setting :point_down:  , as more number of Inactive chats would directly affect an agent's productivity.\r\n![image](https://user-images.githubusercontent.com/34130764/111533003-4d7ad980-878c-11eb-8c1c-2796678a07db.png)\r\n\r\nBefore this feature, we only had one option to deal with such Inactive/Abandoned chats - which was to auto close abandoned chats via this setting :point_down: \r\n![image](https://user-images.githubusercontent.com/34130764/111534353-e65e2480-878d-11eb-82a5-71368064ef45.png)\r\n\r\nhowever closing a chat isn't a best option for some cases. Let me take an example to explain a scenario\r\n\r\n> An agent is assisting a customer for installing a very huge software which is likely to take more than 20-30 minutes to download. In such scenarios closing a chat isn't the best approach since even after the lengthy download the customer might still need some assist from the agent.\r\n> So basically this chat is going to block the agent's queue until the customer is able to finish his time-consuming download task in which he/she doesn't require any agent's assistance. Due to the `Max Simultaneous Chats per agent` limit, the agent is also not able to use this extra time to help other customer thus affecting his overall productivity.\r\n\r\n**So how does the On-Hold feature solve this problem?**\r\nWith the On-Hold feature, an agent is now able to place a chat on-hold. On-Hold chats **don’t count towards the maximum number of concurrent chats** an agent can have. So in our above example, the agent can simply now place the customer on-hold for 20-30 minutes until the customer downloads the software and within this time, the agent can serve other customers - hence increasing the productivity of an agent.\r\n\r\n----------------------------------------\r\n### Working of the new On-Hold feature\r\n\r\n#### How can you place a chat on Hold ?\r\n\r\nA chat can be placed on-hold via 2 means\r\n1. Automatically place Abandoned chats On-hold\r\n      ![image](https://user-images.githubusercontent.com/34130764/111537074-06431780-8791-11eb-8d23-99f5d9f8ec45.png)\r\n    Via this :top: option you can define a timer which will get started when a customer sends a message. If we don't receive any message from the customer within this timer, the timer will get expired and the chat will be considered as Abandoned. \r\n      ![image](https://user-images.githubusercontent.com/34130764/111537346-53bf8480-8791-11eb-8dc7-260633b4e98f.png)\r\n    The via this :top:  setting you can choose to automatically place this abandoned chat On Hold\r\n2.  Manually place a chat On Hold \r\n      As an admin, you can allow an agent to manually place a chat on-hold. To do so, you'll need to turn on this :point_down: setting\r\n      ![image](https://user-images.githubusercontent.com/34130764/111537545-97b28980-8791-11eb-86fd-db45b87e9cc1.png)\r\n      Now an agent will be able to see a new `On Hold` button within their `Visitor Info Panel` like this :point_down: , provided the agent has sent the last message\r\n      ![image](https://user-images.githubusercontent.com/34130764/111537853-f24be580-8791-11eb-9561-d77ba430c625.png)\r\n\r\n#### How can you resume a On Hold chat ?\r\nAn On Hold chat can be resumed via 2 means\r\n\r\n1. If the Customer sends a message\r\n     If the Customer / Omnichannel End User sends a message to the On Hold chat, the On Hold chat will get automatically resumed.\r\n2. Manually by agent\r\n    An Agent can manually resume the On Hold chat via clicking the `Resume` button in the bottom of a chat room. \r\n   ![image](https://user-images.githubusercontent.com/34130764/111538666-f88e9180-8792-11eb-8d14-01453b8e3db0.png)\r\n\r\n#### What would happen if the agent already reached maximum chats, and a On-Hold chat gets resumed ?\r\nBased on how the chat was resumed, there are multiple cases are each case is dealt differently\r\n\r\n- If an agent manually tries to resume the On Hold chat, he/she will get an error saying  `Maximum Simultaneous chat limit reached`\r\n- If a customer replies back on an On Hold chat and the last serving agent has reached maximum capacity, then this customer will be placed on the queue again from where based on the Routing Algorithm selected, the chat will get transferred to any available agent",
+          "milestone": "3.13.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21066",
+          "title": "[FIX] Missing app permissions translation",
+          "userLogin": "d-gubert",
+          "description": "Add missing translations for some app permissions",
+          "milestone": "3.13.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21115",
+          "title": "[IMPROVE]  grammatical typos in pull request template",
+          "userLogin": "sumukhah",
+          "contributors": [
+            "sumukhah"
+          ]
+        },
+        {
+          "pr": "21132",
+          "title": "[IMPROVE] Set description in create channel modal",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.13.0",
+          "contributors": [
+            "tiagoevanp",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21160",
+          "title": "[FIX] Fix the search list showing the last channel",
+          "userLogin": "shrinish123",
+          "description": "The search list now also properly shows the last channel \r\nBefore  :\r\n\r\n![searchlist](https://user-images.githubusercontent.com/56491104/111471487-f3a7ee80-874e-11eb-9c6e-19bbf0731d60.png)\r\n\r\nAfter : \r\n![search_final](https://user-images.githubusercontent.com/56491104/111471521-fe628380-874e-11eb-8fa3-d1edb57587e1.png)",
+          "contributors": [
+            "shrinish123",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21236",
+          "title": "[FIX] Multi Select isn't working in Export Messages",
+          "userLogin": "PriyaBihani",
+          "description": "While exporting messages, we were not able to select multiple Users like this: \r\n\r\nhttps://user-images.githubusercontent.com/69837339/111953057-169a2000-8b0c-11eb-94a4-0e1657683f96.mp4\r\n\r\nNow we can select multiple users: \r\n\r\n\r\nhttps://user-images.githubusercontent.com/69837339/111953097-274a9600-8b0c-11eb-9177-bec388b042bd.mp4",
+          "contributors": [
+            "PriyaBihani",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21080",
+          "title": "[FIX] New Channel popover not closing",
+          "userLogin": "tiagoevanp",
+          "description": "https://user-images.githubusercontent.com/17487063/110828228-92c37680-8275-11eb-9fce-fb40765935a3.mp4",
+          "milestone": "3.13.0",
+          "contributors": [
+            "tiagoevanp",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21222",
+          "title": "[FIX] Wrong license seats number administration info panel",
+          "userLogin": "rodrigok",
+          "description": "The administration info panel was showing the *total of users* as the number counted for the usage of the license seats. Now it's showing the correct number that is *active users*. This was not affecting the license validation on the server-side, only causing confusion for the administrators to check how the usage was being counted.",
+          "milestone": "3.13.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "20811",
+          "title": "[NEW][APPS] Map description as a room value in Apps",
+          "userLogin": "lucassartor",
+          "description": "Add the `description` value of a `room` as a mapped value in the Apps-Engine. That way developers can get the `description` information from a `room` in their app.",
+          "milestone": "3.13.0",
+          "contributors": [
+            "lucassartor",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21193",
+          "title": "[IMPROVE] Improve Apps permission modal",
+          "userLogin": "lucassartor",
+          "description": "Improve the UI of the Apps permission modal when installing an App that requires permissions.\r\n\r\n**New UI:**\r\n![after](https://user-images.githubusercontent.com/49413772/111685622-e817fe80-8806-11eb-998d-b56623560e74.PNG)\r\n\r\n**Old UI:**\r\n![before](https://user-images.githubusercontent.com/49413772/111685897-375e2f00-8807-11eb-814e-cb8060dc1830.PNG)",
+          "milestone": "3.13.0",
+          "contributors": [
+            "lucassartor",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21000",
+          "title": "[IMPROVE] Make debug logs of Apps configurable via Log_Level setting in the Admin panel",
+          "userLogin": "meomay503",
+          "contributors": [
+            "meomay503",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21094",
+          "title": "[FIX] Unexpected open or close visitor info",
+          "userLogin": "tiagoevanp",
+          "description": "The VisitorInfo component closes or open every time a new message was sent, this PR fix that.",
+          "milestone": "3.13.0",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "tassoevan",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21125",
+          "title": "[FIX] Use the correct icons for DMs",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.13.0",
+          "contributors": [
+            "MartinSchoeler",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "21061",
+          "title": "Chore: Meteor update 2.1",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.13.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21015",
+          "title": "Improve: Increase testing coverage",
+          "userLogin": "KevLehman",
+          "description": "Add test for\r\n- settings/raw\r\n- minimongo/comparisons",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "20901",
+          "title": "Chore: Add tests for Meteor methods",
+          "userLogin": "r0zbot",
+          "description": "Add end-to-end tests for the following meteor methods\r\n\r\n- [x] public-settings:get\r\n- [x] rooms:get\r\n- [x] subscriptions:get\r\n- [x] permissions:get\r\n- [x] loadMissedMessages\r\n- [x] loadHistory\r\n- [x] listCustomUserStatus\r\n- [x] getUserRoles\r\n- [x] getRoomRoles  (called by the API, already covered)\r\n- [x] getMessages\r\n- [x] getUsersOfRoom\r\n- [x] loadNextMessages\r\n- [x] getThreadMessages",
+          "contributors": [
+            "r0zbot",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20918",
+          "title": "Chore: Remove `new Buffer` in favor of `Buffer.from`",
+          "userLogin": "KevLehman",
+          "description": "- Changes `new Buffer` to `Buffer.from` since the first one is deprecated.",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "21020",
+          "title": "[FIX] Missing spaces on attachment ",
+          "userLogin": "dougfabris",
+          "milestone": "3.12.1",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21018",
+          "title": "[IMPROVE] Better new channel popover",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.13.0",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "21004",
+          "title": "[IMPROVE] Close Call contextual bar after starting jitsi call.",
+          "userLogin": "yash-rajpal",
+          "description": "After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.\r\nSo, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20973",
+          "title": "[FIX] Stopping Jitsi reload",
+          "userLogin": "yash-rajpal",
+          "description": "The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.\r\nSo removing this dep from useMemo dependencies",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20905",
+          "title": "[FIX] Add missing `unreads` field to `users.info` REST endpoint",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "20879",
+          "title": "[FIX] Iframe flags for audio and video on the BigBlueButton integration",
+          "userLogin": "fcecagno",
+          "contributors": [
+            "fcecagno",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
