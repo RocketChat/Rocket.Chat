@@ -21,6 +21,8 @@ import { useAtLeastOnePermission, usePermission, useRole } from '../../../../../
 import { useUserId } from '../../../../../contexts/UserContext';
 import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
 import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
+import { useSetting } from '../../../../../contexts/SettingsContext';
+import PlaceChatOnHoldModal from '../../../../../components/Omnichannel/modals/PlaceChatOnHoldModal';
 
 
 const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['className'] }): JSX.Element => {
@@ -39,7 +41,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const getVisitorEmail = useMutableCallback(async () => {
 		if (!visitorRoomId) { return; }
-		const { visitor: { visitorEmails } } = await getVisitorInfo(visitorRoomId);
+		const { visitor: { visitorEmails } } = await getVisitorInfo({ visitorId: visitorRoomId } as any);
 		if (visitorEmails?.length && visitorEmails[0].address) {
 			setEmail(visitorEmails[0].address);
 		}
@@ -137,6 +139,18 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		}
 	}, [closeChat, closeModal, rid, t]);
 
+	const onHoldChat = useEndpoint('POST', 'livechat/room.onHold');
+
+	const handleOnHoldChat = useCallback(async () => {
+		try {
+			await onHoldChat({ roomId: rid } as any);
+			closeModal();
+			toastr.success(t('Chat_On_Hold_Successfully'));
+		} catch (error) {
+			handleError(error);
+		}
+	}, [onHoldChat, closeModal, rid, t]);
+
 	const openModal = useMutableCallback((id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
@@ -151,6 +165,9 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 			case QuickActionsEnum.CloseChat:
 				setModal(<CloseChatModal onConfirm={handleClose} onCancel={closeModal} />);
 				break;
+			case QuickActionsEnum.OnHoldChat:
+				setModal(<PlaceChatOnHoldModal onOnHoldChat={handleOnHoldChat} onCancel={closeModal} />);
+				break;
 			default:
 				break;
 		}
@@ -162,6 +179,8 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		openModal(id);
 	});
 
+	const manualOnHoldAllowed = useSetting('Livechat_allow_manual_on_hold');
+
 	const hasManagerRole = useRole('livechat-manager');
 
 	const roomOpen = room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasManagerRole);
@@ -171,6 +190,8 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 	const canSendTranscript = usePermission('send-omnichannel-chat-transcript');
 
 	const canCloseRoom = usePermission('close-others-livechat-room');
+
+	const canPlaceChatOnHold = (!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed) as boolean;
 
 	const omnichannelRouteConfig = useOmnichannelRouteConfig();
 
@@ -184,6 +205,8 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				return !!email && canSendTranscript;
 			case QuickActionsEnum.CloseChat:
 				return !!roomOpen && canCloseRoom;
+			case QuickActionsEnum.OnHoldChat:
+				return !!roomOpen && canPlaceChatOnHold;
 			default:
 				break;
 		}

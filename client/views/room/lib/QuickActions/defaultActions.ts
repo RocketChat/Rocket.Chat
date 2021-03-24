@@ -33,3 +33,11 @@ addAction(QuickActionsEnum.CloseChat, {
 	order: 4,
 	color: 'danger',
 });
+
+addAction(QuickActionsEnum.OnHoldChat, {
+	groups: ['live'],
+	id: QuickActionsEnum.OnHoldChat,
+	title: 'Livechat_onHold_Chat',
+	icon: 'pause',
+	order: 5,
+});
