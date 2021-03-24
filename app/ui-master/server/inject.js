@@ -3,10 +3,10 @@ import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
-import s from 'underscore.string';
 
+import { escapeHTML } from '../../../lib/escapeHTML';
 import { Settings } from '../../models';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 
 const headInjections = new ReactiveDict();
 
@@ -41,7 +41,6 @@ Meteor.startup(() => {
 		<style>
 			body, body * {
 				animation: none !important;
-				transition: none !important;
 			}
 		</style>
 		<script>
@@ -72,13 +71,13 @@ Meteor.startup(() => {
 	});
 
 	settings.get('theme-color-sidebar-background', (key, value) => {
-		const escapedValue = s.escapeHTML(value);
+		const escapedValue = escapeHTML(value);
 		injectIntoHead(key, `<meta name="msapplication-TileColor" content="${ escapedValue }" />`
 							+ `<meta name="theme-color" content="${ escapedValue }" />`);
 	});
 
 	settings.get('Site_Name', (key, value = 'Rocket.Chat') => {
-		const escapedValue = s.escapeHTML(value);
+		const escapedValue = escapeHTML(value);
 		injectIntoHead(key,
 			`<title>${ escapedValue }</title>`
 			+ `<meta name="application-name" content="${ escapedValue }">`
@@ -86,29 +85,29 @@ Meteor.startup(() => {
 	});
 
 	settings.get('Meta_language', (key, value = '') => {
-		const escapedValue = s.escapeHTML(value);
+		const escapedValue = escapeHTML(value);
 		injectIntoHead(key,
 			`<meta http-equiv="content-language" content="${ escapedValue }">`
 			+ `<meta name="language" content="${ escapedValue }">`);
 	});
 
 	settings.get('Meta_robots', (key, value = '') => {
-		const escapedValue = s.escapeHTML(value);
+		const escapedValue = escapeHTML(value);
 		injectIntoHead(key, `<meta name="robots" content="${ escapedValue }">`);
 	});
 
 	settings.get('Meta_msvalidate01', (key, value = '') => {
-		const escapedValue = s.escapeHTML(value);
+		const escapedValue = escapeHTML(value);
 		injectIntoHead(key, `<meta name="msvalidate.01" content="${ escapedValue }">`);
 	});
 
 	settings.get('Meta_google-site-verification', (key, value = '') => {
-		const escapedValue = s.escapeHTML(value);
+		const escapedValue = escapeHTML(value);
 		injectIntoHead(key, `<meta name="google-site-verification" content="${ escapedValue }">`);
 	});
 
 	settings.get('Meta_fb_app_id', (key, value = '') => {
-		const escapedValue = s.escapeHTML(value);
+		const escapedValue = escapeHTML(value);
 		injectIntoHead(key, `<meta property="fb:app_id" content="${ escapedValue }">`);
 	});
 
@@ -157,9 +156,7 @@ renderDynamicCssList();
 // 	changed: renderDynamicCssList
 // });
 
-Settings.find({ _id: /theme-color-rc/i }, { fields: { value: 1 } }).observe({
-	changed: renderDynamicCssList,
-});
+settings.get(/theme-color-rc/i, () => renderDynamicCssList());
 
 injectIntoBody('icons', Assets.getText('public/icons.svg'));
 

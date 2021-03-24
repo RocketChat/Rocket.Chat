@@ -18,7 +18,7 @@ class RFC2813 {
 		this.serverPrefix = null;
 
 		// Hold the buffer while receiving
-		this.receiveBuffer = new Buffer('');
+		this.receiveBuffer = Buffer.from('');
 	}
 
 	/**
@@ -136,7 +136,7 @@ class RFC2813 {
 		}
 
 		// Reset the buffer
-		this.receiveBuffer = new Buffer('');
+		this.receiveBuffer = Buffer.from('');
 
 		lines.forEach((line) => {
 			if (line.length && !line.startsWith('\a')) {
@@ -169,7 +169,7 @@ class RFC2813 {
 		if (localCommandHandlers[command]) {
 			this.log(`Handling local command: ${ command }`);
 
-			localCommandHandlers[command].call(this, parameters);
+			localCommandHandlers[command].call(this, parameters, this);
 		} else {
 			this.log(`Unhandled local command: ${ JSON.stringify(command) }`);
 		}

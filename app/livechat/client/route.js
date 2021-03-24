@@ -1,7 +1,7 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { AccountBox } from '../../ui-utils';
-import '../../../client/omnichannel/routes';
+import '../../../client/views/omnichannel/routes';
 
 export const livechatManagerRoutes = FlowRouter.group({
 	prefix: '/omnichannel',
@@ -16,14 +16,6 @@ AccountBox.addRoute({
 	sideNav: 'omnichannelFlex',
 	i18nPageTitle: 'Livechat_Dashboard',
 	pageTemplate: 'livechatDashboard',
-}, livechatManagerRoutes, load);
-
-AccountBox.addRoute({
-	name: 'livechat-analytics',
-	path: '/analytics',
-	sideNav: 'omnichannelFlex',
-	i18nPageTitle: 'Analytics',
-	pageTemplate: 'livechatAnalytics',
 }, livechatManagerRoutes, load);
 
 AccountBox.addRoute({

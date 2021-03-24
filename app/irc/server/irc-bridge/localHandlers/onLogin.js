@@ -29,8 +29,13 @@ export default function handleOnLogin(login) {
 	});
 
 	this.sendCommand('registerUser', user);
-
 	const rooms = Rooms.findBySubscriptionUserId(user._id).fetch();
 
-	rooms.forEach((room) => this.sendCommand('joinedChannel', { room, user }));
+	rooms.forEach((room) => {
+		if (room.t === 'd') {
+			return;
+		}
+
+		this.sendCommand('joinedChannel', { room, user });
+	});
 }

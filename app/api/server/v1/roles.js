@@ -83,6 +83,7 @@ API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 			name: 1,
 			username: 1,
 			emails: 1,
+			avatarETag: 1,
 		};
 
 		if (!role) {
@@ -99,7 +100,7 @@ API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 			sort: { username: 1 },
 			skip: offset,
 			fields,
-		}).fetch();
-		return API.v1.success({ users });
+		});
+		return API.v1.success({ users: users.fetch(), total: users.count() });
 	},
 });

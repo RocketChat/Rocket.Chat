@@ -63,13 +63,25 @@ export class LivechatInquiry extends Base {
 	/*
 	* mark inquiry as queued
 	*/
-	queueInquiry(inquiryId, defaultAgent) {
+	queueInquiry(inquiryId) {
 		return this.update({
 			_id: inquiryId,
 		}, {
 			$set: {
 				status: 'queued',
-				...defaultAgent && { defaultAgent },
+			},
+		});
+	}
+
+	/*
+	* mark inquiry as ready
+	*/
+	readyInquiry(inquiryId) {
+		return this.update({
+			_id: inquiryId,
+		}, {
+			$set: {
+				status: 'ready',
 			},
 		});
 	}
@@ -107,6 +119,16 @@ export class LivechatInquiry extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	setDefaultAgentById(inquiryId, defaultAgent) {
+		return this.update({
+			_id: inquiryId,
+		}, {
+			$set: {
+				defaultAgent,
+			},
+		});
 	}
 
 	setNameByRoomId(rid, name) {

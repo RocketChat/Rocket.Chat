@@ -4,9 +4,9 @@ import s from 'underscore.string';
 import limax from 'limax';
 
 import { hasPermission } from '../../../authorization';
-import { Notifications } from '../../../notifications';
 import { EmojiCustom } from '../../../models';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
+import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	insertOrUpdateEmoji(emojiData) {
@@ -63,6 +63,10 @@ Meteor.methods({
 			throw new Meteor.Error('Custom_Emoji_Error_Name_Or_Alias_Already_In_Use', 'The custom emoji or one of its aliases is already in use', { method: 'insertOrUpdateEmoji' });
 		}
 
+		if (typeof emojiData.extension === 'undefined') {
+			throw new Meteor.Error('error-the-field-is-required', 'The custom emoji file is required', { method: 'insertOrUpdateEmoji' });
+		}
+
 		if (!emojiData._id) {
 			// insert emoji
 			const createEmoji = {
@@ -73,7 +77,7 @@ Meteor.methods({
 
 			const _id = EmojiCustom.create(createEmoji);
 
-			Notifications.notifyLogged('updateEmojiCustom', { emojiData: createEmoji });
+			api.broadcast('emoji.updateCustom', createEmoji);
 
 			return _id;
 		}
@@ -107,7 +111,7 @@ Meteor.methods({
 			EmojiCustom.setAliases(emojiData._id, []);
 		}
 
-		Notifications.notifyLogged('updateEmojiCustom', { emojiData });
+		api.broadcast('emoji.updateCustom', emojiData);
 
 		return true;
 	},

@@ -1,4 +1,4 @@
-FROM node:12.18.3-buster-slim
+FROM node:12.21.0-buster-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
@@ -10,7 +10,8 @@ RUN groupadd -g 65533 -r rocketchat \
     && apt-get update \
     && apt-get install -y --no-install-recommends fontconfig
 
-ADD . /app
+# --chown requires Docker 17.12 and works only on Linux
+ADD --chown=rocketchat:rocketchat . /app
 
 RUN aptMark="$(apt-mark showmanual)" \
     && apt-get install -y --no-install-recommends g++ make python ca-certificates \
@@ -26,8 +27,7 @@ RUN aptMark="$(apt-mark showmanual)" \
        | sort -u \
        | xargs -r apt-mark manual \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-    && npm cache clear --force \
-    && chown -R rocketchat:rocketchat /app
+    && npm cache clear --force
 
 USER rocketchat
 

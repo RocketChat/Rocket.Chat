@@ -128,6 +128,11 @@ export class PushClass {
 				return;
 			}
 
+			if (response?.statusCode === 422) {
+				logger.info('gateway rejected push notification. not retrying.', response);
+				return;
+			}
+
 			if (response?.statusCode === 401) {
 				logger.warn('Error sending push to gateway (not authorized)', response);
 				return;

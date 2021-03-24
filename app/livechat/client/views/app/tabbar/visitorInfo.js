@@ -18,6 +18,7 @@ import { APIClient } from '../../../../../utils/client';
 import { RoomManager } from '../../../../../ui-utils/client';
 import { DateFormat } from '../../../../../lib/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
+import { Markdown } from '../../../../../markdown/client';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -201,7 +202,13 @@ Template.visitorInfo.helpers({
 	},
 
 	canSendTranscript() {
-		return hasPermission('send-omnichannel-chat-transcript');
+		const room = Template.instance().room.get();
+		return !room.email && hasPermission('send-omnichannel-chat-transcript');
+	},
+
+	canPlaceChatOnHold() {
+		const room = Template.instance().room.get();
+		return room.open && !room.onHold && room.servedBy && room.lastMessage && !room.lastMessage?.token && settings.get('Livechat_allow_manual_on_hold');
 	},
 
 	roomClosedDateTime() {
@@ -243,6 +250,10 @@ Template.visitorInfo.helpers({
 	transcriptRequestedDateTime() {
 		const { requestedAt } = this;
 		return DateFormat.formatDateAndTime(requestedAt);
+	},
+
+	markdown(text) {
+		return Markdown.parse(text);
 	},
 });
 
@@ -317,6 +328,31 @@ Template.visitorInfo.events({
 		event.preventDefault();
 
 		instance.action.set('transcript');
+	},
+
+	'click .on-hold'(event) {
+		event.preventDefault();
+
+		modal.open({
+			title: t('Would_you_like_to_place_chat_on_hold'),
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: t('Yes'),
+		},
+		async () => {
+			const { success } = await APIClient.v1.post('livechat/room.onHold', { roomId: this.rid });
+			if (success) {
+				modal.open({
+					title: t('Chat_On_Hold'),
+					text: t('Chat_On_Hold_Successfully'),
+					type: 'success',
+					timer: 1500,
+					showConfirmButton: false,
+				});
+			}
+		});
 	},
 });
 

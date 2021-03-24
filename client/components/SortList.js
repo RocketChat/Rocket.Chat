@@ -11,9 +11,9 @@ function SortListItem({ text, icon, input }) {
 	return <Flex.Container>
 		<Box is='li'>
 			<Flex.Container>
-				<Box is='label' componentClassName='rc-popover__label' style={{ width: '100%' }}>
+				<Box is='label' className='rc-popover__label' style={{ width: '100%' }}>
 					<Flex.Item grow={0}>
-						<Box componentClassName='rc-popover__icon'><Icon name={icon} size={20}/></Box>
+						<Box className='rc-popover__icon'><Icon name={icon} size={20}/></Box>
 					</Flex.Item>
 					<Margins inline='x8'>
 						<Flex.Item grow={1}>
@@ -61,7 +61,7 @@ function SortModeList() {
 		</Margins>
 		<ul className='rc-popover__list'>
 			<Margins block='x8'>
-				<SortListItem icon={'sort'} text={t('Alphabetical')} input={<RadioButton name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />} />
+				<SortListItem icon={'sort-az'} text={t('Alphabetical')} input={<RadioButton name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />} />
 				<SortListItem icon={'clock'} text={t('Activity')} input={<RadioButton name='sidebarSortby' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />} />
 			</Margins>
 		</ul>

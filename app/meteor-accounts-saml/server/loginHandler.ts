@@ -11,7 +11,7 @@ const makeError = (message: string): Record<string, any> => ({
 });
 
 Accounts.registerLoginHandler('saml', function(loginRequest) {
-	if (!loginRequest.saml || !loginRequest.credentialToken) {
+	if (!loginRequest.saml || !loginRequest.credentialToken || typeof loginRequest.credentialToken !== 'string') {
 		return undefined;
 	}
 
@@ -32,9 +32,6 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 		return SAML.insertOrUpdateSAMLUser(userObject);
 	} catch (error) {
 		console.error(error);
-		return {
-			type: 'saml',
-			error,
-		};
+		return makeError(error.toString());
 	}
 });

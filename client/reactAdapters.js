@@ -1,3 +1,4 @@
+import { Emitter } from '@rocket.chat/emitter';
 import { Blaze } from 'meteor/blaze';
 import { HTML } from 'meteor/htmljs';
 import { Random } from 'meteor/random';
@@ -7,79 +8,64 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 
-let rootNode;
-let invalidatePortals = () => {};
-const portalsMap = new Map();
+const createPortalsSubscription = () => {
+	const portalsMap = new Map();
+	const emitter = new Emitter();
 
-const mountRoot = async () => {
+	return {
+		getCurrentValue: () => Array.from(portalsMap.values()),
+		subscribe: (callback) => emitter.on('update', callback),
+		delete: (key) => {
+			portalsMap.delete(key);
+			emitter.emit('update');
+		},
+		set: (key, portal) => {
+			portalsMap.set(key, { portal, key: Random.id() });
+			emitter.emit('update');
+		},
+		has: (key) => portalsMap.has(key),
+	};
+};
+
+export const portalsSubscription = createPortalsSubscription();
+
+let rootNode;
+
+export const mountRoot = async () => {
+	if (rootNode) {
+		return;
+	}
+
 	rootNode = document.getElementById('react-root');
 
 	if (!rootNode) {
 		rootNode = document.createElement('div');
 		rootNode.id = 'react-root';
-		document.body.appendChild(rootNode);
+		document.body.insertBefore(rootNode, document.body.firstChild);
 	}
 
 	const [
-		{ PureComponent, Suspense, createElement, lazy, useLayoutEffect, useState },
+		{ Suspense, createElement, lazy },
 		{ render },
 	] = await Promise.all([
 		import('react'),
 		import('react-dom'),
-		import('@rocket.chat/fuselage-hooks'),
 	]);
 
-	const LazyMeteorProvider = lazy(() => import('./providers/MeteorProvider'));
+	const LazyAppRoot = lazy(() => import('./components/AppRoot'));
 
-	class PortalWrapper extends PureComponent {
-		state = { errored: false }
-
-		static getDerivedStateFromError = () => ({ errored: true })
-
-		componentDidCatch = () => {}
-
-		render = () => (this.state.errored ? null : this.props.portal)
-	}
-
-	function AppRoot() {
-		const [portals, setPortals] = useState(() => Tracker.nonreactive(() => Array.from(portalsMap.values())));
-
-		useLayoutEffect(() => {
-			invalidatePortals = () => {
-				setPortals(Array.from(portalsMap.values()));
-			};
-			invalidatePortals();
-
-			return () => {
-				invalidatePortals = () => {};
-			};
-		}, []);
-
-		return createElement(Suspense, { fallback: null },
-			createElement(LazyMeteorProvider, {},
-				portals.map(({ key, portal }) => createElement(PortalWrapper, { key, portal })),
-			),
-		);
-	}
-
-	render(createElement(AppRoot), rootNode);
+	render(createElement(Suspense, { fallback: null }, createElement(LazyAppRoot)), rootNode);
 };
 
 const unregisterPortal = (key) => {
-	portalsMap.delete(key);
-	invalidatePortals();
+	portalsSubscription.delete(key);
 };
 
 export const registerPortal = (key, portal) => {
-	if (!rootNode) {
-		mountRoot();
-	}
-
-	portalsMap.set(key, { portal, key: Random.id() });
-	invalidatePortals();
+	mountRoot();
+	portalsSubscription.set(key, portal);
 	return () => unregisterPortal(key);
 };
-
 
 const createLazyElement = async (importFn, propsFn) => {
 	const { createElement, lazy, useEffect, useState, memo, Suspense } = await import('react');
@@ -118,6 +104,8 @@ export const createEphemeralPortal = async (importFn, propsFn, node) => {
 	return registerPortal(node, portal);
 };
 
+const unregister = Symbol('unregister');
+
 export const createTemplateForComponent = (
 	name,
 	importFn,
@@ -130,7 +118,6 @@ export const createTemplateForComponent = (
 	}
 
 	const template = new Blaze.Template(name, renderContainerView);
-	let unregister;
 	template.onRendered(async function() {
 		const props = new ReactiveVar(this.data);
 		this.autorun(() => {
@@ -143,11 +130,11 @@ export const createTemplateForComponent = (
 			return;
 		}
 
-		unregister = await registerPortal(this, portal);
+		this[unregister] = await registerPortal(this, portal);
 	});
 
 	template.onDestroyed(function() {
-		unregister && unregister();
+		this[unregister]?.();
 	});
 
 	Template[name] = template;
@@ -162,7 +149,7 @@ export const renderRouteComponent = (importFn, {
 } = {}) => {
 	const routeName = FlowRouter.getRouteName();
 
-	if (portalsMap.has(routeName)) {
+	if (portalsSubscription.has(routeName)) {
 		return;
 	}
 

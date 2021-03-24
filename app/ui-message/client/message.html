@@ -19,9 +19,7 @@
 					</button>
 				{{else}}
 					<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
-						<div class="avatar">
-							<div class="avatar-image" style="background-image:url({{encodeURI msg.avatar}})"></div>
-						</div>
+						{{> avatar url=avatarFromMessage}}
 					</button>
 				{{/if}}
 			{{else}}
@@ -77,6 +75,11 @@
 					{{#if showStar}}
 						<span title="{{_ "Message_has_been_starred"}}" class="starred"><i class="icon-star"></i></span>
 					{{/if}}
+					{{#if following }}
+						{{#unless msg.tcount}}
+							<span title="{{_ "Following"}}" class="following"><i class="icon-bell"></i></span>
+						{{/unless}}
+					{{/if}}
 					{{#if msg.alert}}
 						<div title="{{_ msg.alert }}" class="message-unread"></div>
 					{{/if}}
@@ -103,6 +106,9 @@
 					{{else}}
 						{{{body}}}
 					{{/if}}
+					{{#if msg.location}}
+						{{> messageLocation location=msg.location}}
+					{{/if}}
 				</div>
 			</div>
 
@@ -114,52 +120,19 @@
 					{{> oembedBaseWidget}}
 				{{/each}}
 			{{/if}}
-			{{#each msg.attachments}}
-				{{injectMessage . ../msg}}
-				{{injectSettings . ../settings}}
-				{{injectIndex . @index}}
-				{{> messageAttachment}}
-			{{/each}}
-
-			{{#if msg.drid}}
-				<div class="message-discussion">
-					{{#if $gt msg.dcount 0}}
-						<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small" data-rid={{roomId}}>
-							<!-- {{> icon icon="discussion"}} -->
-							<span>{{{_ 'message_counter' counter=i18nDiscussionCounter count=msg.dcount }}}</span>
-						</button>
-					{{else}}
-						<button class="js-navigate-to-discussion rc-button rc-button--primary rc-button--small no-replies" data-rid={{roomId}}>
-							{{_ "No_messages_yet" }}
-						</button>
-					{{/if}}
-					<span class="discussion-reply-lm">{{ formatDateAndTime msg.dlm }}</span>
-					{{# if unread }}
-						<div title="{{_ 'Unread' }}" class="message-unread"></div>
-					{{/if}}
-				</div>
+			{{#if hasAttachments}}
+				{{> reactAttachments attachments=msg.attachments file=msg.file }}
 			{{/if}}
+			{{#if msg.drid}}
+				{{> DiscussionMetric count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
+			{{/if}}
+			
 			{{#if $and settings.showReplyButton msg.tcount}}
-				<div class="message-thread">
-					<button class="js-open-thread rc-button rc-button--primary rc-button--small" data-rid={{roomId}}>
-						{{> icon icon="thread"}}
-						{{_ 'Reply'}}
-					</button>
-					<span class='reply-counter'>{{_ i18nReplyCounter counter=msg.tcount }}</span>
-					<span class="discussion-reply-lm">{{ formatDateAndTime msg.tlm}}</span>
-					{{# if unread }}
-						<div title="{{_ 'Unread' }}" class="message-unread {{class}}"></div>
-					{{/if}}
-					{{# if following }}
-					<div role="button" class="js-unfollow-thread" title="{{_ "Following"}}">
-						{{> icon icon="bell" block="thread-icons"}}
-					</div>
-					{{else}}
-					<div role="button" class="js-follow-thread" title="{{_ "Not_following"}}">
-						{{> icon icon="bell-off" block="thread-icons"}}
-					</div>
-					{{/if}}
-				</div>
+			    {{> ThreadMetric counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
+			{{/if}}
+
+			{{#if broadcast}}
+			 	{{> BroadCastMetric mid=msg._id username=msg.u.username replyBroadcast=actions.replyBroadcast }}
 			{{/if}}
 
 			{{#with readReceipt}}
@@ -183,30 +156,8 @@
 				</div>
 			{{/unless}}
 			{{#unless hideActionLinks}}
-			<ul class="actionLinks">
-				{{#each actionLink in actionLinks}}
-					<li class="color-primary-action-color">
-						<span class="rc-button rc-button--primary rc-button--small" style="display: inline-block; line-height: 1.75rem" data-actionlink="{{actionLink.id}}">
-							{{#if actionLink.icon}}
-								<i class="{{actionLink.icon}}"></i>
-							{{/if}}
-							{{#if actionLink.i18nLabel}}
-								{{_ actionLink.i18nLabel}}
-							{{else}}
-								{{actionLink.label}}
-							{{/if}}
-						</span>
-					</li>
-				{{/each}}
-			</ul>
+				{{> MessageActions mid=msg._id actions=actionLinks runAction=(actions.runAction msg)}}
 			{{/unless}}
-			{{#if broadcast}}
-				{{#with msg}}
-					<button type="button" class="js-reply-broadcast rc-button rc-button--primary rc-button--small rc-button--outline" name="button">
-						{{> icon icon="reply"}} {{_'Reply'}}
-					</button>
-				{{/with}}
-			{{/if}}
 			{{#unless hideReactions}}
 			<ul class="reactions">
 				{{#each reaction in reactions}}
@@ -218,9 +169,11 @@
 						</span>
 					</li>
 				{{/each}}
-				<li class="add-reaction">
-					<span class="icon-people-plus"></span>
-				</li>
+				{{#unless hideAddReaction}}
+					<li class="add-reaction">
+						<span class="icon-people-plus"></span>
+					</li>
+				{{/unless}}
 			</ul>
 			{{/unless}}
 		{{/unless}}

@@ -4,9 +4,10 @@ import { Match } from 'meteor/check';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
-import { hasPermission, hasAtLeastOnePermission, canAccessRoom } from '../../../authorization/server';
+import { hasPermission, hasAtLeastOnePermission, canAccessRoom, hasAllPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
+import { Team } from '../../../../server/sdk';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
@@ -223,12 +224,16 @@ API.v1.addRoute('groups.create', { authRequired: true }, {
 		if (this.bodyParams.customFields && !(typeof this.bodyParams.customFields === 'object')) {
 			return API.v1.failure('Body param "customFields" must be an object if provided');
 		}
+		if (this.bodyParams.extraData && !(typeof this.bodyParams.extraData === 'object')) {
+			return API.v1.failure('Body param "extraData" must be an object if provided');
+		}
 
 		const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
 
 		let id;
+
 		Meteor.runAsUser(this.userId, () => {
-			id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly, this.bodyParams.customFields);
+			id = Meteor.call('createPrivateGroup', this.bodyParams.name, this.bodyParams.members ? this.bodyParams.members : [], readOnly, this.bodyParams.customFields, this.bodyParams.extraData);
 		});
 
 		return API.v1.success({
@@ -834,5 +839,53 @@ API.v1.addRoute('groups.setEncrypted', { authRequired: true }, {
 		return API.v1.success({
 			group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 		});
+	},
+});
+
+API.v1.addRoute('groups.convertToTeam', { authRequired: true }, {
+	post() {
+		if (!hasAllPermission(this.userId, ['create-team', 'edit-room'])) {
+			return API.v1.unauthorized();
+		}
+
+		const { roomId, roomName } = this.requestParams();
+
+		if (!roomId && !roomName) {
+			return API.v1.failure('The parameter "roomId" or "roomName" is required');
+		}
+
+		const room = findPrivateGroupByIdOrName({
+			params: {
+				roomId,
+				roomName,
+			},
+			userId: this.userId,
+		});
+
+		if (!room) {
+			return API.v1.failure('Private group not found');
+		}
+
+		const subscriptions = Subscriptions.findByRoomId(room.rid, {
+			fields: { 'u._id': 1 },
+		});
+
+		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
+
+		const teamData = {
+			team: {
+				name: room.name,
+				type: 1,
+			},
+			members,
+			room: {
+				name: room.name,
+				id: room.rid,
+			},
+		};
+
+		const team = Promise.await(Team.create(this.userId, teamData));
+
+		return API.v1.success({ team });
 	},
 });

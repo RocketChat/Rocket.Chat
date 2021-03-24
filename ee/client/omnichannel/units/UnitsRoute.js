@@ -4,19 +4,19 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import React, { useMemo, useCallback, useState } from 'react';
 import { Table, Icon, Button } from '@rocket.chat/fuselage';
 
-import { Th } from '../../../../client/components/GenericTable';
+import GenericTable from '../../../../client/components/GenericTable';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useEndpointDataExperimental } from '../../../../client/hooks/useEndpointDataExperimental';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
-import VerticalBar from '../../../../client/components/basic/VerticalBar';
+import VerticalBar from '../../../../client/components/VerticalBar';
 import UnitsPage from './UnitsPage';
 import { UnitEditWithData, UnitNew } from './EditUnit';
-import DeleteWarningModal from '../../../../client/omnichannel/DeleteWarningModal';
+import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
 import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
 
 export function RemoveUnitButton({ _id, reload }) {
@@ -97,12 +97,12 @@ function UnitsRoute() {
 		id,
 	}));
 
-	const { data, reload } = useEndpointDataExperimental('livechat/units.list', query) || {};
+	const { value: data = {}, reload } = useEndpointData('livechat/units.list', query);
 
 	const header = useMemo(() => [
-		<Th key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name' w='x120'>{t('Name')}</Th>,
-		<Th key={'visibility'} direction={sort[1]} active={sort[0] === 'visibility'} onClick={onHeaderClick} sort='visibility' w='x200'>{t('Visibility')}</Th>,
-		<Th key={'remove'} w='x40'>{t('Remove')}</Th>,
+		<GenericTable.HeaderCell key={'name'} direction={sort[1]} active={sort[0] === 'name'} onClick={onHeaderClick} sort='name'>{t('Name')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'visibility'} direction={sort[1]} active={sort[0] === 'visibility'} onClick={onHeaderClick} sort='visibility'>{t('Visibility')}</GenericTable.HeaderCell>,
+		<GenericTable.HeaderCell key={'remove'} w='x60'>{t('Remove')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t]);
 
 	const renderRow = useCallback(({ _id, name, visibility }) => <Table.Row key={_id} tabIndex={0} role='link' onClick={onRowClick(_id)} action qa-user-id={_id}>
@@ -120,18 +120,18 @@ function UnitsRoute() {
 			unitsRoute.push({});
 		};
 
-		return <VerticalBar className={'contextual-bar'}>
+		return <VerticalBar>
 			<VerticalBar.Header>
 				{context === 'edit' && t('Edit_Unit')}
 				{context === 'new' && t('New_Unit')}
 				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
 
-			{context === 'edit' && <UnitEditWithData unitId={id} reload={reload}/>}
-			{context === 'new' && <UnitNew reload={reload} />}
+			{context === 'edit' && <UnitEditWithData unitId={id} reload={reload} allUnits={data} />}
+			{context === 'new' && <UnitNew reload={reload} allUnits={data} />}
 
 		</VerticalBar>;
-	}, [t, context, id, unitsRoute, reload]);
+	}, [t, context, id, unitsRoute, reload, data]);
 
 	if (!canViewUnits) {
 		return <NotAuthorizedPage />;
@@ -146,7 +146,7 @@ function UnitsRoute() {
 		reload={reload}
 		header={header}
 		renderRow={renderRow}
-		title={'Units'}>
+		title={t('Units')}>
 		<EditUnitsTab />
 	</UnitsPage>;
 }

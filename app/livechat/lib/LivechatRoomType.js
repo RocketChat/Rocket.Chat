@@ -5,7 +5,7 @@ import { ChatRoom } from '../../models';
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization';
 import { openRoom } from '../../ui-utils';
-import { RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
+import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
 import { getAvatarURL } from '../../utils/lib/getAvatarURL';
 
 let LivechatInquiry;
@@ -17,7 +17,7 @@ class LivechatRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'live',
-			path: '/live/:id',
+			path: '/live/:id/:tab?/:context?',
 		});
 	}
 
@@ -85,6 +85,10 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
+	allowMemberAction(room, action) {
+		return [RoomMemberActions.INVITE, RoomMemberActions.JOIN].includes(action);
+	}
+
 	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
@@ -118,19 +122,12 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		if (!room || !room.v || room.v.username !== username) {
 			return false;
 		}
-		const button = instance.tabBar.getButtons().find((button) => button.id === 'visitor-info');
-		if (!button) {
-			return false;
-		}
 
-		const { template, i18nTitle: label, icon } = button;
-		instance.tabBar.setTemplate(template);
-		instance.tabBar.setData({
-			label,
-			icon,
-		});
+		instance.tabBar.openUserInfo();
+		return true;
+	}
 
-		instance.tabBar.open();
+	showQuickActionButtons() {
 		return true;
 	}
 }

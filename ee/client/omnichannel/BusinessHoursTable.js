@@ -1,17 +1,18 @@
-import { Table, Callout, Box, TextInput, Icon, Button } from '@rocket.chat/fuselage';
+import { Table, Callout, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, memo, useMemo, useEffect } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
+import DeleteWarningModal from '../../../client/components/DeleteWarningModal';
 import GenericTable from '../../../client/components/GenericTable';
+import FilterByText from '../../../client/components/FilterByText';
+import { useSetModal } from '../../../client/contexts/ModalContext';
 import { useRoute } from '../../../client/contexts/RouterContext';
+import { useMethod } from '../../../client/contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../client/hooks/useResizeInlineBreakpoint';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../client/hooks/useEndpointDataExperimental';
-import DeleteWarningModal from '../../../client/omnichannel/DeleteWarningModal';
-import { useSetModal } from '../../../client/contexts/ModalContext';
-import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
-import { useMethod } from '../../../client/contexts/ServerContext';
-
+import { useEndpointData } from '../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../client/hooks/useAsyncState';
 
 export function RemoveBusinessHourButton({ _id, type, reload }) {
 	const removeBusinessHour = useMethod('livechat:removeBusinessHour');
@@ -49,22 +50,6 @@ export function RemoveBusinessHourButton({ _id, type, reload }) {
 		</Button>
 	</Table.Cell>;
 }
-
-const FilterByText = memo(({ setFilter, ...props }) => {
-	const t = useTranslation();
-
-	const [text, setText] = useState('');
-
-	const handleChange = useMutableCallback((event) => setText(event.currentTarget.value), []);
-
-	useEffect(() => {
-		setFilter({ text });
-	}, [setFilter, text]);
-
-	return <Box mb='x16' is='form' onSubmit={useMutableCallback((e) => e.preventDefault(), [])} display='flex' flexDirection='column' {...props}>
-		<TextInput placeholder={t('Search_Apps')} addon={<Icon name='magnifier' size='x20'/>} onChange={handleChange} value={text} />
-	</Box>;
-});
 
 const BusinessHoursRow = memo(function BusinessHoursRow(props) {
 	const {
@@ -138,9 +123,9 @@ const BusinessHoursTableContainer = () => {
 	const t = useTranslation();
 	const [params, setParams] = useState(() => ({ current: 0, itemsPerPage: 25, text: '' }));
 
-	const { data, state, reload } = useEndpointDataExperimental(`livechat/business-hours.list?count=${ params.itemsPerPage }&offset=${ params.current }&name=${ params.text }`);
+	const { value: data, phase: state, reload } = useEndpointData(`livechat/business-hours.list?count=${ params.itemsPerPage }&offset=${ params.current }&name=${ params.text }`);
 
-	if (state === ENDPOINT_STATES.ERROR) {
+	if (state === AsyncStatePhase.REJECTED) {
 		return <Callout>
 			{t('Error')}: error
 		</Callout>;
@@ -183,7 +168,7 @@ export function BusinessHoursTable({ businessHours, totalbusinessHours, params, 
 		total={totalbusinessHours}
 		params={params}
 		setParams={onChangeParams}
-		FilterComponent={FilterByText}
+		renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
 	>
 		{(props) => <BusinessHoursRow key={props._id} medium={onMediumBreakpoint} reload={reload} {...props} />}
 	</GenericTable>;

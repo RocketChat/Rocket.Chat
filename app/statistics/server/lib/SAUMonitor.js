@@ -7,6 +7,7 @@ import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { Sessions } from '../../../models/server';
 import { Logger } from '../../../logger';
 import { aggregates } from '../../../models/server/models/Sessions';
+import { getMostImportantRole } from './getMostImportantRole';
 
 const getDateObj = (dateTime = new Date()) => ({
 	day: dateTime.getDate(),
@@ -125,9 +126,12 @@ export class SAUMonitorClass {
 				return;
 			}
 
-			const userId = info.user._id;
+			const { roles, _id: userId } = info.user;
+
+			const mostImportantRole = getMostImportantRole(roles);
+
 			const loginAt = new Date();
-			const params = { userId, loginAt, ...getDateObj() };
+			const params = { userId, roles, mostImportantRole, loginAt, ...getDateObj() };
 			this._handleSession(info.connection, params);
 			this._updateConnectionInfo(info.connection.id, { loginAt });
 		});
@@ -340,7 +344,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		logger.info('[aggregate] - Aggregatting data.');
+		logger.info('[aggregate] - Aggregating data.');
 
 		const date = new Date();
 		date.setDate(date.getDate() - 0); // yesterday

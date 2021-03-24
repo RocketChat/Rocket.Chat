@@ -7,6 +7,10 @@ import { Analytics } from '../../../../../app/models/server';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = (user) => {
+	if (user.roles?.includes('anonymous')) {
+		return;
+	}
+
 	Promise.await(AnalyticsRaw.saveUserData({
 		date: convertDateToInt(user.ts),
 		user,
@@ -25,7 +29,10 @@ export const fillFirstDaysOfUsersIfNeeded = async (date) => {
 			start: startOfPeriod,
 			end: date,
 		});
-		users.forEach((user) => Analytics.insert(user));
+		users.forEach((user) => Analytics.insert({
+			...user,
+			date: parseInt(user.date),
+		}));
 	}
 };
 

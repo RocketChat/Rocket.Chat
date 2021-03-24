@@ -1,11 +1,15 @@
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
+import { escapeRegExp } from '../../../../../../lib/escapeRegExp';
 import LivechatTag from '../../../../models/server/raw/LivechatTag';
 
-export async function findTags({ userId, pagination: { offset, count, sort } }) {
+export async function findTags({ userId, text, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'manage-livechat-tags')) {
 		throw new Error('error-not-authorized');
 	}
-	const cursor = LivechatTag.find({}, {
+	const filterReg = new RegExp(escapeRegExp(text), 'i');
+	const query = { ...text && { $or: [{ name: filterReg }, { description: filterReg }] } };
+
+	const cursor = LivechatTag.find(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,

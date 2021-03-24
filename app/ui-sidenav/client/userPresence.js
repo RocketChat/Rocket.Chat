@@ -7,6 +7,7 @@ import mem from 'mem';
 
 import { APIClient } from '../../utils/client';
 import { saveUser, interestedUserIds } from '../../../imports/startup/client/listenActiveUsers';
+import { Presence } from '../../../client/lib/presence';
 
 import './userPresence.html';
 
@@ -42,9 +43,9 @@ const getAll = _.debounce(async function getAll() {
 			reject();
 		});
 	}
-}, 1000);
+}, 100);
 
-const get = mem(function get(id) {
+export const get = mem(function get(id) {
 	interestedUserIds.add(id);
 	const promise = pending.get(id) || new Promise((resolve, reject) => {
 		promises.set(id, { resolve, reject });
@@ -79,10 +80,13 @@ Tracker.autorun(() => {
 	const isConnected = Meteor.status().connected;
 	if (!Meteor.userId() || (wasConnected && !isConnected)) {
 		wasConnected = isConnected;
+		Presence.reset();
 		return Meteor.users.update({ status: { $exists: true } }, { $unset: { status: true } }, { multi: true });
 	}
 	mem.clear(get);
 	wasConnected = isConnected;
+
+	Presence.restart();
 
 	if (featureExists) {
 		for (const node of data.keys()) {
@@ -91,9 +95,12 @@ Tracker.autorun(() => {
 		}
 		return;
 	}
+
+
 	getAll();
 
 	Accounts.onLogout(() => {
+		Presence.reset();
 		interestedUserIds.clear();
 	});
 });

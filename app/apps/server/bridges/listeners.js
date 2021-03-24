@@ -28,6 +28,8 @@ export class AppListenerBridge {
 				case AppInterface.IPostRoomDeleted:
 				case AppInterface.IPreRoomUserJoined:
 				case AppInterface.IPostRoomUserJoined:
+				case AppInterface.IPreRoomUserLeave:
+				case AppInterface.IPostRoomUserLeave:
 					return 'roomEvent';
 				/**
 				 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
@@ -38,11 +40,10 @@ export class AppListenerBridge {
 				case AppInterface.IPostLivechatAgentAssigned:
 				case AppInterface.IPostLivechatAgentUnassigned:
 				case AppInterface.IPostLivechatRoomTransferred:
+				case AppInterface.IPostLivechatGuestSaved:
+				case AppInterface.IPostLivechatRoomSaved:
 					return 'livechatEvent';
-				case AppInterface.IUIKitInteractionHandler:
-				case AppInterface.IUIKitLivechatInteractionHandler:
-				case AppInterface.IPostExternalComponentOpened:
-				case AppInterface.IPostExternalComponentClosed:
+				default:
 					return 'defaultEvent';
 			}
 		})();
@@ -77,6 +78,13 @@ export class AppListenerBridge {
 						joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser),
 						invitingUser: this.orch.getConverters().get('users').convertToApp(invitingUser),
 					};
+				case AppInterface.IPreRoomUserLeave:
+				case AppInterface.IPostRoomUserLeave:
+					const [leavingUser] = payload;
+					return {
+						room: rm,
+						leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser),
+					};
 				default:
 					return rm;
 			}
@@ -107,7 +115,10 @@ export class AppListenerBridge {
 					from: this.orch.getConverters().get(converter).convertById(data.from),
 					to: this.orch.getConverters().get(converter).convertById(data.to),
 				});
-
+			case AppInterface.IPostLivechatGuestSaved:
+				return this.orch.getManager().getListenerManager().executeListener(inte, this.orch.getConverters().get('visitors').convertById(data));
+			case AppInterface.IPostLivechatRoomSaved:
+				return this.orch.getManager().getListenerManager().executeListener(inte, this.orch.getConverters().get('rooms').convertById(data));
 			default:
 				const room = this.orch.getConverters().get('rooms').convertRoom(data);
 

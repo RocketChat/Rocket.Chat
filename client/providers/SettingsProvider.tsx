@@ -66,7 +66,8 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({
 	const querySettings = useMemo(
 		() => createReactiveSubscriptionFactory(
 			(query = {}) => cachedCollection.collection.find({
-				...('_id' in query) && { _id: { $in: query._id } },
+				...('_id' in query && Array.isArray(query._id)) && { _id: { $in: query._id } },
+				...('_id' in query && !Array.isArray(query._id)) && { _id: query._id },
 				...('group' in query) && { group: query.group },
 				...('section' in query) && (
 					query.section
@@ -90,7 +91,9 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({
 	);
 
 	const saveSettings = useMethod('saveSettings');
-	const dispatch = useCallback((changes) => saveSettings(changes), [saveSettings]);
+	const dispatch = useCallback(async (changes) => {
+		await saveSettings(changes);
+	}, [saveSettings]);
 
 	const contextValue = useMemo<SettingsContextValue>(() => ({
 		hasPrivateAccess,

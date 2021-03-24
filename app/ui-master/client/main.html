@@ -1,5 +1,4 @@
 <body class="color-primary-font-color">
-	<div id='alert-anchor'></div>
 </body>
 
 <template name="main">
@@ -27,7 +26,7 @@
 						{{#if require2faSetup}}
 							<main id="rocket-chat" class="{{embeddedVersion}}">
 								 <div class="rc-old main-content content-background-color">
-									{{> Template.dynamic template="accountSecurity"}}
+									{{> accountSecurity }}
 								</div>
 							</main>
 						{{else}}

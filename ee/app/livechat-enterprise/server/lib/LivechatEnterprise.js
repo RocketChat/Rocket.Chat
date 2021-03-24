@@ -2,11 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Users } from '../../../../../app/models';
+import { LivechatInquiry, OmnichannelQueue } from '../../../../../app/models/server/raw';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
+import { LivechatRooms, Subscriptions } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
-import { removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
+import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../app/callbacks';
+import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 
 export const LivechatEnterprise = {
 	addMonitor(username) {
@@ -160,4 +166,83 @@ export const LivechatEnterprise = {
 		updateInquiryQueuePriority(roomId, priority);
 		updateRoomPriorityHistory(roomId, user, priority);
 	},
+
+	placeRoomOnHold(room) {
+		const { _id: roomId, onHold } = room;
+		if (!roomId || onHold) {
+			return false;
+		}
+		LivechatRooms.setOnHold(roomId);
+		Subscriptions.setOnHold(roomId);
+
+		Meteor.defer(() => {
+			callbacks.run('livechat:afterOnHold', room);
+		});
+
+		return true;
+	},
+
+	async releaseOnHoldChat(room) {
+		const { _id: roomId, onHold } = room;
+		if (!roomId || !onHold) {
+			return;
+		}
+
+		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
+		LivechatRooms.unsetAllOnHoldFieldsByRoomId(roomId);
+		Subscriptions.unsetOnHold(roomId);
+	},
 };
+
+const RACE_TIMEOUT = 1000;
+
+const queueWorker = {
+	running: false,
+	queues: [],
+	async start() {
+		if (this.running) {
+			return;
+		}
+
+		await this.getActiveQueues();
+		await OmnichannelQueue.initQueue();
+		this.running = true;
+		return this.execute();
+	},
+	async stop() {
+		this.running = false;
+		return OmnichannelQueue.stopQueue();
+	},
+	async getActiveQueues() {
+		// undefined = public queue(without department)
+		return [undefined].concat(await LivechatInquiry.getDistinctQueuedDepartments());
+	},
+	async nextQueue() {
+		if (!this.queues.length) {
+			this.queues = await this.getActiveQueues();
+		}
+
+		return this.queues.shift();
+	},
+	async execute() {
+		if (!this.running) {
+			return;
+		}
+
+		const queue = await this.nextQueue();
+		setTimeout(this.checkQueue.bind(this, queue), RACE_TIMEOUT);
+	},
+
+	async checkQueue(queue) {
+		if (await OmnichannelQueue.lockQueue()) {
+			await processWaitingQueue(queue);
+			await OmnichannelQueue.unlockQueue();
+		}
+
+		this.execute();
+	},
+};
+
+settings.onload('Livechat_Routing_Method', function() {
+	RoutingManager.getConfig().autoAssignAgent ? queueWorker.start() : queueWorker.stop();
+});

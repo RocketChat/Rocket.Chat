@@ -537,6 +537,83 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
+	it('/groups.online', (done) => {
+		request.get(api('groups.online'))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('online').and.to.be.an('array');
+			})
+			.end(done);
+	});
+
+	it('/groups.members', (done) => {
+		request.get(api('groups.members'))
+			.set(credentials)
+			.query({
+				roomId: group._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('members').and.to.be.an('array');
+			})
+			.end(done);
+	});
+
+	it('/groups.files', (done) => {
+		request.get(api('groups.files'))
+			.set(credentials)
+			.query({
+				roomId: group._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('files').and.to.be.an('array');
+			})
+			.end(done);
+	});
+
+	describe('/groups.listAll', () => {
+		it('should fail if the user doesnt have view-room-administration permission', (done) => {
+			updatePermission('view-room-administration', []).then(() => {
+				request.get(api('groups.listAll'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should succeed if user has view-room-administration permission', (done) => {
+			updatePermission('view-room-administration', ['admin']).then(() => {
+				request.get(api('groups.listAll'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('groups').and.to.be.an('array');
+					})
+					.end(done);
+			});
+		});
+	});
+
 	it('/groups.counters', (done) => {
 		request.get(api('groups.counters'))
 			.set(credentials)
@@ -1175,6 +1252,84 @@ describe('[Groups]', function() {
 			expect(roomInfo).to.have.a.property('success', true);
 			expect(roomInfo.group).to.have.a.property('_id', testGroup._id);
 			expect(roomInfo.group).to.have.a.property('encrypted', false);
+		});
+	});
+
+	describe('/groups.convertToTeam', () => {
+		before((done) => {
+			request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({ name: `group-${ Date.now() }` })
+				.expect(200)
+				.expect((response) => {
+					this.newGroup = response.body.group;
+				})
+				.then(() => done());
+		});
+
+		it('should fail to convert group if lacking edit-room permission', (done) => {
+			updatePermission('create-team', []).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('groups.convertToTeam'))
+						.set(credentials)
+						.send({ roomId: this.newGroup._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should fail to convert group if lacking create-team permission', (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', []).then(() => {
+					request.post(api('groups.convertToTeam'))
+						.set(credentials)
+						.send({ roomId: this.newGroup._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should successfully convert a group to a team', (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('groups.convertToTeam'))
+						.set(credentials)
+						.send({ roomId: this.newGroup._id })
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should fail to convert group without the required parameters', (done) => {
+			request.post(api('groups.convertToTeam'))
+				.set(credentials)
+				.send({})
+				.expect(400)
+				.end(done);
+		});
+
+		it('should fail to convert group if it\'s already taken', (done) => {
+			request.post(api('groups.convertToTeam'))
+				.set(credentials)
+				.send({ roomId: this.newGroup._id })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
+				})
+				.end(done);
 		});
 	});
 });

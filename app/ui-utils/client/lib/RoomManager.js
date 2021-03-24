@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -13,7 +14,7 @@ import { menu } from './menu';
 import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription } from '../../../models';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
@@ -48,6 +49,33 @@ export const RoomManager = new function() {
 	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
+
+	const handleTrackSettingsChange = (msg) => {
+		const openedRoom = Tracker.nonreactive(() => Session.get('openedRoom'));
+		if (openedRoom !== msg.rid) {
+			return;
+		}
+
+		Tracker.nonreactive(() => {
+			if (msg.t === 'room_changed_privacy') {
+				const type = FlowRouter.current().route.name === 'channel' ? 'c' : 'p';
+				RoomManager.close(type + FlowRouter.getParam('name'));
+
+				const subscription = ChatSubscription.findOne({ rid: msg.rid });
+				const route = subscription.t === 'c' ? 'channel' : 'group';
+				FlowRouter.go(route, { name: subscription.name }, FlowRouter.current().queryParams);
+			}
+
+			if (msg.t === 'r') {
+				const room = ChatRoom.findOne(msg.rid);
+				if (room.name !== FlowRouter.getParam('name')) {
+					RoomManager.close(room.t + FlowRouter.getParam('name'));
+					roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+				}
+			}
+		});
+	};
+
 	const Cls = class {
 		static initClass() {
 			this.prototype.openedRooms = openedRooms;
@@ -93,6 +121,8 @@ export const RoomManager = new function() {
 
 								msg.name = room.name;
 								Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+
+								handleTrackSettingsChange(msg);
 
 								callbacks.run('streamMessage', msg);
 
@@ -177,6 +207,7 @@ export const RoomManager = new function() {
 				const openedRoom = openedRooms[key];
 				this.close(openedRoom.typeName);
 			});
+			Session.set('openedRoom');
 		}
 
 
@@ -244,10 +275,13 @@ export const RoomManager = new function() {
 			const [messagesBox] = dom.getElementsByClassName('messages-box');
 			const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
 			const totalHeight = $(' > .wrapper > ul', messagesBox).height() + 40;
+			if (!ticksBar) {
+				return;
+			}
 
 			// TODO: thread quotes should NOT have mention links at all
 			const mentionsSelector = '.message .body .mention-link--me, .message .body .mention-link--group';
-			ticksBar.innerHTML = Array.from(messagesBox.querySelectorAll(mentionsSelector))
+			ticksBar.innerHTML = Array.from(messagesBox?.querySelectorAll(mentionsSelector) || [])
 				.map((mentionLink) => {
 					const topOffset = $(mentionLink).offset().top + scrollTop;
 					const percent = (100 / totalHeight) * topOffset;

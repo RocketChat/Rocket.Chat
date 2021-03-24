@@ -15,4 +15,8 @@ export class LivechatInquiryRaw extends BaseRaw {
 		};
 		return this.findOne(query, options);
 	}
+
+	getDistinctQueuedDepartments() {
+		return this.col.distinct('department', { status: 'queued' });
+	}
 }

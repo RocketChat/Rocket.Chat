@@ -23,11 +23,19 @@ function joinChannel(parameters) {
 	});
 }
 
-function joinedChannel(parameters) {
-	const {
-		room: { name: roomName },
-		user: { profile: { irc: { nick } } },
-	} = parameters;
+function joinedChannel(parameters, handler) {
+	const roomName = parameters.room?.name;
+	const nick = parameters.user?.profile?.irc?.nick;
+
+	if (!roomName) {
+		handler.log('Skipping room with no name.');
+		return;
+	}
+
+	if (!nick) {
+		handler.log('Skipping user with no irc nick.');
+		return;
+	}
 
 	this.write({
 		prefix: nick,
@@ -56,12 +64,16 @@ function sentMessage(parameters) {
 		message,
 	} = parameters;
 
-	this.write({
-		prefix: nick,
-		command: 'PRIVMSG',
-		parameters: [to],
-		trailer: message,
-	});
+	// eslint-disable-next-line no-control-regex
+	const lines = message.toString().split(/\r\n|\r|\n|\u0007/);
+	for (const line of lines) {
+		this.write({
+			prefix: nick,
+			command: 'PRIVMSG',
+			parameters: [to],
+			trailer: line,
+		});
+	}
 }
 
 function disconnected(parameters) {

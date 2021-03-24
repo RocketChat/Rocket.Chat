@@ -1,3 +1,4 @@
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
@@ -25,12 +26,107 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findOneAgentById(_id, options) {
+		const query = {
+			_id,
+			roles: 'livechat-agent',
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findUsersInRolesWithQuery(roles, query, options) {
 		roles = [].concat(roles);
 
 		Object.assign(query, { roles: { $in: roles } });
 
 		return this.find(query, options);
+	}
+
+	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
+		}
+
+		const query = {
+			__rooms: rid,
+			username,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByIdAndLoginHashedToken(_id, token, options = {}) {
+		const query = {
+			_id,
+			'services.resume.loginTokens.hashedToken': token,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findByActiveUsersExcept(searchTerm, exceptions, options, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
+		if (exceptions == null) { exceptions = []; }
+		if (options == null) { options = {}; }
+		if (!Array.isArray(exceptions)) {
+			exceptions = [exceptions];
+		}
+
+		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
+		if (searchTerm === '') {
+			const query = {
+				$and: [
+					{
+						active: true,
+						username: { $exists: true, $nin: exceptions },
+					},
+					...extraQuery,
+				],
+			};
+
+			return this.find(query, options);
+		}
+
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
+
+		// const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
+
+		const orStmt = (searchFields || []).reduce(function(acc, el) {
+			acc.push({ [el.trim()]: termRegex });
+			return acc;
+		}, []);
+
+		const query = {
+			$and: [
+				{
+					active: true,
+					username: { $exists: true, $nin: exceptions },
+					$or: orStmt,
+				},
+				...extraQuery,
+			],
+		};
+
+		return this.find(query, options);
+	}
+
+	findActiveByIds(userIds, options = {}) {
+		const query = {
+			_id: { $in: userIds },
+			active: true,
+		};
+
+		return this.find(query, options);
+	}
+
+	findOneByUsernameIgnoringCase(username, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
+		}
+
+		const query = { username };
+
+		return this.findOne(query, options);
 	}
 
 	isUserInRole(userId, roleName) {
@@ -46,13 +142,28 @@ export class UsersRaw extends BaseRaw {
 		return this.col.distinct('federation.origin', { federation: { $exists: true } });
 	}
 
-	async getNextLeastBusyAgent(department) {
+	async getNextLeastBusyAgent(department, ignoreAgentId) {
 		const aggregate = [
-			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
-			{ $lookup: { from: 'view_livechat_queue_status', localField: '_id', foreignField: '_id', as: 'LivechatQueueStatus' } }, // the `view_livechat_queue_status` it's a view created when the server starts
+			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent', ...ignoreAgentId && { _id: { $ne: ignoreAgentId } } } },
+			{ $lookup: {
+				from: 'rocketchat_subscription',
+				let: { id: '$_id' },
+				pipeline: [{
+					$match: {
+						$expr: {
+							$and: [
+								{ $eq: ['$u._id', '$$id'] },
+								{ $eq: ['$open', true] },
+								{ ...department && { $eq: ['$department', department] } },
+							],
+						},
+					},
+				}],
+				as: 'subs' },
+			},
 			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
-			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1, queueInfo: { $arrayElemAt: ['$LivechatQueueStatus', 0] } } },
-			{ $sort: { 'queueInfo.chats': 1, lastRoutingTime: 1, username: 1 } },
+			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1, count: { $size: '$subs' } } },
+			{ $sort: { count: 1, lastRoutingTime: 1, username: 1 } },
 		];
 
 		if (department) {
@@ -70,25 +181,27 @@ export class UsersRaw extends BaseRaw {
 		return agent;
 	}
 
-	setLastRoutingTime(userId) {
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$set: {
-				lastRoutingTime: new Date(),
-			},
-		};
-
-		return this.col.updateOne(query, update);
+	async setLastRoutingTime(userId) {
+		const result = await this.col.findAndModify(
+			{ _id: userId }
+			, {
+				sort: {
+					_id: 1,
+				},
+			}, {
+				$set: {
+					lastRoutingTime: new Date(),
+				},
+			});
+		return result.value;
 	}
 
 	async getAgentAndAmountOngoingChats(userId) {
 		const aggregate = [
 			{ $match: { _id: userId, status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
-			{ $lookup: { from: 'view_livechat_queue_status', localField: '_id', foreignField: '_id', as: 'LivechatQueueStatus' } },
-			{ $project: { username: 1, queueInfo: { $arrayElemAt: ['$LivechatQueueStatus', 0] } } },
+			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
+			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }] } } } } } },
+			{ $sort: { 'queueInfo.chats': 1, lastAssignTime: 1, lastRoutingTime: 1, username: 1 } },
 		];
 
 		const [agent] = await this.col.aggregate(aggregate).toArray();
@@ -245,6 +358,7 @@ export class UsersRaw extends BaseRaw {
 			{
 				$match: {
 					createdAt: { $gte: start, $lte: end },
+					roles: { $ne: 'anonymous' },
 				},
 			},
 			{
@@ -261,9 +375,7 @@ export class UsersRaw extends BaseRaw {
 			},
 			{
 				$group: {
-					_id: {
-						$toInt: '$_id',
-					},
+					_id: '$_id',
 					users: { $sum: '$users' },
 				},
 			},
@@ -283,6 +395,27 @@ export class UsersRaw extends BaseRaw {
 			params.push({ $limit: options.count });
 		}
 		return this.col.aggregate(params).toArray();
+	}
+
+	getUserLanguages() {
+		const pipeline = [
+			{
+				$match: {
+					language: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+			},
+			{
+				$group: {
+					_id: '$language',
+					total: { $sum: 1 },
+				},
+			},
+		];
+
+		return this.col.aggregate(pipeline).toArray();
 	}
 
 	updateStatusText(_id, statusText) {
@@ -446,5 +579,25 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	resetTOTPById(userId) {
+		return this.col.updateOne({
+			_id: userId,
+		}, {
+			$unset: {
+				'services.totp': 1,
+			},
+		});
+	}
+
+	removeResumeService(userId) {
+		return this.col.updateOne({
+			_id: userId,
+		}, {
+			$unset: {
+				'services.resume': 1,
+			},
+		});
 	}
 }

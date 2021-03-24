@@ -2,8 +2,9 @@ import React, { useMemo } from 'react';
 import { Field, TextInput, ToggleSwitch, MultiSelectFiltered, Box, Skeleton } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
 import { useForm } from '../../../../client/hooks/useForm';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 
 const mapDepartments = (departments) => departments.map(({ _id }) => _id);
 
@@ -13,16 +14,19 @@ const getInitialData = (data = {}) => ({
 	departments: mapDepartments(data.departments),
 });
 
-const BusinessHoursMultipleContainer = ({ onChange, data: initialData, className }) => {
-	const { data, state } = useEndpointDataExperimental('livechat/department');
+const BusinessHoursMultipleContainer = ({ onChange, data: initialData, className, hasChangesAndIsValid = () => {} }) => {
+	const { value: data, phase: state } = useEndpointData('livechat/department');
 
-	const { values, handlers } = useForm(getInitialData(initialData));
+	const { values, handlers, hasUnsavedChanges } = useForm(getInitialData(initialData));
+
+	const { name } = values;
 
 	onChange(values);
+	hasChangesAndIsValid(hasUnsavedChanges && !!name);
 
 	const departmentList = useMemo(() => data && data.departments?.map(({ _id, name }) => [_id, name]), [data]);
 
-	if (state === ENDPOINT_STATES.LOADING) {
+	if (state === AsyncStatePhase.LOADING) {
 		return <>
 			<Skeleton />
 			<Skeleton />
@@ -58,7 +62,7 @@ export const BusinessHoursMultiple = ({ values = {}, handlers = {}, className, d
 			</Box>
 		</Field>
 		<Field className={className}>
-			<Field.Label>{t('Name')}</Field.Label>
+			<Field.Label>{t('Name')}*</Field.Label>
 			<Field.Row>
 				<TextInput value={name} onChange={handleName} placeholder={t('Name')}/>
 			</Field.Row>

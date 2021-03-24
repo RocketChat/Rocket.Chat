@@ -17,7 +17,7 @@ export const useUpdateAvatar = (avatarObj, userId) => {
 
 	const saveAvatarQuery = useMemo(() => ({
 		userId,
-		avatarUrl,
+		...avatarUrl && { avatarUrl },
 	}), [avatarUrl, userId]);
 
 	const resetAvatarQuery = useMemo(() => ({

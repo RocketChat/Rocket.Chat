@@ -4,7 +4,8 @@ import { check } from 'meteor/check';
 import { hasPermission } from '../../app/authorization';
 import { Users, Subscriptions, Messages } from '../../app/models';
 import { settings } from '../../app/settings';
-import { Notifications } from '../../app/notifications';
+import { api } from '../sdk/api';
+import { Team } from '../sdk';
 
 Meteor.methods({
 	addRoomModerator(rid, userId) {
@@ -57,8 +58,13 @@ Meteor.methods({
 			role: 'moderator',
 		});
 
+		const team = Promise.await(Team.getOneByRoomId(rid));
+		if (team) {
+			Promise.await(Team.addRolesToMember(team._id, userId, ['moderator']));
+		}
+
 		if (settings.get('UI_DisplayRoles')) {
-			Notifications.notifyLogged('roles-change', {
+			api.broadcast('user.roleUpdate', {
 				type: 'added',
 				_id: 'moderator',
 				u: {

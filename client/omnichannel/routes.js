@@ -1,7 +1,11 @@
-import { createTemplateForComponent } from '../reactAdapters';
-import { createRouteGroup } from '../helpers/createRouteGroup';
+import { HTML } from 'meteor/htmljs';
 
-createTemplateForComponent('omnichannelFlex', () => import('./sidebar/OmnichannelSidebar'));
+import { createRouteGroup } from '../lib/createRouteGroup';
+import { createTemplateForComponent } from '../reactAdapters';
+
+createTemplateForComponent('omnichannelFlex', () => import('./sidebar/OmnichannelSidebar'), {
+	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
+});
 
 export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () => import('./OmnichannelRouter'));
 
@@ -26,7 +30,7 @@ registerOmnichannelRoute('/webhooks', {
 
 registerOmnichannelRoute('/customfields/:context?/:id?', {
 	name: 'omnichannel-customfields',
-	lazyRouteComponent: () => import('./customFields/CustomFieldsRouter'),
+	lazyRouteComponent: () => import('../views/omnichannel/customFields/CustomFieldsRoute'),
 });
 
 registerOmnichannelRoute('/appearance', {
@@ -46,17 +50,17 @@ registerOmnichannelRoute('/managers', {
 
 registerOmnichannelRoute('/units/:context?/:id?', {
 	name: 'omnichannel-units',
-	lazyRouteComponent: () => import('../../ee/client/omnichannel/units/UnitsRoute'),
+	lazyRouteComponent: () => import('../../../ee/client/omnichannel/units/UnitsRoute'),
 });
 
 registerOmnichannelRoute('/tags/:context?/:id?', {
 	name: 'omnichannel-tags',
-	lazyRouteComponent: () => import('../../ee/client/omnichannel/tags/TagsRoute'),
+	lazyRouteComponent: () => import('../../../ee/client/omnichannel/tags/TagsRoute'),
 });
 
 registerOmnichannelRoute('/priorities/:context?/:id?', {
 	name: 'omnichannel-priorities',
-	lazyRouteComponent: () => import('../../ee/client/omnichannel/priorities/PrioritiesRoute'),
+	lazyRouteComponent: () => import('../../../ee/client/omnichannel/priorities/PrioritiesRoute'),
 });
 
 registerOmnichannelRoute('/triggers/:context?/:id?', {
@@ -74,7 +78,17 @@ registerOmnichannelRoute('/current', {
 	lazyRouteComponent: () => import('./currentChats/CurrentChatsRoute'),
 });
 
+registerOmnichannelRoute('/departments/:context?/:id?/:tab?', {
+	name: 'omnichannel-departments',
+	lazyRouteComponent: () => import('./departments/DepartmentsRoute'),
+});
+
 registerOmnichannelRoute('/realtime-monitoring', {
 	name: 'omnichannel-realTime',
 	lazyRouteComponent: () => import('./realTimeMonitoring/RealTimeMonitoringPage'),
+});
+
+registerOmnichannelRoute('/analytics', {
+	name: 'omnichannel-analytics',
+	lazyRouteComponent: () => import('./analytics/AnalyticsPage'),
 });

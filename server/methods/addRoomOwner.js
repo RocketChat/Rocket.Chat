@@ -3,8 +3,9 @@ import { check } from 'meteor/check';
 
 import { hasPermission } from '../../app/authorization';
 import { Users, Subscriptions, Messages } from '../../app/models';
+import { Team } from '../sdk';
 import { settings } from '../../app/settings';
-import { Notifications } from '../../app/notifications';
+import { api } from '../sdk/api';
 
 Meteor.methods({
 	addRoomOwner(rid, userId) {
@@ -57,8 +58,13 @@ Meteor.methods({
 			role: 'owner',
 		});
 
+		const team = Promise.await(Team.getOneByRoomId(rid));
+		if (team) {
+			Promise.await(Team.addRolesToMember(team._id, userId, ['owner']));
+		}
+
 		if (settings.get('UI_DisplayRoles')) {
-			Notifications.notifyLogged('roles-change', {
+			api.broadcast('user.roleUpdate', {
 				type: 'added',
 				_id: 'owner',
 				u: {

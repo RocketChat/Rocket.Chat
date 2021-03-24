@@ -89,7 +89,7 @@ Meteor.startup(function() {
 			return !!subscription;
 		},
 		order: 100,
-		group: 'menu',
+		group: ['message', 'menu'],
 	});
 
 	MessageAction.addButton({

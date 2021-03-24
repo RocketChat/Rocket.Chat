@@ -1,9 +1,9 @@
-import s from 'underscore.string';
 import moment from 'moment';
 
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 /**
  * Chechs if a messages contains a user highlight
@@ -18,7 +18,7 @@ export function messageContainsHighlight(message, highlights) {
 	if (! highlights || highlights.length === 0) { return false; }
 
 	return highlights.some(function(highlight) {
-		const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
+		const regexp = new RegExp(escapeRegExp(highlight), 'i');
 		return regexp.test(message.msg);
 	});
 }
@@ -35,7 +35,7 @@ export function getMentions({ mentions, u: { _id: senderId } }) {
 	const toAll = mentions.some(({ _id }) => _id === 'all');
 	const toHere = mentions.some(({ _id }) => _id === 'here');
 	const mentionIds = mentions
-		.filter(({ _id }) => _id !== senderId)
+		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
 		.map(({ _id }) => _id);
 
 	return {
@@ -69,7 +69,8 @@ const getUserIdsFromHighlights = (rid, message) => {
 };
 
 export function updateUsersSubscriptions(message, room) {
-	if (room != null) {
+	// Don't increase unread counter on thread messages
+	if (room != null && !message.tmid) {
 		const {
 			toAll,
 			toHere,
@@ -81,17 +82,19 @@ export function updateUsersSubscriptions(message, room) {
 		const unreadSetting = room.t === 'd' ? 'Unread_Count_DM' : 'Unread_Count';
 		const unreadCount = settings.get(unreadSetting);
 
-		if (toAll || toHere) {
-			incGroupMentions(room._id, room.t, message.u._id, unreadCount);
-		} else {
-			getUserIdsFromHighlights(room._id, message)
-				.forEach((uid) => userIds.add(uid));
+		getUserIdsFromHighlights(room._id, message)
+			.forEach((uid) => userIds.add(uid));
 
-			if (userIds.size > 0) {
-				incUserMentions(room._id, room.t, [...userIds], unreadCount);
-			} else if (unreadCount === 'all_messages') {
-				Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
-			}
+		// give priority to user mentions over group mentions
+		if (userIds.size > 0) {
+			incUserMentions(room._id, room.t, [...userIds], unreadCount);
+		} else if (toAll || toHere) {
+			incGroupMentions(room._id, room.t, message.u._id, unreadCount);
+		}
+
+		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
+		if (!toAll && !toHere && unreadCount === 'all_messages') {
+			Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id]);
 		}
 	}
 

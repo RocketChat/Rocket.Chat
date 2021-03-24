@@ -5,6 +5,10 @@ import { EmailTest } from 'meteor/email';
 import { Mongo } from 'meteor/mongo';
 import { HTTP } from 'meteor/http';
 
+if (!process.env.USE_NATIVE_OPLOG) {
+	Package['disable-oplog'] = {};
+}
+
 // Set default HTTP call timeout to 20s
 const envTimeout = parseInt(process.env.HTTP_DEFAULT_TIMEOUT, 10);
 const timeout = !isNaN(envTimeout) ? envTimeout : 20000;
@@ -26,12 +30,12 @@ tls.DEFAULT_ECDH_CURVE = 'auto';
 const mongoConnectionOptions = {
 	// add retryWrites=false if not present in MONGO_URL
 	...!process.env.MONGO_URL.includes('retryWrites') && { retryWrites: false },
+	// ignoreUndefined: false, // TODO evaluate adding this config
 };
 
 const mongoOptionStr = process.env.MONGO_OPTIONS;
 if (typeof mongoOptionStr !== 'undefined') {
 	const mongoOptions = JSON.parse(mongoOptionStr);
-
 	Object.assign(mongoConnectionOptions, mongoOptions);
 }
 

@@ -1,10 +1,4 @@
-import s from 'underscore.string';
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-
-import { getUserPreference } from '../../utils';
 import { isIE11 } from '../../ui-utils/client/lib/isIE11';
-import { callbacks } from '../../callbacks';
 import { emoji } from '../lib/rocketchat';
 
 /*
@@ -12,76 +6,73 @@ import { emoji } from '../lib/rocketchat';
  * @param {Object} message - The message object
  */
 
-const emojiParser = function(message) {
-	let html = s.trim(message.html);
-	if (html) {
-		// &#39; to apostrophe (') for emojis such as :')
-		html = html.replace(/&#39;/g, '\'');
+const emojiParser = (message) => {
+	if (!message.html?.trim()) {
+		return message;
+	}
 
-		// '<br>' to ' <br> ' for emojis such at line breaks
-		html = html.replace(/<br>/g, ' <br> ');
+	let html = message.html.trim();
 
-		html = Object.entries(emoji.packages).reduce((value, [, emojiPackage]) => emojiPackage.render(value), html);
+	// &#39; to apostrophe (') for emojis such as :')
+	html = html.replace(/&#39;/g, '\'');
 
-		const checkEmojiOnly = document.createElement('div');
+	// '<br>' to ' <br> ' for emojis such at line breaks
+	html = html.replace(/<br>/g, ' <br> ');
 
-		checkEmojiOnly.innerHTML = html;
+	html = Object.entries(emoji.packages).reverse().reduce((value, [, emojiPackage]) => emojiPackage.render(value), html);
 
-		const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
+	const checkEmojiOnly = document.createElement('div');
 
-		let hasText = false;
+	checkEmojiOnly.innerHTML = html;
 
-		if (!isIE11()) {
-			const filter = (node) => {
-				if (node.nodeType === Node.ELEMENT_NODE && (
-					node.classList.contains('emojione')
+	const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
+
+	let hasText = false;
+
+	if (!isIE11()) {
+		const filter = (node) => {
+			if (node.nodeType === Node.ELEMENT_NODE && (
+				node.classList.contains('emojione')
 						|| node.classList.contains('emoji')
-				)) {
-					return NodeFilter.FILTER_REJECT;
-				}
-				return NodeFilter.FILTER_ACCEPT;
-			};
-
-			const walker = document.createTreeWalker(
-				checkEmojiOnly,
-				NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-				filter,
-			);
-
-
-			while (walker.nextNode()) {
-				if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
-					hasText = true;
-					break;
-				}
+			)) {
+				return NodeFilter.FILTER_REJECT;
 			}
-			const emojiOnly = emojis.length && !hasText;
+			return NodeFilter.FILTER_ACCEPT;
+		};
 
-			if (emojiOnly) {
-				for (let i = 0, len = emojis.length; i < len; i++) {
-					const { classList } = emojis[i];
-					classList.add('big');
-				}
-				html = checkEmojiOnly.innerHTML;
+		const walker = document.createTreeWalker(
+			checkEmojiOnly,
+			NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+			filter,
+		);
+
+
+		while (walker.nextNode()) {
+			if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
+				hasText = true;
+				break;
 			}
 		}
+		const emojiOnly = emojis.length && !hasText;
 
-
-		// apostrophe (') back to &#39;
-		html = html.replace(/\'/g, '&#39;');
-
-		// line breaks ' <br> ' back to '<br>'
-		html = html.replace(/ <br> /g, '<br>');
+		if (emojiOnly) {
+			for (let i = 0, len = emojis.length; i < len; i++) {
+				const { classList } = emojis[i];
+				classList.add('big');
+			}
+			html = checkEmojiOnly.innerHTML;
+		}
 	}
+
+	// apostrophe (') back to &#39;
+	html = html.replace(/\'/g, '&#39;');
+
+	// line breaks ' <br> ' back to '<br>'
+	html = html.replace(/ <br> /g, '<br>');
 
 	return { ...message, html };
 };
 
-Tracker.autorun(() => {
-	if (!getUserPreference(Meteor.userId(), 'useEmojis')) {
-		return callbacks.remove('renderMessage', 'emoji');
-	}
-	callbacks.add('renderMessage', emojiParser, callbacks.priority.LOW, 'emoji');
-});
-
 export { emojiParser };
+
+export const createEmojiMessageRenderer = () => emojiParser;
