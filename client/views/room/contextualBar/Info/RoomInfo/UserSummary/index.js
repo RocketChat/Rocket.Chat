@@ -35,14 +35,29 @@ export function withData(WrappedComponent) {
 				subscription = useUserSubscriptionsAll(userId);
 				break;
 		}
-		
+	
 		//We should maybe find a less expensive way to get all the data
 		const result = [...subscription, ...messages]
 		//result.sort((a,b)=>b.ts-a.ts)
+
+
+		const [text, setText] = useState('');
+		const handleTextChange = useCallback((event) => {
+			setText(event.currentTarget.value);
+		}, []);
+		const debouncedText = useDebouncedValue(text, 400);
+		const options = useMemo(() => ({
+			rid,
+			text: debouncedText,
+		}), [rid, debouncedText]);
+
+		
 		return <WrappedComponent
 			{...props}
             messages={result}
 			userId={userId}
+			text={text}
+			setText={handleTextChange}
 			rid={rid}
 			roomName={room ? room.name : null}
 		/>;
@@ -96,8 +111,13 @@ export function UserSummaryList({
 	messages, 
 	userId, 
 	rid, 
-	roomName 
+	roomName,
+	setText,
+	text
 }) {
+
+	const inputRef = useAutoFocus(true);
+
 	const goToMess = (message) => {
 		if (message.tmid) {
 			return FlowRouter.go(FlowRouter.getRouteName(), {
@@ -123,7 +143,7 @@ export function UserSummaryList({
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		}, 400);
 	}
-	return  <> <TextInput style={{width:'450px'}} placeholder={'Search by date'} addon={<Icon name='magnifier' size='x20'/>}/>
+	return  <> <TextInput style={{width:'450px'}} ref={inputRef} placeholder={'Search by date'} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 				{
 					<Virtuoso
 						style={{ height: "500px" }}
