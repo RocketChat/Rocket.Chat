@@ -8,6 +8,7 @@ import { useSetModal } from '../../../contexts/ModalContext';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import ConfirmationModal from '../modals/ConfirmationModal';
 import { roomTypes } from '../../../../app/utils/client';
+import { usePreventProgation } from '../../../hooks/usePreventProgation';
 
 export const useReactModal = (Component, props) => {
 	const setModal = useSetModal();
@@ -92,23 +93,27 @@ const RoomActions = ({ room }) => {
 	/>;
 };
 
-export const TeamChannelItem = ({ room }) => {
+export const TeamChannelItem = ({ room, onClickView }) => {
 	const [showButton, setShowButton] = useState();
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 	const handleMenuEvent = { [isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton };
 
+	const onClick = usePreventProgation();
+
 	return (
 		<Option
 			id={room._id}
+			data-rid={room._id}
 			{ ...handleMenuEvent }
+			onClick={onClickView}
 		>
 			<Option.Avatar>
 				<RoomAvatar room={room} size='x28' />
 			</Option.Avatar>
 			<Option.Column>{room.t === 'c' ? <Icon name='hash' size='x15'/> : <Icon name='hashtag-lock' size='x15'/>}</Option.Column>
 			<Option.Content>{room.fname || room.name}</Option.Content>
-			<Option.Menu>
+			<Option.Menu onClick={onClick}>
 				{showButton ? <RoomActions room={room} /> : <ActionButton
 					ghost
 					tiny

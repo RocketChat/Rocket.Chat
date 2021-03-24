@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import EditChannelWithData from './EditRoomInfo';
 import RoomInfo from './RoomInfo';
 
-export default ({ rid }) => {
+export default ({ rid, onClickBack }) => {
 	const [editing, setEditing] = useState(false);
-	const onClickBack = useMutableCallback(() => setEditing(false));
-	return editing ? <EditChannelWithData onClickBack={onClickBack} rid={rid} /> : <RoomInfo openEditing={setEditing} rid={rid} />;
+	const backToView = useMutableCallback(() => setEditing(false));
+	return editing ? <EditChannelWithData onClickBack={backToView} rid={rid} /> : <RoomInfo onClickBack={onClickBack} openEditing={setEditing} rid={rid} />;
 };

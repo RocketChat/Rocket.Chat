@@ -49,6 +49,7 @@ export const RoomInfo = function RoomInfo({
 	rid,
 	icon,
 	retentionPolicy = {},
+	onClickBack,
 	onClickHide,
 	onClickClose,
 	onClickLeave,
@@ -127,7 +128,7 @@ export const RoomInfo = function RoomInfo({
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='info-circled'/>
+				{onClickBack ? <VerticalBar.Back onClick={onClickBack} /> : <VerticalBar.Icon name='info-circled'/>}
 				<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
 				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>
@@ -189,6 +190,7 @@ export const RoomInfo = function RoomInfo({
 export default ({
 	rid,
 	openEditing,
+	onClickBack,
 }) => {
 	const onClickClose = useTabBarClose();
 	const t = useTranslation();
@@ -334,6 +336,7 @@ export default ({
 			broadcast={broadcast}
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
+			onClickBack={onClickBack}
 			onClickEdit={canEdit && openEditing}
 			onClickClose={onClickClose}
 			onClickDelete={canDelete && handleDelete}
