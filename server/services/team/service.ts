@@ -460,15 +460,22 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return rooms.map(({ _id }: { _id: string}) => _id);
 	}
 
-	async IsUserFromTeamWithId(uid: string, teamId: string): Promise<boolean> {
+	async isUserFromTeamWithId(uid: string, teamId: string): Promise<boolean> {
 		return !!this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
 	}
 
-	async IsUserFromTeamNamed(uid: string, teamName: string): Promise<boolean> {
+	async isUserFromTeamNamed(uid: string, teamName: string): Promise<boolean> {
 		return !!this.TeamMembersModel.findOneByUserIdAndTeamName(uid, teamName);
 	}
 
-	async members(teamId: string, teamName: string, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
+	async members(
+		teamId: string,
+		teamName: string,
+		isMember: boolean,
+		canSeeAll: boolean,
+		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
+		queryOptions: IQueryOptions<ITeamMember>,
+	): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		if (!teamId) {
 			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
 			if (!teamIdName) {
@@ -478,7 +485,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 			teamId = teamIdName._id;
 		}
 
-		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
 		if (!isMember && !canSeeAll) {
 			return {
 				total: 0,
@@ -486,7 +492,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			};
 		}
 
-		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset, query);
+		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset, queryOptions);
 
 		const records = await cursor.toArray();
 		const results: ITeamMemberInfo[] = [];
