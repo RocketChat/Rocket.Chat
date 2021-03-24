@@ -19,7 +19,7 @@ const emojiParser = (message) => {
 	// '<br>' to ' <br> ' for emojis such at line breaks
 	html = html.replace(/<br>/g, ' <br> ');
 
-	html = Object.entries(emoji.packages).reduce((value, [, emojiPackage]) => emojiPackage.render(value), html);
+	html = Object.entries(emoji.packages).reverse().reduce((value, [, emojiPackage]) => emojiPackage.render(value), html);
 
 	const checkEmojiOnly = document.createElement('div');
 
