@@ -7,7 +7,7 @@ import { settings } from '../../app/settings/client';
 import { promises } from '../../app/promises/client';
 import { Notifications } from '../../app/notifications/client';
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
-import { Subscriptions } from '../../app/models';
+import { Subscriptions, Rooms } from '../../app/models/client';
 import { waitUntilFind } from '../../app/e2e/client/waitUntilFind';
 
 const handle = async (roomId, keyId) => {
@@ -58,6 +58,8 @@ Meteor.startup(function() {
 					return;
 				}
 
+				doc.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+
 				// Cover private groups and direct messages
 				if (!e2eRoom.isSupportedRoomType(doc.t)) {
 					e2eRoom.disable();
@@ -73,7 +75,6 @@ Meteor.startup(function() {
 					return;
 				}
 
-				doc.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 
 				e2eRoom.decryptSubscription();
 			},
@@ -100,11 +101,15 @@ Meteor.startup(function() {
 		promises.add('onClientBeforeSendMessage', async function(message) {
 			const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
 
-			const subscription = await waitUntilFind(() => Subscriptions.findOne({ rid: message.rid }));
+			if (!e2eRoom) {
+				return message;
+			}
+
+			const subscription = await waitUntilFind(() => Rooms.findOne({ _id: message.rid }));
 
 			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 
-			if (!e2eRoom || !await e2eRoom.shouldConvertSentMessages()) {
+			if (!await e2eRoom.shouldConvertSentMessages()) {
 				return message;
 			}
 
