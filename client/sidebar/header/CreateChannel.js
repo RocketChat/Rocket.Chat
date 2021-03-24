@@ -129,11 +129,10 @@ export const CreateChannel = ({
 
 export default memo(({
 	onClose,
+	teamId = '',
 }) => {
 	const createChannel = useEndpointActionExperimental('POST', 'channels.create');
 	const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
-	const setChannelDescription = useEndpointActionExperimental('POST', 'channels.setDescription');
-	const setPrivateChannelDescription = useEndpointActionExperimental('POST', 'groups.setDescription');
 	const canCreateChannel = usePermission('create-c');
 	const canCreatePrivateChannel = usePermission('create-p');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
@@ -206,7 +205,9 @@ export default memo(({
 			name,
 			members: users,
 			readOnly,
+			...teamId && { teamId },
 			extraData: {
+				description,
 				broadcast,
 				encrypted,
 			},
@@ -215,16 +216,10 @@ export default memo(({
 
 		if (type) {
 			roomData = await createPrivateChannel(params);
-			goToRoom(roomData.group._id);
+			!teamId && goToRoom(roomData.group._id);
 		} else {
 			roomData = await createChannel(params);
-			goToRoom(roomData.channel._id);
-		}
-
-		if (roomData.success && roomData.group && description) {
-			setPrivateChannelDescription({ description, roomName: roomData.group.name });
-		} else if (roomData.success && roomData.channel && description) {
-			setChannelDescription({ description, roomName: roomData.channel.name });
+			!teamId && goToRoom(roomData.channel._id);
 		}
 
 		onClose();
@@ -236,8 +231,7 @@ export default memo(({
 		name,
 		onClose,
 		readOnly,
-		setChannelDescription,
-		setPrivateChannelDescription,
+		teamId,
 		type,
 		users,
 	]);

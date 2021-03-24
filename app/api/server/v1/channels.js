@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
-import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
+import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../authorization/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { settings } from '../../../settings';
+import { Team } from '../../../../server/sdk';
 
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -184,6 +185,10 @@ function createChannelValidator(params) {
 	if (params.customFields && params.customFields.value && !(typeof params.customFields.value === 'object')) {
 		throw new Error(`Param "${ params.customFields.key }" must be an object if provided`);
 	}
+
+	if (params.teams.value && !Array.isArray(params.teams.value)) {
+		throw new Error(`Param ${ params.teams.key } must be an array`);
+	}
 }
 
 function createChannel(userId, params) {
@@ -220,6 +225,10 @@ API.v1.addRoute('channels.create', { authRequired: true }, {
 					value: bodyParams.members,
 					key: 'members',
 				},
+				teams: {
+					value: bodyParams.teams,
+					key: 'teams',
+				},
 			});
 		} catch (e) {
 			if (e.message === 'unauthorized') {
@@ -231,6 +240,21 @@ API.v1.addRoute('channels.create', { authRequired: true }, {
 
 		if (error) {
 			return error;
+		}
+
+		if (bodyParams.teams) {
+			const canSeeAllTeams = hasPermission(this.userId, 'view-all-teams');
+			const teams = Promise.await(Team.listByNames(bodyParams.teams, { projection: { _id: 1 } }));
+			const teamMembers = [];
+
+			for (const team of teams) {
+				const { records: members } = Promise.await(Team.members(this.userId, team._id, undefined, canSeeAllTeams, { offset: 0, count: Number.MAX_SAFE_INTEGER }));
+				const uids = members.map((member) => member.user.username);
+				teamMembers.push(...uids);
+			}
+
+			const membersToAdd = new Set([...teamMembers, ...bodyParams.members]);
+			bodyParams.members = [...membersToAdd];
 		}
 
 		return API.v1.success(API.channels.create.execute(userId, bodyParams));
@@ -471,6 +495,24 @@ API.v1.addRoute('channels.list', { authRequired: true }, {
 				const roomIds = Subscriptions.findByUserIdAndType(this.userId, 'c', { fields: { rid: 1 } }).fetch().map((s) => s.rid);
 				ourQuery._id = { $in: roomIds };
 			}
+
+			// teams filter - I would love to have a way to apply this filter @ db level :(
+			const ids = Subscriptions.cachedFindByUserId(this.userId, { fields: { rid: 1 } })
+				.fetch()
+				.map((item) => item.rid);
+
+			ourQuery.$or = [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: ids,
+				},
+			}];
 
 			const cursor = Rooms.find(ourQuery, {
 				sort: sort || { name: 1 },
@@ -1048,5 +1090,53 @@ API.v1.addRoute('channels.anonymousread', { authRequired: false }, {
 			offset,
 			total,
 		});
+	},
+});
+
+API.v1.addRoute('channels.convertToTeam', { authRequired: true }, {
+	post() {
+		if (!hasAllPermission(this.userId, ['create-team', 'edit-room'])) {
+			return API.v1.unauthorized();
+		}
+
+		const { channelId, channelName } = this.bodyParams;
+
+		if (!channelId && !channelName) {
+			return API.v1.failure('The parameter "channelId" or "channelName" is required');
+		}
+
+		const room = findChannelByIdOrName({
+			params: {
+				roomId: channelId,
+				roomName: channelName,
+			},
+			userId: this.userId,
+		});
+
+		if (!room) {
+			return API.v1.failure('Channel not found');
+		}
+
+		const subscriptions = Subscriptions.findByRoomId(room._id, {
+			fields: { 'u._id': 1 },
+		});
+
+		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
+
+		const teamData = {
+			team: {
+				name: room.name,
+				type: room.t === 'c' ? 0 : 1,
+			},
+			members,
+			room: {
+				name: room.name,
+				id: room._id,
+			},
+		};
+
+		const team = Promise.await(Team.create(this.userId, teamData));
+
+		return API.v1.success({ team });
 	},
 });

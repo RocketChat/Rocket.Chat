@@ -9,7 +9,7 @@ import { NPSStatus, INpsVoteStatus, INpsVote } from '../../../definition/INps';
 import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { Banner, NPS } from '../../sdk';
-import { sendToCloud } from './sendToCloud';
+import { sendNpsResults } from './sendNpsResults';
 import { getBannerForAdmins, notifyAdmins } from './notification';
 
 export class NPSService extends ServiceClass implements INPSService {
@@ -128,7 +128,7 @@ export class NPSService extends ServiceClass implements INPSService {
 				total,
 				votes,
 			};
-			sendToCloud(nps._id, payload);
+			sendNpsResults(nps._id, payload);
 
 			this.NpsVote.updateVotesToSent(voteIds);
 		}
