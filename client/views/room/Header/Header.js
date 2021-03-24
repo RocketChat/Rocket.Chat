@@ -19,7 +19,6 @@ import MarkdownText from '../../../components/MarkdownText';
 import { roomTypes } from '../../../../app/utils';
 import { useUserSubscription, useUserId } from '../../../contexts/UserContext';
 import { useUserData } from '../../../hooks/useUserData';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 
 export default React.memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
