@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState, useRef, memo } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 import {
 	Box,
 	Icon,
@@ -7,13 +8,12 @@ import {
 	Margins,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { FixedSizeList as List } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
 import {
 	useDebouncedValue,
 	useResizeObserver,
 	useLocalStorage,
 	useMutableCallback,
+	useAutoFocus,
 } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../components/VerticalBar';
@@ -32,14 +32,13 @@ import { useUserRoom } from '../../hooks/useUserRoom';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../../../lib/clickableItem';
-import { MessageSkeleton } from '../../components/Message';
 import ThreadListMessage from './components/Message';
 import { escapeHTML } from '../../../../../lib/escapeHTML';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useTabBarClose, useTabContext } from '../../providers/ToolboxProvider';
 import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
 import { renderMessageBody } from '../../../../lib/renderMessageBody';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useThreadsList } from './useThreadsList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 
@@ -57,8 +56,6 @@ function mapProps(WrappedComponent) {
 }
 
 const Thread = React.memo(mapProps(clickableItem(ThreadListMessage)));
-
-const Skeleton = React.memo(clickableItem(MessageSkeleton));
 
 const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
 const roomFields = { t: 1, name: 1 };
@@ -121,14 +118,14 @@ export function withData(WrappedComponent) {
 	};
 }
 
-const handleFollowButton = (e) => {
+const handleFollowButton = (e, threadId) => {
 	e.preventDefault();
 	e.stopPropagation();
 	call(
 		![true, 'true'].includes(e.currentTarget.dataset.following)
 			? 'followMessage'
 			: 'unfollowMessage',
-		{ mid: e.currentTarget.dataset.id },
+		{ mid: threadId },
 	);
 };
 
@@ -153,9 +150,7 @@ export const normalizeThreadMessage = ({ ...message }) => {
 };
 
 const Row = memo(function Row({
-	data,
-	index,
-	style,
+	thread,
 	showRealNames,
 	unread,
 	unreadUser,
@@ -166,37 +161,33 @@ const Row = memo(function Row({
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 
-	if (!data[index]) {
-		return <Skeleton style={style} />;
-	}
-	const thread = data[index];
 	const msg = normalizeThreadMessage(thread);
 
 	const { name = thread.u.username } = thread.u;
 
-	return (
-		<Thread
-			{...thread}
-			name={showRealNames ? name : thread.u.username}
-			username={thread.u.username}
-			style={style}
-			unread={unread.includes(thread._id)}
-			mention={unreadUser.includes(thread._id)}
-			all={unreadGroup.includes(thread._id)}
-			following={thread.replies && thread.replies.includes(userId)}
-			data-id={thread._id}
-			msg={msg}
-			t={t}
-			formatDate={formatDate}
-			handleFollowButton={handleFollowButton}
-			onClick={onClick}
-		/>
-	);
+	return <Thread
+		tcount={thread.tcount}
+		tlm={thread.tlm}
+		ts={thread.ts}
+		u={thread.u}
+		replies={thread.replies}
+		name={showRealNames ? name : thread.u.username }
+		username={ thread.u.username }
+		unread={unread.includes(thread._id)}
+		mention={unreadUser.includes(thread._id)}
+		all={unreadGroup.includes(thread._id)}
+		following={thread.replies && thread.replies.includes(userId)}
+		data-id={thread._id}
+		msg={msg}
+		t={t}
+		formatDate={formatDate}
+		handleFollowButton={(e) => handleFollowButton(e, thread._id)}
+		onClick={onClick}
+	/>;
 });
 
 export function ThreadList({
 	total = 10,
-	initial = 10,
 	threads = [],
 	room,
 	unread = [],
@@ -216,7 +207,7 @@ export function ThreadList({
 	const threadsRef = useRef();
 
 	const t = useTranslation();
-
+	const inputRef = useAutoFocus(true);
 	const [name] = useCurrentRoute();
 	const channelRoute = useRoute(name);
 	const onClick = useMutableCallback((e) => {
@@ -240,26 +231,6 @@ export function ThreadList({
 
 	threadsRef.current = threads;
 
-	const rowRenderer = useCallback(
-		({ data, index, style }) => (
-			<Row
-				data={data}
-				index={index}
-				style={style}
-				showRealNames={showRealNames}
-				unread={unread}
-				unreadUser={unreadUser}
-				unreadGroup={unreadGroup}
-				userId={userId}
-				onClick={onClick}
-			/>
-		),
-		[showRealNames, unread, unreadUser, unreadGroup, userId, onClick],
-	);
-
-	const isItemLoaded = useMutableCallback(
-		(index) => index < threadsRef.current.length,
-	);
 	const {
 		ref,
 		contentBoxSize: { inlineSize = 378, blockSize = 1 } = {},
@@ -268,86 +239,65 @@ export function ThreadList({
 	const mid = useTabContext();
 	const jump = useQueryStringParameter('jump');
 
-	return (
-		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='thread' />
-				<VerticalBar.Text>{t('Threads')}</VerticalBar.Text>
-				<VerticalBar.Close onClick={onClose} />
-			</VerticalBar.Header>
-			<VerticalBar.Content paddingInline={0}>
-				<Box
-					display='flex'
-					flexDirection='row'
-					p='x24'
-					borderBlockEndWidth='x2'
-					borderBlockEndStyle='solid'
-					borderBlockEndColor='neutral-200'
-					flexShrink={0}
-				>
-					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline='x4'>
-							<TextInput
-								placeholder={t('Search_Messages')}
-								value={text}
-								onChange={setText}
-								addon={<Icon name='magnifier' size='x20' />}
-							/>
-							<Select
-								flexGrow={0}
-								width='110px'
-								onChange={setType}
-								value={type}
-								options={options}
-							/>
-						</Margins>
-					</Box>
+	return <>
+		<VerticalBar.Header>
+			<VerticalBar.Icon name='thread' />
+			<VerticalBar.Text>{t('Threads')}</VerticalBar.Text>
+			<VerticalBar.Close onClick={onClose} />
+		</VerticalBar.Header>
+		<VerticalBar.Content paddingInline={0} ref={ref}>
+			<Box
+				display='flex'
+				flexDirection='row'
+				p='x24'
+				borderBlockEndWidth='x2'
+				borderBlockEndStyle='solid'
+				borderBlockEndColor='neutral-200'
+				flexShrink={0}
+			>
+				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+					<Margins inline='x4'>
+						<TextInput
+							placeholder={t('Search_Messages')}
+							value={text}
+							onChange={setText}
+							addon={<Icon name='magnifier' size='x20' />}
+							ref={inputRef}
+						/>
+						<Select
+							flexGrow={0}
+							width='110px'
+							onChange={setType}
+							value={type}
+							options={options}
+						/>
+					</Margins>
 				</Box>
-				<Box
-					flexGrow={1}
-					flexShrink={1}
-					ref={ref}
-					overflow='hidden'
-					display='flex'
-				>
-					{error && (
-						<Callout mi='x24' type='danger'>
-							{error.toString()}
-						</Callout>
-					)}
-					{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
-					{!error && total > 0 && (
-						<InfiniteLoader
-							isItemLoaded={isItemLoaded}
-							itemCount={total}
-							loadMoreItems={loading ? () => {} : loadMoreItems}
-						>
-							{({ onItemsRendered, ref }) => (
-								<List
-									outerElementType={ScrollableContentWrapper}
-									height={blockSize}
-									width={inlineSize}
-									itemCount={total}
-									itemData={threads}
-									itemSize={124}
-									ref={ref}
-									minimumBatchSize={initial}
-									onItemsRendered={onItemsRendered}
-								>
-									{rowRenderer}
-								</List>
-							)}
-						</InfiniteLoader>
-					)}
-				</Box>
-			</VerticalBar.Content>
-			{mid && (
-				<VerticalBar.InnerContent>
-					<ThreadComponent mid={mid} jump={jump} room={room} />
-				</VerticalBar.InnerContent>
-			)}
-		</>
-	);
+			</Box>
+			<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
+				{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
+				{!error && total > 0 && threads.length > 0 && <Virtuoso
+					style={{ height: blockSize, width: inlineSize }}
+					totalCount={total}
+					endReached={ loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
+					overscan={25}
+					data={threads}
+					components={{ Scroller: ScrollableContentWrapper }}
+					itemContent={(index, data) => <Row
+						thread={data}
+						showRealNames={showRealNames}
+						unread={unread}
+						unreadUser={unreadUser}
+						unreadGroup={unreadGroup}
+						userId={userId}
+						onClick={onClick}
+					/>}
+				/>}
+			</Box>
+		</VerticalBar.Content>
+		{ mid && <VerticalBar.InnerContent><ThreadComponent onClickBack={onClick} mid={mid} jump={jump} room={room}/></VerticalBar.InnerContent> }
+	</>;
 }
 
 export default withData(ThreadList);

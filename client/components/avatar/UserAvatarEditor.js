@@ -31,6 +31,7 @@ export function UserAvatarEditor({ currentUsername, username, setAvatarObj, sugg
 	const t = useTranslation();
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState();
+	const [urlEmpty, setUrlEmpty] = useState(true);
 
 	const setUploadedPreview = useCallback(async (file, avatarObj) => {
 		setAvatarObj(avatarObj);
@@ -40,6 +41,9 @@ export function UserAvatarEditor({ currentUsername, username, setAvatarObj, sugg
 	const [clickUpload] = useFileInput(setUploadedPreview);
 
 	const clickUrl = () => {
+		if (avatarFromUrl === '') {
+			return;
+		}
 		setNewAvatarSource(avatarFromUrl);
 		setAvatarObj({ avatarUrl: avatarFromUrl });
 	};
@@ -51,6 +55,7 @@ export function UserAvatarEditor({ currentUsername, username, setAvatarObj, sugg
 	const url = newAvatarSource;
 
 	const handleAvatarFromUrlChange = (event) => {
+		event.currentTarget.value !== '' ? setUrlEmpty(false) : setUrlEmpty(true);
 		setAvatarFromUrl(event.currentTarget.value);
 	};
 
@@ -65,12 +70,14 @@ export function UserAvatarEditor({ currentUsername, username, setAvatarObj, sugg
 							<Avatar url={`/avatar/%40${ username }`}/>
 						</Button>
 						<Button square onClick={clickUpload} disabled={disabled} title={t('Upload')}><Icon name='upload' size='x20'/></Button>
-						<Button square mie='none' onClick={clickUrl} disabled={disabled} title={t('Add URL')}><Icon name='permalink' size='x20'/></Button>
+						<Button square mie='none' onClick={clickUrl} disabled={disabled || urlEmpty} title={t('Add URL')}><Icon name='permalink' size='x20'/></Button>
 						{suggestions && <UserAvatarSuggestions suggestions={suggestions} setAvatarObj={setAvatarObj} setNewAvatarSource={setNewAvatarSource} disabled={disabled}/>}
 					</Margins>
 				</Box>
-				<Box>{t('Use_url_for_avatar')}</Box>
-				<TextInput flexGrow={0} placeholder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={handleAvatarFromUrlChange}/>
+				<Margins inlineStart='x4'>
+					<Box>{t('Use_url_for_avatar')}</Box>
+					<TextInput flexGrow={0} placeholder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={handleAvatarFromUrlChange}/>
+				</Margins>
 			</Box>
 		</Box>
 	</Box>;

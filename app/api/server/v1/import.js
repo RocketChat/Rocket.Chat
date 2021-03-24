@@ -95,6 +95,31 @@ API.v1.addRoute('downloadPendingFiles', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('downloadPendingAvatars', { authRequired: true }, {
+	post() {
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'downloadPendingAvatars' });
+		}
+
+		if (!hasPermission(this.userId, 'run-import')) {
+			throw new Meteor.Error('not_authorized');
+		}
+
+		const importer = Importers.get('pending-avatars');
+		if (!importer) {
+			throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', { method: 'downloadPendingAvatars' });
+		}
+
+		importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
+		const count = importer.instance.prepareFileCount();
+
+		return API.v1.success({
+			success: true,
+			count,
+		});
+	},
+});
+
 API.v1.addRoute('getCurrentImportOperation', { authRequired: true }, {
 	get() {
 		if (!this.userId) {

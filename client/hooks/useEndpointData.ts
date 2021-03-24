@@ -1,17 +1,21 @@
 import { useCallback, useEffect } from 'react';
 
-import { useEndpoint } from '../contexts/ServerContext';
+import { ServerEndpointPath, ServerEndpointRequestPayload, ServerEndpointResponsePayload, ServerEndpoints, useEndpoint } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { AsyncState, useAsyncState } from './useAsyncState';
 
 const defaultParams = {};
 
-export const useEndpointData = <T>(
-	endpoint: string,
-	params: Record<string, unknown> = defaultParams,
-	initialValue?: T | (() => T),
-): AsyncState<T> & { reload: () => void } => {
-	const { resolve, reject, reset, ...state } = useAsyncState<T>(initialValue);
+type ServerGetEndpointPaths = {
+	[K in ServerEndpointPath]: ServerEndpoints[K] extends { GET: any } ? K : never
+};
+
+export const useEndpointData = <_T, Path extends ServerGetEndpointPaths[keyof ServerGetEndpointPaths]>(
+	endpoint: Path,
+	params: ServerEndpointRequestPayload<'GET', Path> = defaultParams,
+	initialValue?: ServerEndpointResponsePayload<'GET', Path> | (() => ServerEndpointResponsePayload<'GET', Path>),
+): AsyncState<ServerEndpointResponsePayload<'GET', Path>> & { reload: () => void } => {
+	const { resolve, reject, reset, ...state } = useAsyncState<ServerEndpointResponsePayload<'GET', Path>>(initialValue);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getData = useEndpoint('GET', endpoint);
 

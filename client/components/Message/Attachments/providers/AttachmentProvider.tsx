@@ -14,7 +14,7 @@ const AttachmentProvider: FC<{}> = ({ children }) => {
 	const saveMobileBandwidth = !!useUserPreference<boolean>('saveMobileBandwidth');
 
 	const contextValue: AttachmentContextValue = useMemo(() => ({
-		getURL: getURL as (url: string) => string,
+		getURL: (url: string): string => getURL(url, { full: true }),
 		collapsedByDefault,
 		autoLoadEmbedMedias: !reducedData && autoLoadEmbedMedias && (!saveMobileBandwidth || !isMobile),
 		dimensions: {

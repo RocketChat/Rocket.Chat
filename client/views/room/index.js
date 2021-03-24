@@ -31,7 +31,7 @@ const Room = () => {
 		<RoomTemplate.Body><BlazeTemplate onClick={hideFlexTab ? close : undefined} name='roomOld' tabBar={tabBar} rid={room._id} _id={room._id} /></RoomTemplate.Body>
 		{ tab && <RoomTemplate.Aside data-qa-tabbar-name={tab.id}>
 			{ typeof tab.template === 'string' && <VerticalBarOldActions {...tab} name={tab.template} tabBar={tabBar} rid={room._id} _id={room._id} /> }
-			{ typeof tab.template !== 'string' && <LazyComponent template={tab.template} tabBar={tabBar} rid={room._id} _id={room._id} /> }
+			{ typeof tab.template !== 'string' && <LazyComponent template={tab.template} tabBar={tabBar} rid={room._id} teamId={room.teamId} _id={room._id} /> }
 		</RoomTemplate.Aside>}
 	</RoomTemplate>;
 };

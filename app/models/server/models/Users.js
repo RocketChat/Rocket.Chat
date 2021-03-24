@@ -53,6 +53,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
 		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
+		this.tryEnsureIndex({ language: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -442,6 +443,15 @@ export class Users extends Base {
 		}, { multi: true });
 	}
 
+	removeRoomsByRoomIdsAndUserId(rids, userId) {
+		return this.update({
+			_id: userId,
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
+	}
+
 	update2FABackupCodesByUserId(userId, backupCodes) {
 		return this.update({
 			_id: userId,
@@ -582,6 +592,15 @@ export class Users extends Base {
 		}
 
 		const query = { username, [`services.${ serviceName }.id`]: userId };
+
+		return this.findOne(query, options);
+	}
+
+	findOneByEmailAddressAndServiceNameIgnoringCase(emailAddress, userId, serviceName, options) {
+		const query = {
+			'emails.address': String(emailAddress).trim().toLowerCase(),
+			[`services.${ serviceName }.id`]: userId,
+		};
 
 		return this.findOne(query, options);
 	}
@@ -1523,6 +1542,24 @@ Find users to send a message by email if:
 				},
 			},
 		});
+	}
+
+	findAllUsersWithPendingAvatar() {
+		const query = {
+			_pendingAvatarUrl: {
+				$exists: true,
+			},
+		};
+
+		const options = {
+			fields: {
+				_id: 1,
+				name: 1,
+				_pendingAvatarUrl: 1,
+			},
+		};
+
+		return this.find(query, options);
 	}
 }
 

@@ -18,7 +18,7 @@ function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
 
-class AppServerOrchestrator {
+export class AppServerOrchestrator {
 	constructor() {
 		this._isInitialized = false;
 	}
@@ -115,8 +115,7 @@ class AppServerOrchestrator {
 
 	debugLog(...args) {
 		if (this.isDebugging()) {
-			// eslint-disable-next-line
-			console.log(...args);
+			this.getRocketChatLogger().debug(...args);
 		}
 	}
 

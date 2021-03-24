@@ -1,12 +1,11 @@
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React, { useRef, useEffect } from 'react';
-import { VariableSizeList as List, areEqual } from 'react-window';
+import React, { forwardRef, useRef, useEffect } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 import memoize from 'memoize-one';
 
 import { usePreventDefault } from './hooks/usePreventDefault';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
-import { ReactiveUserStatus, colors } from '../components/UserStatus';
 import { useTranslation } from '../contexts/TranslationContext';
 import { roomTypes } from '../../app/utils';
 import { useUserPreference, useUserId } from '../contexts/UserContext';
@@ -17,16 +16,13 @@ import { useTemplateByViewMode } from './hooks/useTemplateByViewMode';
 import { useShortcutOpenMenu } from './hooks/useShortcutOpenMenu';
 import { useAvatarTemplate } from './hooks/useAvatarTemplate';
 import { useRoomList } from './hooks/useRoomList';
+import { useRoomIcon } from '../hooks/useRoomIcon';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
 import { escapeHTML } from '../../lib/escapeHTML';
 import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
 
 const sections = {
 	Omnichannel,
-};
-
-const style = {
-	overflowY: 'scroll',
 };
 
 export const itemSizeMap = (sidebarViewMode) => {
@@ -42,28 +38,14 @@ export const itemSizeMap = (sidebarViewMode) => {
 };
 
 const SidebarIcon = ({ room, small }) => {
-	switch (room.t) {
-		case 'p':
-		case 'c':
-			return <Sidebar.Item.Icon aria-hidden='true' name={roomTypes.getIcon(room)} />;
-		case 'l':
-			return <Sidebar.Item.Icon aria-hidden='true' name='headset' color={colors[room.v.status]}/>;
-		case 'd':
-			if (room.uids && room.uids.length > 2) {
-				return <Sidebar.Item.Icon aria-hidden='true' name='team'/>;
-			}
-			if (room.uids && room.uids.length > 0) {
-				// If the filter fn removes all ids, it's own direct message
-				return room.uids && room.uids.length && <Sidebar.Item.Icon><ReactiveUserStatus small={small && 'small'} uid={room.uids.filter((uid) => uid !== room.u._id)[0] || room.u._id} /></Sidebar.Item.Icon>;
-			}
-			return <Sidebar.Item.Icon aria-hidden='true' name={roomTypes.getIcon(room)}/>;
-		default:
-			return null;
-	}
+	const icon = useRoomIcon(room, small);
+
+	return <Sidebar.Item.Icon {...icon.name && icon}>
+		{!icon.name && icon}
+	</Sidebar.Item.Icon>;
 };
 
-export const createItemData = memoize((items, extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, isAnonymous) => ({
-	items,
+export const createItemData = memoize((extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, isAnonymous) => ({
 	extended,
 	t,
 	SideBarItemTemplate,
@@ -73,15 +55,15 @@ export const createItemData = memoize((items, extended, t, SideBarItemTemplate, 
 	isAnonymous,
 }));
 
-export const Row = React.memo(({ data, index, style }) => {
-	const { extended, items, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
-	const item = items[index];
+export const Row = React.memo(({ data, item }) => {
+	const { extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
+
 	if (typeof item === 'string') {
 		const Section = sections[item];
-		return Section ? <Section aria-level='1' style={style}/> : <Sidebar.Section.Title aria-level='1' style={style}>{t(item)}</Sidebar.Section.Title>;
+		return Section ? <Section aria-level='1' /> : <Sidebar.Section.Title aria-level='1'>{t(item)}</Sidebar.Section.Title>;
 	}
-	return <SideBarItemTemplateWithData sidebarViewMode={sidebarViewMode} style={style} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
-}, areEqual);
+	return <SideBarItemTemplateWithData sidebarViewMode={sidebarViewMode} selected={item.rid === openedRoom} t={t} room={item} extended={extended} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+});
 
 export const normalizeSidebarMessage = (message, t) => {
 	if (message.msg) {
@@ -103,10 +85,21 @@ export const normalizeSidebarMessage = (message, t) => {
 	}
 };
 
+const ScrollerWithCustomProps = forwardRef((props, ref) => <ScrollableContentWrapper
+	{...props}
+	ref={ref}
+	renderView={
+		({ style, ...props }) => (
+			<div {...props} style={{ ...style }} />
+		)
+	}
+	renderTrackHorizontal={(props) => <div {...props} style={{ display: 'none' }} className='track-horizontal'/>}
+/>);
+
 export default () => {
 	useSidebarPaletteColor();
 	const listRef = useRef();
-	const { ref, contentBoxSize: { blockSize = 750 } = {} } = useResizeObserver({ debounceDelay: 100 });
+	const { ref } = useResizeObserver({ debounceDelay: 100 });
 
 	const openedRoom = useSession('openedRoom');
 
@@ -118,9 +111,8 @@ export default () => {
 
 	const t = useTranslation();
 
-	const itemSize = itemSizeMap(sidebarViewMode);
 	const roomsList = useRoomList();
-	const itemData = createItemData(roomsList, extended, t, sideBarItemTemplate, avatarTemplate, openedRoom, sidebarViewMode, isAnonymous);
+	const itemData = createItemData(extended, t, sideBarItemTemplate, avatarTemplate, openedRoom, sidebarViewMode, isAnonymous);
 
 	usePreventDefault(ref);
 	useShortcutOpenMenu(ref);
@@ -130,19 +122,15 @@ export default () => {
 	}, [sidebarViewMode]);
 
 	return <Box h='full' w='full' ref={ref}>
-		<List
-			outerElementType={ScrollableContentWrapper}
-			height={blockSize}
-			itemCount={roomsList.length}
-			itemSize={(index) => (typeof roomsList[index] === 'string' ? (sections[roomsList[index]] && sections[roomsList[index]].size) || 40 : itemSize)}
-			itemData={itemData}
-			overscanCount={10}
-			width='100%'
-			ref={listRef}
-			style={style}
-		>
-			{Row}
-		</List>
+		<Virtuoso
+			totalCount={roomsList.length}
+			data={roomsList}
+			components={{ Scroller: ScrollerWithCustomProps }}
+			itemContent={(index, data) => <Row
+				data={itemData}
+				item={data}
+			/>}
+		/>
 	</Box>;
 };
 
@@ -188,7 +176,8 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }}/> : null;
 	const variant = ((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
-	const badges = unread > 0 || threadUnread ? <Badge style={{ flexShrink: 0 }} variant={ variant }>{unread + tunread?.length}</Badge> : null;
+	const isUnread = unread > 0 || threadUnread;
+	const badges = !hideUnreadStatus && isUnread ? <Badge style={{ flexShrink: 0 }} variant={ variant }>{unread + tunread?.length}</Badge> : null;
 
 	return <SideBarItemTemplate
 		is='a'

@@ -20,7 +20,7 @@ export const PDFAttachment: FC<PDFAttachmentProps> = ({
 	const t = useTranslation();
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	return <Attachment>
-		<MarkdownText withRichContent={undefined} content={description} />
+		<MarkdownText variant='inline' content={description} />
 		<Attachment.Row>
 			<Attachment.Title>{t('PDF')}</Attachment.Title>
 			{collapse}

@@ -37,6 +37,7 @@ export const subscriptionFields = {
 	tunreadGroup: 1,
 	tunreadUser: 1,
 	v: 1,
+	onHold: 1,
 };
 
 export const roomFields = {
@@ -48,6 +49,8 @@ export const roomFields = {
 	u: 1,
 	lm: 1,
 	// usernames: 1,
+	teamId: 1,
+	teamMain: 1,
 	topic: 1,
 	announcement: 1,
 	announcementDetails: 1,
@@ -88,7 +91,6 @@ export const roomFields = {
 	servedBy: 1,
 	priorityId: 1,
 	transcriptRequest: 1,
-	hideHistoryForNewMembers: 1,
 
 	// fields used by DMs
 	usernames: 1,

@@ -9,8 +9,8 @@ import { NPSStatus, INpsVoteStatus, INpsVote } from '../../../definition/INps';
 import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { Banner, NPS } from '../../sdk';
-import { sendToCloud } from './sendToCloud';
-import { getBannerForAdmins } from './getBannerForAdmins';
+import { sendNpsResults } from './sendNpsResults';
+import { getBannerForAdmins, notifyAdmins } from './notification';
 
 export class NPSService extends ServiceClass implements INPSService {
 	protected name = 'nps';
@@ -37,7 +37,9 @@ export class NPSService extends ServiceClass implements INPSService {
 
 		const any = await this.Nps.findOne({}, { projection: { _id: 1 } });
 		if (!any) {
-			Banner.create(getBannerForAdmins());
+			Banner.create(getBannerForAdmins(nps.startAt));
+
+			notifyAdmins(nps.startAt);
 		}
 
 		const {
@@ -108,6 +110,7 @@ export class NPSService extends ServiceClass implements INPSService {
 				},
 			}, {
 				projection: {
+					_id: 0,
 					identifier: 1,
 					roles: 1,
 					score: 1,
@@ -125,7 +128,7 @@ export class NPSService extends ServiceClass implements INPSService {
 				total,
 				votes,
 			};
-			sendToCloud(nps._id, payload);
+			sendNpsResults(nps._id, payload);
 
 			this.NpsVote.updateVotesToSent(voteIds);
 		}

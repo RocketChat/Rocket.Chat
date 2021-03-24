@@ -10,13 +10,12 @@ import {
 	Button,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { FixedSizeList as List, areEqual } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
+import { Virtuoso } from 'react-virtuoso';
 import {
-	useResizeObserver,
 	useMutableCallback,
 	useDebouncedValue,
 	useLocalStorage,
+	useAutoFocus,
 } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
 
@@ -26,31 +25,28 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
-import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
 import { MemberItem } from './components/MemberItem';
 import UserInfoWithData from '../../UserInfo';
 import InviteUsers from '../InviteUsers/InviteUsers';
 import AddUsers from '../AddUsers/AddUsers';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 
-export const createItemData = memoize((items, onClickView, rid) => ({
-	items,
+export const createItemData = memoize((onClickView, rid) => ({
 	onClickView,
 	rid,
 }));
 
-const Row = React.memo(({ data, index, style }) => {
-	const { onClickView, items, rid } = data;
-	const user = items[index];
+const DefaultRow = React.memo(({ user, data, index }) => {
+	const { onClickView, rid } = data;
 
 	if (!user) {
-		return <RoomMembers.Option.Skeleton style={style}/>;
+		return <RoomMembers.Option.Skeleton />;
 	}
 
 	return <RoomMembers.Option
 		index={index}
-		style={style}
 		username={user.username}
 		_id={user._id}
 		rid={rid}
@@ -58,7 +54,7 @@ const Row = React.memo(({ data, index, style }) => {
 		name={user.name}
 		onClickView={onClickView}
 	/>;
-}, areEqual);
+});
 
 export const RoomMembers = ({
 	loading,
@@ -72,23 +68,21 @@ export const RoomMembers = ({
 	onClickAdd,
 	onClickInvite,
 	total,
-	limit,
 	error,
 	loadMoreItems,
+	renderRow: Row = DefaultRow,
 	rid,
 }) => {
 	const t = useTranslation();
-
-	const isItemLoaded = (index) => !!members[index];
+	const inputRef = useAutoFocus(true);
 
 	const options = useMemo(() => [
 		['online', t('Online')],
 		['all', t('All')],
 	], [t]);
 
-	const { ref, contentBoxSize: { blockSize = 780 } = {} } = useResizeObserver({ debounceDelay: 100 });
-
-	const itemData = createItemData(members, onClickView, rid);
+	const itemData = createItemData(onClickView, rid);
+	const lm = useMutableCallback((start) => loadMoreItems(start + 1, Math.min(50, start + 1 - members.length)));
 
 	return (
 		<>
@@ -102,7 +96,7 @@ export const RoomMembers = ({
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
-							<TextInput placeholder={t('Search_by_username')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+							<TextInput placeholder={t('Search_by_username')} value={text} ref={inputRef} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 							<Select
 								flexGrow={0}
 								width='110px'
@@ -136,29 +130,23 @@ export const RoomMembers = ({
 					</Box>
 				)}
 
-				<Box w='full' h='full' overflow='hidden' flexShrink={1} ref={ref}>
-					{!loading && members
-					&& <InfiniteLoader
-						isItemLoaded={isItemLoaded}
-						itemCount={total}
-						loadMoreItems={loadMoreItems}
-					>
-						{({ onItemsRendered, ref }) => (
-							<List
-								outerElementType={ScrollableContentWrapper}
-								className='List'
-								itemData={itemData}
-								height={blockSize}
-								itemCount={limit}
-								itemSize={36}
-								onItemsRendered={onItemsRendered}
-								ref={ref}
-							>
-								{Row}
-							</List>
-						)}
-					</InfiniteLoader>
-					}
+				<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+					{!loading && members && members.length > 0 && <Virtuoso
+						style={{
+							height: '100%',
+							width: '100%',
+						}}
+						totalCount={total}
+						endReached={lm}
+						overscan={50}
+						data={members}
+						components={{ Scroller: ScrollableContentWrapper }}
+						itemContent={(index, data) => <Row
+							data={itemData}
+							user={data}
+							index={index}
+						/>}
+					/>}
 				</Box>
 			</VerticalBar.Content>
 
@@ -249,7 +237,6 @@ export default ({
 			setText={handleTextChange}
 			members={value?.records}
 			total={value?.total}
-			limit={ value?.finished || value?.records.length < 50 ? value?.records.length : value?.records.length + 50}
 			onClickClose={onClickClose}
 			onClickView={viewUser}
 			onClickAdd={canAddUsers && addUser}

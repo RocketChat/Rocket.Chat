@@ -1527,8 +1527,8 @@ settings.addGroup('Setup_Wizard', function() {
 			type: 'select',
 			values: [
 				{
-					key: 'nonprofit',
-					i18nLabel: 'Nonprofit',
+					key: 'community',
+					i18nLabel: 'Community',
 				},
 				{
 					key: 'enterprise',
@@ -1539,8 +1539,8 @@ settings.addGroup('Setup_Wizard', function() {
 					i18nLabel: 'Government',
 				},
 				{
-					key: 'community',
-					i18nLabel: 'Community',
+					key: 'nonprofit',
+					i18nLabel: 'Nonprofit',
 				},
 			],
 			wizard: {
@@ -1559,100 +1559,104 @@ settings.addGroup('Setup_Wizard', function() {
 			type: 'select',
 			values: [
 				{
-					key: 'advocacy',
-					i18nLabel: 'Advocacy',
+					key: 'aerospaceDefense',
+					i18nLabel: 'Aerospace_and_Defense',
 				},
 				{
 					key: 'blockchain',
 					i18nLabel: 'Blockchain',
 				},
 				{
-					key: 'helpCenter',
-					i18nLabel: 'Help_Center',
+					key: 'consulting',
+					i18nLabel: 'Consulting',
 				},
 				{
-					key: 'manufacturing',
-					i18nLabel: 'Manufacturing',
+					key: 'consumerGoods',
+					i18nLabel: 'Consumer_Packaged_Goods',
+				},
+				{
+					key: 'contactCenter',
+					i18nLabel: 'Contact_Center',
 				},
 				{
 					key: 'education',
 					i18nLabel: 'Education',
 				},
 				{
-					key: 'insurance',
-					i18nLabel: 'Insurance',
-				},
-				{
-					key: 'logistics',
-					i18nLabel: 'Logistics',
-				},
-				{
-					key: 'consulting',
-					i18nLabel: 'Consulting',
-				},
-				{
 					key: 'entertainment',
 					i18nLabel: 'Entertainment',
-				},
-				{
-					key: 'publicRelations',
-					i18nLabel: 'Public_Relations',
-				},
-				{
-					key: 'religious',
-					i18nLabel: 'Religious',
-				},
-				{
-					key: 'gaming',
-					i18nLabel: 'Gaming',
-				},
-				{
-					key: 'socialNetwork',
-					i18nLabel: 'Social_Network',
-				},
-				{
-					key: 'realEstate',
-					i18nLabel: 'Real_Estate',
-				},
-				{
-					key: 'tourism',
-					i18nLabel: 'Tourism',
-				},
-				{
-					key: 'telecom',
-					i18nLabel: 'Telecom',
-				},
-				{
-					key: 'consumerGoods',
-					i18nLabel: 'Consumer_Goods',
 				},
 				{
 					key: 'financialServices',
 					i18nLabel: 'Financial_Services',
 				},
 				{
-					key: 'healthcarePharmaceutical',
-					i18nLabel: 'Healthcare_and_Pharmaceutical',
+					key: 'gaming',
+					i18nLabel: 'Gaming',
 				},
 				{
-					key: 'industry',
-					i18nLabel: 'Industry',
+					key: 'healthcare',
+					i18nLabel: 'Healthcare',
+				},
+				{
+					key: 'hospitalityBusinness',
+					i18nLabel: 'Hospitality_Businness',
+				},
+				{
+					key: 'insurance',
+					i18nLabel: 'Insurance',
+				},
+				{
+					key: 'itSecurity',
+					i18nLabel: 'It_Security',
+				},
+				{
+					key: 'logistics',
+					i18nLabel: 'Logistics',
+				},
+				{
+					key: 'manufacturing',
+					i18nLabel: 'Manufacturing',
 				},
 				{
 					key: 'media',
 					i18nLabel: 'Media',
 				},
 				{
+					key: 'pharmaceutical',
+					i18nLabel: 'Pharmaceutical',
+				},
+				{
+					key: 'realEstate',
+					i18nLabel: 'Real_Estate',
+				},
+				{
+					key: 'religious',
+					i18nLabel: 'Religious',
+				},
+				{
 					key: 'retail',
 					i18nLabel: 'Retail',
+				},
+				{
+					key: 'socialNetwork',
+					i18nLabel: 'Social_Network',
+				},
+				{
+					key: 'technologyProvider',
+					i18nLabel: 'Technology_Provider',
 				},
 				{
 					key: 'technologyServices',
 					i18nLabel: 'Technology_Services',
 				},
 				{
-					key: 'technologyProvider',
-					i18nLabel: 'Technology_Provider',
+					key: 'telecom',
+					i18nLabel: 'Telecom',
+				},
+				{
+					key: 'utilities',
+					i18nLabel: 'Utilities',
 				},
 				{
 					key: 'other',
@@ -1708,10 +1712,6 @@ settings.addGroup('Setup_Wizard', function() {
 		this.add('Country', '', {
 			type: 'select',
 			values: [
-				{
-					key: 'worldwide',
-					i18nLabel: 'Worldwide',
-				},
 				{
 					key: 'afghanistan',
 					i18nLabel: 'Country_Afghanistan',
@@ -2668,6 +2668,10 @@ settings.addGroup('Setup_Wizard', function() {
 					key: 'zimbabwe',
 					i18nLabel: 'Country_Zimbabwe',
 				},
+				{
+					key: 'worldwide',
+					i18nLabel: 'Worldwide',
+				},
 			],
 			wizard: {
 				step: 2,
@@ -2710,6 +2714,17 @@ settings.addGroup('Setup_Wizard', function() {
 	});
 
 	this.section('Cloud_Info', function() {
+		this.add('Nps_Url', 'https://nps.rocket.chat', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+			secret: true,
+		});
+
 		this.add('Cloud_Url', 'https://cloud.rocket.chat', {
 			type: 'string',
 			hidden: true,
