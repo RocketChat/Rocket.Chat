@@ -57252,6 +57252,73 @@
           ]
         }
       ]
+    },
+    "3.12.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21020",
+          "title": "[FIX] Missing spaces on attachment ",
+          "userLogin": "dougfabris",
+          "milestone": "3.12.1",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21004",
+          "title": "[IMPROVE] Close Call contextual bar after starting jitsi call.",
+          "userLogin": "yash-rajpal",
+          "description": "After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.\r\nSo, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20973",
+          "title": "[FIX] Stopping Jitsi reload",
+          "userLogin": "yash-rajpal",
+          "description": "The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.\r\nSo removing this dep from useMemo dependencies",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.13.0-rc.1": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.0-alpha.4777",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21287",
+          "title": "Regression: Fix non encrypted rooms failing sending messages",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
