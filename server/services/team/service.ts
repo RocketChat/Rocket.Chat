@@ -635,10 +635,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findOneByName(teamName);
 	}
 
-	async getOneByNames(teamNames: string[]): Promise<ITeam|undefined> {
-		return this.TeamModel.findOne({
-			name: { $in: teamNames },
-		});
+	async getOneByNames(teamNames: string[], options?: FindOneOptions<ITeam>): Promise<ITeam|null> {
+		return this.TeamModel.findOneByNames(teamNames, options);
 	}
 
 	async getOneByRoomId(roomId: string): Promise<ITeam | null> {

@@ -64,6 +64,6 @@ export interface ITeamService {
 	unsetTeamIdOfRooms(teamId: string): void;
 	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | undefined>;
 	getOneByName(teamName: string): Promise<ITeam | null>;
-	getOneByNames(teamNames: string[]): Promise<ITeam | undefined>;
+	getOneByNames(teamNames: string[]): Promise<ITeam | null>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 }
