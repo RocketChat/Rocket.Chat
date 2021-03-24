@@ -200,7 +200,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				id,
 				icon,
 				color,
-				title: t(title),
+				title: t(title as any),
 				className,
 				tabId: id,
 				index,
