@@ -1,24 +1,34 @@
 import _ from 'underscore';
 
-const findDeclarations = (code) => (code.match(/(--[^:; ]+:..*?;)/g) ?? [])
+type Variables = {
+	[name: string]: (variables: Variables) => string;
+};
+
+const findDeclarations = (code: string): [string, Variables[keyof Variables]][] => (code.match(/(--[^:; ]+:..*?;)/g) ?? [])
 	.map((declaration) => {
-		const [, name, value] = /(.*?):\s*(.*?)\s*;/.exec(declaration);
+		const matches = /(.*?):\s*(.*?)\s*;/.exec(declaration);
+
+		if (matches === null) {
+			throw new Error();
+		}
+
+		const [, name, value] = matches;
 		return [
 			name,
 			value.indexOf('var(') >= 0
-				? (variables) => value.replace(/var\((--.*?)\)/gm, (_, name) => variables[name]?.call(null, variables))
-				: () => value,
+				? (variables: Variables): string => value.replace(/var\((--.*?)\)/gm, (_, name) => variables[name]?.call(null, variables))
+				: (): string => value,
 		];
 	});
 
-const replaceReferences = (code, variables) =>
+const replaceReferences = (code: string, variables: Variables): string =>
 	code.replace(/var\((--.*?)\)/gm, (_, name) => variables[name]?.call(null, variables));
 
-let cssVariablesElement;
+let cssVariablesElement: HTMLElement;
 const originalCodes = new Map();
 
 const update = _.debounce(() => {
-	const declarations = [].concat(
+	const declarations = ([] as [string, Variables[keyof Variables]][]).concat(
 		...Array.from(originalCodes.values(), findDeclarations),
 		findDeclarations(cssVariablesElement.innerHTML),
 	);
@@ -44,9 +54,14 @@ const update = _.debounce(() => {
 	});
 }, 100);
 
-const findAndPatchFromLinkElements = () => {
+const findAndPatchFromLinkElements = (): void => {
 	Array.from(document.querySelectorAll('link[type="text/css"].__meteor-css__')).forEach(async (linkElement) => {
 		const url = linkElement.getAttribute('href');
+
+		if (url === null) {
+			return;
+		}
+
 		try {
 			const response = await fetch(url);
 			const code = await response.text();
@@ -59,13 +74,20 @@ const findAndPatchFromLinkElements = () => {
 	});
 };
 
-const waitAndInitialize = () => {
+const waitAndInitialize = (): void => {
 	if (document.readyState !== 'complete') {
 		requestAnimationFrame(waitAndInitialize);
 		return;
 	}
 
-	cssVariablesElement = document.getElementById('css-variables');
+	const element = document.getElementById('css-variables');
+
+	if (element === null) {
+		requestAnimationFrame(waitAndInitialize);
+		return;
+	}
+
+	cssVariablesElement = element;
 
 	const cssVariablesElementObserver = new MutationObserver(() => {
 		update();
@@ -76,7 +98,7 @@ const waitAndInitialize = () => {
 	findAndPatchFromLinkElements();
 };
 
-(() => {
+((): void => {
 	if (window.CSS && window.CSS.supports && window.CSS.supports('(--foo: red)')) {
 		return;
 	}
