@@ -278,7 +278,7 @@ export function ThreadList({
 				{error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
 				{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
 				{!error && total > 0 && threads.length > 0 && <Virtuoso
-					style={{ height: blockSize, width: inlineSize }}
+					style={{ minHeight: blockSize, width: inlineSize }}
 					totalCount={total}
 					endReached={ loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 					overscan={25}
