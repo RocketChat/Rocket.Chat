@@ -2,6 +2,7 @@ import { Match, check } from 'meteor/check';
 
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
+import { promises } from '../../../promises/server';
 import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
 import { Markdown } from '../../../markdown/server';
@@ -218,7 +219,9 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		delete message.tokens;
 	}
 
-	message = callbacks.run('beforeSaveMessage', message, room);
+	// TODO: evaluate substitution
+	// message = callbacks.run('beforeSaveMessage', message, room);
+	message = Promise.await(promises.run('beforeSaveMessage', message));
 	if (message) {
 		if (message._id && upsert) {
 			const { _id } = message;

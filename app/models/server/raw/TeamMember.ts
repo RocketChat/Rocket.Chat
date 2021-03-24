@@ -28,6 +28,10 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		return this.col.findOne({ userId, teamId }, options);
 	}
 
+	findOneByUserIdAndTeamName(userId: string, teamName: string, options?: FindOneOptions<T>): Promise<T | null> {
+		return this.col.findOne({ userId, name: teamName }, options);
+	}
+
 	findByTeamId(teamId: string, options?: FindOneOptions<T>): Cursor<T> {
 		return this.col.find({ teamId }, options);
 	}

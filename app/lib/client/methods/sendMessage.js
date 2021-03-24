@@ -31,7 +31,10 @@ Meteor.methods({
 		if (settings.get('Message_Read_Receipt_Enabled')) {
 			message.unread = true;
 		}
-		message = callbacks.run('beforeSaveMessage', message);
+
+		// TODO: evaluate substitution
+		// message = callbacks.run('beforeSaveMessage', message);
+		message = Promise.await(promises.run('beforeSaveMessage', message));
 		promises.run('onClientMessageReceived', message).then(function(message) {
 			ChatMessage.insert(message);
 			return callbacks.run('afterSaveMessage', message);

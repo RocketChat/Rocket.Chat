@@ -9,7 +9,7 @@ import { t } from '../../app/utils';
 import { ChatMessage } from '../../app/models';
 import { hasAtLeastOnePermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
-import { callbacks } from '../../app/callbacks';
+import { promises } from '../../app/promises/lib/promises';
 
 Meteor.methods({
 	updateMessage(message) {
@@ -62,7 +62,9 @@ Meteor.methods({
 				username: me.username,
 			};
 
-			message = callbacks.run('beforeSaveMessage', message);
+			// TODO: evaluate substitution
+			// message = callbacks.run('beforeSaveMessage', message);
+			message = Promise.await(promises.run('beforeSaveMessage', message));
 			const messageObject = { editedAt: message.editedAt, editedBy: message.editedBy, msg: message.msg };
 
 			if (originalMessage.attachments) {

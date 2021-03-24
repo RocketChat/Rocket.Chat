@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Messages, Rooms } from '../../../models';
 import { settings } from '../../../settings';
+import { promises } from '../../../promises/server';
 import { callbacks } from '../../../callbacks';
 import { Apps } from '../../../apps/server';
 
@@ -42,7 +43,9 @@ export const updateMessage = function(message, user, originalMessage) {
 	const urls = message.msg.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g) || [];
 	message.urls = urls.map((url) => ({ url }));
 
-	message = callbacks.run('beforeSaveMessage', message);
+	// TODO: evaluate substitution
+	// message = callbacks.run('beforeSaveMessage', message);
+	message = Promise.await(promises.run('beforeSaveMessage', message));
 
 	const tempid = message._id;
 	delete message._id;

@@ -51,7 +51,9 @@ export interface ITeamService {
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	listByNames(names: Array<string>, options?: FindOneOptions<ITeam>): Promise<Array<ITeam>>;
 	search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
-	members(uid: string, teamId: string, teamName: string, canSeeAll: boolean, options?: IPaginationOptions, queryOptions?: IQueryOptions<ITeamMember>): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
+	members(teamId: string, teamName: string, isMember: boolean, canSeeAll: boolean, options?: IPaginationOptions, queryOptions?: IQueryOptions<ITeamMember>): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
+	isUserFromTeamWithId(uid: string, teamId: string): Promise<boolean>;
+	isUserFromTeamNamed(uid: string, teamName: string): Promise<boolean>;
 	addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, teamName: string, members: ITeamMemberParams): Promise<void>;
 	removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
@@ -62,5 +64,6 @@ export interface ITeamService {
 	unsetTeamIdOfRooms(teamId: string): void;
 	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | undefined>;
 	getOneByName(teamName: string): Promise<ITeam | null>;
+	getOneByNames(teamNames: string[]): Promise<ITeam | null>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 }

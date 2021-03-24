@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
+import { promises } from '../../promises/server';
 import { isTheLastMessage } from '../../lib';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { hasPermission } from '../../authorization';
@@ -81,7 +81,9 @@ Meteor.methods({
 			username: me.username,
 		};
 
-		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
+		// TODO: evaluate substitution
+		// originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
+		originalMessage = Promise.await(promises.run('beforeSaveMessage', originalMessage));
 
 		Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 		if (isTheLastMessage(room, message)) {
@@ -165,7 +167,10 @@ Meteor.methods({
 			_id: Meteor.userId(),
 			username: me.username,
 		};
-		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
+
+		// TODO: evaluate substitution
+		// originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
+		originalMessage = Promise.await(promises.run('beforeSaveMessage', originalMessage));
 		const room = Meteor.call('canAccessRoom', originalMessage.rid, Meteor.userId());
 		if (isTheLastMessage(room, message)) {
 			Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
