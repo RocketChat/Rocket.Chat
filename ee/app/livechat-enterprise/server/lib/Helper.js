@@ -124,7 +124,7 @@ export const processWaitingQueue = async (department) => {
 };
 
 export const setPredictedVisitorAbandonmentTime = (room) => {
-	if (!room.v || !room.v.lastMessageTs || !settings.get('Livechat_auto_close_abandoned_rooms')) {
+	if (!room.v || !room.v.lastMessageTs || !settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none') {
 		return;
 	}
 
@@ -144,10 +144,10 @@ export const setPredictedVisitorAbandonmentTime = (room) => {
 };
 
 export const updatePredictedVisitorAbandonment = () => {
-	if (settings.get('Livechat_auto_close_abandoned_rooms')) {
-		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
-	} else {
+	if (!settings.get('Livechat_abandoned_rooms_action') || (settings.get('Livechat_abandoned_rooms_action') === 'none')) {
 		LivechatRooms.unsetPredictedVisitorAbandonment();
+	} else {
+		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
 	}
 };
 

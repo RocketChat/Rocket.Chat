@@ -296,7 +296,7 @@ export function ThreadList({
 				/>}
 			</Box>
 		</VerticalBar.Content>
-		{ mid && <VerticalBar.InnerContent><ThreadComponent mid={mid} jump={jump} room={room}/></VerticalBar.InnerContent> }
+		{ mid && <VerticalBar.InnerContent><ThreadComponent onClickBack={onClick} mid={mid} jump={jump} room={room}/></VerticalBar.InnerContent> }
 	</>;
 }
 

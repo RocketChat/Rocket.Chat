@@ -13,7 +13,7 @@ import {
 	allowAgentSkipQueue,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry } from '../../../models/server';
+import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
 import { Apps, AppEvents } from '../../../apps/server';
 
 export const RoutingManager = {
@@ -110,7 +110,7 @@ export const RoutingManager = {
 		return true;
 	},
 
-	async takeInquiry(inquiry, agent) {
+	async takeInquiry(inquiry, agent, options = { clientAction: false }) {
 		check(agent, Match.ObjectIncluding({
 			agentId: String,
 			username: String,
@@ -128,13 +128,18 @@ export const RoutingManager = {
 			return room;
 		}
 
-		if (room.servedBy && room.servedBy._id === agent.agentId) {
+		if (room.servedBy && room.servedBy._id === agent.agentId && !room.onHold) {
 			return room;
 		}
 
-		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', agent, inquiry);
+		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', { agent, inquiry, options });
 		if (!agent) {
+			await callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
 			return null;
+		}
+
+		if (room.onHold) {
+			Subscriptions.removeByRoomIdAndUserId(room._id, agent.agentId);
 		}
 
 		LivechatInquiry.takeInquiry(_id);

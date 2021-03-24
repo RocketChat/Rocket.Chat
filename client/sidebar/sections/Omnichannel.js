@@ -18,6 +18,7 @@ const OmnichannelSection = React.memo((props) => {
 
 	const icon = {
 		title: agentAvailable ? t('Available') : t('Not_Available'),
+		color: agentAvailable ? 'success' : undefined,
 		icon: agentAvailable ? 'message' : 'message-disabled',
 		...agentAvailable && { success: 1 },
 	};
