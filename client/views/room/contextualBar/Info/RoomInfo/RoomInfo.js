@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
-
+import UserSummary from './UserSummary'
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useUserRoom } from '../../../../../contexts/UserContext';
@@ -168,6 +168,11 @@ export const RoomInfo = function RoomInfo({
 						{announcement && announcement !== '' && <InfoPanel.Field>
 							<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
 							<InfoPanel.Text withTruncatedText={false}>{announcement}</InfoPanel.Text>
+						</InfoPanel.Field>}
+
+						{<InfoPanel.Field>
+							<InfoPanel.Label>{t('User summary')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}><UserSummary rid={rid}/></InfoPanel.Text>
 						</InfoPanel.Field>}
 
 						{topic && topic !== '' && <InfoPanel.Field>
