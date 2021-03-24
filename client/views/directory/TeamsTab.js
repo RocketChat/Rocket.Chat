@@ -1,8 +1,7 @@
 import { Box, Margins, Table, Avatar, Tag } from '@rocket.chat/fuselage';
-import { useMediaQuery, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
@@ -27,12 +26,11 @@ function RoomTags({ room }) {
 
 function TeamsTable() {
 	const t = useTranslation();
-	const refAutoFocus = useAutoFocus(true);
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
-	
+
 	const onHeaderClick = useCallback((id) => {
 		const [sortBy, sortDirection] = sort;
 
@@ -56,7 +54,7 @@ function TeamsTable() {
 
 	const { value: data = { result: [] } } = useEndpointData('teams.list', query);
 
-	console.log(data)
+	console.log(data);
 
 	const onClick = useMemo(() => (name, type) => (e) => {
 		if (e.type === 'click' || e.key === 'Enter') {
