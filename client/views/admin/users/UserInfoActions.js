@@ -1,7 +1,7 @@
 import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
 import React, { useCallback, useMemo } from 'react';
 
-import { useUserInfoActionsSpread } from '../../room/hooks/useUserInfoActions';
+import { useActionSpread } from '../../hooks/useActionSpread';
 import ConfirmOwnerChangeWarningModal from '../../../components/ConfirmOwnerChangeWarningModal';
 import { UserInfo } from '../../room/contextualBar/UserInfo';
 import { usePermission } from '../../../contexts/AuthorizationContext';
@@ -234,7 +234,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		username,
 	]);
 
-	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(options);
+	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(options);
 
 	const menu = useMemo(() => {
 		if (!menuOptions) {

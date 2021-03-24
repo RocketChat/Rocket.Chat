@@ -26,6 +26,7 @@ export const useRoomList = (): Array<ISubscription> => {
 	useEffect(() => {
 		setRoomList(() => {
 			const favorite = new Set();
+			const team = new Set();
 			const omnichannel = new Set();
 			const unread = new Set();
 			const _private = new Set();
@@ -42,6 +43,10 @@ export const useRoomList = (): Array<ISubscription> => {
 
 				if (favoritesEnabled && room.f) {
 					return favorite.add(room);
+				}
+
+				if (room.teamMain) {
+					return team.add(room);
 				}
 
 				if (showDiscussion && room.prid) {
@@ -80,6 +85,7 @@ export const useRoomList = (): Array<ISubscription> => {
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
+			team.size && groups.set('Teams', team);
 			showDiscussion && discussion.size && groups.set('Discussions', discussion);
 			sidebarGroupByType && _private.size && groups.set('Private', _private);
 			sidebarGroupByType && _public.size && groups.set('Public', _public);

@@ -17,6 +17,7 @@ export interface IRoom extends IRocketChatRecord {
 	_id: RoomID;
 	t: RoomType;
 	name: string;
+	fname: string;
 	msgs: number;
 	default?: true;
 	broadcast?: true;
@@ -44,6 +45,10 @@ export interface IRoom extends IRocketChatRecord {
 			balance: number;
 		}[];
 	};
+
+	teamMain?: boolean;
+	teamId?: string;
+	teamDefault?: boolean;
 	v?: {
 		_id?: string;
 		token?: string;

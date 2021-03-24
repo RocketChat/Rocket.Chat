@@ -35,12 +35,14 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 	const rid = room._id;
 	const uid = useUserId();
 
-	const getVisitorInfo = useEndpoint('GET', `livechat/visitors.info?visitorId=${ visitorRoomId }`);
+	const getVisitorInfo = useEndpoint('GET', 'livechat/visitors.info');
 
 	const getVisitorEmail = useMutableCallback(async () => {
 		if (!visitorRoomId) { return; }
-		const { visitor: { visitorEmails } } = await getVisitorInfo();
-		setEmail(visitorEmails && visitorEmails.length > 0 && visitorEmails[0].address);
+		const { visitor: { visitorEmails } } = await getVisitorInfo(visitorRoomId);
+		if (visitorEmails?.length && visitorEmails[0].address) {
+			setEmail(visitorEmails[0].address);
+		}
 	});
 
 	useEffect(() => {
@@ -200,7 +202,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				id,
 				icon,
 				color,
-				title: t(title),
+				title: t(title as any),
 				className,
 				tabId: id,
 				index,
