@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { ChatRoom } from '../../app/models';
+import { ChatRoom } from '../../app/models/client';
 
 Meteor.startup(function() {
 	ChatRoom.find().observe({
