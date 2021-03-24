@@ -118,14 +118,14 @@ export function withData(WrappedComponent) {
 	};
 }
 
-const handleFollowButton = (e, mid) => {
+const handleFollowButton = (e, threadId) => {
 	e.preventDefault();
 	e.stopPropagation();
 	call(
 		![true, 'true'].includes(e.currentTarget.dataset.following)
 			? 'followMessage'
 			: 'unfollowMessage',
-		{ mid },
+		{ mid: threadId },
 	);
 };
 

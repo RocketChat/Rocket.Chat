@@ -2041,6 +2041,7 @@
 
 		&:not(.message--ignored) .title {
 			left: 5px;
+
 			width: 60px;
 		}
 
