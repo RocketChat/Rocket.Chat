@@ -2693,6 +2693,8 @@
   "Message_HideType_ul": "Hide \"User Leave\" messages",
   "Message_HideType_ut": "Hide \"User Joined Conversation\" messages",
   "Message_HideType_wm": "Hide \"Welcome\" messages",
+  "Message_HideType_livechat_started": "Hide \"Livechat Started\" messages",
+  "Message_HideType_livechat_close": "Hide \"Livechat Close\" messages",
   "Message_HideType_livechat_transfer_history": "Hide \"Livechat Transfer History\" messages",
   "Message_Id": "Message Id",
   "Message_Ignored": "This message was ignored",

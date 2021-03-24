@@ -34,6 +34,8 @@ Meteor.startup(function() {
 		section: 'Livechat',
 		values: [
 			...MessageTypesValues,
+			{ key: 'livechat-started', i18nLabel: 'Message_HideType_livechat_started' },
+			{ key: 'livechat-close', i18nLabel: 'Message_HideType_livechat_close' },
 			{ key: 'livechat_transfer_history', i18nLabel: 'Message_HideType_livechat_transfer_history' },
 		],
 		public: true,
