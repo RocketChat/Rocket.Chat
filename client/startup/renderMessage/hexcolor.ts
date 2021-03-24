@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../../app/settings';
-import { callbacks } from '../../../app/callbacks';
+import { settings } from '../../../app/settings/client';
+import { callbacks } from '../../../app/callbacks/client';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

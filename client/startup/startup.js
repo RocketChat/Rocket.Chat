@@ -8,8 +8,8 @@ import toastr from 'toastr';
 
 
 import hljs from '../../app/markdown/lib/hljs';
-import { fireGlobalEvent } from '../../app/ui-utils';
-import { getUserPreference, t } from '../../app/utils';
+import { fireGlobalEvent } from '../../app/ui-utils/client';
+import { getUserPreference, t } from '../../app/utils/client';
 import { hasPermission } from '../../app/authorization/client';
 import 'highlight.js/styles/github.css';
 import { synchronizeUserData } from '../lib/userData';

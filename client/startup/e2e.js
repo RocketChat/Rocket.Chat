@@ -7,7 +7,7 @@ import { settings } from '../../app/settings/client';
 import { promises } from '../../app/promises/client';
 import { Notifications } from '../../app/notifications/client';
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
-import { Subscriptions } from '../../app/models';
+import { Subscriptions } from '../../app/models/client';
 import { waitUntilFind } from '../../app/e2e/client/waitUntilFind';
 
 const handle = async (roomId, keyId) => {

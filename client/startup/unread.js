@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
-import { Favico } from '../../app/favico';
+import { Favico } from '../../app/favico/client';
 import { ChatSubscription, ChatRoom } from '../../app/models/client';
-import { menu, fireGlobalEvent } from '../../app/ui-utils';
-import { getUserPreference } from '../../app/utils';
-import { settings } from '../../app/settings';
+import { menu, fireGlobalEvent } from '../../app/ui-utils/client';
+import { getUserPreference } from '../../app/utils/client';
+import { settings } from '../../app/settings/client';
 
 const fetchSubscriptions = () => ChatSubscription.find({
 	open: true,
