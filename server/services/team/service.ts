@@ -9,6 +9,7 @@ import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
+import { Subscriptions } from '../../../app/models/server';
 import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { IRoom } from '../../../definition/IRoom';
@@ -32,6 +33,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 	private MessagesModel: MessagesRaw;
 
 	// TODO not sure we should have the collection here or call the Room service for getting Room data
+	// What's the difference between this one and the one on L25?
 	private Rooms: RoomsRaw;
 
 	constructor(db: Db) {
@@ -566,13 +568,9 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
-		if (!teamId) {
-			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
-			if (!teamIdName) {
-				throw new Error('team-does-not-exist');
-			}
-
-			teamId = teamIdName._id;
+		const team = await this.TeamModel.findOneByIdOrName(teamId || teamName, { projection: { _id: 1, roomId: 1 } });
+		if (!team) {
+			throw new Error('team-does-not-exist');
 		}
 
 		for await (const member of members) {
@@ -583,13 +581,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 				}
 			}
 
-			const existingMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(member.userId, teamId);
+			const existingMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(member.userId, team._id);
 			if (!existingMember) {
 				throw new Error('member-does-not-exist');
 			}
 
 			if (existingMember.roles?.includes('owner')) {
-				const owners = this.TeamMembersModel.findByTeamIdAndRole(teamId, 'owner');
+				const owners = this.TeamMembersModel.findByTeamIdAndRole(team._id, 'owner');
 				const totalOwners = await owners.count();
 				if (totalOwners === 1) {
 					throw new Error('last-owner-can-not-be-removed');
@@ -597,6 +595,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 			}
 
 			this.TeamMembersModel.removeById(existingMember._id);
+
+			await this.unsubscribeFromMain(team.roomId, member.userId);
 		}
 	}
 
@@ -753,5 +753,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}).toArray();
 
 		return rooms;
+	}
+
+	async unsubscribeFromMain(roomId: string, userId: string): Promise<void> {
+		// we need to use the normal model here. The raw one didn't propagate the changes to the FE
+		// let me know if there's a way of doing that
+		await Subscriptions.removeByRoomIdsAndUserId([roomId], userId);
+		await this.RoomsModel.incUsersCountByIds([roomId], -1);
+		await this.Users.removeRoomsByRoomIdsAndUserId([roomId], userId);
 	}
 }

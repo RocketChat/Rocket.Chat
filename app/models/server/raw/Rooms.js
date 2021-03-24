@@ -316,4 +316,20 @@ export class RoomsRaw extends BaseRaw {
 			},
 		});
 	}
+
+	incUsersCountByIds(ids, inc = 1) {
+		const query = {
+			_id: {
+				$in: ids,
+			},
+		};
+
+		const update = {
+			$inc: {
+				usersCount: inc,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
 }
