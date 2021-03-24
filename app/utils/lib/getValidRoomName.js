@@ -33,7 +33,7 @@ export const getValidRoomName = (displayName, rid = '', options = {}) => {
 		}
 	}
 
-	if (!nameValidation.test(slugifiedName) || ['admin', 'administrator', 'system', 'user'].includes(slugifiedName.toLowerCase())) {
+	if (!nameValidation.test(slugifiedName) || settings.get('Accounts_SystemBlockedUsernameList').includes(slugifiedName.toLowerCase())) {
 		throw new Meteor.Error('error-invalid-room-name', `${ slugifiedName } is not a valid room name.`, {
 			function: 'RocketChat.getValidRoomName',
 			channel_name: slugifiedName,
