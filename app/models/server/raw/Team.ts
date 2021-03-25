@@ -47,16 +47,6 @@ export class TeamRaw extends BaseRaw<T> {
 		return this.col.findOne({ name }, options);
 	}
 
-	findOneByIdOrName(param: string, options?: FindOneOptions<T>): Promise<T | null> {
-		return this.col.findOne({
-			$or: [{
-				name: param,
-			}, {
-				_id: param,
-			}],
-		}, options);
-	}
-
 	findOneByMainRoomId(roomId: string, options?: FindOneOptions<T>): Promise<T | null> {
 		return this.col.findOne({ roomId }, options);
 	}

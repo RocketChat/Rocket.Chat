@@ -32,10 +32,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 	private MessagesModel: MessagesRaw;
 
-	// TODO not sure we should have the collection here or call the Room service for getting Room data
-	// What's the difference between this one and the one on L25?
-	private Rooms: RoomsRaw;
-
 	constructor(db: Db) {
 		super();
 
@@ -44,7 +40,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 		this.TeamModel = new TeamRaw(db.collection('rocketchat_team'));
 		this.TeamMembersModel = new TeamMemberRaw(db.collection('rocketchat_team_member'));
 		this.Users = new UsersRaw(db.collection('users'));
-		this.Rooms = new RoomsRaw(db.collection('rocketchat_room'));
 		this.MessagesModel = new MessagesRaw(db.collection('rocketchat_message'));
 	}
 
@@ -54,7 +49,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('team-name-already-exists');
 		}
 
-		const existingRoom = await this.Rooms.findOneByName(team.name, { projection: { _id: 1 } });
+		const existingRoom = await this.RoomsModel.findOneByName(team.name, { projection: { _id: 1 } });
 		if (existingRoom && existingRoom._id !== room.id) {
 			throw new Error('room-name-already-exists');
 		}
@@ -568,7 +563,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
-		const team = await this.TeamModel.findOneByIdOrName(teamId || teamName, { projection: { _id: 1, roomId: 1 } });
+		const searchTerm = teamId || teamName;
+		const team = await this.TeamModel[teamId ? 'findOneById' : 'findOneByName'](searchTerm, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('team-does-not-exist');
 		}
