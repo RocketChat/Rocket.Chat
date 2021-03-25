@@ -39,7 +39,7 @@ export function withData(WrappedComponent) {
 		subscription[0]?.tunread?.length >= 1 && (nbrUnread = subscription[0]?.tunread?.length)
 		console.log(subscription)
 		//this is an exemple, we need to add a business logic
-		const result = [{month: "March", ts: new Date(), tmid: subscription[0].tunread[0]},...subscription, ...messages]
+		const result = [{month: "March", ts: new Date(), tmid: subscription[0]?.tunread?.length >= 1 ? subscription[0]?.tunread : null},...subscription, ...messages]
 		result.sort( (a, b) => b.ts - a.ts );
 		
 		
@@ -52,9 +52,8 @@ export function withData(WrappedComponent) {
 		
 		return <WrappedComponent
 			{...props}
-			//userMessageList={userMessageList}
+			//loadmoreitems
             messages={result}
-			//loadMoreItems={loadMoreItems}
 			userId={userId}
 			nbrUnread={nbrUnread}
 			text={text}
