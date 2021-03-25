@@ -1,11 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Box, Icon, Button, ButtonGroup, Divider, Callout } from '@rocket.chat/fuselage';
-import { css } from '@rocket.chat/css-in-js';
+import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 
-import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import UserCard from '../../../../../components/UserCard';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
@@ -19,7 +16,14 @@ import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManag
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import MarkdownText from '../../../../../components/MarkdownText';
+import ChannelToTeamModal from '../../../../teams/modals/ChannelToTeamModal/ChannelToTeamModal';
+import ConvertToTeamModal from '../../../../teams/modals/ConvertToTeamModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
+import InfoPanel, { RetentionPolicyCallout } from '../../../../InfoPanel';
+import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import { useActionSpread } from '../../../../hooks/useActionSpread';
+
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -33,19 +37,9 @@ const retentionPolicyAppliesTo = {
 	d: 'RetentionPolicy_AppliesToDMs',
 };
 
-const wordBreak = css`
-	word-break: break-word !important;
-`;
-
-const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
-const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
-
-export const RoomInfoIcon = ({ name }) => <Icon name={name} size='x22' />;
-
-export const Title = (props) => <UserCard.Username {...props}/>;
-
 export const RoomInfo = function RoomInfo({
-	fname: name,
+	name,
+	fname,
 	description,
 	archived,
 	broadcast,
@@ -60,6 +54,8 @@ export const RoomInfo = function RoomInfo({
 	onClickLeave,
 	onClickEdit,
 	onClickDelete,
+	onClickMoveToTeam,
+	onClickConvertToTeam,
 }) {
 	const t = useTranslation();
 
@@ -70,6 +66,64 @@ export const RoomInfo = function RoomInfo({
 		maxAgeDefault,
 	} = retentionPolicy;
 
+	const memoizedActions = useMemo(() => ({
+		...onClickEdit && { edit: {
+			label: t('Edit'),
+			icon: 'edit',
+			action: onClickEdit,
+		} },
+		...onClickDelete && { delete: {
+			label: t('Delete'),
+			icon: 'trash',
+			action: onClickDelete,
+		} },
+		...onClickMoveToTeam && { move: {
+			label: t('Teams_move_channel_to_team'),
+			icon: 'team',
+			action: onClickMoveToTeam,
+		} },
+		...onClickConvertToTeam && { convert: {
+			label: t('Teams_convert_channel_to_team'),
+			icon: 'team',
+			action: onClickConvertToTeam,
+		} },
+		...onClickHide && { hide: {
+			label: t('Hide'),
+			action: onClickHide,
+			icon: 'eye-off',
+		} },
+		...onClickLeave && { leave: {
+			label: t('Leave'),
+			action: onClickLeave,
+			icon: 'sign-out',
+		} },
+	}), [onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave]);
+
+	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
+
+	const menu = useMemo(() => {
+		if (!menuOptions) {
+			return null;
+		}
+
+		return <Menu
+			small={false}
+			flexShrink={0}
+			mi='x2'
+			key='menu'
+			ghost={false}
+			renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
+			options={menuOptions}
+		/>;
+	}, [menuOptions]);
+
+	const actions = useMemo(() => {
+		const mapAction = ([key, { label, icon, action }]) =>
+			<InfoPanel.Action key={key} label={label} onClick={action} icon={icon}/>;
+
+		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
+	}, [actionsDefinition, menu]);
+
 	return (
 		<>
 			<VerticalBar.Header>
@@ -79,69 +133,58 @@ export const RoomInfo = function RoomInfo({
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24'>
-				<Box flexGrow={1}>
-					<Box pbe='x24' display='flex' justifyContent='center'>
+				<InfoPanel flexGrow={1}>
+
+					<InfoPanel.Avatar>
 						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
-					</Box>
+					</InfoPanel.Avatar>
 
-					{ archived && <Box pbe='x24'>
-						<Callout type='warning'>
-							{t('Room_archived')}
-						</Callout>
-					</Box>}
+					<InfoPanel.ActionGroup>
+						{actions}
+					</InfoPanel.ActionGroup>
 
-					<Box pbe='x24'>
-						<RoomInfo.Title name={name} status={<RoomInfo.Icon name={icon} />}>{name}</RoomInfo.Title>
-					</Box>
+					<InfoPanel.Section>
+						{ archived && <Box mb='x16'>
+							<Callout type='warning'>
+								{t('Room_archived')}
+							</Callout>
+						</Box>}
+					</InfoPanel.Section>
 
-					{broadcast && broadcast !== '' && <Box pbe='x16'>
-						<Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</Label>
-					</Box>}
+					<InfoPanel.Section>
+						<InfoPanel.Title title={fname || name} icon={icon} />
+					</InfoPanel.Section>
 
-					{description && description !== '' && <Box pbe='x16'>
-						<Label>{t('Description')}</Label>
-						<Info withTruncatedText={false}>{description}</Info>
-					</Box>}
+					<InfoPanel.Section>
+						{broadcast && broadcast !== '' && <InfoPanel.Field>
+							<InfoPanel.Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</InfoPanel.Label>
+						</InfoPanel.Field>}
 
-					{announcement && announcement !== '' && <Box pbe='x16'>
-						<Label>{t('Announcement')}</Label>
-						<Info withTruncatedText={false}>{announcement}</Info>
-					</Box>}
+						{description && description !== '' && <InfoPanel.Field>
+							<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}>{description}</InfoPanel.Text>
+						</InfoPanel.Field>}
 
-					{topic && topic !== '' && <Box pbe='x16'>
-						<Label>{t('Topic')}</Label>
-						<Info withTruncatedText={false}>{topic}</Info>
-					</Box>}
+						{announcement && announcement !== '' && <InfoPanel.Field>
+							<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}>{announcement}</InfoPanel.Text>
+						</InfoPanel.Field>}
 
-					{retentionPolicyEnabled && (
-						<Callout type='warning'>
-							{filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</p>}
-							{filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</p>}
-							{!filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning', { time: maxAgeDefault })}</p>}
-							{!filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_Unpinned', { time: maxAgeDefault })}</p>}
-						</Callout>
-					)}
-				</Box>
+						{topic && topic !== '' && <InfoPanel.Field>
+							<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}>{topic}</InfoPanel.Text>
+						</InfoPanel.Field>}
+
+						{retentionPolicyEnabled && (
+							<RetentionPolicyCallout filesOnlyDefault={filesOnlyDefault} excludePinnedDefault={excludePinnedDefault} maxAgeDefault={maxAgeDefault} />
+						)}
+					</InfoPanel.Section>
+
+				</InfoPanel>
 			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
-				<ButtonGroup stretch>
-					{ onClickHide && <Button width='50%' onClick={onClickHide}><Box is='span' mie='x4'><Icon name='eye-off' size='x20' /></Box>{t('Hide')}</Button> }
-					{ onClickLeave && <Button width='50%' onClick={onClickLeave} danger><Box is='span' mie='x4'><Icon name='sign-out' size='x20' /></Box>{t('Leave')}</Button> }
-				</ButtonGroup>
-				{ (onClickEdit || onClickDelete) && <>
-					<Divider />
-					<ButtonGroup stretch>
-						{ onClickEdit && <Button width='50%' onClick={onClickEdit}><Box is='span' mie='x4'><Icon name='edit' size='x20' /></Box>{t('Edit')}</Button> }
-						{ onClickDelete && <Button width='50%' onClick={onClickDelete} danger><Box is='span' mie='x4'><Icon name='trash' size='x20' /></Box>{t('Delete')}</Button>}
-					</ButtonGroup>
-				</>}
-			</VerticalBar.Footer>
 		</>
 	);
 };
-
-RoomInfo.Title = Title;
-RoomInfo.Icon = RoomInfoIcon;
 
 export default ({
 	rid,
@@ -172,9 +215,18 @@ export default ({
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
+	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRoom', t('Success'));
+	const convertRoomToTeam = useEndpointActionExperimental(
+		'POST',
+		type === 'c' ? 'channels.convertToTeam' : 'groups.convertToTeam',
+		t('Success'),
+	);
+
 	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
 
 	const canEdit = usePermission('edit-room', rid);
+
+	const canConvertRoomToTeam = usePermission('create-team');
 
 	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
@@ -239,6 +291,43 @@ export default ({
 		/>);
 	});
 
+	const onMoveToTeam = useMutableCallback(async () => {
+		const onConfirm = async (teamId) => {
+			try {
+				await moveChannelToTeam({ roomId: rid, teamId });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				closeModal();
+			}
+		};
+
+		setModal(<ChannelToTeamModal
+			rid={rid}
+			onClose={closeModal}
+			onCancel={closeModal}
+			onConfirm={onConfirm}
+		/>);
+	});
+
+	const onConvertToTeam = useMutableCallback(async () => {
+		const data = type === 'c' ? { channelId: rid } : { roomId: rid };
+		const onConfirm = async () => {
+			try {
+				await convertRoomToTeam(data);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				closeModal();
+			}
+		};
+
+		setModal(<ConvertToTeamModal
+			onClose={closeModal}
+			onConfirm={onConfirm}
+		/>);
+	});
+
 	return (
 		<RoomInfo
 			archived={archived}
@@ -250,6 +339,8 @@ export default ({
 			onClickDelete={canDelete && handleDelete}
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}
+			onClickMoveToTeam={!room.teamId && onMoveToTeam}
+			onClickConvertToTeam={!room.teamId && canConvertRoomToTeam && onConvertToTeam}
 			{...room}
 			announcement={room.announcement && <MarkdownText content={room.announcement}/>}
 			description={room.description && <MarkdownText content={room.description}/>}

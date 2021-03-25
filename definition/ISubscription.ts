@@ -20,6 +20,8 @@ export interface ISubscription extends IRocketChatRecord {
 	f?: true;
 	lr: Date;
 	hideUnreadStatus?: true;
+	teamMain?: boolean;
+	teamId?: string;
 
 	userMentions: number;
 	groupMentions: number;
@@ -31,6 +33,8 @@ export interface ISubscription extends IRocketChatRecord {
 	prid?: RoomID;
 
 	roles?: string[];
+
+	onHold?: boolean;
 }
 
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import _ from 'underscore';
+import mem from 'mem';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
@@ -422,10 +423,12 @@ export class Subscriptions extends Base {
 
 	// FIND
 	findByUserId(userId, options) {
-		const query =			{ 'u._id': userId };
+		const query = { 'u._id': userId };
 
 		return this.find(query, options);
 	}
+
+	cachedFindByUserId = mem(this.findByUserId.bind(this), { maxAge: 5000 });
 
 	findByUserIdExceptType(userId, typeException, options) {
 		const query = {
@@ -434,6 +437,19 @@ export class Subscriptions extends Base {
 		};
 
 		return this.find(query, options);
+	}
+
+	findByUserIdWithRoomInfo(userId, options) {
+		const userSubs = this.find({ 'u._id': userId }, options);
+		const roomIds = userSubs.map((sub) => sub.rid);
+		const rooms = Rooms.findByIds(roomIds, { projection: { _id: 1, teamId: 1, teamMain: 1 } }).fetch();
+
+		return userSubs.map((sub) => {
+			const roomSub = rooms.find((r) => r._id === sub.rid);
+			sub.teamMain = roomSub?.teamMain || false;
+			sub.teamId = roomSub?.teamId || undefined;
+			return sub;
+		});
 	}
 
 	findByUserIdAndType(userId, type, options) {
@@ -592,7 +608,7 @@ export class Subscriptions extends Base {
 
 	// UPDATE
 	archiveByRoomId(roomId) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -1258,6 +1274,18 @@ export class Subscriptions extends Base {
 		return result;
 	}
 
+	removeByRoomIdsAndUserId(rids, userId) {
+		const result = this.remove({ rid: { $in: rids }, 'u._id': userId });
+
+		if (Match.test(result, Number) && result > 0) {
+			Rooms.incUsersCountByIds(rids, -1);
+		}
+
+		Users.removeRoomsByRoomIdsAndUserId(rids, userId);
+
+		return result;
+	}
+
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
@@ -1329,6 +1357,22 @@ export class Subscriptions extends Base {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	setOnHold(roomId) {
+		return this.update(
+			{ rid: roomId },
+			{ $set: { onHold: true } },
+			{ multi: true },
+		);
+	}
+
+	unsetOnHold(roomId) {
+		return this.update(
+			{ rid: roomId },
+			{ $unset: { onHold: 1 } },
+			{ multi: true },
+		);
 	}
 }
 

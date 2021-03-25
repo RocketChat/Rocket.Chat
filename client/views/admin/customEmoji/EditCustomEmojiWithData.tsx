@@ -3,7 +3,6 @@ import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import EditCustomEmoji from './EditCustomEmoji';
-import { EmojiDescriptor } from './types';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
@@ -26,11 +25,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 		phase: state,
 		error,
 		reload,
-	} = useEndpointData<{
-		emojis?: {
-			update: EmojiDescriptor[];
-		};
-	}>('emoji-custom.list', query);
+	} = useEndpointData('emoji-custom.list', query);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <Box pb='x20'>
