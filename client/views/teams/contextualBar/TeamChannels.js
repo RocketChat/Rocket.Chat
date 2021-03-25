@@ -9,13 +9,14 @@ import { useSetModal } from '../../../contexts/ModalContext';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { RecordList } from '../../../lib/lists/RecordList.ts';
+import { TeamChannelItem } from './TeamChannelItem';
+import { useTabBarClose } from '../../room/providers/ToolboxProvider';
+import { roomTypes } from '../../../../app/utils';
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../components/VerticalBar';
 import AddExistingModal from '../modals/AddExistingModal';
-import { TeamChannelItem } from './TeamChannelItem';
 import CreateChannel from '../../../sidebar/header/CreateChannel';
 import RoomInfo from '../../room/contextualBar/Info';
-import { useTabBarClose } from '../../room/providers/ToolboxProvider';
 
 
 const Row = memo(function Row({ room, onClickView }) {
@@ -162,8 +163,9 @@ const TeamChannels = ({ teamId }) => {
 
 	const addExisting = useReactModal(AddExistingModal, { teamId });
 	const createNew = useReactModal(CreateChannel, { teamId });
-	const handleBack = useCallback(() => setState({}), [setState]);
 
+	const goToRoom = useCallback((room) => roomTypes.openRouteLink(room.t, room), []);
+	const handleBack = useCallback(() => setState({}), [setState]);
 	const viewRoom = useMutableCallback((e) => {
 		const { rid } = e.currentTarget.dataset;
 
@@ -174,7 +176,7 @@ const TeamChannels = ({ teamId }) => {
 	});
 
 	if (state.tab === 'RoomInfo') {
-		return <RoomInfo rid={state.rid} onClickClose={onClickClose} onClickBack={handleBack} />;
+		return <RoomInfo rid={state.rid} onClickClose={onClickClose} onClickBack={handleBack} onEnterRoom={goToRoom} />;
 	}
 
 	return (

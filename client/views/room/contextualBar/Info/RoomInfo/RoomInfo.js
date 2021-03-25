@@ -57,6 +57,7 @@ export const RoomInfo = function RoomInfo({
 	onClickDelete,
 	onClickMoveToTeam,
 	onClickConvertToTeam,
+	onClickEnterRoom,
 }) {
 	const t = useTranslation();
 
@@ -68,6 +69,11 @@ export const RoomInfo = function RoomInfo({
 	} = retentionPolicy;
 
 	const memoizedActions = useMemo(() => ({
+		...onClickEnterRoom && { enter: {
+			label: t('Enter'),
+			icon: 'login',
+			action: onClickEnterRoom,
+		} },
 		...onClickEdit && { edit: {
 			label: t('Edit'),
 			icon: 'edit',
@@ -98,7 +104,7 @@ export const RoomInfo = function RoomInfo({
 			action: onClickLeave,
 			icon: 'sign-out',
 		} },
-	}), [onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave]);
+	}), [onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave, onClickEnterRoom]);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
 
@@ -191,6 +197,7 @@ export default ({
 	rid,
 	openEditing,
 	onClickBack,
+	onEnterRoom,
 }) => {
 	const onClickClose = useTabBarClose();
 	const t = useTranslation();
@@ -330,6 +337,8 @@ export default ({
 		/>);
 	});
 
+	const onClickEnterRoom = useMutableCallback(() => onEnterRoom(room));
+
 	return (
 		<RoomInfo
 			archived={archived}
@@ -344,6 +353,7 @@ export default ({
 			onClickHide={joined && handleHide}
 			onClickMoveToTeam={!room.teamId && onMoveToTeam}
 			onClickConvertToTeam={!room.teamId && canConvertRoomToTeam && onConvertToTeam}
+			onClickEnterRoom={onEnterRoom && onClickEnterRoom}
 			{...room}
 			announcement={room.announcement && <MarkdownText content={room.announcement}/>}
 			description={room.description && <MarkdownText content={room.description}/>}
