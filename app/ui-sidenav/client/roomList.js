@@ -159,6 +159,8 @@ const mergeSubRoom = (subscription) => {
 			broadcast: 1,
 			archived: 1,
 			retention: 1,
+			teamId: 1,
+			teamMain: 1,
 		},
 	};
 
@@ -188,6 +190,9 @@ const mergeSubRoom = (subscription) => {
 	subscription.broadcast = room.broadcast;
 	subscription.archived = room.archived;
 	subscription.retention = room.retention;
+
+	subscription.teamId = room.teamId;
+	subscription.teamMain = room.teamMain;
 	return Object.assign(subscription, getLowerCaseNames(subscription));
 };
 
@@ -213,6 +218,8 @@ const mergeRoomSub = (room) => {
 			...room.v && { v: room.v },
 			lastMessage: room.lastMessage,
 			streamingOptions: room.streamingOptions,
+			teamId: room.teamId,
+			teamMain: room.teamMain,
 			...getLowerCaseNames(room, sub.name, sub.fname),
 		},
 	});
