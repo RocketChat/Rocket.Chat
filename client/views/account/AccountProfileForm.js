@@ -80,7 +80,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 	const emailError = useMemo(() => (isEmail(email) ? undefined : 'error-invalid-email-address'), [email]);
 	const checkUsername = useDebouncedCallback(async (username) => {
 		if (user.username === username) { return setUsernameError(undefined); }
-		if (!namesRegex.test(username) || ['admin', 'administrator', 'system', 'user'].includes(username.toLowerCase())) { return setUsernameError(t('error-invalid-username')); }
+		if (!namesRegex.test(username)) { return setUsernameError(t('error-invalid-username')); }
 		const isAvailable = await checkUsernameAvailability(username);
 		if (!isAvailable) { return setUsernameError(t('Username_already_exist')); }
 		setUsernameError(undefined);

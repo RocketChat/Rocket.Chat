@@ -19,6 +19,7 @@ import { customFieldText, clearCustomFields, setCustomFields } from '../../data/
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
+import { settings } from '../../../app/settings';
 
 function createTestUser() {
 	return new Promise((resolve) => {
@@ -156,6 +157,30 @@ describe('[Users]', function() {
 			});
 		});
 
+		function failCreateUser(name) {
+			it(`should not create a new user if username is the reserved word ${ name }`, (done) => {
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email: `create_user_fail_${ apiEmail }`,
+						name: `create_user_fail_${ apiUsername }`,
+						username: name,
+						password,
+						active: true,
+						roles: ['user'],
+						joinDefaultChannels: true,
+						verified: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `${ name } is a reserved name. [invalid-name]`);
+					})
+					.end(done);
+			});
+		}
+
 		function failUserWithCustomField(field) {
 			it(`should not create a user if a custom field ${ field.reason }`, (done) => {
 				setCustomFields({ customFieldText }, (error) => {
@@ -196,6 +221,10 @@ describe('[Users]', function() {
 			{ name: 'customFieldText', value: '0123456789-0', reason: 'length is more than maxLength' },
 		].forEach((field) => {
 			failUserWithCustomField(field);
+		});
+
+		settings.get('Accounts_SystemBlockedUsernameList').forEach((name) => {
+			failCreateUser(name);
 		});
 	});
 
@@ -1073,6 +1102,30 @@ describe('[Users]', function() {
 					});
 			});
 		});
+
+		function failUpdateUser(name) {
+			it(`should not update an user if the new username is the reserved word ${ name }`, (done) => {
+				request.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: targetUser._id,
+						data: {
+							username: name,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `${ name } is a reserved name. [invalid-name]`);
+					})
+					.end(done);
+			});
+		}
+
+		settings.get('Accounts_SystemBlockedUsernameList').forEach((name) => {
+			failUpdateUser(name);
+		});
 	});
 
 	describe('[/users.updateOwnBasicInfo]', () => {
@@ -1237,6 +1290,29 @@ describe('[Users]', function() {
 					expect(user).to.not.have.property('e2e');
 				})
 				.end(done);
+		});
+
+		function failUpdateUserOwnBasicInfo(name) {
+			it(`should not update an user's basic info if the new username is the reserved word ${ name }`, (done) => {
+				request.post(api('users.updateOwnBasicInfo'))
+					.set(credentials)
+					.send({
+						data: {
+							username: name,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `${ name } is a reserved name. [invalid-name]`);
+					})
+					.end(done);
+			});
+		}
+
+		settings.get('Accounts_SystemBlockedUsernameList').forEach((name) => {
+			failUpdateUserOwnBasicInfo(name);
 		});
 	});
 

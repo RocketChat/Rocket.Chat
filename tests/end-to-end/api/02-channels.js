@@ -13,6 +13,7 @@ import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
+import { settings } from '../../../app/settings';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
@@ -836,21 +837,46 @@ describe('[Channels]', function() {
 	it('/channels.rename', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request.post(api('channels.rename'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-				name: `EDITED${ apiPublicChannelName }`,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('channel._id');
-				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
-				expect(res.body).to.have.nested.property('channel.t', 'c');
-				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
+		it('should rename a channel', (done) => {
+			request.post(api('channels.rename'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					name: `EDITED${ apiPublicChannelName }`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
+				})
+				.end(done);
+		});
+
+		function failRenameChannel(name) {
+			it(`should not rename a channel to the reserved name ${ name }`, (done) => {
+				request.post(api('channels.rename'))
+					.set(credentials)
+					.send({
+						roomId: channel._id,
+						name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `${ name } is a reserved name. [invalid-name]`);
+					})
+					.end(done);
 			});
+		}
+
+		settings.get('Accounts_SystemBlockedUsernameList').forEach((name) => {
+			failRenameChannel(name);
+		});
 	});
 
 	describe('/channels.getIntegrations', () => {

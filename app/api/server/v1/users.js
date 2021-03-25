@@ -11,6 +11,7 @@ import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
 import {
 	validateCustomFields,
+	validateName,
 	saveUser,
 	saveCustomFieldsWithoutValidation,
 	checkUsernameAvailability,
@@ -46,6 +47,8 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			verified: Match.Maybe(Boolean),
 			customFields: Match.Maybe(Object),
 		});
+
+		validateName(this.bodyParams.username);
 
 		// New change made by pull request #5152
 		if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
@@ -497,6 +500,8 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 			}),
 		});
 
+		validateName(this.bodyParams.data.username);
+
 		const userData = _.extend({ _id: this.bodyParams.userId }, this.bodyParams.data);
 
 		Meteor.runAsUser(this.userId, () => saveUser(this.userId, userData));
@@ -532,6 +537,8 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 			}),
 			customFields: Match.Maybe(Object),
 		});
+
+		validateName(this.bodyParams.data.username);
 
 		const userData = {
 			email: this.bodyParams.data.email,
