@@ -158,6 +158,12 @@ export const getCommonRoomEvents = () => ({
 			button.action.call(this, event, { tabBar: template.tabBar, rid: template.data.rid });
 		}
 	},
+	'dblclick .card-message'(event, template) {
+		const button = MessageAction.getButtonById('reply-in-thread');
+		if ((button != null ? button.action : undefined) != null) {
+			button.action.call(this, event, { tabBar: template.tabBar, rid: template.data.rid });
+		}
+	},
 	'click .js-follow-thread'(e) {
 		e.preventDefault();
 		e.stopPropagation();
