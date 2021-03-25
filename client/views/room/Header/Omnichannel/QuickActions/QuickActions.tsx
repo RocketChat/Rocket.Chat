@@ -1,4 +1,4 @@
-import React, { memo, useContext, useCallback, useState, useEffect, useMemo } from 'react';
+import React, { memo, useContext, useCallback, useState, useEffect } from 'react';
 import { BoxProps, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -17,8 +17,8 @@ import TranscriptModal from '../../../../../components/Omnichannel/modals/Transc
 import CloseChatModal from '../../../../../components/Omnichannel/modals/CloseChatModal';
 import { handleError } from '../../../../../../app/utils/client';
 import { IRoom } from '../../../../../../definition/IRoom';
-import { useAtLeastOnePermission, usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
-import { useUserId } from '../../../../../contexts/UserContext';
+import { usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
+import { useUserId, useUserSubscription } from '../../../../../contexts/UserContext';
 import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
 import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
 
@@ -39,7 +39,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const getVisitorEmail = useMutableCallback(async () => {
 		if (!visitorRoomId) { return; }
-		const { visitor: { visitorEmails } } = await getVisitorInfo(visitorRoomId);
+		const { visitor: { visitorEmails } } = await getVisitorInfo({ visitorId: visitorRoomId } as any);
 		if (visitorEmails?.length && visitorEmails[0].address) {
 			setEmail(visitorEmails[0].address);
 		}
@@ -162,15 +162,17 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		openModal(id);
 	});
 
+	const isSubscribedToRoom = useUserSubscription(room._id, {}) !== undefined;
+
 	const hasManagerRole = useRole('livechat-manager');
 
-	const roomOpen = room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasManagerRole);
+	const roomOpen = room && room.open && ((room.u && room.u._id === uid) || hasManagerRole);
 
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 
 	const canSendTranscript = usePermission('send-omnichannel-chat-transcript');
 
-	const canCloseRoom = usePermission('close-others-livechat-room');
+	const canCloseRoom = usePermission('close-others-livechat-room') || isSubscribedToRoom;
 
 	const omnichannelRouteConfig = useOmnichannelRouteConfig();
 
@@ -190,12 +192,6 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		return false;
 	};
 
-	const hasPermissionGroup = useAtLeastOnePermission(
-		useMemo(() => [
-			'close-others-livechat-room', 'transfer-livechat-guest',
-		], []),
-	);
-
 	return <ButtonGroup mi='x4' medium>
 		{ visibleActions.map(({ id, color, icon, title, action = actionDefault }, index) => {
 			const props = {
@@ -212,7 +208,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				key: id,
 			};
 
-			if (!hasPermissionGroup || !hasPermissionButtons(id)) {
+			if (!hasPermissionButtons(id)) {
 				return;
 			}
 
