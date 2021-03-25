@@ -13,6 +13,7 @@ import ServerProvider from './ServerProvider';
 import SessionProvider from './SessionProvider';
 import SettingsProvider from './SettingsProvider';
 import SidebarProvider from './SidebarProvider';
+import TeamsProvider from './TeamsProvider';
 import ToastMessagesProvider from './ToastMessagesProvider';
 import TranslationProvider from './TranslationProvider';
 import UserProvider from './UserProvider';
@@ -36,7 +37,9 @@ function MeteorProvider({ children }) {
 															<ModalProvider>
 																{/* TODO move to RoomContext */}
 																<AttachmentProvider>
-																	{children}
+																	<TeamsProvider>
+																		{children}
+																	</TeamsProvider>
 																</AttachmentProvider>
 															</ModalProvider>
 														</OmniChannelProvider>

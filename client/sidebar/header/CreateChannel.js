@@ -130,6 +130,7 @@ export const CreateChannel = ({
 export default memo(({
 	onClose,
 	teamId = '',
+	fetch = () => {},
 }) => {
 	const createChannel = useEndpointActionExperimental('POST', 'channels.create');
 	const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
@@ -222,12 +223,17 @@ export default memo(({
 			!teamId && goToRoom(roomData.channel._id);
 		}
 
+		if (teamId) {
+			fetch(teamId);
+		}
+
 		onClose();
 	}, [broadcast,
 		createChannel,
 		createPrivateChannel,
 		description,
 		encrypted,
+		fetch,
 		name,
 		onClose,
 		readOnly,

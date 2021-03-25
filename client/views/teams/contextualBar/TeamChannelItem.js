@@ -24,23 +24,25 @@ export const useReactModal = (Component, props) => {
 	});
 };
 
-const RoomActions = ({ room }) => {
+const RoomActions = ({ room, fetch }) => {
 	const t = useTranslation();
 	const updateRoomEndpoint = useEndpoint('POST', 'teams.updateRoom');
 	const removeRoomEndpoint = useEndpoint('POST', 'teams.removeRoom');
 	const deleteRoomEndpoint = useEndpoint('POST', room.t === 'c' ? 'channels.delete' : 'groups.delete');
 
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {
-		onConfirmAction: () => {
-			removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
+		onConfirmAction: async () => {
+			await removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
+			fetch(room.teamId);
 		},
 		labelButton: t('Remove'),
 		content: <Box is='span' size='14px'>{t('Team_Remove_from_team_modal_content', { teamName: roomTypes.getRoomName(room.t, room) })}</Box>,
 	});
 
 	const DeleteChannelAction = useReactModal(ConfirmationModal, {
-		onConfirmAction: () => {
-			deleteRoomEndpoint({ roomId: room._id });
+		onConfirmAction: async () => {
+			await deleteRoomEndpoint({ roomId: room._id });
+			fetch(room.teamId);
 		},
 		labelButton: t('Delete'),
 		content: <>
@@ -50,11 +52,13 @@ const RoomActions = ({ room }) => {
 	});
 
 	const menuOptions = useMemo(() => {
-		const AutoJoinAction = () => {
-			updateRoomEndpoint({
+		const AutoJoinAction = async () => {
+			await updateRoomEndpoint({
 				roomId: room._id,
 				isDefault: !room.teamDefault,
 			});
+
+			fetch(room.teamId);
 		};
 
 		return [{
@@ -78,7 +82,7 @@ const RoomActions = ({ room }) => {
 			},
 			action: DeleteChannelAction,
 		}];
-	}, [DeleteChannelAction, RemoveFromTeamAction, room._id, room.t, room.teamDefault, t, updateRoomEndpoint]);
+	}, [DeleteChannelAction, RemoveFromTeamAction, fetch, room._id, room.t, room.teamDefault, room.teamId, t, updateRoomEndpoint]);
 
 	return <Menu
 		flexShrink={0}
@@ -92,7 +96,7 @@ const RoomActions = ({ room }) => {
 	/>;
 };
 
-export const TeamChannelItem = ({ room }) => {
+export const TeamChannelItem = ({ room, fetch }) => {
 	const [showButton, setShowButton] = useState();
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
@@ -109,7 +113,7 @@ export const TeamChannelItem = ({ room }) => {
 			<Option.Column>{room.t === 'c' ? <Icon name='hash' size='x15'/> : <Icon name='hashtag-lock' size='x15'/>}</Option.Column>
 			<Option.Content>{room.fname || room.name}</Option.Content>
 			<Option.Menu>
-				{showButton ? <RoomActions room={room} /> : <ActionButton
+				{showButton ? <RoomActions room={room} fetch={fetch} /> : <ActionButton
 					ghost
 					tiny
 					icon='kebab'

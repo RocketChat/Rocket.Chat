@@ -10,6 +10,7 @@ import { ManualRegisterEndpoint as CloudManualRegisterEndpoint } from './endpoin
 import { FilesEndpoint as GroupsFilesEndpoint } from './endpoints/v1/groups/files';
 import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
 import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
+import { ListRoomsEndpoint as TeamsListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
 import { FilesEndpoint as ChannelsFilesEndpoint } from './endpoints/v1/channels/files';
 import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-custom/list';
 import { GetDiscussionsEndpoint as ChatGetDiscussionsEndpoint } from './endpoints/v1/chat/getDiscussions';
@@ -33,6 +34,7 @@ export type ServerEndpoints = {
 	'/apps/externalComponents': AppsExternalComponentsEndpoint;
 	'rooms.autocomplete.channelAndPrivate': RoomsAutocompleteEndpoint;
 	'teams.addRooms': TeamsAddRoomsEndpoint;
+	'teams.listRooms': TeamsListRoomsEndpoint;
 	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
 };
 

@@ -1,27 +1,28 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { Virtuoso } from 'react-virtuoso';
 import { useMutableCallback, useLocalStorage, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
 import { useSetModal } from '../../../contexts/ModalContext';
-import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
-import { useRecordList } from '../../../hooks/lists/useRecordList';
-import { RecordList } from '../../../lib/lists/RecordList.ts';
+import { useTeamsChannels } from '../../../contexts/TeamsContext';
+// import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
+// import { useRecordList } from '../../../hooks/lists/useRecordList';
+// import { RecordList } from '../../../lib/lists/RecordList.ts';
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../components/VerticalBar';
 import AddExistingModal from '../modals/AddExistingModal';
 import { TeamChannelItem } from './TeamChannelItem';
 import CreateChannel from '../../../sidebar/header/CreateChannel';
 
-const Row = memo(function Row({ room }) {
+const Row = memo(function Row({ room, fetch }) {
 	if (!room) {
 		return <BaseTeamChannels.Option.Skeleton />;
 	}
 
 	return <BaseTeamChannels.Option
 		room={room}
+		fetch={fetch}
 	/>;
 });
 
@@ -37,6 +38,7 @@ const BaseTeamChannels = ({
 	onClickCreateNew,
 	total,
 	loadMoreItems,
+	fetch,
 }) => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
@@ -84,6 +86,7 @@ const BaseTeamChannels = ({
 						components={{ Scroller: ScrollableContentWrapper }}
 						itemContent={(index, data) => <Row
 							room={data}
+							fetch={fetch}
 						/>}
 					/>}
 				</Box>
@@ -121,50 +124,35 @@ export const useReactModal = (Component, props) => {
 function TeamChannels({ teamId, tabBar }) {
 	const [type, setType] = useLocalStorage('channels-list-type', 'all');
 	const [text, setText] = useState('');
-	const [roomList] = useState(() => new RecordList());
 
-	const roomListEndpoint = useEndpoint('GET', 'teams.listRooms');
+	const { fetch, rooms, count } = useTeamsChannels();
 
-	const fetchData = useCallback(async (/* start, end*/) => {
-		const { rooms, total } = await roomListEndpoint({ teamId });
-
-		const roomsDated = rooms.map((rooms) => {
-			rooms._updatedAt = new Date(rooms._updatedAt);
-			return { ...rooms };
-		});
-		return {
-			items: roomsDated,
-			itemCount: total,
-		};
-	}, [roomListEndpoint, teamId]);
-
-	const { loadMoreItems } = useScrollableRecordList(
-		roomList,
-		fetchData,
-	);
-	const { phase, items, itemCount } = useRecordList(roomList);
+	useEffect(() => {
+		fetch(teamId);
+	}, [fetch, teamId]);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const addExisting = useReactModal(AddExistingModal, { teamId });
+	const addExisting = useReactModal(AddExistingModal, { teamId, fetch });
 
-	const createNew = useReactModal(CreateChannel, { teamId });
+	const createNew = useReactModal(CreateChannel, { teamId, fetch });
 
 	return (
 		<BaseTeamChannels
-			loading={phase === 'loading'}
+			loading={false}
 			type={type}
 			text={text}
 			setType={setType}
 			setText={handleTextChange}
-			channels={items}
-			total={itemCount}
+			channels={rooms}
+			total={count}
 			onClickClose={tabBar.close}
 			onClickAddExisting={addExisting}
 			onClickCreateNew={createNew}
-			loadMoreItems={loadMoreItems}
+			loadMoreItems={() => {}}
+			fetch={fetch}
 		/>
 	);
 }
