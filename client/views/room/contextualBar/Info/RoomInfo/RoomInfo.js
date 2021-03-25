@@ -193,7 +193,7 @@ export const RoomInfo = function RoomInfo({
 	);
 };
 
-export default ({
+const RoomInfoWithData = ({
 	rid,
 	openEditing,
 	onClickBack,
@@ -361,3 +361,5 @@ export default ({
 		/>
 	);
 };
+
+export default RoomInfoWithData;
