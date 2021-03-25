@@ -7,12 +7,10 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useForm } from '../../../../hooks/useForm';
 import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
-// import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { FormSkeleton } from '../../Skeleton';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { isEmail } from '../../../../../app/utils';
 import { hasAtLeastOnePermission } from '../../../../../app/authorization';
 import CustomFieldsForm from '../../../../components/CustomFieldsForm';
 import { useMethod } from '../../../../contexts/ServerContext';
@@ -38,13 +36,10 @@ const getInitialValuesUser = (visitor) => {
 		return initialValuesUser;
 	}
 
-	const { name, fname, phone, visitorEmails, livechatData } = visitor;
+	const { name, fname } = visitor;
 
 	return {
 		name: (name || fname) ?? '',
-		email: visitorEmails ? visitorEmails[0].address : '',
-		phone: phone ? phone[0].phoneNumber : '',
-		livechatData: livechatData ?? '',
 	};
 };
 
@@ -53,11 +48,15 @@ const getInitialValuesRoom = (room) => {
 		return initialValuesRoom;
 	}
 
-	const { topic, tags } = room;
+	const { topic, tags, livechatData } = room;
+
+	console.log(livechatData);
 
 	return {
 		topic: topic ?? '',
 		tags: tags ?? [],
+		livechatData: livechatData ?? '',
+
 	};
 };
 
@@ -110,13 +109,9 @@ export function RoomEdit({ room, visitor, reload, close }) {
 
 	const {
 		handleName,
-		handleEmail,
-		handlePhone,
 	} = handlers;
 	const {
 		name,
-		email,
-		phone,
 	} = values;
 
 	const {
@@ -137,7 +132,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 	const Tags = useCurrentChatTags();
 
 	const { values: valueCustom, handlers: handleValueCustom } = useForm({
-		livechatData: values.livechatData,
+		livechatData: valuesRoom.livechatData,
 	});
 
 	const { handleLivechatData } = handleValueCustom;
@@ -145,8 +140,6 @@ export function RoomEdit({ room, visitor, reload, close }) {
 
 
 	const [nameError, setNameError] = useState();
-	const [emailError, setEmailError] = useState();
-	const [phoneError, setPhoneError] = useState();
 	const [customFieldsError, setCustomFieldsError] = useState([]);
 
 	const { value: allCustomFields, phase: state } = useEndpointData('livechat/custom-fields');
@@ -155,7 +148,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 		const jsonObj = {};
 		// eslint-disable-next-line no-return-assign
 		customFields.map(({ _id, label, visibility, options, scope, defaultValue, required }) =>
-			(visibility === 'visible' & scope === 'visitor')
+			(visibility === 'visible' & scope === 'room')
 			&& (jsonObj[_id] = {
 				label,
 				type: options ? 'select' : 'text',
@@ -171,21 +164,11 @@ export function RoomEdit({ room, visitor, reload, close }) {
 		? jsonConverterToValidFormat(allCustomFields.customFields) : {}), [allCustomFields]);
 
 
-	// const saveRoom = useEndpointAction('POST', 'omnichannel/contact');
-
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	useComponentDidUpdate(() => {
 		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
 	}, [t, name]);
-
-	useComponentDidUpdate(() => {
-		setEmailError(email && !isEmail(email) ? t('Validate_email_address') : null);
-	}, [t, email]);
-
-	useComponentDidUpdate(() => {
-		!phone && setPhoneError(null);
-	}, [phone]);
 
 	const saveRoom = useMethod('livechat:saveInfo');
 
@@ -204,15 +187,13 @@ export function RoomEdit({ room, visitor, reload, close }) {
 		const userData = {
 			_id: visitor._id,
 			name,
-			email,
-			phone,
-			livechatData,
 		};
 
 		const roomData = {
 			_id: room._id,
 			topic,
 			tags: Object.values(tags),
+			livechatData,
 		};
 
 		try {
@@ -225,7 +206,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 		}
 	});
 
-	const formIsValid = name && !emailError && !phoneError && customFieldsError.length === 0;
+	const formIsValid = name && customFieldsError.length === 0;
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
@@ -241,24 +222,6 @@ export function RoomEdit({ room, visitor, reload, close }) {
 				</Field.Row>
 				<Field.Error>
 					{nameError}
-				</Field.Error>
-			</Field>
-			<Field>
-				<Field.Label>{t('Email')}</Field.Label>
-				<Field.Row>
-					<TextInput error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
-				</Field.Row>
-				<Field.Error>
-					{t(emailError)}
-				</Field.Error>
-			</Field>
-			<Field>
-				<Field.Label>{t('Phone')}</Field.Label>
-				<Field.Row>
-					<TextInput error={phoneError} flexGrow={1} value={phone} onChange={handlePhone} />
-				</Field.Row>
-				<Field.Error>
-					{t(phoneError)}
 				</Field.Error>
 			</Field>
 			{ canViewCustomFields() && allCustomFields

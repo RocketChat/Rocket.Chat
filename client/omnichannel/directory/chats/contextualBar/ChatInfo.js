@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { Box, Margins, Tag, Avatar, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
@@ -15,6 +15,7 @@ import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { UserStatus } from '../../../../components/UserStatus';
 import { roomTypes } from '../../../../../app/utils/client';
 import { useRoute } from '../../../../contexts/RouterContext';
+import { hasPermission } from '../../../../../app/authorization';
 
 
 const wordBreak = css`
@@ -71,14 +72,46 @@ const AgentField = ({ agent }) => {
 	</>;
 };
 
+const CustomField = ({ id, value }) => {
+	const t = useTranslation();
+	const { value: data, phase: state, error } = useEndpointData(`livechat/custom-fields/${ id }`);
+	if (state === AsyncStatePhase.LOADING) {
+		return <FormSkeleton />;
+	}
+	if (error || !data || !data.customField) {
+		return <Box mbs='x16'>{t('Custom_Field_Not_Found')}</Box>;
+	}
+	const { label } = data.customField;
+	return label && <>
+		<Label>{label}</Label>
+		<Info>{value}</Info>
+	</>;
+};
+
 export function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
 
+	const [customFields, setCustomFields] = useState([]);
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
-	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic } } = data || { room: { v: { } } };
+	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, livechatData } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
+	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
+
+	useEffect(() => {
+		if (allCustomFields) {
+			const { customFields: customFieldsAPI } = allCustomFields;
+			setCustomFields(customFieldsAPI);
+		}
+	}, [allCustomFields, stateCustomFields]);
+
+	const checkIsVisibleAndScopeRoom = (key) => {
+		const field = customFields.find(({ _id }) => _id === key);
+		if (field && field.visibility === 'visible' && field.scope === 'room') { return true; }
+		return false;
+	};
 
 	const onEditClick = useMutableCallback(() => routePath.push(
 		route ? {
@@ -142,6 +175,10 @@ export function ChatInfo({ id, route }) {
 						: <Info>{moment(metrics.v.lq).fromNow()}</Info>
 					}
 				</>}
+				{ canViewCustomFields()
+					&& livechatData
+					&& Object.keys(livechatData).map((key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />)
+				}
 			</Margins>
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
