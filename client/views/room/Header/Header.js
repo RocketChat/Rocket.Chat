@@ -46,22 +46,30 @@ const RoomTitle = ({ room }) => <>
 	<Header.Title>{room.name}</Header.Title>
 </>;
 
-const ParentRoomWithPrevRoom = ({ room }) => {
+const ParentRoomWithData = ({ room }) => {
+	const subscription = useUserSubscription(room.prid);
+
+	if (subscription) {
+		return <ParentRoom room={subscription} />;
+	}
+
+	return <ParentRoomWithEndpointData rid={room.prid} />;
+};
+
+const ParentRoomWithEndpointData = ({ rid }) => {
 	const { resolve, reject, reset, phase, value } = useAsyncState();
 	const getData = useEndpoint('GET', 'rooms.info');
 
-	const fetchData = useCallback(() => {
-		reset();
-		getData({ roomId: room.prid })
-			.then(resolve)
-			.catch((error) => {
-				reject(error);
-			});
-	}, [reset, getData, room.prid, resolve, reject]);
-
 	useEffect(() => {
-		fetchData();
-	}, [fetchData]);
+		(async () => {
+			reset();
+			getData({ roomId: rid })
+				.then(resolve)
+				.catch((error) => {
+					reject(error);
+				});
+		})();
+	}, [reset, getData, rid, resolve, reject]);
 
 	if (AsyncStatePhase.LOADING === phase) {
 		return <Skeleton width='x48'/>;
@@ -71,21 +79,15 @@ const ParentRoomWithPrevRoom = ({ room }) => {
 		return null;
 	}
 
-	return <ParentRoom prevRoom={value.room} />;
+	return <ParentRoom room={value.room} />;
 };
 
-const ParentRoom = ({ prevRoom }) => {
-	const prevSubscription = useUserSubscription(prevRoom._id);
-	const prevRoomHref = prevSubscription ? roomTypes.getRouteLink(prevSubscription.t, prevSubscription) : null;
-
-	const name = roomTypes.getRoomName(prevRoom.t, prevRoom);
+const ParentRoom = ({ room }) => {
+	const href = roomTypes.getRouteLink(room.t, room);
 
 	return <Breadcrumbs.Tag>
-		<HeaderIcon room={prevRoom}/>
-		{prevRoomHref
-			? <Breadcrumbs.Link href={prevRoomHref}>{name}</Breadcrumbs.Link>
-			: <Breadcrumbs.Text>{name}</Breadcrumbs.Text>
-		}
+		<HeaderIcon room={room}/>
+		<Breadcrumbs.Link href={href}>{roomTypes.getRoomName(room.t, room)}</Breadcrumbs.Link>
 	</Breadcrumbs.Tag>;
 };
 
@@ -107,7 +109,7 @@ const ParentTeam = ({ room }) => {
 	return teamLoading || userTeamsLoading || room.teamMain ? null : <Breadcrumbs.Tag>
 		<Breadcrumbs.IconSmall name={teamIcon}></Breadcrumbs.IconSmall>
 		{belongsToTeam
-			? <Breadcrumbs.Link href={belongsToTeam && teamMainRoomHref}>{teamMainRoom?.name}</Breadcrumbs.Link>
+			? <Breadcrumbs.Link href={teamMainRoomHref}>{teamMainRoom?.name}</Breadcrumbs.Link>
 			: <Breadcrumbs.Text>{teamMainRoom?.name}</Breadcrumbs.Text>
 		}
 	</Breadcrumbs.Tag>;
@@ -133,7 +135,7 @@ const RoomHeader = ({ room, topic }) => {
 			<Header.Content.Row>
 				<RoomTitle room={room}/>
 				<Favorite room={room} />
-				{room.prid && <ParentRoomWithPrevRoom room={room} />}
+				{room.prid && <ParentRoomWithData room={room} />}
 				{room.teamId && <ParentTeam room={room} />}
 				<Encrypted room={room} />
 				<Translate room={room} />
