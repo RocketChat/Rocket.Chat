@@ -35,6 +35,8 @@ export interface ISubscription extends IRocketChatRecord {
 	roles?: string[];
 
 	onHold?: boolean;
+	encrypted?: boolean;
+	E2EKey?: string;
 }
 
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {

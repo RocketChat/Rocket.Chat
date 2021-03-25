@@ -9,8 +9,11 @@ import { Notifications } from '../../app/notifications/client';
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { waitUntilFind } from '../../app/e2e/client/waitUntilFind';
+import { IMessage } from '../../definition/IMessage';
+import { ISubscription } from '../../definition/ISubscription';
+import { IRoom } from '../../definition/IRoom';
 
-const handle = async (roomId, keyId) => {
+const handle = async (roomId: IRoom['_id'], keyId: string): Promise<void> => {
 	const e2eRoom = await e2e.getInstanceByRoomId(roomId);
 	if (!e2eRoom) {
 		return;
@@ -19,22 +22,24 @@ const handle = async (roomId, keyId) => {
 	e2eRoom.provideKeyToUser(keyId);
 };
 
-Meteor.startup(function() {
-	Tracker.autorun(function() {
-		if (Meteor.userId()) {
-			const adminEmbedded = Layout.isEmbedded() && FlowRouter.current().path.startsWith('/admin');
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		if (!Meteor.userId()) {
+			return;
+		}
 
-			if (!adminEmbedded && settings.get('E2E_Enable') && window.crypto) {
-				e2e.startClient();
-				e2e.enabled.set(true);
-			} else {
-				e2e.enabled.set(false);
-				e2e.closeAlert();
-			}
+		const adminEmbedded = Layout.isEmbedded() && FlowRouter.current().path.startsWith('/admin');
+
+		if (!adminEmbedded && settings.get('E2E_Enable') && window.crypto) {
+			e2e.startClient();
+			e2e.enabled.set(true);
+		} else {
+			e2e.enabled.set(false);
+			e2e.closeAlert();
 		}
 	});
 
-	let observable = null;
+	let observable: Meteor.LiveQueryHandle | null = null;
 	Tracker.autorun(() => {
 		if (!e2e.isReady()) {
 			promises.remove('onClientMessageReceived', 'e2e-decript-message');
@@ -43,11 +48,10 @@ Meteor.startup(function() {
 			return promises.remove('onClientBeforeSendMessage', 'e2e');
 		}
 
-
 		Notifications.onUser('e2ekeyRequest', handle);
 
 		observable = Subscriptions.find().observe({
-			changed: async (doc) => {
+			changed: async (doc: ISubscription) => {
 				if (!doc.encrypted && !doc.E2EKey) {
 					e2e.removeInstanceByRoomId(doc.rid);
 					return;
@@ -78,18 +82,18 @@ Meteor.startup(function() {
 
 				e2eRoom.decryptSubscription();
 			},
-			added: async (doc) => {
+			added: async (doc: ISubscription) => {
 				if (!doc.encrypted && !doc.E2EKey) {
 					return;
 				}
 				return e2e.getInstanceByRoomId(doc.rid);
 			},
-			removed: (doc) => {
+			removed: (doc: ISubscription) => {
 				e2e.removeInstanceByRoomId(doc.rid);
 			},
 		});
 
-		promises.add('onClientMessageReceived', async (msg) => {
+		promises.add('onClientMessageReceived', async (msg: IMessage) => {
 			const e2eRoom = await e2e.getInstanceByRoomId(msg.rid);
 			if (!e2eRoom || !e2eRoom.shouldConvertReceivedMessages()) {
 				return msg;
@@ -98,7 +102,7 @@ Meteor.startup(function() {
 		}, promises.priority.HIGH, 'e2e-decript-message');
 
 		// Encrypt messages before sending
-		promises.add('onClientBeforeSendMessage', async function(message) {
+		promises.add('onClientBeforeSendMessage', async (message: IMessage) => {
 			const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
 
 			if (!e2eRoom) {
