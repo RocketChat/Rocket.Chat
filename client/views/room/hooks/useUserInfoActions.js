@@ -16,7 +16,7 @@ import { roomTypes, RoomMemberActions } from '../../../../app/utils';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useUserRoom } from './useUserRoom';
 import { escapeHTML } from '../../../../lib/escapeHTML';
-
+import RemoveUsersModal from '../../teams/members/RemoveUsersModal';
 
 const useUserHasRoomRole = (uid, rid, role) => useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role }), [uid, rid, role]));
 
@@ -76,25 +76,6 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 		</Modal.Footer>
 	</Modal>;
 };
-
-
-const mapOptions = ([key, { action, label, icon }]) => [
-	key,
-	{
-		label: { label, icon }, // TODO fuselage
-		action,
-	},
-];
-
-export const useUserInfoActionsSpread = (actions, size = 2) => useMemo(() => {
-	const entries = Object.entries(actions);
-
-	const options = entries.slice(0, size);
-	const menuOptions = entries.slice(size, entries.length).map(mapOptions);
-	const menu = menuOptions.length && Object.fromEntries(entries.slice(size, entries.length).map(mapOptions));
-
-	return { actions: options, menu };
-}, [actions, size]);
 
 export const useUserInfoActions = (user = {}, rid) => {
 	const t = useTranslation();
@@ -308,8 +289,23 @@ export const useUserInfoActions = (user = {}, rid) => {
 		};
 	}, [closeModal, dispatchToastMessage, isMuted, muteFn, rid, roomCanMute, roomName, setModal, t, user.username, userCanMute]);
 
+	const removeFromTeam = useEndpointActionExperimental('POST', 'teams.removeMembers', t('User_has_been_removed_from_team'));
+
 	const removeUserAction = useEndpointActionExperimental('POST', `${ endpointPrefix }.kick`, t('User_has_been_removed_from_s', roomName));
 	const removeUserOptionAction = useMutableCallback(() => {
+		if (room.teamMain && room.teamId) {
+			return setModal(<RemoveUsersModal
+				teamId={room?.teamId}
+				userId={user?._id}
+				onClose={closeModal}
+				onCancel={closeModal}
+				onConfirm={(rooms) => {
+					removeFromTeam({ teamId: room.teamId, members: [{ userId: user._id }], rooms });
+					closeModal();
+				}}
+			/>);
+		}
+
 		setModal(<WarningModal
 			text={t('The_user_will_be_removed_from_s', roomName)}
 			close={closeModal}
@@ -318,10 +314,10 @@ export const useUserInfoActions = (user = {}, rid) => {
 		/>);
 	});
 	const removeUserOption = useMemo(() => roomCanRemove && userCanRemove && {
-		label: <Box color='danger'>{t('Remove_from_room')}</Box>,
+		label: <Box color='danger'>{room.teamMain ? t('Remove_from_team') : t('Remove_from_room')}</Box>,
 		icon: 'sign-out',
 		action: removeUserOptionAction,
-	}, [roomCanRemove, userCanRemove, removeUserOptionAction, t]);
+	}, [room, roomCanRemove, userCanRemove, removeUserOptionAction, t]);
 
 	return useMemo(() => ({
 		...openDirectMessageOption && { openDirectMessage: openDirectMessageOption },

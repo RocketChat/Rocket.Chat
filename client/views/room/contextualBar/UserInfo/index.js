@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { Box, Margins, Tag, Button, Icon } from '@rocket.chat/fuselage';
-import { css } from '@rocket.chat/css-in-js';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
@@ -18,14 +17,8 @@ import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { getUserEmailVerified } from '../../../../lib/getUserEmailVerified';
+import InfoPanel from '../../../InfoPanel';
 
-const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
-
-const wordBreak = css`
-	word-break: break-word;
-`;
-
-const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
 const Avatar = ({ username, ...props }) => <UserAvatar title={username} username={username} {...props}/>;
 const Username = ({ username, status, ...props }) => <UserCard.Username name={username} status={status} {...props}/>;
 
@@ -46,7 +39,6 @@ export const UserInfo = React.memo(function UserInfo({
 	name,
 	data,
 	nickname,
-	// onChange,
 	actions,
 	...props
 }) {
@@ -55,76 +47,85 @@ export const UserInfo = React.memo(function UserInfo({
 	const timeAgo = useTimeAgo();
 
 	return <VerticalBar.ScrollableContent p='x24' {...props}>
+		<InfoPanel>
 
-		<Box alignSelf='center'>
-			<Avatar size={'x332'} username={username} etag={data?.avatarETag}/>
-		</Box>
+			<InfoPanel.Avatar>
+				<Avatar size={'x332'} username={username} etag={data?.avatarETag}/>
+			</InfoPanel.Avatar>
 
-		{actions}
+			{actions && !!actions.length && <InfoPanel.Section>
+				{actions}
+			</InfoPanel.Section>}
 
-		<Margins block='x4'>
-			<UserCard.Username name={(showRealNames && name) || username || name} status={status} />
-			<Info withTruncatedText={false}>{customStatus}</Info>
+			<InfoPanel.Section>
+				<InfoPanel.Title title={(showRealNames && name) || username || name} icon={status} />
 
-			{!!roles && <>
-				<Label>{t('Roles')}</Label>
-				<UserCard.Roles>{roles}</UserCard.Roles>
-			</>}
+				<InfoPanel.Text>{customStatus}</InfoPanel.Text>
+			</InfoPanel.Section>
 
-			{Number.isInteger(utcOffset) && <>
-				<Label>{t('Local_Time')}</Label>
-				<Info><UTCClock utcOffset={utcOffset}/></Info>
-			</>}
+			<InfoPanel.Section>
+				{!!roles && <InfoPanel.Field>
+					<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
+					<UserCard.Roles>{roles}</UserCard.Roles>
+				</InfoPanel.Field>}
 
-			{username && username !== name && <>
-				<Label>{t('Username')}</Label>
-				<Info>{username}</Info>
-			</>}
+				{Number.isInteger(utcOffset) && <InfoPanel.Field>
+					<InfoPanel.Label>{t('Local_Time')}</InfoPanel.Label>
+					<InfoPanel.Text><UTCClock utcOffset={utcOffset}/></InfoPanel.Text>
+				</InfoPanel.Field>}
 
-			<Label>{t('Last_login')}</Label>
-			<Info>{lastLogin ? timeAgo(lastLogin) : t('Never')}</Info>
+				{username && username !== name && <InfoPanel.Field>
+					<InfoPanel.Label>{t('Username')}</InfoPanel.Label>
+					<InfoPanel.Text>{username}</InfoPanel.Text>
+				</InfoPanel.Field>}
 
-			{name && <>
-				<Label>{t('Full_Name')}</Label>
-				<Info>{name}</Info>
-			</>}
+				<InfoPanel.Field>
+					<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
+					<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
+				</InfoPanel.Field>
 
-			{nickname && <>
-				<Label>{t('Nickname')}</Label>
-				<Info>{nickname}</Info>
-			</>}
+				{name && <InfoPanel.Field>
+					<InfoPanel.Label>{t('Full_Name')}</InfoPanel.Label>
+					<InfoPanel.Text>{name}</InfoPanel.Text>
+				</InfoPanel.Field>}
 
-			{bio && <>
-				<Label>{t('Bio')}</Label>
-				<Info withTruncatedText={false}><MarkdownText variant='inline' content={bio}/></Info>
-			</>}
+				{nickname && <InfoPanel.Field>
+					<InfoPanel.Label>{t('Nickname')}</InfoPanel.Label>
+					<InfoPanel.Text>{nickname}</InfoPanel.Text>
+				</InfoPanel.Field>}
 
-			{phone && <> <Label>{t('Phone')}</Label>
-				<Info display='flex' flexDirection='row' alignItems='center'>
-					<Box is='a' withTruncatedText href={`tel:${ phone }`}>{phone}</Box>
-				</Info>
-			</>}
+				{bio && <InfoPanel.Field>
+					<InfoPanel.Label>{t('Bio')}</InfoPanel.Label>
+					<InfoPanel.Text withTruncatedText={false}><MarkdownText variant='inline' content={bio}/></InfoPanel.Text>
+				</InfoPanel.Field>}
 
-			{email && <> <Label>{t('Email')}</Label>
-				<Info display='flex' flexDirection='row' alignItems='center'>
-					<Box is='a' withTruncatedText href={`mailto:${ email }`}>{email}</Box>
-					<Margins inline='x4'>
-						{verified && <Tag variant='primary'>{t('Verified')}</Tag>}
-						{verified || <Tag disabled>{t('Not_verified')}</Tag>}
-					</Margins>
-				</Info>
-			</>}
+				{phone && <InfoPanel.Field> <InfoPanel.Label>{t('Phone')}</InfoPanel.Label>
+					<InfoPanel.Text display='flex' flexDirection='row' alignItems='center'>
+						<Box is='a' withTruncatedText href={`tel:${ phone }`}>{phone}</Box>
+					</InfoPanel.Text>
+				</InfoPanel.Field>}
 
-			{ customFields && Object.entries(customFields).map(([label, value]) => <React.Fragment key={label}>
-				<Label>{t(label)}</Label>
-				<Info withTruncatedText={false}>{value}</Info>
-			</React.Fragment>) }
+				{email && <InfoPanel.Field> <InfoPanel.Label>{t('Email')}</InfoPanel.Label>
+					<InfoPanel.Text display='flex' flexDirection='row' alignItems='center'>
+						<Box is='a' withTruncatedText href={`mailto:${ email }`}>{email}</Box>
+						<Margins inline='x4'>
+							{verified && <Tag variant='primary'>{t('Verified')}</Tag>}
+							{verified || <Tag disabled>{t('Not_verified')}</Tag>}
+						</Margins>
+					</InfoPanel.Text>
+				</InfoPanel.Field>}
 
-			<Label>{t('Created_at')}</Label>
-			<Info>{timeAgo(createdAt)}</Info>
+				{ customFields && Object.entries(customFields).map(([label, value]) => <InfoPanel.Field key={label}>
+					<InfoPanel.Label>{t(label)}</InfoPanel.Label>
+					<InfoPanel.Text>{value}</InfoPanel.Text>
+				</InfoPanel.Field>) }
 
-		</Margins>
-
+				<InfoPanel.Field>
+					<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
+					<InfoPanel.Text>{timeAgo(createdAt)}</InfoPanel.Text>
+				</InfoPanel.Field>
+			</InfoPanel.Section>
+		</InfoPanel>
 	</VerticalBar.ScrollableContent>;
 });
 
@@ -137,8 +138,8 @@ export const Action = ({ icon, label, ...props }) => (
 
 UserInfo.Action = Action;
 UserInfo.Avatar = Avatar;
-UserInfo.Info = Info;
-UserInfo.Label = Label;
+UserInfo.Info = InfoPanel.Text;
+UserInfo.Label = InfoPanel.Label;
 UserInfo.Username = Username;
 
 export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, username, tabBar, rid, onClickClose, onClose = onClickClose, video, onClickBack, ...props }) {
@@ -210,7 +211,6 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 				|| <UserInfo
 					{...user}
 					data={user}
-					// onChange={onChange}
 					actions={<UserActions user={user} rid={rid}/>}
 					{...props}
 					p='x24'

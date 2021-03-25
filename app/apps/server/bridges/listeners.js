@@ -28,6 +28,8 @@ export class AppListenerBridge {
 				case AppInterface.IPostRoomDeleted:
 				case AppInterface.IPreRoomUserJoined:
 				case AppInterface.IPostRoomUserJoined:
+				case AppInterface.IPreRoomUserLeave:
+				case AppInterface.IPostRoomUserLeave:
 					return 'roomEvent';
 				/**
 				 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
@@ -75,6 +77,13 @@ export class AppListenerBridge {
 						room: rm,
 						joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser),
 						invitingUser: this.orch.getConverters().get('users').convertToApp(invitingUser),
+					};
+				case AppInterface.IPreRoomUserLeave:
+				case AppInterface.IPostRoomUserLeave:
+					const [leavingUser] = payload;
+					return {
+						room: rm,
+						leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser),
 					};
 				default:
 					return rm;

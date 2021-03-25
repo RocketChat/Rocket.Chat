@@ -6,7 +6,7 @@ import { addAction } from '.';
 
 
 addAction('rocket-search', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
 	id: 'rocket-search',
 	title: 'Search_Messages',
 	icon: 'magnifier',
@@ -54,7 +54,7 @@ addAction('members-list', ({ room }) => {
 });
 
 addAction('uploaded-files-list', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
 	id: 'uploaded-files-list',
 	title: 'Files',
 	icon: 'clip',
@@ -63,7 +63,7 @@ addAction('uploaded-files-list', {
 });
 
 addAction('keyboard-shortcut-list', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
 	id: 'keyboard-shortcut-list',
 	title: 'Keyboard_Shortcuts_Title',
 	icon: 'keyboard',
