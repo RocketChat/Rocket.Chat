@@ -13,7 +13,13 @@ import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
-import { settings } from '../../../app/settings';
+
+const reservedWords = [
+	'admin',
+	'administrator',
+	'system',
+	'user',
+];
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
@@ -874,7 +880,7 @@ describe('[Channels]', function() {
 			});
 		}
 
-		settings.get('Accounts_SystemBlockedUsernameList').forEach((name) => {
+		reservedWords.forEach((name) => {
 			failRenameChannel(name);
 		});
 	});

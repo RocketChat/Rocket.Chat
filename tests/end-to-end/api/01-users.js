@@ -19,7 +19,13 @@ import { customFieldText, clearCustomFields, setCustomFields } from '../../data/
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
-import { settings } from '../../../app/settings';
+
+const reservedWords = [
+	'admin',
+	'administrator',
+	'system',
+	'user',
+];
 
 function createTestUser() {
 	return new Promise((resolve) => {
@@ -223,7 +229,7 @@ describe('[Users]', function() {
 			failUserWithCustomField(field);
 		});
 
-		settings.get('Accounts_SystemBlockedUsernameList').forEach((name) => {
+		reservedWords.forEach((name) => {
 			failCreateUser(name);
 		});
 	});
@@ -1123,7 +1129,7 @@ describe('[Users]', function() {
 			});
 		}
 
-		settings.get('Accounts_SystemBlockedUsernameList').forEach((name) => {
+		reservedWords.forEach((name) => {
 			failUpdateUser(name);
 		});
 	});
@@ -1311,7 +1317,7 @@ describe('[Users]', function() {
 			});
 		}
 
-		settings.get('Accounts_SystemBlockedUsernameList').forEach((name) => {
+		reservedWords.forEach((name) => {
 			failUpdateUserOwnBasicInfo(name);
 		});
 	});
