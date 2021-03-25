@@ -8,6 +8,7 @@ import { useSetModal } from '../../../contexts/ModalContext';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import ConfirmationModal from '../modals/ConfirmationModal';
 import { roomTypes } from '../../../../app/utils/client';
+import Breadcrumbs from '../../../components/Breadcrumbs';
 
 export const useReactModal = (Component, props) => {
 	const setModal = useSetModal();
@@ -93,6 +94,7 @@ const RoomActions = ({ room }) => {
 };
 
 export const TeamChannelItem = ({ room }) => {
+	const t = useTranslation();
 	const [showButton, setShowButton] = useState();
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
@@ -107,7 +109,7 @@ export const TeamChannelItem = ({ room }) => {
 				<RoomAvatar room={room} size='x28' />
 			</Option.Avatar>
 			<Option.Column>{room.t === 'c' ? <Icon name='hash' size='x15'/> : <Icon name='hashtag-lock' size='x15'/>}</Option.Column>
-			<Option.Content>{room.fname || room.name}</Option.Content>
+			<Option.Content><Box display='inline-flex'>{roomTypes.getRoomName(room.t, room)} {room.teamDefault ? <Breadcrumbs.Tag>{t('Team_Auto-join')}</Breadcrumbs.Tag> : ''}</Box></Option.Content>
 			<Option.Menu>
 				{showButton ? <RoomActions room={room} /> : <ActionButton
 					ghost
