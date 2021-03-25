@@ -1,3 +1,4 @@
+import { QueryPage } from 'twilio/lib/rest/preview/understand/assistant/query';
 import { BaseRaw } from './BaseRaw';
 
 export class MessagesRaw extends BaseRaw {
@@ -58,7 +59,7 @@ export class MessagesRaw extends BaseRaw {
 				},
 			},
 		};
-
+		console.log(query)
 		return this.find(query, options);
 	}
 

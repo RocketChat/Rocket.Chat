@@ -22,6 +22,7 @@ export type ServerEndpoints = {
 	'chat.unfollowMessage': ChatUnfollowMessageEndpoint;
 	'cloud.manualRegister': CloudManualRegisterEndpoint;
 	'chat.getDiscussions': ChatGetDiscussionsEndpoint;
+	'chat.getUserSummary': ChatGetDiscussionsEndpoint
 	'chat.getThreadsList': ChatGetThreadsListEndpoint;
 	'emoji-custom.list': EmojiCustomListEndpoint;
 	'channels.files': ChannelsFilesEndpoint;

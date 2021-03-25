@@ -2,8 +2,13 @@ import React from 'react';
 import RawText from '../../../../../../../components/RawText';
 
 const styles = {
-    cursor: "pointer",
-    margin: "10px",
+    cursor: 'pointer',
+    margin: '10px',
+}
+
+const stylesHeader = {
+    margin: '15px',
+    textAlign: 'center'
 }
 export default React.memo(function UserSummaryMessage({
     _updatedAt, 
@@ -21,10 +26,14 @@ export default React.memo(function UserSummaryMessage({
     editedAt, 
     description, 
     sysMes, 
+    nbrUnread,
+    month,
     ...props 
     }) {
     //should be optimized
-        if(description) {
+        if(month) {
+            return <><h2 className="msgSummary_sideBar" key={String(ts)} style={stylesHeader}>̣<RawText>{`${month}`}</RawText></h2><p className="msgSummary_sideBar" style={stylesHeader}>̣<RawText>{`${nbrUnread} unread`}</RawText></p></>
+        } else if(description) {
             return <li className="msgSummary_sideBar" onClick={() => goToMess(message)} key={String(ts)} style={styles}>̣<RawText>{`${String(ts).substring(0,25)}: You changed the room description: \'${description}\'`}</RawText></li>
         }
         else if(fname && !sysMes) {

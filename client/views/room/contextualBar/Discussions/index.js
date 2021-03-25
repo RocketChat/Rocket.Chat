@@ -44,14 +44,12 @@ export function withData(WrappedComponent) {
 			rid,
 			text: debouncedText,
 		}), [rid, debouncedText]);
-
 		const {
 			discussionsList,
 			initialItemCount,
 			loadMoreItems,
 		} = useDiscussionsList(options, userId);
 		const { phase, error, items: discussions, itemCount: totalItemCount } = useRecordList(discussionsList);
-
 		const handleTextChange = useCallback((e) => {
 			setText(e.currentTarget.value);
 		}, []);

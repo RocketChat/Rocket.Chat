@@ -2,29 +2,29 @@ import { MessageList } from './MessageList';
 import type { IMessage } from '../../../definition/IMessage';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
 
-type DiscussionMessage = Omit<IMessage, 'drid'> & Required<Pick<IMessage, 'drid'>>;
+type UserMessage = Omit<IMessage, 'drid'> & Required<Pick<IMessage, 'drid'>>;
 
-export type DiscussionsListOptions = {
+export type UserMessageListOptions = {
 	rid: IMessage['rid'];
 	text?: string;
 };
 
-const isDiscussionMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is DiscussionMessage =>
+const isDiscussionMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is UserMessage =>
 	message.rid === rid && 'rid' in message;
 
-const isDiscussionTextMatching = (discussionMessage: DiscussionMessage, regex: RegExp): boolean =>
+const isDiscussionTextMatching = (discussionMessage: UserMessage, regex: RegExp): boolean =>
 	regex.test(discussionMessage.msg);
 
-export class DiscussionsList extends MessageList {
-	public constructor(private _options: DiscussionsListOptions) {
+export class UserMessageList extends MessageList {
+	public constructor(private _options: UserMessageListOptions) {
 		super();
 	}
 
-	public get options(): DiscussionsListOptions {
+	public get options(): UserMessageListOptions {
 		return this._options;
 	}
 
-	public updateFilters(options: DiscussionsListOptions): void {
+	public updateFilters(options: UserMessageListOptions): void {
 		this._options = options;
 		this.clear();
 	}

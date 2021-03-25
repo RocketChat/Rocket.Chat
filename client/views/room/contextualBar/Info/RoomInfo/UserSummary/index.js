@@ -24,6 +24,7 @@ export function withData(WrappedComponent) {
 		let room;
 		let messages;
 		let subscription;
+		let nbrUnread = 0
 		switch (!showAll) {
 			case true:
 				room = useUserRoom(rid);
@@ -35,27 +36,27 @@ export function withData(WrappedComponent) {
 				subscription = useUserSubscriptionsAll(userId);
 				break;
 		}
-	
-		//We should maybe find a less expensive way to get all the data
-		const result = [...subscription, ...messages]
-		//result.sort((a,b)=>b.ts-a.ts)
+		subscription[0]?.tunread?.length >= 1 && (nbrUnread = subscription[0]?.tunread?.length)
 
-
+		//this is an exemple, we need to add a business logic
+		const result = [{month: "March", ts: new Date()},...subscription, ...messages]
+		result.sort( (a, b) => b.ts - a.ts );
+		
+		
 		const [text, setText] = useState('');
-		const handleTextChange = useCallback((event) => {
-			setText(event.currentTarget.value);
-		}, []);
 		const debouncedText = useDebouncedValue(text, 400);
-		const options = useMemo(() => ({
-			rid,
-			text: debouncedText,
-		}), [rid, debouncedText]);
 
+		const handleTextChange = useCallback((e) => {
+			setText(e.currentTarget.value);
+		}, []);
 		
 		return <WrappedComponent
 			{...props}
+			//userMessageList={userMessageList}
             messages={result}
+			//loadMoreItems={loadMoreItems}
 			userId={userId}
+			nbrUnread={nbrUnread}
 			text={text}
 			setText={handleTextChange}
 			rid={rid}
@@ -67,7 +68,8 @@ export function withData(WrappedComponent) {
 const Row = memo(function Row({
 	messages,
 	goToMess,
-	roomName
+	roomName,
+	nbrUnread
 }) {
 	const {
 		_updatedAt, 
@@ -83,7 +85,8 @@ const Row = memo(function Row({
 		roles, 
 		editedAt, 
 		description, 
-		sysMes
+		sysMes,
+		month
 	} = messages;
 
 	return <UserSummaryMessage
@@ -101,6 +104,8 @@ const Row = memo(function Row({
 		editedAt={editedAt}
 		description={description}
 		roles={roles}
+		nbrUnread={nbrUnread}
+		month={month}
 		roomName={roomName}
 		goToMess={goToMess}
 	/>;
@@ -113,7 +118,8 @@ export function UserSummaryList({
 	rid, 
 	roomName,
 	setText,
-	text
+	text,
+	nbrUnread
 }) {
 
 	const inputRef = useAutoFocus(true);
@@ -149,7 +155,7 @@ export function UserSummaryList({
 						style={{ height: "500px" }}
 						totalCount={messages.length - 1}
 						data={messages}
-						itemContent={(index, data) => <Row messages={data} goToMess={goToMess} roomName={roomName} />}
+						itemContent={(index, data) => <Row messages={data} goToMess={goToMess} roomName={roomName} nbrUnread={nbrUnread}/>}
 					/>
 				}                     
 			</>
