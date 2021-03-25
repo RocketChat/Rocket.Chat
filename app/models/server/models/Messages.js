@@ -743,6 +743,20 @@ export class Messages extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	updatePostProcessedPushMessageById(_id, post_processed_message) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				post_processed_message,
+				pushm_post_processed: true,
+				msg: '',
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
 		const record = {

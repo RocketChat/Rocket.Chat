@@ -452,7 +452,7 @@ Template.message.helpers({
 	},
 	isPushMessage() {
 		const { msg } = this;
-		return msg.isPushMessage;
+		return msg.pushm;
 	},
 	showStar() {
 		const { msg } = this;

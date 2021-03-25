@@ -101,12 +101,17 @@ export function getNotificationPayload({
 				t: message.t,
 			},
 		},
+		isPushMessage: message.pushm,
 		userId,
 	};
 }
 
 export function sendWebPush(notification, platform) {
 	if (settings.get('Push_enable') !== true) {
+		return;
+	}
+
+	if (notification.isPushMessage) {
 		return;
 	}
 
