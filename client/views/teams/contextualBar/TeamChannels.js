@@ -9,19 +9,24 @@ import { useSetModal } from '../../../contexts/ModalContext';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { RecordList } from '../../../lib/lists/RecordList.ts';
+import { TeamChannelItem } from './TeamChannelItem';
+import { useTabBarClose } from '../../room/providers/ToolboxProvider';
+import { roomTypes } from '../../../../app/utils';
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../components/VerticalBar';
 import AddExistingModal from '../modals/AddExistingModal';
-import { TeamChannelItem } from './TeamChannelItem';
 import CreateChannel from '../../../sidebar/header/CreateChannel';
+import RoomInfo from '../../room/contextualBar/Info';
 
-const Row = memo(function Row({ room }) {
+
+const Row = memo(function Row({ room, onClickView }) {
 	if (!room) {
 		return <BaseTeamChannels.Option.Skeleton />;
 	}
 
 	return <BaseTeamChannels.Option
 		room={room}
+		onClickView={onClickView}
 	/>;
 });
 
@@ -37,6 +42,7 @@ const BaseTeamChannels = ({
 	onClickCreateNew,
 	total,
 	loadMoreItems,
+	onClickView,
 }) => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
@@ -76,13 +82,17 @@ const BaseTeamChannels = ({
 
 				<Box w='full' h='full' overflow='hidden' flexShrink={1}>
 					{!loading && channels && channels.length > 0 && <Virtuoso
-						style={{ height: '100%', width: '100%' }}
+						style={{
+							height: '100%',
+							width: '100%',
+						}}
 						totalCount={total}
 						endReached={lm}
 						overscan={50}
 						data={channels}
 						components={{ Scroller: ScrollableContentWrapper }}
 						itemContent={(index, data) => <Row
+							onClickView={onClickView}
 							room={data}
 						/>}
 					/>}
@@ -118,14 +128,17 @@ export const useReactModal = (Component, props) => {
 	});
 };
 
-function TeamChannels({ teamId, tabBar }) {
+const TeamChannels = ({ teamId }) => {
+	const [state, setState] = useState({});
+	const onClickClose = useTabBarClose();
+
 	const [type, setType] = useLocalStorage('channels-list-type', 'all');
 	const [text, setText] = useState('');
 	const [roomList] = useState(() => new RecordList());
 
 	const roomListEndpoint = useEndpoint('GET', 'teams.listRooms');
 
-	const fetchData = useCallback(async (/* start, end*/) => {
+	const fetchData = useCallback(async () => {
 		const { rooms, total } = await roomListEndpoint({ teamId });
 
 		const roomsDated = rooms.map((rooms) => {
@@ -149,8 +162,22 @@ function TeamChannels({ teamId, tabBar }) {
 	}, []);
 
 	const addExisting = useReactModal(AddExistingModal, { teamId });
-
 	const createNew = useReactModal(CreateChannel, { teamId });
+
+	const goToRoom = useCallback((room) => roomTypes.openRouteLink(room.t, room), []);
+	const handleBack = useCallback(() => setState({}), [setState]);
+	const viewRoom = useMutableCallback((e) => {
+		const { rid } = e.currentTarget.dataset;
+
+		setState({
+			tab: 'RoomInfo',
+			rid,
+		});
+	});
+
+	if (state.tab === 'RoomInfo') {
+		return <RoomInfo rid={state.rid} onClickClose={onClickClose} onClickBack={handleBack} onEnterRoom={goToRoom} />;
+	}
 
 	return (
 		<BaseTeamChannels
@@ -161,12 +188,13 @@ function TeamChannels({ teamId, tabBar }) {
 			setText={handleTextChange}
 			channels={items}
 			total={itemCount}
-			onClickClose={tabBar.close}
+			onClickClose={onClickClose}
 			onClickAddExisting={addExisting}
 			onClickCreateNew={createNew}
+			onClickView={viewRoom}
 			loadMoreItems={loadMoreItems}
 		/>
 	);
-}
+};
 
 export default TeamChannels;
