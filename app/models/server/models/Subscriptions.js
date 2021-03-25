@@ -439,19 +439,6 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
-	findByUserIdWithRoomInfo(userId, options) {
-		const userSubs = this.find({ 'u._id': userId }, options);
-		const roomIds = userSubs.map((sub) => sub.rid);
-		const rooms = Rooms.findByIds(roomIds, { projection: { _id: 1, teamId: 1, teamMain: 1 } }).fetch();
-
-		return userSubs.map((sub) => {
-			const roomSub = rooms.find((r) => r._id === sub.rid);
-			sub.teamMain = roomSub?.teamMain || false;
-			sub.teamId = roomSub?.teamId || undefined;
-			return sub;
-		});
-	}
-
 	findByUserIdAndType(userId, type, options) {
 		const query = {
 			'u._id': userId,
