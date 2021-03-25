@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 
