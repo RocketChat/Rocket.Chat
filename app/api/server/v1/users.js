@@ -500,7 +500,9 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 			}),
 		});
 
-		validateName(this.bodyParams.data.username);
+		if (this.bodyParams.data.username) {
+			validateName(this.bodyParams.data.username);
+		}
 
 		const userData = _.extend({ _id: this.bodyParams.userId }, this.bodyParams.data);
 
@@ -538,7 +540,9 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 			customFields: Match.Maybe(Object),
 		});
 
-		validateName(this.bodyParams.data.username);
+		if (this.bodyParams.data.username) {
+			validateName(this.bodyParams.data.username);
+		}
 
 		const userData = {
 			email: this.bodyParams.data.email,
