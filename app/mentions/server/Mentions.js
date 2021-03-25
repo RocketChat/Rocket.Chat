@@ -2,6 +2,8 @@
 * Mentions is a named function that will process Mentions
 * @param {Object} message - The message object
 */
+import s from 'underscore.string';
+
 import { MentionsParser } from '../lib/MentionsParser';
 
 export default class MentionsServer extends MentionsParser {
@@ -54,9 +56,9 @@ export default class MentionsServer extends MentionsParser {
 		const userMentions = [];
 
 		mentions.forEach((m) => {
-			const mention = m.trim().substr(1);
+			const mention = m.trim().substr(1).toLowerCase();
 			if (mention !== 'all' && mention !== 'here') {
-				return userMentions.push(mention);
+				return userMentions.push(new RegExp(`^${ s.escapeRegExp(mention) }$`, 'i'));
 			}
 			if (this.messageMaxAll > 0 && this.getTotalChannelMembers(rid) > this.messageMaxAll) {
 				return this.onMaxRoomMembersExceeded({ sender, rid });

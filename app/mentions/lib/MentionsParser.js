@@ -44,8 +44,10 @@ export class MentionsParser {
 	}
 
 	replaceUsers = (msg, { mentions, temp }, me) => msg
-		.replace(this.userMentionRegex, (match, prefix, mention) => {
+		.replace(this.userMentionRegex, (match, prefix, _mention) => {
 			const classNames = ['mention-link'];
+
+			let mention = _mention.toLowerCase();
 
 			if (mention === 'all') {
 				classNames.push('mention-link--all');
@@ -53,7 +55,7 @@ export class MentionsParser {
 			} else if (mention === 'here') {
 				classNames.push('mention-link--here');
 				classNames.push('mention-link--group');
-			} else if (mention === me) {
+			} else if (mention === me.toLowerCase()) {
 				classNames.push('mention-link--me');
 				classNames.push('mention-link--user');
 			} else {
@@ -69,7 +71,13 @@ export class MentionsParser {
 			const label = temp
 				? mention && escapeHTML(mention)
 				: (mentions || [])
-					.filter(({ username }) => username === mention)
+					.filter(({ username }) => {
+						if (username.toLowerCase() === mention.toLowerCase()) {
+							mention = username;
+							return true;
+						}
+						return false;
+					})
 					.map(({ name, username }) => (this.useRealName ? name : username))
 					.map((label) => label && escapeHTML(label))[0];
 
