@@ -109,7 +109,7 @@ export const TeamChannelItem = ({ room }) => {
 				<RoomAvatar room={room} size='x28' />
 			</Option.Avatar>
 			<Option.Column>{room.t === 'c' ? <Icon name='hash' size='x15'/> : <Icon name='hashtag-lock' size='x15'/>}</Option.Column>
-			<Option.Content><Box display='inline-flex'>{room.fname || room.name} {room.teamDefault ? <Breadcrumbs.Tag>{t('Team_Auto-join')}</Breadcrumbs.Tag> : ''}</Box></Option.Content>
+			<Option.Content><Box display='inline-flex'>{roomTypes.getRoomName(room.t, room)} {room.teamDefault ? <Breadcrumbs.Tag>{t('Team_Auto-join')}</Breadcrumbs.Tag> : ''}</Box></Option.Content>
 			<Option.Menu>
 				{showButton ? <RoomActions room={room} /> : <ActionButton
 					ghost
