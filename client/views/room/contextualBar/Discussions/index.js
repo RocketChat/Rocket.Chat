@@ -1,4 +1,3 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useCallback, useMemo, useState, memo } from 'react';
 import { Box, Icon, TextInput, Callout } from '@rocket.chat/fuselage';
 import { Virtuoso } from 'react-virtuoso';
@@ -19,6 +18,7 @@ import { renderMessageBody } from '../../../../lib/renderMessageBody';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useDiscussionsList } from './useDiscussionsList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
+import { goToRoomById } from '../../../../lib/goToRoomById';
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, tcount, ts, ...props }) => <WrappedComponent replies={tcount} username={username} msg={msg} ts={ts} {...props}/>;
@@ -129,7 +129,7 @@ export function DiscussionList({ total = 10, discussions = [], loadMoreItems, lo
 	const inputRef = useAutoFocus(true);
 	const onClick = useCallback((e) => {
 		const { drid } = e.currentTarget.dataset;
-		FlowRouter.goToRoomById(drid);
+		goToRoomById(drid);
 	}, []);
 	const {
 		ref,

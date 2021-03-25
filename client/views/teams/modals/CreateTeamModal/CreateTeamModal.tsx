@@ -1,4 +1,3 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { FC, memo, Ref, useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutableCallback, useDebouncedCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { Box, Modal, ButtonGroup, Button, TextInput, Field, ToggleSwitch } from '@rocket.chat/fuselage';
@@ -12,6 +11,7 @@ import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../../contexts/ServerContext';
 import TeamNameInput from './TeamNameInput';
 import UsersInput from './UsersInput';
+import { goToRoomById } from '../../../../lib/goToRoomById';
 
 type CreateTeamModalState = {
 	name: any;
@@ -175,7 +175,7 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 
 		const data = await createTeam(params);
 
-		FlowRouter.goToRoomById(data.team.roomId);
+		goToRoomById(data.team.roomId);
 
 		onClose();
 	}, [name, members, type, readOnly, description, broadcast, encrypted, createTeam, onClose]);

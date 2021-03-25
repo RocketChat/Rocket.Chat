@@ -124,7 +124,7 @@ declare module 'meteor/kadira:flow-router' {
 
 		wait(): void;
 
-		notFound: Route | null;
+		notFound: Omit<RouteOptions, 'name'>;
 
 		getRouteName(): string;
 
@@ -138,6 +138,5 @@ declare module 'meteor/kadira:flow-router' {
 	export const FlowRouter: Router & {
 		Route: typeof Route;
 		Router: typeof Router;
-		goToRoomById: (rid: unknown) => void;
 	};
 }

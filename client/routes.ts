@@ -1,4 +1,3 @@
-import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -6,27 +5,10 @@ import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import toastr from 'toastr';
 
-import { KonchatNotification } from '../app/ui';
-import { ChatSubscription } from '../app/models';
-import { roomTypes, handleError } from '../app/utils';
-import { call } from '../app/ui-utils';
+import { KonchatNotification } from '../app/ui/client';
+import { handleError } from '../app/utils/client';
 import { renderRouteComponent } from './reactAdapters';
-
-const getRoomById = mem((rid) => call('getRoomById', rid));
-
-FlowRouter.goToRoomById = async (rid) => {
-	if (!rid) {
-		return;
-	}
-	const subscription = ChatSubscription.findOne({ rid });
-	if (subscription) {
-		return roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
-	}
-
-	const room = await getRoomById(rid);
-	return roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
-};
-
+import { IUser } from '../definition/IUser';
 
 BlazeLayout.setRoot('body');
 
@@ -40,11 +22,12 @@ FlowRouter.route('/', {
 			return FlowRouter.go('home');
 		}
 
-		Tracker.autorun(function(c) {
+		Tracker.autorun((c) => {
 			if (FlowRouter.subsReady() === true) {
-				Meteor.defer(function() {
-					if (Meteor.user() && Meteor.user().defaultRoom) {
-						const room = Meteor.user().defaultRoom.split('/');
+				Meteor.defer(() => {
+					const user = Meteor.user() as IUser | null;
+					if (user?.defaultRoom) {
+						const room = user.defaultRoom.split('/');
 						FlowRouter.go(room[0], { name: room[1] }, FlowRouter.current().queryParams);
 					} else {
 						FlowRouter.go('home');
@@ -67,14 +50,15 @@ FlowRouter.route('/login', {
 FlowRouter.route('/home', {
 	name: 'home',
 
-	action(params, queryParams) {
+	action(_params, queryParams) {
 		KonchatNotification.getDesktopPermission();
-		if (queryParams.saml_idp_credentialToken !== undefined) {
+		if (queryParams?.saml_idp_credentialToken !== undefined) {
 			const token = queryParams.saml_idp_credentialToken;
 			FlowRouter.setQueryParams({
+				// eslint-disable-next-line @typescript-eslint/camelcase
 				saml_idp_credentialToken: null,
 			});
-			Meteor.loginWithSamlToken(token, (error) => {
+			(Meteor as any).loginWithSamlToken(token, (error?: any) => {
 				if (error) {
 					if (error.reason) {
 						toastr.error(error.reason);
@@ -98,7 +82,7 @@ FlowRouter.route('/directory/:tab?', {
 	action: () => {
 		renderRouteComponent(() => import('./views/directory/DirectoryPage'), { template: 'main', region: 'center' });
 	},
-	triggersExit: [function() {
+	triggersExit: [(): void => {
 		$('.main-content').addClass('rc-old');
 	}],
 });
@@ -108,7 +92,7 @@ FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
 	action: () => {
 		renderRouteComponent(() => import('./omnichannel/directory/OmnichannelDirectoryPage'), { template: 'main', region: 'center' });
 	},
-	triggersExit: [function() {
+	triggersExit: [(): void => {
 		$('.main-content').addClass('rc-old');
 	}],
 });
@@ -118,7 +102,7 @@ FlowRouter.route('/account/:group?', {
 	action: () => {
 		renderRouteComponent(() => import('./views/account/AccountRoute'), { template: 'main', region: 'center' });
 	},
-	triggersExit: [function() {
+	triggersExit: [(): void => {
 		$('.main-content').addClass('rc-old');
 	}],
 });
@@ -149,7 +133,7 @@ FlowRouter.route('/legal-notice', {
 
 FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
-	action: ({ type, name }) => {
+	action: ({ type, name } = {}) => {
 		Session.set('roomNotFound', { type, name });
 		BlazeLayout.render('main', { center: 'roomNotFound' });
 	},
@@ -177,7 +161,7 @@ FlowRouter.route('/setup-wizard/:step?', {
 });
 
 FlowRouter.notFound = {
-	action: () => {
+	action: (): void => {
 		renderRouteComponent(() => import('./views/notFound/NotFoundPage'));
 	},
 };

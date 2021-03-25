@@ -1,4 +1,3 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutableCallback, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch } from '@rocket.chat/fuselage';
@@ -10,6 +9,7 @@ import UserAutoCompleteMultiple from '../../../ee/client/audit/UserAutoCompleteM
 import { useSetting } from '../../contexts/SettingsContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useMethod } from '../../contexts/ServerContext';
+import { goToRoomById } from '../../lib/goToRoomById';
 
 export const CreateChannel = ({
 	values,
@@ -198,7 +198,7 @@ export default memo(({
 
 	const onCreate = useCallback(async () => {
 		const goToRoom = (rid) => {
-			FlowRouter.goToRoomById(rid);
+			goToRoomById(rid);
 		};
 
 		const params = {

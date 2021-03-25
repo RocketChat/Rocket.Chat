@@ -11,6 +11,7 @@ import { AutoTranslate } from '../../../autotranslate/client';
 import { Layout } from './Layout';
 import { fireGlobalEvent } from './fireGlobalEvent';
 import { actionLinks } from '../../../action-links/client';
+import { goToRoomById } from '../../../../client/lib/goToRoomById';
 
 
 const fields = { name: 1, username: 1, 'settings.preferences.showMessageInMainThread': 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
@@ -51,7 +52,7 @@ export function messageContext({ rid } = Template.instance()) {
 	const openDiscussion = (e) => {
 		e.preventDefault();
 		const { drid } = e.currentTarget.dataset;
-		FlowRouter.goToRoomById(drid);
+		goToRoomById(drid);
 	};
 
 	const replyBroadcast = (e) => {
