@@ -18,9 +18,10 @@ type AddExistingModalState = {
 type AddExistingModalProps = {
 	onClose: () => void;
 	teamId: string;
+	fetch: (teamId: string) => void;
 };
 
-const useAddExistingModalState = (onClose: () => void, teamId: string): AddExistingModalState => {
+const useAddExistingModalState = (onClose: () => void, teamId: string, fetch: (teamId: string) => void): AddExistingModalState => {
 	const addRoomEndpoint = useEndpoint('POST', 'teams.addRooms');
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
@@ -52,23 +53,26 @@ const useAddExistingModalState = (onClose: () => void, teamId: string): AddExist
 				rooms: rooms.map((room) => room._id),
 				teamId,
 			});
+
+			fetch(teamId);
+			console.log('foi');
 			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage]);
+	}, [addRoomEndpoint, rooms, teamId, onClose, fetch, dispatchToastMessage]);
 
 	return { onAdd, rooms, onChange, hasUnsavedChanges };
 };
 
-const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId }) => {
+const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId, fetch }) => {
 	const t = useTranslation();
 	const {
 		rooms,
 		onAdd,
 		onChange,
 		hasUnsavedChanges,
-	} = useAddExistingModalState(onClose, teamId);
+	} = useAddExistingModalState(onClose, teamId, fetch);
 
 	const isAddButtonEnabled = hasUnsavedChanges;
 
