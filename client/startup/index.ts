@@ -1,8 +1,10 @@
 import './banners';
 import './contextualBar';
+import './e2e';
 import './emailVerification';
 import './i18n';
 import './loginViaQuery';
+import './notifications';
 import './renderMessage';
 import './renderNotification';
 import './roomObserve';
@@ -12,4 +14,4 @@ import './theme';
 import './unread';
 import './userSetUtcOffset';
 import './usersObserve';
-import './e2e';
+import './userStatusManuallySet';
