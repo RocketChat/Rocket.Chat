@@ -12,6 +12,8 @@ import { useSetModal } from '../../../../contexts/ModalContext';
 import { useForm } from '../../../../hooks/useForm';
 import { useMethod } from '../../../../contexts/ServerContext';
 import DeleteWarningModal from '../../../../components/DeleteWarningModal';
+import { settings } from '../../../../../app/settings';
+
 
 const getTimeZoneOffset = function() {
 	const offset = new Date().getTimezoneOffset();
@@ -204,7 +206,9 @@ export default ({
 	});
 
 	const handlePrune = useMutableCallback(async () => {
-		const limit = 2000;
+		const limit = settings.get('Prune_message_limit') >= 0 ? settings.get('Prune_message_limit') || 2000 : undefined;
+		console.log(limit);
+
 		let result;
 
 		try {
