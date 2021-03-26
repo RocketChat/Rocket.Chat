@@ -1,11 +1,15 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
-import EditChannelWithData from './EditRoomInfo';
-import RoomInfo from './RoomInfo';
+import EditRoomInfoWithData from './EditRoomInfo';
+import RoomInfoWithData from './RoomInfo';
 
-export default ({ rid }) => {
+const RoomInfo = ({ rid, onClickBack, onEnterRoom }) => {
 	const [editing, setEditing] = useState(false);
-	const onClickBack = useMutableCallback(() => setEditing(false));
-	return editing ? <EditChannelWithData onClickBack={onClickBack} rid={rid} /> : <RoomInfo openEditing={setEditing} rid={rid} />;
+	const backToView = useMutableCallback(() => setEditing(false));
+	return editing
+		? <EditRoomInfoWithData onClickBack={backToView} rid={rid} />
+		: <RoomInfoWithData onClickBack={onClickBack} openEditing={setEditing} rid={rid} onEnterRoom={onEnterRoom} />;
 };
+
+export default RoomInfo;
