@@ -8,6 +8,7 @@ import stripHtml from 'string-strip-html';
 
 import { settings } from '../../settings/server';
 import { escapeHTML } from '../../../lib/escapeHTML';
+import { replaceVariables } from './utils.js';
 
 let contentHeader;
 let contentFooter;
@@ -25,7 +26,7 @@ settings.get('Language', (key, value) => {
 });
 
 export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), escapeHTML(value));
-export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key, { lng }));
+export const translate = (str) => replaceVariables(str, (match, key) => TAPi18n.__(key, { lng }));
 export const replace = function replace(str, data = {}) {
 	if (!str) {
 		return '';

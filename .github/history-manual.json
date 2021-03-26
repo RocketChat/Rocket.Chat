@@ -63,5 +63,21 @@
 		"contributors": [
 			"sampaiodiego"
 		]
+	}],
+	"3.10.7": [{
+		"title": "[FIX] Bump Livechat widget",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
+	}, {
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego",
+			"g-thome",
+			"KevLehman",
+			"matheusbsilva137"
+		]
 	}]
 }
