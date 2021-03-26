@@ -1,23 +1,32 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Tracker } from 'meteor/tracker';
 
-import { KonchatNotification } from '../../../app/ui/client';
 import { CachedChatSubscription } from '../../../app/models/client';
-import { fireGlobalEvent, readMessage, Layout } from '../../../app/ui-utils/client';
-import { getUserPreference } from '../../../app/utils/client';
 import { Notifications } from '../../../app/notifications/client';
-import { ISubscription } from '../../../definition/ISubscription';
+import {
+	fireGlobalEvent,
+	readMessage,
+	Layout,
+} from '../../../app/ui-utils/client';
+import { KonchatNotification } from '../../../app/ui/client';
+import { getUserPreference } from '../../../app/utils/client';
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
+import { ISubscription } from '../../../definition/ISubscription';
 
 const notifyNewRoom = (sub: ISubscription): void => {
-	if (Session.equals(`user_${ Meteor.userId() }_status`, 'busy')) {
+	if (Session.equals(`user_${Meteor.userId()}_status`, 'busy')) {
 		return;
 	}
 
-	if ((!FlowRouter.getParam('name') || FlowRouter.getParam('name') !== sub.name) && !sub.ls && sub.alert === true) {
+	if (
+		(!FlowRouter.getParam('name') ||
+			FlowRouter.getParam('name') !== sub.name) &&
+		!sub.ls &&
+		sub.alert === true
+	) {
 		KonchatNotification.newRoom(sub.rid);
 	}
 };
@@ -83,33 +92,49 @@ Meteor.startup(() => {
 			}
 		});
 
-		Notifications.onUser('audioNotification', (notification: AudioNotificationEvent) => {
-			const openedRoomId = Session.get('openedRoom');
+		Notifications.onUser(
+			'audioNotification',
+			(notification: AudioNotificationEvent) => {
+				const openedRoomId = Session.get('openedRoom');
 
-			// This logic is duplicated in /client/startup/unread.coffee.
-			const hasFocus = readMessage.isEnable();
-			const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
-			const muteFocusedConversations = getUserPreference(Meteor.userId(), 'muteFocusedConversations');
+				// This logic is duplicated in /client/startup/unread.coffee.
+				const hasFocus = readMessage.isEnable();
+				const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
+				const muteFocusedConversations = getUserPreference(
+					Meteor.userId(),
+					'muteFocusedConversations',
+				);
 
-			if (Layout.isEmbedded()) {
-				if (!hasFocus && messageIsInOpenedRoom) {
+				if (Layout.isEmbedded()) {
+					if (!hasFocus && messageIsInOpenedRoom) {
+						// Play a notification sound
+						KonchatNotification.newMessage(notification.payload.rid);
+					}
+				} else if (
+					!hasFocus ||
+					!messageIsInOpenedRoom ||
+					!muteFocusedConversations
+				) {
 					// Play a notification sound
 					KonchatNotification.newMessage(notification.payload.rid);
 				}
-			} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
-				// Play a notification sound
-				KonchatNotification.newMessage(notification.payload.rid);
-			}
-		});
+			},
+		);
 
-		CachedChatSubscription.onSyncData = ((action: 'changed' | 'removed', sub: ISubscription): void => {
+		CachedChatSubscription.onSyncData = ((
+			action: 'changed' | 'removed',
+			sub: ISubscription,
+		): void => {
 			if (action !== 'removed') {
 				notifyNewRoom(sub);
 			}
 		}) as () => void;
 
-		Notifications.onUser('subscriptions-changed', (_action: 'changed' | 'removed', sub: ISubscription) => {
-			notifyNewRoom(sub);
-		});
+		Notifications.onUser(
+			'subscriptions-changed',
+			(_action: 'changed' | 'removed', sub: ISubscription) => {
+				notifyNewRoom(sub);
+			},
+		);
 	});
 });

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
-import { isRtl } from '../../app/utils/client';
-import { settings } from '../../app/settings/client';
 import { Users } from '../../app/models/client';
+import { settings } from '../../app/settings/client';
+import { isRtl } from '../../app/utils/client';
 
 const currentLanguage = new ReactiveVar();
 
@@ -21,30 +21,32 @@ Meteor.startup(() => {
 		const regex = /([a-z]{2,3})-([a-z]{2,4})/;
 		const matches = regex.exec(language);
 		if (matches) {
-			return `${ matches[1] }-${ matches[2].toUpperCase() }`;
+			return `${matches[1]}-${matches[2].toUpperCase()}`;
 		}
 
 		return language;
 	};
 
-	const getBrowserLanguage = () => filterLanguage(window.navigator.userLanguage || window.navigator.language);
+	const getBrowserLanguage = () =>
+		filterLanguage(window.navigator.userLanguage || window.navigator.language);
 
-	const loadMomentLocale = (language) => new Promise((resolve, reject) => {
-		if (moment.locales().includes(language.toLowerCase())) {
-			resolve(language);
-			return;
-		}
-
-		Meteor.call('loadLocale', language, (error, localeSrc) => {
-			if (error) {
-				reject(error);
+	const loadMomentLocale = (language) =>
+		new Promise((resolve, reject) => {
+			if (moment.locales().includes(language.toLowerCase())) {
+				resolve(language);
 				return;
 			}
 
-			Function(localeSrc).call({ moment });
-			resolve(language);
+			Meteor.call('loadLocale', language, (error, localeSrc) => {
+				if (error) {
+					reject(error);
+					return;
+				}
+
+				Function(localeSrc).call({ moment });
+				resolve(language);
+			});
 		});
-	});
 
 	const applyLanguage = (language = 'en') => {
 		language = filterLanguage(language);
@@ -56,8 +58,13 @@ Meteor.startup(() => {
 		if (!language) {
 			return;
 		}
-		document.documentElement.classList[isRtl(language) ? 'add' : 'remove']('rtl');
-		document.documentElement.setAttribute('dir', isRtl(language) ? 'rtl' : 'ltr');
+		document.documentElement.classList[isRtl(language) ? 'add' : 'remove'](
+			'rtl',
+		);
+		document.documentElement.setAttribute(
+			'dir',
+			isRtl(language) ? 'rtl' : 'ltr',
+		);
 		document.querySelector('html').lang = language;
 
 		TAPi18n.setLanguage(language);
@@ -76,7 +83,8 @@ Meteor.startup(() => {
 	};
 	window.setLanguage = setLanguage;
 
-	const defaultUserLanguage = () => settings.get('Language') || getBrowserLanguage() || 'en';
+	const defaultUserLanguage = () =>
+		settings.get('Language') || getBrowserLanguage() || 'en';
 	window.defaultUserLanguage = defaultUserLanguage;
 
 	Tracker.autorun(() => {

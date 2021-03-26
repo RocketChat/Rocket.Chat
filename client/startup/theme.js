@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import createLess from 'less/browser';
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../app/settings/client';
@@ -8,9 +8,15 @@ const variables = new Map();
 const lessExpressions = new Map([
 	['default-action-color', 'darken(@secondary-background-color, 15%)'],
 	['default-action-contrast', 'contrast(@default-action-color, #444444)'],
-	['primary-background-contrast', 'contrast(@primary-background-color, #444444)'],
+	[
+		'primary-background-contrast',
+		'contrast(@primary-background-color, #444444)',
+	],
 	['primary-action-contrast', 'contrast(@primary-action-color, #444444)'],
-	['secondary-background-contrast', 'contrast(@secondary-background-color, #444444)'],
+	[
+		'secondary-background-contrast',
+		'contrast(@secondary-background-color, #444444)',
+	],
 	['secondary-action-contrast', 'contrast(@secondary-action-color, #444444)'],
 	['selection-background', 'lighten(@selection-color, 30%)'],
 	['success-background', 'lighten(@success-color, 45%)'],
@@ -36,10 +42,19 @@ const compileLess = async () => {
 	}
 
 	const lessCode = [
-		...Array.from(variables.entries(), ([name, value]) => `@${ name }: ${ value };`),
-		...Array.from(lessExpressions.entries(), ([name, expression]) => `@${ name }: ${ expression };`),
+		...Array.from(
+			variables.entries(),
+			([name, value]) => `@${name}: ${value};`,
+		),
+		...Array.from(
+			lessExpressions.entries(),
+			([name, expression]) => `@${name}: ${expression};`,
+		),
 		':root {',
-		...Array.from(lessExpressions.entries(), ([name]) => `--${ name }: @${ name };`),
+		...Array.from(
+			lessExpressions.entries(),
+			([name]) => `--${name}: @${name};`,
+		),
 		'}',
 	].join('\n');
 
@@ -61,7 +76,10 @@ const updateCssVariables = _.debounce(async () => {
 
 	cssVariablesElement.innerHTML = [
 		':root {',
-		...Array.from(variables.entries(), ([name, value]) => `--${ name }: ${ value };`),
+		...Array.from(
+			variables.entries(),
+			([name, value]) => `--${name}: ${value};`,
+		),
 		'}',
 		await compileLess(),
 	].join('\n');
@@ -82,7 +100,7 @@ const handleThemeColorChanged = ({ _id, value, editor }) => {
 			return;
 		}
 
-		variables.set(name, `var(--${ value })`);
+		variables.set(name, `var(--${value})`);
 	} finally {
 		updateCssVariables();
 	}
@@ -98,13 +116,17 @@ const handleThemeFontChanged = ({ _id, value }) => {
 };
 
 Meteor.startup(() => {
-	settings.collection.find({ _id: /^theme-color-/i }, { fields: { value: 1, editor: 1 } }).observe({
-		added: handleThemeColorChanged,
-		changed: handleThemeColorChanged,
-	});
+	settings.collection
+		.find({ _id: /^theme-color-/i }, { fields: { value: 1, editor: 1 } })
+		.observe({
+			added: handleThemeColorChanged,
+			changed: handleThemeColorChanged,
+		});
 
-	settings.collection.find({ _id: /^theme-font-/i }, { fields: { value: 1 } }).observe({
-		added: handleThemeFontChanged,
-		changed: handleThemeFontChanged,
-	});
+	settings.collection
+		.find({ _id: /^theme-font-/i }, { fields: { value: 1 } })
+		.observe({
+			added: handleThemeFontChanged,
+			changed: handleThemeFontChanged,
+		});
 });

@@ -1,29 +1,33 @@
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
+import { Tracker } from 'meteor/tracker';
 
 import { Favico } from '../../app/favico/client';
 import { ChatSubscription, ChatRoom } from '../../app/models/client';
+import { settings } from '../../app/settings/client';
 import { menu, fireGlobalEvent } from '../../app/ui-utils/client';
 import { getUserPreference } from '../../app/utils/client';
-import { settings } from '../../app/settings/client';
 
-const fetchSubscriptions = () => ChatSubscription.find({
-	open: true,
-	hideUnreadStatus: { $ne: true },
-}, {
-	fields: {
-		unread: 1,
-		alert: 1,
-		rid: 1,
-		t: 1,
-		name: 1,
-		ls: 1,
-		unreadAlert: 1,
-		fname: 1,
-		prid: 1,
-	},
-}).fetch();
+const fetchSubscriptions = () =>
+	ChatSubscription.find(
+		{
+			open: true,
+			hideUnreadStatus: { $ne: true },
+		},
+		{
+			fields: {
+				unread: 1,
+				alert: 1,
+				rid: 1,
+				t: 1,
+				name: 1,
+				ls: 1,
+				unreadAlert: 1,
+				fname: 1,
+				prid: 1,
+			},
+		},
+	).fetch();
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -31,22 +35,37 @@ Meteor.startup(() => {
 
 		let unreadAlert = false;
 
-		const unreadCount = fetchSubscriptions().reduce((ret, subscription) =>
-			Tracker.nonreactive(() => {
-				const room = ChatRoom.findOne({ _id: subscription.rid }, { fields: { usersCount: 1 } });
-				fireGlobalEvent('unread-changed-by-subscription', { ...subscription, usersCount: room && room.usersCount });
+		const unreadCount = fetchSubscriptions().reduce(
+			(ret, subscription) =>
+				Tracker.nonreactive(() => {
+					const room = ChatRoom.findOne(
+						{ _id: subscription.rid },
+						{ fields: { usersCount: 1 } },
+					);
+					fireGlobalEvent('unread-changed-by-subscription', {
+						...subscription,
+						usersCount: room && room.usersCount,
+					});
 
-				if (subscription.alert || subscription.unread > 0) {
-					// Increment the total unread count.
-					if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
-						if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
-							unreadAlert = '•';
+					if (subscription.alert || subscription.unread > 0) {
+						// Increment the total unread count.
+						if (
+							subscription.alert === true &&
+							subscription.unreadAlert !== 'nothing'
+						) {
+							if (
+								subscription.unreadAlert === 'all' ||
+								userUnreadAlert !== false
+							) {
+								unreadAlert = '•';
+							}
 						}
+						return ret + subscription.unread;
 					}
-					return ret + subscription.unread;
-				}
-				return ret;
-			}), 0);
+					return ret;
+				}),
+			0,
+		);
 
 		menu.updateUnreadBars();
 
@@ -72,7 +91,7 @@ Meteor.startup(() => {
 
 	window.favico = favicon;
 
-	Tracker.autorun(function() {
+	Tracker.autorun(() => {
 		const siteName = settings.get('Site_Name') || '';
 
 		const unread = Session.get('unread');
@@ -84,6 +103,6 @@ Meteor.startup(() => {
 			});
 		}
 
-		document.title = unread === '' ? siteName : `(${ unread }) ${ siteName }`;
+		document.title = unread === '' ? siteName : `(${unread}) ${siteName}`;
 	});
 });

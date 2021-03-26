@@ -1,19 +1,18 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import { Session } from 'meteor/session';
-import { TimeSync } from 'meteor/mizzao:timesync';
-import { UserPresence } from 'meteor/konecty:user-presence';
 import { Accounts } from 'meteor/accounts-base';
+import { UserPresence } from 'meteor/konecty:user-presence';
+import { Meteor } from 'meteor/meteor';
+import { TimeSync } from 'meteor/mizzao:timesync';
+import { Session } from 'meteor/session';
+import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 
-
+import { hasPermission } from '../../app/authorization/client';
 import hljs from '../../app/markdown/lib/hljs';
 import { fireGlobalEvent } from '../../app/ui-utils/client';
 import { getUserPreference, t } from '../../app/utils/client';
-import { hasPermission } from '../../app/authorization/client';
 import 'highlight.js/styles/github.css';
-import { synchronizeUserData } from '../lib/userData';
 import * as banners from '../lib/banners';
+import { synchronizeUserData } from '../lib/userData';
 
 hljs.initHighlightingOnLoad();
 
@@ -24,7 +23,7 @@ if (window.DISABLE_ANIMATION) {
 	toastr.options.extendedTimeOut = 0;
 }
 
-Meteor.startup(function() {
+Meteor.startup(() => {
 	Accounts.onLogout(() => Session.set('openedRoom', null));
 
 	TimeSync.loggingEnabled = false;
@@ -35,7 +34,7 @@ Meteor.startup(function() {
 	window.lastMessageWindowHistory = {};
 
 	let status = undefined;
-	Tracker.autorun(async function() {
+	Tracker.autorun(async () => {
 		const uid = Meteor.userId();
 		if (!uid) {
 			return;
@@ -65,7 +64,7 @@ Meteor.startup(function() {
 		}
 	});
 
-	const autoRunHandler = Tracker.autorun(async function() {
+	const autoRunHandler = Tracker.autorun(async () => {
 		const uid = Meteor.userId();
 		if (!uid) {
 			return;

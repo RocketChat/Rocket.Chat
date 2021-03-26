@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../../app/settings/client';
 import { callbacks } from '../../../app/callbacks/client';
+import { settings } from '../../../app/settings/client';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -13,10 +13,17 @@ Meteor.startup(() => {
 			return;
 		}
 
-		import('../../../app/colors/client').then(({ createHexColorPreviewMessageRenderer }) => {
-			const renderMessage = createHexColorPreviewMessageRenderer();
-			callbacks.remove('renderMessage', 'hexcolor');
-			callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'hexcolor');
-		});
+		import('../../../app/colors/client').then(
+			({ createHexColorPreviewMessageRenderer }) => {
+				const renderMessage = createHexColorPreviewMessageRenderer();
+				callbacks.remove('renderMessage', 'hexcolor');
+				callbacks.add(
+					'renderMessage',
+					renderMessage,
+					callbacks.priority.MEDIUM,
+					'hexcolor',
+				);
+			},
+		);
 	});
 });

@@ -18,10 +18,17 @@ Meteor.startup(() => {
 			parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
 		};
 
-		import('../../../app/katex/client').then(({ createKatexMessageRendering }) => {
-			const renderMessage = createKatexMessageRendering(options);
-			callbacks.remove('renderMessage', 'katex');
-			callbacks.add('renderMessage', renderMessage, callbacks.priority.HIGH + 1, 'katex');
-		});
+		import('../../../app/katex/client').then(
+			({ createKatexMessageRendering }) => {
+				const renderMessage = createKatexMessageRendering(options);
+				callbacks.remove('renderMessage', 'katex');
+				callbacks.add(
+					'renderMessage',
+					renderMessage,
+					callbacks.priority.HIGH + 1,
+					'katex',
+				);
+			},
+		);
 	});
 });

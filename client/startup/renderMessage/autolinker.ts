@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../../app/settings/client';
 import { callbacks } from '../../../app/callbacks/client';
+import { settings } from '../../../app/settings/client';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -24,10 +24,17 @@ Meteor.startup(() => {
 			phone: settings.get('AutoLinker_Phone'),
 		};
 
-		import('../../../app/autolinker/client').then(({ createAutolinkerMessageRenderer }) => {
-			const renderMessage = createAutolinkerMessageRenderer(options);
-			callbacks.remove('renderMessage', 'autolinker');
-			callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'autolinker');
-		});
+		import('../../../app/autolinker/client').then(
+			({ createAutolinkerMessageRenderer }) => {
+				const renderMessage = createAutolinkerMessageRenderer(options);
+				callbacks.remove('renderMessage', 'autolinker');
+				callbacks.add(
+					'renderMessage',
+					renderMessage,
+					callbacks.priority.MEDIUM,
+					'autolinker',
+				);
+			},
+		);
 	});
 });

@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Meteor } from 'meteor/meteor';
 
 Meteor.startup(() => {
 	const resumeToken = FlowRouter.getQueryParam('resumeToken');
