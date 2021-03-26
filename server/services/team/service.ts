@@ -16,6 +16,7 @@ import { IRoom } from '../../../definition/IRoom';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { canAccessRoom } from '../authorization/canAccessRoom';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
+import { getRoomRoles } from '../../../app/lib/server/lib/getRoomRoles';
 
 export class TeamService extends ServiceClass implements ITeamService {
 	protected name = 'team';
@@ -434,9 +435,22 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const subscriptionsCursor = this.SubscriptionsModel.findByUserIdAndRoomIds(userId, teamRoomIds);
 		const subscriptionRoomIds = (await subscriptionsCursor.toArray()).map((subscription) => subscription.rid);
 		const availableRoomsCursor = this.RoomsModel.findManyByRoomIds(subscriptionRoomIds, { skip, limit });
+		const rooms = await availableRoomsCursor.toArray();
+		const records = [];
+
+		for await (const room of rooms) {
+			const roomRoles = getRoomRoles(room._id) as any[];
+			const userIsOwner = !!roomRoles.find((roomRole: any) => roomRole.u._id === uid && roomRole.roles.includes('owner'));
+			const numberOfOwners = roomRoles.filter((roomRole: any) => roomRole.roles.includes('owner')).length;
+
+			room.isLastOwner = userIsOwner && numberOfOwners === 1;
+
+			records.push(room);
+		}
+
 		return {
 			total: await availableRoomsCursor.count(),
-			records: await availableRoomsCursor.toArray(),
+			records,
 		};
 	}
 
