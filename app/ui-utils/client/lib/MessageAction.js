@@ -220,7 +220,7 @@ Meteor.startup(async function() {
 			message.end = message.start + substring.length;
 
 			let messages = $input.data('reply') || [];
-			messages = addMessageToList(messages, message, substring);
+			messages = addMessageToList(messages, message);
 
 			$input
 				.focus()
