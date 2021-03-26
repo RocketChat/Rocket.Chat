@@ -717,6 +717,15 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findByUsernamesIgnoringCase(usernames, options) {
+		const combineUsernames = usernames.join('|^');
+		const regexp = new RegExp(combineUsernames, 'i');
+
+		const query = { username: regexp };
+
+		return this.find(query, options);
+	}
+
 	findActive(options = {}) {
 		return this.find({
 			active: true,

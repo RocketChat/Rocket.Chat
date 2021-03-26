@@ -393,9 +393,13 @@ API.v1.addRoute('groups.invite', { authRequired: true }, {
 			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
-		const { username } = this.getUserFromParams();
+		const users = this.getUserListFromParams();
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('addUserToRoom', { rid, username }));
+		if (!users.length) {
+			throw new Meteor.Error('error-empty-invite-list', 'Cannot invite if no valid users are provided');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('addUsersToRoom', { rid, users: users.map((u) => u.username) }));
 
 		return API.v1.success({
 			group: this.composeRoomWithLastMessage(Rooms.findOneById(rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
