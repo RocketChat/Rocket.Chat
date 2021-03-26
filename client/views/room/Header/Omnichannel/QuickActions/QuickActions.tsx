@@ -18,12 +18,13 @@ import CloseChatModal from '../../../../../components/Omnichannel/modals/CloseCh
 import { handleError } from '../../../../../../app/utils/client';
 import { IRoom } from '../../../../../../definition/IRoom';
 import { usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
-import { useUserId, useUserSubscription } from '../../../../../contexts/UserContext';
+import { useUserId } from '../../../../../contexts/UserContext';
 import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
 import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
+import { ISubscription } from '../../../../../../definition/ISubscription';
 
 
-const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['className'] }): JSX.Element => {
+const QuickActions = ({ room, className, subscription }: { room: IRoom; className: BoxProps['className']; subscription: ISubscription }): JSX.Element => {
 	const setModal = useSetModal();
 	const { isMobile } = useLayout();
 	const t = useTranslation();
@@ -162,7 +163,9 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		openModal(id);
 	});
 
-	const isSubscribedToRoom = useUserSubscription(room._id, {}) !== undefined;
+	const isSubscribedToRoom = !!subscription;
+
+	const omnichannelRouteConfig = useOmnichannelRouteConfig();
 
 	const hasManagerRole = useRole('livechat-manager');
 
@@ -174,12 +177,12 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const canCloseRoom = usePermission('close-others-livechat-room') || isSubscribedToRoom;
 
-	const omnichannelRouteConfig = useOmnichannelRouteConfig();
+	const canMoveQueue = !!room.u && !!omnichannelRouteConfig?.returnQueue;
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				return !!roomOpen && !!omnichannelRouteConfig?.returnQueue;
+				return !!roomOpen && canMoveQueue;
 			case QuickActionsEnum.ChatForward:
 				return !!roomOpen && canForwardGuest;
 			case QuickActionsEnum.Transcript:
