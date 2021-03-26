@@ -38,7 +38,7 @@ const getInitialValues = (data) => {
 		name: name ?? '',
 		email: visitorEmails ? visitorEmails[0].address : '',
 		phone: phone ? phone[0].phoneNumber : '',
-		livechatData: livechatData ?? '',
+		livechatData: livechatData ?? {},
 		username: contactManager?.username ?? '',
 	};
 };
