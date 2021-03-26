@@ -81,7 +81,7 @@ export const useRoomList = (): Array<ISubscription> => {
 			showOmnichannel && (inquiries.enabled || onHold.size) && groups.set('Omnichannel', []);
 			showOmnichannel && !inquiries.enabled && !onHold.size && groups.set('Omnichannel', omnichannel);
 			showOmnichannel && inquiries.enabled && inquiries.queue.length && groups.set('Incoming_Livechats', inquiries.queue);
-			showOmnichannel && (inquiries.enabled || onHold.size) && omnichannel.size && groups.set('Open_Livechats', omnichannel);
+			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
