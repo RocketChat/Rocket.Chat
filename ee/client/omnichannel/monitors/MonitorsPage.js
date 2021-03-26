@@ -1,27 +1,31 @@
-import React, { useState, useMemo } from 'react';
 import { Button, Box, Callout, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useState, useMemo } from 'react';
 
-import MonitorsTable from './MonitorsTable';
-import Page from '../../../../client/components/Page';
+import { UserAutoComplete } from '../../../../client/components/AutoComplete';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
+import Page from '../../../../client/components/Page';
 import PageSkeleton from '../../../../client/components/PageSkeleton';
+import { useMethod } from '../../../../client/contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useHasLicense } from '../../hooks/useHasLicense';
-import { useMethod } from '../../../../client/contexts/ServerContext';
-import { UserAutoComplete } from '../../../../client/components/AutoComplete';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import MonitorsTable from './MonitorsTable';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
-	text,
-	sort: JSON.stringify({ [column]: sortDir(direction) }),
-	...itemsPerPage && { count: itemsPerPage },
-	...current && { offset: current },
-}), [text, itemsPerPage, current, column, direction]);
+const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
+	useMemo(
+		() => ({
+			text,
+			sort: JSON.stringify({ [column]: sortDir(direction) }),
+			...(itemsPerPage && { count: itemsPerPage }),
+			...(current && { offset: current }),
+		}),
+		[text, itemsPerPage, current, column, direction],
+	);
 
 const MonitorsPageContainer = () => {
 	const license = useHasLicense('livechat-enterprise');
@@ -45,7 +49,10 @@ const MonitorsPage = () => {
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [username, setUsername] = useState('');
 
-	const { value: data, phase: state, reload } = useEndpointData('livechat/monitors.list', useQuery(params, sort));
+	const { value: data, phase: state, reload } = useEndpointData(
+		'livechat/monitors.list',
+		useQuery(params, sort),
+	);
 
 	const addMonitor = useMethod('livechat:addMonitor');
 
@@ -71,36 +78,38 @@ const MonitorsPage = () => {
 	});
 
 	if (state === AsyncStatePhase.REJECTED) {
-		return <Callout>
-			{t('Error')}
-		</Callout>;
+		return <Callout>{t('Error')}</Callout>;
 	}
 
-	return <Page flexDirection='row'>
-		<Page>
-			<Page.Header title={t('Livechat_Monitors')} />
-			<Page.Content>
-				<Box display='flex' flexDirection='1'>
-					<Field>
-						<Field.Label>{t('Username')}</Field.Label>
-						<Field.Row>
-							<UserAutoComplete value={username} onChange={setUsername}/>
-							<Button primary disabled={!username} onClick={handleAdd} mis='x8'>{t('Add')}</Button>
-						</Field.Row>
-					</Field>
-				</Box>
-				<MonitorsTable
-					monitors={data?.monitors}
-					totalMonitors={data?.total}
-					params={params}
-					onChangeParams={setParams}
-					onHeaderClick={onHeaderClick}
-					sort={sort}
-					onDelete={reload}
-				/>
-			</Page.Content>
+	return (
+		<Page flexDirection='row'>
+			<Page>
+				<Page.Header title={t('Livechat_Monitors')} />
+				<Page.Content>
+					<Box display='flex' flexDirection='1'>
+						<Field>
+							<Field.Label>{t('Username')}</Field.Label>
+							<Field.Row>
+								<UserAutoComplete value={username} onChange={setUsername} />
+								<Button primary disabled={!username} onClick={handleAdd} mis='x8'>
+									{t('Add')}
+								</Button>
+							</Field.Row>
+						</Field>
+					</Box>
+					<MonitorsTable
+						monitors={data?.monitors}
+						totalMonitors={data?.total}
+						params={params}
+						onChangeParams={setParams}
+						onHeaderClick={onHeaderClick}
+						sort={sort}
+						onDelete={reload}
+					/>
+				</Page.Content>
+			</Page>
 		</Page>
-	</Page>;
+	);
 };
 
 export default MonitorsPageContainer;

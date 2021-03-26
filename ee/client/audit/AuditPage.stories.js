@@ -7,5 +7,4 @@ export default {
 	component: AuditPage,
 };
 
-
 export const Default = () => <AuditPage />;

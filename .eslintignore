@@ -19,3 +19,4 @@ imports/client/
 ee/server/services/dist/**
 !/.mocharc.js
 !/client/.eslintrc.js
+!/ee/client/.eslintrc.js

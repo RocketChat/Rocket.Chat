@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useState } from 'react';
 
+import VerticalBar from '../../../../client/components/VerticalBar';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
-import VerticalBar from '../../../../client/components/VerticalBar';
 import CannedResponsesForm from './CannedResponseForm';
 
 const CannedResponseEdit = ({ onSave, onReturn, onClose }) => {
@@ -28,23 +28,27 @@ const CannedResponseEdit = ({ onSave, onReturn, onClose }) => {
 		onReturn();
 	});
 
-	return <VerticalBar>
-		<VerticalBar.Header>
-			<VerticalBar.Back onClick={onReturn} />
-			<VerticalBar.Text>{t('New_Canned_Response')}</VerticalBar.Text>
-			<VerticalBar.Close onClick={onClose} />
-		</VerticalBar.Header>
+	return (
+		<VerticalBar>
+			<VerticalBar.Header>
+				<VerticalBar.Back onClick={onReturn} />
+				<VerticalBar.Text>{t('New_Canned_Response')}</VerticalBar.Text>
+				<VerticalBar.Close onClick={onClose} />
+			</VerticalBar.Header>
 
-		<VerticalBar.ScrollableContent>
-			<CannedResponsesForm errors={errors} values={values} handlers={handlers}/>
-		</VerticalBar.ScrollableContent>
+			<VerticalBar.ScrollableContent>
+				<CannedResponsesForm errors={errors} values={values} handlers={handlers} />
+			</VerticalBar.ScrollableContent>
 
-		<VerticalBar.Footer>
-			<ButtonGroup stretch>
-				<Button primary onClick={handleSave}>{t('Save')}</Button>
-			</ButtonGroup>
-		</VerticalBar.Footer>
-	</VerticalBar>;
+			<VerticalBar.Footer>
+				<ButtonGroup stretch>
+					<Button primary onClick={handleSave}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</VerticalBar.Footer>
+		</VerticalBar>
+	);
 };
 
 export default React.memo(CannedResponseEdit);

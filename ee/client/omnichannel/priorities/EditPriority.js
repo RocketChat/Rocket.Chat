@@ -1,17 +1,24 @@
-import React, { useMemo } from 'react';
-import { Field, TextInput, Button, Margins, Box, NumberInput, Callout } from '@rocket.chat/fuselage';
+import {
+	Field,
+	TextInput,
+	Button,
+	Margins,
+	Box,
+	NumberInput,
+	Callout,
+} from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo } from 'react';
 
+import { FormSkeleton } from '../../../../client/components/Skeleton';
+import VerticalBar from '../../../../client/components/VerticalBar';
+import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import VerticalBar from '../../../../client/components/VerticalBar';
-import { useForm } from '../../../../client/hooks/useForm';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
-import { FormSkeleton } from '../../../../client/components/Skeleton';
-
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { useForm } from '../../../../client/hooks/useForm';
 
 export function PriorityEditWithData({ priorityId, reload }) {
 	const query = useMemo(() => ({ priorityId }), [priorityId]);
@@ -20,18 +27,22 @@ export function PriorityEditWithData({ priorityId, reload }) {
 	const t = useTranslation();
 
 	if (state === AsyncStatePhase.LOADING) {
-		return <FormSkeleton/>;
+		return <FormSkeleton />;
 	}
 
 	if (error || !data) {
-		return <Callout m='x16' type='danger'>{t('Not_Available')}</Callout>;
+		return (
+			<Callout m='x16' type='danger'>
+				{t('Not_Available')}
+			</Callout>
+		);
 	}
 
-	return <PriorityEdit priorityId={priorityId} data={data} reload={reload}/>;
+	return <PriorityEdit priorityId={priorityId} data={data} reload={reload} />;
 }
 
 export function PriorityNew({ reload }) {
-	return <PriorityEdit isNew reload={reload}/>;
+	return <PriorityEdit isNew reload={reload} />;
 }
 
 export function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
@@ -40,21 +51,26 @@ export function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 
 	const priority = data || {};
 
-	const { values, handlers, hasUnsavedChanges } = useForm({ name: priority.name, description: priority.description, dueTimeInMinutes: priority.dueTimeInMinutes });
+	const { values, handlers, hasUnsavedChanges } = useForm({
+		name: priority.name,
+		description: priority.description,
+		dueTimeInMinutes: priority.dueTimeInMinutes,
+	});
 
-	const {
-		handleName,
-		handleDescription,
-		handleDueTimeInMinutes,
-	} = handlers;
-	const {
-		name,
-		description,
-		dueTimeInMinutes,
-	} = values;
+	const { handleName, handleDescription, handleDueTimeInMinutes } = handlers;
+	const { name, description, dueTimeInMinutes } = values;
 
-	const nameError = useMemo(() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined), [name, t]);
-	const dueTimeInMinutesError = useMemo(() => (!dueTimeInMinutes || dueTimeInMinutes <= 0 ? t('The_field_is_required', 'Estimated_due_time_in_minutes') : undefined), [dueTimeInMinutes, t]);
+	const nameError = useMemo(
+		() => (!name || name.length === 0 ? t('The_field_is_required', 'name') : undefined),
+		[name, t],
+	);
+	const dueTimeInMinutesError = useMemo(
+		() =>
+			!dueTimeInMinutes || dueTimeInMinutes <= 0
+				? t('The_field_is_required', 'Estimated_due_time_in_minutes')
+				: undefined,
+		[dueTimeInMinutes, t],
+	);
 
 	const savePriority = useMethod('livechat:savePriority');
 
@@ -64,10 +80,13 @@ export function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 		reload();
 	});
 
-	const canSave = useMemo(() => !nameError && !dueTimeInMinutesError, [nameError, dueTimeInMinutesError]);
+	const canSave = useMemo(() => !nameError && !dueTimeInMinutesError, [
+		nameError,
+		dueTimeInMinutesError,
+	]);
 
 	const handleSave = useMutableCallback(async () => {
-		const payload = { name, description, dueTimeInMinutes: `${ dueTimeInMinutes }` };
+		const payload = { name, description, dueTimeInMinutes: `${dueTimeInMinutes}` };
 
 		if (!canSave) {
 			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
@@ -83,33 +102,64 @@ export function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 		}
 	});
 
-	return <VerticalBar.ScrollableContent is='form' { ...props }>
-		<Field>
-			<Field.Label>{t('Name')}*</Field.Label>
-			<Field.Row>
-				<TextInput placeholder={t('Name')} flexGrow={1} value={name} onChange={handleName} error={hasUnsavedChanges && nameError}/>
-			</Field.Row>
-		</Field>
-		<Field>
-			<Field.Label>{t('Description')}</Field.Label>
-			<Field.Row>
-				<TextInput placeholder={t('Description')} flexGrow={1} value={description} onChange={handleDescription} />
-			</Field.Row>
-		</Field>
-		<Field>
-			<Field.Label>{t('Estimated_due_time_in_minutes')}*</Field.Label>
-			<Field.Row>
-				<NumberInput placeholder={t('Estimated_due_time_in_minutes')} value={dueTimeInMinutes} onChange={handleDueTimeInMinutes} flexGrow={1} error={hasUnsavedChanges && dueTimeInMinutesError}/>
-			</Field.Row>
-		</Field>
+	return (
+		<VerticalBar.ScrollableContent is='form' {...props}>
+			<Field>
+				<Field.Label>{t('Name')}*</Field.Label>
+				<Field.Row>
+					<TextInput
+						placeholder={t('Name')}
+						flexGrow={1}
+						value={name}
+						onChange={handleName}
+						error={hasUnsavedChanges && nameError}
+					/>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Description')}</Field.Label>
+				<Field.Row>
+					<TextInput
+						placeholder={t('Description')}
+						flexGrow={1}
+						value={description}
+						onChange={handleDescription}
+					/>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Estimated_due_time_in_minutes')}*</Field.Label>
+				<Field.Row>
+					<NumberInput
+						placeholder={t('Estimated_due_time_in_minutes')}
+						value={dueTimeInMinutes}
+						onChange={handleDueTimeInMinutes}
+						flexGrow={1}
+						error={hasUnsavedChanges && dueTimeInMinutesError}
+					/>
+				</Field.Row>
+			</Field>
 
-		<Field.Row>
-			<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-				<Margins inlineEnd='x4'>
-					{ !isNew && <Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>{t('Reset')}</Button> }
-					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={handleSave}>{t('Save')}</Button>
-				</Margins>
-			</Box>
-		</Field.Row>
-	</VerticalBar.ScrollableContent>;
+			<Field.Row>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
+					<Margins inlineEnd='x4'>
+						{!isNew && (
+							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>
+								{t('Reset')}
+							</Button>
+						)}
+						<Button
+							primary
+							mie='none'
+							flexGrow={1}
+							disabled={!hasUnsavedChanges || !canSave}
+							onClick={handleSave}
+						>
+							{t('Save')}
+						</Button>
+					</Margins>
+				</Box>
+			</Field.Row>
+		</VerticalBar.ScrollableContent>
+	);
 }
