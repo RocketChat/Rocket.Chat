@@ -38,9 +38,9 @@ const CustomField = ({ id, value }) => {
 };
 
 
-export function ContactInfo({ id }) {
+export function ContactInfo({ id, rid, route }) {
 	const t = useTranslation();
-	const directoryRoute = useRoute('omnichannel-directory');
+	const routePath = useRoute(route || 'omnichannel-directory');
 
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
 
@@ -51,7 +51,11 @@ export function ContactInfo({ id }) {
 
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 
-	const onEditButtonClick = useMutableCallback(() => directoryRoute.push({
+	const onEditButtonClick = useMutableCallback(() => routePath.push(route ? {
+		tab: 'contact-profile',
+		context: 'edit',
+		id: rid,
+	} : {
 		tab: 'contacts',
 		context: 'edit',
 		id,

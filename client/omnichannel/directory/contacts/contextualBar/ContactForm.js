@@ -188,7 +188,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		try {
 			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
+			reload && reload();
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
