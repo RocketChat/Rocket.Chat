@@ -21,17 +21,10 @@ Meteor.startup(() => {
 			},
 		};
 
-		import('../../../app/markdown/client').then(
-			({ createMarkdownMessageRenderer }) => {
-				const renderMessage = createMarkdownMessageRenderer(options);
-				callbacks.remove('renderMessage', 'markdown');
-				callbacks.add(
-					'renderMessage',
-					renderMessage,
-					callbacks.priority.HIGH,
-					'markdown',
-				);
-			},
-		);
+		import('../../../app/markdown/client').then(({ createMarkdownMessageRenderer }) => {
+			const renderMessage = createMarkdownMessageRenderer(options);
+			callbacks.remove('renderMessage', 'markdown');
+			callbacks.add('renderMessage', renderMessage, callbacks.priority.HIGH, 'markdown');
+		});
 	});
 });

@@ -7,66 +7,63 @@ import { IUser } from '../../../definition/IUser';
 type UsersNameChangedEvent = Partial<IUser>;
 
 Meteor.startup(() => {
-	Notifications.onLogged(
-		'Users:NameChanged',
-		({ _id, name, username }: UsersNameChangedEvent) => {
-			Messages.update(
-				{
-					'u._id': _id,
+	Notifications.onLogged('Users:NameChanged', ({ _id, name, username }: UsersNameChangedEvent) => {
+		Messages.update(
+			{
+				'u._id': _id,
+			},
+			{
+				$set: {
+					'u.username': username,
+					'u.name': name,
 				},
-				{
-					$set: {
-						'u.username': username,
-						'u.name': name,
-					},
-				},
-				{
-					multi: true,
-				},
-			);
+			},
+			{
+				multi: true,
+			},
+		);
 
-			Messages.update(
-				{
-					mentions: {
-						$elemMatch: { _id },
-					},
+		Messages.update(
+			{
+				mentions: {
+					$elemMatch: { _id },
 				},
-				{
-					$set: {
-						'mentions.$.username': username,
-						'mentions.$.name': name,
-					},
+			},
+			{
+				$set: {
+					'mentions.$.username': username,
+					'mentions.$.name': name,
 				},
-				{
-					multi: true,
-				},
-			);
+			},
+			{
+				multi: true,
+			},
+		);
 
-			Subscriptions.update(
-				{
-					name: username,
-					t: 'd',
+		Subscriptions.update(
+			{
+				name: username,
+				t: 'd',
+			},
+			{
+				$set: {
+					fname: name,
 				},
-				{
-					$set: {
-						fname: name,
-					},
-				},
-			);
+			},
+		);
 
-			RoomRoles.update(
-				{
-					'u._id': _id,
+		RoomRoles.update(
+			{
+				'u._id': _id,
+			},
+			{
+				$set: {
+					'u.name': name,
 				},
-				{
-					$set: {
-						'u.name': name,
-					},
-				},
-				{
-					multi: true,
-				},
-			);
-		},
-	);
+			},
+			{
+				multi: true,
+			},
+		);
+	});
 });

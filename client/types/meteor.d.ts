@@ -24,5 +24,8 @@ declare module 'meteor/meteor' {
 		}
 
 		const connection: IMeteorConnection;
+
+		function _relativeToSiteRootUrl(path: string): void;
+		const _localStorage: Window['localStorage'];
 	}
 }

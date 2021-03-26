@@ -24,17 +24,10 @@ Meteor.startup(() => {
 			phone: settings.get('AutoLinker_Phone'),
 		};
 
-		import('../../../app/autolinker/client').then(
-			({ createAutolinkerMessageRenderer }) => {
-				const renderMessage = createAutolinkerMessageRenderer(options);
-				callbacks.remove('renderMessage', 'autolinker');
-				callbacks.add(
-					'renderMessage',
-					renderMessage,
-					callbacks.priority.MEDIUM,
-					'autolinker',
-				);
-			},
-		);
+		import('../../../app/autolinker/client').then(({ createAutolinkerMessageRenderer }) => {
+			const renderMessage = createAutolinkerMessageRenderer(options);
+			callbacks.remove('renderMessage', 'autolinker');
+			callbacks.add('renderMessage', renderMessage, callbacks.priority.MEDIUM, 'autolinker');
+		});
 	});
 });

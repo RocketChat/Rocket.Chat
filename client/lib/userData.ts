@@ -27,12 +27,12 @@ const updateUser = (userData: IUser & { _updatedAt: Date }): void => {
 	Meteor.users.update({ _id: user._id }, { $set: userData });
 };
 
-export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<unknown> => {
+export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawUserData | void> => {
 	if (!uid) {
 		return;
 	}
 
-	await Notifications.onUser('userData', (data: IUserDataEvent) => {
+	Notifications.onUser('userData', (data: IUserDataEvent) => {
 		switch (data.type) {
 			case 'inserted':
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars

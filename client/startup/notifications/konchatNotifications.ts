@@ -5,11 +5,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { CachedChatSubscription } from '../../../app/models/client';
 import { Notifications } from '../../../app/notifications/client';
-import {
-	fireGlobalEvent,
-	readMessage,
-	Layout,
-} from '../../../app/ui-utils/client';
+import { fireGlobalEvent, readMessage, Layout } from '../../../app/ui-utils/client';
 import { KonchatNotification } from '../../../app/ui/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { IMessage } from '../../../definition/IMessage';
@@ -22,8 +18,7 @@ const notifyNewRoom = (sub: ISubscription): void => {
 	}
 
 	if (
-		(!FlowRouter.getParam('name') ||
-			FlowRouter.getParam('name') !== sub.name) &&
+		(!FlowRouter.getParam('name') || FlowRouter.getParam('name') !== sub.name) &&
 		!sub.ls &&
 		sub.alert === true
 	) {
@@ -92,34 +87,27 @@ Meteor.startup(() => {
 			}
 		});
 
-		Notifications.onUser(
-			'audioNotification',
-			(notification: AudioNotificationEvent) => {
-				const openedRoomId = Session.get('openedRoom');
+		Notifications.onUser('audioNotification', (notification: AudioNotificationEvent) => {
+			const openedRoomId = Session.get('openedRoom');
 
-				// This logic is duplicated in /client/startup/unread.coffee.
-				const hasFocus = readMessage.isEnable();
-				const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
-				const muteFocusedConversations = getUserPreference(
-					Meteor.userId(),
-					'muteFocusedConversations',
-				);
+			// This logic is duplicated in /client/startup/unread.coffee.
+			const hasFocus = readMessage.isEnable();
+			const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
+			const muteFocusedConversations = getUserPreference(
+				Meteor.userId(),
+				'muteFocusedConversations',
+			);
 
-				if (Layout.isEmbedded()) {
-					if (!hasFocus && messageIsInOpenedRoom) {
-						// Play a notification sound
-						KonchatNotification.newMessage(notification.payload.rid);
-					}
-				} else if (
-					!hasFocus ||
-					!messageIsInOpenedRoom ||
-					!muteFocusedConversations
-				) {
+			if (Layout.isEmbedded()) {
+				if (!hasFocus && messageIsInOpenedRoom) {
 					// Play a notification sound
 					KonchatNotification.newMessage(notification.payload.rid);
 				}
-			},
-		);
+			} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
+				// Play a notification sound
+				KonchatNotification.newMessage(notification.payload.rid);
+			}
+		});
 
 		CachedChatSubscription.onSyncData = ((
 			action: 'changed' | 'removed',

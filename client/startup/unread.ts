@@ -7,8 +7,9 @@ import { ChatSubscription, ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { menu, fireGlobalEvent } from '../../app/ui-utils/client';
 import { getUserPreference } from '../../app/utils/client';
+import { ISubscription } from '../../definition/ISubscription';
 
-const fetchSubscriptions = () =>
+const fetchSubscriptions = (): ISubscription[] =>
 	ChatSubscription.find(
 		{
 			open: true,
@@ -33,15 +34,12 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		const userUnreadAlert = getUserPreference(Meteor.userId(), 'unreadAlert');
 
-		let unreadAlert = false;
+		let unreadAlert: false | '•' = false;
 
 		const unreadCount = fetchSubscriptions().reduce(
 			(ret, subscription) =>
 				Tracker.nonreactive(() => {
-					const room = ChatRoom.findOne(
-						{ _id: subscription.rid },
-						{ fields: { usersCount: 1 } },
-					);
+					const room = ChatRoom.findOne({ _id: subscription.rid }, { fields: { usersCount: 1 } });
 					fireGlobalEvent('unread-changed-by-subscription', {
 						...subscription,
 						usersCount: room && room.usersCount,
@@ -49,14 +47,8 @@ Meteor.startup(() => {
 
 					if (subscription.alert || subscription.unread > 0) {
 						// Increment the total unread count.
-						if (
-							subscription.alert === true &&
-							subscription.unreadAlert !== 'nothing'
-						) {
-							if (
-								subscription.unreadAlert === 'all' ||
-								userUnreadAlert !== false
-							) {
+						if (subscription.alert === true && subscription.unreadAlert !== 'nothing') {
+							if (subscription.unreadAlert === 'all' || userUnreadAlert !== false) {
 								unreadAlert = '•';
 							}
 						}
@@ -84,7 +76,7 @@ Meteor.startup(() => {
 });
 
 Meteor.startup(() => {
-	const favicon = new Favico({
+	const favicon = new (Favico as any)({
 		position: 'up',
 		animation: 'none',
 	});
@@ -92,7 +84,7 @@ Meteor.startup(() => {
 	window.favico = favicon;
 
 	Tracker.autorun(() => {
-		const siteName = settings.get('Site_Name') || '';
+		const siteName = settings.get('Site_Name') ?? '';
 
 		const unread = Session.get('unread');
 		fireGlobalEvent('unread-changed', unread);

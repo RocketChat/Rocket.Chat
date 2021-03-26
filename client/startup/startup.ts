@@ -11,6 +11,7 @@ import hljs from '../../app/markdown/lib/hljs';
 import { fireGlobalEvent } from '../../app/ui-utils/client';
 import { getUserPreference, t } from '../../app/utils/client';
 import 'highlight.js/styles/github.css';
+import { USER_STATUS } from '../../definition/UserStatus';
 import * as banners from '../lib/banners';
 import { synchronizeUserData } from '../lib/userData';
 
@@ -33,7 +34,7 @@ Meteor.startup(() => {
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};
 
-	let status = undefined;
+	let status: USER_STATUS | undefined = undefined;
 	Tracker.autorun(async () => {
 		const uid = Meteor.userId();
 		if (!uid) {
@@ -64,7 +65,7 @@ Meteor.startup(() => {
 		}
 	});
 
-	const autoRunHandler = Tracker.autorun(async () => {
+	Tracker.autorun(async (c) => {
 		const uid = Meteor.userId();
 		if (!uid) {
 			return;
@@ -74,22 +75,25 @@ Meteor.startup(() => {
 			return;
 		}
 
-		Meteor.call('cloud:checkRegisterStatus', (err, data) => {
-			if (err) {
-				console.log(err);
-				return;
-			}
+		Meteor.call(
+			'cloud:checkRegisterStatus',
+			(err: unknown, data: { connectToCloud?: boolean; workspaceRegistered?: boolean }) => {
+				if (err) {
+					console.log(err);
+					return;
+				}
 
-			autoRunHandler.stop();
-			const { connectToCloud = false, workspaceRegistered = false } = data;
-			if (connectToCloud === true && workspaceRegistered !== true) {
-				banners.open({
-					id: 'cloud-registration',
-					title: t('Cloud_registration_pending_title'),
-					html: t('Cloud_registration_pending_html'),
-					modifiers: ['large', 'danger'],
-				});
-			}
-		});
+				c.stop();
+				const { connectToCloud = false, workspaceRegistered = false } = data;
+				if (connectToCloud === true && workspaceRegistered !== true) {
+					banners.open({
+						id: 'cloud-registration',
+						title: t('Cloud_registration_pending_title'),
+						html: t('Cloud_registration_pending_html'),
+						modifiers: ['large', 'danger'],
+					});
+				}
+			},
+		);
 	});
 });

@@ -28,8 +28,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const adminEmbedded =
-			Layout.isEmbedded() && FlowRouter.current().path.startsWith('/admin');
+		const adminEmbedded = Layout.isEmbedded() && FlowRouter.current().path.startsWith('/admin');
 
 		if (!adminEmbedded && settings.get('E2E_Enable') && window.crypto) {
 			e2e.startClient();
@@ -116,9 +115,7 @@ Meteor.startup(() => {
 					return message;
 				}
 
-				const subscription = await waitUntilFind(() =>
-					Rooms.findOne({ _id: message.rid }),
-				);
+				const subscription = await waitUntilFind(() => Rooms.findOne({ _id: message.rid }));
 
 				subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 

@@ -11,7 +11,6 @@ type UpdateAvatarEvent = {
 Meteor.startup(() => {
 	Notifications.onLogged('updateAvatar', (data: UpdateAvatarEvent) => {
 		const { username, etag } = data;
-		username &&
-			Meteor.users.update({ username }, { $set: { avatarETag: etag } });
+		username && Meteor.users.update({ username }, { $set: { avatarETag: etag } });
 	});
 });
