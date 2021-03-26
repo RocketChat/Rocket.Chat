@@ -53,7 +53,7 @@ export const UserInfo = React.memo(function UserInfo({
 				<Avatar size={'x332'} username={username} etag={data?.avatarETag}/>
 			</InfoPanel.Avatar>
 
-			{actions && !!actions.length && <InfoPanel.Section>
+			{actions && <InfoPanel.Section>
 				{actions}
 			</InfoPanel.Section>}
 
