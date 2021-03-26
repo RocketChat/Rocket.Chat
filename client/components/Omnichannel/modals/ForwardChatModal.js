@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
@@ -21,8 +21,7 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 
 	const { handleDepartmentName, handleUsername, handleComment } = handlers;
 	const getUserData = useEndpoint('GET', `users.info?username=${ username }`);
-	const { value: departmentsData = {} } = useEndpointData('livechat/department');
-
+	const { value: departmentsData = {} } = useEndpointData('livechat/department', useMemo(() => ({ enabled: true }), []));
 
 	const handleSend = useMutableCallback(() => {
 		onForward(departmentName, userId, comment);
@@ -54,6 +53,8 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 
 	const { departments } = departmentsData;
 
+	const hasDepartments = departments && departments.length > 0;
+
 	return <Modal {...props}>
 		<Modal.Header>
 			<Icon name='baloon-arrow-top-right' size={20}/>
@@ -61,16 +62,16 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			{ (departments && departments.length > 0) && <>
+			{ hasDepartments && <>
 				<Field mbe={'x30'}>
 					<Field.Label>{t('Forward_to_department')}</Field.Label>
 					<Field.Row>
-						<DepartmentAutoComplete value={departmentName} onChange={onChangeDepartment} flexShrink={1} placeholder={t('Department_name')} />
+						<DepartmentAutoComplete enabled={true} value={departmentName} onChange={onChangeDepartment} flexShrink={1} placeholder={t('Department_name')} />
 					</Field.Row>
 				</Field>
 				<ModalSeparator text={t('or')} />
 			</> }
-			<Field mbs={'x30'}>
+			<Field mbs={hasDepartments && 'x30'}>
 				<Field.Label>{t('Forward_to_user')}</Field.Label>
 				<Field.Row>
 					<UserAutoComplete flexGrow={1} value={username} onChange={onChangeUsername} placeholder={t('Username')} />
