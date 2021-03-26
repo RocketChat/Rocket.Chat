@@ -1,16 +1,22 @@
 import React, { useCallback, useEffect } from 'react';
 import { Box, Margins, PasswordInput, Field, FieldGroup, Button } from '@rocket.chat/fuselage';
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Meteor } from 'meteor/meteor';
 
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useForm } from '../../../hooks/useForm';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRoute } from '../../../contexts/RouterContext';
+import { callbacks } from '../../../../app/callbacks';
+import { useUser } from '../../../contexts/UserContext';
 
 const EndToEnd = (props) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const homeRoute = useRoute('home');
+	const user = useUser();
 
 	const publicKey = useLocalStorage('public_key');
 	const privateKey = useLocalStorage('private_key');
@@ -27,6 +33,14 @@ const EndToEnd = (props) => {
 	const passwordError = password !== passwordConfirm && passwordConfirm.length > 0 ? t('Passwords_do_not_match') : undefined;
 	const canSave = keysExist && !passwordError && passwordConfirm.length > 0;
 
+	const handleLogout = useMutableCallback(() => {
+		Meteor.logout(() => {
+			callbacks.run('afterLogoutCleanUp', user);
+			Meteor.call('logoutCleanUp', user);
+			homeRoute.push({});
+		});
+	});
+
 	const saveNewPassword = useCallback(async () => {
 		try {
 			await e2e.changePassword(password);
@@ -42,11 +56,12 @@ const EndToEnd = (props) => {
 			const result = await resetE2eKey();
 			if (result) {
 				dispatchToastMessage({ type: 'success', message: t('User_e2e_key_was_reset') });
+				handleLogout();
 			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [dispatchToastMessage, resetE2eKey, t]);
+	}, [dispatchToastMessage, resetE2eKey, handleLogout, t]);
 
 	useEffect(() => {
 		if (password.trim() === '') {
