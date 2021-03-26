@@ -82,6 +82,7 @@ export function ChatInfo({ id, route }) {
 
 	const onEditClick = useMutableCallback(() => routePath.push(
 		route ? {
+			tab: 'room-info',
 			context: 'edit',
 			id,
 		} : {

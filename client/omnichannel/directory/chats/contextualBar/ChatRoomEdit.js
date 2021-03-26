@@ -23,13 +23,13 @@ const initialValuesUser = {
 	name: '',
 	email: '',
 	phone: '',
-	livechatData: '',
+	livechatData: {},
 };
 
 const initialValuesRoom = {
 	topic: '',
 	tags: '',
-	livechatData: '',
+	livechatData: {},
 };
 
 
@@ -44,7 +44,7 @@ const getInitialValuesUser = (visitor) => {
 		name: (name || fname) ?? '',
 		email: visitorEmails ? visitorEmails[0].address : '',
 		phone: phone ? phone[0].phoneNumber : '',
-		livechatData: livechatData ?? '',
+		livechatData: livechatData ?? {},
 	};
 };
 
@@ -218,7 +218,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 		try {
 			saveRoom(userData, roomData);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
+			reload && reload();
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
