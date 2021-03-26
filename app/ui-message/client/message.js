@@ -17,7 +17,7 @@ import { AutoTranslate } from '../../autotranslate/client';
 import { escapeHTML } from '../../../lib/escapeHTML';
 import { renderMentions } from '../../mentions/client/client';
 import { renderMessageBody } from '../../../client/lib/renderMessageBody';
-import { createTemplateForComponent } from '../../../client/reactAdapters';
+import { createTemplateForComponent } from '../../../client/lib/portals/createTemplateForComponent';
 
 import './message.html';
 

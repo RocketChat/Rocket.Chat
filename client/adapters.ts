@@ -1,4 +1,4 @@
-import { createTemplateForComponent } from './reactAdapters';
+import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
 createTemplateForComponent('MessageActions', () => import('./components/Message/Actions'));
 createTemplateForComponent('reactAttachments', () => import('./components/Message/Attachments'));

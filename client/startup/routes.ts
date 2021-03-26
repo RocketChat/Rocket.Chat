@@ -1,4 +1,3 @@
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
@@ -8,9 +7,8 @@ import toastr from 'toastr';
 import { KonchatNotification } from '../../app/ui/client';
 import { handleError } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
-import { renderRouteComponent } from '../reactAdapters';
-
-BlazeLayout.setRoot('body');
+import * as BlazeLayout from '../lib/portals/blazeLayout';
+import { renderRouteComponent } from '../lib/portals/renderRouteComponent';
 
 FlowRouter.wait();
 

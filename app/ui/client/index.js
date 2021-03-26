@@ -1,4 +1,4 @@
-import { createTemplateForComponent } from '../../../client/reactAdapters';
+import { createTemplateForComponent } from '../../../client/lib/portals/createTemplateForComponent';
 
 import './lib/accounts';
 import './lib/collections';

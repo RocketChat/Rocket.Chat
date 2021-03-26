@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { useSubscription } from 'use-subscription';
 
+import { portalsSubscription } from '../lib/portals/portalsSubscription';
 import MeteorProvider from '../providers/MeteorProvider';
-import { portalsSubscription } from '../reactAdapters';
 import BannerRegion from '../views/banners/BannerRegion';
+import BlazeLayoutWrapper from '../views/blazeLayout/BlazeLayoutWrapper';
 import PortalWrapper from './PortalWrapper';
 
-const AppRoot = () => {
+const AppRoot: FC = () => {
 	const portals = useSubscription(portalsSubscription);
 
 	return (
@@ -15,6 +16,7 @@ const AppRoot = () => {
 			{portals.map(({ key, portal }) => (
 				<PortalWrapper key={key} portal={portal} />
 			))}
+			<BlazeLayoutWrapper />
 		</MeteorProvider>
 	);
 };

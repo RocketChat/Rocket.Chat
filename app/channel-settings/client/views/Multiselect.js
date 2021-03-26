@@ -1,6 +1,6 @@
 import { HTML } from 'meteor/htmljs';
 
-import { createTemplateForComponent } from '../../../../client/reactAdapters';
+import { createTemplateForComponent } from '../../../../client/lib/portals/createTemplateForComponent';
 
 createTemplateForComponent(
 	'Multiselect',

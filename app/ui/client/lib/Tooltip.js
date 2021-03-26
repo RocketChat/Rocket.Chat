@@ -1,6 +1,6 @@
 import { Tracker } from 'meteor/tracker';
 
-import { createEphemeralPortal } from '../../../../client/reactAdapters';
+import { createEphemeralPortal } from '../../../../client/lib/portals/createEphemeralPortal';
 
 const Dep = new Tracker.Dependency();
 

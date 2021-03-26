@@ -14,7 +14,7 @@ import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
-import { createTemplateForComponent } from '../../../../client/reactAdapters';
+import { createTemplateForComponent } from '../../../../client/lib/portals/createTemplateForComponent';
 import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';
 import { getUserPreference } from '../../../utils';

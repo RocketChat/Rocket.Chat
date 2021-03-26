@@ -1,8 +1,8 @@
 import { HTML } from 'meteor/htmljs';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { createTemplateForComponent } from '../../../../client/reactAdapters';
+import * as BlazeLayout from '../../../../client/lib/portals/blazeLayout';
+import { createTemplateForComponent } from '../../../../client/lib/portals/createTemplateForComponent';
 
 createTemplateForComponent('auditPage', () => import('../../../client/audit/AuditPage'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }), // eslint-disable-line new-cap

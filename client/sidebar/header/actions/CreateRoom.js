@@ -3,7 +3,7 @@ import React from 'react';
 
 import { popover } from '../../../../app/ui-utils';
 import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
-import { createTemplateForComponent } from '../../../reactAdapters';
+import { createTemplateForComponent } from '../../../lib/portals/createTemplateForComponent';
 
 const CREATE_ROOM_PERMISSIONS = [
 	'create-c',

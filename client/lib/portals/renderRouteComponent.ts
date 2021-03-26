@@ -1,24 +1,14 @@
 import { Blaze } from 'meteor/blaze';
 import { HTML } from 'meteor/htmljs';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import type { ComponentType, PropsWithoutRef } from 'react';
 
-import { createEphemeralPortal } from './createEphemeralPortal';
+import * as BlazeLayout from './blazeLayout';
 import { createLazyElement } from './createLazyElement';
 import { createLazyPortal } from './createLazyPortal';
-import { createTemplateForComponent } from './createTemplateForComponent';
 import { portalsSubscription, registerPortal, unregisterPortal } from './portalsSubscription';
-
-export {
-	portalsSubscription,
-	registerPortal,
-	unregisterPortal,
-	createEphemeralPortal,
-	createTemplateForComponent,
-};
 
 export const renderRouteComponent = <Props extends {} = {}>(
 	factory: () => Promise<{ default: ComponentType<Props> }>,

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Template } from 'meteor/templating';
 import { Accounts } from 'meteor/accounts-base';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+import * as BlazeLayout from '../../../../client/lib/portals/blazeLayout';
 import { APIClient } from '../../../utils/client';
 
 FlowRouter.route('/oauth/authorize', {

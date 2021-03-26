@@ -1,6 +1,6 @@
 import { HTML } from 'meteor/htmljs';
 
-import { createTemplateForComponent } from '../../reactAdapters';
+import { createTemplateForComponent } from '../../lib/portals/createTemplateForComponent';
 
 // createTemplateForComponent('Header', () => import('../views/room/Header'), {
 // 	renderContainerView: () => HTML.DIV(), // eslint-disable-line new-cap

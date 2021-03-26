@@ -1,7 +1,7 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { ComponentType } from 'react';
 
-import { renderRouteComponent } from '../reactAdapters';
+import { renderRouteComponent } from './portals/renderRouteComponent';
 
 type RouteRegister = {
 	(

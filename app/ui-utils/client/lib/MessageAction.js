@@ -10,7 +10,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { HTML } from 'meteor/htmljs';
 
-import { createTemplateForComponent } from '../../../../client/reactAdapters';
+import { createTemplateForComponent } from '../../../../client/lib/portals/createTemplateForComponent';
 import { messageArgs } from './messageArgs';
 import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';

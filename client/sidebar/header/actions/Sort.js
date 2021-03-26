@@ -2,7 +2,7 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { popover } from '../../../../app/ui-utils';
-import { createTemplateForComponent } from '../../../reactAdapters';
+import { createTemplateForComponent } from '../../../lib/portals/createTemplateForComponent';
 
 const SortList = createTemplateForComponent('SortList', () =>
 	import('../../../components/SortList'),

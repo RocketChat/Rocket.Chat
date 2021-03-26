@@ -8,7 +8,7 @@ import { popover } from '../../../app/ui-utils';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useSetting } from '../../contexts/SettingsContext';
-import { createTemplateForComponent } from '../../reactAdapters';
+import { createTemplateForComponent } from '../../lib/portals/createTemplateForComponent';
 
 const UserDropdown = createTemplateForComponent('UserDropdown', () => import('./UserDropdown'));
 
