@@ -1,19 +1,18 @@
-import { FC, LazyExoticComponent, ReactNode, MouseEvent } from 'react';
 import { BoxProps, OptionProps } from '@rocket.chat/fuselage';
+import { FC, LazyExoticComponent, ReactNode, MouseEvent } from 'react';
 
 import { IRoom } from '../../../../../definition/IRoom';
-import { generator, Events as GeneratorEvents } from './generator';
 import { TranslationKey } from '../../../../contexts/TranslationContext';
+import { generator, Events as GeneratorEvents } from './generator';
 
-
-type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null
+type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null;
 
 type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' | 'title'> & {
 	className: BoxProps['className'];
 	tabId: ToolboxActionConfig['id'] | undefined;
 	index: number;
 	title: string;
-}
+};
 
 export type ActionRenderer = (props: ActionRendererProps) => ReactNode;
 
@@ -34,7 +33,7 @@ export type ToolboxActionConfig = {
 	hotkey?: string;
 	action?: (e: MouseEvent<HTMLElement>) => void;
 	template?: string | FC | LazyExoticComponent<FC<{ rid: string; tabBar: any }>>;
-}
+};
 
 export type ToolboxAction = ToolboxHook | ToolboxActionConfig;
 

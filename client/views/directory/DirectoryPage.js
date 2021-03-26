@@ -1,13 +1,13 @@
-import React, { useEffect, useCallback } from 'react';
 import { Tabs } from '@rocket.chat/fuselage';
+import React, { useEffect, useCallback } from 'react';
 
 import Page from '../../components/Page';
-import { useTranslation } from '../../contexts/TranslationContext';
-import UserTab from './UserTab';
-import ChannelsTab from './ChannelsTab';
-import TeamsTab from './TeamsTab';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import ChannelsTab from './ChannelsTab';
+import TeamsTab from './TeamsTab';
+import UserTab from './UserTab';
 
 function DirectoryPage() {
 	const t = useTranslation();
@@ -27,26 +27,34 @@ function DirectoryPage() {
 		}
 	}, [directoryRoute, tab, federationEnabled, defaultTab]);
 
-	return <Page>
-		<Page.Header title={t('Directory')} />
-		<Tabs flexShrink={0} >
-			<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>{t('Channels')}</Tabs.Item>
-			<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>{t('Users')}</Tabs.Item>
-			<Tabs.Item selected={tab === 'teams'} onClick={handleTabClick('teams')}>{t('Teams')}</Tabs.Item>
-			{ federationEnabled && <Tabs.Item selected={tab === 'external'} onClick={handleTabClick('external')}>{t('External_Users')}</Tabs.Item> }
-		</Tabs>
-		<Page.Content>
-			{
-				(tab === 'users' && <UserTab />)
-			|| (tab === 'channels' && <ChannelsTab />)
-			|| (tab === 'teams' && < TeamsTab/>)
-			|| (federationEnabled && tab === 'external' && <UserTab workspace='external' />)
-			}
-
-		</Page.Content>
-	</Page>;
+	return (
+		<Page>
+			<Page.Header title={t('Directory')} />
+			<Tabs flexShrink={0}>
+				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
+					{t('Channels')}
+				</Tabs.Item>
+				<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
+					{t('Users')}
+				</Tabs.Item>
+				<Tabs.Item selected={tab === 'teams'} onClick={handleTabClick('teams')}>
+					{t('Teams')}
+				</Tabs.Item>
+				{federationEnabled && (
+					<Tabs.Item selected={tab === 'external'} onClick={handleTabClick('external')}>
+						{t('External_Users')}
+					</Tabs.Item>
+				)}
+			</Tabs>
+			<Page.Content>
+				{(tab === 'users' && <UserTab />) ||
+					(tab === 'channels' && <ChannelsTab />) ||
+					(tab === 'teams' && <TeamsTab />) ||
+					(federationEnabled && tab === 'external' && <UserTab workspace='external' />)}
+			</Page.Content>
+		</Page>
+	);
 }
-
 
 DirectoryPage.displayName = 'DirectoryPage';
 

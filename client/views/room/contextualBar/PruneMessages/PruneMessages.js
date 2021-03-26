@@ -1,38 +1,62 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Field, ButtonGroup, Button, CheckBox, InputBox, Box, Margins, Callout } from '@rocket.chat/fuselage';
+import {
+	Field,
+	ButtonGroup,
+	Button,
+	CheckBox,
+	InputBox,
+	Box,
+	Margins,
+	Callout,
+} from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import UserAutoCompleteMultiple from '../../../../../ee/client/audit/UserAutoCompleteMultiple';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import VerticalBar from '../../../../components/VerticalBar';
-import { useUserRoom } from '../../../../contexts/UserContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useSetModal } from '../../../../contexts/ModalContext';
-import { useForm } from '../../../../hooks/useForm';
-import { useMethod } from '../../../../contexts/ServerContext';
 import DeleteWarningModal from '../../../../components/DeleteWarningModal';
+import VerticalBar from '../../../../components/VerticalBar';
+import { useSetModal } from '../../../../contexts/ModalContext';
+import { useMethod } from '../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useUserRoom } from '../../../../contexts/UserContext';
+import { useForm } from '../../../../hooks/useForm';
 
-const getTimeZoneOffset = function() {
+const getTimeZoneOffset = function () {
 	const offset = new Date().getTimezoneOffset();
 	const absOffset = Math.abs(offset);
-	return `${ offset < 0 ? '+' : '-' }${ `00${ Math.floor(absOffset / 60) }`.slice(-2) }:${ `00${ absOffset % 60 }`.slice(-2) }`;
+	return `${offset < 0 ? '+' : '-'}${`00${Math.floor(absOffset / 60)}`.slice(-2)}:${`00${
+		absOffset % 60
+	}`.slice(-2)}`;
 };
 
-export const DialogPruneMessages = ({ children, ...props }) =>
-	<DeleteWarningModal {...props}><Box textAlign='center' fontScale='s1'>{children}</Box></DeleteWarningModal>;
+export const DialogPruneMessages = ({ children, ...props }) => (
+	<DeleteWarningModal {...props}>
+		<Box textAlign='center' fontScale='s1'>
+			{children}
+		</Box>
+	</DeleteWarningModal>
+);
 
-export const DateTimeRow = ({
-	label,
-	dateTime,
-	handleDateTime,
-}) => (
-	<Field >
+export const DateTimeRow = ({ label, dateTime, handleDateTime }) => (
+	<Field>
 		<Field.Label flexGrow={0}>{label}</Field.Label>
 		<Box display='flex' mi='neg-x4'>
 			<Margins inline='x4'>
-				<InputBox type='date' value={dateTime?.date} onChange={handleDateTime?.date} flexGrow={1} h='x20'/>
-				<InputBox type='time' value={dateTime?.time} onChange={handleDateTime?.time} flexGrow={1} h='x20'/>
+				<InputBox
+					type='date'
+					value={dateTime?.date}
+					onChange={handleDateTime?.date}
+					flexGrow={1}
+					h='x20'
+				/>
+				<InputBox
+					type='time'
+					value={dateTime?.time}
+					onChange={handleDateTime?.time}
+					flexGrow={1}
+					h='x20'
+				/>
 			</Margins>
 		</Box>
 	</Field>
@@ -76,12 +100,24 @@ export const PruneMessages = ({
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>
-				<DateTimeRow label={t('Newer_than')} dateTime={newerDateTime} handleDateTime={handleNewerDateTime} />
-				<DateTimeRow label={t('Older_than')} dateTime={olderDateTime} handleDateTime={handleOlderDateTime} />
+				<DateTimeRow
+					label={t('Newer_than')}
+					dateTime={newerDateTime}
+					handleDateTime={handleNewerDateTime}
+				/>
+				<DateTimeRow
+					label={t('Older_than')}
+					dateTime={olderDateTime}
+					handleDateTime={handleOlderDateTime}
+				/>
 
-				<Field >
+				<Field>
 					<Field.Label flexGrow={0}>{t('Only_from_users')}</Field.Label>
-					<UserAutoCompleteMultiple value={users} onChange={onChangeUsers} placeholder={t('Please_enter_usernames')} />
+					<UserAutoCompleteMultiple
+						value={users}
+						onChange={onChangeUsers}
+						placeholder={t('Please_enter_usernames')}
+					/>
 				</Field>
 
 				<Field>
@@ -94,21 +130,27 @@ export const PruneMessages = ({
 				<Field>
 					<Field.Row>
 						<CheckBox id={pinnedCheckboxId} checked={pinned} onChange={handlePinned} />
-						<Field.Label htmlFor={pinnedCheckboxId}>{t('RetentionPolicy_DoNotPrunePinned')}</Field.Label>
+						<Field.Label htmlFor={pinnedCheckboxId}>
+							{t('RetentionPolicy_DoNotPrunePinned')}
+						</Field.Label>
 					</Field.Row>
 				</Field>
 
 				<Field>
 					<Field.Row>
 						<CheckBox id={discussionCheckboxId} checked={discussion} onChange={handleDiscussion} />
-						<Field.Label htmlFor={discussionCheckboxId}>{t('RetentionPolicy_DoNotPruneDiscussion')}</Field.Label>
+						<Field.Label htmlFor={discussionCheckboxId}>
+							{t('RetentionPolicy_DoNotPruneDiscussion')}
+						</Field.Label>
 					</Field.Row>
 				</Field>
 
 				<Field>
 					<Field.Row>
 						<CheckBox id={threadsCheckboxId} checked={threads} onChange={handleThreads} />
-						<Field.Label htmlFor={threadsCheckboxId}>{t('RetentionPolicy_DoNotPruneThreads')}</Field.Label>
+						<Field.Label htmlFor={threadsCheckboxId}>
+							{t('RetentionPolicy_DoNotPruneThreads')}
+						</Field.Label>
 					</Field.Row>
 				</Field>
 
@@ -124,7 +166,9 @@ export const PruneMessages = ({
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					<Button primary danger disabled={validateText && true} onClick={onClickPrune}>{t('Prune')}</Button>
+					<Button primary danger disabled={validateText && true} onClick={onClickPrune}>
+						{t('Prune')}
+					</Button>
 				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>
@@ -144,10 +188,7 @@ const initialValues = {
 	attached: false,
 };
 
-export default ({
-	rid,
-	tabBar,
-}) => {
+export default ({ rid, tabBar }) => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
 	room.type = room.t;
@@ -212,14 +253,25 @@ export default ({
 				return;
 			}
 
-			result = await pruneMessages({ roomId: rid, latest: toDate, oldest: fromDate, inclusive, limit, excludePinned: pinned, ignoreDiscussion: discussion, filesOnly: attached, fromUsers: users, ignoreThreads: threads });
+			result = await pruneMessages({
+				roomId: rid,
+				latest: toDate,
+				oldest: fromDate,
+				inclusive,
+				limit,
+				excludePinned: pinned,
+				ignoreDiscussion: discussion,
+				filesOnly: attached,
+				fromUsers: users,
+				ignoreThreads: threads,
+			});
 			setCount(result);
 
 			if (result < 1) {
 				throw new Error(t('No_messages_found_to_prune'));
 			}
 
-			dispatchToastMessage({ type: 'success', message: `${ result } ${ t('messages_pruned') }` });
+			dispatchToastMessage({ type: 'success', message: `${result} ${t('messages_pruned')}` });
 			closeModal();
 			reset();
 		} catch (error) {
@@ -229,64 +281,95 @@ export default ({
 	});
 
 	const handleModal = () => {
-		setModal(<DialogPruneMessages
-			onCancel={closeModal}
-			onDelete={handlePrune}
-			deleteText={t('Yes_prune_them')}
-		>{t('Prune_Modal')}</DialogPruneMessages>);
+		setModal(
+			<DialogPruneMessages
+				onCancel={closeModal}
+				onDelete={handlePrune}
+				deleteText={t('Yes_prune_them')}
+			>
+				{t('Prune_Modal')}
+			</DialogPruneMessages>,
+		);
 	};
 
 	useEffect(() => {
 		if (newerDate) {
-			setFromDate(new Date(`${ newerDate }T${ newerTime || '00:00' }:00${ getTimeZoneOffset() }`));
+			setFromDate(new Date(`${newerDate}T${newerTime || '00:00'}:00${getTimeZoneOffset()}`));
 		}
 
 		if (olderDate) {
-			setToDate(new Date(`${ olderDate }T${ olderTime || '24:00' }:00${ getTimeZoneOffset() }`));
+			setToDate(new Date(`${olderDate}T${olderTime || '24:00'}:00${getTimeZoneOffset()}`));
 		}
 	}, [newerDate, newerTime, olderDate, olderTime]);
 
 	useEffect(() => {
-		const exceptPinned = pinned ? ` ${ t('except_pinned', {}) }` : '';
-		const ifFrom = users.length ? ` ${ t('if_they_are_from', {
-			postProcess: 'sprintf',
-			sprintf: [users.map((element) => element).join(', ')],
-		}) }` : '';
+		const exceptPinned = pinned ? ` ${t('except_pinned', {})}` : '';
+		const ifFrom = users.length
+			? ` ${t('if_they_are_from', {
+					postProcess: 'sprintf',
+					sprintf: [users.map((element) => element).join(', ')],
+			  })}`
+			: '';
 		const filesOrMessages = t(attached ? 'files' : 'messages', {});
 
 		if (newerDate && olderDate) {
-			setCallOutText(t('Prune_Warning_between', {
-				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, name, moment(fromDate).format('L LT'), moment(toDate).format('L LT')],
-			}) + exceptPinned + ifFrom);
+			setCallOutText(
+				t('Prune_Warning_between', {
+					postProcess: 'sprintf',
+					sprintf: [
+						filesOrMessages,
+						name,
+						moment(fromDate).format('L LT'),
+						moment(toDate).format('L LT'),
+					],
+				}) +
+					exceptPinned +
+					ifFrom,
+			);
 		} else if (newerDate) {
-			setCallOutText(t('Prune_Warning_after', {
-				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, name, moment(fromDate).format('L LT')],
-			}) + exceptPinned + ifFrom);
+			setCallOutText(
+				t('Prune_Warning_after', {
+					postProcess: 'sprintf',
+					sprintf: [filesOrMessages, name, moment(fromDate).format('L LT')],
+				}) +
+					exceptPinned +
+					ifFrom,
+			);
 		} else if (olderDate) {
-			setCallOutText(t('Prune_Warning_before', {
-				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, name, moment(toDate).format('L LT')],
-			}) + exceptPinned + ifFrom);
+			setCallOutText(
+				t('Prune_Warning_before', {
+					postProcess: 'sprintf',
+					sprintf: [filesOrMessages, name, moment(toDate).format('L LT')],
+				}) +
+					exceptPinned +
+					ifFrom,
+			);
 		} else {
-			setCallOutText(t('Prune_Warning_all', {
-				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, name || usernames?.join(' x ')],
-			}) + exceptPinned + ifFrom);
+			setCallOutText(
+				t('Prune_Warning_all', {
+					postProcess: 'sprintf',
+					sprintf: [filesOrMessages, name || usernames?.join(' x ')],
+				}) +
+					exceptPinned +
+					ifFrom,
+			);
 		}
 
 		if (fromDate > toDate) {
-			return setValidateText(t('Newer_than_may_not_exceed_Older_than', {
-				postProcess: 'sprintf',
-				sprintf: [],
-			}));
+			return setValidateText(
+				t('Newer_than_may_not_exceed_Older_than', {
+					postProcess: 'sprintf',
+					sprintf: [],
+				}),
+			);
 		}
 		if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
-			return setValidateText(t('error-invalid-date', {
-				postProcess: 'sprintf',
-				sprintf: [],
-			}));
+			return setValidateText(
+				t('error-invalid-date', {
+					postProcess: 'sprintf',
+					sprintf: [],
+				}),
+			);
 		}
 
 		setValidateText();

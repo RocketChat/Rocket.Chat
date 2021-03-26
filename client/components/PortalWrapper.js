@@ -1,13 +1,13 @@
 import { PureComponent } from 'react';
 
 class PortalWrapper extends PureComponent {
-	state = { errored: false }
+	state = { errored: false };
 
-	static getDerivedStateFromError = () => ({ errored: true })
+	static getDerivedStateFromError = () => ({ errored: true });
 
-	componentDidCatch = () => {}
+	componentDidCatch = () => {};
 
-	render = () => (this.state.errored ? null : this.props.portal)
+	render = () => (this.state.errored ? null : this.props.portal);
 }
 
 export default PortalWrapper;

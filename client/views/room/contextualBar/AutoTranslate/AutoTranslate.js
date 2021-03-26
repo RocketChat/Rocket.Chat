@@ -1,13 +1,13 @@
-import React, { useMemo, useEffect, useState } from 'react';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FieldGroup, Field, ToggleSwitch, Select } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useEffect, useState } from 'react';
 
-import { useUserSubscription } from '../../../../contexts/UserContext';
+import VerticalBar from '../../../../components/VerticalBar';
 import { useLanguage, useTranslation } from '../../../../contexts/TranslationContext';
+import { useUserSubscription } from '../../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
-import VerticalBar from '../../../../components/VerticalBar';
 
 export const AutoTranslate = ({
 	language,
@@ -19,26 +19,38 @@ export const AutoTranslate = ({
 }) => {
 	const t = useTranslation();
 
-	return <>
-		<VerticalBar.Header>
-			<VerticalBar.Icon name='language'/>
-			<VerticalBar.Text>{ t('Auto_Translate') }</VerticalBar.Text>
-			{handleClose && <VerticalBar.Close onClick={handleClose}/>}
-		</VerticalBar.Header>
-		<VerticalBar.Content>
-			<FieldGroup>
-				<Field.Label htmlFor='automatic-translation'>{ t('Automatic_Translation') }</Field.Label>
-				<Field.Row>
-					<ToggleSwitch id='automatic-translation' onChange={handleSwitch} defaultChecked={translateEnable}/>
-				</Field.Row>
+	return (
+		<>
+			<VerticalBar.Header>
+				<VerticalBar.Icon name='language' />
+				<VerticalBar.Text>{t('Auto_Translate')}</VerticalBar.Text>
+				{handleClose && <VerticalBar.Close onClick={handleClose} />}
+			</VerticalBar.Header>
+			<VerticalBar.Content>
+				<FieldGroup>
+					<Field.Label htmlFor='automatic-translation'>{t('Automatic_Translation')}</Field.Label>
+					<Field.Row>
+						<ToggleSwitch
+							id='automatic-translation'
+							onChange={handleSwitch}
+							defaultChecked={translateEnable}
+						/>
+					</Field.Row>
 
-				<Field.Label htmlFor='language'>{ t('Language') }</Field.Label>
-				<Field.Row verticalAlign='middle'>
-					<Select id='language' value={language} disabled={!translateEnable} onChange={handleChangeLanguage} options={languages} />
-				</Field.Row>
-			</FieldGroup>
-		</VerticalBar.Content>
-	</>;
+					<Field.Label htmlFor='language'>{t('Language')}</Field.Label>
+					<Field.Row verticalAlign='middle'>
+						<Select
+							id='language'
+							value={language}
+							disabled={!translateEnable}
+							onChange={handleChangeLanguage}
+							options={languages}
+						/>
+					</Field.Row>
+				</FieldGroup>
+			</VerticalBar.Content>
+		</>
+	);
 };
 
 export default React.memo(({ rid }) => {
@@ -48,18 +60,12 @@ export default React.memo(({ rid }) => {
 
 	const { value: data } = useEndpointData(
 		'autotranslate.getSupportedLanguages',
-		useMemo(
-			() => ({ targetLanguage: userLanguage }),
-			[userLanguage],
-		),
+		useMemo(() => ({ targetLanguage: userLanguage }), [userLanguage]),
 	);
 
 	const [currentLanguage, setCurrentLanguage] = useState(subscription.autoTranslateLanguage);
 
-	const saveSettings = useEndpointActionExperimental(
-		'POST',
-		'autotranslate.saveSettings',
-	);
+	const saveSettings = useEndpointActionExperimental('POST', 'autotranslate.saveSettings');
 
 	const handleChangeLanguage = useMutableCallback((value) => {
 		setCurrentLanguage(value);
@@ -87,14 +93,21 @@ export default React.memo(({ rid }) => {
 		if (!subscription.autoTranslateLanguage) {
 			handleChangeLanguage(userLanguage);
 		}
-	}, [subscription.autoTranslate, subscription.autoTranslateLanguage, handleChangeLanguage, userLanguage]);
+	}, [
+		subscription.autoTranslate,
+		subscription.autoTranslateLanguage,
+		handleChangeLanguage,
+		userLanguage,
+	]);
 
-	return <AutoTranslate
-		language={ currentLanguage }
-		languages={ data ? data.languages.map((value) => [value.language, value.name]) : [] }
-		handleSwitch={ handleSwitch }
-		handleChangeLanguage={ handleChangeLanguage }
-		translateEnable={ !!subscription.autoTranslate }
-		handleClose={ close }
-	/>;
+	return (
+		<AutoTranslate
+			language={currentLanguage}
+			languages={data ? data.languages.map((value) => [value.language, value.name]) : []}
+			handleSwitch={handleSwitch}
+			handleChangeLanguage={handleChangeLanguage}
+			translateEnable={!!subscription.autoTranslate}
+			handleClose={close}
+		/>
+	);
 });

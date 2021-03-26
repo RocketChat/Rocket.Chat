@@ -17,10 +17,7 @@ export const mountRoot = async (): Promise<void> => {
 		document.body.insertBefore(rootNode, document.body.firstChild);
 	}
 
-	const [
-		{ Suspense, createElement, lazy },
-		{ render },
-	] = await Promise.all([
+	const [{ Suspense, createElement, lazy }, { render }] = await Promise.all([
 		import('react'),
 		import('react-dom'),
 	]);

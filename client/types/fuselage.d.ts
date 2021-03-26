@@ -148,10 +148,10 @@ declare module '@rocket.chat/fuselage' {
 		minSize?: CSSProperties['blockSize'];
 		maxSize?: CSSProperties['blockSize'];
 		fontScale?: FontScale;
-	}>
-	& Omit<AllHTMLAttributes<HTMLOrSVGElement>, 'className'>
-	& Omit<SVGAttributes<SVGElement>, keyof AllHTMLAttributes<HTMLOrSVGElement>>
-	& RefAttributes<unknown>;
+	}> &
+		Omit<AllHTMLAttributes<HTMLOrSVGElement>, 'className'> &
+		Omit<SVGAttributes<SVGElement>, keyof AllHTMLAttributes<HTMLOrSVGElement>> &
+		RefAttributes<unknown>;
 
 	export const Box: ForwardRefExoticComponent<BoxProps>;
 
@@ -183,7 +183,19 @@ declare module '@rocket.chat/fuselage' {
 
 	type AvatarProps = Omit<BoxProps, 'title' | 'size'> & {
 		title?: string;
-		size?: 'x16' | 'x18' | 'x20' | 'x24' | 'x28' | 'x32' | 'x36' | 'x40' | 'x48' | 'x124' | 'x200' | 'x332';
+		size?:
+			| 'x16'
+			| 'x18'
+			| 'x20'
+			| 'x24'
+			| 'x28'
+			| 'x32'
+			| 'x36'
+			| 'x40'
+			| 'x48'
+			| 'x124'
+			| 'x200'
+			| 'x332';
 		rounded?: boolean;
 		objectFit?: boolean;
 		url: string;
@@ -313,7 +325,11 @@ declare module '@rocket.chat/fuselage' {
 		current?: number;
 		itemsPerPage?: 25 | 50 | 100;
 		itemsPerPageLabel?: () => string;
-		showingResultsLabel?: (props: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) => string;
+		showingResultsLabel?: (props: {
+			count: number;
+			current: number;
+			itemsPerPage: 25 | 50 | 100;
+		}) => string;
 		onSetCurrent?: Dispatch<SetStateAction<number>>;
 		onSetItemsPerPage?: Dispatch<SetStateAction<25 | 50 | 100>>;
 	};
@@ -419,7 +435,7 @@ declare module '@rocket.chat/fuselage' {
 		optionWidth?: BoxProps['width'];
 		placement?: Placements;
 		renderItem?: (props: OptionProps) => ReactNode;
-	}
+	};
 
 	export const Menu: ForwardRefExoticComponent<MenuProps>;
 
@@ -430,7 +446,7 @@ declare module '@rocket.chat/fuselage' {
 		className?: BoxClassName;
 		children?: any;
 		title?: any;
-	}
+	};
 
 	export const Badge: ForwardRefExoticComponent<BadgeProps>;
 }

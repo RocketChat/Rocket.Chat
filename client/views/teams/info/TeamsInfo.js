@@ -1,25 +1,25 @@
-import React, { useMemo, useCallback } from 'react';
 import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useCallback } from 'react';
 
+import { roomTypes, UiTextContext } from '../../../../app/utils';
+import { GenericModalDoNotAskAgain } from '../../../components/GenericModal';
+import MarkdownText from '../../../components/MarkdownText';
 import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
-import MarkdownText from '../../../components/MarkdownText';
-import DeleteTeamModal from './Delete';
-import LeaveTeamModal from './Leave';
-import InfoPanel, { RetentionPolicyCallout } from '../../InfoPanel';
-import { roomTypes, UiTextContext } from '../../../../app/utils';
-import { useTabBarClose, useTabBarOpen } from '../../room/providers/ToolboxProvider';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
-import { GenericModalDoNotAskAgain } from '../../../components/GenericModal';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useActionSpread } from '../../hooks/useActionSpread';
+import { usePermission } from '../../../contexts/AuthorizationContext';
+import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useSetModal } from '../../../contexts/ModalContext';
 import { useSetting } from '../../../contexts/SettingsContext';
-import { usePermission } from '../../../contexts/AuthorizationContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import InfoPanel, { RetentionPolicyCallout } from '../../InfoPanel';
+import { useActionSpread } from '../../hooks/useActionSpread';
+import { useTabBarClose, useTabBarOpen } from '../../room/providers/ToolboxProvider';
+import DeleteTeamModal from './Delete';
+import LeaveTeamModal from './Leave';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -61,28 +61,39 @@ export const TeamsInfo = ({
 		maxAgeDefault,
 	} = retentionPolicy;
 
-	const memoizedActions = useMemo(() => ({
-		...onClickEdit && { edit: {
-			label: t('Edit'),
-			icon: 'edit',
-			action: onClickEdit,
-		} },
-		...onClickDelete && { delete: {
-			label: t('Delete'),
-			icon: 'trash',
-			action: onClickDelete,
-		} },
-		...onClickHide && { hide: {
-			label: t('Hide'),
-			action: onClickHide,
-			icon: 'eye-off',
-		} },
-		...onClickLeave && { leave: {
-			label: t('Leave'),
-			action: onClickLeave,
-			icon: 'sign-out',
-		} },
-	}), [t, onClickHide, onClickLeave, onClickEdit, onClickDelete]);
+	const memoizedActions = useMemo(
+		() => ({
+			...(onClickEdit && {
+				edit: {
+					label: t('Edit'),
+					icon: 'edit',
+					action: onClickEdit,
+				},
+			}),
+			...(onClickDelete && {
+				delete: {
+					label: t('Delete'),
+					icon: 'trash',
+					action: onClickDelete,
+				},
+			}),
+			...(onClickHide && {
+				hide: {
+					label: t('Hide'),
+					action: onClickHide,
+					icon: 'eye-off',
+				},
+			}),
+			...(onClickLeave && {
+				leave: {
+					label: t('Leave'),
+					action: onClickLeave,
+					icon: 'sign-out',
+				},
+			}),
+		}),
+		[t, onClickHide, onClickLeave, onClickEdit, onClickDelete],
+	);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
 
@@ -91,20 +102,25 @@ export const TeamsInfo = ({
 			return null;
 		}
 
-		return <Menu
-			small={false}
-			flexShrink={0}
-			mi='x2'
-			key='menu'
-			ghost={false}
-			renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
-			options={menuOptions}
-		/>;
+		return (
+			<Menu
+				small={false}
+				flexShrink={0}
+				mi='x2'
+				key='menu'
+				ghost={false}
+				renderItem={({ label: { label, icon }, ...props }) => (
+					<Option {...props} label={label} icon={icon} />
+				)}
+				options={menuOptions}
+			/>
+		);
 	}, [menuOptions]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]) =>
-			<InfoPanel.Action key={key} label={label} onClick={action} icon={icon}/>;
+		const mapAction = ([key, { label, icon, action }]) => (
+			<InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />
+		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
@@ -112,28 +128,25 @@ export const TeamsInfo = ({
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='info-circled'/>
+				<VerticalBar.Icon name='info-circled' />
 				<VerticalBar.Text>{t('Teams_Info')}</VerticalBar.Text>
-				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
+				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24'>
 				<InfoPanel flexGrow={1}>
-
 					<InfoPanel.Avatar>
-						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type } } />
+						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type }} />
 					</InfoPanel.Avatar>
 
-					<InfoPanel.ActionGroup>
-						{actions}
-					</InfoPanel.ActionGroup>
+					<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
 
 					<InfoPanel.Section>
-						{ archived && <Box mb='x16'>
-							<Callout type='warning'>
-								{t('Room_archived')}
-							</Callout>
-						</Box>}
+						{archived && (
+							<Box mb='x16'>
+								<Callout type='warning'>{t('Room_archived')}</Callout>
+							</Box>
+						)}
 					</InfoPanel.Section>
 
 					<InfoPanel.Section>
@@ -141,47 +154,61 @@ export const TeamsInfo = ({
 					</InfoPanel.Section>
 
 					<InfoPanel.Section>
-						{broadcast && broadcast !== '' && <InfoPanel.Field>
-							<InfoPanel.Label><b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}</InfoPanel.Label>
-						</InfoPanel.Field>}
+						{broadcast && broadcast !== '' && (
+							<InfoPanel.Field>
+								<InfoPanel.Label>
+									<b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}
+								</InfoPanel.Label>
+							</InfoPanel.Field>
+						)}
 
-						{description && description !== '' && <InfoPanel.Field>
-							<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
-							<InfoPanel.Text withTruncatedText={false}>{description}</InfoPanel.Text>
-						</InfoPanel.Field>}
+						{description && description !== '' && (
+							<InfoPanel.Field>
+								<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
+								<InfoPanel.Text withTruncatedText={false}>{description}</InfoPanel.Text>
+							</InfoPanel.Field>
+						)}
 
-						{announcement && announcement !== '' && <InfoPanel.Field>
-							<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
-							<InfoPanel.Text withTruncatedText={false}>{announcement}</InfoPanel.Text>
-						</InfoPanel.Field>}
+						{announcement && announcement !== '' && (
+							<InfoPanel.Field>
+								<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
+								<InfoPanel.Text withTruncatedText={false}>{announcement}</InfoPanel.Text>
+							</InfoPanel.Field>
+						)}
 
-						{topic && topic !== '' && <InfoPanel.Field>
-							<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
-							<InfoPanel.Text withTruncatedText={false}>{topic}</InfoPanel.Text>
-						</InfoPanel.Field>}
+						{topic && topic !== '' && (
+							<InfoPanel.Field>
+								<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
+								<InfoPanel.Text withTruncatedText={false}>{topic}</InfoPanel.Text>
+							</InfoPanel.Field>
+						)}
 
-						{onClickViewChannels && <InfoPanel.Field>
-							<InfoPanel.Label>{t('Teams_channels')}</InfoPanel.Label>
-							<InfoPanel.Text>
-								<Button onClick={onClickViewChannels} small>{t('View_channels')}</Button>
-							</InfoPanel.Text>
-						</InfoPanel.Field>}
+						{onClickViewChannels && (
+							<InfoPanel.Field>
+								<InfoPanel.Label>{t('Teams_channels')}</InfoPanel.Label>
+								<InfoPanel.Text>
+									<Button onClick={onClickViewChannels} small>
+										{t('View_channels')}
+									</Button>
+								</InfoPanel.Text>
+							</InfoPanel.Field>
+						)}
 
 						{retentionPolicyEnabled && (
-							<RetentionPolicyCallout filesOnlyDefault={filesOnlyDefault} excludePinnedDefault={excludePinnedDefault} maxAgeDefault={maxAgeDefault} />
+							<RetentionPolicyCallout
+								filesOnlyDefault={filesOnlyDefault}
+								excludePinnedDefault={excludePinnedDefault}
+								maxAgeDefault={maxAgeDefault}
+							/>
 						)}
 					</InfoPanel.Section>
-
 				</InfoPanel>
 			</VerticalBar.ScrollableContent>
 		</>
 	);
 };
 
-export default function TeamsInfoWithLogic({
-	room,
-	openEditing,
-}) {
+export default function TeamsInfoWithLogic({ room, openEditing }) {
 	const onClickClose = useTabBarClose();
 	const openTabbar = useTabBarOpen();
 	const t = useTranslation();
@@ -217,7 +244,8 @@ export default function TeamsInfoWithLogic({
 	// mutalble callback open modal
 	const onClickDelete = useMutableCallback(() => {
 		const onConfirm = async (deletedRooms) => {
-			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : null;
+			const roomsToRemove =
+				Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : null;
 			try {
 				await deleteTeam({ teamId: room.teamId, roomsToRemove });
 				router.push({});
@@ -259,20 +287,22 @@ export default function TeamsInfoWithLogic({
 
 		const warnText = roomTypes.getConfig(room.t).getUiText(UiTextContext.HIDE_WARNING);
 
-		setModal(<GenericModalDoNotAskAgain
-			variant='danger'
-			confirmText={t('Yes_hide_it')}
-			cancelText={t('Cancel')}
-			onClose={closeModal}
-			onCancel={closeModal}
-			onConfirm={hide}
-			dontAskAgain={{
-				action: 'hideRoom',
-				label: t('Hide_room'),
-			}}
-		>
-			{t(warnText, room.fname)}
-		</ GenericModalDoNotAskAgain>);
+		setModal(
+			<GenericModalDoNotAskAgain
+				variant='danger'
+				confirmText={t('Yes_hide_it')}
+				cancelText={t('Cancel')}
+				onClose={closeModal}
+				onCancel={closeModal}
+				onConfirm={hide}
+				dontAskAgain={{
+					action: 'hideRoom',
+					label: t('Hide_room'),
+				}}
+			>
+				{t(warnText, room.fname)}
+			</GenericModalDoNotAskAgain>,
+		);
 	});
 
 	const onClickViewChannels = useCallback(() => openTabbar('team-channels'), [openTabbar]);
@@ -286,13 +316,13 @@ export default function TeamsInfoWithLogic({
 			onClickEdit={canEdit && openEditing}
 			onClickClose={onClickClose}
 			onClickDelete={canDelete && onClickDelete}
-			onClickLeave={/* canLeave && */onClickLeave}
-			onClickHide={/* joined && */handleHide}
+			onClickLeave={/* canLeave && */ onClickLeave}
+			onClickHide={/* joined && */ handleHide}
 			onClickViewChannels={onClickViewChannels}
 			{...room}
-			announcement={room.announcement && <MarkdownText content={room.announcement}/>}
-			description={room.description && <MarkdownText content={room.description}/>}
-			topic={room.topic && <MarkdownText content={room.topic}/>}
+			announcement={room.announcement && <MarkdownText content={room.announcement} />}
+			description={room.description && <MarkdownText content={room.description} />}
+			topic={room.topic && <MarkdownText content={room.topic} />}
 		/>
 	);
 }

@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 
-import { RecordList, RecordListBatchChanges } from '../../lib/lists/RecordList';
 import { IRocketChatRecord } from '../../../definition/IRocketChatRecord';
+import { RecordList, RecordListBatchChanges } from '../../lib/lists/RecordList';
 
 const INITIAL_ITEM_COUNT = 25;
 

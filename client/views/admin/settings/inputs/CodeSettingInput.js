@@ -104,7 +104,9 @@ function CodeMirror({
 		}
 	}, [textAreaRef, value]);
 
-	return <textarea readOnly ref={textAreaRef} style={{ display: 'none' }} value={value} {...props} />;
+	return (
+		<textarea readOnly ref={textAreaRef} style={{ display: 'none' }} value={value} {...props} />
+	);
 }
 
 export function CodeSettingInput({
@@ -128,34 +130,44 @@ export function CodeSettingInput({
 		onChangeValue(value);
 	};
 
-	return <>
-		<Flex.Container>
-			<Box>
-				<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-			</Box>
-		</Flex.Container>
-		<div
-			className={[
-				'code-mirror-box',
-				fullScreen && 'code-mirror-box-fullscreen content-background-color',
-			].filter(Boolean).join(' ')}
-		>
-			<div className='title'>{label}</div>
-			<CodeMirror
-				data-qa-setting-id={_id}
-				id={_id}
-				mode={code}
-				value={value}
-				placeholder={placeholder}
-				disabled={disabled}
-				readOnly={readonly}
-				autoComplete={autocomplete === false ? 'off' : undefined}
-				onChange={handleChange}
-			/>
-			<div className='buttons'>
-				<Button primary onClick={() => toggleFullScreen()}>{fullScreen ? t('Exit_Full_Screen') : t('Full_Screen')}</Button>
+	return (
+		<>
+			<Flex.Container>
+				<Box>
+					<Field.Label htmlFor={_id} title={_id}>
+						{label}
+					</Field.Label>
+					{hasResetButton && (
+						<ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />
+					)}
+				</Box>
+			</Flex.Container>
+			<div
+				className={[
+					'code-mirror-box',
+					fullScreen && 'code-mirror-box-fullscreen content-background-color',
+				]
+					.filter(Boolean)
+					.join(' ')}
+			>
+				<div className='title'>{label}</div>
+				<CodeMirror
+					data-qa-setting-id={_id}
+					id={_id}
+					mode={code}
+					value={value}
+					placeholder={placeholder}
+					disabled={disabled}
+					readOnly={readonly}
+					autoComplete={autocomplete === false ? 'off' : undefined}
+					onChange={handleChange}
+				/>
+				<div className='buttons'>
+					<Button primary onClick={() => toggleFullScreen()}>
+						{fullScreen ? t('Exit_Full_Screen') : t('Full_Screen')}
+					</Button>
+				</div>
 			</div>
-		</div>
-	</>;
+		</>
+	);
 }

@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { useTimezoneTime } from '../hooks/useTimezoneTime';
 import { useTranslation } from '../contexts/TranslationContext';
+import { useTimezoneTime } from '../hooks/useTimezoneTime';
 
 const useUTCClock = (utcOffset) => {
 	const time = useTimezoneTime(utcOffset, 10000);
-	return `${ time } (UTC ${ utcOffset })`;
+	return `${time} (UTC ${utcOffset})`;
 };
 
 export const UTCClock = React.memo(({ utcOffset }) => useUTCClock(utcOffset));

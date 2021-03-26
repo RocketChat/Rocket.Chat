@@ -8,7 +8,10 @@ export const download = (href: string, filename: string): void => {
 	document.body.removeChild(anchorElement);
 };
 
-export const downloadAs = ({ data, ...options }: { data: BlobPart[] } & BlobPropertyBag, filename: string): void => {
+export const downloadAs = (
+	{ data, ...options }: { data: BlobPart[] } & BlobPropertyBag,
+	filename: string,
+): void => {
 	const blob = new Blob(data, options);
 
 	if (navigator.msSaveOrOpenBlob) {
@@ -25,19 +28,28 @@ export const downloadAs = ({ data, ...options }: { data: BlobPart[] } & BlobProp
 };
 
 export const downloadJsonAs = (jsonObject: unknown, basename: string): void => {
-	downloadAs({
-		data: [decodeURIComponent(encodeURI(JSON.stringify(jsonObject, null, 2)))],
-		type: 'application/json;charset=utf-8',
-	}, `${ basename }.json`);
+	downloadAs(
+		{
+			data: [decodeURIComponent(encodeURI(JSON.stringify(jsonObject, null, 2)))],
+			type: 'application/json;charset=utf-8',
+		},
+		`${basename}.json`,
+	);
 };
 
 export const downloadCsvAs = (csvData: unknown[][], basename: string): void => {
-	const escapeCell = (cell: unknown): string => `"${ String(cell).replace(/"/g, '""') }"`;
-	const content = csvData.reduce((content, row) => `${ content + row.map(escapeCell).join(';') }\n`, '');
+	const escapeCell = (cell: unknown): string => `"${String(cell).replace(/"/g, '""')}"`;
+	const content = csvData.reduce(
+		(content, row) => `${content + row.map(escapeCell).join(';')}\n`,
+		'',
+	);
 
-	downloadAs({
-		data: [decodeURIComponent(encodeURI(content))],
-		type: 'text/csv;charset=utf-8',
-		endings: 'native',
-	}, `${ basename }.csv`);
+	downloadAs(
+		{
+			data: [decodeURIComponent(encodeURI(content))],
+			type: 'text/csv;charset=utf-8',
+			endings: 'native',
+		},
+		`${basename}.csv`,
+	);
 };

@@ -6,7 +6,7 @@ declare module 'meteor/konecty:user-presence' {
 	namespace UserPresence {
 		let awayTime: number | undefined;
 		function removeConnectionsByInstanceId(id: string): void;
-		function start(): void
-		function stopTimer(): void
+		function start(): void;
+		function stopTimer(): void;
 	}
 }

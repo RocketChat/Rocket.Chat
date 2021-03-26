@@ -9,14 +9,17 @@ export default ({ name, icon, tabBar, title, ...props }) => {
 	const close = useTabBarClose();
 	const t = useTranslation();
 
-	return <> <VerticalBar.Header>
-		<VerticalBar.Icon name={icon}/>
-		<VerticalBar.Text>{ t(title) }</VerticalBar.Text>
-		{close && <VerticalBar.Close onClick={close}/>}
-	</VerticalBar.Header>
-
-	<VerticalBar.Content>
-		<BlazeTemplate flexShrink={1} overflow='hidden' name={name} tabBar={tabBar} {...props} />
-	</VerticalBar.Content>
-	</>;
+	return (
+		<>
+			{' '}
+			<VerticalBar.Header>
+				<VerticalBar.Icon name={icon} />
+				<VerticalBar.Text>{t(title)}</VerticalBar.Text>
+				{close && <VerticalBar.Close onClick={close} />}
+			</VerticalBar.Header>
+			<VerticalBar.Content>
+				<BlazeTemplate flexShrink={1} overflow='hidden' name={name} tabBar={tabBar} {...props} />
+			</VerticalBar.Content>
+		</>
+	);
 };

@@ -1,9 +1,9 @@
-import { ReactiveVar } from 'meteor/reactive-var';
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
-import { APIClient } from '../../app/utils/client';
 import { Users } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
+import { APIClient } from '../../app/utils/client';
 import type { IUser, IUserDataEvent } from '../../definition/IUser';
 
 export const isSyncReady = new ReactiveVar(false);
@@ -15,7 +15,7 @@ type RawUserData = Omit<IUser, '_updatedAt'> & {
 const updateUser = (userData: IUser & { _updatedAt: Date }): void => {
 	const user: IUser = Users.findOne({ _id: userData._id });
 
-	if (!user || !user._updatedAt || (user._updatedAt.getTime() < userData._updatedAt.getTime())) {
+	if (!user || !user._updatedAt || user._updatedAt.getTime() < userData._updatedAt.getTime()) {
 		Meteor.users.upsert({ _id: userData._id }, userData);
 		return;
 	}

@@ -2,8 +2,8 @@ import React from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { EditRoomContextBar } from './EditRoom';
 import RoomsTable from './RoomsTable';
 
@@ -19,22 +19,26 @@ export function RoomsPage() {
 		roomsRoute.push({});
 	};
 
-	return <Page flexDirection='row'>
-		<Page>
-			<Page.Header title={t('Rooms')} />
-			<Page.Content>
-				<RoomsTable />
-			</Page.Content>
-		</Page>
-		{context && <VerticalBar>
-			<VerticalBar.Header>
-				{t('Room_Info')}
-				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
-			</VerticalBar.Header>
+	return (
+		<Page flexDirection='row'>
+			<Page>
+				<Page.Header title={t('Rooms')} />
+				<Page.Content>
+					<RoomsTable />
+				</Page.Content>
+			</Page>
+			{context && (
+				<VerticalBar>
+					<VerticalBar.Header>
+						{t('Room_Info')}
+						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
+					</VerticalBar.Header>
 
-			<EditRoomContextBar rid={id} />
-		</VerticalBar>}
-	</Page>;
+					<EditRoomContextBar rid={id} />
+				</VerticalBar>
+			)}
+		</Page>
+	);
 }
 
 export default RoomsPage;

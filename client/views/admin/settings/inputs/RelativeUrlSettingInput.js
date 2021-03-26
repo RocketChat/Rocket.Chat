@@ -22,22 +22,28 @@ export function RelativeUrlSettingInput({
 		onChangeValue && onChangeValue(event.currentTarget.value);
 	};
 
-	return <>
-		<Flex.Container>
-			<Box>
-				<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-			</Box>
-		</Flex.Container>
-		<UrlInput
-			data-qa-setting-id={_id}
-			id={_id}
-			value={getAbsoluteUrl(value)}
-			placeholder={placeholder}
-			disabled={disabled}
-			readOnly={readonly}
-			autoComplete={autocomplete === false ? 'off' : undefined}
-			onChange={handleChange}
-		/>
-	</>;
+	return (
+		<>
+			<Flex.Container>
+				<Box>
+					<Field.Label htmlFor={_id} title={_id}>
+						{label}
+					</Field.Label>
+					{hasResetButton && (
+						<ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />
+					)}
+				</Box>
+			</Flex.Container>
+			<UrlInput
+				data-qa-setting-id={_id}
+				id={_id}
+				value={getAbsoluteUrl(value)}
+				placeholder={placeholder}
+				disabled={disabled}
+				readOnly={readonly}
+				autoComplete={autocomplete === false ? 'off' : undefined}
+				onChange={handleChange}
+			/>
+		</>
+	);
 }

@@ -1,12 +1,11 @@
-import React, { useRef, useEffect } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useRef, useEffect } from 'react';
 
-import Chart from '../realTimeMonitoring/charts/Chart';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
-
+import { useTranslation } from '../../../contexts/TranslationContext';
+import Chart from '../realTimeMonitoring/charts/Chart';
 
 const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) => {
 	const t = useTranslation();
@@ -15,10 +14,7 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 	const canvas = useRef();
 	const context = useRef();
 
-	const {
-		start,
-		end,
-	} = dateRange;
+	const { start, end } = dateRange;
 
 	const loadData = useMethod('livechat:getAnalyticsChartData');
 
@@ -29,9 +25,17 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 			}
 			const result = await loadData(params);
 			if (!result?.chartLabel || !result?.dataLabels || !result?.dataPoints) {
-				throw new Error('Error! fetching chart data. Details: livechat:getAnalyticsChartData => Missing Data');
+				throw new Error(
+					'Error! fetching chart data. Details: livechat:getAnalyticsChartData => Missing Data',
+				);
 			}
-			context.current = await drawLineChart(canvas.current, context.current, [result.chartLabel], result.dataLabels, [result.dataPoints]);
+			context.current = await drawLineChart(
+				canvas.current,
+				context.current,
+				[result.chartLabel],
+				result.dataLabels,
+				[result.dataPoints],
+			);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -44,11 +48,11 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 				to: end,
 			},
 			chartOptions: { name: chartName },
-			...departmentId && { departmentId },
+			...(departmentId && { departmentId }),
 		});
 	}, [chartName, departmentId, draw, end, start, t, loadData]);
 
-	return <Chart border='none' pi='none' ref={canvas} {...props}/>;
+	return <Chart border='none' pi='none' ref={canvas} {...props} />;
 };
 
 export default InterchangeableChart;

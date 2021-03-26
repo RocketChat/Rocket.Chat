@@ -1,11 +1,16 @@
-import React from 'react';
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React from 'react';
 
+import {
+	useOmnichannelShowQueueLink,
+	useOmnichannelAgentAvailable,
+	useOmnichannelQueueLink,
+	useOmnichannelDirectoryLink,
+} from '../../contexts/OmnichannelContext';
+import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useMethod } from '../../contexts/ServerContext';
-import { useOmnichannelShowQueueLink, useOmnichannelAgentAvailable, useOmnichannelQueueLink, useOmnichannelDirectoryLink } from '../../contexts/OmnichannelContext';
 
 const OmnichannelSection = React.memo((props) => {
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
@@ -20,7 +25,7 @@ const OmnichannelSection = React.memo((props) => {
 		title: agentAvailable ? t('Available') : t('Not_Available'),
 		color: agentAvailable ? 'success' : undefined,
 		icon: agentAvailable ? 'message' : 'message-disabled',
-		...agentAvailable && { success: 1 },
+		...(agentAvailable && { success: 1 }),
 	};
 
 	const directoryIcon = {
@@ -36,14 +41,18 @@ const OmnichannelSection = React.memo((props) => {
 		}
 	});
 
-	return <Sidebar.TopBar.ToolBox { ...props }>
-		<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
-		<Sidebar.TopBar.Actions>
-			{showOmnichannelQueueLink && <Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink}/> }
-			<Sidebar.TopBar.Action {...icon} onClick={handleStatusChange}/>
-			<Sidebar.TopBar.Action {...directoryIcon} href={directoryLink} is='a' />
-		</Sidebar.TopBar.Actions>
-	</Sidebar.TopBar.ToolBox>;
+	return (
+		<Sidebar.TopBar.ToolBox {...props}>
+			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
+			<Sidebar.TopBar.Actions>
+				{showOmnichannelQueueLink && (
+					<Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />
+				)}
+				<Sidebar.TopBar.Action {...icon} onClick={handleStatusChange} />
+				<Sidebar.TopBar.Action {...directoryIcon} href={directoryLink} is='a' />
+			</Sidebar.TopBar.Actions>
+		</Sidebar.TopBar.ToolBox>
+	);
 });
 
 export default OmnichannelSection;

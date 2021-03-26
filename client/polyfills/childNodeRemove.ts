@@ -1,5 +1,5 @@
-(function(arr): void {
-	arr.forEach(function(item) {
+(function (arr): void {
+	arr.forEach((item) => {
 		if (item.hasOwnProperty('remove')) {
 			return;
 		}
@@ -13,4 +13,4 @@
 			},
 		});
 	});
-}([Element.prototype, CharacterData.prototype, DocumentType.prototype]));
+})([Element.prototype, CharacterData.prototype, DocumentType.prototype]);

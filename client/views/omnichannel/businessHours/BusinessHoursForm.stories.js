@@ -1,8 +1,8 @@
-import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import React from 'react';
 
-import BusinessHoursForm from './BusinessHoursForm';
 import { useForm } from '../../../hooks/useForm';
+import BusinessHoursForm from './BusinessHoursForm';
 
 export default {
 	title: 'omnichannel/businessHours',
@@ -19,7 +19,9 @@ export const Default = () => {
 		},
 	});
 
-	return <Box maxWidth='x600' alignSelf='center' w='full' m='x24'>
-		<BusinessHoursForm values={values} handlers={handlers}/>
-	</Box>;
+	return (
+		<Box maxWidth='x600' alignSelf='center' w='full' m='x24'>
+			<BusinessHoursForm values={values} handlers={handlers} />
+		</Box>
+	);
 };

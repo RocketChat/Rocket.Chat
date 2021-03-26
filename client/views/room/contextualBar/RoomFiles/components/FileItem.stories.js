@@ -17,8 +17,8 @@ const fileData = {
 	},
 };
 
-export const Default = () => <VerticalBar>
-	<FileItem
-		fileData={fileData}
-	/>
-</VerticalBar>;
+export const Default = () => (
+	<VerticalBar>
+		<FileItem fileData={fileData} />
+	</VerticalBar>
+);

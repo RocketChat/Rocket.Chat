@@ -1,15 +1,11 @@
 import { useEffect } from 'react';
 
-import { useStream } from '../../contexts/ServerContext';
 import { IMessage } from '../../../definition/IMessage';
-import {
-	createFilterFromQuery,
-	FieldExpression,
-	Query,
-} from '../../lib/minimongo';
-import { MessageList } from '../../lib/lists/MessageList';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
+import { useStream } from '../../contexts/ServerContext';
+import { MessageList } from '../../lib/lists/MessageList';
+import { createFilterFromQuery, FieldExpression, Query } from '../../lib/minimongo';
 
 type RoomMessagesRidEvent = IMessage;
 
@@ -42,7 +38,11 @@ const createDeleteCriteria = (
 	return createFilterFromQuery<IMessage>(query);
 };
 
-export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IUser['_id'] | null, rid: IRoom['_id'] | null): void => {
+export const useStreamUpdatesForMessageList = (
+	messageList: MessageList,
+	uid: IUser['_id'] | null,
+	rid: IRoom['_id'] | null,
+): void => {
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
 
@@ -52,19 +52,22 @@ export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IU
 			return;
 		}
 
-		const unsubscribeFromRoomMessages = subscribeToRoomMessages<RoomMessagesRidEvent>(rid, (message) => {
-			messageList.handle(message);
-		});
+		const unsubscribeFromRoomMessages = subscribeToRoomMessages<RoomMessagesRidEvent>(
+			rid,
+			(message) => {
+				messageList.handle(message);
+			},
+		);
 
 		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageEvent>(
-			`${ rid }/deleteMessage`,
+			`${rid}/deleteMessage`,
 			({ _id: mid }) => {
 				messageList.remove(mid);
 			},
 		);
 
 		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageBulkEvent>(
-			`${ rid }/deleteMessageBulk`,
+			`${rid}/deleteMessageBulk`,
 			(params) => {
 				const matchDeleteCriteria = createDeleteCriteria(params);
 				messageList.prune(matchDeleteCriteria);

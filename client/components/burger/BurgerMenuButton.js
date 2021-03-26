@@ -4,24 +4,28 @@ import React from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
-import BurgerIcon from './BurgerIcon';
 import BurgerBadge from './BurgerBadge';
+import BurgerIcon from './BurgerIcon';
 
 function BurgerMenuButton({ open, badge, ...props }) {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const t = useTranslation();
 
-	return <Box
-		is='button'
-		aria-label={open ? t('Close menu') : t('Open menu')}
-		type='button'
-		position='relative'
-		className={css`cursor: pointer;`}
-		{...props}
-	>
-		<BurgerIcon open={open} />
-		{!isLayoutEmbedded && badge && <BurgerBadge>{badge}</BurgerBadge>}
-	</Box>;
+	return (
+		<Box
+			is='button'
+			aria-label={open ? t('Close menu') : t('Open menu')}
+			type='button'
+			position='relative'
+			className={css`
+				cursor: pointer;
+			`}
+			{...props}
+		>
+			<BurgerIcon open={open} />
+			{!isLayoutEmbedded && badge && <BurgerBadge>{badge}</BurgerBadge>}
+		</Box>
+	);
 }
 
 export default BurgerMenuButton;

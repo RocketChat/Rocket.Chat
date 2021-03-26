@@ -1,11 +1,11 @@
-import React, { useCallback } from 'react';
 import { Avatar, Margins, Flex, Box, Tag } from '@rocket.chat/fuselage';
+import React, { useCallback } from 'react';
 
 import { Rooms, Users } from '../../app/models/client';
-import { useTranslation } from '../contexts/TranslationContext';
-import { useReactiveValue } from '../hooks/useReactiveValue';
-import { useUser } from '../contexts/UserContext';
 import { getUserAvatarURL } from '../../app/utils/client';
+import { useTranslation } from '../contexts/TranslationContext';
+import { useUser } from '../contexts/UserContext';
+import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const RoomForeword = ({ _id: rid }) => {
 	const t = useTranslation();
@@ -22,12 +22,12 @@ const RoomForeword = ({ _id: rid }) => {
 		return null;
 	}
 
-	return <Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column'>
-		<Flex.Item grow={1}>
-			<Margins block='x24'>
-				<Avatar.Stack>
-					{usernames.map(
-						(username, index) => {
+	return (
+		<Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column'>
+			<Flex.Item grow={1}>
+				<Margins block='x24'>
+					<Avatar.Stack>
+						{usernames.map((username, index) => {
 							const user = Users.findOne({ username }, { fields: { avatarETag: 1 } });
 
 							const avatarUrl = getUserAvatarURL(username, user?.avatarETag);
@@ -41,27 +41,26 @@ const RoomForeword = ({ _id: rid }) => {
 									data-username={username}
 								/>
 							);
-						},
-					)}
-				</Avatar.Stack>
-			</Margins>
-		</Flex.Item>
-		<Box color='default' fontScale='h1' flexGrow={1}>{t('Direct_message_you_have_joined')}</Box>
-		<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>
-			{usernames.map((username, index) => (
-				<Margins inline='x4' key={index}>
-					<Box is='a' href={`/direct/${ username }`}>
-						<Tag
-							className='mention-link'
-							data-username={username}
-							medium
-						>
-							{username}
-						</Tag>
-					</Box>
-				</Margins>))}
+						})}
+					</Avatar.Stack>
+				</Margins>
+			</Flex.Item>
+			<Box color='default' fontScale='h1' flexGrow={1}>
+				{t('Direct_message_you_have_joined')}
+			</Box>
+			<Box is='div' mb='x8' flexGrow={1} display='flex' justifyContent='center'>
+				{usernames.map((username, index) => (
+					<Margins inline='x4' key={index}>
+						<Box is='a' href={`/direct/${username}`}>
+							<Tag className='mention-link' data-username={username} medium>
+								{username}
+							</Tag>
+						</Box>
+					</Margins>
+				))}
+			</Box>
 		</Box>
-	</Box>;
+	);
 };
 
 export default RoomForeword;

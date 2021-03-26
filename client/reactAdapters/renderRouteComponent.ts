@@ -6,12 +6,12 @@ import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import type { ComponentType, PropsWithoutRef } from 'react';
 
-import { portalsSubscription, registerPortal, unregisterPortal } from './portalsSubscription';
-import { mountRoot } from './mountRoot';
+import { createEphemeralPortal } from './createEphemeralPortal';
 import { createLazyElement } from './createLazyElement';
 import { createLazyPortal } from './createLazyPortal';
-import { createEphemeralPortal } from './createEphemeralPortal';
 import { createTemplateForComponent } from './createTemplateForComponent';
+import { mountRoot } from './mountRoot';
+import { portalsSubscription, registerPortal, unregisterPortal } from './portalsSubscription';
 
 export {
 	portalsSubscription,
@@ -67,7 +67,9 @@ export const renderRouteComponent = <Props extends {} = {}>(
 		if (!Template[routeName]) {
 			const blazeTemplate = new Blaze.Template(routeName, () => HTML.DIV()); // eslint-disable-line new-cap
 
-			blazeTemplate.onRendered(async function(this: Blaze.TemplateInstance & { firstNode: Element }) {
+			blazeTemplate.onRendered(async function (
+				this: Blaze.TemplateInstance & { firstNode: Element },
+			) {
 				const node = this.firstNode.parentElement;
 
 				if (!node) {
@@ -75,7 +77,11 @@ export const renderRouteComponent = <Props extends {} = {}>(
 				}
 
 				this.firstNode.remove();
-				const portal = await createLazyPortal(factory, getProps ?? ((): undefined => undefined), node);
+				const portal = await createLazyPortal(
+					factory,
+					getProps ?? ((): undefined => undefined),
+					node,
+				);
 
 				if (routeName !== FlowRouter.getRouteName()) {
 					return;

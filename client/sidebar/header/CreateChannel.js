@@ -1,14 +1,23 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+	Box,
+	Modal,
+	ButtonGroup,
+	Button,
+	TextInput,
+	Icon,
+	Field,
+	ToggleSwitch,
+} from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { Box, Modal, ButtonGroup, Button, TextInput, Icon, Field, ToggleSwitch } from '@rocket.chat/fuselage';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useForm } from '../../hooks/useForm';
-import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import UserAutoCompleteMultiple from '../../../ee/client/audit/UserAutoCompleteMultiple';
-import { useSetting } from '../../contexts/SettingsContext';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useMethod } from '../../contexts/ServerContext';
+import { useSetting } from '../../contexts/SettingsContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
+import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/goToRoomById';
 
 export const CreateChannel = ({
@@ -32,105 +41,152 @@ export const CreateChannel = ({
 		if (allowSpecialNames) {
 			return '';
 		}
-		const regex = new RegExp(`^${ namesValidation }$`);
+		const regex = new RegExp(`^${namesValidation}$`);
 
 		return regex;
 	}, [allowSpecialNames, namesValidation]);
 
 	const [nameError, setNameError] = useState();
 
-	const checkName = useDebouncedCallback(async (name) => {
-		setNameError(false);
-		if (hasUnsavedChanges) { return; }
-		if (!name || name.length === 0) { return setNameError(t('Field_required')); }
-		if (!channelNameRegex.test(name)) { return setNameError(t('error-invalid-name')); }
-		const isNotAvailable = await channelNameExists(name);
-		if (isNotAvailable) { return setNameError(t('Channel_already_exist', name)); }
-	}, 100, [name]);
+	const checkName = useDebouncedCallback(
+		async (name) => {
+			setNameError(false);
+			if (hasUnsavedChanges) {
+				return;
+			}
+			if (!name || name.length === 0) {
+				return setNameError(t('Field_required'));
+			}
+			if (!channelNameRegex.test(name)) {
+				return setNameError(t('error-invalid-name'));
+			}
+			const isNotAvailable = await channelNameExists(name);
+			if (isNotAvailable) {
+				return setNameError(t('Channel_already_exist', name));
+			}
+		},
+		100,
+		[name],
+	);
 
 	useEffect(() => {
 		checkName(values.name);
 	}, [checkName, values.name]);
 
-	const e2edisabled = useMemo(() => !values.type || values.broadcast || !e2eEnabled || e2eEnabledForPrivateByDefault, [e2eEnabled, e2eEnabledForPrivateByDefault, values.broadcast, values.type]);
+	const e2edisabled = useMemo(
+		() => !values.type || values.broadcast || !e2eEnabled || e2eEnabledForPrivateByDefault,
+		[e2eEnabled, e2eEnabledForPrivateByDefault, values.broadcast, values.type],
+	);
 
 	const canSave = useMemo(() => hasUnsavedChanges && !nameError, [hasUnsavedChanges, nameError]);
 
-	return <Modal>
-		<Modal.Header>
-			<Modal.Title>{t('Create_channel')}</Modal.Title>
-			<Modal.Close onClick={onClose}/>
-		</Modal.Header>
-		<Modal.Content>
-			<Field mbe='x24'>
-				<Field.Label>{t('Name')}</Field.Label>
-				<Field.Row>
-					<TextInput error={hasUnsavedChanges ? nameError : undefined} addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />} placeholder={t('Channel_name')} onChange={handlers.handleName}/>
-				</Field.Row>
-				{hasUnsavedChanges && nameError && <Field.Error>
-					{nameError}
-				</Field.Error>}
-			</Field>
-			<Field mbe='x24'>
-				<Field.Label>{t('Topic')} <Box is='span' color='neutral-600'>({t('optional')})</Box></Field.Label>
-				<Field.Row>
-					<TextInput placeholder={t('Channel_what_is_this_channel_about')} onChange={handlers.handleDescription}/>
-				</Field.Row>
-			</Field>
-			<Field mbe='x24'>
-				<Box display='flex' justifyContent='space-between' alignItems='start'>
-					<Box display='flex' flexDirection='column'>
-						<Field.Label>{t('Private')}</Field.Label>
-						<Field.Description>{values.type ? t('Only_invited_users_can_acess_this_channel') : t('Everyone_can_access_this_channel')}</Field.Description>
+	return (
+		<Modal>
+			<Modal.Header>
+				<Modal.Title>{t('Create_channel')}</Modal.Title>
+				<Modal.Close onClick={onClose} />
+			</Modal.Header>
+			<Modal.Content>
+				<Field mbe='x24'>
+					<Field.Label>{t('Name')}</Field.Label>
+					<Field.Row>
+						<TextInput
+							error={hasUnsavedChanges ? nameError : undefined}
+							addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />}
+							placeholder={t('Channel_name')}
+							onChange={handlers.handleName}
+						/>
+					</Field.Row>
+					{hasUnsavedChanges && nameError && <Field.Error>{nameError}</Field.Error>}
+				</Field>
+				<Field mbe='x24'>
+					<Field.Label>
+						{t('Topic')}{' '}
+						<Box is='span' color='neutral-600'>
+							({t('optional')})
+						</Box>
+					</Field.Label>
+					<Field.Row>
+						<TextInput
+							placeholder={t('Channel_what_is_this_channel_about')}
+							onChange={handlers.handleDescription}
+						/>
+					</Field.Row>
+				</Field>
+				<Field mbe='x24'>
+					<Box display='flex' justifyContent='space-between' alignItems='start'>
+						<Box display='flex' flexDirection='column'>
+							<Field.Label>{t('Private')}</Field.Label>
+							<Field.Description>
+								{values.type
+									? t('Only_invited_users_can_acess_this_channel')
+									: t('Everyone_can_access_this_channel')}
+							</Field.Description>
+						</Box>
+						<ToggleSwitch
+							checked={values.type}
+							disabled={!!canOnlyCreateOneType}
+							onChange={onChangeType}
+						/>
 					</Box>
-					<ToggleSwitch checked={values.type} disabled={!!canOnlyCreateOneType} onChange={onChangeType}/>
-				</Box>
-			</Field>
-			<Field mbe='x24' disabled={values.broadcast}>
-				<Box display='flex' justifyContent='space-between' alignItems='start'>
-					<Box display='flex' flexDirection='column'>
-						<Field.Label>{t('Read_only')}</Field.Label>
-						<Field.Description>{t('All_users_in_the_channel_can_write_new_messages')}</Field.Description>
+				</Field>
+				<Field mbe='x24' disabled={values.broadcast}>
+					<Box display='flex' justifyContent='space-between' alignItems='start'>
+						<Box display='flex' flexDirection='column'>
+							<Field.Label>{t('Read_only')}</Field.Label>
+							<Field.Description>
+								{t('All_users_in_the_channel_can_write_new_messages')}
+							</Field.Description>
+						</Box>
+						<ToggleSwitch
+							checked={values.readOnly}
+							disabled={values.broadcast}
+							onChange={handlers.handleReadOnly}
+						/>
 					</Box>
-					<ToggleSwitch checked={values.readOnly} disabled={values.broadcast} onChange={handlers.handleReadOnly}/>
-				</Box>
-			</Field>
-			<Field disabled={e2edisabled} mbe='x24'>
-				<Box display='flex' justifyContent='space-between' alignItems='start'>
-					<Box display='flex' flexDirection='column'>
-						<Field.Label>{t('Encrypted')}</Field.Label>
-						<Field.Description>{values.type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}</Field.Description>
+				</Field>
+				<Field disabled={e2edisabled} mbe='x24'>
+					<Box display='flex' justifyContent='space-between' alignItems='start'>
+						<Box display='flex' flexDirection='column'>
+							<Field.Label>{t('Encrypted')}</Field.Label>
+							<Field.Description>
+								{values.type ? t('Encrypted_channel_Description') : t('Encrypted_not_available')}
+							</Field.Description>
+						</Box>
+						<ToggleSwitch
+							checked={values.encrypted}
+							disabled={e2edisabled}
+							onChange={handlers.handleEncrypted}
+						/>
 					</Box>
-					<ToggleSwitch checked={values.encrypted} disabled={e2edisabled} onChange={handlers.handleEncrypted} />
-				</Box>
-			</Field>
-			<Field mbe='x24'>
-				<Box display='flex' justifyContent='space-between' alignItems='start'>
-					<Box display='flex' flexDirection='column'>
-						<Field.Label>{t('Broadcast')}</Field.Label>
-						<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
+				</Field>
+				<Field mbe='x24'>
+					<Box display='flex' justifyContent='space-between' alignItems='start'>
+						<Box display='flex' flexDirection='column'>
+							<Field.Label>{t('Broadcast')}</Field.Label>
+							<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
+						</Box>
+						<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} />
 					</Box>
-					<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} />
-				</Box>
-			</Field>
-			<Field mbe='x24'>
-				<Field.Label>{`${ t('Add_members') } (${ t('optional') })`}</Field.Label>
-				<UserAutoCompleteMultiple value={values.users} onChange={onChangeUsers}/>
-			</Field>
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button onClick={onClose}>{t('Cancel')}</Button>
-				<Button disabled={!canSave} onClick={onCreate} primary>{t('Create')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
+				</Field>
+				<Field mbe='x24'>
+					<Field.Label>{`${t('Add_members')} (${t('optional')})`}</Field.Label>
+					<UserAutoCompleteMultiple value={values.users} onChange={onChangeUsers} />
+				</Field>
+			</Modal.Content>
+			<Modal.Footer>
+				<ButtonGroup align='end'>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
+					<Button disabled={!canSave} onClick={onCreate} primary>
+						{t('Create')}
+					</Button>
+				</ButtonGroup>
+			</Modal.Footer>
+		</Modal>
+	);
 };
 
-export default memo(({
-	onClose,
-	teamId = '',
-}) => {
+export default memo(({ onClose, teamId = '' }) => {
 	const createChannel = useEndpointActionExperimental('POST', 'channels.create');
 	const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
 	const canCreateChannel = usePermission('create-c');
@@ -146,7 +202,6 @@ export default memo(({
 		return false;
 	}, [canCreateChannel, canCreatePrivateChannel]);
 
-
 	const initialValues = {
 		users: [],
 		name: '',
@@ -158,22 +213,8 @@ export default memo(({
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
-	const {
-		users,
-		name,
-		description,
-		type,
-		readOnly,
-		broadcast,
-		encrypted,
-	} = values;
-	const {
-		handleUsers,
-		handleEncrypted,
-		handleType,
-		handleBroadcast,
-		handleReadOnly,
-	} = handlers;
+	const { users, name, description, type, readOnly, broadcast, encrypted } = values;
+	const { handleUsers, handleEncrypted, handleType, handleBroadcast, handleReadOnly } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {
@@ -205,7 +246,7 @@ export default memo(({
 			name,
 			members: users,
 			readOnly,
-			...teamId && { teamId },
+			...(teamId && { teamId }),
 			extraData: {
 				description,
 				broadcast,
@@ -223,7 +264,8 @@ export default memo(({
 		}
 
 		onClose();
-	}, [broadcast,
+	}, [
+		broadcast,
 		createChannel,
 		createPrivateChannel,
 		description,
@@ -236,16 +278,18 @@ export default memo(({
 		users,
 	]);
 
-	return <CreateChannel
-		values={values}
-		handlers={handlers}
-		hasUnsavedChanges={hasUnsavedChanges}
-		onChangeUsers={onChangeUsers}
-		onChangeType={onChangeType}
-		onChangeBroadcast={onChangeBroadcast}
-		canOnlyCreateOneType={canOnlyCreateOneType}
-		e2eEnabledForPrivateByDefault={e2eEnabledForPrivateByDefault}
-		onClose={onClose}
-		onCreate={onCreate}
-	/>;
+	return (
+		<CreateChannel
+			values={values}
+			handlers={handlers}
+			hasUnsavedChanges={hasUnsavedChanges}
+			onChangeUsers={onChangeUsers}
+			onChangeType={onChangeType}
+			onChangeBroadcast={onChangeBroadcast}
+			canOnlyCreateOneType={canOnlyCreateOneType}
+			e2eEnabledForPrivateByDefault={e2eEnabledForPrivateByDefault}
+			onClose={onClose}
+			onCreate={onCreate}
+		/>
+	);
 });

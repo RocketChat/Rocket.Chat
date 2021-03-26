@@ -1,28 +1,41 @@
-import React, { useCallback, useMemo } from 'react';
 import { Button, ButtonGroup, Icon, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useMemo } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { usePermission, useAllPermissions } from '../../../contexts/AuthorizationContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useUserId, useUserSubscription, useUserSubscriptionByName } from '../../../contexts/UserContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { WebRTC } from '../../../../app/webrtc/client';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useSetModal } from '../../../contexts/ModalContext';
 import { RoomRoles } from '../../../../app/models/client';
 import { roomTypes, RoomMemberActions } from '../../../../app/utils';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
-import { useUserRoom } from './useUserRoom';
+import { WebRTC } from '../../../../app/webrtc/client';
 import { escapeHTML } from '../../../../lib/escapeHTML';
+import { usePermission, useAllPermissions } from '../../../contexts/AuthorizationContext';
+import { useSetModal } from '../../../contexts/ModalContext';
+import { useRoute } from '../../../contexts/RouterContext';
+import { useMethod } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import {
+	useUserId,
+	useUserSubscription,
+	useUserSubscriptionByName,
+} from '../../../contexts/UserContext';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import RemoveUsersModal from '../../teams/members/RemoveUsersModal';
+import { useUserRoom } from './useUserRoom';
 
-const useUserHasRoomRole = (uid, rid, role) => useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role }), [uid, rid, role]));
+const useUserHasRoomRole = (uid, rid, role) =>
+	useReactiveValue(
+		useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, 'roles': role }), [uid, rid, role]),
+	);
 
-const getShouldOpenDirectMessage = (currentSubscription, usernameSubscription, canOpenDirectMessage, username) => {
+const getShouldOpenDirectMessage = (
+	currentSubscription,
+	usernameSubscription,
+	canOpenDirectMessage,
+	username,
+) => {
 	const canOpenDm = canOpenDirectMessage || usernameSubscription;
-	const directMessageIsNotAlreadyOpen = currentSubscription && currentSubscription.name !== username;
+	const directMessageIsNotAlreadyOpen =
+		currentSubscription && currentSubscription.name !== username;
 	return canOpenDm && directMessageIsNotAlreadyOpen;
 };
 
@@ -47,7 +60,7 @@ const getUserIsMuted = (room, user, userCanPostReadonly) => {
 		}
 
 		if (userCanPostReadonly) {
-			return Array.isArray(room.muted) && (room.muted.indexOf(user && user.username) !== -1);
+			return Array.isArray(room.muted) && room.muted.indexOf(user && user.username) !== -1;
 		}
 
 		return true;
@@ -59,22 +72,26 @@ const getUserIsMuted = (room, user, userCanPostReadonly) => {
 const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 	const refAutoFocus = useAutoFocus(true);
 	const t = useTranslation();
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon color='warning' name='modal-warning' size={20}/>
-			<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-			<Modal.Close onClick={close}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{text}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button ghost onClick={close}>{t('Cancel')}</Button>
-				<Button ref={refAutoFocus} primary danger onClick={confirm}>{confirmText}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
+	return (
+		<Modal {...props}>
+			<Modal.Header>
+				<Icon color='warning' name='modal-warning' size={20} />
+				<Modal.Title>{t('Are_you_sure')}</Modal.Title>
+				<Modal.Close onClick={close} />
+			</Modal.Header>
+			<Modal.Content fontScale='p1'>{text}</Modal.Content>
+			<Modal.Footer>
+				<ButtonGroup align='end'>
+					<Button ghost onClick={close}>
+						{t('Cancel')}
+					</Button>
+					<Button ref={refAutoFocus} primary danger onClick={confirm}>
+						{confirmText}
+					</Button>
+				</ButtonGroup>
+			</Modal.Footer>
+		</Modal>
+	);
 };
 
 export const useUserInfoActions = (user = {}, rid) => {
@@ -102,7 +119,10 @@ export const useUserInfoActions = (user = {}, rid) => {
 
 	const otherUserCanPostReadonly = useAllPermissions('post-readonly', rid);
 
-	const isIgnored = currentSubscription && currentSubscription.ignored && currentSubscription.ignored.indexOf(uid) > -1;
+	const isIgnored =
+		currentSubscription &&
+		currentSubscription.ignored &&
+		currentSubscription.ignored.indexOf(uid) > -1;
 	const isMuted = getUserIsMuted(room, user, otherUserCanPostReadonly);
 
 	const endpointPrefix = room.t === 'p' ? 'groups' : 'channels';
@@ -118,7 +138,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 		roomCanMute,
 		roomCanRemove,
 	] = [
-		...roomConfig && [
+		...(roomConfig && [
 			roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_OWNER),
 			roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_LEADER),
 			roomConfig.allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR),
@@ -126,7 +146,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 			roomConfig.allowMemberAction(room, RoomMemberActions.BLOCK),
 			roomConfig.allowMemberAction(room, RoomMemberActions.MUTE),
 			roomConfig.allowMemberAction(room, RoomMemberActions.REMOVE_USER),
-		],
+		]),
 	];
 
 	const roomName = room && room.t && escapeHTML(roomTypes.getRoomName(room.t, room));
@@ -139,18 +159,31 @@ export const useUserInfoActions = (user = {}, rid) => {
 	const userCanDirectMessage = usePermission('create-d');
 
 	const shouldAllowCalls = getShouldAllowCalls(webRTCInstance);
-	const callInProgress = useReactiveValue(useCallback(() => webRTCInstance?.callInProgress.get(), [webRTCInstance]));
-	const shouldOpenDirectMessage = getShouldOpenDirectMessage(currentSubscription, usernameSubscription, userCanDirectMessage, user.username);
+	const callInProgress = useReactiveValue(
+		useCallback(() => webRTCInstance?.callInProgress.get(), [webRTCInstance]),
+	);
+	const shouldOpenDirectMessage = getShouldOpenDirectMessage(
+		currentSubscription,
+		usernameSubscription,
+		userCanDirectMessage,
+		user.username,
+	);
 
-	const openDirectDm = useMutableCallback(() => directRoute.push({
-		rid: user.username,
-	}));
+	const openDirectDm = useMutableCallback(() =>
+		directRoute.push({
+			rid: user.username,
+		}),
+	);
 
-	const openDirectMessageOption = useMemo(() => shouldOpenDirectMessage && {
-		label: t('Direct_Message'),
-		icon: 'balloon',
-		action: openDirectDm,
-	}, [openDirectDm, shouldOpenDirectMessage, t]);
+	const openDirectMessageOption = useMemo(
+		() =>
+			shouldOpenDirectMessage && {
+				label: t('Direct_Message'),
+				icon: 'balloon',
+				action: openDirectDm,
+			},
+		[openDirectDm, shouldOpenDirectMessage, t],
+	);
 
 	const videoCallOption = useMemo(() => {
 		const joinCall = () => {
@@ -161,11 +194,13 @@ export const useUserInfoActions = (user = {}, rid) => {
 		};
 		const action = callInProgress ? joinCall : startCall;
 
-		return shouldAllowCalls && {
-			label: t(callInProgress ? 'Join_video_call' : 'Start_video_call'),
-			icon: 'video',
-			action,
-		};
+		return (
+			shouldAllowCalls && {
+				label: t(callInProgress ? 'Join_video_call' : 'Start_video_call'),
+				icon: 'video',
+				action,
+			}
+		);
 	}, [callInProgress, shouldAllowCalls, t, webRTCInstance]);
 
 	const audioCallOption = useMemo(() => {
@@ -177,42 +212,81 @@ export const useUserInfoActions = (user = {}, rid) => {
 		};
 		const action = callInProgress ? joinCall : startCall;
 
-		return shouldAllowCalls && {
-			label: t(callInProgress ? 'Join_audio_call' : 'Start_audio_call'),
-			icon: 'mic',
-			action,
-		};
+		return (
+			shouldAllowCalls && {
+				label: t(callInProgress ? 'Join_audio_call' : 'Start_audio_call'),
+				icon: 'mic',
+				action,
+			}
+		);
 	}, [callInProgress, shouldAllowCalls, t, webRTCInstance]);
 
 	const changeOwnerEndpoint = isOwner ? 'removeOwner' : 'addOwner';
-	const changeOwnerMessage = isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_a_owner_of__room_name_';
-	const changeOwner = useEndpointActionExperimental('POST', `${ endpointPrefix }.${ changeOwnerEndpoint }`, t(changeOwnerMessage, { username: user.username, room_name: roomName }));
-	const changeOwnerAction = useMutableCallback(async () => changeOwner({ roomId: rid, userId: uid }));
-	const changeOwnerOption = useMemo(() => roomCanSetOwner && userCanSetOwner && {
-		label: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
-		icon: 'shield-check',
-		action: changeOwnerAction,
-	}, [changeOwnerAction, isOwner, t, roomCanSetOwner, userCanSetOwner]);
+	const changeOwnerMessage = isOwner
+		? 'User__username__removed_from__room_name__owners'
+		: 'User__username__is_now_a_owner_of__room_name_';
+	const changeOwner = useEndpointActionExperimental(
+		'POST',
+		`${endpointPrefix}.${changeOwnerEndpoint}`,
+		t(changeOwnerMessage, { username: user.username, room_name: roomName }),
+	);
+	const changeOwnerAction = useMutableCallback(async () =>
+		changeOwner({ roomId: rid, userId: uid }),
+	);
+	const changeOwnerOption = useMemo(
+		() =>
+			roomCanSetOwner &&
+			userCanSetOwner && {
+				label: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
+				icon: 'shield-check',
+				action: changeOwnerAction,
+			},
+		[changeOwnerAction, isOwner, t, roomCanSetOwner, userCanSetOwner],
+	);
 
 	const changeLeaderEndpoint = isLeader ? 'removeLeader' : 'addLeader';
-	const changeLeaderMessage = isLeader ? 'User__username__removed_from__room_name__leaders' : 'User__username__is_now_a_leader_of__room_name_';
-	const changeLeader = useEndpointActionExperimental('POST', `${ endpointPrefix }.${ changeLeaderEndpoint }`, t(changeLeaderMessage, { username: user.username, room_name: roomName }));
+	const changeLeaderMessage = isLeader
+		? 'User__username__removed_from__room_name__leaders'
+		: 'User__username__is_now_a_leader_of__room_name_';
+	const changeLeader = useEndpointActionExperimental(
+		'POST',
+		`${endpointPrefix}.${changeLeaderEndpoint}`,
+		t(changeLeaderMessage, { username: user.username, room_name: roomName }),
+	);
 	const changeLeaderAction = useMutableCallback(() => changeLeader({ roomId: rid, userId: uid }));
-	const changeLeaderOption = useMemo(() => roomCanSetLeader && userCanSetLeader && {
-		label: t(isLeader ? 'Remove_as_leader' : 'Set_as_leader'),
-		icon: 'shield-alt',
-		action: changeLeaderAction,
-	}, [isLeader, roomCanSetLeader, t, userCanSetLeader, changeLeaderAction]);
+	const changeLeaderOption = useMemo(
+		() =>
+			roomCanSetLeader &&
+			userCanSetLeader && {
+				label: t(isLeader ? 'Remove_as_leader' : 'Set_as_leader'),
+				icon: 'shield-alt',
+				action: changeLeaderAction,
+			},
+		[isLeader, roomCanSetLeader, t, userCanSetLeader, changeLeaderAction],
+	);
 
 	const changeModeratorEndpoint = isModerator ? 'removeModerator' : 'addModerator';
-	const changeModeratorMessage = isModerator ? 'User__username__removed_from__room_name__moderators' : 'User__username__is_now_a_moderator_of__room_name_';
-	const changeModerator = useEndpointActionExperimental('POST', `${ endpointPrefix }.${ changeModeratorEndpoint }`, t(changeModeratorMessage, { username: user.username, room_name: roomName }));
-	const changeModeratorAction = useMutableCallback(() => changeModerator({ roomId: rid, userId: uid }));
-	const changeModeratorOption = useMemo(() => roomCanSetModerator && userCanSetModerator && {
-		label: t(isModerator ? 'Remove_as_moderator' : 'Set_as_moderator'),
-		icon: 'shield',
-		action: changeModeratorAction,
-	}, [changeModeratorAction, isModerator, roomCanSetModerator, t, userCanSetModerator]);
+	const changeModeratorMessage = isModerator
+		? 'User__username__removed_from__room_name__moderators'
+		: 'User__username__is_now_a_moderator_of__room_name_';
+	const changeModerator = useEndpointActionExperimental(
+		'POST',
+		`${endpointPrefix}.${changeModeratorEndpoint}`,
+		t(changeModeratorMessage, { username: user.username, room_name: roomName }),
+	);
+	const changeModeratorAction = useMutableCallback(() =>
+		changeModerator({ roomId: rid, userId: uid }),
+	);
+	const changeModeratorOption = useMemo(
+		() =>
+			roomCanSetModerator &&
+			userCanSetModerator && {
+				label: t(isModerator ? 'Remove_as_moderator' : 'Set_as_moderator'),
+				icon: 'shield',
+				action: changeModeratorAction,
+			},
+		[changeModeratorAction, isModerator, roomCanSetModerator, t, userCanSetModerator],
+	);
 
 	const ignoreUser = useMethod('ignoreUser');
 	const ignoreUserAction = useMutableCallback(async () => {
@@ -227,27 +301,40 @@ export const useUserInfoActions = (user = {}, rid) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
-	const ignoreUserOption = useMemo(() => roomCanIgnore && uid !== ownUserId && {
-		label: t(isIgnored ? 'Unignore' : 'Ignore'),
-		icon: 'ban',
-		action: ignoreUserAction,
-	}, [ignoreUserAction, isIgnored, ownUserId, roomCanIgnore, t, uid]);
+	const ignoreUserOption = useMemo(
+		() =>
+			roomCanIgnore &&
+			uid !== ownUserId && {
+				label: t(isIgnored ? 'Unignore' : 'Ignore'),
+				icon: 'ban',
+				action: ignoreUserAction,
+			},
+		[ignoreUserAction, isIgnored, ownUserId, roomCanIgnore, t, uid],
+	);
 
 	const isUserBlocked = currentSubscription.blocker;
 	const toggleBlock = useMethod(isUserBlocked ? 'unblockUser' : 'blockUser');
 	const toggleBlockUserAction = useMutableCallback(async () => {
 		try {
 			await toggleBlock({ rid, blocked: uid });
-			dispatchToastMessage({ type: 'success', message: t(isUserBlocked ? 'User_is_unblocked' : 'User_is_blocked') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t(isUserBlocked ? 'User_is_unblocked' : 'User_is_blocked'),
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
-	const toggleBlockUserOption = useMemo(() => roomCanBlock && uid !== ownUserId && {
-		label: t(isUserBlocked ? 'Unblock' : 'Block'),
-		icon: 'ban',
-		action: toggleBlockUserAction,
-	}, [isUserBlocked, ownUserId, roomCanBlock, t, toggleBlockUserAction, uid]);
+	const toggleBlockUserOption = useMemo(
+		() =>
+			roomCanBlock &&
+			uid !== ownUserId && {
+				label: t(isUserBlocked ? 'Unblock' : 'Block'),
+				icon: 'ban',
+				action: toggleBlockUserAction,
+			},
+		[isUserBlocked, ownUserId, roomCanBlock, t, toggleBlockUserAction, uid],
+	);
 
 	const muteFn = useMethod(isMuted ? 'unmuteUserInRoom' : 'muteUserInRoom');
 	const muteUserOption = useMemo(() => {
@@ -274,73 +361,114 @@ export const useUserInfoActions = (user = {}, rid) => {
 				return onConfirm();
 			}
 
-			setModal(<WarningModal
-				text={t('The_user_wont_be_able_to_type_in_s', roomName)}
-				close={closeModal}
-				confirmText={t('Yes_mute_user')}
-				confirm={onConfirm}
-			/>);
+			setModal(
+				<WarningModal
+					text={t('The_user_wont_be_able_to_type_in_s', roomName)}
+					close={closeModal}
+					confirmText={t('Yes_mute_user')}
+					confirm={onConfirm}
+				/>,
+			);
 		};
 
-		return roomCanMute && userCanMute && {
-			label: t(isMuted ? 'Unmute_user' : 'Mute_user'),
-			icon: isMuted ? 'mic' : 'mic-off',
-			action,
-		};
-	}, [closeModal, dispatchToastMessage, isMuted, muteFn, rid, roomCanMute, roomName, setModal, t, user.username, userCanMute]);
+		return (
+			roomCanMute &&
+			userCanMute && {
+				label: t(isMuted ? 'Unmute_user' : 'Mute_user'),
+				icon: isMuted ? 'mic' : 'mic-off',
+				action,
+			}
+		);
+	}, [
+		closeModal,
+		dispatchToastMessage,
+		isMuted,
+		muteFn,
+		rid,
+		roomCanMute,
+		roomName,
+		setModal,
+		t,
+		user.username,
+		userCanMute,
+	]);
 
-	const removeFromTeam = useEndpointActionExperimental('POST', 'teams.removeMembers', t('User_has_been_removed_from_team'));
+	const removeFromTeam = useEndpointActionExperimental(
+		'POST',
+		'teams.removeMembers',
+		t('User_has_been_removed_from_team'),
+	);
 
-	const removeUserAction = useEndpointActionExperimental('POST', `${ endpointPrefix }.kick`, t('User_has_been_removed_from_s', roomName));
+	const removeUserAction = useEndpointActionExperimental(
+		'POST',
+		`${endpointPrefix}.kick`,
+		t('User_has_been_removed_from_s', roomName),
+	);
 	const removeUserOptionAction = useMutableCallback(() => {
 		if (room.teamMain && room.teamId) {
-			return setModal(<RemoveUsersModal
-				teamId={room?.teamId}
-				userId={user?._id}
-				onClose={closeModal}
-				onCancel={closeModal}
-				onConfirm={(rooms) => {
-					removeFromTeam({ teamId: room.teamId, members: [{ userId: user._id }], rooms });
-					closeModal();
-				}}
-			/>);
+			return setModal(
+				<RemoveUsersModal
+					teamId={room?.teamId}
+					userId={user?._id}
+					onClose={closeModal}
+					onCancel={closeModal}
+					onConfirm={(rooms) => {
+						removeFromTeam({ teamId: room.teamId, members: [{ userId: user._id }], rooms });
+						closeModal();
+					}}
+				/>,
+			);
 		}
 
-		setModal(<WarningModal
-			text={t('The_user_will_be_removed_from_s', roomName)}
-			close={closeModal}
-			confirmText={t('Yes_remove_user')}
-			confirm={() => { removeUserAction({ roomId: rid, userId: uid }); closeModal(); }}
-		/>);
+		setModal(
+			<WarningModal
+				text={t('The_user_will_be_removed_from_s', roomName)}
+				close={closeModal}
+				confirmText={t('Yes_remove_user')}
+				confirm={() => {
+					removeUserAction({ roomId: rid, userId: uid });
+					closeModal();
+				}}
+			/>,
+		);
 	});
-	const removeUserOption = useMemo(() => roomCanRemove && userCanRemove && {
-		label: <Box color='danger'>{room.teamMain ? t('Remove_from_team') : t('Remove_from_room')}</Box>,
-		icon: 'sign-out',
-		action: removeUserOptionAction,
-	}, [room, roomCanRemove, userCanRemove, removeUserOptionAction, t]);
+	const removeUserOption = useMemo(
+		() =>
+			roomCanRemove &&
+			userCanRemove && {
+				label: (
+					<Box color='danger'>{room.teamMain ? t('Remove_from_team') : t('Remove_from_room')}</Box>
+				),
+				icon: 'sign-out',
+				action: removeUserOptionAction,
+			},
+		[room, roomCanRemove, userCanRemove, removeUserOptionAction, t],
+	);
 
-	return useMemo(() => ({
-		...openDirectMessageOption && { openDirectMessage: openDirectMessageOption },
-		...videoCallOption && { video: videoCallOption },
-		...audioCallOption && { audio: audioCallOption },
-		...changeOwnerOption && { changeOwner: changeOwnerOption },
-		...changeLeaderOption && { changeLeader: changeLeaderOption },
-		...changeModeratorOption && { changeModerator: changeModeratorOption },
-		...ignoreUserOption && { ignoreUser: ignoreUserOption },
-		...muteUserOption && { muteUser: muteUserOption },
-		...removeUserOption && { removeUser: removeUserOption },
-		...toggleBlockUserOption && { toggleBlock: toggleBlockUserOption },
-	}),
-	[
-		audioCallOption,
-		changeLeaderOption,
-		changeModeratorOption,
-		changeOwnerOption,
-		ignoreUserOption,
-		muteUserOption,
-		openDirectMessageOption,
-		removeUserOption,
-		videoCallOption,
-		toggleBlockUserOption,
-	]);
+	return useMemo(
+		() => ({
+			...(openDirectMessageOption && { openDirectMessage: openDirectMessageOption }),
+			...(videoCallOption && { video: videoCallOption }),
+			...(audioCallOption && { audio: audioCallOption }),
+			...(changeOwnerOption && { changeOwner: changeOwnerOption }),
+			...(changeLeaderOption && { changeLeader: changeLeaderOption }),
+			...(changeModeratorOption && { changeModerator: changeModeratorOption }),
+			...(ignoreUserOption && { ignoreUser: ignoreUserOption }),
+			...(muteUserOption && { muteUser: muteUserOption }),
+			...(removeUserOption && { removeUser: removeUserOption }),
+			...(toggleBlockUserOption && { toggleBlock: toggleBlockUserOption }),
+		}),
+		[
+			audioCallOption,
+			changeLeaderOption,
+			changeModeratorOption,
+			changeOwnerOption,
+			ignoreUserOption,
+			muteUserOption,
+			openDirectMessageOption,
+			removeUserOption,
+			videoCallOption,
+			toggleBlockUserOption,
+		],
+	);
 };

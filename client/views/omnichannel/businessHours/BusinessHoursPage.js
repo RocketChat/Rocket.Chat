@@ -1,6 +1,6 @@
-import React, { lazy, useMemo } from 'react';
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { lazy, useMemo } from 'react';
 
 import Page from '../../../components/Page';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -11,7 +11,10 @@ const BusinessHoursPage = () => {
 
 	const router = useRoute('omnichannel-businessHours');
 
-	const Table = useMemo(() => lazy(() => import('../../../../ee/client/omnichannel/BusinessHoursTable')), []);
+	const Table = useMemo(
+		() => lazy(() => import('../../../../ee/client/omnichannel/BusinessHoursTable')),
+		[],
+	);
 
 	const handleNew = useMutableCallback(() => {
 		router.push({
@@ -19,18 +22,20 @@ const BusinessHoursPage = () => {
 		});
 	});
 
-	return <Page>
-		<Page.Header title={t('Business_Hours')}>
-			<ButtonGroup>
-				<Button onClick={handleNew}>
-					<Icon name='plus' /> {t('New')}
-				</Button>
-			</ButtonGroup>
-		</Page.Header>
-		<Page.Content>
-			<Table />
-		</Page.Content>
-	</Page>;
+	return (
+		<Page>
+			<Page.Header title={t('Business_Hours')}>
+				<ButtonGroup>
+					<Button onClick={handleNew}>
+						<Icon name='plus' /> {t('New')}
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
+			<Page.Content>
+				<Table />
+			</Page.Content>
+		</Page>
+	);
 };
 
 export default BusinessHoursPage;

@@ -1,19 +1,19 @@
-import React, { memo, FC, useCallback } from 'react';
 import { ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
+import React, { memo, FC, useCallback } from 'react';
 
-import { useForm } from '../../../../hooks/useForm';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
-import RoomsInput from './RoomsInput';
 import { IRoom } from '../../../../../definition/IRoom';
+import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useForm } from '../../../../hooks/useForm';
+import RoomsInput from './RoomsInput';
 
 type AddExistingModalState = {
 	onAdd: any;
 	rooms: IRoom[];
 	onChange: (value: IRoom, action: 'remove' | undefined) => void;
 	hasUnsavedChanges: boolean;
-}
+};
 
 type AddExistingModalProps = {
 	onClose: () => void;
@@ -30,19 +30,22 @@ const useAddExistingModalState = (onClose: () => void, teamId: string): AddExist
 	const { rooms } = values as { rooms: IRoom[] };
 	const { handleRooms } = handlers;
 
-	const onChange = useCallback<AddExistingModalState['onChange']>((value, action) => {
-		if (!action) {
-			if (rooms.some((current: IRoom) => current._id === value._id)) {
+	const onChange = useCallback<AddExistingModalState['onChange']>(
+		(value, action) => {
+			if (!action) {
+				if (rooms.some((current: IRoom) => current._id === value._id)) {
+					return;
+				}
+
+				handleRooms([...rooms, value]);
+
 				return;
 			}
 
-			handleRooms([...rooms, value]);
-
-			return;
-		}
-
-		handleRooms(rooms.filter((current: any) => current._id !== value));
-	}, [handleRooms, rooms]);
+			handleRooms(rooms.filter((current: any) => current._id !== value));
+		},
+		[handleRooms, rooms],
+	);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -63,33 +66,32 @@ const useAddExistingModalState = (onClose: () => void, teamId: string): AddExist
 
 const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId }) => {
 	const t = useTranslation();
-	const {
-		rooms,
-		onAdd,
-		onChange,
-		hasUnsavedChanges,
-	} = useAddExistingModalState(onClose, teamId);
+	const { rooms, onAdd, onChange, hasUnsavedChanges } = useAddExistingModalState(onClose, teamId);
 
 	const isAddButtonEnabled = hasUnsavedChanges;
 
-	return <Modal>
-		<Modal.Header>
-			<Modal.Title>{t('Team_Add_existing_channels')}</Modal.Title>
-			<Modal.Close onClick={onClose}/>
-		</Modal.Header>
-		<Modal.Content>
-			<Field mbe='x24'>
-				<Field.Label>{t('Channels')}</Field.Label>
-				<RoomsInput value={rooms} onChange={onChange} />
-			</Field>
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button onClick={onClose}>{t('Cancel')}</Button>
-				<Button disabled={!isAddButtonEnabled} onClick={onAdd} primary>{t('Add')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
+	return (
+		<Modal>
+			<Modal.Header>
+				<Modal.Title>{t('Team_Add_existing_channels')}</Modal.Title>
+				<Modal.Close onClick={onClose} />
+			</Modal.Header>
+			<Modal.Content>
+				<Field mbe='x24'>
+					<Field.Label>{t('Channels')}</Field.Label>
+					<RoomsInput value={rooms} onChange={onChange} />
+				</Field>
+			</Modal.Content>
+			<Modal.Footer>
+				<ButtonGroup align='end'>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
+					<Button disabled={!isAddButtonEnabled} onClick={onAdd} primary>
+						{t('Add')}
+					</Button>
+				</ButtonGroup>
+			</Modal.Footer>
+		</Modal>
+	);
 };
 
 export default memo(AddExistingModal);

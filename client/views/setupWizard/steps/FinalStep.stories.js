@@ -7,5 +7,4 @@ export default {
 	component: FinalStep,
 };
 
-export const _default = () =>
-	<FinalStep logoSrc='https://open.rocket.chat/images/logo/logo.svg' />;
+export const _default = () => <FinalStep logoSrc='https://open.rocket.chat/images/logo/logo.svg' />;

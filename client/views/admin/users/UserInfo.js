@@ -1,25 +1,31 @@
-import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo } from 'react';
 
-import { UserInfo } from '../../room/contextualBar/UserInfo';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useSetting } from '../../../contexts/SettingsContext';
-import { UserStatus } from '../../../components/UserStatus';
-import UserCard from '../../../components/UserCard';
-import { UserInfoActions } from './UserInfoActions';
 import { FormSkeleton } from '../../../components/Skeleton';
+import UserCard from '../../../components/UserCard';
+import { UserStatus } from '../../../components/UserStatus';
+import { useSetting } from '../../../contexts/SettingsContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import { getUserEmailVerified } from '../../../lib/getUserEmailVerified';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { UserInfo } from '../../room/contextualBar/UserInfo';
+import { UserInfoActions } from './UserInfoActions';
 
 export function UserInfoWithData({ uid, username, ...props }) {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
-	const { value: data, phase: state, error, reload } = useEndpointData('users.info', useMemo(() => ({ ...uid && { userId: uid }, ...username && { username } }), [uid, username]));
+	const { value: data, phase: state, error, reload } = useEndpointData(
+		'users.info',
+		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [
+			uid,
+			username,
+		]),
+	);
 
 	const onChange = useMutableCallback(() => reload());
 
@@ -41,13 +47,16 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			username,
 			lastLogin,
 			showRealNames,
-			roles: roles.map((role, index) => (
-				<UserCard.Role key={index}>{role}</UserCard.Role>
-			)),
+			roles: roles.map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
 			phone: user.phone,
 			utcOffset,
-			customFields: { ...user.customFields, ...approveManuallyUsers && user.active === false && user.reason && { Reason: user.reason } },
+			customFields: {
+				...user.customFields,
+				...(approveManuallyUsers &&
+					user.active === false &&
+					user.reason && { Reason: user.reason }),
+			},
 			verified: getUserEmailVerified(user),
 			email: getUserEmailAddress(user),
 			createdAt: user.createdAt,
@@ -58,7 +67,11 @@ export function UserInfoWithData({ uid, username, ...props }) {
 	}, [approveManuallyUsers, data, showRealNames]);
 
 	if (state === AsyncStatePhase.LOADING) {
-		return <Box p='x24'><FormSkeleton/></Box>;
+		return (
+			<Box p='x24'>
+				<FormSkeleton />
+			</Box>
+		);
 	}
 
 	if (error) {
@@ -67,11 +80,24 @@ export function UserInfoWithData({ uid, username, ...props }) {
 
 	const admin = data.user?.roles?.includes('admin');
 
-	return <UserInfo
-		{...user}
-		data={data.user}
-		onChange={onChange}
-		actions={data && data.user && <UserInfoActions isActive={data.user.active} isAdmin={admin} _id={data.user._id} username={data.user.username} onChange={onChange}/>}
-		{...props}
-	/>;
+	return (
+		<UserInfo
+			{...user}
+			data={data.user}
+			onChange={onChange}
+			actions={
+				data &&
+				data.user && (
+					<UserInfoActions
+						isActive={data.user.active}
+						isAdmin={admin}
+						_id={data.user._id}
+						username={data.user.username}
+						onChange={onChange}
+					/>
+				)
+			}
+			{...props}
+		/>
+	);
 }

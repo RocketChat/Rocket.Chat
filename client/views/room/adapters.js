@@ -49,9 +49,13 @@ createTemplateForComponent('AutoTranslate', () => import('./contextualBar/AutoTr
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 });
 
-createTemplateForComponent('NotificationsPreferences', () => import('./contextualBar/NotificationPreferences'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
-});
+createTemplateForComponent(
+	'NotificationsPreferences',
+	() => import('./contextualBar/NotificationPreferences'),
+	{
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+	},
+);
 
 createTemplateForComponent('InviteUsers', () => import('./contextualBar/RoomMembers/InviteUsers'), {
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
@@ -86,9 +90,13 @@ createTemplateForComponent('UserInfoWithData', () => import('./contextualBar/Use
 	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
 
-createTemplateForComponent('channelFilesList', () => import('./contextualBar/RoomFiles/RoomFiles'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
-});
+createTemplateForComponent(
+	'channelFilesList',
+	() => import('./contextualBar/RoomFiles/RoomFiles'),
+	{
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+	},
+);
 
 createTemplateForComponent('RoomAnnouncement', () => import('./Announcement'), {
 	renderContainerView: () => HTML.DIV(), // eslint-disable-line new-cap

@@ -7,7 +7,9 @@ createTemplateForComponent('omnichannelFlex', () => import('./sidebar/Omnichanne
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
 });
 
-export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () => import('./OmnichannelRouter'));
+export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () =>
+	import('./OmnichannelRouter'),
+);
 
 registerOmnichannelRoute('/installation', {
 	name: 'omnichannel-installation',

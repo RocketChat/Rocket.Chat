@@ -7,4 +7,4 @@ export default {
 	component: UserAutoComplete,
 };
 
-export const Example = () => <UserAutoComplete/>;
+export const Example = () => <UserAutoComplete />;

@@ -1,11 +1,4 @@
-import {
-	Box,
-	CheckBox,
-	Field,
-	Icon,
-	Margins,
-	RadioButton,
-} from '@rocket.chat/fuselage';
+import { Box, CheckBox, Field, Icon, Margins, RadioButton } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState } from 'react';
 
@@ -23,62 +16,51 @@ const Option = React.forwardRef(({ children, label, selected, disabled, ...props
 	const mergedRef = useMergedRefs(ref, innerRef);
 	const id = useUniqueId();
 
-	return <Box
-		className={[
-			'SetupWizard__RegisterServerStep-option',
-			selected && 'SetupWizard__RegisterServerStep-option--selected',
-		].filter(Boolean).join(' ')}
-		display='block'
-		marginBlock='x8'
-		padding='x24'
-		color={selected ? 'primary' : 'disabled'}
-		style={{
-			borderColor: 'currentColor',
-			borderRadius: 2,
-			borderWidth: 2,
-			cursor: 'pointer',
-			...disabled && { opacity: 0.25 },
-		}}
-		onClick={() => {
-			innerRef.current.click();
-		}}
-	>
-		<Field>
-			<Field.Row>
-				<RadioButton ref={mergedRef} id={id} checked={selected} disabled={disabled} {...props} />
-				<Field.Label htmlFor={id}>{label}</Field.Label>
-			</Field.Row>
-		</Field>
-		{children}
-	</Box>;
+	return (
+		<Box
+			className={[
+				'SetupWizard__RegisterServerStep-option',
+				selected && 'SetupWizard__RegisterServerStep-option--selected',
+			]
+				.filter(Boolean)
+				.join(' ')}
+			display='block'
+			marginBlock='x8'
+			padding='x24'
+			color={selected ? 'primary' : 'disabled'}
+			style={{
+				borderColor: 'currentColor',
+				borderRadius: 2,
+				borderWidth: 2,
+				cursor: 'pointer',
+				...(disabled && { opacity: 0.25 }),
+			}}
+			onClick={() => {
+				innerRef.current.click();
+			}}
+		>
+			<Field>
+				<Field.Row>
+					<RadioButton ref={mergedRef} id={id} checked={selected} disabled={disabled} {...props} />
+					<Field.Label htmlFor={id}>{label}</Field.Label>
+				</Field.Row>
+			</Field>
+			{children}
+		</Box>
+	);
 });
 
 const Items = (props) => <Box is='ul' marginBlock='x16' {...props} />;
 
-const Item = ({ children, icon, ...props }) =>
-	<Box
-		is='li'
-		marginBlockEnd='x8'
-		display='flex'
-		alignItems='center'
-		color='default'
-		{...props}
-	>
-		{icon === 'check' && <Icon
-			name='check'
-			size='x20'
-			marginInlineEnd='x8'
-			color='primary'
-		/>}
-		{icon === 'circle' && <Icon
-			name='circle'
-			size='x8'
-			marginInlineStart='x8'
-			marginInlineEnd='x12'
-			color='default'
-		/>}
+const Item = ({ children, icon, ...props }) => (
+	<Box is='li' marginBlockEnd='x8' display='flex' alignItems='center' color='default' {...props}>
+		{icon === 'check' && <Icon name='check' size='x20' marginInlineEnd='x8' color='primary' />}
+		{icon === 'circle' && (
+			<Icon name='circle' size='x8' marginInlineStart='x8' marginInlineEnd='x12' color='default' />
+		)}
 		{children}
-	</Box>;
+	</Box>
+);
 
 function RegisterServerStep({ step, title, active }) {
 	const { canDeclineServerRegistration, goToPreviousStep, goToFinalStep } = useSetupWizardContext();
@@ -151,93 +133,101 @@ function RegisterServerStep({ step, title, active }) {
 	const agreeTermsAndPrivacyId = useUniqueId();
 	const optInMarketingEmailsId = useUniqueId();
 
-	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
-		<StepHeader number={step} title={title} />
+	return (
+		<Step active={active} working={commiting} onSubmit={handleSubmit}>
+			<StepHeader number={step} title={title} />
 
-		<Margins blockEnd='x32'>
-			<Box>
-				<Box is='p' fontScale='s1' color='hint' marginBlockEnd='x16'>{t('Register_Server_Info')}</Box>
+			<Margins blockEnd='x32'>
+				<Box>
+					<Box is='p' fontScale='s1' color='hint' marginBlockEnd='x16'>
+						{t('Register_Server_Info')}
+					</Box>
 
-				<Box display='flex' flexDirection='column'>
-					<Option
-						ref={autoFocusRef}
-						data-qa='register-server'
-						label={t('Register_Server_Registered')}
-						name='registerServer'
-						value='true'
-						selected={registerServer}
-						onChange={({ currentTarget: { checked } }) => {
-							setRegisterServer(checked);
-							setOptInMarketingEmails(checked);
-						}}
-					>
-						<Items>
-							<Item icon='check'>{t('Register_Server_Registered_Push_Notifications')}</Item>
-							<Item icon='check'>{t('Register_Server_Registered_Livechat')}</Item>
-							<Item icon='check'>{t('Register_Server_Registered_OAuth')}</Item>
-							<Item icon='check'>{t('Register_Server_Registered_Marketplace')}</Item>
-						</Items>
-						<Field>
-							<Field.Row>
-								<CheckBox
-									id={optInMarketingEmailsId}
-									name='optInMarketingEmails'
-									value='true'
-									disabled={!registerServer}
-									checked={optInMarketingEmails}
-									onChange={({ currentTarget: { checked } }) => {
-										setOptInMarketingEmails(checked);
-									}}
-								/>
-								<Field.Label htmlFor={optInMarketingEmailsId}>{t('Register_Server_Opt_In')}</Field.Label>
-							</Field.Row>
-						</Field>
-					</Option>
-					<Option
-						data-qa='register-server-standalone'
-						label={t('Register_Server_Standalone')}
-						name='registerServer'
-						value='false'
-						disabled={!canDeclineServerRegistration}
-						selected={!registerServer}
-						onChange={({ currentTarget: { checked } }) => {
-							setRegisterServer(!checked);
-							setOptInMarketingEmails(!checked);
-							setAgreeTermsAndPrivacy(!checked);
-						}}
-					>
-						<Items>
-							<Item icon='circle'>{t('Register_Server_Standalone_Service_Providers')}</Item>
-							<Item icon='circle'>{t('Register_Server_Standalone_Update_Settings')}</Item>
-							<Item icon='circle'>{t('Register_Server_Standalone_Own_Certificates')}</Item>
-						</Items>
-					</Option>
+					<Box display='flex' flexDirection='column'>
+						<Option
+							ref={autoFocusRef}
+							data-qa='register-server'
+							label={t('Register_Server_Registered')}
+							name='registerServer'
+							value='true'
+							selected={registerServer}
+							onChange={({ currentTarget: { checked } }) => {
+								setRegisterServer(checked);
+								setOptInMarketingEmails(checked);
+							}}
+						>
+							<Items>
+								<Item icon='check'>{t('Register_Server_Registered_Push_Notifications')}</Item>
+								<Item icon='check'>{t('Register_Server_Registered_Livechat')}</Item>
+								<Item icon='check'>{t('Register_Server_Registered_OAuth')}</Item>
+								<Item icon='check'>{t('Register_Server_Registered_Marketplace')}</Item>
+							</Items>
+							<Field>
+								<Field.Row>
+									<CheckBox
+										id={optInMarketingEmailsId}
+										name='optInMarketingEmails'
+										value='true'
+										disabled={!registerServer}
+										checked={optInMarketingEmails}
+										onChange={({ currentTarget: { checked } }) => {
+											setOptInMarketingEmails(checked);
+										}}
+									/>
+									<Field.Label htmlFor={optInMarketingEmailsId}>
+										{t('Register_Server_Opt_In')}
+									</Field.Label>
+								</Field.Row>
+							</Field>
+						</Option>
+						<Option
+							data-qa='register-server-standalone'
+							label={t('Register_Server_Standalone')}
+							name='registerServer'
+							value='false'
+							disabled={!canDeclineServerRegistration}
+							selected={!registerServer}
+							onChange={({ currentTarget: { checked } }) => {
+								setRegisterServer(!checked);
+								setOptInMarketingEmails(!checked);
+								setAgreeTermsAndPrivacy(!checked);
+							}}
+						>
+							<Items>
+								<Item icon='circle'>{t('Register_Server_Standalone_Service_Providers')}</Item>
+								<Item icon='circle'>{t('Register_Server_Standalone_Update_Settings')}</Item>
+								<Item icon='circle'>{t('Register_Server_Standalone_Own_Certificates')}</Item>
+							</Items>
+						</Option>
 
-					<Margins all='x16'>
-						<Field>
-							<Field.Row>
-								<CheckBox
-									id={agreeTermsAndPrivacyId}
-									name='agreeTermsAndPrivacy'
-									data-qa='agree-terms-and-privacy'
-									disabled={!registerServer}
-									checked={agreeTermsAndPrivacy}
-									onChange={({ currentTarget: { checked } }) => {
-										setAgreeTermsAndPrivacy(checked);
-									}}
-								/>
-								<Field.Label htmlFor={agreeTermsAndPrivacyId}>
-									{t('Register_Server_Registered_I_Agree')} <a href='https://rocket.chat/terms'>{t('Terms')}</a> & <a href='https://rocket.chat/privacy'>{t('Privacy_Policy')}</a>
-								</Field.Label>
-							</Field.Row>
-						</Field>
-					</Margins>
+						<Margins all='x16'>
+							<Field>
+								<Field.Row>
+									<CheckBox
+										id={agreeTermsAndPrivacyId}
+										name='agreeTermsAndPrivacy'
+										data-qa='agree-terms-and-privacy'
+										disabled={!registerServer}
+										checked={agreeTermsAndPrivacy}
+										onChange={({ currentTarget: { checked } }) => {
+											setAgreeTermsAndPrivacy(checked);
+										}}
+									/>
+									<Field.Label htmlFor={agreeTermsAndPrivacyId}>
+										{t('Register_Server_Registered_I_Agree')}{' '}
+										<a href='https://rocket.chat/terms'>{t('Terms')}</a> &{' '}
+										<a href='https://rocket.chat/privacy'>{t('Privacy_Policy')}</a>
+									</Field.Label>
+								</Field.Row>
+							</Field>
+						</Margins>
+					</Box>
 				</Box>
-			</Box>
-		</Margins>
+			</Margins>
 
-		<Pager disabled={commiting} onBackClick={handleBackClick} />
-	</Step>;
+			<Pager disabled={commiting} onBackClick={handleBackClick} />
+		</Step>
+	);
 }
 
 export default RegisterServerStep;

@@ -1,13 +1,12 @@
-import React from 'react';
 import { Box, FieldGroup, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React from 'react';
 
-import RoleForm from './RoleForm';
-import { useForm } from '../../../hooks/useForm';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useForm } from '../../../hooks/useForm';
+import RoleForm from './RoleForm';
 
 const NewRolePage = () => {
 	const t = useTranslation();
@@ -31,16 +30,20 @@ const NewRolePage = () => {
 		}
 	});
 
-	return <Box w='full' alignSelf='center' mb='neg-x8'>
-		<Margins block='x8'>
-			<FieldGroup>
-				<RoleForm values={values} handlers={handlers}/>
-			</FieldGroup>
-			<ButtonGroup stretch w='full'>
-				<Button primary onClick={handleSave}>{t('Save')}</Button>
-			</ButtonGroup>
-		</Margins>
-	</Box>;
+	return (
+		<Box w='full' alignSelf='center' mb='neg-x8'>
+			<Margins block='x8'>
+				<FieldGroup>
+					<RoleForm values={values} handlers={handlers} />
+				</FieldGroup>
+				<ButtonGroup stretch w='full'>
+					<Button primary onClick={handleSave}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</Margins>
+		</Box>
+	);
 };
 
 export default NewRolePage;

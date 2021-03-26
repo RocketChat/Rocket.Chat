@@ -1,9 +1,8 @@
-import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
-
-import VerticalBar from '../../../../components/VerticalBar';
+import React from 'react';
 
 import { NotificationsPreferences } from '.';
+import VerticalBar from '../../../../components/VerticalBar';
 
 export default {
 	title: 'components/basic/NotificationsPreferences',
@@ -49,20 +48,22 @@ handleSelect.mobile.alert = 'mentions';
 
 handleSelect.email.alert = 'nothing';
 
-export const Default = () => <Box height='600px'>
-	<VerticalBar>
-		<NotificationsPreferences
-			handleOn={handleOn}
-			handleSwitch={handleSwitch}
-			handleOptions={handleOptions}
-			handleSelect={handleSelect}
-			handleChangeOption={{
-				desktopAlert: () => {},
-				desktopAudio: () => {},
-				mobileAlert: () => {},
-				emailAlert: () => {},
-			}}
-			handleSoundChange={{ desktopSound: () => {} }}
-		/>
-	</VerticalBar>
-</Box>;
+export const Default = () => (
+	<Box height='600px'>
+		<VerticalBar>
+			<NotificationsPreferences
+				handleOn={handleOn}
+				handleSwitch={handleSwitch}
+				handleOptions={handleOptions}
+				handleSelect={handleSelect}
+				handleChangeOption={{
+					desktopAlert: () => {},
+					desktopAudio: () => {},
+					mobileAlert: () => {},
+					emailAlert: () => {},
+				}}
+				handleSoundChange={{ desktopSound: () => {} }}
+			/>
+		</VerticalBar>
+	</Box>
+);

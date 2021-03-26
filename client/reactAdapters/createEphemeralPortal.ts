@@ -1,15 +1,10 @@
 import type { ComponentType, PropsWithoutRef } from 'react';
 
-import { portalsSubscription, registerPortal, unregisterPortal } from './portalsSubscription';
-import { mountRoot } from './mountRoot';
 import { createLazyPortal } from './createLazyPortal';
+import { mountRoot } from './mountRoot';
+import { portalsSubscription, registerPortal, unregisterPortal } from './portalsSubscription';
 
-export {
-	portalsSubscription,
-	mountRoot,
-	registerPortal,
-	unregisterPortal,
-};
+export { portalsSubscription, mountRoot, registerPortal, unregisterPortal };
 
 export const createEphemeralPortal = async <Props extends {} = {}>(
 	factory: () => Promise<{ default: ComponentType<Props> }>,

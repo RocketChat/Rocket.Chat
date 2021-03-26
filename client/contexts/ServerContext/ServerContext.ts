@@ -1,18 +1,39 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
-import { ServerEndpointMethodOf, ServerEndpointPath, ServerEndpointFunction, ServerEndpointRequestPayload, ServerEndpointFormData, ServerEndpointResponsePayload } from './endpoints';
-import { ServerMethodFunction, ServerMethodName, ServerMethodParameters, ServerMethodReturn, ServerMethods } from './methods';
+import {
+	ServerEndpointMethodOf,
+	ServerEndpointPath,
+	ServerEndpointFunction,
+	ServerEndpointRequestPayload,
+	ServerEndpointFormData,
+	ServerEndpointResponsePayload,
+} from './endpoints';
+import {
+	ServerMethodFunction,
+	ServerMethodName,
+	ServerMethodParameters,
+	ServerMethodReturn,
+	ServerMethods,
+} from './methods';
 
 type ServerContextValue = {
 	info: {};
 	absoluteUrl: (path: string) => string;
-	callMethod?: <MethodName extends ServerMethodName>(methodName: MethodName, ...args: ServerMethodParameters<MethodName>) => Promise<ServerMethodReturn<MethodName>>;
-	callEndpoint?: <
-		Method extends ServerEndpointMethodOf<Path>,
-		Path extends ServerEndpointPath
-	>(httpMethod: Method, endpoint: Path, params: ServerEndpointRequestPayload<Method, Path>, formData?: ServerEndpointFormData<Method, Path>) => Promise<ServerEndpointResponsePayload<Method, Path>>;
+	callMethod?: <MethodName extends ServerMethodName>(
+		methodName: MethodName,
+		...args: ServerMethodParameters<MethodName>
+	) => Promise<ServerMethodReturn<MethodName>>;
+	callEndpoint?: <Method extends ServerEndpointMethodOf<Path>, Path extends ServerEndpointPath>(
+		httpMethod: Method,
+		endpoint: Path,
+		params: ServerEndpointRequestPayload<Method, Path>,
+		formData?: ServerEndpointFormData<Method, Path>,
+	) => Promise<ServerEndpointResponsePayload<Method, Path>>;
 	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
-	getStream: (streamName: string, options?: {}) => <T>(eventName: string, callback: (data: T) => void) => () => void;
+	getStream: (
+		streamName: string,
+		options?: {},
+	) => <T>(eventName: string, callback: (data: T) => void) => () => void;
 };
 
 export const ServerContext = createContext<ServerContextValue>({
@@ -24,7 +45,8 @@ export const ServerContext = createContext<ServerContextValue>({
 
 export const useServerInformation = (): {} => useContext(ServerContext).info;
 
-export const useAbsoluteUrl = (): ((path: string) => string) => useContext(ServerContext).absoluteUrl;
+export const useAbsoluteUrl = (): ((path: string) => string) =>
+	useContext(ServerContext).absoluteUrl;
 
 export const useMethod = <MethodName extends keyof ServerMethods>(
 	methodName: MethodName,
@@ -34,7 +56,9 @@ export const useMethod = <MethodName extends keyof ServerMethods>(
 	return useCallback(
 		(...args: ServerMethodParameters<MethodName>) => {
 			if (!callMethod) {
-				throw new Error(`cannot use useMethod(${ methodName }) hook without a wrapping ServerContext`);
+				throw new Error(
+					`cannot use useMethod(${methodName}) hook without a wrapping ServerContext`,
+				);
 			}
 
 			return callMethod(methodName, ...args);
@@ -46,27 +70,41 @@ export const useMethod = <MethodName extends keyof ServerMethods>(
 export const useEndpoint = <
 	Method extends ServerEndpointMethodOf<Path>,
 	Path extends ServerEndpointPath
->(httpMethod: Method, endpoint: Path): ServerEndpointFunction<Method, Path> => {
+>(
+	httpMethod: Method,
+	endpoint: Path,
+): ServerEndpointFunction<Method, Path> => {
 	const { callEndpoint } = useContext(ServerContext);
 
-	return useCallback((params: ServerEndpointRequestPayload<Method, Path>, formData?: ServerEndpointFormData<Method, Path>) => {
-		if (!callEndpoint) {
-			throw new Error(`cannot use useEndpoint(${ httpMethod }, ${ endpoint }) hook without a wrapping ServerContext`);
-		}
+	return useCallback(
+		(
+			params: ServerEndpointRequestPayload<Method, Path>,
+			formData?: ServerEndpointFormData<Method, Path>,
+		) => {
+			if (!callEndpoint) {
+				throw new Error(
+					`cannot use useEndpoint(${httpMethod}, ${endpoint}) hook without a wrapping ServerContext`,
+				);
+			}
 
-		return callEndpoint(httpMethod, endpoint, params, formData);
-	}, [callEndpoint, endpoint, httpMethod]);
+			return callEndpoint(httpMethod, endpoint, params, formData);
+		},
+		[callEndpoint, endpoint, httpMethod],
+	);
 };
 
-export const useUpload = (endpoint: string): (params: any, formData: any) => Promise<void> => {
+export const useUpload = (endpoint: string): ((params: any, formData: any) => Promise<void>) => {
 	const { uploadToEndpoint } = useContext(ServerContext);
-	return useCallback((params, formData: any) => uploadToEndpoint(endpoint, params, formData), [endpoint, uploadToEndpoint]);
+	return useCallback((params, formData: any) => uploadToEndpoint(endpoint, params, formData), [
+		endpoint,
+		uploadToEndpoint,
+	]);
 };
 
 export const useStream = (
 	streamName: string,
 	options?: {},
-): <T>(eventName: string, callback: (data: T) => void) => (() => void) => {
+): (<T>(eventName: string, callback: (data: T) => void) => () => void) => {
 	const { getStream } = useContext(ServerContext);
 	return useMemo(() => getStream(streamName, options), [getStream, streamName, options]);
 };

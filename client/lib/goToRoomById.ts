@@ -2,8 +2,8 @@ import { memoize } from '@rocket.chat/memo';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatSubscription } from '../../app/models/client';
-import { roomTypes } from '../../app/utils/client';
 import { call } from '../../app/ui-utils/client';
+import { roomTypes } from '../../app/utils/client';
 import { IRoom } from '../../definition/IRoom';
 
 const getRoomById = memoize((rid: IRoom['_id']) => call('getRoomById', rid));

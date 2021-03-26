@@ -1,15 +1,15 @@
-import React, { useRef, useState } from 'react';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useRef, useState } from 'react';
 
-import BusinessHoursFormContainer from './BusinessHoursFormContainer';
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useMethod } from '../../../contexts/ServerContext';
 import { useRoute } from '../../../contexts/RouterContext';
-import { mapBusinessHoursForm } from './mapBusinessHoursForm';
+import { useMethod } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { DAYS_OF_WEEK } from './BusinessHoursForm';
+import BusinessHoursFormContainer from './BusinessHoursFormContainer';
+import { mapBusinessHoursForm } from './mapBusinessHoursForm';
 
 const closedDays = ['Saturday', 'Sunday'];
 const createDefaultBusinessHours = () => ({
@@ -43,14 +43,19 @@ const NewBusinessHoursPage = () => {
 	const router = useRoute('omnichannel-businessHours');
 
 	const handleSave = useMutableCallback(async () => {
-		const { current: {
-			form,
-			multiple: { departments, ...multiple } = {},
-			timezone: { name: timezoneName } = {},
-		} } = saveData;
+		const {
+			current: {
+				form,
+				multiple: { departments, ...multiple } = {},
+				timezone: { name: timezoneName } = {},
+			},
+		} = saveData;
 
 		if (multiple.name === '') {
-			return dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', { field: t('Name') }) });
+			return dispatchToastMessage({
+				type: 'error',
+				message: t('error-the-field-is-required', { field: t('Name') }),
+			});
 		}
 
 		const mappedForm = mapBusinessHoursForm(form, defaultBusinessHour);
@@ -61,7 +66,7 @@ const NewBusinessHoursPage = () => {
 			const payload = {
 				...defaultBusinessHour,
 				...multiple,
-				...departmentsToApplyBusinessHour && { departmentsToApplyBusinessHour },
+				...(departmentsToApplyBusinessHour && { departmentsToApplyBusinessHour }),
 				timezoneName,
 				workHours: mappedForm,
 				type: 'custom',
@@ -79,21 +84,25 @@ const NewBusinessHoursPage = () => {
 		router.push({});
 	});
 
-	return <Page>
-		<Page.Header title={t('Business_Hours')}>
-			<ButtonGroup>
-				<Button onClick={handleReturn}>
-					{t('Back')}
-				</Button>
-				<Button primary onClick={handleSave} disabled={!hasChanges}>
-					{t('Save')}
-				</Button>
-			</ButtonGroup>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			<BusinessHoursFormContainer data={defaultBusinessHour} saveRef={saveData} onChange={setHasChanges}/>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+	return (
+		<Page>
+			<Page.Header title={t('Business_Hours')}>
+				<ButtonGroup>
+					<Button onClick={handleReturn}>{t('Back')}</Button>
+					<Button primary onClick={handleSave} disabled={!hasChanges}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
+			<Page.ScrollableContentWithShadow>
+				<BusinessHoursFormContainer
+					data={defaultBusinessHour}
+					saveRef={saveData}
+					onChange={setHasChanges}
+				/>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 };
 
 export default NewBusinessHoursPage;

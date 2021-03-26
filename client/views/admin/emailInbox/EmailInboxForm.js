@@ -1,5 +1,3 @@
-import React, { useCallback, useState } from 'react';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	Accordion,
 	Button,
@@ -12,22 +10,23 @@ import {
 	Box,
 	Margins,
 } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useState } from 'react';
 
+import { isEmail } from '../../../../app/utils';
 import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import Page from '../../../components/Page';
+import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import Page from '../../../components/Page';
-import { useForm } from '../../../hooks/useForm';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
-import { isEmail } from '../../../../app/utils';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { FormSkeleton } from './Skeleton';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
-import { useSetModal } from '../../../contexts/ModalContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-
+import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useForm } from '../../../hooks/useForm';
+import { FormSkeleton } from './Skeleton';
 
 const initialValues = {
 	active: true,
@@ -55,16 +54,7 @@ const getInitialValues = (data) => {
 		return initialValues;
 	}
 
-	const {
-		active,
-		name,
-		email,
-		description,
-		senderInfo,
-		department,
-		smtp,
-		imap,
-	} = data;
+	const { active, name, email, description, senderInfo, department, smtp, imap } = data;
 
 	return {
 		active: active ?? true,
@@ -90,10 +80,10 @@ const getInitialValues = (data) => {
 
 export function EmailInboxEditWithData({ id }) {
 	const t = useTranslation();
-	const { value: data, error, phase: state } = useEndpointData(`email-inbox/${ id }`);
+	const { value: data, error, phase: state } = useEndpointData(`email-inbox/${id}`);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton/>;
+		return <FormSkeleton />;
 	}
 
 	if (error || !data) {
@@ -156,8 +146,8 @@ export default function EmailInboxForm({ id, data }) {
 	const close = useCallback(() => router.push({}), [router]);
 
 	const saveEmailInbox = useEndpointAction('POST', 'email-inbox');
-	const deleteAction = useEndpointAction('DELETE', `email-inbox/${ id }`);
-	const emailAlreadyExistsAction = useEndpointAction('GET', `email-inbox.search?email=${ email }`);
+	const deleteAction = useEndpointAction('DELETE', `email-inbox/${id}`);
+	const emailAlreadyExistsAction = useEndpointAction('GET', `email-inbox.search?email=${email}`);
 
 	useComponentDidUpdate(() => {
 		setEmailError(!isEmail(email) ? t('Validate_email_address') : null);
@@ -185,15 +175,28 @@ export default function EmailInboxForm({ id, data }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal
-			onDelete={onDeleteManager}
-			onCancel={() => setModal()}
-		>{t('You_will_not_be_able_to_recover_email_inbox')}</DeleteWarningModal>);
+		setModal(
+			<DeleteWarningModal onDelete={onDeleteManager} onCancel={() => setModal()}>
+				{t('You_will_not_be_able_to_recover_email_inbox')}
+			</DeleteWarningModal>,
+		);
 	});
 
 	const handleSave = useMutableCallback(async () => {
-		const smtp = { server: smtpServer, port: parseInt(smtpPort), username: smtpUsername, password: smtpPassword, secure: smtpSecure };
-		const imap = { server: imapServer, port: parseInt(imapPort), username: imapUsername, password: imapPassword, secure: imapSecure };
+		const smtp = {
+			server: smtpServer,
+			port: parseInt(smtpPort),
+			username: smtpUsername,
+			password: smtpPassword,
+			secure: smtpSecure,
+		};
+		const imap = {
+			server: imapServer,
+			port: parseInt(imapPort),
+			username: imapUsername,
+			password: imapPassword,
+			secure: imapSecure,
+		};
 		const payload = { active, name, email, description, senderInfo, department, smtp, imap };
 		if (id) {
 			payload._id = id;
@@ -207,155 +210,180 @@ export default function EmailInboxForm({ id, data }) {
 		}
 	});
 
-
 	const checkEmailExists = useMutableCallback(async () => {
-		if (!email && !isEmail(email)) { return; }
+		if (!email && !isEmail(email)) {
+			return;
+		}
 		const { emailInbox } = await emailAlreadyExistsAction();
 
-		if (!emailInbox || (id && emailInbox._id === id)) { return; }
+		if (!emailInbox || (id && emailInbox._id === id)) {
+			return;
+		}
 		setEmailError(t('Email_already_exists'));
 	});
 
-	const canSave = hasUnsavedChanges && name && (email && isEmail(email) && !emailError)
-	&& smtpServer && smtpPort && smtpUsername && smtpPassword
-	&& imapServer && imapPort && imapUsername && imapPassword;
+	const canSave =
+		hasUnsavedChanges &&
+		name &&
+		email &&
+		isEmail(email) &&
+		!emailError &&
+		smtpServer &&
+		smtpPort &&
+		smtpUsername &&
+		smtpPassword &&
+		imapServer &&
+		imapPort &&
+		imapUsername &&
+		imapPassword;
 
-	return <Page.ScrollableContentWithShadow>
-		<Box maxWidth='x600' w='full' alignSelf='center'>
-			<Accordion>
-				<Accordion.Item defaultExpanded title={t('Inbox_Info')}>
-					<FieldGroup>
-						<Field>
-							<Field.Label display='flex' justifyContent='space-between' w='full'>
-								{t('Active')}
-								<ToggleSwitch checked={active} onChange={handleActive}/>
-							</Field.Label>
-						</Field>
-						<Field>
-							<Field.Label>{t('Name')}*</Field.Label>
-							<Field.Row>
-								<TextInput value={name} onChange={handleName} />
-							</Field.Row>
-						</Field>
-						<Field>
-							<Field.Label>{t('Email')}*</Field.Label>
-							<Field.Row>
-								<TextInput onBlur={checkEmailExists} error={emailError} value={email} onChange={handleEmail} />
-							</Field.Row>
-							<Field.Error>
-								{t(emailError)}
-							</Field.Error>
-						</Field>
-						<Field>
-							<Field.Label>{t('Description')}</Field.Label>
-							<Field.Row>
-								<TextAreaInput value={description} rows={4} onChange={handleDescription} />
-							</Field.Row>
-						</Field>
-						<Field>
-							<Field.Label>{t('Sender_Info')}</Field.Label>
-							<Field.Row>
-								<TextInput value={senderInfo} onChange={handleSenderInfo} placeholder={t('Optional')} />
-							</Field.Row>
-							<Field.Hint>
-								{t('Will_Appear_In_From')}
-							</Field.Hint>
-						</Field>
-						<Field>
-							<Field.Label>{t('Department')}</Field.Label>
-							<Field.Row>
-								<AutoCompleteDepartment value={department} onChange={handleDepartment} />
-							</Field.Row>
-							<Field.Hint>
-								{t('Only_Members_Selected_Department_Can_View_Channel')}
-							</Field.Hint>
-						</Field>
-					</FieldGroup>
-				</Accordion.Item>
-				<Accordion.Item title={t('Configure_Outgoing_Mail_SMTP')}>
-					<FieldGroup>
-						<Field>
-							<Field.Label>{t('Server')}*</Field.Label>
-							<Field.Row>
-								<TextInput value={smtpServer} onChange={handleSmtpServer} />
-							</Field.Row>
-						</Field>
-						<Field>
-							<Field.Label>{t('Port')}*</Field.Label>
-							<Field.Row>
-								<TextInput type='number' value={smtpPort} onChange={handleSmtpPort} />
-							</Field.Row>
-						</Field>
-						<Field>
-							<Field.Label>{t('Username')}*</Field.Label>
-							<Field.Row>
-								<TextInput value={smtpUsername} onChange={handleSmtpUsername} />
-							</Field.Row>
-						</Field>
-						<Field>
-							<Field.Label>{t('Password')}*</Field.Label>
-							<Field.Row>
-								<TextInput type='password' value={smtpPassword} onChange={handleSmtpPassword} />
-							</Field.Row>
-						</Field>
-						<Field>
-							<Field.Label display='flex' justifyContent='space-between' w='full'>
-								{t('Connect_SSL_TLS')}
-								<ToggleSwitch checked={smtpSecure} onChange={handleSmtpSecure}/>
-							</Field.Label>
-						</Field>
-					</FieldGroup>
-				</Accordion.Item>
-				<Accordion.Item title={t('Configure_Incoming_Mail_IMAP')}>
-					<FieldGroup>
-						<Field>
-							<Field.Label>{t('Server')}*</Field.Label>
-							<Field.Row>
-								<TextInput value={imapServer} onChange={handleImapServer} />
-							</Field.Row>
-						</Field>
-						<Field>
-							<Field.Label>{t('Port')}*</Field.Label>
-							<Field.Row>
-								<TextInput type='number' value={imapPort} onChange={handleImapPort} />
-							</Field.Row>
-						</Field>
-						<Field>
-							<Field.Label>{t('Username')}*</Field.Label>
-							<Field.Row>
-								<TextInput value={imapUsername} onChange={handleImapUsername}/>
-							</Field.Row>
-						</Field>
-						<Field>
-							<Field.Label>{t('Password')}*</Field.Label>
-							<Field.Row>
-								<TextInput type='password' value={imapPassword} onChange={handleImapPassword} />
-							</Field.Row>
-						</Field>
-						<Field>
-							<Field.Label display='flex' justifyContent='space-between' w='full'>
-								{t('Connect_SSL_TLS')}
-								<ToggleSwitch checked={imapSecure} onChange={handleImapSecure} />
-							</Field.Label>
-						</Field>
-					</FieldGroup>
-				</Accordion.Item>
-				<Field>
-					<Field.Row>
-						<ButtonGroup stretch w='full'>
-							<Button onClick={close}>{t('Cancel')}</Button>
-							<Button disabled={!canSave} primary onClick={handleSave}>{t('Save')}</Button>
-						</ButtonGroup>
-					</Field.Row>
-					<Field.Row>
-						<Margins blockStart='x16'>
+	return (
+		<Page.ScrollableContentWithShadow>
+			<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Accordion>
+					<Accordion.Item defaultExpanded title={t('Inbox_Info')}>
+						<FieldGroup>
+							<Field>
+								<Field.Label display='flex' justifyContent='space-between' w='full'>
+									{t('Active')}
+									<ToggleSwitch checked={active} onChange={handleActive} />
+								</Field.Label>
+							</Field>
+							<Field>
+								<Field.Label>{t('Name')}*</Field.Label>
+								<Field.Row>
+									<TextInput value={name} onChange={handleName} />
+								</Field.Row>
+							</Field>
+							<Field>
+								<Field.Label>{t('Email')}*</Field.Label>
+								<Field.Row>
+									<TextInput
+										onBlur={checkEmailExists}
+										error={emailError}
+										value={email}
+										onChange={handleEmail}
+									/>
+								</Field.Row>
+								<Field.Error>{t(emailError)}</Field.Error>
+							</Field>
+							<Field>
+								<Field.Label>{t('Description')}</Field.Label>
+								<Field.Row>
+									<TextAreaInput value={description} rows={4} onChange={handleDescription} />
+								</Field.Row>
+							</Field>
+							<Field>
+								<Field.Label>{t('Sender_Info')}</Field.Label>
+								<Field.Row>
+									<TextInput
+										value={senderInfo}
+										onChange={handleSenderInfo}
+										placeholder={t('Optional')}
+									/>
+								</Field.Row>
+								<Field.Hint>{t('Will_Appear_In_From')}</Field.Hint>
+							</Field>
+							<Field>
+								<Field.Label>{t('Department')}</Field.Label>
+								<Field.Row>
+									<AutoCompleteDepartment value={department} onChange={handleDepartment} />
+								</Field.Row>
+								<Field.Hint>{t('Only_Members_Selected_Department_Can_View_Channel')}</Field.Hint>
+							</Field>
+						</FieldGroup>
+					</Accordion.Item>
+					<Accordion.Item title={t('Configure_Outgoing_Mail_SMTP')}>
+						<FieldGroup>
+							<Field>
+								<Field.Label>{t('Server')}*</Field.Label>
+								<Field.Row>
+									<TextInput value={smtpServer} onChange={handleSmtpServer} />
+								</Field.Row>
+							</Field>
+							<Field>
+								<Field.Label>{t('Port')}*</Field.Label>
+								<Field.Row>
+									<TextInput type='number' value={smtpPort} onChange={handleSmtpPort} />
+								</Field.Row>
+							</Field>
+							<Field>
+								<Field.Label>{t('Username')}*</Field.Label>
+								<Field.Row>
+									<TextInput value={smtpUsername} onChange={handleSmtpUsername} />
+								</Field.Row>
+							</Field>
+							<Field>
+								<Field.Label>{t('Password')}*</Field.Label>
+								<Field.Row>
+									<TextInput type='password' value={smtpPassword} onChange={handleSmtpPassword} />
+								</Field.Row>
+							</Field>
+							<Field>
+								<Field.Label display='flex' justifyContent='space-between' w='full'>
+									{t('Connect_SSL_TLS')}
+									<ToggleSwitch checked={smtpSecure} onChange={handleSmtpSecure} />
+								</Field.Label>
+							</Field>
+						</FieldGroup>
+					</Accordion.Item>
+					<Accordion.Item title={t('Configure_Incoming_Mail_IMAP')}>
+						<FieldGroup>
+							<Field>
+								<Field.Label>{t('Server')}*</Field.Label>
+								<Field.Row>
+									<TextInput value={imapServer} onChange={handleImapServer} />
+								</Field.Row>
+							</Field>
+							<Field>
+								<Field.Label>{t('Port')}*</Field.Label>
+								<Field.Row>
+									<TextInput type='number' value={imapPort} onChange={handleImapPort} />
+								</Field.Row>
+							</Field>
+							<Field>
+								<Field.Label>{t('Username')}*</Field.Label>
+								<Field.Row>
+									<TextInput value={imapUsername} onChange={handleImapUsername} />
+								</Field.Row>
+							</Field>
+							<Field>
+								<Field.Label>{t('Password')}*</Field.Label>
+								<Field.Row>
+									<TextInput type='password' value={imapPassword} onChange={handleImapPassword} />
+								</Field.Row>
+							</Field>
+							<Field>
+								<Field.Label display='flex' justifyContent='space-between' w='full'>
+									{t('Connect_SSL_TLS')}
+									<ToggleSwitch checked={imapSecure} onChange={handleImapSecure} />
+								</Field.Label>
+							</Field>
+						</FieldGroup>
+					</Accordion.Item>
+					<Field>
+						<Field.Row>
 							<ButtonGroup stretch w='full'>
-								{id && <Button primary danger onClick={handleDelete}>{t('Delete')}</Button>}
+								<Button onClick={close}>{t('Cancel')}</Button>
+								<Button disabled={!canSave} primary onClick={handleSave}>
+									{t('Save')}
+								</Button>
 							</ButtonGroup>
-						</Margins>
-					</Field.Row>
-				</Field>
-			</Accordion>
-		</Box>
-	</Page.ScrollableContentWithShadow>;
+						</Field.Row>
+						<Field.Row>
+							<Margins blockStart='x16'>
+								<ButtonGroup stretch w='full'>
+									{id && (
+										<Button primary danger onClick={handleDelete}>
+											{t('Delete')}
+										</Button>
+									)}
+								</ButtonGroup>
+							</Margins>
+						</Field.Row>
+					</Field>
+				</Accordion>
+			</Box>
+		</Page.ScrollableContentWithShadow>
+	);
 }

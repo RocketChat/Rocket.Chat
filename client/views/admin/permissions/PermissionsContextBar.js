@@ -1,11 +1,11 @@
-import React from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React from 'react';
 
+import VerticalBar from '../../../components/VerticalBar';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import VerticalBar from '../../../components/VerticalBar';
-import NewRolePage from './NewRolePage';
 import EditRolePage from './EditRolePage';
+import NewRolePage from './NewRolePage';
 
 const PermissionsContextBar = () => {
 	const t = useTranslation();
@@ -18,17 +18,22 @@ const PermissionsContextBar = () => {
 		router.push({});
 	});
 
-	return (context && <VerticalBar>
-		<VerticalBar.Header>
-			{context === 'new' && t('New_role')}
-			{context === 'edit' && t('Role_Editing')}
-			<VerticalBar.Close onClick={handleVerticalBarCloseButton} />
-		</VerticalBar.Header>
-		<VerticalBar.ScrollableContent>
-			{context === 'new' && <NewRolePage />}
-			{context === 'edit' && <EditRolePage _id={_id} />}
-		</VerticalBar.ScrollableContent>
-	</VerticalBar>) || null;
+	return (
+		(context && (
+			<VerticalBar>
+				<VerticalBar.Header>
+					{context === 'new' && t('New_role')}
+					{context === 'edit' && t('Role_Editing')}
+					<VerticalBar.Close onClick={handleVerticalBarCloseButton} />
+				</VerticalBar.Header>
+				<VerticalBar.ScrollableContent>
+					{context === 'new' && <NewRolePage />}
+					{context === 'edit' && <EditRolePage _id={_id} />}
+				</VerticalBar.ScrollableContent>
+			</VerticalBar>
+		)) ||
+		null
+	);
 };
 
 export default PermissionsContextBar;

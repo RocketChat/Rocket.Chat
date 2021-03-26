@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
 import { Accordion, Field, FieldGroup, MultiSelect } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
@@ -10,7 +10,10 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 
 	const userDontAskAgainList = useUserPreference('dontAskAgainList');
 
-	const options = useMemo(() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]), [userDontAskAgainList]);
+	const options = useMemo(
+		() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]),
+		[userDontAskAgainList],
+	);
 
 	const selectedOptions = options.map(([action]) => action);
 
@@ -22,23 +25,23 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 
 	commitRef.current.global = commit;
 
-	return <Accordion.Item title={t('Global')} {...props}>
-		<FieldGroup>
-			<Field>
-				<Field.Label>
-					{t('Dont_ask_me_again_list')}
-				</Field.Label>
-				<Field.Row>
-					<MultiSelect
-						placeholder={t('Nothing_found')}
-						value={(dontAskAgainList.length > 0 && dontAskAgainList) || undefined}
-						onChange={handleDontAskAgainList}
-						options={options}
-					/>
-				</Field.Row>
-			</Field>
-		</FieldGroup>
-	</Accordion.Item>;
+	return (
+		<Accordion.Item title={t('Global')} {...props}>
+			<FieldGroup>
+				<Field>
+					<Field.Label>{t('Dont_ask_me_again_list')}</Field.Label>
+					<Field.Row>
+						<MultiSelect
+							placeholder={t('Nothing_found')}
+							value={(dontAskAgainList.length > 0 && dontAskAgainList) || undefined}
+							onChange={handleDontAskAgainList}
+							options={options}
+						/>
+					</Field.Row>
+				</Field>
+			</FieldGroup>
+		</Accordion.Item>
+	);
 };
 
 export default PreferencesGlobalSection;

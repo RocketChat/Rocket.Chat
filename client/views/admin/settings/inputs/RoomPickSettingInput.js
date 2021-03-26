@@ -31,33 +31,36 @@ export function RoomPickSettingInput({
 	});
 
 	useEffect(() => {
-		const view = Blaze.renderWithData(Template.inputAutocomplete, {
-			id: _id,
-			name: _id,
-			class: 'search autocomplete rc-input__element',
-			autocomplete: autocomplete === false ? 'off' : undefined,
-			readOnly: readonly,
-			placeholder,
-			disabled,
-			settings: {
-				limit: 10,
-				// inputDelay: 300
-				rules: [
-					{
-						// @TODO maybe change this 'collection' and/or template
-						collection: 'CachedChannelList',
-						endpoint: 'rooms.autocomplete.channelAndPrivate',
-						field: 'name',
-						template: Template.roomSearch,
-						noMatchTemplate: Template.roomSearchEmpty,
-						matchAll: true,
-						selector: (match) => ({ name: match }),
-						sort: 'name',
-					},
-				],
+		const view = Blaze.renderWithData(
+			Template.inputAutocomplete,
+			{
+				id: _id,
+				name: _id,
+				class: 'search autocomplete rc-input__element',
+				autocomplete: autocomplete === false ? 'off' : undefined,
+				readOnly: readonly,
+				placeholder,
+				disabled,
+				settings: {
+					limit: 10,
+					// inputDelay: 300
+					rules: [
+						{
+							// @TODO maybe change this 'collection' and/or template
+							collection: 'CachedChannelList',
+							endpoint: 'rooms.autocomplete.channelAndPrivate',
+							field: 'name',
+							template: Template.roomSearch,
+							noMatchTemplate: Template.roomSearchEmpty,
+							matchAll: true,
+							selector: (match) => ({ name: match }),
+							sort: 'name',
+						},
+					],
+				},
 			},
-
-		}, wrapperRef.current);
+			wrapperRef.current,
+		);
 
 		$('.autocomplete', wrapperRef.current).on('autocompleteselect', (event, doc) => {
 			const { current: value } = valueRef;
@@ -71,20 +74,26 @@ export function RoomPickSettingInput({
 		};
 	}, [_id, autocomplete, disabled, onChangeValue, placeholder, readonly, valueRef]);
 
-	return <>
-		<Flex.Container>
-			<Box>
-				<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-			</Box>
-		</Flex.Container>
-		<div style={{ position: 'relative' }} ref={wrapperRef} />
-		<ul className='selected-rooms'>
-			{value.map(({ _id, name }) =>
-				<li key={_id} className='remove-room' onClick={handleRemoveRoomButtonClick(_id)}>
-					{name} <Icon name='cross' />
-				</li>,
-			)}
-		</ul>
-	</>;
+	return (
+		<>
+			<Flex.Container>
+				<Box>
+					<Field.Label htmlFor={_id} title={_id}>
+						{label}
+					</Field.Label>
+					{hasResetButton && (
+						<ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />
+					)}
+				</Box>
+			</Flex.Container>
+			<div style={{ position: 'relative' }} ref={wrapperRef} />
+			<ul className='selected-rooms'>
+				{value.map(({ _id, name }) => (
+					<li key={_id} className='remove-room' onClick={handleRemoveRoomButtonClick(_id)}>
+						{name} <Icon name='cross' />
+					</li>
+				))}
+			</ul>
+		</>
+	);
 }

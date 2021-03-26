@@ -7,7 +7,6 @@ export default {
 	component: Attachments,
 };
 
-
 const field = {
 	color: '#ff0000',
 	text: 'Yay for gruggy!',
@@ -15,26 +14,33 @@ const field = {
 	mrkdwn_in: ['fields'],
 	title: 'Attachment Example',
 	title_link: 'https://youtube.com',
-	fields: [{
-		short: true,
-		title: 'Test1 ',
-		value: 'Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other',
-	}, {
-		short: true,
-		title: 'Another Test 2',
-		value: '[Link](https://google.com/) something and this and that.',
-	}, {
-		title: 'Another Test 3',
-		value: '[Link](https://google.com/) something and this and that.',
-	}, {
-		short: true,
-		title: 'Another Test 4',
-		value: '[Link](https://google.com/) something and this and that.',
-	}, {
-		short: true,
-		title: 'Another Test 5',
-		value: '[Link](https://google.com/) something and this and that.',
-	}],
+	fields: [
+		{
+			short: true,
+			title: 'Test1 ',
+			value:
+				'Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other Testing out something or other',
+		},
+		{
+			short: true,
+			title: 'Another Test 2',
+			value: '[Link](https://google.com/) something and this and that.',
+		},
+		{
+			title: 'Another Test 3',
+			value: '[Link](https://google.com/) something and this and that.',
+		},
+		{
+			short: true,
+			title: 'Another Test 4',
+			value: '[Link](https://google.com/) something and this and that.',
+		},
+		{
+			short: true,
+			title: 'Another Test 5',
+			value: '[Link](https://google.com/) something and this and that.',
+		},
+	],
 };
 
 const image = {
@@ -79,26 +85,16 @@ const message = {
 
 window.__meteor_runtime_config__ = { ROOT_URL_PATH_PREFIX: '' };
 
-export const Default = () => <Attachments
-	attachments={message.attachments}
-/>;
+export const Default = () => <Attachments attachments={message.attachments} />;
 
-export const Fields = () => <Attachments
-	attachments={[field]}
-/>;
+export const Fields = () => <Attachments attachments={[field]} />;
 
-export const FailingImage = () => <Attachments
-	attachments={[{ ...image, image_url: 'invalid.url' }]}
-/>;
+export const FailingImage = () => (
+	<Attachments attachments={[{ ...image, image_url: 'invalid.url' }]} />
+);
 
-export const Image = () => <Attachments
-	attachments={[image]}
-/>;
+export const Image = () => <Attachments attachments={[image]} />;
 
-export const Video = () => <Attachments
-	attachments={[video]}
-/>;
+export const Video = () => <Attachments attachments={[video]} />;
 
-export const Audio = () => <Attachments
-	attachments={[audio]}
-/>;
+export const Audio = () => <Attachments attachments={[audio]} />;

@@ -8,18 +8,24 @@ import { ModalContext } from '../contexts/ModalContext';
 function ModalProvider({ children }) {
 	const [currentModal, setCurrentModal] = useState(null);
 
-	const contextValue = useMemo(() => Object.assign(modal, {
-		setModal: setCurrentModal,
-	}), []);
+	const contextValue = useMemo(
+		() =>
+			Object.assign(modal, {
+				setModal: setCurrentModal,
+			}),
+		[],
+	);
 
-	return <ModalContext.Provider value={contextValue}>
-		{children}
-		{currentModal && <ModalPortal>
-			<Modal.Backdrop zIndex={9999}>
-				{currentModal}
-			</Modal.Backdrop>
-		</ModalPortal>}
-	</ModalContext.Provider>;
+	return (
+		<ModalContext.Provider value={contextValue}>
+			{children}
+			{currentModal && (
+				<ModalPortal>
+					<Modal.Backdrop zIndex={9999}>{currentModal}</Modal.Backdrop>
+				</ModalPortal>
+			)}
+		</ModalContext.Provider>
+	);
 }
 
 export default memo(ModalProvider);

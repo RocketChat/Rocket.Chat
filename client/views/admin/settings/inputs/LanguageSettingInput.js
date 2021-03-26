@@ -22,25 +22,31 @@ export function LanguageSettingInput({
 		onChangeValue(value);
 	};
 
-	return <>
-		<Flex.Container>
-			<Box>
-				<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-			</Box>
-		</Flex.Container>
-		<Field.Row>
-			<Select
-				data-qa-setting-id={_id}
-				id={_id}
-				value={value}
-				placeholder={placeholder}
-				disabled={disabled}
-				readOnly={readonly}
-				autoComplete={autocomplete === false ? 'off' : undefined}
-				onChange={handleChange}
-				options={languages.map(({ key, name }) => [key, name])}
-			/>
-		</Field.Row>
-	</>;
+	return (
+		<>
+			<Flex.Container>
+				<Box>
+					<Field.Label htmlFor={_id} title={_id}>
+						{label}
+					</Field.Label>
+					{hasResetButton && (
+						<ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />
+					)}
+				</Box>
+			</Flex.Container>
+			<Field.Row>
+				<Select
+					data-qa-setting-id={_id}
+					id={_id}
+					value={value}
+					placeholder={placeholder}
+					disabled={disabled}
+					readOnly={readonly}
+					autoComplete={autocomplete === false ? 'off' : undefined}
+					onChange={handleChange}
+					options={languages.map(({ key, name }) => [key, name])}
+				/>
+			</Field.Row>
+		</>
+	);
 }

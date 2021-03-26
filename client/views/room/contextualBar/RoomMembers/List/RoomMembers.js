@@ -1,4 +1,3 @@
-import React, { useCallback, useMemo, useState } from 'react';
 import {
 	Box,
 	Icon,
@@ -10,7 +9,6 @@ import {
 	Button,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { Virtuoso } from 'react-virtuoso';
 import {
 	useMutableCallback,
 	useDebouncedValue,
@@ -18,20 +16,22 @@ import {
 	useAutoFocus,
 } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 
+import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
+import VerticalBar from '../../../../../components/VerticalBar';
+import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
+import { useMethod } from '../../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserRoom } from '../../../../../contexts/UserContext';
-import VerticalBar from '../../../../../components/VerticalBar';
-import { useMethod } from '../../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
-import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
-import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
-import { MemberItem } from './components/MemberItem';
-import UserInfoWithData from '../../UserInfo';
-import InviteUsers from '../InviteUsers/InviteUsers';
-import AddUsers from '../AddUsers/AddUsers';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
-import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
+import UserInfoWithData from '../../UserInfo';
+import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
+import AddUsers from '../AddUsers/AddUsers';
+import InviteUsers from '../InviteUsers/InviteUsers';
+import { MemberItem } from './components/MemberItem';
 
 export const createItemData = memoize((onClickView, rid) => ({
 	onClickView,
@@ -45,15 +45,17 @@ const DefaultRow = React.memo(({ user, data, index }) => {
 		return <RoomMembers.Option.Skeleton />;
 	}
 
-	return <RoomMembers.Option
-		index={index}
-		username={user.username}
-		_id={user._id}
-		rid={rid}
-		status={user.status}
-		name={user.name}
-		onClickView={onClickView}
-	/>;
+	return (
+		<RoomMembers.Option
+			index={index}
+			username={user.username}
+			_id={user._id}
+			rid={rid}
+			status={user.status}
+			name={user.name}
+			onClickView={onClickView}
+		/>
+	);
 });
 
 export const RoomMembers = ({
@@ -76,48 +78,73 @@ export const RoomMembers = ({
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
 
-	const options = useMemo(() => [
-		['online', t('Online')],
-		['all', t('All')],
-	], [t]);
+	const options = useMemo(
+		() => [
+			['online', t('Online')],
+			['all', t('All')],
+		],
+		[t],
+	);
 
 	const itemData = createItemData(onClickView, rid);
-	const lm = useMutableCallback((start) => loadMoreItems(start + 1, Math.min(50, start + 1 - members.length)));
+	const lm = useMutableCallback((start) =>
+		loadMoreItems(start + 1, Math.min(50, start + 1 - members.length)),
+	);
 
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='team'/>
+				<VerticalBar.Icon name='team' />
 				<VerticalBar.Text>{t('Members')}</VerticalBar.Text>
-				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
+				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
 			<VerticalBar.Content p='x12'>
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
-							<TextInput placeholder={t('Search_by_username')} value={text} ref={inputRef} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+							<TextInput
+								placeholder={t('Search_by_username')}
+								value={text}
+								ref={inputRef}
+								onChange={setText}
+								addon={<Icon name='magnifier' size='x20' />}
+							/>
 							<Select
 								flexGrow={0}
 								width='110px'
 								onChange={setType}
 								value={type}
-								options={options} />
+								options={options}
+							/>
 						</Margins>
 					</Box>
 				</Box>
 
-				{ error && <Box pi='x24' pb='x12'><Callout type='danger'>
-					{error}
-				</Callout></Box> }
+				{error && (
+					<Box pi='x24' pb='x12'>
+						<Callout type='danger'>{error}</Callout>
+					</Box>
+				)}
 
-				{loading && <Box pi='x24' pb='x12'><Throbber size='x12' /></Box>}
-				{!loading && members.length <= 0 && <Box pi='x24' pb='x12'>{t('No_results_found')}</Box>}
+				{loading && (
+					<Box pi='x24' pb='x12'>
+						<Throbber size='x12' />
+					</Box>
+				)}
+				{!loading && members.length <= 0 && (
+					<Box pi='x24' pb='x12'>
+						{t('No_results_found')}
+					</Box>
+				)}
 
 				{!loading && members.length > 0 && (
 					<Box pi='x24' pb='x12'>
 						<Box is='span' color='info' fontScale='p1'>
-							{t('Showing')}: <Box is='span' color='default' fontScale='p2'>{members.length}</Box>
+							{t('Showing')}:{' '}
+							<Box is='span' color='default' fontScale='p2'>
+								{members.length}
+							</Box>
 						</Box>
 
 						{/* <Box is='span' color='info' fontScale='p1' mis='x8'>
@@ -125,35 +152,50 @@ export const RoomMembers = ({
 						</Box> */}
 
 						<Box is='span' color='info' fontScale='p1' mis='x8'>
-							{t('Total')}: <Box is='span' color='default' fontScale='p2'>{total}</Box>
+							{t('Total')}:{' '}
+							<Box is='span' color='default' fontScale='p2'>
+								{total}
+							</Box>
 						</Box>
 					</Box>
 				)}
 
 				<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-					{!loading && members && members.length > 0 && <Virtuoso
-						style={{
-							height: '100%',
-							width: '100%',
-						}}
-						totalCount={total}
-						endReached={lm}
-						overscan={50}
-						data={members}
-						components={{ Scroller: ScrollableContentWrapper }}
-						itemContent={(index, data) => <Row
-							data={itemData}
-							user={data}
-							index={index}
-						/>}
-					/>}
+					{!loading && members && members.length > 0 && (
+						<Virtuoso
+							style={{
+								height: '100%',
+								width: '100%',
+							}}
+							totalCount={total}
+							endReached={lm}
+							overscan={50}
+							data={members}
+							components={{ Scroller: ScrollableContentWrapper }}
+							itemContent={(index, data) => <Row data={itemData} user={data} index={index} />}
+						/>
+					)}
 				</Box>
 			</VerticalBar.Content>
 
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					{ onClickInvite && <Button onClick={onClickInvite} width='50%'><Box is='span' mie='x4'><Icon name='link' size='x20' /></Box>{t('Invite_Link')}</Button> }
-					{ onClickAdd && <Button onClick={onClickAdd} width='50%' primary><Box is='span' mie='x4'><Icon name='user-plus' size='x20' /></Box>{t('Add_users')}</Button> }
+					{onClickInvite && (
+						<Button onClick={onClickInvite} width='50%'>
+							<Box is='span' mie='x4'>
+								<Icon name='link' size='x20' />
+							</Box>
+							{t('Invite_Link')}
+						</Button>
+					)}
+					{onClickAdd && (
+						<Button onClick={onClickAdd} width='50%' primary>
+							<Box is='span' mie='x4'>
+								<Icon name='user-plus' size='x20' />
+							</Box>
+							{t('Add_users')}
+						</Button>
+					)}
 				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>
@@ -164,12 +206,13 @@ RoomMembers.Option = MemberItem;
 
 const useGetUsersOfRoom = (params) => {
 	const method = useMethod('getUsersOfRoom');
-	return useDataWithLoadMore(useCallback((args) => method(...args), [method]), params);
+	return useDataWithLoadMore(
+		useCallback((args) => method(...args), [method]),
+		params,
+	);
 };
 
-export default ({
-	rid,
-}) => {
+export default ({ rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
@@ -180,11 +223,24 @@ export default ({
 	const [text, setText] = useState('');
 
 	const debouncedText = useDebouncedValue(text, 500);
-	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [rid, type, debouncedText]);
+	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [
+		rid,
+		type,
+		debouncedText,
+	]);
 
 	const { value, phase, more, error } = useGetUsersOfRoom(params);
 
-	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
+	const canAddUsers = useAtLeastOnePermission(
+		useMemo(
+			() => [
+				room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room',
+				'add-user-to-joined-room',
+			],
+			[room.t],
+		),
+		rid,
+	);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
@@ -208,14 +264,28 @@ export default ({
 
 	const handleBack = useCallback(() => setState({}), [setState]);
 
-	const loadMoreItems = useCallback((start, end) => more(([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter], (prev, next) => ({
-		total: next.total,
-		finished: next.records.length < 50,
-		records: [...prev.records, ...next.records],
-	})), [more]);
+	const loadMoreItems = useCallback(
+		(start, end) =>
+			more(
+				([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter],
+				(prev, next) => ({
+					total: next.total,
+					finished: next.records.length < 50,
+					records: [...prev.records, ...next.records],
+				}),
+			),
+		[more],
+	);
 
 	if (state.tab === 'UserInfo') {
-		return <UserInfoWithData rid={rid} onClickClose={onClickClose} onClickBack={handleBack} username={state.username} />;
+		return (
+			<UserInfoWithData
+				rid={rid}
+				onClickClose={onClickClose}
+				onClickBack={handleBack}
+				username={state.username}
+			/>
+		);
 	}
 
 	if (state.tab === 'InviteUsers') {

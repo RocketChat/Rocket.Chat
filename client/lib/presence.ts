@@ -20,7 +20,10 @@ const emitter = new Emitter<Events>();
 
 const store = new Map<string, UserPresence>();
 
-export type UserPresence = Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag'>;
+export type UserPresence = Pick<
+	IUser,
+	'_id' | 'username' | 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag'
+>;
 
 type UsersPresencePayload = {
 	users: UserPresence[];
@@ -28,7 +31,9 @@ type UsersPresencePayload = {
 };
 
 const isUid = (eventType: keyof Events): eventType is UserPresence['_id'] =>
-	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'restart', 'remove'].includes(eventType);
+	Boolean(eventType) &&
+	typeof eventType === 'string' &&
+	!['reset', 'restart', 'remove'].includes(eventType);
 
 const uids = new Set<UserPresence['_id']>();
 const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
@@ -44,7 +49,10 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 					ids: [...currentUids],
 				};
 
-				const { users } = await APIClient.v1.get('users.presence', params) as UsersPresencePayload;
+				const { users } = (await APIClient.v1.get(
+					'users.presence',
+					params,
+				)) as UsersPresencePayload;
 
 				users.forEach((user) => {
 					if (!store.has(user._id)) {
@@ -81,14 +89,14 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 
 	emitter.on('reset', () => {
 		store.clear();
-		emitter.events()
-			.filter(isUid).forEach((uid) => {
+		emitter
+			.events()
+			.filter(isUid)
+			.forEach((uid) => {
 				emitter.emit(uid, undefined);
 			});
 		emitter.once('restart', () => {
-			emitter.events()
-				.filter(isUid)
-				.forEach(get);
+			emitter.events().filter(isUid).forEach(get);
 		});
 	});
 
@@ -102,7 +110,10 @@ const update: EventHandlerOf<ExternalEvents, string> = (update) => {
 	}
 };
 
-const listen = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void)): void => {
+const listen = (
+	uid: UserPresence['_id'],
+	handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void),
+): void => {
 	emitter.on(uid, update);
 	emitter.on(uid, handler);
 
@@ -114,7 +125,10 @@ const listen = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents
 	getPresence(uid);
 };
 
-const stop = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void)): void => {
+const stop = (
+	uid: UserPresence['_id'],
+	handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void),
+): void => {
 	setTimeout(() => {
 		emitter.off(uid, handler);
 		emitter.off(uid, update);
@@ -141,13 +155,14 @@ const notify = (update: UserPresence): void => {
 	}
 };
 
-const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> => new Promise((resolve) => {
-	const callback: EventHandlerOf<ExternalEvents, UserPresence['_id']> = (args): void => {
-		resolve(args);
-		stop(uid, callback);
-	};
-	listen(uid, callback);
-});
+const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> =>
+	new Promise((resolve) => {
+		const callback: EventHandlerOf<ExternalEvents, UserPresence['_id']> = (args): void => {
+			resolve(args);
+			stop(uid, callback);
+		};
+		listen(uid, callback);
+	});
 
 export const Presence = {
 	listen,

@@ -2,14 +2,20 @@ import { Box, Button, Icon, Throbber } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, memo } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { appButtonProps, appStatusSpanProps, handleAPIError, warnStatusChange, handleInstallError } from './helpers';
 import { Apps } from '../../../../app/apps/client/orchestrator';
-import IframeModal from './IframeModal';
-import CloudLoginModal from './CloudLoginModal';
-import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import AppPermissionsReviewModal from './AppPermissionsReviewModal';
+import CloudLoginModal from './CloudLoginModal';
+import IframeModal from './IframeModal';
+import {
+	appButtonProps,
+	appStatusSpanProps,
+	handleAPIError,
+	warnStatusChange,
+	handleInstallError,
+} from './helpers';
 
 const installApp = async ({ id, name, version, permissionsGranted }) => {
 	try {
@@ -43,13 +49,16 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 	const status = !button && appStatusSpanProps(app);
 
 	const action = button?.action || '';
-	const confirmAction = useCallback((permissionsGranted) => {
-		setModal(null);
+	const confirmAction = useCallback(
+		(permissionsGranted) => {
+			setModal(null);
 
-		actions[action]({ ...app, permissionsGranted }).then(() => {
-			setLoading(false);
-		});
-	}, [setModal, action, app, setLoading]);
+			actions[action]({ ...app, permissionsGranted }).then(() => {
+				setLoading(false);
+			});
+		},
+		[setModal, action, app, setLoading],
+	);
 
 	const cancelAction = useCallback(() => {
 		setLoading(false);
@@ -69,7 +78,13 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
 		}
 
-		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} cancel={cancelAction} confirm={confirmAction} />);
+		return setModal(
+			<AppPermissionsReviewModal
+				appPermissions={app.permissions}
+				cancel={cancelAction}
+				confirm={confirmAction}
+			/>,
+		);
 	};
 
 	const checkUserLoggedIn = useMethod('cloud:checkUserLoggedIn');
@@ -91,7 +106,13 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 		if (action === 'purchase' && !isAppPurchased) {
 			try {
 				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
-				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal}/>);
+				setModal(
+					<IframeModal
+						url={data.url}
+						cancel={cancelAction}
+						confirm={showAppPermissionsReviewModal}
+					/>,
+				);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -101,19 +122,38 @@ const AppStatus = ({ app, showStatus = true, ...props }) => {
 		showAppPermissionsReviewModal();
 	};
 
-	return <Box {...props}>
-		{button && <Button primary disabled={loading} invisible={!showStatus && !loading} minHeight='x40' onClick={handleClick}>
-			{loading
-				? <Throbber inheritColor />
-				: <>
-					{button.icon && <Icon name={button.icon} />}{t(button.label)}
-				</>}
-		</Button>}
-		{status && <Box color={status.label === 'Disabled' ? 'warning' : 'hint'} display='flex' alignItems='center'>
-			<Icon size='x20' name={status.icon} mie='x4'/>
-			{t(status.label)}
-		</Box>}
-	</Box>;
+	return (
+		<Box {...props}>
+			{button && (
+				<Button
+					primary
+					disabled={loading}
+					invisible={!showStatus && !loading}
+					minHeight='x40'
+					onClick={handleClick}
+				>
+					{loading ? (
+						<Throbber inheritColor />
+					) : (
+						<>
+							{button.icon && <Icon name={button.icon} />}
+							{t(button.label)}
+						</>
+					)}
+				</Button>
+			)}
+			{status && (
+				<Box
+					color={status.label === 'Disabled' ? 'warning' : 'hint'}
+					display='flex'
+					alignItems='center'
+				>
+					<Icon size='x20' name={status.icon} mie='x4' />
+					{t(status.label)}
+				</Box>
+			)}
+		</Box>
+	);
 };
 
 export default memo(AppStatus);

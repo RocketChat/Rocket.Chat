@@ -7,12 +7,10 @@ import { SelectSettingInput } from './SelectSettingInput';
 export default {
 	title: 'admin/settings/inputs/SelectSettingInput',
 	component: SelectSettingInput,
-	decorators: [
-		(storyFn) => <Field>{storyFn()}</Field>,
-	],
+	decorators: [(storyFn) => <Field>{storyFn()}</Field>],
 };
 
-export const _default = () =>
+export const _default = () => (
 	<SelectSettingInput
 		_id='setting_id'
 		label='Label'
@@ -24,9 +22,10 @@ export const _default = () =>
 		]}
 		onChangeValue={action('changeValue')}
 		onChangeEditor={action('changeEditor')}
-	/>;
+	/>
+);
 
-export const disabled = () =>
+export const disabled = () => (
 	<SelectSettingInput
 		_id='setting_id'
 		label='Label'
@@ -37,9 +36,10 @@ export const disabled = () =>
 			{ key: '3', i18nLabel: '3' },
 		]}
 		disabled
-	/>;
+	/>
+);
 
-export const withValue = () =>
+export const withValue = () => (
 	<SelectSettingInput
 		_id='setting_id'
 		label='Label'
@@ -50,9 +50,10 @@ export const withValue = () =>
 			{ key: '2', i18nLabel: '2' },
 			{ key: '3', i18nLabel: '3' },
 		]}
-	/>;
+	/>
+);
 
-export const withResetButton = () =>
+export const withResetButton = () => (
 	<SelectSettingInput
 		_id='setting_id'
 		label='Label'
@@ -65,4 +66,5 @@ export const withResetButton = () =>
 		hasResetButton
 		onChangeValue={action('changeValue')}
 		onResetButtonClick={action('resetButtonClick')}
-	/>;
+	/>
+);

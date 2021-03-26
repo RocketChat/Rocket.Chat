@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
 import { Box, Field, UrlInput, Icon, Button, InputBox, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useState, useEffect } from 'react';
 
-import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
-import EditInvite from '../EditInvite';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import EditInvite from '../EditInvite';
 
 export const InviteUsers = ({
 	onClickBack,
@@ -34,13 +34,23 @@ export const InviteUsers = ({
 				<Field>
 					<Field.Label flexGrow={0}>{t('Invite_Link')}</Field.Label>
 					<Field.Row>
-						{linkText === undefined ? <InputBox.Skeleton /> : <UrlInput value={linkText} addon={<Icon onClick={copy} name='copy' size='x16'/>}/>}
+						{linkText === undefined ? (
+							<InputBox.Skeleton />
+						) : (
+							<UrlInput value={linkText} addon={<Icon onClick={copy} name='copy' size='x16' />} />
+						)}
 					</Field.Row>
 				</Field>
 
-				<Box pb='x8' color='neutral-600' fontScale='c2'>{captionText}</Box>
+				<Box pb='x8' color='neutral-600' fontScale='c2'>
+					{captionText}
+				</Box>
 
-				{ error && <Callout mi='x24' type='danger'>{error.toString()}</Callout>}
+				{error && (
+					<Callout mi='x24' type='danger'>
+						{error.toString()}
+					</Callout>
+				)}
 
 				<Box pb='x16'>
 					{onClickEdit && <Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>}
@@ -50,11 +60,7 @@ export const InviteUsers = ({
 	);
 };
 
-export default ({
-	rid,
-	tabBar,
-	onClickBack,
-}) => {
+export default ({ rid, tabBar, onClickBack }) => {
 	const [editing, setEditing] = useState(false);
 	const format = useFormatDateAndTime();
 	const t = useTranslation();
@@ -67,7 +73,6 @@ export default ({
 	const findOrCreateInvite = useEndpoint('POST', 'findOrCreateInvite');
 
 	const [{ days = 1, maxUses = 0 }, setDayAndMaxUses] = useState({});
-
 
 	const setParams = useMutableCallback((args) => {
 		setDayAndMaxUses(args);
@@ -85,7 +90,10 @@ export default ({
 			const expiration = new Date(data.expires);
 			if (data.maxUses) {
 				const usesLeft = data.maxUses - data.uses;
-				return t('Your_invite_link_will_expire_on__date__or_after__usesLeft__uses', { date: format(expiration), usesLeft });
+				return t('Your_invite_link_will_expire_on__date__or_after__usesLeft__uses', {
+					date: format(expiration),
+					usesLeft,
+				});
 			}
 
 			return t('Your_invite_link_will_expire_on__date__', { date: format(expiration) });
@@ -116,14 +124,15 @@ export default ({
 		})();
 	}, [findOrCreateInvite, editing, linkExpirationText, rid, days, maxUses]);
 
-
 	if (editing) {
-		return <EditInvite
-			onClickBack={onClickBackEditing}
-			linkText={state?.url}
-			captionText={state?.caption}
-			{...{ rid, tabBar, error: state?.error, setParams, days, maxUses }}
-		/>;
+		return (
+			<EditInvite
+				onClickBack={onClickBackEditing}
+				linkText={state?.url}
+				captionText={state?.caption}
+				{...{ rid, tabBar, error: state?.error, setParams, days, maxUses }}
+			/>
+		);
 	}
 
 	return (

@@ -1,29 +1,30 @@
-import React, { useCallback, useMemo, useState } from 'react';
 import {
 	useMutableCallback,
 	useDebouncedValue,
 	useLocalStorage,
 } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useMemo, useState } from 'react';
 
-import { useTabBarClose } from '../../room/providers/ToolboxProvider';
-import { useUserRoom } from '../../../contexts/UserContext';
 import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
-import UserInfoWithData from '../../room/contextualBar/UserInfo';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { RoomMembers } from '../../room/contextualBar/RoomMembers/List/RoomMembers';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useDataWithLoadMore } from '../../room/contextualBar/hooks/useDataWithLoadMore';
+import { useUserRoom } from '../../../contexts/UserContext';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import AddUsers from '../../room/contextualBar/RoomMembers/AddUsers';
 import InviteUsers from '../../room/contextualBar/RoomMembers/InviteUsers';
+import { RoomMembers } from '../../room/contextualBar/RoomMembers/List/RoomMembers';
+import UserInfoWithData from '../../room/contextualBar/UserInfo';
+import { useDataWithLoadMore } from '../../room/contextualBar/hooks/useDataWithLoadMore';
+import { useTabBarClose } from '../../room/providers/ToolboxProvider';
 
 const useGetUsersOfRoom = (params) => {
 	const method = useMethod('getUsersOfRoom');
-	return useDataWithLoadMore(useCallback((args) => method(...args), [method]), params);
+	return useDataWithLoadMore(
+		useCallback((args) => method(...args), [method]),
+		params,
+	);
 };
 
-const TeamMembers = ({
-	rid,
-}) => {
+const TeamMembers = ({ rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
@@ -35,11 +36,24 @@ const TeamMembers = ({
 	const [text, setText] = useState('');
 
 	const debouncedText = useDebouncedValue(text, 500);
-	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [rid, type, debouncedText]);
+	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [
+		rid,
+		type,
+		debouncedText,
+	]);
 
 	const { value, phase, more, error } = useGetUsersOfRoom(params);
 
-	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
+	const canAddUsers = useAtLeastOnePermission(
+		useMemo(
+			() => [
+				room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room',
+				'add-user-to-joined-room',
+			],
+			[room.t],
+		),
+		rid,
+	);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
@@ -63,14 +77,28 @@ const TeamMembers = ({
 
 	const handleBack = useCallback(() => setState({}), [setState]);
 
-	const loadMoreItems = useCallback((start, end) => more(([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter], (prev, next) => ({
-		total: next.total,
-		finished: next.records.length < 50,
-		records: [...prev.records, ...next.records],
-	})), [more]);
+	const loadMoreItems = useCallback(
+		(start, end) =>
+			more(
+				([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter],
+				(prev, next) => ({
+					total: next.total,
+					finished: next.records.length < 50,
+					records: [...prev.records, ...next.records],
+				}),
+			),
+		[more],
+	);
 
 	if (state.tab === 'UserInfo') {
-		return <UserInfoWithData rid={rid} onClickClose={onClickClose} onClickBack={handleBack} username={state.username} />;
+		return (
+			<UserInfoWithData
+				rid={rid}
+				onClickClose={onClickClose}
+				onClickBack={handleBack}
+				username={state.username}
+			/>
+		);
 	}
 
 	if (state.tab === 'InviteUsers') {

@@ -9,10 +9,14 @@ import PortalWrapper from './PortalWrapper';
 const AppRoot = () => {
 	const portals = useSubscription(portalsSubscription);
 
-	return <MeteorProvider>
-		<BannerRegion />
-		{portals.map(({ key, portal }) => <PortalWrapper key={key} portal={portal} />)}
-	</MeteorProvider>;
+	return (
+		<MeteorProvider>
+			<BannerRegion />
+			{portals.map(({ key, portal }) => (
+				<PortalWrapper key={key} portal={portal} />
+			))}
+		</MeteorProvider>
+	);
 };
 
 export default AppRoot;

@@ -1,14 +1,14 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 
 import { KonchatNotification } from '../app/ui/client';
 import { handleError } from '../app/utils/client';
-import { renderRouteComponent } from './reactAdapters';
 import { IUser } from '../definition/IUser';
+import { renderRouteComponent } from './reactAdapters';
 
 BlazeLayout.setRoot('body');
 
@@ -80,31 +80,46 @@ FlowRouter.route('/home', {
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
-		renderRouteComponent(() => import('./views/directory/DirectoryPage'), { template: 'main', region: 'center' });
+		renderRouteComponent(() => import('./views/directory/DirectoryPage'), {
+			template: 'main',
+			region: 'center',
+		});
 	},
-	triggersExit: [(): void => {
-		$('.main-content').addClass('rc-old');
-	}],
+	triggersExit: [
+		(): void => {
+			$('.main-content').addClass('rc-old');
+		},
+	],
 });
 
 FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
 	name: 'omnichannel-directory',
 	action: () => {
-		renderRouteComponent(() => import('./omnichannel/directory/OmnichannelDirectoryPage'), { template: 'main', region: 'center' });
+		renderRouteComponent(() => import('./omnichannel/directory/OmnichannelDirectoryPage'), {
+			template: 'main',
+			region: 'center',
+		});
 	},
-	triggersExit: [(): void => {
-		$('.main-content').addClass('rc-old');
-	}],
+	triggersExit: [
+		(): void => {
+			$('.main-content').addClass('rc-old');
+		},
+	],
 });
 
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
-		renderRouteComponent(() => import('./views/account/AccountRoute'), { template: 'main', region: 'center' });
+		renderRouteComponent(() => import('./views/account/AccountRoute'), {
+			template: 'main',
+			region: 'center',
+		});
 	},
-	triggersExit: [(): void => {
-		$('.main-content').addClass('rc-old');
-	}],
+	triggersExit: [
+		(): void => {
+			$('.main-content').addClass('rc-old');
+		},
+	],
 });
 
 FlowRouter.route('/terms-of-service', {

@@ -3,12 +3,12 @@ import React from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-import { UserInfoWithData } from './UserInfo';
-import { EditUserWithData } from './EditUser';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { AddUser } from './AddUser';
+import { EditUserWithData } from './EditUser';
 import { InviteUsers } from './InviteUsers';
+import { UserInfoWithData } from './UserInfo';
 import UsersTable from './UsersTable';
 
 function UsersPage() {
@@ -31,38 +31,41 @@ function UsersPage() {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	return <Page flexDirection='row'>
-		<Page>
-			<Page.Header title={t('Users')}>
-				<ButtonGroup>
-					<Button onClick={handleNewButtonClick}>
-						<Icon name='plus'/> {t('New')}
-					</Button>
-					<Button onClick={handleInviteButtonClick}>
-						<Icon name='send'/> {t('Invite')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
-			<Page.Content>
-				<UsersTable />
-			</Page.Content>
+	return (
+		<Page flexDirection='row'>
+			<Page>
+				<Page.Header title={t('Users')}>
+					<ButtonGroup>
+						<Button onClick={handleNewButtonClick}>
+							<Icon name='plus' /> {t('New')}
+						</Button>
+						<Button onClick={handleInviteButtonClick}>
+							<Icon name='send' /> {t('Invite')}
+						</Button>
+					</ButtonGroup>
+				</Page.Header>
+				<Page.Content>
+					<UsersTable />
+				</Page.Content>
+			</Page>
+			{context && (
+				<VerticalBar>
+					<VerticalBar.Header>
+						{context === 'info' && t('User_Info')}
+						{context === 'edit' && t('Edit_User')}
+						{context === 'new' && t('Add_User')}
+						{context === 'invite' && t('Invite_Users')}
+						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
+					</VerticalBar.Header>
+
+					{context === 'info' && <UserInfoWithData uid={id} />}
+					{context === 'edit' && <EditUserWithData uid={id} />}
+					{context === 'new' && <AddUser />}
+					{context === 'invite' && <InviteUsers />}
+				</VerticalBar>
+			)}
 		</Page>
-		{context && <VerticalBar>
-			<VerticalBar.Header>
-				{context === 'info' && t('User_Info')}
-				{context === 'edit' && t('Edit_User')}
-				{context === 'new' && t('Add_User')}
-				{context === 'invite' && t('Invite_Users')}
-				<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
-			</VerticalBar.Header>
-
-			{context === 'info' && <UserInfoWithData uid={id}/>}
-			{context === 'edit' && <EditUserWithData uid={id}/>}
-			{context === 'new' && <AddUser/>}
-			{context === 'invite' && <InviteUsers/>}
-
-		</VerticalBar>}
-	</Page>;
+	);
 }
 
 export default UsersPage;

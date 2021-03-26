@@ -1,24 +1,30 @@
 import React, { useRef, useEffect } from 'react';
 
-import Chart from './Chart';
-import { useUpdateChartData } from './useUpdateChartData';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
+import Chart from './Chart';
 import { getMomentChartLabelsAndData } from './getMomentChartLabelsAndData';
 import { getMomentCurrentLabel } from './getMomentCurrentLabel';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { useUpdateChartData } from './useUpdateChartData';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
 
-const init = (canvas, context, t) => drawLineChart(
-	canvas,
-	context,
-	[t('Avg_reaction_time'), t('Longest_reaction_time'), t('Avg_response_time'), t('Longest_response_time')],
-	labels,
-	[initialData, initialData, initialData, initialData],
-	{ legends: true, anim: true, smallTicks: true },
-);
+const init = (canvas, context, t) =>
+	drawLineChart(
+		canvas,
+		context,
+		[
+			t('Avg_reaction_time'),
+			t('Longest_reaction_time'),
+			t('Avg_response_time'),
+			t('Longest_response_time'),
+		],
+		labels,
+		[initialData, initialData, initialData, initialData],
+		{ legends: true, anim: true, smallTicks: true },
+	);
 
 const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
 	const t = useTranslation();
@@ -41,14 +47,8 @@ const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
 	reloadRef.current.responseTimesChart = reload;
 
 	const {
-		reaction: {
-			avg: reactionAvg,
-			longest: reactionLongest,
-		},
-		response: {
-			avg: responseAvg,
-			longest: responseLongest,
-		},
+		reaction: { avg: reactionAvg, longest: reactionLongest },
+		response: { avg: responseAvg, longest: responseLongest },
 	} = data ?? {
 		reaction: {
 			avg: 0,
@@ -74,7 +74,7 @@ const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
 		}
 	}, [reactionAvg, reactionLongest, responseAvg, responseLongest, state, t, updateChartData]);
 
-	return <Chart ref={canvas} {...props}/>;
+	return <Chart ref={canvas} {...props} />;
 };
 
 export default ResponseTimesChart;

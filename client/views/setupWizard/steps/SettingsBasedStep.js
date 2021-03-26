@@ -37,7 +37,10 @@ const useFields = () => {
 	}, []);
 
 	const resetFields = useCallback((fields) => dispatch({ type: reset, payload: fields }), []);
-	const setFieldValue = useCallback((_id, value) => dispatch({ type: setValue, payload: { _id, value } }), []);
+	const setFieldValue = useCallback(
+		(_id, value) => dispatch({ type: setValue, payload: { _id, value } }),
+		[],
+	);
 
 	return { fields, resetFields, setFieldValue };
 };
@@ -86,91 +89,107 @@ function SettingsBasedStep({ step, title, active }) {
 		}
 	};
 
-	const hasEmptyRequiredFields = useMemo(() => !!fields.find((field) => field.requiredOnWizard && String(field.value).trim() === ''), [fields]);
-
+	const hasEmptyRequiredFields = useMemo(
+		() => !!fields.find((field) => field.requiredOnWizard && String(field.value).trim() === ''),
+		[fields],
+	);
 
 	if (fields.length === 0) {
-		return <Step active={active} working={commiting} onSubmit={handleSubmit}>
+		return (
+			<Step active={active} working={commiting} onSubmit={handleSubmit}>
+				<StepHeader number={step} title={title} />
+
+				<Margins blockEnd='x32'>
+					<FieldGroup>
+						{Array.from({ length: 5 }, (_, i) => (
+							<Field key={i}>
+								<Flex.Item align='stretch'>
+									<Field.Label>{<Skeleton width='50%' />}</Field.Label>
+								</Flex.Item>
+								<InputBox.Skeleton />
+							</Field>
+						))}
+					</FieldGroup>
+				</Margins>
+			</Step>
+		);
+	}
+
+	return (
+		<Step active={active} working={commiting} onSubmit={handleSubmit}>
 			<StepHeader number={step} title={title} />
 
 			<Margins blockEnd='x32'>
 				<FieldGroup>
-					{Array.from({ length: 5 }, (_, i) => <Field key={i}>
-						<Flex.Item align='stretch'>
-							<Field.Label>
-								{<Skeleton width='50%' />}
+					{fields.map(({ _id, type, i18nLabel, value, values, requiredOnWizard }, i) => (
+						<Field key={i}>
+							<Field.Label htmlFor={_id} required={requiredOnWizard}>
+								{t(i18nLabel)}
 							</Field.Label>
-						</Flex.Item>
-						<InputBox.Skeleton />
-					</Field>)}
+							<Field.Row>
+								{type === 'string' && (
+									<TextInput
+										type='text'
+										data-qa={_id}
+										id={_id}
+										name={_id}
+										ref={i === 0 ? autoFocusRef : undefined}
+										value={value}
+										onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
+									/>
+								)}
+
+								{type === 'select' && (
+									<Select
+										data-qa={_id}
+										id={_id}
+										name={_id}
+										placeholder={t('Select_an_option')}
+										value={value}
+										onChange={(value) => setFieldValue(_id, value)}
+										options={values.map(({ i18nLabel, key }) => [key, t(i18nLabel)])}
+									/>
+								)}
+
+								{type === 'boolean' && (
+									<Select
+										data-qa={_id}
+										id={_id}
+										name={_id}
+										ref={i === 0 ? autoFocusRef : undefined}
+										value={String(value)}
+										onChange={(value) => setFieldValue(_id, value === 'true')}
+										options={[
+											['true', t('Yes')],
+											['false', t('No')],
+										]}
+									/>
+								)}
+
+								{type === 'language' && (
+									<Select
+										data-qa={_id}
+										id={_id}
+										name={_id}
+										placeholder={t('Default')}
+										value={value}
+										onChange={(value) => setFieldValue(_id, value)}
+										options={languages.map(({ key, name }) => [key, name])}
+									/>
+								)}
+							</Field.Row>
+						</Field>
+					))}
 				</FieldGroup>
 			</Margins>
-		</Step>;
-	}
 
-	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
-		<StepHeader number={step} title={title} />
-
-		<Margins blockEnd='x32'>
-			<FieldGroup>
-				{fields.map(({ _id, type, i18nLabel, value, values, requiredOnWizard }, i) =>
-					<Field key={i}>
-						<Field.Label htmlFor={_id} required={requiredOnWizard}>{t(i18nLabel)}</Field.Label>
-						<Field.Row>
-							{type === 'string' && <TextInput
-								type='text'
-								data-qa={_id}
-								id={_id}
-								name={_id}
-								ref={i === 0 ? autoFocusRef : undefined}
-								value={value}
-								onChange={({ currentTarget: { value } }) => setFieldValue(_id, value)}
-							/>}
-
-							{type === 'select' && <Select
-								data-qa={_id}
-								id={_id}
-								name={_id}
-								placeholder={t('Select_an_option')}
-								value={value}
-								onChange={(value) => setFieldValue(_id, value)}
-								options={values.map(({ i18nLabel, key }) => [key, t(i18nLabel)])}
-							/>}
-
-							{type === 'boolean' && <Select
-								data-qa={_id}
-								id={_id}
-								name={_id}
-								ref={i === 0 ? autoFocusRef : undefined}
-								value={String(value)}
-								onChange={(value) => setFieldValue(_id, value === 'true')}
-								options={[
-									['true', t('Yes')],
-									['false', t('No')],
-								]}
-							/>}
-
-							{type === 'language' && <Select
-								data-qa={_id}
-								id={_id}
-								name={_id}
-								placeholder={t('Default')}
-								value={value}
-								onChange={(value) => setFieldValue(_id, value)}
-								options = {languages.map(({ key, name }) => [key, name])}
-							/>}
-						</Field.Row>
-					</Field>,
-				)}
-			</FieldGroup>
-		</Margins>
-
-		<Pager
-			disabled={commiting}
-			isContinueEnabled={!hasEmptyRequiredFields}
-			onBackClick={currentStep > 2 && handleBackClick}
-		/>
-	</Step>;
+			<Pager
+				disabled={commiting}
+				isContinueEnabled={!hasEmptyRequiredFields}
+				onBackClick={currentStep > 2 && handleBackClick}
+			/>
+		</Step>
+	);
 }
 
 export default SettingsBasedStep;

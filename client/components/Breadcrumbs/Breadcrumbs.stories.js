@@ -9,46 +9,49 @@ export default {
 
 const { Item, Icon, Text, Link, Separator } = Breadcrumbs;
 
-export const Default = () =>
+export const Default = () => (
 	<Breadcrumbs>
 		<Item>
 			<Icon name='lock' />
 			<Text>design</Text>
 		</Item>
-		<Separator/>
+		<Separator />
 		<Item>
 			<Icon name='lock' />
 			<Text>rc-design</Text>
 		</Item>
-	</Breadcrumbs>;
+	</Breadcrumbs>
+);
 
-export const AsTeamMember = () =>
+export const AsTeamMember = () => (
 	<Breadcrumbs>
 		<Item>
 			<Icon name='lock' />
 			<Link>design</Link>
 		</Item>
-		<Separator/>
+		<Separator />
 		<Item>
 			<Icon name='lock' />
 			<Text>rc-design</Text>
 		</Item>
-	</Breadcrumbs>;
+	</Breadcrumbs>
+);
 
-export const WithDiscussion = () =>
+export const WithDiscussion = () => (
 	<Breadcrumbs>
 		<Item>
 			<Icon name='lock' />
 			<Text>design</Text>
 		</Item>
-		<Separator/>
+		<Separator />
 		<Item>
 			<Icon name='lock' />
 			<Text>rc-design</Text>
 		</Item>
-		<Separator/>
+		<Separator />
 		<Item>
 			<Icon name='baloons' />
 			<Text>storybook</Text>
 		</Item>
-	</Breadcrumbs>;
+	</Breadcrumbs>
+);

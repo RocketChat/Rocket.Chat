@@ -1,43 +1,46 @@
-import React, { useRef, useEffect, useState, useMemo, useLayoutEffect } from 'react';
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
+import React, { useRef, useEffect, useState, useMemo, useLayoutEffect } from 'react';
 
-import { CallModal } from './components/CallModal';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useUserRoom, useUser } from '../../../../../contexts/UserContext';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useSettings } from '../../../../../contexts/SettingsContext';
-import VerticalBar from '../../../../../components/VerticalBar';
 import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../app/videobridge/constants';
-import { useMethod } from '../../../../../contexts/ServerContext';
+import VerticalBar from '../../../../../components/VerticalBar';
 import { useConnectionStatus } from '../../../../../contexts/ConnectionStatusContext';
-import { JitsiBridge } from './lib/JitsiBridge';
+import { useSetModal } from '../../../../../contexts/ModalContext';
+import { useMethod } from '../../../../../contexts/ServerContext';
+import { useSettings } from '../../../../../contexts/SettingsContext';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useUserRoom, useUser } from '../../../../../contexts/UserContext';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { CallModal } from './components/CallModal';
+import { JitsiBridge } from './lib/JitsiBridge';
 
-export const CallJitsi = ({
-	handleClose,
-	openNewWindow,
-	refContent,
-	children,
-}) => {
+export const CallJitsi = ({ handleClose, openNewWindow, refContent, children }) => {
 	const t = useTranslation();
 
-	const content = openNewWindow ? <>
-		<Box fontScale='p2'>{t('Video_Conference')}</Box>
-		<Box fontScale='p1' color='neutral-700'>{t('Opened_in_a_new_window')}</Box>
-	</> : <div ref={refContent}/>;
+	const content = openNewWindow ? (
+		<>
+			<Box fontScale='p2'>{t('Video_Conference')}</Box>
+			<Box fontScale='p1' color='neutral-700'>
+				{t('Opened_in_a_new_window')}
+			</Box>
+		</>
+	) : (
+		<div ref={refContent} />
+	);
 
-	return <>
-		<VerticalBar.Header>
-			<VerticalBar.Icon name='phone'/>
-			<VerticalBar.Text>{t('Call')}</VerticalBar.Text>
-			{handleClose && <VerticalBar.Close onClick={handleClose}/>}
-		</VerticalBar.Header>
-		<VerticalBar.ScrollableContent>
-			{content}
-			{children}
-		</VerticalBar.ScrollableContent>
-	</>;
+	return (
+		<>
+			<VerticalBar.Header>
+				<VerticalBar.Icon name='phone' />
+				<VerticalBar.Text>{t('Call')}</VerticalBar.Text>
+				{handleClose && <VerticalBar.Close onClick={handleClose} />}
+			</VerticalBar.Header>
+			<VerticalBar.ScrollableContent>
+				{content}
+				{children}
+			</VerticalBar.ScrollableContent>
+		</>
+	);
 };
 
 const querySettings = {
@@ -85,7 +88,6 @@ const CallJitsWithData = ({ rid }) => {
 		Jitsi_Enabled_TokenAuth: isEnabledTokenAuth,
 	} = Object.fromEntries(useSettings(querySettings).map(({ _id, value }) => [_id, value]));
 
-
 	useEffect(() => {
 		let ignore = false;
 		if (!isEnabledTokenAuth) {
@@ -96,7 +98,9 @@ const CallJitsWithData = ({ rid }) => {
 			const accessToken = await generateAccessToken(rid);
 			!ignore && setAccessToken(accessToken);
 		})();
-		return () => { ignore = true; };
+		return () => {
+			ignore = true;
+		};
 	}, [generateAccessToken, isEnabledTokenAuth, rid, setAccessToken]);
 
 	useLayoutEffect(() => {
@@ -105,25 +109,42 @@ const CallJitsWithData = ({ rid }) => {
 		}
 	}, [connected, handleClose]);
 
-	const rname = useHashName ? uniqueID + rid : encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
+	const rname = useHashName
+		? uniqueID + rid
+		: encodeURIComponent(room.t === 'd' ? room.usernames.join(' x ') : room.name);
 
 	const jitsi = useMemo(() => {
-		if (isEnabledTokenAuth && ! accessToken) {
+		if (isEnabledTokenAuth && !accessToken) {
 			return;
 		}
 
 		const jitsiRoomName = prefix + rname + sufix;
 
-		return new JitsiBridge({
-			openNewWindow,
-			ssl,
-			domain,
-			jitsiRoomName,
-			accessToken,
-			desktopSharingChromeExtId,
-			name: user.name || user.username,
-		}, HEARTBEAT);
-	}, [accessToken, desktopSharingChromeExtId, domain, isEnabledTokenAuth, openNewWindow, prefix, rname, ssl, sufix, user.name, user.username]);
+		return new JitsiBridge(
+			{
+				openNewWindow,
+				ssl,
+				domain,
+				jitsiRoomName,
+				accessToken,
+				desktopSharingChromeExtId,
+				name: user.name || user.username,
+			},
+			HEARTBEAT,
+		);
+	}, [
+		accessToken,
+		desktopSharingChromeExtId,
+		domain,
+		isEnabledTokenAuth,
+		openNewWindow,
+		prefix,
+		rname,
+		ssl,
+		sufix,
+		user.name,
+		user.username,
+	]);
 
 	const testAndHandleTimeout = useMutableCallback(() => {
 		if (new Date() - new Date(room.jitsiTimeout) > TIMEOUT) {
@@ -160,24 +181,15 @@ const CallJitsWithData = ({ rid }) => {
 
 	useLayoutEffect(() => {
 		if (!accepted) {
-			setModal(() =>
-				<CallModal
-					handleYes={handleYes}
-					handleCancel={handleCancel}
-				/>,
-			);
+			setModal(() => <CallModal handleYes={handleYes} handleCancel={handleCancel} />);
 			return;
 		}
 		closeModal();
 	}, [accepted, closeModal, handleCancel, handleYes, setModal]);
 
 	return (
-		<CallJitsi
-			handleClose={handleClose}
-			openNewWindow={openNewWindow}
-			refContent={ref}
-		>
-			{!accepted && <Skeleton/>}
+		<CallJitsi handleClose={handleClose} openNewWindow={openNewWindow} refContent={ref}>
+			{!accepted && <Skeleton />}
 		</CallJitsi>
 	);
 };

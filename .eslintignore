@@ -18,4 +18,4 @@ imports/client/
 !/.storybook/
 ee/server/services/dist/**
 !/.mocharc.js
-!/client/startup/.eslintrc.js
+!/client/.eslintrc.js

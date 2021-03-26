@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
+import { useEffect } from 'react';
 
+import { IRoom } from '../../../definition/IRoom';
+import { ISubscription } from '../../../definition/ISubscription';
 import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { useQueryOptions } from './useQueryOptions';
-import { ISubscription } from '../../../definition/ISubscription';
 
 const query = { open: { $ne: false } };
 
@@ -22,6 +23,11 @@ export const useRoomList = (): Array<ISubscription> => {
 	const rooms = useUserSubscriptions(query, options);
 
 	const inquiries = useQueuedInquiries();
+
+	let queue: IRoom[] = [];
+	if (inquiries.enabled) {
+		queue = inquiries.queue;
+	}
 
 	useEffect(() => {
 		setRoomList(() => {
@@ -76,12 +82,20 @@ export const useRoomList = (): Array<ISubscription> => {
 				conversation.add(room);
 			});
 
-
 			const groups = new Map();
 			showOmnichannel && (inquiries.enabled || onHold.size) && groups.set('Omnichannel', []);
-			showOmnichannel && !inquiries.enabled && !onHold.size && groups.set('Omnichannel', omnichannel);
-			showOmnichannel && inquiries.enabled && inquiries.queue.length && groups.set('Incoming_Livechats', inquiries.queue);
-			showOmnichannel && (inquiries.enabled || onHold.size) && omnichannel.size && groups.set('Open_Livechats', omnichannel);
+			showOmnichannel &&
+				!inquiries.enabled &&
+				!onHold.size &&
+				groups.set('Omnichannel', omnichannel);
+			showOmnichannel &&
+				inquiries.enabled &&
+				queue.length &&
+				groups.set('Incoming_Livechats', queue);
+			showOmnichannel &&
+				(inquiries.enabled || onHold.size) &&
+				omnichannel.size &&
+				groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
@@ -95,7 +109,16 @@ export const useRoomList = (): Array<ISubscription> => {
 		});
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [rooms, showOmnichannel, inquiries.enabled, inquiries.enabled && inquiries.queue, sidebarShowUnread, favoritesEnabled, showDiscussion, sidebarGroupByType]);
+	}, [
+		rooms,
+		showOmnichannel,
+		inquiries.enabled,
+		queue,
+		sidebarShowUnread,
+		favoritesEnabled,
+		showDiscussion,
+		sidebarGroupByType,
+	]);
 
 	return roomList;
 };

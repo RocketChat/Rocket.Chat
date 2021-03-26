@@ -1,19 +1,19 @@
-import React, { FC } from 'react';
 import { Callout, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { FC } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { ISetting } from '../../../../definition/ISetting';
+import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import Page from '../../../components/Page';
+import PageSkeleton from '../../../components/PageSkeleton';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useForm } from '../../../hooks/useForm';
-import Page from '../../../components/Page';
-import AppearanceForm from './AppearanceForm';
-import PageSkeleton from '../../../components/PageSkeleton';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
-import { ISetting } from '../../../../definition/ISetting';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useForm } from '../../../hooks/useForm';
+import AppearanceForm from './AppearanceForm';
 
 type LivechatAppearanceSettings = {
 	Livechat_title: string;
@@ -61,17 +61,17 @@ const AppearancePageContainer: FC = () => {
 	}
 
 	if (!data || !data.success || !data.appearance || error) {
-		return <Page>
-			<Page.Header title={t('Edit_Custom_Field')} />
-			<Page.ScrollableContentWithShadow>
-				<Callout type='danger'>
-					{t('Error')}
-				</Callout>
-			</Page.ScrollableContentWithShadow>
-		</Page>;
+		return (
+			<Page>
+				<Page.Header title={t('Edit_Custom_Field')} />
+				<Page.ScrollableContentWithShadow>
+					<Callout type='danger'>{t('Error')}</Callout>
+				</Page.ScrollableContentWithShadow>
+			</Page>
+		);
 	}
 
-	return <AppearancePage settings={data.appearance}/>;
+	return <AppearancePage settings={data.appearance} />;
 };
 
 type AppearancePageProps = {
@@ -82,9 +82,13 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const save: (settings: Pick<ISetting, '_id'>[] & {value: unknown}[]) => Promise<void> = useMethod('livechat:saveAppearance');
+	const save: (
+		settings: Pick<ISetting, '_id'>[] & { value: unknown }[],
+	) => Promise<void> = useMethod('livechat:saveAppearance');
 
-	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(reduceAppearance(settings));
+	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(
+		reduceAppearance(settings),
+	);
 
 	const handleSave = useMutableCallback(async () => {
 		const mappedAppearance = Object.entries(values).map(([_id, value]) => ({ _id, value }));
@@ -102,23 +106,23 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 		reset();
 	};
 
-	return <Page>
-		<Page.Header title={t('Appearance')}>
-			<ButtonGroup align='end'>
-				<Button onClick={handleResetButtonClick}>
-					{t('Reset')}
-				</Button>
-				<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
-					{t('Save')}
-				</Button>
-			</ButtonGroup>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			<Box maxWidth='x600' w='full' alignSelf='center'>
-				<AppearanceForm values={values} handlers={handlers}/>
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+	return (
+		<Page>
+			<Page.Header title={t('Appearance')}>
+				<ButtonGroup align='end'>
+					<Button onClick={handleResetButtonClick}>{t('Reset')}</Button>
+					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
+			<Page.ScrollableContentWithShadow>
+				<Box maxWidth='x600' w='full' alignSelf='center'>
+					<AppearanceForm values={values} handlers={handlers} />
+				</Box>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 };
 
 export default AppearancePageContainer;

@@ -12,7 +12,9 @@ const getReconnectCountdown = (retryTime) => {
 
 const useReconnectCountdown = (retryTime, status) => {
 	const reconnectionTimerRef = useRef();
-	const [reconnectCountdown, setReconnectCountdown] = useState(() => getReconnectCountdown(retryTime));
+	const [reconnectCountdown, setReconnectCountdown] = useState(() =>
+		getReconnectCountdown(retryTime),
+	);
 
 	useEffect(() => {
 		if (status === 'waiting') {
@@ -30,9 +32,12 @@ const useReconnectCountdown = (retryTime, status) => {
 		reconnectionTimerRef.current = null;
 	}, [retryTime, status]);
 
-	useEffect(() => () => {
-		clearInterval(reconnectionTimerRef.current);
-	}, []);
+	useEffect(
+		() => () => {
+			clearInterval(reconnectionTimerRef.current);
+		},
+		[],
+	);
 
 	return reconnectCountdown;
 };
@@ -51,23 +56,26 @@ function ConnectionStatusAlert() {
 		reconnect && reconnect();
 	};
 
-	return <div className='ConnectionStatusAlert' role='alert'>
-		<strong>
-			<Icon name='warning' /> {t('meteor_status', { context: status })}
-		</strong>
+	return (
+		<div className='ConnectionStatusAlert' role='alert'>
+			<strong>
+				<Icon name='warning' /> {t('meteor_status', { context: status })}
+			</strong>
 
-		{status === 'waiting' && <>
-			{' '}
-			{t('meteor_status_reconnect_in', { count: reconnectCountdown })}
-		</>}
+			{status === 'waiting' && (
+				<> {t('meteor_status_reconnect_in', { count: reconnectCountdown })}</>
+			)}
 
-		{['waiting', 'offline'].includes(status) && <>
-			{' '}
-			<a className='ConnectionStatusAlert__retry-link' href='#' onClick={handleRetryClick}>
-				{t('meteor_status_try_now', { context: status })}
-			</a>
-		</>}
-	</div>;
+			{['waiting', 'offline'].includes(status) && (
+				<>
+					{' '}
+					<a className='ConnectionStatusAlert__retry-link' href='#' onClick={handleRetryClick}>
+						{t('meteor_status_try_now', { context: status })}
+					</a>
+				</>
+			)}
+		</div>
+	);
 }
 
 export default ConnectionStatusAlert;

@@ -1,24 +1,22 @@
 import React, { useRef, useEffect } from 'react';
 
+import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
 import { useUpdateChartData } from './useUpdateChartData';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 
 const initialData = {
 	departments: {},
 };
 
-const init = (canvas, context, t) => drawLineChart(
-	canvas,
-	context,
-	[t('Open'), t('Closed')],
-	[],
-	[[], []],
-	{ legends: true, anim: true, smallTicks: true },
-);
+const init = (canvas, context, t) =>
+	drawLineChart(canvas, context, [t('Open'), t('Closed')], [], [[], []], {
+		legends: true,
+		anim: true,
+		smallTicks: true,
+	});
 
 const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 	const t = useTranslation();
@@ -40,9 +38,7 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 
 	reloadRef.current.chatsPerDepartmentChart = reload;
 
-	const {
-		departments = {},
-	} = data ?? initialData;
+	const { departments = {} } = data ?? initialData;
 
 	useEffect(() => {
 		const initChart = async () => {
@@ -59,7 +55,7 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 		}
 	}, [departments, state, t, updateChartData]);
 
-	return <Chart ref={canvas} {...props}/>;
+	return <Chart ref={canvas} {...props} />;
 };
 
 export default ChatsPerDepartmentChart;

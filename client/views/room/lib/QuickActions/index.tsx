@@ -1,17 +1,16 @@
-import { ReactNode, MouseEvent } from 'react';
 import { BoxProps, OptionProps } from '@rocket.chat/fuselage';
+import { ReactNode, MouseEvent } from 'react';
 
 import { IRoom } from '../../../../../definition/IRoom';
 import { generator, Events as GeneratorEvents } from '../Toolbox/generator';
 
-
-type QuickActionsHook = ({ room }: { room: IRoom }) => QuickActionsActionConfig | null
+type QuickActionsHook = ({ room }: { room: IRoom }) => QuickActionsActionConfig | null;
 
 type ActionRendererProps = Omit<QuickActionsActionConfig, 'renderAction' | 'groups'> & {
 	className: BoxProps['className'];
 	tabId: QuickActionsActionConfig['id'] | undefined;
 	index: number;
-}
+};
 
 export type ActionRenderer = (props: ActionRendererProps) => ReactNode;
 
@@ -29,11 +28,16 @@ export type QuickActionsActionConfig = {
 	renderAction?: ActionRenderer;
 	groups: Array<'live'>;
 	action?: (e: MouseEvent<HTMLElement>) => void;
-}
+};
 
 export type QuickActionsAction = QuickActionsHook | QuickActionsActionConfig;
 
-const { listen, add: addAction, remove: deleteAction, store: actions } = generator<QuickActionsAction>();
+const {
+	listen,
+	add: addAction,
+	remove: deleteAction,
+	store: actions,
+} = generator<QuickActionsAction>();
 
 export type Events = GeneratorEvents<QuickActionsAction>;
 
@@ -43,5 +47,5 @@ export enum QuickActionsEnum {
 	MoveQueue = 'rocket-move-to-queue',
 	ChatForward = 'rocket-chat-forward',
 	Transcript = 'rocket-transcript',
-	CloseChat = 'rocket-close-chat'
+	CloseChat = 'rocket-close-chat',
 }

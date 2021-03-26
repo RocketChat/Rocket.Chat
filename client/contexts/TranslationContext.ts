@@ -21,19 +21,18 @@ export type TranslationContextValue = {
 };
 
 export const TranslationContext = createContext<TranslationContextValue>({
-	languages: [{
-		name: 'Default',
-		en: 'Default',
-		key: '',
-	}],
+	languages: [
+		{
+			name: 'Default',
+			en: 'Default',
+			key: '',
+		},
+	],
 	language: '',
 	loadLanguage: async () => undefined,
-	translate: Object.assign(
-		(key: string) => key,
-		{
-			has: () => true,
-		},
-	),
+	translate: Object.assign((key: string) => key, {
+		has: () => true,
+	}),
 });
 
 export const useLanguages = (): TranslationContextValue['languages'] =>

@@ -19,7 +19,8 @@ export const OmnichannelContext = createContext<OmnichannelContextValue>({
 
 export const useOmnichannel = (): OmnichannelContextValue => useContext(OmnichannelContext);
 export const useOmnichannelShowQueueLink = (): boolean => useOmnichannel().showOmnichannelQueueLink;
-export const useOmnichannelRouteConfig = (): OmichannelRoutingConfig | undefined => useOmnichannel().routeConfig;
+export const useOmnichannelRouteConfig = (): OmichannelRoutingConfig | undefined =>
+	useOmnichannel().routeConfig;
 export const useOmnichannelAgentAvailable = (): boolean => useOmnichannel().agentAvailable;
 export const useQueuedInquiries = (): Inquiries => useOmnichannel().inquiries;
 export const useOmnichannelQueueLink = (): string => '/livechat-queue';

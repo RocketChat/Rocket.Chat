@@ -9,15 +9,17 @@ import ServersSection from './ServersSection';
 function FederationDashboardPage() {
 	const t = useTranslation();
 
-	return <Page>
-		<Page.Header title={t('Federation_Dashboard')} />
-		<Page.ScrollableContentWithShadow>
-			<Box margin='x24'>
-				<OverviewSection />
-				<ServersSection />
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+	return (
+		<Page>
+			<Page.Header title={t('Federation_Dashboard')} />
+			<Page.ScrollableContentWithShadow>
+				<Box margin='x24'>
+					<OverviewSection />
+					<ServersSection />
+				</Box>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 }
 
 export default FederationDashboardPage;

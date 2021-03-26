@@ -4,8 +4,8 @@ type Variables = {
 	[name: string]: (variables: Variables) => string;
 };
 
-const findDeclarations = (code: string): [string, Variables[keyof Variables]][] => (code.match(/(--[^:; ]+:..*?;)/g) ?? [])
-	.map((declaration) => {
+const findDeclarations = (code: string): [string, Variables[keyof Variables]][] =>
+	(code.match(/(--[^:; ]+:..*?;)/g) ?? []).map((declaration) => {
 		const matches = /(.*?):\s*(.*?)\s*;/.exec(declaration);
 
 		if (matches === null) {
@@ -16,7 +16,8 @@ const findDeclarations = (code: string): [string, Variables[keyof Variables]][] 
 		return [
 			name,
 			value.indexOf('var(') >= 0
-				? (variables: Variables): string => value.replace(/var\((--.*?)\)/gm, (_, name) => variables[name]?.call(null, variables))
+				? (variables: Variables): string =>
+						value.replace(/var\((--.*?)\)/gm, (_, name) => variables[name]?.call(null, variables))
 				: (): string => value,
 		];
 	});
@@ -50,28 +51,30 @@ const update = _.debounce(() => {
 		while (sheet.cssRules.length > 0) {
 			sheet.deleteRule(0);
 		}
-		sheet.insertRule(`@media all {${ patchedCode }}`, 0);
+		sheet.insertRule(`@media all {${patchedCode}}`, 0);
 	});
 }, 100);
 
 const findAndPatchFromLinkElements = (): void => {
-	Array.from(document.querySelectorAll('link[type="text/css"].__meteor-css__')).forEach(async (linkElement) => {
-		const url = linkElement.getAttribute('href');
+	Array.from(document.querySelectorAll('link[type="text/css"].__meteor-css__')).forEach(
+		async (linkElement) => {
+			const url = linkElement.getAttribute('href');
 
-		if (url === null) {
-			return;
-		}
+			if (url === null) {
+				return;
+			}
 
-		try {
-			const response = await fetch(url);
-			const code = await response.text();
-			originalCodes.set(linkElement, code);
-		} catch (error) {
-			console.warn(error);
-		} finally {
-			update();
-		}
-	});
+			try {
+				const response = await fetch(url);
+				const code = await response.text();
+				originalCodes.set(linkElement, code);
+			} catch (error) {
+				console.warn(error);
+			} finally {
+				update();
+			}
+		},
+	);
 };
 
 const waitAndInitialize = (): void => {

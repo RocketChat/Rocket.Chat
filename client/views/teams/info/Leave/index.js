@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
 
-import StepOne from './StepOne';
-import StepTwo from './StepTwo';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { UserContext } from '../../../../contexts/UserContext';
 import LeaveTeamModal from './LeaveTeamModal';
+import StepOne from './StepOne';
+import StepTwo from './StepTwo';
 
 const useJoinedRoomsWithLastOwner = (teamId) => {
 	const [roomList, setRoomList] = useState([]);
@@ -25,11 +25,16 @@ const useJoinedRoomsWithLastOwner = (teamId) => {
 
 			const subs = querySubscriptions(query, {}).getCurrentValue();
 
-			const finalRooms = await Promise.all(subs.map(async (subscription) => {
-				const { users, total } = await getUsersInRole({ role: 'owner', roomId: subscription.rid });
-				const isLastOwner = total === 1 && users[0]._id === subscription.u._id;
-				return { ...subscription, isLastOwner };
-			}));
+			const finalRooms = await Promise.all(
+				subs.map(async (subscription) => {
+					const { users, total } = await getUsersInRole({
+						role: 'owner',
+						roomId: subscription.rid,
+					});
+					const isLastOwner = total === 1 && users[0]._id === subscription.u._id;
+					return { ...subscription, isLastOwner };
+				}),
+			);
 
 			setRoomList(finalRooms);
 		};

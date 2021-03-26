@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { formatPricingPlan, formatPrice } from './helpers';
@@ -23,11 +23,22 @@ const formatPriceAndPurchaseType = (purchaseType, pricingPlans, price) => {
 function PriceDisplay({ purchaseType, pricingPlans, price, showType = true, ...props }) {
 	const t = useTranslation();
 
-	const { type, price: formatedPrice } = useMemo(() => formatPriceAndPurchaseType(purchaseType, pricingPlans, price), [purchaseType, pricingPlans, price]);
-	return <Box display='flex' flexDirection='column' {...props}>
-		{showType && <Box color='default' withTruncatedText>{t(type)}</Box>}
-		<Box color='hint' withTruncatedText>{!showType && type === 'Free' ? t(type) : formatedPrice}</Box>
-	</Box>;
+	const { type, price: formatedPrice } = useMemo(
+		() => formatPriceAndPurchaseType(purchaseType, pricingPlans, price),
+		[purchaseType, pricingPlans, price],
+	);
+	return (
+		<Box display='flex' flexDirection='column' {...props}>
+			{showType && (
+				<Box color='default' withTruncatedText>
+					{t(type)}
+				</Box>
+			)}
+			<Box color='hint' withTruncatedText>
+				{!showType && type === 'Free' ? t(type) : formatedPrice}
+			</Box>
+		</Box>
+	);
 }
 
 export default PriceDisplay;

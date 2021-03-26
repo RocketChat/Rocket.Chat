@@ -7,37 +7,28 @@ import { LanguageSettingInput } from './LanguageSettingInput';
 export default {
 	title: 'admin/settings/inputs/LanguageSettingInput',
 	component: LanguageSettingInput,
-	decorators: [
-		(storyFn) => <Field>{storyFn()}</Field>,
-	],
+	decorators: [(storyFn) => <Field>{storyFn()}</Field>],
 };
 
-export const _default = () =>
+export const _default = () => (
 	<LanguageSettingInput
 		_id='setting_id'
 		label='Label'
 		placeholder='Placeholder'
 		onChangeValue={action('changeValue')}
 		onChangeEditor={action('changeEditor')}
-	/>;
+	/>
+);
 
-export const disabled = () =>
-	<LanguageSettingInput
-		_id='setting_id'
-		label='Label'
-		placeholder='Placeholder'
-		disabled
-	/>;
+export const disabled = () => (
+	<LanguageSettingInput _id='setting_id' label='Label' placeholder='Placeholder' disabled />
+);
 
-export const withValue = () =>
-	<LanguageSettingInput
-		_id='setting_id'
-		label='Label'
-		placeholder='Placeholder'
-		value='en'
-	/>;
+export const withValue = () => (
+	<LanguageSettingInput _id='setting_id' label='Label' placeholder='Placeholder' value='en' />
+);
 
-export const withResetButton = () =>
+export const withResetButton = () => (
 	<LanguageSettingInput
 		_id='setting_id'
 		label='Label'
@@ -50,4 +41,5 @@ export const withResetButton = () =>
 		hasResetButton
 		onChangeValue={action('changeValue')}
 		onResetButtonClick={action('resetButtonClick')}
-	/>;
+	/>
+);

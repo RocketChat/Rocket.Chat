@@ -7,5 +7,4 @@ export default {
 	component: Mailer,
 };
 
-export const _default = () =>
-	<Mailer />;
+export const _default = () => <Mailer />;

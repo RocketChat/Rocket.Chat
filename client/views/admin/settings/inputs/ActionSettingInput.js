@@ -5,13 +5,7 @@ import { useMethod } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
-export function ActionSettingInput({
-	_id,
-	actionText,
-	value,
-	disabled,
-	sectionChanged,
-}) {
+export function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }) {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -27,16 +21,18 @@ export function ActionSettingInput({
 		}
 	};
 
-	return <>
-		<Field.Row>
-			<Button
-				data-qa-setting-id={_id}
-				children={t(actionText)}
-				disabled={disabled || sectionChanged}
-				primary
-				onClick={handleClick}
-			/>
-		</Field.Row>
-		{sectionChanged && <Field.Hint>{t('Save_to_enable_this_action')}</Field.Hint>}
-	</>;
+	return (
+		<>
+			<Field.Row>
+				<Button
+					data-qa-setting-id={_id}
+					children={t(actionText)}
+					disabled={disabled || sectionChanged}
+					primary
+					onClick={handleClick}
+				/>
+			</Field.Row>
+			{sectionChanged && <Field.Hint>{t('Save_to_enable_this_action')}</Field.Hint>}
+		</>
+	);
 }

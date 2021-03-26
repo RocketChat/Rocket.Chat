@@ -1,27 +1,26 @@
-import { MessageList } from './MessageList';
 import type { IMessage } from '../../../definition/IMessage';
-import { IUser } from '../../../definition/IUser';
 import { ISubscription } from '../../../definition/ISubscription';
+import { IUser } from '../../../definition/IUser';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
+import { MessageList } from './MessageList';
 
 type ThreadMessage = Omit<IMessage, 'tcount'> & Required<Pick<IMessage, 'tcount'>>;
 
 export type ThreadsListOptions = {
 	rid: IMessage['rid'];
 	text?: string;
-}
-& (
-	{
-		type: 'unread';
-		tunread: ISubscription['tunread'];
-	}
+} & (
 	| {
-		type: 'following';
-		uid: IUser['_id'];
-	}
+			type: 'unread';
+			tunread: ISubscription['tunread'];
+	  }
 	| {
-		type: 'all';
-	}
+			type: 'following';
+			uid: IUser['_id'];
+	  }
+	| {
+			type: 'all';
+	  }
 );
 
 const isThreadMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is ThreadMessage =>
@@ -73,8 +72,10 @@ export class ThreadsList extends MessageList {
 
 		if (this._options.text) {
 			const regex = new RegExp(
-				this._options.text.split(/\s/g)
-					.map((text) => escapeRegExp(text)).join('|'),
+				this._options.text
+					.split(/\s/g)
+					.map((text) => escapeRegExp(text))
+					.join('|'),
 			);
 			if (!isThreadTextMatching(message, regex)) {
 				return false;

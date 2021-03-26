@@ -1,18 +1,18 @@
-import React, { useMemo, useRef } from 'react';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useRef } from 'react';
 
+import { Backdrop } from '../../../components/Backdrop';
+import { LocalTime } from '../../../components/UTCClock';
+import UserCard from '../../../components/UserCard';
+import { ReactiveUserStatus } from '../../../components/UserStatus';
+import { useRolesDescription } from '../../../contexts/AuthorizationContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import UserCard from '../../../components/UserCard';
-import { Backdrop } from '../../../components/Backdrop';
-import { ReactiveUserStatus } from '../../../components/UserStatus';
-import { LocalTime } from '../../../components/UTCClock';
-import { useUserInfoActions } from '../hooks/useUserInfoActions';
-import { useActionSpread } from '../../hooks/useActionSpread';
-import { useRolesDescription } from '../../../contexts/AuthorizationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useActionSpread } from '../../hooks/useActionSpread';
+import { useUserInfoActions } from '../hooks/useUserInfoActions';
 
 const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 	const ref = useRef(target);
@@ -51,14 +51,12 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			_id,
 			name: showRealNames ? name : username,
 			username,
-			roles: roles && getRoles(roles).map((role, index) => (
-				<UserCard.Role key={index}>{role}</UserCard.Role>
-			)),
+			roles:
+				roles &&
+				getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
 			etag: avatarETag,
-			localTime: Number.isInteger(utcOffset) && (
-				<LocalTime utcOffset={utcOffset} />
-			),
+			localTime: Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 			status: status && <ReactiveUserStatus uid={_id} presence={status} />,
 			customStatus: statusText,
 			nickname,
@@ -70,45 +68,49 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 		onClose && onClose();
 	});
 
-	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(useUserInfoActions(user, rid));
+	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(
+		useUserInfoActions(user, rid),
+	);
 
 	const menu = useMemo(() => {
 		if (!menuOptions) {
 			return null;
 		}
 
-		return <Menu
-			flexShrink={0}
-			mi='x2'
-			key='menu'
-			ghost={false}
-			renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
-			options={menuOptions}
-		/>;
+		return (
+			<Menu
+				flexShrink={0}
+				mi='x2'
+				key='menu'
+				ghost={false}
+				renderItem={({ label: { label, icon }, ...props }) => (
+					<Option {...props} label={label} icon={icon} />
+				)}
+				options={menuOptions}
+			/>
+		);
 	}, [menuOptions]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]) =>
-			<UserCard.Action key={key} title={label} aria-label={label} onClick={action} icon={icon}/>;
+		const mapAction = ([key, { label, icon, action }]) => (
+			<UserCard.Action key={key} title={label} aria-label={label} onClick={action} icon={icon} />
+		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
 
-	return (<>
-		<Backdrop bg='transparent' onClick={onClose}/>
-		<PositionAnimated
-			anchor={ref}
-			placement='top-start'
-			margin={8}
-			visible={AnimatedVisibility.UNHIDING}
-		>
-			<UserCard
-				{...user}
-				onClose={onClose}
-				open={handleOpen}
-				actions={actions}
-				t={t}/>
-		</PositionAnimated></>
+	return (
+		<>
+			<Backdrop bg='transparent' onClick={onClose} />
+			<PositionAnimated
+				anchor={ref}
+				placement='top-start'
+				margin={8}
+				visible={AnimatedVisibility.UNHIDING}
+			>
+				<UserCard {...user} onClose={onClose} open={handleOpen} actions={actions} t={t} />
+			</PositionAnimated>
+		</>
 	);
 };
 

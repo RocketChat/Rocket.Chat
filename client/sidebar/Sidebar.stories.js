@@ -1,11 +1,11 @@
 import React from 'react';
 
-import Header from './header';
+import { SettingsContext } from '../contexts/SettingsContext';
+import { UserContext } from '../contexts/UserContext';
 import RoomList from './RoomList';
+import Header from './header';
 // import Extended from './Item/Extended';
 // import RoomAvatar from '../avatar/RoomAvatar';
-import { UserContext } from '../contexts/UserContext';
-import { SettingsContext } from '../contexts/SettingsContext';
 
 export default {
 	title: 'Sidebar',
@@ -145,17 +145,19 @@ const settingContextValue = {
 	dispatch: async () => undefined,
 };
 
-const Sidebar = () => <>
-	<SettingsContext.Provider value={settingContextValue} >
-		<UserContext.Provider value={userContextValue}>
-			<aside class='sidebar sidebar--main' role='navigation'>
-				<Header />
-				<div class='rooms-list sidebar--custom-colors' aria-label='Channels' role='region'>
-					<RoomList />
-				</div>
-			</aside>
-		</UserContext.Provider>
-	</SettingsContext.Provider>
-</>;
+const Sidebar = () => (
+	<>
+		<SettingsContext.Provider value={settingContextValue}>
+			<UserContext.Provider value={userContextValue}>
+				<aside class='sidebar sidebar--main' role='navigation'>
+					<Header />
+					<div class='rooms-list sidebar--custom-colors' aria-label='Channels' role='region'>
+						<RoomList />
+					</div>
+				</aside>
+			</UserContext.Provider>
+		</SettingsContext.Provider>
+	</>
+);
 
 export const Default = () => <Sidebar />;

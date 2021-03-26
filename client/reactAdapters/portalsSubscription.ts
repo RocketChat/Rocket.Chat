@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from 'meteor/random';
-import type { Subscription, Unsubscribe } from 'use-subscription';
 import type { ReactElement } from 'react';
+import type { Subscription, Unsubscribe } from 'use-subscription';
 
 import { mountRoot } from './mountRoot';
 
@@ -18,7 +18,7 @@ type PortalsSubscription = Subscription<SubscribedPortal[]> & {
 
 const createPortalsSubscription = (): PortalsSubscription => {
 	const portalsMap = new Map<unknown, SubscribedPortal>();
-	const emitter = new Emitter<{ 'update': void }>();
+	const emitter = new Emitter<{ update: void }>();
 
 	return {
 		getCurrentValue: (): SubscribedPortal[] => Array.from(portalsMap.values()),
@@ -41,7 +41,7 @@ export const unregisterPortal = (key: unknown): void => {
 	portalsSubscription.delete(key);
 };
 
-export const registerPortal = (key: unknown, portal: ReactElement): () => void => {
+export const registerPortal = (key: unknown, portal: ReactElement): (() => void) => {
 	mountRoot();
 	portalsSubscription.set(key, portal);
 	return (): void => {

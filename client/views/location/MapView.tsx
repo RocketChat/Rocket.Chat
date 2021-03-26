@@ -1,9 +1,9 @@
 import React, { FC, memo } from 'react';
 
 import { useSetting } from '../../contexts/SettingsContext';
-import { useAsyncImage } from './useAsyncImage';
-import MapViewImage from './MapViewImage';
 import MapViewFallback from './MapViewFallback';
+import MapViewImage from './MapViewImage';
+import { useAsyncImage } from './useAsyncImage';
 
 type MapViewProps = {
 	latitude: string;
@@ -13,11 +13,11 @@ type MapViewProps = {
 const MapView: FC<MapViewProps> = ({ latitude, longitude }) => {
 	const googleMapsApiKey = useSetting('MapView_GMapsAPIKey') as string;
 
-	const linkUrl = `https://maps.google.com/maps?daddr=${ latitude },${ longitude }`;
+	const linkUrl = `https://maps.google.com/maps?daddr=${latitude},${longitude}`;
 
 	const imageUrl = useAsyncImage(
 		googleMapsApiKey
-			? `https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${ latitude },${ longitude }&key=${ googleMapsApiKey }`
+			? `https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${latitude},${longitude}&key=${googleMapsApiKey}`
 			: undefined,
 	);
 

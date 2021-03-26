@@ -17,7 +17,7 @@ const ChatsOverview = ({ params, reloadRef, ...props }) => {
 
 	reloadRef.current.chatsOverview = reload;
 
-	return <CounterContainer state={state} data={data} initialData={initialData} {...props}/>;
+	return <CounterContainer state={state} data={data} initialData={initialData} {...props} />;
 };
 
 export default ChatsOverview;

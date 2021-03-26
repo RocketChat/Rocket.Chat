@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
 import { Accordion, Field, Select, FieldGroup } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
 
 import { useLanguages, useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
@@ -10,7 +10,10 @@ const PreferencesLocalizationSection = ({ onChange, commitRef, ...props }) => {
 	const userLanguage = useUserPreference('language') || '';
 	const languages = useLanguages();
 
-	const languageOptions = useMemo(() => languages.map(({ key, name }) => [key, name]).sort(([a], [b]) => a - b), [languages]);
+	const languageOptions = useMemo(
+		() => languages.map(({ key, name }) => [key, name]).sort(([a], [b]) => a - b),
+		[languages],
+	);
 
 	const { values, handlers, commit } = useForm({ language: userLanguage }, onChange);
 
@@ -19,16 +22,18 @@ const PreferencesLocalizationSection = ({ onChange, commitRef, ...props }) => {
 
 	commitRef.current.localization = commit;
 
-	return <Accordion.Item title={t('Localization')} {...props}>
-		<FieldGroup>
-			<Field>
-				<Field.Label>{t('Language')}</Field.Label>
-				<Field.Row>
-					<Select value={language} onChange={handleLanguage} options={languageOptions} />
-				</Field.Row>
-			</Field>
-		</FieldGroup>
-	</Accordion.Item>;
+	return (
+		<Accordion.Item title={t('Localization')} {...props}>
+			<FieldGroup>
+				<Field>
+					<Field.Label>{t('Language')}</Field.Label>
+					<Field.Row>
+						<Select value={language} onChange={handleLanguage} options={languageOptions} />
+					</Field.Row>
+				</Field>
+			</FieldGroup>
+		</Accordion.Item>
+	);
 };
 
 export default PreferencesLocalizationSection;

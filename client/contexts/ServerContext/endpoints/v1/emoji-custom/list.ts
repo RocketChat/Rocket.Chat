@@ -6,7 +6,9 @@ type EmojiDescriptor = {
 };
 
 export type ListEndpoint = {
-	GET: (params: { query: string }) => {
+	GET: (params: {
+		query: string;
+	}) => {
 		emojis?: {
 			update: EmojiDescriptor[];
 		};

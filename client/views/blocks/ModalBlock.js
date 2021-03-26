@@ -4,15 +4,17 @@ import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { kitContext, UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import { renderMessageBody } from '../../lib/renderMessageBody';
-import { getURL } from '../../../app/utils/lib/getURL';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
+import { getURL } from '../../../app/utils/lib/getURL';
+import { renderMessageBody } from '../../lib/renderMessageBody';
 
 // TODO: move this to fuselage-ui-kit itself
 modalParser.plainText = ({ text } = {}) => text;
 
 // TODO: move this to fuselage-ui-kit itself
-modalParser.mrkdwn = ({ text }) => <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />;
+modalParser.mrkdwn = ({ text }) => (
+	<span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />
+);
 
 const focusableElementsString = `
 	a[href]:not([tabindex="-1"]),
@@ -40,15 +42,8 @@ const focusableElementsStringInvalid = `
 	[tabindex]:not([tabindex="-1"]):invalid,
 	[contenteditable]:invalid`;
 
-export function ModalBlock({
-	view,
-	errors,
-	appId,
-	onSubmit,
-	onClose,
-	onCancel,
-}) {
-	const id = `modal_id_${ useUniqueId() }`;
+export function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
+	const id = `modal_id_${useUniqueId()}`;
 	const ref = useRef();
 
 	// Auto focus
@@ -70,43 +65,49 @@ export function ModalBlock({
 	// restore the focus after the component unmount
 	useEffect(() => () => previousFocus && previousFocus.focus(), [previousFocus]);
 	// Handle Tab, Shift + Tab, Enter and Escape
-	const handleKeyDown = useCallback((event) => {
-		if (event.keyCode === 13) { // ENTER
-			return onSubmit(event);
-		}
-
-		if (event.keyCode === 27) { // ESC
-			event.stopPropagation();
-			event.preventDefault();
-			onClose();
-			return false;
-		}
-
-		if (event.keyCode === 9) { // TAB
-			const elements = Array.from(ref.current.querySelectorAll(focusableElementsString));
-			const [first] = elements;
-			const last = elements.pop();
-
-			if (!ref.current.contains(document.activeElement)) {
-				return first.focus();
+	const handleKeyDown = useCallback(
+		(event) => {
+			if (event.keyCode === 13) {
+				// ENTER
+				return onSubmit(event);
 			}
 
-			if (event.shiftKey) {
-				if (!first || first === document.activeElement) {
-					last.focus();
+			if (event.keyCode === 27) {
+				// ESC
+				event.stopPropagation();
+				event.preventDefault();
+				onClose();
+				return false;
+			}
+
+			if (event.keyCode === 9) {
+				// TAB
+				const elements = Array.from(ref.current.querySelectorAll(focusableElementsString));
+				const [first] = elements;
+				const last = elements.pop();
+
+				if (!ref.current.contains(document.activeElement)) {
+					return first.focus();
+				}
+
+				if (event.shiftKey) {
+					if (!first || first === document.activeElement) {
+						last.focus();
+						event.stopPropagation();
+						event.preventDefault();
+					}
+					return;
+				}
+
+				if (!last || last === document.activeElement) {
+					first.focus();
 					event.stopPropagation();
 					event.preventDefault();
 				}
-				return;
 			}
-
-			if (!last || last === document.activeElement) {
-				first.focus();
-				event.stopPropagation();
-				event.preventDefault();
-			}
-		}
-	}, [onClose, onSubmit]);
+		},
+		[onClose, onSubmit],
+	);
 	// Clean the events
 	useEffect(() => {
 		const element = document.querySelector('.rc-modal-wrapper');
@@ -140,24 +141,23 @@ export function ModalBlock({
 		<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 			<Modal open id={id} ref={ref}>
 				<Modal.Header>
-					{view.showIcon ? <Modal.Thumb url={getURL(`/api/apps/${ appId }/icon`)} /> : null}
+					{view.showIcon ? <Modal.Thumb url={getURL(`/api/apps/${appId}/icon`)} /> : null}
 					<Modal.Title>{modalParser.text(view.title)}</Modal.Title>
 					<Modal.Close tabIndex={-1} onClick={onClose} />
 				</Modal.Header>
 				<Modal.Content>
-					<Box
-						is='form'
-						method='post'
-						action='#'
-						onSubmit={onSubmit}
-					>
+					<Box is='form' method='post' action='#' onSubmit={onSubmit}>
 						<UiKitComponent render={UiKitModal} blocks={view.blocks} />
 					</Box>
 				</Modal.Content>
 				<Modal.Footer>
 					<ButtonGroup align='end'>
 						{view.close && <Button onClick={onCancel}>{modalParser.text(view.close.text)}</Button>}
-						{view.submit && <Button primary onClick={onSubmit}>{modalParser.text(view.submit.text)}</Button>}
+						{view.submit && (
+							<Button primary onClick={onSubmit}>
+								{modalParser.text(view.submit.text)}
+							</Button>
+						)}
 					</ButtonGroup>
 				</Modal.Footer>
 			</Modal>
@@ -203,14 +203,20 @@ const useValues = (view) => {
 				return true;
 			}
 
-			if (elements.length && elements.map((element) => ({ element })).filter(filterInputFields).length) {
+			if (
+				elements.length &&
+				elements.map((element) => ({ element })).filter(filterInputFields).length
+			) {
 				return true;
 			}
 		};
 
 		const mapElementToState = ({ element, blockId, elements = [] }) => {
 			if (elements.length) {
-				return elements.map((element) => ({ element, blockId })).filter(filterInputFields).map(mapElementToState);
+				return elements
+					.map((element) => ({ element, blockId }))
+					.filter(filterInputFields)
+					.map(mapElementToState);
 			}
 			return [element.actionId, { value: element.initialValue, blockId }];
 		};
@@ -234,21 +240,16 @@ const useValues = (view) => {
 function ConnectedModalBlock(props) {
 	const state = useActionManagerState(props);
 
-	const {
-		appId,
-		viewId,
-		mid: _mid,
-		errors,
-		view,
-	} = state;
+	const { appId, viewId, mid: _mid, errors, view } = state;
 
 	const [values, updateValues] = useValues(view);
 
-	const groupStateByBlockId = (obj) => Object.entries(obj).reduce((obj, [key, { blockId, value }]) => {
-		obj[blockId] = obj[blockId] || {};
-		obj[blockId][key] = value;
-		return obj;
-	}, {});
+	const groupStateByBlockId = (obj) =>
+		Object.entries(obj).reduce((obj, [key, { blockId, value }]) => {
+			obj[blockId] = obj[blockId] || {};
+			obj[blockId][key] = value;
+			return obj;
+		}, {});
 
 	const prevent = (e) => {
 		if (e) {
@@ -259,17 +260,18 @@ function ConnectedModalBlock(props) {
 	};
 
 	const context = {
-		action: ({ actionId, appId, value, blockId, mid = _mid }) => ActionManager.triggerBlockAction({
-			container: {
-				type: UIKitIncomingInteractionContainerType.VIEW,
-				id: viewId,
-			},
-			actionId,
-			appId,
-			value,
-			blockId,
-			mid,
-		}),
+		action: ({ actionId, appId, value, blockId, mid = _mid }) =>
+			ActionManager.triggerBlockAction({
+				container: {
+					type: UIKitIncomingInteractionContainerType.VIEW,
+					id: viewId,
+				},
+				actionId,
+				appId,
+				value,
+				blockId,
+				mid,
+			}),
 		state: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
 			updateValues({
 				actionId,
@@ -325,16 +327,18 @@ function ConnectedModalBlock(props) {
 		});
 	});
 
-	return <kitContext.Provider value={context}>
-		<ModalBlock
-			view={view}
-			errors={errors}
-			appId={appId}
-			onSubmit={handleSubmit}
-			onCancel={handleCancel}
-			onClose={handleClose}
-		/>
-	</kitContext.Provider>;
+	return (
+		<kitContext.Provider value={context}>
+			<ModalBlock
+				view={view}
+				errors={errors}
+				appId={appId}
+				onSubmit={handleSubmit}
+				onCancel={handleCancel}
+				onClose={handleClose}
+			/>
+		</kitContext.Provider>
+	);
 }
 
 export default ConnectedModalBlock;

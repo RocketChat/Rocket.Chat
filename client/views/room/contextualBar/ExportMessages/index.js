@@ -1,17 +1,27 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Field, TextInput, Select, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
+import {
+	Field,
+	TextInput,
+	Select,
+	ButtonGroup,
+	Button,
+	Box,
+	Icon,
+	Callout,
+	FieldGroup,
+} from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useState, useEffect, useMemo } from 'react';
 
+import { roomTypes, isEmail } from '../../../../../app/utils/client';
+import UserAutoCompleteMultiple from '../../../../../ee/client/audit/UserAutoCompleteMultiple';
 import VerticalBar from '../../../../components/VerticalBar';
+import { useEndpoint } from '../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 import { useUserRoom } from '../../hooks/useUserRoom';
-import { useEndpoint } from '../../../../contexts/ServerContext';
-import { roomTypes, isEmail } from '../../../../../app/utils/client';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
-import UserAutoCompleteMultiple from '../../../../../ee/client/audit/UserAutoCompleteMultiple';
 
 const clickable = css`
 	cursor: pointer;
@@ -26,22 +36,17 @@ const FileExport = ({ onCancel, rid }) => {
 		format: 'html',
 	});
 
-	const {
-		dateFrom,
-		dateTo,
-		format,
-	} = values;
+	const { dateFrom, dateTo, format } = values;
 
-	const {
-		handleDateFrom,
-		handleDateTo,
-		handleFormat,
-	} = handlers;
+	const { handleDateFrom, handleDateTo, handleFormat } = handlers;
 
-	const outputOptions = useMemo(() => [
-		['html', t('HTML')],
-		['json', t('JSON')],
-	], [t]);
+	const outputOptions = useMemo(
+		() => [
+			['html', t('HTML')],
+			['json', t('JSON')],
+		],
+		[t],
+	);
 
 	const roomsExport = useEndpoint('POST', 'rooms.export');
 
@@ -52,8 +57,8 @@ const FileExport = ({ onCancel, rid }) => {
 			await roomsExport({
 				rid,
 				type: 'file',
-				...dateFrom && { dateFrom: new Date(dateFrom) },
-				...dateTo && { dateTo: new Date(dateTo) },
+				...(dateFrom && { dateFrom: new Date(dateFrom) }),
+				...(dateTo && { dateTo: new Date(dateTo) }),
 				format,
 			});
 
@@ -86,13 +91,16 @@ const FileExport = ({ onCancel, rid }) => {
 			<Field>
 				<Field.Label>{t('Output_format')}</Field.Label>
 				<Field.Row>
-					<Select value={format} onChange={handleFormat} placeholder={t('Format')} options={outputOptions}/>
+					<Select
+						value={format}
+						onChange={handleFormat}
+						placeholder={t('Format')}
+						options={outputOptions}
+					/>
 				</Field.Row>
 			</Field>
 			<ButtonGroup stretch mb='x12'>
-				<Button onClick={onCancel}>
-					{t('Cancel')}
-				</Button>
+				<Button onClick={onCancel}>{t('Cancel')}</Button>
 				<Button primary onClick={() => handleSubmit()}>
 					{t('Export')}
 				</Button>
@@ -121,23 +129,18 @@ const MailExportForm = ({ onCancel, rid }) => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const {
-		toUsers,
-		additionalEmails,
-		subject,
-	} = values;
+	const { toUsers, additionalEmails, subject } = values;
 
 	const reset = useMutableCallback(() => {
 		setSelected([]);
-		$('.messages-box .message', $(`#chat-window-${ rid }`))
-			.removeClass('selected');
+		$('.messages-box .message', $(`#chat-window-${rid}`)).removeClass('selected');
 	});
 
 	useEffect(() => {
-		const $root = $(`#chat-window-${ rid }`);
+		const $root = $(`#chat-window-${rid}`);
 		$('.messages-box', $root).addClass('selectable');
 
-		const handler = function() {
+		const handler = function () {
 			const { id } = this;
 
 			if (this.classList.contains('selected')) {
@@ -159,11 +162,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 		};
 	}, [rid]);
 
-	const {
-		handleToUsers,
-		handleAdditionalEmails,
-		handleSubject,
-	} = handlers;
+	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {
@@ -217,40 +216,54 @@ const MailExportForm = ({ onCancel, rid }) => {
 	return (
 		<FieldGroup>
 			<Field>
-				<Callout onClick={reset} title={t('Messages selected')} type={selectedMessages.length > 0 ? 'success' : 'info'}>
-					<p>{`${ selectedMessages.length } Messages selected`}</p>
-					{ selectedMessages.length > 0 && <Box is='p' className={clickable} >{t('Click here to clear the selection')}</Box> }
-					{ selectedMessages.length === 0 && <Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box> }
+				<Callout
+					onClick={reset}
+					title={t('Messages selected')}
+					type={selectedMessages.length > 0 ? 'success' : 'info'}
+				>
+					<p>{`${selectedMessages.length} Messages selected`}</p>
+					{selectedMessages.length > 0 && (
+						<Box is='p' className={clickable}>
+							{t('Click here to clear the selection')}
+						</Box>
+					)}
+					{selectedMessages.length === 0 && (
+						<Box is='p'>{t('Click_the_messages_you_would_like_to_send_by_email')}</Box>
+					)}
 				</Callout>
 			</Field>
 			<Field>
 				<Field.Label>{t('To_users')}</Field.Label>
 				<Field.Row>
-					<UserAutoCompleteMultiple
-						value={toUsers}
-						onChange={onChangeUsers}
-					/>
+					<UserAutoCompleteMultiple value={toUsers} onChange={onChangeUsers} />
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('To_additional_emails')}</Field.Label>
 				<Field.Row>
-					<TextInput placeholder={t('Email_Placeholder_any')} value={additionalEmails} onChange={handleAdditionalEmails} addon={<Icon name='mail' size='x20'/>} />
+					<TextInput
+						placeholder={t('Email_Placeholder_any')}
+						value={additionalEmails}
+						onChange={handleAdditionalEmails}
+						addon={<Icon name='mail' size='x20' />}
+					/>
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Subject')}</Field.Label>
 				<Field.Row>
-					<TextInput value={subject} onChange={handleSubject} addon={<Icon name='edit' size='x20'/>} />
+					<TextInput
+						value={subject}
+						onChange={handleSubject}
+						addon={<Icon name='edit' size='x20' />}
+					/>
 				</Field.Row>
 			</Field>
 
 			{errorMessage && <Callout type={'danger'} title={errorMessage} />}
 
 			<ButtonGroup stretch mb='x12'>
-				<Button onClick={onCancel}>
-					{t('Cancel')}
-				</Button>
+				<Button onClick={onCancel}>{t('Cancel')}</Button>
 				<Button primary onClick={() => handleSubmit()}>
 					{t('Send')}
 				</Button>
@@ -265,29 +278,38 @@ export const ExportMessages = function ExportMessages({ rid }) {
 
 	const [type, setType] = useState('email');
 
-	const exportOptions = useMemo(() => [
-		['email', t('Send_via_email')],
-		['file', t('Export_as_file')],
-	], [t]);
+	const exportOptions = useMemo(
+		() => [
+			['email', t('Send_via_email')],
+			['file', t('Export_as_file')],
+		],
+		[t],
+	);
 
-	return (<>
-		<VerticalBar.Header>
-			{t('Export_Messages')}
-			<VerticalBar.Close onClick={close} />
-		</VerticalBar.Header>
-		<VerticalBar.ScrollableContent>
-			<FieldGroup>
-				<Field>
-					<Field.Label>{t('Method')}</Field.Label>
-					<Field.Row>
-						<Select value={type} onChange={(value) => setType(value)} placeholder={t('Type')} options={exportOptions}/>
-					</Field.Row>
-				</Field>
-			</FieldGroup>
-			{type && type === 'file' && <FileExport rid={rid} onCancel={close} />}
-			{type && type === 'email' && <MailExportForm rid={rid} onCancel={close} />}
-		</VerticalBar.ScrollableContent>
-	</>
+	return (
+		<>
+			<VerticalBar.Header>
+				{t('Export_Messages')}
+				<VerticalBar.Close onClick={close} />
+			</VerticalBar.Header>
+			<VerticalBar.ScrollableContent>
+				<FieldGroup>
+					<Field>
+						<Field.Label>{t('Method')}</Field.Label>
+						<Field.Row>
+							<Select
+								value={type}
+								onChange={(value) => setType(value)}
+								placeholder={t('Type')}
+								options={exportOptions}
+							/>
+						</Field.Row>
+					</Field>
+				</FieldGroup>
+				{type && type === 'file' && <FileExport rid={rid} onCancel={close} />}
+				{type && type === 'email' && <MailExportForm rid={rid} onCancel={close} />}
+			</VerticalBar.ScrollableContent>
+		</>
 	);
 };
 

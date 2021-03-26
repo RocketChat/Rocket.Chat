@@ -1,18 +1,17 @@
-import React, { useEffect, useCallback, useState } from 'react';
 import { Tabs, Icon, Box } from '@rocket.chat/fuselage';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import React, { useEffect, useCallback, useState } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/Page';
-import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
-import ContactTab from './contacts/ContactTab';
 import VerticalBar from '../../components/VerticalBar';
-import { ContactNewEdit, ContactEditWithData } from './contacts/contextualBar/ContactForm';
-import { ContactInfo } from './contacts/contextualBar/ContactInfo';
+import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 import ChatTab from './chats/ChatTab';
 import { ChatInfo } from './chats/contextualBar/ChatInfo';
 import { RoomEditWithData } from './chats/contextualBar/ChatRoomEdit';
-
+import ContactTab from './contacts/ContactTab';
+import { ContactNewEdit, ContactEditWithData } from './contacts/contextualBar/ContactForm';
+import { ContactInfo } from './contacts/contextualBar/ContactInfo';
 
 const OmnichannelDirectoryPage = () => {
 	const t = useTranslation();
@@ -47,31 +46,72 @@ const OmnichannelDirectoryPage = () => {
 		FlowRouter.go('live', { id });
 	};
 
-	const ContactContextualBar = () => <VerticalBar className={'contextual-bar'}>
-		<VerticalBar.Header>
-			{context === 'new' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('New_Contact')}</Box>}
-			{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Profile')}</Box>}
-			{context === 'edit' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='pencil' size='x20' /> {t('Edit_Contact_Profile')}</Box>}
-			<VerticalBar.Close onClick={handleContactsVerticalBarCloseButtonClick} />
-		</VerticalBar.Header>
-		{context === 'new' && <ContactNewEdit reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />}
-		{context === 'info' && <ContactInfo reload={contactReload} id={id} />}
-		{context === 'edit' && <ContactEditWithData id={id} reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />}
-	</VerticalBar>;
+	const ContactContextualBar = () => (
+		<VerticalBar className={'contextual-bar'}>
+			<VerticalBar.Header>
+				{context === 'new' && (
+					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
+						<Icon name='user' size='x20' /> {t('New_Contact')}
+					</Box>
+				)}
+				{context === 'info' && (
+					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
+						<Icon name='user' size='x20' /> {t('Contact_Profile')}
+					</Box>
+				)}
+				{context === 'edit' && (
+					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
+						<Icon name='pencil' size='x20' /> {t('Edit_Contact_Profile')}
+					</Box>
+				)}
+				<VerticalBar.Close onClick={handleContactsVerticalBarCloseButtonClick} />
+			</VerticalBar.Header>
+			{context === 'new' && (
+				<ContactNewEdit reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />
+			)}
+			{context === 'info' && <ContactInfo reload={contactReload} id={id} />}
+			{context === 'edit' && (
+				<ContactEditWithData
+					id={id}
+					reload={contactReload}
+					close={handleContactsVerticalBarCloseButtonClick}
+				/>
+			)}
+		</VerticalBar>
+	);
 
-	const ChatsContextualBar = () => <VerticalBar className={'contextual-bar'}>
-		<VerticalBar.Header>
-			{context === 'info'
-			&& <>
-				<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='info-circled' size='x20' /> {t('Room_Info')}</Box>
-				<VerticalBar.Action title={t('View_full_conversation')} name={'new-window'} onClick={openInRoom} />
-			</> }
-			{context === 'edit' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='pencil' size='x20' /> {t('edit-room')}</Box>}
-			<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
-		</VerticalBar.Header>
-		{context === 'info' && <ChatInfo id={id} />}
-		{context === 'edit' && <RoomEditWithData id={id} close={handleChatsVerticalBarCloseButtonClick} reload={chatReload} />}
-	</VerticalBar>;
+	const ChatsContextualBar = () => (
+		<VerticalBar className={'contextual-bar'}>
+			<VerticalBar.Header>
+				{context === 'info' && (
+					<>
+						<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
+							<Icon name='info-circled' size='x20' /> {t('Room_Info')}
+						</Box>
+						<VerticalBar.Action
+							title={t('View_full_conversation')}
+							name={'new-window'}
+							onClick={openInRoom}
+						/>
+					</>
+				)}
+				{context === 'edit' && (
+					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
+						<Icon name='pencil' size='x20' /> {t('edit-room')}
+					</Box>
+				)}
+				<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
+			</VerticalBar.Header>
+			{context === 'info' && <ChatInfo id={id} />}
+			{context === 'edit' && (
+				<RoomEditWithData
+					id={id}
+					close={handleChatsVerticalBarCloseButtonClick}
+					reload={chatReload}
+				/>
+			)}
+		</VerticalBar>
+	);
 
 	const ContextualBar = () => {
 		if (!context) {
@@ -88,22 +128,26 @@ const OmnichannelDirectoryPage = () => {
 		}
 	};
 
-	return <Page flexDirection='row'>
-		<Page>
-			<Page.Header title={t('Omnichannel_Contact_Center')}/>
-			<Tabs flexShrink={0} >
-				<Tabs.Item selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>{t('Contacts')}</Tabs.Item>
-				<Tabs.Item selected={tab === 'chats'} onClick={handleTabClick('chats')}>{t('Chats')}</Tabs.Item>
-			</Tabs>
-			<Page.Content>
-				{
-					(tab === 'contacts' && <ContactTab setContactReload={setContactReload} />)
-					|| (tab === 'chats' && <ChatTab setChatReload={setChatReload} />)
-				}
-			</Page.Content>
+	return (
+		<Page flexDirection='row'>
+			<Page>
+				<Page.Header title={t('Omnichannel_Contact_Center')} />
+				<Tabs flexShrink={0}>
+					<Tabs.Item selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>
+						{t('Contacts')}
+					</Tabs.Item>
+					<Tabs.Item selected={tab === 'chats'} onClick={handleTabClick('chats')}>
+						{t('Chats')}
+					</Tabs.Item>
+				</Tabs>
+				<Page.Content>
+					{(tab === 'contacts' && <ContactTab setContactReload={setContactReload} />) ||
+						(tab === 'chats' && <ChatTab setChatReload={setChatReload} />)}
+				</Page.Content>
+			</Page>
+			<ContextualBar />
 		</Page>
-		<ContextualBar />
-	</Page>;
+	);
 };
 
 OmnichannelDirectoryPage.displayName = 'DirectoryOmnichannelPage';

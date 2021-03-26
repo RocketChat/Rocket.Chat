@@ -7,12 +7,10 @@ import { ColorSettingInput } from './ColorSettingInput';
 export default {
 	title: 'admin/settings/inputs/ColorSettingInput',
 	component: ColorSettingInput,
-	decorators: [
-		(storyFn) => <Field>{storyFn()}</Field>,
-	],
+	decorators: [(storyFn) => <Field>{storyFn()}</Field>],
 };
 
-export const _default = () =>
+export const _default = () => (
 	<ColorSettingInput
 		_id='setting_id'
 		label='Label'
@@ -21,9 +19,10 @@ export const _default = () =>
 		placeholder='Placeholder'
 		onChangeValue={action('changeValue')}
 		onChangeEditor={action('changeEditor')}
-	/>;
+	/>
+);
 
-export const disabled = () =>
+export const disabled = () => (
 	<ColorSettingInput
 		_id='setting_id'
 		label='Label'
@@ -31,9 +30,10 @@ export const disabled = () =>
 		allowedTypes={['color', 'expression']}
 		placeholder='Placeholder'
 		disabled
-	/>;
+	/>
+);
 
-export const withValue = () =>
+export const withValue = () => (
 	<ColorSettingInput
 		_id='setting_id'
 		label='Label'
@@ -41,9 +41,10 @@ export const withValue = () =>
 		allowedTypes={['color', 'expression']}
 		value='#db2323'
 		placeholder='Placeholder'
-	/>;
+	/>
+);
 
-export const withExpressionAsValue = () =>
+export const withExpressionAsValue = () => (
 	<ColorSettingInput
 		_id='setting_id'
 		label='Label'
@@ -51,9 +52,10 @@ export const withExpressionAsValue = () =>
 		allowedTypes={['color', 'expression']}
 		value='var(--rc-color-primary)'
 		placeholder='Placeholder'
-	/>;
+	/>
+);
 
-export const withResetButton = () =>
+export const withResetButton = () => (
 	<ColorSettingInput
 		_id='setting_id'
 		label='Label'
@@ -63,4 +65,5 @@ export const withResetButton = () =>
 		hasResetButton
 		onChangeValue={action('changeValue')}
 		onResetButtonClick={action('resetButtonClick')}
-	/>;
+	/>
+);

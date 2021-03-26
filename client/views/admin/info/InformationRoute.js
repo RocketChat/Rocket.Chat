@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
 import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import React, { useState, useEffect } from 'react';
 
-import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
+import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod, useServerInformation, useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { downloadJsonAs } from '../../../lib/download';
@@ -57,7 +57,6 @@ const InformationRoute = React.memo(function InformationRoute() {
 
 	const info = useServerInformation();
 
-
 	const handleClickRefreshButton = () => {
 		if (isLoading) {
 			return;
@@ -74,32 +73,36 @@ const InformationRoute = React.memo(function InformationRoute() {
 	};
 
 	if (error) {
-		return <Page>
-			<Page.Header title={t('Info')}>
-				<ButtonGroup>
-					<Button primary type='button' onClick={handleClickRefreshButton}>
-						<Icon name='reload' /> {t('Refresh')}
-					</Button>
-				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
-				<Callout type='danger'>
-					{t('Error_loading_pages')} {/* : {error.message || error.stack}*/}
-				</Callout>
-			</Page.ScrollableContentWithShadow>
-		</Page>;
+		return (
+			<Page>
+				<Page.Header title={t('Info')}>
+					<ButtonGroup>
+						<Button primary type='button' onClick={handleClickRefreshButton}>
+							<Icon name='reload' /> {t('Refresh')}
+						</Button>
+					</ButtonGroup>
+				</Page.Header>
+				<Page.ScrollableContentWithShadow>
+					<Callout type='danger'>
+						{t('Error_loading_pages')} {/* : {error.message || error.stack}*/}
+					</Callout>
+				</Page.ScrollableContentWithShadow>
+			</Page>
+		);
 	}
 
 	if (canViewStatistics) {
-		return <NewInformationPage
-			canViewStatistics={canViewStatistics}
-			isLoading={isLoading}
-			info={info}
-			statistics={statistics}
-			instances={instances}
-			onClickRefreshButton={handleClickRefreshButton}
-			onClickDownloadInfo={handleClickDownloadInfo}
-		/>;
+		return (
+			<NewInformationPage
+				canViewStatistics={canViewStatistics}
+				isLoading={isLoading}
+				info={info}
+				statistics={statistics}
+				instances={instances}
+				onClickRefreshButton={handleClickRefreshButton}
+				onClickDownloadInfo={handleClickDownloadInfo}
+			/>
+		);
 	}
 
 	return <NotAuthorizedPage />;

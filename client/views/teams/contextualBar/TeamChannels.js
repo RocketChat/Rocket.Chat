@@ -1,33 +1,38 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
-import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { Virtuoso } from 'react-virtuoso';
+import {
+	Box,
+	Icon,
+	TextInput,
+	Margins,
+	Select,
+	Throbber,
+	ButtonGroup,
+	Button,
+} from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
-import { useRecordList } from '../../../hooks/lists/useRecordList';
-import { RecordList } from '../../../lib/lists/RecordList.ts';
-import { TeamChannelItem } from './TeamChannelItem';
-import { useTabBarClose } from '../../room/providers/ToolboxProvider';
 import { roomTypes } from '../../../../app/utils';
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../components/VerticalBar';
-import AddExistingModal from '../modals/AddExistingModal';
+import { useSetModal } from '../../../contexts/ModalContext';
+import { useEndpoint } from '../../../contexts/ServerContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRecordList } from '../../../hooks/lists/useRecordList';
+import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
+import { RecordList } from '../../../lib/lists/RecordList.ts';
 import CreateChannel from '../../../sidebar/header/CreateChannel';
 import RoomInfo from '../../room/contextualBar/Info';
-
+import { useTabBarClose } from '../../room/providers/ToolboxProvider';
+import AddExistingModal from '../modals/AddExistingModal';
+import { TeamChannelItem } from './TeamChannelItem';
 
 const Row = memo(function Row({ room, onClickView }) {
 	if (!room) {
 		return <BaseTeamChannels.Option.Skeleton />;
 	}
 
-	return <BaseTeamChannels.Option
-		room={room}
-		onClickView={onClickView}
-	/>;
+	return <BaseTeamChannels.Option room={room} onClickView={onClickView} />;
 });
 
 const BaseTeamChannels = ({
@@ -47,62 +52,89 @@ const BaseTeamChannels = ({
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
 
-	const options = useMemo(() => [
-		['all', t('All')],
-		['autoJoin', t('Auto-join')],
-	], [t]);
+	const options = useMemo(
+		() => [
+			['all', t('All')],
+			['autoJoin', t('Auto-join')],
+		],
+		[t],
+	);
 
-	const lm = useMutableCallback((start) => loadMoreItems(start + 1, Math.min(50, start + 1 - channels.length)));
+	const lm = useMutableCallback((start) =>
+		loadMoreItems(start + 1, Math.min(50, start + 1 - channels.length)),
+	);
 
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='hash'/>
+				<VerticalBar.Icon name='hash' />
 				<VerticalBar.Text>{t('Channels')}</VerticalBar.Text>
-				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
+				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
 			<VerticalBar.Content p='x12'>
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
-							<TextInput placeholder={t('Search')} value={text} ref={inputRef} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+							<TextInput
+								placeholder={t('Search')}
+								value={text}
+								ref={inputRef}
+								onChange={setText}
+								addon={<Icon name='magnifier' size='x20' />}
+							/>
 							<Select
 								flexGrow={0}
 								width='110px'
 								onChange={setType}
 								value={type}
-								options={options} />
+								options={options}
+							/>
 						</Margins>
 					</Box>
 				</Box>
 
-				{loading && <Box pi='x24' pb='x12'><Throbber size='x12' /></Box>}
-				{!loading && channels.length <= 0 && <Box pi='x24' pb='x12'>{t('No_results_found')}</Box>}
+				{loading && (
+					<Box pi='x24' pb='x12'>
+						<Throbber size='x12' />
+					</Box>
+				)}
+				{!loading && channels.length <= 0 && (
+					<Box pi='x24' pb='x12'>
+						{t('No_results_found')}
+					</Box>
+				)}
 
 				<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-					{!loading && channels && channels.length > 0 && <Virtuoso
-						style={{
-							height: '100%',
-							width: '100%',
-						}}
-						totalCount={total}
-						endReached={lm}
-						overscan={50}
-						data={channels}
-						components={{ Scroller: ScrollableContentWrapper }}
-						itemContent={(index, data) => <Row
-							onClickView={onClickView}
-							room={data}
-						/>}
-					/>}
+					{!loading && channels && channels.length > 0 && (
+						<Virtuoso
+							style={{
+								height: '100%',
+								width: '100%',
+							}}
+							totalCount={total}
+							endReached={lm}
+							overscan={50}
+							data={channels}
+							components={{ Scroller: ScrollableContentWrapper }}
+							itemContent={(index, data) => <Row onClickView={onClickView} room={data} />}
+						/>
+					)}
 				</Box>
 			</VerticalBar.Content>
 
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					{ onClickAddExisting && <Button onClick={onClickAddExisting} width='50%'>{t('Team_Add_existing')}</Button> }
-					{ onClickCreateNew && <Button onClick={onClickCreateNew} width='50%'>{t('Create_new')}</Button> }
+					{onClickAddExisting && (
+						<Button onClick={onClickAddExisting} width='50%'>
+							{t('Team_Add_existing')}
+						</Button>
+					)}
+					{onClickCreateNew && (
+						<Button onClick={onClickCreateNew} width='50%'>
+							{t('Create_new')}
+						</Button>
+					)}
 				</ButtonGroup>
 			</VerticalBar.Footer>
 		</>
@@ -121,10 +153,7 @@ export const useReactModal = (Component, props) => {
 			setModal(null);
 		};
 
-		setModal(() => <Component
-			onClose={handleClose}
-			{...props}
-		/>);
+		setModal(() => <Component onClose={handleClose} {...props} />);
 	});
 };
 
@@ -151,10 +180,7 @@ const TeamChannels = ({ teamId }) => {
 		};
 	}, [roomListEndpoint, teamId]);
 
-	const { loadMoreItems } = useScrollableRecordList(
-		roomList,
-		fetchData,
-	);
+	const { loadMoreItems } = useScrollableRecordList(roomList, fetchData);
 	const { phase, items, itemCount } = useRecordList(roomList);
 
 	const handleTextChange = useCallback((event) => {
@@ -176,7 +202,14 @@ const TeamChannels = ({ teamId }) => {
 	});
 
 	if (state.tab === 'RoomInfo') {
-		return <RoomInfo rid={state.rid} onClickClose={onClickClose} onClickBack={handleBack} onEnterRoom={goToRoom} />;
+		return (
+			<RoomInfo
+				rid={state.rid}
+				onClickClose={onClickClose}
+				onClickBack={handleBack}
+				onEnterRoom={goToRoom}
+			/>
+		);
 	}
 
 	return (

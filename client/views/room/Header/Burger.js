@@ -11,5 +11,7 @@ export default React.memo((props) => {
 	const onClick = useMutableCallback(() => {
 		sidebar.toggle();
 	});
-	return <ActionButton mie='x4'icon='burger' ghost {...props} title={t('Sidebar')} onClick={onClick}/>;
+	return (
+		<ActionButton mie='x4' icon='burger' ghost {...props} title={t('Sidebar')} onClick={onClick} />
+	);
 });

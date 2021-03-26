@@ -8,9 +8,7 @@ const AdministrationLayout: FC = ({ children }) => {
 		SideNav.openFlex();
 	}, []);
 
-	return <>
-		{children}
-	</>;
+	return <>{children}</>;
 };
 
 export default AdministrationLayout;

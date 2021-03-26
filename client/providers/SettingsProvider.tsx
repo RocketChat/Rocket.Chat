@@ -1,11 +1,11 @@
 import { Tracker } from 'meteor/tracker';
 import React, { useCallback, useEffect, useMemo, useState, FunctionComponent } from 'react';
 
+import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
 import { useMethod } from '../contexts/ServerContext';
 import { SettingsContext, SettingsContextValue } from '../contexts/SettingsContext';
 import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
 import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCachedCollection';
-import { useAtLeastOnePermission } from '../contexts/AuthorizationContext';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
 type SettingsProviderProps = {
@@ -17,22 +17,25 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({
 	privileged = false,
 }) => {
 	const hasPrivilegedPermission = useAtLeastOnePermission(
-		useMemo(() => [
-			'view-privileged-setting',
-			'edit-privileged-setting',
-			'manage-selected-settings',
-		], []),
+		useMemo(
+			() => ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'],
+			[],
+		),
 	);
 
 	const hasPrivateAccess = privileged && hasPrivilegedPermission;
 
-	const cachedCollection = useMemo(() => (
-		hasPrivateAccess
-			? PrivateSettingsCachedCollection.get()
-			: PublicSettingsCachedCollection.get()
-	), [hasPrivateAccess]);
+	const cachedCollection = useMemo(
+		() =>
+			hasPrivateAccess
+				? PrivateSettingsCachedCollection.get()
+				: PublicSettingsCachedCollection.get(),
+		[hasPrivateAccess],
+	);
 
-	const [isLoading, setLoading] = useState(() => Tracker.nonreactive(() => !cachedCollection.ready.get()));
+	const [isLoading, setLoading] = useState(() =>
+		Tracker.nonreactive(() => !cachedCollection.ready.get()),
+	);
 
 	useEffect(() => {
 		let mounted = true;
@@ -57,62 +60,60 @@ const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({
 	}, [cachedCollection]);
 
 	const querySetting = useMemo(
-		() => createReactiveSubscriptionFactory(
-			(_id) => ({ ...cachedCollection.collection.findOne(_id) }),
-		),
+		() =>
+			createReactiveSubscriptionFactory((_id) => ({ ...cachedCollection.collection.findOne(_id) })),
 		[cachedCollection],
 	);
 
 	const querySettings = useMemo(
-		() => createReactiveSubscriptionFactory(
-			(query = {}) => cachedCollection.collection.find({
-				...('_id' in query && Array.isArray(query._id)) && { _id: { $in: query._id } },
-				...('_id' in query && !Array.isArray(query._id)) && { _id: query._id },
-				...('group' in query) && { group: query.group },
-				...('section' in query) && (
-					query.section
-						? { section: query.section }
-						: {
-							$or: [
-								{ section: { $exists: false } },
-								{ section: null },
-							],
-						}
-				),
-			}, {
-				sort: {
-					section: 1,
-					sorter: 1,
-					i18nLabel: 1,
-				},
-			}).fetch(),
-		),
+		() =>
+			createReactiveSubscriptionFactory((query = {}) =>
+				cachedCollection.collection
+					.find(
+						{
+							...('_id' in query && Array.isArray(query._id) && { _id: { $in: query._id } }),
+							...('_id' in query && !Array.isArray(query._id) && { _id: query._id }),
+							...('group' in query && { group: query.group }),
+							...('section' in query &&
+								(query.section
+									? { section: query.section }
+									: {
+											$or: [{ section: { $exists: false } }, { section: null }],
+									  })),
+						},
+						{
+							sort: {
+								section: 1,
+								sorter: 1,
+								i18nLabel: 1,
+							},
+						},
+					)
+					.fetch(),
+			),
 		[cachedCollection],
 	);
 
 	const saveSettings = useMethod('saveSettings');
-	const dispatch = useCallback(async (changes) => {
-		await saveSettings(changes);
-	}, [saveSettings]);
+	const dispatch = useCallback(
+		async (changes) => {
+			await saveSettings(changes);
+		},
+		[saveSettings],
+	);
 
-	const contextValue = useMemo<SettingsContextValue>(() => ({
-		hasPrivateAccess,
-		isLoading,
-		querySetting,
-		querySettings,
-		dispatch,
-	}), [
-		hasPrivateAccess,
-		isLoading,
-		querySetting,
-		querySettings,
-		dispatch,
-	]);
+	const contextValue = useMemo<SettingsContextValue>(
+		() => ({
+			hasPrivateAccess,
+			isLoading,
+			querySetting,
+			querySettings,
+			dispatch,
+		}),
+		[hasPrivateAccess, isLoading, querySetting, querySettings, dispatch],
+	);
 
-	return <SettingsContext.Provider
-		children={children}
-		value={contextValue}
-	/>;
+	return <SettingsContext.Provider children={children} value={contextValue} />;
 };
 
 export default SettingsProvider;

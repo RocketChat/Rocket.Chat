@@ -7,5 +7,4 @@ export default {
 	component: Announcement,
 };
 
-export const Default = () =>
-	<Announcement announcement='Lorem Ipsum Indolor' />;
+export const Default = () => <Announcement announcement='Lorem Ipsum Indolor' />;

@@ -1,17 +1,19 @@
-import React from 'react';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Box, Divider } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React from 'react';
 
-
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../components/VerticalBar';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 
-const ShortcutSection = ({ title, command }) =>
+const ShortcutSection = ({ title, command }) => (
 	<Box is='section' mb='x16'>
-		<Box fontScale='p2' fontWeight='700'>{title}</Box>
+		<Box fontScale='p2' fontWeight='700'>
+			{title}
+		</Box>
 		<Divider />
 		<Box fontScale='p1'>{command}</Box>
-	</Box>;
+	</Box>
+);
 
 export const KeyboardShortcuts = ({ handleClose }) => {
 	const t = useTranslation();
@@ -19,9 +21,9 @@ export const KeyboardShortcuts = ({ handleClose }) => {
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='keyboard'/>
+				<VerticalBar.Icon name='keyboard' />
 				<VerticalBar.Text>{t('Keyboard_Shortcuts_Title')}</VerticalBar.Text>
-				{handleClose && <VerticalBar.Close onClick={handleClose}/>}
+				{handleClose && <VerticalBar.Close onClick={handleClose} />}
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>
 				<ShortcutSection
@@ -63,5 +65,5 @@ export const KeyboardShortcuts = ({ handleClose }) => {
 
 export default React.memo(({ tabBar }) => {
 	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
-	return <KeyboardShortcuts handleClose={handleClose}/>;
+	return <KeyboardShortcuts handleClose={handleClose} />;
 });

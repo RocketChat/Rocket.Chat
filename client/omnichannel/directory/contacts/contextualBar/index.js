@@ -1,5 +1,5 @@
-import React from 'react';
 import { Icon, Box } from '@rocket.chat/fuselage';
+import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useRoute } from '../../../../contexts/RouterContext';
@@ -17,15 +17,21 @@ const ContactsContextualBar = ({ id }) => {
 	};
 	const room = useRoom();
 
-	const { v: { _id } } = room;
+	const {
+		v: { _id },
+	} = room;
 
-	return <>
-		<VerticalBar.Header>
-			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Profile')}</Box>
-			<VerticalBar.Close onClick={closeContextualBar} />
-		</VerticalBar.Header>
-		<ContactInfo id={_id} />
-	</>;
+	return (
+		<>
+			<VerticalBar.Header>
+				<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
+					<Icon name='user' size='x20' /> {t('Contact_Profile')}
+				</Box>
+				<VerticalBar.Close onClick={closeContextualBar} />
+			</VerticalBar.Header>
+			<ContactInfo id={_id} />
+		</>
+	);
 };
 
 export default ({ rid }) => <ContactsContextualBar id={rid} />;

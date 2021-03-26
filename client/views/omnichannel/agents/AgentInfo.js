@@ -1,33 +1,27 @@
-import React from 'react';
 import { Box, Margins, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import React from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import VerticalBar from '../../../components/VerticalBar';
-import { UserInfo } from '../../room/contextualBar/UserInfo';
-import { UserStatus } from '../../../components/UserStatus';
 import { FormSkeleton } from '../../../components/Skeleton';
-import { formsSubscription } from '../additionalForms';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { UserStatus } from '../../../components/UserStatus';
+import VerticalBar from '../../../components/VerticalBar';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { UserInfo } from '../../room/contextualBar/UserInfo';
+import { formsSubscription } from '../additionalForms';
 
-export const AgentInfo = React.memo(function AgentInfo({
-	uid,
-	children,
-	...props
-}) {
+export const AgentInfo = React.memo(function AgentInfo({ uid, children, ...props }) {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`livechat/users/agent/${ uid }`);
+	const { value: data, phase: state, error } = useEndpointData(`livechat/users/agent/${uid}`);
 	const eeForms = useSubscription(formsSubscription);
 
-	const {
-		useMaxChatsPerAgentDisplay = () => {},
-	} = eeForms;
+	const { useMaxChatsPerAgentDisplay = () => {} } = eeForms;
 
 	const MaxChats = useMaxChatsPerAgentDisplay();
 
 	if (state === AsyncStatePhase.LOADING) {
-		return <FormSkeleton/>;
+		return <FormSkeleton />;
 	}
 
 	if (error || !data || !data.user) {
@@ -35,37 +29,41 @@ export const AgentInfo = React.memo(function AgentInfo({
 	}
 
 	const { user } = data;
-	const {
-		username,
-		statusLivechat,
-		status: userStatus,
-	} = user;
+	const { username, statusLivechat, status: userStatus } = user;
 
-	return <VerticalBar.ScrollableContent p='x24' {...props}>
-
-		<Box alignSelf='center'>
-			<UserInfo.Avatar size={'x332'} username={username}/>
-		</Box>
-
-		<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center' flexShrink={0}>
-			{children}
-		</ButtonGroup>
-
-		<Margins block='x4'>
-			<Box mb='x2'>
-				<UserInfo.Username name={username} status={<UserStatus status={userStatus} />} />
+	return (
+		<VerticalBar.ScrollableContent p='x24' {...props}>
+			<Box alignSelf='center'>
+				<UserInfo.Avatar size={'x332'} username={username} />
 			</Box>
 
-			{statusLivechat && <>
-				<UserInfo.Label>{t('Livechat_status')}</UserInfo.Label>
-				<UserInfo.Info>{t(statusLivechat)}</UserInfo.Info>
-			</>}
+			<ButtonGroup
+				mi='neg-x4'
+				flexShrink={0}
+				flexWrap='nowrap'
+				withTruncatedText
+				justifyContent='center'
+				flexShrink={0}
+			>
+				{children}
+			</ButtonGroup>
 
-			{MaxChats && <MaxChats data={user}/>}
+			<Margins block='x4'>
+				<Box mb='x2'>
+					<UserInfo.Username name={username} status={<UserStatus status={userStatus} />} />
+				</Box>
 
-		</Margins>
+				{statusLivechat && (
+					<>
+						<UserInfo.Label>{t('Livechat_status')}</UserInfo.Label>
+						<UserInfo.Info>{t(statusLivechat)}</UserInfo.Info>
+					</>
+				)}
 
-	</VerticalBar.ScrollableContent>;
+				{MaxChats && <MaxChats data={user} />}
+			</Margins>
+		</VerticalBar.ScrollableContent>
+	);
 });
 
 export const Action = ({ icon, label, ...props }) => (

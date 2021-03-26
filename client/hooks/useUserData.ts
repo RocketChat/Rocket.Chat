@@ -3,7 +3,6 @@ import { useSubscription } from 'use-subscription';
 
 import { Presence, UserPresence } from '../lib/presence';
 
-
 /**
  * Hook to fetch and subscribe users data
  *
@@ -12,16 +11,18 @@ import { Presence, UserPresence } from '../lib/presence';
  * @public
  */
 export const useUserData = (uid: string): UserPresence | undefined => {
-	const subscription = useMemo(() => ({
-		getCurrentValue: (): UserPresence | undefined => Presence.store.get(uid),
-		subscribe: (callback: any): any => {
-			Presence.listen(uid, callback);
-			return (): void => {
-				Presence.stop(uid, callback);
-			};
-		},
-	}),
-	[uid]);
+	const subscription = useMemo(
+		() => ({
+			getCurrentValue: (): UserPresence | undefined => Presence.store.get(uid),
+			subscribe: (callback: any): any => {
+				Presence.listen(uid, callback);
+				return (): void => {
+					Presence.stop(uid, callback);
+				};
+			},
+		}),
+		[uid],
+	);
 
 	return useSubscription(subscription);
 };

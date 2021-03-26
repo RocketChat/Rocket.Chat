@@ -8,13 +8,16 @@ Meteor.methods({
 			return false;
 		}
 
-		ChatSubscription.update({
-			rid,
-			'u._id': Meteor.userId(),
-		}, {
-			$set: {
-				f,
+		ChatSubscription.update(
+			{
+				rid,
+				'u._id': Meteor.userId(),
 			},
-		});
+			{
+				$set: {
+					f,
+				},
+			},
+		);
 	},
 });

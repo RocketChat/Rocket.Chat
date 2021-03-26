@@ -7,7 +7,7 @@ export default {
 	component: MarkdownText,
 };
 
-export const Example = () =>
+export const Example = () => (
 	<MarkdownText
 		content={`
 # h1 Heading
@@ -36,4 +36,5 @@ _This is italic text_
 \`rocket.chat();\`
 
 https://rocket.chat`}
-	/>;
+	/>
+);

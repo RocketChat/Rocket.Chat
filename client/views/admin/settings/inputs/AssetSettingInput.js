@@ -7,13 +7,7 @@ import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesConte
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import './AssetSettingInput.css';
 
-export function AssetSettingInput({
-	_id,
-	label,
-	value = {},
-	asset,
-	fileConstraints = {},
-}) {
+export function AssetSettingInput({ _id, label, value = {}, asset, fileConstraints = {} }) {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -55,28 +49,47 @@ export function AssetSettingInput({
 		}
 	};
 
-	return <>
-		<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
-		<Field.Row>
-			<div className='settings-file-preview'>
-				{value.url
-					? <div className='preview' style={{ backgroundImage: `url(${ value.url }?_dc=${ Random.id() })` }} />
-					: <div className='preview no-file background-transparent-light secondary-font-color'><Icon name='upload' /></div>}
-				<div className='action'>
-					{value.url
-						? <Button onClick={handleDeleteButtonClick}>
-							<Icon name='trash' />{t('Delete')}
-						</Button>
-						: <div className='rc-button rc-button--primary'>{t('Select_file')}
-							<input
-								className='AssetSettingInput__input'
-								type='file'
-								accept={fileConstraints.extensions && fileConstraints.extensions.length && `.${ fileConstraints.extensions.join(', .') }`}
-								onChange={handleUpload}
-							/>
-						</div>}
+	return (
+		<>
+			<Field.Label htmlFor={_id} title={_id}>
+				{label}
+			</Field.Label>
+			<Field.Row>
+				<div className='settings-file-preview'>
+					{value.url ? (
+						<div
+							className='preview'
+							style={{ backgroundImage: `url(${value.url}?_dc=${Random.id()})` }}
+						/>
+					) : (
+						<div className='preview no-file background-transparent-light secondary-font-color'>
+							<Icon name='upload' />
+						</div>
+					)}
+					<div className='action'>
+						{value.url ? (
+							<Button onClick={handleDeleteButtonClick}>
+								<Icon name='trash' />
+								{t('Delete')}
+							</Button>
+						) : (
+							<div className='rc-button rc-button--primary'>
+								{t('Select_file')}
+								<input
+									className='AssetSettingInput__input'
+									type='file'
+									accept={
+										fileConstraints.extensions &&
+										fileConstraints.extensions.length &&
+										`.${fileConstraints.extensions.join(', .')}`
+									}
+									onChange={handleUpload}
+								/>
+							</div>
+						)}
+					</div>
 				</div>
-			</div>
-		</Field.Row>
-	</>;
+			</Field.Row>
+		</>
+	);
 }

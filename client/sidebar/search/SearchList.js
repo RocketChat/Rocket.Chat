@@ -1,63 +1,97 @@
-import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
-import { Meteor } from 'meteor/meteor';
-import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback, useDebouncedValue, useStableArray, useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import memoize from 'memoize-one';
 import { css } from '@rocket.chat/css-in-js';
+import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
+import {
+	useMutableCallback,
+	useDebouncedValue,
+	useStableArray,
+	useAutoFocus,
+	useUniqueId,
+} from '@rocket.chat/fuselage-hooks';
+import memoize from 'memoize-one';
+import { Meteor } from 'meteor/meteor';
+import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
-import { ReactiveUserStatus } from '../../components/UserStatus';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useSetting } from '../../contexts/SettingsContext';
 import { roomTypes } from '../../../app/utils';
-import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
-import { SideBarItemTemplateWithData } from '../RoomList';
-import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
-import { useMethodData } from '../../hooks/useMethodData';
-import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
+import { ReactiveUserStatus } from '../../components/UserStatus';
+import { useSetting } from '../../contexts/SettingsContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
+import { AsyncStatePhase } from '../../hooks/useAsyncState';
+import { useMethodData } from '../../hooks/useMethodData';
+import { SideBarItemTemplateWithData } from '../RoomList';
+import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
-const createItemData = memoize((items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended, sidebarViewMode) => ({
-	items,
-	t,
-	SideBarItemTemplate,
-	AvatarTemplate,
-	useRealName,
-	extended,
-	sidebarViewMode,
-}));
+const createItemData = memoize(
+	(items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended, sidebarViewMode) => ({
+		items,
+		t,
+		SideBarItemTemplate,
+		AvatarTemplate,
+		useRealName,
+		extended,
+		sidebarViewMode,
+	}),
+);
 
 const Row = React.memo(({ item, data }) => {
 	const { t, SideBarItemTemplate, AvatarTemplate, useRealName, extended } = data;
 
 	if (item.t === 'd' && !item.u) {
-		return <UserItem id={`search-${ item._id }`} useRealName={useRealName} t={t} item={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+		return (
+			<UserItem
+				id={`search-${item._id}`}
+				useRealName={useRealName}
+				t={t}
+				item={item}
+				SideBarItemTemplate={SideBarItemTemplate}
+				AvatarTemplate={AvatarTemplate}
+			/>
+		);
 	}
-	return <SideBarItemTemplateWithData id={`search-${ item._id }`} tabIndex={-1} extended={extended} t={t} room={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
+	return (
+		<SideBarItemTemplateWithData
+			id={`search-${item._id}`}
+			tabIndex={-1}
+			extended={extended}
+			t={t}
+			room={item}
+			SideBarItemTemplate={SideBarItemTemplate}
+			AvatarTemplate={AvatarTemplate}
+		/>
+	);
 });
 
-const UserItem = React.memo(({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName, sidebarViewMode }) => {
-	const title = useRealName ? item.fname || item.name : item.name || item.fname;
-	const small = sidebarViewMode !== 'medium';
-	const icon = <Sidebar.Item.Icon><ReactiveUserStatus small={small && 'small'} uid={item._id} /></Sidebar.Item.Icon>;
-	const href = roomTypes.getRouteLink(item.t, item);
+const UserItem = React.memo(
+	({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName, sidebarViewMode }) => {
+		const title = useRealName ? item.fname || item.name : item.name || item.fname;
+		const small = sidebarViewMode !== 'medium';
+		const icon = (
+			<Sidebar.Item.Icon>
+				<ReactiveUserStatus small={small && 'small'} uid={item._id} />
+			</Sidebar.Item.Icon>
+		);
+		const href = roomTypes.getRouteLink(item.t, item);
 
-	return <SideBarItemTemplate
-		is='a'
-		style={{ height: '100%' }}
-		id={id}
-		href={href}
-		title={title}
-		subtitle={t('No_messages_yet')}
-		avatar={AvatarTemplate && <AvatarTemplate {...item}/>}
-		icon={icon}
-		style={style}
-	/>;
-});
-
+		return (
+			<SideBarItemTemplate
+				is='a'
+				style={{ height: '100%' }}
+				id={id}
+				href={href}
+				title={title}
+				subtitle={t('No_messages_yet')}
+				avatar={AvatarTemplate && <AvatarTemplate {...item} />}
+				icon={icon}
+				style={style}
+			/>
+		);
+	},
+);
 
 const shortcut = (() => {
 	if (!Meteor.Device.isDesktop()) {
@@ -87,7 +121,10 @@ const useSpotlight = (filterText = '', usernames) => {
 	}, [searchForChannels, searchForDMs]);
 	const args = useMemo(() => [name, usernames, type], [type, name, usernames]);
 
-	const { value: data = { users: [], rooms: [] }, phase: status } = useMethodData('spotlight', args);
+	const { value: data = { users: [], rooms: [] }, phase: status } = useMethodData(
+		'spotlight',
+		args,
+	);
 
 	return useMemo(() => {
 		if (!data) {
@@ -113,28 +150,36 @@ const useSearchItems = (filterText) => {
 		const filterRegex = new RegExp(escapeRegExp(name), 'i');
 
 		return {
-			$or: [
-				{ name: filterRegex },
-				{ fname: filterRegex },
-			],
-			...type && {
+			$or: [{ name: filterRegex }, { fname: filterRegex }],
+			...(type && {
 				t: type === '@' ? 'd' : { $ne: 'd' },
-			},
+			}),
 		};
 	}, [name, type]);
 
 	const localRooms = useUserSubscriptions(query, options);
 
-	const usernamesFromClient = useStableArray([...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean));
+	const usernamesFromClient = useStableArray(
+		[...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean),
+	);
 
 	const { data: spotlight, status } = useSpotlight(filterText, usernamesFromClient);
 
 	return useMemo(() => {
 		const resultsFromServer = [];
 
-		const filterUsersUnique = ({ _id }, index, arr) => index === arr.findIndex((user) => _id === user._id);
-		const roomFilter = (room) => !localRooms.find((item) => (room.t === 'd' && room.uids?.length > 1 && room.uids.includes(item._id)) || [item.rid, item._id].includes(room._id));
-		const usersfilter = (user) => !localRooms.find((room) => room.t === 'd' && (room.uids?.length === 2 && room.uids.includes(user._id)));
+		const filterUsersUnique = ({ _id }, index, arr) =>
+			index === arr.findIndex((user) => _id === user._id);
+		const roomFilter = (room) =>
+			!localRooms.find(
+				(item) =>
+					(room.t === 'd' && room.uids?.length > 1 && room.uids.includes(item._id)) ||
+					[item.rid, item._id].includes(room._id),
+			);
+		const usersfilter = (user) =>
+			!localRooms.find(
+				(room) => room.t === 'd' && room.uids?.length === 2 && room.uids.includes(user._id),
+			);
 
 		const userMap = (user) => ({
 			_id: user._id,
@@ -144,13 +189,17 @@ const useSearchItems = (filterText) => {
 			avatarETag: user.avatarETag,
 		});
 
-		const exact = resultsFromServer.filter((item) => [item.usernamame, item.name, item.fname].includes(name));
+		const exact = resultsFromServer.filter((item) =>
+			[item.usernamame, item.name, item.fname].includes(name),
+		);
 
-		resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersfilter).map(userMap));
+		resultsFromServer.push(
+			...spotlight.users.filter(filterUsersUnique).filter(usersfilter).map(userMap),
+		);
 		resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
 
 		return { data: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])), status };
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [localRooms, name, spotlight]);
 };
 
@@ -172,16 +221,16 @@ const toggleSelectionState = (next, current, input) => {
 	}
 };
 
-const ScrollerWithCustomProps = forwardRef((props, ref) => <ScrollableContentWrapper
-	{...props}
-	ref={ref}
-	renderView={
-		({ style, ...props }) => (
-			<div {...props} style={{ ...style }} />
-		)
-	}
-	renderTrackHorizontal={(props) => <div {...props} style={{ display: 'none' }} className='track-horizontal'/>}
-/>);
+const ScrollerWithCustomProps = forwardRef((props, ref) => (
+	<ScrollableContentWrapper
+		{...props}
+		ref={ref}
+		renderView={({ style, ...props }) => <div {...props} style={{ ...style }} />}
+		renderTrackHorizontal={(props) => (
+			<div {...props} style={{ display: 'none' }} className='track-horizontal' />
+		)}
+	/>
+));
 
 const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 	const listId = useUniqueId();
@@ -210,13 +259,23 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 
 	const { data: items, status } = useSearchItems(filterText);
 
-	const itemData = createItemData(items, t, sideBarItemTemplate, avatarTemplate, showRealName, extended, sidebarViewMode);
+	const itemData = createItemData(
+		items,
+		t,
+		sideBarItemTemplate,
+		avatarTemplate,
+		showRealName,
+		extended,
+		sidebarViewMode,
+	);
 
 	const changeSelection = useMutableCallback((dir) => {
 		let nextSelectedElement = null;
 
 		if (dir === 'up') {
-			nextSelectedElement = selectedElement.current.parentElement.previousSibling.querySelector('a');
+			nextSelectedElement = selectedElement.current.parentElement.previousSibling.querySelector(
+				'a',
+			);
 		} else {
 			nextSelectedElement = selectedElement.current.parentElement.nextSibling.querySelector('a');
 		}
@@ -286,24 +345,55 @@ const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
 		};
 	}, [autofocus, changeSelection, items.length, onClose, resetCursor, setFilterValue]);
 
-	return <Box position='absolute' rcx-sidebar h='full' display='flex' flexDirection='column' zIndex={99} w='full' className={css`left: 0; top: 0;`} ref={ref}>
-		<Sidebar.TopBar.Section role='search' is='form'>
-			<TextInput aria-owns={listId} data-qa='sidebar-search-input' ref={autofocus} {...filter} placeholder={placeholder} addon={<Icon name='cross' size='x20' onClick={onClose}/>}/>
-		</Sidebar.TopBar.Section>
-		<Box ref={boxRef} aria-expanded='true' role='listbox' id={listId} tabIndex={-1} flexShrink={1} h='full' w='full' data-qa='sidebar-search-result' onClick={onClose} aria-busy={status !== AsyncStatePhase.RESOLVED}>
-			<Virtuoso
-				style={{ height: '100%', width: '100%' }}
-				totalCount={items?.length}
-				data={items}
-				components={{ Scroller: ScrollerWithCustomProps }}
-				itemContent={(index, data) => <Row
-					data={itemData}
-					item={data}
-				/>}
-				ref={listRef}
-			/>
+	return (
+		<Box
+			position='absolute'
+			rcx-sidebar
+			h='full'
+			display='flex'
+			flexDirection='column'
+			zIndex={99}
+			w='full'
+			className={css`
+				left: 0;
+				top: 0;
+			`}
+			ref={ref}
+		>
+			<Sidebar.TopBar.Section role='search' is='form'>
+				<TextInput
+					aria-owns={listId}
+					data-qa='sidebar-search-input'
+					ref={autofocus}
+					{...filter}
+					placeholder={placeholder}
+					addon={<Icon name='cross' size='x20' onClick={onClose} />}
+				/>
+			</Sidebar.TopBar.Section>
+			<Box
+				ref={boxRef}
+				aria-expanded='true'
+				role='listbox'
+				id={listId}
+				tabIndex={-1}
+				flexShrink={1}
+				h='full'
+				w='full'
+				data-qa='sidebar-search-result'
+				onClick={onClose}
+				aria-busy={status !== AsyncStatePhase.RESOLVED}
+			>
+				<Virtuoso
+					style={{ height: '100%', width: '100%' }}
+					totalCount={items?.length}
+					data={items}
+					components={{ Scroller: ScrollerWithCustomProps }}
+					itemContent={(index, data) => <Row data={itemData} item={data} />}
+					ref={listRef}
+				/>
+			</Box>
 		</Box>
-	</Box>;
+	);
 });
 
 export default SearchList;

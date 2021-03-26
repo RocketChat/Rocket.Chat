@@ -2,25 +2,19 @@ import { Table, Callout, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, memo, useMemo } from 'react';
 
-import GenericTable from '../../../components/GenericTable';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
-import { useRoute } from '../../../contexts/RouterContext';
+import GenericTable from '../../../components/GenericTable';
 import { useSetModal } from '../../../contexts/ModalContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 
 const TriggersRow = memo(function TriggersRow(props) {
-	const {
-		_id,
-		name,
-		description,
-		enabled,
-		onDelete,
-	} = props;
+	const { _id, name, description, enabled, onDelete } = props;
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
@@ -59,63 +53,56 @@ const TriggersRow = memo(function TriggersRow(props) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal
-			onDelete={onDeleteTrigger}
-			onCancel={() => setModal()}
-		/>);
+		setModal(<DeleteWarningModal onDelete={onDeleteTrigger} onCancel={() => setModal()} />);
 	});
 
-	return <Table.Row
-		key={_id}
-		role='link'
-		action
-		tabIndex={0}
-		onClick={handleClick}
-		onKeyDown={handleKeyDown}
-	>
-		<Table.Cell withTruncatedText>
-			{name}
-		</Table.Cell>
-		<Table.Cell withTruncatedText>
-			{description}
-		</Table.Cell>
-		<Table.Cell withTruncatedText>
-			{enabled ? t('Yes') : t('No')}
-		</Table.Cell>
-		<Table.Cell withTruncatedText>
-			<Button small ghost title={t('Remove')} onClick={handleDelete}>
-				<Icon name='trash' size='x16'/>
-			</Button>
-		</Table.Cell>
-	</Table.Row>;
+	return (
+		<Table.Row
+			key={_id}
+			role='link'
+			action
+			tabIndex={0}
+			onClick={handleClick}
+			onKeyDown={handleKeyDown}
+		>
+			<Table.Cell withTruncatedText>{name}</Table.Cell>
+			<Table.Cell withTruncatedText>{description}</Table.Cell>
+			<Table.Cell withTruncatedText>{enabled ? t('Yes') : t('No')}</Table.Cell>
+			<Table.Cell withTruncatedText>
+				<Button small ghost title={t('Remove')} onClick={handleDelete}>
+					<Icon name='trash' size='x16' />
+				</Button>
+			</Table.Cell>
+		</Table.Row>
+	);
 });
 
 const TriggersTableContainer = ({ reloadRef }) => {
 	const t = useTranslation();
 	const [params, setParams] = useState(() => ({ current: 0, itemsPerPage: 25 }));
 
-	const {
-		current,
-		itemsPerPage,
-	} = params;
+	const { current, itemsPerPage } = params;
 
-	const { value: data, phase: state, reload } = useEndpointData('livechat/triggers', useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]));
+	const { value: data, phase: state, reload } = useEndpointData(
+		'livechat/triggers',
+		useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]),
+	);
 
 	reloadRef.current = reload;
 
 	if (state === AsyncStatePhase.REJECTED) {
-		return <Callout>
-			{t('Error')}: error
-		</Callout>;
+		return <Callout>{t('Error')}: error</Callout>;
 	}
 
-	return <TriggersTable
-		triggers={data?.triggers}
-		totalTriggers={data?.total}
-		params={params}
-		onChangeParams={setParams}
-		onDelete={reload}
-	/>;
+	return (
+		<TriggersTable
+			triggers={data?.triggers}
+			totalTriggers={data?.total}
+			params={params}
+			onChangeParams={setParams}
+			onDelete={reload}
+		/>
+	);
 };
 
 export function TriggersTable({ triggers, totalTriggers, params, onChangeParams, onDelete }) {
@@ -123,30 +110,27 @@ export function TriggersTable({ triggers, totalTriggers, params, onChangeParams,
 
 	const [ref, onMediumBreakpoint] = useResizeInlineBreakpoint([600], 200);
 
-	return <GenericTable
-		ref={ref}
-		header={<>
-			<GenericTable.HeaderCell>
-				{t('Name')}
-			</GenericTable.HeaderCell>
-			<GenericTable.HeaderCell>
-				{t('Description')}
-			</GenericTable.HeaderCell>
-			<GenericTable.HeaderCell>
-				{t('Enabled')}
-			</GenericTable.HeaderCell>
-			<GenericTable.HeaderCell width='x60'>
-				{t('Remove')}
-			</GenericTable.HeaderCell>
-
-		</>}
-		results={triggers}
-		total={totalTriggers}
-		params={params}
-		setParams={onChangeParams}
-	>
-		{(props) => <TriggersRow key={props._id} onDelete={onDelete} medium={onMediumBreakpoint} {...props} />}
-	</GenericTable>;
+	return (
+		<GenericTable
+			ref={ref}
+			header={
+				<>
+					<GenericTable.HeaderCell>{t('Name')}</GenericTable.HeaderCell>
+					<GenericTable.HeaderCell>{t('Description')}</GenericTable.HeaderCell>
+					<GenericTable.HeaderCell>{t('Enabled')}</GenericTable.HeaderCell>
+					<GenericTable.HeaderCell width='x60'>{t('Remove')}</GenericTable.HeaderCell>
+				</>
+			}
+			results={triggers}
+			total={totalTriggers}
+			params={params}
+			setParams={onChangeParams}
+		>
+			{(props) => (
+				<TriggersRow key={props._id} onDelete={onDelete} medium={onMediumBreakpoint} {...props} />
+			)}
+		</GenericTable>
+	);
 }
 
 export default TriggersTableContainer;

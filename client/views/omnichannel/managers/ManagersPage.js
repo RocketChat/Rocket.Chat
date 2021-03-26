@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
 import { Button, Box, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useState } from 'react';
 
 import { UserAutoComplete } from '../../../components/AutoComplete';
-import Page from '../../../components/Page';
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
+import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
@@ -26,45 +26,44 @@ function AddManager({ reload, ...props }) {
 		reload();
 		setUsername();
 	});
-	return <Box display='flex' alignItems='center' {...props}>
-		<Field>
-			<Field.Label>{t('Username')}</Field.Label>
-			<Field.Row>
-				<UserAutoComplete value={username} onChange={setUsername}/>
-				<Button disabled={!username} onClick={handleSave} mis='x8' primary>{t('Add')}</Button>
-			</Field.Row>
-		</Field>
-	</Box>;
+	return (
+		<Box display='flex' alignItems='center' {...props}>
+			<Field>
+				<Field.Label>{t('Username')}</Field.Label>
+				<Field.Row>
+					<UserAutoComplete value={username} onChange={setUsername} />
+					<Button disabled={!username} onClick={handleSave} mis='x8' primary>
+						{t('Add')}
+					</Button>
+				</Field.Row>
+			</Field>
+		</Box>
+	);
 }
 
-function ManagersPage({
-	data,
-	reload,
-	header,
-	setParams,
-	params,
-	title,
-	renderRow,
-	children,
-}) {
-	return <Page flexDirection='row'>
-		<Page>
-			<Page.Header title={title}/>
-			<AddManager reload={reload} pi='x24'/>
-			<Page.Content>
-				<GenericTable
-					header={header}
-					renderRow={renderRow}
-					results={data && data.users}
-					total={data && data.total}
-					setParams={setParams}
-					params={params}
-					renderFilter={({ onChange, ...props }) => <FilterByText onChange={onChange} {...props} />}
-				/>
-			</Page.Content>
+function ManagersPage({ data, reload, header, setParams, params, title, renderRow, children }) {
+	return (
+		<Page flexDirection='row'>
+			<Page>
+				<Page.Header title={title} />
+				<AddManager reload={reload} pi='x24' />
+				<Page.Content>
+					<GenericTable
+						header={header}
+						renderRow={renderRow}
+						results={data && data.users}
+						total={data && data.total}
+						setParams={setParams}
+						params={params}
+						renderFilter={({ onChange, ...props }) => (
+							<FilterByText onChange={onChange} {...props} />
+						)}
+					/>
+				</Page.Content>
+			</Page>
+			{children}
 		</Page>
-		{children}
-	</Page>;
+	);
 }
 
 export default ManagersPage;

@@ -5,10 +5,7 @@ import toastr from 'toastr';
 import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
 import { t } from '../../../../app/utils/client';
 
-export const appEnabledStatuses = [
-	AppStatus.AUTO_ENABLED,
-	AppStatus.MANUALLY_ENABLED,
-];
+export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 
 const appErroredStatuses = [
 	AppStatus.COMPILER_ERROR_DISABLED,
@@ -30,7 +27,9 @@ export const apiCurlGetter = (absoluteUrl) => (method, api) => {
 };
 
 export function handleInstallError(apiError) {
-	if (!apiError.xhr || !apiError.xhr.responseJSON) { return; }
+	if (!apiError.xhr || !apiError.xhr.responseJSON) {
+		return;
+	}
 
 	const { status, messages, error, payload = null } = apiError.xhr.responseJSON;
 
@@ -58,25 +57,24 @@ export function handleInstallError(apiError) {
 }
 
 const shouldHandleErrorAsWarning = (message) => {
-	const warnings = [
-		'Could not reach the Marketplace',
-	];
+	const warnings = ['Could not reach the Marketplace'];
 
 	return warnings.includes(message);
 };
 
 export const handleAPIError = (error) => {
-	const message = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+	const message =
+		(error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
 	shouldHandleErrorAsWarning(message) ? toastr.warning(message) : toastr.error(message);
 };
 
 export const warnStatusChange = (appName, status) => {
 	if (appErroredStatuses.includes(status)) {
-		toastr.error(t(`App_status_${ status }`), appName);
+		toastr.error(t(`App_status_${status}`), appName);
 		return;
 	}
 
-	toastr.info(t(`App_status_${ status }`), appName);
+	toastr.info(t(`App_status_${status}`), appName);
 };
 
 export const appButtonProps = ({
@@ -88,9 +86,8 @@ export const appButtonProps = ({
 	purchaseType,
 	subscriptionInfo,
 }) => {
-	const canUpdate = installed
-		&& version && marketplaceVersion
-		&& semver.lt(version, marketplaceVersion);
+	const canUpdate =
+		installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 	if (canUpdate) {
 		return {
 			action: 'update',
@@ -133,11 +130,7 @@ export const appButtonProps = ({
 	};
 };
 
-export const appStatusSpanProps = ({
-	installed,
-	status,
-	subscriptionInfo,
-}) => {
+export const appStatusSpanProps = ({ installed, status, subscriptionInfo }) => {
 	if (!installed) {
 		return;
 	}
@@ -174,17 +167,20 @@ export const appStatusSpanProps = ({
 	};
 };
 
-export const formatPrice = (price) => `\$${ Number.parseFloat(price).toFixed(2) }`;
+export const formatPrice = (price) => `\$${Number.parseFloat(price).toFixed(2)}`;
 
 export const formatPricingPlan = ({ strategy, price, tiers = [] }) => {
-	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
+	const { perUnit = false } =
+		(Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [
 		'Apps_Marketplace_pricingPlan',
 		Array.isArray(tiers) && tiers.length > 0 && 'startingAt',
 		strategy,
 		perUnit && 'perUser',
-	].filter(Boolean).join('_');
+	]
+		.filter(Boolean)
+		.join('_');
 
 	return t(pricingPlanTranslationString, {
 		price: formatPrice(price),

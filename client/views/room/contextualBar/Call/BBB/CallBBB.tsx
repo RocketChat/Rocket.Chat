@@ -1,56 +1,66 @@
-import React, { FC, useEffect } from 'react';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { FC, useEffect } from 'react';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
-import VerticalBar from '../../../../../components/VerticalBar';
-import { useTabBarClose } from '../../../providers/ToolboxProvider';
-import { useSetting } from '../../../../../contexts/SettingsContext';
-import { useRoom } from '../../../providers/RoomProvider';
-import { usePermission } from '../../../../../contexts/AuthorizationContext';
-import { IRoom } from '../../../../../../definition/IRoom';
-import { useMethod } from '../../../../../contexts/ServerContext';
 import { popout } from '../../../../../../app/ui-utils/client';
+import { IRoom } from '../../../../../../definition/IRoom';
+import VerticalBar from '../../../../../components/VerticalBar';
+import { usePermission } from '../../../../../contexts/AuthorizationContext';
+import { useMethod } from '../../../../../contexts/ServerContext';
+import { useSetting } from '../../../../../contexts/SettingsContext';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useRoom } from '../../../providers/RoomProvider';
+import { useTabBarClose } from '../../../providers/ToolboxProvider';
 
-
-export const CallBBB: FC <{
+export const CallBBB: FC<{
 	startCall: () => void;
 	endCall: () => void;
 	handleClose: () => void;
 	canManageCall: boolean;
 	live: boolean;
 	openNewWindow: boolean;
-}> = ({
-	handleClose,
-	canManageCall,
-	live,
-	startCall,
-	endCall,
-	openNewWindow,
-	...props
-}) => {
+}> = ({ handleClose, canManageCall, live, startCall, endCall, openNewWindow, ...props }) => {
 	const t = useTranslation();
-	return <>
-		<VerticalBar.Header>
-			<VerticalBar.Icon name='phone'/>
-			<VerticalBar.Text>{t('Call')}</VerticalBar.Text>
-			{handleClose && <VerticalBar.Close onClick={handleClose}/>}
-		</VerticalBar.Header>
-		<VerticalBar.ScrollableContent {...(props as any)}>
-			{ openNewWindow ? <>
-				<Box fontScale='p2'>{t('Video_Conference')}</Box>
-				<Box fontScale='p1' color='neutral-700'>{t('Opened_in_a_new_window')}</Box>
-			</> : null }
-			<ButtonGroup stretch>
-				{ live && <Button primary onClick={startCall}>{t('BBB_Join_Meeting')}</Button> }
-				{ live && canManageCall && <Button danger onClick={endCall}>{t('BBB_End_Meeting')}</Button> }
-				{ !live && canManageCall && <Button primary onClick={startCall} >{t('BBB_Start_Meeting')}</Button> }
-				{ !live && !canManageCall && <Button primary>{t('BBB_You_have_no_permission_to_start_a_call')}</Button> }
-			</ButtonGroup>
-		</VerticalBar.ScrollableContent>
-	</>;
+	return (
+		<>
+			<VerticalBar.Header>
+				<VerticalBar.Icon name='phone' />
+				<VerticalBar.Text>{t('Call')}</VerticalBar.Text>
+				{handleClose && <VerticalBar.Close onClick={handleClose} />}
+			</VerticalBar.Header>
+			<VerticalBar.ScrollableContent {...(props as any)}>
+				{openNewWindow ? (
+					<>
+						<Box fontScale='p2'>{t('Video_Conference')}</Box>
+						<Box fontScale='p1' color='neutral-700'>
+							{t('Opened_in_a_new_window')}
+						</Box>
+					</>
+				) : null}
+				<ButtonGroup stretch>
+					{live && (
+						<Button primary onClick={startCall}>
+							{t('BBB_Join_Meeting')}
+						</Button>
+					)}
+					{live && canManageCall && (
+						<Button danger onClick={endCall}>
+							{t('BBB_End_Meeting')}
+						</Button>
+					)}
+					{!live && canManageCall && (
+						<Button primary onClick={startCall}>
+							{t('BBB_Start_Meeting')}
+						</Button>
+					)}
+					{!live && !canManageCall && (
+						<Button primary>{t('BBB_You_have_no_permission_to_start_a_call')}</Button>
+					)}
+				</ButtonGroup>
+			</VerticalBar.ScrollableContent>
+		</>
+	);
 };
-
 
 const D: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 	const handleClose = useTabBarClose();
@@ -96,7 +106,16 @@ const D: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 
 	const canManageCall = room?.t === 'd' || hasCallManagement;
 
-	return <CallBBB handleClose={handleClose as () => void} openNewWindow={openNewWindow} live={room?.streamingOptions?.type === 'call'} endCall={endCall} startCall={startCall} canManageCall={canManageCall} />;
+	return (
+		<CallBBB
+			handleClose={handleClose as () => void}
+			openNewWindow={openNewWindow}
+			live={room?.streamingOptions?.type === 'call'}
+			endCall={endCall}
+			startCall={startCall}
+			canManageCall={canManageCall}
+		/>
+	);
 };
 
 export default D;

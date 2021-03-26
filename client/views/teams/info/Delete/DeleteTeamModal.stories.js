@@ -12,22 +12,21 @@ const commonProps = {
 	onCancel: () => {},
 };
 
-const rooms = Array.from({ length: 15 }).map((_, i) => ({ rid: i, fname: i, name: i, usersCount: 10 * i, type: 'p', t: 'p' }));
+const rooms = Array.from({ length: 15 }).map((_, i) => ({
+	rid: i,
+	fname: i,
+	name: i,
+	usersCount: 10 * i,
+	type: 'p',
+	t: 'p',
+}));
 
-export const Default = () => <DeleteTeam rooms={rooms}/>;
+export const Default = () => <DeleteTeam rooms={rooms} />;
 
-export const ModalStepOne = () => <StepOne
-	{...commonProps}
-/>;
+export const ModalStepOne = () => <StepOne {...commonProps} />;
 
-export const ModalStepTwo = () => <StepTwo
-	rooms={rooms}
-	selectedRooms={{}}
-	{...commonProps}
-/>;
+export const ModalStepTwo = () => <StepTwo rooms={rooms} selectedRooms={{}} {...commonProps} />;
 
-export const ModalStepThree = () => <StepThree
-	deletedRooms={rooms}
-	keptRooms={rooms}
-	{...commonProps}
-/>;
+export const ModalStepThree = () => (
+	<StepThree deletedRooms={rooms} keptRooms={rooms} {...commonProps} />
+);

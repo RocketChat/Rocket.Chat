@@ -1,40 +1,60 @@
-import React, { useMemo } from 'react';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, ActionButton, Tag } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
 import { useRoutePath } from '../contexts/RouterContext';
+import { useTranslation } from '../contexts/TranslationContext';
 import ScrollableContentWrapper from './ScrollableContentWrapper';
 
-const Sidebar = ({ children, ...props }) => <Box display='flex' flexDirection='column' h='full' justifyContent='stretch' {...props}>
-	{children}
-</Box>;
+const Sidebar = ({ children, ...props }) => (
+	<Box display='flex' flexDirection='column' h='full' justifyContent='stretch' {...props}>
+		{children}
+	</Box>
+);
 
-const Content = ({ children, ...props }) => <Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} overflow='hidden'>
-	<ScrollableContentWrapper {...props}>
-		<Box display='flex' flexDirection='column' w='full' h='full'>
-			{children}
-		</Box>
-	</ScrollableContentWrapper>
-</Box>;
+const Content = ({ children, ...props }) => (
+	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} overflow='hidden'>
+		<ScrollableContentWrapper {...props}>
+			<Box display='flex' flexDirection='column' w='full' h='full'>
+				{children}
+			</Box>
+		</ScrollableContentWrapper>
+	</Box>
+);
 
-const Header = ({ title, onClose, children = undefined, ...props }) => <Box is='header' display='flex' flexDirection='column' pb='x16' {...props}>
-	{(title || onClose) && <Box display='flex' flexDirection='row' alignItems='center' pi='x24' justifyContent='space-between' flexGrow={1}>
-		{title && <Box color='neutral-800' fontSize='p1' fontWeight='p1' flexShrink={1} withTruncatedText>{title}</Box>}
-		{onClose && <ActionButton ghost small icon='cross' onClick={onClose}/>}
-	</Box>}
-	{children}
-</Box>;
+const Header = ({ title, onClose, children = undefined, ...props }) => (
+	<Box is='header' display='flex' flexDirection='column' pb='x16' {...props}>
+		{(title || onClose) && (
+			<Box
+				display='flex'
+				flexDirection='row'
+				alignItems='center'
+				pi='x24'
+				justifyContent='space-between'
+				flexGrow={1}
+			>
+				{title && (
+					<Box color='neutral-800' fontSize='p1' fontWeight='p1' flexShrink={1} withTruncatedText>
+						{title}
+					</Box>
+				)}
+				{onClose && <ActionButton ghost small icon='cross' onClick={onClose} />}
+			</Box>
+		)}
+		{children}
+	</Box>
+);
 
-const GenericItem = ({ href, active, children, ...props }) => <Box
-	is='a'
-	color='default'
-	pb='x8'
-	pi='x24'
-	href={href}
-	className={[
-		active && 'active',
-		css`
+const GenericItem = ({ href, active, children, ...props }) => (
+	<Box
+		is='a'
+		color='default'
+		pb='x8'
+		pi='x24'
+		href={href}
+		className={[
+			active && 'active',
+			css`
 				&:hover,
 				&:focus,
 				&.active:focus,
@@ -46,50 +66,61 @@ const GenericItem = ({ href, active, children, ...props }) => <Box
 					background-color: var(--sidebar-background-light-active);
 				}
 			`,
-	].filter(Boolean)}
-	{...props}
->
-	<Box
-		mi='neg-x4'
-		display='flex'
-		flexDirection='row'
-		alignItems='center'>
-		{children}
+		].filter(Boolean)}
+		{...props}
+	>
+		<Box mi='neg-x4' display='flex' flexDirection='row' alignItems='center'>
+			{children}
+		</Box>
 	</Box>
-</Box>;
+);
 
-const NavigationItem = ({ permissionGranted, pathGroup, pathSection, icon, label, currentPath, tag }) => {
+const NavigationItem = ({
+	permissionGranted,
+	pathGroup,
+	pathSection,
+	icon,
+	label,
+	currentPath,
+	tag,
+}) => {
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
 	const path = useRoutePath(pathSection, params);
 	const isActive = path === currentPath || false;
-	if (permissionGranted && !permissionGranted()) { return null; }
-	return <Sidebar.GenericItem active={isActive} href={path} key={path}>
-		{icon && <Icon name={icon} size='x20' mi='x4'/>}
-		<Box withTruncatedText fontScale='p1' mi='x4' color='info'>{label} {tag && <Tag style={{ display: 'inline', backgroundColor: '#000', color: '#FFF', marginLeft: 4 }}>{tag}</Tag>}</Box>
-	</Sidebar.GenericItem>;
+	if (permissionGranted && !permissionGranted()) {
+		return null;
+	}
+	return (
+		<Sidebar.GenericItem active={isActive} href={path} key={path}>
+			{icon && <Icon name={icon} size='x20' mi='x4' />}
+			<Box withTruncatedText fontScale='p1' mi='x4' color='info'>
+				{label}{' '}
+				{tag && (
+					<Tag style={{ display: 'inline', backgroundColor: '#000', color: '#FFF', marginLeft: 4 }}>
+						{tag}
+					</Tag>
+				)}
+			</Box>
+		</Sidebar.GenericItem>
+	);
 };
 
 const ItemsAssembler = ({ items, currentPath }) => {
 	const t = useTranslation();
-	return items.map(({
-		href,
-		pathSection,
-		i18nLabel,
-		name,
-		icon,
-		permissionGranted,
-		pathGroup,
-		tag,
-	}) => <Sidebar.NavigationItem
-		permissionGranted={permissionGranted}
-		pathGroup={pathGroup}
-		pathSection={href || pathSection}
-		icon={icon}
-		label={t(i18nLabel || name)}
-		key={i18nLabel || name}
-		currentPath={currentPath}
-		tag={t(tag)}
-	/>);
+	return items.map(
+		({ href, pathSection, i18nLabel, name, icon, permissionGranted, pathGroup, tag }) => (
+			<Sidebar.NavigationItem
+				permissionGranted={permissionGranted}
+				pathGroup={pathGroup}
+				pathSection={href || pathSection}
+				icon={icon}
+				label={t(i18nLabel || name)}
+				key={i18nLabel || name}
+				currentPath={currentPath}
+				tag={t(tag)}
+			/>
+		),
+	);
 };
 
 Sidebar.Content = Content;

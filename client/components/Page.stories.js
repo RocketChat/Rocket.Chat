@@ -9,48 +9,54 @@ export default {
 	component: Page,
 };
 
-const DummyContent = () => <>
-	{Array.from({ length: 60 }, (_, i) => <Tile key={i} children='Content slice' marginBlock='x16' />)}
-</>;
+const DummyContent = () => (
+	<>
+		{Array.from({ length: 60 }, (_, i) => (
+			<Tile key={i} children='Content slice' marginBlock='x16' />
+		))}
+	</>
+);
 
-export const Basic = () =>
+export const Basic = () => (
 	<Page>
 		<Page.Header title='Header' />
 		<Page.Content>
 			<DummyContent />
 		</Page.Content>
-	</Page>;
+	</Page>
+);
 
-export const WithButtonsAtTheHeader = () =>
+export const WithButtonsAtTheHeader = () => (
 	<Page>
 		<Page.Header title='Header'>
 			<ButtonGroup>
-				<Button primary type='button'>Hooray!</Button>
+				<Button primary type='button'>
+					Hooray!
+				</Button>
 			</ButtonGroup>
 		</Page.Header>
 		<Page.Content>
 			<DummyContent />
 		</Page.Content>
-	</Page>;
+	</Page>
+);
 
-export const WithScrollableContent = () =>
+export const WithScrollableContent = () => (
 	<Page>
 		<Page.Header title='Header' />
 		<Page.ScrollableContent>
 			<DummyContent />
 		</Page.ScrollableContent>
-	</Page>;
-WithScrollableContent.decorators = [
-	fullHeightDecorator,
-];
+	</Page>
+);
+WithScrollableContent.decorators = [fullHeightDecorator];
 
-export const WithScrollableContentWithShadow = () =>
+export const WithScrollableContentWithShadow = () => (
 	<Page>
 		<Page.Header title='Header' />
 		<Page.ScrollableContentWithShadow>
 			<DummyContent />
 		</Page.ScrollableContentWithShadow>
-	</Page>;
-WithScrollableContentWithShadow.decorators = [
-	fullHeightDecorator,
-];
+	</Page>
+);
+WithScrollableContentWithShadow.decorators = [fullHeightDecorator];

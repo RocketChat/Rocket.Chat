@@ -7,14 +7,8 @@ export default {
 	component: GroupPage,
 };
 
-export const _default = () =>
-	<GroupPage />;
+export const _default = () => <GroupPage />;
 
-export const withGroup = () =>
-	<GroupPage
-		_id='General'
-		i18nLabel='General'
-	/>;
+export const withGroup = () => <GroupPage _id='General' i18nLabel='General' />;
 
-export const skeleton = () =>
-	<GroupPage.Skeleton />;
+export const skeleton = () => <GroupPage.Skeleton />;

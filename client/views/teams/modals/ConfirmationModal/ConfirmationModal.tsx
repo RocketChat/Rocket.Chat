@@ -1,5 +1,5 @@
-import React, { memo, FC } from 'react';
 import { Box, ButtonGroup, Button, Icon, Modal } from '@rocket.chat/fuselage';
+import React, { memo, FC } from 'react';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
@@ -8,9 +8,14 @@ type ConfirmationModalProps = {
 	onConfirmAction: any;
 	labelButton: string;
 	content: string;
-}
+};
 
-const ConfirmationModal: FC<ConfirmationModalProps> = ({ onClose, onConfirmAction, labelButton, content }) => {
+const ConfirmationModal: FC<ConfirmationModalProps> = ({
+	onClose,
+	onConfirmAction,
+	labelButton,
+	content,
+}) => {
 	const t = useTranslation();
 
 	const handleConfirm = (): void => {
@@ -18,21 +23,28 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({ onClose, onConfirmActio
 		onClose();
 	};
 
-	return <Modal>
-		<Modal.Header>
-			<Modal.Title display='flex'><Box mie='x12' ><Icon size='x20' name='modal-warning' color='warning-700'/></Box>{t('Confirmation')}</Modal.Title>
-			<Modal.Close onClick={onClose}/>
-		</Modal.Header>
-		<Modal.Content>
-			{content}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button onClick={onClose}>{t('Cancel')}</Button>
-				<Button onClick={handleConfirm} primary danger>{labelButton}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
+	return (
+		<Modal>
+			<Modal.Header>
+				<Modal.Title display='flex'>
+					<Box mie='x12'>
+						<Icon size='x20' name='modal-warning' color='warning-700' />
+					</Box>
+					{t('Confirmation')}
+				</Modal.Title>
+				<Modal.Close onClick={onClose} />
+			</Modal.Header>
+			<Modal.Content>{content}</Modal.Content>
+			<Modal.Footer>
+				<ButtonGroup align='end'>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
+					<Button onClick={handleConfirm} primary danger>
+						{labelButton}
+					</Button>
+				</ButtonGroup>
+			</Modal.Footer>
+		</Modal>
+	);
 };
 
 export default memo(ConfirmationModal);

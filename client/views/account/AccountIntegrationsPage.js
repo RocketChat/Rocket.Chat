@@ -1,17 +1,18 @@
-import React, { useMemo, useCallback } from 'react';
 import { Box, Select, Field, Button } from '@rocket.chat/fuselage';
+import React, { useMemo, useCallback } from 'react';
 
-import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { useTranslation } from '../../contexts/TranslationContext';
+import { WebdavAccounts } from '../../../app/models';
+import Page from '../../components/Page';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { WebdavAccounts } from '../../../app/models';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '../../hooks/useForm';
-import Page from '../../components/Page';
+import { useReactiveValue } from '../../hooks/useReactiveValue';
 
 const getWebdavAccounts = () => WebdavAccounts.find().fetch();
 
-const getServerName = ({ name, server_url, username }) => name || `${ username }@${ server_url.replace(/^https?\:\/\//i, '') }`;
+const getServerName = ({ name, server_url, username }) =>
+	name || `${username}@${server_url.replace(/^https?\:\/\//i, '')}`;
 
 const AccountIntegrationsPage = () => {
 	const t = useTranslation();
@@ -26,7 +27,10 @@ const AccountIntegrationsPage = () => {
 
 	const removeWebdavAccount = useMethod('removeWebdavAccount');
 
-	const options = useMemo(() => accounts.map(({ _id, ...current }) => [_id, getServerName(current)]), [accounts]);
+	const options = useMemo(
+		() => accounts.map(({ _id, ...current }) => [_id, getServerName(current)]),
+		[accounts],
+	);
 
 	const handleClickRemove = useCallback(() => {
 		try {
@@ -37,20 +41,29 @@ const AccountIntegrationsPage = () => {
 		}
 	}, [dispatchToastMessage, removeWebdavAccount, selected, t]);
 
-	return <Page>
-		<Page.Header title={t('Integrations')} />
-		<Page.ScrollableContentWithShadow>
-			<Box maxWidth='x600' w='full' alignSelf='center'>
-				<Field>
-					<Field.Label>{t('WebDAV_Accounts')}</Field.Label>
-					<Field.Row>
-						<Select options={options} onChange={handleSelected} value={selected} placeholder={t('Select_an_option')}/>
-						<Button primary danger onClick={handleClickRemove}>{t('Remove')}</Button>
-					</Field.Row>
-				</Field>
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+	return (
+		<Page>
+			<Page.Header title={t('Integrations')} />
+			<Page.ScrollableContentWithShadow>
+				<Box maxWidth='x600' w='full' alignSelf='center'>
+					<Field>
+						<Field.Label>{t('WebDAV_Accounts')}</Field.Label>
+						<Field.Row>
+							<Select
+								options={options}
+								onChange={handleSelected}
+								value={selected}
+								placeholder={t('Select_an_option')}
+							/>
+							<Button primary danger onClick={handleClickRemove}>
+								{t('Remove')}
+							</Button>
+						</Field.Row>
+					</Field>
+				</Box>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 };
 
 export default AccountIntegrationsPage;

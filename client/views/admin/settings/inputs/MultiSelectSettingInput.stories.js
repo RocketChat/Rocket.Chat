@@ -7,9 +7,7 @@ import { MultiSelectSettingInput } from './MultiSelectSettingInput';
 export default {
 	title: 'admin/settings/inputs/MultiSelectSettingInput',
 	component: MultiSelectSettingInput,
-	decorators: [
-		(storyFn) => <Field>{storyFn()}</Field>,
-	],
+	decorators: [(storyFn) => <Field>{storyFn()}</Field>],
 };
 const options = [
 	{ key: '1', i18nLabel: '1' },
@@ -17,7 +15,7 @@ const options = [
 	{ key: '3', i18nLabel: '3' },
 ];
 
-export const _default = () =>
+export const _default = () => (
 	<MultiSelectSettingInput
 		_id='setting_id'
 		label='Label'
@@ -25,27 +23,30 @@ export const _default = () =>
 		values={options}
 		onChangeValue={action('changeValue')}
 		onChangeEditor={action('changeEditor')}
-	/>;
+	/>
+);
 
-export const disabled = () =>
+export const disabled = () => (
 	<MultiSelectSettingInput
 		_id='setting_id'
 		label='Label'
 		placeholder='Placeholder'
 		values={options}
 		disabled
-	/>;
+	/>
+);
 
-export const withValue = () =>
+export const withValue = () => (
 	<MultiSelectSettingInput
 		_id='setting_id'
 		label='Label'
 		placeholder='Placeholder'
 		value='1'
 		values={options}
-	/>;
+	/>
+);
 
-export const withResetButton = () =>
+export const withResetButton = () => (
 	<MultiSelectSettingInput
 		_id='setting_id'
 		label='Label'
@@ -54,4 +55,5 @@ export const withResetButton = () =>
 		hasResetButton
 		onChangeValue={action('changeValue')}
 		onResetButtonClick={action('resetButtonClick')}
-	/>;
+	/>
+);

@@ -7,9 +7,16 @@ import RoomInfoWithData from './RoomInfo';
 const RoomInfo = ({ rid, onClickBack, onEnterRoom }) => {
 	const [editing, setEditing] = useState(false);
 	const backToView = useMutableCallback(() => setEditing(false));
-	return editing
-		? <EditRoomInfoWithData onClickBack={backToView} rid={rid} />
-		: <RoomInfoWithData onClickBack={onClickBack} openEditing={setEditing} rid={rid} onEnterRoom={onEnterRoom} />;
+	return editing ? (
+		<EditRoomInfoWithData onClickBack={backToView} rid={rid} />
+	) : (
+		<RoomInfoWithData
+			onClickBack={onClickBack}
+			openEditing={setEditing}
+			rid={rid}
+			onEnterRoom={onEnterRoom}
+		/>
+	);
 };
 
 export default RoomInfo;

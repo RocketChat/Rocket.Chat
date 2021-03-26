@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
-import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
+import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
 
 const roomTypes = {
 	c: 'channels.files',
@@ -12,5 +12,8 @@ const roomTypes = {
 
 export const useFileList = (type, params) => {
 	const method = useEndpoint('GET', roomTypes[type]);
-	return useDataWithLoadMore(useCallback((args) => method(args), [method]), params);
+	return useDataWithLoadMore(
+		useCallback((args) => method(args), [method]),
+		params,
+	);
 };
