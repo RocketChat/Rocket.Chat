@@ -843,25 +843,6 @@ describe('[Channels]', function() {
 	it('/channels.rename', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		it('should rename a channel', (done) => {
-			request.post(api('channels.rename'))
-				.set(credentials)
-				.send({
-					roomId: channel._id,
-					name: `EDITED${ apiPublicChannelName }`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
-					expect(res.body).to.have.nested.property('channel.t', 'c');
-					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
-				})
-				.end(done);
-		});
-
 		function failRenameChannel(name) {
 			it(`should not rename a channel to the reserved name ${ name }`, (done) => {
 				request.post(api('channels.rename'))
@@ -883,6 +864,22 @@ describe('[Channels]', function() {
 		reservedWords.forEach((name) => {
 			failRenameChannel(name);
 		});
+
+		return request.post(api('channels.rename'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				name: `EDITED${ apiPublicChannelName }`,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('channel._id');
+				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
+				expect(res.body).to.have.nested.property('channel.t', 'c');
+				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
+			});
 	});
 
 	describe('/channels.getIntegrations', () => {
