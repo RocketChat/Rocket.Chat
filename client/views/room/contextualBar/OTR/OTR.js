@@ -82,11 +82,12 @@ export default ({
 		}
 
 		const timeout = setTimeout(() => {
+			otr.establishing.set(false);
 			setModal(<OTRModal onConfirm={closeModal} onCancel={closeModal} />);
 		}, 10000);
 
 		return () => clearTimeout(timeout);
-	}, [closeModal, isEstablished, isEstablishing, setModal]);
+	}, [closeModal, isEstablished, isEstablishing, setModal, otr]);
 
 	return (
 		<OTR

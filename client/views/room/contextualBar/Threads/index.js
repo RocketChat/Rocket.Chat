@@ -13,6 +13,7 @@ import {
 	useResizeObserver,
 	useLocalStorage,
 	useMutableCallback,
+	useAutoFocus,
 } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../components/VerticalBar';
@@ -117,14 +118,14 @@ export function withData(WrappedComponent) {
 	};
 }
 
-const handleFollowButton = (e) => {
+const handleFollowButton = (e, threadId) => {
 	e.preventDefault();
 	e.stopPropagation();
 	call(
 		![true, 'true'].includes(e.currentTarget.dataset.following)
 			? 'followMessage'
 			: 'unfollowMessage',
-		{ mid: e.currentTarget.dataset.id },
+		{ mid: threadId },
 	);
 };
 
@@ -165,7 +166,11 @@ const Row = memo(function Row({
 	const { name = thread.u.username } = thread.u;
 
 	return <Thread
-		{ ...thread }
+		tcount={thread.tcount}
+		tlm={thread.tlm}
+		ts={thread.ts}
+		u={thread.u}
+		replies={thread.replies}
 		name={showRealNames ? name : thread.u.username }
 		username={ thread.u.username }
 		unread={unread.includes(thread._id)}
@@ -176,7 +181,8 @@ const Row = memo(function Row({
 		msg={msg}
 		t={t}
 		formatDate={formatDate}
-		handleFollowButton={handleFollowButton} onClick={onClick}
+		handleFollowButton={(e) => handleFollowButton(e, thread._id)}
+		onClick={onClick}
 	/>;
 });
 
@@ -201,7 +207,7 @@ export function ThreadList({
 	const threadsRef = useRef();
 
 	const t = useTranslation();
-
+	const inputRef = useAutoFocus(true);
 	const [name] = useCurrentRoute();
 	const channelRoute = useRoute(name);
 	const onClick = useMutableCallback((e) => {
@@ -256,6 +262,7 @@ export function ThreadList({
 							value={text}
 							onChange={setText}
 							addon={<Icon name='magnifier' size='x20' />}
+							ref={inputRef}
 						/>
 						<Select
 							flexGrow={0}
@@ -273,7 +280,7 @@ export function ThreadList({
 				{!error && total > 0 && threads.length > 0 && <Virtuoso
 					style={{ height: blockSize, width: inlineSize }}
 					totalCount={total}
-					endReached={ loading ? () => {} : loadMoreItems}
+					endReached={ loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 					overscan={25}
 					data={threads}
 					components={{ Scroller: ScrollableContentWrapper }}
@@ -289,7 +296,7 @@ export function ThreadList({
 				/>}
 			</Box>
 		</VerticalBar.Content>
-		{ mid && <VerticalBar.InnerContent><ThreadComponent mid={mid} jump={jump} room={room}/></VerticalBar.InnerContent> }
+		{ mid && <VerticalBar.InnerContent><ThreadComponent onClickBack={onClick} mid={mid} jump={jump} room={room}/></VerticalBar.InnerContent> }
 	</>;
 }
 
