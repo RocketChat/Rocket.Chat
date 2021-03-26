@@ -9,7 +9,7 @@ const createContainer = (): Element => {
 	return container;
 };
 
-const LazyAppRoot = lazy(() => import('../components/AppRoot'));
+const LazyAppRoot = lazy(() => import('../views/root/AppRoot'));
 
 const container = createContainer();
 render(
