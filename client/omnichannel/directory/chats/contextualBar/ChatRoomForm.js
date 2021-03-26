@@ -28,6 +28,7 @@ const initialValuesRoom = {
 	topic: '',
 	tags: '',
 	livechatData: '',
+	priorityId: '',
 };
 
 
@@ -48,15 +49,13 @@ const getInitialValuesRoom = (room) => {
 		return initialValuesRoom;
 	}
 
-	const { topic, tags, livechatData } = room;
-
-	console.log(livechatData);
+	const { topic, tags, livechatData, priorityId } = room;
 
 	return {
 		topic: topic ?? '',
 		tags: tags ?? [],
 		livechatData: livechatData ?? '',
-
+		priorityId: priorityId ?? '',
 	};
 };
 
@@ -117,19 +116,24 @@ export function RoomEdit({ room, visitor, reload, close }) {
 	const {
 		handleTopic,
 		handleTags,
+		handlePriorityId,
 	} = handlersRoom;
 	const {
 		topic,
 		tags,
+		priorityId,
 	} = valuesRoom;
 
 	const forms = useSubscription(formsSubscription);
 
 	const {
 		useCurrentChatTags = () => {},
+		usePrioritiesSelect = () => {},
 	} = forms;
 
 	const Tags = useCurrentChatTags();
+	const PrioritiesSelect = usePrioritiesSelect();
+
 
 	const { values: valueCustom, handlers: handleValueCustom } = useForm({
 		livechatData: valuesRoom.livechatData,
@@ -142,7 +146,8 @@ export function RoomEdit({ room, visitor, reload, close }) {
 	const [nameError, setNameError] = useState();
 	const [customFieldsError, setCustomFieldsError] = useState([]);
 
-	const { value: allCustomFields, phase: state } = useEndpointData('livechat/custom-fields');
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
+	const { value: prioritiesResult = {}, phase: statePriorities } = useEndpointData('livechat/priorities.list');
 
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};
@@ -196,6 +201,10 @@ export function RoomEdit({ room, visitor, reload, close }) {
 			livechatData,
 		};
 
+		if (priorityId) {
+			roomData.priorityId = priorityId;
+		}
+
 		try {
 			saveRoom(userData, roomData);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
@@ -208,10 +217,11 @@ export function RoomEdit({ room, visitor, reload, close }) {
 
 	const formIsValid = name && customFieldsError.length === 0;
 
-	if ([state].includes(AsyncStatePhase.LOADING)) {
+	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 
+	const { priorities } = prioritiesResult;
 
 	return <>
 		<VerticalBar.ScrollableContent is='form'>
@@ -239,6 +249,8 @@ export function RoomEdit({ room, visitor, reload, close }) {
 					<Tags value={Object.values(tags)} handler={handleTags} />
 				</Field.Row>
 			</Field>
+			{PrioritiesSelect && (priorities && priorities.length > 0)
+			&& <PrioritiesSelect value={priorityId} label={t('Priority')} options={priorities} handler={handlePriorityId} />}
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>

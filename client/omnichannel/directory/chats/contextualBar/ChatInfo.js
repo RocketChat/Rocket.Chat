@@ -88,6 +88,22 @@ const CustomField = ({ id, value }) => {
 	</>;
 };
 
+const PriorityField = ({ id }) => {
+	const t = useTranslation();
+	const { value: data, phase: state, error } = useEndpointData(`livechat/priorities.getOne?priorityId=${ id }`);
+	if (state === AsyncStatePhase.LOADING) {
+		return <FormSkeleton />;
+	}
+	if (error || !data) {
+		return <Box mbs='x16'>{t('Custom_Field_Not_Found')}</Box>;
+	}
+	const { name } = data;
+	return <>
+		<Label>{t('Priority')}</Label>
+		<Info>{name}</Info>
+	</>;
+};
+
 export function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
@@ -96,7 +112,7 @@ export function ChatInfo({ id, route }) {
 
 	const [customFields, setCustomFields] = useState([]);
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
-	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, livechatData } } = data || { room: { v: { } } };
+	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, livechatData, priorityId } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 
@@ -179,6 +195,7 @@ export function ChatInfo({ id, route }) {
 					&& livechatData
 					&& Object.keys(livechatData).map((key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />)
 				}
+				{priorityId && <PriorityField id={priorityId} />}
 			</Margins>
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
