@@ -1,4 +1,27 @@
 
+# 3.12.2
+`2021-03-26  ·  2 🐛  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.23.0`
+
+### 🐛 Bug fixes
+
+
+- Bump Livechat widget
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@g-thome](https://github.com/g-thome)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.12.1
 `2021-03-08  ·  1 🚀  ·  2 🐛  ·  3 👩‍💻👨‍💻`
 
