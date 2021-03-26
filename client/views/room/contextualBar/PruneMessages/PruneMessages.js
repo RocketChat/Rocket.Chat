@@ -207,7 +207,6 @@ export default ({
 
 	const handlePrune = useMutableCallback(async () => {
 		const limit = settings.get('Prune_message_limit') >= 0 ? settings.get('Prune_message_limit') || 2000 : undefined;
-		console.log(limit);
 
 		let result;
 
