@@ -589,6 +589,10 @@ export const Livechat = {
 	},
 
 	async transfer(room, guest, transferData) {
+		if (room.onHold) {
+			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:transfer' });
+		}
+
 		if (transferData.departmentId) {
 			transferData.department = LivechatDepartment.findOneById(transferData.departmentId, { fields: { name: 1 } });
 		}
@@ -604,6 +608,10 @@ export const Livechat = {
 
 		if (!room.open) {
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnRoomAsInquiry' });
+		}
+
+		if (room.onHold) {
+			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
 		if (!room.servedBy) {
@@ -961,7 +969,7 @@ export const Livechat = {
 		}
 
 		const showAgentInfo = settings.get('Livechat_show_agent_info');
-		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat_video_call'];
+		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
 		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } });
 
 		let html = '<div> <hr>';

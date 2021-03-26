@@ -97,7 +97,7 @@ const OmnichannelEnabledProvider: FC = ({ children }) => {
 			...context,
 			agentAvailable: user?.statusLivechat === 'available',
 		}));
-	}, [user?.statusLivechat]);
+	}, [user?.statusLivechat, routeConfig]);
 
 	if (!routeConfig || !user) {
 		return <OmnichannelDisabledProvider children={children}/>;

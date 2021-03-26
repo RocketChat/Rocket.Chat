@@ -5,6 +5,7 @@ import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../
 import { Users, Subscriptions, Rooms, Messages } from '../../app/models';
 import { callbacks } from '../../app/callbacks';
 import { roomTypes, RoomMemberActions } from '../../app/utils/server';
+import { Team } from '../sdk';
 
 Meteor.methods({
 	removeUserFromRoom(data) {
@@ -70,6 +71,11 @@ Meteor.methods({
 				username: fromUser.username,
 			},
 		});
+
+		if (room.teamId && room.teamMain) {
+			// if a user is kicked from the main team room, delete the team membership
+			Promise.await(Team.removeMember(room.teamId, removedUser._id));
+		}
 
 		Meteor.defer(function() {
 			callbacks.run('afterRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);

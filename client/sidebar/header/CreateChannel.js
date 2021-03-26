@@ -65,7 +65,7 @@ export const CreateChannel = ({
 			<Field mbe='x24'>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput error={hasUnsavedChanges && nameError} addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />} placeholder={t('Channel_name')} onChange={handlers.handleName}/>
+					<TextInput error={hasUnsavedChanges ? nameError : undefined} addon={<Icon name={values.type ? 'lock' : 'hash'} size='x20' />} placeholder={t('Channel_name')} onChange={handlers.handleName}/>
 				</Field.Row>
 				{hasUnsavedChanges && nameError && <Field.Error>
 					{nameError}
@@ -110,7 +110,7 @@ export const CreateChannel = ({
 						<Field.Label>{t('Broadcast')}</Field.Label>
 						<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
 					</Box>
-					<ToggleSwitch onChange={onChangeBroadcast} />
+					<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} />
 				</Box>
 			</Field>
 			<Field mbe='x24'>
@@ -129,11 +129,10 @@ export const CreateChannel = ({
 
 export default memo(({
 	onClose,
+	teamId = '',
 }) => {
 	const createChannel = useEndpointActionExperimental('POST', 'channels.create');
 	const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
-	const setChannelDescription = useEndpointActionExperimental('POST', 'channels.setDescription');
-	const setPrivateChannelDescription = useEndpointActionExperimental('POST', 'groups.setDescription');
 	const canCreateChannel = usePermission('create-c');
 	const canCreatePrivateChannel = usePermission('create-p');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
@@ -154,7 +153,7 @@ export default memo(({
 		description: '',
 		type: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 		readOnly: false,
-		encrypted: e2eEnabledForPrivateByDefault,
+		encrypted: e2eEnabledForPrivateByDefault ?? false,
 		broadcast: false,
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
@@ -187,17 +186,12 @@ export default memo(({
 	});
 
 	const onChangeType = useMutableCallback((value) => {
-		if (value) {
-			handleEncrypted(false);
-		}
+		handleEncrypted(!value);
 		return handleType(value);
 	});
 
 	const onChangeBroadcast = useMutableCallback((value) => {
-		if (value) {
-			handleEncrypted(false);
-			handleReadOnly(true);
-		}
+		handleEncrypted(!value);
 		handleReadOnly(value);
 		return handleBroadcast(value);
 	});
@@ -211,7 +205,9 @@ export default memo(({
 			name,
 			members: users,
 			readOnly,
+			...teamId && { teamId },
 			extraData: {
+				description,
 				broadcast,
 				encrypted,
 			},
@@ -220,16 +216,10 @@ export default memo(({
 
 		if (type) {
 			roomData = await createPrivateChannel(params);
-			goToRoom(roomData.group._id);
+			!teamId && goToRoom(roomData.group._id);
 		} else {
 			roomData = await createChannel(params);
-			goToRoom(roomData.channel._id);
-		}
-
-		if (roomData.success && roomData.group && description) {
-			setPrivateChannelDescription({ description, roomName: roomData.group.name });
-		} else if (roomData.success && roomData.channel && description) {
-			setChannelDescription({ description, roomName: roomData.channel.name });
+			!teamId && goToRoom(roomData.channel._id);
 		}
 
 		onClose();
@@ -241,8 +231,7 @@ export default memo(({
 		name,
 		onClose,
 		readOnly,
-		setChannelDescription,
-		setPrivateChannelDescription,
+		teamId,
 		type,
 		users,
 	]);
