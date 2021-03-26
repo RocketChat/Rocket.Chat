@@ -13,6 +13,34 @@ describe('Apps - Slash Command "test-simple"', function() {
 	});
 
 	describe('[Slash command "test-simple"]', () => {
+		it('should return an error when no command is provided', (done) => {
+			request.post(api('commands.run'))
+				.send({
+					roomId: 'GENERAL',
+					command: null,
+				})
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
+					expect(res.body.error).to.be.equal('You must provide a command to run.');
+				})
+				.end(done);
+		});
+		it('should return an error when the command does not exist', (done) => {
+			request.post(api('commands.run'))
+				.send({
+					roomId: 'GENERAL',
+					command: 'invalid-command',
+				})
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
+					expect(res.body.error).to.be.equal('The command provided does not exist (or is disabled).');
+				})
+				.end(done);
+		});
 		it('should execute the slash command successfully', (done) => {
 			request.post(api('commands.run'))
 				.send({
