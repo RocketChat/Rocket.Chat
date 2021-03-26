@@ -12,7 +12,6 @@ import './methods/openRoom';
 import './methods/setUserActiveStatus';
 import './methods/toggleFavorite';
 import './methods/updateMessage';
-import './routes';
 import './startup';
 import './views/admin';
 import './views/login';

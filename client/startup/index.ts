@@ -1,3 +1,4 @@
+import './appRoot';
 import './banners';
 import './contextualBar';
 import './e2e';
@@ -8,6 +9,7 @@ import './notifications';
 import './renderMessage';
 import './renderNotification';
 import './roomObserve';
+import './routes';
 import './startup';
 import './streamMessage';
 import './theme';

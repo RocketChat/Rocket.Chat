@@ -10,12 +10,10 @@ import { createEphemeralPortal } from './createEphemeralPortal';
 import { createLazyElement } from './createLazyElement';
 import { createLazyPortal } from './createLazyPortal';
 import { createTemplateForComponent } from './createTemplateForComponent';
-import { mountRoot } from './mountRoot';
 import { portalsSubscription, registerPortal, unregisterPortal } from './portalsSubscription';
 
 export {
 	portalsSubscription,
-	mountRoot,
 	registerPortal,
 	unregisterPortal,
 	createEphemeralPortal,

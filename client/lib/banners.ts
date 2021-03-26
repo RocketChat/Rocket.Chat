@@ -2,7 +2,6 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Subscription } from 'use-subscription';
 
 import { UiKitBannerPayload } from '../../definition/UIKit';
-import { mountRoot } from '../reactAdapters';
 
 export type LegacyBannerPayload = {
 	id: string;
@@ -34,8 +33,6 @@ export const firstSubscription: Subscription<BannerPayload | null> = {
 };
 
 export const open = (payload: BannerPayload): void => {
-	mountRoot();
-
 	let index = queue.findIndex((_payload) => {
 		if (isLegacyPayload(_payload)) {
 			return _payload.id === (payload as LegacyBannerPayload).id;

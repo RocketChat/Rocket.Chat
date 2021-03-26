@@ -5,10 +5,10 @@ import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 
-import { KonchatNotification } from '../app/ui/client';
-import { handleError } from '../app/utils/client';
-import { IUser } from '../definition/IUser';
-import { renderRouteComponent } from './reactAdapters';
+import { KonchatNotification } from '../../app/ui/client';
+import { handleError } from '../../app/utils/client';
+import { IUser } from '../../definition/IUser';
+import { renderRouteComponent } from '../reactAdapters';
 
 BlazeLayout.setRoot('body');
 
@@ -80,7 +80,7 @@ FlowRouter.route('/home', {
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
-		renderRouteComponent(() => import('./views/directory/DirectoryPage'), {
+		renderRouteComponent(() => import('../views/directory/DirectoryPage'), {
 			template: 'main',
 			region: 'center',
 		});
@@ -95,7 +95,7 @@ FlowRouter.route('/directory/:tab?', {
 FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
 	name: 'omnichannel-directory',
 	action: () => {
-		renderRouteComponent(() => import('./omnichannel/directory/OmnichannelDirectoryPage'), {
+		renderRouteComponent(() => import('../omnichannel/directory/OmnichannelDirectoryPage'), {
 			template: 'main',
 			region: 'center',
 		});
@@ -110,7 +110,7 @@ FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
-		renderRouteComponent(() => import('./views/account/AccountRoute'), {
+		renderRouteComponent(() => import('../views/account/AccountRoute'), {
 			template: 'main',
 			region: 'center',
 		});
@@ -171,13 +171,13 @@ FlowRouter.route('/invite/:hash', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		renderRouteComponent(() => import('./views/setupWizard/SetupWizardRoute'));
+		renderRouteComponent(() => import('../views/setupWizard/SetupWizardRoute'));
 	},
 });
 
 FlowRouter.notFound = {
 	action: (): void => {
-		renderRouteComponent(() => import('./views/notFound/NotFoundPage'));
+		renderRouteComponent(() => import('../views/notFound/NotFoundPage'));
 	},
 };
 

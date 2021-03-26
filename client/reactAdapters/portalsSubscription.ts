@@ -3,8 +3,6 @@ import { Random } from 'meteor/random';
 import type { ReactElement } from 'react';
 import type { Subscription, Unsubscribe } from 'use-subscription';
 
-import { mountRoot } from './mountRoot';
-
 type SubscribedPortal = {
 	portal: ReactElement;
 	key: string;
@@ -42,7 +40,6 @@ export const unregisterPortal = (key: unknown): void => {
 };
 
 export const registerPortal = (key: unknown, portal: ReactElement): (() => void) => {
-	mountRoot();
 	portalsSubscription.set(key, portal);
 	return (): void => {
 		unregisterPortal(key);
