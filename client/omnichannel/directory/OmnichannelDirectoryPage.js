@@ -5,13 +5,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/Page';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
-import ContactTab from './contacts/ContactTab';
+import ContactTab from '../contacts/ContactTab';
 import VerticalBar from '../../components/VerticalBar';
-import { ContactNewEdit, ContactEditWithData } from './contacts/contextualBar/ContactForm';
-import { ContactInfo } from './contacts/contextualBar/ContactInfo';
-import ChatTab from './chats/ChatTab';
-import { ChatInfo } from './chats/contextualBar/ChatInfo';
-import { RoomEditWithData } from './chats/contextualBar/ChatRoomEdit';
+import { ContactNewEdit, ContactEditWithData } from '../contacts/contextualBar/ContactForm';
+import { ContactInfo } from '../contacts/contextualBar/ContactInfo';
+import ChatTab from '../chats/ChatTab';
+import { ChatInfo } from '../chats/contextualBar/ChatInfo';
+import { RoomEditWithData } from '../chats/contextualBar/ChatRoomEdit';
 
 
 const OmnichannelDirectoryPage = () => {

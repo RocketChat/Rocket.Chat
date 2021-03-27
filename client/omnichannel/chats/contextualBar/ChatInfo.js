@@ -4,17 +4,17 @@ import { Box, Margins, Tag, Avatar, Button, Icon, ButtonGroup } from '@rocket.ch
 import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import VerticalBar from '../../../../components/VerticalBar';
-import UserCard from '../../../../components/UserCard';
-import { FormSkeleton } from '../../Skeleton';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { UserStatus } from '../../../../components/UserStatus';
-import { roomTypes } from '../../../../../app/utils/client';
-import { useRoute } from '../../../../contexts/RouterContext';
+import VerticalBar from '../../../components/VerticalBar';
+import UserCard from '../../../components/UserCard';
+import { FormSkeleton } from '../../directory/Skeleton';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import UserAvatar from '../../../components/avatar/UserAvatar';
+import { UserStatus } from '../../../components/UserStatus';
+import { roomTypes } from '../../../../app/utils/client';
+import { useRoute } from '../../../contexts/RouterContext';
 
 
 const wordBreak = css`

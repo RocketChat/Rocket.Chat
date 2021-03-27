@@ -1,10 +1,10 @@
 import React from 'react';
 import { Icon, Box } from '@rocket.chat/fuselage';
 
-import VerticalBar from '../../../../components/VerticalBar';
-import { useRoute, useRouteParameter } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useRoom } from '../../../../views/room/providers/RoomProvider';
+import VerticalBar from '../../../components/VerticalBar';
+import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRoom } from '../../../views/room/providers/RoomProvider';
 import { ContactInfo } from './ContactInfo';
 import { ContactEditWithData } from './ContactForm';
 

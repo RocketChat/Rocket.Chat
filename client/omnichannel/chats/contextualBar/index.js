@@ -3,9 +3,9 @@ import { Icon, Box } from '@rocket.chat/fuselage';
 
 import { ChatInfo } from './ChatInfo';
 import { RoomEditWithData } from './ChatRoomEdit';
-import VerticalBar from '../../../../components/VerticalBar';
-import { useRoute, useRouteParameter } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
+import VerticalBar from '../../../components/VerticalBar';
+import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 
 const PATH = 'live';
 

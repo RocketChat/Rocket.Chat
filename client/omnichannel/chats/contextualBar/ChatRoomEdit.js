@@ -3,20 +3,19 @@ import { Field, TextInput, ButtonGroup, Button, Box } from '@rocket.chat/fuselag
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import VerticalBar from '../../../../components/VerticalBar';
-import { useForm } from '../../../../hooks/useForm';
-import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
-// import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { FormSkeleton } from '../../Skeleton';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { isEmail } from '../../../../../app/utils';
-import { hasAtLeastOnePermission } from '../../../../../app/authorization';
-import CustomFieldsForm from '../../../../components/CustomFieldsForm';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { formsSubscription } from '../../../../views/omnichannel/additionalForms';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import VerticalBar from '../../../components/VerticalBar';
+import { useForm } from '../../../hooks/useForm';
+import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { FormSkeleton } from '../../directory/Skeleton';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { isEmail } from '../../../../app/utils';
+import { hasAtLeastOnePermission } from '../../../../app/authorization';
+import CustomFieldsForm from '../../../components/CustomFieldsForm';
+import { useMethod } from '../../../contexts/ServerContext';
+import { formsSubscription } from '../../../views/omnichannel/additionalForms';
 
 
 const initialValuesUser = {
