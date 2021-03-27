@@ -169,7 +169,7 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 
 	const hasManagerRole = useRole('livechat-manager');
 
-	const roomOpen = room && room.open && ((room.u && room.u._id === uid) || hasManagerRole);
+	const roomOpen = room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasManagerRole);
 
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 
@@ -177,7 +177,7 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 
 	const canCloseRoom = usePermission('close-others-livechat-room') || isSubscribedToRoom;
 
-	const canMoveQueue = !!room.u && !!omnichannelRouteConfig?.returnQueue;
+	const canMoveQueue = !!room.servedBy && !!omnichannelRouteConfig?.returnQueue;
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {

@@ -19,7 +19,8 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 	const subscription = useUserSubscription(rid, fields) as unknown as IRoom;
 	const _room = useUserRoom(rid, fields) as unknown as IRoom;
 
-	const room = uid ? subscription || _room : _room;
+	const room = useMemo(() => (uid ? { ...subscription, ..._room.servedBy && { servedBy: _room.servedBy } } || _room : _room), [uid, subscription, _room]);
+
 	const context = useMemo(() => {
 		if (!room) {
 			return null;
