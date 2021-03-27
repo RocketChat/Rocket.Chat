@@ -1,6 +1,14 @@
 import { Box, ScrollableProps } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import React, { createContext, useContext, useState, FC, Dispatch, SetStateAction } from 'react';
+import React, {
+	createContext,
+	useContext,
+	useState,
+	FC,
+	Dispatch,
+	SetStateAction,
+	forwardRef,
+} from 'react';
 
 import { useSession } from '../contexts/SessionContext';
 import { useSidebar } from '../contexts/SidebarContext';
@@ -74,7 +82,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, ...props
 	);
 };
 
-const PageContent = React.forwardRef(function PageContent(props, ref) {
+const PageContent = forwardRef(function PageContent(props, ref) {
 	return (
 		<Box
 			ref={ref}
@@ -92,7 +100,7 @@ type PageScrollableContentProps = {
 	onScrollContent?: ScrollableProps['onScrollContent'];
 };
 
-const PageScrollableContent: FC<PageScrollableContentProps> = React.forwardRef(
+const PageScrollableContent: FC<PageScrollableContentProps> = forwardRef(
 	({ onScrollContent, ...props }, ref) => (
 		<Box display='flex' flexShrink={1} flexDirection='column' flexGrow={1} overflow='hidden'>
 			<ScrollableContentWrapper

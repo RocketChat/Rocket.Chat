@@ -232,7 +232,7 @@ const ScrollerWithCustomProps = forwardRef((props, ref) => (
 	/>
 ));
 
-const SearchList = React.forwardRef(function SearchList({ onClose }, ref) {
+const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 	const listId = useUniqueId();
 	const t = useTranslation();
 	const { setValue: setFilterValue, ...filter } = useInput('');

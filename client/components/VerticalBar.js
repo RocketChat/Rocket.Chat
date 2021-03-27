@@ -7,7 +7,7 @@ import {
 	Margins,
 	Skeleton,
 } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import React, { forwardRef, memo } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { useLayoutContextualBarPosition, useLayoutSizes } from '../providers/LayoutProvider';
@@ -95,11 +95,11 @@ function VerticalBarClose(props) {
 	return <VerticalBarAction {...props} title={t('Close')} name='cross' />;
 }
 
-const VerticalBarContent = React.forwardRef(function VerticalBarContent(props, ref) {
+const VerticalBarContent = forwardRef(function VerticalBarContent(props, ref) {
 	return <Page.Content rcx-vertical-bar__content display='flex' {...props} ref={ref} />;
 });
 
-const VerticalBarScrollableContent = React.forwardRef(function VerticalBarScrollableContent(
+const VerticalBarScrollableContent = forwardRef(function VerticalBarScrollableContent(
 	{ children, ...props },
 	ref,
 ) {
@@ -110,7 +110,7 @@ const VerticalBarScrollableContent = React.forwardRef(function VerticalBarScroll
 	);
 });
 
-const VerticalBarFooter = React.forwardRef(function VerticalBarScrollableContent(
+const VerticalBarFooter = forwardRef(function VerticalBarScrollableContent(
 	{ children, ...props },
 	ref,
 ) {
