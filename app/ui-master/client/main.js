@@ -222,6 +222,11 @@ Template.main.helpers({
 
 		return (!userId && Show_Setup_Wizard === 'pending') || (userId && hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress');
 	},
+	readReceiptsEnabled() {
+		if (settings.get('Message_Read_Receipt_Store_Users')) {
+			return 'read-receipts-enabled';
+		}
+	},
 });
 
 Template.main.events({

@@ -5,7 +5,7 @@ import { setStatus, setConnectionStatus } from './actions/setStatus';
 import { updateUserPresence } from './actions/updateUserPresence';
 import { ServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { IPresence } from '../../../../server/sdk/types/IPresence';
-import { USER_STATUS } from '../../../../definition/UserStatus';
+import { UserStatus } from '../../../../definition/UserStatus';
 import { IBrokerNode } from '../../../../server/sdk/types/IBroker';
 
 export class Presence extends ServiceClass implements IPresence {
@@ -39,11 +39,11 @@ export class Presence extends ServiceClass implements IPresence {
 		return removeLostConnections(nodeID, this.context);
 	}
 
-	async setStatus(uid: string, status: USER_STATUS, statusText?: string): Promise<boolean> {
+	async setStatus(uid: string, status: UserStatus, statusText?: string): Promise<boolean> {
 		return setStatus(uid, status, statusText);
 	}
 
-	async setConnectionStatus(uid: string, status: USER_STATUS, session: string): Promise<boolean> {
+	async setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
 		const result = await setConnectionStatus(uid, status, session);
 		await updateUserPresence(uid);
 		return result;

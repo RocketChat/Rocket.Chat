@@ -2,7 +2,7 @@ import { Emitter, EventHandlerOf } from '@rocket.chat/emitter';
 
 import { APIClient } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
-import { USER_STATUS } from '../../definition/UserStatus';
+import { UserStatus } from '../../definition/UserStatus';
 
 type InternalEvents = {
 	remove: IUser['_id'];
@@ -62,7 +62,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 				});
 
 				currentUids.forEach((uid) => {
-					emitter.emit(uid, { _id: uid, status: USER_STATUS.OFFLINE });
+					emitter.emit(uid, { _id: uid, status: UserStatus.OFFLINE });
 				});
 
 				currentUids.clear();

@@ -2,7 +2,6 @@ import './polyfills';
 
 import './lib/meteorCallWrapper';
 import './importPackages';
-import '../imports/startup/client';
 
 import '../ee/client';
 import './templateHelpers';
