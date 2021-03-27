@@ -26,7 +26,7 @@ addAction('contact-profile', {
 	id: 'contact-profile',
 	title: 'Contact_Profile',
 	icon: 'user',
-	template: lazy(() => import('../../../../omnichannel/directory/contacts/contextualBar')),
+	template: lazy(() => import('../../../omnichannel/directory/contacts/contextualBar')),
 	order: 5,
 });
 

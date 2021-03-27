@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { HTML } from 'meteor/htmljs';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -9,10 +8,6 @@ import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { roomTypes, getUserPreference } from '../../utils';
 import { Users } from '../../models';
-import { createTemplateForComponent } from '../../../client/lib/portals/createTemplateForComponent';
-
-createTemplateForComponent('sidebarHeader', () => import('../../../client/sidebar/header'));
-createTemplateForComponent('sidebarChats', () => import('../../../client/sidebar/RoomList'), { renderContainerView: () => HTML.DIV({ style: 'display: flex; flex: 1 1 auto;' }) });// eslint-disable-line new-cap
 
 Template.sideNav.helpers({
 	flexTemplate() {

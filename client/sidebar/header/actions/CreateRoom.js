@@ -3,7 +3,6 @@ import React from 'react';
 
 import { popover } from '../../../../app/ui-utils';
 import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
-import { createTemplateForComponent } from '../../../lib/portals/createTemplateForComponent';
 
 const CREATE_ROOM_PERMISSIONS = [
 	'create-c',
@@ -13,12 +12,8 @@ const CREATE_ROOM_PERMISSIONS = [
 	'start-discussion-other-user',
 ];
 
-const CreateRoomList = createTemplateForComponent('CreateRoomList', () =>
-	import('./CreateRoomList'),
-);
-
 const config = (e) => ({
-	template: CreateRoomList,
+	template: 'CreateRoomList',
 	data: {
 		options: [],
 	},

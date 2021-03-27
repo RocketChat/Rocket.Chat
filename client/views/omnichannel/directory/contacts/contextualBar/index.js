@@ -1,10 +1,10 @@
 import { Icon, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import VerticalBar from '../../../../components/VerticalBar';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useRoom } from '../../../../views/room/providers/RoomProvider';
+import VerticalBar from '../../../../../components/VerticalBar';
+import { useRoute } from '../../../../../contexts/RouterContext';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useRoom } from '../../../../room/providers/RoomProvider';
 import { ContactInfo } from './ContactInfo';
 
 const ContactsContextualBar = ({ id }) => {

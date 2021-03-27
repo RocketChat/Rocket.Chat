@@ -14,7 +14,7 @@ const RoomForeword = ({ _id: rid }) => {
 	const room = useReactiveValue(useCallback(() => Rooms.findOne({ _id: rid }), [rid]));
 
 	if (room?.t !== 'd') {
-		return t('Start_of_conversation');
+		return <>{t('Start_of_conversation')}</>;
 	}
 
 	const usernames = room.usernames.filter((username) => username !== user.username);

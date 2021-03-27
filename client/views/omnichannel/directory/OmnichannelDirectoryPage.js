@@ -2,10 +2,10 @@ import { Tabs, Icon, Box } from '@rocket.chat/fuselage';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useEffect, useCallback, useState } from 'react';
 
-import Page from '../../components/Page';
-import VerticalBar from '../../components/VerticalBar';
-import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
-import { useTranslation } from '../../contexts/TranslationContext';
+import Page from '../../../components/Page';
+import VerticalBar from '../../../components/VerticalBar';
+import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import ChatTab from './chats/ChatTab';
 import { ChatInfo } from './chats/contextualBar/ChatInfo';
 import { RoomEditWithData } from './chats/contextualBar/ChatRoomEdit';

@@ -4,13 +4,13 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 
-import FilterByText from '../../../components/FilterByText';
-import GenericTable from '../../../components/GenericTable';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import FilterByText from '../../../../components/FilterByText';
+import GenericTable from '../../../../components/GenericTable';
+import NotAuthorizedPage from '../../../../components/NotAuthorizedPage';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
+import { useRoute } from '../../../../contexts/RouterContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLoggedIn) =>
 	useMemo(

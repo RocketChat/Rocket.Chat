@@ -4,15 +4,15 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useEffect, useState } from 'react';
 
-import { hasPermission } from '../../../../../app/authorization';
-import { ContactManagerInfo } from '../../../../../ee/client/omnichannel/ContactManager';
-import UserCard from '../../../../components/UserCard';
-import VerticalBar from '../../../../components/VerticalBar';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { hasPermission } from '../../../../../../app/authorization';
+import { ContactManagerInfo } from '../../../../../../ee/client/omnichannel/ContactManager';
+import UserCard from '../../../../../components/UserCard';
+import VerticalBar from '../../../../../components/VerticalBar';
+import { useRoute } from '../../../../../contexts/RouterContext';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { FormSkeleton } from '../../Skeleton';
 
 const wordBreak = css`

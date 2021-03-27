@@ -8,14 +8,11 @@ import { popover } from '../../../app/ui-utils';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useSetting } from '../../contexts/SettingsContext';
-import { createTemplateForComponent } from '../../lib/portals/createTemplateForComponent';
-
-const UserDropdown = createTemplateForComponent('UserDropdown', () => import('./UserDropdown'));
 
 const openDropdown = (e, user, onClose, allowAnonymousRead) => {
 	if (!(Meteor.userId() == null && allowAnonymousRead)) {
 		popover.open({
-			template: UserDropdown,
+			template: 'UserDropdown',
 			currentTarget: e.currentTarget,
 			data: {
 				user,

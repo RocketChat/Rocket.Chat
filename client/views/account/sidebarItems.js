@@ -1,13 +1,6 @@
-import { HTML } from 'meteor/htmljs';
-
 import { hasPermission } from '../../../app/authorization/client';
 import { settings } from '../../../app/settings';
 import { createSidebarItems } from '../../lib/createSidebarItems';
-import { createTemplateForComponent } from '../../lib/portals/createTemplateForComponent';
-
-createTemplateForComponent('accountFlex', () => import('./AccountSidebar'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
-});
 
 export const {
 	registerSidebarItem: registerAccountSidebarItem,

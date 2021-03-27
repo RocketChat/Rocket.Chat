@@ -1,5 +1,3 @@
-import { createTemplateForComponent } from '../../../client/lib/portals/createTemplateForComponent';
-
 import './lib/accounts';
 import './lib/collections';
 import './lib/iframeCommands';
@@ -58,5 +56,3 @@ export { AudioRecorder } from './lib/recorderjs/audioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';
 export { chatMessages } from './views/app/room';
 export * from './lib/userPopoverStatus';
-
-createTemplateForComponent('RoomForeword', () => import('../../../client/components/RoomForeword'));

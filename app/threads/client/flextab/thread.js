@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import { HTML } from 'meteor/htmljs';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -14,7 +13,6 @@ import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
-import { createTemplateForComponent } from '../../../../client/lib/portals/createTemplateForComponent';
 import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';
 import { getUserPreference } from '../../../utils';
@@ -23,20 +21,7 @@ import { callbacks } from '../../../callbacks/client';
 import './messageBoxFollow';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 
-createTemplateForComponent('Checkbox', async () => {
-	const { CheckBox } = await import('@rocket.chat/fuselage');
-	return { default: CheckBox };
-}, {
-	// eslint-disable-next-line new-cap
-	renderContainerView: () => HTML.DIV({ class: 'rcx-checkbox', style: 'display: flex;' }),
-});
-
 const sort = { ts: 1 };
-
-createTemplateForComponent('ThreadComponent', () => import('../components/ThreadComponent'), {
-	// eslint-disable-next-line new-cap
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar', style: 'display: flex; height: 100%;' }),
-});
 
 Template.thread.events({
 	...dropzoneEvents,

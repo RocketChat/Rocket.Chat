@@ -3,124 +3,80 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-// import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import { hasAtLeastOnePermission } from '../../../../../app/authorization';
-import { isEmail } from '../../../../../app/utils';
-import CustomFieldsForm from '../../../../components/CustomFieldsForm';
-import VerticalBar from '../../../../components/VerticalBar';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { useForm } from '../../../../hooks/useForm';
-import { formsSubscription } from '../../../../views/omnichannel/additionalForms';
+import { hasAtLeastOnePermission } from '../../../../../../app/authorization';
+import { isEmail } from '../../../../../../app/utils';
+import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
+import VerticalBar from '../../../../../components/VerticalBar';
+import { createToken } from '../../../../../components/helpers';
+import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
+import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
+import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
+import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import { useForm } from '../../../../../hooks/useForm';
+import { formsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../Skeleton';
 
-const initialValuesUser = {
+const initialValues = {
+	token: '',
 	name: '',
 	email: '',
 	phone: '',
-	livechatData: '',
+	username: '',
 };
 
-const initialValuesRoom = {
-	topic: '',
-	tags: '',
-	livechatData: '',
-};
-
-const getInitialValuesUser = (visitor) => {
-	if (!visitor) {
-		return initialValuesUser;
+const getInitialValues = (data) => {
+	if (!data) {
+		return initialValues;
 	}
 
-	const { name, fname, phone, visitorEmails, livechatData } = visitor;
+	const {
+		contact: { name, token, phone, visitorEmails, livechatData, contactManager },
+	} = data;
 
 	return {
-		name: (name || fname) ?? '',
+		token: token ?? '',
+		name: name ?? '',
 		email: visitorEmails ? visitorEmails[0].address : '',
 		phone: phone ? phone[0].phoneNumber : '',
 		livechatData: livechatData ?? '',
+		username: contactManager?.username ?? '',
 	};
 };
 
-const getInitialValuesRoom = (room) => {
-	if (!room) {
-		return initialValuesRoom;
-	}
-
-	const { topic, tags } = room;
-
-	return {
-		topic: topic ?? '',
-		tags: tags ?? [],
-	};
-};
-
-export function RoomEditWithData({ id, reload, close }) {
+export function ContactEditWithData({ id, reload, close }) {
 	const t = useTranslation();
-
-	const { value: roomData, phase: state, error } = useEndpointData(`rooms.info?roomId=${id}`);
+	const { value: data, phase: state, error } = useEndpointData(
+		`omnichannel/contact?contactId=${id}`,
+	);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}
 
-	if (error || !roomData || !roomData.room) {
-		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
+	if (error || !data || !data.contact) {
+		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
 	}
 
-	return <VisitorData room={roomData} reload={reload} close={close} />;
+	return <ContactNewEdit id={id} data={data} reload={reload} close={close} />;
 }
 
-function VisitorData({ room, reload, close }) {
+export function ContactNewEdit({ id, data, reload, close }) {
 	const t = useTranslation();
 
-	const {
-		room: {
-			v: { _id },
-		},
-	} = room;
-
-	const { value: visitor, phase: stateVisitor, error: errorVisitor } = useEndpointData(
-		`livechat/visitors.info?visitorId=${_id}`,
-	);
-
-	if ([stateVisitor].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
-	}
-
-	if (errorVisitor || !visitor || !visitor.visitor) {
-		return <Box mbs='x16'>{t('Visitor_not_found')}</Box>;
-	}
-
-	const { visitor: visitorData } = visitor;
-	const { room: roomData } = room;
-
-	return <RoomEdit room={roomData} visitor={visitorData} reload={reload} close={close} />;
-}
-
-export function RoomEdit({ room, visitor, reload, close }) {
-	const t = useTranslation();
-
-	const { values, handlers } = useForm(getInitialValuesUser(visitor));
-	const { values: valuesRoom, handlers: handlersRoom } = useForm(getInitialValuesRoom(room));
 	const canViewCustomFields = () =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const { handleName, handleEmail, handlePhone } = handlers;
-	const { name, email, phone } = values;
+	const { values, handlers } = useForm(getInitialValues(data));
+	const eeForms = useSubscription(formsSubscription);
 
-	const { handleTopic, handleTags } = handlersRoom;
-	const { topic, tags } = valuesRoom;
+	const { useContactManager = () => {} } = eeForms;
 
-	const forms = useSubscription(formsSubscription);
+	const ContactManager = useContactManager();
 
-	const { useCurrentChatTags = () => {} } = forms;
-
-	const Tags = useCurrentChatTags();
+	const { handleName, handleEmail, handlePhone, handleUsername } = handlers;
+	const { token, name, email, phone, username } = values;
 
 	const { values: valueCustom, handlers: handleValueCustom } = useForm({
 		livechatData: values.livechatData,
@@ -138,6 +94,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};
+		// eslint-disable-next-line no-return-assign
 		customFields.forEach(({ _id, label, visibility, options, scope, defaultValue, required }) => {
 			(visibility === 'visible') & (scope === 'visitor') &&
 				(jsonObj[_id] = {
@@ -159,23 +116,49 @@ export function RoomEdit({ room, visitor, reload, close }) {
 		[allCustomFields],
 	);
 
-	// const saveRoom = useEndpointAction('POST', 'omnichannel/contact');
+	const saveContact = useEndpointAction('POST', 'omnichannel/contact');
+	const emailAlreadyExistsAction = useEndpointAction(
+		'GET',
+		`omnichannel/contact.search?email=${email}`,
+	);
+	const phoneAlreadyExistsAction = useEndpointAction(
+		'GET',
+		`omnichannel/contact.search?phone=${phone}`,
+	);
+
+	const checkEmailExists = useMutableCallback(async () => {
+		if (!isEmail(email)) {
+			return;
+		}
+		const { contact } = await emailAlreadyExistsAction();
+		if (!contact || (id && contact._id === id)) {
+			return setEmailError(null);
+		}
+		setEmailError(t('Email_already_exists'));
+	});
+
+	const checkPhoneExists = useMutableCallback(async () => {
+		if (!phone) {
+			return;
+		}
+		const { contact } = await phoneAlreadyExistsAction();
+		if (!contact || (id && contact._id === id)) {
+			return setPhoneError(null);
+		}
+		setPhoneError(t('Phone_already_exists'));
+	});
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	useComponentDidUpdate(() => {
 		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
 	}, [t, name]);
-
 	useComponentDidUpdate(() => {
 		setEmailError(email && !isEmail(email) ? t('Validate_email_address') : null);
 	}, [t, email]);
-
 	useComponentDidUpdate(() => {
 		!phone && setPhoneError(null);
 	}, [phone]);
-
-	const saveRoom = useMethod('livechat:saveInfo');
 
 	const handleSave = useMutableCallback(async (e) => {
 		e.preventDefault();
@@ -184,27 +167,32 @@ export function RoomEdit({ room, visitor, reload, close }) {
 			setNameError(t('The_field_is_required', 'name'));
 			error = true;
 		}
+		if (email && !isEmail(email)) {
+			setEmailError(t('Validate_email_address'));
+			error = true;
+		}
 
 		if (error) {
 			return;
 		}
 
-		const userData = {
-			_id: visitor._id,
+		const payload = {
 			name,
-			email,
-			phone,
-			livechatData,
 		};
+		payload.phone = phone;
+		payload.email = email;
+		payload.customFields = livechatData || {};
+		payload.contactManager = username ? { username } : {};
 
-		const roomData = {
-			_id: room._id,
-			topic,
-			tags: Object.values(tags),
-		};
+		if (id) {
+			payload._id = id;
+			payload.token = token;
+		} else {
+			payload.token = createToken();
+		}
 
 		try {
-			saveRoom(userData, roomData);
+			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
 			close();
@@ -232,14 +220,26 @@ export function RoomEdit({ room, visitor, reload, close }) {
 				<Field>
 					<Field.Label>{t('Email')}</Field.Label>
 					<Field.Row>
-						<TextInput error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
+						<TextInput
+							onBlur={checkEmailExists}
+							error={emailError}
+							flexGrow={1}
+							value={email}
+							onChange={handleEmail}
+						/>
 					</Field.Row>
 					<Field.Error>{t(emailError)}</Field.Error>
 				</Field>
 				<Field>
 					<Field.Label>{t('Phone')}</Field.Label>
 					<Field.Row>
-						<TextInput error={phoneError} flexGrow={1} value={phone} onChange={handlePhone} />
+						<TextInput
+							onBlur={checkPhoneExists}
+							error={phoneError}
+							flexGrow={1}
+							value={phone}
+							onChange={handlePhone}
+						/>
 					</Field.Row>
 					<Field.Error>{t(phoneError)}</Field.Error>
 				</Field>
@@ -251,18 +251,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 						setCustomFieldsError={setCustomFieldsError}
 					/>
 				)}
-				<Field>
-					<Field.Label>{t('Topic')}</Field.Label>
-					<Field.Row>
-						<TextInput flexGrow={1} value={topic} onChange={handleTopic} />
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-					<Field.Row>
-						<Tags value={Object.values(tags)} handler={handleTags} />
-					</Field.Row>
-				</Field>
+				{ContactManager && <ContactManager value={username} handler={handleUsername} />}
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>

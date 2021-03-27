@@ -1,13 +1,7 @@
-import { HTML } from 'meteor/htmljs';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission, hasRole } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
-import { createTemplateForComponent } from '../../lib/portals/createTemplateForComponent';
-
-createTemplateForComponent('adminFlex', () => import('./sidebar/AdminSidebar'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
-});
 
 export const {
 	registerSidebarItem: registerAdminSidebarItem,

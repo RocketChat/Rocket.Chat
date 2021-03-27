@@ -13,7 +13,5 @@ import './methods/toggleFavorite';
 import './methods/updateMessage';
 import './startup';
 import './views/admin';
-import './views/login';
-import './views/room/adapters';
 import './views/teams';
-import './adapters';
+import './templates';

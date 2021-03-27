@@ -2,14 +2,14 @@ import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 
-import FilterByText from '../../../components/FilterByText';
-import GenericTable from '../../../components/GenericTable';
-import { NotAuthorizedPage } from '../../../components/NotAuthorizedPage';
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { useFormatDate } from '../../../hooks/useFormatDate';
+import FilterByText from '../../../../components/FilterByText';
+import GenericTable from '../../../../components/GenericTable';
+import { NotAuthorizedPage } from '../../../../components/NotAuthorizedPage';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
+import { useRoute } from '../../../../contexts/RouterContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { useFormatDate } from '../../../../hooks/useFormatDate';
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 	useMemo(

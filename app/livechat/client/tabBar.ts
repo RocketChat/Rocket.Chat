@@ -7,6 +7,6 @@ addAction('room-info', {
 	id: 'room-info',
 	title: 'Room_Info',
 	icon: 'info-circled',
-	template: lazy(() => import('../../../client/omnichannel/directory/chats/contextualBar')),
+	template: lazy(() => import('../../../client/views/omnichannel/directory/chats/contextualBar')),
 	order: 0,
 });
