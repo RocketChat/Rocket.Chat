@@ -49,6 +49,7 @@ export const RoomInfo = function RoomInfo({
 	rid,
 	icon,
 	retentionPolicy = {},
+	onClickBack,
 	onClickHide,
 	onClickClose,
 	onClickLeave,
@@ -56,6 +57,7 @@ export const RoomInfo = function RoomInfo({
 	onClickDelete,
 	onClickMoveToTeam,
 	onClickConvertToTeam,
+	onClickEnterRoom,
 }) {
 	const t = useTranslation();
 
@@ -67,6 +69,11 @@ export const RoomInfo = function RoomInfo({
 	} = retentionPolicy;
 
 	const memoizedActions = useMemo(() => ({
+		...onClickEnterRoom && { enter: {
+			label: t('Enter'),
+			icon: 'login',
+			action: onClickEnterRoom,
+		} },
 		...onClickEdit && { edit: {
 			label: t('Edit'),
 			icon: 'edit',
@@ -97,7 +104,7 @@ export const RoomInfo = function RoomInfo({
 			action: onClickLeave,
 			icon: 'sign-out',
 		} },
-	}), [onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave]);
+	}), [onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave, onClickEnterRoom]);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
 
@@ -127,7 +134,7 @@ export const RoomInfo = function RoomInfo({
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='info-circled'/>
+				{onClickBack ? <VerticalBar.Back onClick={onClickBack} /> : <VerticalBar.Icon name='info-circled'/>}
 				<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
 				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>
@@ -186,9 +193,11 @@ export const RoomInfo = function RoomInfo({
 	);
 };
 
-export default ({
+const RoomInfoWithData = ({
 	rid,
 	openEditing,
+	onClickBack,
+	onEnterRoom,
 }) => {
 	const onClickClose = useTabBarClose();
 	const t = useTranslation();
@@ -328,12 +337,15 @@ export default ({
 		/>);
 	});
 
+	const onClickEnterRoom = useMutableCallback(() => onEnterRoom(room));
+
 	return (
 		<RoomInfo
 			archived={archived}
 			broadcast={broadcast}
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
+			onClickBack={onClickBack}
 			onClickEdit={canEdit && openEditing}
 			onClickClose={onClickClose}
 			onClickDelete={canDelete && handleDelete}
@@ -341,6 +353,7 @@ export default ({
 			onClickHide={joined && handleHide}
 			onClickMoveToTeam={!room.teamId && onMoveToTeam}
 			onClickConvertToTeam={!room.teamId && canConvertRoomToTeam && onConvertToTeam}
+			onClickEnterRoom={onEnterRoom && onClickEnterRoom}
 			{...room}
 			announcement={room.announcement && <MarkdownText content={room.announcement}/>}
 			description={room.description && <MarkdownText content={room.description}/>}
@@ -348,3 +361,5 @@ export default ({
 		/>
 	);
 };
+
+export default RoomInfoWithData;

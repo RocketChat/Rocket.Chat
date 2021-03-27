@@ -10,5 +10,5 @@ addAction('team-members', {
 	title: 'Teams_members',
 	icon: 'members',
 	template: lazy(() => import('./index')),
-	order: 7,
+	order: 6,
 });
