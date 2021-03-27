@@ -1,11 +1,11 @@
 import { AutoComplete, Option } from '@rocket.chat/fuselage';
-import React, { useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
-const VisitorAutoComplete = React.memo((props) => {
+const VisitorAutoComplete = memo((props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'livechat/visitors.autocomplete',

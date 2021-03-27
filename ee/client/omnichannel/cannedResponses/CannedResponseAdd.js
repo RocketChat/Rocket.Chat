@@ -1,6 +1,6 @@
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -51,4 +51,4 @@ const CannedResponseEdit = ({ onSave, onReturn, onClose }) => {
 	);
 };
 
-export default React.memo(CannedResponseEdit);
+export default memo(CannedResponseEdit);

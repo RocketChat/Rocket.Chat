@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { popover } from '../../../app/ui-utils';
 import { UserStatus } from '../../components/UserStatus';
@@ -23,7 +23,7 @@ const openDropdown = (e, user, onClose, allowAnonymousRead) => {
 	}
 };
 
-export default React.memo(({ user = {} }) => {
+export default memo(({ user = {} }) => {
 	const { _id: uid, status = !uid && 'online', username = 'Anonymous', avatarETag } = user;
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');

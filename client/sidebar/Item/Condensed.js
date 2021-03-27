@@ -1,8 +1,8 @@
 import { Sidebar, ActionButton } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 
-const Condensed = React.memo(
+const Condensed = memo(
 	({
 		icon,
 		title = '',

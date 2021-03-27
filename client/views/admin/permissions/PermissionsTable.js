@@ -11,7 +11,7 @@ import {
 	Button,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, memo } from 'react';
 
 import { ChatPermissions } from '../../../../app/authorization/client/lib/ChatPermissions';
 import { CONSTANTS, AuthorizationUtils } from '../../../../app/authorization/lib';
@@ -71,7 +71,7 @@ const usePermissionsAndRoles = (type = 'permissions', filter = '', limit = 25, s
 	return [permissions.fetch(), permissions.count(false), roles];
 };
 
-const RoleCell = React.memo(
+const RoleCell = memo(
 	({ grantedRoles = [], _id, description, onChange, lineHovered, permissionId }) => {
 		const [granted, setGranted] = useState(() => !!grantedRoles.includes(_id));
 		const [loading, setLoading] = useState(false);
@@ -118,7 +118,7 @@ const getName = (t, permission) => {
 	return t(permission._id);
 };
 
-const PermissionRow = React.memo(({ permission, t, roleList, onGrant, onRemove, ...props }) => {
+const PermissionRow = memo(({ permission, t, roleList, onGrant, onRemove, ...props }) => {
 	const { _id, roles } = permission;
 
 	const [hovered, setHovered] = useState(false);
@@ -155,7 +155,7 @@ const PermissionRow = React.memo(({ permission, t, roleList, onGrant, onRemove, 
 	);
 });
 
-const RoleHeader = React.memo(({ router, _id, description, ...props }) => {
+const RoleHeader = memo(({ router, _id, description, ...props }) => {
 	const onClick = useMutableCallback(() => {
 		router.push({
 			context: 'edit',

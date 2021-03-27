@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { useTimezoneTime } from '../hooks/useTimezoneTime';
@@ -8,10 +8,10 @@ const useUTCClock = (utcOffset) => {
 	return `${time} (UTC ${utcOffset})`;
 };
 
-export const UTCClock = React.memo(({ utcOffset }) => useUTCClock(utcOffset));
+export const UTCClock = memo(({ utcOffset }) => <>{useUTCClock(utcOffset)}</>);
 
-export const LocalTime = React.memo(({ utcOffset }) => {
+export const LocalTime = memo(({ utcOffset }) => {
 	const t = useTranslation();
 	const time = useUTCClock(utcOffset);
-	return t('Local_Time_time', { time });
+	return <>{t('Local_Time_time', { time })}</>;
 });

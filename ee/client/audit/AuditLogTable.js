@@ -1,5 +1,5 @@
 import { Box, Table } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import GenericTable from '../../../client/components/GenericTable';
 import UserAvatar from '../../../client/components/avatar/UserAvatar';
@@ -16,7 +16,7 @@ const FilterDisplay = ({ users, room, startDate, endDate, t }) => (
 	</Box>
 );
 
-const UserRow = React.memo(
+const UserRow = memo(
 	({ u, results, ts, _id, formatDateAndTime, formatDate, fields, mediaQuery }) => {
 		const t = useTranslation();
 

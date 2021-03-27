@@ -7,7 +7,7 @@ import {
 	Margins,
 	Skeleton,
 } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { useLayoutContextualBarPosition, useLayoutSizes } from '../providers/LayoutProvider';
@@ -159,18 +159,18 @@ function VerticalBarText(props) {
 	return <Box flexShrink={1} flexGrow={1} withTruncatedText {...props} />;
 }
 
-VerticalBar.InnerContent = React.memo(VerticalBarInnerContent);
-VerticalBar.Icon = React.memo(VerticalBarIcon);
-VerticalBar.Footer = React.memo(VerticalBarFooter);
-VerticalBar.Text = React.memo(VerticalBarText);
-VerticalBar.Action = React.memo(VerticalBarAction);
-VerticalBar.Actions = React.memo(VerticalBarActions);
-VerticalBar.Header = React.memo(VerticalBarHeader);
-VerticalBar.Close = React.memo(VerticalBarClose);
-VerticalBar.Content = React.memo(VerticalBarContent);
-VerticalBar.ScrollableContent = React.memo(VerticalBarScrollableContent);
-VerticalBar.Skeleton = React.memo(VerticalBarSkeleton);
-VerticalBar.Button = React.memo(VerticalBarButton);
-VerticalBar.Back = React.memo(VerticalBarActionBack);
+VerticalBar.InnerContent = memo(VerticalBarInnerContent);
+VerticalBar.Icon = memo(VerticalBarIcon);
+VerticalBar.Footer = memo(VerticalBarFooter);
+VerticalBar.Text = memo(VerticalBarText);
+VerticalBar.Action = memo(VerticalBarAction);
+VerticalBar.Actions = memo(VerticalBarActions);
+VerticalBar.Header = memo(VerticalBarHeader);
+VerticalBar.Close = memo(VerticalBarClose);
+VerticalBar.Content = memo(VerticalBarContent);
+VerticalBar.ScrollableContent = memo(VerticalBarScrollableContent);
+VerticalBar.Skeleton = memo(VerticalBarSkeleton);
+VerticalBar.Button = memo(VerticalBarButton);
+VerticalBar.Back = memo(VerticalBarActionBack);
 
 export default VerticalBar;

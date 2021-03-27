@@ -6,6 +6,7 @@ import React, {
 	useState,
 	useCallback,
 	useLayoutEffect,
+	memo,
 } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
@@ -32,7 +33,7 @@ const getGroup = (room: IRoom): string => {
 	return groupsDict[room.t];
 };
 
-const VirtualAction = React.memo(
+const VirtualAction = memo(
 	({
 		handleChange,
 		room,

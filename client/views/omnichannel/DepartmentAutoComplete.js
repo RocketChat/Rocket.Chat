@@ -1,12 +1,12 @@
 import { AutoComplete, Option, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
-const DepartmentAutoComplete = React.memo((props) => {
+const DepartmentAutoComplete = memo((props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'livechat/department.autocomplete',

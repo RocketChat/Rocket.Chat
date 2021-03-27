@@ -1,6 +1,6 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import React, { useRef, useEffect, useState, useMemo, useLayoutEffect } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useLayoutEffect, memo } from 'react';
 
 import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../app/videobridge/constants';
 import { useConnectionStatus } from '../../../../../contexts/ConnectionStatusContext';
@@ -166,4 +166,4 @@ const CallJitsWithData = ({ rid }) => {
 	);
 };
 
-export default React.memo(CallJitsWithData);
+export default memo(CallJitsWithData);

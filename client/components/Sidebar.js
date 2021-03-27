@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, ActionButton, Tag } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { useRoutePath } from '../contexts/RouterContext';
 import { useTranslation } from '../contexts/TranslationContext';
@@ -125,8 +125,8 @@ const ItemsAssembler = ({ items, currentPath }) => {
 
 Sidebar.Content = Content;
 Sidebar.Header = Header;
-Sidebar.GenericItem = React.memo(GenericItem);
-Sidebar.NavigationItem = React.memo(NavigationItem);
-Sidebar.ItemsAssembler = React.memo(ItemsAssembler);
+Sidebar.GenericItem = memo(GenericItem);
+Sidebar.NavigationItem = memo(NavigationItem);
+Sidebar.ItemsAssembler = memo(ItemsAssembler);
 
 export default Sidebar;

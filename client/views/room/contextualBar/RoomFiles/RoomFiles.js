@@ -6,7 +6,7 @@ import {
 	useAutoFocus,
 } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import DeleteFileWarning from '../../../../components/DeleteFileWarning';
@@ -24,7 +24,7 @@ import FileItem from './components/FileItem';
 import { useFilesList } from './hooks/useFilesList';
 import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';
 
-const Row = React.memo(({ item, data, index }) => {
+const Row = memo(({ item, data, index }) => {
 	const { userId, onClickDelete, isDeletionAllowed } = data;
 
 	return (

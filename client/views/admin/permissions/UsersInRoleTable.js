@@ -1,6 +1,6 @@
 import { Box, Table, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo } from 'react';
 
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
 import GenericTable from '../../../components/GenericTable';
@@ -12,7 +12,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 
-const UserRow = React.memo(({ _id, username, name, avatarETag, emails, onRemove }) => {
+const UserRow = memo(({ _id, username, name, avatarETag, emails, onRemove }) => {
 	const email = getUserEmailAddress({ emails });
 
 	const handleRemove = useMutableCallback(() => {

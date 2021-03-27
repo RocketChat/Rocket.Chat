@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-export default React.memo(({ type }) => {
+export default memo(({ type }) => {
 	let icon;
 	switch (type) {
 		case 'application/vnd.ms-excel':

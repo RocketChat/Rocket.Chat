@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, FieldGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { memo } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useCustomSound } from '../../../../contexts/CustomSoundContext';
@@ -108,7 +108,7 @@ export const NotificationPreferences = ({
 	);
 };
 
-export default React.memo(({ rid }) => {
+export default memo(({ rid }) => {
 	const t = useTranslation();
 
 	const subscription = useUserSubscription(rid);

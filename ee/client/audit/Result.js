@@ -2,11 +2,11 @@ import { Box } from '@rocket.chat/fuselage';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, memo } from 'react';
 
 import '../../app/auditing/client/templates/audit/audit.html';
 
-const Result = React.memo(({ setDataRef }) => {
+const Result = memo(({ setDataRef }) => {
 	const ref = useRef();
 
 	const [data, setData] = useState({});

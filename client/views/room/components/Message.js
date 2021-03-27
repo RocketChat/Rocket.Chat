@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Margins, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 
-export const MessageSkeleton = React.memo(function MessageSkeleton(props) {
+export const MessageSkeleton = memo(function MessageSkeleton(props) {
 	return (
 		<Message {...props}>
 			<Container mb='neg-x2'>

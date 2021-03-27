@@ -1,6 +1,6 @@
 import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import React, { useMemo, useCallback, useState, useEffect, memo } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -10,7 +10,7 @@ import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
-const FilterByTypeAndText = React.memo(({ setFilter, ...props }) => {
+const FilterByTypeAndText = memo(({ setFilter, ...props }) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');

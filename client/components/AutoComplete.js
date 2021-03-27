@@ -1,5 +1,5 @@
 import { AutoComplete, Option, Options } from '@rocket.chat/fuselage';
-import React, { useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../hooks/useEndpointData';
 import UserAvatar from './avatar/UserAvatar';
@@ -10,7 +10,7 @@ const Avatar = ({ value, ...props }) => (
 	<UserAvatar size={Options.AvatarSize} username={value} {...props} />
 );
 
-export const UserAutoComplete = React.memo((props) => {
+export const UserAutoComplete = memo((props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'users.autocomplete',

@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -63,4 +63,4 @@ export const CannedResponseDetails = ({
 	);
 };
 
-export default React.memo(withResponseData(CannedResponseDetails));
+export default memo(withResponseData(CannedResponseDetails));

@@ -1,8 +1,8 @@
 import { Box, Field, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { memo } from 'react';
 
-export const NotificationToogle = React.memo(({ label, description, onChange, defaultChecked }) => {
+export const NotificationToogle = memo(({ label, description, onChange, defaultChecked }) => {
 	const id = useUniqueId();
 
 	return (

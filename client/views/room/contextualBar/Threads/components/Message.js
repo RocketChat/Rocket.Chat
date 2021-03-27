@@ -1,5 +1,5 @@
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 
 import * as NotificationStatus from '../../../../../components/Message/NotificationStatus';
 import { followStyle, anchor } from '../../../../../components/Message/helpers/followSyle';
@@ -15,7 +15,7 @@ function isIterable(obj) {
 	return typeof obj[Symbol.iterator] === 'function';
 }
 
-export default React.memo(function Message({
+export default memo(function Message({
 	_id,
 	msg,
 	following,

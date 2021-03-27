@@ -1,11 +1,11 @@
 import { ActionButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { useLayout } from '../../../contexts/LayoutContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-export default React.memo((props) => {
+export default memo((props) => {
 	const { sidebar } = useLayout();
 	const t = useTranslation();
 	const onClick = useMutableCallback(() => {

@@ -1,6 +1,6 @@
 import { Box, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { clickableItem } from '../../../../client/lib/clickableItem';
@@ -59,4 +59,4 @@ const CannedResponsesList = ({ responses, onDetails }) => (
 	</>
 );
 
-export default React.memo(CannedResponsesList);
+export default memo(CannedResponsesList);

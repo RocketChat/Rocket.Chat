@@ -26,7 +26,7 @@ function mapProps(WrappedComponent) {
 	);
 }
 
-const Discussion = React.memo(mapProps(clickableItem(DiscussionListMessage)));
+const Discussion = memo(mapProps(clickableItem(DiscussionListMessage)));
 
 const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
 const roomFields = { t: 1, name: 1 };

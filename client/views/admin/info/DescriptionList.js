@@ -1,9 +1,9 @@
 import { Box, Table } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 
 const style = { wordBreak: 'break-word' };
 
-const DescriptionList = React.memo(({ children, title, ...props }) => (
+const DescriptionList = memo(({ children, title, ...props }) => (
 	<>
 		{title && (
 			<Box display='flex' justifyContent='flex-end' width='30%' paddingInline='x8'>
@@ -36,6 +36,6 @@ const DescriptionListEntry = ({ children, label, ...props }) => (
 	</Table.Row>
 );
 
-DescriptionList.Entry = React.memo(DescriptionListEntry);
+DescriptionList.Entry = memo(DescriptionListEntry);
 
 export default DescriptionList;

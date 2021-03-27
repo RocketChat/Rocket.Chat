@@ -16,7 +16,7 @@ import {
 	useAutoFocus,
 } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
@@ -38,7 +38,7 @@ export const createItemData = memoize((onClickView, rid) => ({
 	rid,
 }));
 
-const DefaultRow = React.memo(({ user, data, index }) => {
+const DefaultRow = memo(({ user, data, index }) => {
 	const { onClickView, rid } = data;
 
 	if (!user) {

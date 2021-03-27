@@ -1,6 +1,6 @@
 import { Skeleton, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { memo } from 'react';
 
 import Card from '../../../components/Card/Card';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -8,12 +8,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import InstancesModal from './InstancesModal';
 
-const DeploymentCard = React.memo(function DeploymentCard({
-	info,
-	statistics,
-	instances,
-	isLoading,
-}) {
+const DeploymentCard = memo(function DeploymentCard({ info, statistics, instances, isLoading }) {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const setModal = useSetModal();

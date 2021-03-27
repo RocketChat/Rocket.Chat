@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FC, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, FC, useCallback, useMemo, memo } from 'react';
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
@@ -133,7 +133,7 @@ const OmnichannelEnabledProvider: FC = ({ children }) => {
 	return <OmnichannelContext.Provider value={contextValue} children={children} />;
 };
 
-const OmniChannelProvider: FC = React.memo(({ children }) => {
+const OmniChannelProvider: FC = memo(({ children }) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
 	const hasAccess = usePermission('view-l-room') as boolean;
 

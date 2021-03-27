@@ -1,6 +1,6 @@
 import { FieldGroup, Field, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, memo } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useLanguage, useTranslation } from '../../../../contexts/TranslationContext';
@@ -53,7 +53,7 @@ export const AutoTranslate = ({
 	);
 };
 
-export default React.memo(({ rid }) => {
+export default memo(({ rid }) => {
 	const close = useTabBarClose();
 	const userLanguage = useLanguage();
 	const subscription = useUserSubscription(rid);

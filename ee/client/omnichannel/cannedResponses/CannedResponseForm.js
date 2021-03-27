@@ -1,5 +1,5 @@
 import { FieldGroup, Field, TextInput, TextAreaInput } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
@@ -40,4 +40,4 @@ const CannedResponsesForm = ({ values, handlers, errors }) => {
 	);
 };
 
-export default React.memo(CannedResponsesForm);
+export default memo(CannedResponsesForm);

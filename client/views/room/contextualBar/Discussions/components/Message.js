@@ -1,11 +1,11 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import * as MessageTemplate from '../../../components/Message';
 
-export default React.memo(function Message({
+export default memo(function Message({
 	_id,
 	msg,
 	following,

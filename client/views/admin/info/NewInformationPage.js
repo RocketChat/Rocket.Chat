@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { DOUBLE_COLUMN_CARD_WIDTH } from '../../../components/Card/Card';
 import Page from '../../../components/Page';
@@ -11,7 +11,7 @@ import UsageCard from './UsageCard';
 // import InstancesCard from './InstancesCard';
 // import PushCard from './PushCard';
 
-const InformationPage = React.memo(function InformationPage({
+const InformationPage = memo(function InformationPage({
 	canViewStatistics,
 	isLoading,
 	info,

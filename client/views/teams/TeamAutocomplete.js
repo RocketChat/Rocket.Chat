@@ -1,5 +1,5 @@
 import { AutoComplete, Option, Options } from '@rocket.chat/fuselage';
-import React, { useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import RoomAvatar from '../../components/avatar/RoomAvatar';
 import { useUserId } from '../../contexts/UserContext';
@@ -9,7 +9,7 @@ const Avatar = ({ _id, type, avatarETag, test, ...props }) => (
 	<RoomAvatar size={Options.AvatarSize} room={{ type, _id, avatarETag }} {...props} />
 );
 
-const TeamAutocomplete = React.memo((props) => {
+const TeamAutocomplete = memo((props) => {
 	const [filter, setFilter] = useState('');
 
 	const userId = useUserId();

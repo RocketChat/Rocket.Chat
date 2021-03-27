@@ -1,5 +1,5 @@
 import { Box, Margins, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { FormSkeleton } from '../../../components/Skeleton';
@@ -11,7 +11,7 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import { UserInfo } from '../../room/contextualBar/UserInfo';
 import { formsSubscription } from '../additionalForms';
 
-export const AgentInfo = React.memo(function AgentInfo({ uid, children, ...props }) {
+export const AgentInfo = memo(function AgentInfo({ uid, children, ...props }) {
 	const t = useTranslation();
 	const { value: data, phase: state, error } = useEndpointData(`livechat/users/agent/${uid}`);
 	const eeForms = useSubscription(formsSubscription);

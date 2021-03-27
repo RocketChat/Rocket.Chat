@@ -1,5 +1,5 @@
 import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
@@ -9,7 +9,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { downloadJsonAs } from '../../../lib/download';
 import NewInformationPage from './NewInformationPage';
 
-const InformationRoute = React.memo(function InformationRoute() {
+const InformationRoute = memo(function InformationRoute() {
 	const t = useTranslation();
 	const canViewStatistics = usePermission('view-statistics');
 

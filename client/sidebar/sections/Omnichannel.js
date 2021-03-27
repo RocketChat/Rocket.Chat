@@ -1,6 +1,6 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { memo } from 'react';
 
 import {
 	useOmnichannelShowQueueLink,
@@ -12,7 +12,7 @@ import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 
-const OmnichannelSection = React.memo((props) => {
+const OmnichannelSection = memo((props) => {
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const t = useTranslation();
 	const agentAvailable = useOmnichannelAgentAvailable();

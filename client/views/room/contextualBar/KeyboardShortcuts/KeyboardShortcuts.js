@@ -1,6 +1,6 @@
 import { Box, Divider } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { memo } from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -63,7 +63,7 @@ export const KeyboardShortcuts = ({ handleClose }) => {
 	);
 };
 
-export default React.memo(({ tabBar }) => {
+export default memo(({ tabBar }) => {
 	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
 	return <KeyboardShortcuts handleClose={handleClose} />;
 });

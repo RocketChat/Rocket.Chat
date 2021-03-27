@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
 import { Meteor } from 'meteor/meteor';
-import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
+import React, { forwardRef, useState, useMemo, useEffect, useRef, memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
@@ -38,7 +38,7 @@ const createItemData = memoize(
 	}),
 );
 
-const Row = React.memo(({ item, data }) => {
+const Row = memo(({ item, data }) => {
 	const { t, SideBarItemTemplate, AvatarTemplate, useRealName, extended } = data;
 
 	if (item.t === 'd' && !item.u) {
@@ -66,7 +66,7 @@ const Row = React.memo(({ item, data }) => {
 	);
 });
 
-const UserItem = React.memo(
+const UserItem = memo(
 	({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName, sidebarViewMode }) => {
 		const title = useRealName ? item.fname || item.name : item.name || item.fname;
 		const small = sidebarViewMode !== 'medium';

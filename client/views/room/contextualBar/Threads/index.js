@@ -45,7 +45,7 @@ function mapProps(WrappedComponent) {
 	);
 }
 
-const Thread = React.memo(mapProps(clickableItem(ThreadListMessage)));
+const Thread = memo(mapProps(clickableItem(ThreadListMessage)));
 
 const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
 const roomFields = { t: 1, name: 1 };

@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Menu, Icon, Avatar } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { getURL } from '../../../../../../app/utils/client';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -16,7 +16,7 @@ const hoverClass = css`
 	}
 `;
 
-const MenuItem = React.memo(({ _id, name, url, onClickDelete }) => {
+const MenuItem = memo(({ _id, name, url, onClickDelete }) => {
 	const t = useTranslation();
 	const menuOptions = {
 		downLoad: {

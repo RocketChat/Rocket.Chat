@@ -1,6 +1,6 @@
 import { Box, Table, Icon, Button, NumberInput } from '@rocket.chat/fuselage';
 import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
 import { AutoCompleteAgent } from '../../../components/AutoCompleteAgent';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
@@ -130,7 +130,7 @@ export function Order({ agentId, setAgentList, agentList }) {
 	);
 }
 
-const AgentRow = React.memo(
+const AgentRow = memo(
 	({ agentId, username, name, avatarETag, mediaQuery, agentList, setAgentList }) => (
 		<Table.Row key={agentId} tabIndex={0} role='link' action qa-user-id={agentId}>
 			<Table.Cell withTruncatedText>

@@ -1,6 +1,6 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, memo } from 'react';
 
 import { roomTypes } from '../../../../app/utils';
 import Breadcrumbs from '../../../components/Breadcrumbs';
@@ -21,7 +21,7 @@ import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
 
-export default React.memo(({ room }) => {
+export default memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
 		return null;

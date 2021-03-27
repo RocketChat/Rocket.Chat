@@ -1,6 +1,6 @@
 import { Box, Skeleton, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
 import Card from '../../../components/Card/Card';
@@ -20,7 +20,7 @@ const TextSeparator = ({ label, value }) => (
 	</Box>
 );
 
-const UsageCard = React.memo(function UsageCard({ statistics, isLoading, vertical }) {
+const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 	const s = (fn) => (isLoading ? <Skeleton width='x40' /> : fn());
 	const t = useTranslation();
 	const formatMemorySize = useFormatMemorySize();

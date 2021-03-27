@@ -1,10 +1,10 @@
 import { StatusBullet } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { usePresence } from '../hooks/usePresence';
 
-export const UserStatus = React.memo(({ small, status, ...props }) => {
+export const UserStatus = memo(({ small, status, ...props }) => {
 	const size = small ? 'small' : 'large';
 	const t = useTranslation();
 	switch (status) {
@@ -33,7 +33,7 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-export const ReactiveUserStatus = React.memo(({ uid, presence, ...props }) => {
+export const ReactiveUserStatus = memo(({ uid, presence, ...props }) => {
 	const status = usePresence(uid, presence);
 	return <UserStatus status={status} {...props} />;
 });

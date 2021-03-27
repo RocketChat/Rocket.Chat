@@ -1,5 +1,5 @@
 import { Box, Margins, Tag, Button, Icon } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import MarkdownText from '../../../../components/MarkdownText';
 import { FormSkeleton } from '../../../../components/Skeleton';
@@ -26,7 +26,7 @@ const Username = ({ username, status, ...props }) => (
 	<UserCard.Username name={username} status={status} {...props} />
 );
 
-export const UserInfo = React.memo(function UserInfo({
+export const UserInfo = memo(function UserInfo({
 	username,
 	bio,
 	email,
@@ -176,7 +176,7 @@ UserInfo.Info = InfoPanel.Text;
 UserInfo.Label = InfoPanel.Label;
 UserInfo.Username = Username;
 
-export const UserInfoWithData = React.memo(function UserInfoWithData({
+export const UserInfoWithData = memo(function UserInfoWithData({
 	uid,
 	username,
 	tabBar,

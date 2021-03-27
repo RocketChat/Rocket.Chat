@@ -1,5 +1,5 @@
 import { Sidebar } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUser } from '../../contexts/UserContext';
@@ -37,4 +37,4 @@ const HeaderWithData = () => {
 	);
 };
 
-export default React.memo(HeaderWithData);
+export default memo(HeaderWithData);

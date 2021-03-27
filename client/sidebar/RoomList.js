@@ -1,7 +1,7 @@
 import { Sidebar, Box, Badge } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
-import React, { forwardRef, useRef, useEffect } from 'react';
+import React, { forwardRef, useRef, useEffect, memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
@@ -55,7 +55,7 @@ export const createItemData = memoize(
 	}),
 );
 
-export const Row = React.memo(({ data, item }) => {
+export const Row = memo(({ data, item }) => {
 	const { extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
 
 	if (typeof item === 'string') {
@@ -176,7 +176,7 @@ const getMessage = (room, lastMessage, t) => {
 	)}`;
 };
 
-export const SideBarItemTemplateWithData = React.memo(
+export const SideBarItemTemplateWithData = memo(
 	function SideBarItemTemplateWithData({
 		room,
 		id,

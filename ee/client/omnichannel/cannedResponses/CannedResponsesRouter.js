@@ -1,6 +1,6 @@
 import { ButtonGroup, Button, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
 import { useMethod } from '../../../../client/contexts/ServerContext';
@@ -126,4 +126,4 @@ const CannedResponsesRouter = ({ responses, onClose, onSave, filter, onChangeFil
 	);
 };
 
-export default React.memo(withData(CannedResponsesRouter));
+export default memo(withData(CannedResponsesRouter));

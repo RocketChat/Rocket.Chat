@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { memo } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 
@@ -39,4 +39,4 @@ RoomTemplate.Aside = function Aside({ children }) {
 	return children;
 };
 
-export default React.memo(RoomTemplate);
+export default memo(RoomTemplate);
