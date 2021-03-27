@@ -57319,6 +57319,180 @@
           ]
         }
       ]
+    },
+    "3.8.9": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.10.7": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.11.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.12.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.13.0-rc.2": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.0-alpha.4777",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21020",
+          "title": "[FIX] Missing spaces on attachment ",
+          "userLogin": "dougfabris",
+          "milestone": "3.12.1",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21004",
+          "title": "[IMPROVE] Close Call contextual bar after starting jitsi call.",
+          "userLogin": "yash-rajpal",
+          "description": "After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.\r\nSo, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20973",
+          "title": "[FIX] Stopping Jitsi reload",
+          "userLogin": "yash-rajpal",
+          "description": "The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.\r\nSo removing this dep from useMemo dependencies",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21291",
+          "title": "Regression: Removing user from team doesn't remove them from the team's room.",
+          "userLogin": "KevLehman",
+          "description": "- Remove subscription when calling `teams.removeMembers`",
+          "milestone": "3.13.0",
+          "contributors": [
+            "KevLehman",
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21310",
+          "title": "regression: Discussion room crashing if not member of parent channel",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "21293",
+          "title": "Regression: Remove primary color from button in TeamChannels component",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21295",
+          "title": "Regression: add view room action on Teams Channels",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/112379914-7e489a80-8cc7-11eb-9b0b-e454bb05755d.png)",
+          "contributors": [
+            "dougfabris",
+            "gabriellsh",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "21296",
+          "title": "regression: Sidebar reactivity",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21294",
+          "title": "Regression: Add BreadCrumbs tag into auto-join items",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21307",
+          "title": "Regression: user actions in admin",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21289",
+          "title": "Regression: View Channels button in Team info",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
