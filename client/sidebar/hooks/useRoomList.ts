@@ -9,6 +9,8 @@ import { useQueryOptions } from './useQueryOptions';
 
 const query = { open: { $ne: false } };
 
+const emptyQueue: IRoom[] = [];
+
 export const useRoomList = (): Array<ISubscription> => {
 	const [roomList, setRoomList] = useDebouncedState<ISubscription[]>([], 150);
 
@@ -24,7 +26,7 @@ export const useRoomList = (): Array<ISubscription> => {
 
 	const inquiries = useQueuedInquiries();
 
-	let queue: IRoom[] = [];
+	let queue: IRoom[] = emptyQueue;
 	if (inquiries.enabled) {
 		queue = inquiries.queue;
 	}
@@ -83,19 +85,12 @@ export const useRoomList = (): Array<ISubscription> => {
 			});
 
 			const groups = new Map();
-			showOmnichannel && (inquiries.enabled || onHold.size) && groups.set('Omnichannel', []);
-			showOmnichannel &&
-				!inquiries.enabled &&
-				!onHold.size &&
-				groups.set('Omnichannel', omnichannel);
+			showOmnichannel && groups.set('Omnichannel', []);
 			showOmnichannel &&
 				inquiries.enabled &&
 				queue.length &&
 				groups.set('Incoming_Livechats', queue);
-			showOmnichannel &&
-				(inquiries.enabled || onHold.size) &&
-				omnichannel.size &&
-				groups.set('Open_Livechats', omnichannel);
+			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
@@ -107,8 +102,6 @@ export const useRoomList = (): Array<ISubscription> => {
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 			return [...groups.entries()].flatMap(([key, group]) => [key, ...group]);
 		});
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		rooms,
 		showOmnichannel,
@@ -118,6 +111,7 @@ export const useRoomList = (): Array<ISubscription> => {
 		favoritesEnabled,
 		showDiscussion,
 		sidebarGroupByType,
+		setRoomList,
 	]);
 
 	return roomList;
