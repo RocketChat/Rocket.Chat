@@ -78,8 +78,7 @@ export const useRoomList = (): Array<ISubscription> => {
 
 
 			const groups = new Map();
-			showOmnichannel && (inquiries.enabled || onHold.size) && groups.set('Omnichannel', []);
-			showOmnichannel && !inquiries.enabled && !onHold.size && groups.set('Omnichannel', omnichannel);
+			showOmnichannel && groups.set('Omnichannel', []);
 			showOmnichannel && inquiries.enabled && inquiries.queue.length && groups.set('Incoming_Livechats', inquiries.queue);
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
