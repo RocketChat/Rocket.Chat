@@ -1,12 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Meteor } from 'meteor/meteor';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Skeleton } from '@rocket.chat/fuselage';
 
 import Header from '../../../components/Header';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { AsyncStatePhase, useAsyncState } from '../../../hooks/useAsyncState';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
@@ -19,6 +19,8 @@ import MarkdownText from '../../../components/MarkdownText';
 import { roomTypes } from '../../../../app/utils';
 import { useUserSubscription, useUserId } from '../../../contexts/UserContext';
 import { useUserData } from '../../../hooks/useUserData';
+import { useEndpoint } from '../../../contexts/ServerContext';
+
 
 export default React.memo(({ room, subscription }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
@@ -44,15 +46,49 @@ const RoomTitle = ({ room }) => <>
 	<Header.Title>{room.name}</Header.Title>
 </>;
 
+const ParentRoomWithData = ({ room }) => {
+	const subscription = useUserSubscription(room.prid);
+
+	if (subscription) {
+		return <ParentRoom room={subscription} />;
+	}
+
+	return <ParentRoomWithEndpointData rid={room.prid} />;
+};
+
+const ParentRoomWithEndpointData = ({ rid }) => {
+	const { resolve, reject, reset, phase, value } = useAsyncState();
+	const getData = useEndpoint('GET', 'rooms.info');
+
+	useEffect(() => {
+		(async () => {
+			reset();
+			getData({ roomId: rid })
+				.then(resolve)
+				.catch((error) => {
+					reject(error);
+				});
+		})();
+	}, [reset, getData, rid, resolve, reject]);
+
+	if (AsyncStatePhase.LOADING === phase) {
+		return <Skeleton width='x48'/>;
+	}
+
+	if (AsyncStatePhase.ERROR === phase || !value?.room) {
+		return null;
+	}
+
+	return <ParentRoom room={value.room} />;
+};
+
 const ParentRoom = ({ room }) => {
-	const prevSubscription = useUserSubscription(room.prid);
-	const prevRoomHref = prevSubscription ? roomTypes.getRouteLink(prevSubscription.t, prevSubscription) : null;
-	return prevSubscription && <>
-		<Breadcrumbs.Tag>
-			<HeaderIcon room={prevSubscription}/>
-			<Breadcrumbs.Link href={prevRoomHref}>{prevSubscription.name}</Breadcrumbs.Link>
-		</Breadcrumbs.Tag>
-	</>;
+	const href = roomTypes.getRouteLink(room.t, room);
+
+	return <Breadcrumbs.Tag>
+		<HeaderIcon room={room}/>
+		<Breadcrumbs.Link href={href}>{roomTypes.getRoomName(room.t, room)}</Breadcrumbs.Link>
+	</Breadcrumbs.Tag>;
 };
 
 const ParentTeam = ({ room }) => {
@@ -72,7 +108,10 @@ const ParentTeam = ({ room }) => {
 
 	return teamLoading || userTeamsLoading || room.teamMain ? null : <Breadcrumbs.Tag>
 		<Breadcrumbs.IconSmall name={teamIcon}></Breadcrumbs.IconSmall>
-		<Breadcrumbs.Link href={belongsToTeam && teamMainRoomHref}>{teamMainRoom?.name}</Breadcrumbs.Link>
+		{belongsToTeam
+			? <Breadcrumbs.Link href={teamMainRoomHref}>{teamMainRoom?.name}</Breadcrumbs.Link>
+			: <Breadcrumbs.Text>{teamMainRoom?.name}</Breadcrumbs.Text>
+		}
 	</Breadcrumbs.Tag>;
 };
 const DirectRoomHeader = ({ room }) => {
@@ -96,7 +135,8 @@ const RoomHeader = ({ room, topic, subscription }) => {
 			<Header.Content.Row>
 				<RoomTitle room={room}/>
 				<Favorite room={room} />
-				{(room.prid || room.teamId) && ((room.prid && <ParentRoom room={room} />) || (room.teamId && <ParentTeam room={room} />))}
+				{room.prid && <ParentRoomWithData room={room} />}
+				{room.teamId && <ParentTeam room={room} />}
 				<Encrypted room={room} />
 				<Translate room={room} />
 				{ showQuickActions && <Box mis='x20' display='flex'>
