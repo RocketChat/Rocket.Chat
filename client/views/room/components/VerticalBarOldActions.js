@@ -5,7 +5,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useTabBarClose } from '../providers/ToolboxProvider';
 import { BlazeTemplate } from './BlazeTemplate';
 
-export default ({ name, icon, tabBar, title, ...props }) => {
+const VerticalBarOldActions = ({ name, icon, tabBar, title, ...props }) => {
 	const close = useTabBarClose();
 	const t = useTranslation();
 
@@ -23,3 +23,5 @@ export default ({ name, icon, tabBar, title, ...props }) => {
 		</>
 	);
 };
+
+export default VerticalBarOldActions;

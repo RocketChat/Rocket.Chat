@@ -27,3 +27,5 @@ export const CallModal = ({ handleYes, handleCancel }) => {
 		</Modal>
 	);
 };
+
+export default CallModal;
