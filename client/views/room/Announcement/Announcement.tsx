@@ -1,5 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC } from 'react';
+import React, { FC, MouseEvent } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -14,7 +14,7 @@ type AnnouncementParams = {
 const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetails }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
-	const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void => {
+	const handleClick = (e: MouseEvent<HTMLAnchorElement>): void => {
 		if ((e.target as HTMLAnchorElement).href) {
 			return;
 		}
@@ -29,9 +29,7 @@ const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetail
 	};
 
 	return announcement ? (
-		<AnnouncementComponent
-			onClickOpen={(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void => handleClick(e)}
-		>
+		<AnnouncementComponent onClickOpen={(e: MouseEvent<HTMLAnchorElement>): void => handleClick(e)}>
 			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText />
 		</AnnouncementComponent>
 	) : null;

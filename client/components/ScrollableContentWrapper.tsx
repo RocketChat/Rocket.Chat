@@ -1,5 +1,13 @@
 import { Scrollbars, ScrollValues } from 'rc-scrollbars';
-import React, { MutableRefObject, CSSProperties, useMemo, memo, forwardRef } from 'react';
+import React, {
+	MutableRefObject,
+	CSSProperties,
+	useMemo,
+	memo,
+	forwardRef,
+	ReactNode,
+	ReactElement,
+} from 'react';
 
 const styleDefault = {
 	width: '100%',
@@ -11,7 +19,7 @@ const styleDefault = {
 
 export type CustomScrollbarsProps = {
 	style?: CSSProperties;
-	children?: React.ReactNode;
+	children?: ReactNode;
 	onScroll?: (values: ScrollValues) => void;
 	renderView?: typeof Scrollbars.defaultProps.renderView;
 	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
@@ -31,7 +39,7 @@ const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(
 				style={scrollbarsStyle}
 				onScrollFrame={onScroll}
 				renderView={renderView}
-				renderTrackHorizontal={(props): React.ReactElement => (
+				renderTrackHorizontal={(props): ReactElement => (
 					<div {...props} className='track-horizontal' style={{ display: 'none' }} />
 				)}
 				renderThumbVertical={({ style, ...props }): JSX.Element => (

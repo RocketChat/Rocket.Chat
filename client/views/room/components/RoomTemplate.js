@@ -1,10 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
+import flattenChildren from 'react-keyed-flatten-children';
 
 import VerticalBar from '../../../components/VerticalBar';
 
 export const RoomTemplate = ({ children, ...props }) => {
-	const c = React.Children.toArray(children);
+	const c = flattenChildren(children);
 	const header = c.filter((child) => child.type === RoomTemplate.Header);
 	const body = c.filter((child) => child.type === RoomTemplate.Body);
 	const footer = c.filter((child) => child.type === RoomTemplate.Footer);

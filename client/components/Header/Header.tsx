@@ -8,7 +8,7 @@ import {
 	Badge,
 	BadgeProps,
 } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { FC, isValidElement } from 'react';
 
 const Title: FC = (props: any) => (
 	<Box color='default' mi='x4' fontScale='s2' withTruncatedText {...props} />
@@ -33,7 +33,7 @@ const HeaderIcon: FC<{ icon: JSX.Element | { name: string; color?: string } | nu
 			overflow='hidden'
 			justifyContent='center'
 		>
-			{React.isValidElement(icon) ? (
+			{isValidElement(icon) ? (
 				icon
 			) : (
 				<Icon color='info' size='x18' {...{ name: (icon as any).name }} />
