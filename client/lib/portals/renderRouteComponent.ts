@@ -28,7 +28,7 @@ export const renderRouteComponent = <Props extends {} = {}>(
 		return;
 	}
 
-	Tracker.autorun(async (computation) => {
+	Tracker.autorun((computation) => {
 		if (routeName !== FlowRouter.getRouteName()) {
 			unregisterPortal(routeName);
 			computation.stop();
@@ -42,7 +42,7 @@ export const renderRouteComponent = <Props extends {} = {}>(
 		if (!template || !region) {
 			BlazeLayout.reset();
 
-			const element = await createLazyElement(factory, getProps);
+			const element = createLazyElement(factory, getProps);
 
 			if (routeName !== FlowRouter.getRouteName()) {
 				return;
@@ -55,9 +55,7 @@ export const renderRouteComponent = <Props extends {} = {}>(
 		if (!Template[routeName]) {
 			const blazeTemplate = new Blaze.Template(routeName, () => HTML.DIV()); // eslint-disable-line new-cap
 
-			blazeTemplate.onRendered(async function (
-				this: Blaze.TemplateInstance & { firstNode: Element },
-			) {
+			blazeTemplate.onRendered(function (this: Blaze.TemplateInstance & { firstNode: Element }) {
 				const node = this.firstNode.parentElement;
 
 				if (!node) {
@@ -65,11 +63,7 @@ export const renderRouteComponent = <Props extends {} = {}>(
 				}
 
 				this.firstNode.remove();
-				const portal = await createLazyPortal(
-					factory,
-					getProps ?? ((): undefined => undefined),
-					node,
-				);
+				const portal = createLazyPortal(factory, getProps ?? ((): undefined => undefined), node);
 
 				if (routeName !== FlowRouter.getRouteName()) {
 					return;

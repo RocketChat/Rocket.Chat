@@ -21,15 +21,13 @@ export const createTemplateForComponent = <Props extends {} = {}>(
 	}
 
 	const template = new Blaze.Template(name, renderContainerView);
-	template.onRendered(async function (
-		this: Blaze.TemplateInstance & Record<typeof unregister, unknown>,
-	) {
+	template.onRendered(function (this: Blaze.TemplateInstance & Record<typeof unregister, unknown>) {
 		const props = new ReactiveVar(this.data as PropsWithoutRef<Props>);
 		this.autorun(() => {
 			props.set(Template.currentData());
 		});
 
-		const portal = await createLazyPortal(factory, () => props.get(), this.firstNode as Element);
+		const portal = createLazyPortal(factory, () => props.get(), this.firstNode as Element);
 
 		if (!this.firstNode) {
 			return;

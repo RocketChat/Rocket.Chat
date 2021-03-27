@@ -1,11 +1,20 @@
 import { Tracker } from 'meteor/tracker';
-import type { ComponentType, ReactElement, PropsWithoutRef } from 'react';
+import {
+	ComponentType,
+	ReactElement,
+	PropsWithoutRef,
+	createElement,
+	lazy,
+	useEffect,
+	useState,
+	memo,
+	Suspense,
+} from 'react';
 
-export const createLazyElement = async <Props extends {} = {}>(
+export const createLazyElement = <Props extends {} = {}>(
 	factory: () => Promise<{ default: ComponentType<Props> }>,
 	getProps?: () => PropsWithoutRef<Props> | undefined,
-): Promise<ReactElement> => {
-	const { createElement, lazy, useEffect, useState, memo, Suspense } = await import('react');
+): ReactElement => {
 	const LazyComponent = lazy(factory);
 
 	if (!getProps) {
