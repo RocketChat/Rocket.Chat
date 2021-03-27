@@ -92,6 +92,13 @@ module.exports = {
 				'react/jsx-no-undef': 'error',
 				'react/jsx-fragments': ['error', 'syntax'],
 				'react/no-multi-comp': 'warn',
+				'react-hooks/rules-of-hooks': 'error',
+				'react-hooks/exhaustive-deps': [
+					'warn',
+					{
+						additionalHooks: '(useComponentDidUpdate)',
+					},
+				],
 			},
 			env: {
 				browser: true,
@@ -106,6 +113,12 @@ module.exports = {
 				'react': {
 					version: 'detect',
 				},
+			},
+		},
+		{
+			files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx'],
+			rules: {
+				'react/no-multi-comp': 'off',
 			},
 		},
 	],
