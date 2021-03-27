@@ -12,8 +12,13 @@ const getInitialValues = (data) => ({
 	public: !!data.public,
 });
 
-const checkInvalidOptions = (value) =>
-	value.trim() !== '' && !/^([a-zA-Z0-9-_ ]+)(,\s*[a-zA-Z0-9-_ ]+)*$/i.test(value);
+const checkInvalidOptions = (value) => {
+	if (!value || value.trim() === '') {
+		return false;
+	}
+
+	return value.split(',').every((v) => /^[a-zA-Z0-9-_ ]+$/.test(v));
+};
 
 const CustomFieldsAdditionalFormContainer = ({ data = {}, state, onChange, className }) => {
 	const t = useTranslation();
