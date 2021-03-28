@@ -2,7 +2,7 @@ import { Box, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import Card from '../../../components/Card/Card';
+import Card from '../../../components/Card';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import InstancesModal from './InstancesModal';

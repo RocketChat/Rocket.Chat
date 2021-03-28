@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/f
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
-import { DOUBLE_COLUMN_CARD_WIDTH } from '../../../components/Card/Card';
+import { DOUBLE_COLUMN_CARD_WIDTH } from '../../../components/Card';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import DeploymentCard from './DeploymentCard';

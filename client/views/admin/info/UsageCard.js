@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
 import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
-import Card from '../../../components/Card/Card';
+import Card from '../../../components/Card';
 import { UserStatus } from '../../../components/UserStatus';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';

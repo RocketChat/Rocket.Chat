@@ -2,7 +2,7 @@ import { Box, ButtonGroup, Button, Skeleton, Margins } from '@rocket.chat/fusela
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import Card from '../../../components/Card/Card';
+import Card from '../../../components/Card';
 import PlanTag from '../../../components/PlanTag';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useSetting } from '../../../contexts/SettingsContext';
