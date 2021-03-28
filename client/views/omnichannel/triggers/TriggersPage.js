@@ -8,7 +8,7 @@ import VerticalBar from '../../../components/VerticalBar';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import EditTriggerPage from './EditTriggerPage';
+import EditTriggerPageContainer from './EditTriggerPageContainer';
 import NewTriggerPage from './NewTriggerPage';
 import TriggersTable from './TriggersTable';
 
@@ -55,7 +55,7 @@ const MonitorsPage = () => {
 						<VerticalBar.Close onClick={handleCloseVerticalBar} />
 					</VerticalBar.Header>
 					<VerticalBar.ScrollableContent>
-						{context === 'edit' && <EditTriggerPage id={id} onSave={reload.current} />}
+						{context === 'edit' && <EditTriggerPageContainer id={id} onSave={reload.current} />}
 						{context === 'new' && <NewTriggerPage onSave={reload.current} />}
 					</VerticalBar.ScrollableContent>
 				</VerticalBar>

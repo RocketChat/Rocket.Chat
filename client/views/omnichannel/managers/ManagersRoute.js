@@ -1,54 +1,15 @@
-import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
+import { Box, Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
 
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
 import GenericTable from '../../../components/GenericTable';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import ManagersPage from './ManagersPage';
-
-export function RemoveManagerButton({ _id, reload }) {
-	const t = useTranslation();
-	const deleteAction = useEndpointAction('DELETE', `livechat/users/manager/${_id}`);
-	const setModal = useSetModal();
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const handleRemoveClick = useMutableCallback(async () => {
-		const result = await deleteAction();
-		if (result.success === true) {
-			reload();
-		}
-	});
-	const handleDelete = useMutableCallback((e) => {
-		e.stopPropagation();
-		const onDeleteManager = async () => {
-			try {
-				await handleRemoveClick();
-				dispatchToastMessage({ type: 'success', message: t('Manager_removed') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-			setModal();
-		};
-
-		setModal(<DeleteWarningModal onDelete={onDeleteManager} onCancel={() => setModal()} />);
-	});
-
-	return (
-		<Table.Cell fontScale='p1' color='hint' withTruncatedText>
-			<Button small ghost title={t('Remove')} onClick={handleDelete}>
-				<Icon name='trash' size='x16' />
-			</Button>
-		</Table.Cell>
-	);
-}
+import RemoveManagerButton from './RemoveManagerButton';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
@@ -67,7 +28,7 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 		[text, itemsPerPage, current, column, direction],
 	);
 
-export function ManagersRoute() {
+function ManagersRoute() {
 	const t = useTranslation();
 	const canViewManagers = usePermission('manage-livechat-managers');
 

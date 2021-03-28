@@ -1,31 +1,13 @@
-import { Margins, Callout, FieldGroup, Box, Button } from '@rocket.chat/fuselage';
+import { Margins, FieldGroup, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import PageSkeleton from '../../../components/PageSkeleton';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import TriggersForm from './TriggersForm';
-
-const EditTriggerPageContainer = ({ id, onSave }) => {
-	const t = useTranslation();
-	const { value: data, phase: state } = useEndpointData(`livechat/triggers/${id}`);
-
-	if (state === AsyncStatePhase.LOADING) {
-		return <PageSkeleton />;
-	}
-
-	if (state === AsyncStatePhase.REJECTED || !data?.trigger) {
-		return <Callout>{t('Error')}: error</Callout>;
-	}
-
-	return <EditTriggerPage data={data.trigger} onSave={onSave} />;
-};
 
 const getInitialValues = ({
 	name,
@@ -119,4 +101,4 @@ const EditTriggerPage = ({ data, onSave }) => {
 	);
 };
 
-export default EditTriggerPageContainer;
+export default EditTriggerPage;

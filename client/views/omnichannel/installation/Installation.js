@@ -6,22 +6,7 @@ import RawText from '../../../components/RawText';
 import TextCopy from '../../../components/TextCopy';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-
-const Wrapper = (text) => (
-	<Box
-		fontFamily='mono'
-		alignSelf='center'
-		fontScale='p1'
-		style={{ wordBreak: 'break-all' }}
-		mie='x4'
-		flexGrow={1}
-		withRichContent
-	>
-		<pre>
-			<code>{text}</code>
-		</pre>
-	</Box>
-);
+import Wrapper from './Wrapper';
 
 const Installation = () => {
 	const t = useTranslation();
