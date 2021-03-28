@@ -1,6 +1,6 @@
 import React from 'react';
 
-import UserCard from './UserCard';
+import UserCard from '.';
 
 export default {
 	title: 'components/UserCard',
