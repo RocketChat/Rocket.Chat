@@ -120,6 +120,7 @@ module.exports = {
 		{
 			files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx'],
 			rules: {
+				'react/display-name': 'off',
 				'react/no-multi-comp': 'off',
 			},
 		},
