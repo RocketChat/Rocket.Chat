@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useTranslation } from '../contexts/TranslationContext';
 
-const Wrapper = (text) => (
+const defaultWrapperRenderer = (text) => (
 	<Box
 		fontFamily='mono'
 		alignSelf='center'
@@ -18,7 +18,7 @@ const Wrapper = (text) => (
 	</Box>
 );
 
-const TextCopy = ({ text, wrapper = Wrapper, ...props }) => {
+const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
