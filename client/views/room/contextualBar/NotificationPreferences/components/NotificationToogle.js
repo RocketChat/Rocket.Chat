@@ -2,7 +2,7 @@ import { Box, Field, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
-export const NotificationToogle = memo(({ label, description, onChange, defaultChecked }) => {
+const NotificationToogle = ({ label, description, onChange, defaultChecked }) => {
 	const id = useUniqueId();
 
 	return (
@@ -16,4 +16,6 @@ export const NotificationToogle = memo(({ label, description, onChange, defaultC
 			</Box>
 		</FieldGroup>
 	);
-});
+};
+
+export default memo(NotificationToogle);

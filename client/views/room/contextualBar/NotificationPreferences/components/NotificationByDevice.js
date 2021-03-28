@@ -1,7 +1,7 @@
 import { Box, Accordion, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
-export const NotificationByDevice = memo(({ device, icon, children }) => (
+export const NotificationByDevice = ({ device, icon, children }) => (
 	<Accordion.Item
 		title={
 			<Box display='flex' alignItems='center'>
@@ -14,4 +14,6 @@ export const NotificationByDevice = memo(({ device, icon, children }) => (
 	>
 		<FieldGroup>{children}</FieldGroup>
 	</Accordion.Item>
-));
+);
+
+export default memo(NotificationByDevice);

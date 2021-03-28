@@ -3,7 +3,7 @@ import React from 'react';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
-export default ({ onCancel, onConfirm, confirmLabel = 'Ok', ...props }) => {
+const OTRModal = ({ onCancel, onConfirm, confirmLabel = 'Ok', ...props }) => {
 	const t = useTranslation();
 	return (
 		<Modal {...props}>
@@ -26,3 +26,5 @@ export default ({ onCancel, onConfirm, confirmLabel = 'Ok', ...props }) => {
 		</Modal>
 	);
 };
+
+export default OTRModal;

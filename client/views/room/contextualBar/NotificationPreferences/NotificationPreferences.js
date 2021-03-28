@@ -3,8 +3,8 @@ import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { NotificationByDevice } from './components/NotificationByDevice';
-import { NotificationToogle } from './components/NotificationToogle';
+import NotificationByDevice from './components/NotificationByDevice';
+import NotificationToogle from './components/NotificationToogle';
 import { Preferences } from './components/Preferences';
 
 const NotificationPreferences = ({
