@@ -48,7 +48,7 @@ createTemplateForComponent('messageLocation', () => import('./views/location/Mes
 
 createTemplateForComponent('sidebarHeader', () => import('./sidebar/header'));
 
-createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList'), {
+createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/index'), {
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; flex: 1 1 auto;' }), // eslint-disable-line new-cap
 });
 

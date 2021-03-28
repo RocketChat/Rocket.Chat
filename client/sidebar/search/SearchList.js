@@ -22,7 +22,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useMethodData } from '../../hooks/useMethodData';
-import { SideBarItemTemplateWithData } from '../RoomList';
+import SideBarItemTemplateWithData from '../RoomList/SideBarItemTemplateWithData';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
