@@ -215,7 +215,7 @@ createTemplateForComponent(
 	},
 );
 
-createTemplateForComponent('ModalBlock', () => import('./views/blocks/ModalBlock'), {
+createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedModalBlock'), {
 	// eslint-disable-next-line new-cap
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; width: 100%; height: 100%;' }),
 });
