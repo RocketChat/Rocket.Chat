@@ -1,13 +1,11 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Menu, Icon, Avatar } from '@rocket.chat/fuselage';
+import { Box, Avatar } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { memo } from 'react';
+import React from 'react';
 
-import { getURL } from '../../../../../../app/utils/client';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
-import { download } from '../../../../../lib/download';
 import FileItemIcon from './FileItemIcon';
+import MenuItem from './MenuItem';
 
 const hoverClass = css`
 	&:hover {
@@ -15,39 +13,6 @@ const hoverClass = css`
 		background-color: ${colors.n100};
 	}
 `;
-
-const MenuItem = memo(({ _id, name, url, onClickDelete }) => {
-	const t = useTranslation();
-	const menuOptions = {
-		downLoad: {
-			label: (
-				<Box display='flex' alignItems='center'>
-					<Icon mie='x4' name='download' size='x16' />
-					{t('Download')}
-				</Box>
-			),
-			action: () => {
-				const URL = window.webkitURL ?? window.URL;
-				const href = getURL(url);
-				download(href, name);
-				URL.revokeObjectURL(url);
-			},
-		},
-		...(onClickDelete && {
-			delete: {
-				label: (
-					<Box display='flex' alignItems='center' color='danger'>
-						<Icon mie='x4' name='trash' size='x16' />
-						{t('Delete')}
-					</Box>
-				),
-				action: () => onClickDelete(_id),
-			},
-		}),
-	};
-
-	return <Menu options={menuOptions} />;
-});
 
 const FileItem = ({
 	_id,

@@ -1,1 +1,1 @@
-export { default } from './EditInvite';
+export { default } from './EditInviteWithData';
