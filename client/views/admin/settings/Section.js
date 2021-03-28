@@ -8,7 +8,7 @@ import {
 } from '../../../contexts/EditableSettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import SectionSkeleton from './SectionSkeleton';
-import { Setting } from './Setting';
+import Setting from './Setting';
 
 function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
 	const editableSettings = useEditableSettings(

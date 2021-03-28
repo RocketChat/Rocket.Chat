@@ -1,7 +1,7 @@
 import { FieldGroup } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { Setting } from './Setting';
+import Setting from './Setting';
 
 export default {
 	title: 'admin/settings/Setting',

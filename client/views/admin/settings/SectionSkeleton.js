@@ -1,7 +1,7 @@
 import { Accordion, Box, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { Setting } from './Setting';
+import Setting from './Setting';
 
 function SectionSkeleton() {
 	return (
