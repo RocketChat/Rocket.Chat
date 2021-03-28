@@ -1,27 +1,9 @@
-import { Box } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
 import { useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { capitalize } from '../../../lib/capitalize';
 import { MemoizedSetting } from '../settings/Setting';
-
-export const AppSettingsAssembler = ({ settings, values, handlers }) => (
-	<Box>
-		{Object.values(settings).map((current) => {
-			const { id } = current;
-			return (
-				<AppSetting
-					key={id}
-					appSetting={current}
-					value={values[id]}
-					onChange={handlers[`handle${capitalize(id)}`]}
-				/>
-			);
-		})}
-	</Box>
-);
 
 const useAppTranslation = (appId) => {
 	const t = useTranslation();
@@ -77,3 +59,5 @@ function AppSetting({ appSetting, onChange, value, ...props }) {
 		/>
 	);
 }
+
+export default AppSetting;

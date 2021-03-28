@@ -4,7 +4,7 @@ import React, { FC, useMemo, useEffect, MutableRefObject } from 'react';
 import { ISetting } from '../../../../definition/ISetting';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
-import { AppSettingsAssembler } from './AppSettings';
+import AppSettingsAssembler from './AppSettingsAssembler';
 
 type SettingsDisplayProps = {
 	settings: {
