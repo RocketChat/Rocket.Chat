@@ -5,24 +5,11 @@ import React, { useState, useRef } from 'react';
 import { UserAutoComplete } from '../../../components/AutoComplete';
 import Page from '../../../components/Page';
 import RoomAutoComplete from '../../../components/RoomAutoComplete';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import UsersInRoleTable from './UsersInRoleTable';
-import { useRole } from './useRole';
-
-const UsersInRolePageContainer = () => {
-	const _id = useRouteParameter('_id');
-
-	const role = useRole(_id);
-
-	if (!role) {
-		return null;
-	}
-
-	return <UsersInRolePage data={role} />;
-};
 
 const UsersInRolePage = ({ data }) => {
 	const t = useTranslation();
@@ -107,4 +94,4 @@ const UsersInRolePage = ({ data }) => {
 	);
 };
 
-export default UsersInRolePageContainer;
+export default UsersInRolePage;

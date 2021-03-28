@@ -1,4 +1,4 @@
-import { Box, Field, FieldGroup, Button, Margins, Callout } from '@rocket.chat/fuselage';
+import { Box, Field, FieldGroup, Button, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
@@ -8,18 +8,6 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import RoleForm from './RoleForm';
-import { useRole } from './useRole';
-
-const EditRolePageContainer = ({ _id }) => {
-	const t = useTranslation();
-	const role = useRole(_id);
-
-	if (!role) {
-		return <Callout type='danger'>{t('error-invalid-role')}</Callout>;
-	}
-
-	return <EditRolePage key={_id} data={role} />;
-};
 
 const EditRolePage = ({ data }) => {
 	const t = useTranslation();
@@ -97,4 +85,4 @@ const EditRolePage = ({ data }) => {
 	);
 };
 
-export default EditRolePageContainer;
+export default EditRolePage;

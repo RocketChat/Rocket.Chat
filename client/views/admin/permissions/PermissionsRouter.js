@@ -4,7 +4,7 @@ import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRouteParameter } from '../../../contexts/RouterContext';
 import PermissionsTable from './PermissionsTable';
-import UsersInRole from './UsersInRole';
+import UsersInRole from './UsersInRolePageContainer';
 
 const PermissionsRouter = () => {
 	const canViewPermission = usePermission('access-permissions');
