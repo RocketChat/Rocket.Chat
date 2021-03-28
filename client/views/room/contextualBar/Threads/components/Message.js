@@ -5,7 +5,7 @@ import * as NotificationStatus from '../../../../../components/Message/Notificat
 import { followStyle, anchor } from '../../../../../components/Message/helpers/followSyle';
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import * as MessageTemplate from '../../../components/Message';
+import * as MessageTemplate from '../../../components/MessageTemplate';
 
 function isIterable(obj) {
 	// checks for null and undefined

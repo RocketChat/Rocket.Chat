@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import * as MessageTemplate from '../../../components/Message';
+import * as MessageTemplate from '../../../components/MessageTemplate';
 
 export default memo(function Message({
 	_id,

@@ -3,7 +3,7 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import React, { memo, useLayoutEffect, useRef } from 'react';
 
-export const BlazeTemplate = memo(({ name, flexShrink, overflow, onClick, children, ...props }) => {
+const BlazeTemplate = ({ name, flexShrink, overflow, onClick, children, ...props }) => {
 	const ref = useRef();
 	useLayoutEffect(() => {
 		if (!ref.current || !Template[name]) {
@@ -33,6 +33,6 @@ export const BlazeTemplate = memo(({ name, flexShrink, overflow, onClick, childr
 			{...{ flexShrink, overflow }}
 		/>
 	);
-});
+};
 
 export default memo(BlazeTemplate);
