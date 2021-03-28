@@ -7,14 +7,16 @@ import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { ChatInfo } from './ChatInfo';
 
 const PATH = 'live';
-const ChatsContextualBar = ({ id }) => {
+
+const ChatsContextualBar = ({ rid }) => {
 	const t = useTranslation();
 
 	const directoryRoute = useRoute(PATH);
 
 	const closeContextualBar = () => {
-		directoryRoute.push({ id });
+		directoryRoute.push({ id: rid });
 	};
+
 	return (
 		<>
 			<VerticalBar.Header>
@@ -23,9 +25,9 @@ const ChatsContextualBar = ({ id }) => {
 				</Box>
 				<VerticalBar.Close onClick={closeContextualBar} />
 			</VerticalBar.Header>
-			<ChatInfo route={PATH} id={id} />
+			<ChatInfo route={PATH} id={rid} />
 		</>
 	);
 };
 
-export default ({ rid }) => <ChatsContextualBar id={rid} />;
+export default ChatsContextualBar;
