@@ -1,44 +1,12 @@
-import { Box, Table, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState, useEffect, memo } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-
-const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
-
-const FilterByTypeAndText = memo(({ setFilter, ...props }) => {
-	const t = useTranslation();
-
-	const [text, setText] = useState('');
-
-	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
-
-	useEffect(() => {
-		setFilter({ text });
-	}, [setFilter, text]);
-
-	return (
-		<Box
-			mb='x16'
-			is='form'
-			onSubmit={useCallback((e) => e.preventDefault(), [])}
-			display='flex'
-			flexDirection='column'
-			{...props}
-		>
-			<TextInput
-				placeholder={t('Search_Integrations')}
-				addon={<Icon name='magnifier' size='x20' />}
-				onChange={handleChange}
-				value={text}
-			/>
-		</Box>
-	);
-});
+import FilterByTypeAndText from './FilterByTypeAndText';
+import IntegrationRow from './IntegrationRow';
 
 const useQuery = ({ text, type, itemsPerPage, current }, [column, direction]) =>
 	useMemo(
@@ -61,34 +29,7 @@ const useResizeInlineBreakpoint = (sizes = [], debounceDelay = 0) => {
 	return [ref, ...sizes];
 };
 
-function IntegrationRow({
-	name,
-	_id,
-	type,
-	username,
-	_createdAt,
-	_createdBy: { username: createdBy },
-	channel = [],
-	onClick,
-	isBig,
-}) {
-	const formatDateAndTime = useFormatDateAndTime();
-
-	const handler = useMemo(() => onClick(_id, type), [onClick, _id, type]);
-	return (
-		<Table.Row key={_id} onKeyDown={handler} onClick={handler} tabIndex={0} role='link' action>
-			<Table.Cell style={style} color='default' fontScale='p2'>
-				{name}
-			</Table.Cell>
-			<Table.Cell style={style}>{channel.join(', ')}</Table.Cell>
-			<Table.Cell style={style}>{createdBy}</Table.Cell>
-			{isBig && <Table.Cell style={style}>{formatDateAndTime(_createdAt)}</Table.Cell>}
-			<Table.Cell style={style}>{username}</Table.Cell>
-		</Table.Row>
-	);
-}
-
-export function IntegrationsTable({ type }) {
+function IntegrationsTable({ type }) {
 	const t = useTranslation();
 	const [ref, isBig] = useResizeInlineBreakpoint([700], 200);
 
