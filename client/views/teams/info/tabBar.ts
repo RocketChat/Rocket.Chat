@@ -9,6 +9,6 @@ addAction('team-info', {
 	full: true,
 	title: 'Teams_Info',
 	icon: 'info-circled',
-	template: lazy(() => import('./index.js')) as LazyExoticComponent<FC>,
+	template: lazy(() => import('./index')) as LazyExoticComponent<FC>,
 	order: 1,
 });
