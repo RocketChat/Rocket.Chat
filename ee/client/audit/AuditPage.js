@@ -11,7 +11,7 @@ import {
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState } from 'react';
 
-import { AutoCompleteAgent } from '../../../client/components/AutoCompleteAgent';
+import AutoCompleteAgent from '../../../client/components/AutoCompleteAgent';
 import Page from '../../../client/components/Page';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useForm } from '../../../client/hooks/useForm';

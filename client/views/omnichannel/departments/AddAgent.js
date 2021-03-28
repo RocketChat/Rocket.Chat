@@ -2,7 +2,7 @@ import { Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
-import { AutoCompleteAgent } from '../../../components/AutoCompleteAgent';
+import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';

@@ -14,7 +14,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState } from 'react';
 
 import { isEmail } from '../../../../app/utils';
-import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
 import Page from '../../../components/Page';
 import { useSetModal } from '../../../contexts/ModalContext';

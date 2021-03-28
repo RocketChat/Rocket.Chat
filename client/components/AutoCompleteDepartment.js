@@ -4,7 +4,7 @@ import React, { memo, useMemo, useState } from 'react';
 import { useTranslation } from '../contexts/TranslationContext';
 import { useEndpointData } from '../hooks/useEndpointData';
 
-export const AutoCompleteDepartment = memo((props) => {
+const AutoCompleteDepartment = (props) => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
@@ -36,4 +36,6 @@ export const AutoCompleteDepartment = memo((props) => {
 			options={options}
 		/>
 	);
-});
+};
+
+export default memo(AutoCompleteDepartment);

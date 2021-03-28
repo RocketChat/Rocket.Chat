@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from '../contexts/TranslationContext';
 import DeleteWarningModal from './DeleteWarningModal';
 
-export default ({ onConfirm, onCancel }) => {
+const DeleteFileWarning = ({ onConfirm, onCancel }) => {
 	const t = useTranslation();
 	return (
 		<DeleteWarningModal onCancel={onCancel} onDelete={onConfirm}>
@@ -11,3 +11,5 @@ export default ({ onConfirm, onCancel }) => {
 		</DeleteWarningModal>
 	);
 };
+
+export default DeleteFileWarning;

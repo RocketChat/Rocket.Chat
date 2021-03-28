@@ -4,8 +4,8 @@ import moment from 'moment';
 import React, { useEffect, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { AutoCompleteAgent } from '../../../components/AutoCompleteAgent';
-import { AutoCompleteDepartment } from '../../../components/AutoCompleteDepartment';
+import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
