@@ -4,7 +4,8 @@ import React from 'react';
 import Page from '../../../components/Page';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import EmailInboxForm, { EmailInboxEditWithData } from './EmailInboxForm';
+import EmailInboxEditWithData from './EmailInboxEditWithData';
+import EmailInboxForm from './EmailInboxForm';
 import EmailInboxTable from './EmailInboxTable';
 
 export function EmailInboxPage() {

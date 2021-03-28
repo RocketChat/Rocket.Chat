@@ -21,12 +21,9 @@ import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
-import { FormSkeleton } from './Skeleton';
 
 const initialValues = {
 	active: true,
@@ -78,22 +75,7 @@ const getInitialValues = (data) => {
 	};
 };
 
-export function EmailInboxEditWithData({ id }) {
-	const t = useTranslation();
-	const { value: data, error, phase: state } = useEndpointData(`email-inbox/${id}`);
-
-	if ([state].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
-	}
-
-	if (error || !data) {
-		return <Box mbs='x16'>{t('EmailInbox_not_found')}</Box>;
-	}
-
-	return <EmailInboxForm id={id} data={data} />;
-}
-
-export default function EmailInboxForm({ id, data }) {
+function EmailInboxForm({ id, data }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -387,3 +369,5 @@ export default function EmailInboxForm({ id, data }) {
 		</Page.ScrollableContentWithShadow>
 	);
 }
+
+export default EmailInboxForm;
