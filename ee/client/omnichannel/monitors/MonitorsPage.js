@@ -2,10 +2,10 @@ import { Button, Box, Callout, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 
-import { UserAutoComplete } from '../../../../client/components/AutoComplete';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
 import Page from '../../../../client/components/Page';
 import PageSkeleton from '../../../../client/components/PageSkeleton';
+import UserAutoComplete from '../../../../client/components/UserAutoComplete';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';

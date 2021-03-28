@@ -1,16 +1,13 @@
-import { AutoComplete, Option, Options } from '@rocket.chat/fuselage';
+import { AutoComplete, Option } from '@rocket.chat/fuselage';
 import React, { memo, useMemo, useState } from 'react';
 
-import { useEndpointData } from '../hooks/useEndpointData';
-import UserAvatar from './avatar/UserAvatar';
+import { useEndpointData } from '../../hooks/useEndpointData';
+import UserAvatar from '../avatar/UserAvatar';
+import Avatar from './Avatar';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
-const Avatar = ({ value, ...props }) => (
-	<UserAvatar size={Options.AvatarSize} username={value} {...props} />
-);
-
-export const UserAutoComplete = memo((props) => {
+const UserAutoComplete = (props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'users.autocomplete',
@@ -36,4 +33,6 @@ export const UserAutoComplete = memo((props) => {
 			options={options}
 		/>
 	);
-});
+};
+
+export default memo(UserAutoComplete);

@@ -1,7 +1,7 @@
 import { Field } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { UserAutoComplete } from '../../../../client/components/AutoComplete';
+import UserAutoComplete from '../../../../client/components/UserAutoComplete';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 export const ContactManager = ({ value, handler }) => {

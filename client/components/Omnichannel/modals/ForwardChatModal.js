@@ -6,8 +6,8 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import DepartmentAutoComplete from '../../../views/omnichannel/DepartmentAutoComplete';
-import { UserAutoComplete } from '../../AutoComplete';
 import ModalSeparator from '../../ModalSeparator';
+import UserAutoComplete from '../../UserAutoComplete';
 
 const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 	const t = useTranslation();
