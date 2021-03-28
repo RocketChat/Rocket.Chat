@@ -1,7 +1,7 @@
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { PruneMessages } from './PruneMessages';
+import PruneMessages from './PruneMessages';
 
 export default {
 	title: 'components/PruneMessages',

@@ -1,1 +1,1 @@
-export { default } from './PruneMessages';
+export { default } from './PruneMessagesWithData';
