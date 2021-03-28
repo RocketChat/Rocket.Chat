@@ -16,10 +16,11 @@ export type Props = {
 
 const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 	const uid = useUserId();
-	const subscription = useUserSubscription(rid, fields) as unknown as IRoom;
 	const _room = useUserRoom(rid, fields) as unknown as IRoom;
+	let subscription = useUserSubscription(rid, fields) as unknown as IRoom;
+	subscription = useMemo(() => (subscription ? { ...subscription, ..._room.servedBy && { servedBy: _room.servedBy } } : subscription), [subscription, _room]);
 
-	const room = useMemo(() => (uid ? { ...subscription, ..._room.servedBy && { servedBy: _room.servedBy } } || _room : _room), [uid, subscription, _room]);
+	const room = uid ? subscription || _room : _room;
 
 	const context = useMemo(() => {
 		if (!room) {
