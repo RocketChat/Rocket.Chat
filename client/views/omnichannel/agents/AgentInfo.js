@@ -1,4 +1,4 @@
-import { Box, Margins, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -10,6 +10,7 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { UserInfo } from '../../room/contextualBar/UserInfo';
 import { formsSubscription } from '../additionalForms';
+import AgentInfoAction from './AgentInfoAction';
 
 export const AgentInfo = memo(function AgentInfo({ uid, children, ...props }) {
 	const t = useTranslation();
@@ -66,13 +67,6 @@ export const AgentInfo = memo(function AgentInfo({ uid, children, ...props }) {
 	);
 });
 
-export const Action = ({ icon, label, ...props }) => (
-	<Button title={label} {...props} mi='x4'>
-		<Icon name={icon} size='x20' mie='x4' />
-		{label}
-	</Button>
-);
-
-AgentInfo.Action = Action;
-
-export default AgentInfo;
+export default Object.assign(AgentInfo, {
+	Action: AgentInfoAction,
+});

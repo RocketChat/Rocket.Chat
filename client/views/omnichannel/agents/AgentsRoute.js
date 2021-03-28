@@ -14,7 +14,7 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import AgentEdit from './AgentEdit';
+import AgentEditWithData from './AgentEditWithData';
 import AgentInfo from './AgentInfo';
 import AgentsPage from './AgentsPage';
 
@@ -278,7 +278,7 @@ function AgentsRoute() {
 					<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 				</VerticalBar.Header>
 
-				{context === 'edit' && <AgentEdit uid={id} reload={reload} />}
+				{context === 'edit' && <AgentEditWithData uid={id} reload={reload} />}
 				{context === 'info' && (
 					<AgentInfo uid={id}>
 						<AgentInfoActions id={id} reload={reload} />

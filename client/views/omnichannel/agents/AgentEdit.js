@@ -12,53 +12,17 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useRef, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import { UserInfo } from '../../room/contextualBar/UserInfo';
 import { formsSubscription } from '../additionalForms';
 
-export default function AgentEditWithData({ uid, reload }) {
-	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`livechat/users/agent/${uid}`);
-	const {
-		value: userDepartments,
-		phase: userDepartmentsState,
-		error: userDepartmentsError,
-	} = useEndpointData(`livechat/agents/${uid}/departments`);
-	const {
-		value: availableDepartments,
-		phase: availableDepartmentsState,
-		error: availableDepartmentsError,
-	} = useEndpointData('livechat/department');
-
-	if ([state, availableDepartmentsState, userDepartmentsState].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
-	}
-
-	if (error || userDepartmentsError || availableDepartmentsError || !data || !data.user) {
-		return <Box mbs='x16'>{t('User_not_found')}</Box>;
-	}
-
-	return (
-		<AgentEdit
-			uid={uid}
-			data={data}
-			userDepartments={userDepartments}
-			availableDepartments={availableDepartments}
-			reset={reload}
-		/>
-	);
-}
-
-export function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ...props }) {
+function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ...props }) {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-agents');
 	const [maxChatUnsaved, setMaxChatUnsaved] = useState();
@@ -209,3 +173,5 @@ export function AgentEdit({ data, userDepartments, availableDepartments, uid, re
 		</VerticalBar.ScrollableContent>
 	);
 }
+
+export default AgentEdit;
