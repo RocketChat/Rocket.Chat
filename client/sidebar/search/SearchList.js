@@ -7,91 +7,21 @@ import {
 	useAutoFocus,
 	useUniqueId,
 } from '@rocket.chat/fuselage-hooks';
-import memoize from 'memoize-one';
 import { Meteor } from 'meteor/meteor';
-import React, { forwardRef, useState, useMemo, useEffect, useRef, memo } from 'react';
+import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
-import { roomTypes } from '../../../app/utils';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
-import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
-import { ReactiveUserStatus } from '../../components/UserStatus';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useMethodData } from '../../hooks/useMethodData';
-import SideBarItemTemplateWithData from '../RoomList/SideBarItemTemplateWithData';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-
-const createItemData = memoize(
-	(items, t, SideBarItemTemplate, AvatarTemplate, useRealName, extended, sidebarViewMode) => ({
-		items,
-		t,
-		SideBarItemTemplate,
-		AvatarTemplate,
-		useRealName,
-		extended,
-		sidebarViewMode,
-	}),
-);
-
-const Row = memo(({ item, data }) => {
-	const { t, SideBarItemTemplate, AvatarTemplate, useRealName, extended } = data;
-
-	if (item.t === 'd' && !item.u) {
-		return (
-			<UserItem
-				id={`search-${item._id}`}
-				useRealName={useRealName}
-				t={t}
-				item={item}
-				SideBarItemTemplate={SideBarItemTemplate}
-				AvatarTemplate={AvatarTemplate}
-			/>
-		);
-	}
-	return (
-		<SideBarItemTemplateWithData
-			id={`search-${item._id}`}
-			tabIndex={-1}
-			extended={extended}
-			t={t}
-			room={item}
-			SideBarItemTemplate={SideBarItemTemplate}
-			AvatarTemplate={AvatarTemplate}
-		/>
-	);
-});
-
-const UserItem = memo(
-	({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName, sidebarViewMode }) => {
-		const title = useRealName ? item.fname || item.name : item.name || item.fname;
-		const small = sidebarViewMode !== 'medium';
-		const icon = (
-			<Sidebar.Item.Icon>
-				<ReactiveUserStatus small={small && 'small'} uid={item._id} />
-			</Sidebar.Item.Icon>
-		);
-		const href = roomTypes.getRouteLink(item.t, item);
-
-		return (
-			<SideBarItemTemplate
-				is='a'
-				style={{ height: '100%' }}
-				id={id}
-				href={href}
-				title={title}
-				subtitle={t('No_messages_yet')}
-				avatar={AvatarTemplate && <AvatarTemplate {...item} />}
-				icon={icon}
-				style={style}
-			/>
-		);
-	},
-);
+import Row from './Row';
+import ScrollerWithCustomProps from './ScrollerWithCustomProps';
 
 const shortcut = (() => {
 	if (!Meteor.Device.isDesktop()) {
@@ -221,17 +151,6 @@ const toggleSelectionState = (next, current, input) => {
 	}
 };
 
-const ScrollerWithCustomProps = forwardRef((props, ref) => (
-	<ScrollableContentWrapper
-		{...props}
-		ref={ref}
-		renderView={({ style, ...props }) => <div {...props} style={{ ...style }} />}
-		renderTrackHorizontal={(props) => (
-			<div {...props} style={{ display: 'none' }} className='track-horizontal' />
-		)}
-	/>
-));
-
 const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 	const listId = useUniqueId();
 	const t = useTranslation();
@@ -259,14 +178,17 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 
 	const { data: items, status } = useSearchItems(filterText);
 
-	const itemData = createItemData(
-		items,
-		t,
-		sideBarItemTemplate,
-		avatarTemplate,
-		showRealName,
-		extended,
-		sidebarViewMode,
+	const itemData = useMemo(
+		() => ({
+			items,
+			t,
+			sideBarItemTemplate,
+			avatarTemplate,
+			showRealName,
+			extended,
+			sidebarViewMode,
+		}),
+		[avatarTemplate, extended, items, showRealName, sideBarItemTemplate, sidebarViewMode, t],
 	);
 
 	const changeSelection = useMutableCallback((dir) => {
