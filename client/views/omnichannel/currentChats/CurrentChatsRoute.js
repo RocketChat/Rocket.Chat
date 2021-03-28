@@ -1,58 +1,16 @@
-import { Table, Icon, Button } from '@rocket.chat/fuselage';
+import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
 import React, { useMemo, useCallback, useState } from 'react';
 
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
 import GenericTable from '../../../components/GenericTable';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import CurrentChatsPage from './CurrentChatsPage';
-
-export function RemoveChatButton({ _id, reload }) {
-	const removeChat = useMethod('livechat:removeRoom');
-	const setModal = useSetModal();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
-
-	const handleRemoveClick = useMutableCallback(async () => {
-		try {
-			await removeChat(_id);
-		} catch (error) {
-			console.log(error);
-		}
-		reload();
-	});
-
-	const handleDelete = useMutableCallback((e) => {
-		e.stopPropagation();
-		const onDeleteAgent = async () => {
-			try {
-				await handleRemoveClick();
-				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-			setModal();
-		};
-
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()} />);
-	});
-
-	return (
-		<Table.Cell fontScale='p1' color='hint' withTruncatedText>
-			<Button small ghost title={t('Remove')} onClick={handleDelete}>
-				<Icon name='trash' size='x16' />
-			</Button>
-		</Table.Cell>
-	);
-}
+import RemoveChatButton from './RemoveChatButton';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 

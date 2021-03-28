@@ -12,8 +12,8 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import EditDepartmentWithData from './DepartmentEdit';
 import DepartmentsPage from './DepartmentsPage';
+import EditDepartmentWithData from './EditDepartmentWithData';
 
 export function RemoveDepartmentButton({ _id, reload }) {
 	const deleteAction = useEndpointAction('DELETE', `livechat/department/${_id}`);

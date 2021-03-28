@@ -1,59 +1,17 @@
-import { Table, Icon, Button } from '@rocket.chat/fuselage';
+import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
 
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
 import GenericTable from '../../../components/GenericTable';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useSetModal } from '../../../contexts/ModalContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import CustomFieldsPage from './CustomFieldsPage';
-import EditCustomFieldsPage from './EditCustomFieldsPage';
+import EditCustomFieldsPage from './EditCustomFieldsPageContainer';
 import NewCustomFieldsPage from './NewCustomFieldsPage';
-
-export function RemoveCustomFieldButton({ _id, reload }) {
-	const removeCustomField = useMethod('livechat:removeCustomField');
-	const setModal = useSetModal();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
-
-	const handleRemoveClick = useMutableCallback(async () => {
-		try {
-			await removeCustomField(_id);
-		} catch (error) {
-			console.log(error);
-		}
-		reload();
-	});
-
-	const handleDelete = useMutableCallback((e) => {
-		e.stopPropagation();
-		const onDeleteAgent = async () => {
-			try {
-				await handleRemoveClick();
-				dispatchToastMessage({ type: 'success', message: t('Custom_Field_Removed') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-			setModal();
-		};
-
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()} />);
-	});
-
-	return (
-		<Table.Cell fontScale='p1' color='hint' withTruncatedText>
-			<Button small ghost title={t('Remove')} onClick={handleDelete}>
-				<Icon name='trash' size='x16' />
-			</Button>
-		</Table.Cell>
-	);
-}
+import RemoveCustomFieldButton from './RemoveCustomFieldButton';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 

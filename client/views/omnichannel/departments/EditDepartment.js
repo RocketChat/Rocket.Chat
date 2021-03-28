@@ -21,13 +21,11 @@ import { isEmail } from '../../../../app/utils';
 import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
 import CannedResponsesRouter from '../../../../ee/client/omnichannel/cannedResponses';
 import Page from '../../../components/Page';
-import { FormSkeleton } from '../../../components/Skeleton';
 import { useRoute, useRouteParameter, useCurrentRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -35,23 +33,9 @@ import { useForm } from '../../../hooks/useForm';
 import { formsSubscription } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 
-export default function EditDepartmentWithData({ id, reload, title }) {
-	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`livechat/department/${id}`);
-
-	if ([state].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
-	}
-
-	if (error) {
-		return <Box mbs='x16'>{t('User_not_found')}</Box>;
-	}
-	return <EditDepartment id={id} data={data} reload={reload} title={title} />;
-}
-
 const useQuery = ({ name }) => useMemo(() => ({ selector: JSON.stringify({ name }) }), [name]);
 
-export function EditDepartment({ data, id, title, reload }) {
+function EditDepartment({ data, id, title, reload }) {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-departments');
 	const eeForms = useSubscription(formsSubscription);
@@ -512,3 +496,5 @@ export function EditDepartment({ data, id, title, reload }) {
 		</Page>
 	);
 }
+
+export default EditDepartment;

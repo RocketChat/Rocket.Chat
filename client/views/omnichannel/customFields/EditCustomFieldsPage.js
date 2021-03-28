@@ -1,16 +1,13 @@
-import { Box, Button, Icon, ButtonGroup, Callout, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import Page from '../../../components/Page';
-import PageSkeleton from '../../../components/PageSkeleton';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import { formsSubscription } from '../additionalForms';
 import CustomFieldsForm from './CustomFieldsForm';
@@ -23,30 +20,6 @@ const getInitialValues = (cf) => ({
 	visibility: cf.visibility === 'visible',
 	regexp: cf.regexp,
 });
-
-const EditCustomFieldsPageContainer = ({ reload }) => {
-	const t = useTranslation();
-	const id = useRouteParameter('id');
-
-	const { value: data, phase: state, error } = useEndpointData(`livechat/custom-fields/${id}`);
-
-	if (state === AsyncStatePhase.LOADING) {
-		return <PageSkeleton />;
-	}
-
-	if (!data || !data.success || !data.customField || error) {
-		return (
-			<Page>
-				<Page.Header title={t('Edit_Custom_Field')} />
-				<Page.ScrollableContentWithShadow>
-					<Callout type='danger'>{t('Error')}</Callout>
-				</Page.ScrollableContentWithShadow>
-			</Page>
-		);
-	}
-
-	return <EditCustomFieldsPage customField={data.customField} id={id} reload={reload} />;
-};
 
 const EditCustomFieldsPage = ({ customField, id, reload }) => {
 	const t = useTranslation();
@@ -124,4 +97,4 @@ const EditCustomFieldsPage = ({ customField, id, reload }) => {
 	);
 };
 
-export default EditCustomFieldsPageContainer;
+export default EditCustomFieldsPage;
