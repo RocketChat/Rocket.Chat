@@ -1,24 +1,14 @@
-import { Box, Skeleton, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Skeleton, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
 import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
 import Card from '../../../components/Card/Card';
-import DotLeader from '../../../components/DotLeader';
 import { UserStatus } from '../../../components/UserStatus';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
-
-const TextSeparator = ({ label, value }) => (
-	<Box display='flex' flexDirection='row' mb='x4'>
-		<Box display='inline-flex' alignItems='center'>
-			{label}
-		</Box>
-		<DotLeader />
-		<span>{value}</span>
-	</Box>
-);
+import TextSeparator from './TextSeparator';
 
 const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 	const s = (fn) => (isLoading ? <Skeleton width='x40' /> : fn());

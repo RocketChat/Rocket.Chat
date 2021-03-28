@@ -1,4 +1,4 @@
-import { Box, Icon, ButtonGroup, Button, Skeleton, Margins } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Button, Skeleton, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
@@ -9,17 +9,9 @@ import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import Feature from './Feature';
 import OfflineLicenseModal from './OfflineLicenseModal';
 import UsagePieGraph from './UsagePieGraph';
-
-const Feature = ({ label, enabled }) => (
-	<Box display='flex' flexDirection='row'>
-		<Box color={enabled ? 'success' : 'danger'}>
-			<Icon name={enabled ? 'check' : 'cross'} size='x16' />
-		</Box>
-		{label}
-	</Box>
-);
 
 const LicenseCard = ({ statistics, isLoading }) => {
 	const t = useTranslation();
