@@ -1,1 +1,1 @@
-export { default } from './EditRoomInfo';
+export { default } from './EditChannelWithData';

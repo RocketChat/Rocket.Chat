@@ -6,7 +6,7 @@ import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import EditChannelWithData from '../../room/contextualBar/Info/EditRoomInfo/EditRoomInfo.js';
+import EditChannelWithData from '../../room/contextualBar/Info/EditRoomInfo/EditChannelWithData.js';
 import TeamsInfoWithLogic from './TeamsInfoWithLogic';
 
 function TeamsInfoWithRooms({ rid }) {

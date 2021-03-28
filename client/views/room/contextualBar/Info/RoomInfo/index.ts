@@ -1,1 +1,1 @@
-export { default } from './RoomInfo';
+export { default } from './RoomInfoWithData';

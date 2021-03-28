@@ -1,7 +1,7 @@
 import React from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
-import { RoomInfo } from './RoomInfo';
+import RoomInfo from './RoomInfo';
 
 export default {
 	title: 'components/RoomInfo',

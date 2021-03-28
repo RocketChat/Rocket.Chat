@@ -35,8 +35,6 @@ import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../../hooks/useForm';
-import { useUserRoom } from '../../../hooks/useUserRoom';
-import { useTabBarClose } from '../../../providers/ToolboxProvider';
 
 const typeMap = {
 	c: 'Channels',
@@ -113,19 +111,6 @@ const useInitialValues = (room, settings) => {
 		],
 	);
 };
-
-function EditChannelWithData({ rid, onClickBack }) {
-	const room = useUserRoom(rid);
-	const onClickClose = useTabBarClose();
-
-	return (
-		<EditChannel
-			onClickClose={onClickClose}
-			onClickBack={onClickBack}
-			room={{ type: room?.t, ...room }}
-		/>
-	);
-}
 
 const getCanChangeType = (room, canCreateChannel, canCreateGroup, isAdmin) =>
 	(!room.default || isAdmin) &&
@@ -593,4 +578,4 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	);
 }
 
-export default EditChannelWithData;
+export default EditChannel;
