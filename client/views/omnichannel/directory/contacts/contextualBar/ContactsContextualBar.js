@@ -5,7 +5,7 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import { useRoute } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useRoom } from '../../../../room/providers/RoomProvider';
-import { ContactInfo } from './ContactInfo';
+import ContactInfo from './ContactInfo';
 
 const ContactsContextualBar = ({ rid }) => {
 	const t = useTranslation();

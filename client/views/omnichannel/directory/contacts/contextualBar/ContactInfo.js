@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -6,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization';
 import { ContactManagerInfo } from '../../../../../../ee/client/omnichannel/ContactManager';
-import UserCard from '../../../../../components/UserCard';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useRoute } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -14,35 +12,11 @@ import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { FormSkeleton } from '../../Skeleton';
+import CustomField from './CustomField';
+import Info from './Info';
+import Label from './Label';
 
-const wordBreak = css`
-	word-break: break-word;
-`;
-const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
-const Info = ({ className, ...props }) => (
-	<UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props} />
-);
-const CustomField = ({ id, value }) => {
-	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`livechat/custom-fields/${id}`);
-	if (state === AsyncStatePhase.LOADING) {
-		return <FormSkeleton />;
-	}
-	if (error || !data || !data.customField) {
-		return <Box mbs='x16'>{t('Custom_Field_Not_Found')}</Box>;
-	}
-	const { label } = data.customField;
-	return (
-		label && (
-			<Box>
-				<Label>{label}</Label>
-				<Info>{value}</Info>
-			</Box>
-		)
-	);
-};
-
-export function ContactInfo({ id }) {
+function ContactInfo({ id }) {
 	const t = useTranslation();
 	const directoryRoute = useRoute('omnichannel-directory');
 
@@ -163,3 +137,5 @@ export function ContactInfo({ id }) {
 		</>
 	);
 }
+
+export default ContactInfo;
