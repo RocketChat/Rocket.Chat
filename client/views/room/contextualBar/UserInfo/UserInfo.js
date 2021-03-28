@@ -2,7 +2,7 @@ import { Box, Margins, Tag } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
 import MarkdownText from '../../../../components/MarkdownText';
-import { UTCClock } from '../../../../components/UTCClock';
+import UTCClock from '../../../../components/UTCClock';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';

@@ -69,7 +69,6 @@ function UserInfoWithData({
 			email: getUserEmailAddress(user),
 			utcOffset,
 			createdAt: user.createdAt,
-			// localTime: <LocalTime offset={utcOffset} />,
 			status: status && <ReactiveUserStatus uid={_id} presence={status} />,
 			customStatus: statusText,
 			nickname,

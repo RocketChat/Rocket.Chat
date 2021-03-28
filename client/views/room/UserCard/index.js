@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useRef } from 'react';
 
 import { Backdrop } from '../../../components/Backdrop';
-import { LocalTime } from '../../../components/UTCClock';
+import LocalTime from '../../../components/LocalTime';
 import UserCard from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { useRolesDescription } from '../../../contexts/AuthorizationContext';
