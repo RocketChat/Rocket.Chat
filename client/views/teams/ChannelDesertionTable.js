@@ -1,36 +1,10 @@
-import { Box, CheckBox, Table, Icon, Margins } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Box, CheckBox } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
-import { useRoomIcon } from '../../hooks/useRoomIcon';
-
-const ChannelRow = ({ onChange, selected, room, lastOwnerWarning = '', formatDate }) => {
-	const { name, fname, ts, isLastOwner } = room;
-
-	const handleChange = useMutableCallback(() => onChange(room));
-
-	return (
-		<Table.Row action>
-			<Table.Cell maxWidth='x300' withTruncatedText>
-				<CheckBox checked={selected} onChange={handleChange} disabled={isLastOwner} />
-				<Margins inline='x8'>
-					<Icon size='x16' {...useRoomIcon(room)} />
-					{fname ?? name}
-					{isLastOwner && (
-						<Icon size='x16' name='info-circled' color='danger' title={lastOwnerWarning} />
-					)}
-				</Margins>
-			</Table.Cell>
-
-			<Table.Cell align='end' withTruncatedText>
-				{formatDate(ts)}
-			</Table.Cell>
-		</Table.Row>
-	);
-};
+import ChannelRow from './ChannelRow';
 
 const ChannelDesertionTable = ({
 	rooms,

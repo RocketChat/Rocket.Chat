@@ -30,7 +30,7 @@ import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import UserInfoWithData from '../../UserInfo';
 import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
 import AddUsers from '../AddUsers/AddUsers';
-import InviteUsers from '../InviteUsers/InviteUsers';
+import WrappedInviteUsers from '../InviteUsers/WrappedInviteUsers';
 import { MemberItem } from './components/MemberItem';
 
 export const createItemData = memoize((onClickView, rid) => ({
@@ -289,7 +289,7 @@ export default ({ rid }) => {
 	}
 
 	if (state.tab === 'InviteUsers') {
-		return <InviteUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
+		return <WrappedInviteUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
 	}
 
 	if (state.tab === 'AddUsers') {

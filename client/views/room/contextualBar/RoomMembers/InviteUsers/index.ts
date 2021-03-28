@@ -1,1 +1,1 @@
-export { default } from './InviteUsers';
+export { default } from './WrappedInviteUsers';

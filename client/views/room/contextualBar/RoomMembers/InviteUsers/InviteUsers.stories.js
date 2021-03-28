@@ -1,7 +1,7 @@
 import React from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
-import { InviteUsers } from './InviteUsers';
+import InviteUsers from './InviteUsers';
 
 export default {
 	title: 'components/RoomMembers/InviteUsers',
