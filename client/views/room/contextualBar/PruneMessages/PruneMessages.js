@@ -219,7 +219,7 @@ export default ({
 				throw new Error(t('No_messages_found_to_prune'));
 			}
 			if (result === 1) {
-				dispatchToastMessage({ type: 'success', message: `${ result } ${ t('msg_pruned') }` });
+				dispatchToastMessage({ type: 'success', message: `${ result } ${ t('message_pruned') }` });
 			} else {
 				dispatchToastMessage({ type: 'success', message: `${ result } ${ t('messages_pruned') }` });
 			}
