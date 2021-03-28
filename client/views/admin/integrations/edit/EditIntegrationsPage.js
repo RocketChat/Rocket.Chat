@@ -4,10 +4,10 @@ import React, { useCallback } from 'react';
 import Page from '../../../../components/Page';
 import { useRouteParameter, useRoute } from '../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import EditIncomingWebhookWithData from './EditIncomingWebhook';
-import EditOutgoingWebhookWithData from './EditOutgoingWebhook';
+import EditIncomingWebhookWithData from './EditIncomingWebhookWithData';
+import EditOutgoingWebhookWithData from './EditOutgoingWebhookWithData';
 
-export default function EditIntegrationsPage({ ...props }) {
+function EditIntegrationsPage({ ...props }) {
 	const t = useTranslation();
 
 	const router = useRoute('admin-integrations');
@@ -48,3 +48,5 @@ export default function EditIntegrationsPage({ ...props }) {
 		</Page>
 	);
 }
+
+export default EditIntegrationsPage;

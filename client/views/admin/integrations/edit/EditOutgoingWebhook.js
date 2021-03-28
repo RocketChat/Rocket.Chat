@@ -1,4 +1,4 @@
-import { Field, Box, Skeleton, Margins, Button } from '@rocket.chat/fuselage';
+import { Field, Box, Margins, Button } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
 import DeleteSuccessModal from '../../../../components/DeleteSuccessModal';
@@ -8,46 +8,10 @@ import { useRoute } from '../../../../contexts/RouterContext';
 import { useMethod } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useForm } from '../../../../hooks/useForm';
 import OutgoingWebhookForm from '../OutgoiongWebhookForm';
 import { triggerWordsToArray, triggerWordsToString } from '../helpers/triggerWords';
-
-export default function EditOutgoingWebhookWithData({ integrationId, ...props }) {
-	const t = useTranslation();
-
-	const params = useMemo(() => ({ integrationId }), [integrationId]);
-	const { value: data, phase: state, error, reload } = useEndpointData('integrations.get', params);
-
-	const onChange = () => {
-		reload();
-	};
-
-	if (state === AsyncStatePhase.LOADING) {
-		return (
-			<Box w='full' pb='x24' {...props}>
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-			</Box>
-		);
-	}
-
-	if (error) {
-		return (
-			<Box mbs='x16' {...props}>
-				{t('Oops_page_not_found')}
-			</Box>
-		);
-	}
-
-	return <EditOutgoingWebhook data={data.integration} onChange={onChange} {...props} />;
-}
 
 const getInitialValue = (data) => {
 	const initialValue = {
@@ -175,3 +139,5 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 		/>
 	);
 }
+
+export default EditOutgoingWebhook;
