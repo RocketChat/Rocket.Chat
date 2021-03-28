@@ -10,7 +10,7 @@ import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import EditTriggerPageContainer from './EditTriggerPageContainer';
 import NewTriggerPage from './NewTriggerPage';
-import TriggersTable from './TriggersTable';
+import TriggersTableContainer from './TriggersTableContainer';
 
 const MonitorsPage = () => {
 	const t = useTranslation();
@@ -45,7 +45,7 @@ const MonitorsPage = () => {
 					</Button>
 				</Page.Header>
 				<Page.Content>
-					<TriggersTable reloadRef={reload} />
+					<TriggersTableContainer reloadRef={reload} />
 				</Page.Content>
 			</Page>
 			{context && (
