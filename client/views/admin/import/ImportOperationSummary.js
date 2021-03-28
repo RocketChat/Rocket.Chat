@@ -1,4 +1,4 @@
-import { Skeleton, Table } from '@rocket.chat/fuselage';
+import { Table } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 import {
@@ -11,6 +11,7 @@ import {
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
 
 function ImportOperationSummary({
 	type,
@@ -106,41 +107,6 @@ function ImportOperationSummary({
 	);
 }
 
-function ImportOperationSummarySkeleton({ small }) {
-	return (
-		<Table.Row>
-			<Table.Cell>
-				<Skeleton />
-			</Table.Cell>
-			<Table.Cell>
-				<Skeleton />
-			</Table.Cell>
-			{!small && (
-				<>
-					<Table.Cell>
-						<Skeleton />
-					</Table.Cell>
-					<Table.Cell>
-						<Skeleton />
-					</Table.Cell>
-					<Table.Cell>
-						<Skeleton />
-					</Table.Cell>
-					<Table.Cell>
-						<Skeleton />
-					</Table.Cell>
-					<Table.Cell>
-						<Skeleton />
-					</Table.Cell>
-					<Table.Cell>
-						<Skeleton />
-					</Table.Cell>
-				</>
-			)}
-		</Table.Row>
-	);
-}
-
-ImportOperationSummary.Skeleton = ImportOperationSummarySkeleton;
-
-export default ImportOperationSummary;
+export default Object.assign(ImportOperationSummary, {
+	Skeleton: ImportOperationSummarySkeleton,
+});

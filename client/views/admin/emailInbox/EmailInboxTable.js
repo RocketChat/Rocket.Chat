@@ -1,38 +1,12 @@
-import { Button, Table, Icon } from '@rocket.chat/fuselage';
+import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-
-export function SendTestButton({ id }) {
-	const t = useTranslation();
-
-	const dispatchToastMessage = useToastMessageDispatch();
-	const sendTest = useEndpoint('POST', `email-inbox.send-test/${id}`);
-
-	return (
-		<Table.Cell fontScale='p1' color='hint' withTruncatedText>
-			<Button
-				small
-				ghost
-				title={t('Send_Test_Email')}
-				onClick={(e) =>
-					e.preventDefault() &
-					e.stopPropagation() &
-					sendTest() &
-					dispatchToastMessage({ type: 'success', message: t('Email_sent') })
-				}
-			>
-				<Icon name='send' size='x20' />
-			</Button>
-		</Table.Cell>
-	);
-}
+import SendTestButton from './SendTestButton';
 
 const useQuery = ({ itemsPerPage, current }, [column, direction]) =>
 	useMemo(
