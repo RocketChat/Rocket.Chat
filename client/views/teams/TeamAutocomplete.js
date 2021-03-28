@@ -5,7 +5,7 @@ import { useUserId } from '../../contexts/UserContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import Avatar from './Avatar';
 
-const TeamAutocomplete = memo((props) => {
+const TeamAutocomplete = (props) => {
 	const [filter, setFilter] = useState('');
 
 	const userId = useUserId();
@@ -42,6 +42,6 @@ const TeamAutocomplete = memo((props) => {
 			options={options}
 		/>
 	);
-});
+};
 
-export default TeamAutocomplete;
+export default memo(TeamAutocomplete);

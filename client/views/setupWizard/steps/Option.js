@@ -2,7 +2,7 @@ import { Box, Field, RadioButton } from '@rocket.chat/fuselage';
 import { useMergedRefs, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { forwardRef, useRef } from 'react';
 
-const Option = forwardRef(({ children, label, selected, disabled, ...props }, ref) => {
+const Option = forwardRef(function Option({ children, label, selected, disabled, ...props }, ref) {
 	const innerRef = useRef();
 	const mergedRef = useMergedRefs(ref, innerRef);
 	const id = useUniqueId();
