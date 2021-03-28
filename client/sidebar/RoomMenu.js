@@ -21,7 +21,7 @@ const fields = {
 	name: 1,
 };
 
-const RoomMenu = memo(({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '' }) => {
+const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '' }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -188,6 +188,6 @@ const RoomMenu = memo(({ rid, unread, threadUnread, alert, roomOpen, type, cl, n
 			)}
 		/>
 	);
-});
+};
 
-export default RoomMenu;
+export default memo(RoomMenu);

@@ -12,7 +12,7 @@ import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 
-const OmnichannelSection = memo((props) => {
+const OmnichannelSection = (props) => {
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const t = useTranslation();
 	const agentAvailable = useOmnichannelAgentAvailable();
@@ -53,8 +53,8 @@ const OmnichannelSection = memo((props) => {
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);
+};
+
+export default Object.assign(memo(OmnichannelSection), {
+	size: 56,
 });
-
-export default OmnichannelSection;
-
-OmnichannelSection.size = 56;

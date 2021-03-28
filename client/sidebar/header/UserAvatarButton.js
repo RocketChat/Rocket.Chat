@@ -23,7 +23,7 @@ const openDropdown = (e, user, onClose, allowAnonymousRead) => {
 	}
 };
 
-export default memo(({ user = {} }) => {
+const UserAvatarButton = ({ user = {} }) => {
 	const { _id: uid, status = !uid && 'online', username = 'Anonymous', avatarETag } = user;
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
@@ -66,4 +66,6 @@ export default memo(({ user = {} }) => {
 			</Box>
 		</Box>
 	);
-});
+};
+
+export default memo(UserAvatarButton);
