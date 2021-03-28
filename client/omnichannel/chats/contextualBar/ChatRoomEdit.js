@@ -16,6 +16,8 @@ import { hasAtLeastOnePermission } from '../../../../app/authorization';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import { useMethod } from '../../../contexts/ServerContext';
 import { formsSubscription } from '../../../views/omnichannel/additionalForms';
+import { useUserSubscription } from '../../../contexts/UserContext';
+import { hasPermission } from '../../../../app/authorization/client';
 
 
 const initialValuesUser = {
@@ -60,11 +62,12 @@ const getInitialValuesRoom = (room) => {
 	};
 };
 
-
 export function RoomEditWithData({ id, reload, close }) {
 	const t = useTranslation();
 
 	const { value: roomData, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
+	const subscription = useUserSubscription(id);
+	const hasGlobalEditRoomPermission = hasPermission('save-others-livechat-room-info');
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
@@ -74,6 +77,10 @@ export function RoomEditWithData({ id, reload, close }) {
 		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
 	}
 
+	const hasEditAccess = !!subscription || hasGlobalEditRoomPermission;
+	if (!hasEditAccess) {
+		return <Box mbs='x16'>{t('Not_authorized')}</Box>;
+	}
 
 	return <VisitorData room={roomData} reload={reload} close={close} />;
 }

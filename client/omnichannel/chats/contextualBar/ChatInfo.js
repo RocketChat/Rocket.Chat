@@ -15,6 +15,8 @@ import UserAvatar from '../../../components/avatar/UserAvatar';
 import { UserStatus } from '../../../components/UserStatus';
 import { roomTypes } from '../../../../app/utils/client';
 import { useRoute } from '../../../contexts/RouterContext';
+import { useUserSubscription } from '../../../contexts/UserContext';
+import { hasPermission } from '../../../../app/authorization/client';
 
 
 const wordBreak = css`
@@ -80,6 +82,9 @@ export function ChatInfo({ id, route }) {
 	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
 
+	const subscription = useUserSubscription(id);
+	const hasGlobalEditRoomPermission = hasPermission('save-others-livechat-room-info');
+
 	const onEditClick = useMutableCallback(() => routePath.push(
 		route ? {
 			tab: 'room-info',
@@ -99,6 +104,8 @@ export function ChatInfo({ id, route }) {
 	if (error || !data || !data.room) {
 		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
 	}
+
+	const hasEditAccess = !!subscription || hasGlobalEditRoomPermission;
 
 	return <>
 		<VerticalBar.ScrollableContent p='x24'>
@@ -145,10 +152,10 @@ export function ChatInfo({ id, route }) {
 				</>}
 			</Margins>
 		</VerticalBar.ScrollableContent>
-		<VerticalBar.Footer>
+		{hasEditAccess && <VerticalBar.Footer>
 			<ButtonGroup stretch>
 				<Button onClick={onEditClick}><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
 			</ButtonGroup>
-		</VerticalBar.Footer>
+		</VerticalBar.Footer>}
 	</>;
 }
