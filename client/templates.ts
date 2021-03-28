@@ -109,7 +109,7 @@ createTemplateForComponent(
 	},
 );
 
-createTemplateForComponent('room', () => import('./views/room'), {
+createTemplateForComponent('room', () => import('./views/room/Room'), {
 	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
 });
 
