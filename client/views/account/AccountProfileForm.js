@@ -17,7 +17,7 @@ import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 import UserStatusMenu from '../../components/UserStatusMenu';
-import { UserAvatarEditor } from '../../components/avatar/UserAvatarEditor';
+import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
