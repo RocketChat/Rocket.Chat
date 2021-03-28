@@ -7,7 +7,7 @@ import { useEndpoint } from '../../../contexts/ServerContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { RecordList } from '../../../lib/lists/RecordList.ts';
-import CreateChannel from '../../../sidebar/header/CreateChannel';
+import CreateChannelWithData from '../../../sidebar/header/CreateChannelWithData';
 import RoomInfo from '../../room/contextualBar/Info';
 import { useTabBarClose } from '../../room/providers/ToolboxProvider';
 import AddExistingModal from '../modals/AddExistingModal';
@@ -58,7 +58,7 @@ const TeamChannels = ({ teamId }) => {
 	}, []);
 
 	const addExisting = useReactModal(AddExistingModal, { teamId });
-	const createNew = useReactModal(CreateChannel, { teamId });
+	const createNew = useReactModal(CreateChannelWithData, { teamId });
 
 	const goToRoom = useCallback((room) => roomTypes.openRouteLink(room.t, room), []);
 	const handleBack = useCallback(() => setState({}), [setState]);
