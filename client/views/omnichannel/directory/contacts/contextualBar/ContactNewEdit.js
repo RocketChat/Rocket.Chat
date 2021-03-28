@@ -1,4 +1,4 @@
-import { Field, TextInput, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
@@ -45,24 +45,7 @@ const getInitialValues = (data) => {
 	};
 };
 
-export function ContactEditWithData({ id, reload, close }) {
-	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(
-		`omnichannel/contact?contactId=${id}`,
-	);
-
-	if ([state].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
-	}
-
-	if (error || !data || !data.contact) {
-		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
-	}
-
-	return <ContactNewEdit id={id} data={data} reload={reload} close={close} />;
-}
-
-export function ContactNewEdit({ id, data, reload, close }) {
+function ContactNewEdit({ id, data, reload, close }) {
 	const t = useTranslation();
 
 	const canViewCustomFields = () =>
@@ -266,3 +249,5 @@ export function ContactNewEdit({ id, data, reload, close }) {
 		</>
 	);
 }
+
+export default ContactNewEdit;

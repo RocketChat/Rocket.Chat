@@ -7,13 +7,13 @@ import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useRoom } from '../../../../room/providers/RoomProvider';
 import { ContactInfo } from './ContactInfo';
 
-const ContactsContextualBar = ({ id }) => {
+const ContactsContextualBar = ({ rid }) => {
 	const t = useTranslation();
 
 	const directoryRoute = useRoute('live');
 
 	const closeContextualBar = () => {
-		directoryRoute.push({ id });
+		directoryRoute.push({ id: rid });
 	};
 	const room = useRoom();
 
@@ -34,4 +34,4 @@ const ContactsContextualBar = ({ id }) => {
 	);
 };
 
-export default ({ rid }) => <ContactsContextualBar id={rid} />;
+export default ContactsContextualBar;

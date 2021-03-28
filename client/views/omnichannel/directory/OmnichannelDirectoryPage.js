@@ -10,8 +10,9 @@ import ChatTab from './chats/ChatTab';
 import { ChatInfo } from './chats/contextualBar/ChatInfo';
 import { RoomEditWithData } from './chats/contextualBar/ChatRoomEdit';
 import ContactTab from './contacts/ContactTab';
-import { ContactNewEdit, ContactEditWithData } from './contacts/contextualBar/ContactForm';
+import ContactEditWithData from './contacts/contextualBar/ContactEditWithData';
 import { ContactInfo } from './contacts/contextualBar/ContactInfo';
+import ContactNewEdit from './contacts/contextualBar/ContactNewEdit';
 
 const OmnichannelDirectoryPage = () => {
 	const t = useTranslation();
