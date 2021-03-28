@@ -3,9 +3,9 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import React, { useRef, useEffect, useLayoutEffect } from 'react';
 
-import { ResetSettingButton } from '../ResetSettingButton';
+import ResetSettingButton from '../ResetSettingButton';
 
-export function RoomPickSettingInput({
+function RoomPickSettingInput({
 	_id,
 	label,
 	value,
@@ -97,3 +97,5 @@ export function RoomPickSettingInput({
 		</>
 	);
 }
+
+export default RoomPickSettingInput;

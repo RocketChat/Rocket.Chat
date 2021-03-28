@@ -1,31 +1,9 @@
-import {
-	Box,
-	Field,
-	Flex,
-	TextAreaInput,
-	TextInput,
-	Callout,
-	Margins,
-} from '@rocket.chat/fuselage';
+import { Box, Field, Flex, TextAreaInput, TextInput } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { ResetSettingButton } from '../ResetSettingButton';
+import ResetSettingButton from '../ResetSettingButton';
 
-export function Input({ hint, callout, ...props }) {
-	return (
-		<Field>
-			<StringSettingInput {...props} />
-			{hint && <Field.Hint>{hint}</Field.Hint>}
-			{callout && (
-				<Margins block='x16'>
-					<Callout type='warning'>{callout}</Callout>
-				</Margins>
-			)}
-		</Field>
-	);
-}
-
-export function StringSettingInput({
+function StringSettingInput({
 	_id,
 	label,
 	disabled,
@@ -84,4 +62,4 @@ export function StringSettingInput({
 	);
 }
 
-Input.displayName = 'Input';
+export default StringSettingInput;

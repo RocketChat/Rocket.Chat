@@ -1,9 +1,9 @@
 import { Box, Field, Flex, InputBox } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { ResetSettingButton } from '../ResetSettingButton';
+import ResetSettingButton from '../ResetSettingButton';
 
-export function IntSettingInput({
+function IntSettingInput({
 	_id,
 	label,
 	value,
@@ -47,3 +47,5 @@ export function IntSettingInput({
 		</>
 	);
 }
+
+export default IntSettingInput;

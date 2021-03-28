@@ -2,9 +2,9 @@ import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useLanguages } from '../../../../contexts/TranslationContext';
-import { ResetSettingButton } from '../ResetSettingButton';
+import ResetSettingButton from '../ResetSettingButton';
 
-export function LanguageSettingInput({
+function LanguageSettingInput({
 	_id,
 	label,
 	value,
@@ -50,3 +50,5 @@ export function LanguageSettingInput({
 		</>
 	);
 }
+
+export default LanguageSettingInput;

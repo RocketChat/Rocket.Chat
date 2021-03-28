@@ -2,7 +2,7 @@ import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { MultiSelectSettingInput } from './MultiSelectSettingInput';
+import MultiSelectSettingInput from './MultiSelectSettingInput';
 
 export default {
 	title: 'admin/settings/inputs/MultiSelectSettingInput',

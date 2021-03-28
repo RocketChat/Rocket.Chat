@@ -3,7 +3,7 @@ import React from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-export function ResetSettingButton(props) {
+function ResetSettingButton(props) {
 	const t = useTranslation();
 
 	return (
@@ -20,3 +20,5 @@ export function ResetSettingButton(props) {
 		</Button>
 	);
 }
+
+export default ResetSettingButton;

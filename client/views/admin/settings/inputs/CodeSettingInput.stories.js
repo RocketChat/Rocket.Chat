@@ -2,7 +2,7 @@ import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { CodeSettingInput } from './CodeSettingInput';
+import CodeSettingInput from './CodeSettingInput';
 
 export default {
 	title: 'admin/settings/inputs/CodeSettingInput',

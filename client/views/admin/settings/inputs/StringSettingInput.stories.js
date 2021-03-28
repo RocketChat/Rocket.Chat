@@ -2,7 +2,7 @@ import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { StringSettingInput } from './StringSettingInput';
+import StringSettingInput from './StringSettingInput';
 
 export default {
 	title: 'admin/settings/inputs/StringSettingInput',

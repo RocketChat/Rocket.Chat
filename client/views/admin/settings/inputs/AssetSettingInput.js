@@ -7,7 +7,7 @@ import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesConte
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import './AssetSettingInput.css';
 
-export function AssetSettingInput({ _id, label, value = {}, asset, fileConstraints = {} }) {
+function AssetSettingInput({ _id, label, value = {}, asset, fileConstraints = {} }) {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -93,3 +93,5 @@ export function AssetSettingInput({ _id, label, value = {}, asset, fileConstrain
 		</>
 	);
 }
+
+export default AssetSettingInput;

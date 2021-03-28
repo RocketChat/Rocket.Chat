@@ -2,7 +2,7 @@ import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { IntSettingInput } from './IntSettingInput';
+import IntSettingInput from './IntSettingInput';
 
 export default {
 	title: 'admin/settings/inputs/IntSettingInput',

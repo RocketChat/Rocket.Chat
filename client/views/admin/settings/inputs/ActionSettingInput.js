@@ -5,7 +5,7 @@ import { useMethod } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
-export function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }) {
+function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }) {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -36,3 +36,5 @@ export function ActionSettingInput({ _id, actionText, value, disabled, sectionCh
 		</>
 	);
 }
+
+export default ActionSettingInput;

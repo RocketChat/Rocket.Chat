@@ -2,7 +2,7 @@ import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { GenericSettingInput } from './GenericSettingInput';
+import GenericSettingInput from './GenericSettingInput';
 
 export default {
 	title: 'admin/settings/inputs/GenericSettingInput',

@@ -2,7 +2,7 @@ import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { FontSettingInput } from './FontSettingInput';
+import FontSettingInput from './FontSettingInput';
 
 export default {
 	title: 'admin/settings/inputs/FontSettingInput',

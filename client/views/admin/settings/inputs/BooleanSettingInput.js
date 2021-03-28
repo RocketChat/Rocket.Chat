@@ -1,9 +1,9 @@
 import { Field, ToggleSwitch } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { ResetSettingButton } from '../ResetSettingButton';
+import ResetSettingButton from '../ResetSettingButton';
 
-export function BooleanSettingInput({
+function BooleanSettingInput({
 	_id,
 	label,
 	disabled,
@@ -38,3 +38,5 @@ export function BooleanSettingInput({
 		</Field.Row>
 	);
 }
+
+export default BooleanSettingInput;

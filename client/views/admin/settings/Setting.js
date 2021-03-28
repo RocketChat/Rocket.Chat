@@ -9,21 +9,21 @@ import {
 } from '../../../contexts/EditableSettingsContext';
 import { useSettingStructure } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { ActionSettingInput } from './inputs/ActionSettingInput';
-import { AssetSettingInput } from './inputs/AssetSettingInput';
-import { BooleanSettingInput } from './inputs/BooleanSettingInput';
-import { CodeSettingInput } from './inputs/CodeSettingInput';
-import { ColorSettingInput } from './inputs/ColorSettingInput';
-import { FontSettingInput } from './inputs/FontSettingInput';
-import { GenericSettingInput } from './inputs/GenericSettingInput';
-import { IntSettingInput } from './inputs/IntSettingInput';
-import { LanguageSettingInput } from './inputs/LanguageSettingInput';
-import { MultiSelectSettingInput } from './inputs/MultiSelectSettingInput';
-import { PasswordSettingInput } from './inputs/PasswordSettingInput';
-import { RelativeUrlSettingInput } from './inputs/RelativeUrlSettingInput';
-import { RoomPickSettingInput } from './inputs/RoomPickSettingInput';
-import { SelectSettingInput } from './inputs/SelectSettingInput';
-import { StringSettingInput } from './inputs/StringSettingInput';
+import ActionSettingInput from './inputs/ActionSettingInput';
+import AssetSettingInput from './inputs/AssetSettingInput';
+import BooleanSettingInput from './inputs/BooleanSettingInput';
+import CodeSettingInput from './inputs/CodeSettingInput';
+import ColorSettingInput from './inputs/ColorSettingInput';
+import FontSettingInput from './inputs/FontSettingInput';
+import GenericSettingInput from './inputs/GenericSettingInput';
+import IntSettingInput from './inputs/IntSettingInput';
+import LanguageSettingInput from './inputs/LanguageSettingInput';
+import MultiSelectSettingInput from './inputs/MultiSelectSettingInput';
+import PasswordSettingInput from './inputs/PasswordSettingInput';
+import RelativeUrlSettingInput from './inputs/RelativeUrlSettingInput';
+import RoomPickSettingInput from './inputs/RoomPickSettingInput';
+import SelectSettingInput from './inputs/SelectSettingInput';
+import StringSettingInput from './inputs/StringSettingInput';
 
 export const MemoizedSetting = memo(function MemoizedSetting({
 	type,

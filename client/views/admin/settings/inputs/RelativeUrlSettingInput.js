@@ -2,9 +2,9 @@ import { Box, Field, Flex, UrlInput } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useAbsoluteUrl } from '../../../../contexts/ServerContext';
-import { ResetSettingButton } from '../ResetSettingButton';
+import ResetSettingButton from '../ResetSettingButton';
 
-export function RelativeUrlSettingInput({
+function RelativeUrlSettingInput({
 	_id,
 	label,
 	value,
@@ -47,3 +47,5 @@ export function RelativeUrlSettingInput({
 		</>
 	);
 }
+
+export default RelativeUrlSettingInput;

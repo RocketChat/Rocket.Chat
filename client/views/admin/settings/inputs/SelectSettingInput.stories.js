@@ -2,7 +2,7 @@ import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { SelectSettingInput } from './SelectSettingInput';
+import SelectSettingInput from './SelectSettingInput';
 
 export default {
 	title: 'admin/settings/inputs/SelectSettingInput',

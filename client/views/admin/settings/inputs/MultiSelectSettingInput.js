@@ -2,9 +2,9 @@ import { Field, Flex, Box, MultiSelectFiltered, MultiSelect } from '@rocket.chat
 import React from 'react';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { ResetSettingButton } from '../ResetSettingButton';
+import ResetSettingButton from '../ResetSettingButton';
 
-export function MultiSelectSettingInput({
+function MultiSelectSettingInput({
 	_id,
 	label,
 	value = [],

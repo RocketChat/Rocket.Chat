@@ -1,9 +1,9 @@
 import { Box, Field, Flex, PasswordInput } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { ResetSettingButton } from '../ResetSettingButton';
+import ResetSettingButton from '../ResetSettingButton';
 
-export function PasswordSettingInput({
+function PasswordSettingInput({
 	_id,
 	label,
 	value,
@@ -46,3 +46,5 @@ export function PasswordSettingInput({
 		</>
 	);
 }
+
+export default PasswordSettingInput;

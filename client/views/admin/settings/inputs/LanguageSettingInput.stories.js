@@ -2,7 +2,7 @@ import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { LanguageSettingInput } from './LanguageSettingInput';
+import LanguageSettingInput from './LanguageSettingInput';
 
 export default {
 	title: 'admin/settings/inputs/LanguageSettingInput',

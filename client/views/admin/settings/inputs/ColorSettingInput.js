@@ -2,9 +2,9 @@ import { Box, Field, Flex, InputBox, Margins, TextInput, Select } from '@rocket.
 import React, { useCallback } from 'react';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { ResetSettingButton } from '../ResetSettingButton';
+import ResetSettingButton from '../ResetSettingButton';
 
-export function ColorSettingInput({
+function ColorSettingInput({
 	_id,
 	label,
 	value,
@@ -95,3 +95,5 @@ export function ColorSettingInput({
 		</>
 	);
 }
+
+export default ColorSettingInput;

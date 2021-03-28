@@ -2,7 +2,7 @@ import { Field } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 
-import { BooleanSettingInput } from './BooleanSettingInput';
+import BooleanSettingInput from './BooleanSettingInput';
 
 export default {
 	title: 'admin/settings/inputs/BooleanSettingInput',
