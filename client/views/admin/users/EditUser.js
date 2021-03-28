@@ -1,44 +1,14 @@
-import { Box, Field, Margins, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, Field, Margins, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
-
-export function EditUserWithData({ uid, ...props }) {
-	const t = useTranslation();
-	const { value: roleData, phase: roleState, error: roleError } = useEndpointData('roles.list', '');
-	const { value: data, phase: state, error } = useEndpointData(
-		'users.info',
-		useMemo(() => ({ userId: uid }), [uid]),
-	);
-
-	if ([state, roleState].includes(AsyncStatePhase.LOADING)) {
-		return (
-			<Box p='x24'>
-				<FormSkeleton />
-			</Box>
-		);
-	}
-
-	if (error || roleError) {
-		return (
-			<Callout m='x16' type='danger'>
-				{t('User_not_found')}
-			</Callout>
-		);
-	}
-
-	return <EditUser data={data.user} roles={roleData.roles} {...props} />;
-}
 
 const getInitialValue = (data) => ({
 	roles: data.roles,
@@ -56,7 +26,7 @@ const getInitialValue = (data) => ({
 	statusText: data.statusText ?? '',
 });
 
-export function EditUser({ data, roles, ...props }) {
+function EditUser({ data, roles, ...props }) {
 	const t = useTranslation();
 
 	const [avatarObj, setAvatarObj] = useState();
@@ -225,3 +195,5 @@ export function EditUser({ data, roles, ...props }) {
 		/>
 	);
 }
+
+export default EditUser;
