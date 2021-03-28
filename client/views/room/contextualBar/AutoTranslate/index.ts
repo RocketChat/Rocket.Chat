@@ -1,1 +1,1 @@
-export { default } from './AutoTranslate';
+export { default } from './AutoTranslateWithData';

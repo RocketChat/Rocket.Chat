@@ -1,6 +1,5 @@
 import {
 	Box,
-	Callout,
 	FieldGroup,
 	Field,
 	TextInput,
@@ -12,22 +11,11 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
-import PageSkeleton from '../../../components/PageSkeleton';
-import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
-
-const reduceSettings = (settings) =>
-	settings.reduce((acc, { _id, value }) => {
-		acc = { ...acc, [_id]: value };
-		return acc;
-	}, {});
 
 const reduceSendOptions = (options) =>
 	Object.entries(options).reduce((acc, [key, val]) => {
@@ -38,35 +26,6 @@ const reduceSendOptions = (options) =>
 	}, []);
 
 const integrationsUrl = 'https://rocket.chat/docs/administrator-guides/livechat/#integrations';
-
-const WebhooksPageContainer = () => {
-	const t = useTranslation();
-
-	const { value: data, phase: state, error } = useEndpointData('livechat/integrations.settings');
-
-	const canViewLivechatWebhooks = usePermission('view-livechat-webhooks');
-
-	if (!canViewLivechatWebhooks) {
-		return <NotAuthorizedPage />;
-	}
-
-	if (state === AsyncStatePhase.LOADING) {
-		return <PageSkeleton />;
-	}
-
-	if (!data || !data.success || !data.settings || error) {
-		return (
-			<Page>
-				<Page.Header title={t('Webhooks')} />
-				<Page.ScrollableContentWithShadow>
-					<Callout type='danger'>{t('Error')}</Callout>
-				</Page.ScrollableContentWithShadow>
-			</Page>
-		);
-	}
-
-	return <WebhooksPage settings={reduceSettings(data.settings)} />;
-};
 
 const getInitialValues = ({
 	Livechat_webhookUrl,
@@ -216,4 +175,4 @@ const WebhooksPage = ({ settings }) => {
 	);
 };
 
-export default WebhooksPageContainer;
+export default WebhooksPage;

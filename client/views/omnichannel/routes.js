@@ -21,7 +21,7 @@ registerOmnichannelRoute('/agents/:context?/:id?', {
 
 registerOmnichannelRoute('/webhooks', {
 	name: 'omnichannel-webhooks',
-	lazyRouteComponent: () => import('./webhooks/WebhooksPage'),
+	lazyRouteComponent: () => import('./webhooks/WebhooksPageContainer'),
 });
 
 registerOmnichannelRoute('/customfields/:context?/:id?', {
