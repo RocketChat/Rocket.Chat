@@ -19,7 +19,7 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
-import { UserInfo } from '../../room/contextualBar/UserInfo';
+import UserInfo from '../../room/contextualBar/UserInfo';
 import { formsSubscription } from '../additionalForms';
 
 function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ...props }) {

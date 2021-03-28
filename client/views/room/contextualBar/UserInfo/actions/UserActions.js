@@ -1,7 +1,7 @@
 import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
-import { UserInfo } from '..';
+import UserInfo from '..';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
 import { useUserInfoActions } from '../../../hooks/useUserInfoActions';
 

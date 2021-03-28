@@ -8,7 +8,7 @@ import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { UserInfo } from '../../room/contextualBar/UserInfo';
+import UserInfo from '../../room/contextualBar/UserInfo';
 import { formsSubscription } from '../additionalForms';
 import AgentInfoAction from './AgentInfoAction';
 

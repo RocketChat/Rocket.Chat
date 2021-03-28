@@ -12,7 +12,7 @@ import { useSetting } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useActionSpread } from '../../hooks/useActionSpread';
-import { UserInfo } from '../../room/contextualBar/UserInfo';
+import UserInfo from '../../room/contextualBar/UserInfo';
 
 export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) => {
 	const t = useTranslation();

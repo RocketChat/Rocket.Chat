@@ -12,7 +12,7 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import AddUsers from '../../room/contextualBar/RoomMembers/AddUsers';
 import InviteUsers from '../../room/contextualBar/RoomMembers/InviteUsers';
 import RoomMembers from '../../room/contextualBar/RoomMembers/List/RoomMembers';
-import UserInfoWithData from '../../room/contextualBar/UserInfo';
+import UserInfo from '../../room/contextualBar/UserInfo';
 import { useDataWithLoadMore } from '../../room/contextualBar/hooks/useDataWithLoadMore';
 import { useTabBarClose } from '../../room/providers/ToolboxProvider';
 
@@ -92,7 +92,7 @@ const TeamMembers = ({ rid }) => {
 
 	if (state.tab === 'UserInfo') {
 		return (
-			<UserInfoWithData
+			<UserInfo
 				rid={rid}
 				onClickClose={onClickClose}
 				onClickBack={handleBack}
