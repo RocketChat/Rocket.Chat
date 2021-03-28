@@ -5,7 +5,7 @@ import VerticalBar from '../../../components/VerticalBar';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import ChatInfo from './chats/contextualBar/ChatInfo';
-import { RoomEditWithData } from './chats/contextualBar/ChatRoomEdit';
+import RoomEditWithData from './chats/contextualBar/RoomEditWithData';
 
 const ChatsContextualBar = ({ chatReload }) => {
 	const liveRoute = useRoute('live');

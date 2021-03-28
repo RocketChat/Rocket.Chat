@@ -1,9 +1,8 @@
-import { Field, TextInput, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-// import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization';
 import { isEmail } from '../../../../../../app/utils';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
@@ -59,50 +58,7 @@ const getInitialValuesRoom = (room) => {
 	};
 };
 
-export function RoomEditWithData({ id, reload, close }) {
-	const t = useTranslation();
-
-	const { value: roomData, phase: state, error } = useEndpointData(`rooms.info?roomId=${id}`);
-
-	if ([state].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
-	}
-
-	if (error || !roomData || !roomData.room) {
-		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
-	}
-
-	return <VisitorData room={roomData} reload={reload} close={close} />;
-}
-
-function VisitorData({ room, reload, close }) {
-	const t = useTranslation();
-
-	const {
-		room: {
-			v: { _id },
-		},
-	} = room;
-
-	const { value: visitor, phase: stateVisitor, error: errorVisitor } = useEndpointData(
-		`livechat/visitors.info?visitorId=${_id}`,
-	);
-
-	if ([stateVisitor].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
-	}
-
-	if (errorVisitor || !visitor || !visitor.visitor) {
-		return <Box mbs='x16'>{t('Visitor_not_found')}</Box>;
-	}
-
-	const { visitor: visitorData } = visitor;
-	const { room: roomData } = room;
-
-	return <RoomEdit room={roomData} visitor={visitorData} reload={reload} close={close} />;
-}
-
-export function RoomEdit({ room, visitor, reload, close }) {
+function RoomEdit({ room, visitor, reload, close }) {
 	const t = useTranslation();
 
 	const { values, handlers } = useForm(getInitialValuesUser(visitor));
@@ -277,3 +233,5 @@ export function RoomEdit({ room, visitor, reload, close }) {
 		</>
 	);
 }
+
+export default RoomEdit;
