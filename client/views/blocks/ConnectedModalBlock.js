@@ -6,6 +6,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 import { renderMessageBody } from '../../lib/renderMessageBody';
 import ModalBlock from './ModalBlock';
+import './textParsers';
 
 const useActionManagerState = (initialState) => {
 	const [state, setState] = useState(initialState);
@@ -189,7 +190,6 @@ export default ConnectedModalBlock;
 modalParser.plainText = ({ text } = {}) => text;
 
 // TODO: move this to fuselage-ui-kit itself
-// eslint-disable-next-line react/no-multi-comp
 modalParser.mrkdwn = ({ text }) => (
 	<span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />
 );

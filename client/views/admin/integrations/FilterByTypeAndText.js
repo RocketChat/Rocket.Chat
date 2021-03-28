@@ -3,7 +3,7 @@ import React, { useCallback, useState, useEffect, memo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-const FilterByTypeAndText = memo(({ setFilter, ...props }) => {
+const FilterByTypeAndText = ({ setFilter, ...props }) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
@@ -31,6 +31,6 @@ const FilterByTypeAndText = memo(({ setFilter, ...props }) => {
 			/>
 		</Box>
 	);
-});
+};
 
-export default FilterByTypeAndText;
+export default memo(FilterByTypeAndText);

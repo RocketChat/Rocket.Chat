@@ -6,7 +6,7 @@ import { useEndpointData } from '../../hooks/useEndpointData';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
-const DepartmentAutoComplete = memo((props) => {
+const DepartmentAutoComplete = (props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'livechat/department.autocomplete',
@@ -39,6 +39,6 @@ const DepartmentAutoComplete = memo((props) => {
 			options={options}
 		/>
 	);
-});
+};
 
-export default DepartmentAutoComplete;
+export default memo(DepartmentAutoComplete);

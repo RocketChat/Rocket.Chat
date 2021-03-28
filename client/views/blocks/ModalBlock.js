@@ -4,6 +4,7 @@ import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-u
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { getURL } from '../../../app/utils/lib/getURL';
+import './textParsers';
 
 const focusableElementsString = `
 	a[href]:not([tabindex="-1"]),

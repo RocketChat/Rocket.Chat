@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 
 import DescriptionListEntry from './DescriptionListEntry';
 
-const DescriptionList = memo(({ children, title, ...props }) => (
+const DescriptionList = ({ children, title, ...props }) => (
 	<>
 		{title && (
 			<Box display='flex' justifyContent='flex-end' width='30%' paddingInline='x8'>
@@ -14,8 +14,8 @@ const DescriptionList = memo(({ children, title, ...props }) => (
 			<Table.Body>{children}</Table.Body>
 		</Table>
 	</>
-));
+);
 
-export default Object.assign(DescriptionList, {
+export default Object.assign(memo(DescriptionList), {
 	Entry: DescriptionListEntry,
 });
