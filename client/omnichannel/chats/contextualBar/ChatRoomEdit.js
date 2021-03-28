@@ -16,7 +16,6 @@ import { hasAtLeastOnePermission } from '../../../../app/authorization';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import { useMethod } from '../../../contexts/ServerContext';
 import { formsSubscription } from '../../../views/omnichannel/additionalForms';
-import { useUserSubscription } from '../../../contexts/UserContext';
 import { hasPermission } from '../../../../app/authorization/client';
 
 
@@ -62,12 +61,10 @@ const getInitialValuesRoom = (room) => {
 	};
 };
 
-export function RoomEditWithData({ id, reload, close }) {
+export function RoomEditWithData({ id, reload, close, hasEditAccess }) {
 	const t = useTranslation();
 
 	const { value: roomData, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
-	const subscription = useUserSubscription(id);
-	const hasGlobalEditRoomPermission = hasPermission('save-others-livechat-room-info');
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
@@ -77,7 +74,6 @@ export function RoomEditWithData({ id, reload, close }) {
 		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
 	}
 
-	const hasEditAccess = !!subscription || hasGlobalEditRoomPermission;
 	if (!hasEditAccess) {
 		return <Box mbs='x16'>{t('Not_authorized')}</Box>;
 	}
@@ -113,6 +109,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 	const { values, handlers } = useForm(getInitialValuesUser(visitor));
 	const { values: valuesRoom, handlers: handlersRoom } = useForm(getInitialValuesRoom(room));
 	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+	const canViewTags = hasPermission('manage-livechat-tags');
 
 	const {
 		handleName,
@@ -276,12 +273,12 @@ export function RoomEdit({ room, visitor, reload, close }) {
 					<TextInput flexGrow={1} value={topic} onChange={handleTopic} />
 				</Field.Row>
 			</Field>
-			<Field>
+			{ canViewTags && <Field>
 				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
 				<Field.Row>
 					<Tags value={Object.values(tags)} handler={handleTags} />
 				</Field.Row>
-			</Field>
+			</Field>}
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
