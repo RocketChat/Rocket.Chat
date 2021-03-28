@@ -218,8 +218,12 @@ export default ({
 			if (result < 1) {
 				throw new Error(t('No_messages_found_to_prune'));
 			}
-
-			dispatchToastMessage({ type: 'success', message: `${ result } ${ t('messages_pruned') }` });
+			if (result === 1) {
+				dispatchToastMessage({ type: 'success', message: `${ result } ${ t('message_pruned') }` });
+			} else {
+				dispatchToastMessage({ type: 'success', message: `${ result } ${ t('messages_pruned') }` });
+			}
+			
 			closeModal();
 			reset();
 		} catch (error) {
