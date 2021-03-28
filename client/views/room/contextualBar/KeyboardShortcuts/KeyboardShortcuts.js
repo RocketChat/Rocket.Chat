@@ -1,21 +1,10 @@
-import { Box, Divider } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo } from 'react';
+import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import ShortcutSection from './ShortcutSection';
 
-const ShortcutSection = ({ title, command }) => (
-	<Box is='section' mb='x16'>
-		<Box fontScale='p2' fontWeight='700'>
-			{title}
-		</Box>
-		<Divider />
-		<Box fontScale='p1'>{command}</Box>
-	</Box>
-);
-
-export const KeyboardShortcuts = ({ handleClose }) => {
+const KeyboardShortcuts = ({ handleClose }) => {
 	const t = useTranslation();
 
 	return (
@@ -63,7 +52,4 @@ export const KeyboardShortcuts = ({ handleClose }) => {
 	);
 };
 
-export default memo(({ tabBar }) => {
-	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
-	return <KeyboardShortcuts handleClose={handleClose} />;
-});
+export default KeyboardShortcuts;
