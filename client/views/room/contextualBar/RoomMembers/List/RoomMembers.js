@@ -29,7 +29,7 @@ import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import UserInfoWithData from '../../UserInfo';
 import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
-import AddUsers from '../AddUsers/AddUsers';
+import AddUsers from '../AddUsers';
 import WrappedInviteUsers from '../InviteUsers/WrappedInviteUsers';
 import { MemberItem } from './components/MemberItem';
 

@@ -49,7 +49,7 @@ const MenuItem = memo(({ _id, name, url, onClickDelete }) => {
 	return <Menu options={menuOptions} />;
 });
 
-export const FileItem = ({
+const FileItem = ({
 	_id,
 	name,
 	url,
