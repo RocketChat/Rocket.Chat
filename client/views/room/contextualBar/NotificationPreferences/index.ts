@@ -1,1 +1,1 @@
-export { default } from './NotificationPreferences';
+export { default } from './NotificationPreferencesWithData';
