@@ -7,9 +7,9 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditChannelWithData from '../../room/contextualBar/Info/EditRoomInfo/EditRoomInfo.js';
-import TeamsInfo from './TeamsInfo';
+import TeamsInfoWithLogic from './TeamsInfoWithLogic';
 
-export default function TeamsInfoWithRooms({ rid }) {
+function TeamsInfoWithRooms({ rid }) {
 	const [editing, setEditing] = useState(false);
 	const onClickBack = useMutableCallback(() => setEditing(false));
 	const t = useTranslation();
@@ -39,6 +39,8 @@ export default function TeamsInfoWithRooms({ rid }) {
 	return editing ? (
 		<EditChannelWithData onClickBack={onClickBack} rid={rid} />
 	) : (
-		<TeamsInfo openEditing={setEditing} room={value.room} />
+		<TeamsInfoWithLogic openEditing={setEditing} room={value.room} />
 	);
 }
+
+export default TeamsInfoWithRooms;
