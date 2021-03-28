@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import { useEditableSettingsGroupSections } from '../../../../contexts/EditableSettingsContext';
 import GroupPage from '../GroupPage';
-import { Section } from '../Section';
+import Section from '../Section';
 
 function GenericGroupPage({ _id, ...group }) {
 	const sections = useEditableSettingsGroupSections(_id);

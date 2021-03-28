@@ -1,4 +1,4 @@
-import { Accordion, Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
+import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, memo } from 'react';
 
@@ -11,7 +11,7 @@ import { useSettingsDispatch, useSettings } from '../../../contexts/SettingsCont
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation, useLoadLanguage } from '../../../contexts/TranslationContext';
 import { useUser } from '../../../contexts/UserContext';
-import { Section } from './Section';
+import GroupPageSkeleton from './GroupPageSkeleton';
 
 function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription }) {
 	const changedEditableSettings = useEditableSettings(
@@ -147,34 +147,6 @@ function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription })
 					<Accordion className='page-settings'>{children}</Accordion>
 				</Box>
 			</Page.ScrollableContentWithShadow>
-		</Page>
-	);
-}
-
-function GroupPageSkeleton() {
-	const t = useTranslation();
-
-	return (
-		<Page>
-			<Page.Header title={<Skeleton style={{ width: '20rem' }} />}>
-				<ButtonGroup>
-					<Button children={t('Save_changes')} disabled primary />
-				</ButtonGroup>
-			</Page.Header>
-
-			<Page.Content>
-				<Box style={useMemo(() => ({ margin: '0 auto', width: '100%', maxWidth: '590px' }), [])}>
-					<Box is='p' color='hint' fontScale='p1'>
-						<Skeleton />
-						<Skeleton />
-						<Skeleton width='75%' />
-					</Box>
-
-					<Accordion className='page-settings'>
-						<Section.Skeleton />
-					</Accordion>
-				</Box>
-			</Page.Content>
 		</Page>
 	);
 }

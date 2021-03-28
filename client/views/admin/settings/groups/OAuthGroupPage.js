@@ -8,7 +8,7 @@ import { useAbsoluteUrl, useMethod } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import GroupPage from '../GroupPage';
-import { Section } from '../Section';
+import Section from '../Section';
 
 function OAuthGroupPage({ _id, ...group }) {
 	const sections = useEditableSettingsGroupSections(_id);

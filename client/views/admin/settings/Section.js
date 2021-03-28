@@ -1,4 +1,4 @@
-import { Accordion, Box, Button, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
+import { Accordion, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
@@ -7,9 +7,10 @@ import {
 	useEditableSettingsDispatch,
 } from '../../../contexts/EditableSettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import SectionSkeleton from './SectionSkeleton';
 import { Setting } from './Setting';
 
-export function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
+function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
 	const editableSettings = useEditableSettings(
 		useMemo(
 			() => ({
@@ -87,20 +88,6 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 	);
 }
 
-export function SectionSkeleton() {
-	return (
-		<Accordion.Item noncollapsible title={<Skeleton />}>
-			<Box is='p' color='hint' fontScale='p1'>
-				<Skeleton />
-			</Box>
-
-			<FieldGroup>
-				{Array.from({ length: 10 }).map((_, i) => (
-					<Setting.Skeleton key={i} />
-				))}
-			</FieldGroup>
-		</Accordion.Item>
-	);
-}
-
-Section.Skeleton = SectionSkeleton;
+export default Object.assign(Section, {
+	Skeleton: SectionSkeleton,
+});

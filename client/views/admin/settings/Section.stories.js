@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Section } from './Section';
+import Section from './Section';
 
 export default {
 	title: 'admin/settings/Section',
