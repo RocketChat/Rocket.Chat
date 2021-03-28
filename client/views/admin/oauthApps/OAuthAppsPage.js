@@ -5,9 +5,9 @@ import Page from '../../../components/Page';
 // import VerticalBar from '../../components/VerticalBar';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import EditOauthAppWithData from './EditOauthAppWithData';
 import OAuthAddApp from './OAuthAddApp';
 import OAuthAppsTable from './OAuthAppsTable';
-import OAuthEditAppWithData from './OAuthEditApp';
 
 export function OAuthAppsPage() {
 	const t = useTranslation();
@@ -36,7 +36,7 @@ export function OAuthAppsPage() {
 				</Page.Header>
 				<Page.Content>
 					{!context && <OAuthAppsTable />}
-					{context === 'edit' && <OAuthEditAppWithData _id={id} />}
+					{context === 'edit' && <EditOauthAppWithData _id={id} />}
 					{context === 'new' && <OAuthAddApp />}
 				</Page.Content>
 			</Page>
