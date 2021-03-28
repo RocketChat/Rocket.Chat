@@ -4,7 +4,7 @@ import React from 'react';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useRoute } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { ChatInfo } from './ChatInfo';
+import ChatInfo from './ChatInfo';
 
 const PATH = 'live';
 

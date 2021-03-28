@@ -1,10 +1,9 @@
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { kitContext, modalParser } from '@rocket.chat/fuselage-ui-kit';
+import { kitContext } from '@rocket.chat/fuselage-ui-kit';
 import React, { useEffect, useReducer, useState } from 'react';
 
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
-import { renderMessageBody } from '../../lib/renderMessageBody';
 import ModalBlock from './ModalBlock';
 import './textParsers';
 
@@ -185,11 +184,3 @@ function ConnectedModalBlock(props) {
 }
 
 export default ConnectedModalBlock;
-
-// TODO: move this to fuselage-ui-kit itself
-modalParser.plainText = ({ text } = {}) => text;
-
-// TODO: move this to fuselage-ui-kit itself
-modalParser.mrkdwn = ({ text }) => (
-	<span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />
-);

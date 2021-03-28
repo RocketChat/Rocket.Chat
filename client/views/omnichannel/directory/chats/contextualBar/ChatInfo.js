@@ -1,88 +1,22 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Margins, Tag, Avatar, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Margins, Tag, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
 import React from 'react';
 
-import { roomTypes } from '../../../../../../app/utils/client';
-import UserCard from '../../../../../components/UserCard';
-import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useRoute } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { FormSkeleton } from '../../Skeleton';
+import AgentField from './AgentField';
+import ContactField from './ContactField';
+import DepartmentField from './DepartmentField';
+import Info from './Info';
+import Label from './Label';
 
-const wordBreak = css`
-	word-break: break-word;
-`;
-const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
-const Info = ({ className, ...props }) => (
-	<UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props} />
-);
-
-const DepartmentField = ({ departmentId }) => {
-	const t = useTranslation();
-	const { value: data, phase: state } = useEndpointData(`livechat/department/${departmentId}`);
-	if (state === AsyncStatePhase.LOADING) {
-		return <FormSkeleton />;
-	}
-	const {
-		department: { name },
-	} = data || { department: {} };
-	return (
-		<>
-			<Label>{t('Department')}</Label>
-			<Info>{name}</Info>
-		</>
-	);
-};
-
-const ContactField = ({ contact, room }) => {
-	const t = useTranslation();
-	const { username, status } = contact;
-	const { fname, t: type } = room;
-	const avatarUrl = roomTypes.getConfig(type).getAvatarPath(room);
-
-	return (
-		<>
-			<Label>{t('Contact')}</Label>
-			<Info style={{ display: 'flex' }}>
-				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<UserCard.Username mis='x10' name={username} status={<UserStatus status={status} />} />
-			</Info>
-		</>
-	);
-};
-
-const AgentField = ({ agent }) => {
-	const t = useTranslation();
-	const { username } = agent;
-	const { value, phase: state } = useEndpointData(`users.info?username=${username}`);
-
-	if (state === AsyncStatePhase.LOADING) {
-		return <FormSkeleton />;
-	}
-
-	const {
-		user: { status },
-	} = value || { user: {} };
-
-	return (
-		<>
-			<Label>{t('Agent')}</Label>
-			<Info style={{ display: 'flex' }}>
-				<UserAvatar size='x40' title={username} username={username} />
-				<UserCard.Username mis='x10' name={username} status={<UserStatus status={status} />} />
-			</Info>
-		</>
-	);
-};
-
-export function ChatInfo({ id, route }) {
+function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
@@ -189,3 +123,5 @@ export function ChatInfo({ id, route }) {
 		</>
 	);
 }
+
+export default ChatInfo;
