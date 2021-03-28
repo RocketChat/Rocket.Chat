@@ -1,6 +1,5 @@
 import {
 	Box,
-	Skeleton,
 	Button,
 	ButtonGroup,
 	TextInput,
@@ -15,16 +14,13 @@ import React, { useState, useMemo } from 'react';
 
 import { roomTypes, RoomSettingsEnum } from '../../../../app/utils/client';
 import DeleteChannelWarning from '../../../components/DeleteChannelWarning';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 
 const getInitialValues = (room) => ({
@@ -43,37 +39,6 @@ const getInitialValues = (room) => ({
 	roomAnnouncement: room.announcement ?? '',
 	roomAvatar: undefined,
 });
-
-export function EditRoomContextBar({ rid }) {
-	const canViewRoomAdministration = usePermission('view-room-administration');
-	return canViewRoomAdministration ? <EditRoomWithData rid={rid} /> : <NotAuthorizedPage />;
-}
-
-function EditRoomWithData({ rid }) {
-	const { value: data = {}, phase: state, error, reload } = useEndpointData(
-		'rooms.adminRooms.getRoom',
-		useMemo(() => ({ rid }), [rid]),
-	);
-
-	if (state === AsyncStatePhase.LOADING) {
-		return (
-			<Box w='full' pb='x24'>
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-				<Skeleton mbe='x4' />
-				<Skeleton mbe='x8' />
-			</Box>
-		);
-	}
-
-	if (state === AsyncStatePhase.REJECTED) {
-		return error.message;
-	}
-
-	return <EditRoom room={{ type: data.t, ...data }} onChange={reload} />;
-}
 
 function EditRoom({ room, onChange }) {
 	const t = useTranslation();
@@ -355,3 +320,5 @@ function EditRoom({ room, onChange }) {
 		</VerticalBar.ScrollableContent>
 	);
 }
+
+export default EditRoom;

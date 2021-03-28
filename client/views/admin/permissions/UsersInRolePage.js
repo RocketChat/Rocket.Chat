@@ -9,7 +9,7 @@ import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import UsersInRoleTable from './UsersInRoleTable';
+import UsersInRoleTableContainer from './UsersInRoleTableContainer';
 
 const UsersInRolePage = ({ data }) => {
 	const t = useTranslation();
@@ -80,7 +80,7 @@ const UsersInRolePage = ({ data }) => {
 				</Box>
 				<Margins blockStart='x8'>
 					{(data.scope === 'Users' || rid) && (
-						<UsersInRoleTable
+						<UsersInRoleTableContainer
 							reloadRef={reload}
 							scope={data.scope}
 							rid={rid}
