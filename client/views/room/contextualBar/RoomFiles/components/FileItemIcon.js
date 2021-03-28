@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-export default memo(({ type }) => {
+const FileItemIcon = ({ type }) => {
 	let icon;
 	switch (type) {
 		case 'application/vnd.ms-excel':
@@ -151,4 +151,6 @@ export default memo(({ type }) => {
 	}
 
 	return <span>{icon}</span>;
-});
+};
+
+export default memo(FileItemIcon);

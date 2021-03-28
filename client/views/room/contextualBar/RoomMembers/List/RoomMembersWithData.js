@@ -5,16 +5,16 @@ import {
 } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useUserRoom } from '../../../contexts/UserContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import AddUsers from '../../room/contextualBar/RoomMembers/AddUsers';
-import InviteUsers from '../../room/contextualBar/RoomMembers/InviteUsers';
-import RoomMembers from '../../room/contextualBar/RoomMembers/List/RoomMembers';
-import UserInfoWithData from '../../room/contextualBar/UserInfo';
-import { useDataWithLoadMore } from '../../room/contextualBar/hooks/useDataWithLoadMore';
-import { useTabBarClose } from '../../room/providers/ToolboxProvider';
+import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
+import { useMethod } from '../../../../../contexts/ServerContext';
+import { useUserRoom } from '../../../../../contexts/UserContext';
+import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
+import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import UserInfoWithData from '../../UserInfo';
+import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
+import AddUsers from '../AddUsers';
+import WrappedInviteUsers from '../InviteUsers/WrappedInviteUsers';
+import RoomMembers from './RoomMembers';
 
 const useGetUsersOfRoom = (params) => {
 	const method = useMethod('getUsersOfRoom');
@@ -24,11 +24,10 @@ const useGetUsersOfRoom = (params) => {
 	);
 };
 
-const TeamMembers = ({ rid }) => {
+const RoomMembersWithData = ({ rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
-
 	room.type = room.t;
 	room.rid = rid;
 
@@ -102,7 +101,7 @@ const TeamMembers = ({ rid }) => {
 	}
 
 	if (state.tab === 'InviteUsers') {
-		return <InviteUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
+		return <WrappedInviteUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
 	}
 
 	if (state.tab === 'AddUsers') {
@@ -129,4 +128,4 @@ const TeamMembers = ({ rid }) => {
 	);
 };
 
-export default TeamMembers;
+export default RoomMembersWithData;

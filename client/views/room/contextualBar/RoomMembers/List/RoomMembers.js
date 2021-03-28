@@ -9,56 +9,16 @@ import {
 	Button,
 	Callout,
 } from '@rocket.chat/fuselage';
-import {
-	useMutableCallback,
-	useDebouncedValue,
-	useLocalStorage,
-	useAutoFocus,
-} from '@rocket.chat/fuselage-hooks';
-import memoize from 'memoize-one';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
-import { useMethod } from '../../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useUserRoom } from '../../../../../contexts/UserContext';
-import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
-import { useTabBarClose } from '../../../providers/ToolboxProvider';
-import UserInfoWithData from '../../UserInfo';
-import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
-import AddUsers from '../AddUsers';
-import WrappedInviteUsers from '../InviteUsers/WrappedInviteUsers';
-import { MemberItem } from './components/MemberItem';
+import DefaultRow from './DefaultRow';
 
-export const createItemData = memoize((onClickView, rid) => ({
-	onClickView,
-	rid,
-}));
-
-const DefaultRow = memo(({ user, data, index }) => {
-	const { onClickView, rid } = data;
-
-	if (!user) {
-		return <RoomMembers.Option.Skeleton />;
-	}
-
-	return (
-		<RoomMembers.Option
-			index={index}
-			username={user.username}
-			_id={user._id}
-			rid={rid}
-			status={user.status}
-			name={user.name}
-			onClickView={onClickView}
-		/>
-	);
-});
-
-export const RoomMembers = ({
+const RoomMembers = ({
 	loading,
 	members = [],
 	text,
@@ -86,7 +46,7 @@ export const RoomMembers = ({
 		[t],
 	);
 
-	const itemData = createItemData(onClickView, rid);
+	const itemData = useMemo(() => ({ onClickView, rid }), [onClickView, rid]);
 	const lm = useMutableCallback((start) =>
 		loadMoreItems(start + 1, Math.min(50, start + 1 - members.length)),
 	);
@@ -202,116 +162,4 @@ export const RoomMembers = ({
 	);
 };
 
-RoomMembers.Option = MemberItem;
-
-const useGetUsersOfRoom = (params) => {
-	const method = useMethod('getUsersOfRoom');
-	return useDataWithLoadMore(
-		useCallback((args) => method(...args), [method]),
-		params,
-	);
-};
-
-export default ({ rid }) => {
-	const [state, setState] = useState({});
-	const onClickClose = useTabBarClose();
-	const room = useUserRoom(rid);
-	room.type = room.t;
-	room.rid = rid;
-
-	const [type, setType] = useLocalStorage('members-list-type', 'online');
-	const [text, setText] = useState('');
-
-	const debouncedText = useDebouncedValue(text, 500);
-	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [
-		rid,
-		type,
-		debouncedText,
-	]);
-
-	const { value, phase, more, error } = useGetUsersOfRoom(params);
-
-	const canAddUsers = useAtLeastOnePermission(
-		useMemo(
-			() => [
-				room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room',
-				'add-user-to-joined-room',
-			],
-			[room.t],
-		),
-		rid,
-	);
-
-	const handleTextChange = useCallback((event) => {
-		setText(event.currentTarget.value);
-	}, []);
-
-	const viewUser = useMutableCallback((e) => {
-		const { username } = e.currentTarget.dataset;
-		setState({
-			tab: 'UserInfo',
-			username,
-		});
-	});
-
-	const createInvite = useMutableCallback(() => {
-		setState({ tab: 'InviteUsers' });
-	});
-
-	const addUser = useMutableCallback(() => {
-		setState({ tab: 'AddUsers' });
-	});
-
-	const handleBack = useCallback(() => setState({}), [setState]);
-
-	const loadMoreItems = useCallback(
-		(start, end) =>
-			more(
-				([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter],
-				(prev, next) => ({
-					total: next.total,
-					finished: next.records.length < 50,
-					records: [...prev.records, ...next.records],
-				}),
-			),
-		[more],
-	);
-
-	if (state.tab === 'UserInfo') {
-		return (
-			<UserInfoWithData
-				rid={rid}
-				onClickClose={onClickClose}
-				onClickBack={handleBack}
-				username={state.username}
-			/>
-		);
-	}
-
-	if (state.tab === 'InviteUsers') {
-		return <WrappedInviteUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
-	}
-
-	if (state.tab === 'AddUsers') {
-		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
-	}
-
-	return (
-		<RoomMembers
-			rid={rid}
-			loading={phase === AsyncStatePhase.LOADING}
-			type={type}
-			text={text}
-			error={error}
-			setType={setType}
-			setText={handleTextChange}
-			members={value?.records}
-			total={value?.total}
-			onClickClose={onClickClose}
-			onClickView={viewUser}
-			onClickAdd={canAddUsers && addUser}
-			onClickInvite={canAddUsers && createInvite}
-			loadMoreItems={loadMoreItems}
-		/>
-	);
-};
+export default RoomMembers;

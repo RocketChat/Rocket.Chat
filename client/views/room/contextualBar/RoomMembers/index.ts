@@ -1,1 +1,1 @@
-export { default } from './List/RoomMembers';
+export { default } from './List/RoomMembersWithData';
