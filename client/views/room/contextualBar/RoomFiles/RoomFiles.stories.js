@@ -1,7 +1,7 @@
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { RoomFiles } from './RoomFiles';
+import RoomFiles from './RoomFiles';
 
 export default {
 	title: 'components/RoomFiles',

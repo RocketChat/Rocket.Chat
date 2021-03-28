@@ -1,59 +1,14 @@
 import { Box, Icon, TextInput, Select, Throbber, Margins } from '@rocket.chat/fuselage';
-import {
-	useMutableCallback,
-	useLocalStorage,
-	useUniqueId,
-	useAutoFocus,
-} from '@rocket.chat/fuselage-hooks';
-import memoize from 'memoize-one';
-import React, { useState, useCallback, useMemo, memo } from 'react';
+import { useUniqueId, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import DeleteFileWarning from '../../../../components/DeleteFileWarning';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useSetModal } from '../../../../contexts/ModalContext';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useUserId } from '../../../../contexts/UserContext';
-import { useRecordList } from '../../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
-import FileItem from './components/FileItem';
-import { useFilesList } from './hooks/useFilesList';
-import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';
+import Row from './Row';
 
-const Row = memo(({ item, data, index }) => {
-	const { userId, onClickDelete, isDeletionAllowed } = data;
-
-	return (
-		item && (
-			<RoomFiles.Item
-				index={index}
-				_id={item._id}
-				name={item.name}
-				url={item.url}
-				uploadedAt={item.uploadedAt}
-				user={item.user}
-				ts={item.ts}
-				type={item.type}
-				typeGroup={item.typeGroup}
-				fileData={item}
-				userId={userId}
-				onClickDelete={onClickDelete}
-				isDeletionAllowed={isDeletionAllowed}
-			/>
-		)
-	);
-});
-
-export const createItemData = memoize((onClickDelete, isDeletionAllowed) => ({
-	onClickDelete,
-	isDeletionAllowed,
-}));
-
-export const RoomFiles = function RoomFiles({
+function RoomFiles({
 	loading,
 	filesItems = [],
 	text,
@@ -82,7 +37,13 @@ export const RoomFiles = function RoomFiles({
 
 	const searchId = useUniqueId();
 
-	const itemData = createItemData(onClickDelete, isDeletionAllowed);
+	const itemData = useMemo(
+		() => ({
+			onClickDelete,
+			isDeletionAllowed,
+		}),
+		[isDeletionAllowed, onClickDelete],
+	);
 
 	return (
 		<>
@@ -139,61 +100,6 @@ export const RoomFiles = function RoomFiles({
 			</VerticalBar.Content>
 		</>
 	);
-};
+}
 
-RoomFiles.Item = FileItem;
-
-export default ({ rid }) => {
-	const uid = useUserId();
-	const onClickClose = useTabBarClose();
-	const t = useTranslation();
-	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal());
-	const dispatchToastMessage = useToastMessageDispatch();
-	const deleteFile = useMethod('deleteFileMessage');
-
-	const [type, setType] = useLocalStorage('file-list-type', 'all');
-	const [text, setText] = useState('');
-
-	const handleTextChange = useCallback((event) => {
-		setText(event.currentTarget.value);
-	}, []);
-
-	const { filesList, loadMoreItems } = useFilesList(
-		useMemo(() => ({ rid, type, text }), [rid, type, text]),
-	);
-	const { phase, items: filesItems, itemCount: totalItemCount } = useRecordList(filesList);
-
-	const handleDelete = useMutableCallback((_id) => {
-		const onConfirm = async () => {
-			try {
-				await deleteFile(_id);
-				dispatchToastMessage({ type: 'success', message: t('Deleted') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-			closeModal();
-		};
-
-		setModal(<DeleteFileWarning onConfirm={onConfirm} onCancel={closeModal} />);
-	}, []);
-
-	const isDeletionAllowed = useMessageDeletionIsAllowed(rid, uid);
-
-	return (
-		<RoomFiles
-			rid={rid}
-			loading={phase === AsyncStatePhase.LOADING}
-			type={type}
-			text={text}
-			loadMoreItems={loadMoreItems}
-			setType={setType}
-			setText={handleTextChange}
-			filesItems={filesItems}
-			total={totalItemCount}
-			onClickClose={onClickClose}
-			onClickDelete={handleDelete}
-			isDeletionAllowed={isDeletionAllowed}
-		/>
-	);
-};
+export default RoomFiles;

@@ -1,1 +1,1 @@
-export { default } from './RoomFiles';
+export { default } from './RoomFilesWithData';

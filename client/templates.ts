@@ -184,7 +184,7 @@ createTemplateForComponent(
 
 createTemplateForComponent(
 	'channelFilesList',
-	() => import('./views/room/contextualBar/RoomFiles/RoomFiles'),
+	() => import('./views/room/contextualBar/RoomFiles'),
 	{
 		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
 	},
