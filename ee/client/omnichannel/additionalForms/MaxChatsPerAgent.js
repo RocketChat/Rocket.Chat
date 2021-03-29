@@ -2,20 +2,6 @@ import { NumberInput, Field } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useForm } from '../../../../client/hooks/useForm';
-
-const MaxChatsPerAgentContainer = ({
-	data: { livechat: { maxNumberSimultaneousChat = '' } = {} } = {},
-	onChange,
-}) => {
-	const { values, handlers, hasUnsavedChanges, commit, reset } = useForm({
-		maxNumberSimultaneousChat,
-	});
-
-	onChange({ values, hasUnsavedChanges, commit, reset });
-
-	return <MaxChatsPerAgent values={values} handlers={handlers} />;
-};
 
 const MaxChatsPerAgent = ({ values, handlers }) => {
 	const t = useTranslation();
@@ -36,4 +22,4 @@ const MaxChatsPerAgent = ({ values, handlers }) => {
 	);
 };
 
-export default MaxChatsPerAgentContainer;
+export default MaxChatsPerAgent;

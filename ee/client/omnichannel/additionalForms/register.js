@@ -10,10 +10,10 @@ hasLicense('livechat-enterprise').then((enabled) => {
 
 	registerForm({
 		useCustomFieldsAdditionalForm: () =>
-			useMemo(() => lazy(() => import('./CustomFieldsAdditionalForm')), []),
+			useMemo(() => lazy(() => import('./CustomFieldsAdditionalFormContainer')), []),
 	});
 	registerForm({
-		useMaxChatsPerAgent: () => useMemo(() => lazy(() => import('./MaxChatsPerAgent')), []),
+		useMaxChatsPerAgent: () => useMemo(() => lazy(() => import('./MaxChatsPerAgentContainer')), []),
 	});
 	registerForm({
 		useMaxChatsPerAgentDisplay: () =>

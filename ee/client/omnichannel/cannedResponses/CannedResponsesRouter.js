@@ -3,63 +3,18 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useState } from 'react';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
-import { useMethod } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import CannedResponseAdd from './CannedResponseAdd';
 import CannedResponseDetails from './CannedResponseDetails';
 import CannedResponseEdit from './CannedResponseEdit';
 import CannedResponsesList from './CannedResponsesList';
-import { useCannedResponses } from './useCannedResponses';
+import { withData } from './withData';
 
 const PAGES = {
 	List: 'list',
 	Details: 'details',
 	Edit: 'edit',
 	Add: 'add',
-};
-
-const withData = (WrappedComponent) => ({ departmentId, onClose }) => {
-	const [filter, setFilter] = useState('');
-	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
-
-	const handleFilter = useMutableCallback((e) => {
-		setFilter(e.currentTarget.value);
-	});
-
-	const responses = useCannedResponses(filter, departmentId);
-
-	const save = useMethod('saveCannedResponse');
-
-	const onSave = useMutableCallback(async (data, _id) => {
-		try {
-			await save(_id, {
-				...data,
-				...(departmentId && {
-					departmentId,
-					scope: 'department',
-				}),
-				...(!departmentId && {
-					scope: 'user',
-				}),
-			});
-
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
-	return (
-		<WrappedComponent
-			onChangeFilter={handleFilter}
-			filter={filter}
-			onClose={onClose}
-			responses={responses}
-			onSave={onSave}
-		/>
-	);
 };
 
 const useHandlePage = (page, setCurrentPage) =>
