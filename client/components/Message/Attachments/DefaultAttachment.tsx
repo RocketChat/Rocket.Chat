@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { AttachmentProps } from '.';
 import MarkdownText from '../../MarkdownText';
 import { ActionAttachment, ActionAttachmentProps } from './ActionAttachtment';
-import { Attachment } from './Attachment';
+import Attachment from './Attachment';
 import { FieldsAttachment, FieldsAttachmentProps } from './FieldsAttachment';
 import { Dimensions } from './components/Image';
 import { useCollapse } from './hooks/useCollapse';

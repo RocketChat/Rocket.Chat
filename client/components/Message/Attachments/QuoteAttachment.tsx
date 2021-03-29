@@ -6,7 +6,8 @@ import React, { FC } from 'react';
 import Attachments from '.';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import MarkdownText from '../../MarkdownText';
-import { Attachment, AttachmentPropsBase } from './Attachment';
+import Attachment from './Attachment';
+import { AttachmentPropsBase } from './Attachment/AttachmentPropsBase';
 
 export type QuoteAttachmentProps = {
 	author_name: string;

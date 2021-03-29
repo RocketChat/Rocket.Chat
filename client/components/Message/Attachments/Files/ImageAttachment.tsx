@@ -2,7 +2,8 @@ import React, { FC } from 'react';
 
 import { FileProp } from '..';
 import MarkdownText from '../../../MarkdownText';
-import { Attachment, AttachmentPropsBase } from '../Attachment';
+import Attachment from '../Attachment';
+import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
 import Image, { Dimensions } from '../components/Image';
 import { useMediaUrl } from '../context/AttachmentContext';
 import { useCollapse } from '../hooks/useCollapse';

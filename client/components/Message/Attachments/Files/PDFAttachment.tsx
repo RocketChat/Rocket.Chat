@@ -3,7 +3,8 @@ import React, { FC } from 'react';
 import { FileProp } from '..';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import MarkdownText from '../../../MarkdownText';
-import { Attachment, AttachmentPropsBase } from '../Attachment';
+import Attachment from '../Attachment';
+import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
 import { useCollapse } from '../hooks/useCollapse';
 
 export type PDFAttachmentProps = {

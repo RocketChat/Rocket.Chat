@@ -1,7 +1,7 @@
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import { Attachment } from '../Attachment';
+import Attachment from '../Attachment';
 import { useAttachmentIsCollapsedByDefault } from '../context/AttachmentContext';
 
 export const useCollapse = (attachmentCollapsed: boolean): [boolean, JSX.Element] => {
