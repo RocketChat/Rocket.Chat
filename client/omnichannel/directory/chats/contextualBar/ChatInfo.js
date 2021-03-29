@@ -3,6 +3,7 @@ import moment from 'moment';
 import { Box, Margins, Tag, Avatar, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import UAParser from 'ua-parser-js';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import UserCard from '../../../../components/UserCard';
@@ -104,6 +105,35 @@ const PriorityField = ({ id }) => {
 	</>;
 };
 
+const VisitorClientInfo = ({ uid }) => {
+	const t = useTranslation();
+	const { value: userData, phase: state, error } = useEndpointData(`livechat/visitors.info?visitorId=${ uid }`);
+	if (state === AsyncStatePhase.LOADING) {
+		return <FormSkeleton />;
+	}
+
+	if (error || !userData || !userData.userAgent) {
+		return null;
+	}
+
+	const clientData = {};
+	const ua = new UAParser();
+	ua.setUA(userData.userAgent);
+	clientData.os = `${ ua.getOS().name } ${ ua.getOS().version }`;
+	clientData.browser = `${ ua.getBrowser().name } ${ ua.getBrowser().version }`;
+
+	return <>
+		{clientData.os && <>
+			<Label>{t('OS')}</Label>
+			<Info>{clientData.os}</Info>
+		</>}
+		{clientData.browser && <>
+			<Label>{t('Browser')}</Label>
+			<Info>{clientData.browser}</Info>
+		</>}
+	</>;
+};
+
 export function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
@@ -115,6 +145,7 @@ export function ChatInfo({ id, route }) {
 	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, livechatData, priorityId } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
+	const visitorId = v?._id;
 
 	useEffect(() => {
 		if (allCustomFields) {
@@ -152,6 +183,7 @@ export function ChatInfo({ id, route }) {
 		<VerticalBar.ScrollableContent p='x24'>
 			<Margins block='x4'>
 				<ContactField contact={v} room={data.room} />
+				{visitorId && <VisitorClientInfo uid={visitorId}/>}
 				{servedBy && <AgentField agent={servedBy} />}
 				{ departmentId && <DepartmentField departmentId={departmentId} /> }
 				{tags && tags.length > 0 && <>
