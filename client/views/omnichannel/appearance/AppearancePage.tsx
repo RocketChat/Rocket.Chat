@@ -1,17 +1,12 @@
-import { Callout, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC } from 'react';
 
 import { ISetting } from '../../../../definition/ISetting';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
-import PageSkeleton from '../../../components/PageSkeleton';
-import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import AppearanceForm from './AppearanceForm';
 
@@ -44,35 +39,6 @@ const reduceAppearance = (settings: ISetting[]): AppearanceSettings =>
 		acc = { ...acc, [_id]: value };
 		return acc;
 	}, {});
-
-const AppearancePageContainer: FC = () => {
-	const t = useTranslation();
-
-	const { value: data, phase: state, error } = useEndpointData('livechat/appearance');
-
-	const canViewAppearance = usePermission('view-livechat-appearance');
-
-	if (!canViewAppearance) {
-		return <NotAuthorizedPage />;
-	}
-
-	if (state === AsyncStatePhase.LOADING) {
-		return <PageSkeleton />;
-	}
-
-	if (!data || !data.success || !data.appearance || error) {
-		return (
-			<Page>
-				<Page.Header title={t('Edit_Custom_Field')} />
-				<Page.ScrollableContentWithShadow>
-					<Callout type='danger'>{t('Error')}</Callout>
-				</Page.ScrollableContentWithShadow>
-			</Page>
-		);
-	}
-
-	return <AppearancePage settings={data.appearance} />;
-};
 
 type AppearancePageProps = {
 	settings: ISetting[];
@@ -125,4 +91,4 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 	);
 };
 
-export default AppearancePageContainer;
+export default AppearancePage;

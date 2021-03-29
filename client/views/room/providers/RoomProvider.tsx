@@ -5,7 +5,7 @@ import { IRoom } from '../../../../definition/IRoom';
 import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { RoomContext } from '../contexts/RoomContext';
 import { useUserRoom } from '../hooks/useUserRoom';
-import { ToolboxProvider } from './ToolboxProvider';
+import ToolboxProvider from './ToolboxProvider';
 
 const fields = {};
 

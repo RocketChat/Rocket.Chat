@@ -31,7 +31,7 @@ registerOmnichannelRoute('/customfields/:context?/:id?', {
 
 registerOmnichannelRoute('/appearance', {
 	name: 'omnichannel-appearance',
-	lazyRouteComponent: () => import('./appearance/AppearancePage'),
+	lazyRouteComponent: () => import('./appearance/AppearancePageContainer'),
 });
 
 registerOmnichannelRoute('/businessHours/:context?/:type?/:id?', {

@@ -6,7 +6,6 @@ import React, {
 	useState,
 	useCallback,
 	useLayoutEffect,
-	memo,
 } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
@@ -17,53 +16,7 @@ import { useUserId } from '../../../contexts/UserContext';
 import { ToolboxContext, ToolboxEventHandler } from '../lib/Toolbox/ToolboxContext';
 import { Store } from '../lib/Toolbox/generator';
 import { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
-
-const groupsDict = {
-	l: 'live',
-	d: 'direct',
-	p: 'group',
-	c: 'channel',
-};
-
-const getGroup = (room: IRoom): string => {
-	if (room.teamMain) {
-		return 'team';
-	}
-
-	return groupsDict[room.t];
-};
-
-const VirtualAction = memo(
-	({
-		handleChange,
-		room,
-		action,
-		id,
-	}: {
-		id: string;
-		action: ToolboxAction;
-		room: IRoom;
-		handleChange: Function;
-	}): null => {
-		const config = typeof action === 'function' ? action({ room }) : action;
-
-		const group = getGroup(room);
-
-		const visible =
-			config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
-
-		useLayoutEffect(() => {
-			handleChange((list: Store<ToolboxAction>) => {
-				visible && config ? list.get(id) !== config && list.set(id, config) : list.delete(id);
-			});
-			return (): void => {
-				handleChange((list: Store<ToolboxAction>) => list.delete(id));
-			};
-		}, [config, visible, handleChange, id]);
-
-		return null;
-	},
-);
+import VirtualAction from './VirtualAction';
 
 const useToolboxActions = (
 	room: IRoom,
@@ -83,13 +36,7 @@ const useToolboxActions = (
 	return { listen, actions: state };
 };
 
-export const ToolboxProvider = ({
-	children,
-	room,
-}: {
-	children: ReactNode;
-	room: IRoom;
-}): JSX.Element => {
+const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom }): JSX.Element => {
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const uid = useUserId();
 	const [activeTabBar, setActiveTabBar] = useState<[ToolboxActionConfig | undefined, string?]>([
@@ -196,3 +143,5 @@ export const useTab = (): ToolboxActionConfig | undefined =>
 export const useTabBarOpen = (): Function => useContext(ToolboxContext).open;
 export const useTabBarClose = (): Function => useContext(ToolboxContext).close;
 export const useTabBarOpenUserInfo = (): Function => useContext(ToolboxContext).openUserInfo;
+
+export default ToolboxProvider;
