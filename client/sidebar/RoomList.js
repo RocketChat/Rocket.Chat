@@ -222,6 +222,9 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 	if (prevProps.room.v?.status !== nextProps.room.v?.status) {
 		return false;
 	}
+	if (prevProps.room.teamMain !== nextProps.room.teamMain) {
+		return false;
+	}
 
 	return true;
 });

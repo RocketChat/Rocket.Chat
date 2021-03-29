@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -9,7 +9,7 @@ import DeleteTeamModal from './Delete';
 import LeaveTeamModal from './Leave';
 import InfoPanel, { RetentionPolicyCallout } from '../../InfoPanel';
 import { roomTypes, UiTextContext } from '../../../../app/utils';
-import { useTabBarClose } from '../../room/providers/ToolboxProvider';
+import { useTabBarClose, useTabBarOpen } from '../../room/providers/ToolboxProvider';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { GenericModalDoNotAskAgain } from '../../../components/GenericModal';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -50,6 +50,7 @@ export const TeamsInfo = ({
 	onClickLeave,
 	onClickEdit,
 	onClickDelete,
+	onClickViewChannels,
 }) => {
 	const t = useTranslation();
 
@@ -159,12 +160,12 @@ export const TeamsInfo = ({
 							<InfoPanel.Text withTruncatedText={false}>{topic}</InfoPanel.Text>
 						</InfoPanel.Field>}
 
-						<InfoPanel.Field>
+						{onClickViewChannels && <InfoPanel.Field>
 							<InfoPanel.Label>{t('Teams_channels')}</InfoPanel.Label>
 							<InfoPanel.Text>
-								<Button small>{t('View_channels')}</Button>
+								<Button onClick={onClickViewChannels} small>{t('View_channels')}</Button>
 							</InfoPanel.Text>
-						</InfoPanel.Field>
+						</InfoPanel.Field>}
 
 						{retentionPolicyEnabled && (
 							<RetentionPolicyCallout filesOnlyDefault={filesOnlyDefault} excludePinnedDefault={excludePinnedDefault} maxAgeDefault={maxAgeDefault} />
@@ -182,6 +183,7 @@ export default function TeamsInfoWithLogic({
 	openEditing,
 }) {
 	const onClickClose = useTabBarClose();
+	const openTabbar = useTabBarOpen();
 	const t = useTranslation();
 
 	room.type = room.t;
@@ -273,6 +275,8 @@ export default function TeamsInfoWithLogic({
 		</ GenericModalDoNotAskAgain>);
 	});
 
+	const onClickViewChannels = useCallback(() => openTabbar('team-channels'), [openTabbar]);
+
 	return (
 		<TeamsInfo
 			archived={archived}
@@ -284,6 +288,7 @@ export default function TeamsInfoWithLogic({
 			onClickDelete={canDelete && onClickDelete}
 			onClickLeave={/* canLeave && */onClickLeave}
 			onClickHide={/* joined && */handleHide}
+			onClickViewChannels={onClickViewChannels}
 			{...room}
 			announcement={room.announcement && <MarkdownText content={room.announcement}/>}
 			description={room.description && <MarkdownText content={room.description}/>}
