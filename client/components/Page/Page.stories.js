@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, Tile } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { fullHeightDecorator } from '../../.storybook/decorators';
-import Page from './Page';
+import Page from '.';
+import { fullHeightDecorator } from '../../../.storybook/decorators';
 
 export default {
 	title: 'components/Page',
