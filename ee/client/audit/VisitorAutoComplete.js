@@ -5,7 +5,7 @@ import { useEndpointData } from '../../../client/hooks/useEndpointData';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
-const VisitorAutoComplete = memo((props) => {
+const VisitorAutoComplete = (props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'livechat/visitors.autocomplete',
@@ -25,6 +25,6 @@ const VisitorAutoComplete = memo((props) => {
 			options={options}
 		/>
 	);
-});
+};
 
-export default VisitorAutoComplete;
+export default memo(VisitorAutoComplete);

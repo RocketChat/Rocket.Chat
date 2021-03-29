@@ -1,16 +1,12 @@
-import { AutoComplete, Option, Options } from '@rocket.chat/fuselage';
+import { AutoComplete, Option } from '@rocket.chat/fuselage';
 import React, { memo, useMemo, useState } from 'react';
 
-import RoomAvatar from '../../../client/components/avatar/RoomAvatar';
-import { useEndpointData } from '../../../client/hooks/useEndpointData';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import Avatar from './Avatar';
 
 const query = (name = '') => ({ selector: JSON.stringify({ name }) });
 
-const Avatar = ({ value, type, avatarETag, ...props }) => (
-	<RoomAvatar size={Options.AvatarSize} room={{ type, _id: value, avatarETag }} {...props} />
-);
-
-const RoomAutoComplete = memo((props) => {
+const RoomAutoComplete = (props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'rooms.autocomplete.channelAndPrivate',
@@ -49,6 +45,6 @@ const RoomAutoComplete = memo((props) => {
 			options={options}
 		/>
 	);
-});
+};
 
-export default RoomAutoComplete;
+export default memo(RoomAutoComplete);

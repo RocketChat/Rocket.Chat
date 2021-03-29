@@ -1,17 +1,14 @@
-import { AutoComplete, Box, Option, Options, Chip } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
-import UserAvatar from '../../../client/components/avatar/UserAvatar';
-import { useEndpointData } from '../../../client/hooks/useEndpointData';
+import UserAvatar from '../../../../client/components/avatar/UserAvatar';
+import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import Avatar from './Avatar';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
-const Avatar = ({ value, ...props }) => (
-	<UserAvatar size={Options.AvatarSize} username={value} {...props} />
-);
-
-const UserAutoCompleteMultiple = memo((props) => {
+const UserAutoCompleteMultiple = (props) => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const { value: data } = useEndpointData(
@@ -49,6 +46,6 @@ const UserAutoCompleteMultiple = memo((props) => {
 			options={options}
 		/>
 	);
-});
+};
 
-export default UserAutoCompleteMultiple;
+export default memo(UserAutoCompleteMultiple);
