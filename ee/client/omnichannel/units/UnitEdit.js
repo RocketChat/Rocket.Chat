@@ -1,128 +1,15 @@
-import {
-	Field,
-	TextInput,
-	Button,
-	Box,
-	MultiSelect,
-	Callout,
-	Select,
-	Margins,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Box, MultiSelect, Select, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
-import { FormSkeleton } from '../../../../client/components/Skeleton';
 import VerticalBar from '../../../../client/components/VerticalBar';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
 
-export function UnitEditWithData({ unitId, reload, allUnits }) {
-	const query = useMemo(() => ({ unitId }), [unitId]);
-	const { value: data, phase: state, error } = useEndpointData('livechat/units.getOne', query);
-	const {
-		value: availableDepartments,
-		phase: availableDepartmentsState,
-		error: availableDepartmentsError,
-	} = useEndpointData('livechat/department');
-	const {
-		value: availableMonitors,
-		phase: availableMonitorsState,
-		error: availableMonitorsError,
-	} = useEndpointData('livechat/monitors.list');
-	const {
-		value: unitMonitors,
-		phase: unitMonitorsState,
-		error: unitMonitorsError,
-	} = useEndpointData('livechat/unitMonitors.list', query);
-
-	const t = useTranslation();
-
-	if (
-		[state, availableDepartmentsState, availableMonitorsState, unitMonitorsState].includes(
-			AsyncStatePhase.LOADING,
-		)
-	) {
-		return <FormSkeleton />;
-	}
-
-	if (error || availableDepartmentsError || availableMonitorsError || unitMonitorsError) {
-		return (
-			<Callout m='x16' type='danger'>
-				{t('Not_Available')}
-			</Callout>
-		);
-	}
-
-	const filteredDepartments = {
-		departments: availableDepartments.departments.filter(
-			(department) =>
-				!allUnits ||
-				!allUnits.units ||
-				!department.ancestors ||
-				department.ancestors[0] === unitId ||
-				!allUnits.units.find((unit) => unit._id === department.ancestors[0]),
-		),
-	};
-
-	return (
-		<UnitEdit
-			unitId={unitId}
-			data={data}
-			availableDepartments={filteredDepartments}
-			availableMonitors={availableMonitors}
-			unitMonitors={unitMonitors}
-			reload={reload}
-		/>
-	);
-}
-
-export function UnitNew({ reload, allUnits }) {
-	const t = useTranslation();
-
-	const {
-		value: availableDepartments,
-		phase: availableDepartmentsState,
-		error: availableDepartmentsError,
-	} = useEndpointData('livechat/department');
-	const {
-		value: availableMonitors,
-		phase: availableMonitorsState,
-		error: availableMonitorsError,
-	} = useEndpointData('livechat/monitors.list');
-
-	if ([availableDepartmentsState, availableMonitorsState].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
-	}
-
-	if (availableDepartmentsError || availableMonitorsError) {
-		return <Box mbs='x16'>{t('Not_found')}</Box>;
-	}
-
-	const filteredDepartments = {
-		departments: availableDepartments.departments.filter(
-			(department) =>
-				!allUnits ||
-				!allUnits.units ||
-				!department.ancestors ||
-				!allUnits.units.find((unit) => unit._id === department.ancestors[0]),
-		),
-	};
-	return (
-		<UnitEdit
-			reload={reload}
-			isNew
-			availableDepartments={filteredDepartments}
-			availableMonitors={availableMonitors}
-		/>
-	);
-}
-
-export function UnitEdit({
+function UnitEdit({
 	data,
 	unitId,
 	isNew,
@@ -326,3 +213,5 @@ export function UnitEdit({
 		</VerticalBar.ScrollableContent>
 	);
 }
+
+export default UnitEdit;
