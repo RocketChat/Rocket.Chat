@@ -1,6 +1,8 @@
 import React from 'react';
 
-import Metrics, { Reply, Content } from '.';
+import Content from './Content';
+import Reply from './Reply';
+import Metrics from './index';
 
 export default {
 	title: 'components/Message/Metrics',

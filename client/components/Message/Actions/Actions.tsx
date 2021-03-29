@@ -1,8 +1,8 @@
 import { IconProps, ButtonGroup } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { Content } from '..';
 import { TranslationKey } from '../../../contexts/TranslationContext';
+import Content from '../Metrics/Content';
 import Action from './Action';
 
 type RunAction = () => void;

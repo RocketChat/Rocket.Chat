@@ -1,12 +1,14 @@
 import React, { useCallback, FC } from 'react';
 
-import Metrics, { Reply, Content } from '..';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import * as NotificationStatus from '../NotificationStatus';
 import { followStyle, anchor } from '../helpers/followSyle';
 import { useBlockRendered } from '../hooks/useBlockRendered';
+import Content from './Content';
+import Reply from './Reply';
+import Metrics from './index';
 
 type ThreadReplyOptions = {
 	unread: boolean;
