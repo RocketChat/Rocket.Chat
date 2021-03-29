@@ -38,7 +38,7 @@ const CustomField = ({ id, value }) => {
 };
 
 
-export function ContactInfo({ id, rid, route }) {
+export function ContactInfo({ id, rid, route, hasEditAccess }) {
 	const t = useTranslation();
 	const routePath = useRoute(route || 'omnichannel-directory');
 
@@ -124,11 +124,11 @@ export function ContactInfo({ id, rid, route }) {
 				}
 			</Margins>
 		</VerticalBar.ScrollableContent>
-		<VerticalBar.Footer>
+		{hasEditAccess && <VerticalBar.Footer>
 			<ButtonGroup stretch>
 				{ lastChat && <Button onClick={onChatHistory}><Icon name='history' size='x20'/> {t('Chat_History')}</Button>}
 				<Button onClick={onEditButtonClick}><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
 			</ButtonGroup>
-		</VerticalBar.Footer>
+		</VerticalBar.Footer>}
 	</>;
 }

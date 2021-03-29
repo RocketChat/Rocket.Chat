@@ -7,6 +7,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoom } from '../../../views/room/providers/RoomProvider';
 import { ContactInfo } from './ContactInfo';
 import { ContactEditWithData } from './ContactForm';
+import { hasPermission } from '../../../../app/authorization/client';
 
 const PATH = 'live';
 const ContactsContextualBar = ({ id }) => {
@@ -24,6 +25,8 @@ const ContactsContextualBar = ({ id }) => {
 		directoryRoute.push({ id, tab: 'contact-profile' });
 	};
 
+	const hasEditAccess = hasPermission('edit-omnichannel-contact');
+
 	const room = useRoom();
 
 	const { v: { _id } } = room;
@@ -33,7 +36,7 @@ const ContactsContextualBar = ({ id }) => {
 			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Profile')}</Box>
 			<VerticalBar.Close onClick={closeContextualBar} />
 		</VerticalBar.Header>
-		{context === 'edit' ? <ContactEditWithData id={_id} close={handleContactEditBarCloseButtonClick} /> : <ContactInfo id={_id} rid={id} route={PATH} />}
+		{context === 'edit' && hasEditAccess ? <ContactEditWithData id={_id} close={handleContactEditBarCloseButtonClick} /> : <ContactInfo id={_id} rid={id} route={PATH} hasEditAccess={hasEditAccess} />}
 	</>;
 };
 

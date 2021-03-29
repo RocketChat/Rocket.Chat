@@ -43,7 +43,7 @@ const getInitialValues = (data) => {
 	};
 };
 
-export function ContactEditWithData({ id, reload, close }) {
+export function ContactEditWithData({ id, reload, close, hasEditAccess }) {
 	const t = useTranslation();
 	const { value: data, phase: state, error } = useEndpointData(`omnichannel/contact?contactId=${ id }`);
 
@@ -53,6 +53,10 @@ export function ContactEditWithData({ id, reload, close }) {
 
 	if (error || !data || !data.contact) {
 		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
+	}
+
+	if (!hasEditAccess) {
+		return <Box mbs='x16'>{t('Not_authorized')}</Box>;
 	}
 
 	return <ContactNewEdit id={id} data={data} reload={reload} close={close} />;
