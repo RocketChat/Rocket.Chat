@@ -1,79 +1,15 @@
-import {
-	Field,
-	TextInput,
-	Button,
-	Box,
-	MultiSelect,
-	Callout,
-	Margins,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Box, MultiSelect, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
-import { FormSkeleton } from '../../../../client/components/Skeleton';
 import VerticalBar from '../../../../client/components/VerticalBar';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
 
-export function TagEditWithData({ tagId, reload }) {
-	const query = useMemo(() => ({ tagId }), [tagId]);
-	const { value: data, phase: state, error } = useEndpointData('livechat/tags.getOne', query);
-	const {
-		value: availableDepartments,
-		phase: availableDepartmentsState,
-		error: availableDepartmentsError,
-	} = useEndpointData('livechat/department');
-
-	const t = useTranslation();
-
-	if ([state, availableDepartmentsState].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
-	}
-
-	if (error || availableDepartmentsError) {
-		return (
-			<Callout m='x16' type='danger'>
-				{t('Not_Available')}
-			</Callout>
-		);
-	}
-
-	return (
-		<TagEdit
-			tagId={tagId}
-			data={data}
-			availableDepartments={availableDepartments}
-			reload={reload}
-		/>
-	);
-}
-
-export function TagNew({ reload }) {
-	const t = useTranslation();
-
-	const {
-		value: availableDepartments,
-		phase: availableDepartmentsState,
-		error: availableDepartmentsError,
-	} = useEndpointData('livechat/department');
-
-	if (availableDepartmentsState === AsyncStatePhase.LOADING) {
-		return <FormSkeleton />;
-	}
-
-	if (availableDepartmentsError) {
-		return <Box mbs='x16'>{t('Not_found')}</Box>;
-	}
-
-	return <TagEdit reload={reload} isNew availableDepartments={availableDepartments} />;
-}
-
-export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...props }) {
+function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...props }) {
 	const t = useTranslation();
 	const tagsRoute = useRoute('omnichannel-tags');
 
@@ -192,3 +128,5 @@ export function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...p
 		</VerticalBar.ScrollableContent>
 	);
 }
+
+export default TagEdit;

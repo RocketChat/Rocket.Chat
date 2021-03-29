@@ -9,8 +9,9 @@ import { usePermission } from '../../../../client/contexts/AuthorizationContext'
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import { TagEditWithData, TagNew } from './EditTag';
 import RemoveTagButton from './RemoveTagButton';
+import TagEditWithData from './TagEditWithData';
+import TagNew from './TagNew';
 import TagsPage from './TagsPage';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
