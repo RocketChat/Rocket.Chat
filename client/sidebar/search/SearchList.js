@@ -182,7 +182,7 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 		() => ({
 			items,
 			t,
-			sideBarItemTemplate,
+			SideBarItemTemplate: sideBarItemTemplate,
 			avatarTemplate,
 			showRealName,
 			extended,
