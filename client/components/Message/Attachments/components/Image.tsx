@@ -1,81 +1,18 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon, BoxProps } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { memo, FC, useState, useMemo } from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useAttachmentDimensions } from '../context/AttachmentContext';
+import { Dimensions } from './Dimensions';
+import ImageBox from './ImageBox';
+import Load from './Load';
+import Retry from './Retry';
 
-export type Dimensions = {
-	width: number;
-	height: number;
-};
-
-export type ImageProps = {
+type ImageProps = {
 	previewUrl?: string;
 	src: string;
 	loadImage?: boolean;
 	setLoadImage: () => void;
 } & Dimensions &
 	({ loadImage: true } | { loadImage: false; setLoadImage: () => void });
-
-const ImageBox: FC<BoxProps> = (props) => (
-	<Box
-		display='flex'
-		maxWidth='full'
-		flexDirection='column'
-		justifyContent='center'
-		alignItems='center'
-		alignContent='center'
-		borderRadius='x2'
-		borderWidth='x2'
-		borderStyle='solid'
-		borderColor='neutral-200'
-		{...props}
-	/>
-);
-
-export const Retry: FC<BoxProps & { retry: () => void }> = ({ retry }) => {
-	const t = useTranslation();
-	const clickable = css`
-		cursor: pointer;
-		background: var(--rxc-color-neutral-100, ${colors.n100}) !important;
-
-		&:hover,
-		&:focus {
-			background: var(--rxc-color-neutral-300, ${colors.n300}) !important;
-		}
-	`;
-	return (
-		<ImageBox className={clickable} onClick={retry} size={160}>
-			<Icon name='refresh' color='neutral-700' size='x64' />
-			<Box fontScale='h1' color='default'>
-				{t('Retry')}
-			</Box>
-		</ImageBox>
-	);
-};
-
-export const Load: FC<BoxProps & { load: () => void }> = ({ load, ...props }) => {
-	const t = useTranslation();
-	const clickable = css`
-		cursor: pointer;
-		background: var(--rxc-color-neutral-100, ${colors.n100}) !important;
-
-		&:hover,
-		&:focus {
-			background: var(--rxc-color-neutral-300, ${colors.n300}) !important;
-		}
-	`;
-	return (
-		<ImageBox className={clickable} {...props} onClick={load}>
-			<Icon name='image' color='neutral-700' size='x64' />
-			<Box fontScale='h1' color='default'>
-				{t('Click_to_load')}
-			</Box>
-		</ImageBox>
-	);
-};
 
 const getDimensions = (
 	width: Dimensions['width'],

@@ -1,16 +1,16 @@
-import React, { FC } from 'react';
+import React, { ComponentProps, FC, ReactNode } from 'react';
 
 import { AttachmentProps } from '.';
 import MarkdownText from '../../MarkdownText';
 import { ActionAttachment, ActionAttachmentProps } from './ActionAttachtment';
 import Attachment from './Attachment';
-import { FieldsAttachment, FieldsAttachmentProps } from './FieldsAttachment';
-import { Dimensions } from './components/Image';
+import FieldsAttachment from './FieldsAttachment';
+import { Dimensions } from './components/Dimensions';
 import { useCollapse } from './hooks/useCollapse';
 
 type MarkdownFields = 'text' | 'pretext' | 'fields';
 
-export type DefaultAttachmentProps = {
+type DefaultAttachmentProps = {
 	collapsed?: true;
 
 	author_icon?: string;
@@ -19,7 +19,7 @@ export type DefaultAttachmentProps = {
 
 	// TODO: replace this component props type with a payload-based type because
 	// `value` comes as `string` and is passed as `ReactNode`
-	fields: FieldsAttachmentProps;
+	fields: ComponentProps<typeof FieldsAttachment>['fields'];
 
 	// footer
 	// footer_icon
@@ -46,18 +46,21 @@ const isActionAttachment = (attachment: AttachmentProps): attachment is ActionAt
 
 const applyMarkdownIfRequires = (
 	list: DefaultAttachmentProps['mrkdwn_in'] = ['text', 'pretext'],
-) => (key: MarkdownFields, text: string): JSX.Element | string =>
-	list?.includes(key) ? <MarkdownText variant='inline' content={text} /> : text;
+	key: MarkdownFields,
+	text: string,
+): ReactNode => (list?.includes(key) ? <MarkdownText variant='inline' content={text} /> : text);
 
-export const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
-	const applyMardownFor = applyMarkdownIfRequires(attachment.mrkdwn_in);
+const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
+
 	return (
 		<Attachment.Block
 			color={attachment.color}
 			pre={
 				attachment.pretext && (
-					<Attachment.Text>{applyMardownFor('pretext', attachment.pretext)}</Attachment.Text>
+					<Attachment.Text>
+						{applyMarkdownIfRequires(attachment.mrkdwn_in, 'pretext', attachment.pretext)}
+					</Attachment.Text>
 				)
 			}
 		>
@@ -95,7 +98,9 @@ export const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
 				{!collapsed && (
 					<>
 						{attachment.text && (
-							<Attachment.Text>{applyMardownFor('text', attachment.text)}</Attachment.Text>
+							<Attachment.Text>
+								{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text)}
+							</Attachment.Text>
 						)}
 						{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
 						{attachment.fields && (
@@ -132,3 +137,5 @@ export const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
 		</Attachment.Block>
 	);
 };
+
+export default DefaultAttachment;

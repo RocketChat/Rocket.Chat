@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Retry } from './Image';
+import Retry from './Retry';
 
 export default {
 	title: 'Image',

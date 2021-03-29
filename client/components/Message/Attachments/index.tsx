@@ -1,7 +1,7 @@
-import React, { FC, memo } from 'react';
+import React, { ComponentProps, FC, memo } from 'react';
 
 import { useBlockRendered } from '../hooks/useBlockRendered';
-import { DefaultAttachment, DefaultAttachmentProps } from './DefaultAttachment';
+import DefaultAttachment from './DefaultAttachment';
 import { FileAttachmentProps, isFileAttachment, FileAttachment } from './Files';
 import { QuoteAttachment, QuoteAttachmentProps } from './QuoteAttachment';
 
@@ -13,7 +13,10 @@ export type FileProp = {
 	size: number;
 };
 
-export type AttachmentProps = DefaultAttachmentProps | FileAttachmentProps | QuoteAttachmentProps;
+export type AttachmentProps =
+	| ComponentProps<typeof DefaultAttachment>
+	| FileAttachmentProps
+	| QuoteAttachmentProps;
 
 const isQuoteAttachment = (attachment: AttachmentProps): attachment is QuoteAttachmentProps =>
 	'message_link' in attachment;
