@@ -1,6 +1,7 @@
 import React from 'react';
 
-import InfoPanel, { RetentionPolicyCallout } from '.';
+import InfoPanel from '.';
+import RetentionPolicyCallout from './RetentionPolicyCallout';
 
 export default {
 	title: 'components/InfoPanel',

@@ -4,7 +4,8 @@ import React, { useMemo } from 'react';
 import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import InfoPanel, { RetentionPolicyCallout } from '../../InfoPanel';
+import InfoPanel from '../../InfoPanel';
+import RetentionPolicyCallout from '../../InfoPanel/RetentionPolicyCallout';
 import { useActionSpread } from '../../hooks/useActionSpread';
 
 const TeamsInfo = ({
