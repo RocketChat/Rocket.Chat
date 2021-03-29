@@ -1,51 +1,15 @@
-import {
-	Field,
-	TextInput,
-	Button,
-	Margins,
-	Box,
-	NumberInput,
-	Callout,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
-import { FormSkeleton } from '../../../../client/components/Skeleton';
 import VerticalBar from '../../../../client/components/VerticalBar';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
 
-export function PriorityEditWithData({ priorityId, reload }) {
-	const query = useMemo(() => ({ priorityId }), [priorityId]);
-	const { value: data, phase: state, error } = useEndpointData('livechat/priorities.getOne', query);
-
-	const t = useTranslation();
-
-	if (state === AsyncStatePhase.LOADING) {
-		return <FormSkeleton />;
-	}
-
-	if (error || !data) {
-		return (
-			<Callout m='x16' type='danger'>
-				{t('Not_Available')}
-			</Callout>
-		);
-	}
-
-	return <PriorityEdit priorityId={priorityId} data={data} reload={reload} />;
-}
-
-export function PriorityNew({ reload }) {
-	return <PriorityEdit isNew reload={reload} />;
-}
-
-export function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
+function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 	const t = useTranslation();
 	const prioritiesRoute = useRoute('omnichannel-priorities');
 
@@ -163,3 +127,5 @@ export function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 		</VerticalBar.ScrollableContent>
 	);
 }
+
+export default PriorityEdit;

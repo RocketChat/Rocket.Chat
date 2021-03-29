@@ -2,16 +2,13 @@ import { Button, Box, Callout, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 
-import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
 import Page from '../../../../client/components/Page';
-import PageSkeleton from '../../../../client/components/PageSkeleton';
 import UserAutoComplete from '../../../../client/components/UserAutoComplete';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import { useHasLicense } from '../../hooks/useHasLicense';
 import MonitorsTable from './MonitorsTable';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
@@ -26,20 +23,6 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 		}),
 		[text, itemsPerPage, current, column, direction],
 	);
-
-const MonitorsPageContainer = () => {
-	const license = useHasLicense('livechat-enterprise');
-
-	if (license === 'loading') {
-		return <PageSkeleton />;
-	}
-
-	if (!license) {
-		return <NotAuthorizedPage />;
-	}
-
-	return <MonitorsPage />;
-};
 
 const MonitorsPage = () => {
 	const t = useTranslation();
@@ -112,4 +95,4 @@ const MonitorsPage = () => {
 	);
 };
 
-export default MonitorsPageContainer;
+export default MonitorsPage;

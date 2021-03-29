@@ -9,8 +9,9 @@ import { usePermission } from '../../../../client/contexts/AuthorizationContext'
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import { PriorityEditWithData, PriorityNew } from './EditPriority';
 import PrioritiesPage from './PrioritiesPage';
+import PriorityEditWithData from './PriorityEditWithData';
+import PriorityNew from './PriorityNew';
 import RemovePriorityButton from './RemovePriorityButton';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
