@@ -1,10 +1,10 @@
 import React from 'react';
 
-import RemoveUsersModal from './RemoveUsersModal';
+import BaseRemoveUsersModal from './BaseRemoveUsersModal';
 
 export default {
 	title: 'teams/TeamsMembers',
-	component: RemoveUsersModal,
+	component: BaseRemoveUsersModal,
 };
 
 const results = [
@@ -39,6 +39,6 @@ const results = [
 	},
 ];
 
-export const Default = () => <RemoveUsersModal results={results} />;
+export const Default = () => <BaseRemoveUsersModal results={results} />;
 
-export const Alert = () => <RemoveUsersModal results={results} currentStep={2} />;
+export const Alert = () => <BaseRemoveUsersModal results={results} currentStep={2} />;
