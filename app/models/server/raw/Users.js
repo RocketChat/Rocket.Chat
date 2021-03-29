@@ -600,4 +600,13 @@ export class UsersRaw extends BaseRaw {
 			},
 		});
 	}
+
+	removeRoomsByRoomIdsAndUserId(rids, userId) {
+		return this.update({
+			_id: userId,
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
+	}
 }
