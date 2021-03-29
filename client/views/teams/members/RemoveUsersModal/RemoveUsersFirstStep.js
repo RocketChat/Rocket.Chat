@@ -12,7 +12,6 @@ const RemoveUsersFirstStep = ({
 	username,
 	results,
 	rooms,
-	lastOwnerRooms,
 	// params,
 	// onChangeParams,
 	onToggleAllRooms,
@@ -36,22 +35,19 @@ const RemoveUsersFirstStep = ({
 			onConfirm={onConfirm}
 			{...props}
 		>
-			<>
-				<Box mbe='x24' fontScale='p1'>
-					{t('Select_the_channels_you_want_the_user_to_be_removed_from')}
-				</Box>
-				<ChannelDesertionTable
-					lastOwnerWarning={t('Teams_channels_last_owner_leave_channel_warning')}
-					onToggleAllRooms={onToggleAllRooms}
-					lastOwnerRooms={lastOwnerRooms}
-					rooms={rooms}
-					params={{}}
-					onChangeParams={() => {}}
-					onChangeRoomSelection={onChangeRoomSelection}
-					selectedRooms={selectedRooms}
-					eligibleRoomsLength={eligibleRoomsLength}
-				/>
-			</>
+			<Box mbe='x24' fontScale='p1'>
+				{t('Select_the_channels_you_want_the_user_to_be_removed_from')}
+			</Box>
+			<ChannelDesertionTable
+				lastOwnerWarning={t('Teams_channels_last_owner_leave_channel_warning')}
+				onToggleAllRooms={onToggleAllRooms}
+				rooms={rooms}
+				params={{}}
+				onChangeParams={() => {}}
+				onChangeRoomSelection={onChangeRoomSelection}
+				selectedRooms={selectedRooms}
+				eligibleRoomsLength={eligibleRoomsLength}
+			/>
 		</GenericModal>
 	);
 };
