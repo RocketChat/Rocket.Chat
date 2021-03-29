@@ -4,7 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useEffect, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization';
-import { ContactManagerInfo } from '../../../../../../ee/client/omnichannel/ContactManager';
+import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useRoute } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';

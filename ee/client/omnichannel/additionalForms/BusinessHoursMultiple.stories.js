@@ -1,7 +1,7 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { BusinessHoursMultiple } from './BusinessHoursMultiple';
+import BusinessHoursMultiple from './BusinessHoursMultiple';
 
 export default {
 	title: 'omnichannel/businessHours/ee/BusinessHoursMultiple',

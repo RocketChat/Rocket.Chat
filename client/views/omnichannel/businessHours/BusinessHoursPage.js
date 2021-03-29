@@ -12,7 +12,7 @@ const BusinessHoursPage = () => {
 	const router = useRoute('omnichannel-businessHours');
 
 	const Table = useMemo(
-		() => lazy(() => import('../../../../ee/client/omnichannel/BusinessHoursTable')),
+		() => lazy(() => import('../../../../ee/client/omnichannel/BusinessHoursTableContainer')),
 		[],
 	);
 

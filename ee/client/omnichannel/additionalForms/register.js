@@ -39,7 +39,7 @@ hasLicense('livechat-enterprise').then((enabled) => {
 	});
 	registerForm({
 		useBusinessHoursMultiple: () =>
-			useMemo(() => lazy(() => import('./BusinessHoursMultiple')), []),
+			useMemo(() => lazy(() => import('./BusinessHoursMultipleContainer')), []),
 	});
 	registerForm({
 		useCurrentChatTags: () => useMemo(() => lazy(() => import('../tags/CurrentChatTags')), []),
