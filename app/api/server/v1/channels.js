@@ -572,14 +572,14 @@ API.v1.addRoute('channels.members', { authRequired: true }, {
 		}
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort = {} } = this.parseJsonQuery();
+		const { sort = {}, query } = this.parseJsonQuery();
 
 		const subscriptions = Subscriptions.findByRoomId(findResult._id, {
 			fields: { 'u._id': 1 },
 			sort: { 'u.username': sort.username != null ? sort.username : 1 },
 			skip: offset,
 			limit: count,
-		});
+		}, query);
 
 		const total = subscriptions.count();
 
