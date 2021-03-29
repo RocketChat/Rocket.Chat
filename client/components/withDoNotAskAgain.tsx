@@ -21,9 +21,13 @@ export type RequiredModalProps = {
 };
 
 function withDoNotAskAgain<T extends RequiredModalProps>(
-	WrappedComponent: ComponentType<any>,
+	Component: ComponentType<any>,
 ): FC<DoNotAskAgainProps & Omit<T, keyof RequiredModalProps>> {
-	return function ({ confirm, dontAskAgain, ...props }): ReactElement {
+	const WrappedComponent: FC<DoNotAskAgainProps & Omit<T, keyof RequiredModalProps>> = ({
+		confirm,
+		dontAskAgain,
+		...props
+	}) => {
 		const t = useTranslation();
 		const dontAskAgainList = useUserPreference<DontAskAgainList>('dontAskAgainList');
 		const { action, label } = dontAskAgain;
@@ -55,7 +59,7 @@ function withDoNotAskAgain<T extends RequiredModalProps>(
 		};
 
 		return (
-			<WrappedComponent
+			<Component
 				{...props}
 				dontAskAgain={
 					<Box display='flex' flexDirection='row'>
@@ -67,6 +71,12 @@ function withDoNotAskAgain<T extends RequiredModalProps>(
 			/>
 		);
 	};
+
+	WrappedComponent.displayName = `withDoNotAskAgain(${
+		Component.displayName ?? Component.name ?? 'Component'
+	})`;
+
+	return WrappedComponent;
 }
 
 export { withDoNotAskAgain };

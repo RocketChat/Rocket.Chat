@@ -7,8 +7,8 @@ import {
 	lazy,
 	useEffect,
 	useState,
-	memo,
 	Suspense,
+	FC,
 } from 'react';
 
 export const createLazyElement = <Props extends {} = {}>(
@@ -21,7 +21,7 @@ export const createLazyElement = <Props extends {} = {}>(
 		return createElement(LazyComponent);
 	}
 
-	const WrappedComponent = memo(() => {
+	const WrappedComponent: FC = () => {
 		const [props, setProps] = useState(() => Tracker.nonreactive(getProps));
 
 		useEffect(() => {
@@ -35,7 +35,7 @@ export const createLazyElement = <Props extends {} = {}>(
 		}, []);
 
 		return createElement(Suspense, { fallback: null }, createElement(LazyComponent, props));
-	});
+	};
 
 	return createElement(WrappedComponent);
 };
