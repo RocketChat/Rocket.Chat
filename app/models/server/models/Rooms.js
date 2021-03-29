@@ -523,6 +523,32 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
+	findByNameOrFNameInIdsWithTeams(regex, rids, options) {
+		const query = {
+			teamId: {
+				$exists: true,
+			},
+			$and: [{
+				$or: [{
+					name: regex,
+				}, {
+					fname: regex,
+				}],
+			}, {
+				$or: [{
+					t: 'p',
+					_id: {
+						$in: rids,
+					},
+				}, {
+					t: 'c',
+				}],
+			}],
+		};
+
+		return this._db.find(query, options);
+	}
+
 	findByNameAndTypeNotDefault(name, type, options) {
 		const query = {
 			t: type,

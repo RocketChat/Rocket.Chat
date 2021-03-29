@@ -3,12 +3,13 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 
 import { hasPermission } from '../../app/authorization';
-import { Rooms, Users } from '../../app/models';
+import { Rooms, Users, Subscriptions } from '../../app/models';
 import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';
 import { escapeRegExp } from '../../lib/escapeRegExp';
+import { Team } from '../sdk';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -40,12 +41,12 @@ const sortUsers = function(field, direction) {
 			};
 	}
 };
-
+/* eslint-disable */
 Meteor.methods({
 	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
 
-		if (!['channels', 'users'].includes(type)) {
+		if (!['channels', 'users', 'teams'].includes(type)) {
 			return;
 		}
 
@@ -57,7 +58,7 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', 'usersCount', ...type === 'channels' ? ['usernames', 'lastMessage'] : [], ...type === 'users' ? ['username', 'email', 'bio'] : []].includes(sortBy)) {
+		if (!['name', 'createdAt', 'usersCount', ['channels', 'teams'].includes(...type) ? ['usernames', 'lastMessage'] : [], ...type === 'users' ? ['username', 'email', 'bio'] : []].includes(sortBy)) {
 			return;
 		}
 
@@ -111,6 +112,51 @@ Meteor.methods({
 		// non-logged id user
 		if (!user) {
 			return;
+		}
+
+		if (type === 'teams') {
+			const sort = sortChannels(sortBy, sortDirection);
+			const userSubs = Subscriptions.cachedFindByUserId(user._id).fetch();
+			const ids = userSubs.map((sub) => sub.rid);
+			const result = Rooms.findByNameOrFNameInIdsWithTeams(regex, ids, {
+				...pagination,
+				sort: {
+					featured: -1,
+					...sort,
+				},
+				fields: {
+					t: 1,
+					description: 1,
+					topic: 1,
+					name: 1,
+					fname: 1,
+					lastMessage: 1,
+					ts: 1,
+					archived: 1,
+					default: 1,
+					featured: 1,
+					usersCount: 1,
+					prid: 1,
+					teamId: 1,
+					teamMain: 1,
+				},
+			});
+
+			const rooms = result.fetch();
+			const teamIds = [...new Set(rooms.map((r) => r.teamId))];
+			const teams = Promise.await(Team.listByIds(teamIds, { projection: { _id: 1, name: 1 } }));
+
+			const roomsWithTeamInfo = rooms.reduce((prev, room) => {
+				const teamOfRoom = teams.find((t) => t._id === room.teamId);
+				room.teamName = teamOfRoom.name;
+
+				return prev.push(room) && prev;
+			}, []);
+
+			return {
+				total: result.count(), // count ignores the `skip` and `limit` options
+				results: roomsWithTeamInfo,
+			};
 		}
 
 		// type === users
