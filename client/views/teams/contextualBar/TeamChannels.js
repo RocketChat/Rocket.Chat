@@ -139,7 +139,15 @@ const TeamChannels = ({ teamId }) => {
 	const roomListEndpoint = useEndpoint('GET', 'teams.listRooms');
 
 	const fetchData = useCallback(async () => {
-		const { rooms, total } = await roomListEndpoint({ teamId });
+		const { rooms, total } = await roomListEndpoint({
+			teamId,
+			query: JSON.stringify({
+				name: { $regex: text || '', $options: 'i' },
+				...type !== 'all' && {
+					teamDefault: true,
+				},
+			}),
+		});
 
 		const roomsDated = rooms.map((rooms) => {
 			rooms._updatedAt = new Date(rooms._updatedAt);
@@ -149,7 +157,7 @@ const TeamChannels = ({ teamId }) => {
 			items: roomsDated,
 			itemCount: total,
 		};
-	}, [roomListEndpoint, teamId]);
+	}, [roomListEndpoint, teamId, text, type]);
 
 	const { loadMoreItems } = useScrollableRecordList(
 		roomList,
