@@ -106,7 +106,7 @@ export class AppSchedulerBridge {
 	}
 
 	/**
-	 * Schedules a registered processor to run in recurrently according to a given interval
+	 * Schedules a registered processor to run recurrently according to a given interval
 	 *
 	 * @param {Object} job
 	 * @param {string} job.id The processor's id
@@ -120,7 +120,7 @@ export class AppSchedulerBridge {
 		this.orch.debugLog(`The App ${ appId } is scheduling a recurring job`, id);
 		try {
 			await this.startScheduler();
-			const job = this.scheduler.create(id, data);
+			const job = this.scheduler.create(id, data || {});
 			job.repeatEvery(interval, { skipImmediate: true });
 			await job.save();
 		} catch (e) {
