@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 
-import { roomTypes } from '../../../../../app/utils';
+import { roomTypes } from '../../../../../app/utils/client';
 
 const RoomLinkList = ({ rooms }) => {
 	const roomsArray = Object.values(rooms);

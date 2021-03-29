@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
-import { roomTypes, UiTextContext } from '../../app/utils';
+import { roomTypes, UiTextContext } from '../../app/utils/client';
 import { DeleteWarningModalDoNotAskAgain } from '../components/DeleteWarningModal';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';

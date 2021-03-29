@@ -4,6 +4,7 @@ module.exports = {
 	parser: 'babel-eslint',
 	plugins: ['react', 'react-hooks', 'prettier'],
 	rules: {
+		'import/named': 'error',
 		'import/order': [
 			'error',
 			{

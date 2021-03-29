@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useEffect, useState } from 'react';
 
-import { hasPermission } from '../../../../../../app/authorization';
+import { hasPermission } from '../../../../../../app/authorization/client';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useRoute } from '../../../../../contexts/RouterContext';

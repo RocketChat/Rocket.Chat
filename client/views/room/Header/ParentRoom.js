@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { roomTypes } from '../../../../app/utils';
+import { roomTypes } from '../../../../app/utils/client';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import HeaderIcon from './HeaderIcon';
 

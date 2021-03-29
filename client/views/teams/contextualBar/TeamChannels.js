@@ -1,7 +1,7 @@
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState } from 'react';
 
-import { roomTypes } from '../../../../app/utils';
+import { roomTypes } from '../../../../app/utils/client';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';

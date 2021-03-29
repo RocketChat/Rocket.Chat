@@ -11,7 +11,7 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import { getUserEmailVerified } from '../../../lib/getUserEmailVerified';
-import { UserInfo } from '../../room/contextualBar/UserInfo';
+import UserInfo from '../../room/contextualBar/UserInfo';
 import { UserInfoActions } from './UserInfoActions';
 
 export function UserInfoWithData({ uid, username, ...props }) {

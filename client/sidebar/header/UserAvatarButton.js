@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
 import React, { memo } from 'react';
 
-import { popover } from '../../../app/ui-utils';
+import { popover } from '../../../app/ui-utils/client';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useSetting } from '../../contexts/SettingsContext';

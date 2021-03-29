@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { NotAuthorizedPage } from '../../../../components/NotAuthorizedPage';
+import NotAuthorizedPage from '../../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 import ContactTable from './ContactTable';
 

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { SideNav } from '../../../app/ui-utils';
+import { SideNav } from '../../../app/ui-utils/client';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../contexts/RouterContext';

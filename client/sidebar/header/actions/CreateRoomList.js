@@ -2,7 +2,7 @@ import { Box, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import { modal, popover } from '../../../../app/ui-utils';
+import { modal, popover } from '../../../../app/ui-utils/client';
 import { useAtLeastOnePermission, usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useSetting } from '../../../contexts/SettingsContext';

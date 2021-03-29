@@ -3,8 +3,8 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { hasAtLeastOnePermission } from '../../../../../../app/authorization';
-import { isEmail } from '../../../../../../app/utils';
+import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
+import { isEmail } from '../../../../../../app/utils/client';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { createToken } from '../../../../../components/helpers';

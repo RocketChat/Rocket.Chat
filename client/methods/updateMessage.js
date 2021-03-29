@@ -5,11 +5,11 @@ import moment from 'moment';
 import toastr from 'toastr';
 import _ from 'underscore';
 
-import { hasAtLeastOnePermission } from '../../app/authorization';
-import { callbacks } from '../../app/callbacks';
-import { ChatMessage } from '../../app/models';
-import { settings } from '../../app/settings';
-import { t } from '../../app/utils';
+import { hasAtLeastOnePermission } from '../../app/authorization/client';
+import { callbacks } from '../../app/callbacks/client';
+import { ChatMessage } from '../../app/models/client';
+import { settings } from '../../app/settings/client';
+import { t } from '../../app/utils/client';
 
 Meteor.methods({
 	updateMessage(message) {

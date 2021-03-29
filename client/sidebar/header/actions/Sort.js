@@ -1,7 +1,7 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { popover } from '../../../../app/ui-utils';
+import { popover } from '../../../../app/ui-utils/client';
 
 const config = (e) => ({
 	template: 'SortList',

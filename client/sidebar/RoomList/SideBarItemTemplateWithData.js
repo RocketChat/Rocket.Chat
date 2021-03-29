@@ -1,7 +1,7 @@
 import { Badge } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
-import { roomTypes } from '../../../app/utils';
+import { roomTypes } from '../../../app/utils/client';
 import RoomMenu from '../RoomMenu';
 import SidebarIcon from './SidebarIcon';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';

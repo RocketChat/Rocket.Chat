@@ -1,7 +1,7 @@
 import { Box, Select, Field, Button } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
-import { WebdavAccounts } from '../../../app/models';
+import { WebdavAccounts } from '../../../app/models/client';
 import Page from '../../components/Page';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';

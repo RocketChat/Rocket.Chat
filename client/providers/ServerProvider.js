@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
-import { Info as info } from '../../app/utils';
-import { APIClient } from '../../app/utils/client';
+import { Info as info, APIClient } from '../../app/utils/client';
 import { ServerContext } from '../contexts/ServerContext';
 
 const absoluteUrl = (path) => Meteor.absoluteUrl(path);

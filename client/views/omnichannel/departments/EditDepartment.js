@@ -17,7 +17,7 @@ import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useRef } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { isEmail } from '../../../../app/utils';
+import { isEmail } from '../../../../app/utils/client';
 import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
 import CannedResponsesRouter from '../../../../ee/client/omnichannel/cannedResponses';
 import Page from '../../../components/Page';

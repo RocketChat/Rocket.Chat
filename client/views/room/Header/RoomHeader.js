@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { roomTypes } from '../../../../app/utils';
+import { roomTypes } from '../../../../app/utils/client';
 import Header from '../../../components/Header';
 import MarkdownText from '../../../components/MarkdownText';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';

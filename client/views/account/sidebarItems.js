@@ -1,5 +1,5 @@
 import { hasPermission } from '../../../app/authorization/client';
-import { settings } from '../../../app/settings';
+import { settings } from '../../../app/settings/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
 export const {

@@ -2,7 +2,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
-import { roomTypes, UiTextContext } from '../../../../../../app/utils';
+import { roomTypes, UiTextContext } from '../../../../../../app/utils/client';
 import DeleteChannelWarning from '../../../../../components/DeleteChannelWarning';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
