@@ -1,24 +1,9 @@
-import {
-	Box,
-	Button,
-	ButtonGroup,
-	Field,
-	FieldGroup,
-	ToggleSwitch,
-	BoxClassName,
-	Callout,
-	Divider,
-} from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, useState, Dispatch } from 'react';
+import { Box, Button, ButtonGroup, FieldGroup, Divider } from '@rocket.chat/fuselage';
+import React, { FC, Dispatch } from 'react';
 
 import Page from '../../../components/Page';
-import PageSkeleton from '../../../components/PageSkeleton';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useMethodData } from '../../../hooks/useMethodData';
+import PageToggleAssembler from './PageToggleAssembler';
 
 type OnToggleProps = {
 	onToggle: (id: string, isSubscribed: boolean, setSubscribed: Dispatch<boolean>) => void;
@@ -38,162 +23,6 @@ type FacebookPageProps = OnToggleProps & {
 	onDisable: () => void;
 	onEnable: () => void;
 };
-
-type PageToggleAssemblerProps = OnToggleProps & {
-	pages: PageItem[];
-	className?: BoxClassName;
-};
-
-type PageToggleProps = OnToggleProps &
-	PageItem & {
-		className?: BoxClassName;
-	};
-
-type PageData = {
-	pages: PageItem[];
-};
-
-type InitialStateData = {
-	enabled: boolean;
-	hasToken: boolean;
-};
-
-const initialStateArgs = [
-	{
-		action: 'initialState',
-	},
-];
-
-const listPageArgs = [
-	{
-		action: 'list-pages',
-	},
-];
-
-const FacebookPageContainer: FC = () => {
-	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const {
-		value: initialStateData,
-		phase: state,
-		reload: reloadInitial,
-	} = useMethodData<InitialStateData>('livechat:facebook', initialStateArgs);
-
-	const { value: pagesData, phase: listState, reload: reloadData } = useMethodData<PageData>(
-		'livechat:facebook',
-		listPageArgs,
-	);
-
-	const { enabled, hasToken } = initialStateData || { enabled: false, hasToken: false };
-	const { pages } = pagesData || { pages: [] };
-
-	const livechatFacebook = useMethod('livechat:facebook');
-
-	const onToggle = useMutableCallback(async (id, isSubscribed, setSubscribed) => {
-		setSubscribed(!isSubscribed);
-		try {
-			const action = isSubscribed ? 'unsubscribe' : 'subscribe';
-			await livechatFacebook({
-				action,
-				page: id,
-			});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-			setSubscribed(isSubscribed);
-		}
-	});
-
-	const onDisable = useMutableCallback(async () => {
-		try {
-			await livechatFacebook({ action: 'disable' });
-			dispatchToastMessage({ type: 'success', message: t('Integration_disabled') });
-			reloadInitial();
-			reloadData();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
-	const openOauthWindow = (url: string, callback: () => void): void => {
-		const oauthWindow = window.open(url, 'facebook-integration-oauth', 'width=600,height=400');
-		const checkInterval = setInterval(() => {
-			if (oauthWindow?.closed) {
-				clearInterval(checkInterval);
-				callback();
-			}
-		}, 300);
-	};
-
-	const onEnable = useMutableCallback(async () => {
-		try {
-			const result = await livechatFacebook({ action: 'enable' });
-			if (result?.url) {
-				openOauthWindow(result?.url, () => {
-					onEnable();
-				});
-			} else {
-				reloadInitial();
-				reloadData();
-			}
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
-	if (state === AsyncStatePhase.LOADING || listState === AsyncStatePhase.LOADING) {
-		return <PageSkeleton />;
-	}
-
-	if (state === AsyncStatePhase.REJECTED) {
-		return (
-			<Page>
-				<Page.Header title={t('Edit_Custom_Field')} />
-				<Page.ScrollableContentWithShadow>
-					<Callout type='danger'>{t('Error')}</Callout>
-				</Page.ScrollableContentWithShadow>
-			</Page>
-		);
-	}
-
-	if (enabled && hasToken && listState === AsyncStatePhase.REJECTED) {
-		onEnable();
-	}
-
-	return (
-		<FacebookPage
-			pages={pages}
-			enabled={enabled}
-			hasToken={hasToken}
-			onToggle={onToggle}
-			onRefresh={reloadData}
-			onDisable={onDisable}
-			onEnable={onEnable}
-		/>
-	);
-};
-
-const PageToggle: FC<PageToggleProps> = ({ name, id, subscribed, onToggle, className }) => {
-	const [isSubscribed, setIsSubscribed] = useState(subscribed);
-	const handleToggle = useMutableCallback(() => onToggle(id, isSubscribed, setIsSubscribed));
-	return (
-		<Field className={className}>
-			<Box display='flex' flexDirection='row'>
-				<Field.Label>{name}</Field.Label>
-				<Field.Row>
-					<ToggleSwitch checked={isSubscribed} onChange={handleToggle} />
-				</Field.Row>
-			</Box>
-		</Field>
-	);
-};
-
-const PageToggleAssembler: FC<PageToggleAssemblerProps> = ({ pages, onToggle, className }) => (
-	<FieldGroup>
-		{pages.map((page) => (
-			<PageToggle key={page.id} {...page} onToggle={onToggle} className={className} />
-		))}
-	</FieldGroup>
-);
 
 const FacebookPage: FC<FacebookPageProps> = ({
 	pages,
@@ -255,4 +84,4 @@ const FacebookPage: FC<FacebookPageProps> = ({
 	);
 };
 
-export default FacebookPageContainer;
+export default FacebookPage;
