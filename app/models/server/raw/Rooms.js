@@ -42,8 +42,10 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(name, types, discussion = false, teams = false, options = {}) {
+	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
+
+		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
 
 		const teamCondition = teams ? {} : {
 			teamMain: {
@@ -64,16 +66,19 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			...teamCondition,
+			...onlyTeamsQuery,
 		};
 		return this.find(query, options);
 	}
 
-	findByTypes(types, discussion = false, teams = false, options = {}) {
+	findByTypes(types, discussion = false, teams = false, onlyTeams = false, options = {}) {
 		const teamCondition = teams ? {} : {
 			teamMain: {
 				$exists: false,
 			},
 		};
+
+		const onlyTeamsCondition = onlyTeams ? { teamMain: { $exists: true } } : {};
 
 		const query = {
 			t: {
@@ -81,11 +86,12 @@ export class RoomsRaw extends BaseRaw {
 			},
 			prid: { $exists: discussion },
 			...teamCondition,
+			...onlyTeamsCondition,
 		};
 		return this.find(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, teams = false, options = {}) {
+	findByNameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const teamCondition = teams ? {} : {
@@ -93,6 +99,8 @@ export class RoomsRaw extends BaseRaw {
 				$exists: false,
 			},
 		};
+
+		const onlyTeamsCondition = onlyTeams ? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] } : {};
 
 		const query = {
 			prid: { $exists: discussion },
@@ -104,6 +112,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			...teamCondition,
+			...onlyTeamsCondition,
 		};
 
 		return this.find(query, options);
