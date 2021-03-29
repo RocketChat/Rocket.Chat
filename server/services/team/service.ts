@@ -1,4 +1,4 @@
-import { Db, FindOneOptions, FilterQuery } from 'mongodb';
+import { Db, FindOneOptions } from 'mongodb';
 
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { ITeam, ITeamMember, TEAM_TYPE, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamStats } from '../../../definition/ITeam';
@@ -396,13 +396,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('user-not-on-private-team');
 		}
 		if (getAllRooms) {
-			const teamRoomsCursor = this.RoomsModel.findByTeamId(teamId, { skip, limit }, query as FilterQuery<IRoom>);
+			const teamRoomsCursor = this.RoomsModel.findByTeamId(teamId, { skip, limit }, query);
 			return {
 				total: await teamRoomsCursor.count(),
 				records: await teamRoomsCursor.toArray(),
 			};
 		}
-		const teamRooms = await this.RoomsModel.findByTeamId(teamId, { skip, limit, projection: { _id: 1, t: 1 } }, query as FilterQuery<IRoom>).toArray();
+		const teamRooms = await this.RoomsModel.findByTeamId(teamId, { skip, limit, projection: { _id: 1, t: 1 } }, query).toArray();
 		const privateTeamRoomIds = teamRooms.filter((room) => room.t === 'p').map((room) => room._id);
 		const publicTeamRoomIds = teamRooms.filter((room) => room.t === 'c').map((room) => room._id);
 

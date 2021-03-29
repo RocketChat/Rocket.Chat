@@ -111,8 +111,8 @@ export class RoomsRaw extends BaseRaw {
 
 	findByTeamId(teamId, options = {}, query = {}) {
 		const myQuery = {
-			teamId,
 			...query,
+			teamId,
 			teamMain: {
 				$exists: false,
 			},
