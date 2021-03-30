@@ -718,10 +718,11 @@ export class Users extends Base {
 	}
 
 	findByUsernamesIgnoringCase(usernames, options) {
-		const combineUsernames = usernames.join('|^');
-		const regexp = new RegExp(combineUsernames, 'i');
-
-		const query = { username: regexp };
+		const query = {
+			username: {
+				$in: usernames.filter(Boolean).map((u) => new RegExp(`^$${ escapeRegExp(u) }$`, 'i')),
+			},
+		};
 
 		return this.find(query, options);
 	}
