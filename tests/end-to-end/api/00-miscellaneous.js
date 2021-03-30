@@ -39,7 +39,7 @@ describe('miscellaneous', function() {
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'success');
+				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('data').and.to.be.an('object');
 				expect(res.body.data).to.have.property('userId');
 				expect(res.body.data).to.have.property('authToken');

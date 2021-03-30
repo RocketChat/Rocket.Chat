@@ -522,7 +522,7 @@ export class APIClass extends Restivus {
 					return {
 						statusCode: 401,
 						body: {
-							status: 'error',
+							success: false,
 							error: e.error,
 							details: e.details,
 							message: e.reason || e.message,
@@ -539,7 +539,7 @@ export class APIClass extends Restivus {
 				this.userId = this.user._id;
 
 				const response = {
-					status: 'success',
+					success: true,
 					data: {
 						userId: this.userId,
 						authToken: auth.token,
@@ -577,7 +577,7 @@ export class APIClass extends Restivus {
 			});
 
 			const response = {
-				status: 'success',
+				success: true,
 				data: {
 					message: 'You\'ve been logged out!',
 				},
