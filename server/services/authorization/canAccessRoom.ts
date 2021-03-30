@@ -7,13 +7,30 @@ import { Subscriptions, Rooms, Settings, TeamMembers } from './service';
 
 const roomAccessValidators: RoomAccessValidator[] = [
 	async function(room, user): Promise<boolean> {
-		if (!room?.teamId || !user?._id) {
+		if (!room?.teamId || !user?._id || !room?._id) {
+			// if the room doesn't belongs to a team || no user is present || no room is present skip
 			return false;
 		}
 
+		// to verify if a user can access a team's channel we should:
+		// 1. Verify if the user is a team member
 		const team = await TeamMembers.findOneByUserIdAndTeamId(user._id, room.teamId, { projection: { _id: 1 } });
+		// 2. Verify if the user has an active subscription to channel (users can be on channels without being part of the team)
+		const hasSubscription = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
+		// 3. If it's a discussion, verify if the user can access the parent room
+		if (!room?.prid) {
+			if (room.t === 'p') {
+				return !!hasSubscription;
+			}
+			return !!team || !!hasSubscription;
+		}
 
-		return !!team;
+		const parentRoom = await Rooms.findOne(room.prid);
+		if (!parentRoom) {
+			return false;
+		}
+
+		return Authorization.canAccessRoom(parentRoom, user);
 	},
 
 	async function(room, user): Promise<boolean> {
