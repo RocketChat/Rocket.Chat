@@ -37,7 +37,7 @@ const TeamMembers = ({
 	const debouncedText = useDebouncedValue(text, 500);
 	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [rid, type, debouncedText]);
 
-	const { value, phase, more, error } = useGetUsersOfRoom(params);
+	const { value, phase, more, error, reload } = useGetUsersOfRoom(params);
 
 	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
 
@@ -78,7 +78,7 @@ const TeamMembers = ({
 	}
 
 	if (state.tab === 'AddUsers') {
-		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
+		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} reload={reload} />;
 	}
 
 	return (
@@ -97,6 +97,7 @@ const TeamMembers = ({
 			onClickAdd={canAddUsers && addUser}
 			onClickInvite={canAddUsers && createInvite}
 			loadMoreItems={loadMoreItems}
+			reload={reload}
 		/>
 	);
 };

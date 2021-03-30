@@ -38,7 +38,7 @@ export const createItemData = memoize((onClickView, rid) => ({
 	rid,
 }));
 
-const DefaultRow = React.memo(({ user, data, index }) => {
+const DefaultRow = React.memo(({ user, data, index, reload }) => {
 	const { onClickView, rid } = data;
 
 	if (!user) {
@@ -53,6 +53,7 @@ const DefaultRow = React.memo(({ user, data, index }) => {
 		status={user.status}
 		name={user.name}
 		onClickView={onClickView}
+		reload={reload}
 	/>;
 });
 
@@ -72,6 +73,7 @@ export const RoomMembers = ({
 	loadMoreItems,
 	renderRow: Row = DefaultRow,
 	rid,
+	reload,
 }) => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
@@ -107,15 +109,16 @@ export const RoomMembers = ({
 					</Box>
 				</Box>
 
-				{ error && <Box pi='x24' pb='x12'><Callout type='danger'>
-					{error}
-				</Callout></Box> }
-
 				{loading && <Box pi='x24' pb='x12'><Throbber size='x12' /></Box>}
+
+				{error && <Box pi='x24' pb='x12'><Callout type='danger'>
+					{error.message}
+				</Callout></Box>}
+
 				{!loading && members.length <= 0 && <Box pi='x24' pb='x12'>{t('No_results_found')}</Box>}
 
 				{!loading && members.length > 0 && (
-					<Box pi='x24' pb='x12'>
+					<Box pi='x18' pb='x12'>
 						<Box is='span' color='info' fontScale='p1'>
 							{t('Showing')}: <Box is='span' color='default' fontScale='p2'>{members.length}</Box>
 						</Box>
@@ -145,6 +148,7 @@ export const RoomMembers = ({
 							data={itemData}
 							user={data}
 							index={index}
+							reload={reload}
 						/>}
 					/>}
 				</Box>
@@ -179,10 +183,10 @@ export default ({
 	const [type, setType] = useLocalStorage('members-list-type', 'online');
 	const [text, setText] = useState('');
 
-	const debouncedText = useDebouncedValue(text, 500);
+	const debouncedText = useDebouncedValue(text, 700);
 	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [rid, type, debouncedText]);
 
-	const { value, phase, more, error } = useGetUsersOfRoom(params);
+	const { value, phase, more, error, reload } = useGetUsersOfRoom(params);
 
 	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
 
@@ -223,7 +227,7 @@ export default ({
 	}
 
 	if (state.tab === 'AddUsers') {
-		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
+		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} reload={reload} />;
 	}
 
 	return (
@@ -242,6 +246,7 @@ export default ({
 			onClickAdd={canAddUsers && addUser}
 			onClickInvite={canAddUsers && createInvite}
 			loadMoreItems={loadMoreItems}
+			reload={reload}
 		/>
 	);
 };
