@@ -6,6 +6,7 @@ import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
+import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
 import { NPS, Banner } from '../../../../server/sdk';
 
 export function syncWorkspace(reconnectCheck = false) {
@@ -57,15 +58,22 @@ export function syncWorkspace(reconnectCheck = false) {
 	if (data.nps) {
 		const {
 			id: npsId,
-			startAt,
 			expireAt,
 		} = data.nps;
 
+		const startAt = new Date(data.nps.startAt);
+
 		Promise.await(NPS.create({
 			npsId,
-			startAt: new Date(startAt),
+			startAt,
 			expireAt: new Date(expireAt),
 		}));
+
+		const now = new Date();
+
+		if (startAt.getFullYear() === now.getFullYear() && startAt.getMonth() === now.getMonth() && startAt.getDate() === now.getDate()) {
+			getAndCreateNpsSurvey(npsId);
+		}
 	}
 
 	// add banners

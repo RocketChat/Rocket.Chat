@@ -38,7 +38,7 @@ export const createItemData = memoize((onClickView, rid) => ({
 	rid,
 }));
 
-const Row = React.memo(({ user, data, index }) => {
+const DefaultRow = React.memo(({ user, data, index }) => {
 	const { onClickView, rid } = data;
 
 	if (!user) {
@@ -70,6 +70,7 @@ export const RoomMembers = ({
 	total,
 	error,
 	loadMoreItems,
+	renderRow: Row = DefaultRow,
 	rid,
 }) => {
 	const t = useTranslation();
@@ -131,7 +132,10 @@ export const RoomMembers = ({
 
 				<Box w='full' h='full' overflow='hidden' flexShrink={1}>
 					{!loading && members && members.length > 0 && <Virtuoso
-						style={{ height: '100%', width: '100%' }}
+						style={{
+							height: '100%',
+							width: '100%',
+						}}
 						totalCount={total}
 						endReached={lm}
 						overscan={50}

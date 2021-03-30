@@ -85,14 +85,14 @@ const D: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 	});
 
 	useEffect(() => {
-		if (room?.streamingOptions?.type !== 'call' || popout.context) {
+		if (room?.streamingOptions?.type !== 'call' || openNewWindow || popout.context) {
 			return;
 		}
 		startCall();
 		return (): void => {
 			popout.close();
 		};
-	}, [room?.streamingOptions?.type, startCall]);
+	}, [room?.streamingOptions?.type, startCall, openNewWindow]);
 
 	const canManageCall = room?.t === 'd' || hasCallManagement;
 

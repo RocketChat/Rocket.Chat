@@ -11,7 +11,7 @@ const HeaderIcon: FC<{ icon: JSX.Element | { name: string; color?: string } | nu
 
 const ToolBox: FC = (props: any) => <ButtonGroup mi='x4' medium {...props}/>;
 
-const ToolBoxAction: FC = ({ id, icon, title, action, className, tabId, index, ...props }: any) => <ActionButton
+const ToolBoxAction: FC = ({ id, icon, color, title, action, className, tabId, index, ...props }: any) => <ActionButton
 	className={className}
 	primary={tabId === id}
 	onClick={action}
@@ -23,6 +23,7 @@ const ToolBoxAction: FC = ({ id, icon, title, action, className, tabId, index, .
 	ghost
 	tiny
 	overflow='visible'
+	color={!!color && color}
 	{...props}
 />;
 
