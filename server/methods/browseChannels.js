@@ -9,7 +9,6 @@ import { getFederationDomain } from '../../app/federation/server/lib/getFederati
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';
 import { escapeRegExp } from '../../lib/escapeRegExp';
-import { Team } from '../sdk';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -107,12 +106,11 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 	});
 
 	const rooms = result.fetch();
-	const teamIds = [...new Set(rooms.map((r) => r.teamId))];
-	const teams = Promise.await(Team.listByIds(teamIds, { projection: { _id: 1, name: 1 } }));
+	const mainRooms = rooms.filter((room) => room.teamMain);
 
 	const roomsWithTeamInfo = rooms.reduce((prev, room) => {
-		const teamOfRoom = teams.find((t) => t._id === room.teamId);
-		room.teamName = teamOfRoom.name;
+		const mainRoom = mainRooms.find((mr) => room.teamId === mr.teamId);
+		room.teamName = mainRoom.name;
 
 		return prev.push(room) && prev;
 	}, []);
