@@ -555,14 +555,4 @@ Meteor.startup(function() {
 		i18nLabel: 'How_long_to_wait_to_consider_visitor_abandonment',
 		i18nDescription: 'Time_in_seconds',
 	});
-
-	settings.add('Livechat_abandoned_rooms_action', 'none', {
-		type: 'select',
-		group: 'Omnichannel',
-		section: 'Sessions',
-		values: [
-			{ key: 'none', i18nLabel: 'Do_Nothing' },
-		],
-		invalidValue: 'none',
-	});
 });

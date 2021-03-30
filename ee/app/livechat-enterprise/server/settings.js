@@ -157,8 +157,20 @@ export const createSettings = () => {
 		],
 	});
 
-	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Balancing', i18nLabel: 'Load_Balancing' });
+	settings.add('Livechat_abandoned_rooms_action', 'none', {
+		type: 'select',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		values: [
+			{ key: 'none', i18nLabel: 'Do_Nothing' },
+			{ key: 'close', i18nLabel: 'Livechat_close_chat' },
+			{ key: 'on-hold', i18nLabel: 'Livechat_onHold_Chat' },
+		],
+		invalidValue: 'none',
+		modules: [
+			'livechat-enterprise',
+		],
+	});
 
-	Settings.addOptionValueById('Livechat_abandoned_rooms_action', { key: 'close', i18nLabel: 'Livechat_close_chat' });
-	Settings.addOptionValueById('Livechat_abandoned_rooms_action', { key: 'on-hold', i18nLabel: 'Livechat_onHold_Chat' });
+	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Balancing', i18nLabel: 'Load_Balancing' });
 };
