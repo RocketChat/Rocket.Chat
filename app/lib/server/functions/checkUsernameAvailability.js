@@ -21,17 +21,21 @@ export const checkUsernameAvailability = function(username) {
 		return false;
 	}
 
-	let result = true;
-
 	// Make sure no users are using this username
-	result = result && !Meteor.users.findOne({
+	const existingUser = Meteor.users.findOne({
 		username: {
 			$regex: toRegExp(username),
 		},
 	}, { fields: { _id: 1 } });
+	if (existingUser) {
+		return false;
+	}
 
 	// Make sure no teams are using this username
-	result = result && !Promise.await(Team.getOneByName(toRegExp(username), { projection: { _id: 1 } }));
+	const existingTeam = Promise.await(Team.getOneByName(toRegExp(username), { projection: { _id: 1 } }));
+	if (existingTeam) {
+		return false;
+	}
 
-	return result;
+	return true;
 };
