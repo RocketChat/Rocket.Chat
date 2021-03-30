@@ -211,7 +211,7 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		}
 		const canSeeAllMembers = hasPermission(this.userId, 'view-all-teams', team.roomId);
 
-		const { records, total } = Promise.await(Team.members(this.userId, team._id, teamName, canSeeAllMembers, { offset, count }, { query }));
+		const { records, total } = Promise.await(Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, { query }));
 
 		return API.v1.success({
 			members: records,
@@ -235,7 +235,7 @@ API.v1.addRoute('teams.addMembers', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		Promise.await(Team.addMembers(this.userId, team._id, teamName, members));
+		Promise.await(Team.addMembers(this.userId, team._id, members));
 
 		return API.v1.success();
 	},
@@ -254,7 +254,7 @@ API.v1.addRoute('teams.updateMember', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		Promise.await(Team.updateMember(team._id, teamName, member));
+		Promise.await(Team.updateMember(team._id, member));
 
 		return API.v1.success();
 	},
@@ -273,7 +273,7 @@ API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		Promise.await(Team.removeMembers(team._id, teamName, members));
+		Promise.await(Team.removeMembers(team._id, members));
 
 		if (rooms?.length) {
 			Subscriptions.removeByRoomIdsAndUserId(rooms, this.userId);
@@ -289,7 +289,7 @@ API.v1.addRoute('teams.leave', { authRequired: true }, {
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 
-		Promise.await(Team.removeMembers(team._id, teamName, [{
+		Promise.await(Team.removeMembers(team._id, [{
 			userId: this.userId,
 		}]));
 

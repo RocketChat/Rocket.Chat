@@ -457,16 +457,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return rooms.map(({ _id }: { _id: string}) => _id);
 	}
 
-	async members(uid: string, teamId: string, teamName: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { query }: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
-		if (!teamId) {
-			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
-			if (!teamIdName) {
-				throw new Error('team-does-not-exist');
-			}
-
-			teamId = teamIdName._id;
-		}
-
+	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { query }: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
 		if (!isMember && !canSeeAll) {
 			return {
@@ -505,19 +496,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
+	async addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void> {
 		const createdBy = await this.Users.findOneById(uid, { projection: { username: 1 } });
 		if (!createdBy) {
 			throw new Error('invalid-user');
-		}
-
-		if (!teamId) {
-			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
-			if (!teamIdName) {
-				throw new Error('team-does-not-exist');
-			}
-
-			teamId = teamIdName._id;
 		}
 
 		const membersList: Array<Omit<ITeamMember, '_id'>> = members?.map((member) => ({
@@ -533,16 +515,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await this.addMembersToDefaultRooms(createdBy, teamId, membersList);
 	}
 
-	async updateMember(teamId: string, teamName: string, member: ITeamMemberParams): Promise<void> {
-		if (!teamId) {
-			const teamIdName = await this.TeamModel.findOneByName(teamName, { projection: { _id: 1 } });
-			if (!teamIdName) {
-				throw new Error('team-does-not-exist');
-			}
-
-			teamId = teamIdName._id;
-		}
-
+	async updateMember(teamId: string, member: ITeamMemberParams): Promise<void> {
 		if (!member.userId) {
 			member.userId = await this.Users.findOneByUsername(member.userName);
 			if (!member.userId) {
@@ -562,9 +535,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await this.TeamMembersModel.deleteByUserIdAndTeamId(userId, teamId);
 	}
 
-	async removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void> {
-		const searchTerm = teamId || teamName;
-		const team = await this.TeamModel[teamId ? 'findOneById' : 'findOneByName'](searchTerm, { projection: { _id: 1, roomId: 1 } });
+	async removeMembers(teamId: string, members: Array<ITeamMemberParams>): Promise<void> {
+		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('team-does-not-exist');
 		}
