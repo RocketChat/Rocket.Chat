@@ -10,7 +10,7 @@ import { UserAutoComplete } from '../../AutoComplete';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 
-const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
+const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 	const t = useTranslation();
 
 	const inputRef = useAutoFocus(true);
@@ -55,6 +55,12 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 
 	const hasDepartments = departments && departments.length > 0;
 
+	const { servedBy: { _id: agentId } = {} } = room || {};
+
+	const _id = agentId && { $ne: agentId };
+
+	const conditions = { _id, status: { $ne: 'offline' }, statusLivechat: 'available' };
+
 	return <Modal {...props}>
 		<Modal.Header>
 			<Icon name='baloon-arrow-top-right' size={20}/>
@@ -74,7 +80,7 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 			<Field mbs={hasDepartments && 'x30'}>
 				<Field.Label>{t('Forward_to_user')}</Field.Label>
 				<Field.Row>
-					<UserAutoComplete flexGrow={1} value={username} onChange={onChangeUsername} placeholder={t('Username')} />
+					<UserAutoComplete conditions={conditions} flexGrow={1} value={username} onChange={onChangeUsername} placeholder={t('Username')} />
 				</Field.Row>
 			</Field>
 			<Field marginBlock='x15'>
