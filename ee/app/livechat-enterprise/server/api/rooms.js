@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { API } from '../../../../../app/api/server';
 import { hasPermission } from '../../../../../app/authorization';
@@ -33,7 +34,10 @@ API.v1.addRoute('livechat/room.onHold', { authRequired: true }, {
 			return API.v1.failure('Not authorized');
 		}
 
-		LivechatEnterprise.placeRoomOnHold(room);
+		const onHoldBy = { _id: user._id, username: user.username, name: user.name };
+		const comment = TAPi18n.__('Livechat_On_Hold_manually', { user: onHoldBy.name || `@${ onHoldBy.username }` });
+
+		LivechatEnterprise.placeRoomOnHold(room, comment, onHoldBy);
 
 		return API.v1.success();
 	},

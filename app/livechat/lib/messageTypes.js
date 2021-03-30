@@ -80,3 +80,14 @@ MessageTypes.registerType({
 	system: true,
 	message: 'New_videocall_request',
 });
+
+MessageTypes.registerType({
+	id: 'livechat_placed_chat_on-hold',
+	system: true,
+	message: 'Livechat_placed_chat_on_hold',
+	data(message) {
+		return {
+			comment: message.comment,
+		};
+	},
+});

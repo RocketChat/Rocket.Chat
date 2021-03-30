@@ -1,8 +1,9 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms, LivechatDepartment, Users } from '../../../../../app/models/server';
+import { LivechatRooms, LivechatDepartment, Users, LivechatVisitors } from '../../../../../app/models/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { LivechatEnterprise } from './LivechatEnterprise';
 
@@ -12,12 +13,15 @@ export class VisitorInactivityMonitor {
 		this._name = 'Omnichannel Visitor Inactivity Monitor';
 		this.messageCache = new Map();
 		this.userToPerformAutomaticClosing;
+		this.userToPerformOnHold;
 	}
 
 	start() {
 		this._startMonitoring();
 		this._initializeMessageCache();
-		this.userToPerformAutomaticClosing = Users.findOneById('rocket.cat');
+		const user = Users.findOneById('rocket.cat');
+		this.userToPerformAutomaticClosing = user;
+		this.userToPerformOnHold = user;
 	}
 
 	_startMonitoring() {
@@ -79,7 +83,18 @@ export class VisitorInactivityMonitor {
 	}
 
 	placeRoomOnHold(room) {
-		LivechatEnterprise.placeRoomOnHold(room) && LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
+		const timeout = settings.get('Livechat_visitor_inactivity_timeout');
+
+		const { v: { _id: visitorId } = {} } = room;
+		const visitor = LivechatVisitors.findOneById(visitorId);
+		if (!visitor) {
+			throw new Meteor.Error('error-invalid_visitor', 'Visitor Not found');
+		}
+
+		const guest = visitor.name || visitor.username;
+		const comment = TAPi18n.__('Livechat_On_Hold_due_to_inactivity', { guest, timeout });
+
+		LivechatEnterprise.placeRoomOnHold(room, comment, this.userToPerformOnHold) && LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
 	}
 
 	handleAbandonedRooms() {
