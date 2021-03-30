@@ -387,7 +387,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async listRooms(uid: string, teamId: string, getAllRooms: boolean, allowPrivateTeam: boolean, { offset: skip, count: limit }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<IRoom>> {
+	async listRooms(uid: string, teamId: string, getAllRooms: boolean, allowPrivateTeam: boolean, { offset: skip, count: limit }: IPaginationOptions = { offset: 0, count: 50 }, { query }: IQueryOptions<IRoom>): Promise<IRecordsWithTotal<IRoom>> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
@@ -400,13 +400,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('user-not-on-private-team');
 		}
 		if (getAllRooms) {
-			const teamRoomsCursor = this.RoomsModel.findByTeamId(teamId, { skip, limit });
+			const teamRoomsCursor = this.RoomsModel.findByTeamId(teamId, { skip, limit }, query);
 			return {
 				total: await teamRoomsCursor.count(),
 				records: await teamRoomsCursor.toArray(),
 			};
 		}
-		const teamRooms = await this.RoomsModel.findByTeamId(teamId, { projection: { _id: 1, t: 1 } }).toArray();
+		const teamRooms = await this.RoomsModel.findByTeamId(teamId, { skip, limit, projection: { _id: 1, t: 1 } }, query).toArray();
 		const privateTeamRoomIds = teamRooms.filter((room) => room.t === 'p').map((room) => room._id);
 		const publicTeamRoomIds = teamRooms.filter((room) => room.t === 'c').map((room) => room._id);
 

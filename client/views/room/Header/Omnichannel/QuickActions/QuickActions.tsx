@@ -39,7 +39,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const getVisitorEmail = useMutableCallback(async () => {
 		if (!visitorRoomId) { return; }
-		const { visitor: { visitorEmails } } = await getVisitorInfo(visitorRoomId);
+		const { visitor: { visitorEmails } } = await getVisitorInfo({ visitorId: visitorRoomId });
 		if (visitorEmails?.length && visitorEmails[0].address) {
 			setEmail(visitorEmails[0].address);
 		}
@@ -146,7 +146,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				setModal(<TranscriptModal room={room} email={email} onRequest={handleRequestTranscript} onSend={handleSendTranscript} onDiscard={handleDiscardTranscript} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.ChatForward:
-				setModal(<ForwardChatModal onForward={handleForwardChat} onCancel={closeModal} />);
+				setModal(<ForwardChatModal room={room} onForward={handleForwardChat} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.CloseChat:
 				setModal(<CloseChatModal onConfirm={handleClose} onCancel={closeModal} />);
