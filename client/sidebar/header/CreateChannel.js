@@ -205,8 +205,8 @@ export default memo(({
 			name,
 			members: users,
 			readOnly,
-			...teamId && { teamId },
 			extraData: {
+				...teamId && { teamId },
 				description,
 				broadcast,
 				encrypted,
