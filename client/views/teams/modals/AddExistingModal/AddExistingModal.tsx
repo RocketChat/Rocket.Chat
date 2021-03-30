@@ -21,6 +21,7 @@ type AddExistingModalProps = {
 };
 
 const useAddExistingModalState = (onClose: () => void, teamId: string): AddExistingModalState => {
+	const t = useTranslation();
 	const addRoomEndpoint = useEndpoint('POST', 'teams.addRooms');
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
@@ -41,7 +42,7 @@ const useAddExistingModalState = (onClose: () => void, teamId: string): AddExist
 			return;
 		}
 
-		handleRooms(rooms.filter((current: any) => current._id !== value));
+		handleRooms(rooms.filter((current: any) => current._id !== value._id));
 	}, [handleRooms, rooms]);
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -52,11 +53,13 @@ const useAddExistingModalState = (onClose: () => void, teamId: string): AddExist
 				rooms: rooms.map((room) => room._id),
 				teamId,
 			});
+
+			dispatchToastMessage({ type: 'success', message: t('Channels_added') });
 			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage]);
+	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t]);
 
 	return { onAdd, rooms, onChange, hasUnsavedChanges };
 };
