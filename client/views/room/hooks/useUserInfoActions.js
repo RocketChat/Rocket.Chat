@@ -77,7 +77,7 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 	</Modal>;
 };
 
-export const useUserInfoActions = (user = {}, rid) => {
+export const useUserInfoActions = (user = {}, rid, reload) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const directRoute = useRoute('direct');
@@ -299,9 +299,10 @@ export const useUserInfoActions = (user = {}, rid) => {
 				userId={user?._id}
 				onClose={closeModal}
 				onCancel={closeModal}
-				onConfirm={(rooms) => {
-					removeFromTeam({ teamId: room.teamId, members: [{ userId: user._id }], rooms });
+				onConfirm={async (rooms) => {
+					await removeFromTeam({ teamId: room.teamId, members: [{ userId: user._id }], rooms });
 					closeModal();
+					reload && reload();
 				}}
 			/>);
 		}
@@ -310,9 +311,14 @@ export const useUserInfoActions = (user = {}, rid) => {
 			text={t('The_user_will_be_removed_from_s', roomName)}
 			close={closeModal}
 			confirmText={t('Yes_remove_user')}
-			confirm={() => { removeUserAction({ roomId: rid, userId: uid }); closeModal(); }}
+			confirm={async () => {
+				await removeUserAction({ roomId: rid, userId: uid });
+				closeModal();
+				reload && reload();
+			}}
 		/>);
 	});
+
 	const removeUserOption = useMemo(() => roomCanRemove && userCanRemove && {
 		label: <Box color='danger'>{room.teamMain ? t('Remove_from_team') : t('Remove_from_room')}</Box>,
 		icon: 'sign-out',

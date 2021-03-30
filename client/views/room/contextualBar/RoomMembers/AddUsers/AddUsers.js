@@ -46,6 +46,7 @@ export const AddUsers = ({
 export default ({
 	rid,
 	onClickBack,
+	reload,
 }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -79,6 +80,7 @@ export default ({
 			await saveAction({ rid, users });
 			dispatchToastMessage({ type: 'success', message: t('Users_added') });
 			onClickBack();
+			reload();
 		} catch (e) {
 			dispatchToastMessage({ type: 'error', message: e });
 		}
