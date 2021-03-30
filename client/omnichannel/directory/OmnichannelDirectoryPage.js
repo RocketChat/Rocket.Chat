@@ -50,7 +50,7 @@ const OmnichannelDirectoryPage = () => {
 	const ContactContextualBar = () => <VerticalBar className={'contextual-bar'}>
 		<VerticalBar.Header>
 			{context === 'new' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('New_Contact')}</Box>}
-			{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Profile')}</Box>}
+			{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Info')}</Box>}
 			{context === 'edit' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='pencil' size='x20' /> {t('Edit_Contact_Profile')}</Box>}
 			<VerticalBar.Close onClick={handleContactsVerticalBarCloseButtonClick} />
 		</VerticalBar.Header>

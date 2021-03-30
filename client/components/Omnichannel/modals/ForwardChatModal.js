@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
@@ -7,9 +7,10 @@ import { useForm } from '../../../hooks/useForm';
 import ModalSeparator from '../../ModalSeparator';
 import DepartmentAutoComplete from '../../../views/omnichannel/DepartmentAutoComplete';
 import { UserAutoComplete } from '../../AutoComplete';
+import { useEndpoint } from '../../../contexts/ServerContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 
-const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
+const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 	const t = useTranslation();
 
 	const inputRef = useAutoFocus(true);
@@ -19,8 +20,8 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 	const [userId, setUserId] = useState('');
 
 	const { handleDepartmentName, handleUsername, handleComment } = handlers;
-	const { value } = useEndpointData('GET', `users.info?username=${ username }`);
-
+	const getUserData = useEndpoint('GET', `users.info?username=${ username }`);
+	const { value: departmentsData = {} } = useEndpointData('livechat/department', useMemo(() => ({ enabled: true }), []));
 
 	const handleSend = useMutableCallback(() => {
 		onForward(departmentName, userId, comment);
@@ -41,12 +42,24 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 	useEffect(() => {
 		if (!username) { return; }
 		const fetchData = async () => {
-			const { user } = value;
+			const { user } = await getUserData();
 			setUserId(user._id);
 		};
 		fetchData();
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [username]);
+
+	const canForward = departmentName || username;
+
+	const { departments } = departmentsData;
+
+	const hasDepartments = departments && departments.length > 0;
+
+	const { servedBy: { _id: agentId } = {} } = room || {};
+
+	const _id = agentId && { $ne: agentId };
+
+	const conditions = { _id, status: { $ne: 'offline' }, statusLivechat: 'available' };
 
 	return <Modal {...props}>
 		<Modal.Header>
@@ -55,17 +68,19 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-			<Field mbe={'x30'}>
-				<Field.Label>{t('Forward_to_department')}</Field.Label>
-				<Field.Row>
-					<DepartmentAutoComplete value={departmentName} onChange={onChangeDepartment} flexShrink={1} placeholder={t('Department_name')} />
-				</Field.Row>
-			</Field>
-			<ModalSeparator text={t('or')} />
-			<Field mbs={'x30'}>
+			{ hasDepartments && <>
+				<Field mbe={'x30'}>
+					<Field.Label>{t('Forward_to_department')}</Field.Label>
+					<Field.Row>
+						<DepartmentAutoComplete enabled={true} value={departmentName} onChange={onChangeDepartment} flexShrink={1} placeholder={t('Department_name')} />
+					</Field.Row>
+				</Field>
+				<ModalSeparator text={t('or')} />
+			</> }
+			<Field mbs={hasDepartments && 'x30'}>
 				<Field.Label>{t('Forward_to_user')}</Field.Label>
 				<Field.Row>
-					<UserAutoComplete flexGrow={1} value={username} onChange={onChangeUsername} placeholder={t('Username')} />
+					<UserAutoComplete conditions={conditions} flexGrow={1} value={username} onChange={onChangeUsername} placeholder={t('Username')} />
 				</Field.Row>
 			</Field>
 			<Field marginBlock='x15'>
@@ -78,7 +93,7 @@ const ForwardChatModal = ({ onForward, onCancel, ...props }) => {
 		<Modal.Footer>
 			<ButtonGroup align='end'>
 				<Button onClick={onCancel}>{t('Cancel')}</Button>
-				<Button primary onClick={handleSend}>{t('Forward')}</Button>
+				<Button disabled={!canForward} primary onClick={handleSend}>{t('Forward')}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;
