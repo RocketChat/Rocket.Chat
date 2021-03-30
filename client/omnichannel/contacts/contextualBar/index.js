@@ -33,7 +33,7 @@ const ContactsContextualBar = ({ id }) => {
 
 	return <>
 		<VerticalBar.Header>
-			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Profile')}</Box>
+			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Info')}</Box>
 			<VerticalBar.Close onClick={closeContextualBar} />
 		</VerticalBar.Header>
 		{context === 'edit' && hasEditAccess ? <ContactEditWithData id={_id} close={handleContactEditBarCloseButtonClick} /> : <ContactInfo id={_id} rid={id} route={PATH} hasEditAccess={hasEditAccess} />}
