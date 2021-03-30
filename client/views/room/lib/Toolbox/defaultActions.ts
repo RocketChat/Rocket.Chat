@@ -26,7 +26,7 @@ addAction('user-info', {
 addAction('contact-profile', {
 	groups: ['live'],
 	id: 'contact-profile',
-	title: 'Contact_Profile',
+	title: 'Contact_Info',
 	icon: 'user',
 	template: lazy(() => import('../../../../omnichannel/directory/contacts/contextualBar')),
 	order: 5,
