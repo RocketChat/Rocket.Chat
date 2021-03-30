@@ -19,7 +19,6 @@ const RemoveUsersFirstStep = ({
 	username,
 	results,
 	rooms,
-	lastOwnerRooms,
 	// params,
 	// onChangeParams,
 	onToggleAllRooms,
@@ -40,31 +39,30 @@ const RemoveUsersFirstStep = ({
 		onClose={onClose}
 		onCancel={onCancel}
 		onConfirm={onConfirm}
-		{...props}><>
-			<Box mbe='x24' fontScale='p1'>{t('Select_the_channels_you_want_the_user_to_be_removed_from')}</Box>
-			<ChannelDesertionTable
-				lastOwnerWarning={t('Teams_channels_last_owner_leave_channel_warning')}
-				onToggleAllRooms={onToggleAllRooms}
-				lastOwnerRooms={lastOwnerRooms}
-				rooms={rooms}
-				params={{}}
-				onChangeParams={() => {}}
-				onChangeRoomSelection={onChangeRoomSelection}
-				selectedRooms={selectedRooms}
-				eligibleRoomsLength={eligibleRoomsLength}
-			/>
-		</>
+		{...props}
+	>
+		<Box mbe='x24' fontScale='p1'>{t('Select_the_channels_you_want_the_user_to_be_removed_from')}</Box>
+		<ChannelDesertionTable
+			lastOwnerWarning={t('Teams_channels_last_owner_leave_channel_warning')}
+			onToggleAllRooms={onToggleAllRooms}
+			rooms={rooms}
+			params={{}}
+			onChangeParams={() => {}}
+			onChangeRoomSelection={onChangeRoomSelection}
+			selectedRooms={selectedRooms}
+			eligibleRoomsLength={eligibleRoomsLength}
+		/>
 	</GenericModal>;
 };
 
-const RemoveUsersSecondStep = ({
+export const RemoveUsersSecondStep = ({
 	onClose,
 	onCancel,
 	onConfirm,
-	deletedRooms,
-	keptRooms,
+	deletedRooms = {},
+	keptRooms = {},
 	username,
-	rooms,
+	rooms = [],
 	...props
 }) => {
 	const t = useTranslation();
@@ -80,11 +78,10 @@ const RemoveUsersSecondStep = ({
 		onConfirm={() => onConfirm(deletedRooms)}
 		{...props}>
 		<Margins blockEnd='x16'>
-			{/* {(Object.values(deletedRooms).length > 0 || Object.values(keptRooms).length > 0) && <Box>{ username } is the last owner of some Channels, once removed from the Team, the Channel will be kept inside the Team but the member will still be responsible for managing the Channel from outside the Team.</Box>} */}
-
-			{/* {Object.values(deletedRooms).length > 0 && <Box>{ username } is not going to be removed from the following Channels: <RoomLinkList rooms={deletedRooms} /> </Box>} */}
-
-			{Object.values(keptRooms).length > 0 ? <Box>{t('Teams_kept_username_channels', { username })} <RoomLinkList rooms={keptRooms} /></Box> : <Box>{t('Teams_removing_user_from_team_and_channels', { username })}</Box>}
+			{rooms.length === 0 && <div>{t('Teams_removing__username__from_team', { username })}</div>}
+			{rooms.length > 0 && (Object.values(keptRooms).length > 0
+				? <div>{t('Teams_kept__username__channels', { username })} <RoomLinkList rooms={keptRooms} /></div>
+				: <div>{t('Teams_removing__username__from_team_and_channels', { username })}</div>)}
 		</Margins>
 	</GenericModal>;
 };

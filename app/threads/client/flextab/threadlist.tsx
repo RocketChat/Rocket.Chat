@@ -22,7 +22,7 @@ addAction('thread', (options) => {
 	const room = options.room as unknown as ISubscription;
 	const threadsEnabled = useSetting('Threads_enabled');
 	return useMemo(() => (threadsEnabled ? {
-		groups: ['channel', 'group', 'direct'],
+		groups: ['channel', 'group', 'direct', 'team'],
 		id: 'thread',
 		full: true,
 		title: 'Threads',
@@ -35,6 +35,6 @@ addAction('thread', (options) => {
 				{ unread > 0 && <Header.Badge variant={variant}>{unread}</Header.Badge> }
 			</Header.ToolBoxAction>;
 		},
-		order: 2,
+		order: 4,
 	} : null), [threadsEnabled, room.tunread?.length, room.tunreadUser?.length, room.tunreadGroup?.length]);
 });
