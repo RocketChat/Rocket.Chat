@@ -46,7 +46,6 @@ export default React.memo(({ rid }) => {
 	const userLanguage = useLanguage();
 	const subscription = useUserSubscription(rid);
 
-	console.log(subscription);
 	const { value: data } = useEndpointData(
 		'autotranslate.getSupportedLanguages',
 		useMemo(

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { useMutableCallback, useLocalStorage, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useLocalStorage, useUniqueId, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
 	Box,
 	Icon,
@@ -74,6 +74,7 @@ export const RoomFiles = function RoomFiles({
 		['text', t('Texts')],
 		['application', t('Files')],
 	], [t]);
+	const inputRef = useAutoFocus(true);
 
 	const searchId = useUniqueId();
 
@@ -91,7 +92,7 @@ export const RoomFiles = function RoomFiles({
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
-							<TextInput data-qa-files-search id={searchId} placeholder={t('Search_Files')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+							<TextInput data-qa-files-search id={searchId} placeholder={t('Search_Files')} ref={inputRef} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 							<Select
 								flexGrow={0}
 								width='110px'
@@ -109,7 +110,7 @@ export const RoomFiles = function RoomFiles({
 					<Virtuoso
 						style={{ height: '100%', width: '100%' }}
 						totalCount={total}
-						endReached={loading ? () => {} : loadMoreItems}
+						endReached={ loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 						overscan={50}
 						data={filesItems}
 						components={{ Scroller: ScrollableContentWrapper }}
@@ -130,7 +131,7 @@ RoomFiles.Item = FileItem;
 export default ({ rid }) => {
 	const uid = useUserId();
 	const onClickClose = useTabBarClose();
-
+	const t = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -150,6 +151,7 @@ export default ({ rid }) => {
 		const onConfirm = async () => {
 			try {
 				await deleteFile(_id);
+				dispatchToastMessage({ type: 'success', message: t('Deleted') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

@@ -15,6 +15,7 @@ import {
 	useMutableCallback,
 	useDebouncedValue,
 	useLocalStorage,
+	useAutoFocus,
 } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
 
@@ -37,7 +38,7 @@ export const createItemData = memoize((onClickView, rid) => ({
 	rid,
 }));
 
-const Row = React.memo(({ user, data, index }) => {
+const DefaultRow = React.memo(({ user, data, index }) => {
 	const { onClickView, rid } = data;
 
 	if (!user) {
@@ -69,9 +70,11 @@ export const RoomMembers = ({
 	total,
 	error,
 	loadMoreItems,
+	renderRow: Row = DefaultRow,
 	rid,
 }) => {
 	const t = useTranslation();
+	const inputRef = useAutoFocus(true);
 
 	const options = useMemo(() => [
 		['online', t('Online')],
@@ -93,7 +96,7 @@ export const RoomMembers = ({
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
-							<TextInput placeholder={t('Search_by_username')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+							<TextInput placeholder={t('Search_by_username')} value={text} ref={inputRef} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 							<Select
 								flexGrow={0}
 								width='110px'
@@ -129,7 +132,10 @@ export const RoomMembers = ({
 
 				<Box w='full' h='full' overflow='hidden' flexShrink={1}>
 					{!loading && members && members.length > 0 && <Virtuoso
-						style={{ height: '100%', width: '100%' }}
+						style={{
+							height: '100%',
+							width: '100%',
+						}}
 						totalCount={total}
 						endReached={lm}
 						overscan={50}

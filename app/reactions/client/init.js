@@ -43,7 +43,7 @@ export const EmojiEvents = {
 
 		const data = Blaze.getData(event.currentTarget);
 		const { msg: { _id: mid } } = messageArgs(data);
-		Meteor.call('setReaction', $(event.currentTarget).data('emoji'), mid, () => {
+		Meteor.call('setReaction', $(event.currentTarget).attr('data-emoji'), mid, () => {
 			tooltip.hide();
 		});
 	},

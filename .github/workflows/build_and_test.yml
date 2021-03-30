@@ -30,10 +30,10 @@ jobs:
         echo "github.event_name: ${{ github.event_name }}"
         cat $GITHUB_EVENT_PATH
 
-    - name: Use Node.js 12.18.4
+    - name: Use Node.js 12.21.0
       uses: actions/setup-node@v2
       with:
-        node-version: "12.18.4"
+        node-version: "12.21.0"
 
     - uses: actions/checkout@v2
 
@@ -122,6 +122,12 @@ jobs:
 
     - run: meteor npm run typecheck
 
+    - name: Build Storybook to sanity check components
+      run: npm run build-storybook ; rm -rf ./storybook-static
+      env:
+        NODE_OPTIONS: --max_old_space_size=8192
+
+
     # To reduce memory need during actual build, build the packages solely first
     # - name: Build a Meteor cache
     #   run: |
@@ -184,7 +190,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ["12.18.4"]
+        node-version: ["12.21.0"]
         mongodb-version: ["3.4", "3.6", "4.0"]
 
     steps:
@@ -306,10 +312,10 @@ jobs:
         path: ~/.meteor
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
 
-    - name: Use Node.js 12.18.4
+    - name: Use Node.js 12.21.0
       uses: actions/setup-node@v2
       with:
-        node-version: "12.18.4"
+        node-version: "12.21.0"
 
     - name: Install Meteor
       run: |
@@ -388,6 +394,7 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'us-east-1'
         GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
         REDHAT_REGISTRY_PID: ${{ secrets.REDHAT_REGISTRY_PID }}
         REDHAT_REGISTRY_KEY: ${{ secrets.REDHAT_REGISTRY_KEY }}
@@ -535,10 +542,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Use Node.js 12.18.4
+    - name: Use Node.js 12.21.0
       uses: actions/setup-node@v2
       with:
-        node-version: "12.18.4"
+        node-version: "12.21.0"
 
     - name: Login to DockerHub
       uses: docker/login-action@v1
@@ -567,4 +574,4 @@ jobs:
 
         docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} .
 
-        docker push rocketchat/${{ matrix.service }}-service
+        docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
