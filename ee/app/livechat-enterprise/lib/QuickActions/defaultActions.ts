@@ -4,6 +4,6 @@ addAction(QuickActionsEnum.OnHoldChat, {
 	groups: ['live'],
 	id: QuickActionsEnum.OnHoldChat,
 	title: 'Livechat_onHold_Chat',
-	icon: 'pause',
+	icon: 'pause-unfilled',
 	order: 5,
 });

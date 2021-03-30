@@ -19,7 +19,7 @@ const PlaceChatOnHoldModal: FC<PlaceChatOnHoldModalProps> = ({
 
 	return <Modal {...props}>
 		<Modal.Header>
-			<Icon name='pause' size={20}/>
+			<Icon name='pause-unfilled' size={20}/>
 			<Modal.Title>{t('Livechat_onHold_Chat')}</Modal.Title>
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
