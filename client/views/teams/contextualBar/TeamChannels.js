@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { Virtuoso } from 'react-virtuoso';
-import { useMutableCallback, useLocalStorage, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useLocalStorage, useAutoFocus, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
@@ -52,8 +52,9 @@ const BaseTeamChannels = ({
 		['autoJoin', t('Auto-join')],
 	], [t]);
 
-	const lm = useMutableCallback((start) => loadMoreItems(start + 1, Math.min(50, start + 1 - channels.length)));
+	const lm = useMutableCallback((start) => loadMoreItems(start, Math.min(50, total - start)));
 
+	console.log(total);
 	return (
 		<>
 			<VerticalBar.Header>
@@ -81,13 +82,13 @@ const BaseTeamChannels = ({
 				{!loading && channels.length <= 0 && <Box pi='x24' pb='x12'>{t('No_results_found')}</Box>}
 
 				<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-					{!loading && channels && channels.length > 0 && <Virtuoso
+					<Virtuoso
 						style={{
 							height: '100%',
 							width: '100%',
 						}}
 						totalCount={total}
-						endReached={lm}
+						endReached={loading ? () => {} : lm}
 						overscan={50}
 						data={channels}
 						components={{ Scroller: ScrollableContentWrapper }}
@@ -95,7 +96,7 @@ const BaseTeamChannels = ({
 							onClickView={onClickView}
 							room={data}
 						/>}
-					/>}
+					/>
 				</Box>
 			</VerticalBar.Content>
 
@@ -136,25 +137,40 @@ const TeamChannels = ({ teamId }) => {
 	const [text, setText] = useState('');
 	const [roomList] = useState(() => new RecordList());
 
+	const debouncedText = useDebouncedValue(text, 800);
+
 	const roomListEndpoint = useEndpoint('GET', 'teams.listRooms');
 
-	const fetchData = useCallback(async () => {
-		const { rooms, total } = await roomListEndpoint({ teamId });
+	console.log(text, type);
+
+
+	const fetchData = useCallback(async (start, end) => {
+		console.trace();
+		const { rooms, total } = await roomListEndpoint({
+			teamId,
+			offset: start,
+			count: end,
+			query: JSON.stringify({
+				name: { $regex: debouncedText || '', $options: 'i' },
+				...type !== 'all' && {
+					teamDefault: true,
+				},
+			}),
+		});
 
 		const roomsDated = rooms.map((rooms) => {
 			rooms._updatedAt = new Date(rooms._updatedAt);
 			return { ...rooms };
 		});
+
 		return {
 			items: roomsDated,
 			itemCount: total,
 		};
-	}, [roomListEndpoint, teamId]);
+	}, [roomListEndpoint, teamId, debouncedText, type]);
 
-	const { loadMoreItems } = useScrollableRecordList(
-		roomList,
-		fetchData,
-	);
+	const { loadMoreItems } = useScrollableRecordList(roomList, fetchData);
+
 	const { phase, items, itemCount } = useRecordList(roomList);
 
 	const handleTextChange = useCallback((event) => {
