@@ -61,7 +61,7 @@ export interface ITeamService {
 	deleteByName(teamName: string): Promise<boolean>;
 	unsetTeamIdOfRooms(teamId: string): void;
 	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | undefined>;
-	getOneByName(teamName: string): Promise<ITeam | null>;
+	getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 	autocomplete(uid: string, name: string): Promise<Array<IRoom>>;
 }

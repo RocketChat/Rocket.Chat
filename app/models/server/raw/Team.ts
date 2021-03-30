@@ -43,8 +43,18 @@ export class TeamRaw extends BaseRaw<T> {
 		}, options);
 	}
 
-	findOneByName(name: string, options?: FindOneOptions<T>): Promise<T | null> {
-		return this.col.findOne({ name }, options);
+	findOneByName(name: string | RegExp, options?: FindOneOptions<T>): Promise<T | null> {
+		let query: any = { name };
+
+		if (name instanceof RegExp) {
+			query = {
+				name: {
+					$regex: name,
+				},
+			};
+		}
+
+		return this.col.findOne(query, options);
 	}
 
 	findOneByMainRoomId(roomId: string, options?: FindOneOptions<T>): Promise<T | null> {

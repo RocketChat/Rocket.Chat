@@ -613,8 +613,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findOneById(teamId, options);
 	}
 
-	async getOneByName(teamName: string): Promise<ITeam | null> {
-		return this.TeamModel.findOneByName(teamName);
+	async getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null> {
+		return this.TeamModel.findOneByName(teamName, options);
 	}
 
 	async getOneByRoomId(roomId: string): Promise<ITeam | null> {

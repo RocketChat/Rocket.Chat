@@ -3,6 +3,7 @@ import s from 'underscore.string';
 
 import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { settings } from '../../../settings';
+import { Team } from '../../../../server/sdk';
 
 let usernameBlackList = [];
 
@@ -20,9 +21,17 @@ export const checkUsernameAvailability = function(username) {
 		return false;
 	}
 
-	return !Meteor.users.findOne({
+	let result = true;
+
+	// Make sure no users are using this username
+	result = result && !Meteor.users.findOne({
 		username: {
 			$regex: toRegExp(username),
 		},
 	}, { fields: { _id: 1 } });
+
+	// Make sure no teams are using this username
+	result = result && !Promise.await(Team.getOneByName(toRegExp(username), { projection: { _id: 1 } }));
+
+	return result;
 };
