@@ -15,7 +15,7 @@ const resolveOnHoldCommentInfo = (options: { clientAction: boolean }, room: any)
 		comment = TAPi18n.__('livechat_on_hold_chat_manually', { user: onHoldChatResumedBy.name || onHoldChatResumedBy.username });
 	} else {
 		const { v: { _id: visitorId } } = room;
-		const visitor = LivechatVisitors.findOneById(visitorId);
+		const visitor = LivechatVisitors.findOneById(visitorId, { name: 1, username: 1 });
 		if (!visitor) {
 			throw new Meteor.Error('error-invalid_visitor', 'Visitor Not found');
 		}
@@ -51,7 +51,7 @@ Meteor.methods({
 		await RoutingManager.takeInquiry(inquiry, { agentId, username }, options);
 
 		const { comment, onHoldChatResumedBy } = resolveOnHoldCommentInfo(options, room);
-		Messages.createOnHoldResumedHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldChatResumedBy);
+		(Messages as any).createOnHoldResumedHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldChatResumedBy);
 
 		const updatedRoom = LivechatRooms.findOneById(roomId);
 		updatedRoom && Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));
