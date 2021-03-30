@@ -41,7 +41,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const getVisitorEmail = useMutableCallback(async () => {
 		if (!visitorRoomId) { return; }
-		const { visitor: { visitorEmails } } = await getVisitorInfo({ visitorId: visitorRoomId } as any);
+		const { visitor: { visitorEmails } } = await getVisitorInfo({ visitorId: visitorRoomId });
 		if (visitorEmails?.length && visitorEmails[0].address) {
 			setEmail(visitorEmails[0].address);
 		}
