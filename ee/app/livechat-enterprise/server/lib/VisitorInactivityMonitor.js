@@ -12,8 +12,8 @@ export class VisitorInactivityMonitor {
 		this._started = false;
 		this._name = 'Omnichannel Visitor Inactivity Monitor';
 		this.messageCache = new Map();
-		this.userToPerformAutomaticClosing;
-		this.userToPerformOnHold;
+		this.userToPerformAutomaticClosing = undefined;
+		this.userToPerformOnHold = undefined;
 	}
 
 	start() {

@@ -91,3 +91,14 @@ MessageTypes.registerType({
 		};
 	},
 });
+
+MessageTypes.registerType({
+	id: 'livechat_on-hold_chat_resumed',
+	system: true,
+	message: 'livechat_on_hold_chat_resumed',
+	data(message) {
+		return {
+			comment: message.comment,
+		};
+	},
+});
