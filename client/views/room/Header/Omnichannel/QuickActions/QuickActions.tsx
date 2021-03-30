@@ -160,7 +160,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				setModal(<TranscriptModal room={room} email={email} onRequest={handleRequestTranscript} onSend={handleSendTranscript} onDiscard={handleDiscardTranscript} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.ChatForward:
-				setModal(<ForwardChatModal onForward={handleForwardChat} onCancel={closeModal} />);
+				setModal(<ForwardChatModal room={room} onForward={handleForwardChat} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.CloseChat:
 				setModal(<CloseChatModal onConfirm={handleClose} onCancel={closeModal} />);
