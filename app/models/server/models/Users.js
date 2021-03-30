@@ -720,7 +720,7 @@ export class Users extends Base {
 	findByUsernamesIgnoringCase(usernames, options) {
 		const query = {
 			username: {
-				$in: usernames.filter(Boolean).map((u) => new RegExp(`^$${ escapeRegExp(u) }$`, 'i')),
+				$in: usernames.filter(Boolean).map((u) => new RegExp(`^${ escapeRegExp(u) }$`, 'i')),
 			},
 		};
 
