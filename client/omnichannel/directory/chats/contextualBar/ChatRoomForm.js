@@ -102,8 +102,8 @@ function VisitorData({ room, reload, close }) {
 export function RoomEdit({ room, visitor, reload, close }) {
 	const t = useTranslation();
 
-	const { values, handlers } = useForm(getInitialValuesUser(visitor));
-	const { values: valuesRoom, handlers: handlersRoom } = useForm(getInitialValuesRoom(room));
+	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(getInitialValuesUser(visitor));
+	const { values: valuesRoom, handlers: handlersRoom, hasUnsavedChanges: hasUnsavedChangesRoom } = useForm(getInitialValuesRoom(room));
 	const canViewCustomFields = () => hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
 	const {
@@ -135,7 +135,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 	const PrioritiesSelect = usePrioritiesSelect();
 
 
-	const { values: valueCustom, handlers: handleValueCustom } = useForm({
+	const { values: valueCustom, handlers: handleValueCustom, hasUnsavedChanges: hasUnsavedChangesCustomFields } = useForm({
 		livechatData: valuesRoom.livechatData,
 	});
 
@@ -215,7 +215,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 		}
 	});
 
-	const formIsValid = name && customFieldsError.length === 0;
+	const formIsValid = (hasUnsavedChangesContact || hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) && name && customFieldsError.length === 0;
 
 	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
