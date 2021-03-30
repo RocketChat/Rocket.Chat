@@ -2,12 +2,13 @@ import { escapeRegExp } from '../../../../../lib/escapeRegExp';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
 
-export async function findDepartments({ userId, text, pagination: { offset, count, sort } }) {
+export async function findDepartments({ userId, text, enabled, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-livechat-departments') && !await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
 
 	const query = {
+		...enabled && { enabled: Boolean(enabled) },
 		...text && { name: new RegExp(escapeRegExp(text), 'i') },
 	};
 
