@@ -844,14 +844,14 @@ API.v1.addRoute('groups.setEncrypted', { authRequired: true }, {
 
 API.v1.addRoute('groups.convertToTeam', { authRequired: true }, {
 	post() {
-		if (!hasAllPermission(this.userId, ['create-team', 'edit-room'])) {
-			return API.v1.unauthorized();
-		}
-
 		const { roomId, roomName } = this.requestParams();
 
 		if (!roomId && !roomName) {
 			return API.v1.failure('The parameter "roomId" or "roomName" is required');
+		}
+
+		if (!hasAllPermission(this.userId, ['create-team', 'edit-room'], roomId)) {
+			return API.v1.unauthorized();
 		}
 
 		const room = findPrivateGroupByIdOrName({
