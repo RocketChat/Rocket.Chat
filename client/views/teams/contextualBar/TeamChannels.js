@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { Virtuoso } from 'react-virtuoso';
-import { useMutableCallback, useLocalStorage, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMutableCallback, useLocalStorage, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
@@ -135,6 +135,7 @@ const TeamChannels = ({ teamId }) => {
 	const [type, setType] = useLocalStorage('channels-list-type', 'all');
 	const [text, setText] = useState('');
 	const [roomList] = useState(() => new RecordList());
+	const debouncedText = useDebouncedValue(text, 500);
 
 	const roomListEndpoint = useEndpoint('GET', 'teams.listRooms');
 
@@ -142,7 +143,7 @@ const TeamChannels = ({ teamId }) => {
 		const { rooms, total } = await roomListEndpoint({
 			teamId,
 			query: JSON.stringify({
-				name: { $regex: text || '', $options: 'i' },
+				name: { $regex: debouncedText || '', $options: 'i' },
 				...type !== 'all' && {
 					teamDefault: true,
 				},
@@ -157,7 +158,7 @@ const TeamChannels = ({ teamId }) => {
 			items: roomsDated,
 			itemCount: total,
 		};
-	}, [roomListEndpoint, teamId, text, type]);
+	}, [debouncedText, roomListEndpoint, teamId, type]);
 
 	const { loadMoreItems } = useScrollableRecordList(
 		roomList,
