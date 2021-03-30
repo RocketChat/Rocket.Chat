@@ -49,5 +49,4 @@ const OmnichannelDirectoryPage = () => {
 	);
 };
 
-OmnichannelDirectoryPage.displayName = 'DirectoryOmnichannelPage';
 export default OmnichannelDirectoryPage;

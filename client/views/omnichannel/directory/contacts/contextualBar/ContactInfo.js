@@ -5,7 +5,10 @@ import React, { useEffect, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
+import UserCard from '../../../../../components/UserCard/UserCard';
+import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
+import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useRoute } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
@@ -72,14 +75,28 @@ function ContactInfo({ id }) {
 		FlowRouter.go(`/live/${_id}/contact-chat-history`);
 	};
 
+	const displayName = name || username;
+
 	return (
 		<>
 			<VerticalBar.ScrollableContent p='x24'>
 				<Margins block='x4'>
-					{username && username !== name && (
+					{displayName && (
 						<>
 							<Label>{`${t('Name')} / ${t('Username')}`}</Label>
-							<Info>{`${name}/${username}`}</Info>
+							<Info style={{ display: 'flex' }}>
+								<UserAvatar size='x40' title={username} username={username} />
+								<UserCard.Username
+									mis='x10'
+									name={displayName}
+									status={<UserStatus status={status} />}
+								/>
+								{username && name && (
+									<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
+										({username})
+									</Box>
+								)}
+							</Info>
 						</>
 					)}
 					{visitorEmails && visitorEmails.length && (

@@ -29,7 +29,7 @@ const ContactContextualBar = ({ contactReload }) => {
 				)}
 				{context === 'info' && (
 					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
-						<Icon name='user' size='x20' /> {t('Contact_Profile')}
+						<Icon name='user' size='x20' /> {t('Contact_Info')}
 					</Box>
 				)}
 				{context === 'edit' && (

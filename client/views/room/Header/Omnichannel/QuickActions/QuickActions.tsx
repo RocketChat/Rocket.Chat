@@ -54,7 +54,7 @@ const QuickActions = ({
 		}
 		const {
 			visitor: { visitorEmails },
-		} = await getVisitorInfo(visitorRoomId);
+		} = await getVisitorInfo({ visitorId: visitorRoomId });
 		if (visitorEmails?.length && visitorEmails[0].address) {
 			setEmail(visitorEmails[0].address);
 		}
@@ -191,7 +191,9 @@ const QuickActions = ({
 				);
 				break;
 			case QuickActionsEnum.ChatForward:
-				setModal(<ForwardChatModal onForward={handleForwardChat} onCancel={closeModal} />);
+				setModal(
+					<ForwardChatModal room={room} onForward={handleForwardChat} onCancel={closeModal} />,
+				);
 				break;
 			case QuickActionsEnum.CloseChat:
 				setModal(<CloseChatModal onConfirm={handleClose} onCancel={closeModal} />);

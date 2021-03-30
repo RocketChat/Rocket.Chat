@@ -1,7 +1,7 @@
 export type LivechatVisitorInfoEndpoint = {
-	GET: (
-		visitorId: string,
-	) => {
+	GET: (params: {
+		visitorId: string;
+	}) => {
 		success: boolean;
 		visitor: {
 			visitorEmails: Array<{
