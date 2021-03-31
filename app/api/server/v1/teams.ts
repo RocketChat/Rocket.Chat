@@ -129,9 +129,6 @@ API.v1.addRoute('teams.updateRoom', { authRequired: true }, {
 		const { roomId, isDefault } = this.bodyParams;
 
 		const team = Promise.await(Team.getOneByRoomId(roomId));
-		if (!team) {
-			return API.v1.failure('room-not-on-team');
-		}
 
 		if (!hasPermission(this.userId, 'edit-team-channel', team.roomId)) {
 			return API.v1.unauthorized();

@@ -589,8 +589,22 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findOneByName(teamName, options);
 	}
 
-	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
+	async getOneByMainRoomId(roomId: string): Promise<ITeam | null> {
 		return this.TeamModel.findOneByMainRoomId(roomId, { projection: { _id: 1 } });
+	}
+
+	async getOneByRoomId(roomId: string): Promise<ITeam | undefined> {
+		const room = await this.RoomsModel.findOneById(roomId);
+
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+
+		if (!room.teamId) {
+			throw new Error('room-not-on-team');
+		}
+
+		return this.TeamModel.findOneById(room.teamId);
 	}
 
 	async addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
