@@ -96,8 +96,6 @@ export function ChatInfo({ id, route }) {
 	const formatDateAndTime = useFormatDateAndTime();
 	const formatDuration = useFormatDuration();
 
-	const formatDuration = useFormatDuration();
-
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
 	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
@@ -141,9 +139,14 @@ export function ChatInfo({ id, route }) {
 					<Label>{t('Topic')}</Label>
 					<Info>{topic}</Info>
 				</>}
-				{ts && metrics?.reaction?.fd && <>
+				{ts && <>
 					<Label>{t('Queue_Time')}</Label>
-					<Info>{formatDuration(moment(metrics.reaction.fd).diff(moment(ts)))}</Info>
+					{
+						servedBy
+							? <Info>{moment(servedBy.ts).from(moment(ts), true)}</Info>
+							: <Info>{moment(ts).fromNow(true)}</Info>
+					}
+
 				</>}
 				{closedAt && <>
 					<Label>{t('Chat_Duration')}</Label>
