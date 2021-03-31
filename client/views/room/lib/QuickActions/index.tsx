@@ -43,5 +43,6 @@ export enum QuickActionsEnum {
 	MoveQueue = 'rocket-move-to-queue',
 	ChatForward = 'rocket-chat-forward',
 	Transcript = 'rocket-transcript',
-	CloseChat = 'rocket-close-chat'
+	CloseChat = 'rocket-close-chat',
+	OnHoldChat = 'rocket-on-hold-chat',
 }
