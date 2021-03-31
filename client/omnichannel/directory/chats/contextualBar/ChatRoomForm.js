@@ -182,11 +182,8 @@ export function RoomEdit({ room, visitor, reload, close }) {
 			topic,
 			tags: Object.values(tags),
 			livechatData,
+			...priorityId && { priorityId },
 		};
-
-		if (priorityId) {
-			roomData.priorityId = priorityId;
-		}
 
 		try {
 			saveRoom(userData, roomData);
@@ -223,12 +220,12 @@ export function RoomEdit({ room, visitor, reload, close }) {
 					<TextInput flexGrow={1} value={topic} onChange={handleTopic} />
 				</Field.Row>
 			</Field>
-			<Field>
+			{Tags && (tags && Object.values(tags).length > 0) && <Field>
 				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
 				<Field.Row>
 					<Tags value={Object.values(tags)} handler={handleTags} />
 				</Field.Row>
-			</Field>
+			</Field>}
 			{PrioritiesSelect && (priorities && priorities.length > 0)
 			&& <PrioritiesSelect value={priorityId} label={t('Priority')} options={priorities} handler={handlePriorityId} />}
 		</VerticalBar.ScrollableContent>
