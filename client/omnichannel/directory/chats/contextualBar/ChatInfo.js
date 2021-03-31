@@ -38,15 +38,30 @@ const DepartmentField = ({ departmentId }) => {
 
 const ContactField = ({ contact, room }) => {
 	const t = useTranslation();
-	const { username, status } = contact;
+	const { status } = contact;
 	const { fname, t: type } = room;
 	const avatarUrl = roomTypes.getConfig(type).getAvatarPath(room);
+
+	const { value: data, phase: state, error } = useEndpointData(`livechat/visitors.info?visitorId=${ contact._id }`);
+
+	if (state === AsyncStatePhase.LOADING) {
+		return <FormSkeleton />;
+	}
+
+	if (error || !data || !data.visitor) {
+		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
+	}
+
+	const { visitor: { username, name } } = data;
+
+	const displayName = name || username;
 
 	return <>
 		<Label>{t('Contact')}</Label>
 		<Info style={{ display: 'flex' }}>
 			<Avatar size='x40' title={fname} url={avatarUrl} />
-			<UserCard.Username mis='x10' name={username} status={<UserStatus status={status} />} />
+			<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
+			{username && name && <Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>({username})</Box>}
 		</Info>
 	</>;
 };
@@ -60,13 +75,16 @@ const AgentField = ({ agent }) => {
 		return <FormSkeleton />;
 	}
 
-	const { user: { status } } = value || { user: { } };
+	const { user: { name, status } } = value || { user: { } };
+
+	const displayName = name || username;
 
 	return <>
 		<Label>{t('Agent')}</Label>
 		<Info style={{ display: 'flex' }}>
 			<UserAvatar size='x40' title={username} username={username} />
-			<UserCard.Username mis='x10' name={username} status={<UserStatus status={status} />} />
+			<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
+			{username && name && <Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>({username})</Box>}
 		</Info>
 	</>;
 };
@@ -77,7 +95,7 @@ export function ChatInfo({ id, route }) {
 	const formatDateAndTime = useFormatDateAndTime();
 
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
-	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic } } = data || { room: { v: { } } };
+	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
 
 	const onEditClick = useMutableCallback(() => routePath.push(
@@ -135,12 +153,9 @@ export function ChatInfo({ id, route }) {
 					<Label>{t('Closed_At')}</Label>
 					<Info>{formatDateAndTime(closedAt)}</Info>
 				</>}
-				{metrics?.v?.lq && <>
+				{!waitingResponse && <>
 					<Label>{t('Inactivity_Time')}</Label>
-					{closedAt
-						? <Info>{moment(closedAt).from(moment(metrics.v.lq), true)}</Info>
-						: <Info>{moment(metrics.v.lq).fromNow()}</Info>
-					}
+					<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
 				</>}
 			</Margins>
 		</VerticalBar.ScrollableContent>

@@ -14,6 +14,8 @@ import { hasPermission } from '../../../../../app/authorization';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { ContactManagerInfo } from '../../../../../ee/client/omnichannel/ContactManager';
+import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { UserStatus } from '../../../../components/UserStatus';
 
 
 const wordBreak = css`
@@ -85,12 +87,20 @@ export function ContactInfo({ id }) {
 		FlowRouter.go(`/live/${ _id }/contact-chat-history`);
 	};
 
+	const showContactHistory = FlowRouter.getRouteName() === 'live';
+
+	const displayName = name || username;
+
 	return <>
 		<VerticalBar.ScrollableContent p='x24'>
 			<Margins block='x4'>
-				{username && username !== name && <>
+				{displayName && <>
 					<Label>{`${ t('Name') } / ${ t('Username') }`}</Label>
-					<Info>{`${ name }/${ username }`}</Info>
+					<Info style={{ display: 'flex' }}>
+						<UserAvatar size='x40' title={username} username={username} />
+						<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
+						{username && name && <Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>({username})</Box>}
+					</Info>
 				</>}
 				{visitorEmails && visitorEmails.length && <>
 					<Label>{t('Email')}</Label>
@@ -122,7 +132,7 @@ export function ContactInfo({ id }) {
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>
-				{ lastChat && <Button onClick={onChatHistory}><Icon name='history' size='x20'/> {t('Chat_History')}</Button>}
+				{ showContactHistory && lastChat && <Button onClick={onChatHistory}><Icon name='history' size='x20'/> {t('Chat_History')}</Button>}
 				<Button onClick={onEditButtonClick}><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
 			</ButtonGroup>
 		</VerticalBar.Footer>
