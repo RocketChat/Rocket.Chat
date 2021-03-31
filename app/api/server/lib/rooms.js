@@ -32,6 +32,7 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 	const name = filter && filter.trim();
 	const discussion = types && types.includes('discussions');
 	const includeTeams = types && types.includes('teams');
+	const showOnlyTeams = types.length === 1 && types.includes('teams');
 	const typesToRemove = ['discussions', 'teams'];
 	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
 	const options = {
@@ -42,13 +43,12 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 	};
 
 	let cursor;
-
 	if (name && showTypes.length) {
-		cursor = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, options);
+		cursor = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else if (showTypes.length) {
-		cursor = Rooms.findByTypes(showTypes, discussion, includeTeams, options);
+		cursor = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else {
-		cursor = Rooms.findByNameContaining(name, discussion, includeTeams, options);
+		cursor = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, options);
 	}
 
 	const total = await cursor.count();
