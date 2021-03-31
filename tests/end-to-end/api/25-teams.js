@@ -621,6 +621,7 @@ describe('[Teams]', () => {
 					expect(res.body.teams[0].createdBy).to.include.property('username');
 					expect(res.body.teams[0]).to.include.property('createdAt');
 					expect(res.body.teams[0]).to.include.property('rooms');
+					expect(res.body.teams[0]).to.include.property('numberOfUsers');
 				})
 				.end(done);
 		});
