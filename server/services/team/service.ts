@@ -238,6 +238,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findByNames(names, options).toArray();
 	}
 
+	async listByIds(ids: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]> {
+		return this.TeamModel.findByIds(ids, options).toArray();
+	}
+
 	async addRoom(uid: string, rid: string, teamId: string, isDefault = false): Promise<IRoom> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
