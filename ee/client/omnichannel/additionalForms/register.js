@@ -20,4 +20,5 @@ hasLicense('livechat-enterprise').then((enabled) => {
 	registerForm({ useBusinessHoursMultiple: () => useMemo(() => lazy(() => import('./BusinessHoursMultiple')), []) });
 	registerForm({ useCurrentChatTags: () => useMemo(() => lazy(() => import('../tags/CurrentChatTags')), []) });
 	registerForm({ useContactManager: () => useMemo(() => lazy(() => import('../additionalForms/ContactManager')), []) });
+	registerForm({ usePrioritiesSelect: () => useMemo(() => lazy(() => import('./PrioritiesSelect')), []) });
 });

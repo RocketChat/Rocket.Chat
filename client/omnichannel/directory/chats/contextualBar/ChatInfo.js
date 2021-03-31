@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { Box, Margins, Tag, Avatar, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import UAParser from 'ua-parser-js';
 
 import VerticalBar from '../../../../components/VerticalBar';
 import UserCard from '../../../../components/UserCard';
@@ -16,6 +17,7 @@ import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { UserStatus } from '../../../../components/UserStatus';
 import { roomTypes } from '../../../../../app/utils/client';
 import { useRoute } from '../../../../contexts/RouterContext';
+import { hasPermission } from '../../../../../app/authorization';
 
 
 const wordBreak = css`
@@ -90,16 +92,92 @@ const AgentField = ({ agent }) => {
 	</>;
 };
 
+const CustomField = ({ id, value }) => {
+	const t = useTranslation();
+	const { value: data, phase: state, error } = useEndpointData(`livechat/custom-fields/${ id }`);
+	if (state === AsyncStatePhase.LOADING) {
+		return <FormSkeleton />;
+	}
+	if (error || !data || !data.customField) {
+		return <Box mbs='x16'>{t('Custom_Field_Not_Found')}</Box>;
+	}
+	const { label } = data.customField;
+	return label && <>
+		<Label>{label}</Label>
+		<Info>{value}</Info>
+	</>;
+};
+
+const PriorityField = ({ id }) => {
+	const t = useTranslation();
+	const { value: data, phase: state, error } = useEndpointData(`livechat/priorities.getOne?priorityId=${ id }`);
+	if (state === AsyncStatePhase.LOADING) {
+		return <FormSkeleton />;
+	}
+	if (error || !data) {
+		return <Box mbs='x16'>{t('Custom_Field_Not_Found')}</Box>;
+	}
+	const { name } = data;
+	return <>
+		<Label>{t('Priority')}</Label>
+		<Info>{name}</Info>
+	</>;
+};
+
+const VisitorClientInfo = ({ uid }) => {
+	const t = useTranslation();
+	const { value: userData, phase: state, error } = useEndpointData(`livechat/visitors.info?visitorId=${ uid }`);
+	if (state === AsyncStatePhase.LOADING) {
+		return <FormSkeleton />;
+	}
+
+	if (error || !userData || !userData.userAgent) {
+		return null;
+	}
+
+	const clientData = {};
+	const ua = new UAParser();
+	ua.setUA(userData.userAgent);
+	clientData.os = `${ ua.getOS().name } ${ ua.getOS().version }`;
+	clientData.browser = `${ ua.getBrowser().name } ${ ua.getBrowser().version }`;
+
+	return <>
+		{clientData.os && <>
+			<Label>{t('OS')}</Label>
+			<Info>{clientData.os}</Info>
+		</>}
+		{clientData.browser && <>
+			<Label>{t('Browser')}</Label>
+			<Info>{clientData.browser}</Info>
+		</>}
+	</>;
+};
+
 export function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
-
+	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
+	const [customFields, setCustomFields] = useState([]);
 	const formatDuration = useFormatDuration();
-
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
-	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy } } = data || { room: { v: { } } };
+	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy, priorityId, livechatData } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
+	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
+	const visitorId = v?._id;
+
+	useEffect(() => {
+		if (allCustomFields) {
+			const { customFields: customFieldsAPI } = allCustomFields;
+			setCustomFields(customFieldsAPI);
+		}
+	}, [allCustomFields, stateCustomFields]);
+
+	const checkIsVisibleAndScopeRoom = (key) => {
+		const field = customFields.find(({ _id }) => _id === key);
+		if (field && field.visibility === 'visible' && field.scope === 'room') { return true; }
+		return false;
+	};
 
 	const onEditClick = useMutableCallback(() => routePath.push(
 		route ? {
@@ -124,6 +202,7 @@ export function ChatInfo({ id, route }) {
 		<VerticalBar.ScrollableContent p='x24'>
 			<Margins block='x4'>
 				<ContactField contact={v} room={data.room} />
+				{visitorId && <VisitorClientInfo uid={visitorId}/>}
 				{servedBy && <AgentField agent={servedBy} />}
 				{ departmentId && <DepartmentField departmentId={departmentId} /> }
 				{tags && tags.length > 0 && <>
@@ -168,6 +247,11 @@ export function ChatInfo({ id, route }) {
 					<Label>{t('Inactivity_Time')}</Label>
 					<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
 				</>}
+				{ canViewCustomFields()
+					&& livechatData
+					&& Object.keys(livechatData).map((key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />)
+				}
+				{priorityId && <PriorityField id={priorityId} />}
 			</Margins>
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
