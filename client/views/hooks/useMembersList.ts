@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { getConfig } from '../../../app/ui-utils/client/config';
-import { IRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
 import { useMethod } from '../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
@@ -14,17 +14,17 @@ type MembersListOptions = {
 	debouncedText: string;
 }
 
-export const useRoomMembersList = (
+export const useMembersList = (
 	options: MembersListOptions,
 ): {
-		membersList: RecordList<IRoom>;
+		membersList: RecordList<IUser>;
 		initialItemCount: number;
 		reload: () => void;
 		loadMoreItems: (start: number, end: number) => void;
 	} => {
 	const getUsersMethod = useMethod('getUsersOfRoom');
-	const [membersList, setMembersList] = useState(() => new RecordList<IRoom>());
-	const reload = useCallback(() => setMembersList(new RecordList<IRoom>()), []);
+	const [membersList, setMembersList] = useState(() => new RecordList<IUser>());
+	const reload = useCallback(() => setMembersList(new RecordList<IUser>()), []);
 
 	useComponentDidUpdate(() => {
 		options && reload();
