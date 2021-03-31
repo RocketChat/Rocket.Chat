@@ -219,9 +219,14 @@ export function ChatInfo({ id, route }) {
 					<Label>{t('Topic')}</Label>
 					<Info>{topic}</Info>
 				</>}
-				{ts && metrics?.reaction?.fd && <>
+				{ts && <>
 					<Label>{t('Queue_Time')}</Label>
-					<Info>{moment(ts).from(moment(metrics.reaction.fd), true)}</Info>
+					{
+						servedBy
+							? <Info>{moment(servedBy.ts).from(moment(ts), true)}</Info>
+							: <Info>{moment(ts).fromNow(true)}</Info>
+					}
+
 				</>}
 				{closedAt && <>
 					<Label>{t('Chat_Duration')}</Label>

@@ -111,7 +111,7 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 
 		const isNotAvailable = await teamNameExists(name);
 		if (isNotAvailable) {
-			setNameError(t('Teams_Errors_Already_exists', { name }));
+			setNameError(t('Teams_Errors_team_name', { name }));
 		}
 	}, 230, [name]);
 

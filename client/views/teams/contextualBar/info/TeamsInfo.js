@@ -210,11 +210,10 @@ export default function TeamsInfoWithLogic({
 	const router = useRoute('home');
 
 	const canDelete = usePermission('delete-team', room._id);
-	const canEdit = usePermission('edit-team', room._id);
+	const canEdit = usePermission('edit-team-channel', room._id);
 
 	// const canLeave = usePermission('leave-team'); /* && room.cl !== false && joined */
 
-	// mutalble callback open modal
 	const onClickDelete = useMutableCallback(() => {
 		const onConfirm = async (deletedRooms) => {
 			const roomsToRemove = Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : null;
