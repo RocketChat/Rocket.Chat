@@ -3778,6 +3778,7 @@
   "Tag": "Tag",
   "Tag_removed": "Tag Removed",
   "Take_it": "Take it!",
+  "Taken_At": "Taken At",
   "Target user not allowed to receive messages": "Target user not allowed to receive messages",
   "TargetRoom": "Target Room",
   "TargetRoom_Description": "The room where messages will be sent which are a result of this event being fired. Only one target room is allowed and it must exist.",
