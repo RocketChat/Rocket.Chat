@@ -22,23 +22,23 @@ import memoize from 'memoize-one';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserRoom } from '../../../../../contexts/UserContext';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useMethod } from '../../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
-import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
 import { MemberItem } from './components/MemberItem';
 import UserInfoWithData from '../../UserInfo';
 import InviteUsers from '../InviteUsers/InviteUsers';
 import AddUsers from '../AddUsers/AddUsers';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
+import { useRoomMembersList } from '../../../../hooks/useRoomMembersList';
+import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 
 export const createItemData = memoize((onClickView, rid) => ({
 	onClickView,
 	rid,
 }));
 
-const DefaultRow = React.memo(({ user, data, index }) => {
+const DefaultRow = React.memo(({ user, data, index, reload }) => {
 	const { onClickView, rid } = data;
 
 	if (!user) {
@@ -53,6 +53,7 @@ const DefaultRow = React.memo(({ user, data, index }) => {
 		status={user.status}
 		name={user.name}
 		onClickView={onClickView}
+		reload={reload}
 	/>;
 });
 
@@ -72,6 +73,7 @@ export const RoomMembers = ({
 	loadMoreItems,
 	renderRow: Row = DefaultRow,
 	rid,
+	reload,
 }) => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
@@ -82,7 +84,7 @@ export const RoomMembers = ({
 	], [t]);
 
 	const itemData = createItemData(onClickView, rid);
-	const lm = useMutableCallback((start) => loadMoreItems(start + 1, Math.min(50, start + 1 - members.length)));
+	const lm = useMutableCallback((start) => !loading && loadMoreItems(start));
 
 	return (
 		<>
@@ -107,15 +109,16 @@ export const RoomMembers = ({
 					</Box>
 				</Box>
 
-				{ error && <Box pi='x24' pb='x12'><Callout type='danger'>
-					{error}
-				</Callout></Box> }
-
 				{loading && <Box pi='x24' pb='x12'><Throbber size='x12' /></Box>}
+
+				{error && <Box pi='x24' pb='x12'><Callout type='danger'>
+					{error.message}
+				</Callout></Box>}
+
 				{!loading && members.length <= 0 && <Box pi='x24' pb='x12'>{t('No_results_found')}</Box>}
 
 				{!loading && members.length > 0 && (
-					<Box pi='x24' pb='x12'>
+					<Box pi='x18' pb='x12'>
 						<Box is='span' color='info' fontScale='p1'>
 							{t('Showing')}: <Box is='span' color='default' fontScale='p2'>{members.length}</Box>
 						</Box>
@@ -145,6 +148,7 @@ export const RoomMembers = ({
 							data={itemData}
 							user={data}
 							index={index}
+							reload={reload}
 						/>}
 					/>}
 				</Box>
@@ -162,11 +166,6 @@ export const RoomMembers = ({
 
 RoomMembers.Option = MemberItem;
 
-const useGetUsersOfRoom = (params) => {
-	const method = useMethod('getUsersOfRoom');
-	return useDataWithLoadMore(useCallback((args) => method(...args), [method]), params);
-};
-
 export default ({
 	rid,
 }) => {
@@ -179,10 +178,11 @@ export default ({
 	const [type, setType] = useLocalStorage('members-list-type', 'online');
 	const [text, setText] = useState('');
 
-	const debouncedText = useDebouncedValue(text, 500);
-	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [rid, type, debouncedText]);
+	const debouncedText = useDebouncedValue(text, 800);
 
-	const { value, phase, more, error } = useGetUsersOfRoom(params);
+	const { membersList, loadMoreItems, reload } = useRoomMembersList(useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [rid, type, debouncedText]));
+
+	const { phase, items, itemCount: total } = useRecordList(membersList);
 
 	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
 
@@ -208,12 +208,6 @@ export default ({
 
 	const handleBack = useCallback(() => setState({}), [setState]);
 
-	const loadMoreItems = useCallback((start, end) => more(([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter], (prev, next) => ({
-		total: next.total,
-		finished: next.records.length < 50,
-		records: [...prev.records, ...next.records],
-	})), [more]);
-
 	if (state.tab === 'UserInfo') {
 		return <UserInfoWithData rid={rid} onClickClose={onClickClose} onClickBack={handleBack} username={state.username} />;
 	}
@@ -223,7 +217,7 @@ export default ({
 	}
 
 	if (state.tab === 'AddUsers') {
-		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
+		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} reload={reload} />;
 	}
 
 	return (
@@ -232,16 +226,16 @@ export default ({
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
-			error={error}
 			setType={setType}
 			setText={handleTextChange}
-			members={value?.records}
-			total={value?.total}
+			members={items}
+			total={total}
 			onClickClose={onClickClose}
 			onClickView={viewUser}
 			onClickAdd={canAddUsers && addUser}
 			onClickInvite={canAddUsers && createInvite}
 			loadMoreItems={loadMoreItems}
+			reload={reload}
 		/>
 	);
 };
