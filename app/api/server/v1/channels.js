@@ -422,10 +422,14 @@ API.v1.addRoute('channels.invite', { authRequired: true }, {
 	post() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
-		const user = this.getUserFromParams();
+		const users = this.getUserListFromParams();
+
+		if (!users.length) {
+			return API.v1.failure('invalid-user-invite-list', 'Cannot invite if no users are provided');
+		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('addUserToRoom', { rid: findResult._id, username: user.username });
+			Meteor.call('addUsersToRoom', { rid: findResult._id, users: users.map((u) => u.username) });
 		});
 
 		return API.v1.success({
