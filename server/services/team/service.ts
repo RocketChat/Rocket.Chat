@@ -195,9 +195,11 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const results: ITeamInfo[] = [];
 		for await (const record of records) {
 			const rooms = this.RoomsModel.findByTeamId(record._id);
+			const users = this.TeamMembersModel.findByTeamId(record._id);
 			results.push({
 				...record,
 				rooms: await rooms.count(),
+				numberOfUsers: await users.count(),
 			});
 		}
 
@@ -207,20 +209,37 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async listAll({ offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeam>> {
+	async listAll({ offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamInfo>> {
 		const cursor = this.TeamModel.find({}, {
 			limit: count,
 			skip: offset,
 		});
 
+		const records = await cursor.toArray();
+
+		const results: ITeamInfo[] = [];
+		for await (const record of records) {
+			const rooms = this.RoomsModel.findByTeamId(record._id);
+			const users = this.TeamMembersModel.findByTeamId(record._id);
+			results.push({
+				...record,
+				rooms: await rooms.count(),
+				numberOfUsers: await users.count(),
+			});
+		}
+
 		return {
 			total: await cursor.count(),
-			records: await cursor.toArray(),
+			records: results,
 		};
 	}
 
 	async listByNames(names: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]> {
 		return this.TeamModel.findByNames(names, options).toArray();
+	}
+
+	async listByIds(ids: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]> {
+		return this.TeamModel.findByIds(ids, options).toArray();
 	}
 
 	async addRoom(uid: string, rid: string, teamId: string, isDefault = false): Promise<IRoom> {

@@ -22,6 +22,9 @@ import { useUserId } from '../../../../../contexts/UserContext';
 import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
 import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
 import { ISubscription } from '../../../../../../definition/ISubscription';
+import { useSetting } from '../../../../../contexts/SettingsContext';
+import PlaceChatOnHoldModal from '../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
+
 
 
 const QuickActions = ({ room, className, subscription }: { room: IRoom; className: BoxProps['className']; subscription: ISubscription }): JSX.Element => {
@@ -138,6 +141,18 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 		}
 	}, [closeChat, closeModal, rid, t]);
 
+	const onHoldChat = useEndpoint('POST', 'livechat/room.onHold');
+
+	const handleOnHoldChat = useCallback(async () => {
+		try {
+			await onHoldChat({ roomId: rid } as any);
+			closeModal();
+			toastr.success(t('Chat_On_Hold_Successfully'));
+		} catch (error) {
+			handleError(error);
+		}
+	}, [onHoldChat, closeModal, rid, t]);
+
 	const openModal = useMutableCallback((id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
@@ -151,6 +166,9 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 				break;
 			case QuickActionsEnum.CloseChat:
 				setModal(<CloseChatModal onConfirm={handleClose} onCancel={closeModal} />);
+				break;
+			case QuickActionsEnum.OnHoldChat:
+				setModal(<PlaceChatOnHoldModal onOnHoldChat={handleOnHoldChat} onCancel={closeModal} />);
 				break;
 			default:
 				break;
@@ -166,6 +184,7 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 	const isSubscribedToRoom = !!subscription;
 
 	const omnichannelRouteConfig = useOmnichannelRouteConfig();
+	const manualOnHoldAllowed = useSetting('Livechat_allow_manual_on_hold');
 
 	const hasManagerRole = useRole('livechat-manager');
 
@@ -178,6 +197,9 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 	const canCloseRoom = usePermission('close-others-livechat-room') || isSubscribedToRoom;
 
 	const canMoveQueue = !!room.servedBy && !!omnichannelRouteConfig?.returnQueue;
+	const canPlaceChatOnHold = (!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed) as boolean;
+
+	const omnichannelRouteConfig = useOmnichannelRouteConfig();
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
@@ -189,6 +211,8 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 				return !!email && canSendTranscript;
 			case QuickActionsEnum.CloseChat:
 				return !!roomOpen && canCloseRoom;
+			case QuickActionsEnum.OnHoldChat:
+				return !!roomOpen && canPlaceChatOnHold;
 			default:
 				break;
 		}
