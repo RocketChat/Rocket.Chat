@@ -13,7 +13,7 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { RoomMembers } from '../../room/contextualBar/RoomMembers/List/RoomMembers';
 import AddUsers from '../../room/contextualBar/RoomMembers/AddUsers';
 import InviteUsers from '../../room/contextualBar/RoomMembers/InviteUsers';
-import { useRoomMembersList } from '../../hooks/useRoomMembersList';
+import { useMembersList } from '../../hooks/useMembersList';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 
 const TeamMembers = ({
@@ -31,7 +31,7 @@ const TeamMembers = ({
 
 	const debouncedText = useDebouncedValue(text, 500);
 
-	const { membersList, loadMoreItems, reload } = useRoomMembersList(useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [rid, type, debouncedText]));
+	const { membersList, loadMoreItems, reload } = useMembersList(useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [rid, type, debouncedText]));
 
 	const { phase, items, itemCount: total } = useRecordList(membersList);
 

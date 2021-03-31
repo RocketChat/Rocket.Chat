@@ -30,7 +30,7 @@ import InviteUsers from '../InviteUsers/InviteUsers';
 import AddUsers from '../AddUsers/AddUsers';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
-import { useRoomMembersList } from '../../../../hooks/useRoomMembersList';
+import { useMembersList } from '../../../../hooks/useMembersList';
 import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 
 export const createItemData = memoize((onClickView, rid) => ({
@@ -180,7 +180,7 @@ export default ({
 
 	const debouncedText = useDebouncedValue(text, 800);
 
-	const { membersList, loadMoreItems, reload } = useRoomMembersList(useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [rid, type, debouncedText]));
+	const { membersList, loadMoreItems, reload } = useMembersList(useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [rid, type, debouncedText]));
 
 	const { phase, items, itemCount: total } = useRecordList(membersList);
 
