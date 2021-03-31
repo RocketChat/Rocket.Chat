@@ -854,10 +854,6 @@ API.v1.addRoute('groups.convertToTeam', { authRequired: true }, {
 			return API.v1.failure('The parameter "roomId" or "roomName" is required');
 		}
 
-		if (!hasAllPermission(this.userId, ['create-team', 'edit-room'], roomId)) {
-			return API.v1.unauthorized();
-		}
-
 		const room = findPrivateGroupByIdOrName({
 			params: {
 				roomId,
@@ -868,6 +864,10 @@ API.v1.addRoute('groups.convertToTeam', { authRequired: true }, {
 
 		if (!room) {
 			return API.v1.failure('Private group not found');
+		}
+
+		if (!hasAllPermission(this.userId, ['create-team', 'edit-room'], room.rid)) {
+			return API.v1.unauthorized();
 		}
 
 		const subscriptions = Subscriptions.findByRoomId(room.rid, {
