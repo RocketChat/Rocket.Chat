@@ -121,7 +121,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 	};
 }
 
-export async function findRoomsAvailableForTeams({ uid, selector }) {
+export async function findRoomsAvailableForTeams({ uid, name }) {
 	const options = {
 		fields: {
 			_id: 1,
@@ -140,7 +140,7 @@ export async function findRoomsAvailableForTeams({ uid, selector }) {
 		.fetch()
 		.map((item) => item.rid);
 
-	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStarting(selector.name, userRooms, options).toArray();
+	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStarting(name, userRooms, options).toArray();
 
 	return {
 		items: rooms,

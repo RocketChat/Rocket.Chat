@@ -908,20 +908,19 @@ describe('[Rooms]', function() {
 		});
 	});
 	describe('[/rooms.autocomplete.availableForTeams]', () => {
-		it('should return an error when the required parameter "selector" is not provided', (done) => {
+		it('should return the rooms to fill auto complete', (done) => {
 			request.get(api('rooms.autocomplete.availableForTeams'))
 				.set(credentials)
-				.query({})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The \'selector\' param is required');
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
 				})
 				.end(done);
 		});
-		it('should return the rooms to fill auto complete', (done) => {
-			request.get(api('rooms.autocomplete.availableForTeams?selector={}'))
+		it('should return the filtered rooms to fill auto complete', (done) => {
+			request.get(api('rooms.autocomplete.availableForTeams?name=group'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

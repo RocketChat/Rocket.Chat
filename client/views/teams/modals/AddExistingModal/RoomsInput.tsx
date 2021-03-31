@@ -17,10 +17,7 @@ const useRoomsAutoComplete = (name: string): {
 	rooms: Record<IRoom['_id'], IRoom>;
 	options: AutoCompleteProps['options'];
 } => {
-	const params = useMemo(() => ({
-		selector: JSON.stringify({ name }),
-	}), [name]);
-	const { value: data } = useEndpointData('rooms.autocomplete.availableForTeams', params);
+	const { value: data } = useEndpointData('rooms.autocomplete.availableForTeams', name);
 
 	const options = useMemo<AutoCompleteProps['options']>(() => {
 		if (!data) {

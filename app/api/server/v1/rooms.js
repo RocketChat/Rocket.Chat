@@ -339,15 +339,15 @@ API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, 
 
 API.v1.addRoute('rooms.autocomplete.availableForTeams', { authRequired: true }, {
 	get() {
-		const { selector } = this.queryParams;
+		const { name } = this.queryParams;
 
-		if (!selector) {
-			return API.v1.failure('The \'selector\' param is required');
+		if (name && typeof name !== 'string') {
+			return API.v1.failure('The \'name\' param is invalid');
 		}
 
 		return API.v1.success(Promise.await(findRoomsAvailableForTeams({
 			uid: this.userId,
-			selector: JSON.parse(selector),
+			name,
 		})));
 	},
 });
