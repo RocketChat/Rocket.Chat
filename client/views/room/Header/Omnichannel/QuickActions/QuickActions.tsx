@@ -26,7 +26,6 @@ import { useSetting } from '../../../../../contexts/SettingsContext';
 import PlaceChatOnHoldModal from '../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 
 
-
 const QuickActions = ({ room, className, subscription }: { room: IRoom; className: BoxProps['className']; subscription: ISubscription }): JSX.Element => {
 	const setModal = useSetModal();
 	const { isMobile } = useLayout();
@@ -184,6 +183,7 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 	const isSubscribedToRoom = !!subscription;
 
 	const omnichannelRouteConfig = useOmnichannelRouteConfig();
+
 	const manualOnHoldAllowed = useSetting('Livechat_allow_manual_on_hold');
 
 	const hasManagerRole = useRole('livechat-manager');
@@ -197,9 +197,8 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 	const canCloseRoom = usePermission('close-others-livechat-room') || isSubscribedToRoom;
 
 	const canMoveQueue = !!room.servedBy && !!omnichannelRouteConfig?.returnQueue;
-	const canPlaceChatOnHold = (!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed) as boolean;
 
-	const omnichannelRouteConfig = useOmnichannelRouteConfig();
+	const canPlaceChatOnHold = (!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed) as boolean;
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
