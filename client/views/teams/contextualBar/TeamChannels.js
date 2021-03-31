@@ -17,6 +17,8 @@ import VerticalBar from '../../../components/VerticalBar';
 import AddExistingModal from '../modals/AddExistingModal';
 import CreateChannel from '../../../sidebar/header/CreateChannel';
 import RoomInfo from '../../room/contextualBar/Info';
+import { useTeamsChannelList } from './useTeamsChannelList';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 
 
 const Row = memo(function Row({ room, onClickView }) {
@@ -52,9 +54,8 @@ const BaseTeamChannels = ({
 		['autoJoin', t('Auto-join')],
 	], [t]);
 
-	const lm = useMutableCallback((start) => loadMoreItems(start, Math.min(50, total - start)));
+	const lm = useMutableCallback((start) => !loading && loadMoreItems(start));
 
-	console.log(total);
 	return (
 		<>
 			<VerticalBar.Header>
@@ -79,17 +80,16 @@ const BaseTeamChannels = ({
 				</Box>
 
 				{loading && <Box pi='x24' pb='x12'><Throbber size='x12' /></Box>}
-				{!loading && channels.length <= 0 && <Box pi='x24' pb='x12'>{t('No_results_found')}</Box>}
-
-				<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+				{!loading && channels.length === 0 && <Box pi='x24' pb='x12'>{t('No_results_found')}</Box>}
+				{!loading && <Box w='full' h='full' overflow='hidden' flexShrink={1}>
 					<Virtuoso
-						style={{
-							height: '100%',
-							width: '100%',
-						}}
+						// style={{
+						// 	height: '100%',
+						// 	width: '100%',
+						// }}
 						totalCount={total}
-						endReached={loading ? () => {} : lm}
-						overscan={50}
+						endReached={lm}
+						// overscan={50}
 						data={channels}
 						components={{ Scroller: ScrollableContentWrapper }}
 						itemContent={(index, data) => <Row
@@ -97,7 +97,7 @@ const BaseTeamChannels = ({
 							room={data}
 						/>}
 					/>
-				</Box>
+				</Box>}
 			</VerticalBar.Content>
 
 			<VerticalBar.Footer>
@@ -135,43 +135,14 @@ const TeamChannels = ({ teamId }) => {
 
 	const [type, setType] = useLocalStorage('channels-list-type', 'all');
 	const [text, setText] = useState('');
-	const [roomList] = useState(() => new RecordList());
 
 	const debouncedText = useDebouncedValue(text, 800);
 
-	const roomListEndpoint = useEndpoint('GET', 'teams.listRooms');
 
-	console.log(text, type);
+	const { teamsChannelList, loadMoreItems } = useTeamsChannelList({ teamId, text: debouncedText, type });
 
 
-	const fetchData = useCallback(async (start, end) => {
-		console.trace();
-		const { rooms, total } = await roomListEndpoint({
-			teamId,
-			offset: start,
-			count: end,
-			query: JSON.stringify({
-				name: { $regex: debouncedText || '', $options: 'i' },
-				...type !== 'all' && {
-					teamDefault: true,
-				},
-			}),
-		});
-
-		const roomsDated = rooms.map((rooms) => {
-			rooms._updatedAt = new Date(rooms._updatedAt);
-			return { ...rooms };
-		});
-
-		return {
-			items: roomsDated,
-			itemCount: total,
-		};
-	}, [roomListEndpoint, teamId, debouncedText, type]);
-
-	const { loadMoreItems } = useScrollableRecordList(roomList, fetchData);
-
-	const { phase, items, itemCount } = useRecordList(roomList);
+	const { phase, items, itemCount: total } = useRecordList(teamsChannelList);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
@@ -197,13 +168,13 @@ const TeamChannels = ({ teamId }) => {
 
 	return (
 		<BaseTeamChannels
-			loading={phase === 'loading'}
+			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
 			setType={setType}
 			setText={handleTextChange}
 			channels={items}
-			total={itemCount}
+			total={total}
 			onClickClose={onClickClose}
 			onClickAddExisting={addExisting}
 			onClickCreateNew={createNew}

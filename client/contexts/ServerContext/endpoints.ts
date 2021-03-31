@@ -15,6 +15,7 @@ import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-cu
 import { GetDiscussionsEndpoint as ChatGetDiscussionsEndpoint } from './endpoints/v1/chat/getDiscussions';
 import { GetThreadsListEndpoint as ChatGetThreadsListEndpoint } from './endpoints/v1/chat/getThreadsList';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
+import { ListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
 
 export type ServerEndpoints = {
 	'chat.getMessage': ChatGetMessageEndpoint;
@@ -32,6 +33,7 @@ export type ServerEndpoints = {
 	'custom-user-status.list': CustomUserStatusListEndpoint;
 	'/apps/externalComponents': AppsExternalComponentsEndpoint;
 	'rooms.autocomplete.channelAndPrivate': RoomsAutocompleteEndpoint;
+	'teams.listRooms': ListRoomsEndpoint;
 	'teams.addRooms': TeamsAddRoomsEndpoint;
 	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
 };
