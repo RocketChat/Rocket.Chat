@@ -214,9 +214,12 @@ export const useUserInfoActions = (user = {}, rid) => {
 		action: changeModeratorAction,
 	}, [changeModeratorAction, isModerator, roomCanSetModerator, t, userCanSetModerator]);
 
-	const ignoreUser = currentSubscription ? useMethod('ignoreUser') : () =>  { throw new Error("You must join the channel first") };
+	const ignoreUser = useMethod('ignoreUser');
 	const ignoreUserAction = useMutableCallback(async () => {
 		try {
+			if (!currentSubscription) {
+				throw new Error('You must join the channel first');
+			}
 			await ignoreUser({ rid, userId: uid, ignore: !isIgnored });
 			if (isIgnored) {
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_unignored') });
