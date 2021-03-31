@@ -141,15 +141,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findPublicByTeamId(uid, teamId, options = {}) {
-		const query = {
-			teamId,
-			t: 'c',
-		};
-
-		return this.find(query, options);
-	}
-
 	findChannelAndPrivateByNameStarting(name, sIds, options) {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
