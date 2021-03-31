@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 
 import { API } from '../api';
@@ -294,7 +295,7 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 		const rooms = Promise.await(Team.getMatchingTeamRooms(team._id, roomsToRemove));
 
 		// Remove the team's main room
-		Rooms.removeById(team.roomId);
+		Meteor.call('eraseRoom', team.roomId);
 
 		// If we got a list of rooms to delete along with the team, remove them first
 		if (rooms.length) {
