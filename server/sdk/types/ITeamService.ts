@@ -63,7 +63,7 @@ export interface ITeamService {
 	deleteByName(teamName: string): Promise<boolean>;
 	unsetTeamIdOfRooms(teamId: string): void;
 	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | undefined>;
-	getOneByName(teamName: string, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
+	getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
 	getOneByMainRoomId(teamId: string): Promise<ITeam | null>;
 	getOneByRoomId(teamId: string): Promise<ITeam | undefined>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
