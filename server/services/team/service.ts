@@ -17,6 +17,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { canAccessRoom } from '../authorization/canAccessRoom';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
+import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 
 export class TeamService extends ServiceClass implements ITeamService {
 	protected name = 'team';
@@ -45,8 +46,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
-		const existingTeam = await this.TeamModel.findOneByName(team.name, { projection: { _id: 1 } });
-		if (existingTeam) {
+		if (!checkUsernameAvailability(team.name)) {
 			throw new Error('team-name-already-exists');
 		}
 
@@ -615,7 +615,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findOneById(teamId, options);
 	}
 
-	async getOneByName(teamName: string, options?: FindOneOptions<ITeam>): Promise<ITeam | null> {
+	async getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null> {
 		return this.TeamModel.findOneByName(teamName, options);
 	}
 
