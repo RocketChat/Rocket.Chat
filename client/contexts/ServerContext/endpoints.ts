@@ -16,6 +16,7 @@ import { GetDiscussionsEndpoint as ChatGetDiscussionsEndpoint } from './endpoint
 import { GetThreadsListEndpoint as ChatGetThreadsListEndpoint } from './endpoints/v1/chat/getThreadsList';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
 import { ListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
+import { LivechatRoomOnHoldEndpoint } from './endpoints/v1/livechat/onHold';
 
 export type ServerEndpoints = {
 	'chat.getMessage': ChatGetMessageEndpoint;
@@ -36,6 +37,7 @@ export type ServerEndpoints = {
 	'teams.listRooms': ListRoomsEndpoint;
 	'teams.addRooms': TeamsAddRoomsEndpoint;
 	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
+	'livechat/room.onHold': LivechatRoomOnHoldEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;
