@@ -195,9 +195,11 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const results: ITeamInfo[] = [];
 		for await (const record of records) {
 			const rooms = this.RoomsModel.findByTeamId(record._id);
+			const users = this.TeamMembersModel.findByTeamId(record._id);
 			results.push({
 				...record,
 				rooms: await rooms.count(),
+				numberOfUsers: await users.count(),
 			});
 		}
 
@@ -207,20 +209,37 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async listAll({ offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeam>> {
+	async listAll({ offset, count }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<ITeamInfo>> {
 		const cursor = this.TeamModel.find({}, {
 			limit: count,
 			skip: offset,
 		});
 
+		const records = await cursor.toArray();
+
+		const results: ITeamInfo[] = [];
+		for await (const record of records) {
+			const rooms = this.RoomsModel.findByTeamId(record._id);
+			const users = this.TeamMembersModel.findByTeamId(record._id);
+			results.push({
+				...record,
+				rooms: await rooms.count(),
+				numberOfUsers: await users.count(),
+			});
+		}
+
 		return {
 			total: await cursor.count(),
-			records: await cursor.toArray(),
+			records: results,
 		};
 	}
 
 	async listByNames(names: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]> {
 		return this.TeamModel.findByNames(names, options).toArray();
+	}
+
+	async listByIds(ids: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]> {
+		return this.TeamModel.findByIds(ids, options).toArray();
 	}
 
 	async addRoom(uid: string, rid: string, teamId: string, isDefault = false): Promise<IRoom> {
@@ -383,7 +402,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async listRooms(uid: string, teamId: string, getAllRooms: boolean, allowPrivateTeam: boolean, { offset: skip, count: limit }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<IRoom>> {
+	async listRooms(uid: string, teamId: string, getAllRooms: boolean, allowPrivateTeam: boolean, { offset: skip, count: limit }: IPaginationOptions = { offset: 0, count: 50 }, { query }: IQueryOptions<IRoom>): Promise<IRecordsWithTotal<IRoom>> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
@@ -396,13 +415,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('user-not-on-private-team');
 		}
 		if (getAllRooms) {
-			const teamRoomsCursor = this.RoomsModel.findByTeamId(teamId, { skip, limit });
+			const teamRoomsCursor = this.RoomsModel.findByTeamId(teamId, { skip, limit }, query);
 			return {
 				total: await teamRoomsCursor.count(),
 				records: await teamRoomsCursor.toArray(),
 			};
 		}
-		const teamRooms = await this.RoomsModel.findByTeamId(teamId, { projection: { _id: 1, t: 1 } }).toArray();
+		const teamRooms = await this.RoomsModel.findByTeamId(teamId, { skip, limit, projection: { _id: 1, t: 1 } }, query).toArray();
 		const privateTeamRoomIds = teamRooms.filter((room) => room.t === 'p').map((room) => room._id);
 		const publicTeamRoomIds = teamRooms.filter((room) => room.t === 'c').map((room) => room._id);
 
