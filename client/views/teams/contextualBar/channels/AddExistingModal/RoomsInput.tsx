@@ -2,10 +2,10 @@ import { AutoComplete, Box, Icon, Option, Options, Chip, AutoCompleteProps } fro
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 
-import { IRoom } from '../../../../../definition/IRoom';
-import RoomAvatar from '../../../../components/avatar/RoomAvatar';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { roomTypes } from '../../../../../app/utils/client';
+import { IRoom } from '../../../../../../definition/IRoom';
+import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import { roomTypes } from '../../../../../../app/utils/client';
 
 type RoomsInputProps = {
 	value: IRoom[];
