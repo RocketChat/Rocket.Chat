@@ -35,8 +35,16 @@ export interface ISubscription extends IRocketChatRecord {
 	roles?: string[];
 
 	onHold?: boolean;
+
+	fname?: string;
 }
 
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {
 	t: 'd';
+}
+
+export interface ISubscriptionExtraData {
+	open?: boolean;
+	ls?: Date;
+	prid?: string;
 }

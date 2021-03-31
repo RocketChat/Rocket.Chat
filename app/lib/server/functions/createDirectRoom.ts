@@ -1,40 +1,60 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../../apps/server';
 import { callbacks } from '../../../callbacks/server';
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
+import { ICreateDirectRoomResult } from './types';
+import { IUser } from '../../../../definition/IUser';
+import { ISubscription, ISubscriptionExtraData } from '../../../../definition/ISubscription';
+import { ICreateRoomOptions, ICreateRoomExtraData } from '../../../../server/sdk/types/IRoomService';
 
-const generateSubscription = (fname, name, user, extra) => ({
-	alert: false,
-	unread: 0,
-	userMentions: 0,
-	groupMentions: 0,
-	...user.customFields && { customFields: user.customFields },
-	...getDefaultSubscriptionPref(user),
-	...extra,
-	t: 'd',
-	fname,
-	name,
-	u: {
-		_id: user._id,
-		username: user.username,
-	},
-});
+function generateSubscription(fname: string, name: string, user: IUser, extra: ISubscriptionExtraData): Partial<ISubscription> {
+	return {
+		alert: false,
+		unread: 0,
+		userMentions: 0,
+		groupMentions: 0,
+		...user.customFields && { customFields: user.customFields },
+		...getDefaultSubscriptionPref(user),
+		...extra,
+		t: 'd',
+		fname,
+		name,
+		u: {
+			_id: user._id,
+			username: user.username,
+		},
+	};
+}
 
-const getFname = (members) => members.map(({ name, username }) => name || username).join(', ');
-const getName = (members) => members.map(({ username }) => username).join(', ');
+function getFname(members: IUser[]): string {
+	return members.map(({ name, username }) => name || username).join(', ');
+}
 
-export const createDirectRoom = function(members, roomExtraData = {}, options = {}) {
+function getName(members: IUser[]): string {
+	return members.map(({ username }) => username).join(', ');
+}
+
+export const createDirectRoom = async (members: IUser[], roomExtraData: ICreateRoomExtraData, options: ICreateRoomOptions): Promise<ICreateDirectRoomResult> => {
 	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
 
-	const sortedMembers = members.sort((u1, u2) => (u1.name || u1.username).localeCompare(u2.name || u2.username));
+	const sortedMembers = members.sort((u1, u2) => {
+		const name1 = u1.name || u1.username;
+		const name2 = u2.name || u2.username;
 
-	const usernames = sortedMembers.map(({ username }) => username);
+		if (!name1 || !name2) {
+			throw new Error('Invalid users list, could not create direct room');
+		}
+
+		return name1.localeCompare(name2);
+	});
+
+	const usernames = sortedMembers.map((m) => m.username).filter((u): u is string => !!u);
+
 	const uids = members.map(({ _id }) => _id).sort();
 
 	// Deprecated: using users' _id to compose the room _id is deprecated
@@ -56,33 +76,35 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 	};
 
 	if (isNewRoom) {
-		roomInfo._USERNAMES = usernames;
+		const roomInfoWithUsernames = Object.assign(roomInfo, { _USERNAMES: usernames });
 
-		const prevent = Promise.await(Apps.triggerEvent('IPreRoomCreatePrevent', roomInfo).catch((error) => {
+		const prevent = await Apps.triggerEvent('IPreRoomCreatePrevent', roomInfoWithUsernames).catch((error) => {
 			if (error instanceof AppsEngineException) {
-				throw new Meteor.Error('error-app-prevented', error.message);
+				throw error;
 			}
 
 			throw error;
-		}));
+		});
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
+			throw new Error('error-app-prevented. A Rocket.Chat App prevented the room creation.');
 		}
 
 		let result;
-		result = Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', roomInfo));
-		result = Promise.await(Apps.triggerEvent('IPreRoomCreateModify', result));
+		result = await Apps.triggerEvent('IPreRoomCreateExtend', roomInfoWithUsernames);
+		result = await Apps.triggerEvent('IPreRoomCreateModify', result);
 
 		if (typeof result === 'object') {
 			Object.assign(roomInfo, result);
 		}
-
-		delete roomInfo._USERNAMES;
 	}
 
 	const rid = room?._id || Rooms.insert(roomInfo);
 
 	if (members.length === 1) { // dm to yourself
+		if (!members[0].username) {
+			throw new Error('error trying to send a dm to yourself');
+		}
+
 		Subscriptions.upsert({ rid, 'u._id': members[0]._id }, {
 			$set: { open: true },
 			$setOnInsert: generateSubscription(members[0].name || members[0].username, members[0].username, members[0], { ...options.subscriptionExtra }),

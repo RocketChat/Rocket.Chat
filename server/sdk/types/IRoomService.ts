@@ -6,7 +6,7 @@ interface ISubscriptionExtraData {
 	prid: string;
 }
 
-interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
+export interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
 	nameValidationRegex?: string;
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
