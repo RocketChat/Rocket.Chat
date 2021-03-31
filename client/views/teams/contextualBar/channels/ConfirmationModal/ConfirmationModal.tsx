@@ -1,7 +1,7 @@
 import React, { memo, FC } from 'react';
 import { Box, ButtonGroup, Button, Icon, Modal } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
 
 type ConfirmationModalProps = {
 	onClose: () => void;
