@@ -11,7 +11,7 @@ import { ContactNewEdit, ContactEditWithData } from './contacts/contextualBar/Co
 import { ContactInfo } from './contacts/contextualBar/ContactInfo';
 import ChatTab from './chats/ChatTab';
 import { ChatInfo } from './chats/contextualBar/ChatInfo';
-import { RoomEditWithData } from './chats/contextualBar/ChatRoomEdit';
+import { RoomEditWithData } from './chats/contextualBar/ChatRoomForm';
 
 
 const OmnichannelDirectoryPage = () => {
