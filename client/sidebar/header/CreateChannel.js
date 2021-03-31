@@ -205,11 +205,11 @@ export default memo(({
 			name,
 			members: users,
 			readOnly,
-			...teamId && { teamId },
 			extraData: {
 				description,
 				broadcast,
 				encrypted,
+				...teamId && { teamId },
 			},
 		};
 		let roomData;
