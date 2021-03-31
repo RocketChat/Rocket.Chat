@@ -1662,6 +1662,7 @@
   "error-returning-inquiry": "Error returning inquiry to the queue",
   "error-role-in-use": "Cannot delete role because it's in use",
   "error-role-name-required": "Role name is required",
+  "error-role-already-present":"Role is already present with this name",
   "error-room-is-not-closed": "Room is not closed",
   "error-room-onHold": "Error! Room is On Hold",
   "error-selected-agent-room-agent-are-same": "The selected agent and the room agent are the same",
