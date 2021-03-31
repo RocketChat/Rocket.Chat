@@ -594,7 +594,12 @@ export class TeamService extends ServiceClass implements ITeamService {
 			return false;
 		}
 
-		const member = (await this.TeamMembersModel.createOneByTeamIdAndUserId(teamId, userId, { _id: inviter._id, username: inviter.username })).ops[0];
+		let inviterData = {} as Pick<IUser, '_id' | 'username'>;
+		if (inviter) {
+			inviterData = { _id: inviter._id, username: inviter.username };
+		}
+
+		const member = (await this.TeamMembersModel.createOneByTeamIdAndUserId(teamId, userId, inviterData)).ops[0];
 		await this.addMembersToDefaultRooms(inviter, teamId, [member]);
 
 		return true;

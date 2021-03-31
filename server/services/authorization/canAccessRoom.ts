@@ -3,7 +3,8 @@ import { Authorization } from '../../sdk';
 import { RoomAccessValidator } from '../../sdk/types/IAuthorization';
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomTokenpass } from './canAccessRoomTokenpass';
-import { Subscriptions, Rooms, Settings, TeamMembers } from './service';
+import { Subscriptions, Rooms, Settings, TeamMembers, Team } from './service';
+import { TEAM_TYPE } from '../../../definition/ITeam';
 
 const roomAccessValidators: RoomAccessValidator[] = [
 	async function _validateAccessToPublicRoomsInTeams(room, user): Promise<boolean> {
@@ -14,13 +15,15 @@ const roomAccessValidators: RoomAccessValidator[] = [
 			// if the room doesn't belongs to a team || no user is present || no room is present skip
 			return false;
 		}
+		const team = await Team.findOneById(room.teamId);
+		const membership = await TeamMembers.findOneByUserIdAndTeamId(user._id, room.teamId, { projection: { _id: 1 } });
+		room.teamIsPrivate = team?.type === TEAM_TYPE.PRIVATE;
 
-		const team = await TeamMembers.findOneByUserIdAndTeamId(user._id, room.teamId, { projection: { _id: 1 } });
-		return !!team;
+		return room.teamIsPrivate && !!membership;
 	},
 
 	async function _validateAccessToPublicRooms(room, user): Promise<boolean> {
-		if (!room?._id || room.t !== 'c' || room?.teamId) {
+		if (!room?._id || room.t !== 'c' || (room?.teamId && room?.teamIsPrivate)) {
 			return false;
 		}
 
