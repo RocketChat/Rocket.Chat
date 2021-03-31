@@ -1,11 +1,13 @@
+import { lazy } from 'react';
+
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
-addAction('visitor-info', {
+addAction('room-info', {
 	groups: ['live'],
-	id: 'visitor-info',
-	title: 'Visitor_Info',
+	id: 'room-info',
+	title: 'Room_Info',
 	icon: 'info-circled',
-	template: 'visitorInfo',
+	template: lazy(() => import('../../../client/omnichannel/directory/chats/contextualBar')),
 	order: 0,
 });
 

@@ -2,13 +2,23 @@ import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
-	findOneByRoomIdAndUserId(rid, uid, options) {
+	findOneByRoomIdAndUserId(rid, uid, options = {}) {
 		const query = {
-			rid,
+			_id: rid,
 			'u._id': uid,
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findManyByRoomIds(roomIds, options = {}) {
+		const query = {
+			_id: {
+				$in: roomIds,
+			},
+		};
+
+		return this.find(query, options);
 	}
 
 	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
@@ -32,8 +42,17 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(name, types, discussion = false, options = {}) {
+	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
+
+		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
+
+		const teamCondition = teams ? {} : {
+			teamMain: {
+				$exists: false,
+			},
+		};
+
 		const query = {
 			t: {
 				$in: types,
@@ -46,22 +65,42 @@ export class RoomsRaw extends BaseRaw {
 					usernames: nameRegex,
 				},
 			],
+			...teamCondition,
+			...onlyTeamsQuery,
 		};
 		return this.find(query, options);
 	}
 
-	findByTypes(types, discussion = false, options = {}) {
+	findByTypes(types, discussion = false, teams = false, onlyTeams = false, options = {}) {
+		const teamCondition = teams ? {} : {
+			teamMain: {
+				$exists: false,
+			},
+		};
+
+		const onlyTeamsCondition = onlyTeams ? { teamMain: { $exists: true } } : {};
+
 		const query = {
 			t: {
 				$in: types,
 			},
 			prid: { $exists: discussion },
+			...teamCondition,
+			...onlyTeamsCondition,
 		};
 		return this.find(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, options = {}) {
+	findByNameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
+
+		const teamCondition = teams ? {} : {
+			teamMain: {
+				$exists: false,
+			},
+		};
+
+		const onlyTeamsCondition = onlyTeams ? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] } : {};
 
 		const query = {
 			prid: { $exists: discussion },
@@ -72,11 +111,37 @@ export class RoomsRaw extends BaseRaw {
 					usernames: nameRegex,
 				},
 			],
+			...teamCondition,
+			...onlyTeamsCondition,
 		};
+
 		return this.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(name, options) {
+	findByTeamId(teamId, options = {}, query = {}) {
+		const myQuery = {
+			...query,
+			teamId,
+			teamMain: {
+				$exists: false,
+			},
+		};
+
+		return this.find(myQuery, options);
+	}
+
+	findByTeamIdAndRoomsId(teamId, rids, options = {}) {
+		const query = {
+			teamId,
+			_id: {
+				$in: rids,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findChannelAndPrivateByNameStarting(name, sIds, options) {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
 		const query = {
@@ -84,9 +149,56 @@ export class RoomsRaw extends BaseRaw {
 				$in: ['c', 'p'],
 			},
 			name: nameRegex,
+			teamMain: {
+				$exists: false,
+			},
+			$or: [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: sIds,
+				},
+			}],
 		};
 
 		return this.find(query, options);
+	}
+
+	unsetTeamId(teamId, options = {}) {
+		const query = { teamId };
+		const update = {
+			$unset: {
+				teamId: '',
+				teamDefault: '',
+			},
+		};
+
+		return this.update(query, update, options);
+	}
+
+	unsetTeamById(rid, options = {}) {
+		return this.updateOne({ _id: rid }, { $unset: { teamId: '', teamDefault: '' } }, options);
+	}
+
+	setTeamById(rid, teamId, teamDefault, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamId, teamDefault } }, options);
+	}
+
+	setTeamMainById(rid, teamId, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamId, teamMain: true } }, options);
+	}
+
+	setTeamByIds(rids, teamId, options = {}) {
+		return this.updateMany({ _id: { $in: rids } }, { $set: { teamId } }, options);
+	}
+
+	setTeamDefaultById(rid, teamDefault, options = {}) {
+		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
 	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
@@ -190,5 +302,35 @@ export class RoomsRaw extends BaseRaw {
 		}
 
 		return this.col.aggregate(params).toArray();
+	}
+
+	findOneByName(name, options = {}) {
+		return this.col.findOne({ name }, options);
+	}
+
+	findDefaultRoomsForTeam(teamId) {
+		return this.col.find({
+			teamId,
+			teamDefault: true,
+			teamMain: {
+				$exists: false,
+			},
+		});
+	}
+
+	incUsersCountByIds(ids, inc = 1) {
+		const query = {
+			_id: {
+				$in: ids,
+			},
+		};
+
+		const update = {
+			$inc: {
+				usersCount: inc,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 }

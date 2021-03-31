@@ -14,11 +14,11 @@ addAction('game-center', () => {
 	const hasError = !!error;
 	return useMemo(() =>
 		(enabled
-		&& state === AsyncStatePhase.LOADING
+		&& state === AsyncStatePhase.RESOLVED
 		&& !hasError
 		&& hasExternalComponents
 			? {
-				groups: ['channel', 'group', 'direct'],
+				groups: ['channel', 'group', 'direct', 'team'],
 				id: 'game-center',
 				title: 'Apps_Game_Center',
 				icon: 'game',

@@ -1,9 +1,8 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { uploadFileWithMessage } from '../../../ui/client/lib/fileUpload';
 import { settings } from '../../../settings';
-import { AudioRecorder } from '../../../ui';
+import { AudioRecorder, fileUpload } from '../../../ui';
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 import * as banners from '../../../../client/lib/banners';
@@ -148,7 +147,6 @@ Template.messageBoxAudioMessage.events({
 		instance.state.set(null);
 
 		const { rid, tmid } = this;
-
-		await uploadFileWithMessage(rid, tmid, { file: { file: blob }, fileName: `${ t('Audio record') }.mp3` });
+		await fileUpload([{ file: blob, type: 'video', name: `${ t('Audio record') }.mp3` }], { input: blob }, { rid, tmid });
 	},
 });

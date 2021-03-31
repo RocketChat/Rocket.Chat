@@ -6,6 +6,7 @@ import {
 	FilterQuery,
 	FindOneOptions,
 	InsertOneWriteOpResult,
+	InsertWriteOpResult,
 	ObjectID,
 	ObjectId,
 	OptionalId,
@@ -111,6 +112,19 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 
 	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
 		return this.col.updateMany(filter, update, options);
+	}
+
+	insertMany(docs: Array<ModelOptionalId<T>>, options?: CollectionInsertOneOptions): Promise<InsertWriteOpResult<WithId<T>>> {
+		docs = docs.map((doc) => {
+			if (!doc._id || typeof doc._id !== 'string') {
+				const oid = new ObjectID();
+				return { _id: oid.toHexString(), ...doc };
+			}
+			return doc;
+		});
+
+		// TODO reavaluate following type casting
+		return this.col.insertMany(docs as unknown as Array<OptionalId<T>>, options);
 	}
 
 	insertOne(doc: ModelOptionalId<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {

@@ -96,6 +96,8 @@ Meteor.startup(function() {
 		{ _id: 'view-livechat-rooms',                roles: ['livechat-manager', 'admin'] },
 		{ _id: 'close-livechat-room',                roles: ['livechat-agent', 'livechat-manager', 'admin'] },
 		{ _id: 'close-others-livechat-room',         roles: ['livechat-manager', 'admin'] },
+		{ _id: 'on-hold-livechat-room',               roles: ['livechat-agent', 'livechat-manager', 'admin'] },
+		{ _id: 'on-hold-others-livechat-room',        roles: ['livechat-manager', 'admin'] },
 		{ _id: 'save-others-livechat-room-info',     roles: ['livechat-manager'] },
 		{ _id: 'remove-closed-livechat-rooms',       roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-analytics',            roles: ['livechat-manager', 'admin'] },
@@ -122,6 +124,16 @@ Meteor.startup(function() {
 		{ _id: 'send-omnichannel-chat-transcript',   roles: ['livechat-manager', 'admin'] },
 		{ _id: 'mail-messages',                      roles: ['admin'] },
 		{ _id: 'toggle-room-e2e-encryption',         roles: ['owner'] },
+		{ _id: 'create-team',         roles: ['admin', 'user'] },
+		{ _id: 'delete-team',         roles: ['admin', 'owner'] },
+		{ _id: 'edit-team',           roles: ['admin', 'owner'] },
+		{ _id: 'add-team-member',     roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'edit-team-member',    roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'add-team-channel',    roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'edit-team-channel',   roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'remove-team-channel', roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'view-all-team-channels', roles: ['admin', 'owner'] },
+		{ _id: 'view-all-teams', roles: ['admin'] },
 	];
 
 	for (const permission of permissions) {

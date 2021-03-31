@@ -4,13 +4,15 @@ import { AutoComplete, Option, Options } from '@rocket.chat/fuselage';
 import UserAvatar from './avatar/UserAvatar';
 import { useEndpointData } from '../hooks/useEndpointData';
 
-const query = (term = '') => ({ selector: JSON.stringify({ term }) });
+const query = (term = '', conditions = {}) => ({ selector: JSON.stringify({ term, conditions }) });
 
 const Avatar = ({ value, ...props }) => <UserAvatar size={Options.AvatarSize} username={value} {...props} />;
 
 export const UserAutoComplete = React.memo((props) => {
+	const { conditions = {} } = props;
 	const [filter, setFilter] = useState('');
-	const { value: data } = useEndpointData('users.autocomplete', useMemo(() => query(filter), [filter]));
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const { value: data } = useEndpointData('users.autocomplete', useMemo(() => query(filter, conditions), [filter]));
 	const options = useMemo(() => (data && data.items.map((user) => ({ value: user.username, label: user.name }))) || [], [data]);
 	return <AutoComplete
 		{...props}

@@ -4,9 +4,10 @@ import { Match } from 'meteor/check';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
-import { hasPermission, hasAtLeastOnePermission, canAccessRoom } from '../../../authorization/server';
+import { hasPermission, hasAtLeastOnePermission, canAccessRoom, hasAllPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
+import { Team } from '../../../../server/sdk';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
@@ -392,9 +393,13 @@ API.v1.addRoute('groups.invite', { authRequired: true }, {
 			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
-		const { username } = this.getUserFromParams();
+		const users = this.getUserListFromParams();
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('addUserToRoom', { rid, username }));
+		if (!users.length) {
+			throw new Meteor.Error('error-empty-invite-list', 'Cannot invite if no valid users are provided');
+		}
+
+		Meteor.runAsUser(this.userId, () => Meteor.call('addUsersToRoom', { rid, users: users.map((u) => u.username) }));
 
 		return API.v1.success({
 			group: this.composeRoomWithLastMessage(Rooms.findOneById(rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
@@ -838,5 +843,53 @@ API.v1.addRoute('groups.setEncrypted', { authRequired: true }, {
 		return API.v1.success({
 			group: this.composeRoomWithLastMessage(Rooms.findOneById(findResult.rid, { fields: API.v1.defaultFieldsToExclude }), this.userId),
 		});
+	},
+});
+
+API.v1.addRoute('groups.convertToTeam', { authRequired: true }, {
+	post() {
+		const { roomId, roomName } = this.requestParams();
+
+		if (!roomId && !roomName) {
+			return API.v1.failure('The parameter "roomId" or "roomName" is required');
+		}
+
+		if (!hasAllPermission(this.userId, ['create-team', 'edit-room'], roomId)) {
+			return API.v1.unauthorized();
+		}
+
+		const room = findPrivateGroupByIdOrName({
+			params: {
+				roomId,
+				roomName,
+			},
+			userId: this.userId,
+		});
+
+		if (!room) {
+			return API.v1.failure('Private group not found');
+		}
+
+		const subscriptions = Subscriptions.findByRoomId(room.rid, {
+			fields: { 'u._id': 1 },
+		});
+
+		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
+
+		const teamData = {
+			team: {
+				name: room.name,
+				type: 1,
+			},
+			members,
+			room: {
+				name: room.name,
+				id: room.rid,
+			},
+		};
+
+		const team = Promise.await(Team.create(this.userId, teamData));
+
+		return API.v1.success({ team });
 	},
 });
