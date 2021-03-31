@@ -6,7 +6,6 @@ import {
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 
-
 import { useUserInfoActions } from '../../../../hooks/useUserInfoActions';
 import { useActionSpread } from '../../../../../hooks/useActionSpread';
 import UserAvatar from '../../../../../../components/avatar/UserAvatar';

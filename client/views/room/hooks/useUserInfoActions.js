@@ -16,7 +16,7 @@ import { roomTypes, RoomMemberActions } from '../../../../app/utils';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useUserRoom } from './useUserRoom';
 import { escapeHTML } from '../../../../lib/escapeHTML';
-import RemoveUsersModal from '../../teams/members/RemoveUsersModal';
+import RemoveUsersModal from '../../teams/contextualBar/members/RemoveUsersModal';
 
 const useUserHasRoomRole = (uid, rid, role) => useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role }), [uid, rid, role]));
 
