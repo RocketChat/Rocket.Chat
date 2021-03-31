@@ -890,7 +890,7 @@ Meteor.startup(() => {
 
 			let room = Rooms.findOne({ _id: rid }, { fields: { t: 1 } });
 
-			if (room?.t === 'l' && !FlowRouter.getParam('tab')) {
+			if (room?.t === 'l') {
 				room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
 				roomTypes.getConfig(room.t).openCustomProfileTab(this, room, room.v.username);
 			}
