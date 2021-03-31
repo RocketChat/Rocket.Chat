@@ -6,11 +6,15 @@ export function shouldRemoveOrChangeOwner(subscribedRooms) {
 		.some(({ shouldBeRemoved, shouldChangeOwner }) => shouldBeRemoved || shouldChangeOwner);
 }
 
-export function getSubscribedRoomsForUserWithDetails(userId, assignNewOwner = true) {
+export function getSubscribedRoomsForUserWithDetails(userId, assignNewOwner = true, roomIds = []) {
 	const subscribedRooms = [];
 
+	const cursor = roomIds.length > 0
+		? Subscriptions.findByUserIdAndRoomIds(userId, roomIds)
+		: Subscriptions.findByUserIdExceptType(userId, 'd');
+
 	// Iterate through all the rooms the user is subscribed to, to check if he is the last owner of any of them.
-	Subscriptions.findByUserIdExceptType(userId, 'd').forEach((subscription) => {
+	cursor.forEach((subscription) => {
 		const roomData = {
 			rid: subscription.rid,
 			t: subscription.t,

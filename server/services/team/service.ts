@@ -455,7 +455,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const subscriptionRoomIds = (await subscriptionsCursor.toArray()).map((subscription) => subscription.rid);
 		const availableRoomsCursor = this.RoomsModel.findManyByRoomIds(subscriptionRoomIds, { skip, limit });
 		const rooms = await availableRoomsCursor.toArray();
-		const roomData = getSubscribedRoomsForUserWithDetails(userId);
+		const roomData = getSubscribedRoomsForUserWithDetails(userId, false, teamRoomIds);
 		const records = [];
 
 		for (const room of rooms) {
