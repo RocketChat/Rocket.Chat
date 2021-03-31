@@ -69,7 +69,9 @@ API.v1.addRoute('teams.addRoom', { authRequired: true }, {
 	post() {
 		const { roomId, teamId, isDefault } = this.bodyParams;
 
-		if (!hasPermission(this.userId, 'add-team-channel')) {
+		const team = Promise.await(Team.getOneById(teamId, { projection: { roomId: 1 } }));
+
+		if (!team || !hasPermission(this.userId, 'add-team-channel', team.roomId)) {
 			return API.v1.unauthorized();
 		}
 
