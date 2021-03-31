@@ -57493,6 +57493,177 @@
           ]
         }
       ]
+    },
+    "3.12.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.13.0-rc.3": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.0-alpha.4777",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21351",
+          "title": "Regression: Add teams support to directory",
+          "userLogin": "KevLehman",
+          "description": "- Change `directory.js` to reduce function complexity\r\n- Add `teams` type of item. Directory will return all public teams & private teams the user is part of.",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21361",
+          "title": "Regression: Add number of team members to teams.list and teams.listAll",
+          "userLogin": "g-thome",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "21328",
+          "title": "Regression: Update .invite endpoints to support multiple users at once",
+          "userLogin": "KevLehman",
+          "description": "- channels.invite now supports passing an array as a param (either with usernames or userIds) via `usernames` or `userIds` properties.\r\n- You can still use the endpoint to invite only one user via the old params `userId`, `username` or `user`.\r\n- Same changes apply to groups.invite",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21367",
+          "title": "Regression: Team icons in mention",
+          "userLogin": "gabriellsh",
+          "description": "![image](https://user-images.githubusercontent.com/40830821/113044232-cd814600-9173-11eb-8f17-47c2d1438b75.png)",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21370",
+          "title": "Regression: Fix channels not being added to team on creation",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21356",
+          "title": "Regression: Remove channel action on add channel's modal don't work",
+          "userLogin": "dougfabris",
+          "description": "![removechannel-on-add-existing-modal](https://user-images.githubusercontent.com/27704687/112911017-eda8fa80-90ca-11eb-9c24-47a70be0c314.gif)\r\n\r\n![image](https://user-images.githubusercontent.com/27704687/112911052-02858e00-90cb-11eb-85a2-0ef1f5f9ffd9.png)",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21354",
+          "title": "regression: Unable to add users while creating a team",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "dougfabris",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "21288",
+          "title": "Regression:  New chat forwarding modal is not verifying mandatory values",
+          "userLogin": "rafaelblink",
+          "contributors": [
+            "rafaelblink",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21350",
+          "title": "[FIX] Visitors.info endpoint being called multiple times",
+          "userLogin": "rafaelblink",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21312",
+          "title": "Regression: Unify Contact information displayed on the Room header and Room Info",
+          "userLogin": "murtaza98",
+          "description": "![image](https://user-images.githubusercontent.com/34130764/112586659-35592900-8e22-11eb-94be-32bdff7ca883.png)\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/112913130-788bf400-90cf-11eb-84c6-782b203e100a.png)\r\n\r\n![image](https://user-images.githubusercontent.com/2493803/112913146-817cc580-90cf-11eb-87ad-ef79766be2b3.png)",
+          "contributors": [
+            "murtaza98",
+            "renatobecker",
+            "web-flow",
+            "rafaelblink"
+          ]
+        },
+        {
+          "pr": "21349",
+          "title": "Regression: Channel owner can't convert it into a team.",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.13.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "21348",
+          "title": "regression: remove user modal not showing up",
+          "userLogin": "gabriellsh",
+          "milestone": "3.13.0",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21327",
+          "title": "Regression: Add support to filter on `teams.listRooms` endpoint",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add support for queries (within the `query` parameter);\r\n- Add support to pagination (`offset` and `count`) when an user doesn't have the permission to get all rooms.",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "21322",
+          "title": "Regression: When only 'teams' type is provided, show only rooms with teamMain on `rooms.adminRooms` endpoint",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "21324",
+          "title": "[FIX] 'Chats in Progress' Section is not rendering when the routing algorithm is not Manual Selection",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
