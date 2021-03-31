@@ -37,6 +37,7 @@ export interface ITeamMemberInfo {
 
 export interface ITeamInfo extends ITeam {
 	rooms: number;
+	numberOfUsers: number;
 }
 
 export interface ITeamService {
@@ -50,18 +51,21 @@ export interface ITeamService {
 	list(uid: string, paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeam>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITeam>>;
 	listByNames(names: Array<string>, options?: FindOneOptions<ITeam>): Promise<Array<ITeam>>;
+	listByIds(ids: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
 	search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
-	members(uid: string, teamId: string, teamName: string, canSeeAll: boolean, options?: IPaginationOptions, queryOptions?: IQueryOptions<ITeamMember>): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
-	addMembers(uid: string, teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
-	updateMember(teamId: string, teamName: string, members: ITeamMemberParams): Promise<void>;
-	removeMembers(teamId: string, teamName: string, members: Array<ITeamMemberParams>): Promise<void>;
+	members(uid: string, teamId: string, canSeeAll: boolean, options?: IPaginationOptions, queryOptions?: IQueryOptions<ITeamMember>): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
+	addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void>;
+	updateMember(teamId: string, members: ITeamMemberParams): Promise<void>;
+	removeMembers(teamId: string, members: Array<ITeamMemberParams>): Promise<void>;
 	getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined>;
 	getInfoById(teamId: string): Promise<Partial<ITeam> | undefined>;
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
 	unsetTeamIdOfRooms(teamId: string): void;
 	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | undefined>;
-	getOneByName(teamName: string): Promise<ITeam | null>;
+	getOneByName(teamName: string, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
+	getOneByMainRoomId(teamId: string): Promise<ITeam | null>;
+	getOneByRoomId(teamId: string): Promise<ITeam | undefined>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 	autocomplete(uid: string, name: string): Promise<Array<IRoom>>;
 }

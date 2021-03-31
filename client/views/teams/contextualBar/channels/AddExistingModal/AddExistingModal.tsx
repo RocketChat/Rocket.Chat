@@ -1,12 +1,12 @@
 import React, { memo, FC, useCallback } from 'react';
 import { ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
 
-import { useForm } from '../../../../hooks/useForm';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
+import { useForm } from '../../../../../hooks/useForm';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useEndpoint } from '../../../../../contexts/ServerContext';
 import RoomsInput from './RoomsInput';
-import { IRoom } from '../../../../../definition/IRoom';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { IRoom } from '../../../../../../definition/IRoom';
+import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 
 type AddExistingModalState = {
 	onAdd: any;
@@ -18,10 +18,13 @@ type AddExistingModalState = {
 type AddExistingModalProps = {
 	onClose: () => void;
 	teamId: string;
+	reload: () => void;
 };
 
-const useAddExistingModalState = (onClose: () => void, teamId: string): AddExistingModalState => {
+const useAddExistingModalState = (onClose: () => void, teamId: string, reload: () => void): AddExistingModalState => {
+	const t = useTranslation();
 	const addRoomEndpoint = useEndpoint('POST', 'teams.addRooms');
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
 		rooms: [] as IRoom[],
@@ -36,15 +39,11 @@ const useAddExistingModalState = (onClose: () => void, teamId: string): AddExist
 				return;
 			}
 
-			handleRooms([...rooms, value]);
-
-			return;
+			return handleRooms([...rooms, value]);
 		}
 
-		handleRooms(rooms.filter((current: any) => current._id !== value));
+		handleRooms(rooms.filter((current: any) => current._id !== value._id));
 	}, [handleRooms, rooms]);
-
-	const dispatchToastMessage = useToastMessageDispatch();
 
 	const onAdd = useCallback(async () => {
 		try {
@@ -52,23 +51,26 @@ const useAddExistingModalState = (onClose: () => void, teamId: string): AddExist
 				rooms: rooms.map((room) => room._id),
 				teamId,
 			});
+
+			dispatchToastMessage({ type: 'success', message: t('Channels_added') });
 			onClose();
+			reload();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage]);
+	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload]);
 
 	return { onAdd, rooms, onChange, hasUnsavedChanges };
 };
 
-const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId }) => {
+const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId, reload }) => {
 	const t = useTranslation();
 	const {
 		rooms,
 		onAdd,
 		onChange,
 		hasUnsavedChanges,
-	} = useAddExistingModalState(onClose, teamId);
+	} = useAddExistingModalState(onClose, teamId, reload);
 
 	const isAddButtonEnabled = hasUnsavedChanges;
 

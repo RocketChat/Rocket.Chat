@@ -130,6 +130,7 @@ export const CreateChannel = ({
 export default memo(({
 	onClose,
 	teamId = '',
+	reload,
 }) => {
 	const createChannel = useEndpointActionExperimental('POST', 'channels.create');
 	const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
@@ -145,7 +146,6 @@ export default memo(({
 		}
 		return false;
 	}, [canCreateChannel, canCreatePrivateChannel]);
-
 
 	const initialValues = {
 		users: [],
@@ -205,11 +205,11 @@ export default memo(({
 			name,
 			members: users,
 			readOnly,
-			...teamId && { teamId },
 			extraData: {
 				description,
 				broadcast,
 				encrypted,
+				...teamId && { teamId },
 			},
 		};
 		let roomData;
@@ -223,6 +223,7 @@ export default memo(({
 		}
 
 		onClose();
+		reload();
 	}, [broadcast,
 		createChannel,
 		createPrivateChannel,
@@ -234,6 +235,7 @@ export default memo(({
 		teamId,
 		type,
 		users,
+		reload,
 	]);
 
 	return <CreateChannel
