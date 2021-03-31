@@ -515,25 +515,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void> {
-		const createdBy = await this.Users.findOneById(uid, { projection: { username: 1 } });
-		if (!createdBy) {
-			throw new Error('invalid-user');
-		}
-
-		const membersList: Array<Omit<ITeamMember, '_id'>> = members?.map((member) => ({
-			teamId,
-			userId: member.userId ? member.userId : '',
-			roles: member.roles ? member.roles : [],
-			createdAt: new Date(),
-			createdBy,
-			_updatedAt: new Date(), // TODO how to avoid having to do this?
-		})) || [];
-
-		await this.TeamMembersModel.insertMany(membersList);
-		await this.addMembersToDefaultRooms(createdBy, teamId, membersList);
-	}
-
 	async updateMember(teamId: string, member: ITeamMemberParams): Promise<void> {
 		if (!member.userId) {
 			member.userId = await this.Users.findOneByUsername(member.userName);

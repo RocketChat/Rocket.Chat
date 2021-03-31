@@ -221,25 +221,6 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('teams.addMembers', { authRequired: true }, {
-	post() {
-		const { teamId, teamName, members } = this.bodyParams;
-
-		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
-		if (!team) {
-			return API.v1.failure('team-does-not-exist');
-		}
-
-		if (!hasAtLeastOnePermission(this.userId, ['add-team-member', 'edit-team-member'], team.roomId)) {
-			return API.v1.unauthorized();
-		}
-
-		Promise.await(Team.addMembers(this.userId, team._id, members));
-
-		return API.v1.success();
-	},
-});
-
 API.v1.addRoute('teams.updateMember', { authRequired: true }, {
 	post() {
 		const { teamId, teamName, member } = this.bodyParams;

@@ -54,7 +54,6 @@ export interface ITeamService {
 	listByIds(ids: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
 	search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
 	members(uid: string, teamId: string, canSeeAll: boolean, options?: IPaginationOptions, queryOptions?: IQueryOptions<ITeamMember>): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
-	addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, members: ITeamMemberParams): Promise<void>;
 	removeMembers(teamId: string, members: Array<ITeamMemberParams>): Promise<void>;
 	getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined>;
