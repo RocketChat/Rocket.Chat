@@ -65,20 +65,6 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('teams.addRoom', { authRequired: true }, {
-	post() {
-		const { roomId, teamId, isDefault } = this.bodyParams;
-
-		if (!hasPermission(this.userId, 'add-team-channel')) {
-			return API.v1.unauthorized();
-		}
-
-		const room = Promise.await(Team.addRoom(this.userId, roomId, teamId, isDefault));
-
-		return API.v1.success({ room });
-	},
-});
-
 API.v1.addRoute('teams.addRooms', { authRequired: true }, {
 	post() {
 		const { rooms, teamId } = this.bodyParams;

@@ -117,145 +117,6 @@ describe('[Teams]', () => {
 		});
 	});
 
-	describe('/teams.addRoom', () => {
-		before('create private channel', (done) => {
-			const channelName = `community-channel-private${ Date.now() }`;
-			request.post(api('groups.create'))
-				.set(credentials)
-				.send({
-					name: channelName,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('group._id');
-					expect(res.body).to.have.nested.property('group.name', channelName);
-					expect(res.body).to.have.nested.property('group.t', 'p');
-					expect(res.body).to.have.nested.property('group.msgs', 0);
-					privateRoom = res.body.group;
-				})
-				.end(done);
-		});
-		before('create public channel', (done) => {
-			const channelName = `community-channel-public${ Date.now() }`;
-			request.post(api('channels.create'))
-				.set(credentials)
-				.send({
-					name: channelName,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', channelName);
-					expect(res.body).to.have.nested.property('channel.t', 'c');
-					expect(res.body).to.have.nested.property('channel.msgs', 0);
-					publicRoom = res.body.channel;
-				})
-				.end(done);
-		});
-		before('create another public channel', (done) => {
-			const channelName = `community-channel-public${ Date.now() }`;
-			request.post(api('channels.create'))
-				.set(credentials)
-				.send({
-					name: `${ channelName }2`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('channel._id');
-					expect(res.body).to.have.nested.property('channel.name', `${ channelName }2`);
-					expect(res.body).to.have.nested.property('channel.t', 'c');
-					expect(res.body).to.have.nested.property('channel.msgs', 0);
-					publicRoom2 = res.body.channel;
-				})
-				.end(done);
-		});
-
-		it('should throw an error if no permission', (done) => {
-			updatePermission('add-team-channel', []).then(() => {
-				request.post(api('teams.addRoom'))
-					.set(credentials)
-					.send({
-						roomId: publicRoom._id,
-						teamId: publicTeam._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
-					.end(done);
-			});
-		});
-
-		it('should add public room to team', (done) => {
-			updatePermission('add-team-channel', ['admin']).then(() => {
-				request.post(api('teams.addRoom'))
-					.set(credentials)
-					.send({
-						roomId: publicRoom._id,
-						teamId: publicTeam._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('room');
-						expect(res.body.room).to.have.property('teamId', publicTeam._id);
-						expect(res.body.room).to.have.property('teamDefault', false);
-					})
-					.end(done);
-			});
-		});
-
-		it('should add another public room to private team', (done) => {
-			updatePermission('add-team-channel', ['admin']).then(() => {
-				request.post(api('teams.addRoom'))
-					.set(credentials)
-					.send({
-						roomId: publicRoom2._id,
-						teamId: privateTeam._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('room');
-						expect(res.body.room).to.have.property('teamId', privateTeam._id);
-						expect(res.body.room).to.have.property('teamDefault', false);
-					})
-					.end(done);
-			});
-		});
-
-		it('should add private room to team', (done) => {
-			updatePermission('add-team-channel', ['admin']).then(() => {
-				request.post(api('teams.addRoom'))
-					.set(credentials)
-					.send({
-						roomId: privateRoom._id,
-						teamId: publicTeam._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('room');
-						expect(res.body.room).to.have.property('teamId', publicTeam._id);
-						expect(res.body.room).to.have.property('teamDefault', false);
-					})
-					.end(done);
-			});
-		});
-	});
-
 	describe('/teams.updateRoom', () => {
 		it('should throw an error if no permission', (done) => {
 			updatePermission('edit-team-channel', []).then(() => {
@@ -976,10 +837,10 @@ describe('[Teams]', () => {
 			});
 
 			before('add channel 1 to team', (done) => {
-				request.post(api('teams.addRoom'))
+				request.post(api('teams.addRooms'))
 					.set(credentials)
 					.send({
-						roomId: channel1Id,
+						rooms: [channel1Id],
 						teamId,
 					})
 					.expect('Content-Type', 'application/json')
@@ -1013,10 +874,10 @@ describe('[Teams]', () => {
 			});
 
 			before('add channel 2 to team', (done) => {
-				request.post(api('teams.addRoom'))
+				request.post(api('teams.addRooms'))
 					.set(credentials)
 					.send({
-						roomId: channel2Id,
+						rooms: [channel2Id],
 						teamId,
 					})
 					.expect('Content-Type', 'application/json')
@@ -1180,6 +1041,46 @@ describe('[Teams]', () => {
 						expect(rids).to.include(publicRoom._id);
 						expect(rids).to.include(publicRoom2._id);
 						expect(rids).to.include(privateRoom._id);
+					})
+					.end(done);
+			});
+		});
+
+		it('should add another public room to private team', (done) => {
+			updatePermission('add-team-channel', ['admin']).then(() => {
+				request.post(api('teams.addRooms'))
+					.set(credentials)
+					.send({
+						rooms: [publicRoom2._id],
+						teamId: privateTeam._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('room');
+						expect(res.body.room).to.have.property('teamId', privateTeam._id);
+						expect(res.body.room).to.have.property('teamDefault', false);
+					})
+					.end(done);
+			});
+		});
+
+		it('should add private room to team', (done) => {
+			updatePermission('add-team-channel', ['admin']).then(() => {
+				request.post(api('teams.addRooms'))
+					.set(credentials)
+					.send({
+						rooms: [privateRoom._id],
+						teamId: publicTeam._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('room');
+						expect(res.body.room).to.have.property('teamId', publicTeam._id);
+						expect(res.body.room).to.have.property('teamDefault', false);
 					})
 					.end(done);
 			});
