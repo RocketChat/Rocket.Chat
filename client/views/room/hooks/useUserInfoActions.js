@@ -233,7 +233,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 		action: ignoreUserAction,
 	}, [ignoreUserAction, isIgnored, ownUserId, roomCanIgnore, t, uid]);
 
-	const isUserBlocked = currentSubscription.blocker;
+	const isUserBlocked = currentSubscription?.blocker;
 	const toggleBlock = useMethod(isUserBlocked ? 'unblockUser' : 'blockUser');
 	const toggleBlockUserAction = useMutableCallback(async () => {
 		try {
