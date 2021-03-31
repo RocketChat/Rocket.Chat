@@ -1,15 +1,14 @@
 import React, { useMemo, useState } from 'react';
-import { ActionButton, Box, CheckBox, Icon, Menu, Option } from '@rocket.chat/fuselage';
+import { ActionButton, Box, CheckBox, Icon, Menu, Option, Tag } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useSetModal } from '../../../contexts/ModalContext';
-import RoomAvatar from '../../../components/avatar/RoomAvatar';
-import ConfirmationModal from '../modals/ConfirmationModal';
-import { roomTypes } from '../../../../app/utils/client';
-import { usePreventProgation } from '../../../hooks/usePreventProgation';
-import Breadcrumbs from '../../../components/Breadcrumbs';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useEndpoint } from '../../../../contexts/ServerContext';
+import { useSetModal } from '../../../../contexts/ModalContext';
+import RoomAvatar from '../../../../components/avatar/RoomAvatar';
+import ConfirmationModal from './ConfirmationModal';
+import { roomTypes } from '../../../../../app/utils/client';
+import { usePreventProgation } from '../../../../hooks/usePreventProgation';
 
 export const useReactModal = (Component, props) => {
 	const setModal = useSetModal();
@@ -26,7 +25,7 @@ export const useReactModal = (Component, props) => {
 	});
 };
 
-const RoomActions = ({ room }) => {
+const RoomActions = ({ room, reload }) => {
 	const t = useTranslation();
 	const updateRoomEndpoint = useEndpoint('POST', 'teams.updateRoom');
 	const removeRoomEndpoint = useEndpoint('POST', 'teams.removeRoom');
@@ -35,6 +34,7 @@ const RoomActions = ({ room }) => {
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {
 		onConfirmAction: () => {
 			removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
+			reload();
 		},
 		labelButton: t('Remove'),
 		content: <Box is='span' size='14px'>{t('Team_Remove_from_team_modal_content', { teamName: roomTypes.getRoomName(room.t, room) })}</Box>,
@@ -43,6 +43,7 @@ const RoomActions = ({ room }) => {
 	const DeleteChannelAction = useReactModal(ConfirmationModal, {
 		onConfirmAction: () => {
 			deleteRoomEndpoint({ roomId: room._id });
+			reload();
 		},
 		labelButton: t('Delete'),
 		content: <>
@@ -57,6 +58,8 @@ const RoomActions = ({ room }) => {
 				roomId: room._id,
 				isDefault: !room.teamDefault,
 			});
+
+			reload();
 		};
 
 		return [{
@@ -80,7 +83,7 @@ const RoomActions = ({ room }) => {
 			},
 			action: DeleteChannelAction,
 		}];
-	}, [DeleteChannelAction, RemoveFromTeamAction, room._id, room.t, room.teamDefault, t, updateRoomEndpoint]);
+	}, [DeleteChannelAction, RemoveFromTeamAction, room._id, room.t, room.teamDefault, t, updateRoomEndpoint, reload]);
 
 	return <Menu
 		flexShrink={0}
@@ -94,7 +97,7 @@ const RoomActions = ({ room }) => {
 	/>;
 };
 
-export const TeamChannelItem = ({ room, onClickView }) => {
+export const TeamsChannelItem = ({ room, onClickView, reload }) => {
 	const t = useTranslation();
 	const [showButton, setShowButton] = useState();
 
@@ -114,9 +117,9 @@ export const TeamChannelItem = ({ room, onClickView }) => {
 				<RoomAvatar room={room} size='x28' />
 			</Option.Avatar>
 			<Option.Column>{room.t === 'c' ? <Icon name='hash' size='x15'/> : <Icon name='hashtag-lock' size='x15'/>}</Option.Column>
-			<Option.Content><Box display='inline-flex'>{roomTypes.getRoomName(room.t, room)} {room.teamDefault ? <Breadcrumbs.Tag>{t('Team_Auto-join')}</Breadcrumbs.Tag> : ''}</Box></Option.Content>
+			<Option.Content><Box display='inline-flex'>{roomTypes.getRoomName(room.t, room)} {room.teamDefault ? <Box mi='x8'><Tag mi='x8'>{t('Team_Auto-join')}</Tag></Box> : ''}</Box></Option.Content>
 			<Option.Menu onClick={onClick}>
-				{showButton ? <RoomActions room={room} /> : <ActionButton
+				{showButton ? <RoomActions room={room} reload={reload} /> : <ActionButton
 					ghost
 					tiny
 					icon='kebab'
@@ -126,4 +129,4 @@ export const TeamChannelItem = ({ room, onClickView }) => {
 	);
 };
 
-TeamChannelItem.Skeleton = Option.Skeleton;
+TeamsChannelItem.Skeleton = Option.Skeleton;

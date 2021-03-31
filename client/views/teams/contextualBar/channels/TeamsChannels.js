@@ -3,36 +3,33 @@ import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button } 
 import { Virtuoso } from 'react-virtuoso';
 import { useMutableCallback, useLocalStorage, useAutoFocus, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useSetModal } from '../../../contexts/ModalContext';
-import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
-import { useRecordList } from '../../../hooks/lists/useRecordList';
-import { RecordList } from '../../../lib/lists/RecordList.ts';
-import { TeamChannelItem } from './TeamChannelItem';
-import { useTabBarClose } from '../../room/providers/ToolboxProvider';
-import { roomTypes } from '../../../../app/utils';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
-import VerticalBar from '../../../components/VerticalBar';
-import AddExistingModal from '../modals/AddExistingModal';
-import CreateChannel from '../../../sidebar/header/CreateChannel';
-import RoomInfo from '../../room/contextualBar/Info';
-import { useTeamsChannelList } from './useTeamsChannelList';
-import { AsyncStatePhase } from '../../../lib/asyncState';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useSetModal } from '../../../../contexts/ModalContext';
+import { useRecordList } from '../../../../hooks/lists/useRecordList';
+import { TeamsChannelItem } from './TeamsChannelItem';
+import { useTabBarClose } from '../../../room/providers/ToolboxProvider';
+import { roomTypes } from '../../../../../app/utils';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import VerticalBar from '../../../../components/VerticalBar';
+import AddExistingModal from './AddExistingModal';
+import CreateChannel from '../../../../sidebar/header/CreateChannel';
+import RoomInfo from '../../../room/contextualBar/Info';
+import { useTeamsChannelList } from './hooks/useTeamsChannelList';
+import { AsyncStatePhase } from '../../../../lib/asyncState';
 
-
-const Row = memo(function Row({ room, onClickView }) {
+const Row = memo(function Row({ room, onClickView, reload }) {
 	if (!room) {
-		return <BaseTeamChannels.Option.Skeleton />;
+		return <BaseTeamsChannels.Option.Skeleton />;
 	}
 
-	return <BaseTeamChannels.Option
+	return <BaseTeamsChannels.Option
 		room={room}
 		onClickView={onClickView}
+		reload={reload}
 	/>;
 });
 
-const BaseTeamChannels = ({
+const BaseTeamsChannels = ({
 	loading,
 	channels = [],
 	text,
@@ -45,6 +42,7 @@ const BaseTeamChannels = ({
 	total,
 	loadMoreItems,
 	onClickView,
+	reload,
 }) => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
@@ -60,7 +58,7 @@ const BaseTeamChannels = ({
 		<>
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='hash'/>
-				<VerticalBar.Text>{t('Channels')}</VerticalBar.Text>
+				<VerticalBar.Text>{t('Team_Channels')}</VerticalBar.Text>
 				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>
 
@@ -83,18 +81,14 @@ const BaseTeamChannels = ({
 				{!loading && channels.length === 0 && <Box pi='x24' pb='x12'>{t('No_results_found')}</Box>}
 				{!loading && <Box w='full' h='full' overflow='hidden' flexShrink={1}>
 					<Virtuoso
-						// style={{
-						// 	height: '100%',
-						// 	width: '100%',
-						// }}
 						totalCount={total}
 						endReached={lm}
-						// overscan={50}
 						data={channels}
 						components={{ Scroller: ScrollableContentWrapper }}
 						itemContent={(index, data) => <Row
 							onClickView={onClickView}
 							room={data}
+							reload={reload}
 						/>}
 					/>
 				</Box>}
@@ -109,8 +103,6 @@ const BaseTeamChannels = ({
 		</>
 	);
 };
-
-BaseTeamChannels.Option = TeamChannelItem;
 
 export const useReactModal = (Component, props) => {
 	const setModal = useSetModal();
@@ -129,7 +121,7 @@ export const useReactModal = (Component, props) => {
 	});
 };
 
-const TeamChannels = ({ teamId }) => {
+const TeamsChannels = ({ teamId }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 
@@ -138,9 +130,7 @@ const TeamChannels = ({ teamId }) => {
 
 	const debouncedText = useDebouncedValue(text, 800);
 
-
-	const { teamsChannelList, loadMoreItems } = useTeamsChannelList(useMemo(() => ({ teamId, text: debouncedText, type }), [teamId, debouncedText, type]));
-
+	const { teamsChannelList, loadMoreItems, reload } = useTeamsChannelList(useMemo(() => ({ teamId, text: debouncedText, type }), [teamId, debouncedText, type]));
 
 	const { phase, items, itemCount: total } = useRecordList(teamsChannelList);
 
@@ -148,8 +138,8 @@ const TeamChannels = ({ teamId }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const addExisting = useReactModal(AddExistingModal, { teamId });
-	const createNew = useReactModal(CreateChannel, { teamId });
+	const addExisting = useReactModal(AddExistingModal, { teamId, reload });
+	const createNew = useReactModal(CreateChannel, { teamId, reload });
 
 	const goToRoom = useCallback((room) => roomTypes.openRouteLink(room.t, room), []);
 	const handleBack = useCallback(() => setState({}), [setState]);
@@ -167,7 +157,7 @@ const TeamChannels = ({ teamId }) => {
 	}
 
 	return (
-		<BaseTeamChannels
+		<BaseTeamsChannels
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
@@ -180,8 +170,11 @@ const TeamChannels = ({ teamId }) => {
 			onClickCreateNew={createNew}
 			onClickView={viewRoom}
 			loadMoreItems={loadMoreItems}
+			reload={reload}
 		/>
 	);
 };
 
-export default TeamChannels;
+BaseTeamsChannels.Option = TeamsChannelItem;
+
+export default TeamsChannels;
