@@ -12,6 +12,7 @@ describe('[Teams]', () => {
 	let publicRoom = null;
 	let publicRoom2 = null;
 	let privateRoom = null;
+	let privateRoom2 = null;
 	let testUser;
 	let testUser2;
 
@@ -657,9 +658,9 @@ describe('[Teams]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('room');
-						expect(res.body.room).to.have.property('teamId', teamId);
-						expect(res.body.room).to.have.property('teamDefault', false);
+						expect(res.body).to.have.property('rooms');
+						expect(res.body.rooms[0]).to.have.property('teamId', teamId);
+						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
 					})
 					.then(() => done());
 			});
@@ -694,9 +695,9 @@ describe('[Teams]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('room');
-						expect(res.body.room).to.have.property('teamId', teamId);
-						expect(res.body.room).to.have.property('teamDefault', false);
+						expect(res.body).to.have.property('rooms');
+						expect(res.body.rooms[0]).to.have.property('teamId', teamId);
+						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
 					})
 					.then(() => done());
 			});
@@ -768,6 +769,25 @@ describe('[Teams]', () => {
 				})
 				.end(done);
 		});
+		before('create another private channel', (done) => {
+			const channelName = `community-channel-private${ Date.now() }`;
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					privateRoom2 = res.body.group;
+				})
+				.end(done);
+		});
 		before('create public channel', (done) => {
 			const channelName = `community-channel-public${ Date.now() }`;
 			request.post(api('channels.create'))
@@ -831,7 +851,7 @@ describe('[Teams]', () => {
 				request.post(api('teams.addRooms'))
 					.set(credentials)
 					.send({
-						rooms: [publicRoom._id, publicRoom2._id, privateRoom._id],
+						rooms: [publicRoom._id, privateRoom._id],
 						teamId: publicTeam._id,
 					})
 					.expect('Content-Type', 'application/json')
@@ -839,24 +859,22 @@ describe('[Teams]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('rooms');
-						expect(res.body.rooms).to.have.length(3);
+						expect(res.body.rooms).to.have.length(2);
 						expect(res.body.rooms[0]).to.have.property('_id');
 						expect(res.body.rooms[0]).to.have.property('teamId', publicTeam._id);
 						expect(res.body.rooms[1]).to.have.property('_id');
 						expect(res.body.rooms[1]).to.have.property('teamId', publicTeam._id);
-						expect(res.body.rooms[2]).to.have.property('_id');
-						expect(res.body.rooms[2]).to.have.property('teamId', publicTeam._id);
+
 						const rids = res.body.rooms.map(({ _id }) => _id);
 
 						expect(rids).to.include(publicRoom._id);
-						expect(rids).to.include(publicRoom2._id);
 						expect(rids).to.include(privateRoom._id);
 					})
 					.end(done);
 			});
 		});
 
-		it('should add another public room to private team', (done) => {
+		it('should add public room to private team', (done) => {
 			updatePermission('add-team-channel', ['admin']).then(() => {
 				request.post(api('teams.addRooms'))
 					.set(credentials)
@@ -868,9 +886,9 @@ describe('[Teams]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('room');
-						expect(res.body.room).to.have.property('teamId', privateTeam._id);
-						expect(res.body.room).to.have.property('teamDefault', false);
+						expect(res.body).to.have.property('rooms');
+						expect(res.body.rooms[0]).to.have.property('teamId', privateTeam._id);
+						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
 					})
 					.end(done);
 			});
@@ -881,16 +899,16 @@ describe('[Teams]', () => {
 				request.post(api('teams.addRooms'))
 					.set(credentials)
 					.send({
-						rooms: [privateRoom._id],
-						teamId: publicTeam._id,
+						rooms: [privateRoom2._id],
+						teamId: privateTeam._id,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('room');
-						expect(res.body.room).to.have.property('teamId', publicTeam._id);
-						expect(res.body.room).to.have.property('teamDefault', false);
+						expect(res.body).to.have.property('rooms');
+						expect(res.body.rooms[0]).to.have.property('teamId', privateTeam._id);
+						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
 					})
 					.end(done);
 			});
@@ -997,7 +1015,7 @@ describe('[Teams]', () => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('rooms');
 							expect(res.body.rooms).to.be.an('array');
-							expect(res.body.rooms.length).to.equal(1);
+							expect(res.body.rooms.length).to.equal(2);
 						})
 						.end(done);
 				});
