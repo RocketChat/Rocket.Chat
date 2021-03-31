@@ -10,6 +10,7 @@ import { FormSkeleton } from '../../Skeleton';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useFormatDuration } from '../../../../hooks/useFormatDuration';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { UserStatus } from '../../../../components/UserStatus';
@@ -93,6 +94,7 @@ export function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
+	const formatDuration = useFormatDuration();
 
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
 	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy } } = data || { room: { v: { } } };
@@ -139,7 +141,7 @@ export function ChatInfo({ id, route }) {
 				</>}
 				{ts && metrics?.reaction?.fd && <>
 					<Label>{t('Queue_Time')}</Label>
-					<Info>{moment(ts).from(moment(metrics.reaction.fd), true)}</Info>
+					<Info>{formatDuration(moment(metrics.reaction.fd).diff(moment(ts)))}</Info>
 				</>}
 				{closedAt && <>
 					<Label>{t('Chat_Duration')}</Label>
