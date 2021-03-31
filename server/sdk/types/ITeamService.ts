@@ -37,6 +37,7 @@ export interface ITeamMemberInfo {
 
 export interface ITeamInfo extends ITeam {
 	rooms: number;
+	numberOfUsers: number;
 }
 
 export interface ITeamService {
