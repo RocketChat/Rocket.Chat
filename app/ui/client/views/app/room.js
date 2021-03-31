@@ -47,13 +47,13 @@ export const openProfileTab = (e, tabBar, username) => {
 	tabBar.openUserInfo(username);
 };
 
-const wipeFailedUploads = () => {
-	const uploads = Session.get('uploading');
+// const wipeFailedUploads = () => {
+// 	const uploads = Session.get('uploading');
 
-	if (uploads) {
-		Session.set('uploading', uploads.filter((upload) => !upload.error));
-	}
-};
+// 	if (uploads) {
+// 		Session.set('uploading', uploads.filter((upload) => !upload.error));
+// 	}
+// };
 
 function roomHasGlobalPurge(room) {
 	if (!settings.get('RetentionPolicy_Enabled')) {
@@ -156,7 +156,8 @@ function addToInput(text) {
 	$(input).change().trigger('input');
 }
 
-callbacks.add('enter-room', wipeFailedUploads);
+// WIDE CHAT
+// callbacks.add('enter-room', wipeFailedUploads);
 
 export const dropzoneHelpers = {
 	dragAndDrop() {
@@ -185,6 +186,7 @@ Template.roomOld.helpers({
 	},
 	subscribed() {
 		const { state } = Template.instance();
+		console.log(state);
 		return state.get('subscribed');
 	},
 	messagesHistory() {
@@ -214,7 +216,6 @@ Template.roomOld.helpers({
 				ts: 1,
 			},
 		};
-
 		return ChatMessage.find(query, options);
 	},
 
@@ -232,10 +233,6 @@ Template.roomOld.helpers({
 
 	windowId() {
 		return `chat-window-${ this._id }`;
-	},
-
-	uploading() {
-		return Session.get('uploading');
 	},
 
 	roomLeader() {

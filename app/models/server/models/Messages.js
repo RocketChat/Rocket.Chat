@@ -32,6 +32,10 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
+
+		// push-message
+		this.tryEnsureIndex({ pushm: 1 }, { sparse: true });
+		this.tryEnsureIndex({ pushm_encrypted: 1 }, { sparse: true });
 	}
 
 	setReactions(messageId, reactions) {
@@ -737,6 +741,20 @@ export class Messages extends Base {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	updatePostProcessedPushMessageById(_id, post_processed_message) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				post_processed_message,
+				pushm_post_processed: true,
+				msg: '',
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	// INSERT
