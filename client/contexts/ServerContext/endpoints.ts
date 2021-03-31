@@ -3,6 +3,7 @@ import { GetMessageEndpoint as ChatGetMessageEndpoint } from './endpoints/v1/cha
 import { UnfollowMessageEndpoint as ChatUnfollowMessageEndpoint } from './endpoints/v1/chat/unfollowMessage';
 import { AutocompleteEndpoint as UsersAutocompleteEndpoint } from './endpoints/v1/users/autocomplete';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
+import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
 import { ListEndpoint as CustomUserStatusListEndpoint } from './endpoints/v1/custom-user-status/list';
 import { ExternalComponentsEndpoint as AppsExternalComponentsEndpoint } from './endpoints/apps/externalComponents';
@@ -34,6 +35,7 @@ export type ServerEndpoints = {
 	'custom-user-status.list': CustomUserStatusListEndpoint;
 	'/apps/externalComponents': AppsExternalComponentsEndpoint;
 	'rooms.autocomplete.channelAndPrivate': RoomsAutocompleteEndpoint;
+	'rooms.autocomplete.availableForTeams': RoomsAutocompleteTeamsEndpoint;
 	'teams.listRooms': ListRoomsEndpoint;
 	'teams.addRooms': TeamsAddRoomsEndpoint;
 	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
