@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
+import mem from 'mem';
 
-import { hasPermission } from '../../app/authorization';
-import { Rooms, Users, Subscriptions } from '../../app/models';
+import { hasPermission } from '../../app/authorization/server';
+import { Rooms, Users, Subscriptions } from '../../app/models/server';
+import { Rooms as RoomsRaw } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
@@ -74,6 +76,10 @@ const getChannels = (user, canViewAnon, searchTerm, sort, pagination) => {
 	};
 };
 
+const getChannelsCountForTeam = mem((teamId) => Promise.await(RoomsRaw.findByTeamId(teamId, { projection: { _id: 1 } }).count()), {
+	maxAge: 2000,
+});
+
 const getTeams = (user, searchTerm, sort, pagination) => {
 	if (!user) {
 		return;
@@ -81,7 +87,7 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 
 	const userSubs = Subscriptions.cachedFindByUserId(user._id).fetch();
 	const ids = userSubs.map((sub) => sub.rid);
-	const result = Rooms.findByNameOrFNameInIdsWithTeams(searchTerm, ids, {
+	const result = Rooms.findContainingNameOrFNameInIdsAsTeamMain(searchTerm, ids, {
 		...pagination,
 		sort: {
 			featured: -1,
@@ -105,19 +111,14 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 		},
 	});
 
-	const rooms = result.fetch();
-	const mainRooms = rooms.filter((room) => room.teamMain);
-
-	const roomsWithTeamInfo = rooms.reduce((prev, room) => {
-		const mainRoom = mainRooms.find((mr) => room.teamId === mr.teamId);
-		room.teamName = mainRoom.name;
-
-		return prev.push(room) && prev;
-	}, []);
+	const rooms = result.fetch().map((room) => ({
+		...room,
+		roomsCount: getChannelsCountForTeam(room.teamId),
+	}));
 
 	return {
 		total: result.count(), // count ignores the `skip` and `limit` options
-		results: roomsWithTeamInfo,
+		results: rooms,
 	};
 };
 
@@ -212,7 +213,7 @@ Meteor.methods({
 			case 'channels':
 				return getChannels(user, canViewAnonymous, regex, sortChannels(sortBy, sortDirection), pagination);
 			case 'teams':
-				return getTeams(user, regex, sortChannels(sortBy, sortDirection), pagination);
+				return getTeams(user, text, sortChannels(sortBy, sortDirection), pagination);
 			case 'users':
 				return getUsers(user, text, workspace, sortUsers(sortBy, sortDirection), pagination);
 			default:

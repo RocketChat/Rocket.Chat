@@ -26,6 +26,11 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
+
+		this.tryEnsureIndex({
+			teamId: 1,
+			teamDefault: 1,
+		}, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -523,18 +528,10 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameOrFNameInIdsWithTeams(regex, rids, options) {
+	findContainingNameOrFNameInIdsAsTeamMain(text, rids, options) {
 		const query = {
-			teamId: {
-				$exists: true,
-			},
+			teamMain: true,
 			$and: [{
-				$or: [{
-					name: regex,
-				}, {
-					fname: regex,
-				}],
-			}, {
 				$or: [{
 					t: 'p',
 					_id: {
@@ -545,6 +542,18 @@ export class Rooms extends Base {
 				}],
 			}],
 		};
+
+		if (text) {
+			const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
+
+			query.$and.push({
+				$or: [{
+					name: regex,
+				}, {
+					fname: regex,
+				}],
+			});
+		}
 
 		return this._db.find(query, options);
 	}
