@@ -96,6 +96,7 @@ const OmnichannelEnabledProvider: FC = ({ children }) => {
 		setContextValue((context) => ({
 			...context,
 			agentAvailable: user?.statusLivechat === 'available',
+			...routeConfig && { routeConfig },
 		}));
 	}, [user?.statusLivechat, routeConfig]);
 
