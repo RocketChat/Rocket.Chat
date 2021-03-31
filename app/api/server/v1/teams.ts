@@ -1,9 +1,10 @@
+import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Rooms, Subscriptions } from '../../../models/server';
+import { Subscriptions } from '../../../models/server';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
@@ -291,14 +292,16 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 			return API.v1.failure('Team not found.');
 		}
 
-		const rooms = Promise.await(Team.getMatchingTeamRooms(team._id, roomsToRemove));
+		const rooms: string[] = Promise.await(Team.getMatchingTeamRooms(team._id, roomsToRemove));
 
 		// Remove the team's main room
-		Rooms.removeById(team.roomId);
+		Meteor.call('eraseRoom', team.roomId);
 
 		// If we got a list of rooms to delete along with the team, remove them first
 		if (rooms.length) {
-			Rooms.removeByIds(rooms);
+			rooms.forEach((room) => {
+				Meteor.call('eraseRoom', room);
+			});
 		}
 
 		// Move every other room back to the workspace
