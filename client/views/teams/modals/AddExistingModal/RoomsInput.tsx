@@ -20,7 +20,7 @@ const useRoomsAutoComplete = (name: string): {
 	const params = useMemo(() => ({
 		selector: JSON.stringify({ name }),
 	}), [name]);
-	const { value: data } = useEndpointData('rooms.autocomplete.channelAndPrivate', params);
+	const { value: data } = useEndpointData('rooms.autocomplete.availableForTeams', params);
 
 	const options = useMemo<AutoCompleteProps['options']>(() => {
 		if (!data) {
