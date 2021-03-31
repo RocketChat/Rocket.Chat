@@ -10,6 +10,7 @@ import { FormSkeleton } from '../../Skeleton';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useFormatDuration } from '../../../../hooks/useFormatDuration';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { UserStatus } from '../../../../components/UserStatus';
@@ -94,8 +95,10 @@ export function ChatInfo({ id, route }) {
 
 	const formatDateAndTime = useFormatDateAndTime();
 
+	const formatDuration = useFormatDuration();
+
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
-	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic } } = data || { room: { v: { } } };
+	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
 
 	const onEditClick = useMutableCallback(() => routePath.push(
@@ -153,12 +156,17 @@ export function ChatInfo({ id, route }) {
 					<Label>{t('Closed_At')}</Label>
 					<Info>{formatDateAndTime(closedAt)}</Info>
 				</>}
-				{metrics?.v?.lq && <>
+				{servedBy?.ts && <>
+					<Label>{t('Taken_At')}</Label>
+					<Info>{formatDateAndTime(servedBy.ts)}</Info>
+				</>}
+				{metrics?.response?.avg && formatDuration(metrics.response.avg) && <>
+					<Label>{t('Avg_response_time')}</Label>
+					<Info>{formatDuration(metrics.response.avg)}</Info>
+				</>}
+				{!waitingResponse && <>
 					<Label>{t('Inactivity_Time')}</Label>
-					{closedAt
-						? <Info>{moment(closedAt).from(moment(metrics.v.lq), true)}</Info>
-						: <Info>{moment(metrics.v.lq).fromNow()}</Info>
-					}
+					<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
 				</>}
 			</Margins>
 		</VerticalBar.ScrollableContent>
