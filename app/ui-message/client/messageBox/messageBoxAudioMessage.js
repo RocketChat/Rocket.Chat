@@ -78,15 +78,15 @@ Template.messageBoxAudioMessage.events({
 	async 'click .js-audio-message-record'(event, instance) {
 		event.preventDefault();
 
-		let parameter = await navigator.permissions.query({name : 'microphone'});
-		if(parameter.state === "denied"){
+		const parameter = await navigator.permissions.query({ name: 'microphone' });
+		if (parameter.state === 'denied') {
 			banners.open({
 				id: 'Microphone_permission_denied',
 				title: t('Microphone_permission_denied'),
-				html:  t('Microphone_permission_update_instruction'),
+				html: t('Microphone_permission_update_instruction'),
 				modifiers: ['large', 'danger'],
 			});
-			return
+			return;
 		}
 
 		if (recordingRoomId.get() && (recordingRoomId.get() !== this.rid)) {
