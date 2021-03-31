@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Field, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
@@ -16,7 +16,6 @@ export const AddUsers = ({
 	onClickSave,
 	value,
 	onChange,
-	errors,
 }) => {
 	const t = useTranslation();
 
@@ -30,10 +29,7 @@ export const AddUsers = ({
 			<VerticalBar.ScrollableContent>
 				<Field >
 					<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-					<UserAutoCompleteMultiple errors={errors.users} value={value} onChange={onChange} placeholder={t('Choose_users')} />
-					{errors.users && <Field.Error>
-						{errors.users}
-					</Field.Error>}
+					<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Choose_users')} />
 				</Field>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
@@ -50,7 +46,6 @@ export default ({
 }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const [errors, setErrors] = useState({});
 
 	const onClickClose = useTabBarClose();
 	const saveAction = useMethod('addUsersToRoom');
@@ -70,22 +65,14 @@ export default ({
 	});
 
 	const handleSave = useMutableCallback(async () => {
-		if (users.length < 1) {
-			return setErrors({
-				users: t('Select_at_least_one_user'),
-			});
-		}
-
 		try {
 			await saveAction({ rid, users });
 			dispatchToastMessage({ type: 'success', message: t('Users_added') });
 			onClickBack();
 			reload();
-		} catch (e) {
-			dispatchToastMessage({ type: 'error', message: e });
+		} catch ({ message }) {
+			dispatchToastMessage({ type: 'error', message });
 		}
-
-		setErrors({});
 	});
 
 	return (
@@ -95,7 +82,6 @@ export default ({
 			onClickSave={handleSave}
 			value={users}
 			onChange={onChangeUsers}
-			errors={errors}
 		/>
 	);
 };
