@@ -11,6 +11,7 @@ import { FormSkeleton } from '../../Skeleton';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useFormatDuration } from '../../../../hooks/useFormatDuration';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { UserStatus } from '../../../../components/UserStatus';
@@ -157,8 +158,8 @@ export function ChatInfo({ id, route }) {
 
 	const formatDateAndTime = useFormatDateAndTime();
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
-
 	const [customFields, setCustomFields] = useState([]);
+	const formatDuration = useFormatDuration();
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
 	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy, priorityId, livechatData } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
@@ -233,6 +234,14 @@ export function ChatInfo({ id, route }) {
 				{closedAt && <>
 					<Label>{t('Closed_At')}</Label>
 					<Info>{formatDateAndTime(closedAt)}</Info>
+				</>}
+				{servedBy?.ts && <>
+					<Label>{t('Taken_At')}</Label>
+					<Info>{formatDateAndTime(servedBy.ts)}</Info>
+				</>}
+				{metrics?.response?.avg && formatDuration(metrics.response.avg) && <>
+					<Label>{t('Avg_response_time')}</Label>
+					<Info>{formatDuration(metrics.response.avg)}</Info>
 				</>}
 				{!waitingResponse && <>
 					<Label>{t('Inactivity_Time')}</Label>
