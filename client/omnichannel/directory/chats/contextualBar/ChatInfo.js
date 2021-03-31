@@ -160,7 +160,7 @@ export function ChatInfo({ id, route }) {
 					<Label>{t('Taken_At')}</Label>
 					<Info>{formatDateAndTime(servedBy.ts)}</Info>
 				</>}
-				{metrics?.response?.avg && <>
+				{metrics?.response?.avg && formatDuration(metrics.response.avg) && <>
 					<Label>{t('Avg_response_time')}</Label>
 					<Info>{formatDuration(metrics.response.avg)}</Info>
 				</>}
