@@ -2725,6 +2725,8 @@
   "meteor_status_try_now_waiting": "Probeer nu",
   "meteor_status_waiting": "Wachten op serververbinding,",
   "Method": "Methode",
+  "Microphone_permission_denied": "Microfoon toestemming geweigerd",
+  "Microphone_permission_update_instruction": "<span> Toestemming is vereist om de microfoon te gebruiken. Zie <a href=`https://utlv.screenstepslive.com/s/faculty/m/54123/l/984966-enabling-microphone-and-camera-use-in-web-browsers` target=`_blank`> hier </a> om de machtigingen <span> bij te werken",
   "Min_length_is": "Min lengte is %s",
   "Minimum": "Minimum",
   "Minimum_balance": "Minimum balans",

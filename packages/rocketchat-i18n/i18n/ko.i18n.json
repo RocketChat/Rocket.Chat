@@ -2596,6 +2596,8 @@
   "meteor_status_try_now_waiting": "지금 시도",
   "meteor_status_waiting": "서버 연결을 기다리는 중...",
   "Method": "방법",
+  "Microphone_permission_denied": "마이크 권한이 거부되었습니다.",
+  "Microphone_permission_update_instruction": "<span> 마이크를 사용하려면 권한이 필요합니다. <a href=`https://utlv.screenstepslive.com/s/faculty/m/54123/l/984966-enabling-microphone-and-camera-use-in-web-browsers` target=`_blank`> 참조 여기 </a>에서 권한을 업데이트하세요. <span>",
   "Min_length_is": "최소 길이는 %s입니다.",
   "Minimum": "최소",
   "Minimum_balance": "최소 잔고",

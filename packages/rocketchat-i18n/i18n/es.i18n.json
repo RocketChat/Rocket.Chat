@@ -2725,6 +2725,8 @@
   "meteor_status_try_now_waiting": "Intentar ahora",
   "meteor_status_waiting": "Esperando la conexión del servidor,",
   "Method": "Método",
+  "Microphone_permission_denied": "Permiso de micrófono denegado",
+  "Microphone_permission_update_instruction": "<span> Se requiere permiso para usar el micrófono. Consulte <a href=`https://utlv.screenstepslive.com/s/faculty/m/54123/l/984966-enabling-microphone-and-camera-use-in-web-browsers` target=`_blank`> aquí </a> para actualizar los permisos <span> ",
   "Min_length_is": "La longitud mínima es %s",
   "Minimum": "Mínimo",
   "Minimum_balance": "Balance mínimo",

@@ -2724,6 +2724,8 @@
   "meteor_status_try_now_waiting": "Prova-ho ara",
   "meteor_status_waiting": "Esperant la connexió de servidor,",
   "Method": "Mètode",
+  "Microphone_permission_denied": "El permís del micròfon ha estat denegat",
+  "Microphone_permission_update_instruction": "<span>Es requereix permís per utilitzar el micròfon. Veure <a href=`https://utlv.screenstepslive.com/s/faculty/m/54123/l/984966-enabling-microphone-and-camera-use-in-web-browsers` target=`_blank`>aquí</a> per actualitzar els permisos </span>",
   "Min_length_is": "La llargada mínima és %s",
   "Minimum": "Mínim",
   "Minimum_balance": "Balanç mínim",

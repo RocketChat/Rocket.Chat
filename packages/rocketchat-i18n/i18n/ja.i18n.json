@@ -2607,6 +2607,8 @@
   "meteor_status_try_now_waiting": "再試行",
   "meteor_status_waiting": "サーバー接続を待っています。",
   "Method": "方法",
+  "Microphone_permission_denied": "マイクの許可が拒否されました",
+  "Microphone_permission_update_instruction": "<span>マイクを使用するには許可が必要です。 <a href=`https://utlv.screenstepslive.com/s/faculty/m/54123/l/984966-enabling-microphone-and-camera-use-in-web-browsers` target=`_blank`>を参照してください。ここ</a>で権限を更新します<span>",
   "Min_length_is": "最小の長さは%sです",
   "Minimum": "最小",
   "Minimum_balance": "最低残高",

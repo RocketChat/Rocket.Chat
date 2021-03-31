@@ -2605,6 +2605,8 @@
   "meteor_status_try_now_waiting": "Forsøg nu",
   "meteor_status_waiting": "Afventer forbindelse til server,",
   "Method": "Metode",
+  "Microphone_permission_denied": "Mikrofontilladelse nægtet",
+  "Microphone_permission_update_instruction": "<span> Der kræves tilladelse til at bruge mikrofon. Se <a href=`https://utlv.screenstepslive.com/s/faculty/m/54123/l/984966-enabling-microphone-and-camera-use-in-web-browsers` target=`_blank`> her </a> for at opdatere tilladelser <span> ",
   "Min_length_is": "Min længde er%s",
   "Minimum": "Minimum",
   "Minimum_balance": "Mindste saldo",

@@ -2700,6 +2700,8 @@
   "meteor_status_try_now_waiting": "立即尝试",
   "meteor_status_waiting": "等待服务器连接，",
   "Method": "方法",
+  "Microphone_permission_denied": "麦克风许可被拒绝",
+  "Microphone_permission_update_instruction": "<span>使用麦克风需要权限。参见<a href=`https://utlv.screenstepslive.com/s/faculty/m/54123/l/984966-enabling-microphone-and-camera-use-in-web-browsers` target=`_blank`>这里</a>以更新权限<span>",
   "Min_length_is": "最小长度是 ％s",
   "Minimum": "最小值",
   "Minimum_balance": "最小余额",

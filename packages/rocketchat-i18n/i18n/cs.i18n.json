@@ -2590,6 +2590,8 @@
   "meteor_status_try_now_waiting": "Zkusit nyní",
   "meteor_status_waiting": "Čekám na připojení k serveru,",
   "Method": "Metoda",
+  "Microphone_permission_denied": "Povolení mikrofonu bylo zamítnuto",
+  "Microphone_permission_update_instruction": "<span> K použití mikrofonu je vyžadováno povolení. <a href=`https://utlv.screenstepslive.com/s/faculty/m/54123/l/984966-enabling-microphone-and-camera-use-in-web-browsers` target=`_blank`> zde </a> a aktualizovat oprávnění <span>",
   "Min_length_is": "Minimální délka je %s",
   "Minimum": "Minimum",
   "Minimum_balance": "Minimální stav účtu",

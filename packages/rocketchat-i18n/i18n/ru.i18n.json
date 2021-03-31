@@ -2633,6 +2633,8 @@
   "meteor_status_try_now_waiting": "Попробуйте сейчас",
   "meteor_status_waiting": "В ожидании соединения с сервером",
   "Method": "Метод",
+  "Microphone_permission_denied": "В разрешении на использование микрофона отказано",
+  "Microphone_permission_update_instruction": "<span> Требуется разрешение на использование микрофона. См. <a href=`https://utlv.screenstepslive.com/s/faculty/m/54123/l/984966-enpting-microphone-and-camera-use-in-web-browsers` target=`_blank`> здесь </a>, чтобы обновить разрешения <span>",
   "Min_length_is": "Минимальная длина составляет %s",
   "Minimum": "Минимум",
   "Minimum_balance": "Минимальный баланс",
