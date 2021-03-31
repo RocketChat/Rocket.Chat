@@ -27,6 +27,7 @@ Meteor.methods({
 			topic: Match.Optional(String),
 			tags: Match.Optional([String]),
 			livechatData: Match.Optional(Object),
+			priorityId: Match.Optional(String),
 		}));
 
 		const room = LivechatRooms.findOneById(roomData._id);
