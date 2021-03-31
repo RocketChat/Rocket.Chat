@@ -32,7 +32,7 @@ export function Reactions({ reactions, onClick }) {
 export function Username({ username, onClick, displayName }) {
 	return (
 		<Box mie='x4' mbe='x4' data-username={username} onClick={onClick} key={displayName}>
-			<Tag>{displayName}</Tag>
+			<Tag variant='secondary'>{displayName}</Tag>
 		</Box>
 	);
 }

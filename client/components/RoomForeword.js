@@ -52,6 +52,7 @@ const RoomForeword = ({ _id: rid }) => {
 				<Margins inline='x4' key={index}>
 					<Box is='a' href={`/direct/${ username }`}>
 						<Tag
+							variant='secondary'
 							className='mention-link'
 							data-username={username}
 							medium
