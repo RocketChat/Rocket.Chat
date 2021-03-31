@@ -1,6 +1,86 @@
 
 # 3.13.0 (Under Release Candidate Process)
 
+## 3.13.0-rc.3
+`2021-03-31  ·  2 🐛  ·  13 🔍  ·  13 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- 'Chats in Progress' Section is not rendering when the routing algorithm is not Manual Selection ([#21324](https://github.com/RocketChat/Rocket.Chat/pull/21324))
+
+- Visitors.info endpoint being called multiple times ([#21350](https://github.com/RocketChat/Rocket.Chat/pull/21350))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression:  New chat forwarding modal is not verifying mandatory values ([#21288](https://github.com/RocketChat/Rocket.Chat/pull/21288))
+
+- Regression: Add number of team members to teams.list and teams.listAll ([#21361](https://github.com/RocketChat/Rocket.Chat/pull/21361))
+
+- Regression: Add support to filter on `teams.listRooms` endpoint ([#21327](https://github.com/RocketChat/Rocket.Chat/pull/21327))
+
+  - Add support for queries (within the `query` parameter);  
+  - Add support to pagination (`offset` and `count`) when an user doesn't have the permission to get all rooms.
+
+- Regression: Add teams support to directory ([#21351](https://github.com/RocketChat/Rocket.Chat/pull/21351))
+
+  - Change `directory.js` to reduce function complexity  
+  - Add `teams` type of item. Directory will return all public teams & private teams the user is part of.
+
+- Regression: Channel owner can't convert it into a team. ([#21349](https://github.com/RocketChat/Rocket.Chat/pull/21349))
+
+- Regression: Fix channels not being added to team on creation ([#21370](https://github.com/RocketChat/Rocket.Chat/pull/21370))
+
+- Regression: Remove channel action on add channel's modal don't work ([#21356](https://github.com/RocketChat/Rocket.Chat/pull/21356))
+
+  ![removechannel-on-add-existing-modal](https://user-images.githubusercontent.com/27704687/112911017-eda8fa80-90ca-11eb-9c24-47a70be0c314.gif)
+
+  ![image](https://user-images.githubusercontent.com/27704687/112911052-02858e00-90cb-11eb-85a2-0ef1f5f9ffd9.png)
+
+- regression: remove user modal not showing up ([#21348](https://github.com/RocketChat/Rocket.Chat/pull/21348))
+
+- Regression: Team icons in mention ([#21367](https://github.com/RocketChat/Rocket.Chat/pull/21367))
+
+  ![image](https://user-images.githubusercontent.com/40830821/113044232-cd814600-9173-11eb-8f17-47c2d1438b75.png)
+
+- regression: Unable to add users while creating a team ([#21354](https://github.com/RocketChat/Rocket.Chat/pull/21354))
+
+- Regression: Unify Contact information displayed on the Room header and Room Info ([#21312](https://github.com/RocketChat/Rocket.Chat/pull/21312))
+
+  ![image](https://user-images.githubusercontent.com/34130764/112586659-35592900-8e22-11eb-94be-32bdff7ca883.png)
+
+  ![image](https://user-images.githubusercontent.com/2493803/112913130-788bf400-90cf-11eb-84c6-782b203e100a.png)
+
+  ![image](https://user-images.githubusercontent.com/2493803/112913146-817cc580-90cf-11eb-87ad-ef79766be2b3.png)
+
+- Regression: Update .invite endpoints to support multiple users at once ([#21328](https://github.com/RocketChat/Rocket.Chat/pull/21328))
+
+  - channels.invite now supports passing an array as a param (either with usernames or userIds) via `usernames` or `userIds` properties.  
+  - You can still use the endpoint to invite only one user via the old params `userId`, `username` or `user`.  
+  - Same changes apply to groups.invite
+
+- Regression: When only 'teams' type is provided, show only rooms with teamMain on `rooms.adminRooms` endpoint ([#21322](https://github.com/RocketChat/Rocket.Chat/pull/21322))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@dougfabris](https://github.com/dougfabris)
+- [@g-thome](https://github.com/g-thome)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rafaelblink](https://github.com/rafaelblink)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 ## 3.13.0-rc.2
 `2021-03-26  ·  1 🚀  ·  2 🐛  ·  8 🔍  ·  9 👩‍💻👨‍💻`
 
