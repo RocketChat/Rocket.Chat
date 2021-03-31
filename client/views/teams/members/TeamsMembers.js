@@ -11,15 +11,10 @@ import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext'
 import UserInfoWithData from '../../room/contextualBar/UserInfo';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { RoomMembers } from '../../room/contextualBar/RoomMembers/List/RoomMembers';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useDataWithLoadMore } from '../../room/contextualBar/hooks/useDataWithLoadMore';
 import AddUsers from '../../room/contextualBar/RoomMembers/AddUsers';
 import InviteUsers from '../../room/contextualBar/RoomMembers/InviteUsers';
-
-const useGetUsersOfRoom = (params) => {
-	const method = useMethod('getUsersOfRoom');
-	return useDataWithLoadMore(useCallback((args) => method(...args), [method]), params);
-};
+import { useRoomMembersList } from '../../hooks/useRoomMembersList';
+import { useRecordList } from '../../../hooks/lists/useRecordList';
 
 const TeamMembers = ({
 	rid,
@@ -35,9 +30,10 @@ const TeamMembers = ({
 	const [text, setText] = useState('');
 
 	const debouncedText = useDebouncedValue(text, 500);
-	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [rid, type, debouncedText]);
 
-	const { value, phase, more, error, reload } = useGetUsersOfRoom(params);
+	const { membersList, loadMoreItems, reload } = useRoomMembersList(useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [rid, type, debouncedText]));
+
+	const { phase, items, itemCount: total } = useRecordList(membersList);
 
 	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
 
@@ -63,12 +59,6 @@ const TeamMembers = ({
 
 	const handleBack = useCallback(() => setState({}), [setState]);
 
-	const loadMoreItems = useCallback((start, end) => more(([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter], (prev, next) => ({
-		total: next.total,
-		finished: next.records.length < 50,
-		records: [...prev.records, ...next.records],
-	})), [more]);
-
 	if (state.tab === 'UserInfo') {
 		return <UserInfoWithData rid={rid} onClickClose={onClickClose} onClickBack={handleBack} username={state.username} />;
 	}
@@ -87,11 +77,10 @@ const TeamMembers = ({
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
-			error={error}
 			setType={setType}
 			setText={handleTextChange}
-			members={value?.records}
-			total={value?.total}
+			members={items}
+			total={total}
 			onClickClose={onClickClose}
 			onClickView={viewUser}
 			onClickAdd={canAddUsers && addUser}

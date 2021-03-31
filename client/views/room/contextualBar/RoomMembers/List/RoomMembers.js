@@ -30,7 +30,7 @@ import InviteUsers from '../InviteUsers/InviteUsers';
 import AddUsers from '../AddUsers/AddUsers';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
-import { useRoomMembersList } from './hooks/useRoomMembersList';
+import { useRoomMembersList } from '../../../../hooks/useRoomMembersList';
 import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 
 export const createItemData = memoize((onClickView, rid) => ({
