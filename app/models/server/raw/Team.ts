@@ -43,7 +43,7 @@ export class TeamRaw extends BaseRaw<T> {
 		}, options);
 	}
 
-	findOneByName(name: string, options?: FindOneOptions<T>): Promise<T | null> {
+	findOneByName(name: string | RegExp, options?: FindOneOptions<T>): Promise<T | null> {
 		return this.col.findOne({ name }, options);
 	}
 

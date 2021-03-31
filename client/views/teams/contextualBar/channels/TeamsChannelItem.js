@@ -117,7 +117,7 @@ export const TeamsChannelItem = ({ room, onClickView, reload }) => {
 				<RoomAvatar room={room} size='x28' />
 			</Option.Avatar>
 			<Option.Column>{room.t === 'c' ? <Icon name='hash' size='x15'/> : <Icon name='hashtag-lock' size='x15'/>}</Option.Column>
-			<Option.Content><Box display='inline-flex'>{roomTypes.getRoomName(room.t, room)} {room.teamDefault ? <Box mi='x8'><Tag mi='x8'>{t('Team_Auto-join')}</Tag></Box> : ''}</Box></Option.Content>
+			<Option.Content><Box display='inline-flex'>{roomTypes.getRoomName(room.t, room)} {room.teamDefault ? <Box mi='x8'><Tag>{t('Team_Auto-join')}</Tag></Box> : ''}</Box></Option.Content>
 			<Option.Menu onClick={onClick}>
 				{showButton ? <RoomActions room={room} reload={reload} /> : <ActionButton
 					ghost
