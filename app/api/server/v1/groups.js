@@ -866,7 +866,7 @@ API.v1.addRoute('groups.convertToTeam', { authRequired: true }, {
 			return API.v1.failure('Private group not found');
 		}
 
-		if (!hasAllPermission(this.userId, ['create-team', 'edit-room'], room._id)) {
+		if (!hasAllPermission(this.userId, ['create-team', 'edit-room'], room.rid)) {
 			return API.v1.unauthorized();
 		}
 
