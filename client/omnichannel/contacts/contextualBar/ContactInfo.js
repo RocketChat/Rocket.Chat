@@ -91,6 +91,8 @@ export function ContactInfo({ id, rid, route, hasEditAccess }) {
 		FlowRouter.go(`/live/${ _id }/contact-chat-history`);
 	};
 
+	const showContactHistory = FlowRouter.getRouteName() === 'live';
+
 	const displayName = name || username;
 
 	return <>
@@ -134,7 +136,7 @@ export function ContactInfo({ id, rid, route, hasEditAccess }) {
 		</VerticalBar.ScrollableContent>
 		{hasEditAccess && <VerticalBar.Footer>
 			<ButtonGroup stretch>
-				{ lastChat && <Button onClick={onChatHistory}><Icon name='history' size='x20'/> {t('Chat_History')}</Button>}
+				{ showContactHistory && lastChat && <Button onClick={onChatHistory}><Icon name='history' size='x20'/> {t('Chat_History')}</Button>}
 				<Button onClick={onEditButtonClick}><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
 			</ButtonGroup>
 		</VerticalBar.Footer>}
