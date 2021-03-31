@@ -139,7 +139,7 @@ const TeamChannels = ({ teamId }) => {
 	const debouncedText = useDebouncedValue(text, 800);
 
 
-	const { teamsChannelList, loadMoreItems } = useTeamsChannelList({ teamId, text: debouncedText, type });
+	const { teamsChannelList, loadMoreItems } = useTeamsChannelList(useMemo(() => ({ teamId, text: debouncedText, type }), [teamId, debouncedText, type]));
 
 
 	const { phase, items, itemCount: total } = useRecordList(teamsChannelList);

@@ -1,9 +1,10 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { getConfig } from '../../../../app/ui-utils/client/config';
 import { IRoom } from '../../../../definition/IRoom';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
+import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../../lib/lists/RecordList';
 
 type TeamsChannelListOptions = {
@@ -17,17 +18,16 @@ export const useTeamsChannelList = (
 ): {
 		teamsChannelList: RecordList<IRoom>;
 		initialItemCount: number;
+		reset: () => void;
 		loadMoreItems: (start: number, end: number) => void;
 	} => {
-	const teamsChannelList = useMemo(() => new RecordList<IRoom>(), [options.teamId, options.type, options.text]);
-
-	// useEffect(() => {
-	// 	if (teamsChannelList.options !== options) {
-	// 		teamsChannelList.updateFilters(options);
-	// 	}
-	// }, [teamsChannelList, options]);
-
 	const apiEndPoint = useEndpoint('GET', 'teams.listRooms');
+	const [teamsChannelList, setTeamsChannelList] = useState(() => new RecordList<IRoom>());
+	const reset = useCallback(() => setTeamsChannelList(new RecordList<IRoom>()), []);
+
+	useComponentDidUpdate(() => {
+		options && reset();
+	}, [options, reset]);
 
 	const fetchData = useCallback(
 		async (start, end) => {
@@ -51,7 +51,7 @@ export const useTeamsChannelList = (
 				itemCount: total,
 			};
 		},
-		[apiEndPoint, options.teamId, options.type, options.text],
+		[apiEndPoint, options],
 	);
 
 
@@ -61,6 +61,7 @@ export const useTeamsChannelList = (
 	}, []));
 
 	return {
+		reset,
 		teamsChannelList,
 		loadMoreItems,
 		initialItemCount,
