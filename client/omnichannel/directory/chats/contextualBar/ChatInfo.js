@@ -160,7 +160,7 @@ export function ChatInfo({ id, route }) {
 
 	const [customFields, setCustomFields] = useState([]);
 	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
-	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, livechatData, priorityId } } = data || { room: { v: { } } };
+	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy, priorityId } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 	const visitorId = v?._id;
@@ -234,12 +234,9 @@ export function ChatInfo({ id, route }) {
 					<Label>{t('Closed_At')}</Label>
 					<Info>{formatDateAndTime(closedAt)}</Info>
 				</>}
-				{metrics?.v?.lq && <>
+				{!waitingResponse && <>
 					<Label>{t('Inactivity_Time')}</Label>
-					{closedAt
-						? <Info>{moment(closedAt).from(moment(metrics.v.lq), true)}</Info>
-						: <Info>{moment(metrics.v.lq).fromNow()}</Info>
-					}
+					<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
 				</>}
 				{ canViewCustomFields()
 					&& livechatData
