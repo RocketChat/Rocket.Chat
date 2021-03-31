@@ -6,7 +6,6 @@ import { useSubscription } from 'use-subscription';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useForm } from '../../../../hooks/useForm';
-import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { FormSkeleton } from '../../Skeleton';
@@ -142,8 +141,6 @@ export function RoomEdit({ room, visitor, reload, close }) {
 	const { handleLivechatData } = handleValueCustom;
 	const { livechatData } = valueCustom;
 
-
-	const [nameError, setNameError] = useState();
 	const [customFieldsError, setCustomFieldsError] = useState([]);
 
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
@@ -171,24 +168,10 @@ export function RoomEdit({ room, visitor, reload, close }) {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	useComponentDidUpdate(() => {
-		setNameError(!name ? t('The_field_is_required', t('Name')) : '');
-	}, [t, name]);
-
 	const saveRoom = useMethod('livechat:saveInfo');
 
 	const handleSave = useMutableCallback(async (e) => {
 		e.preventDefault();
-		let error = false;
-		if (!name) {
-			setNameError(t('The_field_is_required', 'name'));
-			error = true;
-		}
-
-		if (error) {
-			return;
-		}
-
 		const userData = {
 			_id: visitor._id,
 			name,
@@ -215,7 +198,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 		}
 	});
 
-	const formIsValid = (hasUnsavedChangesContact || hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) && name && customFieldsError.length === 0;
+	const formIsValid = (hasUnsavedChangesContact || hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) && customFieldsError.length === 0;
 
 	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
@@ -226,13 +209,10 @@ export function RoomEdit({ room, visitor, reload, close }) {
 	return <>
 		<VerticalBar.ScrollableContent is='form'>
 			<Field>
-				<Field.Label>{t('Name')}*</Field.Label>
+				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput error={nameError} flexGrow={1} value={name} onChange={handleName} />
+					<TextInput flexGrow={1} value={name} onChange={handleName} />
 				</Field.Row>
-				<Field.Error>
-					{nameError}
-				</Field.Error>
 			</Field>
 			{ canViewCustomFields() && allCustomFields
 			&& <CustomFieldsForm jsonCustomFields={jsonCustomField} customFieldsData={livechatData}
