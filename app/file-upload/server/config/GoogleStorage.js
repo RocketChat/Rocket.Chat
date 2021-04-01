@@ -20,7 +20,9 @@ const get = function(file, req, res) {
 		}
 
 		const storeType = file.store.split(':').pop();
-		if (settings.get(`FileUpload_GoogleStorage_Proxy_${ storeType }`)) {
+
+		const isExist = settings.get(`FileUpload_GoogleStorage_Proxy_${ storeType }`);
+		if (isExist) {
 			const request = /^https:/.test(fileUrl) ? https : http;
 
 			return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
