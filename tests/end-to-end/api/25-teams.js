@@ -416,7 +416,7 @@ describe('[Teams]', () => {
 		});
 
 		it('should remove one member from a public team', (done) => {
-			request.post(api('teams.addMember'))
+			request.post(api('teams.addMembers'))
 				.set(credentials)
 				.send({
 					teamName: testTeam.name,
