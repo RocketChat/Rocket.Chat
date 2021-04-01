@@ -681,7 +681,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return !!await this.TeamModel.deleteOneByName(teamName);
 	}
 
-	async getAllPublicTeams(options: FindOneOptions<T>): Promise<Array<T>> {
+	async getAllPublicTeams(options: FindOneOptions<ITeam>): Promise<Array<ITeam>> {
 		return this.TeamModel.findByType(TEAM_TYPE.PUBLIC, options).toArray();
 	}
 
