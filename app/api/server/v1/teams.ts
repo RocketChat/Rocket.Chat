@@ -5,6 +5,7 @@ import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { Subscriptions } from '../../../models/server';
+import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
@@ -261,7 +262,7 @@ API.v1.addRoute('teams.updateMember', { authRequired: true }, {
 
 API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
 	post() {
-		const { teamId, teamName, members, rooms } = this.bodyParams;
+		const { teamId, teamName, members } = this.bodyParams;
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
@@ -274,8 +275,27 @@ API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
 
 		Promise.await(Team.removeMembers(team._id, members));
 
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('teams.removeMember', { authRequired: true }, {
+	post() {
+		const { teamId, teamName, uid, rooms } = this.bodyParams;
+
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
+
+		if (!hasAtLeastOnePermission(this.userId, ['edit-team-member'], team.roomId)) {
+			return API.v1.unauthorized();
+		}
+
+		Promise.await(Team.removeMembers(team._id, [{ userId: uid }]));
+
 		if (rooms?.length) {
-			Subscriptions.removeByRoomIdsAndUserId(rooms, this.userId);
+			rooms.forEach((rid: string) => removeUserFromRoom(rid, { _id: uid }));
 		}
 
 		return API.v1.success();

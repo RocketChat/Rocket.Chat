@@ -289,18 +289,18 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 		};
 	}, [closeModal, dispatchToastMessage, isMuted, muteFn, rid, roomCanMute, roomName, setModal, t, user.username, userCanMute]);
 
-	const removeFromTeam = useEndpointActionExperimental('POST', 'teams.removeMembers', t('User_has_been_removed_from_team'));
+	const removeFromTeam = useEndpointActionExperimental('POST', 'teams.removeMember', t('User_has_been_removed_from_team'));
 
 	const removeUserAction = useEndpointActionExperimental('POST', `${ endpointPrefix }.kick`, t('User_has_been_removed_from_s', roomName));
 	const removeUserOptionAction = useMutableCallback(() => {
 		if (room.teamMain && room.teamId) {
 			return setModal(<RemoveUsersModal
 				teamId={room?.teamId}
-				userId={user?._id}
+				userId={uid}
 				onClose={closeModal}
 				onCancel={closeModal}
 				onConfirm={async (rooms) => {
-					await removeFromTeam({ teamId: room.teamId, members: [{ userId: user._id }], rooms });
+					await removeFromTeam({ teamId: room.teamId, uid, rooms: Object.keys(rooms) });
 					closeModal();
 					reload && reload();
 				}}
