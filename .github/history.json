@@ -57933,6 +57933,34 @@
           ]
         }
       ]
+    },
+    "3.13.0-rc.5": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21402",
+          "title": "Regression: General improvement to Teams",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21412",
+          "title": "Regression: Headers icon breaking DMs",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }
