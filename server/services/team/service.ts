@@ -16,6 +16,7 @@ import { IRoom } from '../../../definition/IRoom';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { canAccessRoom } from '../authorization/canAccessRoom';
 import { escapeRegExp } from '../../../lib/escapeRegExp';
+import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 
 export class TeamService extends ServiceClass implements ITeamService {
@@ -242,41 +243,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findByIds(ids, options).toArray();
 	}
 
-	async addRoom(uid: string, rid: string, teamId: string, isDefault = false): Promise<IRoom> {
-		if (!teamId) {
-			throw new Error('missing-teamId');
-		}
-		if (!rid) {
-			throw new Error('missing-roomId');
-		}
-		if (!uid) {
-			throw new Error('missing-userId');
-		}
-		// at this point, we already checked for the permission
-		// so we just need to check if the user can see the room
-		const room = await this.RoomsModel.findOneById(rid);
-		const user = await this.Users.findOneById(uid);
-		const canSeeRoom = await canAccessRoom(room, user);
-		if (!canSeeRoom) {
-			throw new Error('invalid-room');
-		}
-
-		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1 } });
-		if (!team) {
-			throw new Error('invalid-team');
-		}
-		if (room.teamId) {
-			throw new Error('room-already-on-team');
-		}
-
-		room.teamId = teamId;
-		room.teamDefault = !!isDefault;
-		this.RoomsModel.setTeamById(room._id, teamId, isDefault);
-		return {
-			...room,
-		};
-	}
-
 	async addRooms(uid: string, rooms: Array<string>, teamId: string): Promise<Array<IRoom>> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
@@ -453,9 +419,19 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const subscriptionsCursor = this.SubscriptionsModel.findByUserIdAndRoomIds(userId, teamRoomIds);
 		const subscriptionRoomIds = (await subscriptionsCursor.toArray()).map((subscription) => subscription.rid);
 		const availableRoomsCursor = this.RoomsModel.findManyByRoomIds(subscriptionRoomIds, { skip, limit });
+		const rooms = await availableRoomsCursor.toArray();
+		const roomData = getSubscribedRoomsForUserWithDetails(userId, false, teamRoomIds);
+		const records = [];
+
+		for (const room of rooms) {
+			const roomInfo = roomData.find((data) => data.rid === room._id);
+			room.isLastOwner = roomInfo.userIsLastOwner;
+			records.push(room);
+		}
+
 		return {
 			total: await availableRoomsCursor.count(),
-			records: await availableRoomsCursor.toArray(),
+			records,
 		};
 	}
 
@@ -594,7 +570,12 @@ export class TeamService extends ServiceClass implements ITeamService {
 			return false;
 		}
 
-		const member = (await this.TeamMembersModel.createOneByTeamIdAndUserId(teamId, userId, { _id: inviter._id, username: inviter.username })).ops[0];
+		let inviterData = {} as Pick<IUser, '_id' | 'username'>;
+		if (inviter) {
+			inviterData = { _id: inviter._id, username: inviter.username };
+		}
+
+		const member = (await this.TeamMembersModel.createOneByTeamIdAndUserId(teamId, userId, inviterData)).ops[0];
 		await this.addMembersToDefaultRooms(inviter, teamId, [member]);
 
 		return true;

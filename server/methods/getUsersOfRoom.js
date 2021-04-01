@@ -12,6 +12,7 @@ function findUsers({ rid, status, skip, limit, filter = '' }) {
 			nickname: 1,
 			status: 1,
 			avatarETag: 1,
+			_updatedAt: 1,
 		},
 		sort: {
 			statusConnection: -1,
