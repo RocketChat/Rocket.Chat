@@ -22,7 +22,7 @@ import { useUserData } from '../../../hooks/useUserData';
 import { useEndpoint } from '../../../contexts/ServerContext';
 
 
-export default React.memo(({ room, subscription }) => {
+export default React.memo(({ room }) => {
 	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
 		return null;
@@ -32,7 +32,7 @@ export default React.memo(({ room, subscription }) => {
 		return <DirectRoomHeader room={room} />;
 	}
 
-	return <RoomHeader room={room} topic={room.topic} subscription={subscription} />;
+	return <RoomHeader room={room} topic={room.topic} />;
 });
 
 const HeaderIcon = ({ room }) => {
@@ -122,7 +122,7 @@ const DirectRoomHeader = ({ room }) => {
 	return <RoomHeader room={room} topic={directUserData?.statusText} />;
 };
 
-const RoomHeader = ({ room, topic, subscription }) => {
+const RoomHeader = ({ room, topic }) => {
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room}/>;
 	const showQuickActions = roomTypes.showQuickActionButtons(room.t);
@@ -140,7 +140,7 @@ const RoomHeader = ({ room, topic, subscription }) => {
 				<Encrypted room={room} />
 				<Translate room={room} />
 				{ showQuickActions && <Box mis='x20' display='flex'>
-					<QuickActions room={room} subscription={subscription}/>
+					<QuickActions room={room}/>
 				</Box> }
 			</Header.Content.Row>
 			<Header.Content.Row>

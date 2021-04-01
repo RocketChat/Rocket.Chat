@@ -1,4 +1,4 @@
-import React, { memo, useContext, useCallback, useState, useEffect } from 'react';
+import React, { memo, useContext, useCallback, useState, useEffect, useMemo } from 'react';
 import { BoxProps, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -17,16 +17,15 @@ import TranscriptModal from '../../../../../components/Omnichannel/modals/Transc
 import CloseChatModal from '../../../../../components/Omnichannel/modals/CloseChatModal';
 import { handleError } from '../../../../../../app/utils/client';
 import { IRoom } from '../../../../../../definition/IRoom';
-import { usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
+import { useAtLeastOnePermission, usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
 import { useUserId } from '../../../../../contexts/UserContext';
 import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
 import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
-import { ISubscription } from '../../../../../../definition/ISubscription';
 import { useSetting } from '../../../../../contexts/SettingsContext';
 import PlaceChatOnHoldModal from '../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 
 
-const QuickActions = ({ room, className, subscription }: { room: IRoom; className: BoxProps['className']; subscription: ISubscription }): JSX.Element => {
+const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['className'] }): JSX.Element => {
 	const setModal = useSetModal();
 	const { isMobile } = useLayout();
 	const t = useTranslation();
@@ -180,8 +179,6 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 		openModal(id);
 	});
 
-	const isSubscribedToRoom = !!subscription;
-
 	const omnichannelRouteConfig = useOmnichannelRouteConfig();
 
 	const manualOnHoldAllowed = useSetting('Livechat_allow_manual_on_hold');
@@ -194,9 +191,9 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 
 	const canSendTranscript = usePermission('send-omnichannel-chat-transcript');
 
-	const canCloseRoom = usePermission('close-others-livechat-room') || isSubscribedToRoom;
+	const canCloseRoom = usePermission('close-others-livechat-room');
 
-	const canMoveQueue = !!room.servedBy && !!omnichannelRouteConfig?.returnQueue;
+	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue;
 
 	const canPlaceChatOnHold = (!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed) as boolean;
 
@@ -218,6 +215,13 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 		return false;
 	};
 
+	const hasPermissionGroup = useAtLeastOnePermission(
+		useMemo(() => [
+			'close-others-livechat-room', 'transfer-livechat-guest',
+		], []),
+	);
+
+
 	return <ButtonGroup mi='x4' medium>
 		{ visibleActions.map(({ id, color, icon, title, action = actionDefault }, index) => {
 			const props = {
@@ -234,7 +238,7 @@ const QuickActions = ({ room, className, subscription }: { room: IRoom; classNam
 				key: id,
 			};
 
-			if (!hasPermissionButtons(id)) {
+			if (!hasPermissionGroup || !hasPermissionButtons(id)) {
 				return;
 			}
 
