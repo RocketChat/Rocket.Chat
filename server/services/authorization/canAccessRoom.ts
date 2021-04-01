@@ -5,35 +5,45 @@ import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 import { canAccessRoomTokenpass } from './canAccessRoomTokenpass';
 import { Subscriptions, Rooms, Settings, TeamMembers, Team } from './service';
 import { TEAM_TYPE } from '../../../definition/ITeam';
+import { IUser } from '../../../definition/IUser';
+
+async function canAccessPublicRoom(user: Partial<IUser>): Promise<boolean> {
+	if (!user?._id) {
+		// TODO: it was using cached version from /app/settings/server/raw.js
+		const anon = await Settings.getValueById('Accounts_AllowAnonymousRead');
+		return !!anon;
+	}
+
+	return Authorization.hasPermission(user._id, 'view-c-room');
+}
 
 const roomAccessValidators: RoomAccessValidator[] = [
 	async function _validateAccessToPublicRoomsInTeams(room, user): Promise<boolean> {
 		if (!room) {
 			return false;
 		}
-		if (!room._id || !room.teamId || room.t !== 'c' || !user?._id) {
-			// if the room doesn't belongs to a team || no user is present || no room is present skip
+		if (!room._id || !room.teamId || room.t !== 'c') {
+			// if the room doesn't belongs to a team || is not a public channel - skip
 			return false;
 		}
-		const team = await Team.findOneById(room.teamId);
-		const membership = await TeamMembers.findOneByUserIdAndTeamId(user._id, room.teamId, { projection: { _id: 1 } });
-		room.teamIsPrivate = team?.type === TEAM_TYPE.PRIVATE;
 
-		return room.teamIsPrivate && !!membership;
+		// if team is public, access is allowed if the user can access public rooms
+		const team = await Team.findOneById(room.teamId, { projection: { type: 1 } });
+		if (team?.type === TEAM_TYPE.PUBLIC) {
+			return canAccessPublicRoom(user);
+		}
+
+		// otherwise access is allowed only to members of the team
+		const membership = user?._id && await TeamMembers.findOneByUserIdAndTeamId(user._id, room.teamId, { projection: { _id: 1 } });
+		return !!membership;
 	},
 
 	async function _validateAccessToPublicRooms(room, user): Promise<boolean> {
-		if (!room?._id || room.t !== 'c' || (room?.teamId && room?.teamIsPrivate)) {
+		if (!room?._id || room.t !== 'c' || room?.teamId) {
 			return false;
 		}
 
-		if (!user?._id) {
-			// TODO: it was using cached version from /app/settings/server/raw.js
-			const anon = await Settings.getValueById('Accounts_AllowAnonymousRead');
-			return !!anon;
-		}
-
-		return Authorization.hasPermission(user._id, 'view-c-room');
+		return canAccessPublicRoom(user);
 	},
 
 	async function _validateIfAlreadyJoined(room, user): Promise<boolean> {
