@@ -233,7 +233,9 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		return message;
 	}
 
-	const mentionIds = (message.mentions || []).map(({ _id }) => _id).concat(usersInThread); // add users in thread to mentions array because they follow the same rules
+	const userMentions = (message.mentions || []).filter((mention) => !mention.mentionType || mention.mentionType === 'user');
+	const otherMentions = (message.mentions || []).filter((mention) => mention.mentionType && mention.mentionType !== 'user');
+	const mentionIds = userMentions.map(({ _id }) => _id).concat(usersInThread); // add users in thread to mentions array because they follow the same rules
 	const mentionIdsWithoutGroups = mentionIds.filter((_id) => _id !== 'all' && _id !== 'here');
 	const hasMentionToAll = mentionIds.includes('all');
 	const hasMentionToHere = mentionIds.includes('here');
@@ -242,6 +244,14 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {
 		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}
+
+	callbacks.run('notifyCustomMentions', {
+		otherMentions,
+		message,
+		room,
+		mentionIds,
+		mentionIdsWithoutGroups,
+	});
 
 	// Don't fetch all users if room exceeds max members
 	const maxMembersForNotification = settings.get('Notifications_Max_Room_Members');
