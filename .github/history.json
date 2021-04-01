@@ -57664,6 +57664,275 @@
           ]
         }
       ]
+    },
+    "3.13.0-rc.4": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21401",
+          "title": "Regression: Delete team member from related team's rooms",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21400",
+          "title": "Regression: directory not showing public channels of public teams",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21315",
+          "title": "Regression: Permissions missing on new Room Edit and Contact Edit form",
+          "userLogin": "murtaza98",
+          "milestone": "3.13.0",
+          "contributors": [
+            "murtaza98",
+            "renatobecker",
+            "web-flow",
+            "rafaelblink"
+          ]
+        },
+        {
+          "pr": "21399",
+          "title": "regression: Remove Breadcrumbs and update Tag component",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21306",
+          "title": "Regression: Omnichannel agents can't access new action buttons",
+          "userLogin": "murtaza98",
+          "milestone": "3.13.0",
+          "contributors": [
+            "murtaza98",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21372",
+          "title": "Regression: Modify canAccessRoom to adapt to teams specification",
+          "userLogin": "KevLehman",
+          "milestone": "3.13.0",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21386",
+          "title": "Regression: Unify team actions to add a room to a team",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.13.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21395",
+          "title": "[FIX] Replace wrong field description on Room Information panel",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.0",
+          "contributors": [
+            "rafaelblink",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21323",
+          "title": "Regression: Add isLastOwner property on teams.listRoomsOfUser endpoint",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21366",
+          "title": "Regression: Fix reactivity on teamsMembers and roomMembers",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow",
+            "gabriellsh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21398",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "21373",
+          "title": "Regression: New endpoint to list rooms available to be added to any team",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.13.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21371",
+          "title": "Regression: Teams should not have same name as users",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21374",
+          "title": "Regression: invalid teams permission check.",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.13.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "21369",
+          "title": "Regression: Add scope to permission checks in Team's endpoints",
+          "userLogin": "matheusbsilva137",
+          "description": "- Include scope (team's main room ID) in the permission checks;\r\n - Remove the `teamName` parameter from the `members`, `addMembers`, `updateMember` and `removeMembers` methods (since `teamId` will always be defined).",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21384",
+          "title": "Regression: Fix TeamsChannels reactivity",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21385",
+          "title": "Regression: Change name-error description",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21387",
+          "title": "regression: Team info permissions",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21392",
+          "title": "Regression: Add call to eraseRoom method",
+          "userLogin": "matheusbsilva137",
+          "description": "- Replace `removeById` by `eraseRoom` method's call (which not only deletes the room, but also erases its subscriptions and triggers some apps-engine events).",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21394",
+          "title": "[FIX] Incorrect time format of the Queue Time field on the room information page",
+          "userLogin": "rafaelblink",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21309",
+          "title": "Regression: Room Edit form not rendering priority and custom fields",
+          "userLogin": "rafaelblink",
+          "contributors": [
+            "rafaelblink",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21365",
+          "title": "[FIX] \"Taken At\" and \"Average of Response Time\" fields not rendering properly on Room Information panel",
+          "userLogin": "rafaelblink",
+          "contributors": [
+            "rafaelblink",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21363",
+          "title": "[FIX] Inactivity Time field displaying wrong information",
+          "userLogin": "rafaelblink",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21285",
+          "title": "Regression: Quick action button missing for Omnichannel On-Hold queue",
+          "userLogin": "murtaza98",
+          "description": "- Move the Manual On Hold button to the new Omnichannel Header\r\n![image](https://user-images.githubusercontent.com/34130764/112291749-6ae10380-8cb6-11eb-94cd-e05efc14b1bf.png)\r\n![image](https://user-images.githubusercontent.com/34130764/112304146-27d95d00-8cc3-11eb-85db-dde04a110dd1.png)\r\n\r\n- Minor fixes",
+          "milestone": "3.13.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21376",
+          "title": "Regression: unused names for team roles",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.13.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "21316",
+          "title": "Regression: Contact Chat History component not visible",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "renatobecker"
+          ]
+        }
+      ]
     }
   }
 }

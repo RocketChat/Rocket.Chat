@@ -1,6 +1,98 @@
 
 # 3.13.0 (Under Release Candidate Process)
 
+## 3.13.0-rc.4
+`2021-04-01  ·  4 🐛  ·  22 🔍  ·  14 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- "Taken At" and "Average of Response Time" fields not rendering properly on Room Information panel ([#21365](https://github.com/RocketChat/Rocket.Chat/pull/21365))
+
+- Inactivity Time field displaying wrong information ([#21363](https://github.com/RocketChat/Rocket.Chat/pull/21363))
+
+- Incorrect time format of the Queue Time field on the room information page ([#21394](https://github.com/RocketChat/Rocket.Chat/pull/21394))
+
+- Replace wrong field description on Room Information panel ([#21395](https://github.com/RocketChat/Rocket.Chat/pull/21395))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Add call to eraseRoom method ([#21392](https://github.com/RocketChat/Rocket.Chat/pull/21392))
+
+  - Replace `removeById` by `eraseRoom` method's call (which not only deletes the room, but also erases its subscriptions and triggers some apps-engine events).
+
+- Regression: Add isLastOwner property on teams.listRoomsOfUser endpoint ([#21323](https://github.com/RocketChat/Rocket.Chat/pull/21323))
+
+- Regression: Add scope to permission checks in Team's endpoints ([#21369](https://github.com/RocketChat/Rocket.Chat/pull/21369))
+
+  - Include scope (team's main room ID) in the permission checks;
+   - Remove the `teamName` parameter from the `members`, `addMembers`, `updateMember` and `removeMembers` methods (since `teamId` will always be defined).
+
+- Regression: Change name-error description ([#21385](https://github.com/RocketChat/Rocket.Chat/pull/21385))
+
+- Regression: Contact Chat History component not visible ([#21316](https://github.com/RocketChat/Rocket.Chat/pull/21316))
+
+- Regression: Delete team member from related team's rooms ([#21401](https://github.com/RocketChat/Rocket.Chat/pull/21401))
+
+- Regression: directory not showing public channels of public teams ([#21400](https://github.com/RocketChat/Rocket.Chat/pull/21400))
+
+- Regression: Fix reactivity on teamsMembers and roomMembers ([#21366](https://github.com/RocketChat/Rocket.Chat/pull/21366))
+
+- Regression: Fix TeamsChannels reactivity ([#21384](https://github.com/RocketChat/Rocket.Chat/pull/21384))
+
+- Regression: invalid teams permission check. ([#21374](https://github.com/RocketChat/Rocket.Chat/pull/21374))
+
+- Regression: Modify canAccessRoom to adapt to teams specification ([#21372](https://github.com/RocketChat/Rocket.Chat/pull/21372))
+
+- Regression: New endpoint to list rooms available to be added to any team ([#21373](https://github.com/RocketChat/Rocket.Chat/pull/21373))
+
+- Regression: Omnichannel agents can't access new action buttons ([#21306](https://github.com/RocketChat/Rocket.Chat/pull/21306))
+
+- Regression: Permissions missing on new Room Edit and Contact Edit form ([#21315](https://github.com/RocketChat/Rocket.Chat/pull/21315))
+
+- Regression: Quick action button missing for Omnichannel On-Hold queue ([#21285](https://github.com/RocketChat/Rocket.Chat/pull/21285))
+
+  - Move the Manual On Hold button to the new Omnichannel Header
+  ![image](https://user-images.githubusercontent.com/34130764/112291749-6ae10380-8cb6-11eb-94cd-e05efc14b1bf.png)
+  ![image](https://user-images.githubusercontent.com/34130764/112304146-27d95d00-8cc3-11eb-85db-dde04a110dd1.png)
+  
+  - Minor fixes
+
+- regression: Remove Breadcrumbs and update Tag component ([#21399](https://github.com/RocketChat/Rocket.Chat/pull/21399))
+
+- Regression: Room Edit form not rendering priority and custom fields ([#21309](https://github.com/RocketChat/Rocket.Chat/pull/21309))
+
+- regression: Team info permissions ([#21387](https://github.com/RocketChat/Rocket.Chat/pull/21387))
+
+- Regression: Teams should not have same name as users ([#21371](https://github.com/RocketChat/Rocket.Chat/pull/21371))
+
+- Regression: Unify team actions to add a room to a team ([#21386](https://github.com/RocketChat/Rocket.Chat/pull/21386))
+
+- Regression: unused names for team roles ([#21376](https://github.com/RocketChat/Rocket.Chat/pull/21376))
+
+- Update Apps-Engine version ([#21398](https://github.com/RocketChat/Rocket.Chat/pull/21398))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@alansikora](https://github.com/alansikora)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rafaelblink](https://github.com/rafaelblink)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 ## 3.13.0-rc.3
 `2021-03-31  ·  2 🐛  ·  13 🔍  ·  13 👩‍💻👨‍💻`
 
