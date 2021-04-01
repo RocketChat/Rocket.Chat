@@ -5,7 +5,7 @@ import UserAutoCompleteMultiple from '../../../../../../ee/client/audit/UserAuto
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 
-const AddUsers = ({ onClickClose, onClickBack, onClickSave, value, onChange, errors }) => {
+const AddUsers = ({ onClickClose, onClickBack, onClickSave, value, onChange }) => {
 	const t = useTranslation();
 
 	return (
@@ -19,12 +19,10 @@ const AddUsers = ({ onClickClose, onClickBack, onClickSave, value, onChange, err
 				<Field>
 					<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
 					<UserAutoCompleteMultiple
-						errors={errors.users}
 						value={value}
 						onChange={onChange}
 						placeholder={t('Choose_users')}
 					/>
-					{errors.users && <Field.Error>{errors.users}</Field.Error>}
 				</Field>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>

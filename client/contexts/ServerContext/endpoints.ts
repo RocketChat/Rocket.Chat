@@ -11,9 +11,12 @@ import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-cu
 import { FilesEndpoint as GroupsFilesEndpoint } from './endpoints/v1/groups/files';
 import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
+import { LivechatRoomOnHoldEndpoint } from './endpoints/v1/livechat/onHold';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
+import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
 import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
+import { ListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
 import { AutocompleteEndpoint as UsersAutocompleteEndpoint } from './endpoints/v1/users/autocomplete';
 
 export type ServerEndpoints = {
@@ -32,8 +35,11 @@ export type ServerEndpoints = {
 	'custom-user-status.list': CustomUserStatusListEndpoint;
 	'/apps/externalComponents': AppsExternalComponentsEndpoint;
 	'rooms.autocomplete.channelAndPrivate': RoomsAutocompleteEndpoint;
+	'rooms.autocomplete.availableForTeams': RoomsAutocompleteTeamsEndpoint;
+	'teams.listRooms': ListRoomsEndpoint;
 	'teams.addRooms': TeamsAddRoomsEndpoint;
 	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
+	'livechat/room.onHold': LivechatRoomOnHoldEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;

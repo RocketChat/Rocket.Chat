@@ -1,17 +1,17 @@
 import React from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
-import Breadcrumbs from '../../../components/Breadcrumbs';
+import Header from '../../../components/Header';
 import HeaderIcon from './HeaderIcon';
 
 const ParentRoom = ({ room }) => {
 	const href = roomTypes.getRouteLink(room.t, room);
 
 	return (
-		<Breadcrumbs.Tag>
+		<Header.Tag>
 			<HeaderIcon room={room} />
-			<Breadcrumbs.Link href={href}>{roomTypes.getRoomName(room.t, room)}</Breadcrumbs.Link>
-		</Breadcrumbs.Tag>
+			<Header.Link href={href}>{roomTypes.getRoomName(room.t, room)}</Header.Link>
+		</Header.Tag>
 	);
 };
 

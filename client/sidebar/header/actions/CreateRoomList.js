@@ -7,7 +7,7 @@ import { useAtLeastOnePermission, usePermission } from '../../../contexts/Author
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import CreateTeamModal from '../../../views/teams/modals/CreateTeamModal';
+import CreateTeamModal from '../../../views/teams/CreateTeamModal';
 import CreateChannelWithData from '../CreateChannelWithData';
 import CreateRoomListItem from './CreateRoomListItem';
 

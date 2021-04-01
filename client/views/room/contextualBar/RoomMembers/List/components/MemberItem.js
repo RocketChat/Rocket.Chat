@@ -7,7 +7,7 @@ import UserAvatar from '../../../../../../components/avatar/UserAvatar';
 import { usePreventProgation } from '../../../../../../hooks/usePreventProgation';
 import UserActions from './UserActions';
 
-export const MemberItem = ({ _id, status, name, username, onClickView, style, rid }) => {
+export const MemberItem = ({ _id, status, name, username, onClickView, style, rid, reload }) => {
 	const [showButton, setShowButton] = useState();
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
@@ -37,7 +37,7 @@ export const MemberItem = ({ _id, status, name, username, onClickView, style, ri
 			</Option.Content>
 			<Option.Menu onClick={onClick}>
 				{showButton ? (
-					<UserActions username={username} rid={rid} _id={_id} />
+					<UserActions username={username} rid={rid} _id={_id} reload={reload} />
 				) : (
 					<ActionButton ghost tiny icon='kebab' />
 				)}

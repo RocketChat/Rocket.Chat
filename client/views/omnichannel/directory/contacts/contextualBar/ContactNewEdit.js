@@ -51,7 +51,9 @@ function ContactNewEdit({ id, data, reload, close }) {
 	const canViewCustomFields = () =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const { values, handlers } = useForm(getInitialValues(data));
+	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(
+		getInitialValues(data),
+	);
 	const eeForms = useSubscription(formsSubscription);
 
 	const { useContactManager = () => {} } = eeForms;
@@ -61,7 +63,11 @@ function ContactNewEdit({ id, data, reload, close }) {
 	const { handleName, handleEmail, handlePhone, handleUsername } = handlers;
 	const { token, name, email, phone, username } = values;
 
-	const { values: valueCustom, handlers: handleValueCustom } = useForm({
+	const {
+		values: valueCustom,
+		handlers: handleValueCustom,
+		hasUnsavedChanges: hasUnsavedChangesCustomFields,
+	} = useForm({
 		livechatData: values.livechatData,
 	});
 
@@ -184,7 +190,12 @@ function ContactNewEdit({ id, data, reload, close }) {
 		}
 	});
 
-	const formIsValid = name && !emailError && !phoneError && customFieldsError.length === 0;
+	const formIsValid =
+		(hasUnsavedChangesContact || hasUnsavedChangesCustomFields) &&
+		name &&
+		!emailError &&
+		!phoneError &&
+		customFieldsError.length === 0;
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

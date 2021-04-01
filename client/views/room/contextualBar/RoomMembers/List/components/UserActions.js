@@ -4,8 +4,11 @@ import React from 'react';
 import { useActionSpread } from '../../../../../hooks/useActionSpread';
 import { useUserInfoActions } from '../../../../hooks/useUserInfoActions';
 
-const UserActions = ({ username, _id, rid }) => {
-	const { menu: menuOptions } = useActionSpread(useUserInfoActions({ _id, username }, rid), 0);
+const UserActions = ({ username, _id, rid, reload }) => {
+	const { menu: menuOptions } = useActionSpread(
+		useUserInfoActions({ _id, username }, rid, reload),
+		0,
+	);
 	if (!menuOptions) {
 		return null;
 	}

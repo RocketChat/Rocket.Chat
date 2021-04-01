@@ -4,6 +4,8 @@ import Content from './Content';
 import Header from './Header';
 import HeaderDivider from './HeaderDivider';
 import HeaderIcon from './HeaderIcon';
+import HeaderLink from './HeaderLink';
+import HeaderTag from './HeaderTag';
 import Row from './Row';
 import State from './State';
 import Subtitle from './Subtitle';
@@ -27,5 +29,7 @@ export default Object.assign(Header, {
 	}),
 	Divider: HeaderDivider,
 	Icon: HeaderIcon,
+	Link: HeaderLink,
+	Tag: HeaderTag,
 	Badge: ToolBoxActionBadge,
 });

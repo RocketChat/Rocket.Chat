@@ -11,14 +11,14 @@ const InviteUsers = ({ onClickBack, onClickClose, onClickEdit, captionText, link
 	const { copy } = useClipboardWithToast(linkText);
 
 	return (
-		<Box position='absolute' h='full' w='full'>
+		<>
 			<VerticalBar.Header>
 				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
 				<VerticalBar.Text>{t('Invite_Users')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
-			<VerticalBar.Content>
+			<VerticalBar.ScrollableContent>
 				<Field>
 					<Field.Label flexGrow={0}>{t('Invite_Link')}</Field.Label>
 					<Field.Row>
@@ -43,8 +43,8 @@ const InviteUsers = ({ onClickBack, onClickClose, onClickEdit, captionText, link
 				<Box pb='x16'>
 					{onClickEdit && <Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>}
 				</Box>
-			</VerticalBar.Content>
-		</Box>
+			</VerticalBar.ScrollableContent>
+		</>
 	);
 };
 

@@ -1,4 +1,5 @@
 import { UserStatus } from './UserStatus';
+import { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -85,7 +86,7 @@ export interface IRole {
 	_id: string;
 }
 
-export interface IUser {
+export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;
 	roles: string[];
@@ -107,7 +108,7 @@ export interface IUser {
 	oauth?: {
 		authorizedClients: string[];
 	};
-	_updatedAt?: Date;
+	_updatedAt: Date;
 	statusLivechat?: string;
 	e2e?: {
 		private_key: string;

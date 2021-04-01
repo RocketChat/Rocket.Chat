@@ -48,4 +48,5 @@ export enum QuickActionsEnum {
 	ChatForward = 'rocket-chat-forward',
 	Transcript = 'rocket-transcript',
 	CloseChat = 'rocket-close-chat',
+	OnHoldChat = 'rocket-on-hold-chat',
 }

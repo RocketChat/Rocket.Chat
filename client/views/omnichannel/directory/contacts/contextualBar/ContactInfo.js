@@ -1,6 +1,5 @@
 import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useEffect, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
@@ -9,7 +8,7 @@ import UserCard from '../../../../../components/UserCard/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import { useRoute } from '../../../../../contexts/RouterContext';
+import { useCurrentRoute, useRoute } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
@@ -54,6 +53,10 @@ function ContactInfo({ id }) {
 	const {
 		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
 	} = data || { contact: {} };
+
+	const [currentRouteName] = useCurrentRoute();
+	const liveRoute = useRoute('live');
+
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
@@ -72,8 +75,10 @@ function ContactInfo({ id }) {
 
 	const onChatHistory = () => {
 		const { _id } = lastChat;
-		FlowRouter.go(`/live/${_id}/contact-chat-history`);
+		liveRoute.push({ id: _id, tab: 'contact-chat-history' });
 	};
+
+	const showContactHistory = currentRouteName === 'live';
 
 	const displayName = name || username;
 
@@ -141,7 +146,7 @@ function ContactInfo({ id }) {
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					{lastChat && (
+					{showContactHistory && lastChat && (
 						<Button onClick={onChatHistory}>
 							<Icon name='history' size='x20' /> {t('Chat_History')}
 						</Button>

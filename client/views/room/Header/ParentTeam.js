@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import React, { useMemo } from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
-import Breadcrumbs from '../../../components/Breadcrumbs';
+import Header from '../../../components/Header';
 import { useUserSubscription } from '../../../contexts/UserContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import HeaderIcon from './HeaderIcon';
 
 const ParentTeam = ({ room }) => {
 	const query = useMemo(() => ({ teamId: room.teamId }), [room.teamId]);
@@ -25,17 +26,16 @@ const ParentTeam = ({ room }) => {
 	const teamMainRoomHref = teamMainRoom
 		? roomTypes.getRouteLink(teamMainRoom.t, teamMainRoom)
 		: null;
-	const teamIcon = value?.t === 0 ? 'team' : 'team-lock';
 
 	return teamLoading || userTeamsLoading || room.teamMain ? null : (
-		<Breadcrumbs.Tag>
-			<Breadcrumbs.IconSmall name={teamIcon}></Breadcrumbs.IconSmall>
+		<Header.Tag>
+			<HeaderIcon room={teamMainRoom} />
 			{belongsToTeam ? (
-				<Breadcrumbs.Link href={teamMainRoomHref}>{teamMainRoom?.name}</Breadcrumbs.Link>
+				<Header.Link href={teamMainRoomHref}>{teamMainRoom?.name}</Header.Link>
 			) : (
-				<Breadcrumbs.Text>{teamMainRoom?.name}</Breadcrumbs.Text>
+				teamMainRoom?.name
 			)}
-		</Breadcrumbs.Tag>
+		</Header.Tag>
 	);
 };
 

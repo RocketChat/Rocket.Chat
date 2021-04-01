@@ -6,23 +6,15 @@ import {
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
-import { useMethod } from '../../../../../contexts/ServerContext';
 import { useUserRoom } from '../../../../../contexts/UserContext';
+import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
+import { useMembersList } from '../../../../hooks/useMembersList';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import UserInfoWithData from '../../UserInfo';
-import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
 import AddUsers from '../AddUsers';
-import WrappedInviteUsers from '../InviteUsers/WrappedInviteUsers';
+import InviteUsers from '../InviteUsers';
 import RoomMembers from './RoomMembers';
-
-const useGetUsersOfRoom = (params) => {
-	const method = useMethod('getUsersOfRoom');
-	return useDataWithLoadMore(
-		useCallback((args) => method(...args), [method]),
-		params,
-	);
-};
 
 const RoomMembersWithData = ({ rid }) => {
 	const [state, setState] = useState({});
@@ -34,14 +26,17 @@ const RoomMembersWithData = ({ rid }) => {
 	const [type, setType] = useLocalStorage('members-list-type', 'online');
 	const [text, setText] = useState('');
 
-	const debouncedText = useDebouncedValue(text, 500);
-	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [
-		rid,
-		type,
-		debouncedText,
-	]);
+	const debouncedText = useDebouncedValue(text, 800);
 
-	const { value, phase, more, error } = useGetUsersOfRoom(params);
+	const { membersList, loadMoreItems, reload } = useMembersList(
+		useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [
+			rid,
+			type,
+			debouncedText,
+		]),
+	);
+
+	const { phase, items, itemCount: total } = useRecordList(membersList);
 
 	const canAddUsers = useAtLeastOnePermission(
 		useMemo(
@@ -76,19 +71,6 @@ const RoomMembersWithData = ({ rid }) => {
 
 	const handleBack = useCallback(() => setState({}), [setState]);
 
-	const loadMoreItems = useCallback(
-		(start, end) =>
-			more(
-				([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter],
-				(prev, next) => ({
-					total: next.total,
-					finished: next.records.length < 50,
-					records: [...prev.records, ...next.records],
-				}),
-			),
-		[more],
-	);
-
 	if (state.tab === 'UserInfo') {
 		return (
 			<UserInfoWithData
@@ -101,11 +83,13 @@ const RoomMembersWithData = ({ rid }) => {
 	}
 
 	if (state.tab === 'InviteUsers') {
-		return <WrappedInviteUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
+		return <InviteUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
 	}
 
 	if (state.tab === 'AddUsers') {
-		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
+		return (
+			<AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} reload={reload} />
+		);
 	}
 
 	return (
@@ -114,16 +98,16 @@ const RoomMembersWithData = ({ rid }) => {
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
-			error={error}
 			setType={setType}
 			setText={handleTextChange}
-			members={value?.records}
-			total={value?.total}
+			members={items}
+			total={total}
 			onClickClose={onClickClose}
 			onClickView={viewUser}
 			onClickAdd={canAddUsers && addUser}
 			onClickInvite={canAddUsers && createInvite}
 			loadMoreItems={loadMoreItems}
+			reload={reload}
 		/>
 	);
 };

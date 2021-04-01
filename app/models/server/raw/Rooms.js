@@ -141,15 +141,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findPublicByTeamId(uid, teamId, options = {}) {
-		const query = {
-			teamId,
-			t: 'c',
-		};
-
-		return this.find(query, options);
-	}
-
 	findChannelAndPrivateByNameStarting(name, sIds, options) {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
@@ -173,6 +164,33 @@ export class RoomsRaw extends BaseRaw {
 					$in: sIds,
 				},
 			}],
+		};
+
+		return this.find(query, options);
+	}
+
+	findChannelAndGroupListWithoutTeamsByNameStarting(name, groupsToAccept, options) {
+		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			teamId: {
+				$exists: false,
+			},
+			prid: {
+				$exists: false,
+			},
+			$or: [
+				{
+					t: 'c',
+				},
+				{
+					t: 'p',
+					_id: {
+						$in: groupsToAccept,
+					},
+				},
+			],
+			name: nameRegex,
 		};
 
 		return this.find(query, options);

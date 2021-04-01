@@ -34,6 +34,7 @@ const RoomMembers = ({
 	loadMoreItems,
 	renderRow: Row = DefaultRow,
 	rid,
+	reload,
 }) => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
@@ -47,9 +48,7 @@ const RoomMembers = ({
 	);
 
 	const itemData = useMemo(() => ({ onClickView, rid }), [onClickView, rid]);
-	const lm = useMutableCallback((start) =>
-		loadMoreItems(start + 1, Math.min(50, start + 1 - members.length)),
-	);
+	const lm = useMutableCallback((start) => !loading && loadMoreItems(start));
 
 	return (
 		<>
@@ -81,17 +80,18 @@ const RoomMembers = ({
 					</Box>
 				</Box>
 
-				{error && (
-					<Box pi='x24' pb='x12'>
-						<Callout type='danger'>{error}</Callout>
-					</Box>
-				)}
-
 				{loading && (
 					<Box pi='x24' pb='x12'>
 						<Throbber size='x12' />
 					</Box>
 				)}
+
+				{error && (
+					<Box pi='x24' pb='x12'>
+						<Callout type='danger'>{error.message}</Callout>
+					</Box>
+				)}
+
 				{!loading && members.length <= 0 && (
 					<Box pi='x24' pb='x12'>
 						{t('No_results_found')}
@@ -99,7 +99,7 @@ const RoomMembers = ({
 				)}
 
 				{!loading && members.length > 0 && (
-					<Box pi='x24' pb='x12'>
+					<Box pi='x18' pb='x12'>
 						<Box is='span' color='info' fontScale='p1'>
 							{t('Showing')}:{' '}
 							<Box is='span' color='default' fontScale='p2'>
@@ -132,7 +132,9 @@ const RoomMembers = ({
 							overscan={50}
 							data={members}
 							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(index, data) => <Row data={itemData} user={data} index={index} />}
+							itemContent={(index, data) => (
+								<Row data={itemData} user={data} index={index} reload={reload} />
+							)}
 						/>
 					)}
 				</Box>

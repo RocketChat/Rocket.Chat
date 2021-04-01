@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 import { MemberItem } from './components/MemberItem';
 
-const DefaultRow = ({ user, data, index }) => {
+const DefaultRow = ({ user, data, index, reload }) => {
 	const { onClickView, rid } = data;
 
 	if (!user) {
@@ -18,6 +18,7 @@ const DefaultRow = ({ user, data, index }) => {
 			status={user.status}
 			name={user.name}
 			onClickView={onClickView}
+			reload={reload}
 		/>
 	);
 };

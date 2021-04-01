@@ -52,7 +52,7 @@ const RoomForeword = ({ _id: rid }) => {
 				{usernames.map((username, index) => (
 					<Margins inline='x4' key={index}>
 						<Box is='a' href={`/direct/${username}`}>
-							<Tag className='mention-link' data-username={username} medium>
+							<Tag variant='secondary' className='mention-link' data-username={username} medium>
 								{username}
 							</Tag>
 						</Box>

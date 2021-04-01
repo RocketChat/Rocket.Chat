@@ -27,25 +27,28 @@ hasLicense('livechat-enterprise').then((enabled) => {
 	});
 	registerForm({ useEeTextInput: () => useMemo(() => lazy(() => import('./EeTextInput')), []) });
 	registerForm({
-		useDepartmentForwarding: () => useMemo(() => lazy(() => import('./DepartmentForwarding')), []),
-	});
-	registerForm({
-		useDepartmentBusinessHours: () =>
-			useMemo(() => lazy(() => import('./DepartmentBusinessHours')), []),
+		useBusinessHoursMultiple: () =>
+			useMemo(() => lazy(() => import('./BusinessHoursMultipleContainer')), []),
 	});
 	registerForm({
 		useBusinessHoursTimeZone: () =>
 			useMemo(() => lazy(() => import('./BusinessHoursTimeZone')), []),
 	});
 	registerForm({
-		useBusinessHoursMultiple: () =>
-			useMemo(() => lazy(() => import('./BusinessHoursMultipleContainer')), []),
+		useContactManager: () =>
+			useMemo(() => lazy(() => import('../additionalForms/ContactManager')), []),
 	});
 	registerForm({
 		useCurrentChatTags: () => useMemo(() => lazy(() => import('../tags/CurrentChatTags')), []),
 	});
 	registerForm({
-		useContactManager: () =>
-			useMemo(() => lazy(() => import('../additionalForms/ContactManager')), []),
+		useDepartmentBusinessHours: () =>
+			useMemo(() => lazy(() => import('./DepartmentBusinessHours')), []),
+	});
+	registerForm({
+		useDepartmentForwarding: () => useMemo(() => lazy(() => import('./DepartmentForwarding')), []),
+	});
+	registerForm({
+		usePrioritiesSelect: () => useMemo(() => lazy(() => import('./PrioritiesSelect')), []),
 	});
 });

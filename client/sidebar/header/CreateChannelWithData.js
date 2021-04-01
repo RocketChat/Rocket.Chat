@@ -8,7 +8,7 @@ import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/goToRoomById';
 import CreateChannel from './CreateChannel';
 
-const CreateChannelWithData = ({ onClose, teamId = '' }) => {
+const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 	const createChannel = useEndpointActionExperimental('POST', 'channels.create');
 	const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
 	const canCreateChannel = usePermission('create-c');
@@ -68,11 +68,11 @@ const CreateChannelWithData = ({ onClose, teamId = '' }) => {
 			name,
 			members: users,
 			readOnly,
-			...(teamId && { teamId }),
 			extraData: {
 				description,
 				broadcast,
 				encrypted,
+				...(teamId && { teamId }),
 			},
 		};
 		let roomData;
@@ -86,6 +86,7 @@ const CreateChannelWithData = ({ onClose, teamId = '' }) => {
 		}
 
 		onClose();
+		reload();
 	}, [
 		broadcast,
 		createChannel,
@@ -98,6 +99,7 @@ const CreateChannelWithData = ({ onClose, teamId = '' }) => {
 		teamId,
 		type,
 		users,
+		reload,
 	]);
 
 	return (

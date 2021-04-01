@@ -1,9 +1,10 @@
-import { Box, Table, Avatar } from '@rocket.chat/fuselage';
+import { Box, Table, Avatar, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import { roomTypes } from '../../../app/utils/client';
 import GenericTable from '../../components/GenericTable';
+import MarkdownText from '../../components/MarkdownText';
 import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
@@ -74,14 +75,14 @@ function TeamsTable() {
 	const channelsRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
 
-	const query = useQuery(params, sort);
+	const query = useQuery(params, sort, 'teams');
 
-	const { value: data = { result: [] } } = useEndpointData('teams.list', query);
+	const { value: data = { result: [] } } = useEndpointData('directory', query);
 
 	const onClick = useMemo(
 		() => (name, type) => (e) => {
 			if (e.type === 'click' || e.key === 'Enter') {
-				type === 0 ? channelsRoute.push({ name }) : groupsRoute.push({ name });
+				type === 'c' ? channelsRoute.push({ name }) : groupsRoute.push({ name });
 			}
 		},
 		[channelsRoute, groupsRoute],
@@ -90,15 +91,14 @@ function TeamsTable() {
 	const formatDate = useFormatDate();
 	const renderRow = useCallback(
 		(team) => {
-			const { _id, createdAt, name, type, rooms, roomId } = team;
-			const t = type === 0 ? 'c' : 'p';
-			const avatarUrl = roomTypes.getConfig(t).getAvatarPath({ _id: roomId });
+			const { _id, ts, t, name, fname, topic, roomsCount } = team;
+			const avatarUrl = roomTypes.getConfig(t).getAvatarPath(team);
 
 			return (
 				<Table.Row
 					key={_id}
-					onKeyDown={onClick(name, type)}
-					onClick={onClick(name, type)}
+					onKeyDown={onClick(name, t)}
+					onClick={onClick(name, t)}
 					tabIndex={0}
 					role='link'
 					action
@@ -106,24 +106,34 @@ function TeamsTable() {
 					<Table.Cell>
 						<Box display='flex'>
 							<Box flexGrow={0}>
-								<Avatar size='x40' title={name} url={avatarUrl} />
+								<Avatar size='x40' title={fname || name} url={avatarUrl} />
 							</Box>
 							<Box grow={1} mi='x8' style={style}>
 								<Box display='flex' alignItems='center'>
+									<Icon name={roomTypes.getIcon(team)} color='hint' />{' '}
 									<Box fontScale='p2' mi='x4'>
-										{name}
+										{fname || name}
 									</Box>
 									<RoomTags room={team} style={style} />
 								</Box>
+								{topic && (
+									<MarkdownText
+										variant='inlineWithoutBreaks'
+										fontScale='p1'
+										color='hint'
+										style={style}
+										content={topic}
+									/>
+								)}
 							</Box>
 						</Box>
 					</Table.Cell>
 					<Table.Cell fontScale='p1' color='hint' style={style}>
-						{rooms}
+						{roomsCount}
 					</Table.Cell>
 					{mediaQuery && (
 						<Table.Cell fontScale='p1' color='hint' style={style}>
-							{formatDate(createdAt)}
+							{formatDate(ts)}
 						</Table.Cell>
 					)}
 				</Table.Row>
@@ -136,7 +146,7 @@ function TeamsTable() {
 		<GenericTable
 			header={header}
 			renderRow={renderRow}
-			results={data.teams}
+			results={data.result}
 			setParams={setParams}
 			total={data.total}
 		/>

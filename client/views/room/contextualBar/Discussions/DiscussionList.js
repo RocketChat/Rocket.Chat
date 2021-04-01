@@ -8,7 +8,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { goToRoomById } from '../../../../lib/goToRoomById';
-import Row from '../../../teams/contextualBar/Row';
+import Row from '../../../../sidebar/RoomList/Row';
 import { withData } from './withData';
 
 function DiscussionList({

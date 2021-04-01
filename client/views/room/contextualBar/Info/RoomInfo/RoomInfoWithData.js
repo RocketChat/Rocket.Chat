@@ -15,9 +15,9 @@ import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 import WarningModal from '../../../../admin/apps/WarningModal';
-import ChannelToTeamModal from '../../../../teams/modals/ChannelToTeamModal/ChannelToTeamModal';
-import ConvertToTeamModal from '../../../../teams/modals/ConvertToTeamModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
+import ConvertToTeamModal from '../ConvertToTeamModal';
 import RoomInfo from './RoomInfo';
 
 const retentionPolicyMaxAge = {
@@ -58,7 +58,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom }) => {
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRoom', t('Success'));
+	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRooms', t('Success'));
 	const convertRoomToTeam = useEndpointActionExperimental(
 		'POST',
 		type === 'c' ? 'channels.convertToTeam' : 'groups.convertToTeam',
@@ -142,7 +142,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom }) => {
 	const onMoveToTeam = useMutableCallback(async () => {
 		const onConfirm = async (teamId) => {
 			try {
-				await moveChannelToTeam({ roomId: rid, teamId });
+				await moveChannelToTeam({ rooms: [rid], teamId });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
