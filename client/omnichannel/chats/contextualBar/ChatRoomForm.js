@@ -3,18 +3,17 @@ import { Field, TextInput, ButtonGroup, Button, Box } from '@rocket.chat/fuselag
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import VerticalBar from '../../../../components/VerticalBar';
-import { useForm } from '../../../../hooks/useForm';
-import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { FormSkeleton } from '../../Skeleton';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { hasAtLeastOnePermission } from '../../../../../app/authorization';
-import CustomFieldsForm from '../../../../components/CustomFieldsForm';
-import { useMethod } from '../../../../contexts/ServerContext';
-import { formsSubscription } from '../../../../views/omnichannel/additionalForms';
-
+import { useTranslation } from '../../../contexts/TranslationContext';
+import VerticalBar from '../../../components/VerticalBar';
+import { useForm } from '../../../hooks/useForm';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { FormSkeleton } from '../../directory/Skeleton';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { hasAtLeastOnePermission } from '../../../../app/authorization';
+import CustomFieldsForm from '../../../components/CustomFieldsForm';
+import { useMethod } from '../../../contexts/ServerContext';
+import { formsSubscription } from '../../../views/omnichannel/additionalForms';
 
 const initialValuesUser = {
 	name: '',
@@ -188,7 +187,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 		try {
 			saveRoom(userData, roomData);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
+			reload && reload();
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

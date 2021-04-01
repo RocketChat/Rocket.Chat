@@ -4,18 +4,19 @@ import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import VerticalBar from '../../../../components/VerticalBar';
-import UserCard from '../../../../components/UserCard';
-import { FormSkeleton } from '../../Skeleton';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { hasPermission } from '../../../../../app/authorization';
-import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { ContactManagerInfo } from '../../../../../ee/client/omnichannel/ContactManager';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { UserStatus } from '../../../../components/UserStatus';
+import VerticalBar from '../../../components/VerticalBar';
+import UserCard from '../../../components/UserCard';
+import { FormSkeleton } from '../../directory/Skeleton';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRoute } from '../../../contexts/RouterContext';
+import { hasPermission } from '../../../../app/authorization';
+import { useFormatDate } from '../../../hooks/useFormatDate';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { ContactManagerInfo } from '../../../../ee/client/omnichannel/ContactManager';
+import UserAvatar from '../../../components/avatar/UserAvatar';
+import { UserStatus } from '../../../components/UserStatus';
 
 
 const wordBreak = css`
@@ -40,9 +41,9 @@ const CustomField = ({ id, value }) => {
 };
 
 
-export function ContactInfo({ id }) {
+export function ContactInfo({ id, rid, route }) {
 	const t = useTranslation();
-	const directoryRoute = useRoute('omnichannel-directory');
+	const routePath = useRoute(route || 'omnichannel-directory');
 
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
 
@@ -50,14 +51,25 @@ export function ContactInfo({ id }) {
 
 	const formatDate = useFormatDate();
 
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 
-	const onEditButtonClick = useMutableCallback(() => directoryRoute.push({
-		tab: 'contacts',
-		context: 'edit',
-		id,
-	}));
+	const onEditButtonClick = useMutableCallback(() => {
+		if (!hasPermission('edit-omnichannel-contact')) {
+			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
+		}
+
+		routePath.push(route ? {
+			tab: 'contact-profile',
+			context: 'edit',
+			id: rid,
+		} : {
+			tab: 'contacts',
+			context: 'edit',
+			id,
+		});
+	});
 
 	useEffect(() => {
 		if (allCustomFields) {
