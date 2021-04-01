@@ -2941,7 +2941,7 @@ describe('[Users]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.then(() => done);
+				.then(() => done());
 		});
 
 		it('should list both channels', (done) => {
