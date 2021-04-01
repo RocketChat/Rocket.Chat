@@ -722,7 +722,8 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 		const userId = this.userId || Users[method](emailOrUsername, { fields: { _id: 1 } })?._id;
 
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			this.logger.error('[2fa] User was not found when requesting 2fa email code');
+			return API.v1.success();
 		}
 
 		emailCheck.sendEmailCode(getUserForCheck(userId));
