@@ -179,11 +179,13 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		openModal(id);
 	});
 
+	const omnichannelRouteConfig = useOmnichannelRouteConfig();
+
 	const manualOnHoldAllowed = useSetting('Livechat_allow_manual_on_hold');
 
 	const hasManagerRole = useRole('livechat-manager');
 
-	const roomOpen = room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasManagerRole);
+	const roomOpen = room?.open && ((room.u?._id === uid) || hasManagerRole);
 
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 
@@ -191,14 +193,14 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const canCloseRoom = usePermission('close-others-livechat-room');
 
-	const canPlaceChatOnHold = (!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed) as boolean;
+	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 
-	const omnichannelRouteConfig = useOmnichannelRouteConfig();
+	const canPlaceChatOnHold = (!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed) as boolean;
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
-				return !!roomOpen && !!omnichannelRouteConfig?.returnQueue;
+				return !!roomOpen && canMoveQueue;
 			case QuickActionsEnum.ChatForward:
 				return !!roomOpen && canForwardGuest;
 			case QuickActionsEnum.Transcript:
