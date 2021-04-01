@@ -16,7 +16,7 @@ import { roomTypes, RoomMemberActions } from '../../../../app/utils';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useUserRoom } from './useUserRoom';
 import { escapeHTML } from '../../../../lib/escapeHTML';
-import RemoveUsersModal from '../../teams/members/RemoveUsersModal';
+import RemoveUsersModal from '../../teams/contextualBar/members/RemoveUsersModal';
 
 const useUserHasRoomRole = (uid, rid, role) => useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role }), [uid, rid, role]));
 
@@ -77,7 +77,7 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 	</Modal>;
 };
 
-export const useUserInfoActions = (user = {}, rid) => {
+export const useUserInfoActions = (user = {}, rid, reload) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const directRoute = useRoute('direct');
@@ -289,19 +289,20 @@ export const useUserInfoActions = (user = {}, rid) => {
 		};
 	}, [closeModal, dispatchToastMessage, isMuted, muteFn, rid, roomCanMute, roomName, setModal, t, user.username, userCanMute]);
 
-	const removeFromTeam = useEndpointActionExperimental('POST', 'teams.removeMembers', t('User_has_been_removed_from_team'));
+	const removeFromTeam = useEndpointActionExperimental('POST', 'teams.removeMember', t('User_has_been_removed_from_team'));
 
 	const removeUserAction = useEndpointActionExperimental('POST', `${ endpointPrefix }.kick`, t('User_has_been_removed_from_s', roomName));
 	const removeUserOptionAction = useMutableCallback(() => {
 		if (room.teamMain && room.teamId) {
 			return setModal(<RemoveUsersModal
 				teamId={room?.teamId}
-				userId={user?._id}
+				userId={uid}
 				onClose={closeModal}
 				onCancel={closeModal}
-				onConfirm={(rooms) => {
-					removeFromTeam({ teamId: room.teamId, members: [{ userId: user._id }], rooms });
+				onConfirm={async (rooms) => {
+					await removeFromTeam({ teamId: room.teamId, userId: uid, rooms: Object.keys(rooms) });
 					closeModal();
+					reload && reload();
 				}}
 			/>);
 		}
@@ -310,9 +311,14 @@ export const useUserInfoActions = (user = {}, rid) => {
 			text={t('The_user_will_be_removed_from_s', roomName)}
 			close={closeModal}
 			confirmText={t('Yes_remove_user')}
-			confirm={() => { removeUserAction({ roomId: rid, userId: uid }); closeModal(); }}
+			confirm={async () => {
+				await removeUserAction({ roomId: rid, userId: uid });
+				closeModal();
+				reload && reload();
+			}}
 		/>);
 	});
+
 	const removeUserOption = useMemo(() => roomCanRemove && userCanRemove && {
 		label: <Box color='danger'>{room.teamMain ? t('Remove_from_team') : t('Remove_from_room')}</Box>,
 		icon: 'sign-out',

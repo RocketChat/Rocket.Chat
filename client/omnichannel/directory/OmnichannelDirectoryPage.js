@@ -5,13 +5,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '../../components/Page';
 import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
-import ContactTab from './contacts/ContactTab';
+import ContactTab from '../contacts/ContactTab';
 import VerticalBar from '../../components/VerticalBar';
-import { ContactNewEdit, ContactEditWithData } from './contacts/contextualBar/ContactForm';
-import { ContactInfo } from './contacts/contextualBar/ContactInfo';
-import ChatTab from './chats/ChatTab';
-import { ChatInfo } from './chats/contextualBar/ChatInfo';
-import { RoomEditWithData } from './chats/contextualBar/ChatRoomEdit';
+import { ContactNewEdit, ContactEditWithData } from '../contacts/contextualBar/ContactForm';
+import { ContactInfo } from '../contacts/contextualBar/ContactInfo';
+import ChatTab from '../chats/ChatTab';
+import { ChatInfo } from '../chats/contextualBar/ChatInfo';
+import { RoomEditWithData } from '../chats/contextualBar/ChatRoomForm';
 
 
 const OmnichannelDirectoryPage = () => {
@@ -50,7 +50,7 @@ const OmnichannelDirectoryPage = () => {
 	const ContactContextualBar = () => <VerticalBar className={'contextual-bar'}>
 		<VerticalBar.Header>
 			{context === 'new' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('New_Contact')}</Box>}
-			{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Profile')}</Box>}
+			{context === 'info' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Info')}</Box>}
 			{context === 'edit' && <Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='pencil' size='x20' /> {t('Edit_Contact_Profile')}</Box>}
 			<VerticalBar.Close onClick={handleContactsVerticalBarCloseButtonClick} />
 		</VerticalBar.Header>
