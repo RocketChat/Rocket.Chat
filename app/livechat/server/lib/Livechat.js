@@ -469,6 +469,8 @@ export const Livechat = {
 		const rcSettings = {};
 
 		Settings.findNotHiddenPublic([
+			'Livechat_kill_switch',
+			'Livechat_kill_switch_message',
 			'Livechat_title',
 			'Livechat_title_color',
 			'Livechat_enable_message_character_limit',

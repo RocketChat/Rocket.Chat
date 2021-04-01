@@ -19,37 +19,37 @@ class ExternalQueue {
 	}
 
 	getNextAgent(department, ignoreAgentId) {
-		for (let i = 0; i < 10; i++) {
-			try {
-				let queryString = department ? `?departmentId=${ department }` : '';
-				if (ignoreAgentId) {
-					const ignoreAgentIdParam = `ignoreAgentId=${ ignoreAgentId }`;
-					queryString = queryString.startsWith('?') ? `${ queryString }&${ ignoreAgentIdParam }` : `?${ ignoreAgentIdParam }`;
-				}
-				const result = HTTP.call('GET', `${ settings.get('Livechat_External_Queue_URL') }${ queryString }`, {
-					headers: {
-						'User-Agent': 'RocketChat Server',
-						Accept: 'application/json',
-						'X-RocketChat-Secret-Token': settings.get('Livechat_External_Queue_Token'),
-					},
-				});
-
-				if (result && result.data && result.data.username) {
-					const agent = Users.findOneOnlineAgentByUsername(result.data.username);
-
-					if (agent) {
-						return {
-							agentId: agent._id,
-							username: agent.username,
-						};
+		if (!settings.get('Livechat_kill_switch')) {
+			for (let i = 0; i < 10; i++) {
+				try {
+					let queryString = department ? `?departmentId=${ department }` : '';
+					if (ignoreAgentId) {
+						const ignoreAgentIdParam = `ignoreAgentId=${ ignoreAgentId }`;
+						queryString = queryString.startsWith('?') ? `${ queryString }&${ ignoreAgentIdParam }` : `?${ ignoreAgentIdParam }`;
 					}
+					const result = HTTP.call('GET', `${ settings.get('Livechat_External_Queue_URL') }${ queryString }`, {
+						headers: {
+							'User-Agent': 'RocketChat Server',
+							Accept: 'application/json',
+							'X-RocketChat-Secret-Token': settings.get('Livechat_External_Queue_Token'),
+						},
+					});
+					if (result && result.data && result.data.username) {
+						const agent = Users.findOneOnlineAgentByUsername(result.data.username);
+						if (agent) {
+							return {
+								agentId: agent._id,
+								username: agent.username,
+							};
+						}
+					}
+				} catch (e) {
+					console.error('Error requesting agent from external queue.', e);
+					break;
 				}
-			} catch (e) {
-				console.error('Error requesting agent from external queue.', e);
-				break;
 			}
+			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
-		throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 	}
 }
 
