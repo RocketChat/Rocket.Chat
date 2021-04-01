@@ -241,7 +241,7 @@ export function ChatInfo({ id, route }) {
 					<Info>{formatDateAndTime(closedAt)}</Info>
 				</>}
 				{servedBy?.ts && <>
-					<Label>{t('Taken_At')}</Label>
+					<Label>{t('Taken_at')}</Label>
 					<Info>{formatDateAndTime(servedBy.ts)}</Info>
 				</>}
 				{metrics?.response?.avg && formatDuration(metrics.response.avg) && <>
