@@ -248,7 +248,7 @@ API.v1.addRoute('channels.create', { authRequired: true }, {
 			const teamMembers = [];
 
 			for (const team of teams) {
-				const { records: members } = Promise.await(Team.members(this.userId, team._id, undefined, canSeeAllTeams, { offset: 0, count: Number.MAX_SAFE_INTEGER }));
+				const { records: members } = Promise.await(Team.members(this.userId, team._id, canSeeAllTeams, { offset: 0, count: Number.MAX_SAFE_INTEGER }));
 				const uids = members.map((member) => member.user.username);
 				teamMembers.push(...uids);
 			}
