@@ -51,6 +51,7 @@ function ChannelsTable() {
 		<GenericTable.HeaderCell key={'usersCount'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount' style={{ width: '100px' }}>{t('Users')}</GenericTable.HeaderCell>,
 		mediaQuery && <GenericTable.HeaderCell key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '150px' }}>{t('Created_at')}</GenericTable.HeaderCell>,
 		mediaQuery && <GenericTable.HeaderCell key={'lastMessage'} direction={sort[1]} active={sort[0] === 'lastMessage'} onClick={onHeaderClick} sort='lastMessage' style={{ width: '150px' }}>{t('Last_Message')}</GenericTable.HeaderCell>,
+		mediaQuery && <GenericTable.HeaderCell key={'belongsTo'} direction={sort[1]} active={sort[0] === 'belongsTo'} onClick={onHeaderClick} sort='belongsTo' style={{ width: '150px' }}>{t('Belongs_To')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const channelRoute = useRoute('channel');
@@ -65,7 +66,7 @@ function ChannelsTable() {
 
 	const formatDate = useFormatDate();
 	const renderRow = useCallback((room) => {
-		const { _id, ts, t, name, fname, usersCount, lastMessage, topic } = room;
+		const { _id, ts, t, name, fname, usersCount, lastMessage, topic, belongsTo } = room;
 		const avatarUrl = roomTypes.getConfig(t).getAvatarPath(room);
 
 		return <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
@@ -90,6 +91,9 @@ function ChannelsTable() {
 			</Table.Cell>}
 			{ mediaQuery && <Table.Cell fontScale='p1' color='hint' style={style}>
 				{lastMessage && formatDate(lastMessage.ts)}
+			</Table.Cell>}
+			{ mediaQuery && <Table.Cell fontScale='p1' color='hint' style={style}>
+				{belongsTo}
 			</Table.Cell>}
 		</Table.Row>;
 	}

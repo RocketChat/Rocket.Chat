@@ -49,7 +49,8 @@ const getChannels = (user, canViewAnon, searchTerm, sort, pagination) => {
 		return;
 	}
 
-	const teamIds = Promise.await(Team.getAllPublicTeamIds());
+	const teams = Promise.await(Team.getAllPublicTeams());
+	const teamIds = teams.map(({ _id }) => _id);
 
 	const result = Rooms.findByNameOrFNameAndTypeIncludingTeamRooms(searchTerm, 'c', teamIds, {
 		...pagination,
@@ -70,12 +71,26 @@ const getChannels = (user, canViewAnon, searchTerm, sort, pagination) => {
 			featured: 1,
 			usersCount: 1,
 			prid: 1,
+			teamId: 1,
 		},
 	});
 
+	const total = result.count(); // count ignores the `skip` and `limit` options
+	const results = result.fetch().map((room) => {
+		if (room.teamId) {
+			const team = teams.find((team) => team._id === room.teamId);
+			if (team) {
+				room.belongsTo = team.name;
+			}
+		}
+		return room;
+	});
+
+	console.log(results);
+
 	return {
-		total: result.count(), // count ignores the `skip` and `limit` options
-		results: result.fetch(),
+		total,
+		results,
 	};
 };
 
