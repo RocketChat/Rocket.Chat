@@ -16,8 +16,8 @@ import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManag
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import MarkdownText from '../../../../../components/MarkdownText';
-import ChannelToTeamModal from '../../../../teams/modals/ChannelToTeamModal/ChannelToTeamModal';
-import ConvertToTeamModal from '../../../../teams/modals/ConvertToTeamModal';
+import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
+import ConvertToTeamModal from '../ConvertToTeamModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 import InfoPanel, { RetentionPolicyCallout } from '../../../../InfoPanel';
@@ -224,7 +224,7 @@ const RoomInfoWithData = ({
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRoom', t('Success'));
+	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRooms', t('Success'));
 	const convertRoomToTeam = useEndpointActionExperimental(
 		'POST',
 		type === 'c' ? 'channels.convertToTeam' : 'groups.convertToTeam',
@@ -303,7 +303,7 @@ const RoomInfoWithData = ({
 	const onMoveToTeam = useMutableCallback(async () => {
 		const onConfirm = async (teamId) => {
 			try {
-				await moveChannelToTeam({ roomId: rid, teamId });
+				await moveChannelToTeam({ rooms: [rid], teamId });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

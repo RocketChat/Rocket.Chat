@@ -1,9 +1,8 @@
 import React, { useMemo, useEffect } from 'react';
 import { Meteor } from 'meteor/meteor';
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Icon } from '@rocket.chat/fuselage';
 
 import Header from '../../../components/Header';
-import Breadcrumbs from '../../../components/Breadcrumbs';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase, useAsyncState } from '../../../hooks/useAsyncState';
@@ -38,7 +37,9 @@ export default React.memo(({ room }) => {
 const HeaderIcon = ({ room }) => {
 	const icon = useRoomIcon(room);
 
-	return <Breadcrumbs.Icon name={icon.name}>{!icon.name && icon}</Breadcrumbs.Icon>;
+	return <Box w='x20' mi='x2' display='inline-flex' justifyContent='center'>
+		{icon.name ? <Icon size='x20' {...icon}/> : Icon}
+	</Box>;
 };
 
 const RoomTitle = ({ room }) => <>
@@ -85,10 +86,12 @@ const ParentRoomWithEndpointData = ({ rid }) => {
 const ParentRoom = ({ room }) => {
 	const href = roomTypes.getRouteLink(room.t, room);
 
-	return <Breadcrumbs.Tag>
+	return <Header.Tag>
 		<HeaderIcon room={room}/>
-		<Breadcrumbs.Link href={href}>{roomTypes.getRoomName(room.t, room)}</Breadcrumbs.Link>
-	</Breadcrumbs.Tag>;
+		<Header.Link href={href}>
+			{roomTypes.getRoomName(room.t, room)}
+		</Header.Link>
+	</Header.Tag>;
 };
 
 const ParentTeam = ({ room }) => {
@@ -104,15 +107,14 @@ const ParentTeam = ({ room }) => {
 
 	const teamMainRoom = useUserSubscription(value?.teamInfo?.roomId);
 	const teamMainRoomHref = teamMainRoom ? roomTypes.getRouteLink(teamMainRoom.t, teamMainRoom) : null;
-	const teamIcon = value?.t === 0 ? 'team' : 'team-lock';
 
-	return teamLoading || userTeamsLoading || room.teamMain ? null : <Breadcrumbs.Tag>
-		<Breadcrumbs.IconSmall name={teamIcon}></Breadcrumbs.IconSmall>
+	return teamLoading || userTeamsLoading || room.teamMain ? null : <Header.Tag>
+		<HeaderIcon room={teamMainRoom}/>
 		{belongsToTeam
-			? <Breadcrumbs.Link href={teamMainRoomHref}>{teamMainRoom?.name}</Breadcrumbs.Link>
-			: <Breadcrumbs.Text>{teamMainRoom?.name}</Breadcrumbs.Text>
+			? <Header.Link href={teamMainRoomHref}>{teamMainRoom?.name}</Header.Link>
+			: teamMainRoom?.name
 		}
-	</Breadcrumbs.Tag>;
+	</Header.Tag>;
 };
 const DirectRoomHeader = ({ room }) => {
 	const userId = useUserId();

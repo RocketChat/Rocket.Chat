@@ -1,6 +1,18 @@
 import React, { FC } from 'react';
-import { Box, Icon, Divider, ButtonGroup, ActionButton, Badge, BadgeProps } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
+import colors from '@rocket.chat/fuselage-tokens/colors';
+import {
+	Box,
+	Icon,
+	Divider,
+	ButtonGroup,
+	ActionButton,
+	Badge,
+	BadgeProps,
+	Tag,
+	TagProps,
+	BoxProps,
+} from '@rocket.chat/fuselage';
 
 const Title: FC = (props: any) => <Box color='default' mi='x4' fontScale='s2' withTruncatedText {...props}/>;
 const Subtitle: FC = (props: any) => <Box color='hint' fontScale='p1' withTruncatedText {...props}/>;
@@ -10,6 +22,24 @@ const Row: FC = (props: any) => <Box alignItems='center' flexShrink={1} flexGrow
 const HeaderIcon: FC<{ icon: JSX.Element | { name: string; color?: string } | null}> = ({ icon }) => icon && <Box display='flex' flexShrink={0} alignItems='center' size={18} overflow='hidden' justifyContent='center'>{React.isValidElement(icon) ? icon : <Icon color='info' size='x18' { ...{ name: (icon as any).name }} />}</Box>;
 
 const ToolBox: FC = (props: any) => <ButtonGroup mi='x4' medium {...props}/>;
+
+const HeaderLink: FC = (props: BoxProps) => <Box
+	is='a'
+	{...props}
+	className={[
+		css`
+			&:hover,
+			&:focus{
+				color: ${ colors.b500 } !important;
+			}
+			&:visited{
+				color: ${ colors.n800 };
+			}
+		`,
+	].filter(Boolean)}
+/>;
+
+const HeaderTag: FC = ({ children, ...props }: TagProps) => <Tag {...props}><Box display='flex' fontScale='p2'>{children}</Box></Tag>;
 
 const ToolBoxAction: FC = ({ id, icon, color, title, action, className, tabId, index, ...props }: any) => <ActionButton
 	className={className}
@@ -67,4 +97,6 @@ Object.assign(Header, {
 	ToolBoxAction,
 	Divider: HeaderDivider,
 	Icon: HeaderIcon,
+	Link: HeaderLink,
+	Tag: HeaderTag,
 });
