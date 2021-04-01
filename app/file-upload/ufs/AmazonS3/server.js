@@ -3,7 +3,7 @@ import stream from 'stream';
 import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
-import _ from 'underscore';
+import { extend } from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
 
 /**
@@ -19,7 +19,7 @@ export class AmazonS3Store extends UploadFS.Store {
 		// options.region,
 		// options.sslEnabled // optional
 
-		options = _.extend({
+		options = extend({
 			httpOptions: {
 				timeout: 6000,
 				agent: false,

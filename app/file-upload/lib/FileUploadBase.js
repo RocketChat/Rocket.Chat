@@ -3,7 +3,7 @@ import path from 'path';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { UploadFS } from 'meteor/jalik:ufs';
-import _ from 'underscore';
+import { pick } from 'underscore';
 
 import { canAccessRoom, hasPermission } from '../../authorization';
 import { settings } from '../../settings';
@@ -66,7 +66,7 @@ export class FileUploadBase {
 			file: this.meta,
 			onError: (err) => callback(err),
 			onComplete: (fileData) => {
-				const file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
+				const file = pick(fileData, '_id', 'type', 'size', 'name', 'identify', 'description');
 
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
 				return callback(null, file, this.store.options.name);

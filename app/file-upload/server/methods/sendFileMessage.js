@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
-import _ from 'underscore';
+import { omit } from 'underscore';
 
 import { Uploads } from '../../../models';
 import { Rooms } from '../../../models/server/raw';
@@ -31,7 +31,7 @@ Meteor.methods({
 			tmid: Match.Optional(String),
 		});
 
-		Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
+		Uploads.updateFileComplete(file._id, Meteor.userId(), omit(file, '_id'));
 
 		const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
 

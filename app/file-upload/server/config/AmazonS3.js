@@ -1,7 +1,7 @@
 import http from 'http';
 import https from 'https';
 
-import _ from 'underscore';
+import { debounce } from 'underscore';
 
 import { settings } from '../../../settings';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
@@ -62,7 +62,7 @@ const AmazonS3UserDataFiles = new FileUploadClass({
 	// store setted bellow
 });
 
-const configure = _.debounce(function() {
+const configure = debounce(function() {
 	const Bucket = settings.get('FileUpload_S3_Bucket');
 	const Acl = settings.get('FileUpload_S3_Acl');
 	const AWSAccessKeyId = settings.get('FileUpload_S3_AWSAccessKeyId');

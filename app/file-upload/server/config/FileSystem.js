@@ -2,7 +2,7 @@ import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
-import _ from 'underscore';
+import { debounce } from 'underscore';
 
 import { settings } from '../../../settings';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
@@ -95,7 +95,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 	},
 });
 
-const createFileSystemStore = _.debounce(function() {
+const createFileSystemStore = debounce(function() {
 	const options = {
 		path: settings.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
 	};

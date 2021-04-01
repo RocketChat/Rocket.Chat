@@ -1,5 +1,5 @@
 import { UploadFS } from 'meteor/jalik:ufs';
-import _ from 'underscore';
+import { debounce } from 'underscore';
 
 import { settings } from '../../../settings';
 import './AmazonS3.js';
@@ -8,7 +8,7 @@ import './GoogleStorage.js';
 import './GridFS.js';
 import './Webdav.js';
 
-const configStore = _.debounce(() => {
+const configStore = debounce(() => {
 	const store = settings.get('FileUpload_Storage_Type');
 
 	if (store) {
