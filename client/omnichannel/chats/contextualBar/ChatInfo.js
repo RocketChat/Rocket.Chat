@@ -9,6 +9,7 @@ import VerticalBar from '../../../components/VerticalBar';
 import UserCard from '../../../components/UserCard';
 import { FormSkeleton } from '../../directory/Skeleton';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../hooks/useFormatDuration';
@@ -18,6 +19,7 @@ import { UserStatus } from '../../../components/UserStatus';
 import { roomTypes } from '../../../../app/utils/client';
 import { useRoute } from '../../../contexts/RouterContext';
 import { hasPermission } from '../../../../app/authorization';
+import { useUserSubscription } from '../../../contexts/UserContext';
 
 const wordBreak = css`
 	word-break: break-word;
@@ -152,7 +154,7 @@ const VisitorClientInfo = ({ uid }) => {
 	</>;
 };
 
-export function ChatInfo({ id, route, hasEditAccess }) {
+export function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
@@ -163,8 +165,11 @@ export function ChatInfo({ id, route, hasEditAccess }) {
 	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy, priorityId, livechatData } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
+	const subscription = useUserSubscription(id);
+	const hasGlobalEditRoomPermission = hasPermission('save-others-livechat-room-info');
 	const visitorId = v?._id;
 
+	const dispatchToastMessage = useToastMessageDispatch();
 	useEffect(() => {
 		if (allCustomFields) {
 			const { customFields: customFieldsAPI } = allCustomFields;
@@ -178,16 +183,23 @@ export function ChatInfo({ id, route, hasEditAccess }) {
 		return false;
 	};
 
-	const onEditClick = useMutableCallback(() => routePath.push(
-		route ? {
-			tab: 'room-info',
-			context: 'edit',
-			id,
-		} : {
-			tab: 'chats',
-			context: 'edit',
-			id,
-		}));
+	const onEditClick = useMutableCallback(() => {
+		const hasEditAccess = !!subscription || hasGlobalEditRoomPermission;
+		if (!hasEditAccess) {
+			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
+		}
+
+		routePath.push(
+			route ? {
+				tab: 'room-info',
+				context: 'edit',
+				id,
+			} : {
+				tab: 'chats',
+				context: 'edit',
+				id,
+			});
+	});
 
 
 	if (state === AsyncStatePhase.LOADING) {
@@ -259,10 +271,10 @@ export function ChatInfo({ id, route, hasEditAccess }) {
 				{priorityId && <PriorityField id={priorityId} />}
 			</Margins>
 		</VerticalBar.ScrollableContent>
-		{hasEditAccess && <VerticalBar.Footer>
+		<VerticalBar.Footer>
 			<ButtonGroup stretch>
 				<Button onClick={onEditClick}><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
 			</ButtonGroup>
-		</VerticalBar.Footer>}
+		</VerticalBar.Footer>
 	</>;
 }

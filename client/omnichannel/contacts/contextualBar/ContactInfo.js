@@ -8,6 +8,7 @@ import VerticalBar from '../../../components/VerticalBar';
 import UserCard from '../../../components/UserCard';
 import { FormSkeleton } from '../../directory/Skeleton';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { hasPermission } from '../../../../app/authorization';
@@ -40,7 +41,7 @@ const CustomField = ({ id, value }) => {
 };
 
 
-export function ContactInfo({ id, rid, route, hasEditAccess }) {
+export function ContactInfo({ id, rid, route }) {
 	const t = useTranslation();
 	const routePath = useRoute(route || 'omnichannel-directory');
 
@@ -50,18 +51,25 @@ export function ContactInfo({ id, rid, route, hasEditAccess }) {
 
 	const formatDate = useFormatDate();
 
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 
-	const onEditButtonClick = useMutableCallback(() => routePath.push(route ? {
-		tab: 'contact-profile',
-		context: 'edit',
-		id: rid,
-	} : {
-		tab: 'contacts',
-		context: 'edit',
-		id,
-	}));
+	const onEditButtonClick = useMutableCallback(() => {
+		if (!hasPermission('edit-omnichannel-contact')) {
+			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
+		}
+
+		routePath.push(route ? {
+			tab: 'contact-profile',
+			context: 'edit',
+			id: rid,
+		} : {
+			tab: 'contacts',
+			context: 'edit',
+			id,
+		});
+	});
 
 	useEffect(() => {
 		if (allCustomFields) {
@@ -134,11 +142,11 @@ export function ContactInfo({ id, rid, route, hasEditAccess }) {
 				}
 			</Margins>
 		</VerticalBar.ScrollableContent>
-		{hasEditAccess && <VerticalBar.Footer>
+		<VerticalBar.Footer>
 			<ButtonGroup stretch>
 				{ showContactHistory && lastChat && <Button onClick={onChatHistory}><Icon name='history' size='x20'/> {t('Chat_History')}</Button>}
 				<Button onClick={onEditButtonClick}><Icon name='pencil' size='x20'/> {t('Edit')}</Button>
 			</ButtonGroup>
-		</VerticalBar.Footer>}
+		</VerticalBar.Footer>
 	</>;
 }
