@@ -495,7 +495,7 @@ API.v1.addRoute('groups.members', { authRequired: true }, {
 		}
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort = {} } = this.parseJsonQuery();
+		const { sort = {}, query } = this.parseJsonQuery();
 
 		const subscriptions = Subscriptions.findByRoomId(findResult.rid, {
 			fields: { 'u._id': 1 },
@@ -508,7 +508,7 @@ API.v1.addRoute('groups.members', { authRequired: true }, {
 
 		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
 
-		const users = Users.find({ _id: { $in: members } }, {
+		const users = Users.find({ ...query, _id: { $in: members } }, {
 			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
 			sort: { username: sort.username != null ? sort.username : 1 },
 		}).fetch();
