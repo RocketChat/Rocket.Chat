@@ -86,8 +86,6 @@ const getChannels = (user, canViewAnon, searchTerm, sort, pagination) => {
 		return room;
 	});
 
-	console.log(results);
-
 	return {
 		total,
 		results,
