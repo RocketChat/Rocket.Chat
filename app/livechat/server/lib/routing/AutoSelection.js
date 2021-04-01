@@ -22,12 +22,12 @@ class AutoSelection {
 
 	getNextAgent(department, ignoreAgentId) {
 		if (!settings.get('Livechat_kill_switch')) {
-			if (department) {
-				return LivechatDepartmentAgents.getNextAgentForDepartment(department, ignoreAgentId);
-			}
-
-			return Users.getNextAgent(ignoreAgentId);
+			return;
 		}
+		if (department) {
+			return LivechatDepartmentAgents.getNextAgentForDepartment(department, ignoreAgentId);
+		}
+		return Users.getNextAgent(ignoreAgentId);
 	}
 }
 
