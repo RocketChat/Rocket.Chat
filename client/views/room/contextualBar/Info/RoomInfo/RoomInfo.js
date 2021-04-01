@@ -224,7 +224,7 @@ const RoomInfoWithData = ({
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRoom', t('Success'));
+	const moveChannelToTeam = useEndpointActionExperimental('POST', 'teams.addRooms', t('Success'));
 	const convertRoomToTeam = useEndpointActionExperimental(
 		'POST',
 		type === 'c' ? 'channels.convertToTeam' : 'groups.convertToTeam',
@@ -303,7 +303,7 @@ const RoomInfoWithData = ({
 	const onMoveToTeam = useMutableCallback(async () => {
 		const onConfirm = async (teamId) => {
 			try {
-				await moveChannelToTeam({ roomId: rid, teamId });
+				await moveChannelToTeam({ rooms: [rid], teamId });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

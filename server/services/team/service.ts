@@ -243,41 +243,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findByIds(ids, options).toArray();
 	}
 
-	async addRoom(uid: string, rid: string, teamId: string, isDefault = false): Promise<IRoom> {
-		if (!teamId) {
-			throw new Error('missing-teamId');
-		}
-		if (!rid) {
-			throw new Error('missing-roomId');
-		}
-		if (!uid) {
-			throw new Error('missing-userId');
-		}
-		// at this point, we already checked for the permission
-		// so we just need to check if the user can see the room
-		const room = await this.RoomsModel.findOneById(rid);
-		const user = await this.Users.findOneById(uid);
-		const canSeeRoom = await canAccessRoom(room, user);
-		if (!canSeeRoom) {
-			throw new Error('invalid-room');
-		}
-
-		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1 } });
-		if (!team) {
-			throw new Error('invalid-team');
-		}
-		if (room.teamId) {
-			throw new Error('room-already-on-team');
-		}
-
-		room.teamId = teamId;
-		room.teamDefault = !!isDefault;
-		this.RoomsModel.setTeamById(room._id, teamId, isDefault);
-		return {
-			...room,
-		};
-	}
-
 	async addRooms(uid: string, rooms: Array<string>, teamId: string): Promise<Array<IRoom>> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
