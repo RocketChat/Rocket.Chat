@@ -58,7 +58,7 @@ Meteor.methods({
 			role: 'moderator',
 		});
 
-		const team = Promise.await(Team.getOneByRoomId(rid));
+		const team = Promise.await(Team.getOneByMainRoomId(rid));
 		if (team) {
 			Promise.await(Team.addRolesToMember(team._id, userId, ['moderator']));
 		}

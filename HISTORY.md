@@ -1,4 +1,63 @@
 
+# 3.12.2
+`2021-03-26  ·  2 🐛  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.23.0`
+
+### 🐛 Bug fixes
+
+
+- Bump Livechat widget
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@g-thome](https://github.com/g-thome)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.12.1
+`2021-03-08  ·  1 🚀  ·  2 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.23.0`
+
+### 🚀 Improvements
+
+
+- Close Call contextual bar after starting jitsi call. ([#21004](https://github.com/RocketChat/Rocket.Chat/pull/21004) by [@yash-rajpal](https://github.com/yash-rajpal))
+
+  After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.
+  So, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.
+
+### 🐛 Bug fixes
+
+
+- Missing spaces on attachment  ([#21020](https://github.com/RocketChat/Rocket.Chat/pull/21020))
+
+- Stopping Jitsi reload ([#20973](https://github.com/RocketChat/Rocket.Chat/pull/20973) by [@yash-rajpal](https://github.com/yash-rajpal))
+
+  The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.
+  So removing this dep from useMemo dependencies
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 3.12.0
 `2021-02-28  ·  5 🎉  ·  17 🚀  ·  74 🐛  ·  30 🔍  ·  29 👩‍💻👨‍💻`
 
@@ -537,6 +596,34 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 3.11.2
+`2021-02-28  ·  3 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.22.2`
+
+### 🐛 Bug fixes
+
+
+- External systems not being able to change Omnichannel Inquiry priorities  ([#20740](https://github.com/RocketChat/Rocket.Chat/pull/20740))
+
+  Due to a wrong property name, external applications were not able to change the priority of Omnichannel Inquires.
+
+- Prevent Message Attachment rendering ([#20860](https://github.com/RocketChat/Rocket.Chat/pull/20860))
+
+- Room owner not being able to override global retention policy ([#20727](https://github.com/RocketChat/Rocket.Chat/pull/20727))
+
+  use correct permissions to check if room owner can override global retention policy
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@g-thome](https://github.com/g-thome)
+- [@ggazzo](https://github.com/ggazzo)
+- [@renatobecker](https://github.com/renatobecker)
 
 # 3.11.1
 `2021-02-10  ·  5 🐛  ·  6 👩‍💻👨‍💻`
