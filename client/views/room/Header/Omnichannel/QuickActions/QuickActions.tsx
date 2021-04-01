@@ -185,7 +185,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const hasManagerRole = useRole('livechat-manager');
 
-	const roomOpen = room && room.open && ((room.servedBy && room.servedBy._id === uid) || hasManagerRole);
+	const roomOpen = room?.open && ((room.u?._id === uid) || hasManagerRole);
 
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 
@@ -193,7 +193,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const canCloseRoom = usePermission('close-others-livechat-room');
 
-	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue;
+	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 
 	const canPlaceChatOnHold = (!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed) as boolean;
 
@@ -220,7 +220,6 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 			'close-others-livechat-room', 'transfer-livechat-guest',
 		], []),
 	);
-
 
 	return <ButtonGroup mi='x4' medium>
 		{ visibleActions.map(({ id, color, icon, title, action = actionDefault }, index) => {
