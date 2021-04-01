@@ -40,7 +40,7 @@ const getInitialValues = (data) => {
 		name: name ?? '',
 		email: visitorEmails ? visitorEmails[0].address : '',
 		phone: phone ? phone[0].phoneNumber : '',
-		livechatData: livechatData ?? '',
+		livechatData: livechatData ?? {},
 		username: contactManager?.username ?? '',
 	};
 };
@@ -83,7 +83,6 @@ function ContactNewEdit({ id, data, reload, close }) {
 
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};
-		// eslint-disable-next-line no-return-assign
 		customFields.forEach(({ _id, label, visibility, options, scope, defaultValue, required }) => {
 			(visibility === 'visible') & (scope === 'visitor') &&
 				(jsonObj[_id] = {
@@ -183,7 +182,7 @@ function ContactNewEdit({ id, data, reload, close }) {
 		try {
 			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
+			reload && reload();
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

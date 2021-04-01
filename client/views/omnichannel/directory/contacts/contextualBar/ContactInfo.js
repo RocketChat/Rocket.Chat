@@ -9,6 +9,7 @@ import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useCurrentRoute, useRoute } from '../../../../../contexts/RouterContext';
+import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
@@ -18,9 +19,9 @@ import CustomField from './CustomField';
 import Info from './Info';
 import Label from './Label';
 
-function ContactInfo({ id }) {
+function ContactInfo({ id, rid, route }) {
 	const t = useTranslation();
-	const directoryRoute = useRoute('omnichannel-directory');
+	const routePath = useRoute(route || 'omnichannel-directory');
 
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData(
 		'livechat/custom-fields',
@@ -30,15 +31,29 @@ function ContactInfo({ id }) {
 
 	const formatDate = useFormatDate();
 
+	const dispatchToastMessage = useToastMessageDispatch();
+
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 
-	const onEditButtonClick = useMutableCallback(() =>
-		directoryRoute.push({
-			tab: 'contacts',
-			context: 'edit',
-			id,
-		}),
-	);
+	const onEditButtonClick = useMutableCallback(() => {
+		if (!hasPermission('edit-omnichannel-contact')) {
+			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
+		}
+
+		routePath.push(
+			route
+				? {
+						tab: 'contact-profile',
+						context: 'edit',
+						id: rid,
+				  }
+				: {
+						tab: 'contacts',
+						context: 'edit',
+						id,
+				  },
+		);
+	});
 
 	useEffect(() => {
 		if (allCustomFields) {
@@ -50,13 +65,13 @@ function ContactInfo({ id }) {
 	const { value: data, phase: state, error } = useEndpointData(
 		`omnichannel/contact?contactId=${id}`,
 	);
-	const {
-		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
-	} = data || { contact: {} };
 
 	const [currentRouteName] = useCurrentRoute();
 	const liveRoute = useRoute('live');
 
+	const {
+		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
+	} = data || { contact: {} };
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}

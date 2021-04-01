@@ -84,6 +84,18 @@ function ChannelsTable() {
 						{t('Last_Message')}
 					</GenericTable.HeaderCell>
 				),
+				mediaQuery && (
+					<GenericTable.HeaderCell
+						key={'belongsTo'}
+						direction={sort[1]}
+						active={sort[0] === 'belongsTo'}
+						onClick={onHeaderClick}
+						sort='belongsTo'
+						style={{ width: '150px' }}
+					>
+						{t('Belongs_To')}
+					</GenericTable.HeaderCell>
+				),
 			].filter(Boolean),
 		[sort, onHeaderClick, t, mediaQuery],
 	);
@@ -104,7 +116,7 @@ function ChannelsTable() {
 	const formatDate = useFormatDate();
 	const renderRow = useCallback(
 		(room) => {
-			const { _id, ts, t, name, fname, usersCount, lastMessage, topic } = room;
+			const { _id, ts, t, name, fname, usersCount, lastMessage, topic, belongsTo } = room;
 			const avatarUrl = roomTypes.getConfig(t).getAvatarPath(room);
 
 			return (
@@ -152,6 +164,11 @@ function ChannelsTable() {
 					{mediaQuery && (
 						<Table.Cell fontScale='p1' color='hint' style={style}>
 							{lastMessage && formatDate(lastMessage.ts)}
+						</Table.Cell>
+					)}
+					{mediaQuery && (
+						<Table.Cell fontScale='p1' color='hint' style={style}>
+							{belongsTo}
 						</Table.Cell>
 					)}
 				</Table.Row>

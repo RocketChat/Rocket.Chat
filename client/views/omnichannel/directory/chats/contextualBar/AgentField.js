@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import UserCard from '../../../../../components/UserCard';
@@ -20,15 +21,22 @@ const AgentField = ({ agent }) => {
 	}
 
 	const {
-		user: { status },
+		user: { name, status },
 	} = value || { user: {} };
+
+	const displayName = name || username;
 
 	return (
 		<>
 			<Label>{t('Agent')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<UserAvatar size='x40' title={username} username={username} />
-				<UserCard.Username mis='x10' name={username} status={<UserStatus status={status} />} />
+				<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
+				{username && name && (
+					<Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>
+						({username})
+					</Box>
+				)}
 			</Info>
 		</>
 	);

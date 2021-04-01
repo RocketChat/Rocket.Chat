@@ -148,7 +148,7 @@ function RoomEdit({ room, visitor, reload, close }) {
 		try {
 			saveRoom(userData, roomData);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
+			reload && reload();
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

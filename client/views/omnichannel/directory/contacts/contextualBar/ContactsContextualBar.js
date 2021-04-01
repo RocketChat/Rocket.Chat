@@ -2,19 +2,29 @@ import { Icon, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useRoute } from '../../../../../contexts/RouterContext';
+import { useRoute, useRouteParameter } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useRoom } from '../../../../room/providers/RoomProvider';
+import ContactEditWithData from './ContactEditWithData';
 import ContactInfo from './ContactInfo';
+
+const PATH = 'live';
 
 const ContactsContextualBar = ({ rid }) => {
 	const t = useTranslation();
 
-	const directoryRoute = useRoute('live');
+	const directoryRoute = useRoute(PATH);
+
+	const context = useRouteParameter('context');
 
 	const closeContextualBar = () => {
 		directoryRoute.push({ id: rid });
 	};
+
+	const handleContactEditBarCloseButtonClick = () => {
+		directoryRoute.push({ id: rid, tab: 'contact-profile' });
+	};
+
 	const room = useRoom();
 
 	const {
@@ -29,7 +39,11 @@ const ContactsContextualBar = ({ rid }) => {
 				</Box>
 				<VerticalBar.Close onClick={closeContextualBar} />
 			</VerticalBar.Header>
-			<ContactInfo id={_id} />
+			{context === 'edit' ? (
+				<ContactEditWithData id={_id} close={handleContactEditBarCloseButtonClick} />
+			) : (
+				<ContactInfo id={_id} rid={rid} route={PATH} />
+			)}
 		</>
 	);
 };

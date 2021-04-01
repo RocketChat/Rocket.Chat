@@ -395,7 +395,7 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 
 	const removeFromTeam = useEndpointActionExperimental(
 		'POST',
-		'teams.removeMembers',
+		'teams.removeMember',
 		t('User_has_been_removed_from_team'),
 	);
 
@@ -409,11 +409,11 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 			return setModal(
 				<RemoveUsersModal
 					teamId={room?.teamId}
-					userId={user?._id}
+					userId={uid}
 					onClose={closeModal}
 					onCancel={closeModal}
 					onConfirm={async (rooms) => {
-						await removeFromTeam({ teamId: room.teamId, members: [{ userId: user._id }], rooms });
+						await removeFromTeam({ teamId: room.teamId, uid, rooms: Object.keys(rooms) });
 						closeModal();
 						reload && reload();
 					}}

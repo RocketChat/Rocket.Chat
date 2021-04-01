@@ -1,5 +1,5 @@
 import { Avatar, Box } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { roomTypes } from '../../../../../../app/utils/client';
 import UserCard from '../../../../../components/UserCard';
@@ -18,8 +18,7 @@ const ContactField = ({ contact, room }) => {
 	const avatarUrl = roomTypes.getConfig(type).getAvatarPath(room);
 
 	const { value: data, phase: state, error } = useEndpointData(
-		'livechat/visitors.info',
-		useMemo(() => ({ visitorId: contact._id }), [contact._id]),
+		`livechat/visitors.info?visitorId=${contact._id}`,
 	);
 
 	if (state === AsyncStatePhase.LOADING) {

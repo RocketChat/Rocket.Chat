@@ -6,7 +6,9 @@ import React, { useEffect, useState } from 'react';
 import { hasPermission } from '../../../../../../app/authorization/client';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useRoute } from '../../../../../contexts/RouterContext';
+import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useUserSubscription } from '../../../../../contexts/UserContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
@@ -49,8 +51,11 @@ function ChatInfo({ id, route }) {
 	} = data || { room: { v: {} } };
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
+	const subscription = useUserSubscription(id);
+	const hasGlobalEditRoomPermission = hasPermission('save-others-livechat-room-info');
 	const visitorId = v?._id;
 
+	const dispatchToastMessage = useToastMessageDispatch();
 	useEffect(() => {
 		if (allCustomFields) {
 			const { customFields: customFieldsAPI } = allCustomFields;
@@ -66,10 +71,16 @@ function ChatInfo({ id, route }) {
 		return false;
 	};
 
-	const onEditClick = useMutableCallback(() =>
+	const onEditClick = useMutableCallback(() => {
+		const hasEditAccess = !!subscription || hasGlobalEditRoomPermission;
+		if (!hasEditAccess) {
+			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
+		}
+
 		routePath.push(
 			route
 				? {
+						tab: 'room-info',
 						context: 'edit',
 						id,
 				  }
@@ -78,8 +89,8 @@ function ChatInfo({ id, route }) {
 						context: 'edit',
 						id,
 				  },
-		),
-	);
+		);
+	});
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
