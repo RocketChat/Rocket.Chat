@@ -381,7 +381,7 @@ describe('[Teams]', () => {
 		});
 	});
 
-	describe('/teams.removeMembers', () => {
+	describe('/teams.removeMember', () => {
 		let testTeam;
 		before('Create test team', (done) => {
 			const teamName = `test-team-${ Date.now() }`;
@@ -398,15 +398,11 @@ describe('[Teams]', () => {
 		});
 
 		it('should not be able to remove the last owner', (done) => {
-			request.post(api('teams.removeMembers'))
+			request.post(api('teams.removeMember'))
 				.set(credentials)
 				.send({
 					teamName: testTeam.name,
-					members: [
-						{
-							userId: credentials['X-User-Id'],
-						},
-					],
+					userId: credentials['X-User-Id'],
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -420,7 +416,7 @@ describe('[Teams]', () => {
 		});
 
 		it('should remove one member from a public team', (done) => {
-			request.post(api('teams.addMembers'))
+			request.post(api('teams.addMember'))
 				.set(credentials)
 				.send({
 					teamName: testTeam.name,
@@ -436,15 +432,11 @@ describe('[Teams]', () => {
 					],
 				})
 				.then(() =>
-					request.post(api('teams.removeMembers'))
+					request.post(api('teams.removeMember'))
 						.set(credentials)
 						.send({
 							teamName: testTeam.name,
-							members: [
-								{
-									userId: testUser2._id,
-								},
-							],
+							userId: testUser2._id,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)

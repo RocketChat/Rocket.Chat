@@ -300,7 +300,7 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 				onClose={closeModal}
 				onCancel={closeModal}
 				onConfirm={async (rooms) => {
-					await removeFromTeam({ teamId: room.teamId, uid, rooms: Object.keys(rooms) });
+					await removeFromTeam({ teamId: room.teamId, userId: uid, rooms: Object.keys(rooms) });
 					closeModal();
 					reload && reload();
 				}}

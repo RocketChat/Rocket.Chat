@@ -4,7 +4,7 @@ import { Promise } from 'meteor/promise';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
@@ -126,9 +126,8 @@ API.v1.addRoute('teams.updateRoom', { authRequired: true }, {
 
 API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 	get() {
-		const { teamId, teamName } = this.queryParams;
+		const { teamId, teamName, filter, type } = this.queryParams;
 		const { offset, count } = this.getPaginationItems();
-		const { query } = this.parseJsonQuery();
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
@@ -142,7 +141,14 @@ API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 			getAllRooms = true;
 		}
 
-		const { records, total } = Promise.await(Team.listRooms(this.userId, team._id, getAllRooms, allowPrivateTeam, { offset, count }, { query }));
+		const listFilter = {
+			name: filter,
+			isDefault: type === 'autoJoin',
+			getAllRooms,
+			allowPrivateTeam,
+		};
+
+		const { records, total } = Promise.await(Team.listRooms(this.userId, team._id, listFilter, { offset, count }));
 
 		return API.v1.success({
 			rooms: records,
@@ -241,28 +247,9 @@ API.v1.addRoute('teams.updateMember', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
-	post() {
-		const { teamId, teamName, members } = this.bodyParams;
-
-		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
-		if (!team) {
-			return API.v1.failure('team-does-not-exist');
-		}
-
-		if (!hasAtLeastOnePermission(this.userId, ['edit-team-member'], team.roomId)) {
-			return API.v1.unauthorized();
-		}
-
-		Promise.await(Team.removeMembers(team._id, members));
-
-		return API.v1.success();
-	},
-});
-
 API.v1.addRoute('teams.removeMember', { authRequired: true }, {
 	post() {
-		const { teamId, teamName, uid, rooms } = this.bodyParams;
+		const { teamId, teamName, userId, rooms } = this.bodyParams;
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
@@ -273,10 +260,23 @@ API.v1.addRoute('teams.removeMember', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		Promise.await(Team.removeMembers(team._id, [{ userId: uid }]));
+		const user = Users.findOneActiveById(userId);
+		if (!user) {
+			return API.v1.failure('invalid-user');
+		}
+
+		if (!Promise.await(Team.removeMembers(team._id, [{ userId }]))) {
+			return API.v1.failure();
+		}
 
 		if (rooms?.length) {
-			rooms.forEach((rid: string) => removeUserFromRoom(rid, { _id: uid }));
+			const roomsFromTeam: string[] = Promise.await(Team.getMatchingTeamRooms(team._id, rooms));
+
+			roomsFromTeam.forEach((rid) => {
+				removeUserFromRoom(rid, user, {
+					byUser: this.user,
+				});
+			});
 		}
 
 		return API.v1.success();
@@ -294,8 +294,14 @@ API.v1.addRoute('teams.leave', { authRequired: true }, {
 		}]));
 
 		if (rooms?.length) {
-			Subscriptions.removeByRoomIdsAndUserId(rooms, this.userId);
+			const roomsFromTeam: string[] = Promise.await(Team.getMatchingTeamRooms(team._id, rooms));
+
+			roomsFromTeam.forEach((rid) => {
+				removeUserFromRoom(rid, this.user);
+			});
 		}
+
+		removeUserFromRoom(team.roomId, this.user);
 
 		return API.v1.success();
 	},
@@ -366,9 +372,9 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 
 API.v1.addRoute('teams.autocomplete', { authRequired: true }, {
 	get() {
-		const { name, userId } = this.queryParams;
+		const { name } = this.queryParams;
 
-		const teams = Promise.await(Team.autocomplete(userId, name));
+		const teams = Promise.await(Team.autocomplete(this.userId, name));
 
 		return API.v1.success({ teams });
 	},
