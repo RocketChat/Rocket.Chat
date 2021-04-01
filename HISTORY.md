@@ -1,6 +1,24 @@
 
 # 3.13.0 (Under Release Candidate Process)
 
+## 3.13.0-rc.5
+`2021-04-01  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: General improvement to Teams ([#21402](https://github.com/RocketChat/Rocket.Chat/pull/21402))
+
+- Regression: Headers icon breaking DMs ([#21412](https://github.com/RocketChat/Rocket.Chat/pull/21412))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.13.0-rc.4
 `2021-04-01  ·  4 🐛  ·  22 🔍  ·  14 👩‍💻👨‍💻`
 
