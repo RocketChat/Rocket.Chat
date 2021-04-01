@@ -1,4 +1,3 @@
 import './contextualBar/channels/tabBar';
-import './info/tabBar.ts';
-import './members/tabBar';
-import './info';
+import './contextualBar/info/tabBar';
+import './contextualBar/members/tabBar';
