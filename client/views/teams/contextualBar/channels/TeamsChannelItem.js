@@ -3,7 +3,8 @@ import { ActionButton, Box, CheckBox, Icon, Menu, Option, Tag } from '@rocket.ch
 import { usePrefersReducedMotion, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import ConfirmationModal from './ConfirmationModal';
@@ -27,13 +28,19 @@ export const useReactModal = (Component, props) => {
 
 const RoomActions = ({ room, reload }) => {
 	const t = useTranslation();
-	const updateRoomEndpoint = useEndpoint('POST', 'teams.updateRoom');
-	const removeRoomEndpoint = useEndpoint('POST', 'teams.removeRoom');
-	const deleteRoomEndpoint = useEndpoint('POST', room.t === 'c' ? 'channels.delete' : 'groups.delete');
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const updateRoomEndpoint = useEndpointActionExperimental('POST', 'teams.updateRoom');
+	const removeRoomEndpoint = useEndpointActionExperimental('POST', 'teams.removeRoom', t('Success'));
+	const deleteRoomEndpoint = useEndpointActionExperimental('POST', room.t === 'c' ? 'channels.delete' : 'groups.delete', t('Success'));
 
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {
-		onConfirmAction: () => {
-			removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
+		onConfirmAction: async () => {
+			try {
+				await removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 			reload();
 		},
 		labelButton: t('Remove'),
@@ -41,8 +48,12 @@ const RoomActions = ({ room, reload }) => {
 	});
 
 	const DeleteChannelAction = useReactModal(ConfirmationModal, {
-		onConfirmAction: () => {
-			deleteRoomEndpoint({ roomId: room._id });
+		onConfirmAction: async () => {
+			try {
+				await deleteRoomEndpoint({ roomId: room._id });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 			reload();
 		},
 		labelButton: t('Delete'),
@@ -53,11 +64,15 @@ const RoomActions = ({ room, reload }) => {
 	});
 
 	const menuOptions = useMemo(() => {
-		const AutoJoinAction = () => {
-			updateRoomEndpoint({
-				roomId: room._id,
-				isDefault: !room.teamDefault,
-			});
+		const AutoJoinAction = async () => {
+			try {
+				await updateRoomEndpoint({
+					roomId: room._id,
+					isDefault: !room.teamDefault,
+				});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 
 			reload();
 		};
@@ -83,7 +98,17 @@ const RoomActions = ({ room, reload }) => {
 			},
 			action: DeleteChannelAction,
 		}];
-	}, [DeleteChannelAction, RemoveFromTeamAction, room._id, room.t, room.teamDefault, t, updateRoomEndpoint, reload]);
+	}, [
+		t,
+		room.t,
+		room._id,
+		room.teamDefault,
+		RemoveFromTeamAction,
+		DeleteChannelAction,
+		reload,
+		updateRoomEndpoint,
+		dispatchToastMessage,
+	]);
 
 	return <Menu
 		flexShrink={0}
