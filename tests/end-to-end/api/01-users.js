@@ -12,6 +12,7 @@ import {
 	targetUser,
 	log,
 	wait,
+	methodCall,
 } from '../../data/api-data.js';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
 import { imgURL } from '../../data/interactions.js';
@@ -2846,6 +2847,8 @@ describe('[Users]', function() {
 	describe('[/users.listTeams', () => {
 		const teamName1 = `team-name-${ Date.now() }`;
 		const teamName2 = `team-name-2-${ Date.now() }`;
+		let teamRoomId = '';
+		let teamRoomId2 = '';
 		let testUser;
 
 		before('create team 1', (done) => {
@@ -2861,6 +2864,7 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
+					teamRoomId = res.body.team.roomId;
 				})
 				.end(done);
 		});
@@ -2878,6 +2882,7 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('team');
 					expect(res.body).to.have.nested.property('team._id');
+					teamRoomId2 = res.body.team.roomId;
 				})
 				.end(done);
 		});
@@ -2891,16 +2896,13 @@ describe('[Users]', function() {
 		});
 
 		before('add test user to team 1', (done) => {
-			request.post(api('teams.addMembers'))
+			request.post(methodCall('addUsersToRoom'))
 				.set(credentials)
 				.send({
-					teamName: teamName1,
-					members: [
-						{
-							userId: testUser._id,
-							roles: ['member'],
-						},
-					],
+					message: JSON.stringify({
+						method: 'addUsersToRoom',
+						params: [{ rid: teamRoomId, users: [testUser.username] }],
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2911,16 +2913,13 @@ describe('[Users]', function() {
 		});
 
 		before('add test user to team 2', (done) => {
-			request.post(api('teams.addMembers'))
+			request.post(methodCall('addUsersToRoom'))
 				.set(credentials)
 				.send({
-					teamName: teamName2,
-					members: [
-						{
-							userId: testUser._id,
-							roles: ['member', 'owner'],
-						},
-					],
+					message: JSON.stringify({
+						method: 'addUsersToRoom',
+						params: [{ rid: teamRoomId2, users: [testUser.username] }],
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
