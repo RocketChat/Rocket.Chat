@@ -5,20 +5,21 @@ import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import UAParser from 'ua-parser-js';
 
-import VerticalBar from '../../../../components/VerticalBar';
-import UserCard from '../../../../components/UserCard';
-import { FormSkeleton } from '../../Skeleton';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { useFormatDuration } from '../../../../hooks/useFormatDuration';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { UserStatus } from '../../../../components/UserStatus';
-import { roomTypes } from '../../../../../app/utils/client';
-import { useRoute } from '../../../../contexts/RouterContext';
-import { hasPermission } from '../../../../../app/authorization';
-
+import VerticalBar from '../../../components/VerticalBar';
+import UserCard from '../../../components/UserCard';
+import { FormSkeleton } from '../../directory/Skeleton';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import { useFormatDuration } from '../../../hooks/useFormatDuration';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import UserAvatar from '../../../components/avatar/UserAvatar';
+import { UserStatus } from '../../../components/UserStatus';
+import { roomTypes } from '../../../../app/utils/client';
+import { useRoute } from '../../../contexts/RouterContext';
+import { hasPermission } from '../../../../app/authorization';
+import { useUserSubscription } from '../../../contexts/UserContext';
 
 const wordBreak = css`
 	word-break: break-word;
@@ -164,8 +165,11 @@ export function ChatInfo({ id, route }) {
 	const { room: { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy, priorityId, livechatData } } = data || { room: { v: { } } };
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
+	const subscription = useUserSubscription(id);
+	const hasGlobalEditRoomPermission = hasPermission('save-others-livechat-room-info');
 	const visitorId = v?._id;
 
+	const dispatchToastMessage = useToastMessageDispatch();
 	useEffect(() => {
 		if (allCustomFields) {
 			const { customFields: customFieldsAPI } = allCustomFields;
@@ -179,15 +183,23 @@ export function ChatInfo({ id, route }) {
 		return false;
 	};
 
-	const onEditClick = useMutableCallback(() => routePath.push(
-		route ? {
-			context: 'edit',
-			id,
-		} : {
-			tab: 'chats',
-			context: 'edit',
-			id,
-		}));
+	const onEditClick = useMutableCallback(() => {
+		const hasEditAccess = !!subscription || hasGlobalEditRoomPermission;
+		if (!hasEditAccess) {
+			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
+		}
+
+		routePath.push(
+			route ? {
+				tab: 'room-info',
+				context: 'edit',
+				id,
+			} : {
+				tab: 'chats',
+				context: 'edit',
+				id,
+			});
+	});
 
 
 	if (state === AsyncStatePhase.LOADING) {

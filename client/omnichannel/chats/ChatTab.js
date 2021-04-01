@@ -4,13 +4,13 @@ import { Table, Tag, Box } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import GenericTable from '../../../components/GenericTable';
-import FilterByText from '../../../components/FilterByText';
-import { usePermission } from '../../../contexts/AuthorizationContext';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
-import { useRoute } from '../../../contexts/RouterContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useEndpointData } from '../../hooks/useEndpointData';
+import GenericTable from '../../components/GenericTable';
+import FilterByText from '../../components/FilterByText';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import NotAuthorizedPage from '../../components/NotAuthorizedPage';
+import { useRoute } from '../../contexts/RouterContext';
 
 
 const useQuery = ({ text, itemsPerPage, current }, [column, direction], userIdLoggedIn) => useMemo(() => ({

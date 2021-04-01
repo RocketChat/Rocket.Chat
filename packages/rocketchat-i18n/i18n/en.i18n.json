@@ -1481,6 +1481,8 @@
   "edit-room-avatar_description": "Permission to edit a room's avatar.",
   "edit-room-retention-policy": "Edit Room's Retention Policy",
   "edit-room-retention-policy_description": "Permission to edit a room’s retention policy, to automatically delete messages in it",
+  "edit-omnichannel-contact": "Edit Omnichannel Contact",
+  "edit-omnichannel-contact_description": "Permission to edit Omnichannel Contact",
   "Edit_Contact_Profile": "Edit Contact Profile",
   "edited": "edited",
   "Editing_room": "Editing room",
