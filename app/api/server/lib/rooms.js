@@ -120,3 +120,29 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 		items: rooms,
 	};
 }
+
+export async function findRoomsAvailableForTeams({ uid, name }) {
+	const options = {
+		fields: {
+			_id: 1,
+			fname: 1,
+			name: 1,
+			t: 1,
+			avatarETag: 1,
+		},
+		limit: 10,
+		sort: {
+			name: 1,
+		},
+	};
+
+	const userRooms = Subscriptions.findByUserIdAndType(uid, 'p', { fields: { rid: 1 } })
+		.fetch()
+		.map((item) => item.rid);
+
+	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStarting(name, userRooms, options).toArray();
+
+	return {
+		items: rooms,
+	};
+}
