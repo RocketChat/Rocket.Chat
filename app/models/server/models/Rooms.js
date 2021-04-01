@@ -528,6 +528,41 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
+	findByNameOrFNameAndTypeIncludingTeamRooms(name, type, teamIds, options) {
+		const query = {
+			t: type,
+			teamMain: {
+				$exists: false,
+			},
+			$and: [
+				{
+					$or: [
+						{
+							teamId: {
+								$exists: false,
+							},
+						},
+						{
+							teamId: {
+								$in: teamIds,
+							},
+						},
+					],
+				},
+				{
+					$or: [{
+						name,
+					}, {
+						fname: name,
+					}],
+				},
+			],
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
 	findContainingNameOrFNameInIdsAsTeamMain(text, rids, options) {
 		const query = {
 			teamMain: true,

@@ -11,6 +11,7 @@ import { getFederationDomain } from '../../app/federation/server/lib/getFederati
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';
 import { escapeRegExp } from '../../lib/escapeRegExp';
+import { Team } from '../sdk';
 
 const sortChannels = function(field, direction) {
 	switch (field) {
@@ -48,7 +49,9 @@ const getChannels = (user, canViewAnon, searchTerm, sort, pagination) => {
 		return;
 	}
 
-	const result = Rooms.findByNameOrFNameAndType(searchTerm, 'c', {
+	const teamIds = Promise.await(Team.getAllPublicTeamIds());
+
+	const result = Rooms.findByNameOrFNameAndTypeIncludingTeamRooms(searchTerm, 'c', teamIds, {
 		...pagination,
 		sort: {
 			featured: -1,
