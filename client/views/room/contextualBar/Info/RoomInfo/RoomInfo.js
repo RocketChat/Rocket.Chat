@@ -16,8 +16,8 @@ import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManag
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import MarkdownText from '../../../../../components/MarkdownText';
-import ChannelToTeamModal from '../../../../teams/modals/ChannelToTeamModal/ChannelToTeamModal';
-import ConvertToTeamModal from '../../../../teams/modals/ConvertToTeamModal';
+import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
+import ConvertToTeamModal from '../ConvertToTeamModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 import InfoPanel, { RetentionPolicyCallout } from '../../../../InfoPanel';
