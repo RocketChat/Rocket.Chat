@@ -10,7 +10,6 @@ type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null
 
 type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' | 'title'> & {
 	className: BoxProps['className'];
-	tabId: ToolboxActionConfig['id'] | undefined;
 	index: number;
 	title: string;
 }

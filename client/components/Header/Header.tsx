@@ -41,9 +41,8 @@ const HeaderLink: FC = (props: BoxProps) => <Box
 
 const HeaderTag: FC = ({ children, ...props }: TagProps) => <Box mi='x4'><Tag {...props}><Box alignItems='center' fontScale='c2' display='flex'>{children}</Box></Tag></Box>;
 
-const ToolBoxAction: FC = ({ id, icon, color, title, action, className, tabId, index, ...props }: any) => <ActionButton
+const ToolBoxAction: FC = ({ id, icon, color, title, action, className, index, ...props }: any) => <ActionButton
 	className={className}
-	primary={tabId === id}
 	onClick={action}
 	title={title}
 	data-toolbox={index}
