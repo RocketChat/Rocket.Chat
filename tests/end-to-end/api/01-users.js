@@ -2929,6 +2929,21 @@ describe('[Users]', function() {
 				.then(() => done());
 		});
 
+		before('add owner on team 2', (done) => {
+			request.post(api('channels.addOwner'))
+				.set(credentials)
+				.send({
+					roomId: teamRoomId2,
+					userId: testUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.then(() => done);
+		});
+
 		it('should list both channels', (done) => {
 			request.get(api('users.listTeams'))
 				.set(credentials)
