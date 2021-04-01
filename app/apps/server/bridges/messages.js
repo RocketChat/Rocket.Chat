@@ -11,7 +11,7 @@ export class AppMessageBridge {
 
 	async create(message, appId) {
 		this.orch.debugLog(`The App ${ appId } is creating a new message.`);
-
+		console.log("fekf")
 		const convertedMessage = this.orch.getConverters().get('messages').convertAppMessage(message);
 
 		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);

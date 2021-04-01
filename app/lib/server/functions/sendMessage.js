@@ -167,7 +167,6 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		name,
 	};
 	message.rid = room._id;
-
 	if (!Match.test(message.msg, String)) {
 		message.msg = '';
 	}

@@ -41,6 +41,13 @@ import { renderMessageBody } from '../../../../lib/renderMessageBody';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useThreadsList } from './useThreadsList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
+import { useDataWithLoadMore } from '../../../room/contextualBar/hooks/useDataWithLoadMore';
+import { useMethod } from '../../../../contexts/ServerContext/'
+
+const useGetThreadsOfRoom = (params) => {
+	const method = useMethod('getUsersOfRoom');
+	return useDataWithLoadMore(useCallback((args) => method(...args), [method]), params);
+};
 
 function mapProps(WrappedComponent) {
 	return ({ msg, username, replies = [], tcount, ts, ...props }) => (

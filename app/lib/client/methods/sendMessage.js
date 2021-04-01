@@ -14,6 +14,7 @@ Meteor.methods({
 		if (!Meteor.userId() || s.trim(message.msg) === '') {
 			return false;
 		}
+		console.log("here")
 		const messageAlreadyExists = message._id && ChatMessage.findOne({ _id: message._id });
 		if (messageAlreadyExists) {
 			return toastr.error(t('Message_Already_Sent'));

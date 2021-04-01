@@ -36,7 +36,6 @@ export const useFilesList = (
 	} as const;
 
 	const apiEndPoint = room ? roomTypes[room.t] : 'channels.files';
-
 	const getFiles = useEndpoint('GET', apiEndPoint);
 
 	const fetchMessages = useCallback(
