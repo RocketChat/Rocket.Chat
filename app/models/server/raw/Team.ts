@@ -30,6 +30,10 @@ export class TeamRaw extends BaseRaw<T> {
 		return this.col.find({ _id: { $in: ids }, type }, options);
 	}
 
+	findByType(type: number, options?: FindOneOptions<T>): Cursor<T> {
+		return this.col.find({ type }, options);
+	}
+
 	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>, options?: FindOneOptions<T>): Cursor<T> {
 		return this.col.find({
 			name,
