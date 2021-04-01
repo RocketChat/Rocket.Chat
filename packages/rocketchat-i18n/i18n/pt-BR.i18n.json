@@ -3137,7 +3137,7 @@
   "Tag": "Tag",
   "Tag_removed": "Tag Removida",
   "Take_it": "Pegue!",
-  "Taken_At": "Atribuído em",
+  "Taken_at": "Atribuído em",
   "Target user not allowed to receive messages": "Usuário de destino não autorizado a receber mensagens",
   "TargetRoom": "Sala de destino",
   "TargetRoom_Description": "A sala onde as mensagens serão enviadas, que são o resultado desse evento a ser disparado. Somente uma sala alvo é permitida e deve existir.",
