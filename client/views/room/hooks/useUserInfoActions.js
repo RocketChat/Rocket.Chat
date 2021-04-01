@@ -218,7 +218,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 	const ignoreUserAction = useMutableCallback(async () => {
 		try {
 			if (!currentSubscription) {
-				throw new Error('You must join the channel first');
+				throw new Error('Chatpal_channel_not_joined_yet');
 			}
 			await ignoreUser({ rid, userId: uid, ignore: !isIgnored });
 			if (isIgnored) {
