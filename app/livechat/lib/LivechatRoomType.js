@@ -59,7 +59,6 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	}
 
 	condition() {
-		console.log('in');
 		return settings.get('Livechat_enabled') && hasPermission('view-l-room');
 	}
 
