@@ -260,7 +260,7 @@ API.v1.addRoute('teams.removeMember', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const user = Users.findOneActiveById(userId);
+		const user = Users.findOneActiveById(userId, {});
 		if (!user) {
 			return API.v1.failure('invalid-user');
 		}
