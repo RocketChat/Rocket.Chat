@@ -451,15 +451,18 @@ API.v1.addRoute('chat.getUserSummary', { authRequired: true }, {
 				},
 			},
 		};
-
+		console.log(typeSummary)
 		const summaryQuery = { ...query, ...typeSummary, rid};
+		//We have to had a text index for the Subsriptions
+		const summaryQueryWithoutText = { ...query, rid};
+
 		const cursorMessage = Messages.find(summaryQuery, {
 			sort: sort,
 			skip: offset,
 			limit: count,
 			fields,
 		});
-		const cursorSubsriptions = Subscriptions.find(summaryQuery, {
+		const cursorSubsriptions = Subscriptions.find(summaryQueryWithoutText, {
 			sort: sort,
 			skip: offset,
 			limit: count,
@@ -474,7 +477,7 @@ API.v1.addRoute('chat.getUserSummary', { authRequired: true }, {
 		const subscriptions = cursorSubsriptions.fetch()
 
 		const msg = [...messages, ...subscriptions]
-
+		console.log(msg)
 		return API.v1.success({
 			msg,
 			count: msg.length,

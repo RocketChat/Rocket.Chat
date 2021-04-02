@@ -24,7 +24,7 @@ export interface IMessage extends IRocketChatRecord {
 	pinned?: boolean;
 	drid?: RoomID;
 	tlm?: Date;
-
+	_updatedAt: Date;
 	dcount?: number;
 	tcount?: number;
 }

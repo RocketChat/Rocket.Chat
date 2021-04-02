@@ -89,7 +89,7 @@ export function withData(WrappedComponent) {
 			}),
 			[rid, debouncedText, type, subscription, userId],
 		);
-
+		console.log(debouncedText)
 		const {
 			threadsList,
 			initialItemCount,
