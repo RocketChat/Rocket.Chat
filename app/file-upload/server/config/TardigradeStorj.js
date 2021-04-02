@@ -42,21 +42,21 @@ const copy = function(file, out) {
 };
 
 const TardigradeStorjUploads = new FileUploadClass({
-	name: 'AmazonS3:Uploads',
+	name: 'TardigradeStorj:Uploads',
 	get,
 	copy,
 	// store setted bellow
 });
 
 const TardigradeStorjAvatars = new FileUploadClass({
-	name: 'AmazonS3:Avatars',
+	name: 'TardigradeStorj:Avatars',
 	get,
 	copy,
 	// store setted bellow
 });
 
 const TardigradeStorjUserDataFiles = new FileUploadClass({
-	name: 'AmazonS3:UserDataFiles',
+	name: 'TardigradeStorj:UserDataFiles',
 	get,
 	copy,
 	// store setted bellow
