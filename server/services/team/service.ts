@@ -471,6 +471,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return rooms.map(({ _id }: { _id: string}) => _id);
 	}
 
+	async getMembersByTeamIds(teamIds: Array<string>, options: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember>> {
+		return this.TeamMembersModel.findByTeamIds(teamIds, options).toArray();
+	}
+
 	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { query }: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
 		if (!isMember && !canSeeAll) {
