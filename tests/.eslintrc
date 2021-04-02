@@ -6,7 +6,6 @@
     "browser": false,
     "Cypress": false,
     "cy": false,
-    "expect": false,
-    "template-curly-spacing": "off"
+    "expect": false
   }
 }
