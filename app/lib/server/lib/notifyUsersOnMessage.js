@@ -37,8 +37,8 @@ export function getMentions(message) {
 	const toAll = mentions.some(({ _id }) => _id === 'all');
 	const toHere = mentions.some(({ _id }) => _id === 'here');
 
-	const userMentions = mentions.filter((mention) => !mention.mentionType || mention.mentionType === 'user');
-	const otherMentions = mentions.filter((mention) => mention?.mentionType !== 'user');
+	const userMentions = mentions.filter((mention) => !mention.type || mention.type === 'user');
+	const otherMentions = mentions.filter((mention) => mention?.type !== 'user');
 
 	const filteredMentions = userMentions
 		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))

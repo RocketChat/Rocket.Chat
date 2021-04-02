@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import _ from 'underscore';
 
 import MentionsServer from './Mentions';
 import { settings } from '../../settings';
@@ -10,12 +9,12 @@ import { api } from '../../../server/sdk/api';
 
 export class MentionQueries {
 	getUsers(usernames) {
-		const users = Meteor.users.find({ username: { $in: _.unique(usernames) } }, { fields: { _id: true, username: true, name: 1 } }).fetch();
+		const users = Meteor.users.find({ username: { $in: [...new Set(usernames)] } }, { fields: { _id: true, username: true, name: 1 } }).fetch();
 
-		return users.map((user) => {
-			user.mentionType = 'user';
-			return user;
-		});
+		return users.map((user) => ({
+			...user,
+			type: 'user',
+		}));
 	}
 
 	getUser(userId) {
@@ -27,7 +26,7 @@ export class MentionQueries {
 	}
 
 	getChannels(channels) {
-		return Rooms.find({ name: { $in: _.unique(channels) }, t: { $in: ['c', 'p'] } }, { fields: { _id: 1, name: 1 } }).fetch();
+		return Rooms.find({ name: { $in: [...new Set(channels)] }, t: { $in: ['c', 'p'] } }, { fields: { _id: 1, name: 1 } }).fetch();
 	}
 }
 

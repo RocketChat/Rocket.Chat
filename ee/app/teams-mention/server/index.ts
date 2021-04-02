@@ -26,7 +26,7 @@ onLicense('teams-mention', () => {
 		const { otherMentions } = extra;
 
 		const teamIds = otherMentions
-			.filter(({ mentionType }) => mentionType === 'team')
+			.filter(({ type }) => type === 'team')
 			.map(({ _id }) => _id);
 
 		if (!teamIds.length) {
