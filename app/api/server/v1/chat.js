@@ -442,7 +442,7 @@ API.v1.addRoute('chat.getUserSummary', { authRequired: true }, {
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
-
+		console.log(text)
 		const typeSummary = {
 			_hidden: { $ne: true },
 			...text && {
@@ -477,7 +477,6 @@ API.v1.addRoute('chat.getUserSummary', { authRequired: true }, {
 		const subscriptions = cursorSubsriptions.fetch()
 
 		const msg = [...messages, ...subscriptions]
-		console.log(msg)
 		return API.v1.success({
 			msg,
 			count: msg.length,

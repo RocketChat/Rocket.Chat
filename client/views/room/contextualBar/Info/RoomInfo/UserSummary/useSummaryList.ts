@@ -36,7 +36,7 @@ export const useSummaryList = (
 				offset: start,
 				count: end - start,
 			});
-
+			
 			return {
 				items: msg,
 				itemCount: total,
@@ -44,7 +44,7 @@ export const useSummaryList = (
 		},
 		[getSummaryList, options.rid, options.text],
 	);
-
+	
 	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
 		userSummaryList,
 		fetchMessages,
@@ -54,7 +54,6 @@ export const useSummaryList = (
 		}, []),
 	);
 	useStreamUpdatesForMessageList(userSummaryList, uid, options.rid);
-
 	return {
 		userSummaryList,
 		loadMoreItems,

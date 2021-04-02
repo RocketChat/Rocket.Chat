@@ -11,7 +11,8 @@ import { Template } from 'meteor/templating';
 import { useDebouncedValue, useResizeObserver, useAutoFocus, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '../../../../../../contexts/ServerContext'
 import { Rooms, Messages } from '../../../../../../../app/models'
-import {useSummaryList} from "./useSummaryList"
+import {useSummaryList} from "./useSummaryList";
+import { AsyncStatePhase } from '../../../../../../hooks/useAsyncState';
 import { useRecordList } from '../../../../../../hooks/lists/useRecordList';
 
 export function withData(WrappedComponent) {
@@ -67,11 +68,13 @@ export function withData(WrappedComponent) {
 		} = useSummaryList(options, userId);
 
 		const { phase, error, items: userSummary, itemCount: totalItemCount } = useRecordList(userSummaryList);
-		console.log(userSummary)
+
 		return <WrappedComponent
 			{...props}
-			//loadmoreitems
-            messages={result}
+            messages={userSummary}
+			loading={phase === AsyncStatePhase.LOADING}
+			loadMoreItems={loadMoreItems}
+			total={totalItemCount}
 			userId={userId}
 			nbrUnread={nbrUnread}
 			text={text}
@@ -136,7 +139,10 @@ export function UserSummaryList({
 	roomName,
 	setText,
 	text,
-	nbrUnread
+	nbrUnread,
+	loading,
+	loadMoreItems,
+	total = 10
 }) {
 
 	const inputRef = useAutoFocus(true);
@@ -167,13 +173,15 @@ export function UserSummaryList({
 		}, 400);
 	}
 	return  <> <TextInput style={{width:'450px'}} ref={inputRef} placeholder={'Search by date'} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
-				{
+				{<>
 					<Virtuoso
 						style={{ height: "500px" }}
+						endReached={ loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
 						totalCount={messages.length - 1}
 						data={messages}
 						itemContent={(index, data) => <Row messages={data} goToMess={goToMess} roomName={roomName} nbrUnread={nbrUnread}/>}
 					/>
+				</>
 				}                     
 			</>
 }

@@ -50,6 +50,6 @@ export class UserSummaryList extends MessageList {
 	}
 
 	protected compare(a: IMessage, b: IMessage): number {
-		return (b._updatedAt ?? b.ts).getTime() - (a._updatedAt ?? a.ts).getTime();
+		return (b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime();
 	}
 }
