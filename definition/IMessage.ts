@@ -27,4 +27,9 @@ export interface IMessage extends IRocketChatRecord {
 
 	dcount?: number;
 	tcount?: number;
+	editedBy?: {
+		_id: string;
+		username: string;
+	};
+	editedAt?: Date;
 }

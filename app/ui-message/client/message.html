@@ -65,9 +65,7 @@
 						</span>
 					{{/if}}
 					{{#if edited}}
-						<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
-							<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" title="{{_ "Edited"}}"></i>
-						</span>
+						{{>MessageStatusIcon icon='pencil' msg=msg}}
 					{{/if}}
 					{{#if msg.pinned}}
 						<span title="{{_ "Message_has_been_pinned"}}" class="pinned"><i class="icon-pin"></i></span>
@@ -126,7 +124,7 @@
 			{{#if msg.drid}}
 				{{> DiscussionMetric count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
 			{{/if}}
-			
+
 			{{#if $and settings.showReplyButton msg.tcount}}
 			    {{> ThreadMetric counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
 			{{/if}}
