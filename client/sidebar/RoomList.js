@@ -37,8 +37,8 @@ export const itemSizeMap = (sidebarViewMode) => {
 	}
 };
 
-const SidebarIcon = ({ room, small }) => {
-	const icon = useRoomIcon(room, small);
+const SidebarIcon = ({ room }) => {
+	const icon = useRoomIcon(room);
 
 	return <Sidebar.Item.Icon {...icon.name && icon}>
 		{!icon.name && icon}
@@ -150,9 +150,9 @@ const getMessage = (room, lastMessage, t) => {
 	return `${ lastMessage.u.name || lastMessage.u.username }: ${ normalizeSidebarMessage(lastMessage, t) }`;
 };
 
-export const SideBarItemTemplateWithData = React.memo(function SideBarItemTemplateWithData({ room, id, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style, sidebarViewMode, isAnonymous }) {
+export const SideBarItemTemplateWithData = React.memo(function SideBarItemTemplateWithData({ room, id, extended, selected, SideBarItemTemplate, AvatarTemplate, t, style, isAnonymous }) {
 	const title = roomTypes.getRoomName(room.t, room);
-	const icon = <SidebarIcon room={room} small={sidebarViewMode !== 'medium'}/>;
+	const icon = <SidebarIcon room={room} />;
 	const href = roomTypes.getRouteLink(room.t, room);
 
 	const {

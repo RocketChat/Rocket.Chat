@@ -5,19 +5,18 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { usePresence } from '../hooks/usePresence';
 
 export const UserStatus = React.memo(({ small, status, ...props }) => {
-	const size = small ? 'small' : 'large';
 	const t = useTranslation();
 	switch (status) {
 		case 'online':
-			return <StatusBullet size={size} status={status} title={t('Online')} {...props}/>;
+			return <StatusBullet status={status} title={t('Online')} {...props}/>;
 		case 'busy':
-			return <StatusBullet size={size} status={status} title={t('Busy')} {...props}/>;
+			return <StatusBullet status={status} title={t('Busy')} {...props}/>;
 		case 'away':
-			return <StatusBullet size={size} status={status} title={t('Away')} {...props}/>;
+			return <StatusBullet status={status} title={t('Away')} {...props}/>;
 		case 'offline':
-			return <StatusBullet size={size} status={status} title={t('Offline')} {...props}/>;
+			return <StatusBullet status={status} title={t('Offline')} {...props}/>;
 		default:
-			return <StatusBullet size={size} title={t('Loading')} {...props}/>;
+			return <StatusBullet title={t('Loading')} {...props}/>;
 	}
 });
 

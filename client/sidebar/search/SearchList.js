@@ -39,10 +39,9 @@ const Row = React.memo(({ item, data }) => {
 	return <SideBarItemTemplateWithData id={`search-${ item._id }`} tabIndex={-1} extended={extended} t={t} room={item} SideBarItemTemplate={SideBarItemTemplate} AvatarTemplate={AvatarTemplate} />;
 });
 
-const UserItem = React.memo(({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName, sidebarViewMode }) => {
+const UserItem = React.memo(({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName }) => {
 	const title = useRealName ? item.fname || item.name : item.name || item.fname;
-	const small = sidebarViewMode !== 'medium';
-	const icon = <Sidebar.Item.Icon><ReactiveUserStatus small={small && 'small'} uid={item._id} /></Sidebar.Item.Icon>;
+	const icon = <Sidebar.Item.Icon><ReactiveUserStatus uid={item._id} /></Sidebar.Item.Icon>;
 	const href = roomTypes.getRouteLink(item.t, item);
 
 	return <SideBarItemTemplate
