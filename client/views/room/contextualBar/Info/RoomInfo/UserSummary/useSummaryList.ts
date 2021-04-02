@@ -26,7 +26,7 @@ export const useSummaryList = (
 		}
 	}, [userSummaryList, options]);
 
-	const getSummaryList = useEndpoint('GET', 'chat.getSummaryList');
+	const getSummaryList = useEndpoint('GET', 'chat.getUserSummary');
 
 	const fetchMessages = useCallback(
 		async (start, end) => {
@@ -42,7 +42,7 @@ export const useSummaryList = (
 				itemCount: total,
 			};
 		},
-		[getSummaryList, options.rid, options.text, options.type],
+		[getSummaryList, options.rid, options.text],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
