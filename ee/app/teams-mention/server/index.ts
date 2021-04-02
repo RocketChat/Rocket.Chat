@@ -34,11 +34,11 @@ onLicense('teams-mention', () => {
 		}
 
 		const members: ITeamMember[] = Promise.await(Team.getMembersByTeamIds(teamIds, { projection: { userId: 1 } }));
-		mentionIds.push(...[...new Set(
+		mentionIds.push(...new Set(
 			members
 				.map(({ userId }: { userId: string }) => userId)
 				.filter((userId: string) => !mentionIds.includes(userId)),
-		)]);
+		));
 
 		return mentionIds;
 	});
