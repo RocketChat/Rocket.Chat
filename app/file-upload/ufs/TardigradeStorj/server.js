@@ -1,10 +1,10 @@
 // import stream from 'stream';
 
 import { UploadFS } from 'meteor/jalik:ufs';
-// import { check } from 'meteor/check';
-// import { Random } from 'meteor/random';
+import { check } from 'meteor/check';
+import { Random } from 'meteor/random';
 import _ from 'underscore';
-// import storj from 'uplink-nodejs';
+import storj from 'uplink-nodejs';
 
 // TODO: Do this part
 /**
@@ -31,22 +31,22 @@ export class TardigradeStorjStore extends UploadFS.Store {
 
 		// const classOptions = options;
 
-		// const libUplink = new storj.Uplink();
+		const libUplink = new storj.Uplink();
 
 		options.getPath = options.getPath || function(file) {
 			return file._id;
 		};
 
-		// this.getPath = function(file) {
-		// 	if (file.AmazonS3) {
-		// 		return file.AmazonS3.path;
-		// 	}
-		// 	// Compatibility
-		// 	// TODO: Migration
-		// 	if (file.s3) {
-		// 		return file.s3.path + file._id;
-		// 	}
-		// };
+		this.getPath = function(file) {
+			if (file.TardigradeStorj) {
+				return file.TardigradeStorj.path;
+			}
+			// Compatibility
+			// TODO: Migration
+			// if (file.s3) {
+			// 	return file.s3.path + file._id;
+			// }
+		};
 
 		// this.getRedirectURL = function(file, forceDownload = false, callback) {
 		// 	const params = {
@@ -58,66 +58,71 @@ export class TardigradeStorjStore extends UploadFS.Store {
 		// 	return s3.getSignedUrl('getObject', params, callback);
 		// };
 
-		// /**
-		//  * Creates the file in the collection
-		//  * @param file
-		//  * @param callback
-		//  * @return {string}
-		//  */
-		// this.create = function(file, callback) {
-		// 	check(file, Object);
+		/**
+		 * Creates the file in the collection
+		 * @param file
+		 * @param callback
+		 * @return {string}
+		 */
+		this.create = function(file, callback) {
+			check(file, Object);
 
-		// 	if (file._id == null) {
-		// 		file._id = Random.id();
-		// 	}
+			if (file._id == null) {
+				file._id = Random.id();
+			}
 
-		// 	file.AmazonS3 = {
-		// 		path: this.options.getPath(file),
-		// 	};
+			file.TardigradeStorj = {
+				path: this.options.getPath(file),
+			};
 
-		// 	file.store = this.options.name; // assign store to file
-		// 	return this.getCollection().insert(file, callback);
-		// };
+			file.store = this.options.name; // assign store to file
+			return this.getCollection().insert(file, callback);
+		};
 
-		// /**
-		//  * Removes the file
-		//  * @param fileId
-		//  * @param callback
-		//  */
-		// this.delete = function(fileId, callback) {
-		// 	const file = this.getCollection().findOne({ _id: fileId });
-		// 	const params = {
-		// 		Key: this.getPath(file),
-		// 	};
+		/**
+		 * Removes the file
+		 * @param fileId
+		 * @param callback
+		 */
+		this.delete = async function(fileId, callback) {
+			const file = this.getCollection().findOne({ _id: fileId });
+			const params = {
+				Key: this.getPath(file),
+			};
 
-		// 	s3.deleteObject(params, (err, data) => {
-		// 		if (err) {
-		// 			console.error(err);
-		// 		}
+			// argument: bucketName and objectName
+			await libUplink.deleteObject(params).then((err, data) => {
+				if (err) {
+					console.error(err);
+				}
 
-		// 		callback && callback(err, data);
-		// 	});
-		// };
+				callback && callback(err, data);
+			});
+		};
 
-		// /**
-		//  * Returns the file read stream
-		//  * @param fileId
-		//  * @param file
-		//  * @param options
-		//  * @return {*}
-		//  */
-		// this.getReadStream = function(fileId, file, options = {}) {
-		// 	const params = {
-		// 		Key: this.getPath(file),
-		// 	};
 
-		// 	if (options.start && options.end) {
-		// 		params.Range = `${ options.start } - ${ options.end }`;
-		// 	}
+		/**
+		 * Returns the file read stream
+		 * @param fileId
+		 * @param file
+		 * @param options
+		 * @return {*}
+		 */
+		this.getReadStream = function(fileId, file, options = {}) {
+			const params = {
+				Key: this.getPath(file),
+			};
 
-		// 	return s3.getObject(params).createReadStream();
-		// };
+			if (options.start && options.end) {
+				params.Range = `${ options.start } - ${ options.end }`;
+			}
 
+			// TODO: Not sure
+			return libUplink.read(params).createReadStream();
+		};
+
+
+		// TODO: not sure for this
 		// /**
 		//  * Returns the file write stream
 		//  * @param fileId
@@ -138,7 +143,7 @@ export class TardigradeStorjStore extends UploadFS.Store {
 		// 		}
 		// 	});
 
-		// 	s3.putObject({
+		// 	libUplink.uploadObject({
 		// 		Key: this.getPath(file),
 		// 		Body: writeStream,
 		// 		ContentType: file.type,
