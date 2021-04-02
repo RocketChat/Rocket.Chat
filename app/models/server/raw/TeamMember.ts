@@ -32,6 +32,10 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		return this.col.find({ teamId }, options);
 	}
 
+	findByTeamIds(teamIds: Array<string>, options?: FindOneOptions<T>): Cursor<T> {
+		return this.col.find({ teamId: { $in: teamIds } }, options);
+	}
+
 	findByTeamIdAndRole(teamId: string, role?: string, options?: FindOneOptions<T>): Cursor<T> {
 		return this.col.find({ teamId, roles: role }, options);
 	}
