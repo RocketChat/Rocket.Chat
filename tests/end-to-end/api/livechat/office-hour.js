@@ -1,7 +1,12 @@
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data.js';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import {
+	getCredentials,
+	api,
+	request,
+	credentials,
+} from '../../../data/api-data.js';
+import { updatePermission, updateSetting } from '../../../data/helper';
 
 describe('LIVECHAT - office hours', function() {
 	this.retries(0);
@@ -15,7 +20,8 @@ describe('LIVECHAT - office hours', function() {
 	describe('livechat/office-hours', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-livechat-business-hours', []).then(() => {
-				request.get(api('livechat/office-hours'))
+				request
+					.get(api('livechat/office-hours'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -28,7 +34,8 @@ describe('LIVECHAT - office hours', function() {
 		});
 		it('should return an array of office hours', (done) => {
 			updatePermission('view-livechat-business-hours', ['admin']).then(() => {
-				request.get(api('livechat/office-hours'))
+				request
+					.get(api('livechat/office-hours'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)

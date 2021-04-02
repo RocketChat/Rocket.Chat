@@ -13,12 +13,12 @@ import {
 	adminPassword,
 	password,
 } from '../../data/user.js';
-
 import {
 	createUser,
 	login as doLogin,
 	updateSetting,
 	createChannel,
+	deleteUser,
 } from '../../data/helper';
 
 describe('miscellaneous', function() {
@@ -212,7 +212,7 @@ describe('miscellaneous', function() {
 
 		// environment setup
 		before(async (done) => {
-			const user = await createUser();
+			user = await createUser();
 			done();
 		});
 		after(async (done) => {
@@ -220,7 +220,7 @@ describe('miscellaneous', function() {
 			done();
 		});
 
-		it('create a channel', async (done) => {
+		it('create a channel', async () => {
 			testChannel = await createChannel();
 		});
 		it('should return an array(result) when search by user and execute successfully', (done) => {
@@ -417,7 +417,7 @@ describe('miscellaneous', function() {
 
 		// environment setup
 		before(async () => {
-			const user = await createUser();
+			user = await createUser();
 		});
 
 		let userCredentials;

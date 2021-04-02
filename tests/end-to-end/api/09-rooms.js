@@ -15,7 +15,7 @@ import {
 	updatePermission,
 	updateSetting,
 	sendSimpleMessage,
-} from '../../data/helper/helper';
+} from '../../data/helper';
 
 describe('[Rooms]', function() {
 	this.retries(0);

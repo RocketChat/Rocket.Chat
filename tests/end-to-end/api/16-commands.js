@@ -6,7 +6,7 @@ import {
 	request,
 	credentials,
 } from '../../data/api-data.js';
-import { createRoom, sendSimpleMessage } from '../../data/helper/helper';
+import { createRoom, sendSimpleMessage } from '../../data/helper';
 
 describe('[Commands]', function() {
 	this.retries(0);
