@@ -7,6 +7,6 @@
     "Cypress": false,
     "cy": false,
     "expect": false,
-    "template-curly-spacing": ["error", "always"]
+    "template-curly-spacing": "off"
   }
 }
