@@ -57961,6 +57961,60 @@
           ]
         }
       ]
+    },
+    "3.13.0-rc.6": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21422",
+          "title": "Regression: Error clicking on non joined channels on team channel list",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21418",
+          "title": "EE Team Mentions",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21421",
+          "title": "Regression: rooms breaking after deleting a room from a team",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21419",
+          "title": "regression: Directory - teams tab search",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21415",
+          "title": "Regression: header title tag style",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/113326208-bebf9e00-92ef-11eb-97f7-91ae978fc400.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }
