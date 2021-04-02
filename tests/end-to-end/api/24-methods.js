@@ -21,7 +21,7 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${Date.now()}`;
+			channelName = `methods-test-channel-${ Date.now() }`;
 			request
 				.post(api('groups.create'))
 				.set(credentials)
@@ -133,7 +133,7 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${Date.now()}`;
+			channelName = `methods-test-channel-${ Date.now() }`;
 			request
 				.post(api('groups.create'))
 				.set(credentials)
@@ -300,7 +300,7 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${Date.now()}`;
+			channelName = `methods-test-channel-${ Date.now() }`;
 			request
 				.post(api('groups.create'))
 				.set(credentials)
@@ -533,7 +533,7 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${Date.now()}`;
+			channelName = `methods-test-channel-${ Date.now() }`;
 			request
 				.post(api('groups.create'))
 				.set(credentials)
@@ -734,7 +734,7 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${Date.now()}`;
+			channelName = `methods-test-channel-${ Date.now() }`;
 			request
 				.post(api('groups.create'))
 				.set(credentials)
@@ -755,8 +755,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('create test user', (done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
 			request
 				.post(api('users.create'))
 				.set(credentials)
@@ -1033,7 +1033,7 @@ describe('Meteor.methods', function() {
 		};
 		let postMessageDate = false;
 
-		const channelName = `methods-test-channel-${Date.now()}`;
+		const channelName = `methods-test-channel-${ Date.now() }`;
 
 		before('create test group', (done) => {
 			request

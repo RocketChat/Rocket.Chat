@@ -7,7 +7,6 @@ import {
 	credentials,
 } from '../../data/api-data.js';
 import { password } from '../../data/user';
-
 import {
 	updatePermission,
 	createIntegration,
@@ -413,7 +412,7 @@ describe('[Outgoing Integrations]', function() {
 		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to get an outgoing integration', (done) => {
 			updatePermission('manage-outgoing-integrations', []).then(() => {
 				request
-					.get(api(`integrations.get?integrationId=${integration._id}`))
+					.get(api(`integrations.get?integrationId=${ integration._id }`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -430,7 +429,7 @@ describe('[Outgoing Integrations]', function() {
 				request
 					.get(
 						api(
-							`integrations.get?integrationId=${integrationCreatedByAnUser._id}`,
+							`integrations.get?integrationId=${ integrationCreatedByAnUser._id }`,
 						),
 					)
 					.set(credentials)
@@ -471,7 +470,7 @@ describe('[Outgoing Integrations]', function() {
 					request
 						.get(
 							api(
-								`integrations.get?integrationId=${integrationCreatedByAnUser._id}`,
+								`integrations.get?integrationId=${ integrationCreatedByAnUser._id }`,
 							),
 						)
 						.set(userCredentials)
@@ -491,7 +490,7 @@ describe('[Outgoing Integrations]', function() {
 		it('should return the integration successfully', (done) => {
 			updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
 				request
-					.get(api(`integrations.get?integrationId=${integration._id}`))
+					.get(api(`integrations.get?integrationId=${ integration._id }`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)

@@ -89,7 +89,7 @@ describe('[Commands]', function() {
 		before((done) => {
 			createRoom({
 				type: 'c',
-				name: `channel.test.commands.${Date.now()}`,
+				name: `channel.test.commands.${ Date.now() }`,
 			}).end((err, res) => {
 				testChannel = res.body.channel;
 				sendSimpleMessage({

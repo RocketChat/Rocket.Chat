@@ -304,8 +304,8 @@ describe('[Channels]', function() {
 		let testUser;
 		let testUserCredentials;
 		before('Create test user', (done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
 			request
 				.post(api('users.create'))
 				.set(credentials)
@@ -336,7 +336,7 @@ describe('[Channels]', function() {
 				.post(api('channels.create'))
 				.set(testUserCredentials)
 				.send({
-					name: `${apiPublicChannelName}-nojoincode`,
+					name: `${ apiPublicChannelName }-nojoincode`,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -350,7 +350,7 @@ describe('[Channels]', function() {
 				.post(api('channels.create'))
 				.set(testUserCredentials)
 				.send({
-					name: `${apiPublicChannelName}-withjoincode`,
+					name: `${ apiPublicChannelName }-withjoincode`,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -878,7 +878,7 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property(
 					'error',
-					`The channel, ${apiPublicChannelName}, is already closed to the sender`,
+					`The channel, ${ apiPublicChannelName }, is already closed to the sender`,
 				);
 			})
 			.end(done);
@@ -982,7 +982,7 @@ describe('[Channels]', function() {
 			.set(credentials)
 			.send({
 				roomId: channel._id,
-				name: `EDITED${apiPublicChannelName}`,
+				name: `EDITED${ apiPublicChannelName }`,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -991,7 +991,7 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property(
 					'channel.name',
-					`EDITED${apiPublicChannelName}`,
+					`EDITED${ apiPublicChannelName }`,
 				);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property(
@@ -1007,7 +1007,7 @@ describe('[Channels]', function() {
 		let createdChannel;
 		before((done) => {
 			createRoom({
-				name: `test-integration-channel-${Date.now()}`,
+				name: `test-integration-channel-${ Date.now() }`,
 				type: 'c',
 			}).end((err, res) => {
 				createdChannel = res.body.channel;
@@ -1028,7 +1028,7 @@ describe('[Channels]', function() {
 											alias: 'test',
 											username: 'rocket.cat',
 											scriptEnabled: false,
-											channel: `#${createdChannel.name}`,
+											channel: `#${ createdChannel.name }`,
 										},
 										userCredentials,
 									).then((integration) => {
@@ -1143,7 +1143,7 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property(
 					'channel.name',
-					`EDITED${apiPublicChannelName}`,
+					`EDITED${ apiPublicChannelName }`,
 				);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 			})
@@ -1189,7 +1189,7 @@ describe('[Channels]', function() {
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.cf.${Date.now()}`,
+					name: `channel.cf.${ Date.now() }`,
 					customFields,
 				})
 				.end((err, res) => {
@@ -1281,7 +1281,7 @@ describe('[Channels]', function() {
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.cf.${Date.now()}`,
+					name: `channel.cf.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					cfchannel = res.body.channel;
@@ -1440,7 +1440,7 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property(
 					'channel.name',
-					`EDITED${apiPublicChannelName}`,
+					`EDITED${ apiPublicChannelName }`,
 				);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property(
@@ -1467,7 +1467,7 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property(
 					'channel.name',
-					`EDITED${apiPublicChannelName}`,
+					`EDITED${ apiPublicChannelName }`,
 				);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property(
@@ -1494,7 +1494,7 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property(
 					'channel.name',
-					`EDITED${apiPublicChannelName}`,
+					`EDITED${ apiPublicChannelName }`,
 				);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property(
@@ -1520,7 +1520,7 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property(
 					'channel.name',
-					`EDITED${apiPublicChannelName}`,
+					`EDITED${ apiPublicChannelName }`,
 				);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property(
@@ -1548,7 +1548,7 @@ describe('[Channels]', function() {
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property(
 						'channel.name',
-						`EDITED${apiPublicChannelName}`,
+						`EDITED${ apiPublicChannelName }`,
 					);
 					expect(res.body).to.have.nested.property('channel.t', 'p');
 					expect(res.body).to.have.nested.property(
@@ -1566,7 +1566,7 @@ describe('[Channels]', function() {
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.test.${Date.now()}`,
+					name: `channel.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -1637,7 +1637,7 @@ describe('[Channels]', function() {
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.roles.test.${Date.now()}`,
+					name: `channel.roles.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -1741,7 +1741,7 @@ describe('[Channels]', function() {
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.roles.test.${Date.now()}`,
+					name: `channel.roles.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -1836,7 +1836,7 @@ describe('[Channels]', function() {
 			request
 				.post(api('channels.create'))
 				.set(credentials)
-				.send({ name: `channel-${Date.now()}` })
+				.send({ name: `channel-${ Date.now() }` })
 				.then((response) => {
 					this.newChannel = response.body.channel;
 				})

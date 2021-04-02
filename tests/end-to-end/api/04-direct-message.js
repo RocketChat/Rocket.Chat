@@ -373,10 +373,10 @@ describe('[Direct Messages]', function() {
 	});
 
 	describe('fname property', () => {
-		const username = `fname_${apiUsername}`;
-		const name = `Name fname_${apiUsername}`;
-		const updatedName = `Updated Name fname_${apiUsername}`;
-		const email = `fname_${apiEmail}`;
+		const username = `fname_${ apiUsername }`;
+		const name = `Name fname_${ apiUsername }`;
+		const updatedName = `Updated Name fname_${ apiUsername }`;
+		const email = `fname_${ apiEmail }`;
 		let userId;
 		let directMessageId;
 
@@ -405,7 +405,7 @@ describe('[Direct Messages]', function() {
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
-					channel: `@${username}`,
+					channel: `@${ username }`,
 					text: 'This message was sent using the API',
 				})
 				.expect('Content-Type', 'application/json')

@@ -54,7 +54,7 @@ describe('[Subscriptions]', function() {
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.test.${Date.now()}`,
+					name: `channel.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -83,7 +83,7 @@ describe('[Subscriptions]', function() {
 	describe('[/subscriptions.read]', () => {
 		let testChannel;
 		it('create a channel', (done) => {
-			createRoom({ type: 'c', name: `channel.test.${Date.now()}` }).end(
+			createRoom({ type: 'c', name: `channel.test.${ Date.now() }` }).end(
 				(err, res) => {
 					testChannel = res.body.channel;
 					done();
@@ -93,7 +93,7 @@ describe('[Subscriptions]', function() {
 
 		let testGroup;
 		it('create a group', (done) => {
-			createRoom({ type: 'p', name: `channel.test.${Date.now()}` }).end(
+			createRoom({ type: 'p', name: `channel.test.${ Date.now() }` }).end(
 				(err, res) => {
 					testGroup = res.body.group;
 					done();
@@ -232,7 +232,7 @@ describe('[Subscriptions]', function() {
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.test.${Date.now()}`,
+					name: `channel.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;

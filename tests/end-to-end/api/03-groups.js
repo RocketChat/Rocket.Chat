@@ -592,7 +592,7 @@ describe('[Groups]', function() {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property(
 					'error',
-					`The private group, ${apiPrivateChannelName}, is already closed to the sender`,
+					`The private group, ${ apiPrivateChannelName }, is already closed to the sender`,
 				);
 			})
 			.end(done);
@@ -750,7 +750,7 @@ describe('[Groups]', function() {
 			.set(credentials)
 			.send({
 				roomId: group._id,
-				name: `EDITED${apiPrivateChannelName}`,
+				name: `EDITED${ apiPrivateChannelName }`,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -759,7 +759,7 @@ describe('[Groups]', function() {
 				expect(res.body).to.have.nested.property('group._id');
 				expect(res.body).to.have.nested.property(
 					'group.name',
-					`EDITED${apiPrivateChannelName}`,
+					`EDITED${ apiPrivateChannelName }`,
 				);
 				expect(res.body).to.have.nested.property('group.t', 'p');
 				expect(res.body).to.have.nested.property(
@@ -775,7 +775,7 @@ describe('[Groups]', function() {
 		let createdGroup;
 		before((done) => {
 			createRoom({
-				name: `test-integration-group-${Date.now()}`,
+				name: `test-integration-group-${ Date.now() }`,
 				type: 'p',
 			}).end((err, res) => {
 				createdGroup = res.body.group;
@@ -796,7 +796,7 @@ describe('[Groups]', function() {
 											alias: 'test',
 											username: 'rocket.cat',
 											scriptEnabled: false,
-											channel: `#${createdGroup.name}`,
+											channel: `#${ createdGroup.name }`,
 										},
 										userCredentials,
 									).then((integration) => {
@@ -992,7 +992,7 @@ describe('[Groups]', function() {
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({
-					name: `channel.cf.${Date.now()}`,
+					name: `channel.cf.${ Date.now() }`,
 					customFields,
 				})
 				.end((err, res) => {
@@ -1084,7 +1084,7 @@ describe('[Groups]', function() {
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({
-					name: `channel.cf.${Date.now()}`,
+					name: `channel.cf.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					cfchannel = res.body.group;
@@ -1232,7 +1232,7 @@ describe('[Groups]', function() {
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({
-					name: `group.test.${Date.now()}`,
+					name: `group.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testGroup = res.body.group;
@@ -1280,7 +1280,7 @@ describe('[Groups]', function() {
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({
-					name: `group.roles.test.${Date.now()}`,
+					name: `group.roles.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testGroup = res.body.group;
@@ -1384,7 +1384,7 @@ describe('[Groups]', function() {
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({
-					name: `group.roles.test.${Date.now()}`,
+					name: `group.roles.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testGroup = res.body.group;
@@ -1439,7 +1439,7 @@ describe('[Groups]', function() {
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({
-					name: `group.encrypted.test.${Date.now()}`,
+					name: `group.encrypted.test.${ Date.now() }`,
 				})
 				.end((err, res) => {
 					testGroup = res.body.group;
@@ -1522,7 +1522,7 @@ describe('[Groups]', function() {
 			request
 				.post(api('groups.create'))
 				.set(credentials)
-				.send({ name: `group-${Date.now()}` })
+				.send({ name: `group-${ Date.now() }` })
 				.expect(200)
 				.expect((response) => {
 					this.newGroup = response.body.group;

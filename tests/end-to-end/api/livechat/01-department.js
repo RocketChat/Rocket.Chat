@@ -69,7 +69,7 @@ describe('LIVECHAT - departments', function() {
 				.then(() => updatePermission('view-livechat-departments', []))
 				.then(() => {
 					request
-						.get(api(`livechat/department/${department._id}`))
+						.get(api(`livechat/department/${ department._id }`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -85,7 +85,7 @@ describe('LIVECHAT - departments', function() {
 				.then(() => updatePermission('view-livechat-departments', []))
 				.then(() => {
 					request
-						.get(api(`livechat/department/${department._id}`))
+						.get(api(`livechat/department/${ department._id }`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -101,7 +101,7 @@ describe('LIVECHAT - departments', function() {
 		it('should return the created department without the agents if the user does have the permission but request to no include the agents', (done) => {
 			updatePermission('view-livechat-departments', ['admin']).then(() => {
 				request
-					.get(api(`livechat/department/${department._id}?includeAgents=false`))
+					.get(api(`livechat/department/${ department._id }?includeAgents=false`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -119,7 +119,7 @@ describe('LIVECHAT - departments', function() {
 				.then(() => updatePermission('view-livechat-departments', ['admin']))
 				.then(() => {
 					request
-						.get(api(`livechat/department/${department._id}`))
+						.get(api(`livechat/department/${ department._id }`))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)

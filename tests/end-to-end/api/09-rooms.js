@@ -60,7 +60,7 @@ describe('[Rooms]', function() {
 		it('create an channel', (done) => {
 			createRoom({
 				type: 'c',
-				name: `channel.test.${Date.now()}-${Math.random()}`,
+				name: `channel.test.${ Date.now() }-${ Math.random() }`,
 			}).end((err, res) => {
 				testChannel = res.body.channel;
 				done();
@@ -92,7 +92,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.upload', () => {
 		let testChannel;
-		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
+		const testChannelName = `channel.test.upload.${ Date.now() }-${ Math.random() }`;
 		it('create an channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
 				testChannel = res.body.channel;
@@ -101,7 +101,7 @@ describe('[Rooms]', function() {
 		});
 		it("don't upload a file to room with file field other than file", (done) => {
 			request
-				.post(api(`rooms.upload/${testChannel._id}`))
+				.post(api(`rooms.upload/${ testChannel._id }`))
 				.set(credentials)
 				.attach('test', imgURL)
 				.expect('Content-Type', 'application/json')
@@ -115,7 +115,7 @@ describe('[Rooms]', function() {
 		});
 		it("don't upload a file to room with empty file", (done) => {
 			request
-				.post(api(`rooms.upload/${testChannel._id}`))
+				.post(api(`rooms.upload/${ testChannel._id }`))
 				.set(credentials)
 				.attach('file', '')
 				.expect('Content-Type', 'application/json')
@@ -128,7 +128,7 @@ describe('[Rooms]', function() {
 		});
 		it("don't upload a file to room with more than 1 file", (done) => {
 			request
-				.post(api(`rooms.upload/${testChannel._id}`))
+				.post(api(`rooms.upload/${ testChannel._id }`))
 				.set(credentials)
 				.attach('file', imgURL)
 				.attach('file', imgURL)
@@ -142,7 +142,7 @@ describe('[Rooms]', function() {
 		});
 		it('upload a file to room', (done) => {
 			request
-				.post(api(`rooms.upload/${testChannel._id}`))
+				.post(api(`rooms.upload/${ testChannel._id }`))
 				.set(credentials)
 				.attach('file', imgURL)
 				.expect('Content-Type', 'application/json')
@@ -170,7 +170,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.favorite', () => {
 		let testChannel;
-		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
 		it('create an channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
 				testChannel = res.body.channel;
@@ -258,8 +258,8 @@ describe('[Rooms]', function() {
 		let directMessageChannel;
 		let user;
 		beforeEach((done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
 			request
 				.post(api('users.create'))
 				.set(credentials)
@@ -298,7 +298,7 @@ describe('[Rooms]', function() {
 			user = undefined;
 		});
 		it('create a public channel', (done) => {
-			createRoom({ type: 'c', name: `testeChannel${+new Date()}` }).end(
+			createRoom({ type: 'c', name: `testeChannel${ +new Date() }` }).end(
 				(err, res) => {
 					publicChannel = res.body.channel;
 					done();
@@ -306,7 +306,7 @@ describe('[Rooms]', function() {
 			);
 		});
 		it('create a private channel', (done) => {
-			createRoom({ type: 'p', name: `testPrivateChannel${+new Date()}` }).end(
+			createRoom({ type: 'p', name: `testPrivateChannel${ +new Date() }` }).end(
 				(err, res) => {
 					privateChannel = res.body.group;
 					done();
@@ -405,8 +405,8 @@ describe('[Rooms]', function() {
 			'default',
 			'_updatedAt',
 		];
-		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
-		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
+		const testGroupName = `group.test.${ Date.now() }-${ Math.random() }`;
 		after((done) => {
 			closeRoom({ type: 'd', roomId: testDM._id }).then(done);
 		});
@@ -539,8 +539,8 @@ describe('[Rooms]', function() {
 		let testChannel;
 		let testGroup;
 		let testDM;
-		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
-		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
+		const testGroupName = `group.test.${ Date.now() }-${ Math.random() }`;
 		after((done) => {
 			closeRoom({ type: 'd', roomId: testDM._id }).then(done);
 		});
@@ -710,7 +710,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.createDiscussion', () => {
 		let testChannel;
-		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
 		let messageSent;
 		before((done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
@@ -866,7 +866,7 @@ describe('[Rooms]', function() {
 				.set(credentials)
 				.send({
 					prid: testChannel._id,
-					t_name: `discussion-create-from-tests-${testChannel.name}`,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -883,7 +883,7 @@ describe('[Rooms]', function() {
 				.set(credentials)
 				.send({
 					prid: testChannel._id,
-					t_name: `discussion-create-from-tests-${testChannel.name}`,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
 					reply: 'reply from discussion tests',
 				})
 				.expect(200)
@@ -901,7 +901,7 @@ describe('[Rooms]', function() {
 				.set(credentials)
 				.send({
 					prid: testChannel._id,
-					t_name: `discussion-create-from-tests-${testChannel.name}`,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
 					reply: 'reply from discussion tests',
 					users: ['rocket.cat'],
 				})
@@ -920,7 +920,7 @@ describe('[Rooms]', function() {
 				.set(credentials)
 				.send({
 					prid: testChannel._id,
-					t_name: `discussion-create-from-tests-${testChannel.name}`,
+					t_name: `discussion-create-from-tests-${ testChannel.name }`,
 					reply: 'reply from discussion tests',
 					users: ['rocket.cat'],
 					pmid: messageSent._id,
@@ -938,7 +938,7 @@ describe('[Rooms]', function() {
 
 	describe('/rooms.getDiscussions', () => {
 		let testChannel;
-		const testChannelName = `channel.test.getDiscussions${Date.now()}-${Math.random()}`;
+		const testChannelName = `channel.test.getDiscussions${ Date.now() }-${ Math.random() }`;
 		let discussion;
 		before((done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
@@ -948,7 +948,7 @@ describe('[Rooms]', function() {
 					.set(credentials)
 					.send({
 						prid: testChannel._id,
-						t_name: `discussion-create-from-tests-${testChannel.name}`,
+						t_name: `discussion-create-from-tests-${ testChannel.name }`,
 					})
 					.end((err, res) => {
 						discussion = res.body.discussion;
@@ -1154,7 +1154,7 @@ describe('[Rooms]', function() {
 					.send({
 						userId: testUser._id,
 						data: {
-							username: `changed.username.${testUser.username}`,
+							username: `changed.username.${ testUser.username }`,
 						},
 					})
 					.end(() => {
@@ -1165,7 +1165,7 @@ describe('[Rooms]', function() {
 							.end((err, res) => {
 								const { subscription } = res.body;
 								expect(subscription.name).to.equal(
-									`rocket.cat,changed.username.${testUser.username}`,
+									`rocket.cat,changed.username.${ testUser.username }`,
 								);
 								done();
 							});
@@ -1181,7 +1181,7 @@ describe('[Rooms]', function() {
 					.send({
 						userId: testUser._id,
 						data: {
-							name: `changed.name.${testUser.username}`,
+							name: `changed.name.${ testUser.username }`,
 						},
 					})
 					.end(() => {
@@ -1192,7 +1192,7 @@ describe('[Rooms]', function() {
 							.end((err, res) => {
 								const { subscription } = res.body;
 								expect(subscription.fname).to.equal(
-									`changed.name.${testUser.username}, Rocket.Cat`,
+									`changed.name.${ testUser.username }, Rocket.Cat`,
 								);
 								done();
 							});

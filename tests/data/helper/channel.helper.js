@@ -2,7 +2,7 @@ import { api, credentials, request } from '../api-data';
 
 export const createChannel = (userCredentials) =>
 	new Promise((resolve) => {
-		const channelName = `channel.test.${Date.now()}`;
+		const channelName = `channel.test.${ Date.now() }`;
 
 		if (userCredentials) {
 			request

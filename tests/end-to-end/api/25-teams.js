@@ -6,7 +6,7 @@ import { updatePermission } from '../../data/helper';
 describe('[Teams]', () => {
 	before((done) => getCredentials(done));
 
-	const community = `community${Date.now()}`;
+	const community = `community${ Date.now() }`;
 	let publicTeam = null;
 	let privateTeam = null;
 	let publicRoom = null;
@@ -17,8 +17,8 @@ describe('[Teams]', () => {
 	let testUser2;
 
 	before('Create test users', (done) => {
-		let username = `user.test.${Date.now()}`;
-		let email = `${username}@rocket.chat`;
+		let username = `user.test.${ Date.now() }`;
+		let email = `${ username }@rocket.chat`;
 		request
 			.post(api('users.create'))
 			.set(credentials)
@@ -26,8 +26,8 @@ describe('[Teams]', () => {
 			.then((res) => {
 				testUser = res.body.user;
 
-				username = `user.test.${Date.now()}`;
-				email = `${username}@rocket.chat`;
+				username = `user.test.${ Date.now() }`;
+				email = `${ username }@rocket.chat`;
 				request
 					.post(api('users.create'))
 					.set(credentials)
@@ -64,7 +64,7 @@ describe('[Teams]', () => {
 				.post(api('teams.create'))
 				.set(credentials)
 				.send({
-					name: `test-team-${Date.now()}`,
+					name: `test-team-${ Date.now() }`,
 					type: 1,
 				})
 				.expect('Content-Type', 'application/json')
@@ -127,7 +127,7 @@ describe('[Teams]', () => {
 	describe('/teams.addMembers', () => {
 		let testTeam;
 		before('Create test team', (done) => {
-			const teamName = `test-team-${Date.now()}`;
+			const teamName = `test-team-${ Date.now() }`;
 			request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -209,7 +209,7 @@ describe('[Teams]', () => {
 	describe('/teams.members', () => {
 		let testTeam;
 		before('Create test team', (done) => {
-			const teamName = `test-team-${Date.now()}`;
+			const teamName = `test-team-${ Date.now() }`;
 			request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -274,7 +274,7 @@ describe('[Teams]', () => {
 
 	describe('/teams.list', () => {
 		before('Create test team', (done) => {
-			const teamName = `test-team-${Date.now()}`;
+			const teamName = `test-team-${ Date.now() }`;
 			request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -316,7 +316,7 @@ describe('[Teams]', () => {
 	describe('/teams.updateMember', () => {
 		let testTeam;
 		before('Create test team', (done) => {
-			const teamName = `test-team-${Date.now()}`;
+			const teamName = `test-team-${ Date.now() }`;
 			request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -401,7 +401,7 @@ describe('[Teams]', () => {
 	describe('/teams.removeMember', () => {
 		let testTeam;
 		before('Create test team', (done) => {
-			const teamName = `test-team-${Date.now()}`;
+			const teamName = `test-team-${ Date.now() }`;
 			request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -488,7 +488,7 @@ describe('[Teams]', () => {
 	describe('/teams.leave', () => {
 		let testTeam;
 		before('Create test team', (done) => {
-			const teamName = `test-team-${Date.now()}`;
+			const teamName = `test-team-${ Date.now() }`;
 			request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -558,7 +558,7 @@ describe('[Teams]', () => {
 	describe('/teams.delete', () => {
 		describe('deleting an empty team', () => {
 			let roomId;
-			const tempTeamName = `temporaryTeam-${Date.now()}`;
+			const tempTeamName = `temporaryTeam-${ Date.now() }`;
 
 			before('create team', (done) => {
 				request
@@ -632,9 +632,9 @@ describe('[Teams]', () => {
 		});
 
 		describe('delete team with two rooms', () => {
-			const tempTeamName = `temporaryTeam-${Date.now()}`;
-			const channel1Name = `${tempTeamName}-channel1`;
-			const channel2Name = `${tempTeamName}-channel2`;
+			const tempTeamName = `temporaryTeam-${ Date.now() }`;
+			const channel1Name = `${ tempTeamName }-channel1`;
+			const channel2Name = `${ tempTeamName }-channel2`;
 			let teamId;
 			let channel1Id;
 			let channel2Id;
@@ -796,7 +796,7 @@ describe('[Teams]', () => {
 
 	describe('/teams.addRooms', () => {
 		before('create private channel', (done) => {
-			const channelName = `community-channel-private${Date.now()}`;
+			const channelName = `community-channel-private${ Date.now() }`;
 			request
 				.post(api('groups.create'))
 				.set(credentials)
@@ -816,7 +816,7 @@ describe('[Teams]', () => {
 				.end(done);
 		});
 		before('create another private channel', (done) => {
-			const channelName = `community-channel-private${Date.now()}`;
+			const channelName = `community-channel-private${ Date.now() }`;
 			request
 				.post(api('groups.create'))
 				.set(credentials)
@@ -836,7 +836,7 @@ describe('[Teams]', () => {
 				.end(done);
 		});
 		before('create public channel', (done) => {
-			const channelName = `community-channel-public${Date.now()}`;
+			const channelName = `community-channel-public${ Date.now() }`;
 			request
 				.post(api('channels.create'))
 				.set(credentials)
@@ -856,12 +856,12 @@ describe('[Teams]', () => {
 				.end(done);
 		});
 		before('create another public channel', (done) => {
-			const channelName = `community-channel-public${Date.now()}`;
+			const channelName = `community-channel-public${ Date.now() }`;
 			request
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `${channelName}2`,
+					name: `${ channelName }2`,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -870,7 +870,7 @@ describe('[Teams]', () => {
 					expect(res.body).to.have.nested.property('channel._id');
 					expect(res.body).to.have.nested.property(
 						'channel.name',
-						`${channelName}2`,
+						`${ channelName }2`,
 					);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
 					expect(res.body).to.have.nested.property('channel.msgs', 0);
@@ -987,8 +987,8 @@ describe('[Teams]', () => {
 		let testUser;
 		let testUserCredentials;
 		before('Create test user', (done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
 			request
 				.post(api('users.create'))
 				.set(credentials)

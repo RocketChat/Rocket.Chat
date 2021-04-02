@@ -55,7 +55,7 @@ describe('LIVECHAT - visitors', function() {
 		});
 		it('should return the visitor info', (done) => {
 			request
-				.get(api(`livechat/visitors.info?visitorId=${visitor._id}`))
+				.get(api(`livechat/visitors.info?visitorId=${ visitor._id }`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -155,7 +155,7 @@ describe('LIVECHAT - visitors', function() {
 				request
 					.get(
 						api(
-							`livechat/visitors.chatHistory/room/GENERAL/visitor/${visitor._id}`,
+							`livechat/visitors.chatHistory/room/GENERAL/visitor/${ visitor._id }`,
 						),
 					)
 					.set(credentials)

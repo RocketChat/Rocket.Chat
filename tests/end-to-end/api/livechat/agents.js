@@ -114,7 +114,7 @@ describe('LIVECHAT - Agents', function() {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
 			updatePermission('view-l-room', []).then(() => {
 				request
-					.get(api(`livechat/agents/${agent._id}/departments`))
+					.get(api(`livechat/agents/${ agent._id }/departments`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -144,7 +144,7 @@ describe('LIVECHAT - Agents', function() {
 		it('should return an array of departments when the agentId is valid', (done) => {
 			updatePermission('view-l-room', ['admin']).then(() => {
 				request
-					.get(api(`livechat/agents/${agent._id}/departments`))
+					.get(api(`livechat/agents/${ agent._id }/departments`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)

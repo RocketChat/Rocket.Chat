@@ -182,7 +182,7 @@ describe('[Incoming Integrations]', function() {
 
 		it('should execute the incoming integration', (done) => {
 			request
-				.post(`/hooks/${integration._id}/${integration.token}`)
+				.post(`/hooks/${ integration._id }/${ integration.token }`)
 				.send({
 					text: 'Example message',
 				})
@@ -326,7 +326,7 @@ describe('[Incoming Integrations]', function() {
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration', (done) => {
 			updatePermission('manage-incoming-integrations', []).then(() => {
 				request
-					.get(api(`integrations.get?integrationId=${integration._id}`))
+					.get(api(`integrations.get?integrationId=${ integration._id }`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -343,7 +343,7 @@ describe('[Incoming Integrations]', function() {
 				request
 					.get(
 						api(
-							`integrations.get?integrationId=${integrationCreatedByAnUser._id}`,
+							`integrations.get?integrationId=${ integrationCreatedByAnUser._id }`,
 						),
 					)
 					.set(credentials)
@@ -384,7 +384,7 @@ describe('[Incoming Integrations]', function() {
 					request
 						.get(
 							api(
-								`integrations.get?integrationId=${integrationCreatedByAnUser._id}`,
+								`integrations.get?integrationId=${ integrationCreatedByAnUser._id }`,
 							),
 						)
 						.set(userCredentials)
@@ -404,7 +404,7 @@ describe('[Incoming Integrations]', function() {
 		it('should return the integration successfully', (done) => {
 			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
 				request
-					.get(api(`integrations.get?integrationId=${integration._id}`))
+					.get(api(`integrations.get?integrationId=${ integration._id }`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -449,7 +449,7 @@ describe('[Incoming Integrations]', function() {
 
 		it('should have integration updated on subsequent gets', (done) => {
 			request
-				.get(api(`integrations.get?integrationId=${integration._id}`))
+				.get(api(`integrations.get?integrationId=${ integration._id }`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

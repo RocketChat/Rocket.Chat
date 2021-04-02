@@ -430,12 +430,16 @@ describe('miscellaneous', function() {
 			await deleteUser(user);
 		});
 
+		it('create a channel', async () => {
+			testChannel = await createChannel(userCredentials);
+		});
+
 		describe('Successful', () => {
 			it('should return object inside users array when search by a valid user', (done) => {
 				request
 					.get(api('spotlight'))
 					.query({
-						query: `@${adminUsername}`,
+						query: `@${ adminUsername }`,
 					})
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -459,7 +463,7 @@ describe('miscellaneous', function() {
 				request
 					.get(api('spotlight'))
 					.query({
-						query: `#${testChannel.name}`,
+						query: `#${ testChannel.name }`,
 					})
 					.set(credentials)
 					.expect('Content-Type', 'application/json')

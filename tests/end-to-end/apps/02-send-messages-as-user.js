@@ -4,7 +4,6 @@ import { getCredentials, request, credentials } from '../../data/api-data.js';
 import { apps } from '../../data/apps/apps-data.js';
 import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
 import { adminUsername, password } from '../../data/user.js';
-
 import {
 	createUser,
 	login,
@@ -25,7 +24,7 @@ describe('Apps - Send Messages As User', function() {
 	describe('[Send Message as user]', () => {
 		it('should return an error when the room is not found', (done) => {
 			request
-				.post(apps(`/public/${app.id}/send-message-as-user`))
+				.post(apps(`/public/${ app.id }/send-message-as-user`))
 				.send({
 					roomId: 'invalid-room',
 				})
@@ -44,7 +43,7 @@ describe('Apps - Send Messages As User', function() {
 		it('should return an error when the user is not found', (done) => {
 			request
 				.post(
-					apps(`/public/${app.id}/send-message-as-user?userId=invalid-user`),
+					apps(`/public/${ app.id }/send-message-as-user?userId=invalid-user`),
 				)
 				.send({
 					roomId: 'GENERAL',
@@ -67,7 +66,7 @@ describe('Apps - Send Messages As User', function() {
 				request
 					.post(
 						apps(
-							`/public/${app.id}/send-message-as-user?userId=${adminUsername}`,
+							`/public/${ app.id }/send-message-as-user?userId=${ adminUsername }`,
 						),
 					)
 					.set(credentials)
@@ -94,7 +93,7 @@ describe('Apps - Send Messages As User', function() {
 			it('should send a message as app user', (done) => {
 				createRoom({
 					type: 'p',
-					name: `apps-e2etest-room-${Date.now()}`,
+					name: `apps-e2etest-room-${ Date.now() }`,
 				}).end((err, createdRoom) => {
 					createUser().then((createdUser) => {
 						const user = createdUser;
@@ -103,7 +102,7 @@ describe('Apps - Send Messages As User', function() {
 							request
 								.post(
 									apps(
-										`/public/${app.id}/send-message-as-user?userId=${user._id}`,
+										`/public/${ app.id }/send-message-as-user?userId=${ user._id }`,
 									),
 								)
 								.set(userCredentials)
@@ -119,12 +118,12 @@ describe('Apps - Send Messages As User', function() {
 			it('should send a message as app user', (done) => {
 				createRoom({
 					type: 'p',
-					name: `apps-e2etest-room-${Date.now()}`,
+					name: `apps-e2etest-room-${ Date.now() }`,
 				}).end((err, createdRoom) => {
 					request
 						.post(
 							apps(
-								`/public/${app.id}/send-message-as-user?userId=${adminUsername}`,
+								`/public/${ app.id }/send-message-as-user?userId=${ adminUsername }`,
 							),
 						)
 						.set(credentials)
@@ -157,7 +156,7 @@ describe('Apps - Send Messages As User', function() {
 					request
 						.post(
 							apps(
-								`/public/${app.id}/send-message-as-user?userId=${adminUsername}`,
+								`/public/${ app.id }/send-message-as-user?userId=${ adminUsername }`,
 							),
 						)
 						.set(credentials)

@@ -715,7 +715,7 @@ describe('[Chat]', function() {
 		});
 
 		it('should send a message successfully', (done) => {
-			message._id = `id-${Date.now()}`;
+			message._id = `id-${ Date.now() }`;
 			request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
@@ -780,7 +780,7 @@ describe('[Chat]', function() {
 
 			before(async () => {
 				const ytEmbedMsgPayload = {
-					_id: `id-${Date.now()}`,
+					_id: `id-${ Date.now() }`,
 					rid: 'GENERAL',
 					msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
 					alias: 'Gruggy',
@@ -789,7 +789,7 @@ describe('[Chat]', function() {
 				};
 
 				const imgUrlMsgPayload = {
-					_id: `id-${Date.now()}1`,
+					_id: `id-${ Date.now() }1`,
 					rid: 'GENERAL',
 					msg:
 						'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
@@ -869,8 +869,8 @@ describe('[Chat]', function() {
 			const userCredentials = {};
 			let user;
 			before((done) => {
-				const username = `user.test.readonly.${Date.now()}`;
-				const email = `${username}@rocket.chat`;
+				const username = `user.test.readonly.${ Date.now() }`;
+				const email = `${ username }@rocket.chat`;
 				request
 					.post(api('users.create'))
 					.set(credentials)
@@ -898,7 +898,7 @@ describe('[Chat]', function() {
 					.post(api('channels.create'))
 					.set(credentials)
 					.send({
-						name: `readonlychannel${+new Date()}`,
+						name: `readonlychannel${ +new Date() }`,
 						readOnly: true,
 					})
 					.expect('Content-Type', 'application/json')
@@ -1019,8 +1019,8 @@ describe('[Chat]', function() {
 		let user;
 		let userCredentials;
 		before((done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
 			request
 				.post(api('users.create'))
 				.set(credentials)
@@ -1292,7 +1292,7 @@ describe('[Chat]', function() {
 		describe('when execute successfully', () => {
 			it("should return the statusCode 200 and 'receipts' property and should be equal an array", (done) => {
 				request
-					.get(api(`chat.getMessageReadReceipts?messageId=${message._id}`))
+					.get(api(`chat.getMessageReadReceipts?messageId=${ message._id }`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -1366,7 +1366,7 @@ describe('[Chat]', function() {
 		before((done) => {
 			createRoom({
 				type: 'c',
-				name: `channel.test.${Date.now()}`,
+				name: `channel.test.${ Date.now() }`,
 			}).end((err, res) => {
 				roomId = res.body.channel._id;
 				sendSimpleMessage({ roomId }).end((err, res) => {
@@ -1740,7 +1740,7 @@ describe('[Chat]', function() {
 		before((done) => {
 			createRoom({
 				type: 'c',
-				name: `channel.test.${Date.now()}`,
+				name: `channel.test.${ Date.now() }`,
 			}).end((err, res) => {
 				roomId = res.body.channel._id;
 				sendSimpleMessage({ roomId }).end((err, res) => {
@@ -2094,7 +2094,7 @@ describe('Threads', () => {
 		let testChannel;
 		let threadMessage;
 		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.${Date.now()}` }).end(
+			createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` }).end(
 				(err, channel) => {
 					testChannel = channel.body.channel;
 					sendSimpleMessage({
@@ -2197,7 +2197,7 @@ describe('Threads', () => {
 		let testChannel;
 		let threadMessage;
 		before((done) => {
-			createRoom({ type: 'c', name: `.threads.sync.${Date.now()}` }).end(
+			createRoom({ type: 'c', name: `.threads.sync.${ Date.now() }` }).end(
 				(err, channel) => {
 					testChannel = channel.body.channel;
 					sendSimpleMessage({
@@ -2381,7 +2381,7 @@ describe('Threads', () => {
 		let threadMessage;
 		let createdThreadMessage;
 		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.${Date.now()}` }).end(
+			createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` }).end(
 				(err, res) => {
 					testChannel = res.body.channel;
 					sendSimpleMessage({
@@ -2490,7 +2490,7 @@ describe('Threads', () => {
 		let threadMessage;
 		let createdThreadMessage;
 		before((done) => {
-			createRoom({ type: 'c', name: `message.threads.${Date.now()}` }).end(
+			createRoom({ type: 'c', name: `message.threads.${ Date.now() }` }).end(
 				(err, res) => {
 					testChannel = res.body.channel;
 					sendSimpleMessage({
@@ -2676,7 +2676,7 @@ describe('Threads', () => {
 		before((done) => {
 			createRoom({
 				type: 'c',
-				name: `channel.test.threads.follow.${Date.now()}`,
+				name: `channel.test.threads.follow.${ Date.now() }`,
 			}).end((err, res) => {
 				testChannel = res.body.channel;
 				sendSimpleMessage({
@@ -2795,7 +2795,7 @@ describe('Threads', () => {
 		before((done) => {
 			createRoom({
 				type: 'c',
-				name: `channel.test.threads.unfollow.${Date.now()}`,
+				name: `channel.test.threads.unfollow.${ Date.now() }`,
 			}).end((err, res) => {
 				testChannel = res.body.channel;
 				sendSimpleMessage({

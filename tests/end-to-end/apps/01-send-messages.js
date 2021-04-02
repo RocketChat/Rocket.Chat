@@ -18,7 +18,7 @@ describe('Apps - Send Messages As APP User', function() {
 	describe('[Send Message as app user]', () => {
 		it('should return an error when the room is not found', (done) => {
 			request
-				.post(apps(`/public/${app.id}/send-message-as-app-user`))
+				.post(apps(`/public/${ app.id }/send-message-as-app-user`))
 				.send({
 					roomId: 'invalid-room',
 				})
@@ -38,7 +38,7 @@ describe('Apps - Send Messages As APP User', function() {
 			let publicMessageId;
 			it('should send a message as app user', (done) => {
 				request
-					.post(apps(`/public/${app.id}/send-message-as-app-user`))
+					.post(apps(`/public/${ app.id }/send-message-as-app-user`))
 					.set(credentials)
 					.send({
 						roomId: 'GENERAL',
@@ -63,10 +63,10 @@ describe('Apps - Send Messages As APP User', function() {
 			it('should send a message as app user', (done) => {
 				createRoom({
 					type: 'p',
-					name: `apps-e2etest-room-${Date.now()}`,
+					name: `apps-e2etest-room-${ Date.now() }`,
 				}).end((err, createdRoom) => {
 					request
-						.post(apps(`/public/${app.id}/send-message-as-app-user`))
+						.post(apps(`/public/${ app.id }/send-message-as-app-user`))
 						.set(credentials)
 						.send({
 							roomId: createdRoom.body.group._id,
@@ -95,7 +95,7 @@ describe('Apps - Send Messages As APP User', function() {
 					username: 'rocket.cat',
 				}).end((err, createdRoom) => {
 					request
-						.post(apps(`/public/${app.id}/send-message-as-app-user`))
+						.post(apps(`/public/${ app.id }/send-message-as-app-user`))
 						.set(credentials)
 						.send({
 							roomId: createdRoom.body.room._id,

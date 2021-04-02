@@ -37,8 +37,8 @@ import {
 
 function createTestUser() {
 	return new Promise((resolve) => {
-		const username = `user.test.${Date.now()}`;
-		const email = `${username}@rocket.chat`;
+		const username = `user.test.${ Date.now() }`;
+		const email = `${ username }@rocket.chat`;
 		request
 			.post(api('users.create'))
 			.set(credentials)
@@ -150,8 +150,8 @@ describe('[Users]', function() {
 					return done(error);
 				}
 
-				const username = `customField_${apiUsername}`;
-				const email = `customField_${apiEmail}`;
+				const username = `customField_${ apiUsername }`;
+				const email = `customField_${ apiEmail }`;
 				const customFields = { customFieldText: 'success' };
 
 				request
@@ -190,7 +190,7 @@ describe('[Users]', function() {
 		});
 
 		function failUserWithCustomField(field) {
-			it(`should not create a user if a custom field ${field.reason}`, (done) => {
+			it(`should not create a user if a custom field ${ field.reason }`, (done) => {
 				setCustomFields({ customFieldText }, (error) => {
 					if (error) {
 						return done(error);
@@ -203,9 +203,9 @@ describe('[Users]', function() {
 						.post(api('users.create'))
 						.set(credentials)
 						.send({
-							email: `customField_fail_${apiEmail}`,
-							name: `customField_fail_${apiUsername}`,
-							username: `customField_fail_${apiUsername}`,
+							email: `customField_fail_${ apiEmail }`,
+							name: `customField_fail_${ apiUsername }`,
+							username: `customField_fail_${ apiUsername }`,
 							password,
 							active: true,
 							roles: ['user'],
@@ -245,8 +245,8 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.register]', () => {
-		const email = `email@email${Date.now()}.com`;
-		const username = `myusername${Date.now()}`;
+		const email = `email@email${ Date.now() }.com`;
+		const username = `myusername${ Date.now() }`;
 		it('should register new user', (done) => {
 			request
 				.post(api('users.register'))
@@ -542,7 +542,7 @@ describe('[Users]', function() {
 
 			it('should return no online users updated after now', (done) => {
 				request
-					.get(api(`users.presence?from=${new Date().toISOString()}`))
+					.get(api(`users.presence?from=${ new Date().toISOString() }`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -562,7 +562,7 @@ describe('[Users]', function() {
 				date.setMinutes(date.getMinutes() - 11);
 
 				request
-					.get(api(`users.presence?from=${date.toISOString()}`))
+					.get(api(`users.presence?from=${ date.toISOString() }`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -859,8 +859,8 @@ describe('[Users]', function() {
 					userId: targetUser._id,
 					data: {
 						email: apiEmail,
-						name: `edited${apiUsername}`,
-						username: `edited${apiUsername}`,
+						name: `edited${ apiUsername }`,
+						username: `edited${ apiUsername }`,
 						password,
 						active: true,
 						roles: ['user'],
@@ -872,7 +872,7 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property(
 						'user.username',
-						`edited${apiUsername}`,
+						`edited${ apiUsername }`,
 					);
 					expect(res.body).to.have.nested.property(
 						'user.emails[0].address',
@@ -881,7 +881,7 @@ describe('[Users]', function() {
 					expect(res.body).to.have.nested.property('user.active', true);
 					expect(res.body).to.have.nested.property(
 						'user.name',
-						`edited${apiUsername}`,
+						`edited${ apiUsername }`,
 					);
 					expect(res.body).to.not.have.nested.property('user.e2e');
 				})
@@ -895,7 +895,7 @@ describe('[Users]', function() {
 				.send({
 					userId: targetUser._id,
 					data: {
-						email: `edited${apiEmail}`,
+						email: `edited${ apiEmail }`,
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -904,7 +904,7 @@ describe('[Users]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property(
 						'user.emails[0].address',
-						`edited${apiEmail}`,
+						`edited${ apiEmail }`,
 					);
 					expect(res.body).to.have.nested.property(
 						'user.emails[0].verified',
@@ -1210,8 +1210,8 @@ describe('[Users]', function() {
 	describe('[/users.updateOwnBasicInfo]', () => {
 		let user;
 		before((done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
 			request
 				.post(api('users.create'))
 				.set(credentials)
@@ -1250,10 +1250,10 @@ describe('[Users]', function() {
 			user = undefined;
 		});
 
-		const newPassword = `${password}test`;
-		const editedUsername = `basicInfo.name${+new Date()}`;
-		const editedName = `basic-info-test-name${+new Date()}`;
-		const editedEmail = `test${+new Date()}@mail.com`;
+		const newPassword = `${ password }test`;
+		const editedUsername = `basicInfo.name${ +new Date() }`;
+		const editedName = `basic-info-test-name${ +new Date() }`;
+		const editedEmail = `test${ +new Date() }@mail.com`;
 
 		it('enabling E2E in server and generating keys to user...', (done) => {
 			updateSetting('E2E_Enable', true).then(() => {
@@ -1566,7 +1566,7 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.getUsernameSuggestion]', () => {
-		const testUsername = `test${+new Date()}`;
+		const testUsername = `test${ +new Date() }`;
 		let targetUser;
 		let userCredentials;
 		it('register a new user...', (done) => {
@@ -1574,8 +1574,8 @@ describe('[Users]', function() {
 				.post(api('users.register'))
 				.set(credentials)
 				.send({
-					email: `${testUsername}.@teste.com`,
-					username: `${testUsername}test`,
+					email: `${ testUsername }.@teste.com`,
+					username: `${ testUsername }test`,
 					name: testUsername,
 					pass: password,
 				})
@@ -1618,7 +1618,7 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.deleteOwnAccount]', () => {
-		const testUsername = `testuser${+new Date()}`;
+		const testUsername = `testuser${ +new Date() }`;
 		let targetUser;
 		let userCredentials;
 		it('register a new user...', (done) => {
@@ -1626,8 +1626,8 @@ describe('[Users]', function() {
 				.post(api('users.register'))
 				.set(credentials)
 				.send({
-					email: `${testUsername}.@teste.com`,
-					username: `${testUsername}test`,
+					email: `${ testUsername }.@teste.com`,
+					username: `${ testUsername }test`,
 					name: testUsername,
 					pass: password,
 				})
@@ -1715,7 +1715,7 @@ describe('[Users]', function() {
 			const room = (
 				await createRoom({
 					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
+					name: `channel.test.${ Date.now() }-${ Math.random() }`,
 					username: user.username,
 					members: [user.username],
 				})
@@ -1771,7 +1771,7 @@ describe('[Users]', function() {
 			const room = (
 				await createRoom({
 					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
+					name: `channel.test.${ Date.now() }-${ Math.random() }`,
 					username: user.username,
 					members: [user.username],
 				})
@@ -1826,7 +1826,7 @@ describe('[Users]', function() {
 			const room = (
 				await createRoom({
 					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
+					name: `channel.test.${ Date.now() }-${ Math.random() }`,
 					username: user.username,
 					members: [user.username],
 				})
@@ -1908,15 +1908,15 @@ describe('[Users]', function() {
 					})
 					.end(resolve);
 			});
-		const testUsername = `testuserdelete${+new Date()}`;
+		const testUsername = `testuserdelete${ +new Date() }`;
 		let targetUser;
 		beforeEach((done) => {
 			request
 				.post(api('users.register'))
 				.set(credentials)
 				.send({
-					email: `${testUsername}.@teste.com`,
-					username: `${testUsername}test`,
+					email: `${ testUsername }.@teste.com`,
+					username: `${ testUsername }test`,
 					name: testUsername,
 					pass: password,
 				})
@@ -1962,7 +1962,7 @@ describe('[Users]', function() {
 			const room = (
 				await createRoom({
 					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
+					name: `channel.test.${ Date.now() }-${ Math.random() }`,
 					members: [targetUser.username],
 				})
 			).body.channel;
@@ -2013,7 +2013,7 @@ describe('[Users]', function() {
 			const room = (
 				await createRoom({
 					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
+					name: `channel.test.${ Date.now() }-${ Math.random() }`,
 					members: [targetUser.username],
 				})
 			).body.channel;
@@ -2078,7 +2078,7 @@ describe('[Users]', function() {
 			const room = (
 				await createRoom({
 					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
+					name: `channel.test.${ Date.now() }-${ Math.random() }`,
 					members: [targetUser.username],
 				})
 			).body.channel;
@@ -2143,7 +2143,7 @@ describe('[Users]', function() {
 	});
 
 	describe('Personal Access Tokens', () => {
-		const tokenName = `${Date.now()}token`;
+		const tokenName = `${ Date.now() }token`;
 		describe('successful cases', () => {
 			describe('[/users.getPersonalAccessTokens]', () => {
 				it('should return an array when the user does not have personal tokens configured', (done) => {
@@ -2355,8 +2355,8 @@ describe('[Users]', function() {
 	describe('[/users.setActiveStatus]', () => {
 		let user;
 		before((done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
 			request
 				.post(api('users.create'))
 				.set(credentials)
@@ -2439,7 +2439,7 @@ describe('[Users]', function() {
 			const room = (
 				await createRoom({
 					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
+					name: `channel.test.${ Date.now() }-${ Math.random() }`,
 					username: targetUser.username,
 					members: [targetUser.username],
 				})
@@ -2504,7 +2504,7 @@ describe('[Users]', function() {
 			const room = (
 				await createRoom({
 					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
+					name: `channel.test.${ Date.now() }-${ Math.random() }`,
 					username: targetUser.username,
 					members: [targetUser.username],
 				})
@@ -2568,7 +2568,7 @@ describe('[Users]', function() {
 			const room = (
 				await createRoom({
 					type: 'c',
-					name: `channel.test.${Date.now()}-${Math.random()}`,
+					name: `channel.test.${ Date.now() }-${ Math.random() }`,
 					members: [targetUser.username],
 				})
 			).body.channel;
@@ -2712,7 +2712,7 @@ describe('[Users]', function() {
 	describe('[/users.deactivateIdle]', () => {
 		let testUser;
 		let testUserCredentials;
-		const testRoleName = `role.test.${Date.now()}`;
+		const testRoleName = `role.test.${ Date.now() }`;
 
 		before('Create a new role with Users scope', (done) => {
 			request
@@ -2729,8 +2729,8 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		before('Create test user', (done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
 			request
 				.post(api('users.create'))
 				.set(credentials)
@@ -3193,8 +3193,8 @@ describe('[Users]', function() {
 	});
 
 	describe('[/users.listTeams', () => {
-		const teamName1 = `team-name-${Date.now()}`;
-		const teamName2 = `team-name-2-${Date.now()}`;
+		const teamName1 = `team-name-${ Date.now() }`;
+		const teamName2 = `team-name-2-${ Date.now() }`;
 		let testUser;
 
 		before('create team 1', (done) => {
