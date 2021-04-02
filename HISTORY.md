@@ -1,6 +1,35 @@
 
 # 3.13.0 (Under Release Candidate Process)
 
+## 3.13.0-rc.6
+`2021-04-02  ·  5 🔍  ·  5 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- EE Team Mentions ([#21418](https://github.com/RocketChat/Rocket.Chat/pull/21418))
+
+- regression: Directory - teams tab search ([#21419](https://github.com/RocketChat/Rocket.Chat/pull/21419))
+
+- Regression: Error clicking on non joined channels on team channel list ([#21422](https://github.com/RocketChat/Rocket.Chat/pull/21422))
+
+- Regression: header title tag style ([#21415](https://github.com/RocketChat/Rocket.Chat/pull/21415))
+
+  ![image](https://user-images.githubusercontent.com/27704687/113326208-bebf9e00-92ef-11eb-97f7-91ae978fc400.png)
+
+- Regression: rooms breaking after deleting a room from a team ([#21421](https://github.com/RocketChat/Rocket.Chat/pull/21421))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.13.0-rc.5
 `2021-04-01  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
