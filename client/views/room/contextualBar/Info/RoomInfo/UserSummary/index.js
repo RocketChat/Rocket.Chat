@@ -8,9 +8,11 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RoomHistoryManager } from '../../../../../../../app/ui-utils';
 import { Template } from 'meteor/templating';
-import { useDebouncedValue, useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useResizeObserver, useAutoFocus, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '../../../../../../contexts/ServerContext'
 import { Rooms, Messages } from '../../../../../../../app/models'
+import {useSummaryList} from "./useSummaryList"
+import { useRecordList } from '../../../../../../hooks/lists/useRecordList';
 
 export function withData(WrappedComponent) {
 	return ({
@@ -41,14 +43,31 @@ export function withData(WrappedComponent) {
 		//this is an exemple, we need to add a business logic
 		const result = [{month: "March", ts: new Date(), tmid: subscription[0]?.tunread?.length >= 1 ? subscription[0]?.tunread : null},...subscription, ...messages]
 		result.sort( (a, b) => b.ts - a.ts );
-		console.log(result)
 		const [text, setText] = useState('');
 		const debouncedText = useDebouncedValue(text, 400);
 
 		const handleTextChange = useCallback((e) => {
 			setText(e.currentTarget.value);
 		}, []);
-		
+
+		const options = useMemo(
+			() => ({
+				rid,
+				text: debouncedText,
+				tunread: subscription?.tunread,
+				uid: userId,
+			}),
+			[rid, debouncedText, subscription, userId],
+		);
+
+		const {
+			userSummaryList,
+			initialItemCount,
+			loadMoreItems,
+		} = useSummaryList(options, userId);
+
+		const { phase, error, items: userSummary, itemCount: totalItemCount } = useRecordList(userSummaryList);
+		console.log(userSummary)
 		return <WrappedComponent
 			{...props}
 			//loadmoreitems

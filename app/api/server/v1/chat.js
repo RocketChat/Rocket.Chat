@@ -426,6 +426,64 @@ API.v1.addRoute('chat.getPinnedMessages', { authRequired: true }, {
 	},
 });
 
+
+API.v1.addRoute('chat.getSummaryList', { authRequired: true }, {
+	get() {
+		const { rid, text } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+		const { sort, fields, query } = this.parseJsonQuery();
+
+		if (!rid) {
+			throw new Meteor.Error('The required "rid" query param is missing.');
+		}
+
+		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
+		const room = Rooms.findOneById(rid, { fields: { t: 1, _id: 1 } });
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
+
+		const typeSummary = {
+			_hidden: { $ne: true },
+			...text && {
+				$text: {
+					$search: text,
+				},
+			},
+		};
+
+		const summaryQuery = { ...query, ...typeSummary, rid};
+		const cursorMessage = Messages.find(summaryQuery, {
+			sort: sort,
+			skip: offset,
+			limit: count,
+			fields,
+		});
+		const cursorSubsriptions = Subscriptions.find(summaryQuery, {
+			sort: sort,
+			skip: offset,
+			limit: count,
+			fields,
+		});
+
+		const totalMessages = cursorMessage.count();
+		const totalSubscriptions = cursorSubsriptions.count()
+		const total = totalMessages + totalSubscriptions
+
+		const messages = cursorMessage.fetch();
+		const subscriptions = cursorSubsriptions.fetch()
+
+		const msg = [...messages, ...subscriptions]
+
+		return API.v1.success({
+			msg,
+			count: msg.length,
+			offset,
+			total,
+		});
+	},
+});
+
 API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 	get() {
 		const { rid, type, text } = this.queryParams;

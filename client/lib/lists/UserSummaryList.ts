@@ -4,27 +4,27 @@ import { escapeRegExp } from '../../../lib/escapeRegExp';
 
 type UserMessage = Omit<IMessage, 'drid'> & Required<Pick<IMessage, 'drid'>>;
 
-export type UserMessageListOptions = {
+export type UserSummaryListOptions = {
 	rid: IMessage['rid'];
 	text?: string;
 };
 
-const isDiscussionMessageInRoom = (message: IMessage, rid: IMessage['rid']): message is UserMessage =>
+const MessageInRoom = (message: IMessage, rid: IMessage['rid']): message is UserMessage =>
 	message.rid === rid && 'rid' in message;
 
-const isDiscussionTextMatching = (discussionMessage: UserMessage, regex: RegExp): boolean =>
+const isTextMatching = (discussionMessage: UserMessage, regex: RegExp): boolean =>
 	regex.test(discussionMessage.msg);
 
-export class UserMessageList extends MessageList {
-	public constructor(private _options: UserMessageListOptions) {
+export class UserSummaryList extends MessageList {
+	public constructor(private _options: UserSummaryListOptions) {
 		super();
 	}
 
-	public get options(): UserMessageListOptions {
+	public get options(): UserSummaryListOptions {
 		return this._options;
 	}
 
-	public updateFilters(options: UserMessageListOptions): void {
+	public updateFilters(options: UserSummaryListOptions): void {
 		this._options = options;
 		this.clear();
 	}
@@ -32,7 +32,7 @@ export class UserMessageList extends MessageList {
 	protected filter(message: IMessage): boolean {
 		const { rid } = this._options;
 
-		if (!isDiscussionMessageInRoom(message, rid)) {
+		if (!MessageInRoom(message, rid)) {
 			return false;
 		}
 
@@ -41,7 +41,7 @@ export class UserMessageList extends MessageList {
 				this._options.text.split(/\s/g)
 					.map((text) => escapeRegExp(text)).join('|'),
 			);
-			if (!isDiscussionTextMatching(message, regex)) {
+			if (!isTextMatching(message, regex)) {
 				return false;
 			}
 		}

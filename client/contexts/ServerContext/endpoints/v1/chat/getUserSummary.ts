@@ -2,7 +2,7 @@ import { IRoom } from '../../../../../../definition/IRoom';
 import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi';
 import { IMessage } from '../../../../../../definition/IMessage';
 
-export type GetDiscussionsEndpoint = {
+export type GetUserSummaryEndpoint = {
 	GET: (params: {
 		roomId: IRoom['_id'];
 		text?: string;
@@ -10,6 +10,5 @@ export type GetDiscussionsEndpoint = {
 		count: number;
 	}) => {
 		messages: ObjectFromApi<IMessage>[];
-		total: number;
 	};
 };

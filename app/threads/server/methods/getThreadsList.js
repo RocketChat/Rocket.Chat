@@ -11,7 +11,6 @@ Meteor.methods({
 		if (limit > MAX_LIMIT) {
 			throw new Meteor.Error('error-not-allowed', `max limit: ${ MAX_LIMIT }`, { method: 'getThreadsList' });
 		}
-
 		if (!Meteor.userId() || !settings.get('Threads_enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'getThreadsList' });
 		}

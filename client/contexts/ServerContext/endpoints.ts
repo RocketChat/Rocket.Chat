@@ -15,6 +15,7 @@ import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-cu
 import { GetDiscussionsEndpoint as ChatGetDiscussionsEndpoint } from './endpoints/v1/chat/getDiscussions';
 import { GetThreadsListEndpoint as ChatGetThreadsListEndpoint } from './endpoints/v1/chat/getThreadsList';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
+import { GetUserSummaryEndpoint as ChatGetUserSummaryEndpoint} from './endpoints/v1/chat/getUserSummary'
 
 export type ServerEndpoints = {
 	'chat.getMessage': ChatGetMessageEndpoint;
@@ -22,7 +23,7 @@ export type ServerEndpoints = {
 	'chat.unfollowMessage': ChatUnfollowMessageEndpoint;
 	'cloud.manualRegister': CloudManualRegisterEndpoint;
 	'chat.getDiscussions': ChatGetDiscussionsEndpoint;
-	'chat.getUserSummary': ChatGetDiscussionsEndpoint
+	'chat.getUserSummary': ChatGetUserSummaryEndpoint
 	'chat.getThreadsList': ChatGetThreadsListEndpoint;
 	'emoji-custom.list': EmojiCustomListEndpoint;
 	'channels.files': ChannelsFilesEndpoint;
