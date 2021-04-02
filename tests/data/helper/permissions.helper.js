@@ -1,4 +1,4 @@
-import { api, credentials, request } from './api-data';
+import { api, credentials, request } from '../api-data';
 
 export const updatePermission = (permission, roles) => new Promise((resolve) => {
 	request.post(api('permissions.update'))

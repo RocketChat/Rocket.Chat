@@ -1,4 +1,4 @@
-import { api, credentials, request } from './api-data';
+import { api, credentials, request } from '../api-data';
 
 export const createRoom = ({ name, type, username, members = [] }) => {
 	if (!type) {

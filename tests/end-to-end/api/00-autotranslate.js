@@ -6,8 +6,7 @@ import {
 	request,
 	credentials,
 } from '../../data/api-data.js';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { sendSimpleMessage } from '../../data/helper/chat.helper';
+import { sendSimpleMessage, updatePermission, updateSetting } from '../../data/helper';
 
 describe('AutoTranslate', function() {
 	this.retries(0);

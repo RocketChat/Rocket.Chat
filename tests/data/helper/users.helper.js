@@ -1,10 +1,10 @@
-import { api, credentials, request } from './api-data';
-import { password } from './user';
+import { api, credentials, request } from '../api-data';
+import { password } from '../user';
 
 export const createUser = () =>
 	new Promise((resolve) => {
-		const username = `user.test.${Date.now()}`;
-		const email = `${username}@rocket.chat`;
+		const username = `user.test.${ Date.now() }`;
+		const email = `${ username }@rocket.chat`;
 		request
 			.post(api('users.create'))
 			.set(credentials)
@@ -42,7 +42,7 @@ export const deleteUser = (user) =>
 export const getUserByUsername = (username) =>
 	new Promise((resolve) => {
 		request
-			.get(api(`users.info?username=${username}`))
+			.get(api(`users.info?username=${ username }`))
 			.set(credentials)
 			.end((err, res) => {
 				resolve(res.body.user);
@@ -52,7 +52,7 @@ export const getUserByUsername = (username) =>
 export const getUserStatus = (userId) =>
 	new Promise((resolve) => {
 		request
-			.get(api(`users.getStatus?userId=${userId}`))
+			.get(api(`users.getStatus?userId=${ userId }`))
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
