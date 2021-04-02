@@ -212,6 +212,34 @@ settings.addGroup('FileUpload', function() {
 		});
 	});
 
+	this.section('Tardigrade Storj', function() {
+		this.add('FileUpload_TardigradeStorj_AccessGrant', '', {
+			type: 'string',
+			private: true,
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'TardigradeStorj',
+			},
+			secret: true,
+		});
+		this.add('FileUpload_TardigradeStorj_Passphrase', '', {
+			type: 'string',
+			private: true,
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'TardigradeStorj',
+			},
+			secret: true,
+		});
+		this.add('FileUpload_TardigradeStorj_Bucket', '', {
+			type: 'string',
+			enableQuery: {
+				_id: 'FileUpload_Storage_Type',
+				value: 'TardigradeStorj',
+			},
+		});
+	});
+
 	this.section('File System', function() {
 		this.add('FileUpload_FileSystemPath', '', {
 			type: 'string',
