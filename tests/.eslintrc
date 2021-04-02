@@ -1,11 +1,12 @@
 {
-	"env": {
-		"mocha": true
-	},
-	"globals": {
-		"browser": false,
-		"Cypress": false,
-		"cy": false,
-		"expect": false
-	}
+  "env": {
+    "mocha": true
+  },
+  "globals": {
+    "browser": false,
+    "Cypress": false,
+    "cy": false,
+    "expect": false,
+    "template-curly-spacing": ["error", "always"]
+  }
 }

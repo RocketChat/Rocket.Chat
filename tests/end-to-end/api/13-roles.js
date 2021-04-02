@@ -14,8 +14,11 @@ import {
 	apiRoleScopeSubscriptions,
 } from '../../data/api-data.js';
 import { password } from '../../data/user';
-import { updatePermission } from '../../data/permissions.helper';
-import { createUser, login as doLogin } from '../../data/users.helper';
+import {
+	updatePermission,
+	createUser,
+	login as doLogin,
+} from '../../data/helper';
 
 describe('[Roles]', function() {
 	this.retries(0);
@@ -24,12 +27,15 @@ describe('[Roles]', function() {
 
 	describe('GET [/roles.list]', () => {
 		it('should return all roles', (done) => {
-			request.get(api('roles.list'))
+			request
+				.get(api('roles.list'))
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('roles').and.to.be.an('array');
+					expect(res.body)
+						.to.have.property('roles')
+						.and.to.be.an('array');
 				})
 				.end(done);
 		});
@@ -37,21 +43,27 @@ describe('[Roles]', function() {
 
 	describe('GET [/roles.sync]', () => {
 		it('should return an array of roles which are updated after updatedSice date when search by "updatedSince" query parameter', (done) => {
-			request.get(api('roles.sync?updatedSince=2018-11-27T13:52:01Z'))
+			request
+				.get(api('roles.sync?updatedSince=2018-11-27T13:52:01Z'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('roles');
-					expect(res.body.roles).to.have.property('update').and.to.be.an('array');
-					expect(res.body.roles).to.have.property('remove').and.to.be.an('array');
+					expect(res.body.roles)
+						.to.have.property('update')
+						.and.to.be.an('array');
+					expect(res.body.roles)
+						.to.have.property('remove')
+						.and.to.be.an('array');
 				})
 				.end(done);
 		});
 
 		it('should return an error when updatedSince query parameter is not a valid ISODate string', (done) => {
-			request.get(api('roles.sync?updatedSince=fsafdf'))
+			request
+				.get(api('roles.sync?updatedSince=fsafdf'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -64,7 +76,8 @@ describe('[Roles]', function() {
 
 	describe('POST [/roles.create]', () => {
 		it('should create a new role with Users scope', (done) => {
-			request.post(api('roles.create'))
+			request
+				.post(api('roles.create'))
 				.set(credentials)
 				.send({
 					name: apiRoleNameUsers,
@@ -74,16 +87,29 @@ describe('[Roles]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('role._id', apiRoleNameUsers);
-					expect(res.body).to.have.nested.property('role.name', apiRoleNameUsers);
-					expect(res.body).to.have.nested.property('role.scope', apiRoleScopeUsers);
-					expect(res.body).to.have.nested.property('role.description', apiRoleDescription);
+					expect(res.body).to.have.nested.property(
+						'role._id',
+						apiRoleNameUsers,
+					);
+					expect(res.body).to.have.nested.property(
+						'role.name',
+						apiRoleNameUsers,
+					);
+					expect(res.body).to.have.nested.property(
+						'role.scope',
+						apiRoleScopeUsers,
+					);
+					expect(res.body).to.have.nested.property(
+						'role.description',
+						apiRoleDescription,
+					);
 				})
 				.end(done);
 		});
 
 		it('should create a new role with Subscriptions scope', (done) => {
-			request.post(api('roles.create'))
+			request
+				.post(api('roles.create'))
 				.set(credentials)
 				.send({
 					name: apiRoleNameSubscriptions,
@@ -94,10 +120,22 @@ describe('[Roles]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('role._id', apiRoleNameSubscriptions);
-					expect(res.body).to.have.nested.property('role.name', apiRoleNameSubscriptions);
-					expect(res.body).to.have.nested.property('role.scope', apiRoleScopeSubscriptions);
-					expect(res.body).to.have.nested.property('role.description', apiRoleDescription);
+					expect(res.body).to.have.nested.property(
+						'role._id',
+						apiRoleNameSubscriptions,
+					);
+					expect(res.body).to.have.nested.property(
+						'role.name',
+						apiRoleNameSubscriptions,
+					);
+					expect(res.body).to.have.nested.property(
+						'role.scope',
+						apiRoleScopeSubscriptions,
+					);
+					expect(res.body).to.have.nested.property(
+						'role.description',
+						apiRoleDescription,
+					);
 				})
 				.end(done);
 		});
@@ -105,7 +143,8 @@ describe('[Roles]', function() {
 
 	describe('POST [/roles.addUserToRole]', () => {
 		it('should assign a role with User scope to an user', (done) => {
-			request.post(api('roles.addUserToRole'))
+			request
+				.post(api('roles.addUserToRole'))
 				.set(credentials)
 				.send({
 					roleName: apiRoleNameUsers,
@@ -115,15 +154,25 @@ describe('[Roles]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('role._id', apiRoleNameUsers);
-					expect(res.body).to.have.nested.property('role.name', apiRoleNameUsers);
-					expect(res.body).to.have.nested.property('role.scope', apiRoleScopeUsers);
+					expect(res.body).to.have.nested.property(
+						'role._id',
+						apiRoleNameUsers,
+					);
+					expect(res.body).to.have.nested.property(
+						'role.name',
+						apiRoleNameUsers,
+					);
+					expect(res.body).to.have.nested.property(
+						'role.scope',
+						apiRoleScopeUsers,
+					);
 				})
 				.end(done);
 		});
 
 		it('should assign a role with Subscriptions scope to an user', (done) => {
-			request.post(api('roles.addUserToRole'))
+			request
+				.post(api('roles.addUserToRole'))
 				.set(credentials)
 				.send({
 					roleName: apiRoleNameSubscriptions,
@@ -134,9 +183,18 @@ describe('[Roles]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('role._id', apiRoleNameSubscriptions);
-					expect(res.body).to.have.nested.property('role.name', apiRoleNameSubscriptions);
-					expect(res.body).to.have.nested.property('role.scope', apiRoleScopeSubscriptions);
+					expect(res.body).to.have.nested.property(
+						'role._id',
+						apiRoleNameSubscriptions,
+					);
+					expect(res.body).to.have.nested.property(
+						'role.name',
+						apiRoleNameSubscriptions,
+					);
+					expect(res.body).to.have.nested.property(
+						'role.scope',
+						apiRoleScopeSubscriptions,
+					);
 				})
 				.end(done);
 		});
@@ -146,17 +204,21 @@ describe('[Roles]', function() {
 		let userCredentials;
 		before((done) => {
 			createUser().then((createdUser) => {
-				doLogin(createdUser.username, password).then((createdUserCredentials) => {
-					userCredentials = createdUserCredentials;
-					updatePermission('access-permissions', ['admin', 'user']).then(done);
-				});
+				doLogin(createdUser.username, password).then(
+					(createdUserCredentials) => {
+						userCredentials = createdUserCredentials;
+						updatePermission('access-permissions', ['admin', 'user']).then(
+							done,
+						);
+					},
+				);
 			});
 		});
 		it('should return an error when "role" query param is not provided', (done) => {
-			request.get(api('roles.getUsersInRole'))
+			request
+				.get(api('roles.getUsersInRole'))
 				.set(userCredentials)
-				.query({
-				})
+				.query({})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
@@ -167,7 +229,8 @@ describe('[Roles]', function() {
 		});
 		it('should return an error when the user does not the necessary permission', (done) => {
 			updatePermission('access-permissions', ['admin']).then(() => {
-				request.get(api('roles.getUsersInRole'))
+				request
+					.get(api('roles.getUsersInRole'))
 					.set(userCredentials)
 					.query({
 						role: 'admin',
@@ -184,7 +247,8 @@ describe('[Roles]', function() {
 		it('should return an error when the user try access rooms permissions and does not have the necessary permission', (done) => {
 			updatePermission('access-permissions', ['admin', 'user']).then(() => {
 				updatePermission('view-other-user-channels', []).then(() => {
-					request.get(api('roles.getUsersInRole'))
+					request
+						.get(api('roles.getUsersInRole'))
 						.set(userCredentials)
 						.query({
 							role: 'admin',
@@ -202,24 +266,28 @@ describe('[Roles]', function() {
 		});
 		it('should return the list of users', (done) => {
 			updatePermission('access-permissions', ['admin', 'user']).then(() => {
-				updatePermission('view-other-user-channels', ['admin', 'user']).then(() => {
-					request.get(api('roles.getUsersInRole'))
-						.set(userCredentials)
-						.query({
-							role: 'admin',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body.users).to.be.an('array');
-						})
-						.end(done);
-				});
+				updatePermission('view-other-user-channels', ['admin', 'user']).then(
+					() => {
+						request
+							.get(api('roles.getUsersInRole'))
+							.set(userCredentials)
+							.query({
+								role: 'admin',
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+								expect(res.body.users).to.be.an('array');
+							})
+							.end(done);
+					},
+				);
 			});
 		});
 		it('should return the list of users when find by room Id', (done) => {
-			request.get(api('roles.getUsersInRole'))
+			request
+				.get(api('roles.getUsersInRole'))
 				.set(userCredentials)
 				.query({
 					role: 'admin',

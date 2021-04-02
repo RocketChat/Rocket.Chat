@@ -1,10 +1,19 @@
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { updatePermission } from '../../data/permissions.helper';
-import { createIntegration, removeIntegration } from '../../data/integration.helper';
-import { createUser, login } from '../../data/users.helper';
+import {
+	getCredentials,
+	api,
+	request,
+	credentials,
+} from '../../data/api-data.js';
 import { password } from '../../data/user';
+import {
+	updatePermission,
+	createIntegration,
+	removeIntegration,
+	createUser,
+	login,
+} from '../../data/helper';
 
 describe('[Incoming Integrations]', function() {
 	this.retries(0);
@@ -26,8 +35,12 @@ describe('[Incoming Integrations]', function() {
 
 	after((done) => {
 		updatePermission('manage-incoming-integrations', ['admin'])
-			.then(() => updatePermission('manage-own-incoming-integrations', ['admin']))
-			.then(() => updatePermission('manage-own-outgoing-integrations', ['admin']))
+			.then(() =>
+				updatePermission('manage-own-incoming-integrations', ['admin']),
+			)
+			.then(() =>
+				updatePermission('manage-own-outgoing-integrations', ['admin']),
+			)
 			.then(() => updatePermission('manage-outgoing-integrations', ['admin']))
 			.then(done);
 	});
@@ -35,7 +48,8 @@ describe('[Incoming Integrations]', function() {
 	describe('[/integrations.create]', () => {
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to add an incoming integration', (done) => {
 			updatePermission('manage-incoming-integrations', []).then(() => {
-				request.post(api('integrations.create'))
+				request
+					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
 						type: 'webhook-incoming',
@@ -58,7 +72,8 @@ describe('[Incoming Integrations]', function() {
 
 		it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
 			updatePermission('manage-own-incoming-integrations', []).then(() => {
-				request.post(api('integrations.create'))
+				request
+					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
 						type: 'webhook-incoming',
@@ -80,7 +95,8 @@ describe('[Incoming Integrations]', function() {
 		});
 
 		it('should return an error when the user sends an invalid type of integration', (done) => {
-			request.post(api('integrations.create'))
+			request
+				.post(api('integrations.create'))
 				.set(credentials)
 				.send({
 					type: 'webhook-incoming-invalid',
@@ -95,46 +111,26 @@ describe('[Incoming Integrations]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Invalid integration type.');
+					expect(res.body).to.have.property(
+						'error',
+						'Invalid integration type.',
+					);
 				})
 				.end(done);
 		});
 
 		it('should add the integration successfully when the user ONLY has the permission "manage-incoming-integrations" to add an incoming integration', (done) => {
 			let integrationId;
-			updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
-				request.post(api('integrations.create'))
-					.set(credentials)
-					.send({
-						type: 'webhook-incoming',
-						name: 'Incoming test',
-						enabled: true,
-						alias: 'test',
-						username: 'rocket.cat',
-						scriptEnabled: false,
-						channel: '#general',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('integration').and.to.be.an('object');
-						integrationId = res.body.integration._id;
-					})
-					.end(() => removeIntegration(integrationId, 'incoming').then(done));
-			});
-		});
-
-		it('should add the integration successfully when the user ONLY has the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
-			updatePermission('manage-incoming-integrations', []).then(() => {
-				updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
-					request.post(api('integrations.create'))
+			updatePermission('manage-own-incoming-integrations', ['admin']).then(
+				() => {
+					request
+						.post(api('integrations.create'))
 						.set(credentials)
 						.send({
 							type: 'webhook-incoming',
-							name: 'Incoming test 2',
+							name: 'Incoming test',
 							enabled: true,
-							alias: 'test2',
+							alias: 'test',
 							username: 'rocket.cat',
 							scriptEnabled: false,
 							channel: '#general',
@@ -143,16 +139,50 @@ describe('[Incoming Integrations]', function() {
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('integration').and.to.be.an('object');
-							integration = res.body.integration;
+							expect(res.body)
+								.to.have.property('integration')
+								.and.to.be.an('object');
+							integrationId = res.body.integration._id;
 						})
-						.end(done);
-				});
+						.end(() => removeIntegration(integrationId, 'incoming').then(done));
+				},
+			);
+		});
+
+		it('should add the integration successfully when the user ONLY has the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
+			updatePermission('manage-incoming-integrations', []).then(() => {
+				updatePermission('manage-own-incoming-integrations', ['admin']).then(
+					() => {
+						request
+							.post(api('integrations.create'))
+							.set(credentials)
+							.send({
+								type: 'webhook-incoming',
+								name: 'Incoming test 2',
+								enabled: true,
+								alias: 'test2',
+								username: 'rocket.cat',
+								scriptEnabled: false,
+								channel: '#general',
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+								expect(res.body)
+									.to.have.property('integration')
+									.and.to.be.an('object');
+								integration = res.body.integration;
+							})
+							.end(done);
+					},
+				);
 			});
 		});
 
 		it('should execute the incoming integration', (done) => {
-			request.post(`/hooks/${ integration._id }/${ integration.token }`)
+			request
+				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
 					text: 'Example message',
 				})
@@ -163,7 +193,8 @@ describe('[Incoming Integrations]', function() {
 
 	describe('[/integrations.history]', () => {
 		it('should return an error when trying to get history of incoming integrations', (done) => {
-			request.get(api('integrations.history'))
+			request
+				.get(api('integrations.history'))
 				.set(credentials)
 				.query({
 					id: integration._id,
@@ -184,32 +215,40 @@ describe('[Incoming Integrations]', function() {
 				user = createdUser;
 				login(user.username, password).then((credentials) => {
 					userCredentials = credentials;
-					updatePermission('manage-incoming-integrations', ['user']).then(() => {
-						createIntegration({
-							type: 'webhook-incoming',
-							name: 'Incoming test',
-							enabled: true,
-							alias: 'test',
-							username: 'rocket.cat',
-							scriptEnabled: false,
-							channel: '#general',
-						}, userCredentials).then((integration) => {
-							integrationCreatedByAnUser = integration;
-							done();
-						});
-					});
+					updatePermission('manage-incoming-integrations', ['user']).then(
+						() => {
+							createIntegration(
+								{
+									type: 'webhook-incoming',
+									name: 'Incoming test',
+									enabled: true,
+									alias: 'test',
+									username: 'rocket.cat',
+									scriptEnabled: false,
+									channel: '#general',
+								},
+								userCredentials,
+							).then((integration) => {
+								integrationCreatedByAnUser = integration;
+								done();
+							});
+						},
+					);
 				});
 			});
 		});
 
 		it('should return the list of incoming integrations', (done) => {
-			request.get(api('integrations.list'))
+			request
+				.get(api('integrations.list'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					const integrationCreatedByAdmin = res.body.integrations.find((createdIntegration) => createdIntegration._id === integration._id);
+					const integrationCreatedByAdmin = res.body.integrations.find(
+						(createdIntegration) => createdIntegration._id === integration._id,
+					);
 					expect(integrationCreatedByAdmin).to.be.an('object');
 					expect(integrationCreatedByAdmin._id).to.be.equal(integration._id);
 					expect(res.body).to.have.property('offset');
@@ -221,21 +260,27 @@ describe('[Incoming Integrations]', function() {
 
 		it('should return the list of integrations created by the user only', (done) => {
 			updatePermission('manage-incoming-integrations', []).then(() => {
-				updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
-					request.get(api('integrations.list'))
-						.set(userCredentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							const integrationCreatedByAdmin = res.body.integrations.find((createdIntegration) => createdIntegration._id === integration._id);
-							expect(integrationCreatedByAdmin).to.be.equal(undefined);
-							expect(res.body).to.have.property('offset');
-							expect(res.body).to.have.property('items');
-							expect(res.body).to.have.property('total');
-						})
-						.end(done);
-				});
+				updatePermission('manage-own-incoming-integrations', ['user']).then(
+					() => {
+						request
+							.get(api('integrations.list'))
+							.set(userCredentials)
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('success', true);
+								const integrationCreatedByAdmin = res.body.integrations.find(
+									(createdIntegration) =>
+										createdIntegration._id === integration._id,
+								);
+								expect(integrationCreatedByAdmin).to.be.equal(undefined);
+								expect(res.body).to.have.property('offset');
+								expect(res.body).to.have.property('items');
+								expect(res.body).to.have.property('total');
+							})
+							.end(done);
+					},
+				);
 			});
 		});
 
@@ -244,7 +289,8 @@ describe('[Incoming Integrations]', function() {
 				updatePermission('manage-own-incoming-integrations', []).then(() => {
 					updatePermission('manage-outgoing-integrations', []).then(() => {
 						updatePermission('manage-outgoing-integrations', []).then(() => {
-							request.get(api('integrations.list'))
+							request
+								.get(api('integrations.list'))
 								.set(credentials)
 								.expect('Content-Type', 'application/json')
 								.expect(403)
@@ -262,20 +308,25 @@ describe('[Incoming Integrations]', function() {
 
 	describe('[/integrations.get]', () => {
 		it('should return an error when the required "integrationId" query parameters is not sent', (done) => {
-			request.get(api('integrations.get'))
+			request
+				.get(api('integrations.get'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The query parameter "integrationId" is required.');
+					expect(res.body).to.have.property(
+						'error',
+						'The query parameter "integrationId" is required.',
+					);
 				})
 				.end(done);
 		});
 
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration', (done) => {
 			updatePermission('manage-incoming-integrations', []).then(() => {
-				request.get(api(`integrations.get?integrationId=${ integration._id }`))
+				request
+					.get(api(`integrations.get?integrationId=${integration._id}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -289,7 +340,12 @@ describe('[Incoming Integrations]', function() {
 
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration created by another user', (done) => {
 			updatePermission('manage-incoming-integrations', []).then(() => {
-				request.get(api(`integrations.get?integrationId=${ integrationCreatedByAnUser._id }`))
+				request
+					.get(
+						api(
+							`integrations.get?integrationId=${integrationCreatedByAnUser._id}`,
+						),
+					)
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -303,13 +359,17 @@ describe('[Incoming Integrations]', function() {
 
 		it('should return an error when the user sends an invalid integration', (done) => {
 			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
-				request.get(api('integrations.get?integrationId=invalid'))
+				request
+					.get(api('integrations.get?integrationId=invalid'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'The integration does not exists.');
+						expect(res.body).to.have.property(
+							'error',
+							'The integration does not exists.',
+						);
 					})
 					.end(done);
 			});
@@ -317,16 +377,25 @@ describe('[Incoming Integrations]', function() {
 
 		it('should return the integration successfully when the user is able to see only your own integrations', (done) => {
 			updatePermission('manage-incoming-integrations', [])
-				.then(() => updatePermission('manage-own-incoming-integrations', ['user']))
+				.then(() =>
+					updatePermission('manage-own-incoming-integrations', ['user']),
+				)
 				.then(() => {
-					request.get(api(`integrations.get?integrationId=${ integrationCreatedByAnUser._id }`))
+					request
+						.get(
+							api(
+								`integrations.get?integrationId=${integrationCreatedByAnUser._id}`,
+							),
+						)
 						.set(userCredentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('integration');
-							expect(res.body.integration._id).to.be.equal(integrationCreatedByAnUser._id);
+							expect(res.body.integration._id).to.be.equal(
+								integrationCreatedByAnUser._id,
+							);
 						})
 						.end(done);
 				});
@@ -334,7 +403,8 @@ describe('[Incoming Integrations]', function() {
 
 		it('should return the integration successfully', (done) => {
 			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
-				request.get(api(`integrations.get?integrationId=${ integration._id }`))
+				request
+					.get(api(`integrations.get?integrationId=${integration._id}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -350,7 +420,8 @@ describe('[Incoming Integrations]', function() {
 
 	describe('[/integrations.update]', () => {
 		it('should update an integration by id and return the new data', (done) => {
-			request.put(api('integrations.update'))
+			request
+				.put(api('integrations.update'))
 				.set(credentials)
 				.send({
 					type: 'webhook-incoming',
@@ -368,14 +439,17 @@ describe('[Incoming Integrations]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('integration');
 					expect(res.body.integration._id).to.be.equal(integration._id);
-					expect(res.body.integration.name).to.be.equal('Incoming test updated');
+					expect(res.body.integration.name).to.be.equal(
+						'Incoming test updated',
+					);
 					expect(res.body.integration.alias).to.be.equal('test updated');
 				})
 				.end(done);
 		});
 
 		it('should have integration updated on subsequent gets', (done) => {
-			request.get(api(`integrations.get?integrationId=${ integration._id }`))
+			request
+				.get(api(`integrations.get?integrationId=${integration._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -383,7 +457,9 @@ describe('[Incoming Integrations]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('integration');
 					expect(res.body.integration._id).to.be.equal(integration._id);
-					expect(res.body.integration.name).to.be.equal('Incoming test updated');
+					expect(res.body.integration.name).to.be.equal(
+						'Incoming test updated',
+					);
 					expect(res.body.integration.alias).to.be.equal('test updated');
 				})
 				.end(done);
@@ -393,7 +469,8 @@ describe('[Incoming Integrations]', function() {
 	describe('[/integrations.remove]', () => {
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to remove an incoming integration', (done) => {
 			updatePermission('manage-incoming-integrations', []).then(() => {
-				request.post(api('integrations.remove'))
+				request
+					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
 						integrationId: integration._id,
@@ -410,7 +487,8 @@ describe('[Incoming Integrations]', function() {
 
 		it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to remove an incoming integration', (done) => {
 			updatePermission('manage-own-incoming-integrations', []).then(() => {
-				request.post(api('integrations.remove'))
+				request
+					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
 						integrationId: integration._id,
@@ -426,26 +504,33 @@ describe('[Incoming Integrations]', function() {
 		});
 
 		it('should return an error when the user sends an invalid type of integration', (done) => {
-			updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
-				request.post(api('integrations.remove'))
-					.set(credentials)
-					.send({
-						integrationId: integration._id,
-						type: 'invalid-type',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'Invalid integration type.');
-					})
-					.end(done);
-			});
+			updatePermission('manage-own-incoming-integrations', ['admin']).then(
+				() => {
+					request
+						.post(api('integrations.remove'))
+						.set(credentials)
+						.send({
+							integrationId: integration._id,
+							type: 'invalid-type',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property(
+								'error',
+								'Invalid integration type.',
+							);
+						})
+						.end(done);
+				},
+			);
 		});
 
 		it('should remove the integration successfully when the user at least one of the necessary permission to remove an incoming integration', (done) => {
 			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
-				request.post(api('integrations.remove'))
+				request
+					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
 						integrationId: integration._id,
@@ -461,20 +546,23 @@ describe('[Incoming Integrations]', function() {
 		});
 
 		it('the normal user should remove the integration successfully when the user have the "manage-own-incoming-integrations" to remove an incoming integration', (done) => {
-			updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
-				request.post(api('integrations.remove'))
-					.set(userCredentials)
-					.send({
-						integrationId: integrationCreatedByAnUser._id,
-						type: integrationCreatedByAnUser.type,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
-			});
+			updatePermission('manage-own-incoming-integrations', ['user']).then(
+				() => {
+					request
+						.post(api('integrations.remove'))
+						.set(userCredentials)
+						.send({
+							integrationId: integrationCreatedByAnUser._id,
+							type: integrationCreatedByAnUser.type,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				},
+			);
 		});
 	});
 });

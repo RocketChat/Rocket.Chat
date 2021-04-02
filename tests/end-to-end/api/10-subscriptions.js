@@ -1,7 +1,12 @@
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { createRoom } from '../../data/rooms.helper';
+import {
+	getCredentials,
+	api,
+	request,
+	credentials,
+} from '../../data/api-data.js';
+import { createRoom } from '../../data/helper';
 
 describe('[Subscriptions]', function() {
 	this.retries(0);
@@ -9,7 +14,8 @@ describe('[Subscriptions]', function() {
 	before((done) => getCredentials(done));
 
 	it('/subscriptions.get', (done) => {
-		request.get(api('subscriptions.get'))
+		request
+			.get(api('subscriptions.get'))
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -22,7 +28,8 @@ describe('[Subscriptions]', function() {
 	});
 
 	it('/subscriptions.get?updatedSince', (done) => {
-		request.get(api('subscriptions.get'))
+		request
+			.get(api('subscriptions.get'))
 			.set(credentials)
 			.query({
 				updatedSince: new Date(),
@@ -30,8 +37,12 @@ describe('[Subscriptions]', function() {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('update').that.have.lengthOf(0);
-				expect(res.body).to.have.property('remove').that.have.lengthOf(0);
+				expect(res.body)
+					.to.have.property('update')
+					.that.have.lengthOf(0);
+				expect(res.body)
+					.to.have.property('remove')
+					.that.have.lengthOf(0);
 			})
 			.end(done);
 	});
@@ -39,10 +50,11 @@ describe('[Subscriptions]', function() {
 	it('/subscriptions.getOne:', () => {
 		let testChannel;
 		it('create an channel', (done) => {
-			request.post(api('channels.create'))
+			request
+				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.test.${ Date.now() }`,
+					name: `channel.test.${Date.now()}`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -50,7 +62,8 @@ describe('[Subscriptions]', function() {
 				});
 		});
 		it('subscriptions.getOne', (done) => {
-			request.get(api('subscriptions.getOne'))
+			request
+				.get(api('subscriptions.getOne'))
 				.set(credentials)
 				.query({
 					roomId: testChannel._id,
@@ -59,7 +72,9 @@ describe('[Subscriptions]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('subscription').and.to.be.an('object');
+					expect(res.body)
+						.to.have.property('subscription')
+						.and.to.be.an('object');
 				})
 				.end(done);
 		});
@@ -68,33 +83,35 @@ describe('[Subscriptions]', function() {
 	describe('[/subscriptions.read]', () => {
 		let testChannel;
 		it('create a channel', (done) => {
-			createRoom({ type: 'c', name: `channel.test.${ Date.now() }` })
-				.end((err, res) => {
+			createRoom({ type: 'c', name: `channel.test.${Date.now()}` }).end(
+				(err, res) => {
 					testChannel = res.body.channel;
 					done();
-				});
+				},
+			);
 		});
 
 		let testGroup;
 		it('create a group', (done) => {
-			createRoom({ type: 'p', name: `channel.test.${ Date.now() }` })
-				.end((err, res) => {
+			createRoom({ type: 'p', name: `channel.test.${Date.now()}` }).end(
+				(err, res) => {
 					testGroup = res.body.group;
 					done();
-				});
+				},
+			);
 		});
 
 		let testDM;
 		it('create a DM', (done) => {
-			createRoom({ type: 'd', username: 'rocket.cat' })
-				.end((err, res) => {
-					testDM = res.body.room;
-					done();
-				});
+			createRoom({ type: 'd', username: 'rocket.cat' }).end((err, res) => {
+				testDM = res.body.room;
+				done();
+			});
 		});
 
 		it('should mark public channels as read', (done) => {
-			request.post(api('subscriptions.read'))
+			request
+				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
 					rid: testChannel._id,
@@ -107,7 +124,8 @@ describe('[Subscriptions]', function() {
 		});
 
 		it('should mark groups as read', (done) => {
-			request.post(api('subscriptions.read'))
+			request
+				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
 					rid: testGroup._id,
@@ -120,7 +138,8 @@ describe('[Subscriptions]', function() {
 		});
 
 		it('should mark DMs as read', (done) => {
-			request.post(api('subscriptions.read'))
+			request
+				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
 					rid: testDM._id,
@@ -133,7 +152,8 @@ describe('[Subscriptions]', function() {
 		});
 
 		it('should fail on mark inexistent public channel as read', (done) => {
-			request.post(api('subscriptions.read'))
+			request
+				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
 					rid: 'foobar123-somechannel',
@@ -147,7 +167,8 @@ describe('[Subscriptions]', function() {
 		});
 
 		it('should fail on mark inexistent group as read', (done) => {
-			request.post(api('subscriptions.read'))
+			request
+				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
 					rid: 'foobar123-somegroup',
@@ -161,7 +182,8 @@ describe('[Subscriptions]', function() {
 		});
 
 		it('should fail on mark inexistent DM as read', (done) => {
-			request.post(api('subscriptions.read'))
+			request
+				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
 					rid: 'foobar123-somedm',
@@ -175,7 +197,8 @@ describe('[Subscriptions]', function() {
 		});
 
 		it('should fail on invalid params', (done) => {
-			request.post(api('subscriptions.read'))
+			request
+				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
 					rid: 12345,
@@ -189,7 +212,8 @@ describe('[Subscriptions]', function() {
 		});
 
 		it('should fail on empty params', (done) => {
-			request.post(api('subscriptions.read'))
+			request
+				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({})
 				.expect(400)
@@ -204,10 +228,11 @@ describe('[Subscriptions]', function() {
 	describe('[/subscriptions.unread]', () => {
 		let testChannel;
 		it('create an channel', (done) => {
-			request.post(api('channels.create'))
+			request
+				.post(api('channels.create'))
 				.set(credentials)
 				.send({
-					name: `channel.test.${ Date.now() }`,
+					name: `channel.test.${Date.now()}`,
 				})
 				.end((err, res) => {
 					testChannel = res.body.channel;
@@ -215,7 +240,8 @@ describe('[Subscriptions]', function() {
 				});
 		});
 		it('should fail when there are no messages on an channel', (done) => {
-			request.post(api('subscriptions.unread'))
+			request
+				.post(api('subscriptions.unread'))
 				.set(credentials)
 				.send({
 					roomId: testChannel._id,
@@ -224,12 +250,16 @@ describe('[Subscriptions]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
-					expect(res.body).to.have.property('errorType', 'error-no-message-for-unread');
+					expect(res.body).to.have.property(
+						'errorType',
+						'error-no-message-for-unread',
+					);
 				})
 				.end(done);
 		});
 		it('sending message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -241,12 +271,15 @@ describe('[Subscriptions]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('message').and.to.be.an('object');
+					expect(res.body)
+						.to.have.property('message')
+						.and.to.be.an('object');
 				})
 				.end(done);
 		});
 		it('should return success: true when make as unread successfully', (done) => {
-			request.post(api('subscriptions.unread'))
+			request
+				.post(api('subscriptions.unread'))
 				.set(credentials)
 				.send({
 					roomId: testChannel._id,
@@ -259,7 +292,8 @@ describe('[Subscriptions]', function() {
 		});
 
 		it('should fail on invalid params', (done) => {
-			request.post(api('subscriptions.unread'))
+			request
+				.post(api('subscriptions.unread'))
 				.set(credentials)
 				.send({
 					roomId: 12345,
@@ -273,7 +307,8 @@ describe('[Subscriptions]', function() {
 		});
 
 		it('should fail on empty params', (done) => {
-			request.post(api('subscriptions.unread'))
+			request
+				.post(api('subscriptions.unread'))
 				.set(credentials)
 				.send({})
 				.expect(400)

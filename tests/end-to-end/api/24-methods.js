@@ -1,8 +1,13 @@
 import { expect } from 'chai';
 
-import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
-import { updatePermission } from '../../data/permissions.helper.js';
-
+import {
+	getCredentials,
+	request,
+	methodCall,
+	api,
+	credentials,
+} from '../../data/api-data.js';
+import { updatePermission } from '../../data/helper';
 
 describe('Meteor.methods', function() {
 	this.retries(0);
@@ -16,8 +21,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -36,7 +42,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -54,7 +61,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message into thread', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -72,7 +80,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('getThreadMessages'))
+			request
+				.post(methodCall('getThreadMessages'))
 				.send({
 					message: JSON.stringify({
 						method: 'getThreadMessages',
@@ -89,7 +98,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return message thread', (done) => {
-			request.post(methodCall('getThreadMessages'))
+			request
+				.post(methodCall('getThreadMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -101,10 +111,14 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('array');
 					expect(data.result.length).to.equal(2);
 				})
 				.end(done);
@@ -119,8 +133,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -139,7 +154,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -157,7 +173,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send another sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -175,7 +192,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('getMessages'))
+			request
+				.post(methodCall('getMessages'))
 				.send({
 					message: JSON.stringify({
 						method: 'getMessages',
@@ -192,7 +210,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if msgIds not specified', (done) => {
-			request.post(methodCall('getMessages'))
+			request
+				.post(methodCall('getMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -204,10 +223,14 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data)
+						.to.have.a.property('error')
+						.that.is.an('object');
 					expect(data.error).to.have.a.property('sanitizedError');
 					expect(data.error.sanitizedError).to.have.property('error', 400);
 				})
@@ -215,7 +238,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return the first message', (done) => {
-			request.post(methodCall('getMessages'))
+			request
+				.post(methodCall('getMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -227,17 +251,22 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('array');
 					expect(data.result.length).to.equal(1);
 				})
 				.end(done);
 		});
 
 		it('should return both messages', (done) => {
-			request.post(methodCall('getMessages'))
+			request
+				.post(methodCall('getMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -249,10 +278,14 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('array');
 					expect(data.result.length).to.equal(2);
 				})
 				.end(done);
@@ -267,8 +300,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -287,7 +321,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -305,7 +340,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send another sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -323,7 +359,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.send({
 					message: JSON.stringify({
 						method: 'loadHistory',
@@ -340,7 +377,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if roomId not specified', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -352,10 +390,14 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data)
+						.to.have.a.property('error')
+						.that.is.an('object');
 					expect(data.error).to.have.a.property('sanitizedError');
 					expect(data.error.sanitizedError).to.have.property('error', 400);
 				})
@@ -363,7 +405,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return all messages for the specified room', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -375,18 +418,25 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('object');
+					expect(data.result)
+						.to.have.a.property('messages')
+						.that.is.an('array');
 					expect(data.result.messages.length).to.equal(2);
 				})
 				.end(done);
 		});
 
 		it('should return only the first message', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -398,18 +448,25 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('object');
+					expect(data.result)
+						.to.have.a.property('messages')
+						.that.is.an('array');
 					expect(data.result.messages.length).to.equal(1);
 				})
 				.end(done);
 		});
 
 		it('should return only one message when limit = 1', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -421,18 +478,25 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('object');
+					expect(data.result)
+						.to.have.a.property('messages')
+						.that.is.an('array');
 					expect(data.result.messages.length).to.equal(1);
 				})
 				.end(done);
 		});
 
 		it('should return the messages since the last one', (done) => {
-			request.post(methodCall('loadHistory'))
+			request
+				.post(methodCall('loadHistory'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -444,11 +508,17 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('object');
+					expect(data.result)
+						.to.have.a.property('messages')
+						.that.is.an('array');
 					expect(data.result.messages.length).to.equal(2);
 				})
 				.end(done);
@@ -463,8 +533,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -483,7 +554,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -501,7 +573,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send another sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -518,7 +591,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('loadNextMessages'))
+			request
+				.post(methodCall('loadNextMessages'))
 				.send({
 					message: JSON.stringify({
 						method: 'loadNextMessages',
@@ -535,7 +609,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if roomId not specified', (done) => {
-			request.post(methodCall('loadNextMessages'))
+			request
+				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -547,10 +622,14 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data)
+						.to.have.a.property('error')
+						.that.is.an('object');
 					expect(data.error).to.have.a.property('sanitizedError');
 					expect(data.error.sanitizedError).to.have.property('error', 400);
 				})
@@ -558,7 +637,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return all messages for the specified room', (done) => {
-			request.post(methodCall('loadNextMessages'))
+			request
+				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -570,18 +650,25 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('object');
+					expect(data.result)
+						.to.have.a.property('messages')
+						.that.is.an('array');
 					expect(data.result.messages.length).to.equal(2);
 				})
 				.end(done);
 		});
 
 		it('should return only the latest message', (done) => {
-			request.post(methodCall('loadNextMessages'))
+			request
+				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -593,18 +680,25 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('object');
+					expect(data.result)
+						.to.have.a.property('messages')
+						.that.is.an('array');
 					expect(data.result.messages.length).to.equal(1);
 				})
 				.end(done);
 		});
 
 		it('should return only one message when limit = 1', (done) => {
-			request.post(methodCall('loadNextMessages'))
+			request
+				.post(methodCall('loadNextMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -616,11 +710,17 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('messages').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('object');
+					expect(data.result)
+						.to.have.a.property('messages')
+						.that.is.an('array');
 					expect(data.result.messages.length).to.equal(1);
 				})
 				.end(done);
@@ -634,8 +734,9 @@ describe('Meteor.methods', function() {
 		let channelName = false;
 
 		before('create room', (done) => {
-			channelName = `methods-test-channel-${ Date.now() }`;
-			request.post(api('groups.create'))
+			channelName = `methods-test-channel-${Date.now()}`;
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -654,9 +755,10 @@ describe('Meteor.methods', function() {
 		});
 
 		before('create test user', (done) => {
-			const username = `user.test.${ Date.now() }`;
-			const email = `${ username }@rocket.chat`;
-			request.post(api('users.create'))
+			const username = `user.test.${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+			request
+				.post(api('users.create'))
 				.set(credentials)
 				.send({ email, name: username, username, password: username })
 				.end((err, res) => {
@@ -666,7 +768,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('add user to room', (done) => {
-			request.post(api('groups.invite'))
+			request
+				.post(api('groups.invite'))
 				.set(credentials)
 				.send({
 					roomId: rid,
@@ -678,7 +781,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('getUsersOfRoom'))
+			request
+				.post(methodCall('getUsersOfRoom'))
 				.send({
 					message: JSON.stringify({
 						method: 'getUsersOfRoom',
@@ -695,7 +799,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if roomId not specified', (done) => {
-			request.post(methodCall('getUsersOfRoom'))
+			request
+				.post(methodCall('getUsersOfRoom'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -707,10 +812,14 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data)
+						.to.have.a.property('error')
+						.that.is.an('object');
 					expect(data.error).to.have.a.property('sanitizedError');
 					expect(data.error.sanitizedError).to.have.property('error', 400);
 				})
@@ -718,7 +827,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return the users for the specified room', (done) => {
-			request.post(methodCall('getUsersOfRoom'))
+			request
+				.post(methodCall('getUsersOfRoom'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -730,10 +840,14 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('object');
 					expect(data.result).to.have.a.property('total', 2);
 				})
 				.end(done);
@@ -742,7 +856,8 @@ describe('Meteor.methods', function() {
 
 	describe('[@getUserRoles]', () => {
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('getUserRoles'))
+			request
+				.post(methodCall('getUserRoles'))
 				.send({
 					message: JSON.stringify({
 						method: 'getUserRoles',
@@ -759,7 +874,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return the roles for the current user', (done) => {
-			request.post(methodCall('getUserRoles'))
+			request
+				.post(methodCall('getUserRoles'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -771,10 +887,14 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('array');
 				})
 				.end(done);
 		});
@@ -782,7 +902,8 @@ describe('Meteor.methods', function() {
 
 	describe('[@listCustomUserStatus]', () => {
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('listCustomUserStatus'))
+			request
+				.post(methodCall('listCustomUserStatus'))
 				.send({
 					message: JSON.stringify({
 						method: 'listCustomUserStatus',
@@ -799,7 +920,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return custom status for the current user', (done) => {
-			request.post(methodCall('listCustomUserStatus'))
+			request
+				.post(methodCall('listCustomUserStatus'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -811,10 +933,14 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('array');
 				})
 				.end(done);
 		});
@@ -826,7 +952,8 @@ describe('Meteor.methods', function() {
 		};
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('permissions:get'))
+			request
+				.post(methodCall('permissions:get'))
 				.send({
 					message: JSON.stringify({
 						method: 'permissions/get',
@@ -843,7 +970,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return all permissions', (done) => {
-			request.post(methodCall('permissions:get'))
+			request
+				.post(methodCall('permissions:get'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -855,17 +983,22 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('array');
 					expect(data.result.length).to.be.above(1);
 				})
 				.end(done);
 		});
 
 		it('should return all permissions after the given date', (done) => {
-			request.post(methodCall('permissions:get'))
+			request
+				.post(methodCall('permissions:get'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -877,11 +1010,17 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('update').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('object');
+					expect(data.result)
+						.to.have.a.property('update')
+						.that.is.an('array');
 				})
 				.end(done);
 		});
@@ -894,10 +1033,11 @@ describe('Meteor.methods', function() {
 		};
 		let postMessageDate = false;
 
-		const channelName = `methods-test-channel-${ Date.now() }`;
+		const channelName = `methods-test-channel-${Date.now()}`;
 
 		before('create test group', (done) => {
-			request.post(api('groups.create'))
+			request
+				.post(api('groups.create'))
 				.set(credentials)
 				.send({
 					name: channelName,
@@ -916,7 +1056,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -934,7 +1075,8 @@ describe('Meteor.methods', function() {
 		});
 
 		before('send another sample message', (done) => {
-			request.post(api('chat.sendMessage'))
+			request
+				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
@@ -951,7 +1093,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.send({
 					message: JSON.stringify({
 						method: 'loadMissedMessages',
@@ -968,7 +1111,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return an error if the rid param is empty', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -980,13 +1124,16 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.include('error-invalid-room');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.include('error-invalid-room');
 				})
 				.end(done);
 		});
 
 		it('should return an error if the start param is missing', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -998,13 +1145,16 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.include('Match error');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.include('Match error');
 				})
 				.end(done);
 		});
 
 		it('should return and empty list if using current time', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1016,17 +1166,22 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.a('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.a('array');
 					expect(data.result.length).to.be.equal(0);
 				})
 				.end(done);
 		});
 
 		it('should return two messages if using a time from before the first msg was sent', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1038,17 +1193,22 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.a('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.a('array');
 					expect(data.result.length).to.be.equal(2);
 				})
 				.end(done);
 		});
 
 		it('should return a single message if using a time from in between the messages', (done) => {
-			request.post(methodCall('loadMissedMessages'))
+			request
+				.post(methodCall('loadMissedMessages'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1060,10 +1220,14 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.a('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.a('array');
 					expect(data.result.length).to.be.equal(1);
 				})
 				.end(done);
@@ -1076,7 +1240,8 @@ describe('Meteor.methods', function() {
 		};
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('public-settings:get'))
+			request
+				.post(methodCall('public-settings:get'))
 				.send({
 					message: JSON.stringify({
 						method: 'public-settings/get',
@@ -1093,7 +1258,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return the list of public settings', (done) => {
-			request.post(methodCall('public-settings:get'))
+			request
+				.post(methodCall('public-settings:get'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1105,10 +1271,14 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('object');
 				})
 				.end(done);
 		});
@@ -1120,7 +1290,8 @@ describe('Meteor.methods', function() {
 		};
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('private-settings:get'))
+			request
+				.post(methodCall('private-settings:get'))
 				.send({
 					message: JSON.stringify({
 						method: 'private-settings/get',
@@ -1141,7 +1312,8 @@ describe('Meteor.methods', function() {
 				.then(updatePermission('edit-privileged-setting', []))
 				.then(updatePermission('manage-selected-settings', []))
 				.then(() => {
-					request.post(methodCall('private-settings:get'))
+					request
+						.post(methodCall('private-settings:get'))
 						.set(credentials)
 						.send({
 							message: JSON.stringify({
@@ -1153,10 +1325,14 @@ describe('Meteor.methods', function() {
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
+							expect(res.body)
+								.to.have.a.property('message')
+								.that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('result').that.is.an('array');
+							expect(data)
+								.to.have.a.property('result')
+								.that.is.an('array');
 							expect(data.result.length).to.be.equal(0);
 						})
 						.end(done);
@@ -1165,7 +1341,8 @@ describe('Meteor.methods', function() {
 
 		it('should return properties when user has any related permissions', (done) => {
 			updatePermission('view-privileged-setting', ['admin']).then(() => {
-				request.post(methodCall('private-settings:get'))
+				request
+					.post(methodCall('private-settings:get'))
 					.set(credentials)
 					.send({
 						message: JSON.stringify({
@@ -1177,11 +1354,17 @@ describe('Meteor.methods', function() {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
+						expect(res.body)
+							.to.have.a.property('message')
+							.that.is.a('string');
 
 						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('result').that.is.an('object');
-						expect(data.result).to.have.a.property('update').that.is.an('array');
+						expect(data)
+							.to.have.a.property('result')
+							.that.is.an('object');
+						expect(data.result)
+							.to.have.a.property('update')
+							.that.is.an('array');
 						expect(data.result.update.length).to.not.equal(0);
 					})
 					.end(done);
@@ -1193,7 +1376,8 @@ describe('Meteor.methods', function() {
 				.then(updatePermission('edit-privileged-setting', ['admin']))
 				.then(updatePermission('manage-selected-settings', ['admin']))
 				.then(() => {
-					request.post(methodCall('private-settings:get'))
+					request
+						.post(methodCall('private-settings:get'))
 						.set(credentials)
 						.send({
 							message: JSON.stringify({
@@ -1205,11 +1389,17 @@ describe('Meteor.methods', function() {
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.a.property('success', true);
-							expect(res.body).to.have.a.property('message').that.is.a('string');
+							expect(res.body)
+								.to.have.a.property('message')
+								.that.is.a('string');
 
 							const data = JSON.parse(res.body.message);
-							expect(data).to.have.a.property('result').that.is.an('object');
-							expect(data.result).to.have.a.property('update').that.is.an('array');
+							expect(data)
+								.to.have.a.property('result')
+								.that.is.an('object');
+							expect(data.result)
+								.to.have.a.property('update')
+								.that.is.an('array');
 							expect(data.result.update.length).to.not.equal(0);
 						})
 						.end(done);
@@ -1223,7 +1413,8 @@ describe('Meteor.methods', function() {
 		};
 
 		it('should fail if not logged in', (done) => {
-			request.post(methodCall('subscriptions:get'))
+			request
+				.post(methodCall('subscriptions:get'))
 				.send({
 					message: JSON.stringify({
 						method: 'subscriptions/get',
@@ -1240,7 +1431,8 @@ describe('Meteor.methods', function() {
 		});
 
 		it('should return all subscriptions', (done) => {
-			request.post(methodCall('subscriptions:get'))
+			request
+				.post(methodCall('subscriptions:get'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1252,17 +1444,22 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('array');
 					expect(data.result.length).to.be.above(1);
 				})
 				.end(done);
 		});
 
 		it('should return all subscriptions after the given date', (done) => {
-			request.post(methodCall('subscriptions:get'))
+			request
+				.post(methodCall('subscriptions:get'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
@@ -1274,11 +1471,17 @@ describe('Meteor.methods', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+					expect(res.body)
+						.to.have.a.property('message')
+						.that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('update').that.is.an('array');
+					expect(data)
+						.to.have.a.property('result')
+						.that.is.an('object');
+					expect(data.result)
+						.to.have.a.property('update')
+						.that.is.an('array');
 				})
 				.end(done);
 		});
