@@ -23,7 +23,9 @@ export function messageContainsHighlight(message, highlights) {
 	});
 }
 
-export function getMentions({ mentions, u: { _id: senderId } }) {
+export function getMentions(message) {
+	const { mentions, u: { _id: senderId } } = message;
+
 	if (!mentions) {
 		return {
 			toAll: false,
@@ -34,9 +36,19 @@ export function getMentions({ mentions, u: { _id: senderId } }) {
 
 	const toAll = mentions.some(({ _id }) => _id === 'all');
 	const toHere = mentions.some(({ _id }) => _id === 'here');
-	const mentionIds = mentions
+
+	const userMentions = mentions.filter((mention) => !mention.mentionType || mention.mentionType === 'user');
+	const otherMentions = mentions.filter((mention) => mention?.mentionType !== 'user');
+
+	const filteredMentions = userMentions
 		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
 		.map(({ _id }) => _id);
+
+	const mentionIds = callbacks.run('beforeGetMentions', filteredMentions, {
+		userMentions,
+		otherMentions,
+		message,
+	});
 
 	return {
 		toAll,
