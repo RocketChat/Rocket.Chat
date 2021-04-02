@@ -5,7 +5,7 @@ import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useUserRoom } from '../../../../../contexts/UserContext';
-import { useMethod } from '../../../../../contexts/ServerContext';
+import { useMethod, useEndpoint } from '../../../../../contexts/ServerContext';
 import DeleteChannelWarning from '../../../../../components/DeleteChannelWarning';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
@@ -198,6 +198,7 @@ const RoomInfoWithData = ({
 	openEditing,
 	onClickBack,
 	onEnterRoom,
+	resetState,
 }) => {
 	const onClickClose = useTabBarClose();
 	const t = useTranslation();
@@ -219,7 +220,7 @@ const RoomInfoWithData = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
-	const deleteRoom = useMethod('eraseRoom');
+	const deleteRoom = useEndpoint('POST', room.t === 'c' ? 'channels.delete' : 'groups.delete');
 	const hideRoom = useMethod('hideRoom');
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
@@ -242,8 +243,10 @@ const RoomInfoWithData = ({
 	const handleDelete = useMutableCallback(() => {
 		const onConfirm = async () => {
 			try {
-				await deleteRoom(rid);
-				router.push({});
+				resetState && resetState({});
+				await deleteRoom({ roomId: rid });
+				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
+				!resetState && router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
