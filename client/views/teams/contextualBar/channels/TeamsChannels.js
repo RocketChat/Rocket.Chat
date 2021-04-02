@@ -153,7 +153,13 @@ const TeamsChannels = ({ teamId }) => {
 	});
 
 	if (state.tab === 'RoomInfo') {
-		return <RoomInfo rid={state.rid} onClickClose={onClickClose} onClickBack={handleBack} onEnterRoom={goToRoom} />;
+		return <RoomInfo
+			rid={state.rid}
+			onClickClose={onClickClose}
+			onClickBack={handleBack}
+			onEnterRoom={goToRoom}
+			resetState={setState}
+		/>;
 	}
 
 	return (
