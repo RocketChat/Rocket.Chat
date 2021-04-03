@@ -52,7 +52,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 			{useMemo(() => <Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput error={errors && errors.name} flexGrow={1} value={name} onChange={handleName}/>
+					<TextInput error={errors && errors.name} type='text' pattern='[A-Za-z ]+[ A-Za-z]+' placeholder='Full Name e.g(Michael Jackson)' flexGrow={1} value={name} onChange={handleName}/>
 				</Field.Row>
 				{errors && errors.name && <Field.Error>
 					{errors.name}
