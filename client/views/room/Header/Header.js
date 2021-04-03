@@ -119,9 +119,13 @@ const ParentTeam = ({ room }) => {
 const DirectRoomHeader = ({ room }) => {
 	const userId = useUserId();
 	const directUserId = room.uids.filter((uid) => uid !== userId).shift();
-	const directUserData = useUserData(directUserId);
+	const directUserQuery = useMemo(() => ({ userId: directUserId }), [directUserId]);
 
-	return <RoomHeader room={room} topic={directUserData?.statusText} />;
+	const directUserData = useUserData(directUserId);
+	const { value: offlineDirectUserData } = useEndpointData('users.info', directUserData?.statusText === undefined ? directUserQuery : null);
+	const roomTopic = directUserData?.statusText || offlineDirectUserData?.user?.statusText;
+
+	return <RoomHeader room={room} topic={roomTopic} />;
 };
 
 const RoomHeader = ({ room, topic }) => {
