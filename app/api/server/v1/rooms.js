@@ -111,6 +111,10 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 
 		const file = files[0];
 
+		if (file.filename === '..') {
+			return API.v1.failure('Invalid filename');
+		}
+
 		const details = {
 			name: file.filename,
 			size: file.fileBuffer.length,
