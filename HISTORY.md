@@ -1,319 +1,12 @@
 
-# 3.13.0 (Under Release Candidate Process)
-
-## 3.13.0-rc.7
-`2021-04-03  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix Members List Icon ([#21433](https://github.com/RocketChat/Rocket.Chat/pull/21433))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-
-## 3.13.0-rc.6
-`2021-04-02  ·  5 🔍  ·  5 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- EE Team Mentions ([#21418](https://github.com/RocketChat/Rocket.Chat/pull/21418))
-
-- regression: Directory - teams tab search ([#21419](https://github.com/RocketChat/Rocket.Chat/pull/21419))
-
-- Regression: Error clicking on non joined channels on team channel list ([#21422](https://github.com/RocketChat/Rocket.Chat/pull/21422))
-
-- Regression: header title tag style ([#21415](https://github.com/RocketChat/Rocket.Chat/pull/21415))
-
-  ![image](https://user-images.githubusercontent.com/27704687/113326208-bebf9e00-92ef-11eb-97f7-91ae978fc400.png)
-
-- Regression: rooms breaking after deleting a room from a team ([#21421](https://github.com/RocketChat/Rocket.Chat/pull/21421))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@dougfabris](https://github.com/dougfabris)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@ggazzo](https://github.com/ggazzo)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.13.0-rc.5
-`2021-04-01  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: General improvement to Teams ([#21402](https://github.com/RocketChat/Rocket.Chat/pull/21402))
-
-- Regression: Headers icon breaking DMs ([#21412](https://github.com/RocketChat/Rocket.Chat/pull/21412))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@dougfabris](https://github.com/dougfabris)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.13.0-rc.4
-`2021-04-01  ·  4 🐛  ·  22 🔍  ·  14 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- "Taken At" and "Average of Response Time" fields not rendering properly on Room Information panel ([#21365](https://github.com/RocketChat/Rocket.Chat/pull/21365))
-
-- Inactivity Time field displaying wrong information ([#21363](https://github.com/RocketChat/Rocket.Chat/pull/21363))
-
-- Incorrect time format of the Queue Time field on the room information page ([#21394](https://github.com/RocketChat/Rocket.Chat/pull/21394))
-
-- Replace wrong field description on Room Information panel ([#21395](https://github.com/RocketChat/Rocket.Chat/pull/21395))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Add call to eraseRoom method ([#21392](https://github.com/RocketChat/Rocket.Chat/pull/21392))
-
-  - Replace `removeById` by `eraseRoom` method's call (which not only deletes the room, but also erases its subscriptions and triggers some apps-engine events).
-
-- Regression: Add isLastOwner property on teams.listRoomsOfUser endpoint ([#21323](https://github.com/RocketChat/Rocket.Chat/pull/21323))
-
-- Regression: Add scope to permission checks in Team's endpoints ([#21369](https://github.com/RocketChat/Rocket.Chat/pull/21369))
-
-  - Include scope (team's main room ID) in the permission checks;
-   - Remove the `teamName` parameter from the `members`, `addMembers`, `updateMember` and `removeMembers` methods (since `teamId` will always be defined).
-
-- Regression: Change name-error description ([#21385](https://github.com/RocketChat/Rocket.Chat/pull/21385))
-
-- Regression: Contact Chat History component not visible ([#21316](https://github.com/RocketChat/Rocket.Chat/pull/21316))
-
-- Regression: Delete team member from related team's rooms ([#21401](https://github.com/RocketChat/Rocket.Chat/pull/21401))
-
-- Regression: directory not showing public channels of public teams ([#21400](https://github.com/RocketChat/Rocket.Chat/pull/21400))
-
-- Regression: Fix reactivity on teamsMembers and roomMembers ([#21366](https://github.com/RocketChat/Rocket.Chat/pull/21366))
-
-- Regression: Fix TeamsChannels reactivity ([#21384](https://github.com/RocketChat/Rocket.Chat/pull/21384))
-
-- Regression: invalid teams permission check. ([#21374](https://github.com/RocketChat/Rocket.Chat/pull/21374))
-
-- Regression: Modify canAccessRoom to adapt to teams specification ([#21372](https://github.com/RocketChat/Rocket.Chat/pull/21372))
-
-- Regression: New endpoint to list rooms available to be added to any team ([#21373](https://github.com/RocketChat/Rocket.Chat/pull/21373))
-
-- Regression: Omnichannel agents can't access new action buttons ([#21306](https://github.com/RocketChat/Rocket.Chat/pull/21306))
-
-- Regression: Permissions missing on new Room Edit and Contact Edit form ([#21315](https://github.com/RocketChat/Rocket.Chat/pull/21315))
-
-- Regression: Quick action button missing for Omnichannel On-Hold queue ([#21285](https://github.com/RocketChat/Rocket.Chat/pull/21285))
-
-  - Move the Manual On Hold button to the new Omnichannel Header
-  ![image](https://user-images.githubusercontent.com/34130764/112291749-6ae10380-8cb6-11eb-94cd-e05efc14b1bf.png)
-  ![image](https://user-images.githubusercontent.com/34130764/112304146-27d95d00-8cc3-11eb-85db-dde04a110dd1.png)
-  
-  - Minor fixes
-
-- regression: Remove Breadcrumbs and update Tag component ([#21399](https://github.com/RocketChat/Rocket.Chat/pull/21399))
-
-- Regression: Room Edit form not rendering priority and custom fields ([#21309](https://github.com/RocketChat/Rocket.Chat/pull/21309))
-
-- regression: Team info permissions ([#21387](https://github.com/RocketChat/Rocket.Chat/pull/21387))
-
-- Regression: Teams should not have same name as users ([#21371](https://github.com/RocketChat/Rocket.Chat/pull/21371))
-
-- Regression: Unify team actions to add a room to a team ([#21386](https://github.com/RocketChat/Rocket.Chat/pull/21386))
-
-- Regression: unused names for team roles ([#21376](https://github.com/RocketChat/Rocket.Chat/pull/21376))
-
-- Update Apps-Engine version ([#21398](https://github.com/RocketChat/Rocket.Chat/pull/21398))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@alansikora](https://github.com/alansikora)
-- [@d-gubert](https://github.com/d-gubert)
-- [@dougfabris](https://github.com/dougfabris)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@ggazzo](https://github.com/ggazzo)
-- [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@murtaza98](https://github.com/murtaza98)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@rafaelblink](https://github.com/rafaelblink)
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 3.13.0-rc.3
-`2021-03-31  ·  2 🐛  ·  13 🔍  ·  13 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- 'Chats in Progress' Section is not rendering when the routing algorithm is not Manual Selection ([#21324](https://github.com/RocketChat/Rocket.Chat/pull/21324))
-
-- Visitors.info endpoint being called multiple times ([#21350](https://github.com/RocketChat/Rocket.Chat/pull/21350))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression:  New chat forwarding modal is not verifying mandatory values ([#21288](https://github.com/RocketChat/Rocket.Chat/pull/21288))
-
-- Regression: Add number of team members to teams.list and teams.listAll ([#21361](https://github.com/RocketChat/Rocket.Chat/pull/21361))
-
-- Regression: Add support to filter on `teams.listRooms` endpoint ([#21327](https://github.com/RocketChat/Rocket.Chat/pull/21327))
-
-  - Add support for queries (within the `query` parameter);  
-  - Add support to pagination (`offset` and `count`) when an user doesn't have the permission to get all rooms.
-
-- Regression: Add teams support to directory ([#21351](https://github.com/RocketChat/Rocket.Chat/pull/21351))
-
-  - Change `directory.js` to reduce function complexity  
-  - Add `teams` type of item. Directory will return all public teams & private teams the user is part of.
-
-- Regression: Channel owner can't convert it into a team. ([#21349](https://github.com/RocketChat/Rocket.Chat/pull/21349))
-
-- Regression: Fix channels not being added to team on creation ([#21370](https://github.com/RocketChat/Rocket.Chat/pull/21370))
-
-- Regression: Remove channel action on add channel's modal don't work ([#21356](https://github.com/RocketChat/Rocket.Chat/pull/21356))
-
-  ![removechannel-on-add-existing-modal](https://user-images.githubusercontent.com/27704687/112911017-eda8fa80-90ca-11eb-9c24-47a70be0c314.gif)
-
-  ![image](https://user-images.githubusercontent.com/27704687/112911052-02858e00-90cb-11eb-85a2-0ef1f5f9ffd9.png)
-
-- regression: remove user modal not showing up ([#21348](https://github.com/RocketChat/Rocket.Chat/pull/21348))
-
-- Regression: Team icons in mention ([#21367](https://github.com/RocketChat/Rocket.Chat/pull/21367))
-
-  ![image](https://user-images.githubusercontent.com/40830821/113044232-cd814600-9173-11eb-8f17-47c2d1438b75.png)
-
-- regression: Unable to add users while creating a team ([#21354](https://github.com/RocketChat/Rocket.Chat/pull/21354))
-
-- Regression: Unify Contact information displayed on the Room header and Room Info ([#21312](https://github.com/RocketChat/Rocket.Chat/pull/21312))
-
-  ![image](https://user-images.githubusercontent.com/34130764/112586659-35592900-8e22-11eb-94be-32bdff7ca883.png)
-
-  ![image](https://user-images.githubusercontent.com/2493803/112913130-788bf400-90cf-11eb-84c6-782b203e100a.png)
-
-  ![image](https://user-images.githubusercontent.com/2493803/112913146-817cc580-90cf-11eb-87ad-ef79766be2b3.png)
-
-- Regression: Update .invite endpoints to support multiple users at once ([#21328](https://github.com/RocketChat/Rocket.Chat/pull/21328))
-
-  - channels.invite now supports passing an array as a param (either with usernames or userIds) via `usernames` or `userIds` properties.  
-  - You can still use the endpoint to invite only one user via the old params `userId`, `username` or `user`.  
-  - Same changes apply to groups.invite
-
-- Regression: When only 'teams' type is provided, show only rooms with teamMain on `rooms.adminRooms` endpoint ([#21322](https://github.com/RocketChat/Rocket.Chat/pull/21322))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@dougfabris](https://github.com/dougfabris)
-- [@g-thome](https://github.com/g-thome)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@murtaza98](https://github.com/murtaza98)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@rafaelblink](https://github.com/rafaelblink)
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 3.13.0-rc.2
-`2021-03-26  ·  1 🚀  ·  2 🐛  ·  8 🔍  ·  9 👩‍💻👨‍💻`
-
-### 🚀 Improvements
-
-
-- Close Call contextual bar after starting jitsi call. ([#21004](https://github.com/RocketChat/Rocket.Chat/pull/21004) by [@yash-rajpal](https://github.com/yash-rajpal))
-
-  After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.
-  So, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.
-
-### 🐛 Bug fixes
-
-
-- Missing spaces on attachment  ([#21020](https://github.com/RocketChat/Rocket.Chat/pull/21020))
-
-- Stopping Jitsi reload ([#20973](https://github.com/RocketChat/Rocket.Chat/pull/20973) by [@yash-rajpal](https://github.com/yash-rajpal))
-
-  The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.
-  So removing this dep from useMemo dependencies
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Add BreadCrumbs tag into auto-join items ([#21294](https://github.com/RocketChat/Rocket.Chat/pull/21294))
-
-- Regression: add view room action on Teams Channels ([#21295](https://github.com/RocketChat/Rocket.Chat/pull/21295))
-
-  ![image](https://user-images.githubusercontent.com/27704687/112379914-7e489a80-8cc7-11eb-9b0b-e454bb05755d.png)
-
-- regression: Discussion room crashing if not member of parent channel ([#21310](https://github.com/RocketChat/Rocket.Chat/pull/21310))
-
-- Regression: Remove primary color from button in TeamChannels component ([#21293](https://github.com/RocketChat/Rocket.Chat/pull/21293))
-
-- Regression: Removing user from team doesn't remove them from the team's room. ([#21291](https://github.com/RocketChat/Rocket.Chat/pull/21291))
-
-  - Remove subscription when calling `teams.removeMembers`
-
-- regression: Sidebar reactivity ([#21296](https://github.com/RocketChat/Rocket.Chat/pull/21296))
-
-- Regression: user actions in admin ([#21307](https://github.com/RocketChat/Rocket.Chat/pull/21307))
-
-- Regression: View Channels button in Team info ([#21289](https://github.com/RocketChat/Rocket.Chat/pull/21289))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@yash-rajpal](https://github.com/yash-rajpal)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@dougfabris](https://github.com/dougfabris)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@ggazzo](https://github.com/ggazzo)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@tassoevan](https://github.com/tassoevan)
-- [@tiagoevanp](https://github.com/tiagoevanp)
-
-## 3.13.0-rc.1
-`2021-03-24  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix non encrypted rooms failing sending messages ([#21287](https://github.com/RocketChat/Rocket.Chat/pull/21287))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-
-## 3.13.0-rc.0
-`2021-03-23  ·  7 🎉  ·  12 🚀  ·  32 🐛  ·  8 🔍  ·  36 👩‍💻👨‍💻`
+# 3.13.0
+`2021-04-03  ·  7 🎉  ·  11 🚀  ·  36 🐛  ·  60 🔍  ·  38 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.21.0`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.24.0`
 
 ### 🎉 New features
 
@@ -415,11 +108,6 @@
 
 - Better new channel popover ([#21018](https://github.com/RocketChat/Rocket.Chat/pull/21018))
 
-- Close Call contextual bar after starting jitsi call. ([#21004](https://github.com/RocketChat/Rocket.Chat/pull/21004) by [@yash-rajpal](https://github.com/yash-rajpal))
-
-  After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.
-  So, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.
-
 - grammatical typos in pull request template ([#21115](https://github.com/RocketChat/Rocket.Chat/pull/21115) by [@sumukhah](https://github.com/sumukhah))
 
 - Improve Apps permission modal ([#21193](https://github.com/RocketChat/Rocket.Chat/pull/21193))
@@ -453,6 +141,10 @@
 
 ### 🐛 Bug fixes
 
+
+- 'Chats in Progress' Section is not rendering when the routing algorithm is not Manual Selection ([#21324](https://github.com/RocketChat/Rocket.Chat/pull/21324))
+
+- "Taken At" and "Average of Response Time" fields not rendering properly on Room Information panel ([#21365](https://github.com/RocketChat/Rocket.Chat/pull/21365))
 
 - **Apps:** Fix Game Center icon disappeared after the React refactor ([#21091](https://github.com/RocketChat/Rocket.Chat/pull/21091))
 
@@ -531,6 +223,10 @@
 
 - Iframe flags for audio and video on the BigBlueButton integration ([#20879](https://github.com/RocketChat/Rocket.Chat/pull/20879) by [@fcecagno](https://github.com/fcecagno))
 
+- Inactivity Time field displaying wrong information ([#21363](https://github.com/RocketChat/Rocket.Chat/pull/21363))
+
+- Incorrect time format of the Queue Time field on the room information page ([#21394](https://github.com/RocketChat/Rocket.Chat/pull/21394))
+
 - Make custom emoji file required ([#19583](https://github.com/RocketChat/Rocket.Chat/pull/19583) by [@m-shreyansh](https://github.com/m-shreyansh))
 
 - Missing app permissions translation ([#21066](https://github.com/RocketChat/Rocket.Chat/pull/21066))
@@ -540,8 +236,6 @@
 - Missing Keywords in Permissions ([#20354](https://github.com/RocketChat/Rocket.Chat/pull/20354) by [@im-adithya](https://github.com/im-adithya))
 
   The keywords were added to the i18n folder. (Default only)
-
-- Missing spaces on attachment  ([#21020](https://github.com/RocketChat/Rocket.Chat/pull/21020))
 
 - Multi Select isn't working in Export Messages ([#21236](https://github.com/RocketChat/Rocket.Chat/pull/21236) by [@PriyaBihani](https://github.com/PriyaBihani))
 
@@ -587,6 +281,8 @@
   ### After
   ![Screenshot from 2021-01-24 20-54-06](https://user-images.githubusercontent.com/38764067/105634940-82eb0100-5e86-11eb-8b90-e97a43c5e938.png)
 
+- Replace wrong field description on Room Information panel ([#21395](https://github.com/RocketChat/Rocket.Chat/pull/21395))
+
 - Reply count of message is decreased after a message from thread is deleted ([#19977](https://github.com/RocketChat/Rocket.Chat/pull/19977) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   The reply count now is decreased if a message from a thread is deleted.
@@ -601,11 +297,6 @@
 
   ![image](https://user-images.githubusercontent.com/27704687/110708646-c05ae200-81d9-11eb-86da-1d6a2e99b6e5.png)
 
-- Stopping Jitsi reload ([#20973](https://github.com/RocketChat/Rocket.Chat/pull/20973) by [@yash-rajpal](https://github.com/yash-rajpal))
-
-  The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.
-  So removing this dep from useMemo dependencies
-
 - undefined in PruneMessages deleting DM ([#20873](https://github.com/RocketChat/Rocket.Chat/pull/20873) by [@vova-zush](https://github.com/vova-zush))
 
   Fix undefined in Prune Messages in direct
@@ -615,6 +306,8 @@
   The VisitorInfo component closes or open every time a new message was sent, this PR fix that.
 
 - Use the correct icons for DMs ([#21125](https://github.com/RocketChat/Rocket.Chat/pull/21125))
+
+- Visitors.info endpoint being called multiple times ([#21350](https://github.com/RocketChat/Rocket.Chat/pull/21350))
 
 - Wrong license seats number administration info panel ([#21222](https://github.com/RocketChat/Rocket.Chat/pull/21222))
 
@@ -658,6 +351,8 @@
 
   - Changes `new Buffer` to `Buffer.from` since the first one is deprecated.
 
+- EE Team Mentions ([#21418](https://github.com/RocketChat/Rocket.Chat/pull/21418))
+
 - Improve: Increase testing coverage ([#21015](https://github.com/RocketChat/Rocket.Chat/pull/21015))
 
   Add test for  
@@ -665,6 +360,147 @@
   - minimongo/comparisons
 
 - Improve: NPS survey fetch ([#21263](https://github.com/RocketChat/Rocket.Chat/pull/21263))
+
+- Regression:  New chat forwarding modal is not verifying mandatory values ([#21288](https://github.com/RocketChat/Rocket.Chat/pull/21288))
+
+- Regression: Add BreadCrumbs tag into auto-join items ([#21294](https://github.com/RocketChat/Rocket.Chat/pull/21294))
+
+- Regression: Add call to eraseRoom method ([#21392](https://github.com/RocketChat/Rocket.Chat/pull/21392))
+
+  - Replace `removeById` by `eraseRoom` method's call (which not only deletes the room, but also erases its subscriptions and triggers some apps-engine events).
+
+- Regression: Add isLastOwner property on teams.listRoomsOfUser endpoint ([#21323](https://github.com/RocketChat/Rocket.Chat/pull/21323))
+
+- Regression: Add number of team members to teams.list and teams.listAll ([#21361](https://github.com/RocketChat/Rocket.Chat/pull/21361))
+
+- Regression: Add scope to permission checks in Team's endpoints ([#21369](https://github.com/RocketChat/Rocket.Chat/pull/21369))
+
+  - Include scope (team's main room ID) in the permission checks;
+   - Remove the `teamName` parameter from the `members`, `addMembers`, `updateMember` and `removeMembers` methods (since `teamId` will always be defined).
+
+- Regression: Add support to filter on `teams.listRooms` endpoint ([#21327](https://github.com/RocketChat/Rocket.Chat/pull/21327))
+
+  - Add support for queries (within the `query` parameter);  
+  - Add support to pagination (`offset` and `count`) when an user doesn't have the permission to get all rooms.
+
+- Regression: Add teams support to directory ([#21351](https://github.com/RocketChat/Rocket.Chat/pull/21351))
+
+  - Change `directory.js` to reduce function complexity  
+  - Add `teams` type of item. Directory will return all public teams & private teams the user is part of.
+
+- Regression: add view room action on Teams Channels ([#21295](https://github.com/RocketChat/Rocket.Chat/pull/21295))
+
+  ![image](https://user-images.githubusercontent.com/27704687/112379914-7e489a80-8cc7-11eb-9b0b-e454bb05755d.png)
+
+- Regression: Change name-error description ([#21385](https://github.com/RocketChat/Rocket.Chat/pull/21385))
+
+- Regression: Channel owner can't convert it into a team. ([#21349](https://github.com/RocketChat/Rocket.Chat/pull/21349))
+
+- Regression: Contact Chat History component not visible ([#21316](https://github.com/RocketChat/Rocket.Chat/pull/21316))
+
+- Regression: Delete team member from related team's rooms ([#21401](https://github.com/RocketChat/Rocket.Chat/pull/21401))
+
+- regression: Directory - teams tab search ([#21419](https://github.com/RocketChat/Rocket.Chat/pull/21419))
+
+- Regression: directory not showing public channels of public teams ([#21400](https://github.com/RocketChat/Rocket.Chat/pull/21400))
+
+- regression: Discussion room crashing if not member of parent channel ([#21310](https://github.com/RocketChat/Rocket.Chat/pull/21310))
+
+- Regression: Error clicking on non joined channels on team channel list ([#21422](https://github.com/RocketChat/Rocket.Chat/pull/21422))
+
+- Regression: Fix channels not being added to team on creation ([#21370](https://github.com/RocketChat/Rocket.Chat/pull/21370))
+
+- Regression: Fix Members List Icon ([#21433](https://github.com/RocketChat/Rocket.Chat/pull/21433))
+
+- Regression: Fix non encrypted rooms failing sending messages ([#21287](https://github.com/RocketChat/Rocket.Chat/pull/21287))
+
+- Regression: Fix reactivity on teamsMembers and roomMembers ([#21366](https://github.com/RocketChat/Rocket.Chat/pull/21366))
+
+- Regression: Fix TeamsChannels reactivity ([#21384](https://github.com/RocketChat/Rocket.Chat/pull/21384))
+
+- Regression: General improvement to Teams ([#21402](https://github.com/RocketChat/Rocket.Chat/pull/21402))
+
+- Regression: header title tag style ([#21415](https://github.com/RocketChat/Rocket.Chat/pull/21415))
+
+  ![image](https://user-images.githubusercontent.com/27704687/113326208-bebf9e00-92ef-11eb-97f7-91ae978fc400.png)
+
+- Regression: Headers icon breaking DMs ([#21412](https://github.com/RocketChat/Rocket.Chat/pull/21412))
+
+- Regression: invalid teams permission check. ([#21374](https://github.com/RocketChat/Rocket.Chat/pull/21374))
+
+- Regression: Modify canAccessRoom to adapt to teams specification ([#21372](https://github.com/RocketChat/Rocket.Chat/pull/21372))
+
+- Regression: New endpoint to list rooms available to be added to any team ([#21373](https://github.com/RocketChat/Rocket.Chat/pull/21373))
+
+- Regression: Omnichannel agents can't access new action buttons ([#21306](https://github.com/RocketChat/Rocket.Chat/pull/21306))
+
+- Regression: Permissions missing on new Room Edit and Contact Edit form ([#21315](https://github.com/RocketChat/Rocket.Chat/pull/21315))
+
+- Regression: Quick action button missing for Omnichannel On-Hold queue ([#21285](https://github.com/RocketChat/Rocket.Chat/pull/21285))
+
+  - Move the Manual On Hold button to the new Omnichannel Header
+  ![image](https://user-images.githubusercontent.com/34130764/112291749-6ae10380-8cb6-11eb-94cd-e05efc14b1bf.png)
+  ![image](https://user-images.githubusercontent.com/34130764/112304146-27d95d00-8cc3-11eb-85db-dde04a110dd1.png)
+  
+  - Minor fixes
+
+- regression: Remove Breadcrumbs and update Tag component ([#21399](https://github.com/RocketChat/Rocket.Chat/pull/21399))
+
+- Regression: Remove channel action on add channel's modal don't work ([#21356](https://github.com/RocketChat/Rocket.Chat/pull/21356))
+
+  ![removechannel-on-add-existing-modal](https://user-images.githubusercontent.com/27704687/112911017-eda8fa80-90ca-11eb-9c24-47a70be0c314.gif)
+
+  ![image](https://user-images.githubusercontent.com/27704687/112911052-02858e00-90cb-11eb-85a2-0ef1f5f9ffd9.png)
+
+- Regression: Remove primary color from button in TeamChannels component ([#21293](https://github.com/RocketChat/Rocket.Chat/pull/21293))
+
+- regression: remove user modal not showing up ([#21348](https://github.com/RocketChat/Rocket.Chat/pull/21348))
+
+- Regression: Removing user from team doesn't remove them from the team's room. ([#21291](https://github.com/RocketChat/Rocket.Chat/pull/21291))
+
+  - Remove subscription when calling `teams.removeMembers`
+
+- Regression: Room Edit form not rendering priority and custom fields ([#21309](https://github.com/RocketChat/Rocket.Chat/pull/21309))
+
+- Regression: rooms breaking after deleting a room from a team ([#21421](https://github.com/RocketChat/Rocket.Chat/pull/21421))
+
+- regression: Sidebar reactivity ([#21296](https://github.com/RocketChat/Rocket.Chat/pull/21296))
+
+- Regression: Team icons in mention ([#21367](https://github.com/RocketChat/Rocket.Chat/pull/21367))
+
+  ![image](https://user-images.githubusercontent.com/40830821/113044232-cd814600-9173-11eb-8f17-47c2d1438b75.png)
+
+- regression: Team info permissions ([#21387](https://github.com/RocketChat/Rocket.Chat/pull/21387))
+
+- Regression: Teams should not have same name as users ([#21371](https://github.com/RocketChat/Rocket.Chat/pull/21371))
+
+- regression: Unable to add users while creating a team ([#21354](https://github.com/RocketChat/Rocket.Chat/pull/21354))
+
+- Regression: Unify Contact information displayed on the Room header and Room Info ([#21312](https://github.com/RocketChat/Rocket.Chat/pull/21312))
+
+  ![image](https://user-images.githubusercontent.com/34130764/112586659-35592900-8e22-11eb-94be-32bdff7ca883.png)
+
+  ![image](https://user-images.githubusercontent.com/2493803/112913130-788bf400-90cf-11eb-84c6-782b203e100a.png)
+
+  ![image](https://user-images.githubusercontent.com/2493803/112913146-817cc580-90cf-11eb-87ad-ef79766be2b3.png)
+
+- Regression: Unify team actions to add a room to a team ([#21386](https://github.com/RocketChat/Rocket.Chat/pull/21386))
+
+- Regression: unused names for team roles ([#21376](https://github.com/RocketChat/Rocket.Chat/pull/21376))
+
+- Regression: Update .invite endpoints to support multiple users at once ([#21328](https://github.com/RocketChat/Rocket.Chat/pull/21328))
+
+  - channels.invite now supports passing an array as a param (either with usernames or userIds) via `usernames` or `userIds` properties.  
+  - You can still use the endpoint to invite only one user via the old params `userId`, `username` or `user`.  
+  - Same changes apply to groups.invite
+
+- Regression: user actions in admin ([#21307](https://github.com/RocketChat/Rocket.Chat/pull/21307))
+
+- Regression: View Channels button in Team info ([#21289](https://github.com/RocketChat/Rocket.Chat/pull/21289))
+
+- Regression: When only 'teams' type is provided, show only rooms with teamMain on `rooms.adminRooms` endpoint ([#21322](https://github.com/RocketChat/Rocket.Chat/pull/21322))
+
+- Update Apps-Engine version ([#21398](https://github.com/RocketChat/Rocket.Chat/pull/21398))
 
 </details>
 
@@ -692,9 +528,11 @@
 
 - [@KevLehman](https://github.com/KevLehman)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@alansikora](https://github.com/alansikora)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
 - [@g-thome](https://github.com/g-thome)
+- [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
 - [@lolimay](https://github.com/lolimay)
