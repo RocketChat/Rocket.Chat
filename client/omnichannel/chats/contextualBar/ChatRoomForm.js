@@ -219,7 +219,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 					<TextInput flexGrow={1} value={topic} onChange={handleTopic} />
 				</Field.Row>
 			</Field>
-			{Tags && (tags && Object.values(tags).length > 0) && <Field>
+			{Tags && <Field>
 				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
 				<Field.Row>
 					<Tags value={Object.values(tags)} handler={handleTags} />
