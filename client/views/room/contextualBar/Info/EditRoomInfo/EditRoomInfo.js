@@ -52,6 +52,7 @@ const useInitialValues = (room, settings) => {
 		sysMes,
 		encrypted,
 		retention = {},
+		linksPreview,
 	} = room;
 
 	const {
@@ -78,6 +79,7 @@ const useInitialValues = (room, settings) => {
 		systemMessages: Array.isArray(sysMes) ? sysMes : [],
 		hideSysMes: !!sysMes?.length,
 		encrypted,
+		linksPreview,
 		...retentionPolicyEnabled && {
 			retentionEnabled: retention.enabled ?? retentionEnabledDefault,
 			retentionOverrideGlobal: !!retention.overrideGlobal,
@@ -106,6 +108,7 @@ const useInitialValues = (room, settings) => {
 		t,
 		topic,
 		encrypted,
+		linksPreview,
 	]);
 };
 
@@ -157,6 +160,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		encrypted,
 		roomAvatar,
 		archived,
+		linksPreview,
 		roomTopic,
 		roomDescription,
 		roomAnnouncement,
@@ -192,6 +196,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		handleRetentionMaxAge,
 		handleRetentionExcludePinned,
 		handleRetentionFilesOnly,
+		handleLinksPreview,
 	} = handlers;
 
 	const [
@@ -206,6 +211,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewJoinCode,
 		canViewReactWhenReadOnly,
 		canViewEncrypted,
+		canViewLinksPreview,
 	] = useMemo(() => {
 		const isAllowed = roomTypes.getConfig(room.t)?.allowRoomSettingChange || (() => {});
 		return [
@@ -220,6 +226,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 			isAllowed(room, RoomSettingsEnum.JOIN_CODE),
 			isAllowed(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
 			isAllowed(room, RoomSettingsEnum.E2E),
+			isAllowed(room, RoomSettingsEnum.MESSAGES_LINKS_PREVIEW),
 		];
 	}, [room]);
 
@@ -234,6 +241,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canArchiveOrUnarchive = useAtLeastOnePermission(useMemo(() => ['archive-room', 'unarchive-room'], []));
 	const canDelete = usePermission(`delete-${ room.t }`);
 	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
+	const canToggleLinksPreview = usePermission('toggle-room-links-previews', room._id);
 
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
@@ -340,6 +348,14 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Field.Row>
 					</Box>
 					<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
+				</Field>}
+				{canViewLinksPreview && <Field>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+						<Field.Label>{t('Links Preview')}</Field.Label>
+						<Field.Row>
+							<ToggleSwitch disabled={!canToggleLinksPreview} checked={!!linksPreview} onChange={handleLinksPreview}/>
+						</Field.Row>
+					</Box>
 				</Field>}
 				{canViewArchived && <Field>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>

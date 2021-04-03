@@ -23,6 +23,7 @@ const getInitialValues = (room) => ({
 	archived: !!room.archived,
 	isDefault: !!room.default,
 	favorite: !!room.favorite,
+	linkPreview: !!room.linksPreview,
 	featured: !!room.featured,
 	roomTopic: room.topic ?? '',
 	roomDescription: room.description ?? '',
@@ -73,6 +74,7 @@ function EditRoom({ room, onChange }) {
 		canViewDescription,
 		canViewType,
 		canViewReadOnly,
+		canToggleLinksPreview,
 	] = useMemo(() => {
 		const isAllowed = roomTypes.getConfig(room.t).allowRoomSettingChange;
 		return [
@@ -83,6 +85,7 @@ function EditRoom({ room, onChange }) {
 			isAllowed(room, RoomSettingsEnum.DESCRIPTION),
 			isAllowed(room, RoomSettingsEnum.TYPE),
 			isAllowed(room, RoomSettingsEnum.READ_ONLY),
+			isAllowed(room, RoomSettingsEnum.LINK_MESSAGES_PREVIEW),
 		];
 	}, [room]);
 
@@ -98,6 +101,7 @@ function EditRoom({ room, onChange }) {
 		roomAvatar,
 		roomDescription,
 		roomAnnouncement,
+		linkPreview,
 	} = values;
 
 	const {
@@ -112,6 +116,7 @@ function EditRoom({ room, onChange }) {
 		handleRoomTopic,
 		handleRoomDescription,
 		handleRoomAnnouncement,
+		handleToggleLinkPreview,
 	} = handlers;
 
 	const changeArchivation = archived !== !!room.archived;
@@ -217,6 +222,14 @@ function EditRoom({ room, onChange }) {
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Archived')}</Field.Label>
 						<ToggleSwitch disabled={deleted} checked={archived} onChange={handleArchived}/>
+					</Box>
+				</Field.Row>
+			</Field>}
+			{canToggleLinksPreview && <Field>
+				<Field.Row>
+					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+						<Field.Label>{t('Archived')}</Field.Label>
+						<ToggleSwitch disabled={deleted} checked={linkPreview} onChange={handleToggleLinkPreview}/>
 					</Box>
 				</Field.Row>
 			</Field>}

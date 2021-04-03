@@ -1157,6 +1157,22 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	saveLinksPreview(_id, value, hasPermission) {
+		if (!hasPermission) {
+			throw new Error('You must provide "hasPermission" function to be able to call this method');
+		}
+
+		const query = { _id };
+
+		const update = {
+			$set: {
+				linksPreview: value,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	updateGroupDMsRemovingUsernamesByUsername(username) {
 		const query = {
 			t: 'd',

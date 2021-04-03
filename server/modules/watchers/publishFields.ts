@@ -58,6 +58,7 @@ export const roomFields = {
 	unmuted: 1,
 	_updatedAt: 1,
 	archived: 1,
+	linksPreview: 1,
 	jitsiTimeout: 1,
 	description: 1,
 	default: 1,
