@@ -219,7 +219,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				<Grid.Item>
 					<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
 						{useMemo(() => <Field>
-							<Field.Label>{t('Password')}</Field.Label>
+							<Field.Label>{t('New_password')}</Field.Label>
 							<Field.Row>
 								<PasswordInput autoComplete='off' disabled={!allowPasswordChange} error={passwordError} flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
 							</Field.Row>
