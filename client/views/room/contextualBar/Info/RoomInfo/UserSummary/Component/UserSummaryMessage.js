@@ -36,6 +36,7 @@ export default React.memo(function UserSummaryMessage({
     sysMes, 
     nbrUnread,
     month,
+    tmid,
     ...props 
     }) {
     //should be optimized
@@ -48,10 +49,10 @@ export default React.memo(function UserSummaryMessage({
             return !roles ? <p className="msgSummary_sideBar" onClick={() => goToMess(message)} key={String(ts)} style={styles}>̣<RawText>{`${String(ts).substring(0,25)}: You has been added to the room`}</RawText></p> :
             <p className="msgSummary_sideBar" onClick={() => goToMess(message)} key={String(ts)} style={styles}>̣<RawText>{`${String(ts).substring(0,25)}: You created the channel`}</RawText></p>
         }
-        else if(repliesCount && !sysMes) {
+        else if((repliesCount && !sysMes) || tmid) {
             return <p className="msgSummary_sideBar" onClick={() => goToMess(message)} key={String(ts)} style={styles}>̣<RawText>{`${String(ts).substring(0,25)}: You answered: \'${msg}\' in the thread \'${threadMsg}\'` + `${editedAt ? ' (edited)' : ''}`}</RawText></p>
         }
-        else if(threadMsg && !sysMes) {
+        else if((threadMsg && !sysMes) || tmid) {
             return <p className="msgSummary_sideBar" onClick={() => goToMess(message)} key={String(ts)} style={styles}>̣<RawText>{`${String(ts).substring(0,25)}: You sent the message: \'${msg}\' to the thread: \'${threadMsg}\' ` + `${editedAt ? ' (edited)' : ''}`}</RawText></p>
         }
          else if (tcount && !sysMes) {

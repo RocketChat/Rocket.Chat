@@ -27,4 +27,5 @@ export interface IMessage extends IRocketChatRecord {
 	_updatedAt: Date;
 	dcount?: number;
 	tcount?: number;
+	threadMsg?: string;
 }

@@ -442,7 +442,6 @@ API.v1.addRoute('chat.getUserSummary', { authRequired: true }, {
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
-		console.log(text)
 		const typeSummary = {
 			_hidden: { $ne: true },
 			...text && {
@@ -451,7 +450,6 @@ API.v1.addRoute('chat.getUserSummary', { authRequired: true }, {
 				},
 			},
 		};
-		console.log(typeSummary)
 		const summaryQuery = { ...query, ...typeSummary, rid};
 		//We have to had a text index for the Subsriptions
 		const summaryQueryWithoutText = { ...query, rid};
@@ -468,14 +466,12 @@ API.v1.addRoute('chat.getUserSummary', { authRequired: true }, {
 			limit: count,
 			fields,
 		});
-
 		const totalMessages = cursorMessage.count();
 		const totalSubscriptions = cursorSubsriptions.count()
 		const total = totalMessages + totalSubscriptions
 
 		const messages = cursorMessage.fetch();
 		const subscriptions = cursorSubsriptions.fetch()
-
 		const msg = [...messages, ...subscriptions]
 		return API.v1.success({
 			msg,

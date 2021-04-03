@@ -59,7 +59,6 @@ export class MessagesRaw extends BaseRaw {
 				},
 			},
 		};
-		console.log(query)
 		return this.find(query, options);
 	}
 
