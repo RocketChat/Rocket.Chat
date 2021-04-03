@@ -231,6 +231,10 @@ export const MessageTypesValues = [
 		i18nLabel: 'Message_HideType_room_changed_avatar',
 	},
 	{
+		key: 'room_changed_topic',
+		i18nLabel: 'Message_HideType_room_changed_topic',
+	},
+	{
 		key: 'room_e2e_enabled',
 		i18nLabel: 'Message_HideType_room_enabled_encryption',
 	},

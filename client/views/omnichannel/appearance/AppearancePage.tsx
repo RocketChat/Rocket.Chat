@@ -15,11 +15,6 @@ import { ISetting } from '../../../../definition/ISetting';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 
-type LivechatAppearanceEndpointData = {
-	success: boolean;
-	appearance: ISetting[];
-};
-
 type LivechatAppearanceSettings = {
 	Livechat_title: string;
 	Livechat_title_color: string;
@@ -44,7 +39,7 @@ type LivechatAppearanceSettings = {
 
 type AppearanceSettings = Partial<LivechatAppearanceSettings>;
 
-const reduceAppearance = (settings: LivechatAppearanceEndpointData['appearance']): AppearanceSettings =>
+const reduceAppearance = (settings: ISetting[]): AppearanceSettings =>
 	settings.reduce<Partial<LivechatAppearanceSettings>>((acc, { _id, value }) => {
 		acc = { ...acc, [_id]: value };
 		return acc;
@@ -53,7 +48,7 @@ const reduceAppearance = (settings: LivechatAppearanceEndpointData['appearance']
 const AppearancePageContainer: FC = () => {
 	const t = useTranslation();
 
-	const { value: data, phase: state, error } = useEndpointData<LivechatAppearanceEndpointData>('livechat/appearance');
+	const { value: data, phase: state, error } = useEndpointData('livechat/appearance');
 
 	const canViewAppearance = usePermission('view-livechat-appearance');
 
@@ -80,7 +75,7 @@ const AppearancePageContainer: FC = () => {
 };
 
 type AppearancePageProps = {
-	settings: LivechatAppearanceEndpointData['appearance'];
+	settings: ISetting[];
 };
 
 const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {

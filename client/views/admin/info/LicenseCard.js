@@ -74,7 +74,7 @@ const LicenseCard = ({ statistics, isLoading }) => {
 								? <Skeleton variant='rect' width='x112' height='x112'/>
 								: <UsagePieGraph
 									label={t('Users')}
-									used={statistics?.totalUsers}
+									used={statistics?.activeUsers}
 									total={maxActiveUsers}
 									size={112}
 									isLoading={isLoading}
