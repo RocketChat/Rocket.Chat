@@ -7,6 +7,7 @@ import { imgURL } from '../../data/interactions.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { createUser } from '../../data/users.helper';
+import { MockFile } from '../../data/file-helper.js';
 
 describe('[Rooms]', function() {
 	this.retries(0);
@@ -135,6 +136,19 @@ describe('[Rooms]', function() {
 					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
 				})
 				.end(done);
+		});
+		describe('filename variants check', () => {
+			it('mock file is working', () => {
+				const mock = new MockFile();
+				const file = mock.create();
+
+				console.log({ file });
+
+				expect(file.name).toBe('mock.txt');
+				expect(file.size).toBe(1024);
+			});
+			describe('image file', () => {
+			});
 		});
 	});
 
