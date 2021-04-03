@@ -142,12 +142,29 @@ describe('[Rooms]', function() {
 				const mock = new MockFile();
 				const file = mock.create();
 
-				console.log({ file });
-
 				expect(file.name).toBe('mock.txt');
 				expect(file.size).toBe(1024);
 			});
 			describe('image file', () => {
+				it('empty', (done) => {
+					const mock = new MockFile();
+					const file = mock.create('', 1024, 'image/jpeg');
+
+					request.post(api(`rooms.upload/${ testChannel._id }`))
+						.set(credentials)
+						.attach('file', file)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							const { message } = res.body;
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.nested.property('message._id', message._id);
+							expect(res.body).to.have.nested.property('message.rid', testChannel._id);
+							expect(res.body).to.have.nested.property('message.file._id', message.file._id);
+							expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+						})
+						.end(done);
+				});
 			});
 		});
 	});
