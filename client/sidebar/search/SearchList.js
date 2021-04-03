@@ -104,6 +104,19 @@ const options = {
 	},
 };
 
+const searchSort = (items) => {
+	let typeDirect = 0; let typeOther = items.length - 1;
+	while (typeDirect < typeOther) {
+		if (items[typeDirect].t !== 'd') {
+			items[typeDirect] = [items[typeOther], items[typeOther] = items[typeDirect]][0];
+			typeOther--;
+		} else {
+			typeDirect++;
+		}
+	}
+	return items;
+};
+
 const useSearchItems = (filterText) => {
 	const expression = /(@|#)?(.*)/i;
 	const teste = filterText.match(expression);
@@ -149,7 +162,7 @@ const useSearchItems = (filterText) => {
 		resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersfilter).map(userMap));
 		resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
 
-		return { data: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])), status };
+		return { data: searchSort(Array.from(new Set([...exact, ...localRooms, ...resultsFromServer]))), status };
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [localRooms, name, spotlight]);
 };
