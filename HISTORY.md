@@ -1,6 +1,21 @@
 
 # 3.13.0 (Under Release Candidate Process)
 
+## 3.13.0-rc.7
+`2021-04-03  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix Members List Icon ([#21433](https://github.com/RocketChat/Rocket.Chat/pull/21433))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 ## 3.13.0-rc.6
 `2021-04-02  ·  5 🔍  ·  5 👩‍💻👨‍💻`
 
