@@ -89,7 +89,7 @@ export const RoomMembers = ({
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='team'/>
+				<VerticalBar.Icon name='members'/>
 				<VerticalBar.Text>{t('Members')}</VerticalBar.Text>
 				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>
