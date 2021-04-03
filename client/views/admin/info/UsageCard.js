@@ -108,7 +108,7 @@ const UsageCard = React.memo(function UsageCard({ statistics, isLoading, vertica
 						value={s(() => statistics.totalPrivateGroups)}
 					/>
 					<TextSeparator
-						label={<><Card.Icon name='team' size='x16'/> {t('Stats_Total_Direct_Messages')}</>}
+						label={<><Card.Icon name='balloon' size='x16'/> {t('Stats_Total_Direct_Messages')}</>}
 						value={s(() => statistics.totalDirect)}
 					/>
 					<TextSeparator

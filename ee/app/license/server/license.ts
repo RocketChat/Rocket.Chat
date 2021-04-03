@@ -165,6 +165,7 @@ class LicenseClass {
 				}
 				if (!this._validateURL(license.url, this.url)) {
 					item.valid = false;
+					console.error(`#### License error: invalid url, licensed to ${ license.url }, used on ${ this.url }`);
 					this._invalidModules(license.modules);
 					return item;
 				}
@@ -172,12 +173,14 @@ class LicenseClass {
 
 			if (license.expiry && this._validateExpiration(license.expiry)) {
 				item.valid = false;
+				console.error(`#### License error: expired, valid until ${ license.expiry }`);
 				this._invalidModules(license.modules);
 				return item;
 			}
 
 			if (license.maxActiveUsers && !this._hasValidNumberOfActiveUsers(license.maxActiveUsers)) {
 				item.valid = false;
+				console.error(`#### License error: over seats, max allowed ${ license.maxActiveUsers }, current active users ${ Users.getActiveLocalUserCount() }`);
 				this._invalidModules(license.modules);
 				return item;
 			}

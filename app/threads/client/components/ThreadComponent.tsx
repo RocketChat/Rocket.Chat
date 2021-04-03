@@ -22,7 +22,7 @@ const subscriptionFields = {};
 const useThreadMessage = (tmid: string): IMessage => {
 	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', 'chat.getMessage');
-	const getMessageParsed = useCallback<(params: Mongo.Query<IMessage>) => Promise<IMessage>>(async (params) => {
+	const getMessageParsed = useCallback<(params: Parameters<typeof getMessage>[0]) => Promise<IMessage>>(async (params) => {
 		const { message } = await getMessage(params);
 		return {
 			...message,
@@ -59,10 +59,12 @@ const ThreadComponent: FC<{
 	mid: string;
 	jump: unknown;
 	room: IRoom;
+	onClickBack: () => void;
 }> = ({
 	mid,
 	jump,
 	room,
+	onClickBack,
 }) => {
 	const subscription = useUserSubscription(room._id, subscriptionFields);
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
@@ -150,6 +152,7 @@ const ThreadComponent: FC<{
 		onToggleExpand={(expanded): void => setExpand(!expanded)}
 		onToggleFollow={(following): void => setFollowing(!following)}
 		onClose={handleClose}
+		onClickBack={onClickBack}
 	/>;
 };
 
