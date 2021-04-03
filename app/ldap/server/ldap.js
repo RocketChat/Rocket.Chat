@@ -324,6 +324,7 @@ export default class LDAP {
 		if (!this.options.group_filter_enabled) {
 			return true;
 		}
+		this.bindIfNecessary();
 
 		const filter = ['(&'];
 
@@ -500,6 +501,7 @@ export default class LDAP {
 				}
 			}
 			logger.auth.info('Authenticated', dn);
+			this.disconnect();
 			return true;
 		} catch (error) {
 			logger.auth.info('Not authenticated', dn);
