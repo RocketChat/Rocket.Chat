@@ -43,7 +43,9 @@
 					{{#if getStatus}}
 						<button class="message-custom-status" title="{{getStatus}}">💬</button>
 					{{/if}}
-					<span class="info border-component-color color-info-font-color"></span>
+					{{#if t}}
+						{{>MessageStatusIcon type=t}}
+					{{/if}}
 					{{# if showRoles }}
 						{{#each role in roleTags}}
 							<span class="role-tag color-secondary-color border-component-color" data-role="{{role.description}}">{{role.description}}</span>
@@ -55,7 +57,7 @@
 					<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
 					{{#if showTranslated}}
 						<span class="translated">
-							<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" title="{{_ "Translated"}}"></i>
+							{{>MessageStatusIcon type='translated' msg=msg}}
 							<span class="translation-provider">{{ translationProvider }}</span>
 						</span>
 					{{/if}}
@@ -65,7 +67,7 @@
 						</span>
 					{{/if}}
 					{{#if edited}}
-						{{>MessageStatusIcon icon='pencil' msg=msg}}
+						{{>MessageStatusIcon type='edited' msg=msg}}
 					{{/if}}
 					{{#if msg.pinned}}
 						<span title="{{_ "Message_has_been_pinned"}}" class="pinned"><i class="icon-pin"></i></span>
