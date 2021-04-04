@@ -21,18 +21,14 @@ export function withData(WrappedComponent) {
 		showAll, 
 		...props 
 	}) => {
-		//We can also use a Meteor method to fetch discussions
-		//const messages = useMethod('getUserSummary')
 		const userId = useUserId();
-		let subscription;
 		let nbrUnread = 0;
-		let messages
 		//If we hate to show all the data for each rooms
 		//switch (!showAll) {
 			//case true:
 				//room = useUserRoom(rid);
-		messages = useUserSummary(rid, userId);
-		subscription = useUserSubscriptions(rid, userId);
+		//messages = useUserSummary(rid, userId);
+		const subscription = useUserSubscriptions(rid, userId);
 		
 		//break;
 			//default:

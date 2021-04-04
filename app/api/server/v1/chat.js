@@ -459,13 +459,15 @@ API.v1.addRoute('chat.getUserSummary', { authRequired: true }, {
 			skip: offset,
 			limit: count,
 			fields,
-		});
+		})
+
 		const cursorSubsriptions = Subscriptions.find(summaryQueryWithoutText, {
 			sort: sort,
 			skip: offset,
 			limit: count,
 			fields,
 		});
+		
 		const totalMessages = cursorMessage.count();
 		const totalSubscriptions = cursorSubsriptions.count()
 		const total = totalMessages + totalSubscriptions
@@ -499,7 +501,6 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
-
 		const typeThread = {
 			_hidden: { $ne: true },
 			...type === 'following' && { replies: { $in: [this.userId] } },
