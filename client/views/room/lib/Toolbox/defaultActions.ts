@@ -28,7 +28,7 @@ addAction('contact-profile', {
 	id: 'contact-profile',
 	title: 'Contact_Info',
 	icon: 'user',
-	template: lazy(() => import('../../../../omnichannel/directory/contacts/contextualBar')),
+	template: lazy(() => import('../../../../omnichannel/contacts/contextualBar')),
 	order: 5,
 });
 
@@ -47,7 +47,7 @@ addAction('members-list', ({ room }) => {
 		groups: ['channel', 'group'],
 		id: 'members-list',
 		title: 'Members',
-		icon: 'team',
+		icon: 'members',
 		template: lazy(() => import('../../MemberListRouter')),
 		order: 5,
 	} : null), [hasPermission, room.broadcast]);

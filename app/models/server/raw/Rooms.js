@@ -118,16 +118,34 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByTeamId(teamId, options = {}, query = {}) {
-		const myQuery = {
-			...query,
+	findByTeamId(teamId, options = {}) {
+		const query = {
 			teamId,
 			teamMain: {
 				$exists: false,
 			},
 		};
 
-		return this.find(myQuery, options);
+		return this.find(query, options);
+	}
+
+	findByTeamIdContainingNameAndDefault(teamId, name, onlyDefault, options = {}) {
+		const query = {
+			teamId,
+			teamMain: {
+				$exists: false,
+			},
+		};
+
+		if (name) {
+			query.name = new RegExp(escapeRegExp(name), 'i');
+		}
+
+		if (onlyDefault) {
+			query.teamDefault = true;
+		}
+
+		return this.find(query, options);
 	}
 
 	findByTeamIdAndRoomsId(teamId, rids, options = {}) {
@@ -164,6 +182,33 @@ export class RoomsRaw extends BaseRaw {
 					$in: sIds,
 				},
 			}],
+		};
+
+		return this.find(query, options);
+	}
+
+	findChannelAndGroupListWithoutTeamsByNameStarting(name, groupsToAccept, options) {
+		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			teamId: {
+				$exists: false,
+			},
+			prid: {
+				$exists: false,
+			},
+			$or: [
+				{
+					t: 'c',
+				},
+				{
+					t: 'p',
+					_id: {
+						$in: groupsToAccept,
+					},
+				},
+			],
+			name: nameRegex,
 		};
 
 		return this.find(query, options);

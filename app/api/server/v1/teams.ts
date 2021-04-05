@@ -1,9 +1,11 @@
+import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Rooms, Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
+import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
@@ -65,29 +67,20 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('teams.addRoom', { authRequired: true }, {
-	post() {
-		const { roomId, teamId, isDefault } = this.bodyParams;
-
-		if (!hasPermission(this.userId, 'add-team-channel')) {
-			return API.v1.unauthorized();
-		}
-
-		const room = Promise.await(Team.addRoom(this.userId, roomId, teamId, isDefault));
-
-		return API.v1.success({ room });
-	},
-});
-
 API.v1.addRoute('teams.addRooms', { authRequired: true }, {
 	post() {
-		const { rooms, teamId } = this.bodyParams;
+		const { rooms, teamId, teamName } = this.bodyParams;
 
-		if (!hasPermission(this.userId, 'add-team-channel')) {
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
+
+		if (!hasPermission(this.userId, 'add-team-channel', team.roomId)) {
 			return API.v1.unauthorized();
 		}
 
-		const validRooms = Promise.await(Team.addRooms(this.userId, rooms, teamId));
+		const validRooms = Promise.await(Team.addRooms(this.userId, rooms, team._id));
 
 		return API.v1.success({ rooms: validRooms });
 	},
@@ -95,15 +88,20 @@ API.v1.addRoute('teams.addRooms', { authRequired: true }, {
 
 API.v1.addRoute('teams.removeRoom', { authRequired: true }, {
 	post() {
-		const { roomId, teamId } = this.bodyParams;
+		const { roomId, teamId, teamName } = this.bodyParams;
 
-		if (!hasPermission(this.userId, 'remove-team-channel')) {
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
+
+		if (!hasPermission(this.userId, 'remove-team-channel', team.roomId)) {
 			return API.v1.unauthorized();
 		}
 
-		const canRemoveAny = !!hasPermission(this.userId, 'view-all-team-channels');
+		const canRemoveAny = !!hasPermission(this.userId, 'view-all-team-channels', team.roomId);
 
-		const room = Promise.await(Team.removeRoom(this.userId, roomId, teamId, canRemoveAny));
+		const room = Promise.await(Team.removeRoom(this.userId, roomId, team._id, canRemoveAny));
 
 		return API.v1.success({ room });
 	},
@@ -113,10 +111,12 @@ API.v1.addRoute('teams.updateRoom', { authRequired: true }, {
 	post() {
 		const { roomId, isDefault } = this.bodyParams;
 
-		if (!hasPermission(this.userId, 'edit-team-channel')) {
+		const team = Promise.await(Team.getOneByRoomId(roomId));
+
+		if (!hasPermission(this.userId, 'edit-team-channel', team.roomId)) {
 			return API.v1.unauthorized();
 		}
-		const canUpdateAny = !!hasPermission(this.userId, 'view-all-team-channels');
+		const canUpdateAny = !!hasPermission(this.userId, 'view-all-team-channels', team.roomId);
 
 		const room = Promise.await(Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny));
 
@@ -126,18 +126,29 @@ API.v1.addRoute('teams.updateRoom', { authRequired: true }, {
 
 API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 	get() {
-		const { teamId } = this.queryParams;
+		const { teamId, teamName, filter, type } = this.queryParams;
 		const { offset, count } = this.getPaginationItems();
-		const { query } = this.parseJsonQuery();
 
-		const allowPrivateTeam = hasPermission(this.userId, 'view-all-teams');
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
+
+		const allowPrivateTeam = hasPermission(this.userId, 'view-all-teams', team.roomId);
 
 		let getAllRooms = false;
-		if (hasPermission(this.userId, 'view-all-team-channels')) {
+		if (hasPermission(this.userId, 'view-all-team-channels', team.roomId)) {
 			getAllRooms = true;
 		}
 
-		const { records, total } = Promise.await(Team.listRooms(this.userId, teamId, getAllRooms, allowPrivateTeam, { offset, count }, { query }));
+		const listFilter = {
+			name: filter,
+			isDefault: type === 'autoJoin',
+			getAllRooms,
+			allowPrivateTeam,
+		};
+
+		const { records, total } = Promise.await(Team.listRooms(this.userId, team._id, listFilter, { offset, count }));
 
 		return API.v1.success({
 			rooms: records,
@@ -151,15 +162,20 @@ API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 API.v1.addRoute('teams.listRoomsOfUser', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { teamId, userId } = this.queryParams;
+		const { teamId, teamName, userId } = this.queryParams;
 
-		const allowPrivateTeam = hasPermission(this.userId, 'view-all-teams');
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
 
-		if (!hasPermission(this.userId, 'view-all-team-channels')) {
+		const allowPrivateTeam = hasPermission(this.userId, 'view-all-teams', team.roomId);
+
+		if (!hasPermission(this.userId, 'view-all-team-channels', team.roomId)) {
 			return API.v1.unauthorized();
 		}
 
-		const { records, total } = Promise.await(Team.listRoomsOfUser(this.userId, teamId, userId, allowPrivateTeam, { offset, count }));
+		const { records, total } = Promise.await(Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, { offset, count }));
 
 		return API.v1.success({
 			rooms: records,
@@ -175,9 +191,14 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName } = this.queryParams;
 		const { query } = this.parseJsonQuery();
-		const canSeeAllMembers = hasPermission(this.userId, 'view-all-teams');
 
-		const { records, total } = Promise.await(Team.members(this.userId, teamId, teamName, canSeeAllMembers, { offset, count }, { query }));
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
+		const canSeeAllMembers = hasPermission(this.userId, 'view-all-teams', team.roomId);
+
+		const { records, total } = Promise.await(Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, { query }));
 
 		return API.v1.success({
 			members: records,
@@ -190,13 +211,18 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 
 API.v1.addRoute('teams.addMembers', { authRequired: true }, {
 	post() {
-		if (!hasAtLeastOnePermission(this.userId, ['add-team-member', 'edit-team-member'])) {
+		const { teamId, teamName, members } = this.bodyParams;
+
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
+
+		if (!hasAtLeastOnePermission(this.userId, ['add-team-member', 'edit-team-member'], team.roomId)) {
 			return API.v1.unauthorized();
 		}
 
-		const { teamId, teamName, members } = this.bodyParams;
-
-		Promise.await(Team.addMembers(this.userId, teamId, teamName, members));
+		Promise.await(Team.addMembers(this.userId, team._id, members));
 
 		return API.v1.success();
 	},
@@ -204,30 +230,53 @@ API.v1.addRoute('teams.addMembers', { authRequired: true }, {
 
 API.v1.addRoute('teams.updateMember', { authRequired: true }, {
 	post() {
-		if (!hasAtLeastOnePermission(this.userId, ['edit-team-member'])) {
+		const { teamId, teamName, member } = this.bodyParams;
+
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
+
+		if (!hasAtLeastOnePermission(this.userId, ['edit-team-member'], team.roomId)) {
 			return API.v1.unauthorized();
 		}
 
-		const { teamId, teamName, member } = this.bodyParams;
-
-		Promise.await(Team.updateMember(teamId, teamName, member));
+		Promise.await(Team.updateMember(team._id, member));
 
 		return API.v1.success();
 	},
 });
 
-API.v1.addRoute('teams.removeMembers', { authRequired: true }, {
+API.v1.addRoute('teams.removeMember', { authRequired: true }, {
 	post() {
-		if (!hasAtLeastOnePermission(this.userId, ['edit-team-member'])) {
+		const { teamId, teamName, userId, rooms } = this.bodyParams;
+
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
+
+		if (!hasAtLeastOnePermission(this.userId, ['edit-team-member'], team.roomId)) {
 			return API.v1.unauthorized();
 		}
 
-		const { teamId, teamName, members, rooms } = this.bodyParams;
+		const user = Users.findOneActiveById(userId, {});
+		if (!user) {
+			return API.v1.failure('invalid-user');
+		}
 
-		Promise.await(Team.removeMembers(teamId, teamName, members));
+		if (!Promise.await(Team.removeMembers(team._id, [{ userId }]))) {
+			return API.v1.failure();
+		}
 
 		if (rooms?.length) {
-			Subscriptions.removeByRoomIdsAndUserId(rooms, this.userId);
+			const roomsFromTeam: string[] = Promise.await(Team.getMatchingTeamRooms(team._id, rooms));
+
+			roomsFromTeam.forEach((rid) => {
+				removeUserFromRoom(rid, user, {
+					byUser: this.user,
+				});
+			});
 		}
 
 		return API.v1.success();
@@ -238,13 +287,21 @@ API.v1.addRoute('teams.leave', { authRequired: true }, {
 	post() {
 		const { teamId, teamName, rooms } = this.bodyParams;
 
-		Promise.await(Team.removeMembers(teamId, teamName, [{
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+
+		Promise.await(Team.removeMembers(team._id, [{
 			userId: this.userId,
 		}]));
 
 		if (rooms?.length) {
-			Subscriptions.removeByRoomIdsAndUserId(rooms, this.userId);
+			const roomsFromTeam: string[] = Promise.await(Team.getMatchingTeamRooms(team._id, rooms));
+
+			roomsFromTeam.forEach((rid) => {
+				removeUserFromRoom(rid, this.user);
+			});
 		}
+
+		removeUserFromRoom(team.roomId, this.user);
 
 		return API.v1.success();
 	},
@@ -272,10 +329,6 @@ API.v1.addRoute('teams.info', { authRequired: true }, {
 
 API.v1.addRoute('teams.delete', { authRequired: true }, {
 	post() {
-		if (!hasPermission(this.userId, 'delete-team')) {
-			return API.v1.unauthorized();
-		}
-
 		const { teamId, teamName, roomsToRemove } = this.bodyParams;
 
 		if (!teamId && !teamName) {
@@ -291,14 +344,20 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 			return API.v1.failure('Team not found.');
 		}
 
-		const rooms = Promise.await(Team.getMatchingTeamRooms(team._id, roomsToRemove));
+		if (!hasPermission(this.userId, 'delete-team', team.roomId)) {
+			return API.v1.unauthorized();
+		}
+
+		const rooms: string[] = Promise.await(Team.getMatchingTeamRooms(team._id, roomsToRemove));
 
 		// Remove the team's main room
-		Rooms.removeById(team.roomId);
+		Meteor.call('eraseRoom', team.roomId);
 
 		// If we got a list of rooms to delete along with the team, remove them first
 		if (rooms.length) {
-			Rooms.removeByIds(rooms);
+			rooms.forEach((room) => {
+				Meteor.call('eraseRoom', room);
+			});
 		}
 
 		// Move every other room back to the workspace
@@ -313,9 +372,9 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 
 API.v1.addRoute('teams.autocomplete', { authRequired: true }, {
 	get() {
-		const { name, userId } = this.queryParams;
+		const { name } = this.queryParams;
 
-		const teams = Promise.await(Team.autocomplete(userId, name));
+		const teams = Promise.await(Team.autocomplete(this.userId, name));
 
 		return API.v1.success({ teams });
 	},
