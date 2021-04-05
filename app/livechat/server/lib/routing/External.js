@@ -33,8 +33,10 @@ class ExternalQueue {
 						'X-RocketChat-Secret-Token': settings.get('Livechat_External_Queue_Token'),
 					},
 				});
+
 				if (result && result.data && result.data.username) {
 					const agent = Users.findOneOnlineAgentByUsername(result.data.username);
+
 					if (agent) {
 						return {
 							agentId: agent._id,

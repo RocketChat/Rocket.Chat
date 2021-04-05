@@ -5,9 +5,7 @@ import { Users, LivechatDepartmentAgents } from '../../../models';
 
 callbacks.add('livechat.beforeDelegateAgent', (options = {}) => {
 	const { department, agent } = options;
-	if (!settings.get('Livechat_kill_switch')) {
-		return null;
-	}
+
 	if (agent) {
 		return agent;
 	}
