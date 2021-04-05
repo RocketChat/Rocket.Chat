@@ -3811,7 +3811,7 @@
   "Teams_New_Name_Label": "Nombre",
   "Teams_Info": "Información del equipo",
   "Teams_kept_channels": "No seleccionó los siguientes Channels, por lo que se moverán al espacio de trabajo:",
-  "Teams_kept__username__channels": "No seleccionó los siguientes Channels, por lo que __nombredeusuario__ se mantendrá en ellos:",
+  "Teams_kept__username__channels": null,
   "Teams_leave_channels": "Seleccione los Channels del equipo que le gustaría dejar.",
   "Teams_leave": "Dejar equipo",
   "Teams_members": "Miembrsos de Equipos",
