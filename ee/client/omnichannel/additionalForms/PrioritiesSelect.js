@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Field, Select } from '@rocket.chat/fuselage';
 
 export const PrioritiesSelect = ({ options, value, handler, label }) => {
-	const optionsSelect = () => (options && options.length > 0) && options.map((option) => [option._id, option.name]);
+	const optionsSelect = useMemo(() => (options && options.length > 0) && options.map((option) => [option._id, option.name]), [options]);
 
 	return <Field>
 		<Field.Label>{label}</Field.Label>
