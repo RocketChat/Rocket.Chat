@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
 
-import { settings } from '../../settings';
-import { Rooms } from '../../models';
+import { settings } from '../../settings/server';
+import { Rooms } from '../../models/server';
 
-export const getValidRoomName = (displayName, rid = '', options = {}) => {
+export const getValidRoomName = (displayName: string, rid: string|undefined, options: { allowDuplicates?: boolean; nameValidationRegex?: string|RegExp}): string => {
 	let slugifiedName = displayName;
 
 	if (settings.get('UI_Allow_room_names_with_special_chars')) {
@@ -12,9 +12,9 @@ export const getValidRoomName = (displayName, rid = '', options = {}) => {
 			const room = Rooms.findOneByDisplayName(displayName);
 			if (room && room._id !== rid) {
 				if (room.archived) {
-					throw new Meteor.Error('error-archived-duplicate-name', `There's an archived channel with name ${ displayName }`, { function: 'RocketChat.getValidRoomName', channel_name: displayName });
+					throw new Error(`There's an archived channel with name ${ displayName }`);
 				} else {
-					throw new Meteor.Error('error-duplicate-channel-name', `A channel with name '${ displayName }' exists`, { function: 'RocketChat.getValidRoomName', channel_name: displayName });
+					throw new Error(`A channel with name '${ displayName }' exists`);
 				}
 			}
 		}
@@ -36,6 +36,7 @@ export const getValidRoomName = (displayName, rid = '', options = {}) => {
 	if (!nameValidation.test(slugifiedName)) {
 		throw new Meteor.Error('error-invalid-room-name', `${ slugifiedName } is not a valid room name.`, {
 			function: 'RocketChat.getValidRoomName',
+			// eslint-disable-next-line @typescript-eslint/camelcase
 			channel_name: slugifiedName,
 		});
 	}
@@ -51,9 +52,9 @@ export const getValidRoomName = (displayName, rid = '', options = {}) => {
 				}
 				slugifiedName = tmpName;
 			} else if (room.archived) {
-				throw new Meteor.Error('error-archived-duplicate-name', `There's an archived channel with name ${ slugifiedName }`, { function: 'RocketChat.getValidRoomName', channel_name: slugifiedName });
+				throw new Error(`There's an archived channel with name ${ slugifiedName }`);
 			} else {
-				throw new Meteor.Error('error-duplicate-channel-name', `A channel with name '${ slugifiedName }' exists`, { function: 'RocketChat.getValidRoomName', channel_name: slugifiedName });
+				throw new Error(`A channel with name '${ slugifiedName }' exists`);
 			}
 		}
 	}

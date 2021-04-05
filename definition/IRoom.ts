@@ -60,6 +60,10 @@ export interface IRoom extends IRocketChatRecord {
 		_id: string;
 	};
 	onHold?: boolean;
+
+	customFields?: any;
+
+	ts: Date;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {

@@ -37,7 +37,7 @@ function getName(members: IUser[]): string {
 	return members.map(({ username }) => username).join(', ');
 }
 
-export const createDirectRoom = async (members: IUser[], roomExtraData: ICreateRoomExtraData, options: ICreateRoomOptions): Promise<ICreateDirectRoomResult> => {
+export const createDirectRoom = async (members: IUser[], roomExtraData: Partial<ICreateRoomExtraData>|undefined, options?: ICreateRoomOptions): Promise<ICreateDirectRoomResult> => {
 	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
@@ -100,6 +100,8 @@ export const createDirectRoom = async (members: IUser[], roomExtraData: ICreateR
 
 	const rid = room?._id || Rooms.insert(roomInfo);
 
+	const subscriptionsExtraData = options?.subscriptionExtra;
+	const subscriptionsCreator = options?.creator;
 	if (members.length === 1) { // dm to yourself
 		if (!members[0].username) {
 			throw new Error('error trying to send a dm to yourself');
@@ -107,21 +109,21 @@ export const createDirectRoom = async (members: IUser[], roomExtraData: ICreateR
 
 		Subscriptions.upsert({ rid, 'u._id': members[0]._id }, {
 			$set: { open: true },
-			$setOnInsert: generateSubscription(members[0].name || members[0].username, members[0].username, members[0], { ...options.subscriptionExtra }),
+			$setOnInsert: generateSubscription(members[0].name || members[0].username, members[0].username, members[0], { ...subscriptionsExtraData }),
 		});
 	} else {
 		members.forEach((member) => {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
 
 			Subscriptions.upsert({ rid, 'u._id': member._id }, {
-				...options.creator === member._id && { $set: { open: true } },
+				...subscriptionsCreator === member._id && { $set: { open: true } },
 				$setOnInsert: generateSubscription(
 					getFname(otherMembers),
 					getName(otherMembers),
 					member,
 					{
-						...options.subscriptionExtra,
-						...options.creator !== member._id && { open: members.length > 2 },
+						...subscriptionsExtraData,
+						...subscriptionsCreator !== member._id && { open: members.length > 2 },
 					},
 				),
 			});

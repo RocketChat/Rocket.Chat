@@ -26,6 +26,14 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findByUsernames(usernames, options) {
+		const query = {
+			username: { $in: usernames },
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneAgentById(_id, options) {
 		const query = {
 			_id,
@@ -113,6 +121,15 @@ export class UsersRaw extends BaseRaw {
 	findActiveByIds(userIds, options = {}) {
 		const query = {
 			_id: { $in: userIds },
+			active: true,
+		};
+
+		return this.find(query, options);
+	}
+
+	findActiveByUsernames(usernames, options = {}) {
+		const query = {
+			username: { $in: usernames },
 			active: true,
 		};
 
@@ -608,5 +625,14 @@ export class UsersRaw extends BaseRaw {
 		}, {
 			$pullAll: { __rooms: rids },
 		}, { multi: true });
+	}
+
+	addRoomByUserId(_id, rid) {
+		return this.update({
+			_id,
+			__rooms: { $ne: rid },
+		}, {
+			$addToSet: { __rooms: rid },
+		});
 	}
 }

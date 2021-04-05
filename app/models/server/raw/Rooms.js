@@ -333,4 +333,11 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.update(query, update, { multi: true });
 	}
+
+	createWithFullRoomData(room) {
+		delete room._id;
+
+		room._id = this.insert(room);
+		return room;
+	}
 }

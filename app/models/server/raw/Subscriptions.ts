@@ -1,7 +1,10 @@
-import { FindOneOptions, Cursor, UpdateQuery, FilterQuery } from 'mongodb';
+import { FindOneOptions, Cursor, UpdateQuery, FilterQuery, InsertOneWriteOpResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { ISubscription } from '../../../../definition/ISubscription';
+import { ISubscription, ISubscriptionExtraData } from '../../../../definition/ISubscription';
+import { IRoom } from '../../../../definition/IRoom';
+import { IUser } from '../../../../definition/IUser';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 
 type T = ISubscription;
 export class SubscriptionsRaw extends BaseRaw<T> {
@@ -79,5 +82,35 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		};
 
 		return this.update(query, update, options);
+	}
+
+	async createWithRoomAndUser(room: IRoom, user: IUser, extraData: ISubscriptionExtraData): Promise<InsertOneWriteOpResult<WithId<ISubscription>>> {
+		const subscription: Omit<ISubscription, '_id'> = {
+			open: false,
+			alert: false,
+			unread: 0,
+			userMentions: 0,
+			groupMentions: 0,
+			ts: room.ts,
+			rid: room._id,
+			name: room.name,
+			fname: room.fname,
+			customFields: room.customFields,
+			t: room.t,
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			...getDefaultSubscriptionPref(user),
+			...extraData,
+			_updatedAt: room.ts,
+		};
+
+		if (room.prid) {
+			subscription.prid = room.prid;
+		}
+
+		return this.insertOne(subscription);
 	}
 }

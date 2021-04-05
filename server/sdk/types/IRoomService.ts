@@ -1,4 +1,5 @@
 import { IRoom } from '../../../definition/IRoom';
+import { ICreateDirectRoomResult } from '../../../app/lib/server/functions/types';
 
 interface ISubscriptionExtraData {
 	open: boolean;
@@ -27,5 +28,5 @@ export interface ICreateRoomParams {
 }
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
-	create(uid: string, params: ICreateRoomParams): Promise<IRoom>;
+	create(uid: string, params: ICreateRoomParams): Promise<IRoom&{rid: string}|ICreateDirectRoomResult>;
 }
