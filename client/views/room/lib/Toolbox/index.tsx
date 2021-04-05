@@ -1,5 +1,5 @@
-import { BoxProps, OptionProps } from '@rocket.chat/fuselage';
-import { FC, LazyExoticComponent, ReactNode, MouseEvent } from 'react';
+import { Box, Option } from '@rocket.chat/fuselage';
+import { FC, LazyExoticComponent, ReactNode, MouseEvent, ComponentProps } from 'react';
 
 import { IRoom } from '../../../../../definition/IRoom';
 import { TranslationKey } from '../../../../contexts/TranslationContext';
@@ -8,7 +8,7 @@ import { generator, Events as GeneratorEvents } from './generator';
 type ToolboxHook = ({ room }: { room: IRoom }) => ToolboxActionConfig | null;
 
 type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' | 'title'> & {
-	className: BoxProps['className'];
+	className: ComponentProps<typeof Box>['className'];
 	tabId: ToolboxActionConfig['id'] | undefined;
 	index: number;
 	title: string;
@@ -16,7 +16,7 @@ type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' |
 
 export type ActionRenderer = (props: ActionRendererProps) => ReactNode;
 
-type OptionRendererProps = OptionProps;
+type OptionRendererProps = ComponentProps<typeof Option>;
 
 export type OptionRenderer = (props: OptionRendererProps) => ReactNode;
 

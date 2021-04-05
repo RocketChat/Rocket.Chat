@@ -3,13 +3,12 @@ import {
 	Field,
 	TextInput,
 	ToggleSwitch,
-	BoxClassName,
 	Select,
 	TextAreaInput,
 	SelectOptions,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, FormEvent, useMemo, useState } from 'react';
+import React, { ComponentProps, FC, FormEvent, useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
@@ -47,7 +46,7 @@ type TriggersFormProps = {
 		handleConditions: (value: TriggerConditions) => void;
 		handleActions: (value: TriggerActions) => void;
 	};
-	className?: BoxClassName;
+	className?: ComponentProps<typeof Field>['className'];
 };
 
 const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) => {

@@ -1,5 +1,5 @@
-import { FieldGroup, BoxClassName } from '@rocket.chat/fuselage';
-import React, { FC, Dispatch } from 'react';
+import { FieldGroup } from '@rocket.chat/fuselage';
+import React, { FC, Dispatch, ComponentProps } from 'react';
 
 import PageToggle from './PageToggle';
 
@@ -15,7 +15,7 @@ type PageItem = {
 
 type PageToggleAssemblerProps = OnToggleProps & {
 	pages: PageItem[];
-	className?: BoxClassName;
+	className?: ComponentProps<typeof PageToggle>['className'];
 };
 
 const PageToggleAssembler: FC<PageToggleAssemblerProps> = ({ pages, onToggle, className }) => (

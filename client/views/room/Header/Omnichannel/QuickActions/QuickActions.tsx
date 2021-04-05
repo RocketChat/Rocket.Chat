@@ -1,8 +1,17 @@
-import { BoxProps, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import React, { memo, useContext, useCallback, useState, useEffect, useMemo } from 'react';
+import React, {
+	memo,
+	useContext,
+	useCallback,
+	useState,
+	useEffect,
+	useMemo,
+	FC,
+	ComponentProps,
+} from 'react';
 import toastr from 'toastr';
 
 import { handleError } from '../../../../../../app/utils/client';
@@ -28,13 +37,12 @@ import { useUserId } from '../../../../../contexts/UserContext';
 import { QuickActionsActionConfig, QuickActionsEnum } from '../../../lib/QuickActions';
 import { QuickActionsContext } from '../../../lib/QuickActions/QuickActionsContext';
 
-const QuickActions = ({
-	room,
-	className,
-}: {
+type QuickActionsProps = {
 	room: IRoom;
-	className: BoxProps['className'];
-}): JSX.Element => {
+	className: ComponentProps<typeof Box>['className'];
+};
+
+const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 	const setModal = useSetModal();
 	const { isMobile } = useLayout();
 	const t = useTranslation();

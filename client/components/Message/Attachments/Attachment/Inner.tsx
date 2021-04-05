@@ -1,6 +1,6 @@
-import { Box, BoxProps } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import { Box } from '@rocket.chat/fuselage';
+import React, { ComponentProps, FC } from 'react';
 
-const Inner: FC<BoxProps> = ({ ...props }) => <Box {...props} />;
+const Inner: FC<ComponentProps<typeof Box>> = ({ ...props }) => <Box {...props} />;
 
 export default Inner;

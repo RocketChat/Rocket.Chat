@@ -1,6 +1,6 @@
-import { Menu, Option, BoxProps, MenuProps } from '@rocket.chat/fuselage';
+import { Menu, Option, MenuProps, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useContext, ReactNode, useRef } from 'react';
+import React, { memo, useContext, ReactNode, useRef, ComponentProps, FC } from 'react';
 // import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
@@ -15,7 +15,11 @@ const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: 
 	<Option label={title} icon={icon} {...props} />
 );
 
-const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Element => {
+type ToolBoxProps = {
+	className: ComponentProps<typeof Box>['className'];
+};
+
+const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 	const tab = useTab();
 	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();

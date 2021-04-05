@@ -1,5 +1,5 @@
 import { HTML } from 'meteor/htmljs';
-import { ComponentType } from 'react';
+import { ComponentProps, ComponentType } from 'react';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
@@ -21,8 +21,9 @@ createTemplateForComponent(
 
 createTemplateForComponent(
 	'Checkbox',
-	(): Promise<{ default: ComponentType<import('@rocket.chat/fuselage').CheckBoxProps> }> =>
-		import('@rocket.chat/fuselage').then(({ CheckBox }) => ({ default: CheckBox })),
+	(): Promise<{
+		default: ComponentType<ComponentProps<typeof import('@rocket.chat/fuselage').CheckBox>>;
+	}> => import('@rocket.chat/fuselage').then(({ CheckBox }) => ({ default: CheckBox })),
 	{
 		renderContainerView: () => HTML.DIV({ class: 'rcx-checkbox', style: 'display: flex;' }), // eslint-disable-line new-cap
 	},
