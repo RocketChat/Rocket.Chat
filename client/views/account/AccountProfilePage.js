@@ -179,7 +179,7 @@ const AccountProfilePage = () => {
 	const handleDeleteOwnAccount = useCallback(async () => {
 		const save = async (passwordOrUsername) => {
 			try {
-				await deleteOwnAccount(SHA256(passwordOrUsername));
+				await deleteOwnAccount(localPassword ? SHA256(passwordOrUsername) : passwordOrUsername);
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
 			} catch (error) {
 				if (error.error === 'user-last-owner') {
