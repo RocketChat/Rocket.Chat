@@ -6,6 +6,18 @@ import { useRoom } from './providers/RoomProvider';
 import { useTab, useTabBarClose, useTabContext } from './providers/ToolboxProvider';
 import RoomMembers from './contextualBar/RoomMembers';
 
+const getUid = (room, ownUserId) => {
+	if (room.uids.length === 1) {
+		return room.uids.length;
+	}
+
+	const uid = room.uids.filter((uid) => uid !== ownUserId).shift();
+
+	// Self DMs used to be created with the userId duplicated.
+	// Sometimes rooms can have 2 equal uids, but it's a self DM.
+	return uid ?? room.uids[0];
+};
+
 const MemberListRouter = ({ rid }) => {
 	const username = useTabContext();
 	const room = useRoom();
@@ -19,7 +31,7 @@ const MemberListRouter = ({ rid }) => {
 		return <RoomMembers rid={rid}/>;
 	}
 
-	return <UserInfo width='100%' {...username ? { username } : { uid: room.uids.length === 1 ? room.uids[0] : room.uids.filter((uid) => uid !== ownUserId).shift() }} onClose={onClickClose} rid={rid}/>;
+	return <UserInfo width='100%' {...username ? { username } : { uid: getUid(room, ownUserId) }} onClose={onClickClose} rid={rid}/>;
 };
 
 export default MemberListRouter;

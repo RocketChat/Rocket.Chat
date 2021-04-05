@@ -4,7 +4,7 @@ import React from 'react';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
+import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { UserInfoWithData } from './UserInfo';
 import { EditUserWithData } from './EditUser';
 import { AddUser } from './AddUser';
@@ -28,8 +28,7 @@ function UsersPage() {
 		usersRoute.push({ context: 'invite' });
 	};
 
-	const context = useRouteParameter('context');
-	const id = useRouteParameter('id');
+	const [, { context, id }] = useCurrentRoute();
 
 	return <Page flexDirection='row'>
 		<Page>
