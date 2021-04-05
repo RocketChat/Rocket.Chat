@@ -63,17 +63,21 @@
 					{{/if}}
 					{{#if msg.sentByEmail}}
 						<span class="sent-by-email">
-							<i class="icon-mail" title='{{_ "Message_sent_by_email"}}'></i>
+							{{>MessageStatusIcon type='sent-by-email'}}
 						</span>
 					{{/if}}
 					{{#if edited}}
 						{{>MessageStatusIcon type='edited' msg=msg}}
 					{{/if}}
 					{{#if msg.pinned}}
-						<span title="{{_ "Message_has_been_pinned"}}" class="pinned"><i class="icon-pin"></i></span>
+						<span class="pinned">
+							{{>MessageStatusIcon type='pinned'}}
+						</span>
 					{{/if}}
 					{{#if showStar}}
-						<span title="{{_ "Message_has_been_starred"}}" class="starred"><i class="icon-star"></i></span>
+						<span class="starred">
+							{{>MessageStatusIcon type='starred'}}
+						</span>
 					{{/if}}
 					{{#if following }}
 						{{#unless msg.tcount}}

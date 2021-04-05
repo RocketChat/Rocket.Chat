@@ -4,6 +4,9 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import { IMessage } from '../../../../definition/IMessage';
 import Edited from './Edited';
 import Translated from './Translated';
+import Pinned from './Pinned';
+import Starred from './Starred';
+import SentByMail from './SentByMail';
 
 type StatusIconType = FC<{
 	type: string;
@@ -17,9 +20,15 @@ const renderStatus = (type: string, msg: IMessage): ReactElement | undefined => 
 		case 'e2e':
 			return <Icon name='key' />;
 		case 'otr-ack':
-			return <Icon name='otr-message' />;
+			return <Icon name='shredder' />;
 		case 'translated':
 			return <Translated msg={msg} />;
+		case 'pinned':
+			return <Pinned />;
+		case 'starred':
+			return <Starred />;
+		case 'sent-by-email':
+			return <SentByMail />;
 	}
 };
 
