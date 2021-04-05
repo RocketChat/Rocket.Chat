@@ -29,7 +29,7 @@ const onDeleteMessageStream = (msg) => {
 	// remove thread refenrece from deleted message
 	ChatMessage.update({ tmid: msg._id }, { $unset: { tmid: 1 } }, { multi: true });
 };
-const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
+const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, users, ignoreThreads }) => {
 	const query = { rid, ts };
 	if (excludePinned) {
 		query.pinned = { $ne: true };
@@ -39,6 +39,11 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 	}
 	if (users && users.length) {
 		query['u.username'] = { $in: users };
+	}
+	if (ignoreThreads) {
+		query.tlm = { $exists: false };
+		query.tcount = { $exists: false };
+		query.tmid = { $exists: false };
 	}
 	ChatMessage.remove(query);
 };
