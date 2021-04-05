@@ -48,7 +48,7 @@ export function ContactEditWithData({ id, reload, close }) {
 	const { value: data, phase: state, error } = useEndpointData(`omnichannel/contact?contactId=${ id }`);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton/>;
+		return <Box pi='x24'><FormSkeleton/></Box>;
 	}
 
 	if (error || !data || !data.contact) {
@@ -199,7 +199,7 @@ export function ContactNewEdit({ id, data, reload, close }) {
 
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton/>;
+		return <Box pi='x24'><FormSkeleton/></Box>;
 	}
 
 	return <>

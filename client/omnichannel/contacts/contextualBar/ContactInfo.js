@@ -18,12 +18,14 @@ import { ContactManagerInfo } from '../../../../ee/client/omnichannel/ContactMan
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { UserStatus } from '../../../components/UserStatus';
 
-
 const wordBreak = css`
 	word-break: break-word;
 `;
+
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
+const Field = ({ children, ...props }) => <Box {...props }><Margins block='x4'>{children}</Margins></Box>;
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
+
 const CustomField = ({ id, value }) => {
 	const t = useTranslation();
 	const { value: data, phase: state, error } = useEndpointData(`livechat/custom-fields/${ id }`);
@@ -34,12 +36,11 @@ const CustomField = ({ id, value }) => {
 		return <Box mbs='x16'>{t('Custom_Field_Not_Found')}</Box>;
 	}
 	const { label } = data.customField;
-	return label && <Box>
+	return label && <Field>
 		<Label>{label}</Label>
 		<Info>{value}</Info>
-	</Box>;
+	</Field>;
 };
-
 
 export function ContactInfo({ id, rid, route }) {
 	const t = useTranslation();
@@ -81,7 +82,7 @@ export function ContactInfo({ id, rid, route }) {
 	const { value: data, phase: state, error } = useEndpointData(`omnichannel/contact?contactId=${ id }`);
 	const { contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager } } = data || { contact: {} };
 	if (state === AsyncStatePhase.LOADING) {
-		return <FormSkeleton />;
+		return <Box pi='x24'><FormSkeleton /></Box>;
 	}
 
 	if (error || !data || !data.contact) {
@@ -105,42 +106,38 @@ export function ContactInfo({ id, rid, route }) {
 
 	return <>
 		<VerticalBar.ScrollableContent p='x24'>
-			<Margins block='x4'>
-				{displayName && <>
-					<Label>{`${ t('Name') } / ${ t('Username') }`}</Label>
-					<Info style={{ display: 'flex' }}>
-						<UserAvatar size='x40' title={username} username={username} />
-						<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
-						{username && name && <Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>({username})</Box>}
-					</Info>
-				</>}
-				{visitorEmails && visitorEmails.length && <>
-					<Label>{t('Email')}</Label>
-					<Info>{visitorEmails[0].address}</Info>
-				</>}
-				{phone && phone.length && <>
-					<Label>{t('Phone')}</Label>
-					<Info>{phone[0].phoneNumber}</Info>
-				</>}
-				{ts && <>
-					<Label>{t('Created_at')}</Label>
-					<Info>{formatDate(ts)}</Info>
-				</>}
-
-				{lastChat && <>
-					<Label>{t('Last_Chat')}</Label>
-					<Info>{formatDate(lastChat.ts)}</Info>
-				</>}
-				{ canViewCustomFields()
-					&& livechatData
-					&& Object.keys(livechatData).map((key) => checkIsVisibleAndScopeVisitor(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />)
-				}
-				{ contactManager && <>
-					<Label>{t('Contact_Manager')}</Label>
-					<ContactManagerInfo username={contactManager.username} />
-				</>
-				}
-			</Margins>
+			{displayName && <Field>
+				<Label>{`${ t('Name') } / ${ t('Username') }`}</Label>
+				<Info style={{ display: 'flex' }}>
+					<UserAvatar size='x40' title={username} username={username} />
+					<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
+					{username && name && <Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>({username})</Box>}
+				</Info>
+			</Field>}
+			{visitorEmails && visitorEmails.length && <Field>
+				<Label>{t('Email')}</Label>
+				<Info>{visitorEmails[0].address}</Info>
+			</Field>}
+			{phone && phone.length && <Field>
+				<Label>{t('Phone')}</Label>
+				<Info>{phone[0].phoneNumber}</Info>
+			</Field>}
+			{ts && <Field>
+				<Label>{t('Created_at')}</Label>
+				<Info>{formatDate(ts)}</Info>
+			</Field>}
+			{lastChat && <Field>
+				<Label>{t('Last_Chat')}</Label>
+				<Info>{formatDate(lastChat.ts)}</Info>
+			</Field>}
+			{ canViewCustomFields()
+				&& livechatData
+				&& Object.keys(livechatData).map((key) => checkIsVisibleAndScopeVisitor(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />)
+			}
+			{contactManager && <Field>
+				<Label>{t('Contact_Manager')}</Label>
+				<ContactManagerInfo username={contactManager.username} />
+			</Field>}
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>

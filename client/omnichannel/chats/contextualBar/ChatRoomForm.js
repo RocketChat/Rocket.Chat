@@ -64,7 +64,7 @@ export function RoomEditWithData({ id, reload, close }) {
 	const { value: roomData, phase: state, error } = useEndpointData(`rooms.info?roomId=${ id }`);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton/>;
+		return <Box pi='x24'><FormSkeleton/></Box>;
 	}
 
 	if (error || !roomData || !roomData.room) {
@@ -83,7 +83,7 @@ function VisitorData({ room, reload, close }) {
 	const { value: visitor, phase: stateVisitor, error: errorVisitor } = useEndpointData(`livechat/visitors.info?visitorId=${ _id }`);
 
 	if ([stateVisitor].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton/>;
+		return <Box p='x24'><FormSkeleton/></Box>;
 	}
 
 	if (errorVisitor || !visitor || !visitor.visitor) {
@@ -197,7 +197,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 	const formIsValid = (hasUnsavedChangesContact || hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) && customFieldsError.length === 0;
 
 	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton/>;
+		return <Box pi='x24'><FormSkeleton/></Box>;
 	}
 
 	const { priorities } = prioritiesResult;

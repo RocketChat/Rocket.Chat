@@ -60,7 +60,7 @@ export const UserInfo = React.memo(function UserInfo({
 			<InfoPanel.Section>
 				<InfoPanel.Title title={(showRealNames && name) || username || name} icon={status} />
 
-				<InfoPanel.Text>{customStatus}</InfoPanel.Text>
+				{customStatus && <InfoPanel.Text>{customStatus}</InfoPanel.Text>}
 			</InfoPanel.Section>
 
 			<InfoPanel.Section>

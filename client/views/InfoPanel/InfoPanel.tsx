@@ -21,13 +21,13 @@ const Title: FC<TitleProps> = ({ title, icon }) => <Box display='flex' title={ti
 			? <Icon name={icon} size='x22' />
 			: icon
 	}
-	<Box mis='x16' flexGrow={1} withTruncatedText>{title}</Box>
+	<Box mis='x8' flexGrow={1} withTruncatedText>{title}</Box>
 </Box>;
 
-const Label: FC<BoxProps> = (props) => <Box mb='x8' fontScale='p2' color='default' {...props} />;
+const Label: FC<BoxProps> = (props) => <Box mb='x4' fontScale='p2' color='default' {...props} />;
 
 const Text: FC<BoxProps> = (props) => <Box
-	mb='x8'
+	mb='x4'
 	fontScale='p1'
 	color='hint'
 	withTruncatedText
@@ -42,7 +42,7 @@ const Action: FC<ButtonProps & { icon: string; label: string }> = ({ label, icon
 
 const ActionGroup: FC<ButtonGroupProps> = (props) => <Section><ButtonGroup flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center' {...props}/></Section>;
 
-const Field: FC = ({ children }) => <Box mb='x12'>{children}</Box>;
+const Field: FC = ({ children }) => <Box mb='x16'>{children}</Box>;
 
 const Avatar: FC = ({ children }) => <Section display='flex' justifyContent='center'>
 	{children}

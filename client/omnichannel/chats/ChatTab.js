@@ -69,7 +69,12 @@ const ChatTable = ({ setChatReload }) => {
 				<Box withTruncatedText>{fname}</Box>
 				{tags && <Box color='hint' display='flex' flex-direction='row'>
 					{tags.map((tag) => (
-						<Box style={{ marginTop: 4, whiteSpace: 'nowrap', overflow: tag.length > 10 ? 'hidden' : 'visible', textOverflow: 'ellipsis' }} key={tag} mie='x4'>
+						<Box style={{
+							marginTop: 4,
+							whiteSpace: 'nowrap',
+							overflow: tag.length > 10 ? 'hidden' : 'visible',
+							textOverflow: 'ellipsis',
+						}} key={tag} mie='x4'>
 							<Tag style={{ display: 'inline' }} disabled>{tag}</Tag>
 						</Box>
 					))}

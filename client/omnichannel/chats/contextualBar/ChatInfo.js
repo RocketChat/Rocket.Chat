@@ -25,6 +25,7 @@ const wordBreak = css`
 	word-break: break-word;
 `;
 const Label = (props) => <Box fontScale='p2' color='default' {...props} />;
+const Field = ({ children, ...props }) => <Box {...props }><Margins block='x4'>{children}</Margins></Box>;
 const Info = ({ className, ...props }) => <UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props}/>;
 
 const DepartmentField = ({ departmentId }) => {
@@ -34,10 +35,10 @@ const DepartmentField = ({ departmentId }) => {
 		return <FormSkeleton />;
 	}
 	const { department: { name } } = data || { department: {} };
-	return <>
+	return <Field>
 		<Label>{t('Department')}</Label>
 		<Info>{name}</Info>
-	</>;
+	</Field>;
 };
 
 const ContactField = ({ contact, room }) => {
@@ -60,14 +61,14 @@ const ContactField = ({ contact, room }) => {
 
 	const displayName = name || username;
 
-	return <>
+	return <Field>
 		<Label>{t('Contact')}</Label>
 		<Info style={{ display: 'flex' }}>
 			<Avatar size='x40' title={fname} url={avatarUrl} />
 			<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
 			{username && name && <Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>({username})</Box>}
 		</Info>
-	</>;
+	</Field>;
 };
 
 const AgentField = ({ agent }) => {
@@ -83,14 +84,14 @@ const AgentField = ({ agent }) => {
 
 	const displayName = name || username;
 
-	return <>
+	return <Field>
 		<Label>{t('Agent')}</Label>
 		<Info style={{ display: 'flex' }}>
 			<UserAvatar size='x40' title={username} username={username} />
 			<UserCard.Username mis='x10' name={displayName} status={<UserStatus status={status} />} />
 			{username && name && <Box display='flex' mis='x7' mb='x9' align='center' justifyContent='center'>({username})</Box>}
 		</Info>
-	</>;
+	</Field>;
 };
 
 const CustomField = ({ id, value }) => {
@@ -103,10 +104,10 @@ const CustomField = ({ id, value }) => {
 		return <Box mbs='x16'>{t('Custom_Field_Not_Found')}</Box>;
 	}
 	const { label } = data.customField;
-	return label && <>
+	return label && <Field>
 		<Label>{label}</Label>
 		<Info>{value}</Info>
-	</>;
+	</Field>;
 };
 
 const PriorityField = ({ id }) => {
@@ -119,10 +120,10 @@ const PriorityField = ({ id }) => {
 		return <Box mbs='x16'>{t('Custom_Field_Not_Found')}</Box>;
 	}
 	const { name } = data;
-	return <>
+	return <Field>
 		<Label>{t('Priority')}</Label>
 		<Info>{name}</Info>
-	</>;
+	</Field>;
 };
 
 const VisitorClientInfo = ({ uid }) => {
@@ -143,14 +144,14 @@ const VisitorClientInfo = ({ uid }) => {
 	clientData.browser = `${ ua.getBrowser().name } ${ ua.getBrowser().version }`;
 
 	return <>
-		{clientData.os && <>
+		{clientData.os && <Field>
 			<Label>{t('OS')}</Label>
 			<Info>{clientData.os}</Info>
-		</>}
-		{clientData.browser && <>
+		</Field>}
+		{clientData.browser && <Field>
 			<Label>{t('Browser')}</Label>
 			<Info>{clientData.browser}</Info>
-		</>}
+		</Field>}
 	</>;
 };
 
@@ -203,7 +204,7 @@ export function ChatInfo({ id, route }) {
 
 
 	if (state === AsyncStatePhase.LOADING) {
-		return <FormSkeleton />;
+		return <Box pi='x24'><FormSkeleton /></Box>;
 	}
 
 	if (error || !data || !data.room) {
@@ -212,64 +213,61 @@ export function ChatInfo({ id, route }) {
 
 	return <>
 		<VerticalBar.ScrollableContent p='x24'>
-			<Margins block='x4'>
-				<ContactField contact={v} room={data.room} />
-				{visitorId && <VisitorClientInfo uid={visitorId}/>}
-				{servedBy && <AgentField agent={servedBy} />}
-				{ departmentId && <DepartmentField departmentId={departmentId} /> }
-				{tags && tags.length > 0 && <>
-					<Label>{t('Tags')}</Label>
-					<Info>
-						{tags.map((tag) => (
-							<Box key={tag} mie='x4' display='inline'>
-								<Tag style={{ display: 'inline' }} disabled>{tag}</Tag>
-							</Box>
-						))}
-					</Info>
-				</>}
-				{topic && <>
-					<Label>{t('Topic')}</Label>
-					<Info>{topic}</Info>
-				</>}
-				{ts && <>
-					<Label>{t('Queue_Time')}</Label>
-					{
-						servedBy
-							? <Info>{moment(servedBy.ts).from(moment(ts), true)}</Info>
-							: <Info>{moment(ts).fromNow(true)}</Info>
-					}
-
-				</>}
-				{closedAt && <>
-					<Label>{t('Chat_Duration')}</Label>
-					<Info>{moment(closedAt).from(moment(ts), true)}</Info>
-				</>}
-				{ts && <>
-					<Label>{t('Created_at')}</Label>
-					<Info>{formatDateAndTime(ts)}</Info>
-				</>}
-				{closedAt && <>
-					<Label>{t('Closed_At')}</Label>
-					<Info>{formatDateAndTime(closedAt)}</Info>
-				</>}
-				{servedBy?.ts && <>
-					<Label>{t('Taken_at')}</Label>
-					<Info>{formatDateAndTime(servedBy.ts)}</Info>
-				</>}
-				{metrics?.response?.avg && formatDuration(metrics.response.avg) && <>
-					<Label>{t('Avg_response_time')}</Label>
-					<Info>{formatDuration(metrics.response.avg)}</Info>
-				</>}
-				{!waitingResponse && <>
-					<Label>{t('Inactivity_Time')}</Label>
-					<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
-				</>}
-				{ canViewCustomFields()
-					&& livechatData
-					&& Object.keys(livechatData).map((key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />)
+			<ContactField contact={v} room={data.room} />
+			{visitorId && <VisitorClientInfo uid={visitorId}/>}
+			{servedBy && <AgentField agent={servedBy} />}
+			{departmentId && <DepartmentField departmentId={departmentId} />}
+			{tags && tags.length > 0 && <>
+				<Label>{t('Tags')}</Label>
+				<Info>
+					{tags.map((tag) => (
+						<Box key={tag} mie='x4' display='inline'>
+							<Tag style={{ display: 'inline' }} disabled>{tag}</Tag>
+						</Box>
+					))}
+				</Info>
+			</>}
+			{topic && <Field>
+				<Label>{t('Topic')}</Label>
+				<Info>{topic}</Info>
+			</Field>}
+			{ts && <Field>
+				<Label>{t('Queue_Time')}</Label>
+				{
+					servedBy
+						? <Info>{moment(servedBy.ts).from(moment(ts), true)}</Info>
+						: <Info>{moment(ts).fromNow(true)}</Info>
 				}
-				{priorityId && <PriorityField id={priorityId} />}
-			</Margins>
+			</Field>}
+			{closedAt && <Field>
+				<Label>{t('Chat_Duration')}</Label>
+				<Info>{moment(closedAt).from(moment(ts), true)}</Info>
+			</Field>}
+			{ts && <Field>
+				<Label>{t('Created_at')}</Label>
+				<Info>{formatDateAndTime(ts)}</Info>
+			</Field>}
+			{closedAt && <Field>
+				<Label>{t('Closed_At')}</Label>
+				<Info>{formatDateAndTime(closedAt)}</Info>
+			</Field>}
+			{servedBy?.ts && <Field>
+				<Label>{t('Taken_at')}</Label>
+				<Info>{formatDateAndTime(servedBy.ts)}</Info>
+			</Field>}
+			{metrics?.response?.avg && formatDuration(metrics.response.avg) && <Field>
+				<Label>{t('Avg_response_time')}</Label>
+				<Info>{formatDuration(metrics.response.avg)}</Info>
+			</Field>}
+			{!waitingResponse && <Field>
+				<Label>{t('Inactivity_Time')}</Label>
+				<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
+			</Field>}
+			{ canViewCustomFields()
+				&& livechatData
+				&& Object.keys(livechatData).map((key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />)
+			}
+			{priorityId && <PriorityField id={priorityId} />}
 		</VerticalBar.ScrollableContent>
 		<VerticalBar.Footer>
 			<ButtonGroup stretch>

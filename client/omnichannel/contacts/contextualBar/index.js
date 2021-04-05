@@ -1,5 +1,4 @@
 import React from 'react';
-import { Icon, Box } from '@rocket.chat/fuselage';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
@@ -30,7 +29,8 @@ const ContactsContextualBar = ({ id }) => {
 
 	return <>
 		<VerticalBar.Header>
-			<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'><Icon name='user' size='x20' /> {t('Contact_Info')}</Box>
+			<VerticalBar.Icon name='user' />
+			<VerticalBar.Text>{t('Contact_Info')}</VerticalBar.Text>
 			<VerticalBar.Close onClick={closeContextualBar} />
 		</VerticalBar.Header>
 		{context === 'edit' ? <ContactEditWithData id={_id} close={handleContactEditBarCloseButtonClick} /> : <ContactInfo id={_id} rid={id} route={PATH} />}
