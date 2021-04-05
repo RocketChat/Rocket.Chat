@@ -1,9 +1,10 @@
 import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../components/MarkdownText';
 import GenericTable from '../../components/GenericTable';
+import FilterByText from '../../components/FilterByText';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRoute } from '../../contexts/RouterContext';
@@ -30,6 +31,7 @@ function TeamsTable() {
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
+	const refAutoFocus = useAutoFocus(true);
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 
 	const onHeaderClick = useCallback((id) => {
@@ -92,6 +94,7 @@ function TeamsTable() {
 
 	return <GenericTable
 		header={header}
+		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Teams_Search_teams')} inputRef={refAutoFocus} onChange={onChange} {...props} />}
 		renderRow={renderRow}
 		results={data.result}
 		setParams={setParams}

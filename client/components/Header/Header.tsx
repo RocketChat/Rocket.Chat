@@ -30,7 +30,7 @@ const HeaderLink: FC = (props: BoxProps) => <Box
 		css`
 			&:hover,
 			&:focus{
-				color: ${ colors.b500 } !important;
+				color: ${ colors.n800 } !important;
 			}
 			&:visited{
 				color: ${ colors.n800 };
@@ -39,7 +39,7 @@ const HeaderLink: FC = (props: BoxProps) => <Box
 	].filter(Boolean)}
 />;
 
-const HeaderTag: FC = ({ children, ...props }: TagProps) => <Tag {...props}><Box display='flex' fontScale='p2'>{children}</Box></Tag>;
+const HeaderTag: FC = ({ children, ...props }: TagProps) => <Box mi='x4'><Tag {...props}><Box alignItems='center' fontScale='c2' display='flex'>{children}</Box></Tag></Box>;
 
 const ToolBoxAction: FC = ({ id, icon, color, title, action, className, tabId, index, ...props }: any) => <ActionButton
 	className={className}
