@@ -25,6 +25,7 @@ export interface IRoom extends IRocketChatRecord {
 	encrypted?: boolean;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
+	uids: Array<string>;
 
 	lastMessage?: IMessage;
 	lm?: Date;
