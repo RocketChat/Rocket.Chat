@@ -145,6 +145,8 @@ export function settings(url) {
 	return {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
+			emergencyLivechatDisable: initSettings.Livechat_kill_switch,
+			emergencyLivechatDisableMessage: initSettings.Livechat_kill_switch_message,
 			registrationForm: shouldShowRegistrationForm(),
 			startSessionOnNewChat: initSettings.Livechat_start_session_on_new_chat,
 			allowSwitchingDepartments: initSettings.Livechat_allow_switching_departments,
