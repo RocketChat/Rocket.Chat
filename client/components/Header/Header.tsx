@@ -1,6 +1,18 @@
 import React, { FC } from 'react';
-import { Box, Icon, Divider, ButtonGroup, ActionButton, Badge, BadgeProps } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
+import colors from '@rocket.chat/fuselage-tokens/colors';
+import {
+	Box,
+	Icon,
+	Divider,
+	ButtonGroup,
+	ActionButton,
+	Badge,
+	BadgeProps,
+	Tag,
+	TagProps,
+	BoxProps,
+} from '@rocket.chat/fuselage';
 
 const Title: FC = (props: any) => <Box color='default' mi='x4' fontScale='s2' withTruncatedText {...props}/>;
 const Subtitle: FC = (props: any) => <Box color='hint' fontScale='p1' withTruncatedText {...props}/>;
@@ -11,7 +23,25 @@ const HeaderIcon: FC<{ icon: JSX.Element | { name: string; color?: string } | nu
 
 const ToolBox: FC = (props: any) => <ButtonGroup mi='x4' medium {...props}/>;
 
-const ToolBoxAction: FC = ({ id, icon, title, action, className, tabId, index, ...props }: any) => <ActionButton
+const HeaderLink: FC = (props: BoxProps) => <Box
+	is='a'
+	{...props}
+	className={[
+		css`
+			&:hover,
+			&:focus{
+				color: ${ colors.n800 } !important;
+			}
+			&:visited{
+				color: ${ colors.n800 };
+			}
+		`,
+	].filter(Boolean)}
+/>;
+
+const HeaderTag: FC = ({ children, ...props }: TagProps) => <Box mi='x4'><Tag {...props}><Box alignItems='center' fontScale='c2' display='flex'>{children}</Box></Tag></Box>;
+
+const ToolBoxAction: FC = ({ id, icon, color, title, action, className, tabId, index, ...props }: any) => <ActionButton
 	className={className}
 	primary={tabId === id}
 	onClick={action}
@@ -23,6 +53,7 @@ const ToolBoxAction: FC = ({ id, icon, title, action, className, tabId, index, .
 	ghost
 	tiny
 	overflow='visible'
+	color={!!color && color}
 	{...props}
 />;
 
@@ -66,4 +97,6 @@ Object.assign(Header, {
 	ToolBoxAction,
 	Divider: HeaderDivider,
 	Icon: HeaderIcon,
+	Link: HeaderLink,
+	Tag: HeaderTag,
 });

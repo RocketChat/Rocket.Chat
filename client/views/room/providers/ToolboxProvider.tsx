@@ -1,8 +1,7 @@
 import React, { ReactNode, useContext, useMemo, useState, useCallback, useLayoutEffect } from 'react';
 import { useDebouncedState, useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
-import { Handler } from '@rocket.chat/emitter';
 
-import { ToolboxContext } from '../lib/Toolbox/ToolboxContext';
+import { ToolboxContext, ToolboxEventHandler } from '../lib/Toolbox/ToolboxContext';
 import { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
 import { IRoom } from '../../../../definition/IRoom';
 import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
@@ -18,11 +17,20 @@ const groupsDict = {
 	c: 'channel',
 };
 
+const getGroup = (room: IRoom): string => {
+	if (room.teamMain) {
+		return 'team';
+	}
+
+	return groupsDict[room.t];
+};
+
 
 const VirtualAction = React.memo(({ handleChange, room, action, id }: { id: string; action: ToolboxAction; room: IRoom; handleChange: Function}): null => {
 	const config = typeof action === 'function' ? action({ room }) : action;
 
-	const group = groupsDict[room.t];
+	const group = getGroup(room);
+
 	const visible = config && (!config.groups || (groupsDict[room.t] && config.groups.includes(group as any)));
 
 	useLayoutEffect(() => {
@@ -37,7 +45,7 @@ const VirtualAction = React.memo(({ handleChange, room, action, id }: { id: stri
 	return null;
 });
 
-const useToolboxActions = (room: IRoom): { listen: (handler: Handler<any>) => Function; actions: Array<[string, ToolboxAction]> } => {
+const useToolboxActions = (room: IRoom): { listen: ToolboxEventHandler; actions: Array<[string, ToolboxAction]> } => {
 	const { listen, actions } = useContext(ToolboxContext);
 	const [state, setState] = useState<Array<[string, ToolboxAction]>>(Array.from(actions.entries()));
 
@@ -90,7 +98,7 @@ export const ToolboxProvider = ({ children, room }: { children: ReactNode; room:
 	const openUserInfo = useCallback((username) => {
 		switch (room.t) {
 			case 'l':
-				open('visitor-info', username);
+				open('room-info', username);
 				break;
 			case 'd':
 				open('user-info', username);

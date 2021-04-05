@@ -589,6 +589,10 @@ export const Livechat = {
 	},
 
 	async transfer(room, guest, transferData) {
+		if (room.onHold) {
+			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:transfer' });
+		}
+
 		if (transferData.departmentId) {
 			transferData.department = LivechatDepartment.findOneById(transferData.departmentId, { fields: { name: 1 } });
 		}
@@ -604,6 +608,10 @@ export const Livechat = {
 
 		if (!room.open) {
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnRoomAsInquiry' });
+		}
+
+		if (room.onHold) {
+			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
 		if (!room.servedBy) {
