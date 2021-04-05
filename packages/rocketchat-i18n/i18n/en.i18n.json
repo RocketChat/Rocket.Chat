@@ -2581,7 +2581,7 @@
   "manage-apps_description": "Permission to manage all apps",
   "manage-assets": "Manage Assets",
   "manage-assets_description": "Permission to manage the server assets",
-  "manage-cloud":"Manage Cloud",
+  "manage-cloud": "Manage Cloud",
   "manage-cloud_description": "Permission to manage cloud",
   "manage-email-inbox": "Manage Email Inbox",
   "manage-email-inbox_description": "Permission to manage email inboxes",
