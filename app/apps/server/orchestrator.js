@@ -115,8 +115,7 @@ export class AppServerOrchestrator {
 
 	debugLog(...args) {
 		if (this.isDebugging()) {
-			// eslint-disable-next-line
-			console.log(...args);
+			this.getRocketChatLogger().debug(...args);
 		}
 	}
 

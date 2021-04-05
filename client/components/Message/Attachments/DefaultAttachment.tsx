@@ -18,6 +18,8 @@ export type DefaultAttachmentProps = {
 	author_link?: string;
 	author_name?: string;
 
+	// TODO: replace this component props type with a payload-based type because
+	// `value` comes as `string` and is passed as `ReactNode`
 	fields: FieldsAttachmentProps;
 
 	// footer
@@ -57,7 +59,13 @@ export const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
 			{!collapsed && <>
 				{attachment.text && <Attachment.Text>{applyMardownFor('text', attachment.text)}</Attachment.Text>}
 				{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
-				{attachment.fields && <FieldsAttachment fields={attachment.fields.map(({ value, ...rest }) => {
+				{attachment.fields && <FieldsAttachment fields={attachment.fields.map((field) => {
+					if (!field.value) {
+						return field;
+					}
+
+					const { value, ...rest } = field;
+
 					const cleanValue = (value as string).replace(/(.*)/g, (line: string) => {
 						if (line.trim() === '') {
 							return `${ line }  <br/>`;
