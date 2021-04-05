@@ -33,11 +33,11 @@ export const useFilesList = (
 		l: 'channels.files',
 		d: 'im.files',
 		p: 'groups.files',
-	};
+	} as const;
 
-	const apiEndPoint = room && roomTypes[room.t];
+	const apiEndPoint = room ? roomTypes[room.t] : 'channels.files';
 
-	const getFiles = useEndpoint('GET', apiEndPoint as string);
+	const getFiles = useEndpoint('GET', apiEndPoint);
 
 	const fetchMessages = useCallback(
 		async (start, end) => {
