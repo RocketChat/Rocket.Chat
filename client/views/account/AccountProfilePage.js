@@ -44,11 +44,10 @@ const AccountProfilePage = () => {
 
 	const logoutOtherClients = useMethod('logoutOtherClients');
 	const deleteOwnAccount = useMethod('deleteUserOwnAccount');
+	const checkUserHasPassword = useMethod('checkUserHasPassword');
 	const saveFn = useMethod('saveUserProfile');
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
-
-	const localPassword = Boolean(user?.services?.password?.bcrypt?.trim());
 
 	const erasureType = useSetting('Message_ErasureType');
 	const allowRealNameChange = useSetting('Accounts_AllowRealNameChange');
@@ -177,6 +176,7 @@ const AccountProfilePage = () => {
 	}, [logoutOtherClients, dispatchToastMessage, t]);
 
 	const handleDeleteOwnAccount = useCallback(async () => {
+		const localPassword = (await checkUserHasPassword()).result;
 		const save = async (passwordOrUsername) => {
 			try {
 				await deleteOwnAccount(localPassword ? SHA256(passwordOrUsername) : passwordOrUsername);
@@ -215,7 +215,7 @@ const AccountProfilePage = () => {
 			text={t('If_you_are_sure_type_in_your_username')}
 			isPassword
 		/>);
-	}, [closeModal, deleteOwnAccount, dispatchToastMessage, erasureType, localPassword, t, setModal]);
+	}, [closeModal, deleteOwnAccount, dispatchToastMessage, erasureType, checkUserHasPassword, t, setModal]);
 
 	return <Page>
 		<Page.Header title={t('Profile')}>

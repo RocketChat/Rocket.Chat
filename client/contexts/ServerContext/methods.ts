@@ -25,6 +25,7 @@ export type ServerMethods = {
 	'bbbEnd': (...args: any[]) => any;
 	'bbbJoin': (...args: any[]) => any;
 	'blockUser': (...args: any[]) => any;
+	'checkUserHasPassword': (...args: any[]) => any;
 	'checkUsernameAvailability': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
 	'clearIntegrationHistory': (...args: any[]) => any;

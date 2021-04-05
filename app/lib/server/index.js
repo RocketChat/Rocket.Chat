@@ -24,6 +24,7 @@ import './methods/addUserToRoom';
 import './methods/archiveRoom';
 import './methods/blockUser';
 import './methods/checkRegistrationSecretURL';
+import './methods/checkUserHasPassword';
 import './methods/checkUsernameAvailability';
 import './methods/cleanRoomHistory';
 import './methods/createChannel';
