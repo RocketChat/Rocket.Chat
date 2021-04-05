@@ -596,6 +596,22 @@ settings.addGroup('Accounts', function() {
 			enableQuery,
 		});
 	});
+
+	this.section('Password_History', function() {
+		this.add('Accounts_Password_History_Enabled', false, {
+			type: 'boolean',
+		});
+
+		const enableQuery = {
+			_id: 'Accounts_Password_History_Enabled',
+			value: true,
+		};
+
+		this.add('Accounts_Password_History_Amount', 5, {
+			type: 'int',
+			enableQuery,
+		});
+	});
 });
 
 settings.addGroup('OAuth', function() {

@@ -1034,6 +1034,12 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
+	addPasswordToHistory(_id, password) {
+		if (settings.get('Accounts_Password_History_Enabled') === true) {
+
+		}
+	}
+
 	setServiceId(_id, serviceName, serviceId) {
 		const update =		{ $set: {} };
 

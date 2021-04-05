@@ -81,6 +81,8 @@ function saveUserProfile(settings, customFields) {
 				logout: false,
 			});
 
+			Users.addPasswordToHistory(this.userId, user.services?.password.bcrypt);
+
 			try {
 				Meteor.call('removeOtherTokens');
 			} catch (e) {
