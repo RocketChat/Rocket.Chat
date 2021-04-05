@@ -50,7 +50,7 @@ addAction('members-list', ({ room }) => {
 						groups: ['channel', 'group'],
 						id: 'members-list',
 						title: 'Members',
-						icon: 'team',
+						icon: 'members',
 						template: lazy(() => import('../../MemberListRouter')),
 						order: 5,
 				  }

@@ -54,13 +54,8 @@ const TeamsChannels = ({ teamId }) => {
 
 	const goToRoom = useCallback((room) => roomTypes.openRouteLink(room.t, room), []);
 	const handleBack = useCallback(() => setState({}), [setState]);
-	const viewRoom = useMutableCallback((e) => {
-		const { rid } = e.currentTarget.dataset;
-
-		setState({
-			tab: 'RoomInfo',
-			rid,
-		});
+	const viewRoom = useMutableCallback((room) => {
+		goToRoom(room);
 	});
 
 	if (state.tab === 'RoomInfo') {
@@ -70,6 +65,7 @@ const TeamsChannels = ({ teamId }) => {
 				onClickClose={onClickClose}
 				onClickBack={handleBack}
 				onEnterRoom={goToRoom}
+				resetState={setState}
 			/>
 		);
 	}

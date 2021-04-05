@@ -8,7 +8,7 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useRoute } from '../../../../../contexts/RouterContext';
-import { useMethod } from '../../../../../contexts/ServerContext';
+import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -32,7 +32,7 @@ const retentionPolicyAppliesTo = {
 	d: 'RetentionPolicy_AppliesToDMs',
 };
 
-const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom }) => {
+const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetState }) => {
 	const onClickClose = useTabBarClose();
 	const t = useTranslation();
 
@@ -53,7 +53,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
-	const deleteRoom = useMethod('eraseRoom');
+	const deleteRoom = useEndpoint('POST', room.t === 'c' ? 'channels.delete' : 'groups.delete');
 	const hideRoom = useMethod('hideRoom');
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
@@ -77,8 +77,10 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom }) => {
 	const handleDelete = useMutableCallback(() => {
 		const onConfirm = async () => {
 			try {
-				await deleteRoom(rid);
-				router.push({});
+				resetState && resetState({});
+				await deleteRoom({ roomId: rid });
+				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
+				!resetState && router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

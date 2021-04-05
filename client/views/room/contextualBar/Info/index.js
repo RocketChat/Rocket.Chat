@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import EditRoomInfoWithData from './EditRoomInfo';
 import RoomInfoWithData from './RoomInfo';
 
-const RoomInfo = ({ rid, onClickBack, onEnterRoom }) => {
+const RoomInfo = ({ rid, onClickBack, onEnterRoom, resetState }) => {
 	const [editing, setEditing] = useState(false);
 	const backToView = useMutableCallback(() => setEditing(false));
 	return editing ? (
@@ -15,6 +15,7 @@ const RoomInfo = ({ rid, onClickBack, onEnterRoom }) => {
 			openEditing={setEditing}
 			rid={rid}
 			onEnterRoom={onEnterRoom}
+			resetState={resetState}
 		/>
 	);
 };

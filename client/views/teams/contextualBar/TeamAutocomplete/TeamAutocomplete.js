@@ -1,18 +1,15 @@
 import { AutoComplete, Option } from '@rocket.chat/fuselage';
 import React, { memo, useMemo, useState } from 'react';
 
-import { useUserId } from '../../../../contexts/UserContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Avatar from './Avatar';
 
 const TeamAutocomplete = (props) => {
 	const [filter, setFilter] = useState('');
 
-	const userId = useUserId();
-
 	const { value: data } = useEndpointData(
 		'teams.autocomplete',
-		useMemo(() => ({ name: filter, userId }), [filter, userId]),
+		useMemo(() => ({ name: filter }), [filter]),
 	);
 
 	const options = useMemo(

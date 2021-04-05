@@ -6,7 +6,8 @@ export type ListRoomsEndpoint = {
 		teamId: string;
 		offset?: number;
 		count?: number;
-		query: string;
+		filter: string;
+		type: string;
 	}) => Omit<IRecordsWithTotal<IRoom>, 'records'> & {
 		count: number;
 		offset: number;

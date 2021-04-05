@@ -11,7 +11,7 @@ const HeaderLink: FC<ComponentProps<typeof Box>> = (props) => (
 			css`
 				&:hover,
 				&:focus {
-					color: ${colors.b500} !important;
+					color: ${colors.n800} !important;
 				}
 				&:visited {
 					color: ${colors.n800};

@@ -35,12 +35,8 @@ export const useTeamsChannelList = (
 				teamId: options.teamId,
 				offset: start,
 				count: end - start,
-				query: JSON.stringify({
-					name: { $regex: options.text || '', $options: 'i' },
-					...(options.type !== 'all' && {
-						teamDefault: true,
-					}),
-				}),
+				filter: options.text,
+				type: options.type,
 			});
 
 			return {

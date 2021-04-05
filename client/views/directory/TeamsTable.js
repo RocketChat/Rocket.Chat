@@ -1,8 +1,9 @@
 import { Box, Table, Avatar, Icon } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import { roomTypes } from '../../../app/utils/client';
+import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
 import MarkdownText from '../../components/MarkdownText';
 import { useRoute } from '../../contexts/RouterContext';
@@ -19,6 +20,7 @@ function TeamsTable() {
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
+	const refAutoFocus = useAutoFocus(true);
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 
 	const onHeaderClick = useCallback(
@@ -145,6 +147,14 @@ function TeamsTable() {
 	return (
 		<GenericTable
 			header={header}
+			renderFilter={({ onChange, ...props }) => (
+				<FilterByText
+					placeholder={t('Teams_Search_teams')}
+					inputRef={refAutoFocus}
+					onChange={onChange}
+					{...props}
+				/>
+			)}
 			renderRow={renderRow}
 			results={data.result}
 			setParams={setParams}

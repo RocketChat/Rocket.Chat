@@ -7,7 +7,7 @@ function Row({ room, onClickView, reload }) {
 		return <TeamsChannelItem.Skeleton />;
 	}
 
-	return <TeamsChannelItem room={room} onClickView={onClickView} reload={reload} />;
+	return <TeamsChannelItem room={room} onClickView={() => onClickView(room)} reload={reload} />;
 }
 
 export default memo(Row);

@@ -25,8 +25,6 @@ export const SpotlightEnterprise = {
 	},
 
 	_performExtraUserSearches(_, userId, searchParams) {
-		if (this._searchTeams(userId, searchParams)) {
-			return searchParams.users;
-		}
+		return this._searchTeams(userId, searchParams);
 	},
 };
