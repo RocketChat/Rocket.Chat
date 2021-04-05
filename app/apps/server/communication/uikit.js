@@ -18,14 +18,14 @@ apiServer.disable('x-powered-by');
 if (settings.get('API_Enable_CORS')) {
 	const CORSOriginSetting = settings.get('API_CORS_Origin');
 
-	const whitelistOrigins = CORSOriginSetting
+	const allowlistOrigins = CORSOriginSetting
 		.trim()
 		.split(',')
 		.map((origin) => String(origin).trim().toLocaleLowerCase());
 
 	apiServer.use(cors({
 		origin: (origin, callback) => {
-			if (CORSOriginSetting === '*' || whitelistOrigins.includes(origin) || !origin) {
+			if (CORSOriginSetting === '*' || allowlistOrigins.includes(origin) || !origin) {
 				callback(null, true);
 			} else {
 				callback(new Error('Not allowed by CORS'));
