@@ -12,7 +12,6 @@ import {
 	useDebouncedCallback,
 	useAutoFocus,
 } from '@rocket.chat/fuselage-hooks';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { FC, memo, Ref, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { IUser } from '../../../../definition/IUser';
@@ -22,6 +21,7 @@ import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
+import { goToRoomById } from '../../../lib/goToRoomById';
 import TeamNameInput from './TeamNameInput';
 import UsersInput from './UsersInput';
 
@@ -183,7 +183,7 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 
 		const data = await createTeam(params);
 
-		FlowRouter.goToRoomById(data.team.roomId);
+		goToRoomById(data.team.roomId);
 
 		onClose();
 	}, [name, members, type, readOnly, description, broadcast, encrypted, createTeam, onClose]);
