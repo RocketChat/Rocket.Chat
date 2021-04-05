@@ -157,9 +157,7 @@ function SettingsBasedStep({ step, title, active }) {
 								placeholder={t('Default')}
 								value={value}
 								onChange={(value) => setFieldValue(_id, value)}
-								options = {languages
-									.map(({ key, name }) => [key, name])
-									.sort(([a], [b]) => a - b)}
+								options = {languages.map(({ key, name }) => [key, name])}
 							/>}
 						</Field.Row>
 					</Field>,

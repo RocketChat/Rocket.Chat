@@ -16,9 +16,7 @@ export const EditCustomUserStatusWithData: FC<EditCustomUserStatusWithDataProps>
 	const t = useTranslation();
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const { value: data, phase: state, error, reload } = useEndpointData<{
-		statuses: unknown[];
-	}>('custom-user-status.list', query);
+	const { value: data, phase: state, error, reload } = useEndpointData('custom-user-status.list', query);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <Box pb='x20'>

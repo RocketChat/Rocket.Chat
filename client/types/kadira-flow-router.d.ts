@@ -138,5 +138,6 @@ declare module 'meteor/kadira:flow-router' {
 	export const FlowRouter: Router & {
 		Route: typeof Route;
 		Router: typeof Router;
+		goToRoomById: (rid: unknown) => void;
 	};
 }

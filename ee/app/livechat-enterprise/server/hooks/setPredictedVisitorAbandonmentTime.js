@@ -3,7 +3,7 @@ import { settings } from '../../../../../app/settings/server';
 import { setPredictedVisitorAbandonmentTime } from '../lib/Helper';
 
 callbacks.add('afterSaveMessage', function(message, room) {
-	if (!settings.get('Livechat_auto_close_abandoned_rooms') || settings.get('Livechat_visitor_inactivity_timeout') <= 0) {
+	if (!settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none' || settings.get('Livechat_visitor_inactivity_timeout') <= 0) {
 		return message;
 	}
 	// skips this callback if the message was edited

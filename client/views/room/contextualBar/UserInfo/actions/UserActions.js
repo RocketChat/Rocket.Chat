@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react';
 import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
 
-import { useUserInfoActions, useUserInfoActionsSpread } from '../../../hooks/useUserInfoActions';
+import { useUserInfoActions } from '../../../hooks/useUserInfoActions';
+import { useActionSpread } from '../../../../hooks/useActionSpread';
 import { UserInfo } from '..';
 
 
 const UserActions = ({ user, rid }) => {
-	const { actions: actionsDefinition, menu: menuOptions } = useUserInfoActionsSpread(useUserInfoActions(user, rid));
+	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(useUserInfoActions(user, rid));
 
 	const menu = useMemo(() => {
 		if (!menuOptions) {

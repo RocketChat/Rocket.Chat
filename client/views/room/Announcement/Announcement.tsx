@@ -18,7 +18,7 @@ type AnnouncementParams = {
 	announcementDetails: () => void;
 }
 
-export const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onClickOpen }) => {
+const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onClickOpen }) => {
 	const announcementBar = css`
 		background-color: ${ colors.b200 };
 		background-color: var(--rc-color-announcement-background, ${ colors.b200 });

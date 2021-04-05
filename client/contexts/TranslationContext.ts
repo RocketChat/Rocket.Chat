@@ -1,18 +1,22 @@
 import { createContext, useContext } from 'react';
 
+import type keys from '../../packages/rocketchat-i18n/i18n/en.i18n.json';
+
 export type TranslationLanguage = {
 	name: string;
 	en: string;
 	key: string;
 };
 
+export type TranslationKey = keyof typeof keys;
+
 export type TranslationContextValue = {
 	languages: TranslationLanguage[];
 	language: TranslationLanguage['key'];
 	loadLanguage: (language: TranslationLanguage['key']) => Promise<void>;
 	translate: {
-		(key: string, ...replaces: unknown[]): string;
-		has: (key: string) => boolean;
+		(key: TranslationKey, ...replaces: unknown[]): string;
+		has: (key: TranslationKey) => boolean;
 	};
 };
 
