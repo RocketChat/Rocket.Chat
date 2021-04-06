@@ -171,9 +171,9 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 	const closeChat = useMethod('livechat:closeRoom');
 
 	const handleClose = useCallback(
-		async (comment: string) => {
+		async (comment: string, tags: string[]) => {
 			try {
-				await closeChat(rid, comment, { clientAction: true });
+				await closeChat(rid, comment, { clientAction: true, tags });
 				closeModal();
 				toastr.success(t('Chat_closed_successfully'));
 			} catch (error) {
