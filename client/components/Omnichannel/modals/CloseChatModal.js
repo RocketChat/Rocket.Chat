@@ -1,32 +1,35 @@
-import React, { FC, useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { Field, Button, TextInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useSubscription } from 'use-subscription';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
+import { formsSubscription } from '../../../views/omnichannel/additionalForms';
 
 
-type CloseChatModalProps = {
-	onCancel: () => void;
-	onConfirm: (comment: string) => void;
-};
-
-const CloseChatModal: FC<CloseChatModalProps> = ({ onCancel, onConfirm, ...props }) => {
+const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 	const t = useTranslation();
 
 	const inputRef = useAutoFocus(true);
+	const forms = useSubscription(formsSubscription);
 
-	const { values, handlers } = useForm({ comment: '' });
+	const {
+		useCurrentChatTags = () => {},
+	} = forms;
 
-	const { comment } = values as { comment: string };
-	const { handleComment } = handlers;
+	const Tags = useCurrentChatTags();
+
+	const { values, handlers } = useForm({ comment: '', tags: [] });
+
+	const { comment, tags } = values;
+	const { handleComment, handleTags } = handlers;
 	const [commentError, setCommentError] = useState('');
 
-
 	const handleConfirm = useCallback(() => {
-		onConfirm(comment);
-	}, [comment, onConfirm]);
+		onConfirm(comment, tags);
+	}, [comment, onConfirm, tags]);
 
 	useComponentDidUpdate(() => {
 		setCommentError(!comment ? t('The_field_is_required', t('Comment')) : '');
@@ -51,6 +54,12 @@ const CloseChatModal: FC<CloseChatModalProps> = ({ onCancel, onConfirm, ...props
 					{commentError}
 				</Field.Error>
 			</Field>
+			{Tags && <Field>
+				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
+				<Field.Row>
+					<Tags value={tags} handler={handleTags} />
+				</Field.Row>
+			</Field>}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
