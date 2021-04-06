@@ -12,3 +12,4 @@ import './theme';
 import './unread';
 import './userSetUtcOffset';
 import './usersObserve';
+import './e2e';

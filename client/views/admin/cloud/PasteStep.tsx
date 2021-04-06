@@ -74,7 +74,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 			<ButtonGroup>
 				<Button disabled={isLoading} onClick={onBackButtonClick}>{t('Back')}</Button>
 				<Button primary disabled={isLoading || !cloudKey.trim()} marginInlineStart='auto' onClick={handleFinishButtonClick}>
-					{isLoading ? <Throbber inheritColor /> : t('Finish Registration')}
+					{isLoading ? <Throbber inheritColor /> : t('Finish_Registration')}
 				</Button>
 			</ButtonGroup>
 		</Modal.Footer>

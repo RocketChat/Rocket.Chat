@@ -5,11 +5,14 @@ import { Users } from '../../../../../app/models';
 import { LivechatInquiry, OmnichannelQueue } from '../../../../../app/models/server/raw';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
+import { LivechatRooms, Subscriptions } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../app/callbacks';
+import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 
 export const LivechatEnterprise = {
 	addMonitor(username) {
@@ -162,6 +165,32 @@ export const LivechatEnterprise = {
 	updateRoomPriority(roomId, user, priority) {
 		updateInquiryQueuePriority(roomId, priority);
 		updateRoomPriorityHistory(roomId, user, priority);
+	},
+
+	placeRoomOnHold(room) {
+		const { _id: roomId, onHold } = room;
+		if (!roomId || onHold) {
+			return false;
+		}
+		LivechatRooms.setOnHold(roomId);
+		Subscriptions.setOnHold(roomId);
+
+		Meteor.defer(() => {
+			callbacks.run('livechat:afterOnHold', room);
+		});
+
+		return true;
+	},
+
+	async releaseOnHoldChat(room) {
+		const { _id: roomId, onHold } = room;
+		if (!roomId || !onHold) {
+			return;
+		}
+
+		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
+		LivechatRooms.unsetAllOnHoldFieldsByRoomId(roomId);
+		Subscriptions.unsetOnHold(roomId);
 	},
 };
 

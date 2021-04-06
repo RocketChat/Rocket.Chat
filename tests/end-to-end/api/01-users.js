@@ -2842,4 +2842,112 @@ describe('[Users]', function() {
 				.then(tryAuthentication);
 		});
 	});
+
+	describe('[/users.listTeams', () => {
+		const teamName1 = `team-name-${ Date.now() }`;
+		const teamName2 = `team-name-2-${ Date.now() }`;
+		let testUser;
+
+		before('create team 1', (done) => {
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName1,
+					type: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('team');
+					expect(res.body).to.have.nested.property('team._id');
+				})
+				.end(done);
+		});
+
+		before('create team 2', (done) => {
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName2,
+					type: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('team');
+					expect(res.body).to.have.nested.property('team._id');
+				})
+				.end(done);
+		});
+
+		before('create new user', (done) => {
+			createTestUser()
+				.then((user) => {
+					testUser = user;
+				})
+				.then(() => done());
+		});
+
+		before('add test user to team 1', (done) => {
+			request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamName: teamName1,
+					members: [
+						{
+							userId: testUser._id,
+							roles: ['member'],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.then(() => done());
+		});
+
+		before('add test user to team 2', (done) => {
+			request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamName: teamName2,
+					members: [
+						{
+							userId: testUser._id,
+							roles: ['member', 'owner'],
+						},
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.then(() => done());
+		});
+
+		it('should list both channels', (done) => {
+			request.get(api('users.listTeams'))
+				.set(credentials)
+				.send({
+					userId: testUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('teams');
+
+					const { teams } = res.body;
+
+					expect(teams).to.have.length(2);
+					expect(teams[0].isOwner).to.not.be.eql(teams[1].isOwner);
+				})
+				.end(done);
+		});
+	});
 });

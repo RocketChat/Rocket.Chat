@@ -1254,6 +1254,16 @@ export class Messages extends Base {
 
 		return this.find(query);
 	}
+
+	decreaseReplyCountById(_id, inc = -1) {
+		const query = { _id };
+		const update = {
+			$inc: {
+				tcount: inc,
+			},
+		};
+		return this.update(query, update);
+	}
 }
 
 export default new Messages();
