@@ -269,7 +269,7 @@ export class Logger {
 	}
 
 	_log(options, ...args) {
-		require('log-timestamp');
+		// require('log-timestamp');
 		if (LoggerManager.enabled === false) {
 			LoggerManager.addToQueue(this, [options, ...args]);
 			return;
