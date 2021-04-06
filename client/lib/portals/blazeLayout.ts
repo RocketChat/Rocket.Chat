@@ -11,18 +11,14 @@ class BlazeLayoutSubscription
 	implements Subscription<BlazeLayoutDescriptor | null> {
 	private descriptor: BlazeLayoutDescriptor | null = null;
 
-	getCurrentValue(): BlazeLayoutDescriptor | null {
-		return this.descriptor;
-	}
+	getCurrentValue = (): BlazeLayoutDescriptor | null => this.descriptor;
 
 	setCurrentValue(descriptor: BlazeLayoutDescriptor | null): void {
 		this.descriptor = descriptor;
 		this.emit('update');
 	}
 
-	subscribe(callback: () => void): Unsubscribe {
-		return this.on('update', callback);
-	}
+	subscribe = (callback: () => void): Unsubscribe => this.on('update', callback);
 }
 
 export const subscription = new BlazeLayoutSubscription();

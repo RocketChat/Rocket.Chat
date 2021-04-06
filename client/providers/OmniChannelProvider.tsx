@@ -7,11 +7,12 @@ import OmnichannelEnabledProvider from './OmnichannelEnabledProvider';
 
 const OmniChannelProvider: FC = ({ children }) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
-	const hasAccess = usePermission('view-l-room') as boolean;
+	const hasAccess = usePermission('view-l-room');
 
 	if (!omniChannelEnabled || !hasAccess) {
 		return <OmnichannelDisabledProvider children={children} />;
 	}
+
 	return <OmnichannelEnabledProvider children={children} />;
 };
 

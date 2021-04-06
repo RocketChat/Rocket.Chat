@@ -3,6 +3,8 @@ import React, { FC, useEffect, useLayoutEffect, useRef } from 'react';
 
 import { subscription, BlazeLayoutDescriptor } from '../../lib/portals/blazeLayout';
 
+let unmountCount = 0;
+
 const BlazeLayoutWrapper: FC = () => {
 	const ref = useRef<HTMLDivElement>(null);
 
@@ -26,9 +28,20 @@ const BlazeLayoutWrapper: FC = () => {
 
 		update(subscription.getCurrentValue());
 
-		return subscription.subscribe(() => {
+		const unsubscribe = subscription.subscribe(() => {
 			update(subscription.getCurrentValue());
 		});
+
+		return (): void => {
+			if (++unmountCount > 1) {
+				console.warn(
+					'It looks like BlazeLayoutWrapper is being remounted, droping template state out.',
+				);
+			}
+
+			unsubscribe();
+			BlazeLayout.reset();
+		};
 	}, []);
 
 	return (

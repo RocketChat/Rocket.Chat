@@ -13,12 +13,12 @@ import OmnichannelManualSelectionProvider from './OmnichannelManualSelectionProv
 
 const args = [] as any;
 
-const emptyContext = {
+const emptyContext: OmnichannelContextValue = {
 	inquiries: { enabled: false },
 	enabled: false,
 	agentAvailable: false,
 	showOmnichannelQueueLink: false,
-} as OmnichannelContextValue;
+};
 
 const OmnichannelEnabledProvider: FC = ({ children }) => {
 	const omnichannelRouting = useSetting('Livechat_Routing_Method');
