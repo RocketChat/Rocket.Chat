@@ -8,7 +8,6 @@ import { Rooms } from '../../../models/server/raw';
 import { callbacks } from '../../../callbacks';
 import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
-import { settings } from '../../../settings/server';
 
 Meteor.methods({
 	async sendFileMessage(roomId, store, file, msgData = {}) {
@@ -57,15 +56,15 @@ Meteor.methods({
 			try {
 				attachment.image_preview = await FileUpload.resizeImagePreview(file);
 
-				const thumbBuffer = await FileUpload.createImageThumbnail(file);
+				const { data: thumbBuffer, width, height } = await FileUpload.createImageThumbnail(file);
 				if (thumbBuffer) {
 					const thumbnail = FileUpload.uploadImageThumbnail(file, thumbBuffer, roomId, user._id);
 					const thumbUrl = FileUpload.getPath(`${ thumbnail._id }/${ encodeURI(file.name) }`);
 					attachment.image_url = thumbUrl;
 					attachment.image_type = thumbnail.type;
 					attachment.image_dimensions = {
-						width: settings.get('Message_Attachments_Thumbnails_Width'),
-						height: settings.get('Message_Attachments_Thumbnails_Height'),
+						width,
+						height,
 					};
 					thumbId = thumbnail._id;
 				}

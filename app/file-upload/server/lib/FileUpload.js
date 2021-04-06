@@ -285,7 +285,7 @@ export const FileUpload = {
 		const transformer = sharp()
 			.resize({ width, height, fit: 'inside' });
 
-		const result = transformer.toBuffer().then((out) => out);
+		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
 		image.pipe(transformer);
 
 		return result;
