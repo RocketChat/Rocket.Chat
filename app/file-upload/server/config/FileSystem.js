@@ -19,31 +19,38 @@ const FileSystemUploads = new FileUploadClass({
 
 		const options = {};
 
-		if (req.headers.range) {
-			const range = getFileRange(file, req);
-			setRangeHeaders(range, file, res);
-
-			if (range) {
-				options.start = range.start;
-				options.end = range.stop;
-			}
-		}
-
 		try {
 			const stat = statSync(filePath);
-
-			if (stat && stat.isFile()) {
-				file = FileUpload.addExtensionTo(file);
-				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
-				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
-				res.setHeader('Content-Type', file.type || 'application/octet-stream');
-
-				if (!options.hasOwnProperty('start')) {
-					res.setHeader('Content-Length', file.size);
-				}
-
-				this.store.getReadStream(file._id, file, options).pipe(res);
+			if (!stat?.isFile()) {
+				res.writeHead(404);
+				res.end();
+				return;
 			}
+
+			file = FileUpload.addExtensionTo(file);
+			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+			res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+			res.setHeader('Content-Type', file.type || 'application/octet-stream');
+
+			if (req.headers.range) {
+				const range = getFileRange(file, req);
+
+				if (range) {
+					setRangeHeaders(range, file, res);
+					if (range.outOfRange) {
+						return;
+					}
+					options.start = range.start;
+					options.end = range.stop;
+				}
+			}
+
+			// set content-length if range has not set
+			if (!res.getHeader('Content-Length')) {
+				res.setHeader('Content-Length', file.size);
+			}
+
+			this.store.getReadStream(file._id, file, options).pipe(res);
 		} catch (e) {
 			res.writeHead(404);
 			res.end();
