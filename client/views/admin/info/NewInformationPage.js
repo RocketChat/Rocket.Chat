@@ -12,7 +12,6 @@ import { DOUBLE_COLUMN_CARD_WIDTH } from '../../../components/Card/Card';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 const InformationPage = React.memo(function InformationPage({
-	canViewStatistics,
 	isLoading,
 	info,
 	statistics,
@@ -34,15 +33,14 @@ const InformationPage = React.memo(function InformationPage({
 
 	return <Page data-qa='admin-info'>
 		<Page.Header title={t('Info')}>
-			{canViewStatistics
-				&& <ButtonGroup>
-					<Button disabled={isLoading} external type='button' onClick={onClickDownloadInfo}>
-						<Icon name='download' /> {t('Download_Info')}
-					</Button>
-					<Button disabled={isLoading} primary type='button' onClick={onClickRefreshButton}>
-						<Icon name='reload' /> {t('Refresh')}
-					</Button>
-				</ButtonGroup>}
+			<ButtonGroup>
+				<Button disabled={isLoading} external type='button' onClick={onClickDownloadInfo}>
+					<Icon name='download' /> {t('Download_Info')}
+				</Button>
+				<Button disabled={isLoading} primary type='button' onClick={onClickRefreshButton}>
+					<Icon name='reload' /> {t('Refresh')}
+				</Button>
+			</ButtonGroup>
 		</Page.Header>
 
 		<Page.ScrollableContentWithShadow>
@@ -61,7 +59,7 @@ const InformationPage = React.memo(function InformationPage({
 								rel='noopener noreferrer'
 								target='_blank'
 								href={'https://rocket.chat/docs/installation/manual-installation/multiple-instances-to-improve-'
-							+ 'performance/#running-multiple-instances-per-host-to-improve-performance'}>
+									+ 'performance/#running-multiple-instances-per-host-to-improve-performance'}>
 								{t('Click_here_for_more_info')}
 							</a>
 						</p>
@@ -70,9 +68,9 @@ const InformationPage = React.memo(function InformationPage({
 
 				<Box display='flex' flexDirection='row' w='full' flexWrap='wrap' justifyContent={isSmall ? 'center' : 'flex-start'} ref={ref}>
 					<Margins all='x8'>
-						<DeploymentCard info={info} statistics={statistics} instances={instances} isLoading={isLoading}/>
-						<LicenseCard statistics={statistics} isLoading={isLoading}/>
-						<UsageCard vertical={isSmall} statistics={statistics} isLoading={isLoading}/>
+						<DeploymentCard info={info} statistics={statistics} instances={instances} isLoading={isLoading} />
+						<LicenseCard statistics={statistics} isLoading={isLoading} />
+						<UsageCard vertical={isSmall} statistics={statistics} isLoading={isLoading} />
 						{/* {!!instances.length && <InstancesCard instances={instances}/>} */}
 						{/* <PushCard /> */}
 					</Margins>
