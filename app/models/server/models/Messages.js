@@ -257,6 +257,13 @@ export class Messages extends Base {
 				$ne: true,
 			},
 			rid: roomId,
+			$or: [{
+				tmid: {
+					$exists: false,
+				},
+			}, {
+				tshow: true,
+			}],
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
@@ -369,6 +376,13 @@ export class Messages extends Base {
 			ts: {
 				$lt: timestamp,
 			},
+			$or: [{
+				tmid: {
+					$exists: false,
+				},
+			}, {
+				tshow: true,
+			}],
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
@@ -388,6 +402,13 @@ export class Messages extends Base {
 				$gt: afterTimestamp,
 				$lt: beforeTimestamp,
 			},
+			$or: [{
+				tmid: {
+					$exists: false,
+				},
+			}, {
+				tshow: true,
+			}],
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
