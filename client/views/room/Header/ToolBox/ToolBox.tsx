@@ -14,7 +14,7 @@ import { ToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 const renderMenuOption: OptionRenderer = (
 	{ label: { title, icon }, ...props }: any,
 ): ReactNode =>
-	<Option label={title} title={title} icon={icon} {...props}/>;
+	<Option label={title} icon={icon} {...props}/>;
 
 const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Element => {
 	const tab = useTab();
@@ -32,10 +32,10 @@ const ToolBox = ({ className }: { className: BoxProps['className'] }): JSX.Eleme
 		hiddenActionRenderers.current = { ...hiddenActionRenderers.current, [item.id]: item.renderOption || renderMenuOption };
 		return [item.id, {
 			label: { title: t(item.title), icon: item.icon },
-			// ...item,
 			action: (): void => {
 				openTabBar(item.id);
 			},
+			...item,
 		}];
 	}));
 

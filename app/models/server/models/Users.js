@@ -53,6 +53,7 @@ export class Users extends Base {
 		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
 		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
+		this.tryEnsureIndex({ language: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -174,8 +175,11 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	getNextAgent() {
-		const query = queryStatusAgentOnline();
+	getNextAgent(ignoreAgentId) {
+		const extraFilters = {
+			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
+		};
+		const query = queryStatusAgentOnline(extraFilters);
 
 		const collectionObj = this.model.rawCollection();
 		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
@@ -201,11 +205,12 @@ export class Users extends Base {
 		return null;
 	}
 
-	getNextBotAgent() {
+	getNextBotAgent(ignoreAgentId) {
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
 			},
+			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
 		};
 
 		const collectionObj = this.model.rawCollection();
@@ -438,6 +443,15 @@ export class Users extends Base {
 		}, { multi: true });
 	}
 
+	removeRoomsByRoomIdsAndUserId(rids, userId) {
+		return this.update({
+			_id: userId,
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
+	}
+
 	update2FABackupCodesByUserId(userId, backupCodes) {
 		return this.update({
 			_id: userId,
@@ -582,6 +596,15 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByEmailAddressAndServiceNameIgnoringCase(emailAddress, userId, serviceName, options) {
+		const query = {
+			'emails.address': String(emailAddress).trim().toLowerCase(),
+			[`services.${ serviceName }.id`]: userId,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneByUsername(username, options) {
 		const query = { username };
 
@@ -690,6 +713,16 @@ export class Users extends Base {
 
 	findByUsername(username, options) {
 		const query = { username };
+
+		return this.find(query, options);
+	}
+
+	findByUsernamesIgnoringCase(usernames, options) {
+		const query = {
+			username: {
+				$in: usernames.filter(Boolean).map((u) => new RegExp(`^${ escapeRegExp(u) }$`, 'i')),
+			},
+		};
 
 		return this.find(query, options);
 	}
@@ -1519,6 +1552,24 @@ Find users to send a message by email if:
 				},
 			},
 		});
+	}
+
+	findAllUsersWithPendingAvatar() {
+		const query = {
+			_pendingAvatarUrl: {
+				$exists: true,
+			},
+		};
+
+		const options = {
+			fields: {
+				_id: 1,
+				name: 1,
+				_pendingAvatarUrl: 1,
+			},
+		};
+
+		return this.find(query, options);
 	}
 }
 

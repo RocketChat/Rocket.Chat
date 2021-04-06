@@ -57,20 +57,6 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> {
 		});
 	}
 
-	async updateOne(_id: string, data: Omit<ILivechatBusinessHour, '_id'>): Promise<any> {
-		const query = {
-			_id,
-		};
-
-		const update = {
-			$set: {
-				...data,
-			},
-		};
-
-		return this.col.updateOne(query, update);
-	}
-
 	// TODO: Remove this function after remove the deprecated method livechat:saveOfficeHours
 	async updateDayOfGlobalBusinessHour(day: Omit<IBusinessHourWorkHour, 'code'>): Promise<any> {
 		return this.col.updateOne({

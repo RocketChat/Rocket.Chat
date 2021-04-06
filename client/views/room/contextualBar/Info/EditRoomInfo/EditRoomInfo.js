@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import {
 	Field,
 	TextInput,
+	PasswordInput,
 	ToggleSwitch,
 	MultiSelect,
 	Accordion,
@@ -31,6 +32,7 @@ import { usePermission, useAtLeastOnePermission, useRole } from '../../../../../
 import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
 import { useUserRoom } from '../../../hooks/useUserRoom';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 
 const typeMap = {
 	c: 'Channels',
@@ -135,6 +137,9 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const onChange = useCallback(({ initialValue, value, key }) => {
 		const { current } = saveData;
 		if (JSON.stringify(initialValue) !== JSON.stringify(value)) {
+			if (key === 'systemMessages' && value?.length > 0) {
+				current.hideSysMes = true;
+			}
 			current[key] = value;
 		} else {
 			delete current[key];
@@ -225,9 +230,10 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canChangeType = getCanChangeType(room, canCreateChannel, canCreateGroup, isAdmin);
 	const canSetRo = usePermission('set-readonly', room._id);
 	const canSetReactWhenRo = usePermission('set-react-when-readonly', room._id);
-	const canEditPrivilegedSetting = usePermission('edit-privileged-setting', room._id);
+	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(useMemo(() => ['archive-room', 'unarchive-room'], []));
 	const canDelete = usePermission(`delete-${ room.t }`);
+	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
 
 	const changeArchivation = archived !== !!room.archived;
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
@@ -237,6 +243,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 
 	const handleSave = useMutableCallback(async () => {
 		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;
+		delete data.archived;
 		const save = () => saveAction({
 			rid: room._id,
 			...data,
@@ -350,7 +357,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Field.Row>
 					</Box>
 					<Field.Row>
-						<TextInput disabled={!joinCodeRequired} value={joinCode} onChange={handleJoinCode} placeholder={t('Reset_password')} flexGrow={1}/>
+						<PasswordInput disabled={!joinCodeRequired} value={joinCode} onChange={handleJoinCode} placeholder={t('Reset_password')} flexGrow={1}/>
 					</Field.Row>
 				</Field>}
 				{canViewHideSysMes && <Field>
@@ -361,14 +368,14 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Field.Row>
 					</Box>
 					<Field.Row>
-						<MultiSelect options={sysMesOptions} disabled={!hideSysMes} value={systemMessages} onChange={handleSystemMessages} placeholder={t('Select_an_option')} flexGrow={1}/>
+						<MultiSelect maxWidth='100%' options={sysMesOptions} disabled={!hideSysMes} value={systemMessages} onChange={handleSystemMessages} placeholder={t('Select_an_option')} flexGrow={1}/>
 					</Field.Row>
 				</Field>}
 				{canViewEncrypted && <Field>
 					<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 						<Field.Label>{t('Encrypted')}</Field.Label>
 						<Field.Row>
-							<ToggleSwitch checked={encrypted} onChange={handleEncrypted}/>
+							<ToggleSwitch disabled={!canToggleEncryption} checked={encrypted} onChange={handleEncrypted}/>
 						</Field.Row>
 					</Box>
 				</Field>}
@@ -387,7 +394,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 									<Field.Label>{t('RetentionPolicyRoom_OverrideGlobal')}</Field.Label>
 									<Field.Row>
-										<ToggleSwitch disabled={!retentionEnabled || !canEditPrivilegedSetting} checked={retentionOverrideGlobal} onChange={handleRetentionOverrideGlobal}/>
+										<ToggleSwitch disabled={!retentionEnabled || !canEditRoomRetentionPolicy} checked={retentionOverrideGlobal} onChange={handleRetentionOverrideGlobal} />
 									</Field.Row>
 								</Box>
 							</Field>

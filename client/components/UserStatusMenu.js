@@ -2,7 +2,6 @@ import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react'
 import {
 	Button,
 	PositionAnimated,
-	Margins,
 	Options,
 	useCursor,
 	Box,
@@ -24,9 +23,9 @@ const UserStatusMenu = ({
 
 	const options = useMemo(() => {
 		const renderOption = (status, label) => <Box display='flex' flexDirection='row' alignItems='center'>
-			<Margins inlineEnd='x8'>
+			<Box marginInlineEnd='x8'>
 				<UserStatus status={status} />
-			</Margins>
+			</Box>
 			{label}
 		</Box>;
 

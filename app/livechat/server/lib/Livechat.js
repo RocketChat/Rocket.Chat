@@ -63,7 +63,7 @@ export const Livechat = {
 		}
 
 		const onlineAgents = Livechat.getOnlineAgents(department);
-		return (onlineAgents && onlineAgents.count() > 0) || settings.get('Livechat_accept_chats_with_no_agents');
+		return onlineAgents && onlineAgents.count() > 0;
 	},
 
 	getNextAgent(department) {
@@ -78,7 +78,11 @@ export const Livechat = {
 		return Users.findAgents();
 	},
 
-	getOnlineAgents(department) {
+	getOnlineAgents(department, agent) {
+		if (agent?.agentId) {
+			return Users.findOnlineAgents(agent.agentId);
+		}
+
 		if (department) {
 			return LivechatDepartmentAgents.getOnlineForDepartment(department);
 		}
@@ -585,6 +589,10 @@ export const Livechat = {
 	},
 
 	async transfer(room, guest, transferData) {
+		if (room.onHold) {
+			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:transfer' });
+		}
+
 		if (transferData.departmentId) {
 			transferData.department = LivechatDepartment.findOneById(transferData.departmentId, { fields: { name: 1 } });
 		}
@@ -600,6 +608,10 @@ export const Livechat = {
 
 		if (!room.open) {
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnRoomAsInquiry' });
+		}
+
+		if (room.onHold) {
+			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
 		if (!room.servedBy) {
@@ -622,7 +634,6 @@ export const Livechat = {
 		try {
 			this.saveTransferHistory(room, transferData);
 			RoutingManager.unassignAgent(inquiry, departmentId);
-			Meteor.defer(() => callbacks.run('livechat.chatQueued', LivechatRooms.findOneById(rid)));
 		} catch (e) {
 			console.error(e);
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
@@ -958,7 +969,7 @@ export const Livechat = {
 		}
 
 		const showAgentInfo = settings.get('Livechat_show_agent_info');
-		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat_video_call'];
+		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
 		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } });
 
 		let html = '<div> <hr>';

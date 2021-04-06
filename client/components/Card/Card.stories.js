@@ -61,10 +61,10 @@ export const Double = () => <Box p='x40'>
 			<Card.Col>
 				<Box>
 					<Card.Col.Title>A Section</Card.Col.Title>
-					<div>A bunch of stuff</div>
-					<div>A bunch of stuff</div>
-					<div>A bunch of stuff</div>
-					<div>A bunch of stuff</div>
+					<Box display='flex' flexDirection='row' alignItems='center'><Card.Icon name='document-eye'/>A bunch of stuff</Box>
+					<Box display='flex' flexDirection='row' alignItems='center'><Card.Icon name='pencil'/>A bunch of stuff</Box>
+					<Box display='flex' flexDirection='row' alignItems='center'><Card.Icon name='cross'/>A bunch of stuff</Box>
+					<Box display='flex' flexDirection='row' alignItems='center'><Card.Icon name='num-pad'/>A bunch of stuff</Box>
 				</Box>
 				<Box>
 					<Card.Col.Title>Another Section</Card.Col.Title>

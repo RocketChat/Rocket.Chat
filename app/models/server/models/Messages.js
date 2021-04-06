@@ -569,6 +569,7 @@ export class Messages extends Base {
 			},
 			$unset: {
 				blocks: 1,
+				tshow: 1,
 			},
 		};
 
@@ -1242,6 +1243,16 @@ export class Messages extends Base {
 		};
 
 		return this.find(query);
+	}
+
+	decreaseReplyCountById(_id, inc = -1) {
+		const query = { _id };
+		const update = {
+			$inc: {
+				tcount: inc,
+			},
+		};
+		return this.update(query, update);
 	}
 }
 

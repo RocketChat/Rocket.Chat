@@ -1,3 +1,12 @@
+declare module '@rocket.chat/fuselage-tokens/colors' {
+	type ColorsType = {
+		[key: string]: string;
+	};
+
+	const Colors: ColorsType;
+	export default Colors;
+}
+
 declare module '@rocket.chat/fuselage' {
 	import { css } from '@rocket.chat/css-in-js';
 	import { Placements } from '@rocket.chat/fuselage-hooks';
@@ -142,7 +151,7 @@ declare module '@rocket.chat/fuselage' {
 
 		elevation?: '0' | '1' | '2';
 		invisible?: boolean;
-		withRichContent?: boolean;
+		withRichContent?: boolean | string;
 		withTruncatedText?: boolean;
 		size?: CSSProperties['blockSize'];
 		minSize?: CSSProperties['blockSize'];
@@ -164,7 +173,30 @@ declare module '@rocket.chat/fuselage' {
 		Item: ForwardRefExoticComponent<AccordionItemProps>;
 	};
 
-	type AvatarProps = BoxProps;
+	type AutoCompleteProps = {
+		value: unknown[];
+		filter: string;
+		setFilter?: (filter: string) => void;
+		options?: { label: string; value: unknown }[];
+		renderItem: ElementType;
+		renderSelected?: ElementType;
+		onChange: (value: unknown, action: 'remove' | undefined) => void;
+		getLabel?: (option: { label: string; value: unknown }) => string;
+		getValue?: (option: { label: string; value: unknown }) => unknown;
+		renderEmpty?: ElementType;
+		placeholder?: string;
+		error?: boolean;
+		disabled?: boolean;
+	};
+	export const AutoComplete: FC<AutoCompleteProps>;
+
+	type AvatarProps = Omit<BoxProps, 'title' | 'size'> & {
+		title?: string;
+		size?: 'x16' | 'x18' | 'x20' | 'x24' | 'x28' | 'x32' | 'x36' | 'x40' | 'x48' | 'x124' | 'x200' | 'x332';
+		rounded?: boolean;
+		objectFit?: boolean;
+		url: string;
+	};
 	export const Avatar: ForwardRefExoticComponent<AvatarProps> & {
 		Context: Context<{
 			baseUrl: string;
@@ -222,6 +254,7 @@ declare module '@rocket.chat/fuselage' {
 	export const Field: ForwardRefExoticComponent<FieldProps> & {
 		Row: ForwardRefExoticComponent<BoxProps>;
 		Label: ForwardRefExoticComponent<BoxProps>;
+		Description: ForwardRefExoticComponent<BoxProps>;
 		Hint: ForwardRefExoticComponent<BoxProps>;
 		Error: ForwardRefExoticComponent<BoxProps>;
 	};
@@ -258,6 +291,31 @@ declare module '@rocket.chat/fuselage' {
 
 	type NumberInputProps = BoxProps;
 	export const NumberInput: ForwardRefExoticComponent<NumberInputProps>;
+
+	type OptionsProps = BoxProps & {
+		multiple?: boolean;
+		options: [unknown, string, boolean?][];
+		cursor: number;
+		renderItem?: ElementType;
+		renderEmpty?: ElementType;
+		onSelect: (option: [unknown, string]) => void;
+	};
+	export const Options: ForwardRefExoticComponent<OptionsProps> & {
+		AvatarSize: AvatarProps['size'];
+	};
+
+	type OptionProps = {
+		id?: string;
+		avatar?: ReactNode;
+		label?: string;
+		focus?: boolean;
+		selected?: boolean;
+		icon?: string;
+		className?: BoxProps['className'];
+		title?: string;
+		value?: any;
+	};
+	export const Option: ForwardRefExoticComponent<OptionProps>;
 
 	type PaginationProps = BoxProps & {
 		count: number;
@@ -355,20 +413,6 @@ declare module '@rocket.chat/fuselage' {
 	export const Select: ForwardRefExoticComponent<SelectProps>;
 
 	export const Divider: ForwardRefExoticComponent<BoxProps>;
-
-	type OptionProps = {
-		id?: string;
-		avatar?: typeof Avatar;
-		label?: string;
-		focus?: boolean;
-		selected?: boolean;
-		icon?: string;
-		className?: BoxProps['className'];
-		title?: string;
-		value?: any;
-	};
-
-	export const Option: ForwardRefExoticComponent<OptionProps>;
 
 	export type MenuProps = Omit<ActionButtonProps, 'icon'> & {
 		icon?: string;

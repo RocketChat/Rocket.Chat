@@ -61,7 +61,7 @@ export function AssetSettingInput({
 			<div className='settings-file-preview'>
 				{value.url
 					? <div className='preview' style={{ backgroundImage: `url(${ value.url }?_dc=${ Random.id() })` }} />
-					: <div className='preview no-file background-transparent-light secondary-font-color'><Icon icon='icon-upload' /></div>}
+					: <div className='preview no-file background-transparent-light secondary-font-color'><Icon name='upload' /></div>}
 				<div className='action'>
 					{value.url
 						? <Button onClick={handleDeleteButtonClick}>

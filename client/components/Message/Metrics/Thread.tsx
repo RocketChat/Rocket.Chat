@@ -6,6 +6,7 @@ import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import * as NotificationStatus from '../NotificationStatus';
 import { followStyle, anchor } from '../helpers/followSyle';
 import Metrics, { Reply, Content } from '..';
+import { useBlockRendered } from '../hooks/useBlockRendered';
 
 
 type ThreadReplyOptions = {
@@ -24,6 +25,8 @@ type ThreadReplyOptions = {
 const ThreadMetric: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, counter, participants, following, lm, openThread }) => {
 	const t = useTranslation();
 
+	const { className, ref } = useBlockRendered();
+
 	const followMessage = useEndpoint('POST', 'chat.followMessage');
 	const unfollowMessage = useEndpoint('POST', 'chat.unfollowMessage');
 	const format = useTimeAgo();
@@ -31,6 +34,7 @@ const ThreadMetric: FC<ThreadReplyOptions> = ({ unread, mention, all, rid, mid, 
 	const handleFollow = useCallback(() => (following ? unfollowMessage({ mid }) : followMessage({ mid })), [followMessage, following, mid, unfollowMessage]);
 
 	return <Content className={followStyle}>
+		<div className={className} ref={ref as any} />
 		<Reply data-rid={rid} data-mid={mid} onClick={openThread}>{t('Reply')}</Reply>
 		<Metrics>
 			<Metrics.Item title={t('Replies')}>

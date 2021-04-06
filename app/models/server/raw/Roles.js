@@ -8,13 +8,15 @@ export class RolesRaw extends BaseRaw {
 	}
 
 	async isUserInRoles(userId, roles, scope) {
-		roles = [].concat(roles);
+		if (!Array.isArray(roles)) {
+			roles = [roles];
+		}
 
 		for (let i = 0, total = roles.length; i < total; i++) {
 			const roleName = roles[i];
 
 			// eslint-disable-next-line no-await-in-loop
-			const role = await this.findOne({ _id: roleName });
+			const role = await this.findOne({ _id: roleName }, { scope: 1 });
 			const roleScope = (role && role.scope) || 'Users';
 			const model = this.models[roleScope];
 

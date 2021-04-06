@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, Field, Margins, ButtonGroup, Button, Callout, Flex } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import Page from '../../../components/Page';
@@ -67,21 +67,23 @@ const UsersInRolePage = ({ data }) => {
 		<Page.Content>
 			<Box display='flex' flexDirection='row' w='full' mi='neg-x4'>
 				<Margins inline='x4'>
-					{data.scope !== 'Users' && <Field>
-						<Field.Label>{t('Choose_a_room')}</Field.Label>
-						<Field.Row>
-							<RoomAutoComplete value={rid} onChange={setRid} placeholder={t('User')}/>
-						</Field.Row>
-					</Field>}
-					<Field>
-						<Field.Label>{t('Add_user')}</Field.Label>
-						<Field.Row>
-							<UserAutoComplete value={user} onChange={setUser} placeholder={t('User')}/>
-						</Field.Row>
-					</Field>
-					<Box display='flex' flexGrow={1} flexDirection='column' justifyContent='flex-end'>
-						<Button primary onClick={handleAdd}>{t('Add')}</Button>
-					</Box>
+					<Flex.Item shrink={1}>
+						{data.scope !== 'Users' && <Field>
+							<Field.Label>{t('Choose_a_room')}</Field.Label>
+							<Field.Row>
+								<RoomAutoComplete value={rid} onChange={setRid} placeholder={t('User')}/>
+							</Field.Row>
+						</Field>}
+						<Field>
+							<Field.Label>{t('Add_user')}</Field.Label>
+							<Field.Row>
+								<UserAutoComplete value={user} onChange={setUser} placeholder={t('User')}/>
+							</Field.Row>
+						</Field>
+						<Box display='flex' flexGrow={1} flexDirection='column' justifyContent='flex-end'>
+							<Button primary onClick={handleAdd}>{t('Add')}</Button>
+						</Box>
+					</Flex.Item>
 				</Margins>
 			</Box>
 			<Margins blockStart='x8'>

@@ -10,13 +10,17 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import VerticalBar from '../../../components/VerticalBar';
 import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
-import { EmojiDescriptor } from './types';
 import { useAbsoluteUrl } from '../../../contexts/ServerContext';
 
 type EditCustomEmojiProps = {
 	close: () => void;
 	onChange: () => void;
-	data: EmojiDescriptor;
+	data: {
+		_id: string;
+		name: string;
+		aliases: string[];
+		extension: string;
+	};
 };
 
 const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...props }) => {

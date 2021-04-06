@@ -13,6 +13,7 @@ import { useUserSubscription } from '../contexts/UserContext';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';
 import WarningModal from '../views/admin/apps/WarningModal';
+import { DeleteWarningModalDoNotAskAgain } from '../components/DeleteWarningModal';
 
 const fields = {
 	f: 1,
@@ -89,14 +90,18 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.HIDE_WARNING);
 
-		setModal(<WarningModal
-			text={t(warnText, name)}
-			confirmText={t('Yes_hide_it')}
-			close={closeModal}
-			cancel={closeModal}
+		setModal(<DeleteWarningModalDoNotAskAgain
+			deleteText={t('Yes_hide_it')}
+			onCancel={closeModal}
 			cancelText={t('Cancel')}
 			confirm={hide}
-		/>);
+			dontAskAgain={{
+				action: 'hideRoom',
+				label: t('Hide_room'),
+			}}
+		>
+			{t(warnText, name)}
+		</DeleteWarningModalDoNotAskAgain>);
 	});
 
 	const handleToggleRead = useMutableCallback(async () => {

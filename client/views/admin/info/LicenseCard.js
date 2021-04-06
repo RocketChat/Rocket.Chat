@@ -30,7 +30,7 @@ const LicenseCard = ({ statistics, isLoading }) => {
 	const { value, phase, error } = useEndpointData('licenses.get');
 	const endpointLoading = phase === AsyncStatePhase.LOADING;
 
-	const { maxActiveUsers = 0, modules = [] } = endpointLoading || error ? {} : value.licenses[0];
+	const { maxActiveUsers = 0, modules = [] } = endpointLoading || error || !value.licenses.length ? {} : value.licenses[0];
 
 	const hasEngagement = modules.includes('engagement-dashboard');
 	const hasOmnichannel = modules.includes('livechat-enterprise');
@@ -74,7 +74,7 @@ const LicenseCard = ({ statistics, isLoading }) => {
 								? <Skeleton variant='rect' width='x112' height='x112'/>
 								: <UsagePieGraph
 									label={t('Users')}
-									used={statistics?.totalUsers}
+									used={statistics?.activeUsers}
 									total={maxActiveUsers}
 									size={112}
 									isLoading={isLoading}

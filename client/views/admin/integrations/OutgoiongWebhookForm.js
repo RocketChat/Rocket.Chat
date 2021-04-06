@@ -94,7 +94,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 
 	const hilightedExampleJson = useHighlightedCode('json', JSON.stringify(exampleData, null, 2));
 
-	return <Page.ScrollableContent pb='x24' mi='neg-x24' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} qa-admin-user-edit='form' { ...props }>
+	return <Page.ScrollableContentWithShadow pb='x24' mi='neg-x24' is='form' onSubmit={useCallback((e) => e.preventDefault(), [])} qa-admin-user-edit='form' { ...props }>
 		<Margins block='x16'>
 			<Accordion width='x600' alignSelf='center' >
 				<FieldGroup>
@@ -259,5 +259,5 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 				{ append }
 			</Accordion>
 		</Margins>
-	</Page.ScrollableContent>;
+	</Page.ScrollableContentWithShadow>;
 }

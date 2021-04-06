@@ -45,7 +45,7 @@ const AccountPreferencesPage = () => {
 	const handleSave = useCallback(async () => {
 		try {
 			const { current: data } = saveData;
-			if (data.highlights || data.hightlights === '') {
+			if (data.highlights || data.highlights === '') {
 				Object.assign(data, { highlights: data.highlights.split(/,|\n/).map((val) => val.trim()).filter(Boolean) });
 			}
 

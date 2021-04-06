@@ -18,6 +18,8 @@ const UsageGraph = ({ used = 0, total = 0, label, color, size }) => {
 
 	const getColor = useCallback((data) => graphColors(color)[data.id], [color]);
 
+	const unlimited = total === 0;
+
 	return <Box display='flex' flexDirection='column' alignItems='center'>
 		<Box size={`x${ size }`}>
 			<Box position='relative'>
@@ -40,11 +42,11 @@ const UsageGraph = ({ used = 0, total = 0, label, color, size }) => {
 					fontScale='p2'
 					style={{ left: 0, right: 0, top: 0, bottom: 0 }}
 				>
-					<span>{Number((100 / total) * used).toFixed(2)}%</span>
+					{unlimited ? '∞' : `${ Number((100 / total) * used).toFixed(2) }%`}
 				</Box>
 			</Box>
 		</Box>
-		<span><Box is='span' color='default'>{used}</Box> / {total}</span>
+		<span><Box is='span' color='default'>{used}</Box> / {unlimited ? '∞' : total}</span>
 		<span>{label}</span>
 	</Box>;
 };

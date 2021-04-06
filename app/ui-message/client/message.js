@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
@@ -111,6 +112,10 @@ Template.message.helpers({
 	isBot() {
 		const { msg } = this;
 		return msg.bot && 'bot';
+	},
+	hasAttachments() {
+		const { msg } = this;
+		return msg.attachments?.length;
 	},
 	roleTags() {
 		const { msg, hideRoles, settings } = this;
@@ -447,7 +452,7 @@ Template.message.helpers({
 	},
 	showStar() {
 		const { msg } = this;
-		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
+		return msg.starred && msg.starred.length > 0 && msg.starred.find((star) => star._id === Meteor.userId()) && !(msg.actionContext === 'starred' || this.context === 'starred');
 	},
 });
 

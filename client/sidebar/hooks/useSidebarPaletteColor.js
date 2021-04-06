@@ -145,7 +145,7 @@ const getStyle = ((selector) => (colors) => `
 			--rcx-color-primary-700: ${ toVar(colors.b300) };
 			--rcx-color-primary-800: ${ toVar(colors.b200) };
 			--rcx-color-primary-900: ${ toVar(colors.b100) };
-			
+
 			--rcx-button-colors-ghost-active-border-color: ${ toVar(colors.n900) };
 			--rcx-button-colors-ghost-active-background-color: ${ toVar(colors.n800) };
 			--rcx-button-colors-ghost-color: ${ toVar(colors.n600) };
@@ -195,10 +195,9 @@ const useSidebarPaletteColorIE11 = () => {
 				sidebarStyle.setAttribute('id', 'sidebar-modifier');
 				document.head.appendChild(sidebarStyle);
 
-				const fuselageStyleRules = sidebarStyle.innerText.match(/(.|\n)*?\{((.|\n)*?)\}(.|\n)*?/gi).filter((text) => /\.rcx-(sidebar|button|divider|input)/.test(text) && /(color|background|shadow)/.test(text));
+				const fuselageStyleRules = sidebarStyle.innerText.match(/(.|\n)*?\{((.|\n)*?)\}(.|\n)*?/gi).filter((text) => /\.rcx-(sidebar|button|divider|input)/.test(text));
 
-				const sheet = CSSOM.parse(fuselageStyleRules.join(' '));
-
+				const sheet = CSSOM.parse(fuselageStyleRules.join(' ').match(/((?!\}).|\n)*?\{|(.)*(color|background|shadow)(.)*|\}/gi).join(' '));
 
 				const filterSelectors = (selector) => /rcx-(sidebar|button|divider|input)/.test(selector);
 				const insertSelector = (selector) => selector.replace(/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/, (match, group, g2, g3, offset, text) => {

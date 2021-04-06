@@ -13,7 +13,7 @@ addAction('livestream', ({ room }) => {
 	const isLive = room && room.streamingOptions && room.streamingOptions.id && room.streamingOptions.type === 'livestream';
 
 	return useMemo(() => (enabled ? {
-		groups: ['channel', 'group'],
+		groups: ['channel', 'group', 'team'],
 		id: 'livestream',
 		title: 'Livestream',
 		icon: 'podcast',

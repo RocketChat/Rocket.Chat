@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
-import { Template } from 'meteor/templating';
 
 import { roomTypes } from '../../utils/client';
 import { Rooms, Subscriptions } from '../../models';
@@ -44,7 +43,7 @@ export const EmojiEvents = {
 
 		const data = Blaze.getData(event.currentTarget);
 		const { msg: { _id: mid } } = messageArgs(data);
-		Meteor.call('setReaction', $(event.currentTarget).data('emoji'), mid, () => {
+		Meteor.call('setReaction', $(event.currentTarget).attr('data-emoji'), mid, () => {
 			tooltip.hide();
 		});
 	},
@@ -59,8 +58,6 @@ export const EmojiEvents = {
 		tooltip.hide();
 	},
 };
-
-Template.roomOld.events(EmojiEvents);
 
 Meteor.startup(function() {
 	MessageAction.addButton({

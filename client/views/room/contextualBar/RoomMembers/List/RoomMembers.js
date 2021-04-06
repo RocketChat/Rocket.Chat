@@ -10,55 +10,52 @@ import {
 	Button,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { FixedSizeList as List, areEqual } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
+import { Virtuoso } from 'react-virtuoso';
 import {
-	useResizeObserver,
 	useMutableCallback,
 	useDebouncedValue,
 	useLocalStorage,
+	useAutoFocus,
 } from '@rocket.chat/fuselage-hooks';
 import memoize from 'memoize-one';
 
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserRoom } from '../../../../../contexts/UserContext';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { useMethod } from '../../../../../contexts/ServerContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
-import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
-import { useDataWithLoadMore } from '../../hooks/useDataWithLoadMore';
 import { MemberItem } from './components/MemberItem';
 import UserInfoWithData from '../../UserInfo';
 import InviteUsers from '../InviteUsers/InviteUsers';
 import AddUsers from '../AddUsers/AddUsers';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
+import { useMembersList } from '../../../../hooks/useMembersList';
+import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 
-export const createItemData = memoize((items, onClickView, rid) => ({
-	items,
+export const createItemData = memoize((onClickView, rid) => ({
 	onClickView,
 	rid,
 }));
 
-const Row = React.memo(({ data, index, style }) => {
-	const { onClickView, items, rid } = data;
-	const user = items[index];
+const DefaultRow = React.memo(({ user, data, index, reload }) => {
+	const { onClickView, rid } = data;
 
 	if (!user) {
-		return <RoomMembers.Option.Skeleton style={style}/>;
+		return <RoomMembers.Option.Skeleton />;
 	}
 
 	return <RoomMembers.Option
 		index={index}
-		style={style}
 		username={user.username}
 		_id={user._id}
 		rid={rid}
 		status={user.status}
 		name={user.name}
 		onClickView={onClickView}
+		reload={reload}
 	/>;
-}, areEqual);
+});
 
 export const RoomMembers = ({
 	loading,
@@ -72,28 +69,27 @@ export const RoomMembers = ({
 	onClickAdd,
 	onClickInvite,
 	total,
-	limit,
 	error,
 	loadMoreItems,
+	renderRow: Row = DefaultRow,
 	rid,
+	reload,
 }) => {
 	const t = useTranslation();
-
-	const isItemLoaded = (index) => !!members[index];
+	const inputRef = useAutoFocus(true);
 
 	const options = useMemo(() => [
 		['online', t('Online')],
 		['all', t('All')],
 	], [t]);
 
-	const { ref, contentBoxSize: { blockSize = 780 } = {} } = useResizeObserver({ debounceDelay: 100 });
-
-	const itemData = createItemData(members, onClickView, rid);
+	const itemData = createItemData(onClickView, rid);
+	const lm = useMutableCallback((start) => !loading && loadMoreItems(start));
 
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='team'/>
+				<VerticalBar.Icon name='members'/>
 				<VerticalBar.Text>{t('Members')}</VerticalBar.Text>
 				{ onClickClose && <VerticalBar.Close onClick={onClickClose} /> }
 			</VerticalBar.Header>
@@ -102,7 +98,7 @@ export const RoomMembers = ({
 				<Box display='flex' flexDirection='row' p='x12' flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 						<Margins inline='x4'>
-							<TextInput placeholder={t('Search_by_username')} value={text} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
+							<TextInput placeholder={t('Search_by_username')} value={text} ref={inputRef} onChange={setText} addon={<Icon name='magnifier' size='x20'/>}/>
 							<Select
 								flexGrow={0}
 								width='110px'
@@ -113,15 +109,16 @@ export const RoomMembers = ({
 					</Box>
 				</Box>
 
-				{ error && <Box pi='x24' pb='x12'><Callout type='danger'>
-					{error}
-				</Callout></Box> }
-
 				{loading && <Box pi='x24' pb='x12'><Throbber size='x12' /></Box>}
+
+				{error && <Box pi='x24' pb='x12'><Callout type='danger'>
+					{error.message}
+				</Callout></Box>}
+
 				{!loading && members.length <= 0 && <Box pi='x24' pb='x12'>{t('No_results_found')}</Box>}
 
 				{!loading && members.length > 0 && (
-					<Box pi='x24' pb='x12'>
+					<Box pi='x18' pb='x12'>
 						<Box is='span' color='info' fontScale='p1'>
 							{t('Showing')}: <Box is='span' color='default' fontScale='p2'>{members.length}</Box>
 						</Box>
@@ -136,29 +133,24 @@ export const RoomMembers = ({
 					</Box>
 				)}
 
-				<Box w='full' h='full' overflow='hidden' flexShrink={1} ref={ref}>
-					{!loading && members
-					&& <InfiniteLoader
-						isItemLoaded={isItemLoaded}
-						itemCount={total}
-						loadMoreItems={loadMoreItems}
-					>
-						{({ onItemsRendered, ref }) => (
-							<List
-								outerElementType={ScrollableContentWrapper}
-								className='List'
-								itemData={itemData}
-								height={blockSize}
-								itemCount={limit}
-								itemSize={36}
-								onItemsRendered={onItemsRendered}
-								ref={ref}
-							>
-								{Row}
-							</List>
-						)}
-					</InfiniteLoader>
-					}
+				<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+					{!loading && members && members.length > 0 && <Virtuoso
+						style={{
+							height: '100%',
+							width: '100%',
+						}}
+						totalCount={total}
+						endReached={lm}
+						overscan={50}
+						data={members}
+						components={{ Scroller: ScrollableContentWrapper }}
+						itemContent={(index, data) => <Row
+							data={itemData}
+							user={data}
+							index={index}
+							reload={reload}
+						/>}
+					/>}
 				</Box>
 			</VerticalBar.Content>
 
@@ -174,11 +166,6 @@ export const RoomMembers = ({
 
 RoomMembers.Option = MemberItem;
 
-const useGetUsersOfRoom = (params) => {
-	const method = useMethod('getUsersOfRoom');
-	return useDataWithLoadMore(useCallback((args) => method(...args), [method]), params);
-};
-
 export default ({
 	rid,
 }) => {
@@ -191,10 +178,11 @@ export default ({
 	const [type, setType] = useLocalStorage('members-list-type', 'online');
 	const [text, setText] = useState('');
 
-	const debouncedText = useDebouncedValue(text, 500);
-	const params = useMemo(() => [rid, type === 'all', { limit: 50 }, debouncedText], [rid, type, debouncedText]);
+	const debouncedText = useDebouncedValue(text, 800);
 
-	const { value, phase, more, error } = useGetUsersOfRoom(params);
+	const { membersList, loadMoreItems, reload } = useMembersList(useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [rid, type, debouncedText]));
+
+	const { phase, items, itemCount: total } = useRecordList(membersList);
 
 	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
 
@@ -220,12 +208,6 @@ export default ({
 
 	const handleBack = useCallback(() => setState({}), [setState]);
 
-	const loadMoreItems = useCallback((start, end) => more(([rid, type, , filter]) => [rid, type, { skip: start, limit: end - start }, filter], (prev, next) => ({
-		total: next.total,
-		finished: next.records.length < 50,
-		records: [...prev.records, ...next.records],
-	})), [more]);
-
 	if (state.tab === 'UserInfo') {
 		return <UserInfoWithData rid={rid} onClickClose={onClickClose} onClickBack={handleBack} username={state.username} />;
 	}
@@ -235,7 +217,7 @@ export default ({
 	}
 
 	if (state.tab === 'AddUsers') {
-		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} />;
+		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} reload={reload} />;
 	}
 
 	return (
@@ -244,17 +226,16 @@ export default ({
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
-			error={error}
 			setType={setType}
 			setText={handleTextChange}
-			members={value?.records}
-			total={value?.total}
-			limit={ value?.finished || value?.records.length < 50 ? value?.records.length : value?.records.length + 50}
+			members={items}
+			total={total}
 			onClickClose={onClickClose}
 			onClickView={viewUser}
 			onClickAdd={canAddUsers && addUser}
 			onClickInvite={canAddUsers && createInvite}
 			loadMoreItems={loadMoreItems}
+			reload={reload}
 		/>
 	);
 };
