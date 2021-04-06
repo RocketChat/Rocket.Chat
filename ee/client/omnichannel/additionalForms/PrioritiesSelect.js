@@ -3,10 +3,7 @@ import React, { useMemo } from 'react';
 
 export const PrioritiesSelect = ({ options, value, handler, label }) => {
 	const optionsSelect = useMemo(
-		() =>
-			options &&
-			options.length > 0 &&
-			options.map((option) => [option._id, option.name], [options]),
+		() => options && options.length > 0 && options.map((option) => [option._id, option.name]),
 		[options],
 	);
 
