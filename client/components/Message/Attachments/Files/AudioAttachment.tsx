@@ -1,9 +1,11 @@
 import React, { FC } from 'react';
 
 import { useCollapse } from '../hooks/useCollapse';
-import { Attachment, AttachmentPropsBase } from '../Attachment';
-import { FileProp } from '..';
 import { useMediaUrl } from '../context/AttachmentContext';
+import { FileProp } from '..';
+import { Attachment, AttachmentPropsBase } from '../Attachment';
+import MarkdownText from '../../../MarkdownText';
+
 
 export type AudioAttachmentProps = {
 	audio_url: string;
@@ -23,9 +25,9 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	title_link_download: hasDownload,
 }) => {
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
-	// useTranslation();
 	const getURL = useMediaUrl();
 	return <Attachment>
+		<MarkdownText variant='inline' content={description} />
 		<Attachment.Row>
 			<Attachment.Title>{title}</Attachment.Title>
 			{size && <Attachment.Size size={size}/>}
@@ -36,7 +38,6 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 			<audio controls>
 				<source src={getURL(url)} type={type}/>
 			</audio>
-			{description && <Attachment.Details is='figcaption'>{description}</Attachment.Details>}
 		</Attachment.Content> }
 	</Attachment>;
 };
