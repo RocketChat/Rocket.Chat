@@ -17,15 +17,12 @@ import { FormSkeleton } from '../../Skeleton';
 
 const initialValuesUser = {
 	name: '',
-	email: '',
-	phone: '',
-	livechatData: '',
 };
 
 const initialValuesRoom = {
 	topic: '',
 	tags: '',
-	livechatData: '',
+	livechatData: {},
 	priorityId: '',
 };
 
@@ -51,7 +48,7 @@ const getInitialValuesRoom = (room) => {
 	return {
 		topic: topic ?? '',
 		tags: tags ?? [],
-		livechatData: livechatData ?? '',
+		livechatData: livechatData ?? {},
 		priorityId: priorityId ?? '',
 	};
 };
