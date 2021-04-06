@@ -67,26 +67,11 @@ const readFromGridFS = function(storeName, fileId, file, req, res) {
 		ws.emit('end');
 	});
 
-	const accept = req.headers['accept-encoding'] || '';
-
-	const range = getFileRange(file, req);
-
 	// Transform stream
 	store.transformRead(rs, ws, fileId, file, req);
 
-	// Compress data using gzip
-	if (accept.match(/\bgzip\b/) && range === null) {
-		res.setHeader('Content-Encoding', 'gzip');
-		res.removeHeader('Content-Length');
-		res.writeHead(200);
-		ws.pipe(zlib.createGzip()).pipe(res);
-	} else if (accept.match(/\bdeflate\b/) && range === null) {
-		// Compress data using deflate
-		res.setHeader('Content-Encoding', 'deflate');
-		res.removeHeader('Content-Length');
-		res.writeHead(200);
-		ws.pipe(zlib.createDeflate()).pipe(res);
-	} else if (range) {
+	const range = getFileRange(file, req);
+	if (range) {
 		setRangeHeaders(range, file, res);
 
 		if (range.outOfRange) {
@@ -95,10 +80,31 @@ const readFromGridFS = function(storeName, fileId, file, req, res) {
 
 		logger.debug('File upload extracting range');
 		ws.pipe(new ExtractRange({ start: range.start, stop: range.stop })).pipe(res);
-	} else {
-		res.writeHead(200);
-		ws.pipe(res);
+		return;
 	}
+
+	const accept = req.headers['accept-encoding'] || '';
+
+	// Compress data using gzip
+	if (accept.match(/\bgzip\b/)) {
+		res.setHeader('Content-Encoding', 'gzip');
+		res.removeHeader('Content-Length');
+		res.writeHead(200);
+		ws.pipe(zlib.createGzip()).pipe(res);
+		return;
+	}
+
+	// Compress data using deflate
+	if (accept.match(/\bdeflate\b/)) {
+		res.setHeader('Content-Encoding', 'deflate');
+		res.removeHeader('Content-Length');
+		res.writeHead(200);
+		ws.pipe(zlib.createDeflate()).pipe(res);
+		return;
+	}
+
+	res.writeHead(200);
+	ws.pipe(res);
 };
 
 const copyFromGridFS = function(storeName, fileId, file, out) {
