@@ -1,11 +1,9 @@
 import React, { FC } from 'react';
+import { Message } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useBlockRendered } from '../hooks/useBlockRendered';
-import Content from './Content';
-import Reply from './Reply';
-import Metrics from './index';
 
 type DicussionOptions = {
 	drid: string;
@@ -20,20 +18,16 @@ const DiscussionMetric: FC<DicussionOptions> = ({ lm, count, rid, drid, openDisc
 	const format = useTimeAgo();
 	const { className, ref } = useBlockRendered();
 
-	return (
-		<Content>
-			<div className={className} ref={ref as any} />
-			<Reply data-rid={rid} data-drid={drid} onClick={openDiscussion}>
-				{count ? t('message_counter', { counter: count, count }) : t('Reply')}
-			</Reply>
-			<Metrics>
-				<Metrics.Item title={lm?.toLocaleString()}>
-					<Metrics.Item.Icon name='clock' />
-					<Metrics.Item.Label>{lm ? format(lm) : t('No_messages_yet')}</Metrics.Item.Label>
-				</Metrics.Item>
-			</Metrics>
-		</Content>
-	);
+	return <Message.Block>
+		<div className={className} ref={ref as any} />
+		<Message.Metrics>
+			<Message.Metrics.Reply data-rid={rid} data-drid={drid} onClick={openDiscussion}>{count ? t('message_counter', { counter: count, count }) : t('Reply')}</Message.Metrics.Reply>
+			<Message.Metrics.Item title={lm?.toLocaleString()}>
+				<Message.Metrics.Item.Icon name='clock'/>
+				<Message.Metrics.Item.Label>{lm ? format(lm) : t('No_messages_yet')}</Message.Metrics.Item.Label>
+			</Message.Metrics.Item>
+		</Message.Metrics>
+	</Message.Block>;
 };
 
 export default DiscussionMetric;
