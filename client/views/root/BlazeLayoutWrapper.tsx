@@ -1,7 +1,8 @@
 import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-import React, { FC, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { FC, useLayoutEffect, useMemo, useRef, CSSProperties } from 'react';
+import { useSubscription } from 'use-subscription';
 
-import { subscription, BlazeLayoutDescriptor } from '../../lib/portals/blazeLayout';
+import { subscription } from '../../lib/portals/blazeLayout';
 
 let unmountCount = 0;
 
@@ -14,23 +15,6 @@ const BlazeLayoutWrapper: FC = () => {
 		}
 
 		BlazeLayout.setRoot(ref.current);
-	}, []);
-
-	useEffect(() => {
-		const update = (descriptor: BlazeLayoutDescriptor | null): void => {
-			if (!descriptor) {
-				BlazeLayout.reset();
-				return;
-			}
-
-			BlazeLayout.render(descriptor.template, descriptor.regions);
-		};
-
-		update(subscription.getCurrentValue());
-
-		const unsubscribe = subscription.subscribe(() => {
-			update(subscription.getCurrentValue());
-		});
 
 		return (): void => {
 			if (++unmountCount > 1) {
@@ -39,25 +23,39 @@ const BlazeLayoutWrapper: FC = () => {
 				);
 			}
 
-			unsubscribe();
 			BlazeLayout.reset();
+			BlazeLayout.setRoot(null);
 		};
 	}, []);
 
-	return (
-		<div
-			ref={ref}
-			style={{
-				position: 'relative',
-				display: 'flex',
-				overflow: 'visible',
-				flexDirection: 'column',
-				width: '100vw',
-				height: '100vh',
-				padding: '0',
-			}}
-		/>
+	const descriptor = useSubscription(subscription);
+
+	useLayoutEffect(() => {
+		if (!descriptor) {
+			BlazeLayout.reset();
+			return;
+		}
+
+		BlazeLayout.render(descriptor.template, descriptor.regions);
+	}, [descriptor]);
+
+	const rootElementStyle = useMemo<CSSProperties>(
+		() =>
+			descriptor
+				? {
+						position: 'relative',
+						display: 'flex',
+						overflow: 'visible',
+						flexDirection: 'column',
+						width: '100vw',
+						height: '100vh',
+						padding: '0',
+				  }
+				: { display: 'none' },
+		[descriptor],
 	);
+
+	return <div ref={ref} style={rootElementStyle} />;
 };
 
 export default BlazeLayoutWrapper;
