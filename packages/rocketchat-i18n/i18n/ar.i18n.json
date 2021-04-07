@@ -2147,7 +2147,6 @@
   "RetentionPolicy_ExcludePinned": "استبعاد الرسائل المثبتة",
   "RetentionPolicy_FilesOnly": "فقط حذف الملفات",
   "RetentionPolicy_FilesOnly_Description": "سيتم حذف الملفات فقط ، وستظل الرسائل نفسها في مكانها.",
-  "RetentionPolicy_MaxAge": "الحد الأقصى لعمر الرسالة",
   "RetentionPolicy_MaxAge_Channels": "الحد الأقصى لعمر الرسالة في القنوات",
   "RetentionPolicy_MaxAge_Description": "تقليم جميع الرسائل الأقدم من هذه القيمة ، في أيام",
   "RetentionPolicy_MaxAge_DMs": "الحد الأقصى لعمر الرسالة في الرسائل المباشرة",

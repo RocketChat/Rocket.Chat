@@ -2848,7 +2848,6 @@
   "RetentionPolicy_ExcludePinned": "Angeheftete Nachrichten ausschließen",
   "RetentionPolicy_FilesOnly": "Löschen Sie nur Dateien",
   "RetentionPolicy_FilesOnly_Description": "Nur Dateien werden gelöscht, die Nachrichten selbst bleiben bestehen.",
-  "RetentionPolicy_MaxAge": "Maximales Nachrichtenalter",
   "RetentionPolicy_MaxAge_Channels": "Maximales Nachrichtenalter in Kanälen",
   "RetentionPolicy_MaxAge_Description": "Bereinigen Sie alle Nachrichten, die älter als dieser Wert sind, in Tagen",
   "RetentionPolicy_MaxAge_DMs": "Maximales Nachrichtenalter in direkten Nachrichten",

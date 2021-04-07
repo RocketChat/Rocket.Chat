@@ -3183,7 +3183,6 @@
   "RetentionPolicy_ExcludePinned": "排除釘選消息",
   "RetentionPolicy_FilesOnly": "只刪除檔案",
   "RetentionPolicy_FilesOnly_Description": "只刪除檔案，郵件本身將保留在原位。",
-  "RetentionPolicy_MaxAge": "最大郵件年齡",
   "RetentionPolicy_MaxAge_Channels": "頻道中的最大訊息時限",
   "RetentionPolicy_MaxAge_Description": "修剪所有早於此值的郵件，以天為單位",
   "RetentionPolicy_MaxAge_DMs": "直接訊息中的最大訊息時間",

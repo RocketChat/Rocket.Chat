@@ -3232,7 +3232,6 @@
   "RetentionPolicy_ExcludePinned": "排除固定消息",
   "RetentionPolicy_FilesOnly": "只删除文件",
   "RetentionPolicy_FilesOnly_Description": "只有文件会被删除，消息本身将保留在原位。",
-  "RetentionPolicy_MaxAge": "消息保持时限",
   "RetentionPolicy_MaxAge_Channels": "频道中的消息保持时限",
   "RetentionPolicy_MaxAge_Description": "修剪所有早于此值的消息，以天为单位",
   "RetentionPolicy_MaxAge_DMs": "私聊消息最大年龄",

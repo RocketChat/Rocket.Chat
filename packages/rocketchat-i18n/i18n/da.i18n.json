@@ -3114,7 +3114,6 @@
   "RetentionPolicy_ExcludePinned": "Ekskluder pinnede meddelelser",
   "RetentionPolicy_FilesOnly": "Slet kun filer",
   "RetentionPolicy_FilesOnly_Description": "Kun filer slettes, meddelelserne selv forbliver på plads.",
-  "RetentionPolicy_MaxAge": "Maksimal meddelelsesalder",
   "RetentionPolicy_MaxAge_Channels": "Maksimal meddelelsesalder i kanaler",
   "RetentionPolicy_MaxAge_Description": "Beskær alle meddelelser, der er ældre end denne værdi, om dage",
   "RetentionPolicy_MaxAge_DMs": "Maksimal meddelelsesalder i direkte beskeder",

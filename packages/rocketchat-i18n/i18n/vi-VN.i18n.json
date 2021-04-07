@@ -2146,7 +2146,6 @@
   "RetentionPolicy_ExcludePinned": "Loại trừ các thư đã ghim",
   "RetentionPolicy_FilesOnly": "Chỉ xóa tệp",
   "RetentionPolicy_FilesOnly_Description": "Chỉ các tệp sẽ bị xóa, bản thân thư sẽ vẫn được giữ nguyên.",
-  "RetentionPolicy_MaxAge": "Độ tuổi tin nhắn tối đa",
   "RetentionPolicy_MaxAge_Channels": "Độ tuổi tin nhắn tối đa trong các kênh",
   "RetentionPolicy_MaxAge_Description": "Cắt bớt tất cả các thư cũ hơn giá trị này, trong ngày",
   "RetentionPolicy_MaxAge_DMs": "Độ tuổi tin nhắn tối đa trong các tin nhắn trực tiếp",

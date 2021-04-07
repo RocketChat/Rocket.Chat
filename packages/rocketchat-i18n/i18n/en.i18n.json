@@ -3331,7 +3331,6 @@
   "RetentionPolicy_ExcludePinned": "Exclude pinned messages",
   "RetentionPolicy_FilesOnly": "Only delete files",
   "RetentionPolicy_FilesOnly_Description": "Only files will be deleted, the messages themselves will stay in place.",
-  "RetentionPolicy_MaxAge": "Maximum message age",
   "RetentionPolicy_MaxAge_Channels": "Maximum message age in channels",
   "RetentionPolicy_MaxAge_Description": "Prune all messages older than this value, in days",
   "RetentionPolicy_MaxAge_DMs": "Maximum message age in direct messages",

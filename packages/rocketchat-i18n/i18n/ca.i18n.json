@@ -3326,7 +3326,6 @@
   "RetentionPolicy_ExcludePinned": "Exclou els missatges fixats",
   "RetentionPolicy_FilesOnly": "Només elimineu arxius",
   "RetentionPolicy_FilesOnly_Description": "Només s'eliminaran els arxius, els propis missatges romandran al seu lloc.",
-  "RetentionPolicy_MaxAge": "Antiguitat màxima de l'missatge",
   "RetentionPolicy_MaxAge_Channels": "Antiguitat màxima dels missatges en els canals",
   "RetentionPolicy_MaxAge_Description": "Elimineu tots els missatges anteriors a aquest valor, en dies",
   "RetentionPolicy_MaxAge_DMs": "Antiguitat màxima del missatge en missatges directes",

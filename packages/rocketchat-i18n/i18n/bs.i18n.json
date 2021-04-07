@@ -2146,7 +2146,6 @@
   "RetentionPolicy_ExcludePinned": "Izuzmite prikvačene poruke",
   "RetentionPolicy_FilesOnly": "Samo izbrišite datoteke",
   "RetentionPolicy_FilesOnly_Description": "Samo će se datoteke izbrisati, poruke će ostati na mjestu.",
-  "RetentionPolicy_MaxAge": "Maksimalna dob poruka",
   "RetentionPolicy_MaxAge_Channels": "Maksimalna dob poruka u kanalima",
   "RetentionPolicy_MaxAge_Description": "Prune sve poruke starijima od ove vrijednosti, u danima",
   "RetentionPolicy_MaxAge_DMs": "Maksimalna dob poruka u izravnim porukama",

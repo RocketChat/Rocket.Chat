@@ -2187,7 +2187,6 @@
   "RetentionPolicy_ExcludePinned": "ຍົກເວັ້ນຂໍ້ຄວາມທີ່ມີ PINned",
   "RetentionPolicy_FilesOnly": "ພຽງແຕ່ລຶບໄຟລ໌",
   "RetentionPolicy_FilesOnly_Description": "ໄຟລ໌ພຽງແຕ່ຈະຖືກລຶບ, ຂໍ້ຄວາມຂອງເຂົາເຈົ້າເອງຈະຢູ່ໃນສະຖານທີ່.",
-  "RetentionPolicy_MaxAge": "Age message ສູງສຸດ",
   "RetentionPolicy_MaxAge_Channels": "ອາຍຸສູງສຸດຂອງຂໍ້ຄວາມໃນຊ່ອງທາງ",
   "RetentionPolicy_MaxAge_Description": "ການແກ້ໄຂຂໍ້ຄວາມເກົ່າກວ່າມູນຄ່ານີ້, ໃນມື້",
   "RetentionPolicy_MaxAge_DMs": "ອາຍຸສູງສຸດຂອງຂໍ້ຄວາມໃນຂໍ້ຄວາມໂດຍກົງ",

@@ -2233,7 +2233,6 @@
   "RetentionPolicy_ExcludePinned": "Exkludera fasta meddelanden",
   "RetentionPolicy_FilesOnly": "Ta bara bort filer",
   "RetentionPolicy_FilesOnly_Description": "Endast filer kommer att raderas, meddelandena själva kommer att stanna kvar.",
-  "RetentionPolicy_MaxAge": "Maximal meddelandeålder",
   "RetentionPolicy_MaxAge_Channels": "Maximal meddelandeålder i kanaler",
   "RetentionPolicy_MaxAge_Description": "Skär alla meddelanden som är äldre än det här värdet, i dagar",
   "RetentionPolicy_MaxAge_DMs": "Maximal meddelandeålder i direktmeddelanden",

@@ -2149,7 +2149,6 @@
   "RetentionPolicy_ExcludePinned": "Sulje kiinnitetyt viestit",
   "RetentionPolicy_FilesOnly": "Vain tiedostojen poistaminen",
   "RetentionPolicy_FilesOnly_Description": "Vain tiedostot poistetaan, viestit pysyvät paikallaan.",
-  "RetentionPolicy_MaxAge": "Viestin enimmäisikä",
   "RetentionPolicy_MaxAge_Channels": "Maksimi viestin ikä kanavilla",
   "RetentionPolicy_MaxAge_Description": "Leikkaa kaikki tämän arvoa vanhemmat viestit päivinä",
   "RetentionPolicy_MaxAge_DMs": "Suurin viestien enimmäisviesti",

@@ -3118,7 +3118,6 @@
   "RetentionPolicy_ExcludePinned": "ピン留めされたメッセージを除外する",
   "RetentionPolicy_FilesOnly": "ファイルのみを削除する",
   "RetentionPolicy_FilesOnly_Description": "ファイルのみが削除され、メッセージ自体はそのまま残ります。",
-  "RetentionPolicy_MaxAge": "メッセージ保持日数",
   "RetentionPolicy_MaxAge_Channels": "チャンネルでのメッセージ保持日数",
   "RetentionPolicy_MaxAge_Description": "この値より古いすべてのメッセージを整理します。",
   "RetentionPolicy_MaxAge_DMs": "ダイレクトメッセージのメッセージ保持日数",

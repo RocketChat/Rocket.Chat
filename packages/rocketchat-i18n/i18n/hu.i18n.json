@@ -2578,7 +2578,6 @@
   "RetentionPolicy_ExcludePinned": "A rögzített üzenetek kizárása",
   "RetentionPolicy_FilesOnly": "Csak fájlok törlése",
   "RetentionPolicy_FilesOnly_Description": "Csak a fájlok lesznek törölve, az üzenetek maguk maradnak a helyükön.",
-  "RetentionPolicy_MaxAge": "A maximális üzenet kora",
   "RetentionPolicy_MaxAge_Channels": "A maximális üzenetek kora a csatornákban",
   "RetentionPolicy_MaxAge_Description": "Az ezekben az értékekben régebbi, régebbi üzeneteket aprítsuk meg",
   "RetentionPolicy_MaxAge_DMs": "Maximális üzenetek kora a közvetlen üzenetekben",

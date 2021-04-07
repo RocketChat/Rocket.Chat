@@ -2242,7 +2242,6 @@
   "RetentionPolicy_ExcludePinned": "Ekskluder pinnede meldinger",
   "RetentionPolicy_FilesOnly": "Bare slett filer",
   "RetentionPolicy_FilesOnly_Description": "Bare filer vil bli slettet, meldingene selv vil forbli på plass.",
-  "RetentionPolicy_MaxAge": "Maksimal meldingsalder",
   "RetentionPolicy_MaxAge_Channels": "Maksimal meldingsalder i kanaler",
   "RetentionPolicy_MaxAge_Description": "Beskjær alle meldinger som er eldre enn denne verdien, i dager",
   "RetentionPolicy_MaxAge_DMs": "Maksimal meldingsalder i direkte meldinger",

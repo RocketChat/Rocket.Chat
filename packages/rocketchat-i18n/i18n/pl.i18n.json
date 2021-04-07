@@ -3131,7 +3131,6 @@
   "RetentionPolicy_ExcludePinned": "Wyklucz podpięte wiadomości",
   "RetentionPolicy_FilesOnly": "Usuwaj tylko pliki",
   "RetentionPolicy_FilesOnly_Description": "Tylko pliki zostaną usunięte, same wiadomości pozostaną na swoim miejscu.",
-  "RetentionPolicy_MaxAge": "Maksymalny wiek wiadomości",
   "RetentionPolicy_MaxAge_Channels": "Maksymalny wiek wiadomości w kanałach",
   "RetentionPolicy_MaxAge_Description": "Przycinaj wszystkie wiadomości starsze niż ta wartość, w dniach",
   "RetentionPolicy_MaxAge_DMs": "Maksymalny wiek wiadomości w wiadomościach bezpośrednich",

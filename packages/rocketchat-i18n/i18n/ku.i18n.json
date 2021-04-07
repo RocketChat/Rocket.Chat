@@ -2143,7 +2143,6 @@
   "RetentionPolicy_ExcludePinned": "Peyamên pinned",
   "RetentionPolicy_FilesOnly": "Tenê pelan jêbirin",
   "RetentionPolicy_FilesOnly_Description": "Tenê pelên wê jêbirin, peyamên xwe dê di cih de bimînin.",
-  "RetentionPolicy_MaxAge": "Mesajê herî mezintir",
   "RetentionPolicy_MaxAge_Channels": "Zewaca herî mezintir di kanalên",
   "RetentionPolicy_MaxAge_Description": "Di rojan de, hemî mesajên kevntir ji vê nirxê mezintir bide",
   "RetentionPolicy_MaxAge_DMs": "Mesajê herî mezintir di navnîşên peyamê de",

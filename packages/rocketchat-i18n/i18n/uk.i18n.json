@@ -2695,7 +2695,6 @@
   "RetentionPolicy_ExcludePinned": "Виключити закріплені повідомлення",
   "RetentionPolicy_FilesOnly": "Видаляти лише файли",
   "RetentionPolicy_FilesOnly_Description": "Тільки файли будуть видалені, самі повідомлення залишиться на місці.",
-  "RetentionPolicy_MaxAge": "Максимальний вік повідомлення",
   "RetentionPolicy_MaxAge_Channels": "Максимальний вік повідомлення в каналах",
   "RetentionPolicy_MaxAge_Description": "Обрізати всі повідомлення старше цього значення в днях",
   "RetentionPolicy_MaxAge_DMs": "Максимальний вік повідомлення в прямому повідомленні",

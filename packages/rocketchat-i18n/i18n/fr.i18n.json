@@ -3331,7 +3331,6 @@
   "RetentionPolicy_ExcludePinned": "Exclure les messages épinglés",
   "RetentionPolicy_FilesOnly": "Supprimer uniquement les fichiers",
   "RetentionPolicy_FilesOnly_Description": "Seuls les fichiers seront supprimés, les messages eux-mêmes resteront en place.",
-  "RetentionPolicy_MaxAge": "Âge maximum des messages",
   "RetentionPolicy_MaxAge_Channels": "Âge maximum des messages dans les canaux",
   "RetentionPolicy_MaxAge_Description": "Élaguez tous les messages plus anciens que cette valeur, en jours",
   "RetentionPolicy_MaxAge_DMs": "Âge maximal des messages dans les messages privés",

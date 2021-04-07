@@ -2149,7 +2149,6 @@
   "RetentionPolicy_ExcludePinned": "Səslənən mesajları həddindən kənarlaşdırın",
   "RetentionPolicy_FilesOnly": "Yalnız faylları silin",
   "RetentionPolicy_FilesOnly_Description": "Yalnız fayllar silinəcək, mesajlar özləri yerində qalacaqlar.",
-  "RetentionPolicy_MaxAge": "Maksimum mesaj yaşı",
   "RetentionPolicy_MaxAge_Channels": "Kanallarda maksimum mesaj yaşı",
   "RetentionPolicy_MaxAge_Description": "Bu dəyərdən daha eski olan bütün mesajları bir neçə gündə kəsin",
   "RetentionPolicy_MaxAge_DMs": "Birbaşa mesajlarda maksimum mesaj yaşı",

@@ -2147,7 +2147,6 @@
   "RetentionPolicy_ExcludePinned": "Përjashto mesazhet e mbështetura",
   "RetentionPolicy_FilesOnly": "Vetëm fshini skedarët",
   "RetentionPolicy_FilesOnly_Description": "Vetëm skedarët do të fshihen, vetë mesazhet do të qëndrojnë në vend.",
-  "RetentionPolicy_MaxAge": "Mosha maksimale e mesazhit",
   "RetentionPolicy_MaxAge_Channels": "Mosha maksimale e mesazhit në kanale",
   "RetentionPolicy_MaxAge_Description": "Prune të gjitha mesazhet më të vjetër se kjo vlerë, në ditë",
   "RetentionPolicy_MaxAge_DMs": "Mosha Maksimale e mesazhit në mesazhet direkte",

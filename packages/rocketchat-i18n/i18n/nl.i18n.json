@@ -3331,7 +3331,6 @@
   "RetentionPolicy_ExcludePinned": "Sluit vastgezette berichten uit",
   "RetentionPolicy_FilesOnly": "Alleen bestanden verwijderen",
   "RetentionPolicy_FilesOnly_Description": "Alleen bestanden worden verwijderd, de berichten zelf blijven op hun plaats.",
-  "RetentionPolicy_MaxAge": "Maximale berichtleeftijd",
   "RetentionPolicy_MaxAge_Channels": "Maximale berichtleeftijd in kanalen",
   "RetentionPolicy_MaxAge_Description": "Snoei alle berichten die ouder zijn dan deze waarde, in dagen",
   "RetentionPolicy_MaxAge_DMs": "Maximale berichtleeftijd in privéberichten",

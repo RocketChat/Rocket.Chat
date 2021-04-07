@@ -2478,7 +2478,6 @@
   "RetentionPolicy_ExcludePinned": "មិនរាប់បញ្ចូលសារដែលបានបញ្ចូល",
   "RetentionPolicy_FilesOnly": "លុបតែឯកសារ",
   "RetentionPolicy_FilesOnly_Description": "មានតែឯកសារប៉ុណ្ណោះដែលនឹងត្រូវលុបចោលសាររបស់ពួកគេនឹងនៅតែបន្ត។",
-  "RetentionPolicy_MaxAge": "អាយុសារអតិបរមា",
   "RetentionPolicy_MaxAge_Channels": "អាយុសារអតិបរមានៅក្នុងឆានែល",
   "RetentionPolicy_MaxAge_Description": "កាត់បន្ថយសារទាំងអស់ដែលចាស់ជាងតម្លៃនេះជាថ្ងៃ",
   "RetentionPolicy_MaxAge_DMs": "អាយុសារអតិបរមានៅក្នុងសារដោយផ្ទាល់",

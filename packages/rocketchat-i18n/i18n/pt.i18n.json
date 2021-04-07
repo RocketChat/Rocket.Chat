@@ -2488,7 +2488,6 @@
   "RetentionPolicy_ExcludePinned": "Excluir mensagens fixas",
   "RetentionPolicy_FilesOnly": "Apenas apagar arquivos",
   "RetentionPolicy_FilesOnly_Description": "Apenas arquivos serão excluídos, as mensagens permanecerão no lugar.",
-  "RetentionPolicy_MaxAge": "A idade máxima da mensagem",
   "RetentionPolicy_MaxAge_Channels": "A idade máxima da mensagem nos canais",
   "RetentionPolicy_MaxAge_Description": "Remover todas as mensagens mais antigas que esse valor, em dias",
   "RetentionPolicy_MaxAge_DMs": "Duração máxima da mensagem em mensagens directas",

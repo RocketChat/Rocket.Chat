@@ -3134,7 +3134,6 @@
   "RetentionPolicy_ExcludePinned": "Исключить закрепленные сообщения",
   "RetentionPolicy_FilesOnly": "Удалить только файлы",
   "RetentionPolicy_FilesOnly_Description": "Удаляются только файлы, сами сообщения остаются на месте.",
-  "RetentionPolicy_MaxAge": "Максимальное время жизни сообщений",
   "RetentionPolicy_MaxAge_Channels": "Максимальное время жизни сообщений в открытых каналах",
   "RetentionPolicy_MaxAge_Description": "Удалять все сообщения старше этого значения, в днях",
   "RetentionPolicy_MaxAge_DMs": "Максимальное время жизни личных сообщений",

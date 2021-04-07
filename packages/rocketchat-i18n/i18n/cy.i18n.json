@@ -2146,7 +2146,6 @@
   "RetentionPolicy_ExcludePinned": "Eithrio negeseuon wedi'u pinnio",
   "RetentionPolicy_FilesOnly": "Dileu ffeiliau yn unig",
   "RetentionPolicy_FilesOnly_Description": "Dim ond ffeiliau fydd yn cael eu dileu, bydd y negeseuon eu hunain yn aros yn eu lle.",
-  "RetentionPolicy_MaxAge": "Uchafswm oedran neges",
   "RetentionPolicy_MaxAge_Channels": "Uchafswm oedran neges mewn sianeli",
   "RetentionPolicy_MaxAge_Description": "Torrwch bob neges yn hŷn na'r gwerth hwn, mewn dyddiau",
   "RetentionPolicy_MaxAge_DMs": "Uchafswm oed neges mewn negeseuon uniongyrchol",

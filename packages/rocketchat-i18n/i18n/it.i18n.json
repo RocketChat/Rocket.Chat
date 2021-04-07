@@ -2183,7 +2183,6 @@
   "RetentionPolicy_ExcludePinned": "Escludere i messaggi aggiunti",
   "RetentionPolicy_FilesOnly": "Elimina solo i file",
   "RetentionPolicy_FilesOnly_Description": "Verranno eliminati solo i file, i messaggi rimarranno al loro posto.",
-  "RetentionPolicy_MaxAge": "Età massima del messaggio",
   "RetentionPolicy_MaxAge_Channels": "Massima età dei messaggi nei canali",
   "RetentionPolicy_MaxAge_Description": "Elimina tutti i messaggi più vecchi di questo valore, in giorni",
   "RetentionPolicy_MaxAge_DMs": "Età massima dei messaggi nei messaggi diretti",

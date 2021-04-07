@@ -2424,7 +2424,6 @@
   "RetentionPolicy_ExcludePinned": "پیام های پین شده را حذف کنید",
   "RetentionPolicy_FilesOnly": "فقط فایلها را حذف کنید",
   "RetentionPolicy_FilesOnly_Description": "فقط فایل ها حذف خواهند شد، پیام های خود را در جای خود قرار می دهند.",
-  "RetentionPolicy_MaxAge": "حداکثر سن پیام",
   "RetentionPolicy_MaxAge_Channels": "حداکثر سن پیام در کانال ها",
   "RetentionPolicy_MaxAge_Description": "تمام پیام های قدیمی تر از این مقدار را در روزها فرو کن",
   "RetentionPolicy_MaxAge_DMs": "حداکثر سن پیام در پیام های مستقیم",

@@ -2538,7 +2538,6 @@
   "RetentionPolicy_ExcludePinned": "Sabitlenmiş iletileri dışında tut",
   "RetentionPolicy_FilesOnly": "Sadece dosyaları sil",
   "RetentionPolicy_FilesOnly_Description": "Sadece dosyalar silinecek, mesajların kendisi yerinde kalacaktır.",
-  "RetentionPolicy_MaxAge": "Maksimum ileti yaşı",
   "RetentionPolicy_MaxAge_Channels": "Kanallarda maksimum ileti yaşı",
   "RetentionPolicy_MaxAge_Description": "Bu değerde günden daha eski olan tüm iletileri buda ",
   "RetentionPolicy_MaxAge_DMs": "Doğrudan iletilerde maksimum ileti yaşı",
