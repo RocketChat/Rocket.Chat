@@ -35,7 +35,6 @@ import './views/app/videoCall/videoButtons';
 import './views/app/videoCall/videoCall';
 import './views/app/photoswipe';
 import './components/icon';
-import './components/status';
 import './components/table.html';
 import './components/table';
 import './components/tabs';

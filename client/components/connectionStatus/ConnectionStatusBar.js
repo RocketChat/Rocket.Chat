@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { useConnectionStatus } from '../../contexts/ConnectionStatusContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import './ConnectionStatusAlert.css';
+import './ConnectionStatusBar.css';
 
 const getReconnectCountdown = (retryTime) => {
 	const timeDiff = retryTime - Date.now();
@@ -42,7 +42,7 @@ const useReconnectCountdown = (retryTime, status) => {
 	return reconnectCountdown;
 };
 
-function ConnectionStatusAlert() {
+function ConnectionStatusBar() {
 	const { connected, retryTime, status, reconnect } = useConnectionStatus();
 	const reconnectCountdown = useReconnectCountdown(retryTime, status);
 	const t = useTranslation();
@@ -57,7 +57,7 @@ function ConnectionStatusAlert() {
 	};
 
 	return (
-		<div className='ConnectionStatusAlert' role='alert'>
+		<div className='ConnectionStatusBar' role='alert'>
 			<strong>
 				<Icon name='warning' /> {t('meteor_status', { context: status })}
 			</strong>
@@ -69,7 +69,7 @@ function ConnectionStatusAlert() {
 			{['waiting', 'offline'].includes(status) && (
 				<>
 					{' '}
-					<a className='ConnectionStatusAlert__retry-link' href='#' onClick={handleRetryClick}>
+					<a className='ConnectionStatusBar__retry-link' href='#' onClick={handleRetryClick}>
 						{t('meteor_status_try_now', { context: status })}
 					</a>
 				</>
@@ -78,4 +78,4 @@ function ConnectionStatusAlert() {
 	);
 }
 
-export default ConnectionStatusAlert;
+export default ConnectionStatusBar;

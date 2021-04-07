@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import React from 'react';
 
 import { ConnectionStatusContext } from '../../contexts/ConnectionStatusContext';
-import ConnectionStatusAlert from './ConnectionStatusAlert';
+import ConnectionStatusBar from './ConnectionStatusBar';
 
 const stateDecorator = ({ status = 'connected' } = {}) => (storyFn) => (
 	<ConnectionStatusContext.Provider
@@ -18,21 +18,21 @@ const stateDecorator = ({ status = 'connected' } = {}) => (storyFn) => (
 );
 
 export default {
-	title: 'components/connectionStatus/ConnectionStatusAlert',
-	component: ConnectionStatusAlert,
+	title: 'components/connectionStatus/ConnectionStatusBar',
+	component: ConnectionStatusBar,
 };
 
-export const Connected = () => <ConnectionStatusAlert />;
+export const Connected = () => <ConnectionStatusBar />;
 Connected.decorators = [stateDecorator()];
 
-export const Connecting = () => <ConnectionStatusAlert />;
+export const Connecting = () => <ConnectionStatusBar />;
 Connecting.decorators = [stateDecorator({ status: 'connecting' })];
 
-export const Failed = () => <ConnectionStatusAlert />;
+export const Failed = () => <ConnectionStatusBar />;
 Failed.decorators = [stateDecorator({ status: 'failed' })];
 
-export const Waiting = () => <ConnectionStatusAlert />;
+export const Waiting = () => <ConnectionStatusBar />;
 Waiting.decorators = [stateDecorator({ status: 'waiting' })];
 
-export const Offline = () => <ConnectionStatusAlert />;
+export const Offline = () => <ConnectionStatusBar />;
 Offline.decorators = [stateDecorator({ status: 'offline' })];
