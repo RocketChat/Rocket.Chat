@@ -23,23 +23,10 @@ export function withData(WrappedComponent) {
 	}) => {
 		const userId = useUserId();
 		let nbrUnread = 0;
-		//If we hate to show all the data for each rooms
-		//switch (!showAll) {
-			//case true:
-				//room = useUserRoom(rid);
-		//messages = useUserSummary(rid, userId);
+
 		const subscription = useUserSubscriptions(rid, userId);
-		
-		//break;
-			//default:
-				//messages = useUserSummaryAll(userId);
-				//subscription = useUserSubscriptionsAll(userId);
-				//break;
-		//}
 		subscription[0]?.tunread?.length >= 1 && (nbrUnread = subscription[0]?.tunread?.length)
-		//this is an exemple, we need to add a business logic
-		//const result = [{month: "March", ts: new Date(), tmid: subscription[0]?.tunread?.length >= 1 ? subscription[0]?.tunread : null},...subscription, ...messages]
-		//result.sort( (a, b) => b.ts - a.ts );
+		
 		const [text, setText] = useState('');
 		const debouncedText = useDebouncedValue(text, 400);
 
