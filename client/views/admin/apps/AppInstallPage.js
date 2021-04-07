@@ -30,6 +30,7 @@ function AppInstallPage() {
 	const endpointAddress = appId ? `/apps/${ appId }` : '/apps';
 	const downloadApp = useEndpoint('POST', endpointAddress);
 	const uploadApp = useUpload(endpointAddress);
+	const uploadUpdateApp = useUpload(`${ endpointAddress }/update`);
 
 	const { values, handlers } = useForm({
 		file: {},
@@ -59,11 +60,20 @@ function AppInstallPage() {
 		const fileData = new FormData();
 		fileData.append('app', appFile, appFile.name);
 		fileData.append('permissions', JSON.stringify(permissionsGranted));
-		if (appId) {
-			const updateViaUploadApp = useUpload(`/apps/${ appId }`);
-		} else {
-			await uploadApp(fileData);
+
+		try {
+			if (appId) {
+				await uploadUpdateApp(fileData);
+			} else {
+				await uploadApp(fileData);
+			}
+		} catch (e) {
+			const errMsg = e.xhr.responseJSON.error;
+			if (errMsg === 'App already exists.') {
+				await uploadUpdateApp(fileData);
+			}
 		}
+
 		appsRoute.push({ context: 'details', id: app.id });
 		setModal(null);
 	};
