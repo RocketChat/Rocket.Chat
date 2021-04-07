@@ -1,4 +1,4 @@
-import React, { memo, useContext, useCallback, useState, useEffect, useMemo } from 'react';
+import React, { memo, useContext, useCallback, useState, useEffect } from 'react';
 import { BoxProps, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -17,7 +17,7 @@ import TranscriptModal from '../../../../../components/Omnichannel/modals/Transc
 import CloseChatModal from '../../../../../components/Omnichannel/modals/CloseChatModal';
 import { handleError } from '../../../../../../app/utils/client';
 import { IRoom } from '../../../../../../definition/IRoom';
-import { useAtLeastOnePermission, usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
+import { usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
 import { useUserId } from '../../../../../contexts/UserContext';
 import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
 import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
@@ -191,7 +191,9 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const canSendTranscript = usePermission('send-omnichannel-chat-transcript');
 
-	const canCloseRoom = usePermission('close-others-livechat-room');
+	const canCloseOthersRoom = usePermission('close-others-livechat-room');
+
+	const canCloseRoom = usePermission('close-livechat-room', uid || '');
 
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 
@@ -206,7 +208,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 			case QuickActionsEnum.Transcript:
 				return !!email && canSendTranscript;
 			case QuickActionsEnum.CloseChat:
-				return !!roomOpen && canCloseRoom;
+				return !!roomOpen && (canCloseRoom || canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:
 				return !!roomOpen && canPlaceChatOnHold;
 			default:
@@ -214,12 +216,6 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		}
 		return false;
 	};
-
-	const hasPermissionGroup = useAtLeastOnePermission(
-		useMemo(() => [
-			'close-others-livechat-room', 'transfer-livechat-guest',
-		], []),
-	);
 
 	return <ButtonGroup mi='x4' medium>
 		{ visibleActions.map(({ id, color, icon, title, action = actionDefault }, index) => {
@@ -237,7 +233,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				key: id,
 			};
 
-			if (!hasPermissionGroup || !hasPermissionButtons(id)) {
+			if (!hasPermissionButtons(id)) {
 				return;
 			}
 
