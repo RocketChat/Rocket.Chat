@@ -31,4 +31,5 @@ export interface IMessage extends IRocketChatRecord {
 
 	dcount?: number;
 	tcount?: number;
+	t?: string;
 }
