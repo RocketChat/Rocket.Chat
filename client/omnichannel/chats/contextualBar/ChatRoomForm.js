@@ -17,15 +17,12 @@ import { formsSubscription } from '../../../views/omnichannel/additionalForms';
 
 const initialValuesUser = {
 	name: '',
-	email: '',
-	phone: '',
-	livechatData: '',
 };
 
 const initialValuesRoom = {
 	topic: '',
 	tags: '',
-	livechatData: '',
+	livechatData: {},
 	priorityId: '',
 };
 
@@ -52,7 +49,7 @@ const getInitialValuesRoom = (room) => {
 	return {
 		topic: topic ?? '',
 		tags: tags ?? [],
-		livechatData: livechatData ?? '',
+		livechatData: livechatData ?? {},
 		priorityId: priorityId ?? '',
 	};
 };
@@ -219,7 +216,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 					<TextInput flexGrow={1} value={topic} onChange={handleTopic} />
 				</Field.Row>
 			</Field>
-			{Tags && (tags && Object.values(tags).length > 0) && <Field>
+			{Tags && <Field>
 				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
 				<Field.Row>
 					<Tags value={Object.values(tags)} handler={handleTags} />
