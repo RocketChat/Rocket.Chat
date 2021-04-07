@@ -2,9 +2,8 @@ import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { withDoNotAskAgain, RequiredModalProps } from '../../withDoNotAskAgain';
 
-type ReturnChatQueueModalProps = RequiredModalProps & {
+type ReturnChatQueueModalProps = {
 	onMoveChat: () => void;
 	onCancel: () => void;
 };
@@ -12,8 +11,6 @@ type ReturnChatQueueModalProps = RequiredModalProps & {
 const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({
 	onCancel,
 	onMoveChat,
-	confirm = onMoveChat,
-	dontAskAgain,
 	...props
 }) => {
 	const t = useTranslation();
@@ -29,16 +26,13 @@ const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({
 		</Modal.Content>
 		<Modal.Footer>
 			<Box>
-				{dontAskAgain}
 				<ButtonGroup align='end'>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button primary onClick={confirm}>{t('Move_queue')}</Button>
+					<Button primary onClick={onMoveChat}>{t('Move_queue')}</Button>
 				</ButtonGroup>
 			</Box>
 		</Modal.Footer>
 	</Modal>;
 };
-
-export const ReturnChatQueueDoNotAskAgain = withDoNotAskAgain<ReturnChatQueueModalProps>(ReturnChatQueueModal);
 
 export default ReturnChatQueueModal;
