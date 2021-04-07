@@ -185,7 +185,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const hasManagerRole = useRole('livechat-manager');
 
-	const roomOpen = room?.open && ((room.u?._id === uid) || hasManagerRole);
+	const roomOpen = room?.open && ((room.u?._id === uid) || hasManagerRole) && room?.lastMessage?.t !== 'livechat-close';
 
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 
