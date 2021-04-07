@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Field, TextInput, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { Field, TextInput, ButtonGroup, Button, Box, Tag, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
 
@@ -93,6 +93,34 @@ function VisitorData({ room, reload, close }) {
 	return <RoomEdit room={roomData} visitor={visitorData} reload={reload} close={close} />;
 }
 
+const TagsManual = ({ tags = [], removeTag = () => {}, addTag = () => {} }) => {
+	const [tagValue, handleTagValue] = useState('');
+
+	const handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			tagValue && addTag(tagValue);
+			handleTagValue('');
+		}
+	};
+	return <>
+		<Field.Row>
+			<TextInput onKeyDown={handleKeyDown} value={tagValue} flexGrow={1} onChange={(event) => handleTagValue(event.target.value)}/>
+		</Field.Row>
+		<Field.Row>
+			{tags && <Box color='hint' display='flex' flex-direction='row'>
+				{tags.length > 0 && tags.map((tag) => (
+					<Box onClick={() => removeTag(tag)} key={tag} mie='x4'>
+						<Tag style={{ display: 'inline', fontSize: '0.8rem' }} disabled>
+							{tag}
+							<Icon style={{ fontWeight: 'bold', paddingTop: '0.1rem', paddingBottom: '0.3rem' }} marginBlockStart='x2' name='cross' />
+						</Tag>
+					</Box>
+				))}
+			</Box>}
+		</Field.Row>
+	</>;
+};
+
 
 export function RoomEdit({ room, visitor, reload, close }) {
 	const t = useTranslation();
@@ -141,6 +169,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('livechat/custom-fields');
 	const { value: prioritiesResult = {}, phase: statePriorities } = useEndpointData('livechat/priorities.list');
+	const { value: tagsResult = [], phase: stateTags } = useEndpointData('livechat/tags.list');
 
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};
@@ -165,6 +194,8 @@ export function RoomEdit({ room, visitor, reload, close }) {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const saveRoom = useMethod('livechat:saveInfo');
+
+	const { tags: tagsList } = tagsResult;
 
 	const handleSave = useMutableCallback(async (e) => {
 		e.preventDefault();
@@ -193,11 +224,20 @@ export function RoomEdit({ room, visitor, reload, close }) {
 
 	const formIsValid = (hasUnsavedChangesContact || hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) && customFieldsError.length === 0;
 
-	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
+	if ([stateCustomFields, statePriorities, stateTags].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton/>;
 	}
 
 	const { priorities } = prioritiesResult;
+
+	const removeTag = (tag) => {
+		const tagsFiltered = tags.filter((tagArray) => tagArray !== tag);
+		handleTags(tagsFiltered);
+	};
+
+	const addTag = (tag) => {
+		handleTags([...tags, tag]);
+	};
 
 	return <>
 		<VerticalBar.ScrollableContent is='form'>
@@ -216,11 +256,14 @@ export function RoomEdit({ room, visitor, reload, close }) {
 					<TextInput flexGrow={1} value={topic} onChange={handleTopic} />
 				</Field.Row>
 			</Field>
-			{Tags && <Field>
+			{Tags && (tagsList && tagsList.length > 0) ? <Field>
 				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
 				<Field.Row>
 					<Tags value={Object.values(tags)} handler={handleTags} />
 				</Field.Row>
+			</Field> : <Field>
+				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
+				<TagsManual tags={tags} removeTag={removeTag} addTag={addTag} />
 			</Field>}
 			{PrioritiesSelect && (priorities && priorities.length > 0)
 			&& <PrioritiesSelect value={priorityId} label={t('Priority')} options={priorities} handler={handlePriorityId} />}
