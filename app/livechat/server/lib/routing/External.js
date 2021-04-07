@@ -19,6 +19,9 @@ class ExternalQueue {
 	}
 
 	getNextAgent(department, ignoreAgentId) {
+		if (settings.get('Livechat_kill_switch')) {
+			return null;
+		}
 		for (let i = 0; i < 10; i++) {
 			try {
 				let queryString = department ? `?departmentId=${ department }` : '';

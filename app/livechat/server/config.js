@@ -19,6 +19,21 @@ Meteor.startup(function() {
 		public: true,
 	});
 
+	settings.add('Livechat_kill_switch', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+		i18nDescription: 'Livechat_kill_switch_description',
+	});
+
+	settings.add('Livechat_kill_switch_message', 'Livechat is Currently Offline', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		public: true,
+	});
+
 	settings.add('Livechat_title_color', '#C1272D', {
 		type: 'color',
 		editor: 'color',
