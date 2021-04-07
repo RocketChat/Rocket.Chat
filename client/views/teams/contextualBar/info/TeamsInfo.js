@@ -20,6 +20,7 @@ import { useMethod } from '../../../../contexts/ServerContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
+import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 
 const retentionPolicyMaxAge = {
 	c: 'RetentionPolicy_MaxAge_Channels',
@@ -199,6 +200,8 @@ export default function TeamsInfoWithLogic({
 		filesOnlyDefault: useSetting('RetentionPolicy_FilesOnly'),
 	};
 
+	const dontAskHideRoom = useDontAskAgain('hideRoom');
+
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
@@ -257,6 +260,10 @@ export default function TeamsInfoWithLogic({
 		};
 
 		const warnText = roomTypes.getConfig(room.t).getUiText(UiTextContext.HIDE_WARNING);
+
+		if (dontAskHideRoom) {
+			return hide();
+		}
 
 		setModal(<GenericModalDoNotAskAgain
 			variant='danger'
