@@ -70,7 +70,6 @@ class AppClientOrchestrator {
 			price,
 			pricingPlans,
 			purchaseType,
-			permissions: latest.permissions,
 		}));
 	}
 
