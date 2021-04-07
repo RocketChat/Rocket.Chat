@@ -4,7 +4,7 @@ import React, { memo, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
 import { roomTypes, UiTextContext } from '../../app/utils/client';
-import { DeleteWarningModalDoNotAskAgain } from '../components/DeleteWarningModal';
+import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';
 import { useRoute } from '../contexts/RouterContext';
@@ -13,6 +13,7 @@ import { useSetting } from '../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useTranslation } from '../contexts/TranslationContext';
 import { useUserSubscription } from '../contexts/UserContext';
+import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import WarningModal from '../views/admin/apps/WarningModal';
 
 const fields = {
@@ -33,6 +34,8 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const subscription = useUserSubscription(rid, fields);
 	const canFavorite = useSetting('Favorite_Rooms');
 	const isFavorite = (subscription != null ? subscription.f : undefined) != null && subscription.f;
+
+	const dontAskHideRoom = useDontAskAgain('hideRoom');
 
 	const hideRoom = useMethod('hideRoom');
 	const readMessages = useMethod('readMessages');
@@ -95,19 +98,25 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.HIDE_WARNING);
 
+		if (dontAskHideRoom) {
+			return hide();
+		}
+
 		setModal(
-			<DeleteWarningModalDoNotAskAgain
-				deleteText={t('Yes_hide_it')}
-				onCancel={closeModal}
+			<GenericModalDoNotAskAgain
+				variant='danger'
+				confirmText={t('Yes_hide_it')}
 				cancelText={t('Cancel')}
-				confirm={hide}
+				onClose={closeModal}
+				onCancel={closeModal}
+				onConfirm={hide}
 				dontAskAgain={{
 					action: 'hideRoom',
 					label: t('Hide_room'),
 				}}
 			>
 				{t(warnText, name)}
-			</DeleteWarningModalDoNotAskAgain>,
+			</GenericModalDoNotAskAgain>,
 		);
 	});
 

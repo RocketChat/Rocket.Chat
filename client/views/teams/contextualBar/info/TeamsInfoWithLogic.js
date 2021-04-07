@@ -11,6 +11,7 @@ import { useMethod } from '../../../../contexts/ServerContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
 import { useTabBarClose, useTabBarOpen } from '../../../room/providers/ToolboxProvider';
 import DeleteTeamModal from './Delete';
@@ -46,6 +47,8 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 		excludePinnedDefault: useSetting('RetentionPolicy_DoNotPrunePinned'),
 		filesOnlyDefault: useSetting('RetentionPolicy_FilesOnly'),
 	};
+
+	const dontAskHideRoom = useDontAskAgain('hideRoom');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -106,6 +109,10 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 		};
 
 		const warnText = roomTypes.getConfig(room.t).getUiText(UiTextContext.HIDE_WARNING);
+
+		if (dontAskHideRoom) {
+			return hide();
+		}
 
 		setModal(
 			<GenericModalDoNotAskAgain

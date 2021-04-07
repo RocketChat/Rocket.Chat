@@ -2,11 +2,11 @@ import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
-import { withDoNotAskAgain, RequiredModalProps } from './withDoNotAskAgain';
 
-type DeleteWarningModalProps = RequiredModalProps & {
+type DeleteWarningModalProps = {
 	cancelText?: string;
 	deleteText?: string;
+	confirm?: () => void;
 	onDelete: () => void;
 	onCancel: () => void;
 };
@@ -18,7 +18,6 @@ const DeleteWarningModal: FC<DeleteWarningModalProps> = ({
 	onCancel,
 	onDelete,
 	confirm = onDelete,
-	dontAskAgain,
 	...props
 }) => {
 	const t = useTranslation();
@@ -33,7 +32,6 @@ const DeleteWarningModal: FC<DeleteWarningModalProps> = ({
 			<Modal.Content fontScale='p1'>{children}</Modal.Content>
 			<Modal.Footer>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
-					{dontAskAgain}
 					<ButtonGroup align='end'>
 						<Button ghost onClick={onCancel}>
 							{cancelText ?? t('Cancel')}
@@ -47,9 +45,5 @@ const DeleteWarningModal: FC<DeleteWarningModalProps> = ({
 		</Modal>
 	);
 };
-
-export const DeleteWarningModalDoNotAskAgain = withDoNotAskAgain<DeleteWarningModalProps>(
-	DeleteWarningModal,
-);
 
 export default DeleteWarningModal;

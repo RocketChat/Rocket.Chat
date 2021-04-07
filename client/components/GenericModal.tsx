@@ -77,9 +77,6 @@ const GenericModal: FC<GenericModalProps> = ({
 	);
 };
 
-// TODO update withDoNotAskAgain to use onConfirm istead of confirm
-export const GenericModalDoNotAskAgain = withDoNotAskAgain<GenericModalProps>(
-	({ confirm, ...props }) => <GenericModal onConfirm={confirm} {...props} />,
-);
+export const GenericModalDoNotAskAgain = withDoNotAskAgain<GenericModalProps>(GenericModal);
 
 export default GenericModal;

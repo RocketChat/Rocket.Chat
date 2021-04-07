@@ -2,10 +2,10 @@ import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { RequiredModalProps } from '../../../../../../client/components/withDoNotAskAgain';
 
-type PlaceChatOnHoldModalProps = RequiredModalProps & {
+type PlaceChatOnHoldModalProps = {
 	onOnHoldChat: () => void;
+	confirm?: () => void;
 	onCancel: () => void;
 };
 
