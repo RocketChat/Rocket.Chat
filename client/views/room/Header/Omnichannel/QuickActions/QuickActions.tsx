@@ -193,7 +193,7 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
 
-	const canCloseRoom = usePermission('close-livechat-room', uid || '');
+	const canCloseRoom = usePermission('close-livechat-room');
 
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 
