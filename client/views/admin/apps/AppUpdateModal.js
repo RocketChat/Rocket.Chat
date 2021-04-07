@@ -21,16 +21,18 @@ const AppUpdateModal = ({ confirm, cancel, ...props }) => {
 	return <Modal {...props}>
 		<Modal.Header>
 			<Icon color='danger' name='info-circled' size={20}/>
-			<Modal.Title>This app is already installed</Modal.Title>
+			<Modal.Title>
+				{t('Apps_Manual_Update_Modal_Title')}
+			</Modal.Title>
 			<Modal.Close onClick={handleCloseButtonClick}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
-    Do you want to update it?
+			{t('Apps_Manual_Update_Modal_Body')}
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup align='end'>
-				<Button ghost onClick={handleCancelButtonClick}>No</Button>
-				<Button primary danger onClick={handleConfirmButtonClick}>Yes</Button>
+				<Button ghost onClick={handleCancelButtonClick}>{t('No')}</Button>
+				<Button primary danger onClick={handleConfirmButtonClick}>{t('Yes')}</Button>
 			</ButtonGroup>
 		</Modal.Footer>
 	</Modal>;
