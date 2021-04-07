@@ -1,7 +1,10 @@
 import { Roles } from '../../../models/server/raw';
 
 export const hasRoleAsync = async (userId, roleNames, scope) => {
-	roleNames = [].concat(roleNames);
+	if (!userId || userId === '') {
+		return false;
+	}
+
 	return Roles.isUserInRoles(userId, roleNames, scope);
 };
 

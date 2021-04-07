@@ -160,7 +160,7 @@ export function getEmailData({
 		headers: {},
 	};
 
-	if (sender.emails?.length > 0) {
+	if (sender.emails?.length > 0 && settings.get('Add_Sender_To_ReplyTo')) {
 		const [senderEmail] = sender.emails;
 		email.headers['Reply-To'] = generateNameEmail(username, senderEmail.address);
 	}

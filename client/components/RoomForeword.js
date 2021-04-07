@@ -13,7 +13,7 @@ const RoomForeword = ({ _id: rid }) => {
 	const user = useUser();
 	const room = useReactiveValue(useCallback(() => Rooms.findOne({ _id: rid }), [rid]));
 
-	if (room.t !== 'd') {
+	if (room?.t !== 'd') {
 		return t('Start_of_conversation');
 	}
 
@@ -52,6 +52,7 @@ const RoomForeword = ({ _id: rid }) => {
 				<Margins inline='x4' key={index}>
 					<Box is='a' href={`/direct/${ username }`}>
 						<Tag
+							variant='secondary'
 							className='mention-link'
 							data-username={username}
 							medium

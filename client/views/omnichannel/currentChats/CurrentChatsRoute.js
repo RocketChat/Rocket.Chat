@@ -68,8 +68,11 @@ const useQuery = ({ guest, servedBy, department, status, from, to, tags, customF
 		...current && { offset: current },
 	};
 
-	if (from && to) {
-		query.createdAt = JSON.stringify({ start: from, end: to });
+	if (from || to) {
+		query.createdAt = JSON.stringify({
+			...from && { start: moment(new Date(from)).set({ hour: '00', minutes: '00', seconds: '00' }).format('YYYY-MM-DDTHH:mm:ss') },
+			...to && { end: moment(new Date(to)).set({ hour: '23', minutes: '59', seconds: '59' }).format('YYYY-MM-DDTHH:mm:ss') },
+		});
 	}
 	if (status !== 'all') {
 		query.open = status === 'opened';

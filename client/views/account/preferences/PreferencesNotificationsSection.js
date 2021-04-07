@@ -18,7 +18,7 @@ const emailNotificationOptionsLabelMap = {
 	nothing: 'Email_Notification_Mode_Disabled',
 };
 
-const PreferencesNotificationsSection = ({ onChange, ...props }) => {
+const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 	const t = useTranslation();
 
 	const [notificationsPermission, setNotificationsPermission] = useState();
@@ -34,7 +34,7 @@ const PreferencesNotificationsSection = ({ onChange, ...props }) => {
 	const defaultMobileNotifications = useSetting('Accounts_Default_User_Preferences_mobileNotifications');
 	const canChangeEmailNotification = useSetting('Accounts_AllowEmailNotifications');
 
-	const { values, handlers } = useForm({
+	const { values, handlers, commit } = useForm({
 		desktopNotificationRequireInteraction: userDesktopNotificationRequireInteraction,
 		desktopNotifications: userDesktopNotifications,
 		mobileNotifications: userMobileNotifications,
@@ -59,6 +59,8 @@ const PreferencesNotificationsSection = ({ onChange, ...props }) => {
 	} = handlers;
 
 	useEffect(() => setNotificationsPermission(window.Notification && Notification.permission), []);
+
+	commitRef.current.notifications = commit;
 
 	const onSendNotification = useCallback(() => {
 		KonchatNotification.notify({

@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import moment from 'moment';
 
-import { hasRole } from '../../../../../app/authorization';
 import {
 	LivechatDepartment,
 	Users,
@@ -125,16 +123,8 @@ export const processWaitingQueue = async (department) => {
 	await dispatchWaitingQueueStatus(departmentId);
 };
 
-export const allowAgentSkipQueue = (agent) => {
-	check(agent, Match.ObjectIncluding({
-		agentId: String,
-	}));
-
-	return settings.get('Livechat_assign_new_conversation_to_bot') && hasRole(agent.agentId, 'bot');
-};
-
 export const setPredictedVisitorAbandonmentTime = (room) => {
-	if (!room.v || !room.v.lastMessageTs || !settings.get('Livechat_auto_close_abandoned_rooms')) {
+	if (!room.v || !room.v.lastMessageTs || !settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none') {
 		return;
 	}
 
@@ -154,10 +144,10 @@ export const setPredictedVisitorAbandonmentTime = (room) => {
 };
 
 export const updatePredictedVisitorAbandonment = () => {
-	if (settings.get('Livechat_auto_close_abandoned_rooms')) {
-		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
-	} else {
+	if (!settings.get('Livechat_abandoned_rooms_action') || (settings.get('Livechat_abandoned_rooms_action') === 'none')) {
 		LivechatRooms.unsetPredictedVisitorAbandonment();
+	} else {
+		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
 	}
 };
 

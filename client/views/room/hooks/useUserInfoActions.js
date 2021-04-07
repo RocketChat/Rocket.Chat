@@ -16,7 +16,7 @@ import { roomTypes, RoomMemberActions } from '../../../../app/utils';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useUserRoom } from './useUserRoom';
 import { escapeHTML } from '../../../../lib/escapeHTML';
-
+import RemoveUsersModal from '../../teams/contextualBar/members/RemoveUsersModal';
 
 const useUserHasRoomRole = (uid, rid, role) => useReactiveValue(useCallback(() => !!RoomRoles.findOne({ rid, 'u._id': uid, roles: role }), [uid, rid, role]));
 
@@ -77,26 +77,7 @@ const WarningModal = ({ text, confirmText, close, confirm, ...props }) => {
 	</Modal>;
 };
 
-
-const mapOptions = ([key, { action, label, icon }]) => [
-	key,
-	{
-		label: { label, icon }, // TODO fuselage
-		action,
-	},
-];
-
-export const useUserInfoActionsSpread = (actions, size = 2) => useMemo(() => {
-	const entries = Object.entries(actions);
-
-	const options = entries.slice(0, size);
-	const menuOptions = entries.slice(size, entries.length).map(mapOptions);
-	const menu = menuOptions.length && Object.fromEntries(entries.slice(size, entries.length).map(mapOptions));
-
-	return { actions: options, menu };
-}, [actions, size]);
-
-export const useUserInfoActions = (user = {}, rid) => {
+export const useUserInfoActions = (user = {}, rid, reload) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const directRoute = useRoute('direct');
@@ -167,7 +148,7 @@ export const useUserInfoActions = (user = {}, rid) => {
 
 	const openDirectMessageOption = useMemo(() => shouldOpenDirectMessage && {
 		label: t('Direct_Message'),
-		icon: 'chat',
+		icon: 'balloon',
 		action: openDirectDm,
 	}, [openDirectDm, shouldOpenDirectMessage, t]);
 
@@ -237,7 +218,11 @@ export const useUserInfoActions = (user = {}, rid) => {
 	const ignoreUserAction = useMutableCallback(async () => {
 		try {
 			await ignoreUser({ rid, userId: uid, ignore: !isIgnored });
-			dispatchToastMessage({ type: 'success', message: t('User_has_been_unignored') });
+			if (isIgnored) {
+				dispatchToastMessage({ type: 'success', message: t('User_has_been_unignored') });
+			} else {
+				dispatchToastMessage({ type: 'success', message: t('User_has_been_ignored') });
+			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -304,20 +289,41 @@ export const useUserInfoActions = (user = {}, rid) => {
 		};
 	}, [closeModal, dispatchToastMessage, isMuted, muteFn, rid, roomCanMute, roomName, setModal, t, user.username, userCanMute]);
 
+	const removeFromTeam = useEndpointActionExperimental('POST', 'teams.removeMember', t('User_has_been_removed_from_team'));
+
 	const removeUserAction = useEndpointActionExperimental('POST', `${ endpointPrefix }.kick`, t('User_has_been_removed_from_s', roomName));
 	const removeUserOptionAction = useMutableCallback(() => {
+		if (room.teamMain && room.teamId) {
+			return setModal(<RemoveUsersModal
+				teamId={room?.teamId}
+				userId={uid}
+				onClose={closeModal}
+				onCancel={closeModal}
+				onConfirm={async (rooms) => {
+					await removeFromTeam({ teamId: room.teamId, userId: uid, rooms: Object.keys(rooms) });
+					closeModal();
+					reload && reload();
+				}}
+			/>);
+		}
+
 		setModal(<WarningModal
 			text={t('The_user_will_be_removed_from_s', roomName)}
 			close={closeModal}
 			confirmText={t('Yes_remove_user')}
-			confirm={() => { removeUserAction({ roomId: rid, userId: uid }); closeModal(); }}
+			confirm={async () => {
+				await removeUserAction({ roomId: rid, userId: uid });
+				closeModal();
+				reload && reload();
+			}}
 		/>);
 	});
+
 	const removeUserOption = useMemo(() => roomCanRemove && userCanRemove && {
-		label: <Box color='danger'>{t('Remove_from_room')}</Box>,
+		label: <Box color='danger'>{room.teamMain ? t('Remove_from_team') : t('Remove_from_room')}</Box>,
 		icon: 'sign-out',
 		action: removeUserOptionAction,
-	}, [roomCanRemove, userCanRemove, removeUserOptionAction, t]);
+	}, [room, roomCanRemove, userCanRemove, removeUserOptionAction, t]);
 
 	return useMemo(() => ({
 		...openDirectMessageOption && { openDirectMessage: openDirectMessageOption },

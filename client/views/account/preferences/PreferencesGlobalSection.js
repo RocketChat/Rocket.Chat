@@ -5,7 +5,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 
-const PreferencesGlobalSection = ({ onChange, ...props }) => {
+const PreferencesGlobalSection = ({ onChange, commitRef, ...props }) => {
 	const t = useTranslation();
 
 	const userDontAskAgainList = useUserPreference('dontAskAgainList');
@@ -14,11 +14,13 @@ const PreferencesGlobalSection = ({ onChange, ...props }) => {
 
 	const selectedOptions = options.map(([action]) => action);
 
-	const { values, handlers } = useForm({ dontAskAgainList: selectedOptions }, onChange);
+	const { values, handlers, commit } = useForm({ dontAskAgainList: selectedOptions }, onChange);
 
 	const { dontAskAgainList } = values;
 
 	const { handleDontAskAgainList } = handlers;
+
+	commitRef.current.global = commit;
 
 	return <Accordion.Item title={t('Global')} {...props}>
 		<FieldGroup>

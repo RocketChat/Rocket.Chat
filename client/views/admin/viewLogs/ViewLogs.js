@@ -185,7 +185,7 @@ function ViewLogs() {
 	}, [sendToBottomIfNecessary]);
 
 	return <Page>
-		<Page.Header title={t('View Logs')} />
+		<Page.Header title={t('View_Logs')} />
 		<Page.Content>
 			<Box
 				width='full'

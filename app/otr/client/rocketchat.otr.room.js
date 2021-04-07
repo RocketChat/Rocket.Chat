@@ -13,6 +13,7 @@ import { OTR } from './rocketchat.otr';
 import { Notifications } from '../../notifications';
 import { modal } from '../../ui-utils';
 import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
+import { Presence } from '../../../client/lib/presence';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
@@ -178,7 +179,6 @@ OTR.Room = class {
 	}
 
 	onUserStream(type, data) {
-		const user = Meteor.users.findOne(data.userId);
 		switch (type) {
 			case 'handshake':
 				let timeout = null;
@@ -198,36 +198,40 @@ OTR.Room = class {
 					});
 				};
 
-				if (data.refresh && this.established.get()) {
-					this.reset();
-					establishConnection();
-				} else {
-					if (this.established.get()) {
+				(async () => {
+					const { username } = await Presence.get(data.userId);
+					if (data.refresh && this.established.get()) {
 						this.reset();
+						establishConnection();
+					} else {
+						if (this.established.get()) {
+							this.reset();
+						}
+
+						modal.open({
+							title: TAPi18n.__('OTR'),
+							text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username }),
+							html: true,
+							showCancelButton: true,
+							allowOutsideClick: false,
+							confirmButtonText: TAPi18n.__('Yes'),
+							cancelButtonText: TAPi18n.__('No'),
+						}, (isConfirm) => {
+							if (isConfirm) {
+								establishConnection();
+							} else {
+								Meteor.clearTimeout(timeout);
+								this.deny();
+							}
+						});
 					}
 
-					modal.open({
-						title: TAPi18n.__('OTR'),
-						text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username: user.username }),
-						html: true,
-						showCancelButton: true,
-						allowOutsideClick: false,
-						confirmButtonText: TAPi18n.__('Yes'),
-						cancelButtonText: TAPi18n.__('No'),
-					}, (isConfirm) => {
-						if (isConfirm) {
-							establishConnection();
-						} else {
-							Meteor.clearTimeout(timeout);
-							this.deny();
-						}
-					});
-				}
+					timeout = Meteor.setTimeout(() => {
+						this.establishing.set(false);
+						modal.close();
+					}, 10000);
+				})();
 
-				timeout = Meteor.setTimeout(() => {
-					this.establishing.set(false);
-					modal.close();
-				}, 10000);
 
 				break;
 

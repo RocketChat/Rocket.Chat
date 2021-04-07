@@ -83,7 +83,9 @@
         "indent": "off",
         "no-extra-parens": "off",
         "no-spaced-func": "off",
+        "no-unused-vars": "off",
         "no-useless-constructor": "off",
+        "no-use-before-define": "off",
         "react/jsx-uses-react": "error",
         "react/jsx-uses-vars": "error",
         "react/jsx-no-undef": "error",
@@ -99,6 +101,10 @@
             "SwitchCase": 1
           }
         ],
+        "@typescript-eslint/interface-name-prefix": [
+          "error",
+          "always"
+        ],
         "@typescript-eslint/no-extra-parens": [
           "error",
           "all",
@@ -111,10 +117,9 @@
           }
         ],
         "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/interface-name-prefix": [
-          "error",
-          "always"
-        ]
+        "@typescript-eslint/no-unused-vars": ["error", {
+          "argsIgnorePattern": "^_"
+        }]
       },
       "env": {
         "browser": true,

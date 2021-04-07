@@ -45,11 +45,9 @@ export default function NewIntegrationsPage({ ...props }) {
 				{t('Outgoing')}
 			</Tabs.Item>
 		</Tabs>
-		<Page.ScrollableContentWithShadow>
-			{
-				(tab === 'incoming' && <NewIncomingWebhook key='incoming'/>)
-				|| (tab === 'outgoing' && <NewOutgoingWebhook key='outgoing'/>)
-			}
-		</Page.ScrollableContentWithShadow>
+		{
+			(tab === 'incoming' && <NewIncomingWebhook key='incoming'/>)
+			|| (tab === 'outgoing' && <NewOutgoingWebhook key='outgoing'/>)
+		}
 	</Page>;
 }

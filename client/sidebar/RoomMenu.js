@@ -13,6 +13,8 @@ import { useUserSubscription } from '../contexts/UserContext';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';
 import WarningModal from '../views/admin/apps/WarningModal';
+import { GenericModalDoNotAskAgain } from '../components/GenericModal';
+import { useDontAskAgain } from '../hooks/useDontAskAgain';
 
 const fields = {
 	f: 1,
@@ -32,6 +34,8 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 	const subscription = useUserSubscription(rid, fields);
 	const canFavorite = useSetting('Favorite_Rooms');
 	const isFavorite = ((subscription != null ? subscription.f : undefined) != null) && subscription.f;
+
+	const dontAskHideRoom = useDontAskAgain('hideRoom');
 
 	const hideRoom = useMethod('hideRoom');
 	const readMessages = useMethod('readMessages');
@@ -89,14 +93,24 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.HIDE_WARNING);
 
-		setModal(<WarningModal
-			text={t(warnText, name)}
+		if (dontAskHideRoom) {
+			return hide();
+		}
+
+		setModal(<GenericModalDoNotAskAgain
+			variant='danger'
 			confirmText={t('Yes_hide_it')}
-			close={closeModal}
-			cancel={closeModal}
 			cancelText={t('Cancel')}
-			confirm={hide}
-		/>);
+			onClose={closeModal}
+			onCancel={closeModal}
+			onConfirm={hide}
+			dontAskAgain={{
+				action: 'hideRoom',
+				label: t('Hide_room'),
+			}}
+		>
+			{t(warnText, name)}
+		</ GenericModalDoNotAskAgain>);
 	});
 
 	const handleToggleRead = useMutableCallback(async () => {

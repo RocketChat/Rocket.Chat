@@ -23,7 +23,7 @@ export const InviteUsers = ({
 	const { copy } = useClipboardWithToast(linkText);
 
 	return (
-		<Box position='absolute' h='full' w='full'>
+		<>
 			<VerticalBar.Header>
 				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
 				<VerticalBar.Text>{t('Invite_Users')}</VerticalBar.Text>
@@ -46,7 +46,7 @@ export const InviteUsers = ({
 					{onClickEdit && <Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>}
 				</Box>
 			</VerticalBar.ScrollableContent>
-		</Box>
+		</>
 	);
 };
 

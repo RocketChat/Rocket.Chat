@@ -1,4 +1,4 @@
-import React, { useMemo, lazy, LazyExoticComponent, FC } from 'react';
+import React, { useMemo, lazy, LazyExoticComponent, FC, ReactNode } from 'react';
 import { BadgeProps } from '@rocket.chat/fuselage';
 
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
@@ -22,19 +22,19 @@ addAction('thread', (options) => {
 	const room = options.room as unknown as ISubscription;
 	const threadsEnabled = useSetting('Threads_enabled');
 	return useMemo(() => (threadsEnabled ? {
-		groups: ['channel', 'group', 'direct'],
+		groups: ['channel', 'group', 'direct', 'team'],
 		id: 'thread',
 		full: true,
 		title: 'Threads',
 		icon: 'thread',
 		template,
-		renderAction: (props) => {
+		renderAction: (props): ReactNode => {
 			const unread = room.tunread?.length > 99 ? '99+' : room.tunread?.length;
 			const variant = getVariant(room.tunreadUser?.length, room.tunreadGroup?.length);
 			return <Header.ToolBoxAction {...props} >
 				{ unread > 0 && <Header.Badge variant={variant}>{unread}</Header.Badge> }
 			</Header.ToolBoxAction>;
 		},
-		order: 2,
+		order: 4,
 	} : null), [threadsEnabled, room.tunread?.length, room.tunreadUser?.length, room.tunreadGroup?.length]);
 });

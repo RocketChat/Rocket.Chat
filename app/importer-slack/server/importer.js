@@ -14,6 +14,8 @@ import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 
+// #ToDo: review PR #20216 and add back any new features that may have been removed by the merge.
+
 export class SlackImporter extends Base {
 	parseData(data) {
 		const dataString = data.toString();

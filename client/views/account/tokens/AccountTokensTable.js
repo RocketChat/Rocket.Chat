@@ -49,6 +49,8 @@ const AccountTokensTable = ({ data, reload }) => {
 	const onRegenerate = useCallback((name) => {
 		const onConfirm = async () => {
 			try {
+				setModal(null);
+
 				const token = await regenerateToken({ tokenName: name });
 
 				setModal(<InfoModal
@@ -60,6 +62,7 @@ const AccountTokensTable = ({ data, reload }) => {
 
 				reload();
 			} catch (e) {
+				setModal(null);
 				dispatchToastMessage({ type: 'error', message: e });
 			}
 		};

@@ -2,6 +2,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
 import { HTML } from 'meteor/htmljs';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
@@ -174,7 +175,7 @@ Template.thread.onRendered(function() {
 		this.callbackRemove = () => callbacks.remove('streamNewMessage', `thread-${ rid }`);
 
 		callbacks.add('streamNewMessage', _.debounce((msg) => {
-			if (rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
+			if (Session.get('openedRoom') !== msg.rid || rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
 				return;
 			}
 			Meteor.call('readThreads', tmid);

@@ -27,7 +27,7 @@ const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) =>
 	const t = useTranslation();
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
+	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
 	return <>

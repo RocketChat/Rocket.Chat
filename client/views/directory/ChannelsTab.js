@@ -1,5 +1,5 @@
 import { Box, Margins, Table, Avatar, Tag, Icon } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../components/MarkdownText';
@@ -28,6 +28,7 @@ function RoomTags({ room }) {
 
 function ChannelsTable() {
 	const t = useTranslation();
+	const refAutoFocus = useAutoFocus(true);
 	const [sort, setSort] = useState(['name', 'asc']);
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
@@ -50,6 +51,7 @@ function ChannelsTable() {
 		<GenericTable.HeaderCell key={'usersCount'} direction={sort[1]} active={sort[0] === 'usersCount'} onClick={onHeaderClick} sort='usersCount' style={{ width: '100px' }}>{t('Users')}</GenericTable.HeaderCell>,
 		mediaQuery && <GenericTable.HeaderCell key={'createdAt'} direction={sort[1]} active={sort[0] === 'createdAt'} onClick={onHeaderClick} sort='createdAt' style={{ width: '150px' }}>{t('Created_at')}</GenericTable.HeaderCell>,
 		mediaQuery && <GenericTable.HeaderCell key={'lastMessage'} direction={sort[1]} active={sort[0] === 'lastMessage'} onClick={onHeaderClick} sort='lastMessage' style={{ width: '150px' }}>{t('Last_Message')}</GenericTable.HeaderCell>,
+		mediaQuery && <GenericTable.HeaderCell key={'belongsTo'} direction={sort[1]} active={sort[0] === 'belongsTo'} onClick={onHeaderClick} sort='belongsTo' style={{ width: '150px' }}>{t('Belongs_To')}</GenericTable.HeaderCell>,
 	].filter(Boolean), [sort, onHeaderClick, t, mediaQuery]);
 
 	const channelRoute = useRoute('channel');
@@ -64,7 +66,7 @@ function ChannelsTable() {
 
 	const formatDate = useFormatDate();
 	const renderRow = useCallback((room) => {
-		const { _id, ts, t, name, fname, usersCount, lastMessage, topic } = room;
+		const { _id, ts, t, name, fname, usersCount, lastMessage, topic, belongsTo } = room;
 		const avatarUrl = roomTypes.getConfig(t).getAvatarPath(room);
 
 		return <Table.Row key={_id} onKeyDown={onClick(name)} onClick={onClick(name)} tabIndex={0} role='link' action>
@@ -77,7 +79,7 @@ function ChannelsTable() {
 						<Box display='flex' alignItems='center'>
 							<Icon name={roomTypes.getIcon(room)} color='hint' /> <Box fontScale='p2' mi='x4'>{fname || name}</Box><RoomTags room={room} style={style} />
 						</Box>
-						{topic && <MarkdownText fontScale='p1' color='hint' style={style} withRichContent={false} content={topic} />}
+						{topic && <MarkdownText variant='inlineWithoutBreaks' fontScale='p1' color='hint' style={style} content={topic} />}
 					</Box>
 				</Box>
 			</Table.Cell>
@@ -90,13 +92,16 @@ function ChannelsTable() {
 			{ mediaQuery && <Table.Cell fontScale='p1' color='hint' style={style}>
 				{lastMessage && formatDate(lastMessage.ts)}
 			</Table.Cell>}
+			{ mediaQuery && <Table.Cell fontScale='p1' color='hint' style={style}>
+				{belongsTo}
+			</Table.Cell>}
 		</Table.Row>;
 	}
 	, [formatDate, mediaQuery, onClick]);
 
 	return <GenericTable
 		header={header}
-		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Channels')} onChange={onChange} {...props} />}
+		renderFilter={({ onChange, ...props }) => <FilterByText placeholder={t('Search_Channels')} inputRef={refAutoFocus} onChange={onChange} {...props} />}
 		renderRow={renderRow}
 		results={data.result}
 		setParams={setParams}

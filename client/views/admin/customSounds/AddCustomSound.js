@@ -64,7 +64,7 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 				name,
 				sound,
 			);
-			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Updated_Successfully') });
+			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
 			goToNew(result)();
 			onChange();
 		} catch (error) {

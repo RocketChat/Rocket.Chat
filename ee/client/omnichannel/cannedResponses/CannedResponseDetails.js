@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Margins, ButtonGroup, Button, Icon, ActionButton } from '@rocket.chat/fuselage';
+import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { css } from '@rocket.chat/css-in-js';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -13,7 +13,7 @@ export const CannedResponseDetails = ({ response: { shortcut, text, scope }, onE
 
 	return <VerticalBar>
 		<VerticalBar.Header>
-			<ActionButton tiny ghost mis='none' icon='arrow-back' onClick={onReturn} />
+			<VerticalBar.Back onClick={onReturn} />
 			<VerticalBar.Text>!{shortcut}</VerticalBar.Text>
 			<VerticalBar.Close onClick={onClose} />
 		</VerticalBar.Header>

@@ -20,11 +20,16 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 	const _room = useUserRoom(rid, fields) as unknown as IRoom;
 
 	const room = uid ? subscription || _room : _room;
-	room._id = rid;
-	const context = useMemo(() => ({
-		rid,
-		room: { ...room, name: roomTypes.getRoomName(room.t, room) },
-	}), [room, rid]);
+	const context = useMemo(() => {
+		if (!room) {
+			return null;
+		}
+		room._id = rid;
+		return {
+			rid,
+			room: { ...room, name: roomTypes.getRoomName(room.t, room) },
+		};
+	}, [room, rid]);
 
 	if (!room) {
 		return <></>;

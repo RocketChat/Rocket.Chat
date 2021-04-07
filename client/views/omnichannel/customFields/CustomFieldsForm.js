@@ -58,7 +58,7 @@ const CustomFieldsForm = ({ values = {}, handlers = {}, className }) => {
 		<Field className={className}>
 			<Field.Label>{t('Validation')}</Field.Label>
 			<Field.Row>
-				<TextInput value={regexp} onChange={handleRegexp} placeholder={t('Label')}/>
+				<TextInput value={regexp} onChange={handleRegexp} placeholder={t('Validation')}/>
 			</Field.Row>
 		</Field>
 	</>;

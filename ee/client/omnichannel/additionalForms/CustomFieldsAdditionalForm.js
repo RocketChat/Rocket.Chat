@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Box, Field, TextInput, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -12,23 +12,18 @@ const getInitialValues = (data) => ({
 	public: !!data.public,
 });
 
-const checkInvalidOptions = (value) => value.trim() !== '' && !/^([a-zA-Z0-9-_ ]+)(,\s*[a-zA-Z0-9-_ ]+)*$/i.test(value);
+const checkInvalidOptions = (value) => {
+	if (!value || value.trim() === '') {
+		return false;
+	}
+
+	return value.split(',').every((v) => /^[a-zA-Z0-9-_ ]+$/.test(v));
+};
 
 const CustomFieldsAdditionalFormContainer = ({ data = {}, state, onChange, className }) => {
-	const saveData = useRef({});
-
 	const t = useTranslation();
 
-	const onChangeValue = useCallback(({ initialValue, value, key }) => {
-		const { current } = saveData;
-		if (JSON.stringify(initialValue) !== JSON.stringify(value)) {
-			current[key] = value;
-		} else {
-			delete current[key];
-		}
-	}, []);
-
-	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data), onChangeValue);
+	const { values, handlers, hasUnsavedChanges } = useForm(getInitialValues(data));
 
 	const errors = useMemo(() => ({
 		optionsError: checkInvalidOptions(values.options) ? t('error-invalid-value') : undefined,
@@ -37,8 +32,8 @@ const CustomFieldsAdditionalFormContainer = ({ data = {}, state, onChange, class
 	const hasError = useMemo(() => !!Object.values(errors).filter(Boolean).length, [errors]);
 
 	useEffect(() => {
-		onChange({ data: saveData.current, hasError, hasUnsavedChanges });
-	}, [hasError, hasUnsavedChanges, onChange]);
+		onChange({ data: values, hasError, hasUnsavedChanges });
+	}, [hasError, hasUnsavedChanges, onChange, values]);
 
 	return <CustomFieldsAdditionalForm values={values} handlers={handlers} state={state} className={className} errors={errors}/>;
 };

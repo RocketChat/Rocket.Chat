@@ -44,6 +44,10 @@ const useOmnichannelInquiries = (): Array<any> => {
 
 	return useReactiveValue(useCallback(() => LivechatInquiry.find({
 		status: 'queued',
+		$or: [
+			{ defaultAgent: { $exists: false } },
+			{ 'defaultAgent.agentId': uid },
+		],
 	}, {
 		sort: {
 			queueOrder: 1,
@@ -51,7 +55,7 @@ const useOmnichannelInquiries = (): Array<any> => {
 			estimatedServiceTimeAt: 1,
 		},
 		limit: omnichannelPoolMaxIncoming,
-	}).fetch(), [omnichannelPoolMaxIncoming]));
+	}).fetch(), [omnichannelPoolMaxIncoming, uid]));
 };
 
 const OmnichannelDisabledProvider: FC = ({ children }) => <OmnichannelContext.Provider value={emptyContext} children={children}/>;
@@ -92,8 +96,9 @@ const OmnichannelEnabledProvider: FC = ({ children }) => {
 		setContextValue((context) => ({
 			...context,
 			agentAvailable: user?.statusLivechat === 'available',
+			...routeConfig && { routeConfig },
 		}));
-	}, [user?.statusLivechat]);
+	}, [user?.statusLivechat, routeConfig]);
 
 	if (!routeConfig || !user) {
 		return <OmnichannelDisabledProvider children={children}/>;

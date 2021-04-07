@@ -74,7 +74,7 @@ const CopyStep: FC<CopyStepProps> = ({ onNextButtonClick }) => {
 					<Icon name='copy' /> {t('Copy')}
 				</Button>
 			</Box>
-			<MarkdownText is='p' preserveHtml={true} withRichContent content={t('Cloud_click_here', { cloudConsoleUrl })} />
+			<MarkdownText preserveHtml={true} content={t('Cloud_click_here', { cloudConsoleUrl })} />
 		</Modal.Content>
 		<Modal.Footer>
 			<ButtonGroup>

@@ -32,11 +32,9 @@ export default function EditIntegrationsPage({ ...props }) {
 				{type === 'outgoing' && <Button onClick={handleClickHistory}>{t('History')}</Button>}
 			</ButtonGroup>
 		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			{
-				(type === 'outgoing' && <EditOutgoingWebhookWithData integrationId={integrationId} key='outgoing'/>)
-				|| (type === 'incoming' && <EditIncomingWebhookWithData integrationId={integrationId} key='incoming'/>)
-			}
-		</Page.ScrollableContentWithShadow>
+		{
+			(type === 'outgoing' && <EditOutgoingWebhookWithData integrationId={integrationId} key='outgoing'/>)
+			|| (type === 'incoming' && <EditIncomingWebhookWithData integrationId={integrationId} key='incoming'/>)
+		}
 	</Page>;
 }

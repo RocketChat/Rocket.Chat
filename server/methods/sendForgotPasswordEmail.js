@@ -9,7 +9,7 @@ Meteor.methods({
 	sendForgotPasswordEmail(to) {
 		check(to, String);
 
-		const email = to.trim();
+		const email = to.trim().toLowerCase();
 
 		const user = Users.findOneByEmailAddress(email, { fields: { _id: 1 } });
 

@@ -2,13 +2,17 @@ import { IRocketChatRecord } from './IRocketChatRecord';
 import { IUser } from './IUser';
 import { ChannelName, RoomID } from './IRoom';
 
+type MentionType = 'user' | 'team';
+
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
 	ts: Date;
 	mentions?: {
 		_id: string;
+		type: MentionType;
 		name?: string;
+		username?: string;
 	}[];
 	channels?: Array<ChannelName>;
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
@@ -20,4 +24,12 @@ export interface IMessage extends IRocketChatRecord {
 		type: 'Point';
 		coordinates: [string, string];
 	};
+	starred?: {_id: string}[];
+	pinned?: boolean;
+	drid?: RoomID;
+	tlm?: Date;
+
+	dcount?: number;
+	tcount?: number;
+	t?: string;
 }

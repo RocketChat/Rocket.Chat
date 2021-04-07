@@ -10,7 +10,7 @@ const Translate = ({ room: { autoTranslateLanguage, autoTranslate } }) => {
 	const t = useTranslation();
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const encryptedLabel = t('Translated');
-	return autoTranslateEnabled && autoTranslate && autoTranslateLanguage ? <Header.State title={encryptedLabel} icon='language' color={colors.b500} tiny ghost/> : null;
+	return autoTranslateEnabled && autoTranslate && autoTranslateLanguage ? <Header.State title={encryptedLabel} icon='language' color={colors.b500} /> : null;
 };
 
 export default memo(Translate);

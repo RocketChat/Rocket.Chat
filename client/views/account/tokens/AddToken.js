@@ -55,7 +55,7 @@ const AddToken = ({ onDidAddToken, ...props }) => {
 				<Margins inlineEnd='x4'>
 					<TextInput value={name} onChange={handleName} placeholder={t('API_Add_Personal_Access_Token')}/>
 				</Margins>
-				<Button primary onClick={handleAdd}>{t('Add')}</Button>
+				<Button primary disabled={name.length === 0} onClick={handleAdd}>{t('Add')}</Button>
 			</Field.Row>
 			<Field.Row>
 				<CheckBox id={bypassTwoFactorCheckboxId} checked={bypassTwoFactor} onChange={handleBypassTwoFactor} />

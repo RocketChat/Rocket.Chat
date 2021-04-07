@@ -1,4 +1,4 @@
-import { useMemo, lazy, LazyExoticComponent, FC } from 'react';
+import { useMemo, lazy } from 'react';
 
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 
@@ -6,7 +6,7 @@ import { addAction } from '.';
 
 
 addAction('rocket-search', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
 	id: 'rocket-search',
 	title: 'Search_Messages',
 	icon: 'magnifier',
@@ -19,7 +19,16 @@ addAction('user-info', {
 	id: 'user-info',
 	title: 'User_Info',
 	icon: 'user',
-	template: lazy(() => import('../../MemberListRouter')) as LazyExoticComponent<FC>,
+	template: lazy(() => import('../../MemberListRouter')),
+	order: 5,
+});
+
+addAction('contact-profile', {
+	groups: ['live'],
+	id: 'contact-profile',
+	title: 'Contact_Info',
+	icon: 'user',
+	template: lazy(() => import('../../../../omnichannel/contacts/contextualBar')),
 	order: 5,
 });
 
@@ -28,7 +37,7 @@ addAction('user-info-group', {
 	id: 'user-info-group',
 	title: 'Members',
 	icon: 'team',
-	template: lazy(() => import('../../MemberListRouter')) as LazyExoticComponent<FC>,
+	template: lazy(() => import('../../MemberListRouter')),
 	order: 5,
 });
 
@@ -38,23 +47,23 @@ addAction('members-list', ({ room }) => {
 		groups: ['channel', 'group'],
 		id: 'members-list',
 		title: 'Members',
-		icon: 'team',
-		template: lazy(() => import('../../MemberListRouter')) as LazyExoticComponent<FC>,
+		icon: 'members',
+		template: lazy(() => import('../../MemberListRouter')),
 		order: 5,
 	} : null), [hasPermission, room.broadcast]);
 });
 
 addAction('uploaded-files-list', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
 	id: 'uploaded-files-list',
 	title: 'Files',
 	icon: 'clip',
-	template: lazy(() => import('../../contextualBar/RoomFiles')) as LazyExoticComponent<FC>,
+	template: lazy(() => import('../../contextualBar/RoomFiles')),
 	order: 6,
 });
 
 addAction('keyboard-shortcut-list', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
 	id: 'keyboard-shortcut-list',
 	title: 'Keyboard_Shortcuts_Title',
 	icon: 'keyboard',

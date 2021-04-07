@@ -18,6 +18,7 @@ const GenericTable = ({
 	results,
 	setParams = () => { },
 	total,
+	pagination = true,
 	...props
 }, ref) => {
 	const t = useTranslation();
@@ -39,7 +40,7 @@ const GenericTable = ({
 		return Array.from({ length: 10 }, (_, i) => <LoadingRow key={i} cols={headerCells.length} />);
 	}, [header]);
 
-	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
+	const showingResultsLabel = useCallback(({ count, current, itemsPerPage }) => t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count), [t]);
 
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
 
@@ -69,7 +70,7 @@ const GenericTable = ({
 						</Table>
 					</ScrollableContentWrapper>
 				</Box>
-				<Pagination
+				{pagination && <Pagination
 					divider
 					current={current}
 					itemsPerPage={itemsPerPage}
@@ -78,7 +79,7 @@ const GenericTable = ({
 					count={total || 0}
 					onSetItemsPerPage={setItemsPerPage}
 					onSetCurrent={setCurrent}
-				/>
+				/>}
 			</>
 		}
 	</>;

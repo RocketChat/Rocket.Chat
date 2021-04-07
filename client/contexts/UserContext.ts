@@ -32,7 +32,7 @@ type UserContextValue = {
 	loginWithPassword: (user: string | object, password: string) => Promise<void>;
 	queryPreference: <T>(key: string | Mongo.ObjectID, defaultValue?: T) => Subscription<T | undefined>;
 	querySubscription: (query: FilterQuery<ISubscription>, fields: Fields, sort?: Sort) => Subscription <ISubscription | undefined>;
-	queryRoom: (query: FilterQuery<IRoom>, fields: Fields, sort?: Sort) => Subscription <IRoom | undefined>;
+	queryRoom: (query: FilterQuery<IRoom>, fields?: Fields, sort?: Sort) => Subscription <IRoom | undefined>;
 	querySubscriptions: (query: SubscriptionQuery, options?: FindOptions) => Subscription <Array<ISubscription> | []>;
 };
 
@@ -79,7 +79,7 @@ export const useUserSubscription = (rid: string, fields: Fields): ISubscription 
 	return useSubscription(subscription);
 };
 
-export const useUserRoom = (rid: string, fields: Fields): IRoom | undefined => {
+export const useUserRoom = (rid: string, fields?: Fields): IRoom | undefined => {
 	const { queryRoom } = useContext(UserContext);
 	const subscription = useMemo(() => queryRoom({ _id: rid }, fields), [queryRoom, rid, fields]);
 	return useSubscription(subscription);

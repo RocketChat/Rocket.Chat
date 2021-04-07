@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ButtonGroup, Button, ActionButton } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -31,7 +31,7 @@ const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 
 	return <VerticalBar>
 		<VerticalBar.Header>
-			<ActionButton tiny ghost mis='none' icon='arrow-back' onClick={onReturn} />
+			<VerticalBar.Back onClick={onReturn} />
 			<VerticalBar.Text>{t('Edit_Canned_Responses')}</VerticalBar.Text>
 			<VerticalBar.Close onClick={onClose} />
 		</VerticalBar.Header>

@@ -146,13 +146,23 @@ const getStyle = ((selector) => (colors) => `
 			--rcx-color-primary-800: ${ toVar(colors.b200) };
 			--rcx-color-primary-900: ${ toVar(colors.b100) };
 
-			--rcx-button-colors-secondary-active-border-color: ${ toVar(colors.n900) };
-			--rcx-button-colors-secondary-active-background-color: ${ toVar(colors.n800) };
-			--rcx-button-colors-secondary-color: ${ toVar(colors.n600) };
-			--rcx-button-colors-secondary-border-color: ${ toVar(colors.n800) };
-			--rcx-button-colors-secondary-background-color: ${ toVar(colors.n800) };
-			--rcx-button-colors-secondary-hover-background-color: ${ toVar(colors.n900) };
-			--rcx-button-colors-secondary-hover-border-color: ${ toVar(colors.n900) };
+			--rcx-button-colors-ghost-active-border-color: ${ toVar(colors.n900) };
+			--rcx-button-colors-ghost-active-background-color: ${ toVar(colors.n800) };
+			--rcx-button-colors-ghost-color: ${ toVar(colors.n600) };
+			--rcx-button-colors-ghost-border-color: ${ toVar(colors.sibebarSurface) };
+			--rcx-button-colors-ghost-background-color: ${ toVar(colors.sibebarSurface) };
+			--rcx-button-colors-ghost-hover-background-color: ${ toVar(colors.n900) };
+			--rcx-button-colors-ghost-hover-border-color: ${ toVar(colors.n900) };
+
+			--rcx-button-colors-ghost-success-active-border-color: ${ toVar(colors.n900) };
+			--rcx-button-colors-ghost-success-active-background-color: ${ toVar(colors.n800) };
+			--rcx-button-colors-ghost-success-color: ${ toVar(colors.n600) };
+			--rcx-button-colors-ghost-success-border-color: ${ toVar(colors.sibebarSurface) };
+			--rcx-button-colors-ghost-success-background-color: ${ toVar(colors.sibebarSurface) };
+			--rcx-button-colors-ghost-success-hover-background-color: ${ toVar(colors.n900) };
+			--rcx-button-colors-ghost-success-hover-border-color: ${ toVar(colors.n900) };
+
+
 			--rcx-sidebar-item-background-color-hover: ${ toVar(colors.n900) };
 			--rcx-sidebar-item-background-color-selected: ${ h2r(toVar(colors.n700 || colors.n800), 0.3) };
 			--rcx-badge-colors-ghost-background-color: ${ toVar(colors.n700) };
@@ -162,7 +172,6 @@ const getStyle = ((selector) => (colors) => `
 			--rcx-divider-color: ${ h2r(toVar(colors.n900), 0.4) };
 			--rcx-color-foreground-alternative: ${ toVar(colors.n100) };
 			--rcx-color-foreground-hint: ${ toVar(colors.n600) };
-
 		}
 		.rcx-sidebar {
 			background-color: ${ toVar(colors.sibebarSurface) };
@@ -186,10 +195,9 @@ const useSidebarPaletteColorIE11 = () => {
 				sidebarStyle.setAttribute('id', 'sidebar-modifier');
 				document.head.appendChild(sidebarStyle);
 
-				const fuselageStyleRules = sidebarStyle.innerText.match(/(.|\n)*?\{((.|\n)*?)\}(.|\n)*?/gi).filter((text) => /\.rcx-(sidebar|button|divider|input)/.test(text) && /(color|background|shadow)/.test(text));
+				const fuselageStyleRules = sidebarStyle.innerText.match(/(.|\n)*?\{((.|\n)*?)\}(.|\n)*?/gi).filter((text) => /\.rcx-(sidebar|button|divider|input)/.test(text));
 
-				const sheet = CSSOM.parse(fuselageStyleRules.join(' '));
-
+				const sheet = CSSOM.parse(fuselageStyleRules.join(' ').match(/((?!\}).|\n)*?\{|(.)*(color|background|shadow)(.)*|\}/gi).join(' '));
 
 				const filterSelectors = (selector) => /rcx-(sidebar|button|divider|input)/.test(selector);
 				const insertSelector = (selector) => selector.replace(/^((html:not\(\.js-focus-visible\)|\.js-focus-visible)|\.)(.*)/, (match, group, g2, g3, offset, text) => {

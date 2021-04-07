@@ -48,7 +48,7 @@ function isIterable(obj) {
 }
 
 export function Message({ className, ...props }) {
-	return <Box rcx-contextual-message pi='x20' pb='x16' pbs='x16' display='flex' {...props} className={[...isIterable(className) ? className : [className]].filter(Boolean)}/>;
+	return <Box rcx-message pi='x20' pb='x16' pbs='x16' display='flex' {...props} className={[...isIterable(className) ? className : [className]].filter(Boolean)}/>;
 }
 
 export default Message;
