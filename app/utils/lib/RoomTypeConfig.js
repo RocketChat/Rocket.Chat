@@ -22,6 +22,7 @@ export const RoomSettingsEnum = {
 	JOIN_CODE: 'joinCode',
 	BROADCAST: 'broadcast',
 	SYSTEM_MESSAGES: 'systemMessages',
+	MESSAGES_LINKS_PREVIEW: 'messagesLinksPreview',
 	E2E: 'encrypted',
 };
 

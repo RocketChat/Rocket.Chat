@@ -11,6 +11,7 @@ import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
 import { saveRoomCustomFields } from '../functions/saveRoomCustomFields';
 import { saveRoomDescription } from '../functions/saveRoomDescription';
 import { saveRoomType } from '../functions/saveRoomType';
+import { saveRoomLinksPreview } from '../functions/saveRoomLinksPreview';
 import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
@@ -19,7 +20,7 @@ import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
 
-const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
+const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite', 'linksPreview'];
 
 const validators = {
 	default({ userId }) {
@@ -216,6 +217,9 @@ const settingSavers = {
 	},
 	roomAvatar({ value, rid, user }) {
 		setRoomAvatar(rid, value, user);
+	},
+	linksPreview({ value, rid }) {
+		saveRoomLinksPreview(rid, value);
 	},
 };
 

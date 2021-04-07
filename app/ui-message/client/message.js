@@ -276,9 +276,15 @@ Template.message.helpers({
 		}
 	},
 	hasOembed() {
-		const { msg, settings } = this;
+		const { room: { linksPreview }, msg, settings } = this;
+
 		// there is no URLs, there is no template to show the oembed (oembed package removed) or oembed is not enable
 		if (!(msg.urls && msg.urls.length > 0) || !Template.oembedBaseWidget || !settings.API_Embed) {
+			return false;
+		}
+
+		// check if linksPreview is set for room
+		if (!linksPreview) {
 			return false;
 		}
 

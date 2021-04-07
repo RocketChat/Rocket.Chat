@@ -11,6 +11,7 @@ export class RoomsMock extends BaseModelMock {
 			msgs: 31,
 			usersCount: 3,
 			default: true,
+			linksPreview: true,
 			_updatedAt: new Date('2019-04-10T17:44:34.931Z'),
 			lastMessage: {
 				_id: 1,
