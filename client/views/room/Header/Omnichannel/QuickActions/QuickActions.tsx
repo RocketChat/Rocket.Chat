@@ -8,7 +8,6 @@ import React, {
 	useCallback,
 	useState,
 	useEffect,
-	useMemo,
 	FC,
 	ComponentProps,
 } from 'react';
@@ -22,11 +21,7 @@ import CloseChatModal from '../../../../../components/Omnichannel/modals/CloseCh
 import ForwardChatModal from '../../../../../components/Omnichannel/modals/ForwardChatModal';
 import ReturnChatQueueModal from '../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../components/Omnichannel/modals/TranscriptModal';
-import {
-	useAtLeastOnePermission,
-	usePermission,
-	useRole,
-} from '../../../../../contexts/AuthorizationContext';
+import { usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
 import { useLayout } from '../../../../../contexts/LayoutContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
@@ -240,13 +235,18 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 
 	const hasManagerRole = useRole('livechat-manager');
 
-	const roomOpen = room?.open && (room.u?._id === uid || hasManagerRole);
+	const roomOpen =
+		room?.open &&
+		(room.u?._id === uid || hasManagerRole) &&
+		room?.lastMessage?.t !== 'livechat-close';
 
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 
 	const canSendTranscript = usePermission('send-omnichannel-chat-transcript');
 
-	const canCloseRoom = usePermission('close-others-livechat-room');
+	const canCloseOthersRoom = usePermission('close-others-livechat-room');
+
+	const canCloseRoom = usePermission('close-livechat-room');
 
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 
@@ -264,7 +264,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			case QuickActionsEnum.Transcript:
 				return !!email && canSendTranscript;
 			case QuickActionsEnum.CloseChat:
-				return !!roomOpen && canCloseRoom;
+				return !!roomOpen && (canCloseRoom || canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:
 				return !!roomOpen && canPlaceChatOnHold;
 			default:
@@ -272,10 +272,6 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 		}
 		return false;
 	};
-
-	const hasPermissionGroup = useAtLeastOnePermission(
-		useMemo(() => ['close-others-livechat-room', 'transfer-livechat-guest'], []),
-	);
 
 	return (
 		<ButtonGroup mi='x4' medium>
@@ -294,7 +290,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 					'key': id,
 				};
 
-				if (!hasPermissionGroup || !hasPermissionButtons(id)) {
+				if (!hasPermissionButtons(id)) {
 					return;
 				}
 
