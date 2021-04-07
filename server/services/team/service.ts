@@ -30,6 +30,7 @@ import {
 	ITeamMemberInfo,
 	ITeamMemberParams,
 	ITeamService,
+	ITeamUpdateData,
 } from '../../sdk/types/ITeamService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { canAccessRoom } from '../authorization/canAccessRoom';
@@ -149,6 +150,16 @@ export class TeamService extends ServiceClass implements ITeamService {
 			};
 		} catch (e) {
 			throw new Error('error-team-creation');
+		}
+	}
+
+	async update(teamId: string, updateData: ITeamUpdateData): Promise<void> {
+		if (updateData.name) {
+			await this.TeamModel.updateName(teamId, updateData.name);
+		}
+
+		if (updateData.type) {
+			await this.TeamModel.updateType(teamId, updateData.type);
 		}
 	}
 

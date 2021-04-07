@@ -379,3 +379,17 @@ API.v1.addRoute('teams.autocomplete', { authRequired: true }, {
 		return API.v1.success({ teams });
 	},
 });
+
+API.v1.addRoute('teams.update', { authRequired: true }, {
+	post() {
+		if (!hasPermission(this.userId, 'edit-team')) {
+			return API.v1.unauthorized();
+		}
+
+		const { teamId, data } = this.bodyParams;
+
+		Promise.await(Team.update(teamId, { name: data.name, type: data.type }));
+
+		return API.v1.success();
+	},
+});
