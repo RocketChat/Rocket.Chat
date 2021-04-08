@@ -10,8 +10,8 @@ const AppRoot: FC = () => (
 	<MeteorProvider>
 		<ConnectionStatusBar />
 		<BannerRegion />
-		<PortalsWrapper />
 		<BlazeLayoutWrapper />
+		<PortalsWrapper />
 	</MeteorProvider>
 );
 
