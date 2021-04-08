@@ -26,7 +26,7 @@ const getInitialValue = (data) => ({
 	statusText: data.statusText ?? '',
 });
 
-function EditUser({ data, roles, ...props }) {
+const EditUser = React.memo(({ data, roles, onChange, ...props }) => {
 	const t = useTranslation();
 
 	const [avatarObj, setAvatarObj] = useState();
@@ -144,6 +144,7 @@ function EditUser({ data, roles, ...props }) {
 				await updateAvatar();
 			}
 			goToUser(data._id);
+			onChange();
 		}
 	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
 
@@ -194,6 +195,6 @@ function EditUser({ data, roles, ...props }) {
 			{...props}
 		/>
 	);
-}
+});
 
 export default EditUser;
