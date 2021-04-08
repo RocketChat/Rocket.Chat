@@ -1,24 +1,22 @@
-import React, { useCallback, useMemo, useState } from 'react';
 import {
 	useMutableCallback,
 	useDebouncedValue,
 	useLocalStorage,
 } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useMemo, useState } from 'react';
 
-import { useTabBarClose } from '../../../room/providers/ToolboxProvider';
-import { useUserRoom } from '../../../../contexts/UserContext';
 import { useAtLeastOnePermission } from '../../../../contexts/AuthorizationContext';
-import UserInfoWithData from '../../../room/contextualBar/UserInfo';
+import { useUserRoom } from '../../../../contexts/UserContext';
+import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { RoomMembers } from '../../../room/contextualBar/RoomMembers/List/RoomMembers';
+import { useMembersList } from '../../../hooks/useMembersList';
 import AddUsers from '../../../room/contextualBar/RoomMembers/AddUsers';
 import InviteUsers from '../../../room/contextualBar/RoomMembers/InviteUsers';
-import { useMembersList } from '../../../hooks/useMembersList';
-import { useRecordList } from '../../../../hooks/lists/useRecordList';
+import RoomMembers from '../../../room/contextualBar/RoomMembers/List/RoomMembers';
+import UserInfoWithData from '../../../room/contextualBar/UserInfo';
+import { useTabBarClose } from '../../../room/providers/ToolboxProvider';
 
-const TeamMembers = ({
-	rid,
-}) => {
+const TeamMembers = ({ rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
@@ -31,11 +29,26 @@ const TeamMembers = ({
 
 	const debouncedText = useDebouncedValue(text, 500);
 
-	const { membersList, loadMoreItems, reload } = useMembersList(useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [rid, type, debouncedText]));
+	const { membersList, loadMoreItems, reload } = useMembersList(
+		useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [
+			rid,
+			type,
+			debouncedText,
+		]),
+	);
 
 	const { phase, items, itemCount: total } = useRecordList(membersList);
 
-	const canAddUsers = useAtLeastOnePermission(useMemo(() => [room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room', 'add-user-to-joined-room'], [room.t]), rid);
+	const canAddUsers = useAtLeastOnePermission(
+		useMemo(
+			() => [
+				room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room',
+				'add-user-to-joined-room',
+			],
+			[room.t],
+		),
+		rid,
+	);
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
@@ -60,7 +73,14 @@ const TeamMembers = ({
 	const handleBack = useCallback(() => setState({}), [setState]);
 
 	if (state.tab === 'UserInfo') {
-		return <UserInfoWithData rid={rid} onClickClose={onClickClose} onClickBack={handleBack} username={state.username} />;
+		return (
+			<UserInfoWithData
+				rid={rid}
+				onClickClose={onClickClose}
+				onClickBack={handleBack}
+				username={state.username}
+			/>
+		);
 	}
 
 	if (state.tab === 'InviteUsers') {
@@ -68,7 +88,9 @@ const TeamMembers = ({
 	}
 
 	if (state.tab === 'AddUsers') {
-		return <AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} reload={reload} />;
+		return (
+			<AddUsers onClickClose={onClickClose} rid={rid} onClickBack={handleBack} reload={reload} />
+		);
 	}
 
 	return (
