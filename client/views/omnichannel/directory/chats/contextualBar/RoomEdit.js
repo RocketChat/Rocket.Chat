@@ -5,6 +5,7 @@ import { useSubscription } from 'use-subscription';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
+import TagsManual from '../../../../../components/Omnichannel/Tags';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
@@ -14,7 +15,6 @@ import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useForm } from '../../../../../hooks/useForm';
 import { formsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../Skeleton';
-import TagsManual from '../../../../../components/Omnichannel/Tags';
 
 const initialValuesUser = {
 	name: '',
@@ -100,7 +100,7 @@ function RoomEdit({ room, visitor, reload, close }) {
 	const { value: prioritiesResult = {}, phase: statePriorities } = useEndpointData(
 		'livechat/priorities.list',
 	);
-	
+
 	const { value: tagsResult = [], phase: stateTags } = useEndpointData('livechat/tags.list');
 
 	const jsonConverterToValidFormat = (customFields) => {
@@ -159,7 +159,7 @@ function RoomEdit({ room, visitor, reload, close }) {
 		(hasUnsavedChangesContact || hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) &&
 		customFieldsError.length === 0;
 
-	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
+	if ([stateCustomFields, statePriorities, stateTags].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}
 
@@ -189,15 +189,19 @@ function RoomEdit({ room, visitor, reload, close }) {
 						<TextInput flexGrow={1} value={topic} onChange={handleTopic} />
 					</Field.Row>
 				</Field>
-				{Tags && (tagsList && tagsList.length > 0) ? <Field>
-				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-					<Field.Row>
-						<Tags value={Object.values(tags)} handler={handleTags} />
-					</Field.Row>
-				</Field> : <Field>
-					<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-					<TagsManual tags={tags} handler={handleTags}/>
-				</Field>}
+				{Tags && tagsList && tagsList.length > 0 ? (
+					<Field>
+						<Field.Label mb='x4'>{t('Tags')}</Field.Label>
+						<Field.Row>
+							<Tags value={Object.values(tags)} handler={handleTags} />
+						</Field.Row>
+					</Field>
+				) : (
+					<Field>
+						<Field.Label mb='x4'>{t('Tags')}</Field.Label>
+						<TagsManual tags={tags} handler={handleTags} />
+					</Field>
+				)}
 				{PrioritiesSelect && priorities && priorities.length > 0 && (
 					<PrioritiesSelect
 						value={priorityId}

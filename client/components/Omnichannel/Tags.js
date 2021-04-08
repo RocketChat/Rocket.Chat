@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
 import { Field, TextInput, Box, Tag, Icon } from '@rocket.chat/fuselage';
+import React, { useState } from 'react';
 
-import { useTranslation } from '../../contexts/TranslationContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 
 const TagsManual = ({ tags = [], handler = () => {} }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-
 
 	const [tagValue, handleTagValue] = useState('');
 
@@ -33,24 +32,37 @@ const TagsManual = ({ tags = [], handler = () => {} }) => {
 		}
 	};
 
-
-	return <>
-		<Field.Row>
-			<TextInput onKeyDown={handleKeyDown} value={tagValue} flexGrow={1} onChange={(event) => handleTagValue(event.target.value)}/>
-		</Field.Row>
-		<Field.Row>
-			{tags && <Box color='hint' display='flex' flex-direction='row'>
-				{tags.length > 0 && tags.map((tag) => (
-					<Box onClick={() => removeTag(tag)} key={tag} mie='x4'>
-						<Tag style={{ display: 'inline', fontSize: '0.8rem' }} disabled>
-							{tag}
-							<Icon style={{ fontWeight: 'bold', paddingTop: '0.1rem', paddingBottom: '0.3rem' }} marginBlockStart='x2' name='cross' />
-						</Tag>
+	return (
+		<>
+			<Field.Row>
+				<TextInput
+					onKeyDown={handleKeyDown}
+					value={tagValue}
+					flexGrow={1}
+					onChange={(event) => handleTagValue(event.target.value)}
+				/>
+			</Field.Row>
+			<Field.Row>
+				{tags && (
+					<Box color='hint' display='flex' flex-direction='row'>
+						{tags.length > 0 &&
+							tags.map((tag) => (
+								<Box onClick={() => removeTag(tag)} key={tag} mie='x4'>
+									<Tag style={{ display: 'inline', fontSize: '0.8rem' }} disabled>
+										{tag}
+										<Icon
+											style={{ fontWeight: 'bold', paddingTop: '0.1rem', paddingBottom: '0.3rem' }}
+											marginBlockStart='x2'
+											name='cross'
+										/>
+									</Tag>
+								</Box>
+							))}
 					</Box>
-				))}
-			</Box>}
-		</Field.Row>
-	</>;
+				)}
+			</Field.Row>
+		</>
+	);
 };
 
 export default TagsManual;

@@ -4,11 +4,11 @@ import React, { useCallback, useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import { formsSubscription } from '../../../views/omnichannel/additionalForms';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { FormSkeleton } from '../../../views/omnichannel/directory/Skeleton';
 import TagsManual from '../Tags';
 
@@ -40,44 +40,57 @@ const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 	const canConfirm = useMemo(() => !!comment, [comment]);
 
 	if ([stateTags].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton/>;
+		return <FormSkeleton />;
 	}
 	const { tags: tagsList } = tagsResult;
 
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon name='baloon-close-top-right' size={20}/>
-			<Modal.Title>{t('Closing_chat')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			<Box color='neutral-600'>{t('Close_room_description')}</Box>
-			<Field marginBlock='x15'>
-				<Field.Label>{t('Comment')}*</Field.Label>
-				<Field.Row>
-					<TextInput ref={inputRef} error={commentError} flexGrow={1} value={comment} onChange={handleComment} placeholder={t('Please_add_a_comment')} />
-				</Field.Row>
-				<Field.Error>
-					{commentError}
-				</Field.Error>
-			</Field>
-			{Tags && (tagsList && tagsList.length > 0) ? <Field>
-				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-				<Field.Row>
-					<Tags value={Object.values(tags)} handler={handleTags} />
-				</Field.Row>
-			</Field> : <Field>
-				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-				<TagsManual tags={tags} handler={handleTags}/>
-			</Field>}
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button onClick={onCancel}>{t('Cancel')}</Button>
-				<Button disabled={!canConfirm} primary onClick={handleConfirm}>{t('Confirm')}</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
+	return (
+		<Modal {...props}>
+			<Modal.Header>
+				<Icon name='baloon-close-top-right' size={20} />
+				<Modal.Title>{t('Closing_chat')}</Modal.Title>
+				<Modal.Close onClick={onCancel} />
+			</Modal.Header>
+			<Modal.Content fontScale='p1'>
+				<Box color='neutral-600'>{t('Close_room_description')}</Box>
+				<Field marginBlock='x15'>
+					<Field.Label>{t('Comment')}*</Field.Label>
+					<Field.Row>
+						<TextInput
+							ref={inputRef}
+							error={commentError}
+							flexGrow={1}
+							value={comment}
+							onChange={handleComment}
+							placeholder={t('Please_add_a_comment')}
+						/>
+					</Field.Row>
+					<Field.Error>{commentError}</Field.Error>
+				</Field>
+				{Tags && tagsList && tagsList.length > 0 ? (
+					<Field>
+						<Field.Label mb='x4'>{t('Tags')}</Field.Label>
+						<Field.Row>
+							<Tags value={Object.values(tags)} handler={handleTags} />
+						</Field.Row>
+					</Field>
+				) : (
+					<Field>
+						<Field.Label mb='x4'>{t('Tags')}</Field.Label>
+						<TagsManual tags={tags} handler={handleTags} />
+					</Field>
+				)}
+			</Modal.Content>
+			<Modal.Footer>
+				<ButtonGroup align='end'>
+					<Button onClick={onCancel}>{t('Cancel')}</Button>
+					<Button disabled={!canConfirm} primary onClick={handleConfirm}>
+						{t('Confirm')}
+					</Button>
+				</ButtonGroup>
+			</Modal.Footer>
+		</Modal>
+	);
 };
 
 export default CloseChatModal;
