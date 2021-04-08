@@ -1,29 +1,22 @@
-import React, { lazy, Suspense } from 'react';
+import { Meteor } from 'meteor/meteor';
+import React from 'react';
 import { render } from 'react-dom';
 
+import AppRoot from '../views/root/AppRoot';
+
 const createContainer = (): Element => {
-	const container = document.getElementById('react-root') ?? document.createElement('div');
-	container.id = 'react-root';
-	Object.assign(container.style, {
-		position: 'relative',
-		display: 'flex',
-		overflow: 'visible',
-		flexDirection: 'column',
-		width: '100vw',
-		height: '100vh',
-		padding: '0',
-	});
+	const container = document.getElementById('react-root');
+
+	if (!container) {
+		throw new Error('could not find the element #react-root on DOM tree');
+	}
+
 	document.body.insertBefore(container, document.body.firstChild);
 
 	return container;
 };
 
-const LazyAppRoot = lazy(() => import('../views/root/AppRoot'));
-
-const container = createContainer();
-render(
-	<Suspense fallback={null}>
-		<LazyAppRoot />
-	</Suspense>,
-	container,
-);
+Meteor.startup(() => {
+	const container = createContainer();
+	render(<AppRoot />, container);
+});

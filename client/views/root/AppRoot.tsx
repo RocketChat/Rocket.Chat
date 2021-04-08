@@ -1,18 +1,22 @@
-import React, { FC } from 'react';
+import React, { FC, lazy, Suspense } from 'react';
 
-import ConnectionStatusBar from '../../components/connectionStatus/ConnectionStatusBar';
-import MeteorProvider from '../../providers/MeteorProvider';
-import BannerRegion from '../banners/BannerRegion';
-import BlazeLayoutWrapper from './BlazeLayoutWrapper';
-import PortalsWrapper from './PortalsWrapper';
+const ConnectionStatusBar = lazy(
+	() => import('../../components/connectionStatus/ConnectionStatusBar'),
+);
+const MeteorProvider = lazy(() => import('../../providers/MeteorProvider'));
+const BannerRegion = lazy(() => import('../banners/BannerRegion'));
+const BlazeLayoutWrapper = lazy(() => import('./BlazeLayoutWrapper'));
+const PortalsWrapper = lazy(() => import('./PortalsWrapper'));
 
 const AppRoot: FC = () => (
-	<MeteorProvider>
-		<ConnectionStatusBar />
-		<BannerRegion />
-		<BlazeLayoutWrapper />
-		<PortalsWrapper />
-	</MeteorProvider>
+	<Suspense fallback={null}>
+		<MeteorProvider>
+			<ConnectionStatusBar />
+			<BannerRegion />
+			<BlazeLayoutWrapper />
+			<PortalsWrapper />
+		</MeteorProvider>
+	</Suspense>
 );
 
 export default AppRoot;

@@ -158,16 +158,19 @@ renderDynamicCssList();
 
 settings.get(/theme-color-rc/i, () => renderDynamicCssList());
 
-injectIntoBody('icons', Assets.getText('public/icons.svg'));
-
-injectIntoBody('page-loading-div', `
-<div id="initial-page-loading" class="page-loading">
-	<div class="loading-animation">
-		<div class="bounce bounce1"></div>
-		<div class="bounce bounce2"></div>
-		<div class="bounce bounce3"></div>
+injectIntoBody('react-root', `
+<div id="react-root">
+	<div class="page-loading">
+		<div class="loading-animation">
+			<div class="bounce bounce1"></div>
+			<div class="bounce bounce2"></div>
+			<div class="bounce bounce3"></div>
+		</div>
 	</div>
-</div>`);
+</div>
+`);
+
+injectIntoBody('icons', Assets.getText('public/icons.svg'));
 
 settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
 	if (value) {
