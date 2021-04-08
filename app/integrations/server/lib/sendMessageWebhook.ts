@@ -15,13 +15,13 @@ class SendMessageWebhook {
 		let user;
 		// Try to find the user who we are impersonating
 		if (trigger.impersonateUser) {
-			user = Models.Users.findOneByUsernameIgnoringCase(data.user_name);
+			user = Models.Users.findOneByUsernameIgnoringCase(data.user_name, undefined);
 		}
 
 		// If they don't exist (aka the trigger didn't contain a user) then we set the user based upon the
 		// configured username for the integration since this is required at all times.
 		if (!user) {
-			user = Models.Users.findOneByUsernameIgnoringCase(trigger.username);
+			user = Models.Users.findOneByUsernameIgnoringCase(trigger.username, undefined);
 		}
 
 		let tmpRoom;
