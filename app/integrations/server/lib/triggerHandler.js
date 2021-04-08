@@ -3,9 +3,6 @@ import vm from 'vm';
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
-import s from 'underscore.string';
-import moment from 'moment';
-import Fiber from 'fibers';
 import Future from 'fibers/future';
 
 import * as Models from '../../../models';
@@ -15,8 +12,9 @@ import { integrations } from '../../lib/rocketchat';
 import EventArgumentHandler from './eventArgumentHandler';
 import UpdateHistoryWebhook from './updateHistoryWebhook';
 import SendMessageWebhook from './sendMessageWebhook';
+import { buildSandbox } from './sandbox';
 
-integrations.triggerHandler = new class RocketChatIntegrationHandler {
+integrations.triggerHandler = new class RocketChatTriggerHandler {
 	constructor() {
 		this.vm = vm;
 		this.successResults = [200, 201, 202];
@@ -68,39 +66,6 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		return false;
 	}
 
-	buildSandbox(store = {}) {
-		const sandbox = {
-			scriptTimeout(reject) {
-				return setTimeout(() => reject('timed out'), 3000);
-			},
-			_,
-			s,
-			console,
-			moment,
-			Fiber,
-			Promise,
-			Store: {
-				set: (key, val) => { store[key] = val; },
-				get: (key) => store[key],
-			},
-			HTTP: (method, url, options) => {
-				try {
-					return {
-						result: HTTP.call(method, url, options),
-					};
-				} catch (error) {
-					return { error };
-				}
-			},
-		};
-
-		Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => {
-			sandbox[k] = Models[k];
-		});
-
-		return { store, sandbox };
-	}
-
 	getIntegrationScript(integration) {
 		const compiledScript = this.compiledScripts[integration._id];
 		if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
@@ -108,7 +73,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		}
 
 		const script = integration.scriptCompiled;
-		const { store, sandbox } = this.buildSandbox();
+		const { store, sandbox } = buildSandbox();
 
 		let vmScript;
 		try {
@@ -173,7 +138,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		}
 
 		try {
-			const { sandbox } = this.buildSandbox(this.compiledScripts[integration._id].store);
+			const { sandbox } = buildSandbox(this.compiledScripts[integration._id].store);
 			sandbox.script = script;
 			sandbox.method = method;
 			sandbox.params = params;

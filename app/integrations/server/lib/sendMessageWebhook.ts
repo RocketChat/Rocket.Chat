@@ -2,7 +2,7 @@ import * as Models from '../../../models/server';
 import { logger } from '../logger';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 
-type MessageValues = {
+interface IMessageValues {
 	channel: string;
 	alias: string;
 	avatar: string;
@@ -41,7 +41,7 @@ class SendMessageWebhook {
 
 		message.bot = { i: trigger._id };
 
-		const defaultValues: MessageValues = {
+		const defaultValues: IMessageValues = {
 			channel: '',
 			alias: trigger.alias,
 			avatar: trigger.avatar,

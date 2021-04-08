@@ -3,25 +3,9 @@ import _ from 'underscore';
 
 import * as Models from '../../../models/server';
 
-type History = {
+interface IKeyable {
 	type: string;
-	step: any;
-	integration?: any;
-	event?: any;
-	data?: any;
-	triggerWord?: any;
-	ranPrepareScript?: any;
-	prepareSentMessage?: any;
-	processSentMessage?: any;
-	resultMessage?: any;
-	finished?: any;
-	url?: any;
-	httpCallData?: any;
-	httpError?: any;
-	httpResult?: any;
-	error?: any;
-	errorStack?: any;
-	_createdAt?: any;
+	[key: string]: any;
 }
 
 class UpdateHistoryWebhook {
@@ -63,7 +47,7 @@ class UpdateHistoryWebhook {
 		error: any;
 		errorStack: any;
 	}): any {
-		const history: History = {
+		const history: IKeyable = {
 			type: 'outgoing-webhook',
 			step,
 		};

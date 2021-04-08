@@ -3,17 +3,13 @@ import { logger } from '../logger';
 import { settings } from '../../../settings/server';
 
 
-type ArgObject = {
-	event: any;
-	message?: any;
-	owner?: any;
-	room?: any;
-	user?: any;
+interface IKeyable {
+	[key: string]: any;
 }
 
 class EventArgumentHandler {
-	eventNameArgumentsToObject(...args: any): ArgObject {
-		const argObject: ArgObject = {
+	eventNameArgumentsToObject(...args: any): IKeyable {
+		const argObject: IKeyable = {
 			event: args[0],
 		};
 
