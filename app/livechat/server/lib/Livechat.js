@@ -471,6 +471,8 @@ export const Livechat = {
 		Settings.findNotHiddenPublic([
 			'Livechat_title',
 			'Livechat_title_color',
+			'Livechat_kill_switch',
+			'Livechat_kill_switch_message',
 			'Livechat_enable_message_character_limit',
 			'Livechat_message_character_limit',
 			'Message_MaxAllowedSize',

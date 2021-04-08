@@ -164,6 +164,8 @@ export function settings(url) {
 			limitTextLength: initSettings.Livechat_enable_message_character_limit
 
 			&& (initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+			livechat_kill_switch: initSettings.Livechat_kill_switch,
+			livechat_kill_switch_message: initSettings.Livechat_kill_switch_message,
 		},
 		theme: {
 			title: initSettings.Livechat_title,
