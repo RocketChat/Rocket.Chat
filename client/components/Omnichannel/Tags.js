@@ -33,7 +33,7 @@ const Tags = ({ tags = [], handler = () => {} }) => {
 			return;
 		}
 		if (tagValue && tagValue.trim() === '') {
-			dispatchToastMessage({ type: 'error', message: t('Please_enter_valid_tag') });
+			dispatchToastMessage({ type: 'error', message: t('Enter_a_tag') });
 			handleTagValue('');
 			return;
 		}
