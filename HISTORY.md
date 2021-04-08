@@ -1,6 +1,52 @@
 
+# 3.13.1
+`2021-04-07  ·  9 🐛  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.21.0`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.24.1`
+
+### 🐛 Bug fixes
+
+
+- Add tag input to Closing Chat modal ([#21462](https://github.com/RocketChat/Rocket.Chat/pull/21462))
+
+- Admin Users list pagination ([#21469](https://github.com/RocketChat/Rocket.Chat/pull/21469))
+
+  - Fix Administration/Users pagination
+
+- App installation from marketplace not correctly displaying the permissions ([#21470](https://github.com/RocketChat/Rocket.Chat/pull/21470))
+
+  Fixes the marketplace app installation not correctly displaying the permissions modal.
+
+- Close chat button is not available for Omnichannel agents ([#21481](https://github.com/RocketChat/Rocket.Chat/pull/21481))
+
+- Error when editing Omnichannel rooms without custom fields ([#21450](https://github.com/RocketChat/Rocket.Chat/pull/21450))
+
+- Header component breaking if user is not part of teams room. ([#21465](https://github.com/RocketChat/Rocket.Chat/pull/21465))
+
+- Make Omnichannel's closing chat button the last action in the toolbox ([#21476](https://github.com/RocketChat/Rocket.Chat/pull/21476))
+
+- Omnichannel queue manager returning outdated room object ([#21485](https://github.com/RocketChat/Rocket.Chat/pull/21485))
+
+  The Omnichannel Queue Manager is returning outdated room object when delegating the chat to an agent, hence, our Livechat widget is affected and the agent assigned to the chat is not displayed on the widget, only after refreshing/reloading.
+
+- Wrong useMemo on Priorities EE field. ([#21453](https://github.com/RocketChat/Rocket.Chat/pull/21453))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@d-gubert](https://github.com/d-gubert)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@graywolf336](https://github.com/graywolf336)
+- [@rafaelblink](https://github.com/rafaelblink)
+- [@renatobecker](https://github.com/renatobecker)
+- [@thassiov](https://github.com/thassiov)
+
 # 3.13.0
-`2021-04-03  ·  7 🎉  ·  11 🚀  ·  36 🐛  ·  60 🔍  ·  38 👩‍💻👨‍💻`
+`2021-04-04  ·  7 🎉  ·  11 🚀  ·  36 🐛  ·  60 🔍  ·  38 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.21.0`
