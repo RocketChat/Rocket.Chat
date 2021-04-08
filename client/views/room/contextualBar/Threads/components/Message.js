@@ -21,9 +21,9 @@ export default React.memo(function MessageThread({ _id, msg, following, username
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 	return <Message {...props} className={[...isIterable(className) ? className : [className], !following && followStyle].filter(Boolean)}>
-		<Message.AvatarContainer>
+		<Message.LeftContainer>
 			<UserAvatar username={username} className='rcx-message__avatar' size='x36'/>
-		</Message.AvatarContainer>
+		</Message.LeftContainer>
 		<Message.Container>
 			<Message.Header>
 				<Message.Name title={username}>{name}</Message.Name>

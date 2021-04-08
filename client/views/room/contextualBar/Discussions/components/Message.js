@@ -5,9 +5,9 @@ import RawText from '../../../../../components/RawText';
 
 export default React.memo(function MessageDiscussion({ _id, msg, following, username, name = username, ts, dcount, t = (text) => text, participants, handleFollowButton, unread, mention, all, formatDate = (e) => e, dlm, className = [], ...props }) {
 	return <Message {...props} className={className}>
-		<Message.AvatarContainer>
+		<Message.LeftContainer>
 			<UserAvatar username={username} className='rcx-message__avatar' size='x36'/>
-		</Message.AvatarContainer>
+		</Message.LeftContainer>
 		<Message.Container>
 			<Message.Header>
 				<Message.Name title={username}>{name}</Message.Name>

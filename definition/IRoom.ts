@@ -22,7 +22,10 @@ export interface IRoom extends IRocketChatRecord {
 	default?: true;
 	broadcast?: true;
 	featured?: true;
+	announcement?: string;
 	encrypted?: boolean;
+
+	sysMes?: string[];
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 
