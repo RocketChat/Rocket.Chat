@@ -1,17 +1,16 @@
-import React, { useCallback, useState, useMemo } from 'react';
 import { Field, Button, TextInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useForm } from '../../../hooks/useForm';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
+import { useForm } from '../../../hooks/useForm';
 import { formsSubscription } from '../../../views/omnichannel/additionalForms';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { FormSkeleton } from '../../../omnichannel/directory/Skeleton';
+import { FormSkeleton } from '../../../views/omnichannel/directory/Skeleton';
 import TagsManual from '../Tags';
-
 
 const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 	const t = useTranslation();
@@ -20,9 +19,7 @@ const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 	const inputRef = useAutoFocus(true);
 	const forms = useSubscription(formsSubscription);
 
-	const {
-		useCurrentChatTags = () => {},
-	} = forms;
+	const { useCurrentChatTags = () => {} } = forms;
 
 	const Tags = useCurrentChatTags();
 

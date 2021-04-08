@@ -7,8 +7,4 @@ export default {
 	component: StepHeader,
 };
 
-export const _default = () =>
-	<StepHeader
-		number={1}
-		title={'Title'}
-	/>;
+export const _default = () => <StepHeader number={1} title={'Title'} />;

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { usePermission } from '../../../contexts/AuthorizationContext';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import { usePermission } from '../../../contexts/AuthorizationContext';
 import RoomsPage from './RoomsPage';
 
 function RoomsRoute() {
