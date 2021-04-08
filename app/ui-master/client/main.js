@@ -123,8 +123,6 @@ Template.main.events({
 });
 
 Template.main.onRendered(function() {
-	$('#initial-page-loading').remove();
-
 	return Tracker.autorun(function() {
 		const userId = Meteor.userId();
 		const Show_Setup_Wizard = settings.get('Show_Setup_Wizard');
