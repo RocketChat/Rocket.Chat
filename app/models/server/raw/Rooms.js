@@ -148,6 +148,26 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findByTeamIdContainingNameAndUserId(teamId, name, onlyDefault, rooms, options = {}) {
+		const query = {
+			teamId,
+			teamMain: {
+				$exists: false,
+			},
+			...name ? { name } : {},
+			...onlyDefault ? { onlyDefault } : {},
+			$or: [{
+				t: 'c',
+			}, {
+				_id: {
+					$in: rooms,
+				},
+			}],
+		};
+
+		return this.find(query, options);
+	}
+
 	findByTeamIdAndRoomsId(teamId, rids, options = {}) {
 		const query = {
 			teamId,
