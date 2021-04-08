@@ -2805,6 +2805,7 @@
   "System_messages": "Mensagens do sistema",
   "Tag": "Tag",
   "Take_it": "Pegue!",
+  "Tag_already_exists": "Tag já existe",
   "Target user not allowed to receive messages": "Utilizador de destino não autorizado a receber mensagens",
   "TargetRoom": "Sala de destino",
   "TargetRoom_Description": "A sala onde as mensagens serão enviadas, que são o resultado desse evento a ser disparado. Somente uma sala-alvo é permitido e deve existir.",
