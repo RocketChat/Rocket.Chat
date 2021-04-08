@@ -26,7 +26,7 @@ export const useRoomIcon = (room: IRoom, small = true): JSX.Element | { name: st
 		case 'c':
 			return { name: 'hash' };
 		case 'l':
-			return { name: 'headset', color: colors[(room as unknown as IOmnichannelRoom).v.status] };
+			return { name: 'headset', color: colors[room.v ? (room as unknown as IOmnichannelRoom).v.status : 'offline'] };
 		case 'd':
 			const direct = room as unknown as IDirectMessageRoom;
 			if (direct.uids && direct.uids.length > 2) {
