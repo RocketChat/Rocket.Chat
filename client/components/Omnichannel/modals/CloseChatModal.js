@@ -18,7 +18,7 @@ const CloseChatModal = ({ department = {}, onCancel, onConfirm }) => {
 	const { handleComment, handleTags } = handlers;
 	const [commentError, setCommentError] = useState('');
 	const [tagError, setTagError] = useState('');
-	const [required, setRequired] = useState(false);
+	const [tagRequired, setTagRequired] = useState(false);
 
 	const handleConfirm = useCallback(() => {
 		onConfirm(comment, tags);
@@ -28,20 +28,20 @@ const CloseChatModal = ({ department = {}, onCancel, onConfirm }) => {
 		setCommentError(!comment ? t('The_field_is_required', t('Comment')) : '');
 	}, [t, comment]);
 
-	const canConfirm = useMemo(() => (!required ? !!comment : !!comment && tags.length > 0), [
+	const canConfirm = useMemo(() => (!tagRequired ? !!comment : !!comment && tags.length > 0), [
 		comment,
-		required,
+		tagRequired,
 		tags,
 	]);
 
 	useEffect(() => {
-		department?.requestTagBeforeClosingChat && setRequired(true);
+		department?.requestTagBeforeClosingChat && setTagRequired(true);
 		setTagError(
-			department?.requestTagBeforeClosingChat && (!tags || tags.length === 0)
+			tagRequired && (!tags || tags.length === 0)
 				? t('error-tags-must-be-assigned-before-closing-chat')
 				: '',
 		);
-	}, [department, required, t, tags]);
+	}, [department, tagRequired, t, tags]);
 
 	return (
 		<Modal>
