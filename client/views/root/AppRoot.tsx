@@ -1,5 +1,7 @@
 import React, { FC, lazy, Suspense } from 'react';
 
+import PageLoading from './PageLoading';
+
 const ConnectionStatusBar = lazy(
 	() => import('../../components/connectionStatus/ConnectionStatusBar'),
 );
@@ -9,7 +11,7 @@ const BlazeLayoutWrapper = lazy(() => import('./BlazeLayoutWrapper'));
 const PortalsWrapper = lazy(() => import('./PortalsWrapper'));
 
 const AppRoot: FC = () => (
-	<Suspense fallback={null}>
+	<Suspense fallback={<PageLoading />}>
 		<MeteorProvider>
 			<ConnectionStatusBar />
 			<BannerRegion />

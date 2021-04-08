@@ -8,15 +8,7 @@ const BlazeLayoutWrapper: FC = () => {
 	const descriptor = useSubscription(subscription);
 
 	if (!descriptor) {
-		return (
-			<div className='page-loading'>
-				<div className='loading-animation'>
-					<div className='bounce bounce1'></div>
-					<div className='bounce bounce2'></div>
-					<div className='bounce bounce3'></div>
-				</div>
-			</div>
-		);
+		return null;
 	}
 
 	return <BlazeTemplate template={descriptor.template} data={descriptor.regions ?? {}} />;
