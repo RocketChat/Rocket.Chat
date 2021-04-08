@@ -1,6 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
-import { Meteor } from 'meteor/meteor';
-import { Box, Skeleton, Icon } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 
 import Header from '../../../components/Header';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
@@ -34,16 +33,14 @@ export default React.memo(({ room }) => {
 	return <RoomHeader room={room} topic={room.topic} />;
 });
 
-const HeaderIcon = ({ room }) => {
+const HeaderIconWithRoom = ({ room }) => {
 	const icon = useRoomIcon(room);
 
-	return <Box w='x20' mi='x2' display='inline-flex' justifyContent='center'>
-		{icon.name ? <Icon size='x20' {...icon}/> : icon}
-	</Box>;
+	return <Header.Tag.Icon icon={icon} />;
 };
 
 const RoomTitle = ({ room }) => <>
-	<HeaderIcon room={room}/>
+	<HeaderIconWithRoom room={room}/>
 	<Header.Title>{room.name}</Header.Title>
 </>;
 
@@ -73,7 +70,7 @@ const ParentRoomWithEndpointData = ({ rid }) => {
 	}, [reset, getData, rid, resolve, reject]);
 
 	if (AsyncStatePhase.LOADING === phase) {
-		return <Skeleton width='x48'/>;
+		return <Header.Tag.Skeleton />;
 	}
 
 	if (AsyncStatePhase.ERROR === phase || !value?.room) {
@@ -87,7 +84,7 @@ const ParentRoom = ({ room }) => {
 	const href = roomTypes.getRouteLink(room.t, room);
 
 	return <Header.Tag>
-		<HeaderIcon room={room}/>
+		<HeaderIconWithRoom room={room}/>
 		<Header.Link href={href}>
 			{roomTypes.getRoomName(room.t, room)}
 		</Header.Link>
@@ -95,26 +92,33 @@ const ParentRoom = ({ room }) => {
 };
 
 const ParentTeam = ({ room }) => {
-	const query = useMemo(() => ({ teamId: room.teamId }), [room.teamId]);
-	const userTeamQuery = useMemo(() => ({ userId: Meteor.userId() }), []);
+	const userId = useUserId();
 
-	const { value, phase } = useEndpointData('teams.info', query);
-	const { value: userTeams, phase: userTeamsPhase } = useEndpointData('users.listTeams', userTeamQuery);
+	const { value, phase } = useEndpointData('teams.info', useMemo(() => ({ teamId: room.teamId }), [room.teamId]));
+	const { value: userTeams, phase: userTeamsPhase } = useEndpointData('users.listTeams', useMemo(() => ({ userId }), [userId]));
 
-	const teamLoading = phase === AsyncStatePhase.LOADING;
-	const userTeamsLoading = userTeamsPhase === AsyncStatePhase.LOADING;
 	const belongsToTeam = userTeams?.teams?.find((team) => team._id === room.teamId);
 
 	const teamMainRoom = useUserSubscription(value?.teamInfo?.roomId);
 	const teamMainRoomHref = teamMainRoom ? roomTypes.getRouteLink(teamMainRoom.t, teamMainRoom) : null;
 
-	return teamLoading || userTeamsLoading || room.teamMain ? null : <Header.Tag>
-		<HeaderIcon room={teamMainRoom}/>
-		{belongsToTeam
-			? <Header.Link href={teamMainRoomHref}>{teamMainRoom?.name}</Header.Link>
-			: teamMainRoom?.name
-		}
-	</Header.Tag>;
+	if (phase === AsyncStatePhase.LOADING || userTeamsPhase === AsyncStatePhase.LOADING) {
+		return <Header.Tag.Skeleton />;
+	}
+
+	if (phase === AsyncStatePhase.REJECTED || !value.teamInfo) {
+		return null;
+	}
+
+	return (
+		<Header.Tag>
+			<Header.Tag.Icon icon={{ name: 'team' }} />
+			{belongsToTeam && teamMainRoom
+				? <Header.Link href={teamMainRoomHref}>{teamMainRoom?.name}</Header.Link>
+				: value.teamInfo.name
+			}
+		</Header.Tag>
+	);
 };
 const DirectRoomHeader = ({ room }) => {
 	const userId = useUserId();
@@ -138,7 +142,7 @@ const RoomHeader = ({ room, topic }) => {
 				<RoomTitle room={room}/>
 				<Favorite room={room} />
 				{room.prid && <ParentRoomWithData room={room} />}
-				{room.teamId && <ParentTeam room={room} />}
+				{room.teamId && !room.teamMain && <ParentTeam room={room} />}
 				<Encrypted room={room} />
 				<Translate room={room} />
 				{ showQuickActions && <Box mis='x20' display='flex'>
