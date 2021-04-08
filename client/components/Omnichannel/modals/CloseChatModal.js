@@ -1,27 +1,16 @@
 import { Field, Button, TextInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, useMemo } from 'react';
-import { useSubscription } from 'use-subscription';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
-import { formsSubscription } from '../../../views/omnichannel/additionalForms';
-import { FormSkeleton } from '../../../views/omnichannel/directory/Skeleton';
-import TagsManual from '../Tags';
+import Tags from '../Tags';
 
 const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 	const t = useTranslation();
-	const { value: tagsResult = [], phase: stateTags } = useEndpointData('livechat/tags.list');
 
 	const inputRef = useAutoFocus(true);
-	const forms = useSubscription(formsSubscription);
-
-	const { useCurrentChatTags = () => {} } = forms;
-
-	const Tags = useCurrentChatTags();
 
 	const { values, handlers } = useForm({ comment: '', tags: [] });
 
@@ -38,11 +27,6 @@ const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 	}, [t, comment]);
 
 	const canConfirm = useMemo(() => !!comment, [comment]);
-
-	if ([stateTags].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
-	}
-	const { tags: tagsList } = tagsResult;
 
 	return (
 		<Modal {...props}>
@@ -67,17 +51,9 @@ const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 					</Field.Row>
 					<Field.Error>{commentError}</Field.Error>
 				</Field>
-				{Tags && tagsList && tagsList.length > 0 ? (
+				{Tags && (
 					<Field>
-						<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-						<Field.Row>
-							<Tags value={Object.values(tags)} handler={handleTags} />
-						</Field.Row>
-					</Field>
-				) : (
-					<Field>
-						<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-						<TagsManual tags={tags} handler={handleTags} />
+						<Tags tags={tags} handler={handleTags} />
 					</Field>
 				)}
 			</Modal.Content>

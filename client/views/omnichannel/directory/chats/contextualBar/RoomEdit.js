@@ -5,7 +5,7 @@ import { useSubscription } from 'use-subscription';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
-import TagsManual from '../../../../../components/Omnichannel/Tags';
+import Tags from '../../../../../components/Omnichannel/Tags';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
@@ -76,9 +76,8 @@ function RoomEdit({ room, visitor, reload, close }) {
 
 	const forms = useSubscription(formsSubscription);
 
-	const { useCurrentChatTags = () => {}, usePrioritiesSelect = () => {} } = forms;
+	const { usePrioritiesSelect = () => {} } = forms;
 
-	const Tags = useCurrentChatTags();
 	const PrioritiesSelect = usePrioritiesSelect();
 
 	const {
@@ -100,8 +99,6 @@ function RoomEdit({ room, visitor, reload, close }) {
 	const { value: prioritiesResult = {}, phase: statePriorities } = useEndpointData(
 		'livechat/priorities.list',
 	);
-
-	const { value: tagsResult = [], phase: stateTags } = useEndpointData('livechat/tags.list');
 
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};
@@ -159,12 +156,11 @@ function RoomEdit({ room, visitor, reload, close }) {
 		(hasUnsavedChangesContact || hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) &&
 		customFieldsError.length === 0;
 
-	if ([stateCustomFields, statePriorities, stateTags].includes(AsyncStatePhase.LOADING)) {
+	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}
 
 	const { priorities } = prioritiesResult;
-	const { tags: tagsList } = tagsResult;
 
 	return (
 		<>
@@ -189,17 +185,9 @@ function RoomEdit({ room, visitor, reload, close }) {
 						<TextInput flexGrow={1} value={topic} onChange={handleTopic} />
 					</Field.Row>
 				</Field>
-				{Tags && tagsList && tagsList.length > 0 ? (
+				{Tags && (
 					<Field>
-						<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-						<Field.Row>
-							<Tags value={Object.values(tags)} handler={handleTags} />
-						</Field.Row>
-					</Field>
-				) : (
-					<Field>
-						<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-						<TagsManual tags={tags} handler={handleTags} />
+						<Tags tags={tags} handler={handleTags} />
 					</Field>
 				)}
 				{PrioritiesSelect && priorities && priorities.length > 0 && (
