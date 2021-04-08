@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, isValidElement, ReactElement } from 'react';
 import { css } from '@rocket.chat/css-in-js';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import {
@@ -12,14 +12,19 @@ import {
 	Tag,
 	TagProps,
 	BoxProps,
+	Skeleton,
 } from '@rocket.chat/fuselage';
+
+type HeaderIconProps = {icon: ReactElement | { name: string; color?: string } | null};
 
 const Title: FC = (props: any) => <Box color='default' mi='x4' fontScale='s2' withTruncatedText {...props}/>;
 const Subtitle: FC = (props: any) => <Box color='hint' fontScale='p1' withTruncatedText {...props}/>;
 
 const Row: FC = (props: any) => <Box alignItems='center' flexShrink={1} flexGrow={1} display='flex' {...props}/>;
 
-const HeaderIcon: FC<{ icon: JSX.Element | { name: string; color?: string } | null}> = ({ icon }) => icon && <Box display='flex' flexShrink={0} alignItems='center' size={18} overflow='hidden' justifyContent='center'>{React.isValidElement(icon) ? icon : <Icon color='info' size='x18' { ...{ name: (icon as any).name }} />}</Box>;
+const HeaderIcon: FC<HeaderIconProps> = ({ icon }) => icon && <Box display='flex' flexShrink={0} alignItems='center' size={18} overflow='hidden' justifyContent='center'>
+	{React.isValidElement(icon) ? icon : <Icon color='info' size='x18' { ...{ name: (icon as any).name }} />}
+</Box>;
 
 const ToolBox: FC = (props: any) => <ButtonGroup mi='x4' medium {...props}/>;
 
@@ -40,6 +45,12 @@ const HeaderLink: FC = (props: BoxProps) => <Box
 />;
 
 const HeaderTag: FC = ({ children, ...props }: TagProps) => <Box mi='x4'><Tag {...props}><Box alignItems='center' fontScale='c2' display='flex'>{children}</Box></Tag></Box>;
+
+const HeaderTagIcon: FC<HeaderIconProps> = ({ icon }) => (icon ? <Box w='x20' mi='x2' display='inline-flex' justifyContent='center'>
+	{isValidElement(icon) ? icon : <Icon size='x20' {...icon}/>}
+</Box> : null);
+
+const HeaderTagSkeleton: FC = () => <Skeleton width='x48'/>;
 
 const ToolBoxAction: FC = ({ id, icon, color, title, action, className, tabId, index, ...props }: any) => <ActionButton
 	className={className}
@@ -84,6 +95,11 @@ Object.assign(Content, {
 
 Object.assign(ToolBoxAction, {
 	Badge: ToolBoxActionBadge,
+});
+
+Object.assign(HeaderTag, {
+	Icon: HeaderTagIcon,
+	Skeleton: HeaderTagSkeleton,
 });
 
 Object.assign(Header, {
