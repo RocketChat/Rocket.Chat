@@ -1,9 +1,9 @@
-import { USER_STATUS } from './UserStatus';
+import { UserStatus } from './UserStatus';
 
 export interface IUserSessionConnection {
 	id: string;
 	instanceId: string;
-	status: USER_STATUS;
+	status: UserStatus;
 	_createdAt: Date;
 	_updatedAt: Date;
 }

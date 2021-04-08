@@ -2,18 +2,18 @@ import { ButtonGroup, Button, Box, Icon } from '@rocket.chat/fuselage';
 import { SHA256 } from 'meteor/sha';
 import React, { useMemo, useState, useCallback } from 'react';
 
-import Page from '../../components/Page';
-import AccountProfileForm from './AccountProfileForm';
 import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeWarningModal';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useForm } from '../../hooks/useForm';
-import { useSetting } from '../../contexts/SettingsContext';
-import { useUser } from '../../contexts/UserContext';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useMethod } from '../../contexts/ServerContext';
+import Page from '../../components/Page';
 import { useSetModal } from '../../contexts/ModalContext';
+import { useMethod } from '../../contexts/ServerContext';
+import { useSetting } from '../../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useUser } from '../../contexts/UserContext';
+import { useForm } from '../../hooks/useForm';
 import { useUpdateAvatar } from '../../hooks/useUpdateAvatar';
 import { getUserEmailAddress } from '../../lib/getUserEmailAddress';
+import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
 
 const getInitialValues = (user) => ({
@@ -70,31 +70,34 @@ const AccountProfilePage = () => {
 		allowPasswordChange = Boolean(user?.services?.password?.bcrypt);
 	}
 
-	const namesRegex = useMemo(() => new RegExp(`^${ namesRegexSetting }$`), [namesRegexSetting]);
+	const namesRegex = useMemo(() => new RegExp(`^${namesRegexSetting}$`), [namesRegexSetting]);
 
 	const canChangeUsername = allowUsernameChange && !ldapUsernameLinked;
 
-	const settings = useMemo(() => ({
-		allowRealNameChange,
-		allowUserStatusMessageChange,
-		allowEmailChange,
-		allowPasswordChange,
-		allowUserAvatarChange,
-		allowDeleteOwnAccount,
-		canChangeUsername,
-		requireName,
-		namesRegex,
-	}), [
-		allowDeleteOwnAccount,
-		allowEmailChange,
-		allowPasswordChange,
-		allowRealNameChange,
-		allowUserAvatarChange,
-		allowUserStatusMessageChange,
-		canChangeUsername,
-		requireName,
-		namesRegex,
-	]);
+	const settings = useMemo(
+		() => ({
+			allowRealNameChange,
+			allowUserStatusMessageChange,
+			allowEmailChange,
+			allowPasswordChange,
+			allowUserAvatarChange,
+			allowDeleteOwnAccount,
+			canChangeUsername,
+			requireName,
+			namesRegex,
+		}),
+		[
+			allowDeleteOwnAccount,
+			allowEmailChange,
+			allowPasswordChange,
+			allowRealNameChange,
+			allowUserAvatarChange,
+			allowUserStatusMessageChange,
+			canChangeUsername,
+			requireName,
+			namesRegex,
+		],
+	);
 
 	const {
 		realname,
@@ -116,21 +119,26 @@ const AccountProfilePage = () => {
 	const onSave = useCallback(async () => {
 		const save = async (typedPassword) => {
 			try {
-				await saveFn({
-					...allowRealNameChange && { realname },
-					...allowEmailChange && getUserEmailAddress(user) !== email && { email },
-					...allowPasswordChange && { newPassword: password },
-					...canChangeUsername && { username },
-					...allowUserStatusMessageChange && { statusText },
-					...typedPassword && { typedPassword: SHA256(typedPassword) },
-					statusType,
-					nickname,
-					bio: bio || '',
-				}, customFields);
+				await saveFn(
+					{
+						...(allowRealNameChange && { realname }),
+						...(allowEmailChange && getUserEmailAddress(user) !== email && { email }),
+						...(allowPasswordChange && { newPassword: password }),
+						...(canChangeUsername && { username }),
+						...(allowUserStatusMessageChange && { statusText }),
+						...(typedPassword && { typedPassword: SHA256(typedPassword) }),
+						statusType,
+						nickname,
+						bio: bio || '',
+					},
+					customFields,
+				);
 				handlePassword('');
 				handleConfirmationPassword('');
 				const avatarResult = await updateAvatar();
-				if (avatarResult) { handleAvatar(''); }
+				if (avatarResult) {
+					handleAvatar('');
+				}
 				commit();
 				dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 			} catch (error) {
@@ -169,7 +177,10 @@ const AccountProfilePage = () => {
 		setLoggingOut(true);
 		try {
 			await logoutOtherClients();
-			dispatchToastMessage({ type: 'success', message: t('Logged_out_of_other_clients_successfully') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Logged_out_of_other_clients_successfully'),
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -184,14 +195,18 @@ const AccountProfilePage = () => {
 			} catch (error) {
 				if (error.error === 'user-last-owner') {
 					const { shouldChangeOwner, shouldBeRemoved } = error.details;
-					return setModal(() => <ConfirmOwnerChangeWarningModal
-						onConfirm={() => { deleteOwnAccount(SHA256(passwordOrUsername), true); }}
-						onCancel={closeModal}
-						contentTitle={t(`Delete_User_Warning_${ erasureType }`)}
-						confirmLabel={t('Continue')}
-						shouldChangeOwner={shouldChangeOwner}
-						shouldBeRemoved={shouldBeRemoved}
-					/>);
+					return setModal(() => (
+						<ConfirmOwnerChangeWarningModal
+							onConfirm={() => {
+								deleteOwnAccount(SHA256(passwordOrUsername), true);
+							}}
+							onCancel={closeModal}
+							contentTitle={t(`Delete_User_Warning_${erasureType}`)}
+							confirmLabel={t('Continue')}
+							shouldChangeOwner={shouldChangeOwner}
+							shouldBeRemoved={shouldBeRemoved}
+						/>
+					));
 				}
 
 				dispatchToastMessage({ type: 'error', message: error });
@@ -200,46 +215,60 @@ const AccountProfilePage = () => {
 
 		const title = t('Are_you_sure_you_want_to_delete_your_account');
 		if (localPassword) {
-			return setModal(() => <ActionConfirmModal
+			return setModal(() => (
+				<ActionConfirmModal
+					onSave={save}
+					onCancel={closeModal}
+					title={title}
+					text={t('For_your_security_you_must_enter_your_current_password_to_continue')}
+					isPassword
+				/>
+			));
+		}
+		return setModal(() => (
+			<ActionConfirmModal
 				onSave={save}
 				onCancel={closeModal}
 				title={title}
-				text={t('For_your_security_you_must_enter_your_current_password_to_continue')}
+				text={t('If_you_are_sure_type_in_your_username')}
 				isPassword
-			/>);
-		}
-		return setModal(() => <ActionConfirmModal
-			onSave={save}
-			onCancel={closeModal}
-			title={title}
-			text={t('If_you_are_sure_type_in_your_username')}
-			isPassword
-		/>);
+			/>
+		));
 	}, [closeModal, deleteOwnAccount, dispatchToastMessage, erasureType, localPassword, t, setModal]);
 
-	return <Page>
-		<Page.Header title={t('Profile')}>
-			<ButtonGroup>
-				<Button primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
-					{t('Save_changes')}
-				</Button>
-			</ButtonGroup>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			<Box maxWidth='600px' w='full' alignSelf='center'>
-				<AccountProfileForm values={values} handlers={handlers} user={user} settings={settings} onSaveStateChange={setCanSave}/>
-				<ButtonGroup stretch mb='x12'>
-					<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
-						{t('Logout_Others')}
+	return (
+		<Page>
+			<Page.Header title={t('Profile')}>
+				<ButtonGroup>
+					<Button primary disabled={!hasUnsavedChanges || !canSave || loggingOut} onClick={onSave}>
+						{t('Save_changes')}
 					</Button>
-					{allowDeleteOwnAccount && <Button danger onClick={handleDeleteOwnAccount}>
-						<Icon name='trash' size='x20' mie='x4'/>
-						{t('Delete_my_account')}
-					</Button>}
 				</ButtonGroup>
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+			</Page.Header>
+			<Page.ScrollableContentWithShadow>
+				<Box maxWidth='600px' w='full' alignSelf='center'>
+					<AccountProfileForm
+						values={values}
+						handlers={handlers}
+						user={user}
+						settings={settings}
+						onSaveStateChange={setCanSave}
+					/>
+					<ButtonGroup stretch mb='x12'>
+						<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
+							{t('Logout_Others')}
+						</Button>
+						{allowDeleteOwnAccount && (
+							<Button danger onClick={handleDeleteOwnAccount}>
+								<Icon name='trash' size='x20' mie='x4' />
+								{t('Delete_my_account')}
+							</Button>
+						)}
+					</ButtonGroup>
+				</Box>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 };
 
 export default AccountProfilePage;
