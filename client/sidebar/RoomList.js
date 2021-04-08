@@ -20,6 +20,7 @@ import { useRoomIcon } from '../hooks/useRoomIcon';
 import { useSidebarPaletteColor } from './hooks/useSidebarPaletteColor';
 import { escapeHTML } from '../../lib/escapeHTML';
 import ScrollableContentWrapper from '../components/ScrollableContentWrapper';
+import UnreadCounter from './components/UnreadCounter';
 
 const sections = {
 	Omnichannel,
@@ -121,8 +122,12 @@ export default () => {
 		listRef.current?.resetAfterIndex(0);
 	}, [sidebarViewMode]);
 
+	const virtuosoRef = useRef(null);
+
 	return <Box h='full' w='full' ref={ref}>
+		<UnreadCounter roomsList={roomsList} t={t} virtuosoRef={virtuosoRef}/>
 		<Virtuoso
+			ref={virtuosoRef}
 			totalCount={roomsList.length}
 			data={roomsList}
 			components={{ Scroller: ScrollerWithCustomProps }}
