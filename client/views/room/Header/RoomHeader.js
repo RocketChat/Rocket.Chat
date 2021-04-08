@@ -33,7 +33,7 @@ const RoomHeader = ({ room, topic }) => {
 					<RoomTitle room={room} />
 					<Favorite room={room} />
 					{room.prid && <ParentRoomWithData room={room} />}
-					{room.teamId && <ParentTeam room={room} />}
+					{room.teamId && !room.teamMain && <ParentTeam room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />
 					{showQuickActions && (

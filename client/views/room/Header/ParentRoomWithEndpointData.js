@@ -1,6 +1,6 @@
-import { Skeleton } from '@rocket.chat/fuselage';
 import React, { useEffect } from 'react';
 
+import Header from '../../../components/Header';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { AsyncStatePhase, useAsyncState } from '../../../hooks/useAsyncState';
 import ParentRoom from './ParentRoom';
@@ -21,7 +21,7 @@ const ParentRoomWithEndpointData = ({ rid }) => {
 	}, [reset, getData, rid, resolve, reject]);
 
 	if (AsyncStatePhase.LOADING === phase) {
-		return <Skeleton width='x48' />;
+		return <Header.Tag.Skeleton />;
 	}
 
 	if (AsyncStatePhase.ERROR === phase || !value?.room) {

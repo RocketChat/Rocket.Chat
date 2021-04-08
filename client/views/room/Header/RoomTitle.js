@@ -1,11 +1,11 @@
 import React from 'react';
 
 import Header from '../../../components/Header';
-import HeaderIcon from './HeaderIcon';
+import HeaderIconWithRoom from './HeaderIconWithRoom';
 
 const RoomTitle = ({ room }) => (
 	<>
-		<HeaderIcon room={room} />
+		<HeaderIconWithRoom room={room} />
 		<Header.Title>{room.name}</Header.Title>
 	</>
 );

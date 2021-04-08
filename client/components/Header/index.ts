@@ -6,6 +6,8 @@ import HeaderDivider from './HeaderDivider';
 import HeaderIcon from './HeaderIcon';
 import HeaderLink from './HeaderLink';
 import HeaderTag from './HeaderTag';
+import HeaderTagIcon from './HeaderTagIcon';
+import HeaderTagSkeleton from './HeaderTagSkeleton';
 import Row from './Row';
 import State from './State';
 import Subtitle from './Subtitle';
@@ -30,6 +32,9 @@ export default Object.assign(Header, {
 	Divider: HeaderDivider,
 	Icon: HeaderIcon,
 	Link: HeaderLink,
-	Tag: HeaderTag,
+	Tag: Object.assign(HeaderTag, {
+		Icon: HeaderTagIcon,
+		Skeleton: HeaderTagSkeleton,
+	}),
 	Badge: ToolBoxActionBadge,
 });

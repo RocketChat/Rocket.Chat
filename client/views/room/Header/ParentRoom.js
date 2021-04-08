@@ -2,7 +2,7 @@ import React from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
 import Header from '../../../components/Header';
-import HeaderIcon from './HeaderIcon';
+import HeaderIcon from './HeaderIconWithRoom';
 
 const ParentRoom = ({ room }) => {
 	const href = roomTypes.getRouteLink(room.t, room);

@@ -1,9 +1,9 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { FC, isValidElement } from 'react';
+import React, { FC, isValidElement, ReactElement } from 'react';
 
-const HeaderIcon: FC<{ icon: JSX.Element | { name: string; color?: string } | null }> = ({
-	icon,
-}) =>
+type HeaderIconProps = { icon: ReactElement | { name: string; color?: string } | null };
+
+const HeaderIcon: FC<HeaderIconProps> = ({ icon }) =>
 	icon && (
 		<Box
 			display='flex'

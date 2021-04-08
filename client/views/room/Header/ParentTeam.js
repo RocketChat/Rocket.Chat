@@ -1,25 +1,23 @@
-import { Meteor } from 'meteor/meteor';
 import React, { useMemo } from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
 import Header from '../../../components/Header';
-import { useUserSubscription } from '../../../contexts/UserContext';
+import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import HeaderIcon from './HeaderIcon';
 
 const ParentTeam = ({ room }) => {
-	const query = useMemo(() => ({ teamId: room.teamId }), [room.teamId]);
-	const userTeamQuery = useMemo(() => ({ userId: Meteor.userId() }), []);
+	const userId = useUserId();
 
-	const { value, phase } = useEndpointData('teams.info', query);
+	const { value, phase } = useEndpointData(
+		'teams.info',
+		useMemo(() => ({ teamId: room.teamId }), [room.teamId]),
+	);
 	const { value: userTeams, phase: userTeamsPhase } = useEndpointData(
 		'users.listTeams',
-		userTeamQuery,
+		useMemo(() => ({ userId }), [userId]),
 	);
 
-	const teamLoading = phase === AsyncStatePhase.LOADING;
-	const userTeamsLoading = userTeamsPhase === AsyncStatePhase.LOADING;
 	const belongsToTeam = userTeams?.teams?.find((team) => team._id === room.teamId);
 
 	const teamMainRoom = useUserSubscription(value?.teamInfo?.roomId);
@@ -27,13 +25,21 @@ const ParentTeam = ({ room }) => {
 		? roomTypes.getRouteLink(teamMainRoom.t, teamMainRoom)
 		: null;
 
-	return teamLoading || userTeamsLoading || room.teamMain ? null : (
+	if (phase === AsyncStatePhase.LOADING || userTeamsPhase === AsyncStatePhase.LOADING) {
+		return <Header.Tag.Skeleton />;
+	}
+
+	if (phase === AsyncStatePhase.REJECTED || !value.teamInfo) {
+		return null;
+	}
+
+	return (
 		<Header.Tag>
-			<HeaderIcon room={teamMainRoom} />
-			{belongsToTeam ? (
+			<Header.Tag.Icon icon={{ name: 'team' }} />
+			{belongsToTeam && teamMainRoom ? (
 				<Header.Link href={teamMainRoomHref}>{teamMainRoom?.name}</Header.Link>
 			) : (
-				teamMainRoom?.name
+				value.teamInfo.name
 			)}
 		</Header.Tag>
 	);
