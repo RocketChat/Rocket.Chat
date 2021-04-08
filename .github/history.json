@@ -58046,6 +58046,114 @@
         "4.0"
       ],
       "pull_requests": []
+    },
+    "3.13.1": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21465",
+          "title": "[FIX] Header component breaking if user is not part of teams room.",
+          "userLogin": "gabriellsh",
+          "milestone": "3.13.1",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21469",
+          "title": "[FIX] Admin Users list pagination",
+          "userLogin": "KevLehman",
+          "description": "- Fix Administration/Users pagination",
+          "milestone": "3.13.1",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "21470",
+          "title": "[FIX] App installation from marketplace not correctly displaying the permissions",
+          "userLogin": "graywolf336",
+          "description": "Fixes the marketplace app installation not correctly displaying the permissions modal.",
+          "milestone": "3.13.1",
+          "contributors": [
+            "graywolf336",
+            "d-gubert",
+            "web-flow",
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "21485",
+          "title": "[FIX] Omnichannel queue manager returning outdated room object",
+          "userLogin": "renatobecker",
+          "description": "The Omnichannel Queue Manager is returning outdated room object when delegating the chat to an agent, hence, our Livechat widget is affected and the agent assigned to the chat is not displayed on the widget, only after refreshing/reloading.",
+          "milestone": "3.13.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21481",
+          "title": "[FIX]  Close chat button is not available for Omnichannel agents",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21476",
+          "title": "[FIX] Make Omnichannel's closing chat button the last action in the toolbox",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21450",
+          "title": "[FIX] Error when editing Omnichannel rooms without custom fields",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21453",
+          "title": "[FIX] Wrong useMemo on Priorities EE field.",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21462",
+          "title": "[FIX] Add tag input to Closing Chat modal",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink"
+          ]
+        }
+      ]
     }
   }
 }
