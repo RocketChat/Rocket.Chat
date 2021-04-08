@@ -4,9 +4,6 @@
 			<div class="messages-container-wrapper">
 				<div class="messages-container-main dropzone {{dragAndDrop}}">
 					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
-					{{#unless embeddedVersion}}
-						{{> RoomAnnouncement announcement=announcement announcementDetails=announcementDetails }}
-					{{/unless}}
 					<div class="container-bars {{containerBarsShow unreadData uploading}}">
 						{{#with unreadData}}
 							{{#if since}}
@@ -114,9 +111,9 @@
 									{{/if}}
 								{{/if}}
 
-								{{# with messageContext}}
+								<!-- {{# with messageContext}}
 									{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room  actions=actions subscription=subscription settings=settings u=u}}{{/each}}
-								{{/with}}
+								{{/with}} -->
 
 								{{#if hasMoreNext}}
 									<li class="load-more">
