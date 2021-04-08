@@ -7,10 +7,15 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { formsSubscription } from '../../../views/omnichannel/additionalForms';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { FormSkeleton } from '../../../omnichannel/directory/Skeleton';
+import TagsManual from '../Tags';
 
 
 const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 	const t = useTranslation();
+	const { value: tagsResult = [], phase: stateTags } = useEndpointData('livechat/tags.list');
 
 	const inputRef = useAutoFocus(true);
 	const forms = useSubscription(formsSubscription);
@@ -37,6 +42,11 @@ const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 
 	const canConfirm = useMemo(() => !!comment, [comment]);
 
+	if ([stateTags].includes(AsyncStatePhase.LOADING)) {
+		return <FormSkeleton/>;
+	}
+	const { tags: tagsList } = tagsResult;
+
 	return <Modal {...props}>
 		<Modal.Header>
 			<Icon name='baloon-close-top-right' size={20}/>
@@ -54,11 +64,14 @@ const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 					{commentError}
 				</Field.Error>
 			</Field>
-			{Tags && <Field>
+			{Tags && (tagsList && tagsList.length > 0) ? <Field>
 				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
 				<Field.Row>
-					<Tags value={tags} handler={handleTags} />
+					<Tags value={Object.values(tags)} handler={handleTags} />
 				</Field.Row>
+			</Field> : <Field>
+				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
+				<TagsManual tags={tags} handler={handleTags}/>
 			</Field>}
 		</Modal.Content>
 		<Modal.Footer>

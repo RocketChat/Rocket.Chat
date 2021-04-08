@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Field, TextInput, ButtonGroup, Button, Box, Tag, Icon } from '@rocket.chat/fuselage';
+import { Field, TextInput, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSubscription } from 'use-subscription';
 
@@ -14,6 +14,7 @@ import { hasAtLeastOnePermission } from '../../../../app/authorization';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
 import { useMethod } from '../../../contexts/ServerContext';
 import { formsSubscription } from '../../../views/omnichannel/additionalForms';
+import TagsManual from '../../../components/Omnichannel/Tags';
 
 const initialValuesUser = {
 	name: '',
@@ -92,35 +93,6 @@ function VisitorData({ room, reload, close }) {
 
 	return <RoomEdit room={roomData} visitor={visitorData} reload={reload} close={close} />;
 }
-
-const TagsManual = ({ tags = [], removeTag = () => {}, addTag = () => {} }) => {
-	const [tagValue, handleTagValue] = useState('');
-
-	const handleKeyDown = (event) => {
-		if (event.key === 'Enter') {
-			tagValue && addTag(tagValue);
-			handleTagValue('');
-		}
-	};
-	return <>
-		<Field.Row>
-			<TextInput onKeyDown={handleKeyDown} value={tagValue} flexGrow={1} onChange={(event) => handleTagValue(event.target.value)}/>
-		</Field.Row>
-		<Field.Row>
-			{tags && <Box color='hint' display='flex' flex-direction='row'>
-				{tags.length > 0 && tags.map((tag) => (
-					<Box onClick={() => removeTag(tag)} key={tag} mie='x4'>
-						<Tag style={{ display: 'inline', fontSize: '0.8rem' }} disabled>
-							{tag}
-							<Icon style={{ fontWeight: 'bold', paddingTop: '0.1rem', paddingBottom: '0.3rem' }} marginBlockStart='x2' name='cross' />
-						</Tag>
-					</Box>
-				))}
-			</Box>}
-		</Field.Row>
-	</>;
-};
-
 
 export function RoomEdit({ room, visitor, reload, close }) {
 	const t = useTranslation();
@@ -230,14 +202,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 
 	const { priorities } = prioritiesResult;
 
-	const removeTag = (tag) => {
-		const tagsFiltered = tags.filter((tagArray) => tagArray !== tag);
-		handleTags(tagsFiltered);
-	};
-
-	const addTag = (tag) => {
-		handleTags([...tags, tag]);
-	};
+	console.log(tags);
 
 	return <>
 		<VerticalBar.ScrollableContent is='form'>
@@ -263,7 +228,7 @@ export function RoomEdit({ room, visitor, reload, close }) {
 				</Field.Row>
 			</Field> : <Field>
 				<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-				<TagsManual tags={tags} removeTag={removeTag} addTag={addTag} />
+				<TagsManual tags={tags} handler={handleTags}/>
 			</Field>}
 			{PrioritiesSelect && (priorities && priorities.length > 0)
 			&& <PrioritiesSelect value={priorityId} label={t('Priority')} options={priorities} handler={handlePriorityId} />}
