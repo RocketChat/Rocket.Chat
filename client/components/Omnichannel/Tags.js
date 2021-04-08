@@ -10,7 +10,7 @@ import { useEndpointData } from '../../hooks/useEndpointData';
 import { formsSubscription } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 
-const Tags = ({ tags = [], handler = () => {} }) => {
+const Tags = ({ tags = [], handler = () => {}, error = '' }) => {
 	const { value: tagsResult = [], phase: stateTags } = useEndpointData('livechat/tags.list');
 	const t = useTranslation();
 	const forms = useSubscription(formsSubscription);
@@ -28,13 +28,13 @@ const Tags = ({ tags = [], handler = () => {} }) => {
 	};
 
 	const handleTagTextSubmit = useMutableCallback(() => {
-		if (tags.includes(tagValue)) {
-			dispatchToastMessage({ type: 'error', message: t('Tag_already_exists') });
-			return;
-		}
-		if (tagValue && tagValue.trim() === '') {
+		if (!tagValue || tagValue.trim() === '') {
 			dispatchToastMessage({ type: 'error', message: t('Enter_a_tag') });
 			handleTagValue('');
+			return;
+		}
+		if (tags.includes(tagValue)) {
+			dispatchToastMessage({ type: 'error', message: t('Tag_already_exists') });
 			return;
 		}
 		handler([...tags, tagValue]);
@@ -58,12 +58,13 @@ const Tags = ({ tags = [], handler = () => {} }) => {
 				<>
 					<Field.Row>
 						<TextInput
+							error={error}
 							value={tagValue}
 							onChange={(event) => handleTagValue(event.target.value)}
 							flexGrow={1}
 							placeholder={t('Enter_a_tag')}
 						/>
-						<Button mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
+						<Button disabled={!tagValue} mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
 							{t('Add')}
 						</Button>
 					</Field.Row>
