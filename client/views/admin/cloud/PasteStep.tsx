@@ -1,9 +1,9 @@
 import { Box, Button, ButtonGroup, Scrollable, Throbber, Modal } from '@rocket.chat/fuselage';
 import React, { ChangeEvent, FC, useState } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 
 type PasteStepProps = {
 	onBackButtonClick: () => void;
@@ -37,48 +37,57 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 		}
 	};
 
-	return <>
-		<Modal.Content>
-			<Box withRichContent>
-				<p>{t('Cloud_register_offline_finish_helper')}</p>
-			</Box>
-			<Box
-				display='flex'
-				flexDirection='column'
-				alignItems='stretch'
-				padding='x16'
-				flexGrow={1}
-				backgroundColor='neutral-800'
-			>
-				<Scrollable vertical>
-					<Box
-						is='textarea'
-						height='x108'
-						fontFamily='mono'
-						fontScale='p1'
-						color='alternative'
-						style={{ wordBreak: 'break-all', resize: 'none' }}
-						placeholder={t('Paste_here')}
-						disabled={isLoading}
-						value={cloudKey}
-						autoComplete='off'
-						autoCorrect='off'
-						autoCapitalize='off'
-						spellCheck='false'
-						onChange={handleCloudKeyChange}
-					/>
-				</Scrollable>
-			</Box>
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup>
-				<Button disabled={isLoading} onClick={onBackButtonClick}>{t('Back')}</Button>
-				<Button primary disabled={isLoading || !cloudKey.trim()} marginInlineStart='auto' onClick={handleFinishButtonClick}>
-					{isLoading ? <Throbber inheritColor /> : t('Finish_Registration')}
-				</Button>
-			</ButtonGroup>
-		</Modal.Footer>
-	</>;
+	return (
+		<>
+			<Modal.Content>
+				<Box withRichContent>
+					<p>{t('Cloud_register_offline_finish_helper')}</p>
+				</Box>
+				<Box
+					display='flex'
+					flexDirection='column'
+					alignItems='stretch'
+					padding='x16'
+					flexGrow={1}
+					backgroundColor='neutral-800'
+				>
+					<Scrollable vertical>
+						<Box
+							is='textarea'
+							height='x108'
+							fontFamily='mono'
+							fontScale='p1'
+							color='alternative'
+							style={{ wordBreak: 'break-all', resize: 'none' }}
+							placeholder={t('Paste_here')}
+							disabled={isLoading}
+							value={cloudKey}
+							autoComplete='off'
+							autoCorrect='off'
+							autoCapitalize='off'
+							spellCheck='false'
+							onChange={handleCloudKeyChange}
+						/>
+					</Scrollable>
+				</Box>
+			</Modal.Content>
+			<Modal.Footer>
+				<ButtonGroup>
+					<Button disabled={isLoading} onClick={onBackButtonClick}>
+						{t('Back')}
+					</Button>
+					<Button
+						primary
+						disabled={isLoading || !cloudKey.trim()}
+						marginInlineStart='auto'
+						onClick={handleFinishButtonClick}
+					>
+						{isLoading ? <Throbber inheritColor /> : t('Finish_Registration')}
+					</Button>
+				</ButtonGroup>
+			</Modal.Footer>
+		</>
+	);
 };
 
 export default PasteStep;

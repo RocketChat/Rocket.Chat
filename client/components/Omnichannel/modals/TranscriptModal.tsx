@@ -1,12 +1,11 @@
-import React, { FC, useCallback, useEffect, useState, useMemo } from 'react';
 import { Field, Button, TextInput, Icon, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import React, { FC, useCallback, useEffect, useState, useMemo } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useForm } from '../../../hooks/useForm';
-import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { IRoom } from '../../../../definition/IRoom';
-
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
+import { useForm } from '../../../hooks/useForm';
 
 type TranscriptModalProps = {
 	email: string;
@@ -17,21 +16,31 @@ type TranscriptModalProps = {
 	onDiscard: () => void;
 };
 
-const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', room, onRequest, onSend, onCancel, onDiscard, ...props }) => {
+const TranscriptModal: FC<TranscriptModalProps> = ({
+	email: emailDefault = '',
+	room,
+	onRequest,
+	onSend,
+	onCancel,
+	onDiscard,
+	...props
+}) => {
 	const t = useTranslation();
 
 	const inputRef = useAutoFocus(true);
 
-	const { values, handlers } = useForm({ email: emailDefault || '', subject: t('Transcript_of_your_livechat_conversation') });
+	const { values, handlers } = useForm({
+		email: emailDefault || '',
+		subject: t('Transcript_of_your_livechat_conversation'),
+	});
 
 	const { email, subject } = values as { email: string; subject: string };
 	const { handleEmail, handleSubject } = handlers;
 	const [emailError, setEmailError] = useState('');
 	const [subjectError, setSubjectError] = useState('');
-	const { transcriptRequest } = room as unknown as IRoom;
+	const { transcriptRequest } = (room as unknown) as IRoom;
 	const roomOpen = room && room.open;
 	const token = room?.v?.token;
-
 
 	const handleRequest = useCallback(() => {
 		onRequest(email, subject);
@@ -60,47 +69,64 @@ const TranscriptModal: FC<TranscriptModalProps> = ({ email: emailDefault = '', r
 		}
 	});
 
-	return <Modal {...props}>
-		<Modal.Header>
-			<Icon name='mail-arrow-top-right' size={20}/>
-			<Modal.Title>{t('Transcript')}</Modal.Title>
-			<Modal.Close onClick={onCancel}/>
-		</Modal.Header>
-		<Modal.Content fontScale='p1'>
-			{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
-			<Field marginBlock='x15'>
-				<Field.Label>{t('Email')}*</Field.Label>
-				<Field.Row>
-					<TextInput disabled={!!emailDefault || !!transcriptRequest} error={emailError} flexGrow={1} value={email} onChange={handleEmail} />
-				</Field.Row>
-				<Field.Error>
-					{emailError}
-				</Field.Error>
-			</Field>
-			<Field marginBlock='x15'>
-				<Field.Label>{t('Subject')}*</Field.Label>
-				<Field.Row>
-					<TextInput ref={inputRef} disabled={!!transcriptRequest} error={subjectError} flexGrow={1} value={subject} onChange={handleSubject} />
-				</Field.Row>
-				<Field.Error>
-					{subjectError}
-				</Field.Error>
-			</Field>
-		</Modal.Content>
-		<Modal.Footer>
-			<ButtonGroup align='end'>
-				<Button onClick={onCancel}>{t('Cancel')}</Button>
-				{
-					roomOpen && transcriptRequest
-						? <Button primary danger onClick={handleDiscard}>{t('Discard')}</Button>
-						: <Button disabled={!canSave} primary onClick={handleRequest}>{t('Request')}</Button>
-				}
-				{
-					!roomOpen && <Button disabled={!canSave} primary onClick={handleSend}>{t('Send')}</Button>
-				}
-			</ButtonGroup>
-		</Modal.Footer>
-	</Modal>;
+	return (
+		<Modal {...props}>
+			<Modal.Header>
+				<Icon name='mail-arrow-top-right' size={20} />
+				<Modal.Title>{t('Transcript')}</Modal.Title>
+				<Modal.Close onClick={onCancel} />
+			</Modal.Header>
+			<Modal.Content fontScale='p1'>
+				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
+				<Field marginBlock='x15'>
+					<Field.Label>{t('Email')}*</Field.Label>
+					<Field.Row>
+						<TextInput
+							disabled={!!emailDefault || !!transcriptRequest}
+							error={emailError}
+							flexGrow={1}
+							value={email}
+							onChange={handleEmail}
+						/>
+					</Field.Row>
+					<Field.Error>{emailError}</Field.Error>
+				</Field>
+				<Field marginBlock='x15'>
+					<Field.Label>{t('Subject')}*</Field.Label>
+					<Field.Row>
+						<TextInput
+							ref={inputRef}
+							disabled={!!transcriptRequest}
+							error={subjectError}
+							flexGrow={1}
+							value={subject}
+							onChange={handleSubject}
+						/>
+					</Field.Row>
+					<Field.Error>{subjectError}</Field.Error>
+				</Field>
+			</Modal.Content>
+			<Modal.Footer>
+				<ButtonGroup align='end'>
+					<Button onClick={onCancel}>{t('Cancel')}</Button>
+					{roomOpen && transcriptRequest ? (
+						<Button primary danger onClick={handleDiscard}>
+							{t('Discard')}
+						</Button>
+					) : (
+						<Button disabled={!canSave} primary onClick={handleRequest}>
+							{t('Request')}
+						</Button>
+					)}
+					{!roomOpen && (
+						<Button disabled={!canSave} primary onClick={handleSend}>
+							{t('Send')}
+						</Button>
+					)}
+				</ButtonGroup>
+			</Modal.Footer>
+		</Modal>
+	);
 };
 
 export default TranscriptModal;
