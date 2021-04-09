@@ -35,7 +35,7 @@ export const renderRouteComponent = <Props extends {} = {}>(
 		}
 
 		if (!Template[routeName]) {
-			const blazeTemplate = new Blaze.Template(routeName, () => HTML.DIV()); // eslint-disable-line new-cap
+			const blazeTemplate = new Blaze.Template(routeName, () => HTML.DIV());
 
 			blazeTemplate.onRendered(function (this: Blaze.TemplateInstance & { firstNode: Element }) {
 				const node = this.firstNode.parentElement;
