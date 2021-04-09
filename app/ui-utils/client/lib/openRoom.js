@@ -8,7 +8,7 @@ import { memoize } from '@rocket.chat/memo';
 import _ from 'underscore';
 import { HTML } from 'meteor/htmljs';
 
-import * as BlazeLayout from '../../../../client/lib/portals/blazeLayout';
+import * as AppLayout from '../../../../client/lib/appLayout';
 import { Messages, ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
@@ -51,7 +51,7 @@ const replaceCenterDomBy = (dom) => {
 	document.dispatchEvent(new CustomEvent('main-content-destroyed'));
 
 	const roomNode = dom();
-	BlazeLayout.render('main', { center: createTemplateForDomNode(roomNode) });
+	AppLayout.render('main', { center: createTemplateForDomNode(roomNode) });
 
 	return roomNode;
 };
@@ -71,7 +71,7 @@ export const openRoom = async function(type, name) {
 	window.currentTracker = Tracker.autorun(async function(c) {
 		const user = Meteor.user();
 		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
-			BlazeLayout.render('main');
+			AppLayout.render('main');
 			return;
 		}
 
@@ -90,14 +90,14 @@ export const openRoom = async function(type, name) {
 
 			if (RoomManager.open(type + name).ready() !== true) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
-					BlazeLayout.render('main');
+					AppLayout.render('main');
 				}
 
 				replaceCenterDomBy(() => getDomOfLoading());
 				return;
 			}
 
-			BlazeLayout.render('main', { center: 'loading' });
+			AppLayout.render('main', { center: 'loading' });
 
 			c.stop();
 
@@ -149,7 +149,7 @@ export const openRoom = async function(type, name) {
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });
-			return BlazeLayout.render('main', { center: 'roomNotFound' });
+			return AppLayout.render('main', { center: 'roomNotFound' });
 		}
 	});
 };

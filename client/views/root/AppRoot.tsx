@@ -7,7 +7,7 @@ const ConnectionStatusBar = lazy(
 );
 const MeteorProvider = lazy(() => import('../../providers/MeteorProvider'));
 const BannerRegion = lazy(() => import('../banners/BannerRegion'));
-const BlazeLayoutWrapper = lazy(() => import('./BlazeLayoutWrapper'));
+const AppLayout = lazy(() => import('./AppLayout'));
 const PortalsWrapper = lazy(() => import('./PortalsWrapper'));
 
 const AppRoot: FC = () => (
@@ -15,7 +15,7 @@ const AppRoot: FC = () => (
 		<MeteorProvider>
 			<ConnectionStatusBar />
 			<BannerRegion />
-			<BlazeLayoutWrapper />
+			<AppLayout />
 			<PortalsWrapper />
 		</MeteorProvider>
 	</Suspense>

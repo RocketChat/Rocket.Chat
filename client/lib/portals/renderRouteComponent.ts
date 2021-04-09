@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import type { ComponentType, PropsWithoutRef } from 'react';
 
-import * as BlazeLayout from './blazeLayout';
+import * as AppLayout from '../appLayout';
 import { createLazyElement } from './createLazyElement';
 import { createLazyPortal } from './createLazyPortal';
 import { portalsSubscription, registerPortal, unregisterPortal } from './portalsSubscription';
@@ -40,7 +40,7 @@ export const renderRouteComponent = <Props extends {} = {}>(
 		}
 
 		if (!template || !region) {
-			BlazeLayout.reset();
+			AppLayout.reset();
 
 			const element = createLazyElement(factory, getProps);
 
@@ -83,7 +83,7 @@ export const renderRouteComponent = <Props extends {} = {}>(
 		}
 
 		Tracker.afterFlush(() => {
-			BlazeLayout.render(template, { [region]: routeName });
+			AppLayout.render(template, { [region]: routeName });
 		});
 	});
 };
