@@ -4,8 +4,9 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import mem from 'mem';
+import { memoize } from '@rocket.chat/memo';
 import _ from 'underscore';
+import { HTML } from 'meteor/htmljs';
 
 import * as BlazeLayout from '../../../../client/lib/portals/blazeLayout';
 import { Messages, ChatSubscription, Rooms } from '../../../models';
@@ -21,34 +22,39 @@ window.currentTracker = undefined;
 // cleanup session when hot reloading
 Session.set('openedRoom', null);
 
-const getDomOfLoading = mem(function getDomOfLoading() {
+const getDomOfLoading = memoize(() => {
 	const loadingDom = document.createElement('div');
-	const contentAsFunc = (content) => () => content;
-
-	const template = Blaze._TemplateWith({ }, contentAsFunc(Template.loading));
-	Blaze.render(template, loadingDom);
-
+	Blaze.render(Template.loading, loadingDom);
 	return loadingDom;
 });
 
-function replaceCenterDomBy(dom) {
+const createTemplateForDomNode = memoize((node) => {
+	const templateName = Math.random().toString(16).slice(2);
+
+	// eslint-disable-next-line new-cap
+	const template = new Blaze.Template(templateName, () => HTML.Comment(''));
+
+	template.onRendered(function() {
+		this.firstNode.parentNode.insertBefore(node, this.firstNode);
+	});
+
+	template.onDestroyed(function() {
+		delete Template[templateName];
+	});
+
+	Template[templateName] = template;
+
+	return templateName;
+});
+
+const replaceCenterDomBy = (dom) => {
 	document.dispatchEvent(new CustomEvent('main-content-destroyed'));
 
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			const mainNode = document.querySelector('.main-content');
-			if (mainNode) {
-				for (const child of Array.from(mainNode.children)) {
-					if (child) { mainNode.removeChild(child); }
-				}
-				const roomNode = dom();
-				mainNode.appendChild(roomNode);
-				return resolve([mainNode, roomNode]);
-			}
-			resolve(mainNode);
-		}, 0);
-	});
-}
+	const roomNode = dom();
+	BlazeLayout.render('main', { center: createTemplateForDomNode(roomNode) });
+
+	return roomNode;
+};
 
 const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
 	Tracker.autorun((c) => {
@@ -87,13 +93,11 @@ export const openRoom = async function(type, name) {
 					BlazeLayout.render('main');
 				}
 
-				await replaceCenterDomBy(() => getDomOfLoading());
+				replaceCenterDomBy(() => getDomOfLoading());
 				return;
 			}
 
-			BlazeLayout.render('main', {
-				center: 'loading',
-			});
+			BlazeLayout.render('main', { center: 'loading' });
 
 			c.stop();
 
@@ -101,12 +105,10 @@ export const openRoom = async function(type, name) {
 				window.currentTracker = undefined;
 			}
 
-			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
+			const roomDom = replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
-			if (mainNode) {
-				const selector = await waitUntilWrapperExists('.messages-box .wrapper');
-				selector.scrollTop = roomDom.oldScrollTop;
-			}
+			const selector = await waitUntilWrapperExists('.messages-box .wrapper');
+			selector.scrollTop = roomDom.oldScrollTop;
 
 			Session.set('openedRoom', room._id);
 			RoomManager.openedRoom = room._id;
