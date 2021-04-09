@@ -1,12 +1,15 @@
-import { useEffect } from 'react';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
+import { useEffect } from 'react';
 
+import { IRoom } from '../../../definition/IRoom';
+import { ISubscription } from '../../../definition/ISubscription';
 import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { useQueryOptions } from './useQueryOptions';
-import { ISubscription } from '../../../definition/ISubscription';
 
 const query = { open: { $ne: false } };
+
+const emptyQueue: IRoom[] = [];
 
 export const useRoomList = (): Array<ISubscription> => {
 	const [roomList, setRoomList] = useDebouncedState<ISubscription[]>([], 150);
@@ -22,6 +25,11 @@ export const useRoomList = (): Array<ISubscription> => {
 	const rooms = useUserSubscriptions(query, options);
 
 	const inquiries = useQueuedInquiries();
+
+	let queue: IRoom[] = emptyQueue;
+	if (inquiries.enabled) {
+		queue = inquiries.queue;
+	}
 
 	useEffect(() => {
 		setRoomList(() => {
@@ -76,10 +84,12 @@ export const useRoomList = (): Array<ISubscription> => {
 				conversation.add(room);
 			});
 
-
 			const groups = new Map();
 			showOmnichannel && groups.set('Omnichannel', []);
-			showOmnichannel && inquiries.enabled && inquiries.queue.length && groups.set('Incoming_Livechats', inquiries.queue);
+			showOmnichannel &&
+				inquiries.enabled &&
+				queue.length &&
+				groups.set('Incoming_Livechats', queue);
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
@@ -92,9 +102,17 @@ export const useRoomList = (): Array<ISubscription> => {
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 			return [...groups.entries()].flatMap(([key, group]) => [key, ...group]);
 		});
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [rooms, showOmnichannel, inquiries.enabled, inquiries.enabled && inquiries.queue, sidebarShowUnread, favoritesEnabled, showDiscussion, sidebarGroupByType]);
+	}, [
+		rooms,
+		showOmnichannel,
+		inquiries.enabled,
+		queue,
+		sidebarShowUnread,
+		favoritesEnabled,
+		showDiscussion,
+		sidebarGroupByType,
+		setRoomList,
+	]);
 
 	return roomList;
 };

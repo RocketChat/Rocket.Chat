@@ -309,8 +309,13 @@ Meteor.methods({
 					user,
 				});
 
-				if (setting === 'roomName' && room.teamMain) {
-					Team.rename(room.teamId, value);
+				if (room.teamMain) {
+					if (setting === 'roomName') {
+						Team.update(room.teamId, { name: value });
+					} else if (setting === 'roomType') {
+						const type = value === 'c' ? '0' : '1';
+						Team.update(room.teamId, { type });
+					}
 				}
 			}
 		});

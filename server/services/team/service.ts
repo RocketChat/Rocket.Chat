@@ -1,4 +1,5 @@
 import { Db, FindOneOptions } from 'mongodb';
+import { Meteor } from 'meteor/meteor';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
@@ -30,6 +31,7 @@ import {
 	ITeamMemberInfo,
 	ITeamMemberParams,
 	ITeamService,
+	ITeamUpdateData,
 } from '../../sdk/types/ITeamService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { canAccessRoom } from '../authorization/canAccessRoom';
@@ -149,6 +151,25 @@ export class TeamService extends ServiceClass implements ITeamService {
 			};
 		} catch (e) {
 			throw new Error('error-team-creation');
+		}
+	}
+
+	async update(teamId: string, updateData: ITeamUpdateData): Promise<void> {
+		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
+		if (updateData.name) {
+			if (team) {
+				Meteor.call('saveRoomSettings', team.roomId, 'roomName', updateData.name);
+			}
+
+			await this.TeamModel.updateName(teamId, updateData.name);
+		}
+
+		if (updateData.type) {
+			if (team) {
+				Meteor.call('saveRoomSettings', team.roomId, 'roomType', Number(updateData.type) ? 'p' : 'c');
+			}
+
+			await this.TeamModel.updateType(teamId, updateData.type);
 		}
 	}
 
@@ -766,9 +787,5 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await Subscriptions.removeByRoomIdsAndUserId([roomId], userId);
 		await this.RoomsModel.incUsersCountByIds([roomId], -1);
 		await this.Users.removeRoomsByRoomIdsAndUserId([roomId], userId);
-	}
-
-	async rename(teamId: string, name: string): Promise<void> {
-		await this.TeamModel.updateOne({ _id: teamId }, { $set: { name } });
 	}
 }
