@@ -1,5 +1,3 @@
-import { createTemplateForComponent } from '../../../client/reactAdapters';
-
 import './lib/accounts';
 import './lib/collections';
 import './lib/iframeCommands';
@@ -37,7 +35,6 @@ import './views/app/videoCall/videoButtons';
 import './views/app/videoCall/videoCall';
 import './views/app/photoswipe';
 import './components/icon';
-import './components/status';
 import './components/table.html';
 import './components/table';
 import './components/tabs';
@@ -58,5 +55,3 @@ export { AudioRecorder } from './lib/recorderjs/audioRecorder';
 export { VideoRecorder } from './lib/recorderjs/videoRecorder';
 export { chatMessages } from './views/app/room';
 export * from './lib/userPopoverStatus';
-
-createTemplateForComponent('RoomForeword', () => import('../../../client/components/RoomForeword'));
