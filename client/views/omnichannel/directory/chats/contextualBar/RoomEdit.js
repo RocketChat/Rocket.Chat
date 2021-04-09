@@ -15,27 +15,11 @@ import { useForm } from '../../../../../hooks/useForm';
 import { formsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../Skeleton';
 
-const initialValuesUser = {
-	name: '',
-};
-
 const initialValuesRoom = {
 	topic: '',
 	tags: '',
 	livechatData: {},
 	priorityId: '',
-};
-
-const getInitialValuesUser = (visitor) => {
-	if (!visitor) {
-		return initialValuesUser;
-	}
-
-	const { name, fname } = visitor;
-
-	return {
-		name: (name || fname) ?? '',
-	};
 };
 
 const getInitialValuesRoom = (room) => {
@@ -56,9 +40,6 @@ const getInitialValuesRoom = (room) => {
 function RoomEdit({ room, visitor, reload, close }) {
 	const t = useTranslation();
 
-	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(
-		getInitialValuesUser(visitor),
-	);
 	const {
 		values: valuesRoom,
 		handlers: handlersRoom,
@@ -66,9 +47,6 @@ function RoomEdit({ room, visitor, reload, close }) {
 	} = useForm(getInitialValuesRoom(room));
 	const canViewCustomFields = () =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
-
-	const { handleName } = handlers;
-	const { name } = values;
 
 	const { handleTopic, handleTags, handlePriorityId } = handlersRoom;
 	const { topic, tags, priorityId } = valuesRoom;
@@ -131,7 +109,6 @@ function RoomEdit({ room, visitor, reload, close }) {
 		e.preventDefault();
 		const userData = {
 			_id: visitor._id,
-			name,
 		};
 
 		const roomData = {
@@ -153,8 +130,7 @@ function RoomEdit({ room, visitor, reload, close }) {
 	});
 
 	const formIsValid =
-		(hasUnsavedChangesContact || hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) &&
-		customFieldsError.length === 0;
+		(hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) && customFieldsError.length === 0;
 
 	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
@@ -165,12 +141,6 @@ function RoomEdit({ room, visitor, reload, close }) {
 	return (
 		<>
 			<VerticalBar.ScrollableContent is='form'>
-				<Field>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
-						<TextInput flexGrow={1} value={name} onChange={handleName} />
-					</Field.Row>
-				</Field>
 				{canViewCustomFields() && allCustomFields && (
 					<CustomFieldsForm
 						jsonCustomFields={jsonCustomField}
