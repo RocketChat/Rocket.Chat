@@ -4,7 +4,7 @@ import { Messages, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Apps } from '../../../apps/server';
-import { Markdown } from '../../../markdown/server';
+import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 export const updateMessage = function(message, user, originalMessage) {
 	if (!originalMessage) {
@@ -40,20 +40,7 @@ export const updateMessage = function(message, user, originalMessage) {
 		username: user.username,
 	};
 
-	if (message.parseUrls !== false) {
-		message.html = message.msg;
-		message = Markdown.code(message);
-
-		const urls = message.html.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g) || [];
-		if (urls) {
-			message.urls = urls.map((url) => ({ url }));
-		}
-
-		message = Markdown.mountTokensBack(message, false);
-		message.msg = message.html;
-		delete message.html;
-		delete message.tokens;
-	}
+	parseUrlsInMessage(message);
 
 	message = callbacks.run('beforeSaveMessage', message);
 
