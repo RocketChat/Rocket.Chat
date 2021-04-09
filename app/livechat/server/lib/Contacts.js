@@ -4,6 +4,10 @@ import s from 'underscore.string';
 import {
 	LivechatVisitors,
 	LivechatCustomField,
+	LivechatRooms,
+	Rooms,
+	LivechatInquiry,
+	Subscriptions,
 } from '../../../models';
 
 
@@ -59,6 +63,15 @@ export const Contacts = {
 		updateUser.$set.contactManager = (contactManager?.username && { username: contactManager.username }) || null;
 
 		LivechatVisitors.updateById(contactId, updateUser);
+
+		const room = LivechatRooms.findOneByVisitorToken(token, { _id: 1 });
+
+		if (room) {
+			const { _id: rid } = room;
+			return Rooms.setFnameById(rid, name)
+				&& LivechatInquiry.setNameByRoomId(rid, name)
+				&& Subscriptions.updateDisplayNameByRoomId(rid, name);
+		}
 
 		return contactId;
 	},
