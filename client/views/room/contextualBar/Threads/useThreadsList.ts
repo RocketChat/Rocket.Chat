@@ -35,7 +35,7 @@ export const useThreadsList = (
 				type: options.type,
 				text: options.text,
 				offset: start,
-				count: end - start,
+				count: end,
 			});
 
 			return {

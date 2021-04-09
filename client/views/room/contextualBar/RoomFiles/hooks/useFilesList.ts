@@ -18,7 +18,7 @@ export const useFilesList = (
 		loadMoreItems: (start: number, end: number) => void;
 	} => {
 	const [filesList] = useState(() => new FilesList(options));
-
+	console.log(filesList)
 	const room = useUserRoom(options.rid);
 	const uid = useUserId();
 
