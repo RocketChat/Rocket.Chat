@@ -38,8 +38,6 @@ export const createRouteGroup = (
 				}
 
 				renderRouteComponent(importRouter, {
-					template: 'main',
-					region: 'center',
 					propsFn: () => ({ lazyRouteComponent, ...options, params, queryParams, ...props }),
 				});
 			},

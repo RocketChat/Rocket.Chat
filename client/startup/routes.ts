@@ -79,10 +79,7 @@ FlowRouter.route('/home', {
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
-		renderRouteComponent(() => import('../views/directory/DirectoryPage'), {
-			template: 'main',
-			region: 'center',
-		});
+		renderRouteComponent(() => import('../views/directory/DirectoryPage'));
 	},
 	triggersExit: [
 		(): void => {
@@ -94,10 +91,7 @@ FlowRouter.route('/directory/:tab?', {
 FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
 	name: 'omnichannel-directory',
 	action: () => {
-		renderRouteComponent(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'), {
-			template: 'main',
-			region: 'center',
-		});
+		renderRouteComponent(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
 	},
 	triggersExit: [
 		(): void => {
@@ -109,10 +103,7 @@ FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
-		renderRouteComponent(() => import('../views/account/AccountRoute'), {
-			template: 'main',
-			region: 'center',
-		});
+		renderRouteComponent(() => import('../views/account/AccountRoute'));
 	},
 	triggersExit: [
 		(): void => {

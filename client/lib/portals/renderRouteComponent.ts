@@ -6,19 +6,14 @@ import { Tracker } from 'meteor/tracker';
 import type { ComponentType, PropsWithoutRef } from 'react';
 
 import * as AppLayout from '../appLayout';
-import { createLazyElement } from './createLazyElement';
 import { createLazyPortal } from './createLazyPortal';
 import { portalsSubscription, registerPortal, unregisterPortal } from './portalsSubscription';
 
 export const renderRouteComponent = <Props extends {} = {}>(
 	factory: () => Promise<{ default: ComponentType<Props> }>,
 	{
-		template,
-		region,
 		propsFn: getProps,
 	}: {
-		template?: string;
-		region?: string;
 		propsFn?: () => PropsWithoutRef<Props> | undefined;
 	} = {},
 ): void => {
@@ -36,19 +31,6 @@ export const renderRouteComponent = <Props extends {} = {}>(
 		}
 
 		if (!computation.firstRun) {
-			return;
-		}
-
-		if (!template || !region) {
-			AppLayout.reset();
-
-			const element = createLazyElement(factory, getProps);
-
-			if (routeName !== FlowRouter.getRouteName()) {
-				return;
-			}
-
-			registerPortal(routeName, element);
 			return;
 		}
 
@@ -83,7 +65,7 @@ export const renderRouteComponent = <Props extends {} = {}>(
 		}
 
 		Tracker.afterFlush(() => {
-			AppLayout.render(template, { [region]: routeName });
+			AppLayout.render('main', { center: routeName });
 		});
 	});
 };

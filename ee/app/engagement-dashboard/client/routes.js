@@ -11,7 +11,7 @@ registerAdminRoute('/engagement-dashboard/:tab?', {
 			return;
 		}
 
-		renderRouteComponent(() => import('./components/EngagementDashboardRoute'), { template: 'main', region: 'center' });
+		renderRouteComponent(() => import('./components/EngagementDashboardRoute'));
 	},
 });
 
