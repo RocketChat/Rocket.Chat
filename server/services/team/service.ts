@@ -1,4 +1,5 @@
 import { Db, FindOneOptions } from 'mongodb';
+import { Meteor } from 'meteor/meteor';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
@@ -154,11 +155,20 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async update(teamId: string, updateData: ITeamUpdateData): Promise<void> {
+		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
 		if (updateData.name) {
+			if (team) {
+				Meteor.call('saveRoomSettings', team.roomId, 'roomName', updateData.name);
+			}
+
 			await this.TeamModel.updateName(teamId, updateData.name);
 		}
 
 		if (updateData.type) {
+			if (team) {
+				Meteor.call('saveRoomSettings', team.roomId, 'roomType', Number(updateData.type) ? 'p' : 'c');
+			}
+
 			await this.TeamModel.updateType(teamId, updateData.type);
 		}
 	}
