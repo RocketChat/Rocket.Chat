@@ -36,7 +36,7 @@ export const useMembersList = (
 				options.rid,
 				options.type,
 				{
-					limit: end - start,
+					limit: end,
 					skip: start,
 				},
 				options.debouncedText,
