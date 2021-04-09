@@ -1,6 +1,6 @@
 import { hasAllPermission } from '../../../../app/authorization';
 import { registerAdminRoute, registerAdminSidebarItem } from '../../../../client/views/admin';
-import { renderRouteComponent } from '../../../../client/reactAdapters';
+import { renderRouteComponent } from '../../../../client/lib/portals/renderRouteComponent';
 import { hasLicense } from '../../license/client';
 
 registerAdminRoute('/engagement-dashboard/:tab?', {

@@ -5,9 +5,6 @@
 	{{#if subsReady}}
 		{{#unless showSetupWizard}}
 			{{#unless logged}}
-				<div class="rc-old connection-status">
-					{{> status}}
-				</div>
 				{{#if useIframe}}
 					{{#if iframeUrl}}
 						<iframe src="{{iframeUrl}}" style="height: 100%; width: 100%;"></iframe>
@@ -39,10 +36,6 @@
 								<div class="{{#unless $eq old false}}rc-old{{/unless}} main-content content-background-color {{readReceiptsEnabled}}">
 									{{> Template.dynamic template=center}}
 								</div>
-							</div>
-
-							<div class="rc-old connection-status">
-								{{> status}}
 							</div>
 						{{/if}}
 					{{/if}}
