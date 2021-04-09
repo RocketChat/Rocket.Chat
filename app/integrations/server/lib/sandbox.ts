@@ -40,6 +40,12 @@ export function buildSandbox(store: Record<any, any> = {}): Record<any, any> {
 			}
 		},
 	};
-	Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => { sandbox[k as keyof typeof sandbox] = Models[k as keyof typeof Models]; });
+
+	const keys = Object.keys(Models).filter((key) => !key.startsWith('_'));
+
+	keys.forEach((key) => {
+		sandbox[key as keyof typeof sandbox] = Models[key as keyof typeof Models];
+	});
+
 	return { store, sandbox	};
 }
