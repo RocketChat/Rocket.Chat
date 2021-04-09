@@ -767,4 +767,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await this.RoomsModel.incUsersCountByIds([roomId], -1);
 		await this.Users.removeRoomsByRoomIdsAndUserId([roomId], userId);
 	}
+
+	async rename(teamId: string, name: string): Promise<void> {
+		await this.TeamModel.updateOne({ _id: teamId }, { $set: { name } });
+	}
 }

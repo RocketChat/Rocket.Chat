@@ -75,4 +75,5 @@ export interface ITeamService {
 	autocomplete(uid: string, name: string): Promise<Array<IRoom>>;
 	getAllPublicTeams(options: FindOneOptions<ITeam>): Promise<Array<ITeam>>;
 	getMembersByTeamIds(teamIds: Array<string>, options: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember>>;
+	rename(teamId: string, name: string): Promise<void>;
 }
