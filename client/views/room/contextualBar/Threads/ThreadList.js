@@ -1,4 +1,4 @@
-import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Margins, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useRef } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -111,7 +111,12 @@ function ThreadList({
 							{error.toString()}
 						</Callout>
 					)}
-					{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
+					{total === 0 && !loading && <Box p='x24'>{t('No_Threads')}</Box>}
+					{loading && (
+						<Box p='x24' w='full' display='flex' justifyContent='center'>
+							<Throbber size='x12' />
+						</Box>
+					)}
 					{!error && total > 0 && threads.length > 0 && (
 						<Virtuoso
 							style={{ height: blockSize, width: inlineSize }}
