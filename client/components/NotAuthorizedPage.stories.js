@@ -7,5 +7,4 @@ export default {
 	component: NotAuthorizedPage,
 };
 
-export const _default = () =>
-	<NotAuthorizedPage />;
+export const _default = () => <NotAuthorizedPage />;
