@@ -1,4 +1,4 @@
-import { Db, FindOneOptions } from 'mongodb';
+import { Db, FindOneOptions, UpdateWriteOpResult } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
@@ -171,6 +171,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 			await this.TeamModel.updateType(teamId, updateData.type);
 		}
+	}
+
+	async updateName(teamId: string, newName: string): Promise<UpdateWriteOpResult> {
+		return this.TeamModel.updateName(teamId, newName);
+	}
+
+	async updateType(teamId: string, newType: TEAM_TYPE): Promise<UpdateWriteOpResult> {
+		return this.TeamModel.updateType(teamId, newType);
 	}
 
 	async findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]> {

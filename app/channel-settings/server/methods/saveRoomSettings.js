@@ -4,6 +4,7 @@ import { Match, check } from 'meteor/check';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermission } from '../../../authorization';
 import { Rooms } from '../../../models';
+import { Team } from '../../../../server/sdk';
 import { callbacks } from '../../../callbacks';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
@@ -307,6 +308,15 @@ Meteor.methods({
 					rid,
 					user,
 				});
+
+				if (room.teamMain) {
+					if (setting === 'roomName') {
+						Team.updateName(room.teamId, value);
+					} else if (setting === 'roomType') {
+						const type = value === 'c' ? 0 : 1;
+						Team.updateType(room.teamId, type);
+					}
+				}
 			}
 		});
 
