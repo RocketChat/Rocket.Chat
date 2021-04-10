@@ -1,44 +1,42 @@
 <template name="main">
 	{{#if subsReady}}
-		{{#unless showSetupWizard}}
-			{{#unless logged}}
-				{{#if useIframe}}
-					{{#if iframeUrl}}
-						<iframe src="{{iframeUrl}}" style="height: 100%; width: 100%;"></iframe>
-					{{/if}}
-				{{else}}
-					{{> loginLayout center="loginForm"}}
+		{{#unless logged}}
+			{{#if useIframe}}
+				{{#if iframeUrl}}
+					<iframe src="{{iframeUrl}}" style="height: 100%; width: 100%;"></iframe>
 				{{/if}}
-				{{ CustomScriptLoggedOut }}
 			{{else}}
-				{{#unless hasUsername}}
-					{{> username}}
+				{{> loginLayout center="loginForm"}}
+			{{/if}}
+			{{ CustomScriptLoggedOut }}
+		{{else}}
+			{{#unless hasUsername}}
+				{{> username}}
+			{{else}}
+				{{#if requirePasswordChange}}
+					{{> loginLayout center="resetPassword"}}
 				{{else}}
-					{{#if requirePasswordChange}}
-						{{> loginLayout center="resetPassword"}}
-					{{else}}
-						{{#if require2faSetup}}
-							<main id="rocket-chat" class="{{embeddedVersion}}">
-								 <div class="rc-old main-content content-background-color">
-									{{> accountSecurity }}
-								</div>
-							</main>
-						{{else}}
-							{{> videoCall overlay=true}}
-							<div id="rocket-chat" class="{{embeddedVersion}} menu-nav">
-								{{#unless removeSidenav}}
-									{{> sideNav }}
-								{{/unless}}
-								<div class="{{#unless $eq old false}}rc-old{{/unless}} main-content content-background-color {{readReceiptsEnabled}}">
-									{{> Template.dynamic template=center}}
-								</div>
+					{{#if require2faSetup}}
+						<main id="rocket-chat" class="{{embeddedVersion}}">
+							<div class="rc-old main-content content-background-color">
+								{{> accountSecurity }}
 							</div>
-						{{/if}}
+						</main>
+					{{else}}
+						{{> videoCall overlay=true}}
+						<div id="rocket-chat" class="{{embeddedVersion}} menu-nav">
+							{{#unless removeSidenav}}
+								{{> sideNav }}
+							{{/unless}}
+							<div class="rc-old main-content content-background-color {{readReceiptsEnabled}}">
+								{{> Template.dynamic template=center}}
+							</div>
+						</div>
 					{{/if}}
-				{{/unless}}
-				{{ CustomScriptLoggedIn }}
-				{{> photoswipe}}
+				{{/if}}
 			{{/unless}}
+			{{ CustomScriptLoggedIn }}
+			{{> photoswipe}}
 		{{/unless}}
 	{{else}}
 		{{> loading}}

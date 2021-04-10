@@ -5,11 +5,10 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { getUserPreference } from '../../utils/client';
-import { mainReady, Layout, iframeLogin, menu } from '../../ui-utils';
+import { mainReady, Layout, iframeLogin } from '../../ui-utils';
 import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
-import { hasRole } from '../../authorization';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
 import { isSyncReady } from '../../../client/lib/userData';
@@ -29,34 +28,28 @@ function customScriptsOnLogout() {
 
 callbacks.add('afterLogoutCleanUp', () => customScriptsOnLogout(), callbacks.priority.LOW, 'custom-script-on-logout');
 
-Template.main.onCreated(function() {
-	tooltip.init();
-});
-
 Template.main.helpers({
-	removeSidenav() {
-		return Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path);
-	},
-	siteName() {
-		return settings.get('Site_Name');
-	},
-	logged() {
-		if (Meteor.userId() != null || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
-			$('html').addClass('noscroll').removeClass('scroll');
+	removeSidenav: () => Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
+	logged: () => {
+		if (!!Meteor.userId() || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
+			document.documentElement.classList.add('noscroll');
+			document.documentElement.classList.remove('scroll');
 			return true;
 		}
-		$('html').addClass('scroll').removeClass('noscroll');
+
+		document.documentElement.classList.add('scroll');
+		document.documentElement.classList.remove('noscroll');
 		return false;
 	},
-	useIframe() {
+	useIframe: () => {
 		const iframeEnabled = typeof iframeLogin !== 'undefined';
 		return iframeEnabled && iframeLogin.reactiveEnabled.get();
 	},
-	iframeUrl() {
+	iframeUrl: () => {
 		const iframeEnabled = typeof iframeLogin !== 'undefined';
 		return iframeEnabled && iframeLogin.reactiveIframeUrl.get();
 	},
-	subsReady() {
+	subsReady: () => {
 		const subscriptionsReady = CachedChatSubscription.ready.get();
 		const settingsReady = settings.cachedCollection.ready.get();
 		const ready = !Meteor.userId() || (isSyncReady.get() && subscriptionsReady && settingsReady);
@@ -66,16 +59,16 @@ Template.main.helpers({
 
 		return ready;
 	},
-	hasUsername() {
+	hasUsername: () => {
 		const uid = Meteor.userId();
 		const user = uid && Users.findOne({ _id: uid }, { fields: { username: 1 } });
 		return (user && user.username) || (!uid && settings.get('Accounts_AllowAnonymousRead'));
 	},
-	requirePasswordChange() {
+	requirePasswordChange: () => {
 		const user = Meteor.user();
 		return user && user.requirePasswordChange === true;
 	},
-	require2faSetup() {
+	require2faSetup: () => {
 		const user = Meteor.user();
 
 		// User is already using 2fa
@@ -86,59 +79,56 @@ Template.main.helpers({
 		const mandatoryRole = Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
 		return mandatoryRole !== undefined;
 	},
-	CustomScriptLoggedOut() {
+	CustomScriptLoggedOut: () => {
 		const script = settings.get('Custom_Script_Logged_Out') || '';
 		if (script.trim()) {
 			executeCustomScript(script);
 		}
 	},
-	CustomScriptLoggedIn() {
+	CustomScriptLoggedIn: () => {
 		const script = settings.get('Custom_Script_Logged_In') || '';
 		if (script.trim()) {
 			executeCustomScript(script);
 		}
 	},
-	embeddedVersion() {
+	embeddedVersion: () => {
 		if (Layout.isEmbedded()) {
 			return 'embedded-view';
 		}
 	},
-	showSetupWizard() {
-		const userId = Meteor.userId();
-		const Show_Setup_Wizard = settings.get('Show_Setup_Wizard');
-
-		return (!userId && Show_Setup_Wizard === 'pending') || (userId && hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress');
-	},
-	readReceiptsEnabled() {
+	readReceiptsEnabled: () => {
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
 			return 'read-receipts-enabled';
 		}
 	},
 });
 
-Template.main.events({
-	'click div.burger'() {
-		return menu.toggle();
-	},
+Template.main.onCreated(function() {
+	tooltip.init();
 });
 
 Template.main.onRendered(function() {
-	return Tracker.autorun(function() {
+	Tracker.autorun(function() {
 		const userId = Meteor.userId();
+
 		if (getUserPreference(userId, 'hideUsernames')) {
-			$(document.body).on('mouseleave', 'button.thumb', function() {
-				return tooltip.hide();
-			});
-			return $(document.body).on('mouseenter', 'button.thumb', function(e) {
+			$(document.body).on('mouseenter', 'button.thumb', (e) => {
 				const avatarElem = $(e.currentTarget);
 				const username = avatarElem.attr('data-username');
 				if (username) {
 					e.stopPropagation();
-					return tooltip.showElement($('<span>').text(username), avatarElem);
+					tooltip.showElement($('<span>').text(username), avatarElem);
 				}
 			});
+
+			$(document.body).on('mouseleave', 'button.thumb', () => {
+				tooltip.hide();
+			});
+
+			return;
 		}
+
 		$(document.body).off('mouseenter', 'button.thumb');
-		return $(document.body).off('mouseleave', 'button.thumb');
+		$(document.body).off('mouseleave', 'button.thumb');
 	});
 });
