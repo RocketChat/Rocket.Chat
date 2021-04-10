@@ -5,7 +5,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { getUserPreference } from '../../utils/client';
-import { mainReady, Layout, iframeLogin, menu, fireGlobalEvent } from '../../ui-utils';
+import { mainReady, Layout, iframeLogin, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
@@ -125,11 +125,6 @@ Template.main.events({
 Template.main.onRendered(function() {
 	return Tracker.autorun(function() {
 		const userId = Meteor.userId();
-		const Show_Setup_Wizard = settings.get('Show_Setup_Wizard');
-
-		if ((!userId && Show_Setup_Wizard === 'pending') || (userId && hasRole(userId, 'admin') && Show_Setup_Wizard === 'in_progress')) {
-			FlowRouter.go('setup-wizard');
-		}
 		if (getUserPreference(userId, 'hideUsernames')) {
 			$(document.body).on('mouseleave', 'button.thumb', function() {
 				return tooltip.hide();
@@ -146,8 +141,4 @@ Template.main.onRendered(function() {
 		$(document.body).off('mouseenter', 'button.thumb');
 		return $(document.body).off('mouseleave', 'button.thumb');
 	});
-});
-
-Meteor.startup(function() {
-	return fireGlobalEvent('startup', true);
 });
