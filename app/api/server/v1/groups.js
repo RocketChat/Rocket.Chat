@@ -499,7 +499,12 @@ API.v1.addRoute('groups.members', { authRequired: true }, {
 		}
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort = {}, query } = this.parseJsonQuery();
+		const { sort = {} } = this.parseJsonQuery();
+		const { status, username, name } = this.queryParams;
+
+		if (status && !Array.isArray(status)) {
+			throw new Meteor.Error('error-status-param-not-an-array', 'The parameter "status" should be an array of strings');
+		}
 
 		const subscriptions = Subscriptions.findByRoomId(findResult.rid, {
 			fields: { 'u._id': 1 },
@@ -511,6 +516,11 @@ API.v1.addRoute('groups.members', { authRequired: true }, {
 		const total = subscriptions.count();
 
 		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
+		const query = {
+			name,
+			username,
+			status: status ? { $in: status } : undefined,
+		};
 
 		const users = Users.find({ ...query, _id: { $in: members } }, {
 			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
