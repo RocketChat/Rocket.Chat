@@ -258,6 +258,7 @@
 		"redis": "^2.8.0",
 		"semver": "^5.7.1",
 		"sharp": "^0.22.1",
+		"simple-peer": "^9.10.0",
 		"speakeasy": "^2.0.0",
 		"stream-buffers": "^3.0.2",
 		"string-strip-html": "^7.0.3",

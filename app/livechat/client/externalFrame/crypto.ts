@@ -23,6 +23,7 @@ export async function getKeyFromString(keyStr: string): Promise<CryptoKey> {
 }
 
 export async function encrypt(text: string, key: CryptoKey): Promise<string> {
+	console.log(text);
 	const vector = crypto.getRandomValues(new Uint8Array(16));
 	const data = new TextEncoder().encode(text);
 	const enc = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: vector }, key, data);

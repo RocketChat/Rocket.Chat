@@ -1,0 +1,47 @@
+
+
+<template name="videoTemplate">
+	<video style="width:450px; margin:10px" src="{{src}}" autoplay class="webrtc-video-element"></video>
+</template>
+
+<template name="modalVideo">
+	<header class="contextual-bar__header">
+		<div class="contextual-bar__header-data">
+			<h1 class="contextual-bar__header-title">Call Incoming</h1>
+		</div>
+		<button class="contextual-bar__header-close js-close">
+			{{> icon block="contextual-bar__header-close-icon" icon="plus"}}
+		</button>
+	</header>
+
+	<div class="rc-game__container">
+		
+		
+		{{ #unless isVideoCallOn }}
+		
+		
+		<button style="color:blue; margin-left:2px;" class="contextual-bar__header-close answer-video-call">
+			ACCEPT
+		</button>
+
+		<button style="color:red; margin-left:300px;" class="contextual-bar__header-close reject-video-call">
+			REJECT
+		</button>
+		{{else}}
+		{{> videoTemplate src=videoSrc }}
+       
+		<button style="color:blue; margin-left:2px;" class="contextual-bar__header-close mute-audio-call">
+			{{ #if isAudioOn }} MUTE {{ else }} UN-MUTE {{/if}}
+		</button>
+
+		<button style="color:blue; margin-left:20px;" class="contextual-bar__header-close mute-video-call">
+			{{ #if isVideoOn }} CAM-OFF {{ else }} CAM-ON {{/if}}
+		</button>
+
+		<button style="color:red; margin-left:350px;" class="contextual-bar__header-close reject-video-call">
+			END CALL
+		</button >
+
+		{{ /unless }}
+	</div>
+</template>

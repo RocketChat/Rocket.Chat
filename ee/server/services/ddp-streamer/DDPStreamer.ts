@@ -1,4 +1,7 @@
 import http, { RequestOptions, IncomingMessage, ServerResponse } from 'http';
+import https from require('https');
+var path = require('path')
+var fs = require('fs')
 import url from 'url';
 
 import WebSocket from 'ws';
@@ -40,7 +43,12 @@ const proxy = function(req: IncomingMessage, res: ServerResponse): void {
 	req.resume();
 };
 
-const httpServer = http.createServer((req, res) => {
+var certOptions = {
+	key: fs.readFileSync(path.resolve('./server.key')),
+	cert: fs.readFileSync(path.resolve('./server.crt'))
+  }
+
+const httpServer = https.createServer(certOptions, (req, res) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 
 	if (process.env.NODE_ENV !== 'production' && !/^\/sockjs\/info\?cb=/.test(req.url || '')) {

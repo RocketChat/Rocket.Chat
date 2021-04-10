@@ -9,7 +9,8 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-
+import Peer from "simple-peer";
+import { modal } from '../../../../ui-utils/client';
 import { t, roomTypes, getUserPreference, handleError } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
@@ -28,6 +29,9 @@ import { hasAllPermission, hasRole } from '../../../../authorization';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import './room.html';
+import './modalVideoCall.html';
+import {useState} from 'react';
+
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 
 export const chatMessages = {};
@@ -143,7 +147,7 @@ async function createFileFromUrl(url) {
 		type: data.type,
 	};
 	const { mime } = await import('../../../../utils/lib/mimeTypes');
-	const file = new File([data], `File - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ mime.extension(data.type) }`, metadata);
+	const file = new File([data], `File - ${moment().format(settings.get('Message_TimeAndDateFormat'))}.${mime.extension(data.type)}`, metadata);
 	return file;
 }
 
@@ -231,7 +235,7 @@ Template.roomOld.helpers({
 	},
 
 	windowId() {
-		return `chat-window-${ this._id }`;
+		return `chat-window-${this._id}`;
 	},
 
 	uploading() {
@@ -261,7 +265,7 @@ Template.roomOld.helpers({
 	},
 
 	announcementDetails() {
-		const roomData = Session.get(`roomData${ this._id }`);
+		const roomData = Session.get(`roomData${this._id}`);
 		if (!roomData) { return false; }
 		if (roomData.announcementDetails != null && roomData.announcementDetails.callback != null) {
 			return () => callbacks.run(roomData.announcementDetails.callback, this._id);
@@ -289,7 +293,10 @@ Template.roomOld.helpers({
 			onResize: () => sendToBottomIfNecessary && sendToBottomIfNecessary(),
 			onKeyUp: (...args) => chatMessages[rid] && chatMessages[rid].keyup.apply(chatMessages[rid], args),
 			onKeyDown: (...args) => chatMessages[rid] && chatMessages[rid].keydown.apply(chatMessages[rid], args),
-			onSend: (...args) => chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args),
+			onSend: (...args) => {
+				console.log(args)
+				chatMessages[rid] && chatMessages[rid].send.apply(chatMessages[rid], args)
+			},
 		};
 	},
 
@@ -369,6 +376,21 @@ Template.roomOld.helpers({
 
 		return state.get('subscribed');
 	},
+	
+	/*showVideoCallModal() {
+		modal.open({
+			allowOutsideClick: false,
+			data: {
+				game: gameManifestInfo,
+			},
+			template: 'room',
+			type: 'rc-game',
+		});
+		
+		const { state } = Template.instance();
+		return state.get('showCallModal');
+	
+	},*/
 	hideLeaderHeader() {
 		return Template.instance().hideLeaderHeader.get() ? 'animated-hidden' : '';
 	},
@@ -515,7 +537,7 @@ Meteor.startup(() => {
 		...dropzoneEvents,
 		'click .toggle-hidden'(e) {
 			const id = e.currentTarget.dataset.message;
-			document.querySelector(`#${ id }`).classList.toggle('message--ignored');
+			document.querySelector(`#${id}`).classList.toggle('message--ignored');
 		},
 
 		'click .message'(e, template) {
@@ -539,8 +561,8 @@ Meteor.startup(() => {
 				const selectedMessages = $('.messages-box .message.selected').map((i, message) => message.id);
 				const removeClass = _.difference(selectedMessages, template.getSelectedMessages());
 				const addClass = _.difference(template.getSelectedMessages(), selectedMessages);
-				removeClass.forEach((message) => $(`.messages-box #${ message }`).removeClass('selected'));
-				addClass.forEach((message) => $(`.messages-box #${ message }`).addClass('selected'));
+				removeClass.forEach((message) => $(`.messages-box #${message}`).removeClass('selected'));
+				addClass.forEach((message) => $(`.messages-box #${message}`).addClass('selected'));
 			}
 		},
 		'click .jump-recent button'(e, template) {
@@ -562,7 +584,7 @@ Meteor.startup(() => {
 		},
 		'click .upload-progress-close'(e) {
 			e.preventDefault();
-			Session.set(`uploading-cancel-${ this.id }`, true);
+			Session.set(`uploading-cancel-${this.id}`, true);
 		},
 		'click .unread-bar > button.mark-read'(e, t) {
 			readMessage.readNow(t.data._id);
@@ -578,7 +600,11 @@ Meteor.startup(() => {
 			}
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
-		'scroll .wrapper': _.throttle(function(e, t) {
+		
+		'click .reject-video-call'(e, t) {
+			
+		},
+		'scroll .wrapper': _.throttle(function (e, t) {
 			const $roomLeader = $('.room-leader');
 			if ($roomLeader.length) {
 				if (e.target.scrollTop < t.lastScrollTop) {
@@ -610,7 +636,7 @@ Meteor.startup(() => {
 		},
 	});
 
-	Template.roomOld.onCreated(function() {
+	Template.roomOld.onCreated(function () {
 		// this.scrollOnBottom = true
 		// this.typing = new msgTyping this.data._id
 		const rid = this.data._id;
@@ -725,7 +751,7 @@ Meteor.startup(() => {
 			this.tabBar.close();
 		};
 
-		Meteor.call('getRoomRoles', this.data._id, function(error, results) {
+		Meteor.call('getRoomRoles', this.data._id, function (error, results) {
 			if (error) {
 				handleError(error);
 			}
@@ -764,7 +790,7 @@ Meteor.startup(() => {
 		};
 	}); // Update message to re-render DOM
 
-	Template.roomOld.onDestroyed(function() {
+	Template.roomOld.onDestroyed(function () {
 		if (this.rolesObserve) {
 			this.rolesObserve.stop();
 		}
@@ -781,7 +807,7 @@ Meteor.startup(() => {
 		callbacks.remove('streamNewMessage', this.data._id);
 	});
 
-	Template.roomOld.onRendered(function() {
+	Template.roomOld.onRendered(function () {
 		const { _id: rid } = this.data;
 
 		if (!chatMessages[rid]) {
@@ -798,7 +824,7 @@ Meteor.startup(() => {
 
 		const messageBox = $('.messages-box');
 
-		template.isAtBottom = function(scrollThreshold = 0) {
+		template.isAtBottom = function (scrollThreshold = 0) {
 			if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
 				newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 				return true;
@@ -806,12 +832,12 @@ Meteor.startup(() => {
 			return false;
 		};
 
-		template.sendToBottom = function() {
+		template.sendToBottom = function () {
 			wrapper.scrollTo(30, wrapper.scrollHeight);
 			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 		};
 
-		template.checkIfScrollIsAtBottom = function() {
+		template.checkIfScrollIsAtBottom = function () {
 			template.atBottom = template.isAtBottom(100);
 		};
 
@@ -819,7 +845,7 @@ Meteor.startup(() => {
 
 		template.observer.observe(wrapperUl);
 
-		const wheelHandler = _.throttle(function() {
+		const wheelHandler = _.throttle(function () {
 			template.checkIfScrollIsAtBottom();
 		}, 100);
 
@@ -829,7 +855,7 @@ Meteor.startup(() => {
 
 		wrapper.addEventListener('touchstart', () => { template.atBottom = false; });
 
-		wrapper.addEventListener('touchend', function() {
+		wrapper.addEventListener('touchend', function () {
 			template.checkIfScrollIsAtBottom();
 			setTimeout(() => template.checkIfScrollIsAtBottom(), 1000);
 			setTimeout(() => template.checkIfScrollIsAtBottom(), 2000);
@@ -844,7 +870,7 @@ Meteor.startup(() => {
 
 		const rtl = $('html').hasClass('rtl');
 
-		const getElementFromPoint = function(topOffset = 0) {
+		const getElementFromPoint = function (topOffset = 0) {
 			const messageBoxOffset = messageBox.offset();
 
 			let element;
@@ -876,7 +902,7 @@ Meteor.startup(() => {
 			});
 		}, 300);
 
-		const read = _.debounce(function() {
+		const read = _.debounce(function () {
 			if (rid !== Session.get('openedRoom')) {
 				return;
 			}
@@ -962,17 +988,112 @@ Meteor.startup(() => {
 			if (rid !== msg.rid || msg.editedAt || msg.tmid) {
 				return;
 			}
+			console.log('hey brother streamed new msg', msg)
+			let videoCallMsg = null;
+			try {
+				videoCallMsg = JSON.parse(msg.msg)
+			}
+			catch (e) {
+
+			}
+
+
+			if (videoCallMsg && videoCallMsg.type !== 'endcall') {
+				const { state } = template;
+				state.set({
+					showCallModal: true,
+					sdpMsg: videoCallMsg
+				});
+				modal.open({
+					allowOutsideClick: false,
+					template: 'modalVideo',
+					data: {
+						template,
+						answerVideoCall: (e, t) => {
+							const { state } = t;
+							const { _id } = t.data;
+
+							navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+
+								window.myVideoStream = stream;
+								const peer = new Peer({
+									initiator: false,
+									trickle: false,
+									stream: stream,
+								});
+
+								peer.on("signal", data => {
+									const rid = _id;
+									chatMessages[rid].send(null, { rid: rid, tmid: null, value: JSON.stringify(data), tshow: null })
+								})
+
+								peer.signal(state.get("sdpMsg"))
+
+								
+
+								peer.on("stream", stream => {
+									window.remoteStream = stream;
+									state.set({
+										showCallModal: true,
+										sdpMsg: null,
+										isVideoCallOn: true
+									});
+
+									// const userVideoElement = document.getElementsByClassName("userVideo")[0];
+									// if (userVideoElement) {
+									// 	userVideoElement.srcObject = stream
+									// }
+								});
+
+								peer.on('error', (err) => {
+									//endCall()
+								})
+							})
+							.catch((err) => {
+								console.log('error in navigator', err);
+							})
+						},
+						toggleVideo: (e, t) => { 
+							window.myVideoStream.getVideoTracks()[0].enabled = !window.myVideoStream.getVideoTracks()[0].enabled
+						},
+						toggleAudio: (e, t) => { 
+							window.myVideoStream.getAudioTracks()[0].enabled = !window.myVideoStream.getAudioTracks()[0].enabled
+						},
+						rejectVideoCall: (e, t) => {
+							const { state } = t;
+							const { _id } = t.data;
+							modal.close();
+							state.set({
+								showCallModal: false,
+								sdpMsg: null,
+								isVideoCallOn: false,
+							});
+							window.myVideoStream.getTracks().forEach((track) => track.stop());
+							window.myVideoStream = null;
+							const rid = _id;
+							chatMessages[rid].send(null, { rid: rid, tmid: null, value: JSON.stringify({ type: 'endcall' }), tshow: null })
+						}
+					}
+				});
+				return;
+			}
+
+
 
 			if (msg.u._id === Meteor.userId()) {
 				return template.sendToBottom();
 			}
+
+
+
+
 
 			if (!template.isAtBottom()) {
 				newMessage.classList.remove('not');
 			}
 		}, callbacks.priority.MEDIUM, rid);
 
-		this.autorun(function() {
+		this.autorun(function () {
 			if (template.data._id !== RoomManager.openedRoom) {
 				return;
 			}
@@ -995,4 +1116,48 @@ callbacks.add('enter-room', (sub) => {
 		chatMessages[sub.rid].restoreReplies();
 	}
 	setTimeout(() => readMessage.read(sub.rid), 1000);
+});
+
+Template.modalVideo.helpers({
+	isVideoCallOn() {
+		console.log('heeloo');
+		const { state } = Template.instance().data.template;
+		return state.get('isVideoCallOn');
+	},
+	videoSrc() {
+		console.log('videoSrc');
+		return Template.instance().data.template.state.get('videoStream');
+	},
+	isAudioOn() {
+		return window.myVideoStream ? window.myVideoStream.getAudioTracks()[0].enabled : false;
+	},
+	isVideoOn() {
+		return window.myVideoStream ? window.myVideoStream.getVideoTracks()[0].enabled : false;
+	}
+})
+
+Template.modalVideo.events({
+	'click .answer-video-call'(e, t) {
+		console.log(`hello`);
+		t.data.answerVideoCall(e, t.data.template)
+	},
+	'click .mute-audio-call'(e, t){
+		if(window.myVideoStream){
+			t.data.toggleAudio(e, t.data.template)
+		  }
+	},
+	'click .mute-video-call'(e, t){
+		if(window.myVideoStream){
+			t.data.toggleVideo(e, t.data.template)
+		}
+	},
+	'click .reject-video-call'(e, t) {
+		t.data.rejectVideoCall(e, t.data.template)
+	}
+})
+
+Template.videoTemplate.onRendered(function() {
+	this.autorun(() => {
+		this.firstNode.srcObject = window.remoteStream;
+	});
 });

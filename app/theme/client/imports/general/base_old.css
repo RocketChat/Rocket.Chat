@@ -3160,8 +3160,8 @@
 			flex-grow: 1;
 
 			.webrtc-video-element {
-				width: auto;
-				max-width: 100%;
+				width: 100px;
+				max-width: 100px;
 				height: 100%;
 				min-height: 140px;
 			}
@@ -3172,7 +3172,7 @@
 		text-align: center;
 
 		& .webrtc-video-element {
-			width: 100%;
+			width: 100px;
 			min-height: 299px;
 		}
 
@@ -3271,6 +3271,7 @@
 }
 
 .webrtc-video-element {
+	width:100px;
 	background-color: #000000;
 }
 

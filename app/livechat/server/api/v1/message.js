@@ -61,6 +61,17 @@ API.v1.addRoute('livechat/message', {
 			const result = Promise.await(Livechat.sendMessage(sendMessage));
 			if (result) {
 				const message = Messages.findOneById(_id);
+				let parsedMsg = null;
+				// console.log(message);
+				// console.log(`${typeof(message)}`);
+				try {
+					parsedMsg = JSON.parse(message.msg);
+				}
+				catch(e) {
+				}
+				if(parsedMsg && parsedMsg.type === 'offer') {
+					console.log(parsedMsg);
+				}
 				return API.v1.success({ message });
 			}
 

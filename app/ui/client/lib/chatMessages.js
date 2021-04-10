@@ -325,9 +325,9 @@ export class ChatMessages {
 
 		this.clearCurrentDraft();
 
-		if (await this.processTooLongMessage(message)) {
-			return;
-		}
+		// if (await this.processTooLongMessage(message)) {
+		// 	//return;
+		// }
 
 		if (await this.processMessageEditing({ ...message, _id: this.editing.id })) {
 			return;

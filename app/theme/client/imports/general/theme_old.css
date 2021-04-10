@@ -38,6 +38,10 @@
 	border-color: var(--component-color);
 }
 
+.display_none {
+	display: none;
+}
+
 .background-component-color {
 	background-color: var(--component-color);
 }

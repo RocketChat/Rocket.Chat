@@ -99,12 +99,28 @@ export class ListenersModule {
 				return;
 			}
 
+			
+
 			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, _sub, eventName, args, allowed) => streamer.changedPayload(streamer.subscriptionName, 'id', {
 				eventName,
 				args: [...args, allowed],
 			}));
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+			
+				let parsedMsg = null;
+				// console.log(message);
+				// console.log(`${typeof(message)}`);
+				
+				try {
+					parsedMsg = JSON.parse(message.msg);
+					console.log(parsedMsg);
+				}
+				catch(e) {
+				}
+				if(parsedMsg && parsedMsg.type === 'offer') {
+					console.log(parsedMsg.sdp);
+				}
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
