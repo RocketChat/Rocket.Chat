@@ -1,9 +1,11 @@
 <template name="starredMessages">
 	{{#if Template.subscriptionsReady}}
-		{{#unless hasMessages}}
-			<div class="list-view starred-messages-list flex-tab__header">
-				<h2>{{_ "No_starred_messages"}}</h2>
-			</div>
+		{{#unless hasMore}}
+			{{#unless hasMessages}}
+				<div class="list-view starred-messages-list flex-tab__header">
+					<h2>{{_ "No_starred_messages"}}</h2>
+				</div>
+			{{/unless}}
 		{{/unless}}
 	{{/if}}
 	<div class="flex-tab__result js-list">
