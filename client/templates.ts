@@ -1,5 +1,4 @@
 import { HTML } from 'meteor/htmljs';
-import { ComponentProps, ComponentType } from 'react';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
@@ -21,28 +20,25 @@ createTemplateForComponent(
 
 createTemplateForComponent(
 	'Checkbox',
-	(): Promise<{
-		default: ComponentType<ComponentProps<typeof import('@rocket.chat/fuselage').CheckBox>>;
-	}> => import('@rocket.chat/fuselage').then(({ CheckBox }) => ({ default: CheckBox })),
+	async (): Promise<{ default: typeof import('@rocket.chat/fuselage').CheckBox }> => {
+		const { CheckBox } = await import('@rocket.chat/fuselage');
+		return { default: CheckBox };
+	},
 	{
-		renderContainerView: () => HTML.DIV({ class: 'rcx-checkbox', style: 'display: flex;' }),
+		attachment: 'at-parent',
 	},
 );
 
-createTemplateForComponent(
-	'ThreadComponent',
-	() => import('../app/threads/client/components/ThreadComponent'),
-	{
-		renderContainerView: () =>
-			HTML.DIV({ class: 'contextual-bar', style: 'display: flex; height: 100%;' }),
-	},
-);
-
-createTemplateForComponent('RoomForeword', () => import('./components/RoomForeword'));
+createTemplateForComponent('RoomForeword', () => import('./components/RoomForeword'), {
+	attachment: 'at-parent',
+});
 
 createTemplateForComponent(
 	'accountSecurity',
 	() => import('./views/account/security/AccountSecurityPage'),
+	{
+		attachment: 'at-parent',
+	},
 );
 
 createTemplateForComponent('messageLocation', () => import('./views/location/MessageLocation'));
@@ -50,7 +46,7 @@ createTemplateForComponent('messageLocation', () => import('./views/location/Mes
 createTemplateForComponent('sidebarHeader', () => import('./sidebar/header'));
 
 createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/index'), {
-	renderContainerView: () => HTML.DIV({ style: 'display: flex; flex: 1 1 auto;' }),
+	attachment: 'at-parent',
 });
 
 createTemplateForComponent(
@@ -74,11 +70,11 @@ createTemplateForComponent(
 );
 
 createTemplateForComponent('auditPage', () => import('../ee/client/audit/AuditPage'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }),
+	attachment: 'at-parent',
 });
 
 createTemplateForComponent('auditLogPage', () => import('../ee/client/audit/AuditLogPage'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }),
+	attachment: 'at-parent',
 });
 
 createTemplateForComponent(
