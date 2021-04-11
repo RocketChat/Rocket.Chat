@@ -166,6 +166,14 @@ FlowRouter.route('/setup-wizard/:step?', {
 	},
 });
 
+FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
+	name: 'mailer-unsubscribe',
+	action: () => {
+		const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
+		appLayout.render({ component: MailerUnsubscriptionPage });
+	},
+});
+
 FlowRouter.notFound = {
 	action: (): void => {
 		const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
