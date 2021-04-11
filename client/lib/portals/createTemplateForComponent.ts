@@ -40,7 +40,6 @@ export const createTemplateForComponent = <Props extends {} = {}>(
 				...('props' in options && typeof options.props === 'function' && options.props()),
 				...Template.currentData(),
 			});
-			console.log(props.get());
 		});
 
 		const container =

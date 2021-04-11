@@ -1,11 +1,11 @@
-import React, { lazy, useMemo, Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
 import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import SettingsProvider from '../../providers/SettingsProvider';
 import AdministrationLayout from './AdministrationLayout';
 
-function AdministrationRouter({ lazyRouteComponent, ...props }) {
+function AdministrationRouter({ renderRoute }) {
 	const [routeName] = useCurrentRoute();
 	const defaultRoute = useRoute('admin-info');
 	useEffect(() => {
@@ -14,17 +14,11 @@ function AdministrationRouter({ lazyRouteComponent, ...props }) {
 		}
 	}, [defaultRoute, routeName]);
 
-	const LazyRouteComponent = useMemo(() => (lazyRouteComponent ? lazy(lazyRouteComponent) : null), [
-		lazyRouteComponent,
-	]);
-
 	return (
 		<AdministrationLayout>
 			<SettingsProvider privileged>
-				{LazyRouteComponent ? (
-					<Suspense fallback={<PageSkeleton />}>
-						<LazyRouteComponent {...props} />
-					</Suspense>
+				{renderRoute ? (
+					<Suspense fallback={<PageSkeleton />}>{renderRoute()}</Suspense>
 				) : (
 					<PageSkeleton />
 				)}

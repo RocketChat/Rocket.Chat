@@ -1,6 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
-import type { ComponentType } from 'react';
+import { ComponentType, createElement, lazy, ReactNode } from 'react';
 
 import * as AppLayout from './appLayout';
 import { createTemplateForComponent } from './portals/createTemplateForComponent';
@@ -12,7 +12,7 @@ type RouteRegister = {
 			(
 				| {}
 				| {
-						lazyRouteComponent: () => Promise<ComponentType>;
+						lazyRouteComponent: () => Promise<{ default: ComponentType }>;
 						props: Record<string, unknown>;
 				  }
 			),
@@ -22,7 +22,11 @@ type RouteRegister = {
 export const createRouteGroup = (
 	name: string,
 	prefix: string,
-	importRouter: () => Promise<{ default: ComponentType }>,
+	importRouter: () => Promise<{
+		default: ComponentType<{
+			renderRoute?: () => ReactNode;
+		}>;
+	}>,
 ): RouteRegister => {
 	const routeGroup = FlowRouter.group({
 		name,
@@ -32,15 +36,19 @@ export const createRouteGroup = (
 	const registerRoute: RouteRegister = (path, options) => {
 		if ('lazyRouteComponent' in options) {
 			const { lazyRouteComponent, props, ...rest } = options;
+
+			const RouteComponent = lazy(lazyRouteComponent);
+			const renderRoute = (): ReactNode => createElement(RouteComponent, props);
+
 			routeGroup.route(path, {
 				...rest,
-				action(params, queryParams) {
+				action() {
 					const center = createTemplateForComponent(
 						Tracker.nonreactive(() => FlowRouter.getRouteName()),
 						importRouter,
 						{
 							attachment: 'at-parent',
-							props: () => ({ lazyRouteComponent, ...rest, params, queryParams, ...props }),
+							props: () => ({ renderRoute }),
 						},
 					);
 					AppLayout.render('main', { center });
