@@ -15,24 +15,25 @@ const apiServer = express();
 
 apiServer.disable('x-powered-by');
 
-if (settings.get('API_Enable_CORS')) {
-	const CORSOriginSetting = settings.get('API_CORS_Origin');
+let corsEnabled = false;
+let allowlistOrigins = [];
 
-	const allowlistOrigins = CORSOriginSetting
-		.trim()
-		.split(',')
-		.map((origin) => String(origin).trim().toLocaleLowerCase());
+settings.get('API_Enable_CORS', (_, value) => { corsEnabled = value; });
 
-	apiServer.use(cors({
-		origin: (origin, callback) => {
-			if (CORSOriginSetting === '*' || allowlistOrigins.includes(origin) || !origin) {
-				callback(null, true);
-			} else {
-				callback(new Error('Not allowed by CORS'));
-			}
-		},
-	}));
-}
+settings.get('API_CORS_Origin', (_, value) => {
+	allowlistOrigins = value ? value.trim().split(',').map((origin) => String(origin).trim().toLocaleLowerCase()) : [];
+});
+
+apiServer.use(cors({
+	origin: (origin, callback) => {
+		if (!origin || (corsEnabled && (allowlistOrigins.includes('*') || allowlistOrigins.includes(origin)))) {
+			callback(null, true);
+		} else {
+			callback('Not allowed by CORS', false);
+		}
+	},
+}));
+
 
 WebApp.connectHandlers.use(apiServer);
 
