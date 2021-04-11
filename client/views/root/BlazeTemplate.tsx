@@ -7,7 +7,6 @@ import { useSubscription } from 'use-subscription';
 import { blazePortals } from '../../lib/portals/blazePortals';
 
 type BlazeTemplateProps = {
-	children?: never;
 	template: keyof typeof Template;
 	data?: Record<string, unknown>;
 };
@@ -38,7 +37,10 @@ const BlazeTemplate: FC<BlazeTemplateProps> = ({ template, data }) => {
 		);
 
 		return (): void => {
-			Blaze.remove(view);
+			// Blaze must wait for all fragments declared below to properly unmount
+			setTimeout(() => {
+				Blaze.remove(view);
+			}, 1);
 		};
 	}, [template]);
 

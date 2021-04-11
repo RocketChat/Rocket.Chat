@@ -1,12 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Blaze } from 'meteor/blaze';
-import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import { memoize } from '@rocket.chat/memo';
 import _ from 'underscore';
-import { HTML } from 'meteor/htmljs';
+import { Random } from 'meteor/random';
 
 import * as AppLayout from '../../../../client/lib/appLayout';
 import { Messages, ChatSubscription, Rooms } from '../../../models';
@@ -16,40 +13,22 @@ import { roomTypes } from '../../../utils';
 import { call, callMethod } from './callMethod';
 import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
 import { waitUntilWrapperExists } from './RoomHistoryManager';
+import { createTemplateForComponent } from '../../../../client/lib/portals/createTemplateForComponent';
 
 window.currentTracker = undefined;
 
 // cleanup session when hot reloading
 Session.set('openedRoom', null);
 
-const getDomOfLoading = memoize(() => {
-	const loadingDom = document.createElement('div');
-	Blaze.render(Template.loading, loadingDom);
-	return loadingDom;
-});
-
-const createTemplateForDomNode = memoize((node) => {
-	const templateName = Math.random().toString(16).slice(2);
-
-	// eslint-disable-next-line new-cap
-	const template = new Blaze.Template(templateName, () => HTML.Comment(''));
-
-	template.onRendered(function() {
-		this.firstNode.parentNode.insertBefore(node, this.firstNode);
-	});
-
-	template.onDestroyed(function() {
-		delete Template[templateName];
-	});
-
-	Template[templateName] = template;
-
-	return templateName;
-});
-
 const replaceCenterDomBy = (dom) => {
 	const roomNode = dom();
-	AppLayout.render('main', { center: createTemplateForDomNode(roomNode) });
+
+	const center = createTemplateForComponent(Random.id(), () => import('../../../../client/views/root/DomNode'), {
+		attachment: 'at-parent',
+		props: () => ({ node: roomNode }),
+	});
+
+	AppLayout.render('main', { center });
 
 	return roomNode;
 };
@@ -91,7 +70,7 @@ export const openRoom = async function(type, name) {
 					AppLayout.render('main');
 				}
 
-				replaceCenterDomBy(() => getDomOfLoading());
+				AppLayout.render('main', { center: 'loading' });
 				return;
 			}
 
