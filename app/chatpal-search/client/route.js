@@ -1,5 +1,4 @@
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
-
+import * as BlazeLayout from '../../../client/lib/portals/blazeLayout';
 import { registerAdminRoute } from '../../../client/views/admin';
 import { t } from '../../utils';
 

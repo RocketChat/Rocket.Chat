@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { useEffect, useState } from 'react';
 
-import { isErrorType, UIKitUserInteractionResult, UiKitPayload } from '../../../definition/UIKit';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
-
+import { isErrorType, UIKitUserInteractionResult, UiKitPayload } from '../../../definition/UIKit';
 
 const useUIKitStateManager = <S extends UiKitPayload>(initialState: S): S => {
 	const [state, setState] = useSafely(useState<S>(initialState));
