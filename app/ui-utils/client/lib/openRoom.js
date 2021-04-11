@@ -5,7 +5,7 @@ import { Session } from 'meteor/session';
 import _ from 'underscore';
 import { Random } from 'meteor/random';
 
-import * as AppLayout from '../../../../client/lib/appLayout';
+import { appLayout } from '../../../../client/lib/appLayout';
 import { Messages, ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
@@ -28,7 +28,7 @@ const replaceCenterDomBy = (dom) => {
 		props: () => ({ node: roomNode }),
 	});
 
-	AppLayout.render('main', { center });
+	appLayout.render('main', { center });
 
 	return roomNode;
 };
@@ -48,7 +48,7 @@ export const openRoom = async function(type, name) {
 	window.currentTracker = Tracker.autorun(async function(c) {
 		const user = Meteor.user();
 		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
-			AppLayout.render('main');
+			appLayout.render('main');
 			return;
 		}
 
@@ -67,14 +67,14 @@ export const openRoom = async function(type, name) {
 
 			if (RoomManager.open(type + name).ready() !== true) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
-					AppLayout.render('main');
+					appLayout.render('main');
 				}
 
-				AppLayout.render('main', { center: 'loading' });
+				appLayout.render('main', { center: 'loading' });
 				return;
 			}
 
-			AppLayout.render('main', { center: 'loading' });
+			appLayout.render('main', { center: 'loading' });
 
 			c.stop();
 
@@ -126,7 +126,7 @@ export const openRoom = async function(type, name) {
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });
-			return AppLayout.render('main', { center: 'roomNotFound' });
+			return appLayout.render('main', { center: 'roomNotFound' });
 		}
 	});
 };

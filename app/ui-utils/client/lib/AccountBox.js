@@ -5,7 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 
-import * as AppLayout from '../../../../client/lib/appLayout';
+import { appLayout } from '../../../../client/lib/appLayout';
 import { SideNav } from './SideNav';
 
 export const AccountBox = (function() {
@@ -78,7 +78,7 @@ export const AccountBox = (function() {
 			async action() {
 				await wait();
 				Session.set('openedRoom');
-				return AppLayout.render('main', routeConfig);
+				return appLayout.render('main', routeConfig);
 			},
 			triggersEnter: [
 				function() {

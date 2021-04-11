@@ -2,7 +2,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 import { ComponentType, createElement, lazy, ReactNode } from 'react';
 
-import * as AppLayout from './appLayout';
+import { appLayout } from './appLayout';
 import { createTemplateForComponent } from './portals/createTemplateForComponent';
 
 type RouteRegister = {
@@ -51,7 +51,7 @@ export const createRouteGroup = (
 							props: () => ({ renderRoute }),
 						},
 					);
-					AppLayout.render('main', { center });
+					appLayout.render('main', { center });
 				},
 			});
 			return;
@@ -66,7 +66,7 @@ export const createRouteGroup = (
 			const center = createTemplateForComponent(`${name}-index`, importRouter, {
 				attachment: 'at-parent',
 			});
-			AppLayout.render('main', { center });
+			appLayout.render('main', { center });
 		},
 	});
 

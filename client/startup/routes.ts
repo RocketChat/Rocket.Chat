@@ -8,7 +8,7 @@ import toastr from 'toastr';
 import { KonchatNotification } from '../../app/ui/client';
 import { handleError } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
-import * as AppLayout from '../lib/appLayout';
+import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
 
 FlowRouter.wait();
@@ -16,7 +16,7 @@ FlowRouter.wait();
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
-		AppLayout.render('main', { center: 'loading' });
+		appLayout.render('main', { center: 'loading' });
 		if (!Meteor.userId()) {
 			return FlowRouter.go('home');
 		}
@@ -66,13 +66,13 @@ FlowRouter.route('/home', {
 					}
 				}
 
-				AppLayout.render('main', { center: 'home' });
+				appLayout.render('main', { center: 'home' });
 			});
 
 			return;
 		}
 
-		AppLayout.render('main', { center: 'home' });
+		appLayout.render('main', { center: 'home' });
 	},
 });
 
@@ -84,7 +84,7 @@ FlowRouter.route('/directory/:tab?', {
 			() => import('../views/directory/DirectoryPage'),
 			{ attachment: 'at-parent' },
 		);
-		AppLayout.render('main', { center: DirectoryPage });
+		appLayout.render('main', { center: DirectoryPage });
 	},
 });
 
@@ -96,7 +96,7 @@ FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
 			() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'),
 			{ attachment: 'at-parent' },
 		);
-		AppLayout.render('main', { center: OmnichannelDirectoryPage });
+		appLayout.render('main', { center: OmnichannelDirectoryPage });
 	},
 });
 
@@ -108,7 +108,7 @@ FlowRouter.route('/account/:group?', {
 			() => import('../views/account/AccountRoute'),
 			{ attachment: 'at-parent' },
 		);
-		AppLayout.render('main', { center: AccountRoute });
+		appLayout.render('main', { center: AccountRoute });
 	},
 });
 
@@ -116,7 +116,7 @@ FlowRouter.route('/terms-of-service', {
 	name: 'terms-of-service',
 	action: () => {
 		Session.set('cmsPage', 'Layout_Terms_of_Service');
-		AppLayout.render('cmsPage');
+		appLayout.render('cmsPage');
 	},
 });
 
@@ -124,7 +124,7 @@ FlowRouter.route('/privacy-policy', {
 	name: 'privacy-policy',
 	action: () => {
 		Session.set('cmsPage', 'Layout_Privacy_Policy');
-		AppLayout.render('cmsPage');
+		appLayout.render('cmsPage');
 	},
 });
 
@@ -132,7 +132,7 @@ FlowRouter.route('/legal-notice', {
 	name: 'legal-notice',
 	action: () => {
 		Session.set('cmsPage', 'Layout_Legal_Notice');
-		AppLayout.render('cmsPage');
+		appLayout.render('cmsPage');
 	},
 });
 
@@ -140,21 +140,21 @@ FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
 	action: ({ type, name } = {}) => {
 		Session.set('roomNotFound', { type, name });
-		AppLayout.render('main', { center: 'roomNotFound' });
+		appLayout.render('main', { center: 'roomNotFound' });
 	},
 });
 
 FlowRouter.route('/register/:hash', {
 	name: 'register-secret-url',
 	action: () => {
-		AppLayout.render('secretURL');
+		appLayout.render('secretURL');
 	},
 });
 
 FlowRouter.route('/invite/:hash', {
 	name: 'invite',
 	action: () => {
-		AppLayout.render('invite');
+		appLayout.render('invite');
 	},
 });
 
@@ -162,14 +162,14 @@ FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
 		const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
-		AppLayout.render({ component: SetupWizardRoute });
+		appLayout.render({ component: SetupWizardRoute });
 	},
 });
 
 FlowRouter.notFound = {
 	action: (): void => {
 		const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
-		AppLayout.render({ component: NotFoundPage });
+		appLayout.render({ component: NotFoundPage });
 	},
 };
 

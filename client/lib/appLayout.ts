@@ -27,26 +27,26 @@ class AppLayoutSubscription
 		this.descriptor = descriptor;
 		this.emit('update');
 	}
+
+	render: {
+		(template: string, regions?: { [region: string]: string }): void;
+		(descriptor: BlazeLayoutDescriptor): void;
+		<Props = {}>(descriptor: ComponentLayoutDescriptor<Props>): void;
+	} = (
+		templateOrDescriptor: string | AppLayoutDescriptor,
+		regions?: { [region: string]: string },
+	): void => {
+		if (typeof templateOrDescriptor === 'string') {
+			this.setCurrentValue({ template: templateOrDescriptor, regions });
+			return;
+		}
+
+		this.setCurrentValue(templateOrDescriptor);
+	};
+
+	reset = (): void => {
+		this.setCurrentValue(null);
+	};
 }
 
-export const subscription = new AppLayoutSubscription();
-
-export const render: {
-	(template: string, regions?: { [region: string]: string }): void;
-	(descriptor: BlazeLayoutDescriptor): void;
-	<Props = {}>(descriptor: ComponentLayoutDescriptor<Props>): void;
-} = (
-	templateOrDescriptor: string | AppLayoutDescriptor,
-	regions?: { [region: string]: string },
-): void => {
-	if (typeof templateOrDescriptor === 'string') {
-		subscription.setCurrentValue({ template: templateOrDescriptor, regions });
-		return;
-	}
-
-	subscription.setCurrentValue(templateOrDescriptor);
-};
-
-export const reset = (): void => {
-	subscription.setCurrentValue(null);
-};
+export const appLayout = new AppLayoutSubscription();

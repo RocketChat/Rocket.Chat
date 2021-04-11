@@ -2,7 +2,7 @@ import { hasAllPermission } from '../../../../app/authorization';
 import { registerAdminRoute, registerAdminSidebarItem } from '../../../../client/views/admin';
 import { hasLicense } from '../../license/client';
 import { createTemplateForComponent } from '../../../../client/lib/portals/createTemplateForComponent';
-import * as AppLayout from '../../../../client/lib/appLayout';
+import { appLayout } from '../../../../client/lib/appLayout';
 
 registerAdminRoute('/engagement-dashboard/:tab?', {
 	name: 'engagement-dashboard',
@@ -13,7 +13,7 @@ registerAdminRoute('/engagement-dashboard/:tab?', {
 		}
 
 		const EngagementDashboardRoute = createTemplateForComponent('EngagementDashboardRoute', () => import('./components/EngagementDashboardRoute'), { attachment: 'at-parent' });
-		AppLayout.render('main', { center: EngagementDashboardRoute });
+		appLayout.render('main', { center: EngagementDashboardRoute });
 	},
 });
 

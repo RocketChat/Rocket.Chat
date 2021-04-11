@@ -1,12 +1,12 @@
 import React, { createElement, FC, Suspense } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { subscription } from '../../lib/appLayout';
+import { appLayout } from '../../lib/appLayout';
 import BlazeTemplate from './BlazeTemplate';
 import PageLoading from './PageLoading';
 
 const AppLayout: FC = () => {
-	const descriptor = useSubscription(subscription);
+	const descriptor = useSubscription(appLayout);
 
 	if (descriptor === null) {
 		return null;
