@@ -48,8 +48,6 @@ const createTemplateForDomNode = memoize((node) => {
 });
 
 const replaceCenterDomBy = (dom) => {
-	document.dispatchEvent(new CustomEvent('main-content-destroyed'));
-
 	const roomNode = dom();
 	AppLayout.render('main', { center: createTemplateForDomNode(roomNode) });
 

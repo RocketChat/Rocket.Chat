@@ -1,17 +1,21 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Tracker } from 'meteor/tracker';
 import type { ComponentType } from 'react';
 
-import { renderRouteComponent } from './portals/renderRouteComponent';
+import * as AppLayout from './appLayout';
+import { createTemplateForComponent } from './portals/createTemplateForComponent';
 
 type RouteRegister = {
 	(
 		path: string,
-		params: {
-			name: string;
-			lazyRouteComponent: () => Promise<ComponentType>;
-			props: Record<string, unknown>;
-			action: (params?: Record<string, string>, queryParams?: Record<string, string>) => void;
-		},
+		params: Parameters<typeof FlowRouter.route>[1] &
+			(
+				| {}
+				| {
+						lazyRouteComponent: () => Promise<ComponentType>;
+						props: Record<string, unknown>;
+				  }
+			),
 	): void;
 };
 
@@ -25,24 +29,38 @@ export const createRouteGroup = (
 		prefix,
 	});
 
-	const registerRoute: RouteRegister = (
-		path,
-		{ lazyRouteComponent, props, action, ...options },
-	) => {
-		routeGroup.route(path, {
-			...options,
-			action: (params, queryParams) => {
-				if (action) {
-					action(params, queryParams);
-					return;
-				}
+	const registerRoute: RouteRegister = (path, options) => {
+		if ('lazyRouteComponent' in options) {
+			const { lazyRouteComponent, props, ...rest } = options;
+			routeGroup.route(path, {
+				...rest,
+				action(params, queryParams) {
+					const center = createTemplateForComponent(
+						Tracker.nonreactive(() => FlowRouter.getRouteName()),
+						importRouter,
+						{
+							attachment: 'at-parent',
+							props: () => ({ lazyRouteComponent, ...rest, params, queryParams, ...props }),
+						},
+					);
+					AppLayout.render('main', { center });
+				},
+			});
+			return;
+		}
 
-				renderRouteComponent(importRouter, {
-					propsFn: () => ({ lazyRouteComponent, ...options, params, queryParams, ...props }),
-				});
-			},
-		});
+		routeGroup.route(path, options);
 	};
+
+	registerRoute('/', {
+		name: `${name}-index`,
+		action() {
+			const center = createTemplateForComponent(`${name}-index`, importRouter, {
+				attachment: 'at-parent',
+			});
+			AppLayout.render('main', { center });
+		},
+	});
 
 	return registerRoute;
 };

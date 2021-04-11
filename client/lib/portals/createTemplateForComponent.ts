@@ -16,6 +16,7 @@ export const createTemplateForComponent = <Props extends {} = {}>(
 		  }
 		| {
 				attachment: 'at-parent';
+				props?: () => PropsWithoutRef<Props>;
 		  } = {
 		renderContainerView: (): unknown => HTML.DIV(),
 	},
@@ -35,7 +36,11 @@ export const createTemplateForComponent = <Props extends {} = {}>(
 	template.onRendered(function (this: Blaze.TemplateInstance) {
 		const props = new ReactiveVar(this.data as PropsWithoutRef<Props>);
 		this.autorun(() => {
-			props.set(Template.currentData());
+			props.set({
+				...('props' in options && typeof options.props === 'function' && options.props()),
+				...Template.currentData(),
+			});
+			console.log(props.get());
 		});
 
 		const container =
