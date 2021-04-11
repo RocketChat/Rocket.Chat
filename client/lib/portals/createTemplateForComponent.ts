@@ -4,10 +4,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import type { ComponentType, PropsWithoutRef } from 'react';
 
+import { blazePortals } from './blazePortals';
 import { createLazyPortal } from './createLazyPortal';
-import { registerPortal } from './portalsSubscription';
-
-const unregister = Symbol('unregister');
 
 export const createTemplateForComponent = <Props extends {} = {}>(
 	name: string,
@@ -21,7 +19,7 @@ export const createTemplateForComponent = <Props extends {} = {}>(
 	}
 
 	const template = new Blaze.Template(name, renderContainerView);
-	template.onRendered(function (this: Blaze.TemplateInstance & Record<typeof unregister, unknown>) {
+	template.onRendered(function (this: Blaze.TemplateInstance) {
 		const props = new ReactiveVar(this.data as PropsWithoutRef<Props>);
 		this.autorun(() => {
 			props.set(Template.currentData());
@@ -29,17 +27,11 @@ export const createTemplateForComponent = <Props extends {} = {}>(
 
 		const portal = createLazyPortal(factory, () => props.get(), this.firstNode as Element);
 
-		if (!this.firstNode) {
-			return;
-		}
-
-		this[unregister] = registerPortal(this, portal);
+		blazePortals.register(this, portal);
 	});
 
-	template.onDestroyed(function (
-		this: Blaze.TemplateInstance & Record<typeof unregister, () => void | undefined>,
-	) {
-		this[unregister]?.();
+	template.onDestroyed(function (this: Blaze.TemplateInstance) {
+		blazePortals.unregister(this);
 	});
 
 	Template[name] = template;

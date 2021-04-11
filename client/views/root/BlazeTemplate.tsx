@@ -1,7 +1,10 @@
 import { Blaze } from 'meteor/blaze';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
-import React, { FC, useLayoutEffect, useRef } from 'react';
+import React, { FC, Fragment, useLayoutEffect, useRef } from 'react';
+import { useSubscription } from 'use-subscription';
+
+import { blazePortals } from '../../lib/portals/blazePortals';
 
 type BlazeTemplateProps = {
 	children?: never;
@@ -14,6 +17,7 @@ const hiddenStyle = { display: 'none' } as const;
 const BlazeTemplate: FC<BlazeTemplateProps> = ({ template, data }) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const dataRef = useRef(new ReactiveDict());
+	const portals = useSubscription(blazePortals);
 
 	useLayoutEffect(() => {
 		dataRef.current.set(data);
@@ -38,7 +42,14 @@ const BlazeTemplate: FC<BlazeTemplateProps> = ({ template, data }) => {
 		};
 	}, [template]);
 
-	return <div ref={ref} style={hiddenStyle} />;
+	return (
+		<>
+			<div ref={ref} style={hiddenStyle} />
+			{portals.map(({ key, node }) => (
+				<Fragment key={key} children={node} />
+			))}
+		</>
+	);
 };
 
 export default BlazeTemplate;
