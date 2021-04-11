@@ -1,7 +1,7 @@
 import { Blaze } from 'meteor/blaze';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
-import React, { FC, Fragment, useLayoutEffect, useRef } from 'react';
+import React, { FC, Fragment, useEffect, useRef } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { blazePortals } from '../../lib/portals/blazePortals';
@@ -18,11 +18,11 @@ const BlazeTemplate: FC<BlazeTemplateProps> = ({ template, data }) => {
 	const dataRef = useRef(new ReactiveDict());
 	const portals = useSubscription(blazePortals);
 
-	useLayoutEffect(() => {
+	useEffect(() => {
 		dataRef.current.set(data);
-	}, [data]);
+	});
 
-	useLayoutEffect(() => {
+	useEffect(() => {
 		if (!ref.current || !ref.current.parentNode) {
 			return;
 		}
@@ -37,10 +37,7 @@ const BlazeTemplate: FC<BlazeTemplateProps> = ({ template, data }) => {
 		);
 
 		return (): void => {
-			// Blaze must wait for all fragments declared below to properly unmount
-			setTimeout(() => {
-				Blaze.remove(view);
-			}, 1);
+			Blaze.remove(view);
 		};
 	}, [template]);
 
