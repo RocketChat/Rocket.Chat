@@ -36,7 +36,7 @@ Meteor.startup(() => {
 
 	injectIntoHead('noreferrer', '<meta name="referrer" content="origin-when-cross-origin" />');
 
-	if (process.env.DISABLE_ANIMATION || process.env.TEST_MODE === 'true') {
+	if (process.env.DISABLE_ANIMATION) {
 		injectIntoHead('disable-animation', `
 		<style>
 			body, body * {
