@@ -10,22 +10,46 @@ import { createLazyPortal } from './createLazyPortal';
 export const createTemplateForComponent = <Props extends {} = {}>(
 	name: string,
 	factory: () => Promise<{ default: ComponentType<Props> }>,
-	{
-		renderContainerView = (): unknown => HTML.DIV(), // eslint-disable-line new-cap
-	} = {},
+	options:
+		| {
+				renderContainerView?: () => unknown;
+		  }
+		| {
+				attachment: 'at-parent';
+		  } = {
+		renderContainerView: (): unknown => HTML.DIV(),
+	},
 ): string => {
 	if (Template[name]) {
 		return name;
 	}
 
-	const template = new Blaze.Template(name, renderContainerView);
+	const renderFunction =
+		('renderContainerView' in options && options.renderContainerView) ||
+		('attachment' in options &&
+			options.attachment === 'at-parent' &&
+			((): unknown => HTML.Comment('anchor'))) ||
+		((): unknown => HTML.DIV());
+
+	const template = new Blaze.Template(name, renderFunction);
 	template.onRendered(function (this: Blaze.TemplateInstance) {
 		const props = new ReactiveVar(this.data as PropsWithoutRef<Props>);
 		this.autorun(() => {
 			props.set(Template.currentData());
 		});
 
-		const portal = createLazyPortal(factory, () => props.get(), this.firstNode as Element);
+		const container =
+			('renderContainerView' in options && (this.firstNode as Element)) ||
+			('attachment' in options &&
+				options.attachment === 'at-parent' &&
+				(this.firstNode as Node).parentElement) ||
+			null;
+
+		if (!container) {
+			return;
+		}
+
+		const portal = createLazyPortal(factory, () => props.get(), container);
 
 		blazePortals.register(this, portal);
 	});

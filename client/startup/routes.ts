@@ -9,6 +9,7 @@ import { KonchatNotification } from '../../app/ui/client';
 import { handleError } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import * as AppLayout from '../lib/appLayout';
+import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
 import { renderRouteComponent } from '../lib/portals/renderRouteComponent';
 
 FlowRouter.wait();
@@ -79,7 +80,12 @@ FlowRouter.route('/home', {
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
-		renderRouteComponent(() => import('../views/directory/DirectoryPage'));
+		const DirectoryPage = createTemplateForComponent(
+			'DirectoryPage',
+			() => import('../views/directory/DirectoryPage'),
+			{ attachment: 'at-parent' },
+		);
+		AppLayout.render('main', { center: DirectoryPage });
 	},
 	triggersExit: [
 		(): void => {
