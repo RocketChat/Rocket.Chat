@@ -4,7 +4,7 @@ import { Subscription, Unsubscribe } from 'use-subscription';
 
 type BlazeLayoutDescriptor = {
 	template: string;
-	regions?: { [region: string]: string };
+	data?: Record<string, unknown>;
 };
 
 type ComponentLayoutDescriptor<Props extends {} = {}> = {
@@ -29,15 +29,15 @@ class AppLayoutSubscription
 	}
 
 	render: {
-		(template: string, regions?: { [region: string]: string }): void;
+		(template: string, data?: Record<string, unknown>): void;
 		(descriptor: BlazeLayoutDescriptor): void;
 		<Props = {}>(descriptor: ComponentLayoutDescriptor<Props>): void;
 	} = (
 		templateOrDescriptor: string | AppLayoutDescriptor,
-		regions?: { [region: string]: string },
+		data?: Record<string, unknown>,
 	): void => {
 		if (typeof templateOrDescriptor === 'string') {
-			this.setCurrentValue({ template: templateOrDescriptor, regions });
+			this.setCurrentValue({ template: templateOrDescriptor, data });
 			return;
 		}
 
