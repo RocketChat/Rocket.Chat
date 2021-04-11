@@ -10,7 +10,6 @@ import { handleError } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import * as AppLayout from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
-import { renderRouteComponent } from '../lib/portals/renderRouteComponent';
 
 FlowRouter.wait();
 
@@ -87,11 +86,6 @@ FlowRouter.route('/directory/:tab?', {
 		);
 		AppLayout.render('main', { center: DirectoryPage });
 	},
-	triggersExit: [
-		(): void => {
-			$('.main-content').addClass('rc-old');
-		},
-	],
 });
 
 FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
@@ -104,23 +98,18 @@ FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
 		);
 		AppLayout.render('main', { center: OmnichannelDirectoryPage });
 	},
-	triggersExit: [
-		(): void => {
-			$('.main-content').addClass('rc-old');
-		},
-	],
 });
 
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
-		renderRouteComponent(() => import('../views/account/AccountRoute'));
+		const AccountRoute = createTemplateForComponent(
+			'AccountRoute',
+			() => import('../views/account/AccountRoute'),
+			{ attachment: 'at-parent' },
+		);
+		AppLayout.render('main', { center: AccountRoute });
 	},
-	triggersExit: [
-		(): void => {
-			$('.main-content').addClass('rc-old');
-		},
-	],
 });
 
 FlowRouter.route('/terms-of-service', {
