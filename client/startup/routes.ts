@@ -97,7 +97,12 @@ FlowRouter.route('/directory/:tab?', {
 FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
 	name: 'omnichannel-directory',
 	action: () => {
-		renderRouteComponent(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
+		const OmnichannelDirectoryPage = createTemplateForComponent(
+			'OmnichannelDirectoryPage',
+			() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'),
+			{ attachment: 'at-parent' },
+		);
+		AppLayout.render('main', { center: OmnichannelDirectoryPage });
 	},
 	triggersExit: [
 		(): void => {
