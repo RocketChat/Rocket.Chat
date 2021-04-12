@@ -1,8 +1,8 @@
 import React from 'react';
 
+import * as Status from '../../../../components/UserStatus';
 import VerticalBar from '../../../../components/VerticalBar';
-
-import { UserInfo } from '.';
+import UserInfo from './UserInfo';
 
 export default {
 	title: 'components/UserInfo',
@@ -18,10 +18,8 @@ const user = {
 	// actions: [<UserCard.Action icon='message'/>, <UserCard.Action icon='phone'/>],
 	localTime: 'Local Time: 7:44 AM',
 	utcOffset: -3,
-	email: {
-		address: 'rocketchat@rocket.chat',
-		verified: true,
-	},
+	email: 'rocketchat@rocket.chat',
+	status: <Status.Offline />,
 };
 
 const nickname = {
@@ -29,5 +27,13 @@ const nickname = {
 	nickname: 'Nickname',
 };
 
-export const Default = () => <VerticalBar><UserInfo { ...user } /></VerticalBar>;
-export const Nickname = () => <VerticalBar><UserInfo { ...nickname } /></VerticalBar>;
+export const Default = () => (
+	<VerticalBar height={800}>
+		<UserInfo {...user} />
+	</VerticalBar>
+);
+export const Nickname = () => (
+	<VerticalBar height={800}>
+		<UserInfo {...nickname} />
+	</VerticalBar>
+);

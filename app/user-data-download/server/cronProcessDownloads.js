@@ -171,6 +171,9 @@ const getMessageData = function(msg, hideUsers, userData, usersMap) {
 			case 'livechat-close':
 				messageObject.msg = TAPi18n.__('Conversation_finished');
 				break;
+			case 'livechat-started':
+				messageObject.msg = TAPi18n.__('Chat_started');
+				break;
 		}
 	}
 

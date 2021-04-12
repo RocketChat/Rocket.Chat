@@ -49,6 +49,7 @@ function _OAuthServicesUpdate() {
 				data.buttonColor = settings.get(`${ service.key }-button_color`);
 				data.tokenSentVia = settings.get(`${ service.key }-token_sent_via`);
 				data.identityTokenSentVia = settings.get(`${ service.key }-identity_token_sent_via`);
+				data.keyField = settings.get(`${ service.key }-key_field`);
 				data.usernameField = settings.get(`${ service.key }-username_field`);
 				data.emailField = settings.get(`${ service.key }-email_field`);
 				data.nameField = settings.get(`${ service.key }-name_field`);
@@ -73,6 +74,7 @@ function _OAuthServicesUpdate() {
 					loginStyle: data.loginStyle,
 					tokenSentVia: data.tokenSentVia,
 					identityTokenSentVia: data.identityTokenSentVia,
+					keyField: data.keyField,
 					usernameField: data.usernameField,
 					emailField: data.emailField,
 					nameField: data.nameField,
@@ -181,6 +183,7 @@ function customOAuthServicesInit() {
 					buttonColor: process.env[`${ serviceKey }_button_color`],
 					tokenSentVia: process.env[`${ serviceKey }_token_sent_via`],
 					identityTokenSentVia: process.env[`${ serviceKey }_identity_token_sent_via`],
+					keyField: process.env[`${ serviceKey }_key_field`],
 					usernameField: process.env[`${ serviceKey }_username_field`],
 					nameField: process.env[`${ serviceKey }_name_field`],
 					emailField: process.env[`${ serviceKey }_email_field`],
@@ -190,10 +193,10 @@ function customOAuthServicesInit() {
 					mapCustomFields: process.env[`${ serviceKey }_map_custom_fields`],
 					customFieldsMap: process.env[`${ serviceKey }_custom_fields_map`],
 					channelsAdmin: process.env[`${ serviceKey }_channels_admin`],
-					mergeUsers: process.env[`${ serviceKey }_merge_users`],
+					mergeUsers: process.env[`${ serviceKey }_merge_users`] === 'true',
 					mapChannels: process.env[`${ serviceKey }_map_channels`],
-					mergeRoles: process.env[`${ serviceKey }_merge_roles`],
-					showButton: process.env[`${ serviceKey }_show_button`],
+					mergeRoles: process.env[`${ serviceKey }_merge_roles`] === 'true',
+					showButton: process.env[`${ serviceKey }_show_button`] === 'true',
 					avatarField: process.env[`${ serviceKey }_avatar_field`],
 				};
 
