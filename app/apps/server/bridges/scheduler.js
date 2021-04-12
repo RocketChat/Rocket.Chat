@@ -19,7 +19,6 @@ export class AppSchedulerBridge {
 			// this ensures the same job doesn't get executed multiple times in a cluster
 			defaultConcurrency: 1,
 		});
-		this.listenToSchedulerEvents();
 		this.isConnected = false;
 	}
 
@@ -63,7 +62,7 @@ export class AppSchedulerBridge {
 						runAfterRegister.push(this.scheduleOnceAfterRegister({ id, when: startupSetting.when, data: startupSetting.data }, appId));
 						break;
 					case StartupType.RECURRING:
-						runAfterRegister.push(this.scheduleRecurring({ id, interval: startupSetting.interval, data: startupSetting.data }, appId));
+						runAfterRegister.push(this.scheduleRecurring({ id, interval: startupSetting.interval, skipImmediate: startupSetting.skipImmediate, data: startupSetting.data }, appId));
 						break;
 					default:
 						this.orch.getRocketChatLogger().error(`Invalid startup setting type (${ startupSetting.type }) for the processor ${ id }`);
@@ -111,17 +110,18 @@ export class AppSchedulerBridge {
 	 * @param {Object} job
 	 * @param {string} job.id The processor's id
 	 * @param {string} job.interval When the processor will be re executed
+	 * @param {boolean} job.skipImmediate=false Whether to let the first iteration to execute as soon as the task is registered
 	 * @param {Object} [job.data] An optional object that is passed to the processor
 	 * @param {string} appId
 	 *
 	 * @returns Promise<void>
 	 */
-	async scheduleRecurring({ id, interval, data }, appId) {
+	async scheduleRecurring({ id, interval, skipImmediate = false, data }, appId) {
 		this.orch.debugLog(`The App ${ appId } is scheduling a recurring job`, id);
 		try {
 			await this.startScheduler();
 			const job = this.scheduler.create(id, data || {});
-			job.repeatEvery(interval, { skipImmediate: true });
+			job.repeatEvery(interval, { skipImmediate });
 			await job.save();
 		} catch (e) {
 			this.orch.getRocketChatLogger().error(e);
@@ -169,12 +169,5 @@ export class AppSchedulerBridge {
 			await this.scheduler.start();
 			this.isConnected = true;
 		}
-	}
-
-	listenToSchedulerEvents() {
-		this.scheduler.on('start', (job) => this.orch.debugLog(`Job ${ job.attrs.name } started`));
-		this.scheduler.on('complete', (job) => this.orch.debugLog(`Job ${ job.attrs.name } finished`));
-		this.scheduler.on('success', (job) => this.orch.debugLog(`Job ${ job.attrs.name } was successful`));
-		this.scheduler.on('fail', (job, err) => this.orch.getRocketChatLogger().error(`Job ${ job.attrs.name } has failed: ${ err.message } `));
 	}
 }
