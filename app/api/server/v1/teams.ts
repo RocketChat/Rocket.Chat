@@ -189,14 +189,23 @@ API.v1.addRoute('teams.listRoomsOfUser', { authRequired: true }, {
 API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { teamId, teamName } = this.queryParams;
-		const { query } = this.parseJsonQuery();
+		const { teamId, teamName, status, username, name } = this.queryParams;
+
+		if (status && !Array.isArray(status)) {
+			throw new Meteor.Error('error-status-param-not-an-array', 'The parameter "status" should be an array of strings');
+		}
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}
 		const canSeeAllMembers = hasPermission(this.userId, 'view-all-teams', team.roomId);
+
+		const query = {
+			username,
+			name,
+			status: status ? { $in: status } : undefined,
+		};
 
 		const { records, total } = Promise.await(Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, { query }));
 
