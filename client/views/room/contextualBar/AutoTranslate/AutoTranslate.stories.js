@@ -1,10 +1,8 @@
-import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-
-import { AutoTranslate } from '.';
-
+import AutoTranslate from './AutoTranslate';
 
 export default {
 	title: 'components/basic/AutoTranslate',
@@ -20,7 +18,7 @@ const languages = [
 export const Default = () => (
 	<Box height='600px'>
 		<VerticalBar>
-			<AutoTranslate languages={languages} defaultLanguage='en'/>
+			<AutoTranslate languages={languages} defaultLanguage='en' />
 		</VerticalBar>
 	</Box>
 );
