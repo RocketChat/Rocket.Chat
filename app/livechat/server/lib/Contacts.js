@@ -64,13 +64,15 @@ export const Contacts = {
 
 		LivechatVisitors.updateById(contactId, updateUser);
 
-		const room = LivechatRooms.findOneByVisitorToken(token, { _id: 1 });
+		const rooms = LivechatRooms.findByVisitorId(contactId).fetch();
 
-		if (room) {
-			const { _id: rid } = room;
-			return Rooms.setFnameById(rid, name)
-				&& LivechatInquiry.setNameByRoomId(rid, name)
-				&& Subscriptions.updateDisplayNameByRoomId(rid, name);
+		if (rooms && rooms.length > 0) {
+			rooms.forEach((room) => {
+				const { _id: rid } = room;
+				Rooms.setFnameById(rid, name)
+					&& LivechatInquiry.setNameByRoomId(rid, name)
+					&& Subscriptions.updateDisplayNameByRoomId(rid, name);
+			});
 		}
 
 		return contactId;
