@@ -212,12 +212,18 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 
 API.v1.addRoute('rooms.info', { authRequired: true }, {
 	get() {
-		const room = findRoomByIdOrName({ params: this.requestParams() });
+		const roomFind = findRoomByIdOrName({ params: this.requestParams() });
 		const { fields } = this.parseJsonQuery();
-		if (!Meteor.call('canAccessRoom', room._id, this.userId, {})) {
+		if (!Meteor.call('canAccessRoom', roomFind._id, this.userId, {})) {
 			return API.v1.failure('not-allowed', 'Not Allowed');
 		}
-		return API.v1.success({ room: Rooms.findOneByIdOrName(room._id, { fields }) });
+
+		const room = Rooms.findOneByIdOrName(roomFind._id, { fields });
+		const { tags } = room;
+		if (tags && tags.length > 0) {
+			room.tags = [...tags.sort()];
+		}
+		return API.v1.success({ room });
 	},
 });
 
