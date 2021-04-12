@@ -2,30 +2,35 @@ import { Tabs } from '@rocket.chat/fuselage';
 import React, { useEffect, useCallback, useState } from 'react';
 
 import Page from '../../../components/Page';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useCurrentRoute, useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import ContextualBar from './ContextualBar';
 import ChatTab from './chats/ChatTab';
 import ContactTab from './contacts/ContactTab';
 
 const OmnichannelDirectoryPage = () => {
-	const t = useTranslation();
-
 	const defaultTab = 'contacts';
 
+	const [routeName] = useCurrentRoute();
 	const tab = useRouteParameter('tab');
 	const directoryRoute = useRoute('omnichannel-directory');
+
+	useEffect(() => {
+		if (routeName !== 'omnichannel-directory') {
+			return;
+		}
+
+		if (!tab) {
+			return directoryRoute.replace({ tab: defaultTab });
+		}
+	}, [routeName, directoryRoute, tab, defaultTab]);
 
 	const handleTabClick = useCallback((tab) => () => directoryRoute.push({ tab }), [directoryRoute]);
 
 	const [contactReload, setContactReload] = useState();
 	const [chatReload, setChatReload] = useState();
 
-	useEffect(() => {
-		if (!tab) {
-			return directoryRoute.replace({ tab: defaultTab });
-		}
-	}, [directoryRoute, tab, defaultTab]);
+	const t = useTranslation();
 
 	return (
 		<Page flexDirection='row'>
