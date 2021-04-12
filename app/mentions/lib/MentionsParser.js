@@ -66,18 +66,27 @@ export class MentionsParser {
 				return this.userTemplate({ prefix, className, mention, label: mention, type: 'group' });
 			}
 
+			const filterUser = ({ username, type }) => (!type || type === 'user') && username === mention;
+			const filterTeam = ({ name, type }) => type === 'team' && name === mention;
+
+			const [mentionObj] = (mentions || []).filter((m) => filterUser(m) || filterTeam(m));
+
 			const label = temp
 				? mention && escapeHTML(mention)
-				: (mentions || [])
-					.filter(({ username }) => username === mention)
-					.map(({ name, username }) => (this.useRealName ? name : username))
-					.map((label) => label && escapeHTML(label))[0];
+				: mentionObj && escapeHTML(mentionObj.type === 'team' || this.useRealName ? mentionObj.name : mentionObj.username);
 
 			if (!label) {
 				return match;
 			}
 
-			return this.userTemplate({ prefix, className, mention, label, title: this.useRealName ? mention : label });
+			return this.userTemplate({
+				prefix,
+				className,
+				mention,
+				label,
+				type: mentionObj?.type === 'team' ? 'team' : 'username',
+				title: this.useRealName ? mention : label,
+			});
 		})
 
 	replaceChannels = (msg, { temp, channels }) => msg

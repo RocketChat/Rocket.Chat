@@ -17,11 +17,8 @@ import { AutoTranslate } from '../../autotranslate/client';
 import { escapeHTML } from '../../../lib/escapeHTML';
 import { renderMentions } from '../../mentions/client/client';
 import { renderMessageBody } from '../../../client/lib/renderMessageBody';
-import { createTemplateForComponent } from '../../../client/reactAdapters';
-
+import { settings } from '../../settings/client';
 import './message.html';
-
-createTemplateForComponent('messageLocation', () => import('../../../client/views/location/MessageLocation'));
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
@@ -453,6 +450,15 @@ Template.message.helpers({
 	showStar() {
 		const { msg } = this;
 		return msg.starred && msg.starred.length > 0 && msg.starred.find((star) => star._id === Meteor.userId()) && !(msg.actionContext === 'starred' || this.context === 'starred');
+	},
+	readReceipt() {
+		if (!settings.get('Message_Read_Receipt_Enabled')) {
+			return;
+		}
+
+		return {
+			readByEveryone: (!this.msg.unread && 'read') || 'color-component-color',
+		};
 	},
 });
 

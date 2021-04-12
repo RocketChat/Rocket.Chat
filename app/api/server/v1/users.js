@@ -258,28 +258,28 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 						},
 					},
 					{
-						$skip: offset,
-					},
-					{
-						$limit: count,
-					},
-					{
 						$facet: {
-							sortedResults: [{ $sort: actualSort }],
-							totalCount: [{ $count: 'value' }],
+							sortedResults: [{
+								$sort: actualSort,
+							}, {
+								$skip: offset,
+							}, {
+								$limit: count,
+							}],
+							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 						},
 					},
 				])
 				.toArray(),
 		);
 
-		const { sortedResults: users, totalCount } = result[0];
+		const { sortedResults: users, totalCount: [{ total }] } = result[0];
 
 		return API.v1.success({
 			users,
 			count: users.length,
 			offset,
-			total: totalCount[0].value,
+			total,
 		});
 	},
 });
@@ -769,7 +769,8 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 		const userId = this.userId || Users[method](emailOrUsername, { fields: { _id: 1 } })?._id;
 
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			this.logger.error('[2fa] User was not found when requesting 2fa email code');
+			return API.v1.success();
 		}
 
 		emailCheck.sendEmailCode(getUserForCheck(userId));
