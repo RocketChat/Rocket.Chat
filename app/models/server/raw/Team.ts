@@ -94,4 +94,24 @@ export class TeamRaw extends BaseRaw<T> {
 			},
 		});
 	}
+
+	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TEAM_TYPE }): Promise < UpdateWriteOpResult > {
+		const query = {
+			_id: teamId,
+		};
+
+		const update = {
+			$set: {},
+		};
+
+		if (nameAndType.name) {
+			Object.assign(update.$set, { name: nameAndType.name });
+		}
+
+		if (nameAndType.type) {
+			Object.assign(update.$set, { type: nameAndType.type });
+		}
+
+		return this.col.updateOne(query, update);
+	}
 }

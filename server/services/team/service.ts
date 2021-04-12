@@ -171,6 +171,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 			await this.TeamModel.updateType(teamId, updateData.type);
 		}
+		await this.TeamModel.updateNameAndType(teamId, updateData);
 	}
 
 	async findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]> {
