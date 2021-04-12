@@ -21,9 +21,9 @@ API.v1.addRoute('omnichannel/contact', { authRequired: true }, {
 				contactManager: Match.Maybe(Object),
 			});
 
-			const contactId = Contacts.registerContact(this.bodyParams);
+			const contact = Contacts.registerContact(this.bodyParams);
 
-			return API.v1.success({ contact: contactId });
+			return API.v1.success({ contact });
 		} catch (e) {
 			return API.v1.failure(e);
 		}
