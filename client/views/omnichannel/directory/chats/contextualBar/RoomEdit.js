@@ -22,7 +22,7 @@ const initialValuesUser = {
 
 const initialValuesRoom = {
 	topic: '',
-	tags: '',
+	tags: [],
 	livechatData: {},
 	priorityId: '',
 };
@@ -137,7 +137,7 @@ function RoomEdit({ room, visitor, reload, close }) {
 		const roomData = {
 			_id: room._id,
 			topic,
-			tags: Object.values(tags),
+			tags: tags.sort(),
 			livechatData,
 			...(priorityId && { priorityId }),
 		};
