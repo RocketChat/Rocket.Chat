@@ -2,20 +2,21 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
+import { lazy } from 'react';
 import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
 import { handleError } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
-import * as BlazeLayout from '../lib/portals/blazeLayout';
-import { renderRouteComponent } from '../lib/portals/renderRouteComponent';
+import { appLayout } from '../lib/appLayout';
+import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
 
 FlowRouter.wait();
 
 FlowRouter.route('/', {
 	name: 'index',
 	action() {
-		BlazeLayout.render('main', { center: 'loading' });
+		appLayout.render('main', { center: 'loading' });
 		if (!Meteor.userId()) {
 			return FlowRouter.go('home');
 		}
@@ -65,66 +66,57 @@ FlowRouter.route('/home', {
 					}
 				}
 
-				BlazeLayout.render('main', { center: 'home' });
+				appLayout.render('main', { center: 'home' });
 			});
 
 			return;
 		}
 
-		BlazeLayout.render('main', { center: 'home' });
+		appLayout.render('main', { center: 'home' });
 	},
 });
 
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
 	action: () => {
-		renderRouteComponent(() => import('../views/directory/DirectoryPage'), {
-			template: 'main',
-			region: 'center',
-		});
+		const DirectoryPage = createTemplateForComponent(
+			'DirectoryPage',
+			() => import('../views/directory/DirectoryPage'),
+			{ attachment: 'at-parent' },
+		);
+		appLayout.render('main', { center: DirectoryPage });
 	},
-	triggersExit: [
-		(): void => {
-			$('.main-content').addClass('rc-old');
-		},
-	],
 });
 
 FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
 	name: 'omnichannel-directory',
 	action: () => {
-		renderRouteComponent(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'), {
-			template: 'main',
-			region: 'center',
-		});
+		const OmnichannelDirectoryPage = createTemplateForComponent(
+			'OmnichannelDirectoryPage',
+			() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'),
+			{ attachment: 'at-parent' },
+		);
+		appLayout.render('main', { center: OmnichannelDirectoryPage });
 	},
-	triggersExit: [
-		(): void => {
-			$('.main-content').addClass('rc-old');
-		},
-	],
 });
 
 FlowRouter.route('/account/:group?', {
 	name: 'account',
 	action: () => {
-		renderRouteComponent(() => import('../views/account/AccountRoute'), {
-			template: 'main',
-			region: 'center',
-		});
+		const AccountRoute = createTemplateForComponent(
+			'AccountRoute',
+			() => import('../views/account/AccountRoute'),
+			{ attachment: 'at-parent' },
+		);
+		appLayout.render('main', { center: AccountRoute });
 	},
-	triggersExit: [
-		(): void => {
-			$('.main-content').addClass('rc-old');
-		},
-	],
 });
 
 FlowRouter.route('/terms-of-service', {
 	name: 'terms-of-service',
 	action: () => {
 		Session.set('cmsPage', 'Layout_Terms_of_Service');
-		BlazeLayout.render('cmsPage');
+		appLayout.render('cmsPage');
 	},
 });
 
@@ -132,7 +124,7 @@ FlowRouter.route('/privacy-policy', {
 	name: 'privacy-policy',
 	action: () => {
 		Session.set('cmsPage', 'Layout_Privacy_Policy');
-		BlazeLayout.render('cmsPage');
+		appLayout.render('cmsPage');
 	},
 });
 
@@ -140,7 +132,7 @@ FlowRouter.route('/legal-notice', {
 	name: 'legal-notice',
 	action: () => {
 		Session.set('cmsPage', 'Layout_Legal_Notice');
-		BlazeLayout.render('cmsPage');
+		appLayout.render('cmsPage');
 	},
 });
 
@@ -148,34 +140,44 @@ FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
 	action: ({ type, name } = {}) => {
 		Session.set('roomNotFound', { type, name });
-		BlazeLayout.render('main', { center: 'roomNotFound' });
+		appLayout.render('main', { center: 'roomNotFound' });
 	},
 });
 
 FlowRouter.route('/register/:hash', {
 	name: 'register-secret-url',
 	action: () => {
-		BlazeLayout.render('secretURL');
+		appLayout.render('secretURL');
 	},
 });
 
 FlowRouter.route('/invite/:hash', {
 	name: 'invite',
 	action: () => {
-		BlazeLayout.render('invite');
+		appLayout.render('invite');
 	},
 });
 
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		renderRouteComponent(() => import('../views/setupWizard/SetupWizardRoute'));
+		const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
+		appLayout.render({ component: SetupWizardRoute });
+	},
+});
+
+FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
+	name: 'mailer-unsubscribe',
+	action: () => {
+		const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
+		appLayout.render({ component: MailerUnsubscriptionPage });
 	},
 });
 
 FlowRouter.notFound = {
 	action: (): void => {
-		renderRouteComponent(() => import('../views/notFound/NotFoundPage'));
+		const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
+		appLayout.render({ component: NotFoundPage });
 	},
 };
 
