@@ -51,12 +51,6 @@ export async function findRooms({
 			}
 		});
 	}
-	rooms.forEach((room) => {
-		const { tags } = room;
-		if (tags && tags.length > 0) {
-			room.tags = [...tags.sort()];
-		}
-	});
 	return {
 		rooms,
 		count: rooms.length,
