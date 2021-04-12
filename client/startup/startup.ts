@@ -25,6 +25,8 @@ if (window.DISABLE_ANIMATION) {
 }
 
 Meteor.startup(() => {
+	fireGlobalEvent('startup', true);
+
 	Accounts.onLogout(() => Session.set('openedRoom', null));
 
 	TimeSync.loggingEnabled = false;
