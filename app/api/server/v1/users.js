@@ -788,6 +788,7 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 				utcOffset: 1,
 				statusText: 1,
 				avatarETag: 1,
+				roles: 1,
 			},
 		};
 

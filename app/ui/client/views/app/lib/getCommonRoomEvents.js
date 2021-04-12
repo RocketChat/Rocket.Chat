@@ -1,49 +1,53 @@
-import Clipboard from 'clipboard';
-import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import Clipboard from "clipboard";
+import { Meteor } from "meteor/meteor";
+import { Random } from "meteor/random";
+import { FlowRouter } from "meteor/kadira:flow-router";
 
 import {
 	fireGlobalEvent,
 	popover,
 	Layout,
 	MessageAction,
-} from '../../../../../ui-utils/client';
-import {
-	addMessageToList,
-} from '../../../../../ui-utils/client/lib/MessageAction';
-import { call } from '../../../../../ui-utils/client/lib/callMethod';
-import { promises } from '../../../../../promises/client';
-import { isURL } from '../../../../../utils/lib/isURL';
-import { openUserCard } from '../../../lib/UserCard';
-import { messageArgs } from '../../../../../ui-utils/client/lib/messageArgs';
-import { ChatMessage, Rooms, Messages } from '../../../../../models';
-import { t } from '../../../../../utils/client';
-import { chatMessages } from '../room';
-import { EmojiEvents } from '../../../../../reactions/client/init';
-import { goToRoomById } from '../../../../../../client/lib/goToRoomById';
+} from "../../../../../ui-utils/client";
+import { addMessageToList } from "../../../../../ui-utils/client/lib/MessageAction";
+import { call } from "../../../../../ui-utils/client/lib/callMethod";
+import { promises } from "../../../../../promises/client";
+import { isURL } from "../../../../../utils/lib/isURL";
+import { openUserCard } from "../../../lib/UserCard";
+import { messageArgs } from "../../../../../ui-utils/client/lib/messageArgs";
+import { ChatMessage, Rooms, Messages } from "../../../../../models";
+import { t } from "../../../../../utils/client";
+import { chatMessages } from "../room";
+import { EmojiEvents } from "../../../../../reactions/client/init";
+import { goToRoomById } from "../../../../../../client/lib/goToRoomById";
 
 const mountPopover = (e, i, outerContext) => {
-	let context = $(e.target).parents('.message').data('context');
+	let context = $(e.target).parents(".message").data("context");
 	if (!context) {
-		context = 'message';
+		context = "message";
 	}
 
 	const messageContext = messageArgs(outerContext);
 
-	let menuItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
-		icon: item.icon,
-		name: t(item.label),
-		type: 'message-action',
-		id: item.id,
-		modifier: item.color,
-	}));
-
-	if (window.matchMedia('(max-width: 500px)').matches) {
-		const messageItems = MessageAction.getButtons(messageContext, context, 'message').map((item) => ({
+	let menuItems = MessageAction.getButtons(messageContext, context, "menu").map(
+		(item) => ({
 			icon: item.icon,
 			name: t(item.label),
-			type: 'message-action',
+			type: "message-action",
+			id: item.id,
+			modifier: item.color,
+		})
+	);
+
+	if (window.matchMedia("(max-width: 500px)").matches) {
+		const messageItems = MessageAction.getButtons(
+			messageContext,
+			context,
+			"message"
+		).map((item) => ({
+			icon: item.icon,
+			name: t(item.label),
+			type: "message-action",
 			id: item.id,
 			modifier: item.color,
 		}));
@@ -51,7 +55,13 @@ const mountPopover = (e, i, outerContext) => {
 		menuItems = menuItems.concat(messageItems);
 	}
 
-	const [items, deleteItem] = menuItems.reduce((result, value) => { result[value.id === 'delete-message' ? 1 : 0].push(value); return result; }, [[], []]);
+	const [items, deleteItem] = menuItems.reduce(
+		(result, value) => {
+			result[value.id === "delete-message" ? 1 : 0].push(value);
+			return result;
+		},
+		[[], []]
+	);
 	const groups = [{ items }];
 
 	if (deleteItem.length) {
@@ -67,8 +77,8 @@ const mountPopover = (e, i, outerContext) => {
 		instance: i,
 		currentTarget: e.currentTarget,
 		data: outerContext,
-		activeElement: $(e.currentTarget).parents('.message')[0],
-		onRendered: () => new Clipboard('.rc-popover__item'),
+		activeElement: $(e.currentTarget).parents(".message")[0],
+		onRendered: () => new Clipboard(".rc-popover__item"),
 	};
 
 	popover.open(config);
@@ -83,7 +93,7 @@ export const getCommonRoomEvents = () => ({
 		let touchtime = null;
 		return {
 			...EmojiEvents,
-			'click .message img'(e) {
+			"click .message img"(e) {
 				clearTimeout(touchtime);
 				if (touchMoved === true) {
 					e.preventDefault();
@@ -91,7 +101,7 @@ export const getCommonRoomEvents = () => ({
 				}
 			},
 
-			'touchstart .message'(e) {
+			"touchstart .message"(e) {
 				const { touches } = e.originalEvent;
 				if (touches && touches.length) {
 					lastTouchX = touches[0].pageX;
@@ -102,15 +112,19 @@ export const getCommonRoomEvents = () => ({
 					return;
 				}
 
-				if ($(e.currentTarget).hasClass('system')) {
+				if ($(e.currentTarget).hasClass("system")) {
 					return;
 				}
 
-				if (e.target && (e.target.nodeName === 'AUDIO')) {
+				if (e.target && e.target.nodeName === "AUDIO") {
 					return;
 				}
 
-				if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
+				if (
+					e.target &&
+					e.target.nodeName === "A" &&
+					isURL(e.target.getAttribute("href"))
+				) {
 					e.preventDefault();
 					e.stopPropagation();
 				}
@@ -123,9 +137,13 @@ export const getCommonRoomEvents = () => ({
 				touchtime = setTimeout(doLongTouch, 500);
 			},
 
-			'touchend .message'(e) {
+			"touchend .message"(e) {
 				clearTimeout(touchtime);
-				if (e.target && (e.target.nodeName === 'A') && isURL(e.target.getAttribute('href'))) {
+				if (
+					e.target &&
+					e.target.nodeName === "A" &&
+					isURL(e.target.getAttribute("href"))
+				) {
 					if (touchMoved === true) {
 						e.preventDefault();
 						e.stopPropagation();
@@ -136,7 +154,7 @@ export const getCommonRoomEvents = () => ({
 				}
 			},
 
-			'touchmove .message'(e) {
+			"touchmove .message"(e) {
 				const { touches } = e.originalEvent;
 				if (touches && touches.length) {
 					const deltaX = Math.abs(lastTouchX - touches[0].pageX);
@@ -148,72 +166,72 @@ export const getCommonRoomEvents = () => ({
 				clearTimeout(touchtime);
 			},
 
-			'touchcancel .message'() {
+			"touchcancel .message"() {
 				clearTimeout(touchtime);
 			},
 		};
 	})(),
-	'click [data-message-action]'(event, template) {
-		const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
+	"click [data-message-action]"(event, template) {
+		const button = MessageAction.getButtonById(
+			event.currentTarget.dataset.messageAction
+		);
 		if ((button != null ? button.action : undefined) != null) {
-			button.action.call(this, event, { tabBar: template.tabBar, rid: template.data.rid });
-		}
-	},
-	'click .js-follow-thread'(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		const { msg } = messageArgs(this);
-		call('followMessage', { mid: msg._id });
-	},
-	'click .js-unfollow-thread'(e) {
-		e.preventDefault();
-		e.stopPropagation();
-		const { msg } = messageArgs(this);
-		call('unfollowMessage', { mid: msg._id });
-	},
-	'click .js-open-thread'(event) {
-		event.preventDefault();
-		event.stopPropagation();
-
-		const { msg: { rid, _id, tmid } } = messageArgs(this);
-		const room = Rooms.findOne({ _id: rid });
-
-		FlowRouter.go(FlowRouter.getRouteName(), {
-			rid,
-			name: room.name,
-			tab: 'thread',
-			context: tmid || _id,
-		}, {
-			jump: tmid && tmid !== _id && _id && _id,
-		});
-	},
-
-	'click .image-to-download'(event) {
-		const { msg } = messageArgs(this);
-		ChatMessage.update({ _id: msg._id, 'urls.url': $(event.currentTarget).data('url') }, { $set: { 'urls.$.downloadImages': true } });
-		ChatMessage.update({ _id: msg._id, 'attachments.image_url': $(event.currentTarget).data('url') }, { $set: { 'attachments.$.downloadImages': true } });
-	},
-	'click .user-card-message'(e, instance) {
-		const { msg } = messageArgs(this);
-		if (!Meteor.userId()) {
-			return;
-		}
-
-		const { username } = msg.u;
-
-		if (username) {
-			openUserCard({
-				username,
-				rid: instance.data.rid,
-				target: e.currentTarget,
-				open: (e) => {
-					e.preventDefault();
-					instance.data.tabBar.openUserInfo(username);
-				},
+			button.action.call(this, event, {
+				tabBar: template.tabBar,
+				rid: template.data.rid,
 			});
 		}
 	},
-	'click .js-actionButton-respondWithMessage'(event, instance) {
+	// 'click .js-follow-thread'(e) {
+	// 	e.preventDefault();
+	// 	e.stopPropagation();
+	// 	const { msg } = messageArgs(this);
+	// 	call('followMessage', { mid: msg._id });
+	// },
+	// 'click .js-unfollow-thread'(e) {
+	// 	e.preventDefault();
+	// 	e.stopPropagation();
+	// 	const { msg } = messageArgs(this);
+	// 	call('unfollowMessage', { mid: msg._id });
+	// },
+	// 'click .js-open-thread'(event) {
+	// 	event.preventDefault();
+	// 	event.stopPropagation();
+
+	// 	const { msg: { rid, _id, tmid } } = messageArgs(this);
+	// 	const room = Rooms.findOne({ _id: rid });
+
+	// 	FlowRouter.go(FlowRouter.getRouteName(), {
+	// 		rid,
+	// 		name: room.name,
+	// 		tab: 'thread',
+	// 		context: tmid || _id,
+	// 	}, {
+	// 		jump: tmid && tmid !== _id && _id && _id,
+	// 	});
+	// },
+
+	// 'click .user-card-message'(e, instance) {
+	// 	const { msg } = messageArgs(this);
+	// 	if (!Meteor.userId()) {
+	// 		return;
+	// 	}
+
+	// 	const { username } = msg.u;
+
+	// 	if (username) {
+	// 		openUserCard({
+	// 			username,
+	// 			rid: instance.data.rid,
+	// 			target: e.currentTarget,
+	// 			open: (e) => {
+	// 				e.preventDefault();
+	// 				instance.data.tabBar.openUserInfo(username);
+	// 			},
+	// 		});
+	// 	}
+	// },
+	"click .js-actionButton-respondWithMessage"(event, instance) {
 		const { rid } = instance.data;
 		const msg = event.currentTarget.value;
 		if (!msg) {
@@ -224,7 +242,7 @@ export const getCommonRoomEvents = () => ({
 		input.value = msg;
 		input.focus();
 	},
-	async 'click .js-actionButton-respondWithQuotedMessage'(event, instance) {
+	async "click .js-actionButton-respondWithQuotedMessage"(event, instance) {
 		const { rid } = instance.data;
 		const { id: msgId } = event.currentTarget;
 		const { $input } = chatMessages[rid];
@@ -235,16 +253,16 @@ export const getCommonRoomEvents = () => ({
 
 		const message = Messages.findOne({ _id: msgId });
 
-		let messages = $input.data('reply') || [];
+		let messages = $input.data("reply") || [];
 		messages = addMessageToList(messages, message);
 
 		$input
 			.focus()
-			.data('mention-user', false)
-			.data('reply', messages)
-			.trigger('dataChange');
+			.data("mention-user", false)
+			.data("reply", messages)
+			.trigger("dataChange");
 	},
-	async 'click .js-actionButton-sendMessage'(event, instance) {
+	async "click .js-actionButton-sendMessage"(event, instance) {
 		const { rid } = instance.data;
 		const msg = event.currentTarget.value;
 		let msgObject = { _id: Random.id(), rid, msg };
@@ -252,33 +270,41 @@ export const getCommonRoomEvents = () => ({
 			return;
 		}
 
-		msgObject = await promises.run('onClientBeforeSendMessage', msgObject);
+		msgObject = await promises.run("onClientBeforeSendMessage", msgObject);
 
 		const _chatMessages = chatMessages[rid];
-		if (_chatMessages && await _chatMessages.processSlashCommand(msgObject)) {
+		if (_chatMessages && (await _chatMessages.processSlashCommand(msgObject))) {
 			return;
 		}
 
-		await call('sendMessage', msgObject);
+		await call("sendMessage", msgObject);
 	},
-	'click .message-actions__menu'(e, template) {
+	"click .message-actions__menu"(e, template) {
 		const messageContext = messageArgs(this);
 		const { msg: message, context: ctx } = messageContext;
-		const context = ctx || message.context || message.actionContext || 'message';
+		const context =
+			ctx || message.context || message.actionContext || "message";
 
-		const allItems = MessageAction.getButtons(messageContext, context, 'menu').map((item) => ({
+		const allItems = MessageAction.getButtons(
+			messageContext,
+			context,
+			"menu"
+		).map((item) => ({
 			icon: item.icon,
 			name: t(item.label),
-			type: 'message-action',
+			type: "message-action",
 			id: item.id,
 			modifier: item.color,
 		}));
 
-		const itemsBelowDivider = [
-			'delete-message',
-			'report-message',
-		];
-		const [items, alertsItem] = allItems.reduce((result, value) => { result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value); return result; }, [[], []]);
+		const itemsBelowDivider = ["delete-message", "report-message"];
+		const [items, alertsItem] = allItems.reduce(
+			(result, value) => {
+				result[itemsBelowDivider.includes(value.id) ? 1 : 0].push(value);
+				return result;
+			},
+			[[], []]
+		);
 		const groups = [{ items }];
 
 		if (alertsItem.length) {
@@ -294,13 +320,13 @@ export const getCommonRoomEvents = () => ({
 			rid: template.data.rid,
 			data: this,
 			currentTarget: e.currentTarget,
-			activeElement: $(e.currentTarget).parents('.message')[0],
-			onRendered: () => new Clipboard('.rc-popover__item'),
+			activeElement: $(e.currentTarget).parents(".message")[0],
+			onRendered: () => new Clipboard(".rc-popover__item"),
 		};
 
 		popover.open(config);
 	},
-	'click .mention-link'(e, instance) {
+	"click .mention-link"(e, instance) {
 		e.stopPropagation();
 		e.preventDefault();
 
@@ -308,11 +334,18 @@ export const getCommonRoomEvents = () => ({
 			return;
 		}
 
-		const { currentTarget: { dataset: { channel, group, username } } } = e;
+		const {
+			currentTarget: {
+				dataset: { channel, group, username },
+			},
+		} = e;
 
 		if (channel) {
 			if (Layout.isEmbedded()) {
-				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
+				fireGlobalEvent("click-mention-link", {
+					path: FlowRouter.path("channel", { name: channel }),
+					channel,
+				});
 			}
 			goToRoomById(channel);
 			return;

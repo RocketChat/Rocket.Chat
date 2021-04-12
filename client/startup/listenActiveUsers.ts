@@ -46,8 +46,40 @@ export const saveUser = (
 
 Meteor.startup(() => {
 	Notifications.onLogged(
+		'roles-change',
+		(role: { _id: string; scope: string; u: IUser; type: 'added' | 'removed' | 'changed' }) => {
+			if (role.scope) {
+				return;
+			}
+
+			const user = Presence.store.get(role.u._id);
+
+			if (!user) {
+				return;
+			}
+
+			switch (role.type) {
+				// case 'changed':
+				// 	break;
+				case 'added':
+					Presence.notify({
+						...user,
+						roles: [...new Set([...user.roles, role._id])],
+					});
+					break;
+				case 'removed':
+					Presence.notify({
+						...user,
+						roles: user.roles.filter((r) => r !== role._id),
+					});
+					break;
+			}
+		},
+	);
+
+	Notifications.onLogged(
 		'user-status',
-		([_id, username, status, statusText]: [
+		async ([_id, username, status, statusText]: [
 			IUser['_id'],
 			IUser['username'],
 			number,
@@ -58,7 +90,9 @@ Meteor.startup(() => {
 				username,
 				status: STATUS_MAP[status],
 				statusText,
+				roles: Presence.store.get(_id)?.roles || [],
 			});
+
 			if (!interestedUserIds.has(_id)) {
 				return;
 			}

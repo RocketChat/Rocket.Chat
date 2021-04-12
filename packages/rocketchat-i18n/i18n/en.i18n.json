@@ -637,6 +637,7 @@
   "bot_request": "Bot request",
   "BotHelpers_userFields": "User Fields",
   "BotHelpers_userFields_Description": "CSV of user fields that can be accessed by bots helper methods.",
+  "Bot": "Bot",
   "Bots": "Bots",
   "Branch": "Branch",
   "Broadcast": "Broadcast",

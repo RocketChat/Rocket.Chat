@@ -80,13 +80,13 @@ export class ListenersModule {
 
 		service.onEvent('presence.status', ({ user }) => {
 			const {
-				_id, username, status, statusText,
+				_id, username, name, status, statusText,
 			} = user;
 			if (!status) {
 				return;
 			}
 
-			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText]);
+			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name]);
 		});
 
 		service.onEvent('user.updateCustomStatus', (userStatus) => {

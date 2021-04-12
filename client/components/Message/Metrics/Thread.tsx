@@ -57,7 +57,7 @@ const ThreadMetric: FC<ThreadReplyOptions> = ({
 					<Message.Metrics.Item.Icon name='thread' />
 					<Message.Metrics.Item.Label>{counter}</Message.Metrics.Item.Label>
 				</Message.Metrics.Item>
-				{participants && (
+				{!!participants && (
 					<Message.Metrics.Item title={t('Participants')}>
 						<Message.Metrics.Item.Icon name='user' />
 						<Message.Metrics.Item.Label>{participants}</Message.Metrics.Item.Label>
@@ -74,6 +74,8 @@ const ThreadMetric: FC<ThreadReplyOptions> = ({
 					onClick={handleFollow}
 				>
 					<Message.Metrics.Following name={following ? 'bell' : 'bell-off'} />
+				</Message.Metrics.Item>
+				<Message.Metrics.Item>
 					<Message.Metrics.Item.Label>
 						{(mention && <NotificationStatus.Me t={t} />) ||
 							(all && <NotificationStatus.All t={t} />) ||
