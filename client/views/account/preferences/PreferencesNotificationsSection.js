@@ -6,6 +6,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 import { useSetting } from '../../../contexts/SettingsContext';
+import PreferenceNotificationPause from './PreferenceNotificationPause';
 
 const notificationOptionsLabelMap = {
 	all: 'All_messages',
@@ -159,6 +160,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 					{!canChangeEmailNotification && t('Email_Notifications_Change_Disabled')}
 				</Field.Hint>
 			</Field>
+			<PreferenceNotificationPause onChange={onChange} commitRef={commitRef} />
 		</FieldGroup>
 	</Accordion.Item>;
 };
