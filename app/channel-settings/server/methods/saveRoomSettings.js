@@ -311,10 +311,10 @@ Meteor.methods({
 
 				if (room.teamMain) {
 					if (setting === 'roomName') {
-						Team.updateName(room.teamId, value);
+						Team.update(room.teamId, { name: value });
 					} else if (setting === 'roomType') {
 						const type = value === 'c' ? 0 : 1;
-						Team.updateType(room.teamId, type);
+						Team.update(room.teamId, { type });
 					}
 				}
 			}
