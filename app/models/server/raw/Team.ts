@@ -75,26 +75,6 @@ export class TeamRaw extends BaseRaw<T> {
 		return this.col.deleteOne({ name });
 	}
 
-	updateName(teamId: string, newName: string): Promise<UpdateWriteOpResult> {
-		return this.col.updateOne({
-			_id: teamId,
-		}, {
-			$set: {
-				name: newName,
-			},
-		});
-	}
-
-	updateType(teamId: string, newType: TEAM_TYPE): Promise<UpdateWriteOpResult> {
-		return this.col.updateOne({
-			_id: teamId,
-		}, {
-			$set: {
-				type: newType,
-			},
-		});
-	}
-
 	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TEAM_TYPE }): Promise < UpdateWriteOpResult > {
 		const query = {
 			_id: teamId,
