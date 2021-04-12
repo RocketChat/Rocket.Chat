@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import moment from 'moment';
 import { Field, Box, RadioButton, ToggleSwitch } from '@rocket.chat/fuselage';
+import moment from 'moment';
+import React, { useState, useMemo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
@@ -19,20 +19,19 @@ const PreferenceNotificationPauseField = ({ onChange, commitRef }) => {
 	const [customTimeActive, setCustomTimeActive] = useState(false);
 	const [pauseTime, setPauseTime] = useState(userNotificationPausedUntil || null);
 
-	const { handlers, commit } = useForm({
-		notificationPausedUntil: userNotificationPausedUntil,
-	}, onChange);
+	const { handlers, commit } = useForm(
+		{
+			notificationPausedUntil: userNotificationPausedUntil,
+		},
+		onChange,
+	);
 
-	const {
-		handleNotificationPausedUntil,
-	} = handlers;
+	const { handleNotificationPausedUntil } = handlers;
 
 	commitRef.current.notifications = commit;
 
 	const pauseNotificationOptions = useMemo(() => {
-		const options = Object
-			.entries(notificationOptionsLabelMap)
-			.map(([key, val]) => [key, t(val)]);
+		const options = Object.entries(notificationOptionsLabelMap).map(([key, val]) => [key, t(val)]);
 		return options;
 	}, [t, userNotificationPausedUntil]);
 
@@ -81,54 +80,63 @@ const PreferenceNotificationPauseField = ({ onChange, commitRef }) => {
 		<Field>
 			<Field.Label>{t('Notification Pause Settings')}</Field.Label>
 			<Field.Row>
-				{userNotificationPausedUntil && <>
-					<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label style={{ paddingLeft: 0 }}>
-							Notifications are paused till {moment(userNotificationPausedUntil).format('DD-MMM-YYYY HH:mm:ss')}
-						</Field.Label>
-						<Field.Row>
-							<ToggleSwitch onChange={handleStartNotifications} checked={pauseTime} />
-						</Field.Row>
-					</Field>
-				</>}
-				{!userNotificationPausedUntil && <>
-					<Box display='flex' flexDirection='column'>
-						{pauseNotificationOptions.map(([key, val], id) => {
-							const htmlId = `PAUSE_NOTIFICATION_OPTION-${ id }`;
-							return (
-								<Box display='flex' flexDirection='row' key={id.toString()}>
-									<RadioButton
-										name='PAUSE_NOTIFICATION_OPTIONS'
-										value={key}
-										onChange={handleChoosePauseOption}
-										id={htmlId}
-									/>
-									<Field.Label htmlFor={id}>{val}</Field.Label>
-								</Box>
-							);
-						})}
-						<Box display='flex' flexDirection='row'>
-							<RadioButton
-								name='PAUSE_NOTIFICATION_OPTIONS'
-								value={'custom'}
-								onChange={handleChoosePauseOption}
-								id={'PAUSE_NOTIFICATION_OPTION-custom'}
-							/>
-							<Field.Label htmlFor={'PAUSE_NOTIFICATION_OPTION-custom'}>{t('Choose Custom Time')}</Field.Label>
-							{customTimeActive && <Box style={{ marginLeft: 10 }}>
-								<input
-									type='datetime-local'
-									onChange={handleCustomTimeChange}
+				{userNotificationPausedUntil && (
+					<>
+						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
+							<Field.Label style={{ paddingLeft: 0 }}>
+								Notifications are paused till{' '}
+								{moment(userNotificationPausedUntil).format('DD-MMM-YYYY HH:mm:ss')}
+							</Field.Label>
+							<Field.Row>
+								<ToggleSwitch onChange={handleStartNotifications} checked={pauseTime} />
+							</Field.Row>
+						</Field>
+					</>
+				)}
+				{!userNotificationPausedUntil && (
+					<>
+						<Box display='flex' flexDirection='column'>
+							{pauseNotificationOptions.map(([key, val], id) => {
+								const htmlId = `PAUSE_NOTIFICATION_OPTION-${id}`;
+								return (
+									<Box display='flex' flexDirection='row' key={id.toString()}>
+										<RadioButton
+											name='PAUSE_NOTIFICATION_OPTIONS'
+											value={key}
+											onChange={handleChoosePauseOption}
+											id={htmlId}
+										/>
+										<Field.Label htmlFor={id}>{val}</Field.Label>
+									</Box>
+								);
+							})}
+							<Box display='flex' flexDirection='row'>
+								<RadioButton
+									name='PAUSE_NOTIFICATION_OPTIONS'
+									value={'custom'}
+									onChange={handleChoosePauseOption}
+									id={'PAUSE_NOTIFICATION_OPTION-custom'}
 								/>
-							</Box>}
+								<Field.Label htmlFor={'PAUSE_NOTIFICATION_OPTION-custom'}>
+									{t('Choose Custom Time')}
+								</Field.Label>
+								{customTimeActive && (
+									<Box style={{ marginLeft: 10 }}>
+										<input type='datetime-local' onChange={handleCustomTimeChange} />
+									</Box>
+								)}
+							</Box>
+							{pauseTime && (
+								<Box>
+									<p>
+										Notifications will be paused till{' '}
+										{moment(pauseTime).format('DD-MMM-YYYY HH:mm:ss')}
+									</p>
+								</Box>
+							)}
 						</Box>
-						{pauseTime && <Box>
-							<p>
-								Notifications will be paused till {moment(pauseTime).format('DD-MMM-YYYY HH:mm:ss')}
-							</p>
-						</Box>}
-					</Box>
-				</>}
+					</>
+				)}
 			</Field.Row>
 		</Field>
 	);
