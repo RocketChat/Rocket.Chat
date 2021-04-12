@@ -1097,7 +1097,7 @@ describe('[Teams]', () => {
 		});
 	});
 
-	describe.only('/teams.update', () => {
+	describe('/teams.update', () => {
 		let testTeam;
 		before('Create test team', (done) => {
 			const teamName = `test-team-name${ Date.now() }`;
