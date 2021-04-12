@@ -1,16 +1,5 @@
 <template name="message">
 	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message {{className}} {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}">
-		{{#if isThreadReply}}
-			{{> messageThread parentMessage=parentMessage msg=msg tmid=msg.tmid class=bodyClass following=msg.following}}
-			<div class="thread-replied js-open-thread">
-				<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
-					{{> avatar username=msg.u.username}}
-				</button>
-				<span role="button" class="js-toggle-thread-reply thread-reply-preview color-primary-font-color">
-					<span class="message-body--unstyled">{{{threadMessage}}}</span>
-				</span>
-			</div>
-		{{/if}}
 		{{#unless shouldHideBody}}
 			{{#if msg.avatar}}
 				{{#if avatarFromUsername}}
