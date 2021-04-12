@@ -1,13 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Blaze } from 'meteor/blaze';
-import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import mem from 'mem';
 import _ from 'underscore';
+import { Random } from 'meteor/random';
 
-import * as BlazeLayout from '../../../../client/lib/portals/blazeLayout';
+import { appLayout } from '../../../../client/lib/appLayout';
 import { Messages, ChatSubscription, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
@@ -15,40 +13,25 @@ import { roomTypes } from '../../../utils';
 import { call, callMethod } from './callMethod';
 import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
 import { waitUntilWrapperExists } from './RoomHistoryManager';
+import { createTemplateForComponent } from '../../../../client/lib/portals/createTemplateForComponent';
 
 window.currentTracker = undefined;
 
 // cleanup session when hot reloading
 Session.set('openedRoom', null);
 
-const getDomOfLoading = mem(function getDomOfLoading() {
-	const loadingDom = document.createElement('div');
-	const contentAsFunc = (content) => () => content;
+const replaceCenterDomBy = (dom) => {
+	const roomNode = dom();
 
-	const template = Blaze._TemplateWith({ }, contentAsFunc(Template.loading));
-	Blaze.render(template, loadingDom);
-
-	return loadingDom;
-});
-
-function replaceCenterDomBy(dom) {
-	document.dispatchEvent(new CustomEvent('main-content-destroyed'));
-
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			const mainNode = document.querySelector('.main-content');
-			if (mainNode) {
-				for (const child of Array.from(mainNode.children)) {
-					if (child) { mainNode.removeChild(child); }
-				}
-				const roomNode = dom();
-				mainNode.appendChild(roomNode);
-				return resolve([mainNode, roomNode]);
-			}
-			resolve(mainNode);
-		}, 0);
+	const center = createTemplateForComponent(Random.id(), () => import('../../../../client/views/root/DomNode'), {
+		attachment: 'at-parent',
+		props: () => ({ node: roomNode }),
 	});
-}
+
+	appLayout.render('main', { center });
+
+	return roomNode;
+};
 
 const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
 	Tracker.autorun((c) => {
@@ -65,7 +48,7 @@ export const openRoom = async function(type, name) {
 	window.currentTracker = Tracker.autorun(async function(c) {
 		const user = Meteor.user();
 		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
-			BlazeLayout.render('main');
+			appLayout.render('main');
 			return;
 		}
 
@@ -84,16 +67,14 @@ export const openRoom = async function(type, name) {
 
 			if (RoomManager.open(type + name).ready() !== true) {
 				if (settings.get('Accounts_AllowAnonymousRead')) {
-					BlazeLayout.render('main');
+					appLayout.render('main');
 				}
 
-				await replaceCenterDomBy(() => getDomOfLoading());
+				appLayout.render('main', { center: 'loading' });
 				return;
 			}
 
-			BlazeLayout.render('main', {
-				center: 'loading',
-			});
+			appLayout.render('main', { center: 'loading' });
 
 			c.stop();
 
@@ -101,12 +82,10 @@ export const openRoom = async function(type, name) {
 				window.currentTracker = undefined;
 			}
 
-			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
+			const roomDom = replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
-			if (mainNode) {
-				const selector = await waitUntilWrapperExists('.messages-box .wrapper');
-				selector.scrollTop = roomDom.oldScrollTop;
-			}
+			const selector = await waitUntilWrapperExists('.messages-box .wrapper');
+			selector.scrollTop = roomDom.oldScrollTop;
 
 			Session.set('openedRoom', room._id);
 			RoomManager.openedRoom = room._id;
@@ -147,7 +126,7 @@ export const openRoom = async function(type, name) {
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });
-			return BlazeLayout.render('main', { center: 'roomNotFound' });
+			return appLayout.render('main', { center: 'roomNotFound' });
 		}
 	});
 };
