@@ -50,7 +50,6 @@ dispatch:run-as-user
 jalik:ufs@1.0.2
 jalik:ufs-gridfs@1.0.2
 jparker:gravatar
-kadira:blaze-layout
 kadira:flow-router
 mizzao:timesync
 mrt:reactive-store
