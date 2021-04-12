@@ -156,22 +156,15 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 	async update(teamId: string, updateData: ITeamUpdateData): Promise<void> {
 		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
-		if (updateData.name) {
-			if (team) {
-				Meteor.call('saveRoomSettings', team.roomId, 'roomName', updateData.name);
-			}
-
-			await this.TeamModel.updateName(teamId, updateData.name);
-		}
-
-		if (updateData.type) {
-			if (team) {
-				Meteor.call('saveRoomSettings', team.roomId, 'roomType', Number(updateData.type) ? 'p' : 'c');
-			}
-
-			await this.TeamModel.updateType(teamId, updateData.type);
-		}
 		await this.TeamModel.updateNameAndType(teamId, updateData);
+
+		if (team && updateData.name) {
+			Meteor.call('saveRoomSettings', team.roomId, 'roomName', updateData.name);
+		}
+
+		if (team && updateData.type) {
+			Meteor.call('saveRoomSettings', team.roomId, 'roomType', Number(updateData.type) ? 'p' : 'c');
+		}
 	}
 
 	async findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]> {
