@@ -1,11 +1,17 @@
-import { Subscriptions, Settings } from '../../../models';
+import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
+import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 
-export class AppInternalBridge {
-	constructor(orch) {
-		this.orch = orch;
+import { AppServerOrchestrator } from '../orchestrator';
+import { Subscriptions, Settings } from '../../../models/server';
+import { ISubscription } from '../../../../definition/ISubscription';
+
+export class AppInternalBridge extends InternalBridge {
+	// eslint-disable-next-line no-empty-function
+	constructor(private readonly orch: AppServerOrchestrator) {
+		super();
 	}
 
-	getUsernamesOfRoomById(roomId) {
+	protected getUsernamesOfRoomById(roomId: string): Array<string> {
 		if (!roomId) {
 			return [];
 		}
@@ -20,12 +26,12 @@ export class AppInternalBridge {
 			return [];
 		}
 
-		return records.map((s) => s.u.username);
+		return records.map((s: ISubscription) => s.u.username);
 	}
 
-	getWorkspacePublicKey() {
+	protected async getWorkspacePublicKey(): Promise<ISetting> {
 		const publicKeySetting = Settings.findById('Cloud_Workspace_PublicKey').fetch()[0];
 
-		return this.orch.getConverters().get('settings').convertToApp(publicKeySetting);
+		return this.orch.getConverters()?.get('settings').convertToApp(publicKeySetting);
 	}
 }

@@ -2,15 +2,15 @@ import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBr
 import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/IMessageBridge';
 
 import { Messages, Users, Subscriptions } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { api } from '../../../../server/sdk/api';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { ISubscription } from '../../../../definition/ISubscription';
 import { AppServerOrchestrator } from '../orchestrator';
-import {ISubscription} from '/definition/ISubscription';
-import {ITypingDescriptor} from '@rocket.chat/apps-engine/server/bridges/IMessageBridge';
 
 export class AppMessageBridge extends MessageBridge {
 	// eslint-disable-next-line no-empty-function
@@ -87,7 +87,7 @@ export class AppMessageBridge extends MessageBridge {
 			);
 	}
 
-	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor) {
+	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
 		switch (scope) {
 			case 'room':
 				notifications.notifyRoom(id, 'typing', username, isTyping);

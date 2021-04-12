@@ -5,6 +5,7 @@ import { ChannelName, RoomID } from './IRoom';
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
+	tmid?: string;
 	ts: Date;
 	mentions?: {
 		_id: string;
