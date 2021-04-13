@@ -539,19 +539,19 @@ jobs:
   # NOTE: Right now it will only push on every merge into develop_pwa because we have a standing PR from it -> develop.
   widechat-ecr-push:
     runs-on: ubuntu-latest
-    if: ${{ github.base_ref == 'develop_pwa' && github.event_name == 'push' }}
+    if: ${{ github.ref == 'refs/heads/develop_pwa' && github.event_name == 'push' }}
     needs: test
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Parse for PR num
+    - name: Parse for branch
       run: |
         git_ref=${{ github.ref }}
         arrRef=(${git_ref//\// })
-        pr_num=${arrRef[2]}
-        echo "pr_num is this: $pr_num"
-        echo "PR_TAG=pr-num-$pr_num" >> $GITHUB_ENV
+        branch=${arrRef[2]}
+        echo "branch is this: $branch"
+        echo "PR_TAG=latest-$branch" >> $GITHUB_ENV
 
     - name: Restore build
       uses: actions/download-artifact@v1
