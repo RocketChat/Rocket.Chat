@@ -459,7 +459,6 @@ jobs:
 
   image-build:
     runs-on: ubuntu-latest
-    # EAR - WideChat uses Terranovax/aws-ecr-deploy@v1 to deploy to ecr
     if: github.event_name == 'DEACTIVATED'
     needs: deploy
 
@@ -540,7 +539,7 @@ jobs:
   # NOTE: Right now it will only push on every merge into develop_pwa because we have a standing PR from it -> develop.
   widechat-ecr-push:
     runs-on: ubuntu-latest
-    if: ${{ github.base_ref == 'develop' && github.event_name == 'pull_request' }}
+    if: ${{ github.base_ref == 'develop_pwa' && github.event_name == 'push' }}
     needs: test
 
     steps:
