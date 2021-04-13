@@ -66,14 +66,12 @@ export const Contacts = {
 
 		const rooms = LivechatRooms.findByVisitorId(contactId).fetch();
 
-		if (rooms && rooms.length > 0) {
-			rooms.forEach((room) => {
-				const { _id: rid } = room;
-				Rooms.setFnameById(rid, name)
-					&& LivechatInquiry.setNameByRoomId(rid, name)
-					&& Subscriptions.updateDisplayNameByRoomId(rid, name);
-			});
-		}
+		rooms?.length && rooms.forEach((room) => {
+			const { _id: rid } = room;
+			Rooms.setFnameById(rid, name)
+				&& LivechatInquiry.setNameByRoomId(rid, name)
+				&& Subscriptions.updateDisplayNameByRoomId(rid, name);
+		});
 
 		return contactId;
 	},
