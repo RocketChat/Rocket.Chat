@@ -67,51 +67,53 @@ class DeeplAutoTranslate extends AutoTranslate {
 	 * @returns {object} code : value pair
 	 */
 	getSupportedLanguages(target) {
-		if (this.autoTranslateEnabled && this.apiKey) {
-			if (this.supportedLanguages[target]) {
-				return this.supportedLanguages[target];
-			}
-			this.supportedLanguages[target] = [
-				{
-					language: 'en',
-					name: TAPi18n.__('Language_English', { lng: target }),
-				},
-				{
-					language: 'de',
-					name: TAPi18n.__('Language_German', { lng: target }),
-				},
-				{
-					language: 'fr',
-					name: TAPi18n.__('Language_French', { lng: target }),
-				},
-				{
-					language: 'es',
-					name: TAPi18n.__('Language_Spanish', { lng: target }),
-				},
-				{
-					language: 'it',
-					name: TAPi18n.__('Language_Italian', { lng: target }),
-				},
-				{
-					language: 'nl',
-					name: TAPi18n.__('Language_Dutch', { lng: target }),
-				},
-				{
-					language: 'pl',
-					name: TAPi18n.__('Language_Polish', { lng: target }),
-				},
-				{
-					language: 'pt',
-					name: TAPi18n.__('Language_Portuguese', { lng: target }),
-				},
-				{
-					language: 'ru',
-					name: TAPi18n.__('Language_Russian', { lng: target }),
-				},
-			];
+		if (!this.apiKey) {
+			return;
+		}
 
+		if (this.supportedLanguages[target]) {
 			return this.supportedLanguages[target];
 		}
+		this.supportedLanguages[target] = [
+			{
+				language: 'en',
+				name: TAPi18n.__('Language_English', { lng: target }),
+			},
+			{
+				language: 'de',
+				name: TAPi18n.__('Language_German', { lng: target }),
+			},
+			{
+				language: 'fr',
+				name: TAPi18n.__('Language_French', { lng: target }),
+			},
+			{
+				language: 'es',
+				name: TAPi18n.__('Language_Spanish', { lng: target }),
+			},
+			{
+				language: 'it',
+				name: TAPi18n.__('Language_Italian', { lng: target }),
+			},
+			{
+				language: 'nl',
+				name: TAPi18n.__('Language_Dutch', { lng: target }),
+			},
+			{
+				language: 'pl',
+				name: TAPi18n.__('Language_Polish', { lng: target }),
+			},
+			{
+				language: 'pt',
+				name: TAPi18n.__('Language_Portuguese', { lng: target }),
+			},
+			{
+				language: 'ru',
+				name: TAPi18n.__('Language_Russian', { lng: target }),
+			},
+		];
+
+		return this.supportedLanguages[target];
 	}
 
 	/**

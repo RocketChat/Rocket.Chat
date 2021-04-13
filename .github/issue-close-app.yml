@@ -12,6 +12,7 @@ comment: |
     * Expected behavior
     * Actual behavior
     * Server Setup Information
+    * Version of Rocket.Chat Server
 issueConfigs:
 # There can be several configs for different kind of issues.
 - content:

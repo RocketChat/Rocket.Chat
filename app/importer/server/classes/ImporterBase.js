@@ -41,12 +41,12 @@ export class Base {
 	 * The max BSON object size we can store in MongoDB is 16777216 bytes
 	 * but for some reason the mongo instanace which comes with Meteor
 	 * errors out for anything close to that size. So, we are rounding it
-	 * down to 8000000 bytes.
+	 * down to 6000000 bytes.
 	 *
 	 * @returns {number} 8000000 bytes.
 	 */
 	static getMaxBSONSize() {
-		return 8000000;
+		return 6000000;
 	}
 
 	/**
@@ -140,7 +140,7 @@ export class Base {
 	 */
 	prepareUsingLocalFile(fullFilePath) {
 		const file = fs.readFileSync(fullFilePath);
-		const buffer = Buffer.isBuffer(file) ? file : new Buffer(file);
+		const buffer = Buffer.isBuffer(file) ? file : Buffer.from(file);
 
 		const { contentType } = this.importRecord;
 		const fileName = this.importRecord.file;
@@ -163,7 +163,7 @@ export class Base {
 	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
 		this.collection.remove({});
 		if (!skipTypeCheck) {
-			const fileType = this.getFileType(new Buffer(dataURI.split(',')[1], 'base64'));
+			const fileType = this.getFileType(Buffer.from(dataURI.split(',')[1], 'base64'));
 			this.logger.debug('Uploaded file information is:', fileType);
 			this.logger.debug('Expected file type is:', this.info.mimeType);
 

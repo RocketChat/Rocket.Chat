@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import s from 'underscore.string';
 
 import { Rooms } from '../../../models';
+import { escapeHTML } from '../../../../lib/escapeHTML';
 
 export const saveRoomTokensMinimumBalance = function(rid, roomTokensMinimumBalance) {
 	if (!Match.test(rid, String)) {
@@ -11,7 +11,7 @@ export const saveRoomTokensMinimumBalance = function(rid, roomTokensMinimumBalan
 		});
 	}
 
-	const minimumTokenBalance = parseFloat(s.escapeHTML(roomTokensMinimumBalance));
+	const minimumTokenBalance = parseFloat(escapeHTML(roomTokensMinimumBalance));
 
 	return Rooms.setMinimumTokenBalanceById(rid, minimumTokenBalance);
 };

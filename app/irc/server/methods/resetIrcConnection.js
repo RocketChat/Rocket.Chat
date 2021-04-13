@@ -1,32 +1,31 @@
 import { Meteor } from 'meteor/meteor';
 
+import { Settings } from '../../../models/server';
 import { settings } from '../../../settings';
-import { t } from '../../../utils';
 import Bridge from '../irc-bridge';
 
 Meteor.methods({
 	resetIrcConnection() {
-		const ircEnabled = !!settings.get('IRC_Enabled') === true;
+		const ircEnabled = Boolean(settings.get('IRC_Enabled'));
+		Settings.upsert({ _id: 'IRC_Bridge_Last_Ping' }, {
+			$set: {
+				value: new Date(0),
+			},
+		});
+		Settings.upsert({ _id: 'IRC_Bridge_Reset_Time' }, {
+			$set: {
+				value: new Date(),
+			},
+		});
 
-		if (Meteor.ircBridge) {
-			Meteor.ircBridge.stop();
-			if (!ircEnabled) {
-				return {
-					message: 'Connection_Closed',
-					params: [],
-				};
-			}
+		if (!ircEnabled) {
+			return {
+				message: 'Connection_Closed',
+				params: [],
+			};
 		}
 
-		if (ircEnabled) {
-			if (Meteor.ircBridge) {
-				Meteor.ircBridge.init();
-				return {
-					message: 'Connection_Reset',
-					params: [],
-				};
-			}
-
+		setTimeout(Meteor.bindEnvironment(() => {
 			// Normalize the config values
 			const config = {
 				server: {
@@ -44,13 +43,11 @@ Meteor.methods({
 
 			Meteor.ircBridge = new Bridge(config);
 			Meteor.ircBridge.init();
+		}), 300);
 
-			return {
-				message: 'Connection_Reset',
-				params: [],
-			};
-		}
-
-		throw new Meteor.Error(t('IRC_Federation_Disabled'));
+		return {
+			message: 'Connection_Reset',
+			params: [],
+		};
 	},
 });

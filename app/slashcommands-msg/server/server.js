@@ -4,8 +4,8 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { slashCommands } from '../../utils';
-import { Notifications } from '../../notifications';
 import { Users } from '../../models';
+import { api } from '../../../server/sdk/api';
 
 /*
 * Msg is a named function that will replace /msg commands
@@ -19,10 +19,7 @@ function Msg(command, params, item) {
 	const separator = trimmedParams.indexOf(' ');
 	const user = Meteor.users.findOne(Meteor.userId());
 	if (separator === -1) {
-		return	Notifications.notifyUser(Meteor.userId(), 'message', {
-			_id: Random.id(),
-			rid: item.rid,
-			ts: new Date(),
+		return api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Username_and_message_must_not_be_empty', null, user.language),
 		});
 	}
@@ -31,10 +28,7 @@ function Msg(command, params, item) {
 	const targetUsername = targetUsernameOrig.replace('@', '');
 	const targetUser = Users.findOneByUsernameIgnoringCase(targetUsername);
 	if (targetUser == null) {
-		Notifications.notifyUser(Meteor.userId(), 'message', {
-			_id: Random.id(),
-			rid: item.rid,
-			ts: new Date(),
+		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Username_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [targetUsernameOrig],

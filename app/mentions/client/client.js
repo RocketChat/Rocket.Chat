@@ -1,28 +1,26 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-
-import { callbacks } from '../../callbacks';
-import { settings } from '../../settings';
-import { Users } from '../../models/client';
 import { MentionsParser } from '../lib/MentionsParser';
+import './mentionLink.css';
 
-let me;
-let useRealName;
-let pattern;
-
-Meteor.startup(() => Tracker.autorun(() => {
-	const uid = Meteor.userId();
-	me = uid && (Users.findOne(uid, { fields: { username: 1 } }) || {}).username;
-	pattern = settings.get('UTF8_Names_Validation');
-	useRealName = settings.get('UI_Use_Real_Name');
-}));
-
-
-export const instance = new MentionsParser({
-	pattern: () => pattern,
-	useRealName: () => useRealName,
-	me: () => me,
+export let instance = new MentionsParser({
+	me: () => undefined,
+	pattern: () => undefined,
+	useRealName: () => undefined,
 });
 
-callbacks.add('renderMessage', (message) => instance.parse(message), callbacks.priority.MEDIUM, 'mentions-message');
-callbacks.add('renderMentions', (message) => instance.parse(message), callbacks.priority.MEDIUM, 'mentions-mentions');
+export let renderMentions = (message) => message;
+
+export const createMentionsMessageRenderer = ({
+	me,
+	pattern,
+	useRealName,
+}) => {
+	instance = new MentionsParser({
+		me: () => me,
+		pattern: () => pattern,
+		useRealName: () => useRealName,
+	});
+
+	renderMentions = (message) => instance.parse(message);
+
+	return (message) => instance.parse(message);
+};

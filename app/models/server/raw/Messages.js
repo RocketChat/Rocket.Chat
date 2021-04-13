@@ -166,7 +166,7 @@ export class MessagesRaw extends BaseRaw {
 			{
 				$project: {
 					_id: 0,
-					date: { $toInt: '$_id.date' },
+					date: '$_id.date',
 					room: {
 						_id: '$_id._id',
 						name: '$_id.name',

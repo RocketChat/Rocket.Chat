@@ -3,8 +3,8 @@
  * @param {Object} message - The message object
  */
 import { Random } from 'meteor/random';
-import s from 'underscore.string';
 
+import { unescapeHTML } from '../../../../../lib/unescapeHTML';
 import hljs from '../../hljs';
 
 const inlinecode = (message) => {
@@ -41,12 +41,12 @@ const codeblocks = (message) => {
 			const part = msgParts[index];
 			const codeMatch = part.match(/^```[\r\n]*(.*[\r\n\ ]?)[\r\n]*([\s\S]*?)```+?$/);
 
-			if (codeMatch != null) {
+			if (codeMatch) {
 				// Process highlight if this part is code
 				const singleLine = codeMatch[0].indexOf('\n') === -1;
-				const lang = !singleLine && Array.from(hljs.listLanguages()).includes(s.trim(codeMatch[1])) ? s.trim(codeMatch[1]) : '';
-				const emptyLanguage = lang === '' ? s.unescapeHTML(codeMatch[1] + codeMatch[2]) : s.unescapeHTML(codeMatch[2]);
-				const code = singleLine ? s.unescapeHTML(codeMatch[1]) : emptyLanguage;
+				const lang = !singleLine && Array.from(hljs.listLanguages()).includes(codeMatch[1].trim()) ? codeMatch[1].trim() : '';
+				const emptyLanguage = lang === '' ? unescapeHTML(codeMatch[1] + codeMatch[2]) : unescapeHTML(codeMatch[2]);
+				const code = singleLine ? unescapeHTML(codeMatch[1]) : emptyLanguage;
 
 				const result = lang === '' ? hljs.highlightAuto(lang + code) : hljs.highlight(lang, code);
 				const token = `=!=${ Random.id() }=!=`;
@@ -70,8 +70,8 @@ const codeblocks = (message) => {
 };
 
 export const code = (message) => {
-	if (s.trim(message.html)) {
-		if (message.tokens == null) {
+	if (message.html?.trim()) {
+		if (!message.tokens) {
 			message.tokens = [];
 		}
 

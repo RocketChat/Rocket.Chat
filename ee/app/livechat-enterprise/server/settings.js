@@ -53,24 +53,30 @@ export const createSettings = () => {
 		],
 	});
 
-	settings.add('Livechat_auto_close_abandoned_rooms', false, {
-		type: 'boolean',
+	settings.add('Livechat_abandoned_rooms_action', 'none', {
+		type: 'select',
 		group: 'Omnichannel',
 		section: 'Sessions',
-		i18nLabel: 'Enable_omnichannel_auto_close_abandoned_rooms',
+		values: [
+			{ key: 'none', i18nLabel: 'Do_Nothing' },
+			{ key: 'close', i18nLabel: 'Livechat_close_chat' },
+			{ key: 'on-hold', i18nLabel: 'Livechat_onHold_Chat' },
+		],
 		enterprise: true,
-		invalidValue: false,
+		public: true,
+		invalidValue: 'none',
 		modules: [
 			'livechat-enterprise',
 		],
 	});
+
 
 	settings.add('Livechat_abandoned_rooms_closed_custom_message', '', {
 		type: 'string',
 		group: 'Omnichannel',
 		section: 'Sessions',
 		i18nLabel: 'Livechat_abandoned_rooms_closed_custom_message',
-		enableQuery: { _id: 'Livechat_auto_close_abandoned_rooms', value: true },
+		enableQuery: { _id: 'Livechat_abandoned_rooms_action', value: 'close' },
 		enterprise: true,
 		invalidValue: '',
 		modules: [
@@ -82,7 +88,6 @@ export const createSettings = () => {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Routing',
-		enableQuery: { _id: 'Livechat_Routing_Method', value: { $ne: 'Manual_Selection' } },
 		enterprise: true,
 		invalidValue: false,
 		modules: [
@@ -110,6 +115,64 @@ export const createSettings = () => {
 				],
 			});
 		});
+	});
+
+	settings.add('Omnichannel_contact_manager_routing', true, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Routing',
+		enterprise: true,
+		invalidValue: false,
+		modules: [
+			'livechat-enterprise',
+		],
+	});
+
+	settings.add('Livechat_auto_close_on_hold_chats_timeout', 3600, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enterprise: true,
+		invalidValue: 0,
+		modules: [
+			'livechat-enterprise',
+		],
+	});
+
+	settings.add('Livechat_auto_close_on_hold_chats_custom_message', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enableQuery: { _id: 'Livechat_auto_close_on_hold_chats_timeout', value: { $gte: 1 } },
+		enterprise: true,
+		invalidValue: '',
+		modules: [
+			'livechat-enterprise',
+		],
+	});
+
+	settings.add('Livechat_allow_manual_on_hold', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		enterprise: true,
+		invalidValue: false,
+		public: true,
+		modules: [
+			'livechat-enterprise',
+		],
+	});
+
+	settings.add('Livechat_auto_transfer_chat_timeout', 0, {
+		type: 'int',
+		group: 'Omnichannel',
+		section: 'Sessions',
+		i18nDescription: 'Livechat_auto_transfer_chat_timeout_description',
+		enterprise: true,
+		invalidValue: 0,
+		modules: [
+			'livechat-enterprise',
+		],
 	});
 
 	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Balancing', i18nLabel: 'Load_Balancing' });

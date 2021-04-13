@@ -458,7 +458,7 @@ describe('Settings', () => {
 
 		settings.updateById('setting_callback', 'value3');
 
-		expect(spy).to.have.been.called.exactly(4);
+		expect(spy).to.have.been.called.exactly(6);
 		expect(spy).to.have.been.called.with('setting_callback', 'value2');
 		expect(spy).to.have.been.called.with('setting_callback', 'value3');
 	});

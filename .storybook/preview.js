@@ -1,13 +1,24 @@
-import { withKnobs } from '@storybook/addon-knobs';
+import { DocsPage, DocsContainer } from '@storybook/addon-docs/blocks';
 import { addDecorator, addParameters } from '@storybook/react';
 
 import { rocketChatDecorator } from './decorators';
 
 addDecorator(rocketChatDecorator);
-addDecorator(withKnobs);
 
 addParameters({
+	backgrounds: {
+		grid: {
+			cellSize: 4,
+			cellAmount: 4,
+			opacity: 0.5,
+		},
+	},
+	docs: {
+		container: DocsContainer,
+		page: DocsPage,
+	},
 	options: {
-		showRoots: true,
+		storySort: ([, a], [, b]) =>
+			a.kind.localeCompare(b.kind),
 	},
 });

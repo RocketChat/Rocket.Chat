@@ -1,5 +1,5 @@
 <template name="messageThread">
-	<q role="button" title="{{_ " Open_thread "}}" class="thread-quote js-open-thread">
+	<q role="button" title="{{_ "Open_thread"}}" class="thread-quote js-open-thread">
 		{{> icon icon="thread" block="thread-icons"}} <div class="thread-quote__message "><span class="message-body--unstyled">{{{parentMessage}}}</span></div>
 		{{# if following }}
 		<div role="button" class="js-unfollow-thread" title="{{_ "Following"}}">

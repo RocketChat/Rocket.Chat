@@ -19,13 +19,17 @@ const isPortTaken = (port) => new Promise((resolve, reject) => {
 		.listen(port);
 });
 
-const waitPortRelease = (port) => new Promise((resolve, reject) => {
+const waitPortRelease = (port, count = 0) => new Promise((resolve, reject) => {
 	isPortTaken(port).then((taken) => {
 		if (!taken) {
 			return resolve();
 		}
+		if (count > 60) {
+			return reject();
+		}
+		console.log('Port', port, 'not release, waiting 1s...');
 		setTimeout(() => {
-			waitPortRelease(port).then(resolve).catch(reject);
+			waitPortRelease(port, ++count).then(resolve).catch(reject);
 		}, 1000);
 	});
 });
@@ -77,7 +81,10 @@ function startProcess(opts, callback) {
 
 		processes.splice(processes.indexOf(proc), 1);
 
-		processes.forEach((p) => p.kill());
+		processes.forEach((p) => {
+			console.log('Killing process', p.pid);
+			p.kill();
+		});
 
 		if (processes.length === 0) {
 			waitPortRelease(appOptions.env.PORT).then(() => {

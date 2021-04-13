@@ -61,6 +61,10 @@
 	--rc-color-primary-lightest: var(--color-gray-lightest);
 	--rc-color-content: var(--color-white);
 	--rc-color-link-active: var(--rc-color-button-primary);
+	--rc-color-announcement-text: #095ad2;
+	--rc-color-announcement-background: #d1ebfe;
+	--rc-color-announcement-text-hover: #01336b;
+	--rc-color-announcement-background-hover: #76b7fc;
 
 	/* #endregion */
 
@@ -82,7 +86,6 @@
 	/* #endregion */
 
 	/* #region less-colors Old Colors (minor) */
-	--tertiary-background-color: var(--component-color);
 	--tertiary-font-color: var(--transparent-lightest);
 	--link-font-color: var(--primary-action-color);
 	--info-font-color: var(--secondary-font-color);
@@ -268,13 +271,6 @@
 	--sidebar-item-text-size: 0.875rem;
 
 	/*
-	* Modal
-	*/
-	--modal-wrapper-width: 650px;
-	--modal-wrapper-margin: 3rem;
-	--modal-back-button-color: var(--color-gray);
-
-	/*
 	* Modal - Create Channel
 	*/
 	--create-channel-gap-between-elements: 1rem;
@@ -354,10 +350,6 @@
 	*/
 	--header-height: 77px;
 	--header-padding: 16px;
-	--header-toggle-favorite-color: var(--color-gray-medium);
-	--header-toggle-favorite-star-color: var(--rc-color-alert-light);
-	--header-toggle-encryption-off-color: var(--color-gray-medium);
-	--header-toggle-encryption-on-color: var(--rc-color-alert-message-secondary);
 	--header-title-username-color-darker: var(--color-dark);
 	--header-title-font-size: var(--text-default-size);
 	--header-title-font-size--subtitle: var(--text-small-size);

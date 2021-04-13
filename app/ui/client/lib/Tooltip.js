@@ -1,6 +1,6 @@
 import { Tracker } from 'meteor/tracker';
 
-import { createEphemeralPortal } from '../../../../client/reactAdapters';
+import { createEphemeralPortal } from '../../../../client/lib/portals/createEphemeralPortal';
 
 const Dep = new Tracker.Dependency();
 
@@ -8,7 +8,7 @@ let state;
 let dom;
 let unregister;
 
-const createAchor = () => {
+const createAnchor = () => {
 	const div = document.createElement('div');
 	div.id = 'react-tooltip';
 	document.body.appendChild(div);
@@ -28,14 +28,14 @@ export const closeTooltip = () => {
 	unregister = unregister && unregister();
 };
 
-export const openToolTip = async (title, anchor) => {
-	dom = dom || createAchor();
+export const openToolTip = (title, anchor) => {
+	dom = dom || createAnchor();
 	state = {
 		title,
 		anchor,
 	};
 	Dep.changed();
-	unregister = unregister || await createEphemeralPortal(() => import('./TooltipComponent'), props, dom);
+	unregister = unregister || createEphemeralPortal(() => import('./TooltipComponent'), props, dom);
 };
 
 document.body.addEventListener('mouseover', (() => {

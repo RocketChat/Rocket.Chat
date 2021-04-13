@@ -10,6 +10,7 @@ import { AppRoomBridge } from './rooms';
 import { AppInternalBridge } from './internal';
 import { AppSettingBridge } from './settings';
 import { AppUserBridge } from './users';
+import { AppSchedulerBridge } from './scheduler';
 
 export {
 	RealAppBridges,
@@ -24,4 +25,5 @@ export {
 	AppSettingBridge,
 	AppUserBridge,
 	AppInternalBridge,
+	AppSchedulerBridge,
 };

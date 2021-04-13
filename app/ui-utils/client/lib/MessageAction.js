@@ -12,7 +12,7 @@ import { Session } from 'meteor/session';
 import { messageArgs } from './messageArgs';
 import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
-import { hasAtLeastOnePermission } from '../../../authorization/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { modal } from './modal';
 
 const call = (method, ...args) => new Promise((resolve, reject) => {
@@ -166,13 +166,22 @@ Meteor.startup(async function() {
 				reply: msg._id,
 			});
 		},
-		condition({ subscription, room }) {
+		condition({ subscription, room, msg, u }) {
 			if (subscription == null) {
 				return false;
 			}
 			if (room.t === 'd' || room.t === 'l') {
 				return false;
 			}
+
+			// Check if we already have a DM started with the message user (not ourselves) or we can start one
+			if (u._id !== msg.u._id && !hasPermission('create-d')) {
+				const dmRoom = Rooms.findOne({ _id: [u._id, msg.u._id].sort().join('') });
+				if (!dmRoom || !Subscriptions.findOne({ rid: dmRoom._id, 'u._id': u._id })) {
+					return false;
+				}
+			}
+
 			return true;
 		},
 		order: 0,
@@ -353,6 +362,26 @@ Meteor.startup(async function() {
 			return Boolean(subscription);
 		},
 		order: 17,
+		group: 'menu',
+	});
+
+	MessageAction.addButton({
+		id: 'reaction-list',
+		icon: 'emoji',
+		label: 'Reactions',
+		context: ['message', 'message-mobile', 'threads'],
+		action(_, { tabBar, rid }) {
+			const { msg: { reactions } } = messageArgs(this);
+
+			modal.open({
+				template: 'reactionList',
+				data: { reactions, tabBar, rid, onClose: () => modal.close() },
+			});
+		},
+		condition({ msg: { reactions } }) {
+			return !!reactions;
+		},
+		order: 18,
 		group: 'menu',
 	});
 });

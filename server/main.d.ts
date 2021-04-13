@@ -1,4 +1,7 @@
 import { EJSON } from 'meteor/ejson';
+import { Db, Collection } from 'mongodb';
+
+import { IStreamerConstructor } from './modules/streamer/streamer.module';
 
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 declare module 'meteor/random' {
@@ -37,7 +40,11 @@ declare module 'meteor/meteor' {
 			details?: string | undefined | Record<string, string>;
 		}
 
+		const Streamer: IStreamerConstructor;
+
 		const server: any;
+
+		const runAsUser: (userId: string, scope: Function) => any;
 
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;
@@ -79,5 +86,49 @@ declare module 'meteor/littledata:synced-cron' {
 	namespace SyncedCron {
 		function add(params: ICronAddParameters): string;
 		function remove(name: string): string;
+	}
+}
+
+declare module 'meteor/mongo' {
+	interface RemoteCollectionDriver {
+		mongo: MongoConnection;
+	}
+	interface OplogHandle {
+		stop(): void;
+		onOplogEntry(trigger: Record<string, any>, callback: Function): void;
+		onSkippedEntries(callback: Function): void;
+		waitUntilCaughtUp(): void;
+		_defineTooFarBehind(value: number): void;
+	}
+	interface MongoConnection {
+		db: Db;
+		_oplogHandle: OplogHandle;
+		rawCollection(name: string): Collection;
+	}
+
+	namespace MongoInternals {
+		function defaultRemoteCollectionDriver(): RemoteCollectionDriver;
+
+		class ConnectionClass {}
+
+		function Connection(): ConnectionClass;
+	}
+}
+
+declare module 'async_hooks' {
+	export class AsyncLocalStorage<T> {
+		disable(): void;
+
+		getStore(): T | undefined;
+
+		run(store: T, callback: (...args: any[]) => void, ...args: any[]): void;
+
+		exit(callback: (...args: any[]) => void, ...args: any[]): void;
+
+		runSyncAndReturn<R>(store: T, callback: (...args: any[]) => R, ...args: any[]): R;
+
+		exitSyncAndReturn<R>(callback: (...args: any[]) => R, ...args: any[]): R;
+
+		enterWith(store: T): void;
 	}
 }

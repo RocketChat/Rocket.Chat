@@ -8,4 +8,6 @@ export interface ISAMLGlobalSettings {
 	roleAttributeSync: boolean;
 	userDataFieldMap: string;
 	usernameNormalize: string;
+	channelsAttributeUpdate: boolean;
+	includePrivateChannelsInUpdate: boolean;
 }

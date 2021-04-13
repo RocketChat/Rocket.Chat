@@ -1,0 +1,25 @@
+scrape_configs:
+# if you just have single or multiple, but static instances - you
+# can use the static configuration below.
+- job_name: rocketchat_static
+  static_configs:
+  - targets:
+    - cadvisor:8080
+
+
+# If you use a Docker-based setup make sure to use the DNS
+# discovery to always include all available application instances
+# of Rocket.Chat
+- job_name: rocketchat_docker
+  scrape_interval: 5s
+  dns_sd_configs:
+  - names: [
+      "authorization-service",
+      "account-service",
+      "presence-service",
+      "ddp-streamer-service",
+      "stream-hub-service",
+      "traefik",
+    ]
+    type: A
+    port: 9458

@@ -7,6 +7,8 @@ import juice from 'juice';
 import stripHtml from 'string-strip-html';
 
 import { settings } from '../../settings/server';
+import { escapeHTML } from '../../../lib/escapeHTML';
+import { replaceVariables } from './utils.js';
 
 let contentHeader;
 let contentFooter;
@@ -23,8 +25,8 @@ settings.get('Language', (key, value) => {
 	lng = value || 'en';
 });
 
-export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), s.escapeHTML(value));
-export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key, { lng }));
+export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), escapeHTML(value));
+export const translate = (str) => replaceVariables(str, (match, key) => TAPi18n.__(key, { lng }));
 export const replace = function replace(str, data = {}) {
 	if (!str) {
 		return '';
@@ -45,10 +47,10 @@ export const replace = function replace(str, data = {}) {
 const nonEscapeKeys = ['room_path'];
 
 export const replaceEscaped = (str, data = {}) => replace(str, {
-	Site_Name: s.escapeHTML(settings.get('Site_Name')),
-	Site_Url: s.escapeHTML(settings.get('Site_Url')),
+	Site_Name: escapeHTML(settings.get('Site_Name')),
+	Site_Url: escapeHTML(settings.get('Site_Url')),
 	...Object.entries(data).reduce((ret, [key, value]) => {
-		ret[key] = nonEscapeKeys.includes(key) ? value : s.escapeHTML(value);
+		ret[key] = nonEscapeKeys.includes(key) ? value : escapeHTML(value);
 		return ret;
 	}, {}),
 });
@@ -108,7 +110,7 @@ export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) 
 	}
 
 	if (!text) {
-		text = stripHtml(html);
+		text = stripHtml(html).result;
 	}
 
 	if (settings.get('email_plain_text_only')) {
@@ -126,7 +128,7 @@ export const send = ({ to, from, replyTo, subject, html, text, data, headers }) 
 		subject: replace(subject, data),
 		text: text
 			? replace(text, data)
-			: stripHtml(replace(html, data)),
+			: stripHtml(replace(html, data)).result,
 		html: wrap(html, data),
 		headers,
 	});

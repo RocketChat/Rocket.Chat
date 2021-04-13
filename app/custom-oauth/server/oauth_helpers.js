@@ -1,6 +1,9 @@
 import { addUserRoles, removeUserFromRoles } from '../../authorization';
-import { Roles } from '../../models';
+import { Roles, Rooms } from '../../models';
+import { addUserToRoom, createRoom } from '../../lib/server/functions';
+import { Logger } from '../../logger';
 
+export const logger = new Logger('OAuth', {});
 
 // Returns list of roles from SSO identity
 export function mapRolesFromSSO(identity, roleClaimName) {
@@ -38,5 +41,33 @@ export function updateRolesFromSSO(user, identity, roleClaimName) {
 		toAdd.forEach(function(role) {
 			addUserRoles(user._id, role);
 		});
+	}
+}
+
+export function mapSSOGroupsToChannels(user, identity, groupClaimName, channelsMap, channelsAdmin) {
+	if (user && identity && groupClaimName) {
+		const groupsFromSSO = identity[groupClaimName] || [];
+
+		for (const ssoGroup in channelsMap) {
+			if (typeof ssoGroup === 'string') {
+				let channels = channelsMap[ssoGroup];
+				if (!Array.isArray(channels)) {
+					channels = [channels];
+				}
+				for (const channel of channels) {
+					let room = Rooms.findOneByNonValidatedName(channel);
+					if (!room) {
+						room = createRoom('c', channel, channelsAdmin, [], false);
+						if (!room || !room.rid) {
+							logger.error(`could not create channel ${ channel }`);
+							return;
+						}
+					}
+					if (Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
+						addUserToRoom(room._id, user);
+					}
+				}
+			}
+		}
 	}
 }

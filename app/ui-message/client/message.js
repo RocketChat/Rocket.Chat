@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import s from 'underscore.string';
+import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
@@ -8,15 +8,17 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
-import { renderMessageBody, MessageTypes, MessageAction } from '../../ui-utils/client';
+import { MessageTypes, MessageAction } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles } from '../../models/client';
-import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes } from '../../utils';
-import './message.html';
 import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
-
+import { escapeHTML } from '../../../lib/escapeHTML';
+import { renderMentions } from '../../mentions/client/client';
+import { renderMessageBody } from '../../../client/lib/renderMessageBody';
+import { settings } from '../../settings/client';
+import './message.html';
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
@@ -28,11 +30,11 @@ const renderBody = (msg, settings) => {
 	} else if (messageType.template) {
 		// render template
 	} else if (messageType.message) {
-		msg.msg = s.escapeHTML(msg.msg);
+		msg.msg = escapeHTML(msg.msg);
 		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
 		msg.html = msg.msg;
-		msg = callbacks.run('renderMentions', msg);
+		msg = renderMentions(msg);
 		msg = msg.html;
 	} else {
 		msg = renderMessageBody(msg);
@@ -50,6 +52,19 @@ const renderBody = (msg, settings) => {
 };
 
 Template.message.helpers({
+	unread() {
+		const { msg, subscription } = this;
+		return subscription?.tunread?.includes(msg._id);
+	},
+	mention() {
+		const { msg, subscription } = this;
+		return subscription.tunreadUser?.includes(msg._id);
+	},
+
+	all() {
+		const { msg, subscription } = this;
+		return subscription.tunreadGroup?.includes(msg._id);
+	},
 	following() {
 		const { msg, u } = this;
 		return msg.replies && msg.replies.indexOf(u._id) > -1;
@@ -95,6 +110,10 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.bot && 'bot';
 	},
+	hasAttachments() {
+		const { msg } = this;
+		return msg.attachments?.length;
+	},
 	roleTags() {
 		const { msg, hideRoles, settings } = this;
 		if (settings.hideRoles || hideRoles) {
@@ -136,6 +155,13 @@ Template.message.helpers({
 		if (msg.avatar != null && msg.avatar[0] === '@') {
 			return msg.avatar.replace(/^@/, '');
 		}
+	},
+	avatarFromMessage() {
+		const { msg } = this;
+		if (msg && msg.avatar) {
+			return encodeURI(msg.avatar);
+		}
+		return '';
 	},
 	getStatus() {
 		const { msg } = this;
@@ -207,25 +233,6 @@ Template.message.helpers({
 			return 'system';
 		}
 	},
-	unread() {
-		const { msg, subscription } = this;
-		if (!subscription?.tunread?.includes(msg._id)) {
-			return false;
-		}
-
-		const badgeClass = (() => {
-			if (subscription.tunreadUser?.includes(msg._id)) {
-				return 'badge--user-mentions';
-			}
-			if (subscription.tunreadGroup?.includes(msg._id)) {
-				return 'badge--group-mentions';
-			}
-		})();
-
-		return {
-			class: badgeClass,
-		};
-	},
 	showTranslated() {
 		const { msg, subscription, settings, u } = this;
 		if (settings.AutoTranslate_Enabled && msg.u && msg.u._id !== u._id && !MessageTypes.isSystemMessage(msg)) {
@@ -236,7 +243,7 @@ Template.message.helpers({
 	translationProvider() {
 		const instance = Template.instance();
 		const { translationProvider } = instance.data.msg;
-		return translationProvider && AutoTranslate.providersMetadata[translationProvider].displayName;
+		return translationProvider && AutoTranslate.providersMetadata[translationProvider]?.displayName;
 	},
 	edited() {
 		const { msg } = this;
@@ -442,7 +449,16 @@ Template.message.helpers({
 	},
 	showStar() {
 		const { msg } = this;
-		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
+		return msg.starred && msg.starred.length > 0 && msg.starred.find((star) => star._id === Meteor.userId()) && !(msg.actionContext === 'starred' || this.context === 'starred');
+	},
+	readReceipt() {
+		if (!settings.get('Message_Read_Receipt_Enabled')) {
+			return;
+		}
+
+		return {
+			readByEveryone: (!this.msg.unread && 'read') || 'color-component-color',
+		};
 	},
 });
 

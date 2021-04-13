@@ -15,7 +15,7 @@ export function shouldNotifyAudio({
 	roomType,
 	isThread,
 }) {
-	if (disableAllMessageNotifications && audioNotifications == null && !hasReplyToThread) {
+	if (disableAllMessageNotifications && audioNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
 

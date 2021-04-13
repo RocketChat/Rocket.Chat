@@ -144,6 +144,7 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term,
 			phone: 1,
 			livechatData: 1,
 			visitorEmails: 1,
+			lastChat: 1,
 		},
 	});
 

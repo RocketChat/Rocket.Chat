@@ -10,6 +10,8 @@ import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { Rooms } from '../../../models/client';
+import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
+import { goToRoomById } from '../../../../client/lib/goToRoomById';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -34,7 +36,7 @@ Meteor.startup(function() {
 				return RoomHistoryManager.getSurroundingMessages(message, 50);
 			}
 
-			FlowRouter.goToRoomById(message.rid);
+			goToRoomById(message.rid);
 			// RocketChat.MessageAction.hideDropDown();
 
 			if (window.matchMedia('(max-width: 500px)').matches) {
@@ -84,6 +86,7 @@ Template.DefaultSearchResultTemplate.onCreated(function() {
 });
 
 Template.DefaultSearchResultTemplate.events({
+	...getCommonRoomEvents(),
 	'change #global-search'(e, t) {
 		t.data.parentPayload.searchAll = e.target.checked;
 		t.data.payload.limit = t.pageSize;

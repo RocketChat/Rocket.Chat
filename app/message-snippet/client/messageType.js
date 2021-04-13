@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 
+import { escapeHTML } from '../../../lib/escapeHTML';
 import { MessageTypes } from '../../ui-utils';
 
 Meteor.startup(function() {
@@ -9,7 +9,7 @@ Meteor.startup(function() {
 		system: true,
 		message: 'Snippeted_a_message',
 		data(message) {
-			const snippetLink = `<a href="/snippet/${ message.snippetId }/${ encodeURIComponent(message.snippetName) }">${ s.escapeHTML(message.snippetName) }</a>`;
+			const snippetLink = `<a href="/snippet/${ message.snippetId }/${ encodeURIComponent(message.snippetName) }">${ escapeHTML(message.snippetName) }</a>`;
 			return { snippetLink };
 		},
 	});

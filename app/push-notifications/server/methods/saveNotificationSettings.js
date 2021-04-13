@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Subscriptions } from '../../../models';
+import { Subscriptions } from '../../../models/server';
 import { getUserNotificationPreference } from '../../../utils';
 
 Meteor.methods({
@@ -13,39 +13,26 @@ Meteor.methods({
 		check(field, String);
 		check(value, String);
 
+		const getNotificationPrefValue = (field, value) => {
+			if (value === 'default') {
+				const userPref = getUserNotificationPreference(Meteor.userId(), field);
+				return userPref.origin === 'server' ? null : userPref;
+			}
+			return { value, origin: 'subscription' };
+		};
+
 		const notifications = {
 			audioNotifications: {
-				updateMethod: (subscription, value) => Subscriptions.updateAudioNotificationsById(subscription._id, value),
+				updateMethod: (subscription, value) => Subscriptions.updateNotificationsPrefById(subscription._id, getNotificationPrefValue('audio', value), 'audioNotifications', 'audioPrefOrigin'),
 			},
 			desktopNotifications: {
-				updateMethod: (subscription, value) => {
-					if (value === 'default') {
-						const userPref = getUserNotificationPreference(Meteor.userId(), 'desktop');
-						Subscriptions.updateDesktopNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
-					} else {
-						Subscriptions.updateDesktopNotificationsById(subscription._id, { value, origin: 'subscription' });
-					}
-				},
+				updateMethod: (subscription, value) => Subscriptions.updateNotificationsPrefById(subscription._id, getNotificationPrefValue('desktop', value), 'desktopNotifications', 'desktopPrefOrigin'),
 			},
 			mobilePushNotifications: {
-				updateMethod: (subscription, value) => {
-					if (value === 'default') {
-						const userPref = getUserNotificationPreference(Meteor.userId(), 'mobile');
-						Subscriptions.updateMobilePushNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
-					} else {
-						Subscriptions.updateMobilePushNotificationsById(subscription._id, { value, origin: 'subscription' });
-					}
-				},
+				updateMethod: (subscription, value) => Subscriptions.updateNotificationsPrefById(subscription._id, getNotificationPrefValue('mobile', value), 'mobilePushNotifications', 'mobilePrefOrigin'),
 			},
 			emailNotifications: {
-				updateMethod: (subscription, value) => {
-					if (value === 'default') {
-						const userPref = getUserNotificationPreference(Meteor.userId(), 'email');
-						Subscriptions.updateEmailNotificationsById(subscription._id, userPref.origin === 'server' ? null : userPref);
-					} else {
-						Subscriptions.updateEmailNotificationsById(subscription._id, { value, origin: 'subscription' });
-					}
-				},
+				updateMethod: (subscription, value) => Subscriptions.updateNotificationsPrefById(subscription._id, getNotificationPrefValue('email', value), 'emailNotifications', 'emailPrefOrigin'),
 			},
 			unreadAlert: {
 				updateMethod: (subscription, value) => Subscriptions.updateUnreadAlertById(subscription._id, value),

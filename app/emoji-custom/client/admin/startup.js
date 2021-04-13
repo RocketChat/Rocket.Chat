@@ -1,5 +1,5 @@
+import { registerAdminSidebarItem } from '../../../../client/views/admin';
 import { hasPermission } from '../../../authorization';
-import { registerAdminSidebarItem } from '../../../../client/admin';
 
 registerAdminSidebarItem({
 	href: 'emoji-custom',

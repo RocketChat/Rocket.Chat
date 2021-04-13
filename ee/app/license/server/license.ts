@@ -1,8 +1,6 @@
 import { EventEmitter } from 'events';
 
 import { Users } from '../../../../app/models/server';
-import { addRoleRestrictions } from '../../authorization/lib/addRoleRestrictions';
-import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
@@ -30,12 +28,13 @@ export interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
-let addedRoleRestrictions = false;
 
 class LicenseClass {
 	private url: string|null = null;
 
 	private licenses: IValidLicense[] = [];
+
+	private encryptedLicenses = new Set<string>();
 
 	private tags = new Set<ILicenseTag>();
 
@@ -62,6 +61,7 @@ class LicenseClass {
 
 			modules.forEach((module) => {
 				this.modules.add(module);
+				EnterpriseLicenses.emit('module', { module, valid: true });
 				EnterpriseLicenses.emit(`valid:${ module }`);
 			});
 		});
@@ -73,7 +73,10 @@ class LicenseClass {
 				? getBundleModules(licenseModule)
 				: [licenseModule];
 
-			modules.forEach((module) => EnterpriseLicenses.emit(`invalid:${ module }`));
+			modules.forEach((module) => {
+				EnterpriseLicenses.emit('module', { module, valid: false });
+				EnterpriseLicenses.emit(`invalid:${ module }`);
+			});
 		});
 	}
 
@@ -112,12 +115,18 @@ class LicenseClass {
 		});
 
 		this.validate();
+	}
 
-		if (!addedRoleRestrictions && this.hasAnyValidLicense()) {
-			addRoleRestrictions();
-			resetEnterprisePermissions();
-			addedRoleRestrictions = true;
+	lockLicense(encryptedLicense: string): void {
+		this.encryptedLicenses.add(encryptedLicense);
+	}
+
+	isLicenseDuplicate(encryptedLicense: string): boolean {
+		if (this.encryptedLicenses.has(encryptedLicense)) {
+			return true;
 		}
+
+		return false;
 	}
 
 	hasModule(module: string): boolean {
@@ -126,6 +135,10 @@ class LicenseClass {
 
 	hasAnyValidLicense(): boolean {
 		return this.licenses.some((item) => item.valid);
+	}
+
+	getLicenses(): IValidLicense[] {
+		return this.licenses;
 	}
 
 	getModules(): string[] {
@@ -152,6 +165,7 @@ class LicenseClass {
 				}
 				if (!this._validateURL(license.url, this.url)) {
 					item.valid = false;
+					console.error(`#### License error: invalid url, licensed to ${ license.url }, used on ${ this.url }`);
 					this._invalidModules(license.modules);
 					return item;
 				}
@@ -159,12 +173,14 @@ class LicenseClass {
 
 			if (license.expiry && this._validateExpiration(license.expiry)) {
 				item.valid = false;
+				console.error(`#### License error: expired, valid until ${ license.expiry }`);
 				this._invalidModules(license.modules);
 				return item;
 			}
 
 			if (license.maxActiveUsers && !this._hasValidNumberOfActiveUsers(license.maxActiveUsers)) {
 				item.valid = false;
+				console.error(`#### License error: over seats, max allowed ${ license.maxActiveUsers }, current active users ${ Users.getActiveLocalUserCount() }`);
 				this._invalidModules(license.modules);
 				return item;
 			}
@@ -212,7 +228,7 @@ class LicenseClass {
 const License = new LicenseClass();
 
 export function addLicense(encryptedLicense: string): boolean {
-	if (!encryptedLicense || String(encryptedLicense).trim() === '') {
+	if (!encryptedLicense || String(encryptedLicense).trim() === '' || License.isLicenseDuplicate(encryptedLicense)) {
 		return false;
 	}
 
@@ -229,6 +245,7 @@ export function addLicense(encryptedLicense: string): boolean {
 		}
 
 		License.addLicense(JSON.parse(decrypted));
+		License.lockLicense(encryptedLicense);
 
 		return true;
 	} catch (e) {
@@ -238,6 +255,19 @@ export function addLicense(encryptedLicense: string): boolean {
 		}
 		return false;
 	}
+}
+
+export function validateFormat(encryptedLicense: string): boolean {
+	if (!encryptedLicense || String(encryptedLicense).trim() === '') {
+		return false;
+	}
+
+	const decrypted = decrypt(encryptedLicense);
+	if (!decrypted) {
+		return false;
+	}
+
+	return true;
 }
 
 export function setURL(url: string): void {
@@ -256,6 +286,10 @@ export function getMaxGuestUsers(): number {
 	return maxGuestUsers;
 }
 
+export function getLicenses(): IValidLicense[] {
+	return License.getLicenses();
+}
+
 export function getModules(): string[] {
 	return License.getModules();
 }
@@ -272,8 +306,21 @@ export function onLicense(feature: string, cb: (...args: any[]) => void): void {
 	EnterpriseLicenses.once(`valid:${ feature }`, cb);
 }
 
+export function onModule(cb: (...args: any[]) => void): void {
+	EnterpriseLicenses.on('module', cb);
+}
+
 export function onValidateLicenses(cb: (...args: any[]) => void): void {
 	EnterpriseLicenses.on('validate', cb);
+}
+
+export function flatModules(modulesAndBundles: string[]): string[] {
+	const bundles = modulesAndBundles.filter(isBundle);
+	const modules = modulesAndBundles.filter((x) => !isBundle(x));
+
+	const modulesFromBundles = bundles.map(getBundleModules).flat();
+
+	return modules.concat(modulesFromBundles);
 }
 
 export interface IOverrideClassProperties {

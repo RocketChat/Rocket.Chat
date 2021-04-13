@@ -6,10 +6,6 @@
 	padding: 0 !important;
 }
 
-.defaultProvider {
-	padding: 24px;
-}
-
 .rocket-search-tab {
 	display: flex;
 	flex-direction: column;

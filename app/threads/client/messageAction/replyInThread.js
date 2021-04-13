@@ -16,9 +16,9 @@ Meteor.startup(function() {
 			icon: 'thread',
 			label: 'Reply_in_thread',
 			context: ['message', 'message-mobile'],
-			action() {
+			action(e) {
 				const { msg: message } = messageArgs(this);
-
+				e.stopPropagation();
 				FlowRouter.setParams({
 					tab: 'thread',
 					context: message.tmid || message._id,

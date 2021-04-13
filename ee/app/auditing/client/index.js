@@ -13,14 +13,14 @@ hasLicense('auditing').then((enabled) => {
 	AccountBox.addItem({
 		href: 'audit-home',
 		name: 'Message_auditing',
-		icon: 'clipboard',
+		icon: 'document-eye',
 		condition: () => hasAllPermission('can-audit'),
 	});
 
 	AccountBox.addItem({
 		href: 'audit-log',
 		name: 'Message_auditing_log',
-		icon: 'clipboard',
+		icon: 'document-eye',
 		condition: () => hasAllPermission('can-audit-log'),
 	});
 }).catch((error) => {

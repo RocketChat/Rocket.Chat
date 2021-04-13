@@ -87,5 +87,10 @@ metrics.totalPrivateGroupMessages = new client.Gauge({ name: 'rocketchat_private
 metrics.totalDirectMessages = new client.Gauge({ name: 'rocketchat_direct_messages_total', help: 'total of messages in direct rooms' });
 metrics.totalLivechatMessages = new client.Gauge({ name: 'rocketchat_livechat_messages_total', help: 'total of messages in livechat rooms' });
 
+// Apps metrics
+metrics.totalAppsInstalled = new client.Gauge({ name: 'rocketchat_apps_installed', help: 'total apps installed' });
+metrics.totalAppsEnabled = new client.Gauge({ name: 'rocketchat_apps_enabled', help: 'total apps enabled' });
+metrics.totalAppsFailed = new client.Gauge({ name: 'rocketchat_apps_failed', help: 'total apps that failed to load' });
+
 // Meteor Facts
 metrics.meteorFacts = new client.Gauge({ name: 'rocketchat_meteor_facts', labelNames: ['pkg', 'fact'], help: 'internal meteor facts' });

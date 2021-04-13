@@ -60,11 +60,6 @@ Template.contactChatHistory.onCreated(async function() {
 	this.returnChatHistoryList = () => {
 		this.showChatHistoryMessages.set(false);
 		this.chatHistoryMessagesContext.set();
-
-		this.tabBar.setData({
-			label: 'Contact_Chat_History',
-			icon: 'clock',
-		});
 	};
 
 	this.autorun(async () => {

@@ -4,7 +4,7 @@ import Busboy from 'busboy';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
-import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom } from '../lib/rooms';
+import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findRoomsAvailableForTeams } from '../lib/rooms';
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 
@@ -234,7 +234,7 @@ API.v1.addRoute('rooms.leave', { authRequired: true }, {
 
 API.v1.addRoute('rooms.createDiscussion', { authRequired: true }, {
 	post() {
-		const { prid, pmid, reply, t_name, users } = this.bodyParams;
+		const { prid, pmid, reply, t_name, users, encrypted } = this.bodyParams;
 		if (!prid) {
 			return API.v1.failure('Body parameter "prid" is required.');
 		}
@@ -245,12 +245,17 @@ API.v1.addRoute('rooms.createDiscussion', { authRequired: true }, {
 			return API.v1.failure('Body parameter "users" must be an array.');
 		}
 
+		if (encrypted !== undefined && typeof encrypted !== 'boolean') {
+			return API.v1.failure('Body parameter "encrypted" must be a boolean when included.');
+		}
+
 		const discussion = Meteor.runAsUser(this.userId, () => Meteor.call('createDiscussion', {
 			prid,
 			pmid,
 			t_name,
 			reply,
 			users: users || [],
+			encrypted,
 		}));
 
 		return API.v1.success({ discussion });
@@ -332,6 +337,21 @@ API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, 
 	},
 });
 
+API.v1.addRoute('rooms.autocomplete.availableForTeams', { authRequired: true }, {
+	get() {
+		const { name } = this.queryParams;
+
+		if (name && typeof name !== 'string') {
+			return API.v1.failure('The \'name\' param is invalid');
+		}
+
+		return API.v1.success(Promise.await(findRoomsAvailableForTeams({
+			uid: this.userId,
+			name,
+		})));
+	},
+});
+
 API.v1.addRoute('rooms.saveRoomSettings', { authRequired: true }, {
 	post() {
 		const { rid, ...params } = this.bodyParams;
@@ -365,7 +385,7 @@ API.v1.addRoute('rooms.export', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-params');
 		}
 
-		if (!hasPermission(this.userId, 'mail-messages')) {
+		if (!hasPermission(this.userId, 'mail-messages', rid)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
 		}
 

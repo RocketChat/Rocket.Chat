@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import { modal } from '../../../ui-utils/client';
 import { APIClient, t, handleError } from '../../../utils/client';
+import './gameCenter.html';
 
 const getExternalComponents = async (instance) => {
 	try {

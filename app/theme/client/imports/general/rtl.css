@@ -100,26 +100,6 @@
 		}
 	}
 
-	& .account-box .options {
-		direction: ltr;
-
-		& > .wrapper {
-			direction: rtl;
-		}
-	}
-
-	& .flex-tab-container {
-		border-width: 0 1px 0 0;
-	}
-
-	& .flex-tab-bar .tab-button.active {
-		margin-right: -1px;
-		margin-left: auto;
-
-		border-right: unset;
-		border-left: 3px solid #ff0000;
-	}
-
 	& .flex-tab .control {
 		padding: 12px 30px;
 

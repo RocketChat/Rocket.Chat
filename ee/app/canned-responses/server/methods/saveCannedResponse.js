@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission } from '../../../../../app/authorization';
 import CannedResponse from '../../../models/server/models/CannedResponse';
 import { Users } from '../../../../../app/models';
-import { cannedResponsesStreamer } from '../streamer';
+import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 Meteor.methods({
 	saveCannedResponse(_id, responseData) {
@@ -42,7 +42,7 @@ Meteor.methods({
 			responseData.createdBy = user.username;
 		}
 		const createdCannedResponse = CannedResponse.createOrUpdateCannedResponse(_id, responseData);
-		cannedResponsesStreamer.emit('canned-responses', { type: 'changed', ...createdCannedResponse });
+		notifications.streamCannedResponses.emit('canned-responses', { type: 'changed', ...createdCannedResponse });
 
 		return createdCannedResponse;
 	},

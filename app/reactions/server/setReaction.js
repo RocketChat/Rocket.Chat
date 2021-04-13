@@ -1,14 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
 import { Messages, EmojiCustom, Rooms } from '../../models';
-import { Notifications } from '../../notifications';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../../emoji';
 import { isTheLastMessage, msgStream } from '../../lib';
 import { hasPermission } from '../../authorization/server/functions/hasPermission';
+import { api } from '../../../server/sdk/api';
 
 const removeUserReaction = (message, reaction, username) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
@@ -112,10 +111,7 @@ Meteor.methods({
 			return Promise.await(executeSetReaction(reaction, messageId, shouldReact));
 		} catch (e) {
 			if (e.error === 'error-not-allowed' && e.reason && e.details && e.details.rid) {
-				Notifications.notifyUser(Meteor.userId(), 'message', {
-					_id: Random.id(),
-					rid: e.details.rid,
-					ts: new Date(),
+				api.broadcast('notify.ephemeralMessage', Meteor.userId(), e.details.rid, {
 					msg: e.reason,
 				});
 

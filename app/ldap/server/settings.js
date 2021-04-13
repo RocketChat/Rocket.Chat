@@ -86,7 +86,12 @@ settings.addGroup('LDAP', function() {
 	});
 
 	this.section('Sync / Import', function() {
-		this.add('LDAP_Username_Field', 'sAMAccountName', { type: 'string', enableQuery });
+		this.add('LDAP_Username_Field', 'sAMAccountName', {
+			type: 'string',
+			enableQuery,
+			// public so that it's visible to AccountProfilePage:
+			public: true,
+		});
 		this.add('LDAP_Unique_Identifier_Field', 'objectGUID,ibm-entryUUID,GUID,dominoUNID,nsuniqueId,uidNumber', { type: 'string', enableQuery });
 		this.add('LDAP_Default_Domain', '', { type: 'string', enableQuery });
 		this.add('LDAP_Merge_Existing_Users', false, { type: 'boolean', enableQuery });

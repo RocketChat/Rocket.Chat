@@ -1,5 +1,5 @@
 import { promisify } from 'util';
 
-import _urlParser from 'mongodb/lib/url_parser';
+import { parseConnectionString } from 'mongodb/lib/core';
 
-export const urlParser = promisify(_urlParser);
+export const urlParser = promisify(parseConnectionString);

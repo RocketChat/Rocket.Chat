@@ -445,6 +445,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 		}
 
 		const typeThread = {
+			_hidden: { $ne: true },
 			...type === 'following' && { replies: { $in: [this.userId] } },
 			...type === 'unread' && { _id: { $in: Subscriptions.findOneByRoomIdAndUserId(room._id, user._id).tunread } },
 			...text && {
@@ -654,6 +655,9 @@ API.v1.addRoute('chat.getStarredMessages', { authRequired: true }, {
 				sort,
 			},
 		}));
+
+		messages.messages = normalizeMessagesForUser(messages.messages, this.userId);
+
 		return API.v1.success(messages);
 	},
 });

@@ -6,6 +6,7 @@ import { closeRoom, createRoom } from '../../data/rooms.helper';
 import { imgURL } from '../../data/interactions.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
+import { createUser } from '../../data/users.helper';
 
 describe('[Rooms]', function() {
 	this.retries(0);
@@ -906,6 +907,30 @@ describe('[Rooms]', function() {
 				.end(done);
 		});
 	});
+	describe('[/rooms.autocomplete.availableForTeams]', () => {
+		it('should return the rooms to fill auto complete', (done) => {
+			request.get(api('rooms.autocomplete.availableForTeams'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should return the filtered rooms to fill auto complete', (done) => {
+			request.get(api('rooms.autocomplete.availableForTeams?name=group'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
 	describe('/rooms.adminRooms', () => {
 		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
 			updatePermission('view-room-administration', []).then(() => {
@@ -931,6 +956,72 @@ describe('[Rooms]', function() {
 					expect(res.body).to.have.property('count');
 				})
 				.end(done);
+		});
+	});
+
+	describe('update group dms name', () => {
+		let testUser;
+		let roomId;
+
+		before(async () => {
+			testUser = await createUser();
+
+			const rocketcat = 'rocket.cat';
+			const usernames = [testUser.username, rocketcat].join(',');
+
+			const result = await request.post(api('dm.create'))
+				.set(credentials)
+				.send({
+					usernames,
+				});
+
+			roomId = result.body.room.rid;
+		});
+
+		it('should update group name if user changes username', (done) => {
+			updateSetting('UI_Use_Real_Name', false).then(() => {
+				request.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							username: `changed.username.${ testUser.username }`,
+						},
+					})
+					.end(() => {
+						request.get(api('subscriptions.getOne'))
+							.set(credentials)
+							.query({ roomId })
+							.end((err, res) => {
+								const { subscription } = res.body;
+								expect(subscription.name).to.equal(`rocket.cat,changed.username.${ testUser.username }`);
+								done();
+							});
+					});
+			});
+		});
+
+		it('should update group name if user changes name', (done) => {
+			updateSetting('UI_Use_Real_Name', true).then(() => {
+				request.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							name: `changed.name.${ testUser.username }`,
+						},
+					})
+					.end(() => {
+						request.get(api('subscriptions.getOne'))
+							.set(credentials)
+							.query({ roomId })
+							.end((err, res) => {
+								const { subscription } = res.body;
+								expect(subscription.fname).to.equal(`changed.name.${ testUser.username }, Rocket.Cat`);
+								done();
+							});
+					});
+			});
 		});
 	});
 });

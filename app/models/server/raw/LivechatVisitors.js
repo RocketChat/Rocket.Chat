@@ -1,5 +1,4 @@
-import s from 'underscore.string';
-
+import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatVisitorsRaw extends BaseRaw {
@@ -20,7 +19,7 @@ export class LivechatVisitorsRaw extends BaseRaw {
 			exceptions = [exceptions];
 		}
 
-		const nameRegex = new RegExp(`^${ s.escapeRegExp(searchTerm).trim() }`, 'i');
+		const nameRegex = new RegExp(`^${ escapeRegExp(searchTerm).trim() }`, 'i');
 
 		const match = {
 			$match: {
@@ -59,15 +58,16 @@ export class LivechatVisitorsRaw extends BaseRaw {
 	 * @return [{object}] List of Visitors from db
 	 */
 	findVisitorsByEmailOrPhoneOrNameOrUsername(_emailOrPhoneOrNameOrUsername, options) {
+		const filter = new RegExp(_emailOrPhoneOrNameOrUsername, 'i');
 		const query = {
 			$or: [{
-				'visitorEmails.address': new RegExp(`^${ s.escapeRegExp(_emailOrPhoneOrNameOrUsername) }$`, 'i'),
+				'visitorEmails.address': filter,
 			}, {
 				'phone.phoneNumber': _emailOrPhoneOrNameOrUsername,
 			}, {
-				name: new RegExp(`^${ s.escapeRegExp(_emailOrPhoneOrNameOrUsername).trim() }`, 'i'),
+				name: filter,
 			}, {
-				username: _emailOrPhoneOrNameOrUsername,
+				username: filter,
 			}],
 		};
 

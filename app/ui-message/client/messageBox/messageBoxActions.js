@@ -8,7 +8,6 @@ import { messageBox, modal } from '../../../ui-utils';
 import { fileUpload } from '../../../ui';
 import { settings } from '../../../settings';
 import { t } from '../../../utils';
-import { mime } from '../../../utils/lib/mimeTypes';
 
 messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
@@ -41,7 +40,8 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 
 		$(document.body).append($input);
 
-		$input.one('change', function(e) {
+		$input.one('change', async function(e) {
+			const { mime } = await import('../../../utils/lib/mimeTypes');
 			const filesToUpload = [...e.target.files].map((file) => {
 				Object.defineProperty(file, 'type', {
 					value: mime.lookup(file.name),

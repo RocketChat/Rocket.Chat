@@ -70,7 +70,9 @@ export const unfollow = ({ tmid, rid, uid }) => {
 export const readThread = ({ userId, rid, tmid }) => {
 	const fields = { tunread: 1 };
 	const sub = Subscriptions.findOneByRoomIdAndUserId(rid, userId, { fields });
-
+	if (!sub) {
+		return;
+	}
 	// if the thread being marked as read is the last one unread also clear the unread subscription flag
 	const clearAlert = sub.tunread?.length <= 1 && sub.tunread.includes(tmid);
 

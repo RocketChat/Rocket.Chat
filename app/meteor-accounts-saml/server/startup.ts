@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../settings/server';
-import { loadSamlServiceProviders, addSamlService } from './lib/settings';
+import { loadSamlServiceProviders, addSettings } from './lib/settings';
 import { Logger } from '../../logger/server';
 import { SAMLUtils } from './lib/Utils';
 
@@ -18,4 +18,4 @@ const updateServices = _.debounce(Meteor.bindEnvironment(() => {
 
 settings.get(/^SAML_.+/, updateServices);
 
-Meteor.startup(() => addSamlService('Default'));
+Meteor.startup(() => addSettings('Default'));

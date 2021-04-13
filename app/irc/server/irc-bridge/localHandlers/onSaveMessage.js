@@ -6,7 +6,7 @@ export default function handleOnSaveMessage(message, to) {
 	if (to.t === 'd') {
 		const subscriptions = Subscriptions.findByRoomId(to._id);
 		subscriptions.forEach((subscription) => {
-			if (subscription.u.username !== to.username) {
+			if (subscription.u._id !== message.u._id) {
 				const userData = Users.findOne({ username: subscription.u.username });
 				if (userData) {
 					if (userData.profile && userData.profile.irc && userData.profile.irc.nick) {

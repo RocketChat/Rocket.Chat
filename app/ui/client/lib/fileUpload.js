@@ -116,7 +116,7 @@ const getAudioUploadPreview = (file, preview) => `\
 		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
 	</div>
 	<div class="rc-input__wrapper">
-		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+		<input class="rc-input__element" id='file-description' autofocus style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
 	</div>
 </div>`;
 
@@ -132,7 +132,7 @@ const getVideoUploadPreview = (file, preview) => `\
 		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
 	</div>
 	<div class="rc-input__wrapper">
-		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+		<input class="rc-input__element" id='file-description' autofocus style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
 	</div>
 </div>`;
 
@@ -145,7 +145,7 @@ const getImageUploadPreview = (file, preview) => `\
 		<input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
 	</div>
 	<div class="rc-input__wrapper">
-		<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+		<input class="rc-input__element" id='file-description' autofocus style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
 	</div>
 </div>`;
 
@@ -180,7 +180,7 @@ const getGenericUploadPreview = (file) => `\
 <input class="rc-input__element" id='file-name' style='display: inherit;' value='${ Handlebars._escape(file.name) }' placeholder='${ t('Upload_file_name') }'>
 </div>
 <div class="rc-input__wrapper">
-<input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
+<input class="rc-input__element" id='file-description' style='display: inherit;' value='' autoFocus placeholder='${ t('Upload_file_description') }'>
 </div>
 </div>`;
 
@@ -232,7 +232,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			return;
 		}
 
-		if (!fileUploadIsValidContentType(file.file.type)) {
+		if (file.file.type && !fileUploadIsValidContentType(file.file.type)) {
 			modal.open({
 				title: t('FileUpload_MediaType_NotAccepted'),
 				text: file.file.type || `*.${ s.strRightBack(file.file.name, '.') }`,
@@ -260,7 +260,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			confirmButtonText: t('Send'),
 			cancelButtonText: t('Cancel'),
 			html: true,
-			onRendered: () => $('#file-name').focus(),
+			onRendered: () => $('#file-description').focus(),
 		}, async (isConfirm) => {
 			if (!isConfirm) {
 				return;

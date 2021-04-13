@@ -4,8 +4,10 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 
 import { Uploads } from '../../../models';
+import { Rooms } from '../../../models/server/raw';
 import { callbacks } from '../../../callbacks';
 import { FileUpload } from '../lib/FileUpload';
+import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 
 Meteor.methods({
 	async sendFileMessage(roomId, store, file, msgData = {}) {
@@ -13,9 +15,10 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}
 
-		const room = Meteor.call('canAccessRoom', roomId, Meteor.userId());
+		const room = await Rooms.findOneById(roomId);
+		const user = Meteor.user();
 
-		if (!room) {
+		if (user?.type !== 'app' && canAccessRoom(room, user) !== true) {
 			return false;
 		}
 
@@ -65,7 +68,6 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
-		const user = Meteor.user();
 		let msg = Object.assign({
 			_id: Random.id(),
 			rid: roomId,

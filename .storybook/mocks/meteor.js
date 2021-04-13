@@ -1,4 +1,7 @@
 export const Meteor = {
+	Device: {
+		isDesktop: () => false,
+	},
 	isClient: true,
 	isServer: false,
 	_localStorage: window.localStorage,
@@ -74,8 +77,6 @@ export const FlowRouter = {
 		route: () => {},
 	}),
 };
-
-export const BlazeLayout = {};
 
 export const Session = {
 	get: () => {},

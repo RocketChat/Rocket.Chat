@@ -70,9 +70,11 @@ API.v1.addRoute('livechat/custom-fields', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
+		const { text } = this.queryParams;
 
 		const customFields = Promise.await(findLivechatCustomFields({
 			userId: this.userId,
+			text,
 			pagination: {
 				offset,
 				count,

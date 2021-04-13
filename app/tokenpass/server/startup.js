@@ -2,11 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
-import { Tokenpass } from './Tokenpass';
 import { settings } from '../../settings';
-import { addRoomAccessValidator } from '../../authorization';
-import { Users } from '../../models';
 import { callbacks } from '../../callbacks';
+import { validateTokenAccess } from './roomAccessValidator.compatibility';
+import './roomAccessValidator.internalService';
 
 settings.addGroup('OAuth', function() {
 	this.section('Tokenpass', function() {
@@ -23,25 +22,7 @@ settings.addGroup('OAuth', function() {
 	});
 });
 
-function validateTokenAccess(userData, roomData) {
-	if (!userData || !userData.services || !userData.services.tokenpass || !userData.services.tokenpass.tcaBalances) {
-		return false;
-	}
-
-	return Tokenpass.validateAccess(roomData.tokenpass, userData.services.tokenpass.tcaBalances);
-}
-
 Meteor.startup(function() {
-	addRoomAccessValidator(function(room, user) {
-		if (!room || !room.tokenpass || !user) {
-			return false;
-		}
-
-		const userData = Users.getTokenBalancesByUserId(user._id);
-
-		return validateTokenAccess(userData, room);
-	});
-
 	callbacks.add('beforeJoinRoom', function(user, room) {
 		if (room.tokenpass && !validateTokenAccess(user, room)) {
 			throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });

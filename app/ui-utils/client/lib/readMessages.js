@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
@@ -18,7 +18,7 @@ import { ChatSubscription, ChatMessage } from '../../../models';
 // window.addEventListener 'focus', ->
 // readMessage.refreshUnreadMark(undefined, true)
 
-export const readMessage = new class extends EventEmitter {
+export const readMessage = new class extends Emitter {
 	constructor() {
 		super();
 		this.debug = false;

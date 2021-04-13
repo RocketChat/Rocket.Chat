@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { UserPresence } from 'meteor/konecty:user-presence';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
-import _ from 'underscore';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
 
@@ -12,6 +11,7 @@ import { settings } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
 import { Users } from '../../app/models/server';
 import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
+import { StreamerCentral } from '../modules/streamer/streamer.module';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
@@ -59,12 +59,13 @@ function authorizeConnection(instance) {
 
 const cache = new Map();
 const originalSetDefaultStatus = UserPresence.setDefaultStatus;
+export let matrixBroadCastActions;
 function startMatrixBroadcast() {
 	if (!startMonitor) {
 		UserPresence.setDefaultStatus = originalSetDefaultStatus;
 	}
 
-	const actions = {
+	matrixBroadCastActions = {
 		added(record) {
 			cache.set(record._id, record);
 
@@ -94,6 +95,9 @@ function startMatrixBroadcast() {
 			connections[instance] = DDP.connect(instance, {
 				_dontPrintErrors: LoggerManager.logLevel < 2,
 			});
+
+			// remove not relevant info from instance record
+			delete record.extraInformation.os;
 
 			connections[instance].instanceRecord = record;
 			connections[instance].instanceId = record._id;
@@ -142,58 +146,9 @@ function startMatrixBroadcast() {
 		},
 	};
 
-	InstanceStatusModel.find(query, options).fetch().forEach(actions.added);
-	return InstanceStatusModel.on('change', ({ clientAction, id, data }) => {
-		switch (clientAction) {
-			case 'inserted':
-				if (data.extraInformation?.port) {
-					actions.added(data);
-				}
-				break;
-			case 'removed':
-				actions.removed(id);
-				break;
-		}
-	});
+	InstanceStatusModel.find(query, options).fetch().forEach(matrixBroadCastActions.added);
 }
 
-Meteor.methods({
-	broadcastAuth(remoteId, selfId) {
-		check(selfId, String);
-		check(remoteId, String);
-
-		const query = {
-			_id: remoteId,
-		};
-
-		if (selfId === InstanceStatus.id() && remoteId !== InstanceStatus.id() && InstanceStatus.getCollection().findOne(query)) {
-			this.connection.broadcastAuth = true;
-		}
-
-		return this.connection.broadcastAuth === true;
-	},
-
-	stream(streamName, eventName, args) {
-		if (!this.connection) {
-			return 'self-not-authorized';
-		}
-
-		if (this.connection.broadcastAuth !== true) {
-			return 'not-authorized';
-		}
-
-		const instance = Meteor.StreamerCentral.instances[streamName];
-		if (!instance) {
-			return 'stream-not-exists';
-		}
-
-		if (instance.serverOnly) {
-			instance.__emit(eventName, ...args);
-		} else {
-			Meteor.StreamerCentral.instances[streamName]._emit(eventName, args);
-		}
-	},
-});
 
 function startStreamCastBroadcast(value) {
 	const instance = 'StreamCast';
@@ -233,7 +188,7 @@ function startStreamCastBroadcast(value) {
 			return 'not-authorized';
 		}
 
-		const instance = Meteor.StreamerCentral.instances[streamName];
+		const instance = StreamerCentral.instances[streamName];
 		if (!instance) {
 			return 'stream-not-exists';
 		}
@@ -247,7 +202,7 @@ function startStreamCastBroadcast(value) {
 	return connection.subscribe('stream');
 }
 
-function startStreamBroadcast() {
+export function startStreamBroadcast() {
 	if (!process.env.INSTANCE_IP) {
 		process.env.INSTANCE_IP = 'localhost';
 	}
@@ -309,9 +264,7 @@ function startStreamBroadcast() {
 		return results;
 	}
 
-	const onBroadcast = function(streamName, eventName, args) {
-		return broadcast(streamName, eventName, args);
-	};
+	const onBroadcast = Meteor.bindEnvironment(broadcast);
 
 	let TroubleshootDisableInstanceBroadcast;
 	settings.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
@@ -319,28 +272,82 @@ function startStreamBroadcast() {
 		TroubleshootDisableInstanceBroadcast = value;
 
 		if (value) {
-			return Meteor.StreamerCentral.removeListener('broadcast', onBroadcast);
+			return StreamerCentral.removeListener('broadcast', onBroadcast);
 		}
 
-		Meteor.StreamerCentral.on('broadcast', onBroadcast);
+		StreamerCentral.on('broadcast', onBroadcast);
 	});
 }
 
-Meteor.startup(function() {
-	return startStreamBroadcast();
-});
+function getConnection(address) {
+	const conn = connections[address];
+	if (!conn) {
+		return;
+	}
+
+	const {
+		instanceRecord,
+		broadcastAuth,
+	} = conn;
+
+	return {
+		address,
+		currentStatus: conn._stream.currentStatus,
+		instanceRecord,
+		broadcastAuth,
+	};
+}
+
+export function getInstanceConnection(instance) {
+	const subPath = getURL('', { cdn: false, full: false });
+	const address = `${ instance.extraInformation.host }:${ instance.extraInformation.port }${ subPath }`;
+
+	return getConnection(address);
+}
 
 Meteor.methods({
+	broadcastAuth(remoteId, selfId) {
+		check(selfId, String);
+		check(remoteId, String);
+
+		const query = {
+			_id: remoteId,
+		};
+
+		if (selfId === InstanceStatus.id() && remoteId !== InstanceStatus.id() && InstanceStatus.getCollection().findOne(query)) {
+			this.connection.broadcastAuth = true;
+		}
+
+		return this.connection.broadcastAuth === true;
+	},
+
+	stream(streamName, eventName, args) {
+		if (!this.connection) {
+			return 'self-not-authorized';
+		}
+
+		if (this.connection.broadcastAuth !== true) {
+			return 'not-authorized';
+		}
+
+		const instance = StreamerCentral.instances[streamName];
+		if (!instance) {
+			return 'stream-not-exists';
+		}
+
+		if (instance.serverOnly) {
+			instance.__emit(eventName, ...args);
+		} else {
+			StreamerCentral.instances[streamName]._emit(eventName, args);
+		}
+	},
+
 	'instances/get'() {
 		if (!hasPermission(Meteor.userId(), 'view-statistics')) {
 			throw new Meteor.Error('error-action-not-allowed', 'List instances is not allowed', {
 				method: 'instances/get',
 			});
 		}
-
-		return Object.keys(connections).map((address) => {
-			const conn = connections[address];
-			return Object.assign({ address, currentStatus: conn._stream.currentStatus }, _.pick(conn, 'instanceRecord', 'broadcastAuth'));
-		});
+		return Object.keys(connections).map(getConnection);
 	},
 });

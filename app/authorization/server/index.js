@@ -1,6 +1,5 @@
 import { addUserRoles } from './functions/addUserRoles';
 import {
-	addRoomAccessValidator,
 	canAccessRoom,
 	roomAccessValidators,
 } from './functions/canAccessRoom';
@@ -32,7 +31,6 @@ export {
 	removeUserFromRoles,
 	canSendMessage,
 	validateRoomMessagePermissions,
-	addRoomAccessValidator,
 	roomAccessValidators,
 	addUserRoles,
 	canAccessRoom,
