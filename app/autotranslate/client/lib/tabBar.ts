@@ -3,11 +3,16 @@ import { lazy, useMemo } from 'react';
 import { addAction } from '../../../../client/views/room/lib/Toolbox';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useSetting } from '../../../../client/contexts/SettingsContext';
+import { useUserSubscription } from '../../../../client/contexts/UserContext';
 
-addAction('autotranslate', () => {
+const query = {};
+
+addAction('autotranslate', ({ room }) => {
 	const hasPermission = usePermission('auto-translate');
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
-	return useMemo(() => (hasPermission && autoTranslateEnabled ? {
+	const hasSubscription = !!useUserSubscription(room._id, query);
+
+	return useMemo(() => (hasPermission && autoTranslateEnabled && hasSubscription ? {
 		groups: ['channel', 'group', 'direct', 'team'],
 		id: 'autotranslate',
 		title: 'Auto_Translate',
@@ -15,5 +20,5 @@ addAction('autotranslate', () => {
 		template: lazy(() => import('../../../../client/views/room/contextualBar/AutoTranslate')),
 		order: 20,
 		full: true,
-	} : null), [autoTranslateEnabled, hasPermission]);
+	} : null), [autoTranslateEnabled, hasPermission, hasSubscription]);
 });
