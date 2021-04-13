@@ -97,7 +97,6 @@ export class AppApisBridge extends ApiBridge {
 
 	private _appApiExecutor(endpoint: IApiEndpoint, appId: string): RequestHandler {
 		return (req: RequestWithPrivateHash, res: Response): void => {
-			// const request: RequestWithPrivateHash = {
 			const request: IApiRequest = {
 				method: req.method.toLowerCase() as RequestMethod,
 				headers: req.headers as { [key: string]: string },
