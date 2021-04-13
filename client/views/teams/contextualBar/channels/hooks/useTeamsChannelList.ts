@@ -11,16 +11,16 @@ type TeamsChannelListOptions = {
 	teamId: string;
 	type: 'all' | 'autoJoin';
 	text: string;
-}
+};
 
 export const useTeamsChannelList = (
 	options: TeamsChannelListOptions,
 ): {
-		teamsChannelList: RecordList<IRoom>;
-		initialItemCount: number;
-		reload: () => void;
-		loadMoreItems: (start: number, end: number) => void;
-	} => {
+	teamsChannelList: RecordList<IRoom>;
+	initialItemCount: number;
+	reload: () => void;
+	loadMoreItems: (start: number, end: number) => void;
+} => {
 	const apiEndPoint = useEndpoint('GET', 'teams.listRooms');
 	const [teamsChannelList, setTeamsChannelList] = useState(() => new RecordList<IRoom>());
 	const reload = useCallback(() => setTeamsChannelList(new RecordList<IRoom>()), []);
@@ -50,11 +50,14 @@ export const useTeamsChannelList = (
 		[apiEndPoint, options],
 	);
 
-
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(teamsChannelList, fetchData, useMemo(() => {
-		const filesListSize = getConfig('teamsChannelListSize');
-		return filesListSize ? parseInt(filesListSize, 10) : undefined;
-	}, []));
+	const { loadMoreItems, initialItemCount } = useScrollableRecordList(
+		teamsChannelList,
+		fetchData,
+		useMemo(() => {
+			const filesListSize = getConfig('teamsChannelListSize');
+			return filesListSize ? parseInt(filesListSize, 10) : undefined;
+		}, []),
+	);
 
 	return {
 		reload,

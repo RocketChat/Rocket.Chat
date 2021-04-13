@@ -1,36 +1,50 @@
-import React, { memo, useContext, useCallback, useState, useEffect } from 'react';
-import { BoxProps, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
+import React, {
+	memo,
+	useContext,
+	useCallback,
+	useState,
+	useEffect,
+	FC,
+	ComponentProps,
+} from 'react';
 import toastr from 'toastr';
 
-import Header from '../../../../../components/Header';
-import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { QuickActionsActionConfig, QuickActionsEnum } from '../../../lib/QuickActions';
-import { useLayout } from '../../../../../contexts/LayoutContext';
-import { useSetModal } from '../../../../../contexts/ModalContext';
-import { QuickActionsContext } from '../../../lib/QuickActions/QuickActionsContext';
-import ReturnChatQueueModal from '../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
-import ForwardChatModal from '../../../../../components/Omnichannel/modals/ForwardChatModal';
-import TranscriptModal from '../../../../../components/Omnichannel/modals/TranscriptModal';
-import CloseChatModal from '../../../../../components/Omnichannel/modals/CloseChatModal';
 import { handleError } from '../../../../../../app/utils/client';
 import { IRoom } from '../../../../../../definition/IRoom';
+import PlaceChatOnHoldModal from '../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
+import Header from '../../../../../components/Header';
+import CloseChatModal from '../../../../../components/Omnichannel/modals/CloseChatModal';
+import ForwardChatModal from '../../../../../components/Omnichannel/modals/ForwardChatModal';
+import ReturnChatQueueModal from '../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
+import TranscriptModal from '../../../../../components/Omnichannel/modals/TranscriptModal';
 import { usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
-import { useUserId } from '../../../../../contexts/UserContext';
+import { useLayout } from '../../../../../contexts/LayoutContext';
+import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
 import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
-import PlaceChatOnHoldModal from '../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useUserId } from '../../../../../contexts/UserContext';
+import { QuickActionsActionConfig, QuickActionsEnum } from '../../../lib/QuickActions';
+import { QuickActionsContext } from '../../../lib/QuickActions/QuickActionsContext';
 
+type QuickActionsProps = {
+	room: IRoom;
+	className: ComponentProps<typeof Box>['className'];
+};
 
-const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['className'] }): JSX.Element => {
+const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 	const setModal = useSetModal();
 	const { isMobile } = useLayout();
 	const t = useTranslation();
 	const { actions: mapActions } = useContext(QuickActionsContext);
-	const actions = (Array.from(mapActions.values()) as QuickActionsActionConfig[]).sort((a, b) => (a.order || 0) - (b.order || 0));
+	const actions = (Array.from(mapActions.values()) as QuickActionsActionConfig[]).sort(
+		(a, b) => (a.order || 0) - (b.order || 0),
+	);
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 	const [email, setEmail] = useState('');
 	const visitorRoomId = room.v?._id;
@@ -40,8 +54,12 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 	const getVisitorInfo = useEndpoint('GET', 'livechat/visitors.info');
 
 	const getVisitorEmail = useMutableCallback(async () => {
-		if (!visitorRoomId) { return; }
-		const { visitor: { visitorEmails } } = await getVisitorInfo({ visitorId: visitorRoomId });
+		if (!visitorRoomId) {
+			return;
+		}
+		const {
+			visitor: { visitorEmails },
+		} = await getVisitorInfo({ visitorId: visitorRoomId });
 		if (visitorEmails?.length && visitorEmails[0].address) {
 			setEmail(visitorEmails[0].address);
 		}
@@ -68,28 +86,34 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const requestTranscript = useMethod('livechat:requestTranscript');
 
-	const handleRequestTranscript = useCallback(async (email: string, subject: string) => {
-		try {
-			await requestTranscript(rid, email, subject);
-			closeModal();
-			Session.set('openedRoom', null);
-			FlowRouter.go('/home');
-			toastr.success(t('Livechat_transcript_has_been_requested'));
-		} catch (error) {
-			handleError(error);
-		}
-	}, [closeModal, requestTranscript, rid, t]);
+	const handleRequestTranscript = useCallback(
+		async (email: string, subject: string) => {
+			try {
+				await requestTranscript(rid, email, subject);
+				closeModal();
+				Session.set('openedRoom', null);
+				FlowRouter.go('/home');
+				toastr.success(t('Livechat_transcript_has_been_requested'));
+			} catch (error) {
+				handleError(error);
+			}
+		},
+		[closeModal, requestTranscript, rid, t],
+	);
 
 	const sendTranscript = useMethod('livechat:sendTranscript');
 
-	const handleSendTranscript = useCallback(async (email: string, subject: string, token: string) => {
-		try {
-			await sendTranscript(token, rid, email, subject);
-			closeModal();
-		} catch (error) {
-			handleError(error);
-		}
-	}, [closeModal, rid, sendTranscript]);
+	const handleSendTranscript = useCallback(
+		async (email: string, subject: string, token: string) => {
+			try {
+				await sendTranscript(token, rid, email, subject);
+				closeModal();
+			} catch (error) {
+				handleError(error);
+			}
+		},
+		[closeModal, rid, sendTranscript],
+	);
 
 	const discardTranscript = useMethod('livechat:discardTranscript');
 
@@ -105,39 +129,54 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const forwardChat = useMethod('livechat:transfer');
 
-	const handleForwardChat = useCallback(async (departmentId?: string, userId?: string, comment?: string) => {
-		if (departmentId && userId) {
-			return;
-		}
-		const transferData: { roomId: string; comment?: string; departmentId?: string; userId?: string } = {
-			roomId: rid,
-			comment,
-		};
+	const handleForwardChat = useCallback(
+		async (departmentId?: string, userId?: string, comment?: string) => {
+			if (departmentId && userId) {
+				return;
+			}
+			const transferData: {
+				roomId: string;
+				comment?: string;
+				departmentId?: string;
+				userId?: string;
+			} = {
+				roomId: rid,
+				comment,
+			};
 
-		if (departmentId) { transferData.departmentId = departmentId; }
-		if (userId) { transferData.userId = userId; }
+			if (departmentId) {
+				transferData.departmentId = departmentId;
+			}
+			if (userId) {
+				transferData.userId = userId;
+			}
 
-		try {
-			await forwardChat(transferData);
-			closeModal();
-			toastr.success(t('Transferred'));
-			FlowRouter.go('/');
-		} catch (error) {
-			handleError(error);
-		}
-	}, [closeModal, forwardChat, rid, t]);
+			try {
+				await forwardChat(transferData);
+				closeModal();
+				toastr.success(t('Transferred'));
+				FlowRouter.go('/');
+			} catch (error) {
+				handleError(error);
+			}
+		},
+		[closeModal, forwardChat, rid, t],
+	);
 
 	const closeChat = useMethod('livechat:closeRoom');
 
-	const handleClose = useCallback(async (comment: string, tags: string[]) => {
-		try {
-			await closeChat(rid, comment, { clientAction: true, tags });
-			closeModal();
-			toastr.success(t('Chat_closed_successfully'));
-		} catch (error) {
-			handleError(error);
-		}
-	}, [closeChat, closeModal, rid, t]);
+	const handleClose = useCallback(
+		async (comment: string, tags: string[]) => {
+			try {
+				await closeChat(rid, comment, { clientAction: true, tags });
+				closeModal();
+				toastr.success(t('Chat_closed_successfully'));
+			} catch (error) {
+				handleError(error);
+			}
+		},
+		[closeChat, closeModal, rid, t],
+	);
 
 	const onHoldChat = useEndpoint('POST', 'livechat/room.onHold');
 
@@ -157,10 +196,21 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 				setModal(<ReturnChatQueueModal onMoveChat={handleMoveChat} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.Transcript:
-				setModal(<TranscriptModal room={room} email={email} onRequest={handleRequestTranscript} onSend={handleSendTranscript} onDiscard={handleDiscardTranscript} onCancel={closeModal} />);
+				setModal(
+					<TranscriptModal
+						room={room}
+						email={email}
+						onRequest={handleRequestTranscript}
+						onSend={handleSendTranscript}
+						onDiscard={handleDiscardTranscript}
+						onCancel={closeModal}
+					/>,
+				);
 				break;
 			case QuickActionsEnum.ChatForward:
-				setModal(<ForwardChatModal room={room} onForward={handleForwardChat} onCancel={closeModal} />);
+				setModal(
+					<ForwardChatModal room={room} onForward={handleForwardChat} onCancel={closeModal} />,
+				);
 				break;
 			case QuickActionsEnum.CloseChat:
 				setModal(<CloseChatModal onConfirm={handleClose} onCancel={closeModal} />);
@@ -185,7 +235,10 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const hasManagerRole = useRole('livechat-manager');
 
-	const roomOpen = room?.open && ((room.u?._id === uid) || hasManagerRole) && room?.lastMessage?.t !== 'livechat-close';
+	const roomOpen =
+		room?.open &&
+		(room.u?._id === uid || hasManagerRole) &&
+		room?.lastMessage?.t !== 'livechat-close';
 
 	const canForwardGuest = usePermission('transfer-livechat-guest');
 
@@ -197,7 +250,10 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 
-	const canPlaceChatOnHold = (!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed) as boolean;
+	const canPlaceChatOnHold = (!room.onHold &&
+		room.u &&
+		!(room as any).lastMessage?.token &&
+		manualOnHoldAllowed) as boolean;
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
@@ -217,29 +273,31 @@ const QuickActions = ({ room, className }: { room: IRoom; className: BoxProps['c
 		return false;
 	};
 
-	return <ButtonGroup mi='x4' medium>
-		{ visibleActions.map(({ id, color, icon, title, action = actionDefault }, index) => {
-			const props = {
-				id,
-				icon,
-				color,
-				title: t(title as any),
-				className,
-				tabId: id,
-				index,
-				primary: false,
-				'data-quick-actions': index,
-				action,
-				key: id,
-			};
+	return (
+		<ButtonGroup mi='x4' medium>
+			{visibleActions.map(({ id, color, icon, title, action = actionDefault }, index) => {
+				const props = {
+					id,
+					icon,
+					color,
+					'title': t(title as any),
+					className,
+					'tabId': id,
+					index,
+					'primary': false,
+					'data-quick-actions': index,
+					action,
+					'key': id,
+				};
 
-			if (!hasPermissionButtons(id)) {
-				return;
-			}
+				if (!hasPermissionButtons(id)) {
+					return;
+				}
 
-			return <Header.ToolBoxAction {...props} />;
-		})}
-	</ButtonGroup>;
+				return <Header.ToolBoxAction {...props} />;
+			})}
+		</ButtonGroup>
+	);
 };
 
 export default memo(QuickActions);
