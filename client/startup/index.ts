@@ -13,6 +13,7 @@ import './renderMessage';
 import './renderNotification';
 import './roomObserve';
 import './routes';
+import './setupWizard';
 import './startup';
 import './streamMessage';
 import './theme';

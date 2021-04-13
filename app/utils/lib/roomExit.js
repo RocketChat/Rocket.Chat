@@ -46,7 +46,7 @@ export const roomExit = function() {
 						child.oldScrollTop = wrapper.scrollTop;
 					}
 				}
-				mainNode.removeChild(child);
+				// mainNode.removeChild(child);
 			}
 		});
 	});
