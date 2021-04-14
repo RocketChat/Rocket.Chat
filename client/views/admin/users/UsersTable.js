@@ -98,7 +98,6 @@ function UsersTable() {
 	);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
-	console.log(data);
 	return (
 		<GenericTable
 			header={
