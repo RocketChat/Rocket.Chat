@@ -186,7 +186,7 @@ API.v1.addRoute('directory', { authRequired: true }, {
 		const { text, type, workspace = 'local' } = query;
 
 		if (sort && Object.keys(sort).length > 1) {
-			return API.v1.failure('This method support only one "sort" parameter');
+			return API.v1.failure('This method supports only one "sort" parameter');
 		}
 		const sortBy = sort ? Object.keys(sort)[0] : undefined;
 		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
