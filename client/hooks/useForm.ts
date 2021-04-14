@@ -27,8 +27,7 @@ type UseFormReturnType = {
 	reset: () => void;
 };
 
-const reduceForm = (state: FormState, action: FormAction): FormState =>
-	action(state);
+const reduceForm = (state: FormState, action: FormAction): FormState => action(state);
 
 const initForm = (initialValues: Record<string, unknown>): FormState => {
 	const fields = [];
@@ -49,65 +48,67 @@ const initForm = (initialValues: Record<string, unknown>): FormState => {
 	};
 };
 
-const valueChanged = (fieldName: string, newValue: unknown): FormAction =>
-	(state: FormState): FormState => {
-		let { fields } = state;
-		const field = fields.find(({ name }) => name === fieldName);
+const valueChanged = (fieldName: string, newValue: unknown): FormAction => (
+	state: FormState,
+): FormState => {
+	let { fields } = state;
+	const field = fields.find(({ name }) => name === fieldName);
 
-		if (!field || field.currentValue === newValue) {
-			return state;
-		}
+	if (!field || field.currentValue === newValue) {
+		return state;
+	}
 
-		const newField = {
-			...field,
-			currentValue: newValue,
-			changed: JSON.stringify(newValue) !== JSON.stringify(field.initialValue),
-		};
-
-		fields = state.fields.map((field) => {
-			if (field.name === fieldName) {
-				return newField;
-			}
-
-			return field;
-		});
-
-		return {
-			...state,
-			fields,
-			values: {
-				...state.values,
-				[newField.name]: newField.currentValue,
-			},
-			hasUnsavedChanges: newField.changed || fields.some((field) => field.changed),
-		};
+	const newField = {
+		...field,
+		currentValue: newValue,
+		changed: JSON.stringify(newValue) !== JSON.stringify(field.initialValue),
 	};
 
-const formCommitted = (): FormAction =>
-	(state: FormState): FormState => ({
-		...state,
-		fields: state.fields.map((field) => ({
-			...field,
-			initialValue: field.currentValue,
-			changed: false,
-		})),
-		hasUnsavedChanges: false,
+	fields = state.fields.map((field) => {
+		if (field.name === fieldName) {
+			return newField;
+		}
+
+		return field;
 	});
 
-const formReset = (): FormAction =>
-	(state: FormState): FormState => ({
+	return {
 		...state,
-		fields: state.fields.map((field) => ({
-			...field,
-			currentValue: field.initialValue,
-			changed: false,
-		})),
-		values: state.fields.reduce((values, field) => ({
+		fields,
+		values: {
+			...state.values,
+			[newField.name]: newField.currentValue,
+		},
+		hasUnsavedChanges: newField.changed || fields.some((field) => field.changed),
+	};
+};
+
+const formCommitted = (): FormAction => (state: FormState): FormState => ({
+	...state,
+	fields: state.fields.map((field) => ({
+		...field,
+		initialValue: field.currentValue,
+		changed: false,
+	})),
+	hasUnsavedChanges: false,
+});
+
+const formReset = (): FormAction => (state: FormState): FormState => ({
+	...state,
+	fields: state.fields.map((field) => ({
+		...field,
+		currentValue: field.initialValue,
+		changed: false,
+	})),
+	values: state.fields.reduce(
+		(values, field) => ({
 			...values,
 			[field.name]: field.initialValue,
-		}), {}),
-		hasUnsavedChanges: false,
-	});
+		}),
+		{},
+	),
+	hasUnsavedChanges: false,
+});
 
 const isChangeEvent = (x: any): x is ChangeEvent =>
 	(typeof x === 'object' || typeof x === 'function') && typeof x?.currentTarget !== 'undefined';
@@ -140,7 +141,7 @@ const getValue = (eventOrValue: ChangeEvent | unknown): unknown => {
 
 export const useForm = (
 	initialValues: Record<string, unknown>,
-	onChange: ((...args: unknown[]) => void) = (): void => undefined,
+	onChange: (...args: unknown[]) => void = (): void => undefined,
 ): UseFormReturnType => {
 	const [state, dispatch] = useReducer(reduceForm, initialValues, initForm);
 
@@ -153,18 +154,24 @@ export const useForm = (
 	}, []);
 
 	const handlers = useMemo<Record<string, (eventOrValue: ChangeEvent | unknown) => void>>(
-		() => state.fields.reduce((handlers, { name, initialValue }) => ({
-			...handlers,
-			[`handle${ capitalize(name) }`]: (eventOrValue: ChangeEvent | unknown): void => {
-				const newValue = getValue(eventOrValue);
-				dispatch(valueChanged(name, newValue));
-				onChange({
-					initialValue,
-					value: newValue,
-					key: name,
-				});
-			},
-		}), {}), [onChange, state.fields]);
+		() =>
+			state.fields.reduce(
+				(handlers, { name, initialValue }) => ({
+					...handlers,
+					[`handle${capitalize(name)}`]: (eventOrValue: ChangeEvent | unknown): void => {
+						const newValue = getValue(eventOrValue);
+						dispatch(valueChanged(name, newValue));
+						onChange({
+							initialValue,
+							value: newValue,
+							key: name,
+						});
+					},
+				}),
+				{},
+			),
+		[onChange, state.fields],
+	);
 
 	return {
 		handlers,

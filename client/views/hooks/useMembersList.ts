@@ -12,16 +12,16 @@ type MembersListOptions = {
 	type: 'all' | 'autoJoin';
 	limit: number;
 	debouncedText: string;
-}
+};
 
 export const useMembersList = (
 	options: MembersListOptions,
 ): {
-		membersList: RecordList<IUser>;
-		initialItemCount: number;
-		reload: () => void;
-		loadMoreItems: (start: number, end: number) => void;
-	} => {
+	membersList: RecordList<IUser>;
+	initialItemCount: number;
+	reload: () => void;
+	loadMoreItems: (start: number, end: number) => void;
+} => {
 	const getUsersMethod = useMethod('getUsersOfRoom');
 	const [membersList, setMembersList] = useState(() => new RecordList<IUser>());
 	const reload = useCallback(() => setMembersList(new RecordList<IUser>()), []);
@@ -53,10 +53,14 @@ export const useMembersList = (
 		[getUsersMethod, options],
 	);
 
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(membersList, fetchData, useMemo(() => {
-		const filesListSize = getConfig('teamsChannelListSize');
-		return filesListSize ? parseInt(filesListSize, 10) : undefined;
-	}, []));
+	const { loadMoreItems, initialItemCount } = useScrollableRecordList(
+		membersList,
+		fetchData,
+		useMemo(() => {
+			const filesListSize = getConfig('teamsChannelListSize');
+			return filesListSize ? parseInt(filesListSize, 10) : undefined;
+		}, []),
+	);
 
 	return {
 		reload,

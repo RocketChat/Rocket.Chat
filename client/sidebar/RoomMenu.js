@@ -1,20 +1,20 @@
 import { Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
-import { useSetting } from '../contexts/SettingsContext';
-import { useRoute } from '../contexts/RouterContext';
 import { RoomManager } from '../../app/ui-utils/client/lib/RoomManager';
-import { useMethod } from '../contexts/ServerContext';
-import { roomTypes, UiTextContext } from '../../app/utils';
-import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
-import { useUserSubscription } from '../contexts/UserContext';
+import { roomTypes, UiTextContext } from '../../app/utils/client';
+import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';
-import WarningModal from '../views/admin/apps/WarningModal';
-import { GenericModalDoNotAskAgain } from '../components/GenericModal';
+import { useRoute } from '../contexts/RouterContext';
+import { useMethod } from '../contexts/ServerContext';
+import { useSetting } from '../contexts/SettingsContext';
+import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
+import { useTranslation } from '../contexts/TranslationContext';
+import { useUserSubscription } from '../contexts/UserContext';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
+import WarningModal from '../views/admin/apps/WarningModal';
 
 const fields = {
 	f: 1,
@@ -22,7 +22,7 @@ const fields = {
 	name: 1,
 };
 
-const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '' }) => {
+const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '' }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -33,7 +33,7 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 
 	const subscription = useUserSubscription(rid, fields);
 	const canFavorite = useSetting('Favorite_Rooms');
-	const isFavorite = ((subscription != null ? subscription.f : undefined) != null) && subscription.f;
+	const isFavorite = (subscription != null ? subscription.f : undefined) != null && subscription.f;
 
 	const dontAskHideRoom = useDontAskAgain('hideRoom');
 
@@ -49,9 +49,13 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 	const canLeavePrivate = usePermission('leave-p');
 
 	const canLeave = (() => {
-		if (type === 'c' && !canLeaveChannel) { return false; }
-		if (type === 'p' && !canLeavePrivate) { return false; }
-		return !(((cl != null) && !cl) || ['d', 'l'].includes(type));
+		if (type === 'c' && !canLeaveChannel) {
+			return false;
+		}
+		if (type === 'p' && !canLeavePrivate) {
+			return false;
+		}
+		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
 
 	const handleLeave = useMutableCallback(() => {
@@ -70,15 +74,16 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.LEAVE_WARNING);
 
-
-		setModal(<WarningModal
-			text={t(warnText, name)}
-			confirmText={t('Leave_room')}
-			close={closeModal}
-			cancel={closeModal}
-			cancelText={t('Cancel')}
-			confirm={leave}
-		/>);
+		setModal(
+			<WarningModal
+				text={t(warnText, name)}
+				confirmText={t('Leave_room')}
+				close={closeModal}
+				cancel={closeModal}
+				cancelText={t('Cancel')}
+				confirm={leave}
+			/>,
+		);
 	});
 
 	const handleHide = useMutableCallback(async () => {
@@ -97,20 +102,22 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 			return hide();
 		}
 
-		setModal(<GenericModalDoNotAskAgain
-			variant='danger'
-			confirmText={t('Yes_hide_it')}
-			cancelText={t('Cancel')}
-			onClose={closeModal}
-			onCancel={closeModal}
-			onConfirm={hide}
-			dontAskAgain={{
-				action: 'hideRoom',
-				label: t('Hide_room'),
-			}}
-		>
-			{t(warnText, name)}
-		</ GenericModalDoNotAskAgain>);
+		setModal(
+			<GenericModalDoNotAskAgain
+				variant='danger'
+				confirmText={t('Yes_hide_it')}
+				cancelText={t('Cancel')}
+				onClose={closeModal}
+				onCancel={closeModal}
+				onConfirm={hide}
+				dontAskAgain={{
+					action: 'hideRoom',
+					label: t('Hide_room'),
+				}}
+			>
+				{t(warnText, name)}
+			</GenericModalDoNotAskAgain>,
+		);
 	});
 
 	const handleToggleRead = useMutableCallback(async () => {
@@ -139,34 +146,57 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 		}
 	});
 
-	const menuOptions = useMemo(() => ({
-		hideRoom: {
-			label: { label: t('Hide'), icon: 'eye-off' },
-			action: handleHide,
-		},
-		toggleRead: {
-			label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
-			action: handleToggleRead,
-		},
-		...canFavorite && { toggleFavorite: {
-			label: { label: isFavorite ? t('Unfavorite') : t('Favorite'), icon: isFavorite ? 'star-filled' : 'star' },
-			action: handleToggleFavorite,
-		} },
-		...canLeave && { leaveRoom: {
-			label: { label: t('Leave_room'), icon: 'sign-out' },
-			action: handleLeave,
-		} },
-	}), [t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave]);
+	const menuOptions = useMemo(
+		() => ({
+			hideRoom: {
+				label: { label: t('Hide'), icon: 'eye-off' },
+				action: handleHide,
+			},
+			toggleRead: {
+				label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
+				action: handleToggleRead,
+			},
+			...(canFavorite && {
+				toggleFavorite: {
+					label: {
+						label: isFavorite ? t('Unfavorite') : t('Favorite'),
+						icon: isFavorite ? 'star-filled' : 'star',
+					},
+					action: handleToggleFavorite,
+				},
+			}),
+			...(canLeave && {
+				leaveRoom: {
+					label: { label: t('Leave_room'), icon: 'sign-out' },
+					action: handleLeave,
+				},
+			}),
+		}),
+		[
+			t,
+			handleHide,
+			isUnread,
+			handleToggleRead,
+			canFavorite,
+			isFavorite,
+			handleToggleFavorite,
+			canLeave,
+			handleLeave,
+		],
+	);
 
+	return (
+		<Menu
+			rcx-sidebar-item__menu
+			mini
+			aria-keyshortcuts='alt'
+			tabIndex={-1}
+			options={menuOptions}
+			renderItem={({ label: { label, icon }, ...props }) => (
+				<Option label={label} title={label} icon={icon} {...props} />
+			)}
+		/>
+	);
+};
 
-	return <Menu
-		rcx-sidebar-item__menu
-		mini
-		aria-keyshortcuts='alt'
-		tabIndex={-1}
-		options={menuOptions}
-		renderItem={({ label: { label, icon }, ...props }) => <Option label={label} title={label} icon={icon} {...props}/>}
-	/>;
-});
-
-export default RoomMenu;
+export default memo(RoomMenu);
