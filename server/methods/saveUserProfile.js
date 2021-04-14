@@ -8,6 +8,7 @@ import { settings as rcSettings } from '../../app/settings/server';
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
 import { compareUserPassword } from '../lib/compareUserPassword';
+import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 
 function saveUserProfile(settings, customFields) {
 	if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
@@ -71,6 +72,12 @@ function saveUserProfile(settings, customFields) {
 			// don't let user change to same password
 			if (compareUserPassword(user, { plain: settings.newPassword })) {
 				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
+					method: 'saveUserProfile',
+				});
+			}
+
+			if (user.services?.passwordHistory && !compareUserPasswordHistory(user, { plain: settings.newPassword })) {
+				throw new Meteor.Error('error-password-in-history', 'Entered password in history', {
 					method: 'saveUserProfile',
 				});
 			}

@@ -1036,7 +1036,15 @@ export class Users extends Base {
 
 	addPasswordToHistory(_id, password) {
 		if (settings.get('Accounts_Password_History_Enabled') === true) {
-
+			const update = {
+				$push: {
+					'services.passwordHistory': {
+						$each: [password],
+						$slice: -Number(settings.get('Accounts_Password_History_Amount')),
+					},
+				},
+			};
+			return this.update(_id, update);
 		}
 	}
 
