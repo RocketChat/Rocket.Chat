@@ -114,6 +114,8 @@ Template.thread.helpers({
 	checkboxData() {
 		const instance = Template.instance();
 		const checked = instance.state.get('sendToChannel');
+		const showInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread');
+		showInMainThread ? instance.state.set('sendToChannel', true) : null;
 		return {
 			id: 'sendAlso',
 			checked,
