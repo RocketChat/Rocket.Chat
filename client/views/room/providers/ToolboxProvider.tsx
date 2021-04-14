@@ -129,7 +129,13 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 							(action as ToolboxActionConfig).anonymous),
 				)
 				.map(([id, item]) => (
-					<VirtualAction action={item} room={room} id={id} key={id} handleChange={handleChange} />
+					<VirtualAction
+						action={item}
+						room={room}
+						id={id}
+						key={id + room._id}
+						handleChange={handleChange}
+					/>
 				))}
 			{children}
 		</ToolboxContext.Provider>
