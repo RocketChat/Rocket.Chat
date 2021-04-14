@@ -259,8 +259,10 @@ export class AppsRestApi {
 				if (!buff) {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
+		
+				const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
 
-				const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true }));
+				const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true }, user));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
