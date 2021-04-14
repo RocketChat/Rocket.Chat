@@ -79,5 +79,14 @@
 			"KevLehman",
 			"matheusbsilva137"
 		]
+	}],
+	"3.11.4": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego",
+			"KevLehman",
+			"renatobecker"
+		]
 	}]
 }
