@@ -81,6 +81,7 @@ function DiscussionList({
 								itemContent={(index, data) => (
 									<Row
 										discussion={data}
+										item={data}
 										showRealNames={showRealNames}
 										userId={userId}
 										onClick={onClick}
