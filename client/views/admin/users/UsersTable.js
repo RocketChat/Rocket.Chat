@@ -98,7 +98,7 @@ function UsersTable() {
 	);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
-
+	console.log(data);
 	return (
 		<GenericTable
 			header={
@@ -160,7 +160,7 @@ function UsersTable() {
 				</>
 			}
 			results={data.users}
-			total={data.total}
+			total={JSON.stringify(data)==='{}'?0:data.total}
 			setParams={setParams}
 			params={params}
 			renderFilter={({ onChange, ...props }) => (

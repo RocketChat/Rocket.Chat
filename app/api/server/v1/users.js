@@ -237,7 +237,8 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
 		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
-
+		let users = [],total = 0;
+		try {
 		const result = Promise.await(
 			UsersRaw.col
 				.aggregate([
@@ -269,9 +270,16 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 				])
 				.toArray(),
 		);
-
 		const { sortedResults: users, totalCount: [{ total }] } = result[0];
+		return API.v1.success({
+			users,
+			count: users.length,
+			offset,
+			total,
+		});
+		} catch (e) {
 
+		}
 		return API.v1.success({
 			users,
 			count: users.length,
