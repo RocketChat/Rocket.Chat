@@ -15363,6 +15363,14 @@
       ]
     },
     "HEAD": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
       "pull_requests": []
     },
     "0.66.0-rc.0": {
@@ -56635,6 +56643,108 @@
         }
       ]
     },
+    "3.8.9": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.10.7": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.11.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.12.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21020",
+          "title": "[FIX] Missing spaces on attachment ",
+          "userLogin": "dougfabris",
+          "milestone": "3.12.1",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21004",
+          "title": "[IMPROVE] Close Call contextual bar after starting jitsi call.",
+          "userLogin": "yash-rajpal",
+          "description": "After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.\r\nSo, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20973",
+          "title": "[FIX] Stopping Jitsi reload",
+          "userLogin": "yash-rajpal",
+          "description": "The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.\r\nSo removing this dep from useMemo dependencies",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.12.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.12.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
     "3.13.0-rc.0": {
       "node_version": "12.21.0",
       "npm_version": "6.14.8",
@@ -56645,6 +56755,41 @@
         "4.0"
       ],
       "pull_requests": [
+        {
+          "pr": "21020",
+          "title": "[FIX] Missing spaces on attachment ",
+          "userLogin": "dougfabris",
+          "milestone": "3.12.1",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21004",
+          "title": "[IMPROVE] Close Call contextual bar after starting jitsi call.",
+          "userLogin": "yash-rajpal",
+          "description": "After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.\r\nSo, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20973",
+          "title": "[FIX] Stopping Jitsi reload",
+          "userLogin": "yash-rajpal",
+          "description": "The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.\r\nSo removing this dep from useMemo dependencies",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
         {
           "pr": "20881",
           "title": "[FIX] Follow thread action on threads list ",
@@ -56661,6 +56806,7 @@
           "pr": "20966",
           "title": "[NEW] Teams",
           "userLogin": "gabriellsh",
+          "description": "## Teams\r\n\r\n\r\n\r\nYou can easily group your users as Teams on Rocket.Chat. The feature takes the hassle out of managing multiple users one by one and allows you to handle them at the same time efficiently.\r\n\r\n\r\n- Teams can be public or private and each team can have its own channels, which also can be public or private.\r\n- It's possible to add existing channels to a Team or create new ones inside a Team.\r\n- It's possible to invite people outside a Team to join Team's channels.\r\n- It's possible to convert channels to Teams\r\n- It's possible to add all team members to a channel at once\r\n- Team members have roles\r\n\r\n\r\n![image](https://user-images.githubusercontent.com/70927132/113421955-4f56b680-93a2-11eb-80dc-9b70a3f09b3e.png)\r\n\r\n\r\n\r\n**Quickly onboard new users with Autojoin channels**\r\n\r\nTeams can have Auto-join channels –  channels to which the team members are automatically added, so you don’t need to go through the manual process of adding users repetitively\r\n\r\n![image](https://user-images.githubusercontent.com/70927132/113419284-81194e80-939d-11eb-9fff-aeb05cbc8089.png)\r\n\r\n**Instantly mention multiple members at once** (available in EE)\r\n\r\nWith Teams, you don’t need to remember everyone’s name to communicate with a team quickly. Just mention a Team — @engineers, for instance —  and all members will be instantly notified.",
           "milestone": "3.13.0",
           "contributors": [
             "matheusbsilva137",
@@ -57124,9 +57270,9 @@
         {
           "pr": "21000",
           "title": "[IMPROVE] Make debug logs of Apps configurable via Log_Level setting in the Admin panel",
-          "userLogin": "meomay503",
+          "userLogin": "cuonghuunguyen",
           "contributors": [
-            "meomay503",
+            "cuonghuunguyen",
             "web-flow"
           ]
         },
@@ -57253,53 +57399,6 @@
         }
       ]
     },
-    "3.12.1": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.23.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": [
-        {
-          "pr": "21020",
-          "title": "[FIX] Missing spaces on attachment ",
-          "userLogin": "dougfabris",
-          "milestone": "3.12.1",
-          "contributors": [
-            "dougfabris",
-            "tassoevan",
-            "web-flow"
-          ]
-        },
-        {
-          "pr": "21004",
-          "title": "[IMPROVE] Close Call contextual bar after starting jitsi call.",
-          "userLogin": "yash-rajpal",
-          "description": "After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.\r\nSo, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.",
-          "milestone": "3.12.1",
-          "contributors": [
-            "yash-rajpal",
-            "tassoevan",
-            "web-flow"
-          ]
-        },
-        {
-          "pr": "20973",
-          "title": "[FIX] Stopping Jitsi reload",
-          "userLogin": "yash-rajpal",
-          "description": "The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.\r\nSo removing this dep from useMemo dependencies",
-          "milestone": "3.12.1",
-          "contributors": [
-            "yash-rajpal",
-            "tassoevan",
-            "web-flow"
-          ]
-        }
-      ]
-    },
     "3.13.0-rc.1": {
       "node_version": "12.21.0",
       "npm_version": "6.14.8",
@@ -57319,50 +57418,6 @@
           ]
         }
       ]
-    },
-    "3.8.9": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.19.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": []
-    },
-    "3.10.7": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.21.0-alpha.4235",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": []
-    },
-    "3.11.3": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.22.2",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": []
-    },
-    "3.12.2": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.23.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": []
     },
     "3.13.0-rc.2": {
       "node_version": "12.21.0",
@@ -57493,17 +57548,6 @@
           ]
         }
       ]
-    },
-    "3.12.3": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.23.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": []
     },
     "3.13.0-rc.3": {
       "node_version": "12.21.0",
@@ -58045,7 +58089,30 @@
         "3.6",
         "4.0"
       ],
-      "pull_requests": []
+      "pull_requests": [
+        {
+          "pr": "21437",
+          "title": "Release 3.13.0",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            null,
+            "fcecagno",
+            "web-flow",
+            "yash-rajpal",
+            "MartinSchoeler",
+            "dougfabris",
+            "KevLehman",
+            "r0zbot",
+            "tiagoevanp",
+            "cuonghuunguyen",
+            "lucassartor",
+            "rodrigok",
+            "PriyaBihani",
+            "shrinish123"
+          ]
+        }
+      ]
     },
     "3.13.1": {
       "node_version": "12.21.0",
@@ -58057,6 +58124,19 @@
         "4.0"
       ],
       "pull_requests": [
+        {
+          "pr": "21486",
+          "title": "Release 3.13.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rafaelblink",
+            "sampaiodiego",
+            "renatobecker",
+            "graywolf336",
+            "KevLehman",
+            "gabriellsh"
+          ]
+        },
         {
           "pr": "21465",
           "title": "[FIX] Header component breaking if user is not part of teams room.",
