@@ -48,10 +48,12 @@ export const openRoom = async function(type, name) {
 				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 			}
 
+
 			if (room._id === Session.get('openedRoom') && !FlowRouter.getQueryParam('msg')) {
 				return;
 			}
 
+			RoomManager.open(type + name);
 
 			appLayout.render('main', { center: 'room' });
 

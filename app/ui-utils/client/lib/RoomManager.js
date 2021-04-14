@@ -249,33 +249,31 @@ export const RoomManager = new function() {
 		}
 
 		updateMentionsMarksOfRoom(typeName) {
-			const dom = this.getDomOfRoom(typeName);
-			if (!dom) {
-				return;
-			}
 
-			const [ticksBar] = dom.getElementsByClassName('ticks-bar');
-			const [messagesBox] = dom.getElementsByClassName('messages-box');
-			const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
-			const totalHeight = $(' > .wrapper > ul', messagesBox).height() + 40;
-			if (!ticksBar) {
-				return;
-			}
+			return;
 
-			// TODO: thread quotes should NOT have mention links at all
-			const mentionsSelector = '.message .body .mention-link--me, .message .body .mention-link--group';
-			ticksBar.innerHTML = Array.from(messagesBox?.querySelectorAll(mentionsSelector) || [])
-				.map((mentionLink) => {
-					const topOffset = $(mentionLink).offset().top + scrollTop;
-					const percent = (100 / totalHeight) * topOffset;
-					const className = [
-						'tick',
-						mentionLink.classList.contains('mention-link--me') && 'tick--me',
-						mentionLink.classList.contains('mention-link--group') && 'tick--group',
-					].filter(Boolean).join(' ');
-					return `<div class="${ className }" style="top: ${ percent }%;"></div>`;
-				})
-				.join('');
+			// const [ticksBar] = dom.getElementsByClassName('ticks-bar');
+			// const [messagesBox] = dom.getElementsByClassName('messages-box');
+			// const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
+			// const totalHeight = $(' > .wrapper > ul', messagesBox).height() + 40;
+			// if (!ticksBar) {
+			// 	return;
+			// }
+
+			// // TODO: thread quotes should NOT have mention links at all
+			// const mentionsSelector = '.message .body .mention-link--me, .message .body .mention-link--group';
+			// ticksBar.innerHTML = Array.from(messagesBox?.querySelectorAll(mentionsSelector) || [])
+			// 	.map((mentionLink) => {
+			// 		const topOffset = $(mentionLink).offset().top + scrollTop;
+			// 		const percent = (100 / totalHeight) * topOffset;
+			// 		const className = [
+			// 			'tick',
+			// 			mentionLink.classList.contains('mention-link--me') && 'tick--me',
+			// 			mentionLink.classList.contains('mention-link--group') && 'tick--group',
+			// 		].filter(Boolean).join(' ');
+			// 		return `<div class="${ className }" style="top: ${ percent }%;"></div>`;
+			// 	})
+			// 	.join('');
 		}
 	};
 	Cls.initClass();

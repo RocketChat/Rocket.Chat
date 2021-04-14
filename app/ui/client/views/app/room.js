@@ -796,6 +796,8 @@ Meteor.startup(() => {
 		const afterMessageGroup = () => {
 			if (store.scroll) {
 				wrapper.scrollTop = store.scroll;
+			} else {
+				this.sendToBottom();
 			}
 			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
 

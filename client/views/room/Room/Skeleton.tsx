@@ -1,34 +1,9 @@
 import { Skeleton, Box, InputBox } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
 import Header from '../../../components/Header';
 import VerticalBarSkeleton from '../../../components/VerticalBar/VerticalBarSkeleton';
 import { RoomTemplate } from '../components/RoomTemplate';
-
-// 	{/* <Header.Content>
-// 		<Header.Content.Row>
-// 			<RoomTitle room={room} />
-// 			<Favorite room={room} />
-// 			{room.prid && <ParentRoomWithData room={room} />}
-// 			{room.teamId && !room.teamMain && <ParentTeam room={room} />}
-// 			<Encrypted room={room} />
-// 			<Translate room={room} />
-// 			{showQuickActions && (
-// 				<Box mis='x20' display='flex'>
-// 					<QuickActions room={room} />
-// 				</Box>
-// 			)}
-// 		</Header.Content.Row>
-// 		<Header.Content.Row>
-// 			<Header.Subtitle>
-// 				{topic && <MarkdownText variant='inlineWithoutBreaks' content={topic} />}
-// 			</Header.Subtitle>
-// 		</Header.Content.Row>
-// 	</Header.Content>
-// 	<Header.ToolBox>
-// 		<ToolBox room={room} />
-// 	</Header.ToolBox></Header> */}
-// {/* <Header>sdasdasda</Header> */}
 
 const RoomSkeleton: FC = () => (
 	<RoomTemplate>
@@ -77,4 +52,4 @@ const RoomSkeleton: FC = () => (
 		</RoomTemplate.Aside>
 	</RoomTemplate>
 );
-export default RoomSkeleton;
+export default memo(RoomSkeleton);
