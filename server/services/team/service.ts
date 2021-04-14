@@ -1,4 +1,4 @@
-import { Db, FindOneOptions } from 'mongodb';
+import { Db, FindOneOptions, UpdateWriteOpResult } from 'mongodb';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
@@ -766,5 +766,9 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await Subscriptions.removeByRoomIdsAndUserId([roomId], userId);
 		await this.RoomsModel.incUsersCountByIds([roomId], -1);
 		await this.Users.removeRoomsByRoomIdsAndUserId([roomId], userId);
+	}
+
+	async updateTeamName(id: string, name: string): Promise<UpdateWriteOpResult> {
+		return this.TeamModel.updateTeamName(id, name);
 	}
 }

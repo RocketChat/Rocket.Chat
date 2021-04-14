@@ -65,6 +65,16 @@ export class TeamRaw extends BaseRaw<T> {
 		});
 	}
 
+	updateTeamName(id: string, name: string): Promise<UpdateWriteOpResult> {
+		return this.col.updateOne({
+			_id: id,
+		}, {
+			$set: {
+				name,
+			},
+		});
+	}
+
 	deleteOneById(id: string): Promise<DeleteWriteOpResultObject> {
 		return this.col.deleteOne({
 			_id: id,

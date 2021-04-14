@@ -1,4 +1,4 @@
-import { FindOneOptions } from 'mongodb';
+import { FindOneOptions, UpdateWriteOpResult } from 'mongodb';
 
 import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
@@ -75,4 +75,5 @@ export interface ITeamService {
 	autocomplete(uid: string, name: string): Promise<Array<IRoom>>;
 	getAllPublicTeams(options: FindOneOptions<ITeam>): Promise<Array<ITeam>>;
 	getMembersByTeamIds(teamIds: Array<string>, options: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember>>;
+	updateTeamName(id: string, name: string): Promise<UpdateWriteOpResult>;
 }

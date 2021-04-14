@@ -4,6 +4,7 @@ import { Rooms, Messages, Subscriptions, Integrations } from '../../../models';
 import { roomTypes, getValidRoomName } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { checkUsernameAvailability } from '../../../lib/server/functions';
+import { Team } from '../../../../server/sdk';
 
 const updateRoomName = (rid, displayName, isDiscussion) => {
 	if (isDiscussion) {
@@ -34,6 +35,10 @@ export const saveRoomName = function(rid, displayName, user, sendMessage = true)
 	if (!update) {
 		return;
 	}
+	if (room.teamId && room.teamMain) {
+		Team.updateTeamName(room.teamId, displayName);
+	}
+
 	Integrations.updateRoomName(room.name, displayName);
 	if (sendMessage) {
 		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user);
