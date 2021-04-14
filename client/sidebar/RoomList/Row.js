@@ -19,7 +19,6 @@ const Row = ({ data, item }) => {
 			<Sidebar.Section.Title aria-level='1'>{t(item)}</Sidebar.Section.Title>
 		);
 	}
-
 	return (
 		<SideBarItemTemplateWithData
 			sidebarViewMode={sidebarViewMode}
