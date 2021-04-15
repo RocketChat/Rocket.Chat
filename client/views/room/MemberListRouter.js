@@ -8,7 +8,7 @@ import { useTab, useTabBarClose, useTabContext } from './providers/ToolboxProvid
 
 const getUid = (room, ownUserId) => {
 	if (room.uids.length === 1) {
-		return room.uids.length;
+		return room.uids[0];
 	}
 
 	const uid = room.uids.filter((uid) => uid !== ownUserId).shift();
