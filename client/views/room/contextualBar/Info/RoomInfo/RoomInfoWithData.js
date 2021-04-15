@@ -72,7 +72,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const canConvertRoomToTeam = usePermission('create-team');
 
 	const canMoveToTeam = usePermission('add-team-channel', rid)
-	console.log(canMoveToTeam, rid)
+
 	const canLeave =
 		usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
