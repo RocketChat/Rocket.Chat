@@ -5,13 +5,7 @@ import CounterContainer from '../counter/CounterContainer';
 
 const defaultValue = { title: '', value: '00:00:00' };
 
-
-const initialData = [
-	defaultValue,
-	defaultValue,
-	defaultValue,
-	defaultValue,
-];
+const initialData = [defaultValue, defaultValue, defaultValue, defaultValue];
 
 const ProductivityOverview = ({ params, reloadRef, ...props }) => {
 	const { value: data, phase: state, reload } = useEndpointData(
@@ -21,7 +15,7 @@ const ProductivityOverview = ({ params, reloadRef, ...props }) => {
 
 	reloadRef.current.productivityOverview = reload;
 
-	return <CounterContainer state={state} data={data} initialData={initialData} {...props}/>;
+	return <CounterContainer state={state} data={data} initialData={initialData} {...props} />;
 };
 
 export default ProductivityOverview;
