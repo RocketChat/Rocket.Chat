@@ -40,7 +40,7 @@ Accounts.updateOrCreateUserFromExternalService = function(serviceName, serviceDa
 	}
 
 	if (serviceData.email) {
-		let user = Users.findOneByEmailAddress(serviceData.email);
+		const user = Users.findOneByEmailAddress(serviceData.email);
 		if (user != null) {
 			const findQuery = {
 				address: serviceData.email,
