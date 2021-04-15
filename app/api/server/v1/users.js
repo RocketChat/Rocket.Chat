@@ -11,13 +11,13 @@ import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
 import {
 	validateCustomFields,
-	validateName,
 	saveUser,
 	saveCustomFieldsWithoutValidation,
 	checkUsernameAvailability,
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib';
+import { validateName } from '../../../lib/server/functions/validateName';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
@@ -48,7 +48,9 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			customFields: Match.Maybe(Object),
 		});
 
-		validateName(this.bodyParams.username);
+		if (!validateName(this.bodyParams.username)) {
+			return API.v1.failure(`"${ this.bodyParams.username }" is a reserved word`);
+		}
 
 		// New change made by pull request #5152
 		if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
@@ -500,8 +502,8 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 			}),
 		});
 
-		if (this.bodyParams.data.username) {
-			validateName(this.bodyParams.data.username);
+		if (this.bodyParams.data.username && !validateName(this.bodyParams.data.username)) {
+			return API.v1.failure(`"${ this.bodyParams.data.username }" is a reserved word`);
 		}
 
 		const userData = _.extend({ _id: this.bodyParams.userId }, this.bodyParams.data);
@@ -540,8 +542,8 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 			customFields: Match.Maybe(Object),
 		});
 
-		if (this.bodyParams.data.username) {
-			validateName(this.bodyParams.data.username);
+		if (this.bodyParams.data.username && !validateName(this.bodyParams.data.username)) {
+			return API.v1.failure(`"${ this.bodyParams.data.username }" is a reserved word`);
 		}
 
 		const userData = {

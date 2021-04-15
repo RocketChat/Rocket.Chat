@@ -8,7 +8,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { settings } from '../../../settings';
 import { Team } from '../../../../server/sdk';
-import { validateName } from '../../../lib';
+import { validateName } from '../../../lib/server/functions/validateName';
 
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -179,7 +179,9 @@ function createChannelValidator(params) {
 		throw new Error(`Param "${ params.name.key }" is required`);
 	}
 
-	validateName(params.name.value);
+	if (!validateName(params.name.value)) {
+		throw new Error(`"${ params.members.key }" is a reserved word`);
+	}
 
 	if (params.members && params.members.value && !_.isArray(params.members.value)) {
 		throw new Error(`Param "${ params.members.key }" must be an array if provided`);
@@ -766,7 +768,9 @@ API.v1.addRoute('channels.rename', { authRequired: true }, {
 			return API.v1.failure('The channel name is the same as what it would be renamed to.');
 		}
 
-		validateName(this.bodyParams.name);
+		if (!validateName(this.bodyParams.name)) {
+			return API.v1.failure(`"${ this.bodyParams.name }" is a reserved word.`);
+		}
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('saveRoomSettings', findResult._id, 'roomName', this.bodyParams.name);
