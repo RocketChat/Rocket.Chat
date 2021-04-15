@@ -2,6 +2,7 @@ import { Cookies } from 'meteor/ostrio:cookies';
 
 import Users from '../../models/server/models/Users';
 import { FileUpload } from '../../file-upload/server';
+import { getURL } from '../../utils/lib/getURL';
 
 const cookie = new Cookies();
 const userDataStore = FileUpload.getStore('UserDataFiles');
@@ -46,7 +47,7 @@ export const DataExport = {
 		let errorHtml = Assets.getText('errors/error_template.html');
 		errorHtml = errorHtml.replace('$ERROR_TYPE$', errorType);
 		errorHtml = errorHtml.replace('$ERROR_DESCRIPTION$', errorDescription);
-		errorHtml = errorHtml.replace('$SERVER_URL$', __meteor_runtime_config__.ROOT_URL);
+		errorHtml = errorHtml.replace('$SERVER_URL$', getURL('/', { full: true, cdn: false }));
 		return errorHtml;
 	},
 
