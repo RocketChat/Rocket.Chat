@@ -17,7 +17,6 @@ import BaseTeamsChannels from './BaseTeamsChannels';
 import { useTeamsChannelList } from './hooks/useTeamsChannelList';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 
-
 const useReactModal = (Component, props) => {
 	const setModal = useSetModal();
 
