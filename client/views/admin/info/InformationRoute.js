@@ -94,7 +94,6 @@ const InformationRoute = React.memo(function InformationRoute() {
 		</Page>;
 	}
 
-	if (canViewStatistics) {
 		return <NewInformationPage
 			canViewStatistics={canViewStatistics}
 			isLoading={isLoading}
@@ -104,9 +103,7 @@ const InformationRoute = React.memo(function InformationRoute() {
 			onClickRefreshButton={handleClickRefreshButton}
 			onClickDownloadInfo={handleClickDownloadInfo}
 		/>;
-	}
-
-	return <NotAuthorizedPage />;
+	
 });
 
 export default InformationRoute;
