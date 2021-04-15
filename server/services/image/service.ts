@@ -8,9 +8,9 @@ import { IMediaService, ResizeResult } from '../../sdk/types/IMediaService';
 export class MediaService extends ServiceClass implements IMediaService {
 	protected name = 'media';
 
-	resizeFromBuffer(input: Buffer, width: number, height: number, keepType: boolean, blur: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
+	resizeFromBuffer(input: Buffer, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
 		const transformer = sharp(input)
-			.resize({ width, height, fit });
+			.resize({ width, height, fit, withoutEnlargement: !enlarge });
 
 		if (!keepType) {
 			transformer.jpeg();
@@ -23,9 +23,9 @@ export class MediaService extends ServiceClass implements IMediaService {
 		return transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
 	}
 
-	resizeFromStream(input: Readable, width: number, height: number, keepType: boolean, blur: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
+	resizeFromStream(input: Readable, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
 		const transformer = sharp()
-			.resize({ width, height, fit });
+			.resize({ width, height, fit, withoutEnlargement: !enlarge });
 
 		if (!keepType) {
 			transformer.jpeg();

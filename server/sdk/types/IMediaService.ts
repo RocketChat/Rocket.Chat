@@ -9,6 +9,6 @@ export type ResizeResult = {
 }
 
 export interface IMediaService {
-	resizeFromBuffer(input: Buffer, width: number, height: number, keepType: boolean, blur: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult>;
-	resizeFromStream(input: Readable, width: number, height: number, keepType: boolean, blur: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult>;
+	resizeFromBuffer(input: Buffer, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult>;
+	resizeFromStream(input: Readable, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult>;
 }
