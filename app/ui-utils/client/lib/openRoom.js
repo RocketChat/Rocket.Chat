@@ -30,6 +30,12 @@ const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
 	});
 });
 
+
+NewRoomManager.on('changed', (rid) => {
+	Session.set('openedRoom', rid);
+	RoomManager.openedRoom = rid;
+});
+
 export const openRoom = async function(type, name) {
 	window.currentTracker && window.currentTracker.stop();
 	window.currentTracker = Tracker.autorun(async function(c) {
@@ -63,9 +69,6 @@ export const openRoom = async function(type, name) {
 			if (window.currentTracker) {
 				window.currentTracker = undefined;
 			}
-
-			Session.set('openedRoom', room._id);
-			RoomManager.openedRoom = room._id;
 
 			NewRoomManager.open(room._id);
 

@@ -2,10 +2,13 @@ import { Emitter } from '@rocket.chat/emitter';
 import { useEffect, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
+import { getConfig } from '../../app/ui-utils/client/config';
 import { IRoom } from '../../definition/IRoom';
 import { useUserId, useUserRoom, useUserSubscription } from '../contexts/UserContext';
 import { useAsyncState } from '../hooks/useAsyncState';
 import { AsyncState } from './asyncState';
+
+const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 
 export class RoomStore extends Emitter<{
 	changed: undefined;
@@ -17,7 +20,7 @@ export class RoomStore extends Emitter<{
 	constructor(readonly rid: string) {
 		super();
 
-		this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
+		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
 	update({ scroll, lastTime }: { scroll?: number; lastTime?: Date }): void {
@@ -33,8 +36,9 @@ export class RoomStore extends Emitter<{
 	}
 }
 
+const debugRoomManager = !!(getConfig('debug') || getConfig('debug-RoomManager'));
 export const RoomManager = new (class RoomManager extends Emitter<{
-	changed: undefined;
+	changed: IRoom['_id'] | undefined;
 	opened: IRoom['_id'];
 	closed: IRoom['_id'];
 	back: IRoom['_id'];
@@ -48,9 +52,20 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 
 	constructor() {
 		super();
-		this.on('opened', (rid) => {
-			console.log('room opened ->', rid);
-		});
+		debugRoomManager &&
+			this.on('opened', (rid) => {
+				console.log('room opened ->', rid);
+			});
+
+		debugRoomManager &&
+			this.on('back', (rid) => {
+				console.log('room moved to back ->', rid);
+			});
+
+		debugRoomManager &&
+			this.on('closed', (rid) => {
+				console.log('room close ->', rid);
+			});
 	}
 
 	get lastOpened(): IRoom['_id'] | undefined {
@@ -76,8 +91,9 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 	close(rid: IRoom['_id']): void {
 		if (!this.rooms.has(rid)) {
 			this.rooms.delete(rid);
+			this.emit('closed', rid);
 		}
-		this.emit('changed');
+		this.emit('changed', this.rid);
 	}
 
 	open(rid: IRoom['_id']): void {
@@ -91,7 +107,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 		}
 		this.rid = rid;
 		this.emit('opened', rid);
-		this.emit('changed');
+		this.emit('changed', this.rid);
 	}
 
 	getStore(rid: IRoom['_id']): RoomStore | undefined {
