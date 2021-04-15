@@ -51,7 +51,6 @@ const TeamsChannels = ({ teamId }) => {
 
 	const addExisting = useReactModal(AddExistingModal, { teamId, reload });
 	const createNew = useReactModal(CreateChannel, { teamId, reload });
-
 	const goToRoom = useCallback((room) => roomTypes.openRouteLink(room.t, room), []);
 	const handleBack = useCallback(() => setState({}), [setState]);
 	const viewRoom = useMutableCallback((room) => {
