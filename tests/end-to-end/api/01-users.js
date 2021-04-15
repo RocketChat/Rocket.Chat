@@ -12,6 +12,7 @@ import {
 	targetUser,
 	log,
 	wait,
+	reservedWords,
 } from '../../data/api-data.js';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
 import { imgURL } from '../../data/interactions.js';
@@ -19,13 +20,6 @@ import { customFieldText, clearCustomFields, setCustomFields } from '../../data/
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
-
-const reservedWords = [
-	'admin',
-	'administrator',
-	'system',
-	'user',
-];
 
 function createTestUser() {
 	return new Promise((resolve) => {
