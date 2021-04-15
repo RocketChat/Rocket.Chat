@@ -1347,7 +1347,7 @@ settings.addGroup('Layout', function() {
 			multiline: true,
 			public: true,
 		});
-		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
+		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to <strong>APP SETTINGS</strong> &rarr; <strong>Layout</strong> to customize this page.', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -1358,13 +1358,13 @@ settings.addGroup('Layout', function() {
 			multiline: true,
 			public: true,
 		});
-		this.add('Layout_Privacy_Policy', 'Privacy Policy <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
+		this.add('Layout_Privacy_Policy', 'Privacy Policy <br> Go to <strong>APP SETTINGS</strong> &rarr; <strong>Layout</strong> to customize this page.', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			public: true,
 		});
-		this.add('Layout_Legal_Notice', 'Legal Notice <br> Go to APP SETTINGS -> Layout to customize this page.', {
+		this.add('Layout_Legal_Notice', 'Legal Notice <br> Go to <strong>APP SETTINGS</strong> &rarr; <strong>Layout</strong> to customize this page.', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
