@@ -1,10 +1,10 @@
 import React from 'react';
 
-import UserInfo from './contextualBar/UserInfo';
 import { useUserId } from '../../contexts/UserContext';
+import RoomMembers from './contextualBar/RoomMembers';
+import UserInfo from './contextualBar/UserInfo';
 import { useRoom } from './providers/RoomProvider';
 import { useTab, useTabBarClose, useTabContext } from './providers/ToolboxProvider';
-import RoomMembers from './contextualBar/RoomMembers';
 
 const getUid = (room, ownUserId) => {
 	if (room.uids.length === 1) {
@@ -28,10 +28,17 @@ const MemberListRouter = ({ rid }) => {
 	const isMembersList = tab.id === 'members-list' || tab.id === 'user-info-group';
 
 	if (isMembersList && !username) {
-		return <RoomMembers rid={rid}/>;
+		return <RoomMembers rid={rid} />;
 	}
 
-	return <UserInfo width='100%' {...username ? { username } : { uid: getUid(room, ownUserId) }} onClose={onClickClose} rid={rid}/>;
+	return (
+		<UserInfo
+			width='100%'
+			{...(username ? { username } : { uid: getUid(room, ownUserId) })}
+			onClose={onClickClose}
+			rid={rid}
+		/>
+	);
 };
 
 export default MemberListRouter;
