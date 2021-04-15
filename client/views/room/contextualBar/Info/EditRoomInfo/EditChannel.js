@@ -231,6 +231,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(
 		useMemo(() => ['archive-room', 'unarchive-room'], []),
+		room._id,
 	);
 	const canDelete = usePermission(`delete-${room.t}`);
 	const canToggleEncryption =
