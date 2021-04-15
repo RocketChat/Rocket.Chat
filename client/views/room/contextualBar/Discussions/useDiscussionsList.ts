@@ -1,23 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import {
-	DiscussionsList,
-	DiscussionsListOptions,
-} from '../../../../lib/lists/DiscussionsList';
+import { getConfig } from '../../../../../app/ui-utils/client/config';
+import { IUser } from '../../../../../definition/IUser';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
-import { IUser } from '../../../../../definition/IUser';
-import { getConfig } from '../../../../../app/ui-utils/client/config';
+import { DiscussionsList, DiscussionsListOptions } from '../../../../lib/lists/DiscussionsList';
 
 export const useDiscussionsList = (
 	options: DiscussionsListOptions,
 	uid: IUser['_id'],
 ): {
-		discussionsList: DiscussionsList;
-		initialItemCount: number;
-		loadMoreItems: (start: number, end: number) => void;
-	} => {
+	discussionsList: DiscussionsList;
+	initialItemCount: number;
+	loadMoreItems: (start: number, end: number) => void;
+} => {
 	const [discussionsList] = useState(() => new DiscussionsList(options));
 
 	useEffect(() => {

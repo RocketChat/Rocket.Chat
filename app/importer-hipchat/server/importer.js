@@ -31,7 +31,7 @@ export class HipChatImporter extends Base {
 		super.prepare(dataURI, sentContentType, fileName, skipTypeCheck);
 		const { image } = RocketChatFile.dataURIParse(dataURI);
 		// const contentType = ref.contentType;
-		const zip = new this.AdmZip(new Buffer(image, 'base64'));
+		const zip = new this.AdmZip(Buffer.from(image, 'base64'));
 		const zipEntries = zip.getEntries();
 		let tempRooms = [];
 		let tempUsers = [];

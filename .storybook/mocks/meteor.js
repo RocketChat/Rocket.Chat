@@ -78,8 +78,6 @@ export const FlowRouter = {
 	}),
 };
 
-export const BlazeLayout = {};
-
 export const Session = {
 	get: () => {},
 	set: () => {},

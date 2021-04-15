@@ -1,7 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { Subscription } from 'use-subscription';
 
-import { mountRoot } from '../reactAdapters';
 import { UiKitBannerPayload } from '../../definition/UIKit';
 
 export type LegacyBannerPayload = {
@@ -19,11 +18,12 @@ export type LegacyBannerPayload = {
 
 type BannerPayload = LegacyBannerPayload | UiKitBannerPayload;
 
-export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload => !('blocks' in payload);
+export const isLegacyPayload = (payload: BannerPayload): payload is LegacyBannerPayload =>
+	!('blocks' in payload);
 
 const queue: BannerPayload[] = [];
 const emitter = new Emitter<{
-	update: undefined;
+	'update': undefined;
 	'update-first': undefined;
 }>();
 
@@ -33,8 +33,6 @@ export const firstSubscription: Subscription<BannerPayload | null> = {
 };
 
 export const open = (payload: BannerPayload): void => {
-	mountRoot();
-
 	let index = queue.findIndex((_payload) => {
 		if (isLegacyPayload(_payload)) {
 			return _payload.id === (payload as LegacyBannerPayload).id;
@@ -54,7 +52,6 @@ export const open = (payload: BannerPayload): void => {
 		emitter.emit('update-first');
 	}
 };
-
 
 export const closeById = (id: string): void => {
 	const index = queue.findIndex((banner) => {
