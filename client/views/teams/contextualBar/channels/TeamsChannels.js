@@ -9,7 +9,7 @@ import { roomTypes } from '../../../../../app/utils/client';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
-import CreateChannel from '../../../../sidebar/header/CreateChannel';
+import CreateChannel from '../../../../sidebar/header/CreateChannelWithData';
 import RoomInfo from '../../../room/contextualBar/Info';
 import { useTabBarClose } from '../../../room/providers/ToolboxProvider';
 import AddExistingModal from './AddExistingModal';
