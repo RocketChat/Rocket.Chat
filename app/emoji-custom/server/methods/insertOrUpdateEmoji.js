@@ -69,7 +69,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-the-field-is-required', 'The custom emoji file is required', { method: 'insertOrUpdateEmoji' });
 		}
 
-		const extensionValidation = /(jpe?g|png|gif|bmp)$/i
+		const extensionValidation = /(jpe?g|png|gif|bmp)$/i;
 
 		if (!extensionValidation.test(emojiData.extension)) {
 			throw new Meteor.Error('error-input-is-not-a-valid-field', `${ emojiData.extension } is not a valid file extension`, { method: 'insertOrUpdateEmoji', input: emojiData.extension, field: 'Extension' });
