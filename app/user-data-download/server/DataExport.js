@@ -21,9 +21,17 @@ export const DataExport = {
 			rc_token = cookie.get('rc_token', headers.cookie);
 		}
 
-		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token) && rc_uid === userId;
-		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
-		return isAuthorizedByCookies || isAuthorizedByHeaders;
+		const options = { fields: { _id: 1 } };
+
+		if (rc_uid && rc_token && rc_uid === userId) {
+			return !!Users.findOneByIdAndLoginToken(rc_uid, rc_token, options);
+		}
+
+		if (headers['x-user-id'] && headers['x-auth-token'] && headers['x-user-id'] === userId) {
+			return !!Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token'], options);
+		}
+
+		return false;
 	},
 
 	get(file, req, res, next) {

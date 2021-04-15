@@ -15,6 +15,7 @@ import { DataExport } from './DataExport';
 import * as Mailer from '../../mailer';
 import { readSecondaryPreferred } from '../../../server/database/readSecondaryPreferred';
 import { joinPath } from '../../../server/lib/fileUtils';
+import { getURL } from '../../utils/lib/getURL';
 
 const fsStat = util.promisify(fs.stat);
 const fsOpen = util.promisify(fs.open);
@@ -570,7 +571,7 @@ async function processDataDownloads() {
 		}
 
 		const subject = TAPi18n.__('UserDataDownload_EmailSubject');
-		const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: DataExport.getPath(file._id) });
+		const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: getURL(DataExport.getPath(file._id), { cdn: false, full: true }) });
 
 		sendEmail(operation.userData, subject, body);
 	}
