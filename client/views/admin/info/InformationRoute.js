@@ -95,7 +95,8 @@ const InformationRoute = memo(function InformationRoute() {
 		);
 	}
 
-		return <NewInformationPage
+	return (
+		<NewInformationPage
 			canViewStatistics={canViewStatistics}
 			isLoading={isLoading}
 			info={info}
@@ -103,8 +104,8 @@ const InformationRoute = memo(function InformationRoute() {
 			instances={instances}
 			onClickRefreshButton={handleClickRefreshButton}
 			onClickDownloadInfo={handleClickDownloadInfo}
-		/>;
-	
+		/>
+	);
 });
 
 export default InformationRoute;
