@@ -19,7 +19,6 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 
 	const onClick = usePreventProgation();
 	const canEdit = usePermission('edit-team-channel', room._id);
-	console.log(canEdit);
 	return (
 		<Option id={room._id} data-rid={room._id} {...handleMenuEvent} onClick={onClickView}>
 			<Option.Avatar>
