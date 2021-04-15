@@ -15,6 +15,8 @@ import { useTabBarClose } from '../../../room/providers/ToolboxProvider';
 import AddExistingModal from './AddExistingModal';
 import BaseTeamsChannels from './BaseTeamsChannels';
 import { useTeamsChannelList } from './hooks/useTeamsChannelList';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
+
 
 const useReactModal = (Component, props) => {
 	const setModal = useSetModal();
@@ -49,6 +51,7 @@ const TeamsChannels = ({ teamId }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
+	const canAddExistingTeam = usePermission('add-team-channel');
 	const addExisting = useReactModal(AddExistingModal, { teamId, reload });
 	const createNew = useReactModal(CreateChannel, { teamId, reload });
 
@@ -80,8 +83,8 @@ const TeamsChannels = ({ teamId }) => {
 			channels={items}
 			total={total}
 			onClickClose={onClickClose}
-			onClickAddExisting={addExisting}
-			onClickCreateNew={createNew}
+			onClickAddExisting={canAddExistingTeam && addExisting}
+			onClickCreateNew={canAddExistingTeam && createNew}
 			onClickView={viewRoom}
 			loadMoreItems={loadMoreItems}
 			reload={reload}
