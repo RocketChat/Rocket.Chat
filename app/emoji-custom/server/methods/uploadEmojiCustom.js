@@ -6,6 +6,7 @@ import { hasPermission } from '../../../authorization';
 import { RocketChatFile } from '../../../file';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 import { api } from '../../../../server/sdk/api';
+import { Media } from '../../../../server/sdk';
 
 const getFile = async (file, extension) => {
 	if (extension !== 'svg+xml') {
@@ -30,8 +31,8 @@ Meteor.methods({
 		const file = await getFile(Buffer.from(binaryContent, 'binary'), emojiData.extension);
 
 		emojiData.extension = emojiData.extension === 'svg+xml' ? 'png' : emojiData.extension;
-
-		const rs = RocketChatFile.bufferToStream(file);
+		const { data: resizedEmojiBuffer } = await Media.resizeFromBuffer(file, 128, 128, true, false, 'inside');
+		const rs = RocketChatFile.bufferToStream(resizedEmojiBuffer);
 		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
 		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`), contentType);
 		ws.on('end', Meteor.bindEnvironment(() =>
