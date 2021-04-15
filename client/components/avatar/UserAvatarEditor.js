@@ -69,8 +69,10 @@ export function UserAvatarEditor({ currentUsername, username, setAvatarObj, sugg
 						{suggestions && <UserAvatarSuggestions suggestions={suggestions} setAvatarObj={setAvatarObj} setNewAvatarSource={setNewAvatarSource} disabled={disabled}/>}
 					</Margins>
 				</Box>
-				<Box>{t('Use_url_for_avatar')}</Box>
-				<TextInput flexGrow={0} placeholder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={handleAvatarFromUrlChange}/>
+				<Margins inlineStart='x4'>
+					<Box>{t('Use_url_for_avatar')}</Box>
+					<TextInput flexGrow={0} placeholder={t('Use_url_for_avatar')} value={avatarFromUrl} onChange={handleAvatarFromUrlChange}/>
+				</Margins>
 			</Box>
 		</Box>
 	</Box>;

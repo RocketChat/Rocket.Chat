@@ -26,7 +26,7 @@ export const useRoomIcon = (room: IRoom, small = true): JSX.Element | { name: st
 		case 'd':
 			const direct = room as unknown as IDirectMessageRoom;
 			if (direct.uids && direct.uids.length > 2) {
-				return { name: 'baloon-arrow-left' };
+				return { name: 'balloon' };
 			}
 			if (direct.uids && direct.uids.length > 0) {
 				return <ReactiveUserStatus { ...{ small, uid: direct.uids.filter((uid) => uid !== room.u._id)[0] || room.u._id } as any } />;

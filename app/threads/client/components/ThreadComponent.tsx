@@ -59,10 +59,12 @@ const ThreadComponent: FC<{
 	mid: string;
 	jump: unknown;
 	room: IRoom;
+	onClickBack: () => void;
 }> = ({
 	mid,
 	jump,
 	room,
+	onClickBack,
 }) => {
 	const subscription = useUserSubscription(room._id, subscriptionFields);
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
@@ -150,6 +152,7 @@ const ThreadComponent: FC<{
 		onToggleExpand={(expanded): void => setExpand(!expanded)}
 		onToggleFollow={(following): void => setFollowing(!following)}
 		onClose={handleClose}
+		onClickBack={onClickBack}
 	/>;
 };
 

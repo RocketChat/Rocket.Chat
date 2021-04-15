@@ -178,7 +178,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const options = useMemo(() => ({
 		...canDirectMessage && { directMessage: {
-			icon: 'chat',
+			icon: 'balloon',
 			label: t('Direct_Message'),
 			action: directMessageClick,
 		} },

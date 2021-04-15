@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { Box, BoxProps } from '@rocket.chat/fuselage';
 
 type FieldProp = {
 	short?: boolean;
 	title: string;
-	value: JSX.Element | string;
+	value: ReactNode;
 }
 
 const Field: FC<BoxProps | FieldProp> = ({ title, value, ...props }) => <Box mb='x4' pi='x4' width='full' flexBasis={100} flexShrink={0} {...props}>
