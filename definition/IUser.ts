@@ -1,5 +1,5 @@
+import { UserStatus } from './UserStatus';
 import { IRocketChatRecord } from './IRocketChatRecord';
-import { USER_STATUS } from './UserStatus';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -96,14 +96,14 @@ export interface IUser extends IRocketChatRecord {
 	name?: string;
 	services?: IUserServices;
 	emails?: IUserEmail[];
-	status?: USER_STATUS;
+	status?: UserStatus;
 	statusConnection?: string;
 	lastLogin?: Date;
 	avatarOrigin?: string;
 	avatarETag?: string;
 	utcOffset?: number;
 	language?: string;
-	statusDefault?: USER_STATUS;
+	statusDefault?: UserStatus;
 	statusText?: string;
 	oauth?: {
 		authorizedClients: string[];
@@ -119,6 +119,7 @@ export interface IUser extends IRocketChatRecord {
 		[key: string]: any;
 	};
 	settings?: IUserSettings;
+	defaultRoom?: string;
 }
 
 export type IUserDataEvent = {

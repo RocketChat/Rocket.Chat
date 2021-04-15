@@ -9,12 +9,10 @@ import {
 	Tabs,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
+import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
-import { Meteor } from 'meteor/meteor';
 
-import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import {
 	ProgressStep,
 	ImportWaitingStates,
@@ -23,26 +21,29 @@ import {
 	ImportingStartedStates,
 	ImportingErrorStates,
 } from '../../../../app/importer/lib/ImporterProgressStep';
-import { useErrorHandler } from './useErrorHandler';
+import Page from '../../../components/Page';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
-import PrepareUsers from './PrepareUsers';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import PrepareChannels from './PrepareChannels';
+import PrepareUsers from './PrepareUsers';
+import { useErrorHandler } from './useErrorHandler';
 
-const waitFor = (fn, predicate) => new Promise((resolve, reject) => {
-	const callPromise = () => {
-		fn().then((result) => {
-			if (predicate(result)) {
-				resolve(result);
-				return;
-			}
+const waitFor = (fn, predicate) =>
+	new Promise((resolve, reject) => {
+		const callPromise = () => {
+			fn().then((result) => {
+				if (predicate(result)) {
+					resolve(result);
+					return;
+				}
 
-			setTimeout(callPromise, 1000);
-		}, reject);
-	};
+				setTimeout(callPromise, 1000);
+			}, reject);
+		};
 
-	callPromise();
-});
+		callPromise();
+	});
 
 function PrepareImportPage() {
 	const t = useTranslation();
@@ -57,7 +58,9 @@ function PrepareImportPage() {
 	const [isImporting, setImporting] = useSafely(useState(false));
 
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
-	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [channels]);
+	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [
+		channels,
+	]);
 
 	const importHistoryRoute = useRoute('admin-import');
 	const newImportRoute = useRoute('admin-import-new');
@@ -111,8 +114,10 @@ function PrepareImportPage() {
 
 		const loadCurrentOperation = async () => {
 			try {
-				const { operation } = await waitFor(getCurrentImportOperation, ({ operation }) =>
-					operation.valid && !ImportWaitingStates.includes(operation.status));
+				const { operation } = await waitFor(
+					getCurrentImportOperation,
+					({ operation }) => operation.valid && !ImportWaitingStates.includes(operation.status),
+				);
 
 				if (!operation.valid) {
 					newImportRoute.push();
@@ -124,9 +129,11 @@ function PrepareImportPage() {
 					return;
 				}
 
-				if (operation.status === ProgressStep.USER_SELECTION
-					|| ImportPreparingStartedStates.includes(operation.status)
-					|| ImportFileReadyStates.includes(operation.status)) {
+				if (
+					operation.status === ProgressStep.USER_SELECTION ||
+					ImportPreparingStartedStates.includes(operation.status) ||
+					ImportFileReadyStates.includes(operation.status)
+				) {
 					setStatus(operation.status);
 					loadImportFileData();
 					return;
@@ -152,7 +159,19 @@ function PrepareImportPage() {
 		};
 
 		loadCurrentOperation();
-	}, [getCurrentImportOperation, getImportFileData, handleError, importHistoryRoute, importProgressRoute, newImportRoute, setMessageCount, setPreparing, setProgressRate, setStatus, t]);
+	}, [
+		getCurrentImportOperation,
+		getImportFileData,
+		handleError,
+		importHistoryRoute,
+		importProgressRoute,
+		newImportRoute,
+		setMessageCount,
+		setPreparing,
+		setProgressRate,
+		setStatus,
+		t,
+	]);
 
 	const handleBackToImportsButtonClick = () => {
 		importHistoryRoute.push();
@@ -175,41 +194,75 @@ function PrepareImportPage() {
 
 	const statusDebounced = useDebouncedValue(status, 100);
 
-	return <Page>
-		<Page.Header title={t('Importing_Data')}>
-			<ButtonGroup>
-				<Button ghost onClick={handleBackToImportsButtonClick}>
-					<Icon name='back' /> {t('Back_to_imports')}
-				</Button>
-				<Button primary disabled={isImporting} onClick={handleStartButtonClick}>
-					{t('Importer_Prepare_Start_Import')}
-				</Button>
-			</ButtonGroup>
-		</Page.Header>
+	return (
+		<Page>
+			<Page.Header title={t('Importing_Data')}>
+				<ButtonGroup>
+					<Button ghost onClick={handleBackToImportsButtonClick}>
+						<Icon name='back' /> {t('Back_to_imports')}
+					</Button>
+					<Button primary disabled={isImporting} onClick={handleStartButtonClick}>
+						{t('Importer_Prepare_Start_Import')}
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
 
-		<Page.ScrollableContentWithShadow>
-			<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
-				<Box is='h2' fontScale='p2'>{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}</Box>
-				{!isPreparing && <Tabs flexShrink={0} >
-					<Tabs.Item disabled={usersCount === 0} selected={tab === 'users'} onClick={handleTabClick('users')}>{t('Users')} <Badge>{usersCount}</Badge></Tabs.Item>
-					<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>{t('Channels')} <Badge>{channelsCount}</Badge></Tabs.Item>
-					<Tabs.Item disabled>{t('Messages')}<Badge>{messageCount}</Badge></Tabs.Item>
-				</Tabs>}
-				<Margins block='x24'>
-					{isPreparing && <>
-						{progressRate
-							? <Box display='flex' justifyContent='center' fontScale='p1'>
-								<Box is='progress' value={(progressRate * 10).toFixed(0)} max='1000' marginInlineEnd='x24' />
-								<Box is='span'>{s.numberFormat(progressRate, 0) }%</Box>
-							</Box>
-							: <Throbber justifyContent='center' />}
-					</>}
-					{!isPreparing && tab === 'users' && <PrepareUsers usersCount={usersCount} users={users} setUsers={setUsers}/>}
-					{!isPreparing && tab === 'channels' && <PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels}/>}
-				</Margins>
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+			<Page.ScrollableContentWithShadow>
+				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
+					<Box is='h2' fontScale='p2'>
+						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}
+					</Box>
+					{!isPreparing && (
+						<Tabs flexShrink={0}>
+							<Tabs.Item
+								disabled={usersCount === 0}
+								selected={tab === 'users'}
+								onClick={handleTabClick('users')}
+							>
+								{t('Users')} <Badge>{usersCount}</Badge>
+							</Tabs.Item>
+							<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
+								{t('Channels')} <Badge>{channelsCount}</Badge>
+							</Tabs.Item>
+							<Tabs.Item disabled>
+								{t('Messages')}
+								<Badge>{messageCount}</Badge>
+							</Tabs.Item>
+						</Tabs>
+					)}
+					<Margins block='x24'>
+						{isPreparing && (
+							<>
+								{progressRate ? (
+									<Box display='flex' justifyContent='center' fontScale='p1'>
+										<Box
+											is='progress'
+											value={(progressRate * 10).toFixed(0)}
+											max='1000'
+											marginInlineEnd='x24'
+										/>
+										<Box is='span'>{s.numberFormat(progressRate, 0)}%</Box>
+									</Box>
+								) : (
+									<Throbber justifyContent='center' />
+								)}
+							</>
+						)}
+						{!isPreparing && tab === 'users' && (
+							<PrepareUsers usersCount={usersCount} users={users} setUsers={setUsers} />
+						)}
+						{!isPreparing && tab === 'channels' && (
+							<PrepareChannels
+								channels={channels}
+								channelsCount={channelsCount}
+								setChannels={setChannels}
+							/>
+						)}
+					</Margins>
+				</Box>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 }
 
 export default PrepareImportPage;
