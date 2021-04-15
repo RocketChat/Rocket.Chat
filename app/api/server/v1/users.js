@@ -49,7 +49,7 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 		});
 
 		if (!validateName(this.bodyParams.username)) {
-			return API.v1.failure(`"${ this.bodyParams.username }" is a reserved word`);
+			return API.v1.failure(`"${ this.bodyParams.username }" is a reserved name.`);
 		}
 
 		// New change made by pull request #5152
@@ -503,7 +503,7 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 		});
 
 		if (this.bodyParams.data.username && !validateName(this.bodyParams.data.username)) {
-			return API.v1.failure(`"${ this.bodyParams.data.username }" is a reserved word`);
+			return API.v1.failure(`"${ this.bodyParams.data.username }" is a reserved name.`);
 		}
 
 		const userData = _.extend({ _id: this.bodyParams.userId }, this.bodyParams.data);
@@ -543,7 +543,7 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 		});
 
 		if (this.bodyParams.data.username && !validateName(this.bodyParams.data.username)) {
-			return API.v1.failure(`"${ this.bodyParams.data.username }" is a reserved word`);
+			return API.v1.failure(`"${ this.bodyParams.data.username }" is a reserved name.`);
 		}
 
 		const userData = {

@@ -175,7 +175,7 @@ describe('[Users]', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `${ name } is a reserved name. [invalid-name]`);
+						expect(res.body).to.have.property('error', `"${ name }" is a reserved name.`);
 					})
 					.end(done);
 			});
@@ -1117,7 +1117,7 @@ describe('[Users]', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `${ name } is a reserved name. [invalid-name]`);
+						expect(res.body).to.have.property('error', `"${ name }" is a reserved name.`);
 					})
 					.end(done);
 			});
@@ -1305,7 +1305,7 @@ describe('[Users]', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `${ name } is a reserved name. [invalid-name]`);
+						expect(res.body).to.have.property('error', `"${ name }" is a reserved name.`);
 					})
 					.end(done);
 			});

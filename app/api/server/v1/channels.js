@@ -180,7 +180,7 @@ function createChannelValidator(params) {
 	}
 
 	if (!validateName(params.name.value)) {
-		throw new Error(`"${ params.members.key }" is a reserved word`);
+		throw new Error(`"${ params.members.key }" is a reserved name.`);
 	}
 
 	if (params.members && params.members.value && !_.isArray(params.members.value)) {
@@ -769,7 +769,7 @@ API.v1.addRoute('channels.rename', { authRequired: true }, {
 		}
 
 		if (!validateName(this.bodyParams.name)) {
-			return API.v1.failure(`"${ this.bodyParams.name }" is a reserved word.`);
+			return API.v1.failure(`"${ this.bodyParams.name }" is a reserved name.`);
 		}
 
 		Meteor.runAsUser(this.userId, () => {
