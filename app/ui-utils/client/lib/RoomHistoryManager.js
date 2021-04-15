@@ -151,8 +151,8 @@ export const RoomHistoryManager = new class {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		const result = await call('loadHistory', rid, ts, limit, ls);
-
+		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
+		const result = await call('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
 
 		let previousHeight;
 		let scroll;
@@ -176,17 +176,13 @@ export const RoomHistoryManager = new class {
 			room.loaded = 0;
 		}
 
-		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
-
-		const visibleMessages = messages.filter((msg) => !msg.tmid || showMessageInMainThread || msg.tshow);
-
-		room.loaded += visibleMessages.length;
+		room.loaded += messages.length;
 
 		if (messages.length < limit) {
 			room.hasMore.set(false);
 		}
 
-		if (room.hasMore.get() && (visibleMessages.length === 0 || room.loaded < limit)) {
+		if (room.hasMore.get() && (messages.length === 0 || room.loaded < limit)) {
 			return this.getMore(rid);
 		}
 
