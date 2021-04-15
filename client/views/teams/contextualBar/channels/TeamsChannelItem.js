@@ -1,7 +1,7 @@
 import { ActionButton, Box, Icon, Option, Tag } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
-
+import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { roomTypes } from '../../../../../app/utils/client';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -18,7 +18,8 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 	};
 
 	const onClick = usePreventProgation();
-
+	const canEdit = usePermission('edit-team-channel', room._id);
+	console.log(canEdit);
 	return (
 		<Option id={room._id} data-rid={room._id} {...handleMenuEvent} onClick={onClickView}>
 			<Option.Avatar>
@@ -39,13 +40,13 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 					)}
 				</Box>
 			</Option.Content>
-			<Option.Menu onClick={onClick}>
+			{canEdit && <Option.Menu onClick={onClick}>
 				{showButton ? (
 					<RoomActions room={room} reload={reload} />
 				) : (
 					<ActionButton ghost tiny icon='kebab' />
 				)}
-			</Option.Menu>
+			</Option.Menu>}
 		</Option>
 	);
 };
