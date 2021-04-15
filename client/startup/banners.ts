@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import * as banners from '../lib/banners';
+import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
 import { IBanner, BannerPlatform } from '../../definition/IBanner';
-import { Notifications } from '../../app/notifications/client';
+import * as banners from '../lib/banners';
 
 const fetchInitialBanners = async (): Promise<void> => {
-	const response = await APIClient.get('v1/banners.getNew', {
+	const response = (await APIClient.get('v1/banners.getNew', {
 		platform: BannerPlatform.Web,
-	}) as {
+	})) as {
 		banners: IBanner[];
 	};
 
@@ -22,10 +22,10 @@ const fetchInitialBanners = async (): Promise<void> => {
 };
 
 const handleNewBanner = async (event: { bannerId: string }): Promise<void> => {
-	const response = await APIClient.get('v1/banners.getNew', {
+	const response = (await APIClient.get('v1/banners.getNew', {
 		platform: BannerPlatform.Web,
 		bid: event.bannerId,
-	}) as {
+	})) as {
 		banners: IBanner[];
 	};
 
