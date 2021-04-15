@@ -12,6 +12,7 @@ import ParentRoomWithData from './ParentRoomWithData';
 import ParentTeam from './ParentTeam';
 import RoomTitle from './RoomTitle';
 import ToolBox from './ToolBox';
+import BackButton from './icons/BackButton';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
@@ -27,6 +28,7 @@ const RoomHeader = ({ room, topic }) => {
 					<Burger />
 				</Header.ToolBox>
 			)}
+			<BackButton />
 			{avatar && <Header.Avatar>{avatar}</Header.Avatar>}
 			<Header.Content>
 				<Header.Content.Row>
