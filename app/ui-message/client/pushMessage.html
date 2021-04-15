@@ -1,0 +1,46 @@
+<template name="pushMessage">
+	{{#with data}}
+		<div class="push-message-container">
+			<div class="push-message-content-container">
+				{{#if icon}}
+					<div class="push-message-icon-container">
+						<img class="push-message-icon" src="{{icon}}" alt="" />
+					</div>
+				{{/if}}
+				<div class="push-message-header">
+					{{#if title}}
+						<span class="push-message-title">
+							{{title}}
+						</span>
+					{{/if}}
+
+					<div class="push-message-timestamp-container">
+						{{#if timestamp}}
+							<span class="push-message-timestamp">
+								{{timeAgo(timestamp)}}
+							</span>
+						{{/if}}
+
+						<button class="button-down button-expand">
+							{{> icon icon="arrow-down" block="rc-icon--default-size"}}
+						</button>
+					</div>
+				</div>
+
+				{{#if body}}
+					<span class="push-message-body">
+						{{body}}
+					</span>
+				{{/if}}
+			</div>
+
+			{{#if actions}}
+				<div class="push-message-actions-container">
+					{{#each action in actions}}
+						{{> pushMessageAction data=action}}
+					{{/each}}
+				</div>
+			{{/if}}
+		</div>
+	{{/with}}
+</template>

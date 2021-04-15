@@ -83,6 +83,17 @@ export class AppSchedulerBridge {
 		}
 	}
 
+	async cancelJobByDataQuery(data, appId) {
+		this.orch.debugLog(`Canceling all jobs of App ${ appId } matching ${ JSON.stringify(data) }`);
+		await this.startScheduler();
+		const matcher = new RegExp(`_${ appId }$`);
+		try {
+			await this.scheduler.cancel({ name: { $regex: matcher }, data });
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
 	async startScheduler() {
 		if (!this.isConnected) {
 			await this.scheduler.start();

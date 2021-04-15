@@ -1,5 +1,6 @@
 import { RoutingManager } from '../RoutingManager';
 import { LivechatDepartmentAgents, Users } from '../../../../models/server';
+import { settings } from '../../../../settings/server';
 
 /* Auto Selection Queuing method:
 	*
@@ -20,6 +21,9 @@ class AutoSelection {
 	}
 
 	getNextAgent(department, ignoreAgentId) {
+		if (settings.get('Livechat_kill_switch')) {
+			return null;
+		}
 		if (department) {
 			return LivechatDepartmentAgents.getNextAgentForDepartment(department, ignoreAgentId);
 		}

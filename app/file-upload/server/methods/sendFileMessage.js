@@ -23,6 +23,7 @@ Meteor.methods({
 		}
 
 		check(msgData, {
+			id: Match.Optional(String),
 			avatar: Match.Optional(String),
 			emoji: Match.Optional(String),
 			alias: Match.Optional(String),
@@ -68,8 +69,15 @@ Meteor.methods({
 			attachment.video_size = file.size;
 		}
 
+		let id;
+		if (msgData.id) {
+			id = msgData.id;
+		} else {
+			id = Random.id();
+		}
+
 		let msg = Object.assign({
-			_id: Random.id(),
+			_id: id,
 			rid: roomId,
 			ts: new Date(),
 			msg: '',

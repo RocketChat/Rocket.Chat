@@ -8,6 +8,7 @@ RUN groupadd -g 65533 -r rocketchat \
     && mkdir -p /app/uploads \
     && chown rocketchat:rocketchat /app/uploads \
     && apt-get update \
+    && apt-get -y upgrade \
     && apt-get install -y --no-install-recommends fontconfig
 
 # --chown requires Docker 17.12 and works only on Linux

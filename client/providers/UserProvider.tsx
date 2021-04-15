@@ -8,6 +8,7 @@ import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionF
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { ISubscription } from '../../definition/ISubscription';
 import { IRoom } from '../../definition/IRoom';
+import { callbacks } from '../../app/callbacks/client';
 
 const getUserId = (): string | null => Meteor.userId();
 
@@ -22,6 +23,7 @@ const loginWithPassword = (user: string | object, password: string): Promise<voi
 			}
 
 			resolve();
+			callbacks.run('onUserLogin');
 		});
 	});
 
