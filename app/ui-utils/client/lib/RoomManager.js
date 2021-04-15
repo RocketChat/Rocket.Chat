@@ -248,10 +248,7 @@ export const RoomManager = new function() {
 			return onlineUsers.set(onlineUsersValue);
 		}
 
-		updateMentionsMarksOfRoom(typeName) {
-
-			return;
-
+		updateMentionsMarksOfRoom(/* typeName */) {
 			// const [ticksBar] = dom.getElementsByClassName('ticks-bar');
 			// const [messagesBox] = dom.getElementsByClassName('messages-box');
 			// const scrollTop = $('> .wrapper', messagesBox).scrollTop() - 50;
