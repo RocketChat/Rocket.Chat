@@ -1,6 +1,20 @@
 
+# 3.13.2
+`2021-04-14  ·  1 🐛  ·  3 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.13.1
-`2021-04-07  ·  9 🐛  ·  7 👩‍💻👨‍💻`
+`2021-04-08  ·  9 🐛  ·  1 🔍  ·  8 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.21.0`
@@ -35,6 +49,14 @@
 
 - Wrong useMemo on Priorities EE field. ([#21453](https://github.com/RocketChat/Rocket.Chat/pull/21453))
 
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.13.1 ([#21486](https://github.com/RocketChat/Rocket.Chat/pull/21486))
+
+</details>
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@KevLehman](https://github.com/KevLehman)
@@ -43,10 +65,11 @@
 - [@graywolf336](https://github.com/graywolf336)
 - [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 - [@thassiov](https://github.com/thassiov)
 
 # 3.13.0
-`2021-04-04  ·  7 🎉  ·  11 🚀  ·  36 🐛  ·  60 🔍  ·  38 👩‍💻👨‍💻`
+`2021-04-04  ·  7 🎉  ·  11 🚀  ·  36 🐛  ·  61 🔍  ·  38 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.21.0`
@@ -123,6 +146,35 @@
 
 - Teams ([#20966](https://github.com/RocketChat/Rocket.Chat/pull/20966))
 
+  ## Teams
+
+
+
+  You can easily group your users as Teams on Rocket.Chat. The feature takes the hassle out of managing multiple users one by one and allows you to handle them at the same time efficiently.
+
+  
+  - Teams can be public or private and each team can have its own channels, which also can be public or private.  
+  - It's possible to add existing channels to a Team or create new ones inside a Team.  
+  - It's possible to invite people outside a Team to join Team's channels.  
+  - It's possible to convert channels to Teams  
+  - It's possible to add all team members to a channel at once  
+  - Team members have roles
+
+
+  ![image](https://user-images.githubusercontent.com/70927132/113421955-4f56b680-93a2-11eb-80dc-9b70a3f09b3e.png)
+
+
+
+  **Quickly onboard new users with Autojoin channels**
+
+  Teams can have Auto-join channels –  channels to which the team members are automatically added, so you don’t need to go through the manual process of adding users repetitively
+
+  ![image](https://user-images.githubusercontent.com/70927132/113419284-81194e80-939d-11eb-9fff-aeb05cbc8089.png)
+
+  **Instantly mention multiple members at once** (available in EE)
+
+  With Teams, you don’t need to remember everyone’s name to communicate with a team quickly. Just mention a Team — @engineers, for instance —  and all members will be instantly notified.
+
 ### 🚀 Improvements
 
 
@@ -166,7 +218,7 @@
   **Old UI:**
   ![before](https://user-images.githubusercontent.com/49413772/111685897-375e2f00-8807-11eb-814e-cb8060dc1830.PNG)
 
-- Make debug logs of Apps configurable via Log_Level setting in the Admin panel ([#21000](https://github.com/RocketChat/Rocket.Chat/pull/21000) by [@meomay503](https://github.com/meomay503))
+- Make debug logs of Apps configurable via Log_Level setting in the Admin panel ([#21000](https://github.com/RocketChat/Rocket.Chat/pull/21000) by [@cuonghuunguyen](https://github.com/cuonghuunguyen))
 
 - Re-design Omnichannel Room Info Panel ([#21199](https://github.com/RocketChat/Rocket.Chat/pull/21199))
 
@@ -546,6 +598,8 @@
 
 - Regression: When only 'teams' type is provided, show only rooms with teamMain on `rooms.adminRooms` endpoint ([#21322](https://github.com/RocketChat/Rocket.Chat/pull/21322))
 
+- Release 3.13.0 ([#21437](https://github.com/RocketChat/Rocket.Chat/pull/21437) by [@PriyaBihani](https://github.com/PriyaBihani) & [@cuonghuunguyen](https://github.com/cuonghuunguyen) & [@fcecagno](https://github.com/fcecagno) & [@shrinish123](https://github.com/shrinish123) & [@yash-rajpal](https://github.com/yash-rajpal))
+
 - Update Apps-Engine version ([#21398](https://github.com/RocketChat/Rocket.Chat/pull/21398))
 
 </details>
@@ -559,11 +613,11 @@
 - [@Tirieru](https://github.com/Tirieru)
 - [@aKn1ghtOut](https://github.com/aKn1ghtOut)
 - [@aditya-mitra](https://github.com/aditya-mitra)
+- [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@cyberShaw](https://github.com/cyberShaw)
 - [@fcecagno](https://github.com/fcecagno)
 - [@im-adithya](https://github.com/im-adithya)
 - [@m-shreyansh](https://github.com/m-shreyansh)
-- [@meomay503](https://github.com/meomay503)
 - [@reda-alaoui](https://github.com/reda-alaoui)
 - [@shrinish123](https://github.com/shrinish123)
 - [@sumukhah](https://github.com/sumukhah)
