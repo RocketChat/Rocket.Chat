@@ -71,6 +71,8 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 
 	const canConvertRoomToTeam = usePermission('create-team');
 
+	const canMoveToTeam = usePermission('add-team-channel', rid)
+	console.log(canMoveToTeam, rid)
 	const canLeave =
 		usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
@@ -191,8 +193,8 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			onClickDelete={canDelete && handleDelete}
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}
-			onClickMoveToTeam={!room.teamId && onMoveToTeam}
-			onClickConvertToTeam={!room.teamId && canConvertRoomToTeam && onConvertToTeam}
+			onClickMoveToTeam={!room.teamId && canMoveToTeam && onMoveToTeam}
+			onClickConvertToTeam={!room.teamId && canConvertRoomToTeam && canEdit && onConvertToTeam}
 			onClickEnterRoom={onEnterRoom && onClickEnterRoom}
 			{...room}
 			announcement={room.announcement && <MarkdownText content={room.announcement} />}

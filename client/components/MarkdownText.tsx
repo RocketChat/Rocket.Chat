@@ -79,6 +79,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 			break;
 		case 'inlineWithoutBreaks':
 			markedOptions = inlineWithoutBreaksOptions;
+			console.log('here')
 			break;
 		case 'document':
 		default:

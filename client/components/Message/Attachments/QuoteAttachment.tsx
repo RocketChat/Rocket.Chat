@@ -65,6 +65,7 @@ export const QuoteAttachment: FC<QuoteAttachmentProps> = ({
 						</Box>
 					</Attachment.Author>
 					<MarkdownText variant='inline' content={text} />
+					{console.log(text, attachments)}
 					{attachments && (
 						<Attachment.Inner>
 							<Attachments attachments={attachments} />
