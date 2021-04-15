@@ -19,12 +19,14 @@ const HeaderCell: FC<HeaderCellProps> = ({
 	...props
 }) => {
 	const fn = useCallback(() => onClick && sort && onClick(sort), [sort, onClick]);
-	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
-		<Box display='flex' alignItems='center' wrap='no-wrap'>
-			{children}
-			{sort && <SortIcon direction={active ? direction : undefined} />}
-		</Box>
-	</Table.Cell>;
+	return (
+		<Table.Cell clickable={!!sort} onClick={fn} {...props}>
+			<Box display='flex' alignItems='center' wrap='no-wrap'>
+				{children}
+				{sort && <SortIcon direction={active ? direction : undefined} />}
+			</Box>
+		</Table.Cell>
+	);
 };
 
 export default HeaderCell;
