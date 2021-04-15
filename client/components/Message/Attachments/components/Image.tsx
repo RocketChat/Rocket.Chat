@@ -58,7 +58,6 @@ const Image: FC<ImageProps> = ({ previewUrl, loadImage = true, setLoadImage, src
 
 	return (
 		<ImageBox
-
 			onError={setHasError}
 			box
 			{...(previewUrl && ({ style: { background, boxSizing: 'content-box' } } as any))}
