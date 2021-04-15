@@ -600,6 +600,8 @@ settings.addGroup('Accounts', function() {
 	this.section('Password_History', function() {
 		this.add('Accounts_Password_History_Enabled', false, {
 			type: 'boolean',
+			i18nLabel: 'Enable_Password_History',
+			i18nDescription: 'Enable_Password_History_Description',
 		});
 
 		const enableQuery = {
@@ -610,6 +612,8 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_Password_History_Amount', 5, {
 			type: 'int',
 			enableQuery,
+			i18nLabel: 'Password_History_Amount',
+			i18nDescription: 'Password_History_Amount_Description',
 		});
 	});
 });

@@ -2,6 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { IUser } from '../../definition/IUser';
 import { IPassword } from '../../definition/IPassword';
+import { settings } from '../../app/settings/server';
 
 /**
  * Check if a given password is the one user by given user or if the user doesn't have a password
@@ -9,7 +10,7 @@ import { IPassword } from '../../definition/IPassword';
  * @param {object} pass Object with { plain: 'plain-test-password' } or { sha256: 'sha256password' }
  */
 export function compareUserPasswordHistory(user: IUser, pass: IPassword): boolean {
-	if (!user?.services?.passwordHistory) {
+	if (!user?.services?.passwordHistory || !settings.get('Accounts_Password_History_Enabled')) {
 		return true;
 	}
 
@@ -18,8 +19,9 @@ export function compareUserPasswordHistory(user: IUser, pass: IPassword): boolea
 	}
 
 	const currentPassword = user.services.password.bcrypt;
+	const passwordHistory = user.services.passwordHistory.slice(-Number(settings.get('Accounts_Password_History_Amount')));
 
-	for (const password of user.services.passwordHistory) {
+	for (const password of passwordHistory) {
 		if (!password.trim()) {
 			user.services.password.bcrypt = currentPassword;
 			return false;
