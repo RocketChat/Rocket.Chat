@@ -36,12 +36,12 @@ export const useMembersList = (
 				options.rid,
 				options.type,
 				{
-					limit: end - start,
+					limit: end,
 					skip: start,
 				},
 				options.debouncedText,
 			);
-
+				console.log(start, end )
 			return {
 				items: records.map((members: any) => {
 					members._updatedAt = new Date(members._updatedAt);
