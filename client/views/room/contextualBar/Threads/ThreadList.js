@@ -69,7 +69,7 @@ function ThreadList({
 
 	const mid = useTabContext();
 	const jump = useQueryStringParameter('jump');
-	const loading = actualLoading === AsyncStatePhase.LOADING || actualLoading === AsyncStatePhase.UPDATING ? true: false;
+	const loading = actualLoading === AsyncStatePhase.LOADING || actualLoading === AsyncStatePhase.UPDATING;
 
 	return (
 		<>
