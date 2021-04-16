@@ -402,7 +402,7 @@ API.v1.addRoute('teams.update', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		Promise.await(Team.update(teamId, { name: data.name, type: data.type }));
+		Promise.await(Team.update(this.userId, teamId, { name: data.name, type: data.type }));
 
 		return API.v1.success();
 	},

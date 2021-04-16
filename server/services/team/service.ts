@@ -1,5 +1,4 @@
 import { Db, FindOneOptions } from 'mongodb';
-import { Meteor } from 'meteor/meteor';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
@@ -35,6 +34,8 @@ import {
 } from '../../sdk/types/ITeamService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { canAccessRoom } from '../authorization/canAccessRoom';
+import { saveRoomName } from '../../../app/channel-settings/server';
+import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
 
 export class TeamService extends ServiceClass implements ITeamService {
 	protected name = 'team';
@@ -154,14 +155,23 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 	}
 
-	async update(teamId: string, updateData: ITeamUpdateData): Promise<void> {
+	async update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void> {
 		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
-		if (team && updateData.name) {
-			Meteor.call('saveRoomSettings', team.roomId, 'roomName', updateData.name);
+		if (!team) {
+			return;
 		}
 
-		if (team && updateData.type) {
-			Meteor.call('saveRoomSettings', team.roomId, 'roomType', Number(updateData.type) ? 'p' : 'c');
+		const user = await this.Users.findOneById(uid);
+		if (!user) {
+			return;
+		}
+
+		if (updateData.name) {
+			saveRoomName(team.roomId, updateData.name, user);
+		}
+
+		if (updateData.type) {
+			saveRoomType(team.roomId, updateData.type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
 		}
 
 		await this.TeamModel.updateNameAndType(teamId, updateData);
