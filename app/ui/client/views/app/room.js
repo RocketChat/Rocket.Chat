@@ -913,7 +913,7 @@ Meteor.startup(() => {
 
 			if (room?.t === 'l') {
 				room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
-				roomTypes.getConfig(room.t).openCustomProfileTab(this, room, room.v.username);
+				// roomTypes.getConfig(room.t).openCustomProfileTab(this, room, room.v.username);
 			}
 		});
 

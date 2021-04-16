@@ -5,14 +5,14 @@ import ChatsContextualBar from './ChatsContextualBar';
 import ContactContextualBar from './ContactContextualBar';
 
 const ContextualBar = ({ contactReload, chatReload }) => {
-	const context = useRouteParameter('context');
-	const tab = useRouteParameter('tab');
+	const id = useRouteParameter('id');
+	const page = useRouteParameter('page');
 
-	if (!context) {
+	if (!id) {
 		return null;
 	}
 
-	switch (tab) {
+	switch (page) {
 		case 'contacts':
 			return <ContactContextualBar contactReload={contactReload} />;
 		case 'chats':

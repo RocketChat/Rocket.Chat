@@ -1,35 +1,36 @@
-import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { FC } from 'react';
 
-import { roomTypes } from '../../../../app/utils/client';
+import { IRoom } from '../../../../definition/IRoom';
 import Header from '../../../components/Header';
 import MarkdownText from '../../../components/MarkdownText';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
-import { useLayout } from '../../../contexts/LayoutContext';
-import Burger from './Burger';
-import QuickActions from './Omnichannel/QuickActions';
 import ParentRoomWithData from './ParentRoomWithData';
 import ParentTeam from './ParentTeam';
 import RoomTitle from './RoomTitle';
 import ToolBox from './ToolBox';
-import BackButton from './icons/BackButton';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
 
-const RoomHeader = ({ room, topic }) => {
-	const { isMobile } = useLayout();
+export type RoomHeaderProps = {
+	room: IRoom;
+	topic?: string;
+	slots: {
+		start?: FC;
+		preContent?: FC;
+		insideContent?: FC;
+		posContent?: FC;
+		end?: FC;
+	};
+};
+
+const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => {
 	const avatar = <RoomAvatar room={room} />;
-	const showQuickActions = roomTypes.showQuickActionButtons(room.t);
 	return (
 		<Header>
-			{isMobile && (
-				<Header.ToolBox>
-					<Burger />
-				</Header.ToolBox>
-			)}
-			<BackButton />
+			{slots?.start}
 			{avatar && <Header.Avatar>{avatar}</Header.Avatar>}
+			{slots?.preContent}
 			<Header.Content>
 				<Header.Content.Row>
 					<RoomTitle room={room} />
@@ -38,11 +39,7 @@ const RoomHeader = ({ room, topic }) => {
 					{room.teamId && !room.teamMain && <ParentTeam room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />
-					{showQuickActions && (
-						<Box mis='x20' display='flex'>
-							<QuickActions room={room} />
-						</Box>
-					)}
+					{slots?.insideContent}
 				</Header.Content.Row>
 				<Header.Content.Row>
 					<Header.Subtitle>
@@ -50,9 +47,11 @@ const RoomHeader = ({ room, topic }) => {
 					</Header.Subtitle>
 				</Header.Content.Row>
 			</Header.Content>
+			{slots?.posContent}
 			<Header.ToolBox>
 				<ToolBox room={room} />
 			</Header.ToolBox>
+			{slots?.end}
 		</Header>
 	);
 };

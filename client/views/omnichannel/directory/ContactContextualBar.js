@@ -10,7 +10,7 @@ import ContactNewEdit from './contacts/contextualBar/ContactNewEdit';
 
 const ContactContextualBar = ({ contactReload }) => {
 	const directoryRoute = useRoute('omnichannel-directory');
-	const context = useRouteParameter('context');
+	const bar = useRouteParameter('bar') || 'info';
 	const id = useRouteParameter('id');
 
 	const t = useTranslation();
@@ -22,28 +22,28 @@ const ContactContextualBar = ({ contactReload }) => {
 	return (
 		<VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
-				{context === 'new' && (
+				{bar === 'new' && (
 					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
 						<Icon name='user' size='x20' /> {t('New_Contact')}
 					</Box>
 				)}
-				{context === 'info' && (
+				{bar === 'info' && (
 					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
 						<Icon name='user' size='x20' /> {t('Contact_Info')}
 					</Box>
 				)}
-				{context === 'edit' && (
+				{bar === 'edit' && (
 					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
 						<Icon name='pencil' size='x20' /> {t('Edit_Contact_Profile')}
 					</Box>
 				)}
 				<VerticalBar.Close onClick={handleContactsVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
-			{context === 'new' && (
+			{bar === 'new' && (
 				<ContactNewEdit reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />
 			)}
-			{context === 'info' && <ContactInfo reload={contactReload} id={id} />}
-			{context === 'edit' && (
+			{bar === 'info' && <ContactInfo reload={contactReload} id={id} />}
+			{bar === 'edit' && (
 				<ContactEditWithData
 					id={id}
 					reload={contactReload}

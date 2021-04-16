@@ -80,13 +80,13 @@ function ChatInfo({ id, route }) {
 		routePath.push(
 			route
 				? {
-						tab: 'room-info',
-						context: 'edit',
+						page: 'room-info',
+						bar: 'edit',
 						id,
 				  }
 				: {
-						tab: 'chats',
-						context: 'edit',
+						page: 'chats',
+						bar: 'edit',
 						id,
 				  },
 		);
