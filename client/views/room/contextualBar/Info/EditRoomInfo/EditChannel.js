@@ -30,6 +30,7 @@ import {
 	useRole,
 } from '../../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
+import { useRoute } from '../../../../../contexts/RouterContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -125,6 +126,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const maxAgeDefault = useSetting(`RetentionPolicy_MaxAge_${typeMap[room.t]}`) || 30;
 
 	const saveData = useRef({});
+	const router = useRoute('home');
 
 	const onChange = useCallback(({ initialValue, value, key }) => {
 		const { current } = saveData;
@@ -280,6 +282,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		const onConfirm = async () => {
 			await deleteRoom(room._id);
 			onCancel();
+			router.push({});
 		};
 
 		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
