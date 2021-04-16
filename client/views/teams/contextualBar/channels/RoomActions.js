@@ -30,8 +30,8 @@ const RoomActions = ({ room, reload }) => {
 	);
 
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {
-		onConfirmAction: () => {
-			removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
+		onConfirmAction: async () => {
+			await removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
 			reload();
 		},
 		labelButton: t('Remove'),
@@ -45,8 +45,8 @@ const RoomActions = ({ room, reload }) => {
 	});
 
 	const DeleteChannelAction = useReactModal(ConfirmationModal, {
-		onConfirmAction: () => {
-			deleteRoomEndpoint({ roomId: room._id });
+		onConfirmAction: async () => {
+			await deleteRoomEndpoint({ roomId: room._id });
 			reload();
 		},
 		labelButton: t('Delete'),
