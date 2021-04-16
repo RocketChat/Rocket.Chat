@@ -53,6 +53,7 @@ export function withData(Component) {
 				total={totalItemCount}
 				initial={initialItemCount}
 				loading={phase === AsyncStatePhase.LOADING}
+				actualLoading={phase}
 				loadMoreItems={loadMoreItems}
 				room={room}
 				text={text}
