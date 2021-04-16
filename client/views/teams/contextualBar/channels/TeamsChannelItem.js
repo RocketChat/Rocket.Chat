@@ -1,9 +1,10 @@
 import { ActionButton, Box, Icon, Option, Tag } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
-import { usePermission } from '../../../../contexts/AuthorizationContext';
+
 import { roomTypes } from '../../../../../app/utils/client';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { usePreventProgation } from '../../../../hooks/usePreventProgation';
 import RoomActions from './RoomActions';
@@ -16,7 +17,6 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 	const handleMenuEvent = {
 		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
 	};
-
 	const onClick = usePreventProgation();
 	const canEdit = usePermission('edit-team-channel', room._id);
 	return (
@@ -39,13 +39,15 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 					)}
 				</Box>
 			</Option.Content>
-			{canEdit && <Option.Menu onClick={onClick}>
-				{showButton ? (
-					<RoomActions room={room} reload={reload} />
-				) : (
-					<ActionButton ghost tiny icon='kebab' />
-				)}
-			</Option.Menu>}
+			{canEdit && (
+				<Option.Menu onClick={onClick}>
+					{showButton ? (
+						<RoomActions room={room} reload={reload} />
+					) : (
+						<ActionButton ghost tiny icon='kebab' />
+					)}
+				</Option.Menu>
+			)}
 		</Option>
 	);
 };
