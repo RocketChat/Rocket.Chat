@@ -3,7 +3,7 @@ import React, { FC, memo } from 'react';
 
 import Header from '../../../components/Header';
 import VerticalBarSkeleton from '../../../components/VerticalBar/VerticalBarSkeleton';
-import { RoomTemplate } from '../components/RoomTemplate';
+import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 
 const RoomSkeleton: FC = () => (
 	<RoomTemplate>

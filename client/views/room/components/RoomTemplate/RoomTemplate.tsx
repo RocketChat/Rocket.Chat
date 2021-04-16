@@ -2,7 +2,11 @@ import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
-import VerticalBar from '../../../components/VerticalBar';
+import VerticalBar from '../../../../components/VerticalBar/VerticalBar';
+import { Aside } from './slots/Aside';
+import { Body } from './slots/Body';
+import { Footer } from './slots/Footer';
+import { Header } from './slots/Header';
 
 export const RoomTemplate: FC & {
 	Header: FC;
@@ -30,25 +34,6 @@ export const RoomTemplate: FC & {
 			</Box>
 		</Box>
 	);
-};
-
-// eslint-disable-next-line react/no-multi-comp
-const Header: FC = function Header({ children }) {
-	return <>{children}</>;
-};
-
-// eslint-disable-next-line react/no-multi-comp
-const Body: FC = function Body({ children }) {
-	return <>{children}</>;
-};
-
-// eslint-disable-next-line react/no-multi-comp
-const Footer: FC = function Footer({ children }) {
-	return <>{children}</>;
-};
-// eslint-disable-next-line react/no-multi-comp
-const Aside: FC = function Aside({ children }) {
-	return <>{children}</>;
 };
 
 RoomTemplate.Header = Header;
