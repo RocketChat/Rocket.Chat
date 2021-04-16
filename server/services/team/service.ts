@@ -400,16 +400,16 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		if (getAllRooms) {
-			const teamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, { skip, limit });
+			const teamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, undefined, { skip, limit });
 			return {
 				total: await teamRoomsCursor.count(),
 				records: await teamRoomsCursor.toArray(),
 			};
 		}
 
-		const subscriptions = await this.SubscriptionsModel.findByUserId(uid, { projection: { rid: 1 } }).toArray();
-		const userRoomIds = subscriptions.map((s) => s.rid);
-		const validTeamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndUserId(teamId, name, isDefault, userRoomIds, { skip, limit });
+		const user = await this.Users.findOneById(uid, { fields: { __rooms: 1 } });
+		const userRooms = user.__rooms;
+		const validTeamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, userRooms, { skip, limit });
 
 		return {
 			total: await validTeamRoomsCursor.count(),
