@@ -94,16 +94,12 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 	);
 
 	useLayoutEffect(() => {
-		if (!(currentRoom === room._id)) {
-			return;
-		}
-
 		if (!tab) {
 			setActiveTabBar([undefined, undefined]);
 		}
 
 		setActiveTabBar([list.get(tab as string) as ToolboxActionConfig, context]);
-	}, [tab, list, currentRoom, room._id, context]);
+	}, [tab, list, currentRoom, context]);
 
 	const contextValue = useMemo(
 		() => ({
@@ -129,7 +125,13 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 							(action as ToolboxActionConfig).anonymous),
 				)
 				.map(([id, item]) => (
-					<VirtualAction action={item} room={room} id={id} key={id} handleChange={handleChange} />
+					<VirtualAction
+						action={item}
+						room={room}
+						id={id}
+						key={id + room._id}
+						handleChange={handleChange}
+					/>
 				))}
 			{children}
 		</ToolboxContext.Provider>
