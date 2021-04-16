@@ -152,7 +152,7 @@ function EditUser({ data, roles, ...props }) {
 	const cleanRoles = [
 		...availableRoles
 			.filter((availableRole) => values.roles.includes(availableRole[0]))
-			.map(elem => elem[0]),
+			.map((elem) => elem[0]),
 	];
 
 	values.roles = cleanRoles;
