@@ -148,12 +148,12 @@ function EditUser({ data, roles, ...props }) {
 	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
 
 	const availableRoles = roles.map(({ _id, description }) => [_id, description || _id]);
-	
+
 	const cleanRoles = [
 		...availableRoles
-			.filter(availableRole => values.roles.includes(availableRole[0]))
-			.map(elem => elem[0])
-						];
+			.filter((availableRole) => values.roles.includes(availableRole[0]))
+			.map(elem => elem[0]),
+	];
 
 	values.roles = cleanRoles;
 
