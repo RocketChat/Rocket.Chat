@@ -10,7 +10,7 @@ import { e2e } from './rocketchat.e2e';
 addAction('e2e', ({ room }) => {
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eReady = e2e.isReady() || room.encrypted;
-	const e2ePermission = room.t === 'd' || usePermission('toggle-room-e2e-encryption', room._id);
+	const e2ePermission = usePermission('toggle-room-e2e-encryption', room._id) || room.t === 'd';
 	const hasPermission = usePermission('edit-room', room._id) && e2ePermission && e2eReady;
 	const toggleE2E = useMethod('saveRoomSettings');
 
