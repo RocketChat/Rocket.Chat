@@ -37,10 +37,27 @@ const FilterByText: FC<FilterByTextProps> = ({
 		event.preventDefault();
 	}, []);
 
-	return <Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' {...props}>
-		<TextInput placeholder={placeholder ?? t('Search')} ref={inputRef} addon={<Icon name='magnifier' size='x20'/>} onChange={handleInputChange} value={text} />
-		<Button onClick={onButtonClick} display={display ? 'block' : 'none'} mis='x8' primary>{textButton}</Button>
-	</Box>;
+	return (
+		<Box
+			mb='x16'
+			is='form'
+			onSubmit={handleFormSubmit}
+			display='flex'
+			flexDirection='row'
+			{...props}
+		>
+			<TextInput
+				placeholder={placeholder ?? t('Search')}
+				ref={inputRef}
+				addon={<Icon name='magnifier' size='x20' />}
+				onChange={handleInputChange}
+				value={text}
+			/>
+			<Button onClick={onButtonClick} display={display ? 'block' : 'none'} mis='x8' primary>
+				{textButton}
+			</Button>
+		</Box>
+	);
 };
 
 export default memo(FilterByText);
