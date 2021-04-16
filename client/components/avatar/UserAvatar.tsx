@@ -1,7 +1,7 @@
 import React, { FC, memo } from 'react';
 
-import BaseAvatar, { BaseAvatarProps } from './BaseAvatar';
 import { useUserAvatarPath } from '../../contexts/AvatarUrlContext';
+import BaseAvatar, { BaseAvatarProps } from './BaseAvatar';
 
 type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title'> & {
 	username: string;
@@ -11,12 +11,9 @@ type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title'> & {
 
 const UserAvatar: FC<UserAvatarProps> = ({ username, etag, ...rest }) => {
 	const getUserAvatarPath = useUserAvatarPath();
-	const {
-		url = getUserAvatarPath(username, etag),
-		...props
-	} = rest;
+	const { url = getUserAvatarPath(username, etag), ...props } = rest;
 
-	return <BaseAvatar url={url} title={username} {...props}/>;
+	return <BaseAvatar url={url} title={username} {...props} />;
 };
 
 export default memo(UserAvatar);

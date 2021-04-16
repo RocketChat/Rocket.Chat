@@ -27,7 +27,8 @@
 		"nats": "^1.4.8",
 		"underscore.string": "^3.3.5",
 		"uuid": "^7.0.3",
-		"ws": "^7.2.3"
+		"ws": "^7.2.3",
+		"eventemitter3": "^4.0.7"
 	},
 	"devDependencies": {
 		"@types/ejson": "^2.1.2",

@@ -1,5 +1,5 @@
-import { MessageList } from './MessageList';
 import type { IMessage } from '../../../definition/IMessage';
+import { MessageList } from './MessageList';
 
 type FilesMessage = Omit<IMessage, 'rid'> & Required<Pick<IMessage, 'rid'>>;
 
