@@ -5,7 +5,7 @@ import { hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { settings } from '../../../settings';
 import { API } from '../api';
-import { getDirectMessageByIdWithOptionToJoin, getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
+import { getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
 
 function findDirectMessageRoom(params, user) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
@@ -15,29 +15,6 @@ function findDirectMessageRoom(params, user) {
 	const room = getDirectMessageByNameOrIdWithOptionToJoin({
 		currentUserId: user._id,
 		nameOrId: params.username || params.roomId,
-	});
-
-	const canAccess = Meteor.call('canAccessRoom', room._id, user._id);
-	if (!canAccess || !room || room.t !== 'd') {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any direct message');
-	}
-
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
-
-	return {
-		room,
-		subscription,
-	};
-}
-
-function findDirectMessageRoomByRoomId(params, user) {
-	if (!params.roomId || !params.roomId.trim()) {
-		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
-	}
-
-	const room = getDirectMessageByIdWithOptionToJoin({
-		currentUserId: user._id,
-		nameOrId: params.roomId,
 	});
 
 	const canAccess = Meteor.call('canAccessRoom', room._id, user._id);
@@ -221,7 +198,7 @@ API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true }, {
 
 API.v1.addRoute(['dm.members', 'im.members'], { authRequired: true }, {
 	get() {
-		const findResult = findDirectMessageRoomByRoomId(this.requestParams(), this.user);
+		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
