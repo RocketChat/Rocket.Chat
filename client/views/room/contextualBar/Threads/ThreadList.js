@@ -2,6 +2,7 @@ import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fus
 import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useRef } from 'react';
 import { Virtuoso } from 'react-virtuoso';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 
 import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
@@ -27,7 +28,7 @@ function ThreadList({
 	type,
 	setType,
 	loadMoreItems,
-	loading,
+	actualLoading,
 	onClose,
 	error,
 	userId,
@@ -68,6 +69,8 @@ function ThreadList({
 
 	const mid = useTabContext();
 	const jump = useQueryStringParameter('jump');
+	
+	var loading = actualLoading === AsyncStatePhase.LOADING || actualLoading === AsyncStatePhase.UPDATING ? true: false;
 
 	return (
 		<>
