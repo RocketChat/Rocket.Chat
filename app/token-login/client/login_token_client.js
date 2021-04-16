@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import * as BlazeLayout from '../../../client/lib/portals/blazeLayout';
+import { appLayout } from '../../../client/lib/appLayout';
 
 Meteor.loginWithLoginToken = function(token) {
 	Accounts.callLoginMethod({
@@ -20,7 +20,7 @@ Meteor.loginWithLoginToken = function(token) {
 FlowRouter.route('/login-token/:token', {
 	name: 'tokenLogin',
 	action() {
-		BlazeLayout.render('loginLayout');
+		appLayout.render('loginLayout');
 		Meteor.loginWithLoginToken(this.getParam('token'));
 	},
 });
