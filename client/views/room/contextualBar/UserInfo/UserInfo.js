@@ -50,6 +50,7 @@ function UserInfo({
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
+					{console.log(roles)}
 					{!!roles && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
