@@ -39,8 +39,8 @@ const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(
 				style={scrollbarsStyle}
 				onScrollFrame={onScroll}
 				renderView={renderView}
-				renderTrackHorizontal={(props): ReactElement => (
-					<div {...props} className='track-horizontal' style={{ display: 'none' }} />
+				renderTrackHorizontal={({ style, ...props }): ReactElement => (
+					<div {...props} className='track-horizontal' style={style} />
 				)}
 				renderThumbVertical={({ style, ...props }): JSX.Element => (
 					<div
