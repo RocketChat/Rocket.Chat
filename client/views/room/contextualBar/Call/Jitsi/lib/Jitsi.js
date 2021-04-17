@@ -94,9 +94,23 @@ function changeEventStatus(postis, event, status) {
  * @param token if you need token authentication, then pass the token
  * @constructor
  */
-export function JitsiMeetExternalAPI(domain, room_name, width, height, parentNode, configOverwrite, interfaceConfigOverwrite, noSsl, token) {
-	if (!width || width < MIN_WIDTH) { width = MIN_WIDTH; }
-	if (!height || height < MIN_HEIGHT) { height = MIN_HEIGHT; }
+export function JitsiMeetExternalAPI(
+	domain,
+	room_name,
+	width,
+	height,
+	parentNode,
+	configOverwrite,
+	interfaceConfigOverwrite,
+	noSsl,
+	token,
+) {
+	if (!width || width < MIN_WIDTH) {
+		width = MIN_WIDTH;
+	}
+	if (!height || height < MIN_HEIGHT) {
+		height = MIN_HEIGHT;
+	}
 
 	this.parentNode = null;
 	if (parentNode) {
@@ -107,29 +121,39 @@ export function JitsiMeetExternalAPI(domain, room_name, width, height, parentNod
 	}
 
 	this.iframeHolder = this.parentNode.appendChild(document.createElement('div'));
-	this.iframeHolder.id = `jitsiConference${ id }`;
-	if (width) { this.iframeHolder.style.width = `${ width }px`; }
-	if (height) { this.iframeHolder.style.height = `${ height }px`; }
-	this.frameName = `jitsiConferenceFrame${ id }`;
-	this.url = `${ noSsl ? 'http' : 'https' }://${ domain }/`;
-	if (room_name) { this.url += room_name; }
-	if (token) {
-		this.url += `?jwt=${ token }`;
+	this.iframeHolder.id = `jitsiConference${id}`;
+	if (width) {
+		this.iframeHolder.style.width = `${width}px`;
 	}
-	this.url += `#jitsi_meet_external_api_id=${ id }`;
+	if (height) {
+		this.iframeHolder.style.height = `${height}px`;
+	}
+	this.frameName = `jitsiConferenceFrame${id}`;
+	this.url = `${noSsl ? 'http' : 'https'}://${domain}/`;
+	if (room_name) {
+		this.url += room_name;
+	}
+	if (token) {
+		this.url += `?jwt=${token}`;
+	}
+	this.url += `#jitsi_meet_external_api_id=${id}`;
 
 	let key;
 	if (configOverwrite) {
 		for (key in configOverwrite) {
-			if (!configOverwrite.hasOwnProperty(key) || typeof key !== 'string') { continue; }
-			this.url += `&config.${ key }=${ configOverwrite[key] }`;
+			if (!configOverwrite.hasOwnProperty(key) || typeof key !== 'string') {
+				continue;
+			}
+			this.url += `&config.${key}=${configOverwrite[key]}`;
 		}
 	}
 
 	if (interfaceConfigOverwrite) {
 		for (key in interfaceConfigOverwrite) {
-			if (!interfaceConfigOverwrite.hasOwnProperty(key) || typeof key !== 'string') { continue; }
-			this.url += `&interfaceConfig.${ key }=${ interfaceConfigOverwrite[key] }`;
+			if (!interfaceConfigOverwrite.hasOwnProperty(key) || typeof key !== 'string') {
+				continue;
+			}
+			this.url += `&interfaceConfig.${key}=${interfaceConfigOverwrite[key]}`;
 		}
 	}
 
@@ -144,7 +168,7 @@ export function JitsiMeetExternalAPI(domain, room_name, width, height, parentNod
 	this.frame = this.iframeHolder.appendChild(this.frame);
 	this.postis = postis({
 		window: this.frame.contentWindow,
-		scope: `jitsi_meet_external_api_${ id }`,
+		scope: `jitsi_meet_external_api_${id}`,
 	});
 
 	this.eventHandlers = {};
@@ -164,13 +188,15 @@ export function JitsiMeetExternalAPI(domain, room_name, width, height, parentNod
  * @param name the name of the command
  * @param arguments array of arguments
  */
-JitsiMeetExternalAPI.prototype.executeCommand = function(name, argumentsList) {
+JitsiMeetExternalAPI.prototype.executeCommand = function (name, argumentsList) {
 	if (!(name in commands)) {
 		console.error('Not supported command name.');
 		return;
 	}
 	let argumentsArray = argumentsList;
-	if (!argumentsArray) { argumentsArray = []; }
+	if (!argumentsArray) {
+		argumentsArray = [];
+	}
 	sendMessage(this.postis, { method: commands[name], params: argumentsArray });
 };
 
@@ -188,7 +214,7 @@ JitsiMeetExternalAPI.prototype.executeCommand = function(name, argumentsList) {
  * object are the commands that will be executed and the values are the
  * arguments for the command.
  */
-JitsiMeetExternalAPI.prototype.executeCommands = function(object) {
+JitsiMeetExternalAPI.prototype.executeCommands = function (object) {
 	Object.entries(object).forEach(([key, value]) => this.executeCommand(key, value));
 };
 
@@ -240,7 +266,7 @@ JitsiMeetExternalAPI.prototype.executeCommands = function(object) {
  * }}
  * @param object
  */
-JitsiMeetExternalAPI.prototype.addEventListeners = function(object) {
+JitsiMeetExternalAPI.prototype.addEventListeners = function (object) {
 	Object.entries(object).forEach(([key, value]) => this.addEventListener(key, value));
 };
 
@@ -291,7 +317,7 @@ JitsiMeetExternalAPI.prototype.addEventListeners = function(object) {
  * @param event the name of the event
  * @param listener the listener
  */
-JitsiMeetExternalAPI.prototype.addEventListener = function(event, listener) {
+JitsiMeetExternalAPI.prototype.addEventListener = function (event, listener) {
 	if (!(event in events)) {
 		console.error('Not supported event name.');
 		return;
@@ -299,9 +325,11 @@ JitsiMeetExternalAPI.prototype.addEventListener = function(event, listener) {
 	// We cannot remove listeners from postis that's why we are handling the
 	// callback that way.
 	if (!(event in this.eventHandlers)) {
-		this.postis.listen(events[event], function(data) {
-			if (event in this.eventHandlers && typeof this.eventHandlers[event] === 'function') { this.eventHandlers[event].call(null, data); }
-		}.bind(this));
+		this.postis.listen(events[event], (data) => {
+			if (event in this.eventHandlers && typeof this.eventHandlers[event] === 'function') {
+				this.eventHandlers[event].call(null, data);
+			}
+		});
 	}
 	this.eventHandlers[event] = listener;
 	changeEventStatus(this.postis, event, true);
@@ -311,9 +339,9 @@ JitsiMeetExternalAPI.prototype.addEventListener = function(event, listener) {
  * Removes event listener.
  * @param event the name of the event.
  */
-JitsiMeetExternalAPI.prototype.removeEventListener = function(event) {
+JitsiMeetExternalAPI.prototype.removeEventListener = function (event) {
 	if (!(event in this.eventHandlers)) {
-		console.error(`The event ${ event } is not registered.`);
+		console.error(`The event ${event} is not registered.`);
 		return;
 	}
 	delete this.eventHandlers[event];
@@ -324,7 +352,7 @@ JitsiMeetExternalAPI.prototype.removeEventListener = function(event) {
  * Removes event listeners.
  * @param events array with the names of the events.
  */
-JitsiMeetExternalAPI.prototype.removeEventListeners = function(events) {
+JitsiMeetExternalAPI.prototype.removeEventListeners = function (events) {
 	for (let i = 0; i < events.length; i++) {
 		this.removeEventListener(events[i]);
 	}
@@ -333,12 +361,14 @@ JitsiMeetExternalAPI.prototype.removeEventListeners = function(events) {
 /**
  * Removes the listeners and removes the Jitsi Meet frame.
  */
-JitsiMeetExternalAPI.prototype.dispose = function() {
+JitsiMeetExternalAPI.prototype.dispose = function () {
 	this.postis.destroy();
 	const frame = document.getElementById(this.frameName);
-	if (frame) { frame.src = 'about:blank'; }
+	if (frame) {
+		frame.src = 'about:blank';
+	}
 	const self = this;
-	window.setTimeout(function() {
+	window.setTimeout(() => {
 		self.iframeHolder.removeChild(self.frame);
 		self.iframeHolder.parentNode.removeChild(self.iframeHolder);
 	}, 10);

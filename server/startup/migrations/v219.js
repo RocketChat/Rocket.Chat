@@ -1,59 +1,34 @@
-import { Migrations } from '../../../app/migrations';
-import { Messages, Users } from '../../../app/models';
-
-function createNewReactions(reactions) {
-	const newReactions = {};
-
-	for (const [reactionName, reactionObj] of Object.entries(reactions)) {
-		const { usernames } = reactionObj;
-
-		if (!usernames) {
-			return {};
-		}
-
-		const newUserIds = [];
-		const newUsernames = [];
-
-		// only push reaction of those users who can be found by their `usernames`
-		for (const username of usernames) {
-			const foundUser =				username
-				&& Users.findOne({ username }, { fields: { _id: 1, username: 1 } });
-
-			if (foundUser) {
-				newUserIds.push(foundUser._id);
-				newUsernames.push(foundUser.username);
-			}
-		}
-
-		newReactions[reactionName] = {
-			userIds: newUserIds,
-			usernames: newUsernames,
-		};
-	}
-
-	return newReactions;
-}
-
-function migrateUserReactions() {
-	Messages.find({ reactions: { $exists: true } }).forEach((message) => {
-		// create new reactions object along with the `user._id`
-		const newReactions = createNewReactions(message.reactions);
-		Messages.update(
-			{ _id: message._id },
-			{
-				$set: {
-					reactions: newReactions,
-				},
-			},
-		);
-	});
-}
+import { Migrations } from '../../../app/migrations/server';
+import { Settings } from '../../../app/models/server';
 
 Migrations.add({
 	version: 219,
 	up() {
-		console.info('Now fixing message reactions ...');
-		migrateUserReactions();
-		console.info('Done fixing message reactions !');
+		const SettingIds = {
+			old: 'Livechat_auto_close_abandoned_rooms',
+			new: 'Livechat_abandoned_rooms_action',
+		};
+
+
+		const oldSetting = Settings.findOne({ _id: SettingIds.old });
+		if (!oldSetting) {
+			return;
+		}
+
+		const oldValue = oldSetting.value;
+
+		const newValue = oldValue && oldValue === true ? 'close' : 'none';
+
+		Settings.update({
+			_id: SettingIds.new,
+		}, {
+			$set: {
+				value: newValue,
+			},
+		});
+
+		Settings.remove({
+			_id: SettingIds.old,
+		});
 	},
 });

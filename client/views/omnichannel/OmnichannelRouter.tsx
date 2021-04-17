@@ -1,22 +1,32 @@
-import React, { lazy, useMemo, Suspense, useEffect, FC, ComponentType } from 'react';
+import React, { ReactNode, Suspense, useEffect, FC } from 'react';
 
-import PageSkeleton from '../../components/PageSkeleton';
 import { SideNav } from '../../../app/ui-utils/client';
+import PageSkeleton from '../../components/PageSkeleton';
+import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 
 type OmnichannelRouterProps = {
-	lazyRouteComponent: () => Promise<{ default: ComponentType }>;
+	renderRoute?: () => ReactNode;
 };
 
-const OmnichannelRouter: FC<OmnichannelRouterProps> = ({ lazyRouteComponent, ...props }) => {
-	const LazyRouteComponent = useMemo(() => lazy(lazyRouteComponent), [lazyRouteComponent]);
+const OmnichannelRouter: FC<OmnichannelRouterProps> = ({ renderRoute }) => {
+	const [routeName] = useCurrentRoute();
+	const defaultRoute = useRoute('omnichannel-current-chats');
+	useEffect(() => {
+		if (routeName === 'omnichannel-index') {
+			defaultRoute.push();
+		}
+	}, [defaultRoute, routeName]);
+
 	useEffect(() => {
 		SideNav.setFlex('omnichannelFlex');
 		SideNav.openFlex(() => undefined);
 	}, []);
 
-	return <Suspense fallback={<PageSkeleton />}>
-		<LazyRouteComponent {...props} />
-	</Suspense>;
+	return renderRoute ? (
+		<Suspense fallback={<PageSkeleton />}>{renderRoute()}</Suspense>
+	) : (
+		<PageSkeleton />
+	);
 };
 
 export default OmnichannelRouter;
