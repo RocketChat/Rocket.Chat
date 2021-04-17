@@ -1,4 +1,4 @@
-import { FindOneOptions, UpdateWriteOpResult } from 'mongodb';
+import { FindOneOptions } from 'mongodb';
 
 import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
