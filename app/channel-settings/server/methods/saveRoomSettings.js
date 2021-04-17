@@ -18,6 +18,7 @@ import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
+import { Team } from '../../../../server/sdk';
 
 const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
 
@@ -126,7 +127,12 @@ const validators = {
 
 const settingSavers = {
 	roomName({ value, rid, user }) {
-		saveRoomName(rid, value, user);
+		if (saveRoomName(rid, value, user)) {
+			const room = Rooms.findOneById(rid);
+			if (room.teamId && room.teamMain) {
+				Team.updateTeamName(room.teamId, value);
+			}
+		}
 	},
 	roomTopic({ value, room, rid, user }) {
 		if (value !== room.topic) {
