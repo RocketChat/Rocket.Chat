@@ -1,5 +1,4 @@
-import { Db, FindOneOptions, UpdateWriteOpResult } from 'mongodb';
-import { Meteor } from 'meteor/meteor';
+import { Db, FindOneOptions } from 'mongodb';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
