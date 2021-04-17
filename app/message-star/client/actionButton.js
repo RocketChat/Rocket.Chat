@@ -92,7 +92,7 @@ Meteor.startup(function() {
 			return msg.starred && msg.starred.find((star) => star._id === u._id);
 		},
 		order: 100,
-		group: ['message', 'menu'],
+		group: ['menu'],
 	});
 
 	MessageAction.addButton({
