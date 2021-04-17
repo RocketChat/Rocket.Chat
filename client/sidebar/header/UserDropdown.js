@@ -148,12 +148,12 @@ const UserDropdown = ({ user, onClose }) => {
 					const status = userStatus.list[key];
 					const name = status.localizeName ? t(status.name) : status.name;
 					const modifier = status.statusType || user.status;
-					const statutTxt = handleStatutText(name, status.localizeName)
+					const statutText = handleStatutText(name, status.localizeName)
 
 					return (
 						<Option
 							onClick={() => {
-								setStatus(status.statusType, statutTxt);
+								setStatus(status.statusType, statutText);
 								onClose();
 							}}
 							key={i}
