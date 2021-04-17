@@ -18,8 +18,8 @@ const getInitialValue = (data) => ({
 	status: data.status,
 	bio: data.bio ?? '',
 	nickname: data.nickname ?? '',
-	email: (data.emails && data.emails[0].address) || '',
-	verified: (data.emails && data.emails[0].verified) || false,
+	email: (data.emails && data.emails.length && data.emails[0].address) || '',
+	verified: (data.emails && data.emails.length && data.emails[0].verified) || false,
 	setRandomPassword: false,
 	requirePasswordChange: data.setRandomPassword || false,
 	customFields: data.customFields ?? {},
@@ -28,7 +28,7 @@ const getInitialValue = (data) => ({
 
 function EditUser({ data, roles, ...props }) {
 	const t = useTranslation();
-
+	
 	const [avatarObj, setAvatarObj] = useState();
 	const [errors, setErrors] = useState({});
 
