@@ -63,7 +63,7 @@ API.v1.addRoute('custom-user-status.update', { authRequired: true }, {
 			name: String,
 			statusType: Match.Maybe(String),
 		});
-
+		console.log(this.bodyParams);
 		const userStatusData = {
 			_id: this.bodyParams._id,
 			name: this.bodyParams.name,
