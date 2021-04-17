@@ -15,17 +15,20 @@ type ImageProps = {
 	({ loadImage: true } | { loadImage: false; setLoadImage: () => void });
 
 const getDimensions = (
-	width: Dimensions['width'],
-	height: Dimensions['height'],
+	originalWidth: Dimensions['width'],
+	originalHeight: Dimensions['height'],
 	limits: { width: number; height: number },
-): { width: 'auto' | number; height: 'auto' | number } => {
-	const ratio = height / width;
+): { width: number; height: number } => {
+	const widthRatio = originalWidth / (limits.width - 4);
+	const heightRatio = originalHeight / limits.height;
 
-	if (height >= width || Math.min(width, limits.width) * ratio > limits.height) {
-		return { width: (width * Math.min(height, limits.height)) / height, height: 'auto' };
+	if (widthRatio > heightRatio) {
+		const width = Math.min(originalWidth, limits.width - 4);
+		return { width, height: (width / originalWidth) * originalHeight };
 	}
 
-	return { width: Math.min(width, limits.width), height: 'auto' };
+	const height = Math.min(originalHeight, limits.height);
+	return { width: (height / originalHeight) * originalWidth, height };
 };
 
 const Image: FC<ImageProps> = ({ previewUrl, loadImage = true, setLoadImage, src, ...size }) => {
@@ -46,22 +49,23 @@ const Image: FC<ImageProps> = ({ previewUrl, loadImage = true, setLoadImage, src
 	const background = previewUrl && `url(${previewUrl}) center center / cover no-repeat fixed`;
 
 	if (!loadImage) {
-		return <Load {...limits} load={setLoadImage} />;
+		return <Load {...dimensions} {...limits} load={setLoadImage} />;
 	}
 
 	if (error) {
-		return <Retry retry={setHasNoError} />;
+		return <Retry {...dimensions} retry={setHasNoError} />;
 	}
 
 	return (
 		<ImageBox
-			className='gallery-item'
 			onError={setHasError}
-			{...(previewUrl && ({ style: { background } } as any))}
+			box
+			{...(previewUrl && ({ style: { background, boxSizing: 'content-box' } } as any))}
 			{...dimensions}
-			src={src}
-			is='img'
-		/>
+			is='picture'
+		>
+			<img className='gallery-item' src={src} {...dimensions} />
+		</ImageBox>
 	);
 };
 

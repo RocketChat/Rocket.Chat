@@ -595,3 +595,14 @@ jobs:
         docker build --build-arg SERVICE=${{ matrix.service }} -t rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} .
 
         docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
+
+        if [[ $GITHUB_REF == refs/tags/* ]]; then
+          if echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+            RELEASE="latest"
+          elif echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+            RELEASE="release-candidate"
+          fi
+
+          docker tag rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} rocketchat/${{ matrix.service }}-service:${RELEASE}
+          docker push rocketchat/${{ matrix.service }}-service:${RELEASE}
+        fi
