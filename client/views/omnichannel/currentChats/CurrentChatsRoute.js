@@ -80,7 +80,7 @@ const useQuery = (
 function CurrentChatsRoute() {
 	const t = useTranslation();
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
-	const canRemmoveCloseCurrentChats = usePermission('remove-closed-livechat-rooms');
+	const canRemoveClosedCurrentChats = usePermission('remove-closed-livechat-rooms');
 
 	const [params, setParams] = useState({
 		fname: '',
@@ -176,10 +176,13 @@ function CurrentChatsRoute() {
 				>
 					{t('Status')}
 				</GenericTable.HeaderCell>,
-				canRemmoveCloseCurrentChats ? 
+				canRemoveClosedCurrentChats ? (
 					<GenericTable.HeaderCell key={'remove'} w='x60'>
 						{t('Remove')}
-					</GenericTable.HeaderCell> : '',
+					</GenericTable.HeaderCell>
+				) : (
+					''
+				),
 			].filter(Boolean),
 		[sort, onHeaderClick, t],
 	);
@@ -200,7 +203,7 @@ function CurrentChatsRoute() {
 				<Table.Cell withTruncatedText>{moment(ts).format('L LTS')}</Table.Cell>
 				<Table.Cell withTruncatedText>{moment(lm).format('L LTS')}</Table.Cell>
 				<Table.Cell withTruncatedText>{open ? t('Open') : t('Closed')}</Table.Cell>
-				{!open && canRemmoveCloseCurrentChats && <RemoveChatButton _id={_id} reload={reload} />}
+				{!open && canRemoveClosedCurrentChats && <RemoveChatButton _id={_id} reload={reload} />}
 			</Table.Row>
 		),
 		[onRowClick, reload, t],
