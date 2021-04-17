@@ -30,9 +30,12 @@ import {
 	ITeamMemberInfo,
 	ITeamMemberParams,
 	ITeamService,
+	ITeamUpdateData,
 } from '../../sdk/types/ITeamService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { canAccessRoom } from '../authorization/canAccessRoom';
+import { saveRoomName } from '../../../app/channel-settings/server';
+import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
 
 export class TeamService extends ServiceClass implements ITeamService {
 	protected name = 'team';
@@ -150,6 +153,28 @@ export class TeamService extends ServiceClass implements ITeamService {
 		} catch (e) {
 			throw new Error('error-team-creation');
 		}
+	}
+
+	async update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void> {
+		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
+		if (!team) {
+			return;
+		}
+
+		const user = await this.Users.findOneById(uid);
+		if (!user) {
+			return;
+		}
+
+		if (updateData.name) {
+			saveRoomName(team.roomId, updateData.name, user);
+		}
+
+		if (updateData.type) {
+			saveRoomType(team.roomId, updateData.type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
+		}
+
+		await this.TeamModel.updateNameAndType(teamId, updateData);
 	}
 
 	async findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]> {
