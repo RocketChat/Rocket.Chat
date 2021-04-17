@@ -101,8 +101,6 @@ const UserDropdown = ({ user, onClose }) => {
 		if (!existingStatutText.includes(statusText)) {
 			if (localizeName) {
 				return statusText;
-			} else {
-				return name;
 			}
 		}
 		return name;
@@ -148,7 +146,7 @@ const UserDropdown = ({ user, onClose }) => {
 					const status = userStatus.list[key];
 					const name = status.localizeName ? t(status.name) : status.name;
 					const modifier = status.statusType || user.status;
-					const statutText = handleStatutText(name, status.localizeName)
+					const statutText = handleStatutText(name, status.localizeName);
 
 					return (
 						<Option
