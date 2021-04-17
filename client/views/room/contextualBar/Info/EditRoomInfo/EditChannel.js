@@ -260,7 +260,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				...data,
 				...(joinCode && { joinCode: joinCodeRequired ? joinCode : '' }),
 				...((data.systemMessages || !hideSysMes) && {
-					systemMessages: hideSysMes ? systemMessages : [],
+					systemMessages: hideSysMes && systemMessages,
 				}),
 			});
 
