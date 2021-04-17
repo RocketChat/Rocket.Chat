@@ -3811,7 +3811,6 @@
   "Teams_New_Name_Label": "Nom",
   "Teams_Info": "Informació de l'equip",
   "Teams_kept_channels": "No va seleccionar els següents Channels, de manera que es mouran a l'espai de treball:",
-  "Teams_kept__username__channels": null,
   "Teams_leave_channels": "Seleccioneu els Channels de l'equip que li agradaria deixar.",
   "Teams_leave": "Deixa l'equip",
   "Teams_members": "Membres d'equips",
