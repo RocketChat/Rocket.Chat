@@ -28,7 +28,7 @@ const getInitialValue = (data) => ({
 
 function EditUser({ data, roles, ...props }) {
 	const t = useTranslation();
-	
+
 	const [avatarObj, setAvatarObj] = useState();
 	const [errors, setErrors] = useState({});
 
