@@ -95,20 +95,19 @@ const UserDropdown = ({ user, onClose }) => {
 
 	const accountBoxItems = useReactiveValue(getItems);
 
-	const existingStatusText = Object.values(userStatus.list).map((elem) => {
-		if(elem.localizeName) {
-			return t(elem.name)
-		}
-		return elem.name
-	});
+	const existingStatusText = Object.values(userStatus.list).map((elem) => elem.name);
 
 	const handleStatusText = (name, localizeName) => {
-		if (!existingStatusText.includes(statusText)) {
-			if (localizeName) {
-				return statusText;
+		if (existingStatusText.includes(statusText) || statusText === '') {
+			if(localizeName) {
+				return '';
 			}
+			return name;
+		};
+		if(statusText !== '' && !localizeName && existingStatusText.includes(name)) {
+			return name
 		}
-		return name;
+		return statusText;
 	};
 
 	return (
