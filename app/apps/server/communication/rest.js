@@ -507,7 +507,9 @@ export class AppsRestApi {
 					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 
-				Promise.await(manager.remove(prl.getID()));
+				const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+
+				Promise.await(manager.remove(prl.getID(), user));
 
 				const info = prl.getInfo();
 				info.status = prl.getStatus();
