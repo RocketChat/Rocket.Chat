@@ -35,7 +35,7 @@ const retentionPolicyAppliesTo = {
 const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetState }) => {
 	const onClickClose = useTabBarClose();
 	const t = useTranslation();
-	console.log('test')
+
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;

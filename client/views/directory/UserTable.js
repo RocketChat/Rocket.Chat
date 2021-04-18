@@ -138,7 +138,7 @@ function UserTable({ workspace = 'local' }) {
 					</Flex.Container>
 				</Table.Cell>
 				{mediaQuery && canViewFullOtherUserInfo && (
-					<Table.Cell withTruncatedText>{emails && emails.length && emails[0].address}</Table.Cell>
+					<Table.Cell withTruncatedText>{emails && emails[0].address}</Table.Cell>
 				)}
 				{federation && <Table.Cell withTruncatedText>{domain}</Table.Cell>}
 				{mediaQuery && (
