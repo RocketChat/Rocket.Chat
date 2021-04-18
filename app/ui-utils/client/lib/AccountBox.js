@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
 
+import { appLayout } from '../../../../client/lib/appLayout';
 import { SideNav } from './SideNav';
 
 export const AccountBox = (function() {
@@ -78,7 +78,7 @@ export const AccountBox = (function() {
 			async action() {
 				await wait();
 				Session.set('openedRoom');
-				return BlazeLayout.render('main', routeConfig);
+				return appLayout.render('main', routeConfig);
 			},
 			triggersEnter: [
 				function() {
