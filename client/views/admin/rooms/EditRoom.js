@@ -24,10 +24,7 @@ import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction'
 import { useForm } from '../../../hooks/useForm';
 
 const getInitialValues = (room) => ({
-	roomName:
-		room.t === 'd'
-			? room.usernames.join(' x ')
-			: roomTypes.getRoomName(room.t, { type: room.t, ...room }),
+	roomName: roomTypes.getRoomName(room.t, { type: room.t, ...room }),
 	roomType: room.t,
 	readOnly: !!room.ro,
 	archived: !!room.archived,
@@ -97,6 +94,12 @@ function EditRoom({ room, onChange }) {
 		handleRoomDescription,
 		handleRoomAnnouncement,
 	} = handlers;
+	console.log(roomName)
+	const handleRoomNameDirect = () => {
+		if(room.t === 'd') {
+
+		}
+	}
 
 	const changeArchivation = archived !== !!room.archived;
 
@@ -116,21 +119,24 @@ function EditRoom({ room, onChange }) {
 		t(archiveMessage),
 	);
 
+	const savedValues = {
+		rid: room._id,
+		roomName,
+		roomTopic,
+		roomType,
+		readOnly,
+		default: isDefault,
+		favorite: { defaultValue: isDefault, favorite },
+		featured,
+		roomDescription,
+		roomAnnouncement,
+		roomAvatar,
+	};
+
 	const handleSave = useMutableCallback(async () => {
 		const save = () =>
-			saveAction({
-				rid: room._id,
-				roomName,
-				roomTopic,
-				roomType,
-				readOnly,
-				default: isDefault,
-				favorite: { defaultValue: isDefault, favorite },
-				featured,
-				roomDescription,
-				roomAnnouncement,
-				roomAvatar,
-			});
+			delete savedValues.roomName
+			saveAction(savedValues);
 
 		const archive = () => archiveAction({ rid: room._id, action: archiveSelector });
 
@@ -171,12 +177,18 @@ function EditRoom({ room, onChange }) {
 			<Field>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
-					<TextInput
+					{room.t === 'd' ? 					
+						<TextInput
 						disabled={deleted || !canViewName}
-						value={roomName}
-						onChange={handleRoomName}
-						flexGrow={1}
-					/>
+						value={room.usernames.join(' x ')}
+						flexGrow={1}/> 
+						: <TextInput
+							disabled={deleted || !canViewName}
+							value={roomName}
+							onChange={handleRoomName}
+							flexGrow={1}
+						/>}
+
 				</Field.Row>
 			</Field>
 			{room.t !== 'd' && (

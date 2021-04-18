@@ -95,7 +95,12 @@ const UserDropdown = ({ user, onClose }) => {
 
 	const accountBoxItems = useReactiveValue(getItems);
 
-	const existingStatusText = Object.values(userStatus.list).map((elem) => elem.name);
+	const existingStatusText = Object.values(userStatus.list).map((elem) => {
+		if(elem.localizeName) {
+			return t(elem.name)
+		}
+		return elem.name
+	});
 
 	const handleStatusText = (name, localizeName) => {
 		if (!existingStatusText.includes(statusText)) {
