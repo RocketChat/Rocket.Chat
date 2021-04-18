@@ -183,8 +183,10 @@ function RoomsTable() {
 				type === 'd'
 					? usernames.join(' x ')
 					: roomTypes.getRoomName(type, { name, type, _id, ...args });
-			const roomType = icon.includes('team') ? `${t('Team')}, ${t(roomTypeI18nMap[type])}` : t(roomTypeI18nMap[type]);
-			
+			const roomType = icon.includes('team') ?
+							`${t('Team')}, ${t(roomTypeI18nMap[type])}`
+											: t(roomTypeI18nMap[type]);
+
 			return (
 				<Table.Row
 					action
