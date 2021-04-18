@@ -2,16 +2,29 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
-import { Messages, EmojiCustom, Rooms } from '../../models';
+import { Messages, EmojiCustom, Rooms, Users } from '../../models';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../../emoji';
 import { isTheLastMessage, msgStream } from '../../lib';
 import { hasPermission } from '../../authorization/server/functions/hasPermission';
 import { api } from '../../../server/sdk/api';
 
-const removeUserReaction = (message, reaction, username) => {
-	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
-	if (message.reactions[reaction].usernames.length === 0) {
+const createNewUsernamesArray = (userIds) => {
+	const newUsernamesArr = [];
+	for (const userId of userIds) {
+		const { username } = Users.findOne({ _id: userId }, { fields: { username: 1 } });
+		newUsernamesArr.push(username);
+	}
+	return newUsernamesArr;
+};
+
+const removeUserReaction = (message, reaction, userId) => {
+	const idx = message.reactions[reaction].userIds.indexOf(userId);
+	// both the userId and its corresponding username are at the same position
+	message.reactions[reaction].userIds.splice(idx, 1);
+	message.reactions[reaction].usernames.splice(idx, 1);
+
+	if (message.reactions[reaction].userIds.length === 0) {
 		delete message.reactions[reaction];
 	}
 	return message;
@@ -37,17 +50,19 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		});
 	}
 
-	const userAlreadyReacted = Boolean(message.reactions) && Boolean(message.reactions[reaction]) && message.reactions[reaction].usernames.indexOf(user.username) !== -1;
+	const userAlreadyReacted = 	Boolean(message.reactions)
+	&& Boolean(message.reactions[reaction])
+	&& message.reactions[reaction].userIds.indexOf(user._id) !== -1;
+
 	// When shouldReact was not informed, toggle the reaction.
 	if (shouldReact === undefined) {
 		shouldReact = !userAlreadyReacted;
 	}
-
 	if (userAlreadyReacted === shouldReact) {
 		return;
 	}
 	if (userAlreadyReacted) {
-		removeUserReaction(message, reaction, user.username);
+		removeUserReaction(message, reaction, user._id);
 		if (_.isEmpty(message.reactions)) {
 			delete message.reactions;
 			if (isTheLastMessage(room, message)) {
@@ -69,9 +84,20 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 		if (!message.reactions[reaction]) {
 			message.reactions[reaction] = {
 				usernames: [],
+				userIds: [],
 			};
 		}
+
+		/* if user2 has renamed himself to user1 (who has already reacted),
+		   make a new array of usernames in this case */
+		if (message.reactions[reaction].usernames.some((usrnm) => usrnm === user.username)) {
+			const newArr = createNewUsernamesArray(message.reactions[reaction].userIds);
+			message.reactions[reaction].usernames = newArr;
+		}
+
 		message.reactions[reaction].usernames.push(user.username);
+		message.reactions[reaction].userIds.push(user._id);
+
 		Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
 			Rooms.setReactionsInLastMessage(room._id, message);

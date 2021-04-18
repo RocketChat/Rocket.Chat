@@ -286,16 +286,25 @@ Template.message.helpers({
 		return true;
 	},
 	reactions() {
-		const { msg: { reactions = {} }, u: { username: myUsername, name: myName } } = this;
+		const { msg: { reactions = {} }, u: { _id: myId } } = this;
 
 		return Object.entries(reactions)
 			.map(([emoji, reaction]) => {
-				const myDisplayName = reaction.names ? myName : `@${ myUsername }`;
 				const displayNames = reaction.names || reaction.usernames.map((username) => `@${ username }`);
-				const selectedDisplayNames = displayNames.slice(0, 15).filter((displayName) => displayName !== myDisplayName);
 
-				if (displayNames.some((displayName) => displayName === myDisplayName)) {
-					selectedDisplayNames.unshift(t('You'));
+				const selectedDisplayNames = displayNames.slice(0, 15);
+
+				const usernameIndex = reaction.userIds.indexOf(myId);
+
+				// if you have reacted, then 'You' have to be in the beginning of the array
+				if (usernameIndex !== -1) {
+					if (usernameIndex < 15) { // you are there in the 15 selectedDisplayNames
+						selectedDisplayNames.splice(usernameIndex, 1);
+						selectedDisplayNames.unshift(t('You'));
+					} else { // remove the last one
+						selectedDisplayNames.pop();
+						selectedDisplayNames.unshift(t('You'));
+					}
 				}
 
 				let usernames;
@@ -313,7 +322,7 @@ Template.message.helpers({
 					count: displayNames.length,
 					usernames,
 					reaction: ` ${ t('Reacted_with').toLowerCase() } ${ emoji }`,
-					userReacted: displayNames.indexOf(myDisplayName) > -1,
+					userReacted: usernameIndex > -1,
 				};
 			});
 	},
