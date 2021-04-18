@@ -989,7 +989,13 @@ settings.addGroup('General', function() {
 			type: 'boolean',
 		});
 	});
+	this.add('Starred_message_limit', 50, {
+		type: 'int',
+		public: true,
+		i18nDescription: 'Starred_message_limit_description',
+	});
 });
+
 
 settings.addGroup('Message', function() {
 	this.section('Message_Attachments', function() {
