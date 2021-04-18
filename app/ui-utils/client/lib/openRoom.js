@@ -3,35 +3,22 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
-import { Random } from 'meteor/random';
 
 import { appLayout } from '../../../../client/lib/appLayout';
-import { Messages, ChatSubscription, Rooms } from '../../../models';
+import { Messages, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes } from '../../../utils';
 import { call, callMethod } from './callMethod';
 import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
-import { waitUntilWrapperExists } from './RoomHistoryManager';
-import { createTemplateForComponent } from '../../../../client/lib/portals/createTemplateForComponent';
+import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
+import { Rooms } from '../../../models/client';
 
 window.currentTracker = undefined;
 
 // cleanup session when hot reloading
 Session.set('openedRoom', null);
 
-const replaceCenterDomBy = (dom) => {
-	const roomNode = dom();
-
-	const center = createTemplateForComponent(Random.id(), () => import('../../../../client/views/root/DomNode'), {
-		attachment: 'at-parent',
-		props: () => ({ node: roomNode }),
-	});
-
-	appLayout.render('main', { center });
-
-	return roomNode;
-};
 
 const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
 	Tracker.autorun((c) => {
@@ -41,6 +28,12 @@ const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
 			return resolve(room);
 		}
 	});
+});
+
+
+NewRoomManager.on('changed', (rid) => {
+	Session.set('openedRoom', rid);
+	RoomManager.openedRoom = rid;
 });
 
 export const openRoom = async function(type, name) {
@@ -61,20 +54,15 @@ export const openRoom = async function(type, name) {
 				return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 			}
 
+
 			if (room._id === Session.get('openedRoom') && !FlowRouter.getQueryParam('msg')) {
 				return;
 			}
 
-			if (RoomManager.open(type + name).ready() !== true) {
-				if (settings.get('Accounts_AllowAnonymousRead')) {
-					appLayout.render('main');
-				}
+			RoomManager.open(type + name);
 
-				appLayout.render('main', { center: 'loading' });
-				return;
-			}
+			appLayout.render('main', { center: 'room' });
 
-			appLayout.render('main', { center: 'loading' });
 
 			c.stop();
 
@@ -82,13 +70,7 @@ export const openRoom = async function(type, name) {
 				window.currentTracker = undefined;
 			}
 
-			const roomDom = replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
-
-			const selector = await waitUntilWrapperExists('.messages-box .wrapper');
-			selector.scrollTop = roomDom.oldScrollTop;
-
-			Session.set('openedRoom', room._id);
-			RoomManager.openedRoom = room._id;
+			NewRoomManager.open(room._id);
 
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 
