@@ -99,13 +99,13 @@ const UserDropdown = ({ user, onClose }) => {
 
 	const handleStatusText = (name, localizeName) => {
 		if (existingStatusText.includes(statusText) || statusText === '') {
-			if(localizeName) {
+			if (localizeName) {
 				return '';
 			}
 			return name;
-		};
-		if(statusText !== '' && !localizeName && existingStatusText.includes(name)) {
-			return name
+		}
+		if (statusText !== '' && !localizeName && existingStatusText.includes(name)) {
+			return name;
 		}
 		return statusText;
 	};
