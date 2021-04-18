@@ -183,7 +183,7 @@ function RoomsTable() {
 				type === 'd'
 					? usernames.join(' x ')
 					: roomTypes.getRoomName(type, { name, type, _id, ...args });
-
+			const roomType = icon.includes('team') ? `${t(roomTypeI18nMap[type])}, ${t('Team')}` : t(roomTypeI18nMap[type])
 			return (
 				<Table.Row
 					action
@@ -223,7 +223,7 @@ function RoomsTable() {
 					</Table.Cell>
 					<Table.Cell>
 						<Box color='hint' fontScale='p2' style={style}>
-							{t(roomTypeI18nMap[type])}
+							{roomType}
 						</Box>
 						<Box mi='x4' />
 					</Table.Cell>
