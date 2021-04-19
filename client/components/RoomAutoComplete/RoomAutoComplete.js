@@ -13,12 +13,13 @@ const RoomAutoComplete = (props) => {
 		'rooms.autocomplete.channelAndPrivate',
 		useMemo(() => query(filter), [filter]),
 	);
+
 	const options = useMemo(
 		() =>
 			(data &&
-				data.items.map(({ name, _id, avatarETag, t }) => ({
+				data.items.map(({ fname, _id, avatarETag, t }) => ({
 					value: _id,
-					label: { name, avatarETag, type: t },
+					label: { fname, avatarETag, type: t },
 				}))) ||
 			[],
 		[data],
@@ -32,14 +33,14 @@ const RoomAutoComplete = (props) => {
 			renderSelected={({ value, label }) => (
 				<>
 					<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />{' '}
-					{label?.name}
+					{label?.fname}
 				</>
 			)}
 			renderItem={({ value, label, ...props }) => (
 				<Option
 					key={value}
 					{...props}
-					label={label.name}
+					label={label.fname}
 					avatar={<Avatar value={value} {...label} />}
 				/>
 			)}

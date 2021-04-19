@@ -60,7 +60,7 @@ const UsersInRolePage = ({ data }) => {
 								<Field>
 									<Field.Label>{t('Choose_a_room')}</Field.Label>
 									<Field.Row>
-										<RoomAutoComplete value={rid} onChange={setRid} placeholder={t('User')} />
+										<RoomAutoComplete value={rid} onChange={setRid} placeholder={t('Room')} />
 									</Field.Row>
 								</Field>
 							)}
