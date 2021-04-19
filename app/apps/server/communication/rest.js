@@ -262,7 +262,7 @@ export class AppsRestApi {
 
 				const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
 
-				const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true }, user));
+				const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user }));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
