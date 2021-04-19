@@ -31,6 +31,8 @@ export function messageContext({ rid } = Template.instance()) {
 		}, {
 			jump: tmid && tmid !== mid && mid && mid,
 		});
+		e.preventDefault();
+		e.stopPropagation();
 	};
 
 	const runAction = Layout.isEmbedded() ? (msg, e) => {
@@ -51,6 +53,7 @@ export function messageContext({ rid } = Template.instance()) {
 
 	const openDiscussion = (e) => {
 		e.preventDefault();
+		e.stopPropagation();
 		const { drid } = e.currentTarget.dataset;
 		goToRoomById(drid);
 	};

@@ -168,7 +168,7 @@ function ChatInfo({ id, route }) {
 							<Info>{formatDuration(metrics.response.avg)}</Info>
 						</>
 					)}
-					{!waitingResponse && (
+					{!waitingResponse && responseBy?.lastMessageTs && (
 						<>
 							<Label>{t('Inactivity_Time')}</Label>
 							<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>

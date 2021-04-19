@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
+// import { Session } from 'meteor/session';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { RoomTypeConfig } from './RoomTypeConfig';
@@ -47,7 +47,7 @@ export class RoomTypesCommon {
 			const routeConfig = {
 				name: roomConfig.route.name,
 				action: roomConfig.route.action,
-				triggersExit: [() => Session.set('openedRoom', '')],
+				// triggersExit: [() => Session.set('openedRoom', '')],
 			};
 
 			if (Meteor.isClient) {

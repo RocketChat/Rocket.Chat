@@ -166,11 +166,11 @@ function CurrentChatsRoute() {
 					{t('Last_Message')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
-					key={'status'}
+					key={'open'}
 					direction={sort[1]}
-					active={sort[0] === 'status'}
+					active={sort[0] === 'open'}
 					onClick={onHeaderClick}
-					sort='status'
+					sort='open'
 					w='x100'
 				>
 					{t('Status')}

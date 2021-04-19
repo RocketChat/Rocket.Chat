@@ -1096,4 +1096,66 @@ describe('[Teams]', () => {
 			});
 		});
 	});
+
+	describe('/teams.update', () => {
+		let testTeam;
+		before('Create test team', (done) => {
+			const teamName = `test-team-name${ Date.now() }`;
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
+					done();
+				});
+		});
+
+		it('should update team name', async () => {
+			const testTeamName = `test-team-name-changed${ Date.now() }`;
+			const updateResponse = await request.post(api('teams.update'))
+				.set(credentials)
+				.send({
+					teamId: testTeam._id,
+					data: {
+						name: testTeamName,
+					},
+				});
+
+			expect(updateResponse.body).to.have.property('success', true);
+
+			const infoResponse = await request.get(api('teams.info'))
+				.set(credentials)
+				.query({ teamId: testTeam._id });
+
+			expect(infoResponse.body).to.have.property('success', true);
+
+			const { teamInfo } = infoResponse.body;
+			expect(teamInfo).to.have.property('name', testTeamName);
+		});
+
+		it('should update team type', async () => {
+			const updateResponse = await request.post(api('teams.update'))
+				.set(credentials)
+				.send({
+					teamId: testTeam._id,
+					data: {
+						type: 1,
+					},
+				});
+
+			expect(updateResponse.body).to.have.property('success', true);
+
+			const infoResponse = await request.get(api('teams.info'))
+				.set(credentials)
+				.query({ teamId: testTeam._id });
+
+			expect(infoResponse.body).to.have.property('success', true);
+
+			const { teamInfo } = infoResponse.body;
+			expect(teamInfo).to.have.property('type', 1);
+		});
+	});
 });

@@ -87,9 +87,9 @@ function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ..
 			await saveAgentStatus({ status, agentId: uid });
 			dispatchToastMessage({ type: 'success', message: t('saved') });
 			agentsRoute.push({});
+			reset();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
-			console.log(error);
 		}
 		commit();
 		commitMaxChats();
