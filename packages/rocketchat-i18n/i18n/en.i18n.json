@@ -1666,7 +1666,7 @@
   "error-not-allowed": "Not allowed",
   "error-not-authorized": "Not authorized",
   "error-office-hours-are-closed": "The office hours are closed.",
-  "error-password-in-history": "Entered password that has been previously used",
+  "error-password-in-history": "Entered password has been previously used",
   "error-password-policy-not-met": "Password does not meet the server's policy",
   "error-password-policy-not-met-maxLength": "Password does not meet the server's policy of maximum length (password too long)",
   "error-password-policy-not-met-minLength": "Password does not meet the server's policy of minimum length (password too short)",

@@ -77,7 +77,7 @@ function saveUserProfile(settings, customFields) {
 			}
 
 			if (user.services?.passwordHistory && !compareUserPasswordHistory(user, { plain: settings.newPassword })) {
-				throw new Meteor.Error('error-password-in-history', 'Entered password that has been previously used', {
+				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
 					method: 'saveUserProfile',
 				});
 			}
