@@ -15363,14 +15363,6 @@
       ]
     },
     "HEAD": {
-      "node_version": "12.21.0",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.24.1",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
       "pull_requests": []
     },
     "0.66.0-rc.0": {
@@ -58231,6 +58223,81 @@
           "milestone": "3.13.1",
           "contributors": [
             "rafaelblink"
+          ]
+        }
+      ]
+    },
+    "3.11.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.12.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.13.2": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21570",
+          "title": "Release 3.13.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.13.3": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21491",
+          "title": "[FIX] Team's channels list for teams with too many channels",
+          "userLogin": "KevLehman",
+          "description": "- Fix teams.listRooms pagination for non-admin users",
+          "milestone": "3.13.3",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21644",
+          "title": "[FIX] Livechat not retrieving messages",
+          "userLogin": "cuonghuunguyen",
+          "milestone": "3.13.3",
+          "contributors": [
+            "cuonghuunguyen"
           ]
         }
       ]
