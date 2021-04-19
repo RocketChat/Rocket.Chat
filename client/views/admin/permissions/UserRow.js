@@ -7,7 +7,7 @@ import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 
 const UserRow = ({ _id, username, name, avatarETag, emails, onRemove }) => {
 	const email = getUserEmailAddress({ emails });
-	
+
 	const handleRemove = useMutableCallback(() => {
 		onRemove(username);
 	});
