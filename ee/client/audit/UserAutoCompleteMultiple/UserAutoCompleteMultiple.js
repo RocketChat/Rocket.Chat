@@ -41,7 +41,7 @@ const UserAutoCompleteMultiple = (props) => {
 				))
 			}
 			renderItem={({ value, ...props }) => (
-				<Option>
+				<Option key={value}>
 					<Option.Avatar>
 						<UserAvatar username={value} size='x20'/>
 					</Option.Avatar>
