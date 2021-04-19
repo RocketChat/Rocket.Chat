@@ -16,17 +16,17 @@ const apiServer = express();
 apiServer.disable('x-powered-by');
 
 let corsEnabled = false;
-let allowlistOrigins = [];
+let allowListOrigins = [];
 
 settings.get('API_Enable_CORS', (_, value) => { corsEnabled = value; });
 
 settings.get('API_CORS_Origin', (_, value) => {
-	allowlistOrigins = value ? value.trim().split(',').map((origin) => String(origin).trim().toLocaleLowerCase()) : [];
+	allowListOrigins = value ? value.trim().split(',').map((origin) => String(origin).trim().toLocaleLowerCase()) : [];
 });
 
 apiServer.use(cors({
 	origin: (origin, callback) => {
-		if (!origin || (corsEnabled && (allowlistOrigins.includes('*') || allowlistOrigins.includes(origin)))) {
+		if (!origin || (corsEnabled && (allowListOrigins.includes('*') || allowListOrigins.includes(origin))) || origin === settings.get('Site_Url')) {
 			callback(null, true);
 		} else {
 			callback('Not allowed by CORS', false);
