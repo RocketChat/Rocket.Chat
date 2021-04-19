@@ -103,9 +103,9 @@ function AgentsRoute() {
 				<GenericTable.HeaderCell
 					key={'status'}
 					direction={sort[1]}
-					active={sort[0] === 'status'}
+					active={sort[0] === 'statusLivechat'}
 					onClick={onHeaderClick}
-					sort='status'
+					sort='statusLivechat'
 				>
 					{t('Livechat_status')}
 				</GenericTable.HeaderCell>,
