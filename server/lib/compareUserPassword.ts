@@ -18,7 +18,7 @@ export function compareUserPassword(user: IUser, pass: IPassword): boolean {
 	}
 
 	const password = pass.plain || {
-		digest: pass.sha256.toLowerCase() || '',
+		digest: pass.sha256?.toLowerCase() || '',
 		algorithm: 'sha-256' as const,
 	};
 
