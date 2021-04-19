@@ -14,14 +14,6 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return this.findOne(query, options);
 	}
 
-	findByUserId(userId: string, options: FindOneOptions<T> = {}): Cursor<T> {
-		const query = {
-			'u._id': userId,
-		};
-
-		return this.find(query, options);
-	}
-
 	findByUserIdAndRoomIds(userId: string, roomIds: Array<string>, options: FindOneOptions<T> = {}): Cursor<T> {
 		const query = {
 			'u._id': userId,
