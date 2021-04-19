@@ -19,7 +19,7 @@ const RoomAutoComplete = (props) => {
 			(data &&
 				data.items.map(({ fname, name, _id, avatarETag, t }) => ({
 					value: _id,
-					label: { fname: fname ? fname : name, avatarETag, type: t },
+					label: { fname: fname || name, avatarETag, type: t },
 				}))) ||
 			[],
 		[data],
