@@ -39,7 +39,7 @@ const UserAutoCompleteMultiple = (props) => {
 					</Chip>
 				))
 			}
-			renderItem={({ value, label, ...props}) => (// eslint-disable-line no-use-before-define
+			renderItem={({ value, label, ...props }) => (
 				<Option key={value} {...props}>
 					<Option.Avatar>
 						<UserAvatar username={value} size='x20'/>
