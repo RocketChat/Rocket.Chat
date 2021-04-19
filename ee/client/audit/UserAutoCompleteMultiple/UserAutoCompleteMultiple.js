@@ -40,13 +40,13 @@ const UserAutoCompleteMultiple = (props) => {
 					</Chip>
 				))
 			}
-			renderItem={({ value, ...props }) => (
-				<Option key={value}>
+			renderItem={({ value, label, ...props}) => (
+				<Option key={value} {...props}>
 					<Option.Avatar>
 						<UserAvatar username={value} size='x20'/>
 					</Option.Avatar>
 					<Option.Content>
-						{props.label} <Option.Description>({value})</Option.Description>
+						{label} <Option.Description>({value})</Option.Description>
 					</Option.Content>
 				</Option>
 			)}
