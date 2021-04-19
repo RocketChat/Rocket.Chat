@@ -1,5 +1,5 @@
 import { Blaze } from 'meteor/blaze';
-import { Session } from 'meteor/session';
+// import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
@@ -25,8 +25,8 @@ export const roomExit = function() {
 		}
 		callbacks.run('roomExit');
 
-		Session.set('lastOpenedRoom', Session.get('openedRoom'));
-		Session.set('openedRoom', null);
+		// Session.set('lastOpenedRoom', Session.get('openedRoom'));
+		// Session.set('openedRoom', null);
 		RoomManager.openedRoom = null;
 
 		const mainNode = document.querySelector('.main-content');
