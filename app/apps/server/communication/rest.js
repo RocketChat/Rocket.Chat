@@ -509,7 +509,7 @@ export class AppsRestApi {
 
 				const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
 
-				Promise.await(manager.remove(prl.getID(), user));
+				Promise.await(manager.remove(prl.getID(), { user }));
 
 				const info = prl.getInfo();
 				info.status = prl.getStatus();
