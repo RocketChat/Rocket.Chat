@@ -24,7 +24,7 @@ const UsersInRoleTableContainer = ({ rid, roleName, reloadRef }) => {
 	reloadRef.current = reload;
 
 	const tableData = data?.users || [];
-	console.log(tableData);
+
 	return (
 		<UsersInRoleTable
 			data={tableData}
