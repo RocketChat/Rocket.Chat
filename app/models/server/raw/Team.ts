@@ -98,7 +98,7 @@ export class TeamRaw extends BaseRaw<T> {
 			Object.assign(update.$set, { name: nameAndType.name });
 		}
 
-		if (nameAndType.type) {
+		if (typeof nameAndType.type !== 'undefined') {
 			Object.assign(update.$set, { type: nameAndType.type });
 		}
 

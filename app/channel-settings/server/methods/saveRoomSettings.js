@@ -19,6 +19,7 @@ import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 import { RoomSettingsEnum, roomTypes } from '../../../utils';
 import { Team } from '../../../../server/sdk';
+import { TEAM_TYPE } from '../../../../definition/ITeam';
 
 const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
 
@@ -126,12 +127,13 @@ const validators = {
 };
 
 const settingSavers = {
-	roomName({ value, rid, user }) {
-		if (saveRoomName(rid, value, user)) {
-			const room = Rooms.findOneById(rid);
-			if (room.teamId && room.teamMain) {
-				Team.updateTeamName(room.teamId, value);
-			}
+	roomName({ value, rid, user, room }) {
+		if (!saveRoomName(rid, value, user)) {
+			return;
+		}
+
+		if (room.teamId && room.teamMain) {
+			Team.update(user._id, room.teamId, { name: value, updateRoom: false });
 		}
 	},
 	roomTopic({ value, room, rid, user }) {
@@ -155,8 +157,17 @@ const settingSavers = {
 		}
 	},
 	roomType({ value, room, rid, user }) {
-		if (value !== room.t) {
-			saveRoomType(rid, value, user);
+		if (value === room.t) {
+			return;
+		}
+
+		if (!saveRoomType(rid, value, user)) {
+			return;
+		}
+
+		if (room.teamId && room.teamMain) {
+			const type = value === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE;
+			Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
 	tokenpass({ value, rid }) {
