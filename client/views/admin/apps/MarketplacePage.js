@@ -24,22 +24,28 @@ function MarketplacePage() {
 		cloudRoute.push();
 	};
 
-	return <Page>
-		<Page.Header title={t('Marketplace')}>
-			{!isLoggedInCloud && <ButtonGroup>
-				<Button disabled={isLoggedInCloud === undefined} onClick={handleLoginButtonClick}>
-					{isLoggedInCloud === undefined
-						? <Skeleton width='x80' />
-						: <>
-							<Icon name='download'/> {t('Login')}
-						</>}
-				</Button>
-			</ButtonGroup>}
-		</Page.Header>
-		<Page.Content>
-			<MarketplaceTable />
-		</Page.Content>
-	</Page>;
+	return (
+		<Page>
+			<Page.Header title={t('Marketplace')}>
+				{!isLoggedInCloud && (
+					<ButtonGroup>
+						<Button disabled={isLoggedInCloud === undefined} onClick={handleLoginButtonClick}>
+							{isLoggedInCloud === undefined ? (
+								<Skeleton width='x80' />
+							) : (
+								<>
+									<Icon name='download' /> {t('Login')}
+								</>
+							)}
+						</Button>
+					</ButtonGroup>
+				)}
+			</Page.Header>
+			<Page.Content>
+				<MarketplaceTable />
+			</Page.Content>
+		</Page>
+	);
 }
 
 export default MarketplacePage;
