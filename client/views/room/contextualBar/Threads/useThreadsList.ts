@@ -32,7 +32,7 @@ export const useThreadsList = (
 				type: options.type,
 				text: options.text,
 				offset: start,
-				count: end,
+				count: end - start,
 			});
 
 			return {
