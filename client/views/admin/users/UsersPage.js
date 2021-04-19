@@ -49,15 +49,18 @@ function UsersPage() {
 			</Page>
 			{context && (
 				<VerticalBar>
-					<VerticalBar.Header>
-						{context === 'info' && t('User_Info')}
-						{context === 'edit' && t('Edit_User')}
-						{context === 'new' && t('Add_User')}
-						{context === 'invite' && t('Invite_Users')}
-						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
-					</VerticalBar.Header>
+					{context !== 'info' && (
+						<VerticalBar.Header>
+							{context === 'edit' && t('Edit_User')}
+							{context === 'new' && t('Add_User')}
+							{context === 'invite' && t('Invite_Users')}
+							<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
+						</VerticalBar.Header>
+					)}
 
-					{context === 'info' && <UserInfoWithData uid={id} />}
+					{context === 'info' && (
+						<UserInfoWithData uid={id} onClose={handleVerticalBarCloseButtonClick} />
+					)}
 					{context === 'edit' && <EditUserWithData uid={id} />}
 					{context === 'new' && <AddUser />}
 					{context === 'invite' && <InviteUsers />}
