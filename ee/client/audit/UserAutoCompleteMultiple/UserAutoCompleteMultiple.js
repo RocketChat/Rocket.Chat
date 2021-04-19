@@ -4,7 +4,6 @@ import React, { memo, useMemo, useState } from 'react';
 
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import Avatar from './Avatar';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
 
