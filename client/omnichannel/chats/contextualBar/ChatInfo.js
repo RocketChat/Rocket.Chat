@@ -33,10 +33,10 @@ const DepartmentField = ({ departmentId }) => {
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
-	const { department: { name } } = data || { department: {} };
+	const { department } = data || { department: {} };
 	return <>
 		<Label>{t('Department')}</Label>
-		<Info>{name}</Info>
+		<Info>{department && department.name}</Info>
 	</>;
 };
 
@@ -262,7 +262,7 @@ export function ChatInfo({ id, route }) {
 				</>}
 				{!waitingResponse && <>
 					<Label>{t('Inactivity_Time')}</Label>
-					<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
+					<Info>{responseBy && moment(responseBy.lastMessageTs).fromNow(true)}</Info>
 				</>}
 				{ canViewCustomFields()
 					&& livechatData

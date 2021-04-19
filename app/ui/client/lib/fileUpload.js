@@ -1,13 +1,14 @@
 import { Tracker } from 'meteor/tracker';
+import { Random } from 'meteor/random';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
 import { Handlebars } from 'meteor/ui';
-import { Random } from 'meteor/random';
 
 import { settings } from '../../../settings/client';
-import { t, fileUploadIsValidContentType, APIClient } from '../../../utils';
+import { ChatMessage } from '../../../models/client';
+import { t, fileUploadIsValidContentType, SWCache, APIClient } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
-
+import { sendOfflineFileMessage } from './sendOfflineFileMessage';
 
 const readAsDataURL = (file, callback) => {
 	const reader = new FileReader();
@@ -214,7 +215,6 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 
 	const replies = $(input).data('reply') || [];
 	const mention = $(input).data('mention-user') || false;
-
 	let msg = '';
 
 	if (!mention || !threadsEnabled) {
@@ -224,6 +224,9 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 	if (mention && threadsEnabled && replies.length) {
 		tmid = replies[0]._id;
 	}
+
+	const msgData = { id: Random.id(), msg, tmid };
+	let offlineFile = null;
 
 	const uploadNextFile = () => {
 		const file = files.pop();
@@ -266,16 +269,74 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				return;
 			}
 
+			const record = {
+				name: document.getElementById('file-name').value || file.name || file.file.name,
+				size: file.file.size,
+				type: file.file.type,
+				rid,
+				description: document.getElementById('file-description').value,
+			};
+
 			const fileName = document.getElementById('file-name').value || file.name || file.file.name;
 
-			uploadFileWithMessage(rid, tmid, {
-				description: document.getElementById('file-description').value || undefined,
-				fileName,
-				msg: msg || undefined,
-				file,
+			const data = new FormData();
+			record.description && data.append('description', record.description);
+			data.append('id', msgData.id);
+			msg && data.append('msg', msg);
+			tmid && data.append('tmid', tmid);
+			data.append('file', file.file, fileName);
+
+			const upload = {
+				id: Random.id(),
+				name: fileName,
+				percentage: 0,
+			};
+			file.file._id = upload.id;
+			uploadNextFile();
+
+			sendOfflineFileMessage(rid, msgData, file.file, record, (file) => {
+				offlineFile = file;
 			});
 
-			uploadNextFile();
+			const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ rid }`, {}, data, {
+				progress(progress) {
+					if (progress === 100) {
+						return;
+					}
+
+					const uploads = upload;
+					uploads.percentage = Math.round(progress) || 0;
+					ChatMessage.setProgress(msgData.id, uploads);
+				},
+				error(error) {
+					const uploads = upload;
+					uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+					uploads.percentage = 0;
+					ChatMessage.setProgress(msg._id, uploads);
+				},
+			});
+
+			Tracker.autorun((computation) => {
+				const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
+				if (!isCanceling) {
+					return;
+				}
+				computation.stop();
+				Session.delete(`uploading-cancel-${ upload.id }`);
+
+				xhr.abort();
+			});
+
+			try {
+				const res = await promise;
+
+				if (typeof res === 'object' && res.success && offlineFile) { SWCache.removeFromCache(offlineFile); }
+			} catch (error) {
+				const uploads = upload;
+				uploads.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
+				uploads.percentage = 0;
+				ChatMessage.setProgress(msgData.id, uploads);
+			}
 		}));
 	};
 

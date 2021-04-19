@@ -31,6 +31,8 @@ export class AppListenerBridge {
 				case AppInterface.IPreRoomUserLeave:
 				case AppInterface.IPostRoomUserLeave:
 					return 'roomEvent';
+				case AppInterface.IRoomUserTyping:
+					return 'typingEvent';
 				/**
 				 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
 				 */
@@ -96,6 +98,10 @@ export class AppListenerBridge {
 			return result;
 		}
 		return this.orch.getConverters().get('rooms').convertAppRoom(result);
+	}
+
+	async typingEvent(inte, data) {
+		return this.orch.getManager().getListenerManager().executeListener(inte, data);
 	}
 
 	async livechatEvent(inte, data) {

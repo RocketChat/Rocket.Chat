@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import { LivechatVisitors } from '../../../models';
@@ -44,4 +46,10 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	return message;
+}, callbacks.priority.LOW, 'leadCapture');
+
+callbacks.add('beforeSaveMessage', function() {
+	if (settings.get('Livechat_kill_switch')) {
+		throw new Meteor.Error(settings.get('Livechat_kill_switch_message'));
+	}
 }, callbacks.priority.LOW, 'leadCapture');

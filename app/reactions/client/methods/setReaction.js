@@ -7,15 +7,31 @@ import { emoji } from '../../../emoji';
 import { roomTypes } from '../../../utils/client';
 
 Meteor.methods({
-	setReaction(reaction, messageId) {
+	setReaction(reaction, messageId, shouldReact, offlineTrigerred = false) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error(203, 'User_logged_out');
+		}
+
+		if (offlineTrigerred) {
+			return;
 		}
 
 		const user = Meteor.user();
 
 		const message = Messages.findOne({ _id: messageId });
 		const room = Rooms.findOne({ _id: message.rid });
+		const tempActions = message.tempActions || {};
+
+		if (tempActions.delete) {
+			return false;
+		}
+
+		if (tempActions.react) {
+			tempActions.reactions.push(reaction);
+		} else if (!tempActions.send) {
+			tempActions.react = true;
+			tempActions.reactions = [reaction];
+		}
 
 		if (message.private) {
 			return false;
@@ -42,10 +58,10 @@ Meteor.methods({
 
 			if (_.isEmpty(message.reactions)) {
 				delete message.reactions;
-				Messages.unsetReactions(messageId);
+				Messages.unsetReactions(messageId, tempActions);
 				callbacks.run('unsetReaction', messageId, reaction);
 			} else {
-				Messages.setReactions(messageId, message.reactions);
+				Messages.setReactions(messageId, message.reactions, tempActions);
 				callbacks.run('setReaction', messageId, reaction);
 			}
 		} else {
@@ -59,7 +75,7 @@ Meteor.methods({
 			}
 			message.reactions[reaction].usernames.push(user.username);
 
-			Messages.setReactions(messageId, message.reactions);
+			Messages.setReactions(messageId, message.reactions, tempActions);
 			callbacks.run('setReaction', messageId, reaction);
 		}
 	},

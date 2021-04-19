@@ -35,6 +35,11 @@ export const {
 		i18nLabel: 'Custom_Fields',
 		permissionGranted: () => hasPermission('view-livechat-customfields'),
 	}, {
+		// WIDE
+		href: 'omnichannel-filters',
+		i18nLabel: 'Livechat_Filters',
+		permissionGranted: () => hasPermission('view-livechat-triggers'),
+	}, {
 		href: 'omnichannel-triggers',
 		i18nLabel: 'Livechat_Triggers',
 		permissionGranted: () => hasPermission('view-livechat-triggers'),

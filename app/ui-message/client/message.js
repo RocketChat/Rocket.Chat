@@ -450,6 +450,10 @@ Template.message.helpers({
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
 	},
+	isPushMessage() {
+		const { msg } = this;
+		return msg.pushm;
+	},
 	showStar() {
 		const { msg } = this;
 		return msg.starred && msg.starred.length > 0 && msg.starred.find((star) => star._id === Meteor.userId()) && !(msg.actionContext === 'starred' || this.context === 'starred');

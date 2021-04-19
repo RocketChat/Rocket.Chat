@@ -48,6 +48,7 @@ const commands = {
 				const customLoginWith = Meteor[`loginWith${ s.capitalize(customOauth.service, true) }`];
 				const customRedirectUri = data.redirectUrl || siteUrl;
 				customLoginWith.call(Meteor, { redirectUrl: customRedirectUri }, customOAuthCallback);
+				callbacks.run('onUserLogin');
 			}
 		}
 	},

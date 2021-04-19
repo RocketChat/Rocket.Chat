@@ -1,0 +1,88 @@
+on: workflow_dispatch
+
+name: PUSH to Amazon ECR
+
+jobs:
+  widechat-ecr-push:
+    name: ecr-push
+    runs-on: ubuntu-latest
+    # if: ${{ github.base_ref == 'develop' && github.event_name == 'pull_request' }}
+    # needs: test
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # - name: Parse for PR num
+    #   run: |
+    #     git_ref=${{ github.ref }}
+    #     arrRef=(${git_ref//\// })
+    #     pr_num=${arrRef[2]}
+    #     echo "pr_num is this: $pr_num"
+    #     echo "PR_TAG=pr-num-$pr_num" >> $GITHUB_ENV
+
+    - name: Download artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: build_and_test.yml
+        workflow_conclusion: success
+        branch: develop_pwa
+        name: build
+        path: /tmp/build
+
+    - name: Unpack build
+      run: |
+        cd /tmp/build
+        tar xzf Rocket.Chat.tar.gz
+        rm Rocket.Chat.tar.gz
+        cp "${GITHUB_WORKSPACE}/.docker/Dockerfile" .
+
+    - name: Configure AWS credentials in DEV
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR in DEV
+      id: build-image-dev
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: widechat
+        IMAGE_TAG: ear-test
+
+      run: |
+        # Build a docker container and push it to ECR
+        cd /tmp/build
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=DEV_IMAGE::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+    ## Temporarily we will deploy the PR tags to PROD as well as DEV
+    - name: Configure AWS credentials in PROD
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_PROD_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr-prod
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: tag, and push image to Amazon ECR in PROD
+      id: tag-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
+        ECR_REPOSITORY: widechat
+        IMAGE_TAG: ear-test
+
+      run: |
+        # Tag docker image and push it to ECR
+        docker tag ${{ steps.build-image-dev.outputs.DEV_IMAGE }} $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=image::$ECR_PROD_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"

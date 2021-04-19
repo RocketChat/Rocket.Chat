@@ -24,3 +24,24 @@ API.v1.addRoute('livechat/transcript', {
 		}
 	},
 });
+
+API.v1.addRoute('livechat/gettranscript', { authRequired: true }, {
+	post() {
+		try {
+			check(this.bodyParams, {
+				token: String,
+				rid: String,
+			});
+
+			const { token, rid } = this.bodyParams;
+			const response = Livechat.getTranscript({ token, rid });
+			if (!response) {
+				return API.v1.failure({ message: TAPi18n.__('Error_sending_livechat_transcript') });
+			}
+
+			return API.v1.success(response);
+		} catch (e) {
+			return API.v1.failure(e);
+		}
+	},
+});

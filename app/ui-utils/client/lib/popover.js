@@ -1,8 +1,10 @@
 import './popover.html';
 import { Blaze } from 'meteor/blaze';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
+import { share, isShareAvailable } from '../../../utils';
 import { messageBox } from './messageBox';
 import { MessageAction } from './MessageAction';
 import { isRtl } from '../../../utils/client';
@@ -28,6 +30,7 @@ export const popover = {
 		if (activeElement) {
 			$(activeElement).removeClass('active');
 		}
+		this.renderedPopover = null;
 	},
 };
 
@@ -138,6 +141,17 @@ Template.popover.onRendered(function() {
 	this.firstNode.style.visibility = 'visible';
 });
 
+// WIDE CHAT
+Template.popover.onCreated(function() {
+	this.route = FlowRouter.current().path;
+	this.autorun(() => {
+		FlowRouter.watchPathChange();
+		if (FlowRouter.current().path !== this.route) {
+			popover.close();
+		}
+	});
+});
+
 Template.popover.onDestroyed(function() {
 	if (this.data.onDestroyed) {
 		this.data.onDestroyed();
@@ -148,7 +162,7 @@ Template.popover.onDestroyed(function() {
 Template.popover.events({
 	'click .js-action'(e, instance) {
 		!this.action || this.action.call(this, e, instance.data.data);
-		popover.close();
+		!this.hasPopup && popover.close();
 	},
 	'click .js-close'() {
 		popover.close();
@@ -175,6 +189,23 @@ Template.popover.events({
 			button.action.call(t.data.data, e, { tabBar, rid });
 			popover.close();
 			return false;
+		}
+	},
+	'click [data-type="share-action"]'(e) {
+		if (isShareAvailable()) {
+			share();
+		} else {
+			popover.close();
+			const options = [];
+			const config = {
+				template: 'share',
+				currentTarget: e.target,
+				data: {
+					options,
+				},
+				offsetVertical: e.target.clientHeight + 10,
+			};
+			popover.open(config);
 		}
 	},
 });

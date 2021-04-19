@@ -1,0 +1,17 @@
+<template name="pushMessageAction">
+	{{#with data}}
+		<button type="button" class="push-message-action-button">
+			{{#if icon}}
+				<div class="push-message-action-button-icon-container">
+					<img class="push-message-action-button-icon" src="{{icon}}" alt="" />
+				</div>
+			{{/if}}
+
+			{{#if title}}
+				<span class="push-message-action-button-title">
+					{{title}}
+				</span>
+			{{/if}}
+		</button>
+	{{/with}}
+</template>
