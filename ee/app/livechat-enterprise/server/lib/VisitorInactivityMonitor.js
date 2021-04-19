@@ -18,8 +18,7 @@ export class VisitorInactivityMonitor {
 		this._startMonitoring();
 		this._initializeMessageCache();
 		const user = Users.findOneById('rocket.cat');
-		this.userToPerformAutomaticClosing = user;
-		this.userToPerformOnHold = user;
+		this.userToPerformAction = user;
 	}
 
 	_startMonitoring() {
@@ -76,7 +75,7 @@ export class VisitorInactivityMonitor {
 		Livechat.closeRoom({
 			comment,
 			room,
-			user: this.userToPerformAutomaticClosing,
+			user: this.userToPerformAction,
 		});
 	}
 
@@ -92,7 +91,7 @@ export class VisitorInactivityMonitor {
 		const guest = visitor.name || visitor.username;
 		const comment = TAPi18n.__('Livechat_On_Hold_due_to_inactivity', { guest, timeout });
 
-		LivechatEnterprise.placeRoomOnHold(room, comment, this.userToPerformOnHold) && LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
+		LivechatEnterprise.placeRoomOnHold(room, comment, this.userToPerformAction) && LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
 	}
 
 	handleAbandonedRooms() {
