@@ -13,7 +13,6 @@ const RoomAutoComplete = (props) => {
 		'rooms.autocomplete.channelAndPrivate',
 		useMemo(() => query(filter), [filter]),
 	);
-
 	const options = useMemo(
 		() =>
 			(data &&
