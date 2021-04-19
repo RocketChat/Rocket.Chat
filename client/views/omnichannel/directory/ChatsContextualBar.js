@@ -2,7 +2,6 @@ import { Icon, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useBackButton } from '../../../contexts/BackButtonContext';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import Chat from './chats/Chat';
@@ -16,18 +15,9 @@ const ChatsContextualBar = ({ chatReload }) => {
 	const id = useRouteParameter('id');
 
 	const t = useTranslation();
-	// const { setbackButtonPath } = useBackButton();
 
 	const openInRoom = () => {
 		directoryRoute.push({ page: 'chats', id, bar: 'chat' });
-
-		// setbackButtonPath(
-		// 	directoryRoute.getPath({
-		// 		tab: 'chats',
-		// 		bar,
-		// 		id,
-		// 	}),
-		// );
 	};
 
 	const handleChatsVerticalBarCloseButtonClick = () => {

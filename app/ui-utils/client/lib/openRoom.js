@@ -20,7 +20,7 @@ window.currentTracker = undefined;
 Session.set('openedRoom', null);
 
 
-const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
+export const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
 	Tracker.autorun((c) => {
 		const room = roomTypes.findRoom(type, rid, Meteor.user());
 		if (room) {
