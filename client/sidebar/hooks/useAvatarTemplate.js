@@ -23,6 +23,10 @@ export const useAvatarTemplate = () => {
 			}
 		})();
 
-		return (room) => <RoomAvatar size={size} room={{ ...room, _id: room.rid || room._id, type: room.t }} />;
+		const renderRoomAvatar = (room) => (
+			<RoomAvatar size={size} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
+		);
+
+		return renderRoomAvatar;
 	}, [sidebarHideAvatar, sidebarViewMode]);
 };

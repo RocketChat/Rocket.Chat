@@ -24,15 +24,18 @@ export const useMessageDeletionIsAllowed = (rid, uid) => {
 			return () => false;
 		}
 
-		const checkTimeframe = blockDeleteInMinutes !== 0 ? ({ ts }) => {
-			if (!ts) {
-				return false;
-			}
+		const checkTimeframe =
+			blockDeleteInMinutes !== 0
+				? ({ ts }) => {
+						if (!ts) {
+							return false;
+						}
 
-			const currentTsDiff = getDifference(new Date(), new Date(ts), MINUTES);
+						const currentTsDiff = getDifference(new Date(), new Date(ts), MINUTES);
 
-			return currentTsDiff < blockDeleteInMinutes;
-		} : () => true;
+						return currentTsDiff < blockDeleteInMinutes;
+				  }
+				: () => true;
 
 		if (userHasPermissonToDeleteAny) {
 			return checkTimeframe;
@@ -44,5 +47,11 @@ export const useMessageDeletionIsAllowed = (rid, uid) => {
 	})();
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	return useCallback(isDeletionAllowed, [canForceDelete, deletionIsEnabled, userHasPermissonToDeleteAny, userHasPermissonToDeleteOwn, blockDeleteInMinutes]);
+	return useCallback(isDeletionAllowed, [
+		canForceDelete,
+		deletionIsEnabled,
+		userHasPermissonToDeleteAny,
+		userHasPermissonToDeleteOwn,
+		blockDeleteInMinutes,
+	]);
 };

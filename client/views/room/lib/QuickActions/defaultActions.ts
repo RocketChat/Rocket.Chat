@@ -1,6 +1,5 @@
 import { addAction, QuickActionsEnum } from '.';
 
-
 addAction(QuickActionsEnum.MoveQueue, {
 	groups: ['live'],
 	id: QuickActionsEnum.MoveQueue,
