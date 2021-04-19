@@ -44,7 +44,7 @@ export const useFilesList = (
 			const { files, total } = await getFiles({
 				roomId: options.rid,
 				offset: start,
-				count: end,
+				count: end - start,
 				sort: JSON.stringify({ uploadedAt: -1 }),
 				query: JSON.stringify({
 					name: { $regex: options.text || '', $options: 'i' },
