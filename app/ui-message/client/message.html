@@ -75,6 +75,11 @@
 					{{#if showStar}}
 						<span title="{{_ "Message_has_been_starred"}}" class="starred"><i class="icon-star"></i></span>
 					{{/if}}
+					{{#if following }}
+						{{#unless msg.tcount}}
+							<span title="{{_ "Following"}}" class="following"><i class="icon-bell"></i></span>
+						{{/unless}}
+					{{/if}}
 					{{#if msg.alert}}
 						<div title="{{_ msg.alert }}" class="message-unread"></div>
 					{{/if}}

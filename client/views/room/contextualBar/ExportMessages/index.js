@@ -4,7 +4,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { UserAutoComplete } from '../../../../components/AutoComplete';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 import { useUserRoom } from '../../hooks/useUserRoom';
@@ -12,6 +11,7 @@ import { useEndpoint } from '../../../../contexts/ServerContext';
 import { roomTypes, isEmail } from '../../../../../app/utils/client';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
+import UserAutoCompleteMultiple from '../../../../../ee/client/audit/UserAutoCompleteMultiple';
 import { offlineAction } from '../../../../../app/ui-utils';
 
 const clickable = css`
@@ -115,7 +115,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 	const { values, handlers } = useForm({
 		dateFrom: '',
 		dateTo: '',
-		toUsers: '',
+		toUsers: [],
 		additionalEmails: '',
 		subject: t('Mail_Messages_Subject', roomName),
 	});
@@ -165,6 +165,16 @@ const MailExportForm = ({ onCancel, rid }) => {
 		handleAdditionalEmails,
 		handleSubject,
 	} = handlers;
+
+	const onChangeUsers = useMutableCallback((value, action) => {
+		if (!action) {
+			if (toUsers.includes(value)) {
+				return;
+			}
+			return handleToUsers([...toUsers, value]);
+		}
+		handleToUsers(toUsers.filter((current) => current !== value));
+	});
 
 	const roomsExport = useEndpoint('POST', 'rooms.export');
 
@@ -222,7 +232,10 @@ const MailExportForm = ({ onCancel, rid }) => {
 			<Field>
 				<Field.Label>{t('To_users')}</Field.Label>
 				<Field.Row>
-					<UserAutoComplete value={toUsers} onChange={handleToUsers}/>
+					<UserAutoCompleteMultiple
+						value={toUsers}
+						onChange={onChangeUsers}
+					/>
 				</Field.Row>
 			</Field>
 			<Field>

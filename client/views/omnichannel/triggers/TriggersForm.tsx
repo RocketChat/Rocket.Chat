@@ -86,13 +86,20 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 	const conditionOptions: SelectOptions = useMemo(() => [
 		['page-url', t('Visitor_page_URL')],
 		['time-on-site', t('Visitor_time_on_site')],
-		['open-chat-window', t('Visitor_opens_chat_window')],
+		['chat-opened-by-visitor', t('Chat_opened_by_visitor')],
 	], [t]);
 
 	const actionOptions: SelectOptions = useMemo(() => [
 		['send-message', t('Send_a_message')],
 		['start-session', t('Start_a_session')],
 	], [t]);
+
+	const conditionValuePlaceholders: {[conditionName: string]: string} = useMemo(() => ({
+		'page-url': t('Enter_a_regex'),
+		'time-on-site': t('Time_in_seconds'),
+	}), [t]);
+
+	const conditionValuePlaceholder = conditionValuePlaceholders[conditionName];
 
 	const senderOptions: SelectOptions = useMemo(() => [
 		['queue', t('Impersonate_next_agent_from_queue')],
@@ -167,82 +174,115 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 	useComponentDidUpdate(() => {
 		setMsgError(!actionMsg ? t('The_field_is_required', t('Message')) : '');
 	}, [t, actionMsg]);
-	return <>
-		<Field className={className}>
-			<Box display='flex' flexDirection='row'>
-				<Field.Label>{t('Enabled')}</Field.Label>
+	return (
+		<>
+			<Field className={className}>
+				<Box display='flex' flexDirection='row'>
+					<Field.Label>{t('Enabled')}</Field.Label>
+					<Field.Row>
+						<ToggleSwitch checked={enabled} onChange={handleEnabled} />
+					</Field.Row>
+				</Box>
+			</Field>
+			<Field className={className}>
+				<Box display='flex' flexDirection='row'>
+					<Field.Label>{t('Run_only_once_for_each_visitor')}</Field.Label>
+					<Field.Row>
+						<ToggleSwitch checked={runOnce} onChange={handleRunOnce} />
+					</Field.Row>
+				</Box>
+			</Field>
+			<Field className={className}>
+				<Box display='flex' flexDirection='row'>
+					<Field.Label>{t('Run_for_registered_visitor_only')}</Field.Label>
+					<Field.Row>
+						<ToggleSwitch checked={registeredOnly} onChange={handleRegisteredOnly} />
+					</Field.Row>
+				</Box>
+			</Field>
+			<Field className={className}>
+				<Field.Label>{t('Name')}*</Field.Label>
 				<Field.Row>
-					<ToggleSwitch checked={enabled} onChange={handleEnabled}/>
+					<TextInput value={name} error={nameError} onChange={handleName} placeholder={t('Name')} />
 				</Field.Row>
-			</Box>
-		</Field>
-		<Field className={className}>
-			<Box display='flex' flexDirection='row'>
-				<Field.Label>{t('Run_only_once_for_each_visitor')}</Field.Label>
+				<Field.Error>{nameError}</Field.Error>
+			</Field>
+			<Field className={className}>
+				<Field.Label>{t('Description')}</Field.Label>
 				<Field.Row>
-					<ToggleSwitch checked={runOnce} onChange={handleRunOnce}/>
+					<TextInput
+						value={description}
+						onChange={handleDescription}
+						placeholder={t('Description')}
+					/>
 				</Field.Row>
-			</Box>
-		</Field>
-		<Field className={className}>
-			<Box display='flex' flexDirection='row'>
-				<Field.Label>{t('Run_for_registered_visitor_only')}</Field.Label>
+			</Field>
+			<Field className={className}>
+				<Field.Label>{t('Condition')}</Field.Label>
 				<Field.Row>
-					<ToggleSwitch checked={registeredOnly} onChange={handleRegisteredOnly}/>
+					<Select options={conditionOptions} value={conditionName} onChange={handleConditionName} />
 				</Field.Row>
-			</Box>
-		</Field>
-		<Field className={className}>
-			<Field.Label>{t('Name')}</Field.Label>
-			<Field.Row>
-				<TextInput value={name} error={nameError} onChange={handleName} placeholder={t('Name')}/>
-			</Field.Row>
-			<Field.Error>
-				{nameError}
-			</Field.Error>
-		</Field>
-		<Field className={className}>
-			<Field.Label>{t('Description')}</Field.Label>
-			<Field.Row>
-				<TextInput value={description} onChange={handleDescription} placeholder={t('Description')}/>
-			</Field.Row>
-		</Field>
-		<Field className={className}>
-			<Field.Label>{t('Condition')}</Field.Label>
-			<Field.Row>
-				<Select options={conditionOptions} value={conditionName} onChange={handleConditionName}/>
-			</Field.Row>
-			{conditionName !== 'open-chat-window' && <Field.Row>
-				<TextInput value={conditionValue} onChange={handleConditionValue} placeholder={conditionName === 'page-url' ? t('Enter_a_regex') : t('Time_in_seconds')}/>
-			</Field.Row>}
-		</Field>
-		<Field className={className}>
-			<Field.Label>{t('Action')}</Field.Label>
-			<Field.Row>
-				<Select options={actionOptions} value={actionName} onChange={handleActionName}/>
-			</Field.Row>
-			{actionName === 'start-session' && <Field.Row>
-				<TextInput value={actionDepartmentName} onChange={handleActionDepartmentName} placeholder={t('Name_of_department')}/>
-			</Field.Row>}
-			<Field.Row>
-				<TextAreaInput rows={3} value={actionMsg} onChange={handleActionMessage} placeholder={`${ t('Message') }*`}/>
-			</Field.Row>
-			<Field.Error>
-				{msgError}
-			</Field.Error>
-			{actionName === 'send-message' && <>
+				{conditionValuePlaceholder && (
+					<Field.Row>
+						<TextInput
+							value={conditionValue}
+							onChange={handleConditionValue}
+							placeholder={conditionValuePlaceholder}
+						/>
+					</Field.Row>
+				)}
+			</Field>
+			<Field className={className}>
+				<Field.Label>{t('Action')}</Field.Label>
 				<Field.Row>
-					<Select options={senderOptions} value={actionSender} onChange={handleActionSender} placeholder={t('Select_an_option')}/>
+					<Select
+						options={actionOptions}
+						value={actionName}
+						onChange={handleActionName}
+					/>
 				</Field.Row>
-				{actionSender === 'custom' && <Field.Row>
-					<TextInput value={actionAgentName} onChange={handleActionAgentName} placeholder={t('Name_of_agent')}/>
-				</Field.Row>}
-				<Field.Row>
-					<TextAreaInput rows={3} value={actionMsg} onChange={handleActionMessage} placeholder={t('Message')}/>
-				</Field.Row>
-			</>}
-		</Field>
-	</>;
+				{actionName === 'start-session' && (
+					<Field.Row>
+						<TextInput
+							value={actionDepartmentName}
+							onChange={handleActionDepartmentName}
+							placeholder={t('Name_of_department')}
+						/>
+					</Field.Row>
+				)}
+				{actionName === 'send-message' && (
+					<>
+						<Field.Row>
+							<Select
+								options={senderOptions}
+								value={actionSender}
+								onChange={handleActionSender}
+								placeholder={t('Select_an_option')}
+							/>
+						</Field.Row>
+						{actionSender === 'custom' && (
+							<Field.Row>
+								<TextInput
+									value={actionAgentName}
+									onChange={handleActionAgentName}
+									placeholder={t('Name_of_agent')}
+								/>
+							</Field.Row>
+						)}
+						<Field.Row>
+							<TextAreaInput
+								rows={3}
+								value={actionMsg}
+								onChange={handleActionMessage}
+								placeholder={`${ t('Message') }*`}
+							/>
+						</Field.Row>
+					</>
+				)}
+				<Field.Error>{msgError}</Field.Error>
+			</Field>
+		</>
+	);
 };
 
 export default TriggersForm;

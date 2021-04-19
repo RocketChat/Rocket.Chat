@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { IconProps, Icon, Button, ButtonGroup } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 import { Content } from '..';
 
 type RunAction = () => void;
@@ -10,7 +10,7 @@ type ActionOptions = {
 	mid: string;
 	id: string;
 	icon: IconProps['name'];
-	i18nLabel?: string;
+	i18nLabel?: TranslationKey;
 	label?: string;
 	runAction?: RunAction;
 };

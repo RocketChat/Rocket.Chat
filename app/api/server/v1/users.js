@@ -5,6 +5,7 @@ import _ from 'underscore';
 import Busboy from 'busboy';
 
 import { Users, Subscriptions } from '../../../models/server';
+import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
@@ -19,11 +20,12 @@ import {
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
-import { findUsersToAutocomplete } from '../lib/users';
+import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
+import { Team } from '../../../../server/sdk';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -202,10 +204,10 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 			user.rooms = Subscriptions.findByUserId(user._id, {
 				fields: {
 					rid: 1,
-					bio: 1,
 					name: 1,
 					t: 1,
 					roles: 1,
+					unread: 1,
 				},
 				sort: {
 					t: 1,
@@ -229,18 +231,52 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		const users = Users.find(query, {
-			sort: sort || { username: 1 },
-			skip: offset,
-			limit: count,
-			fields,
-		}).fetch();
+		const nonEmptyQuery = getNonEmptyQuery(query);
+		const nonEmptyFields = getNonEmptyFields(fields);
+
+		const inclusiveFields = getInclusiveFields(nonEmptyFields);
+
+		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
+
+		const result = Promise.await(
+			UsersRaw.col
+				.aggregate([
+					{
+						$match: nonEmptyQuery,
+					},
+					{
+						$project: inclusiveFields,
+					},
+					{
+						$addFields: {
+							nameInsensitive: {
+								$toLower: '$name',
+							},
+						},
+					},
+					{
+						$facet: {
+							sortedResults: [{
+								$sort: actualSort,
+							}, {
+								$skip: offset,
+							}, {
+								$limit: count,
+							}],
+							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+						},
+					},
+				])
+				.toArray(),
+		);
+
+		const { sortedResults: users, totalCount: [{ total }] } = result[0];
 
 		return API.v1.success({
 			users,
 			count: users.length,
 			offset,
-			total: Users.find(query).count(),
+			total,
 		});
 	},
 });
@@ -873,5 +909,20 @@ API.v1.addRoute('users.resetTOTP', { authRequired: true, twoFactorRequired: true
 		Promise.await(resetTOTP(user._id, true));
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.listTeams', { authRequired: true }, {
+	get() {
+		const { userId } = this.bodyParams;
+
+		// If the caller has permission to view all teams, there's no need to filter the teams
+		const adminId = hasPermission(this.userId, 'view-all-teams') ? '' : this.userId;
+
+		const teams = Promise.await(Team.findBySubscribedUserIds(userId, adminId));
+
+		return API.v1.success({
+			teams,
+		});
 	},
 });
