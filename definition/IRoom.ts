@@ -60,7 +60,7 @@ export interface IRoom extends IRocketChatRecord {
 		_id: string;
 	};
 	onHold?: boolean;
-	autoTranslateLanguage?: boolean;
+	autoTranslateLanguage: string;
 	autoTranslate?: boolean;
 }
 
