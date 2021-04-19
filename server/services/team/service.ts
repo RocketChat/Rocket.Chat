@@ -166,12 +166,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 			return;
 		}
 
-		if (updateData.name) {
-			saveRoomName(team.roomId, updateData.name, user);
+		const { name, type, updateRoom = true } = updateData;
+
+		if (updateRoom && name) {
+			saveRoomName(team.roomId, name, user);
 		}
 
-		if (updateData.type) {
-			saveRoomType(team.roomId, updateData.type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
+		if (updateRoom && typeof type !== 'undefined') {
+			saveRoomType(team.roomId, type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
 		}
 
 		await this.TeamModel.updateNameAndType(teamId, updateData);
