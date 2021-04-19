@@ -2,6 +2,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
 
+import { settings } from '../../../../../app/settings/client';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useMethod } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
@@ -89,7 +90,11 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 	});
 
 	const handlePrune = useMutableCallback(async () => {
-		const limit = 2000;
+		const limit =
+			settings.get('Prune_message_limit') >= 0
+				? settings.get('Prune_message_limit') || 2000
+				: undefined;
+
 		let result;
 
 		try {
