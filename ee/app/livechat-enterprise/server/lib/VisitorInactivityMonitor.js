@@ -17,8 +17,7 @@ export class VisitorInactivityMonitor {
 	start() {
 		this._startMonitoring();
 		this._initializeMessageCache();
-		const user = Users.findOneById('rocket.cat');
-		this.userToPerformAction = user;
+		this.userToPerformAction = Users.findOneById('rocket.cat');
 	}
 
 	_startMonitoring() {
