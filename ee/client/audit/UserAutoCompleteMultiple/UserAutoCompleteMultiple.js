@@ -46,7 +46,7 @@ const UserAutoCompleteMultiple = (props) => {
 						<UserAvatar username={value} size='x20'/>
 					</Option.Avatar>
 					<Option.Content>
-						{value} <Option.Description>({props.label})</Option.Description>
+						{props.label} <Option.Description>({value})</Option.Description>
 					</Option.Content>
 				</Option>
 			)}
