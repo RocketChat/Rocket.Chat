@@ -60,6 +60,7 @@ export interface IRoom extends IRocketChatRecord {
 		_id: string;
 	};
 	onHold?: boolean;
+	departmentId?: string;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
