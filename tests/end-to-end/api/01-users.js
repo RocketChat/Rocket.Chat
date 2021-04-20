@@ -175,7 +175,7 @@ describe('[Users]', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `"${ name }" is a reserved name.`);
+						expect(res.body).to.have.property('error', `${ name } is already in use :( [error-field-unavailable]`);
 					})
 					.end(done);
 			});
@@ -1117,7 +1117,7 @@ describe('[Users]', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `"${ name }" is a reserved name.`);
+						expect(res.body).to.have.property('error', 'Could not save user identity [error-could-not-save-identity]');
 					})
 					.end(done);
 			});
@@ -1305,7 +1305,7 @@ describe('[Users]', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `"${ name }" is a reserved name.`);
+						expect(res.body).to.have.property('error', 'Could not save user identity [error-could-not-save-identity]');
 					})
 					.end(done);
 			});

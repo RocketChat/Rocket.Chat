@@ -8,7 +8,6 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { settings } from '../../../settings';
 import { Team } from '../../../../server/sdk';
-import { validateName } from '../../../lib/server/functions/validateName';
 
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -177,10 +176,6 @@ function createChannelValidator(params) {
 
 	if (!params.name || !params.name.value) {
 		throw new Error(`Param "${ params.name.key }" is required`);
-	}
-
-	if (!validateName(params.name.value)) {
-		throw new Error(`"${ params.members.key }" is a reserved name.`);
 	}
 
 	if (params.members && params.members.value && !_.isArray(params.members.value)) {
@@ -766,10 +761,6 @@ API.v1.addRoute('channels.rename', { authRequired: true }, {
 
 		if (findResult.name === this.bodyParams.name) {
 			return API.v1.failure('The channel name is the same as what it would be renamed to.');
-		}
-
-		if (!validateName(this.bodyParams.name)) {
-			return API.v1.failure(`"${ this.bodyParams.name }" is a reserved name.`);
 		}
 
 		Meteor.runAsUser(this.userId, () => {
