@@ -1,6 +1,6 @@
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
-import { Subscriptions, Rooms } from '../../../models/server/raw';
+import { Subscriptions, Rooms, Users } from '../../../models/server/raw';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
 const subscriptionOptions = {
@@ -35,6 +35,16 @@ export const validateRoomMessagePermissionsAsync = async (room, { uid, username,
 
 	if ((room.muted || []).includes(username)) {
 		throw new Error('You_have_been_muted');
+	}
+
+	console.error(room);
+	if (room.t === 'd') {
+		const recipientId = room.uids.filter((id) => id !== uid)[0];
+		const recipient = await Users.findOneById(recipientId, { projection: { active: 1 } });
+		console.error({ recipientId, recipient });
+		if (recipient.active === false) {
+			throw new Error('room_account_deactivated');
+		}
 	}
 };
 

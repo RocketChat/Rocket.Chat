@@ -3379,6 +3379,7 @@
   "Room_has_been_unarchived": "Room has been unarchived",
   "Room_Info": "Room Information",
   "room_is_blocked": "This room is blocked",
+  "room_account_deactivated": "This account is deactivated",
   "room_is_read_only": "This room is read only",
   "room_name": "room name",
   "Room_name_changed": "Room name changed to: <em>__room_name__</em> by <em>__user_by__</em>",
