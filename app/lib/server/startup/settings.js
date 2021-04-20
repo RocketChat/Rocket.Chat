@@ -164,15 +164,9 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_BlockedUsernameList', '', {
 			type: 'string',
 		});
-		this.add('Accounts_SystemBlockedUsernameList', '', {
+		this.add('Accounts_SystemBlockedUsernameList', 'admin,administrator,system,user', {
 			type: 'string',
 			hidden: true,
-			value: [
-				'admin',
-				'administrator',
-				'system',
-				'user',
-			],
 		});
 		this.add('Accounts_UseDefaultBlockedDomainsList', true, {
 			type: 'boolean',
