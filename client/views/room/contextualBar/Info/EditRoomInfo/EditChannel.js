@@ -392,7 +392,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 								/>
 							</Field.Row>
 						</Box>
-						<Field.Hint>{t('set-react-when-readonly_description')}</Field.Hint>
+						<Field.Hint>{t('React_when_read_only')}</Field.Hint>
 					</Field>
 				)}
 				{canViewArchived && (
