@@ -7,19 +7,13 @@ import {
 	credentials,
 	apiPublicChannelName,
 	channel,
+	reservedWords,
 } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
-
-const reservedWords = [
-	'admin',
-	'administrator',
-	'system',
-	'user',
-];
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
