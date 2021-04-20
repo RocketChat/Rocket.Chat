@@ -50,7 +50,7 @@ function UserInfo({
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
-					{!!roles && roles.length && (
+					{!!roles && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
 							<UserCard.Roles>{roles}</UserCard.Roles>
