@@ -400,22 +400,20 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		if (getAllRooms) {
-			const teamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, { skip, limit });
+			const teamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, undefined, { skip, limit });
 			return {
 				total: await teamRoomsCursor.count(),
 				records: await teamRoomsCursor.toArray(),
 			};
 		}
-		const teamRooms = await this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, { skip, limit, projection: { _id: 1, t: 1 } }).toArray();
-		const privateTeamRoomIds = teamRooms.filter((room) => room.t === 'p').map((room) => room._id);
-		const publicTeamRoomIds = teamRooms.filter((room) => room.t === 'c').map((room) => room._id);
 
-		const subscriptionsCursor = this.SubscriptionsModel.findByUserIdAndRoomIds(uid, privateTeamRoomIds);
-		const subscriptionRoomIds = (await subscriptionsCursor.toArray()).map((subscription) => subscription.rid);
-		const availableRoomsCursor = this.RoomsModel.findManyByRoomIds([...subscriptionRoomIds, ...publicTeamRoomIds], { skip, limit });
+		const user = await this.Users.findOneById(uid, { fields: { __rooms: 1 } });
+		const userRooms = user.__rooms;
+		const validTeamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, userRooms, { skip, limit });
+
 		return {
-			total: await availableRoomsCursor.count(),
-			records: await availableRoomsCursor.toArray(),
+			total: await validTeamRoomsCursor.count(),
+			records: await validTeamRoomsCursor.toArray(),
 		};
 	}
 
