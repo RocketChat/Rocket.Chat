@@ -49,7 +49,7 @@ const LegacyBanner: FC<LegacyBannerProps> = ({ config }) => {
 			onAction={handleAction}
 			onClose={handleClose}
 		>
-			{text && text}
+			{text}
 			{html && <div dangerouslySetInnerHTML={{ __html: html }} />}
 		</Banner>
 	);
