@@ -36,6 +36,17 @@ export const getLdapRolesByUsername = (username, ldap) => {
 	return Array.isArray(ldapUserGroups) ? getLdapRoles(ldapUserGroups) : [];
 };
 
+export const getLdapTeamsByUsername = (username, ldap) => {
+	const searchOptions = {
+		filter: settings.get('LDAP_Query_To_Get_User_Teams').replace(/#{username}/g, username),
+		scope: ldap.options.User_Search_Scope || 'sub',
+		sizeLimit: ldap.options.Search_Size_Limit,
+	};
+	const getLdapTeams = (ldapUserGroups) => ldapUserGroups.filter((field) => field && field.ou).map((field) => field.ou);
+	const ldapUserGroups = ldap.searchAllSync(ldap.options.BaseDN, searchOptions);
+	return Array.isArray(ldapUserGroups) ? getLdapTeams(ldapUserGroups) : [];
+};
+
 export const getRocketChatRolesByLdapRoles = (mappedRoles, ldapUserRoles) => {
 	const mappedLdapRoles = Object.keys(mappedRoles);
 	if (!ldapUserRoles.length) {
@@ -54,8 +65,30 @@ export const getRocketChatRolesByLdapRoles = (mappedRoles, ldapUserRoles) => {
 		.reduce(removeRepeatedRoles, []);
 };
 
+export const getRocketChatTeamsByLdapTeams = (mappedTeams, ldapUserTeams) => {
+	const mappedLdapTeams = Object.keys(mappedTeams);
+	const filteredTeams = ldapUserTeams.filter((ldapTeam) => mappedLdapTeams.includes(ldapTeam));
+
+	if (filteredTeams.length < ldapUserTeams.length) {
+		const unmappedLdapTeams = ldapUserTeams.filter((ldapRole) => !mappedLdapTeams.includes(ldapRole));
+		logger.error(`The following LDAP teams are not mapped in Rocket.Chat: "${ unmappedLdapTeams.join(', ') }".`);
+	}
+
+	if (!filteredTeams.length) {
+		return [];
+	}
+
+	const rcTeams = filteredTeams.map((ldapTeam) => mappedTeams[ldapTeam]);
+	return [...new Set(rcTeams)];
+};
+
 export const updateUserUsingMappedLdapRoles = (userId, roles) => {
 	Meteor.users.update({ _id: userId }, { $set: { roles } });
+};
+
+export const updateUserUsingMappedLdapTeams = (userId, teamNames) => {
+	console.log('assign teams to userId: ', teamNames);
+	// Meteor.users.update({ _id: userId }, { $set: { roles } });
 };
 
 export const validateLDAPRolesMappingChanges = () => {
