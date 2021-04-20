@@ -16,7 +16,7 @@ const Tags = ({ tags = [], handler = () => {}, error = '' }) => {
 	const forms = useSubscription(formsSubscription);
 
 	const { useCurrentChatTags = () => {} } = forms;
-	const TagsEE = useCurrentChatTags();
+	const Tags = useCurrentChatTags();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -50,9 +50,9 @@ const Tags = ({ tags = [], handler = () => {}, error = '' }) => {
 	return (
 		<>
 			<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-			{TagsEE && tagsList && tagsList.length > 0 ? (
+			{Tags && tagsList && tagsList.length > 0 ? (
 				<Field.Row>
-					<TagsEE value={tags} handler={handler} />
+					<Tags value={tags} handler={handler} />
 				</Field.Row>
 			) : (
 				<>
