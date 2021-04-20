@@ -7,8 +7,6 @@ Meteor.startup(function() {
         Meteor.call('updateLastLogin', (error) => {
             if (error) {
                 return handleError(error);
-            } else {
-                console.log('ok')
             }
         });
     }
