@@ -129,21 +129,16 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByTeamIdContainingNameAndDefault(teamId, name, onlyDefault, options = {}) {
+	findByTeamIdContainingNameAndDefault(teamId, name, teamDefault, ids, options = {}) {
 		const query = {
 			teamId,
 			teamMain: {
 				$exists: false,
 			},
+			...name ? { name: new RegExp(escapeRegExp(name), 'i') } : {},
+			...teamDefault === true ? { teamDefault } : {},
+			...ids ? { $or: [{ t: 'c' }, { _id: { $in: ids } }] } : {},
 		};
-
-		if (name) {
-			query.name = new RegExp(escapeRegExp(name), 'i');
-		}
-
-		if (onlyDefault) {
-			query.teamDefault = true;
-		}
 
 		return this.find(query, options);
 	}
