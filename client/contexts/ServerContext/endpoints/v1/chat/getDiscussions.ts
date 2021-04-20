@@ -1,6 +1,6 @@
+import { IMessage } from '../../../../../../definition/IMessage';
 import { IRoom } from '../../../../../../definition/IRoom';
 import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi';
-import { IMessage } from '../../../../../../definition/IMessage';
 
 export type GetDiscussionsEndpoint = {
 	GET: (params: {
