@@ -81,14 +81,12 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					icon,
 					'title': t(title),
 					className,
-					'tabId': id,
 					index,
-					'primary': id === tab?.id,
+					'info': id === tab?.id,
 					'data-toolbox': index,
 					action,
 					'key': id,
 				};
-
 				if (renderAction) {
 					return renderAction(props);
 				}

@@ -62,6 +62,7 @@ export interface IRoom extends IRocketChatRecord {
 	onHold?: boolean;
 	autoTranslateLanguage: string;
 	autoTranslate?: boolean;
+	departmentId?: string;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {

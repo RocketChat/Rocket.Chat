@@ -1,4 +1,3 @@
-import { Icon, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
@@ -33,9 +32,8 @@ const ChatsContextualBar = ({ chatReload }) => {
 			<VerticalBar.Header>
 				{bar === 'info' && (
 					<>
-						<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
-							<Icon name='info-circled' size='x20' /> {t('Room_Info')}
-						</Box>
+						<VerticalBar.Icon name='info-circled' />
+						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
 						<VerticalBar.Action
 							title={t('View_full_conversation')}
 							name={'new-window'}
