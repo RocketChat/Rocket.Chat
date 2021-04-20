@@ -5,6 +5,7 @@ import React, { useMemo } from 'react';
 import { roomTypes } from '../../../../../app/utils/client';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import ConfirmationModal from './ConfirmationModal';
 
@@ -22,6 +23,7 @@ const useReactModal = (Component, props) => {
 
 const RoomActions = ({ room, reload }) => {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const updateRoomEndpoint = useEndpoint('POST', 'teams.updateRoom');
 	const removeRoomEndpoint = useEndpoint('POST', 'teams.removeRoom');
 	const deleteRoomEndpoint = useEndpoint(
@@ -30,9 +32,14 @@ const RoomActions = ({ room, reload }) => {
 	);
 
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {
-		onConfirmAction: () => {
-			removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
-			reload();
+		onConfirmAction: async () => {
+			try {
+				await removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
+				dispatchToastMessage({ type: 'success', message: t('Room_has_been_removed') });
+				reload();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 		},
 		labelButton: t('Remove'),
 		content: (
@@ -46,8 +53,13 @@ const RoomActions = ({ room, reload }) => {
 
 	const DeleteChannelAction = useReactModal(ConfirmationModal, {
 		onConfirmAction: async () => {
-			await deleteRoomEndpoint({ roomId: room._id });
-			reload();
+			try {
+				await deleteRoomEndpoint({ roomId: room._id });
+				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
+				reload();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 		},
 		labelButton: t('Delete'),
 		content: (
