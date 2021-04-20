@@ -7,11 +7,10 @@ import { IImportUser } from '../definitions/IImportUser';
 import { IImportMessage, IImportMessageReaction } from '../definitions/IImportMessage';
 import { IImportChannel } from '../definitions/IImportChannel';
 import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../definitions/IImportRecord';
-import { Users, Rooms } from '../../../models/server';
-import { generateUsernameSuggestion, insertMessage, setUserAvatar } from '../../../lib/server';
+import { Users, Rooms, Subscriptions } from '../../../models/server';
+import { generateUsernameSuggestion, insertMessage } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser } from '../../../../definition/IUser';
-import '../../../../definition/Meteor';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -158,17 +157,14 @@ export class ImportDataConverter {
 			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username);
 		}
 
-		// Meteor.runAsUser(existingUser._id, () => {
-		// 	if (userData.avatarUrl) {
-		// 		try {
-		// 			setUserAvatar(existingUser, userData.avatarUrl, undefined, 'url');
-		// 		} catch (error) {
-		// 			// this.logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
-		// 			console.log(error);
-		// 			console.log(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
-		// 		}
-		// 	}
-		// });
+		if (userData.avatarUrl) {
+			try {
+				Users.update({ _id: existingUser._id }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
+			} catch (error) {
+				console.warn(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
+				console.error(error);
+			}
+		}
 	}
 
 	insertUser(userData: IImportUser): IUser {
@@ -204,12 +200,10 @@ export class ImportDataConverter {
 
 			if (userData.avatarUrl) {
 				try {
-					setUserAvatar(user, userData.avatarUrl, undefined, 'url');
+					Users.update({ _id: userId }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
 				} catch (error) {
-					// this.logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
-					// this.logger.error(error);
-					console.log(error);
-					console.log(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
+					console.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
+					console.error(error);
 				}
 			}
 		});
@@ -285,7 +279,7 @@ export class ImportDataConverter {
 	}
 
 	saveError(importId: string, error: Error): void {
-		console.log(error);
+		console.error(error);
 		ImportData.update({
 			_id: importId,
 		}, {
@@ -406,7 +400,7 @@ export class ImportDataConverter {
 			const _id = this.findImportedRoomId(importId);
 
 			if (!_id || !name) {
-				console.log(`Mentioned room not found: ${ importId }`);
+				console.warn(`Mentioned room not found: ${ importId }`);
 				continue;
 			}
 
@@ -422,6 +416,7 @@ export class ImportDataConverter {
 	}
 
 	convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
+		const rids: Array<string> = [];
 		const messages = ImportData.find({ dataType: 'message' });
 		messages.forEach(({ data: m, _id }: IImportMessageRecord) => {
 			try {
@@ -436,13 +431,16 @@ export class ImportDataConverter {
 
 				const creator = this.findImportedUser(m.u._id);
 				if (!creator) {
-					console.log(`Imported user not found: ${ m.u._id }`);
+					console.warn(`Imported user not found: ${ m.u._id }`);
 					throw new Error('importer-message-unknown-user');
 				}
 
 				const rid = this.findImportedRoomId(m.rid);
 				if (!rid) {
 					throw new Error('importer-message-unknown-room');
+				}
+				if (!rids.includes(rid)) {
+					rids.push(rid);
 				}
 
 				// Convert the mentions and channels first because these conversions can also modify the msg in the message object
@@ -483,7 +481,12 @@ export class ImportDataConverter {
 					msgObj.reactions = this.convertMessageReactions(m.reactions);
 				}
 
-				insertMessage(creator, msgObj, rid, true);
+				try {
+					insertMessage(creator, msgObj, rid, true);
+				} catch (e) {
+					console.warn(`Failed to import message with timestamp ${ String(msgObj.ts) } to room ${ rid }`);
+					console.error(e);
+				}
 
 				if (afterImportFn) {
 					afterImportFn(m, 'message');
@@ -492,6 +495,15 @@ export class ImportDataConverter {
 				this.saveError(_id, e);
 			}
 		});
+
+		for (const rid of rids) {
+			try {
+				Rooms.resetLastMessageById(rid);
+			} catch (e) {
+				console.warn(`Failed to update last message of room ${ rid }`);
+				console.error(e);
+			}
+		}
 	}
 
 	updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): void {
@@ -666,7 +678,7 @@ export class ImportDataConverter {
 
 		if (roomData.t === 'd') {
 			if (members.length < roomData.users.length) {
-				console.log('One or more imported users not found: ${ roomData.users }');
+				console.warn('One or more imported users not found: ${ roomData.users }');
 				throw new Error('importer-channel-missing-users');
 			}
 		}
@@ -681,8 +693,8 @@ export class ImportDataConverter {
 				roomData._id = roomInfo.rid;
 			});
 		} catch (e) {
-			console.log(roomData.name, members);
-			console.log(e);
+			console.warn(roomData.name, members);
+			console.error(e);
 			throw e;
 		}
 
@@ -768,6 +780,10 @@ export class ImportDataConverter {
 					this.insertRoom(c, startedByUserId);
 				}
 
+				if (c.archived && c._id) {
+					this.archiveRoomById(c._id);
+				}
+
 				if (afterImportFn) {
 					afterImportFn(c, 'channel');
 				}
@@ -775,6 +791,11 @@ export class ImportDataConverter {
 				this.saveError(_id, e);
 			}
 		});
+	}
+
+	archiveRoomById(rid: string): void {
+		Rooms.archiveById(rid);
+		Subscriptions.archiveByRoomId(rid);
 	}
 
 	convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): void {

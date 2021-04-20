@@ -118,23 +118,16 @@ export class HipChatEnterpriseImporter extends Base {
 				this.preparedMessages[m.PrivateUserMessage.id] = true;
 
 				const newId = `hipchatenterprise-private-${ m.PrivateUserMessage.id }`;
-				const skipMessage = this._checkIfMessageExists(newId);
-				const skipAttachment = skipMessage && (m.PrivateUserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true);
-
-				if (!skipMessage || !skipAttachment) {
-					msgs.push({
-						type: 'user',
-						id: newId,
-						senderId: m.PrivateUserMessage.sender.id,
-						receiverId: m.PrivateUserMessage.receiver.id,
-						text: m.PrivateUserMessage.message.indexOf('/me ') === -1 ? m.PrivateUserMessage.message : `${ m.PrivateUserMessage.message.replace(/\/me /, '_') }_`,
-						ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0]),
-						attachment: m.PrivateUserMessage.attachment,
-						attachment_path: m.PrivateUserMessage.attachment_path,
-						skip: skipMessage,
-						skipAttachment,
-					});
-				}
+				msgs.push({
+					type: 'user',
+					id: newId,
+					senderId: m.PrivateUserMessage.sender.id,
+					receiverId: m.PrivateUserMessage.receiver.id,
+					text: m.PrivateUserMessage.message.indexOf('/me ') === -1 ? m.PrivateUserMessage.message : `${ m.PrivateUserMessage.message.replace(/\/me /, '_') }_`,
+					ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0]),
+					attachment: m.PrivateUserMessage.attachment,
+					attachment_path: m.PrivateUserMessage.attachment_path,
+				});
 			}
 
 			if (msgs.length >= 500) {
@@ -158,55 +151,39 @@ export class HipChatEnterpriseImporter extends Base {
 		for (const m of file) {
 			if (m.UserMessage) {
 				const newId = `hipchatenterprise-${ id }-user-${ m.UserMessage.id }`;
-				const skipMessage = this._checkIfMessageExists(newId);
-				const skipAttachment = skipMessage && (m.UserMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true);
 
-				if (!skipMessage || !skipAttachment) {
-					roomMsgs.push({
-						type: 'user',
-						id: newId,
-						userId: m.UserMessage.sender.id,
-						text: m.UserMessage.message.indexOf('/me ') === -1 ? m.UserMessage.message : `${ m.UserMessage.message.replace(/\/me /, '_') }_`,
-						ts: new Date(m.UserMessage.timestamp.split(' ')[0]),
-						attachment: m.UserMessage.attachment,
-						attachment_path: m.UserMessage.attachment_path,
-						skip: skipMessage,
-						skipAttachment,
-					});
-				}
+				roomMsgs.push({
+					type: 'user',
+					id: newId,
+					userId: m.UserMessage.sender.id,
+					text: m.UserMessage.message.indexOf('/me ') === -1 ? m.UserMessage.message : `${ m.UserMessage.message.replace(/\/me /, '_') }_`,
+					ts: new Date(m.UserMessage.timestamp.split(' ')[0]),
+					attachment: m.UserMessage.attachment,
+					attachment_path: m.UserMessage.attachment_path,
+				});
 			} else if (m.NotificationMessage) {
 				const text = m.NotificationMessage.message.indexOf('/me ') === -1 ? m.NotificationMessage.message : `${ m.NotificationMessage.message.replace(/\/me /, '_') }_`;
 				const newId = `hipchatenterprise-${ id }-notif-${ m.NotificationMessage.id }`;
-				const skipMessage = this._checkIfMessageExists(newId);
-				const skipAttachment = skipMessage && (m.NotificationMessage.attachment_path ? this._checkIfMessageExists(`${ newId }-attachment`) : true);
 
-				if (!skipMessage || !skipAttachment) {
-					roomMsgs.push({
-						type: 'user',
-						id: newId,
-						userId: 'rocket.cat',
-						alias: m.NotificationMessage.sender,
-						text: m.NotificationMessage.message_format === 'html' ? turndownService.turndown(text) : text,
-						ts: new Date(m.NotificationMessage.timestamp.split(' ')[0]),
-						attachment: m.NotificationMessage.attachment,
-						attachment_path: m.NotificationMessage.attachment_path,
-						skip: skipMessage,
-						skipAttachment,
-					});
-				}
+				roomMsgs.push({
+					type: 'user',
+					id: newId,
+					userId: 'rocket.cat',
+					alias: m.NotificationMessage.sender,
+					text: m.NotificationMessage.message_format === 'html' ? turndownService.turndown(text) : text,
+					ts: new Date(m.NotificationMessage.timestamp.split(' ')[0]),
+					attachment: m.NotificationMessage.attachment,
+					attachment_path: m.NotificationMessage.attachment_path,
+				});
 			} else if (m.TopicRoomMessage) {
 				const newId = `hipchatenterprise-${ id }-topic-${ m.TopicRoomMessage.id }`;
-				const skipMessage = this._checkIfMessageExists(newId);
-				if (!skipMessage) {
-					roomMsgs.push({
-						type: 'topic',
-						id: newId,
-						userId: m.TopicRoomMessage.sender.id,
-						ts: new Date(m.TopicRoomMessage.timestamp.split(' ')[0]),
-						text: m.TopicRoomMessage.message,
-						skip: skipMessage,
-					});
-				}
+				roomMsgs.push({
+					type: 'topic',
+					id: newId,
+					userId: m.TopicRoomMessage.sender.id,
+					ts: new Date(m.TopicRoomMessage.timestamp.split(' ')[0]),
+					text: m.TopicRoomMessage.message,
+				});
 			} else if (m.ArchiveRoomMessage) {
 				this.logger.warn('Archived Room Notification was ignored.');
 			} else if (m.GuestAccessMessage) {
@@ -506,18 +483,34 @@ export class HipChatEnterpriseImporter extends Base {
 		});
 	}
 
-	_importAttachment(msg, room, sender) {
-		// if (msg.attachment_path && !msg.skipAttachment) {
-		// 	const details = {
-		// 		message_id: `${ msg.id }-attachment`,
-		// 		name: msg.attachment.name,
-		// 		size: msg.attachment.size,
-		// 		userId: sender._id,
-		// 		rid: room._id,
-		// 	};
+	_importAttachment(msg, newMessage) {
+		if (!msg.attachment?.url) {
+			return;
+		}
 
-		// 	this.uploadFile(details, msg.attachment.url, sender, room, msg.ts);
-		// }
+		const fileId = `${ msg.id }-${ msg.attachment.name || 'attachment' }`;
+		const fileMessage = {
+			_id: fileId,
+			rid: newMessage.rid,
+			ts: newMessage.ts,
+			msg: msg.attachment.url || '',
+			_importFile: {
+				downloadUrl: msg.attachment.url,
+				id: `${ fileId }`,
+				size: msg.attachment.size || 0,
+				name: msg.attachment.name,
+				external: true,
+				source: 'hipchat-enterprise',
+				original: {
+					...msg.attachment,
+				},
+			},
+			u: {
+				_id: newMessage.u._id,
+			},
+		};
+
+		this.converter.addMessage(fileMessage);
 	}
 
 	_importSingleMessage(msg, roomIdentifier, rid) {
@@ -526,70 +519,23 @@ export class HipChatEnterpriseImporter extends Base {
 			return;
 		}
 
-		// this._importAttachment(msg, rid);
+		const newMessage = {
+			_id: msg.id,
+			ts: msg.ts,
+			msg: msg.text,
+			rid,
+			alias: msg.alias,
+			u: {
+				_id: String(msg.userId),
+			},
+		};
 
-		switch (msg.type) {
-			case 'user':
-				this.converter.addMessage({
-					_id: msg.id,
-					ts: msg.ts,
-					msg: msg.text,
-					rid,
-					alias: msg.alias,
-					u: {
-						_id: String(msg.userId),
-					},
-				});
-				break;
-			case 'topic':
-				this.converter.addMessage({
-					_id: msg.id,
-					ts: msg.ts,
-					t: 'room_changed_topic',
-					msg: msg.text,
-					rid,
-					u: {
-						_id: msg.userId,
-					},
-				});
-				break;
+		this._importAttachment(msg, newMessage);
+		if (msg.type === 'topic') {
+			newMessage.t = 'room_changed_topic';
 		}
 
-		// try {
-		// 	const creator = this.getRocketUserFromUserId(msg.userId);
-		// 	if (creator) {
-		// 		Meteor.runAsUser(creator._id, () => {
-		// 			this._importAttachment(msg, room, creator);
-
-		// 			switch (msg.type) {
-		// 				case 'user':
-		// 					if (!msg.skip) {
-		// 						insertMessage(creator, {
-		// 							_id: msg.id,
-		// 							ts: msg.ts,
-		// 							msg: msg.text,
-		// 							rid: room._id,
-		// 							alias: msg.alias,
-		// 							u: {
-		// 								_id: creator._id,
-		// 								username: creator.username,
-		// 							},
-		// 						}, room, false);
-		// 					}
-		// 					break;
-		// 				case 'topic':
-		// 					Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', room._id, msg.text, creator, { _id: msg.id, ts: msg.ts });
-		// 					break;
-		// 			}
-		// 		});
-		// 	} else {
-		// 		this.logger.error(`Hipchat user not found: ${ msg.userId }`);
-		// 		this.addMessageError(new Meteor.Error('error-message-sender-is-invalid'), `Hipchat user not found: ${ msg.userId }`);
-		// 	}
-		// } catch (e) {
-		// 	this.logger.error(e);
-		// 	this.addMessageError(e, msg);
-		// }
+		this.converter.addMessage(newMessage);
 	}
 
 	async _importMessageList(startedByUserId, messageListId) {
@@ -705,17 +651,15 @@ export class HipChatEnterpriseImporter extends Base {
 				}
 				importedMessages[msg.id] = true;
 
-				if (!msg.skip) {
-					this.converter.addMessage({
-						_id: msg.id,
-						ts: msg.ts,
-						msg: msg.text,
-						rid,
-						u: {
-							_id: String(msg.senderId),
-						},
-					});
-				}
+				this.converter.addMessage({
+					_id: msg.id,
+					ts: msg.ts,
+					msg: msg.text,
+					rid,
+					u: {
+						_id: String(msg.senderId),
+					},
+				});
 
 				if (msgCount >= 50) {
 					super.addCountCompleted(msgCount);

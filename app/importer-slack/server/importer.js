@@ -1,20 +1,15 @@
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import {
-	RawImports,
 	Base,
 	ProgressStep,
 	ImportData,
 	ImporterWebsocket,
 } from '../../importer/server';
-import { Users, Rooms, Messages } from '../../models';
-import { getValidRoomName } from '../../utils';
+import { Messages } from '../../models';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-
-// #ToDo: review PR #20216 and add back any new features that may have been removed by the merge.
 
 export class SlackImporter extends Base {
 	parseData(data) {
@@ -313,11 +308,7 @@ export class SlackImporter extends Base {
 			me: () => 'me',
 		});
 
-		const users = mentionsParser.getUserMentions(newMessage.msg);
-		users.forEach((user_id, index, arr) => {
-			arr[index] = this._replaceSlackUserId(user_id.slice(1, user_id.length));
-		});
-
+		const users = mentionsParser.getUserMentions(newMessage.msg).filter((u) => u).map((uid) => this._replaceSlackUserId(uid.slice(1, uid.length)));
 		if (users.length) {
 			if (!newMessage.mentions) {
 				newMessage.mentions = [];
@@ -325,11 +316,7 @@ export class SlackImporter extends Base {
 			newMessage.mentions.push(...users);
 		}
 
-		const channels = mentionsParser.getChannelMentions(newMessage.msg);
-		channels.forEach((channel_name, index, arr) => {
-			arr[index] = channel_name.slice(1, channel_name.length);
-		});
-
+		const channels = mentionsParser.getChannelMentions(newMessage.msg).filter((c) => c).map((name) => name.slice(1, name.length));
 		if (channels.length) {
 			if (!newMessage.channels) {
 				newMessage.channels = [];
@@ -381,24 +368,30 @@ export class SlackImporter extends Base {
 						author_icon: getUserAvatarURL(message.attachments[0].author_subname),
 					});
 					newMessage.t = 'message_pinned';
-				} else {
-					// TODO: make this better
-					this.logger.debug('Pinned item with no attachment, needs work.');
-					// Messages.createWithTypeRoomIdMessageAndUser 'message_pinned', room._id, '', @getRocketUserFromUserId(message.user), msgDataDefaults
 				}
 				break;
-			// case 'file_share':
-			// 	if (message.file && message.file.url_private_download !== undefined) {
-			// 		const details = {
-			// 			message_id: `slack-${ message.ts.replace(/\./g, '-') }`,
-			// 			name: message.file.name,
-			// 			size: message.file.size,
-			// 			type: message.file.mimetype,
-			// 			rid: room._id,
-			// 		};
-			// 		this.uploadFile(details, message.file.url_private_download, rocketUser, room, new Date(parseInt(message.ts.split('.')[0]) * 1000));
-			// 	}
-			// 	break;
+			case 'file_share':
+				if (message.file?.url_private_download) {
+					const fileId = this.makeSlackMessageId(slackChannelId, message.ts, 'share');
+					const fileMessage = {
+						_id: fileId,
+						rid: newMessage.rid,
+						ts: newMessage.ts,
+						msg: message.file.url_private_download || '',
+						_importFile: this.convertSlackFileToPendingFile(message.file),
+						u: {
+							_id: newMessage.u._id,
+						},
+					};
+
+					if (message.thread_ts && (message.thread_ts !== message.ts)) {
+						fileMessage.tmid = this.makeSlackMessageId(slackChannelId, message.thread_ts);
+					}
+
+					this.converter.addMessage(fileMessage, this._useUpsert);
+				}
+				break;
+
 			default:
 				if (!missedTypes[message.subtype] && !ignoreTypes[message.subtype]) {
 					missedTypes[message.subtype] = message;
