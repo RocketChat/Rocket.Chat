@@ -33,7 +33,7 @@ function UserInfo({
 	const t = useTranslation();
 
 	const timeAgo = useTimeAgo();
-	const timeShortAgo = useShortTimeAgo();
+	const shortTimeAgo = useShortTimeAgo();
 
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
@@ -76,7 +76,7 @@ function UserInfo({
 
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
-						<InfoPanel.Text>{lastLogin ? timeShortAgo(lastLogin) : t('Never')}</InfoPanel.Text>
+						<InfoPanel.Text>{lastLogin ? shortTimeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
 					</InfoPanel.Field>
 
 					{name && (
