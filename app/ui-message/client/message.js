@@ -551,6 +551,11 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 	const previousNode = (index === undefined || index > 0) && getPreviousSentMessage(currentNode);
 	const nextNode = currentNode.nextElementSibling;
 
+	if (!previousNode) {
+		setTimeout(() => {
+			currentNode.dispatchEvent(new CustomEvent('MessageGroup', { bubbles: true }));
+		}, 100);
+	}
 	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
 		currentNode.classList.add('sequential');
 	} else {

@@ -275,7 +275,7 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 				.toArray(),
 		);
 
-		const { sortedResults: users, totalCount: [{ total }] } = result[0];
+		const { sortedResults: users, totalCount: [{ total } = { total: 0 }] } = result[0];
 
 		return API.v1.success({
 			users,
