@@ -6,7 +6,7 @@ import UTCClock from '../../../../components/UTCClock';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useShortTimeAgo } from '../../../../hooks/useTimeAgo';
+import { useTimeAgo, useShortTimeAgo } from '../../../../hooks/useTimeAgo';
 import InfoPanel from '../../../InfoPanel';
 import Avatar from './Avatar';
 
@@ -32,7 +32,8 @@ function UserInfo({
 }) {
 	const t = useTranslation();
 
-	const timeAgo = useShortTimeAgo();
+	const timeAgo = useTimeAgo();
+	const timeShortAgo = useShortTimeAgo();
 
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
@@ -75,7 +76,7 @@ function UserInfo({
 
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
-						<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
+						<InfoPanel.Text>{lastLogin ? timeShortAgo(lastLogin) : t('Never')}</InfoPanel.Text>
 					</InfoPanel.Field>
 
 					{name && (
