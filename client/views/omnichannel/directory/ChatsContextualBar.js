@@ -20,7 +20,7 @@ const ChatsContextualBar = ({ chatReload }) => {
 	};
 
 	const handleChatsVerticalBarCloseButtonClick = () => {
-		directoryRoute.push({ tab: 'chats' });
+		directoryRoute.push({ tab: 'chats', context: 'info', id });
 	};
 
 	return (
