@@ -5,6 +5,7 @@ import { useSubscription } from 'use-subscription';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
+import Tags from '../../../../../components/Omnichannel/Tags';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
@@ -21,7 +22,7 @@ const initialValuesUser = {
 
 const initialValuesRoom = {
 	topic: '',
-	tags: '',
+	tags: [],
 	livechatData: {},
 	priorityId: '',
 };
@@ -75,9 +76,8 @@ function RoomEdit({ room, visitor, reload, close }) {
 
 	const forms = useSubscription(formsSubscription);
 
-	const { useCurrentChatTags = () => {}, usePrioritiesSelect = () => {} } = forms;
+	const { usePrioritiesSelect = () => {} } = forms;
 
-	const Tags = useCurrentChatTags();
 	const PrioritiesSelect = usePrioritiesSelect();
 
 	const {
@@ -137,7 +137,7 @@ function RoomEdit({ room, visitor, reload, close }) {
 		const roomData = {
 			_id: room._id,
 			topic,
-			tags: Object.values(tags),
+			tags: tags.sort(),
 			livechatData,
 			...(priorityId && { priorityId }),
 		};
@@ -187,10 +187,7 @@ function RoomEdit({ room, visitor, reload, close }) {
 				</Field>
 				{Tags && (
 					<Field>
-						<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-						<Field.Row>
-							<Tags value={Object.values(tags)} handler={handleTags} />
-						</Field.Row>
+						<Tags tags={tags} handler={handleTags} />
 					</Field>
 				)}
 				{PrioritiesSelect && priorities && priorities.length > 0 && (

@@ -63,6 +63,7 @@ export interface IRoom extends IRocketChatRecord {
 	unread?: number;
 	alert?: boolean;
 	hideUnreadStatus?: boolean;
+	departmentId?: string;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {

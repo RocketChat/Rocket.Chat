@@ -3,8 +3,8 @@ import React from 'react';
 
 import { useRoomIcon } from '../../hooks/useRoomIcon';
 
-const SidebarIcon = ({ room, small }) => {
-	const icon = useRoomIcon(room, small);
+const SidebarIcon = ({ room }) => {
+	const icon = useRoomIcon(room);
 	const unread = !room.hideUnreadStatus && (room.alert || room.unread);
 
 	return (
