@@ -18,7 +18,7 @@ const RoomAutoComplete = (props) => {
 			(data &&
 				data.items.map(({ fname, name, _id, avatarETag, t }) => ({
 					value: _id,
-					label: { fname: fname || name, avatarETag, type: t },
+					label: { name: fname || name, avatarETag, type: t },
 				}))) ||
 			[],
 		[data],
@@ -32,14 +32,14 @@ const RoomAutoComplete = (props) => {
 			renderSelected={({ value, label }) => (
 				<>
 					<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />{' '}
-					{label?.fname}
+					{label?.name}
 				</>
 			)}
 			renderItem={({ value, label, ...props }) => (
 				<Option
 					key={value}
 					{...props}
-					label={label.fname}
+					label={label.name}
 					avatar={<Avatar value={value} {...label} />}
 				/>
 			)}
