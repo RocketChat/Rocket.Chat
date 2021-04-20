@@ -29,6 +29,7 @@ import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
+import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
 
 export const chatMessages = {};
 
@@ -787,10 +788,30 @@ Meteor.startup(() => {
 		if (!chatMessages[rid]) {
 			chatMessages[rid] = new ChatMessages();
 		}
+
+		const wrapper = this.find('.wrapper');
+
+		const store = NewRoomManager.getStore(rid);
+
+		const afterMessageGroup = () => {
+			if (store.scroll) {
+				wrapper.scrollTop = store.scroll;
+			} else {
+				this.sendToBottom();
+			}
+			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
+
+			wrapper.addEventListener('scroll', _.throttle(() => {
+				store.update({ scroll: wrapper.scrollTop });
+			}, 100));
+		};
+
+		wrapper.addEventListener('MessageGroup', afterMessageGroup);
+
 		chatMessages[rid].initializeWrapper(this.find('.wrapper'));
 		chatMessages[rid].initializeInput(this.find('.js-input-message'), { rid });
 
-		const wrapper = this.find('.wrapper');
+
 		const wrapperUl = this.find('.wrapper > ul');
 		const newMessage = this.find('.new-message');
 

@@ -5,7 +5,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
 import Header from '../Header';
 import BlazeTemplate from '../components/BlazeTemplate';
-import { RoomTemplate } from '../components/RoomTemplate';
+import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
 import { useRoom } from '../providers/RoomProvider';
 import {

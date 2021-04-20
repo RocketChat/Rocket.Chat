@@ -1196,7 +1196,7 @@ export class Rooms extends Base {
 		const query = { _id };
 
 		const update = {
-			[value === true ? '$set' : '$unset']: {
+			[value === true ? '$set' : '$unset']: {
 				'retention.ignoreThreads': true,
 			},
 		};
