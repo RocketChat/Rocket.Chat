@@ -1,60 +1,73 @@
 import { Random } from 'meteor/random';
+import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
+import {
+	ILivechatMessage,
+	IVisitor,
+	ILivechatRoom,
+	ILivechatTransferData,
+	IDepartment,
+} from '@rocket.chat/apps-engine/definition/livechat';
+import { IUser } from '@rocket.chat/apps-engine/definition/users';
 
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
-import LivechatRooms from '../../../models/server/models/LivechatRooms';
-import LivechatVisitors from '../../../models/server/models/LivechatVisitors';
-import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
-import Users from '../../../models/server/models/Users';
+import {
+	Users,
+	LivechatDepartment,
+	LivechatVisitors,
+	LivechatRooms,
+} from '../../../models/server';
+import { AppServerOrchestrator } from '../orchestrator';
 
-export class AppLivechatBridge {
-	constructor(orch) {
-		this.orch = orch;
+export class AppLivechatBridge extends LivechatBridge {
+	// eslint-disable-next-line no-empty-function
+	constructor(private readonly orch: AppServerOrchestrator) {
+		super();
 	}
 
-	isOnline(department) {
-		return Livechat.online(department);
+	protected isOnline(departmentId?: string): boolean {
+		return Livechat.online(departmentId);
 	}
 
-	async isOnlineAsync(department) {
-		return Livechat.online(department);
+	protected async isOnlineAsync(departmentId?: string): Promise<boolean> {
+		return Livechat.online(departmentId);
 	}
 
-	async createMessage(message, appId) {
+	protected async createMessage(message: ILivechatMessage, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${ appId } is creating a new message.`);
 
 		if (!message.token) {
 			throw new Error('Invalid token for livechat message');
 		}
 
-		const data = {
-			guest: this.orch.getConverters().get('visitors').convertAppVisitor(message.visitor),
-			message: this.orch.getConverters().get('messages').convertAppMessage(message),
-		};
-
-		const msg = await Livechat.sendMessage(data);
+		const msg = await Livechat.sendMessage({
+			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
+			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
+			agent: undefined,
+			roomInfo: undefined,
+		});
 
 		return msg._id;
 	}
 
-	async getMessageById(messageId, appId) {
+	protected async getMessageById(messageId: string, appId: string): Promise<ILivechatMessage> {
 		this.orch.debugLog(`The App ${ appId } is getting the message: "${ messageId }"`);
 
-		return this.orch.getConverters().get('messages').convertById(messageId);
+		return this.orch.getConverters()?.get('messages').convertById(messageId);
 	}
 
-	async updateMessage(message, appId) {
+	protected async updateMessage(message: ILivechatMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is updating a message.`);
 
 		const data = {
 			guest: message.visitor,
-			message: this.orch.getConverters().get('messages').convertAppMessage(message),
+			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
 		};
 
 		Livechat.updateMessage(data);
 	}
 
-	async createRoom(visitor, agent, appId) {
+	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string): Promise<ILivechatRoom> {
 		this.orch.debugLog(`The App ${ appId } is creating a livechat room.`);
 
 		let agentRoom;
@@ -64,25 +77,28 @@ export class AppLivechatBridge {
 		}
 
 		const result = await getRoom({
-			guest: this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
+			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			agent: agentRoom,
 			rid: Random.id(),
+			roomInfo: undefined,
+			extraParams: undefined,
 		});
 
-		return this.orch.getConverters().get('rooms').convertRoom(result.room);
+		return this.orch.getConverters()?.get('rooms').convertRoom(result.room);
 	}
 
-	async closeRoom(room, comment, appId) {
+	protected async closeRoom(room: ILivechatRoom, comment: string, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${ appId } is closing a livechat room.`);
 
 		return Livechat.closeRoom({
-			visitor: this.orch.getConverters().get('visitors').convertAppVisitor(room.visitor),
-			room: this.orch.getConverters().get('rooms').convertAppRoom(room),
+			visitor: this.orch.getConverters()?.get('visitors').convertAppVisitor(room.visitor),
+			room: this.orch.getConverters()?.get('rooms').convertAppRoom(room),
 			comment,
+			user: undefined,
 		});
 	}
 
-	async findRooms(visitor, departmentId, appId) {
+	protected async findRooms(visitor: IVisitor, departmentId: string | null, appId: string): Promise<Array<ILivechatRoom>> {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
 		if (!visitor) {
@@ -92,15 +108,15 @@ export class AppLivechatBridge {
 		let result;
 
 		if (departmentId) {
-			result = LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId).fetch();
+			result = LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}).fetch();
 		} else {
-			result = LivechatRooms.findOpenByVisitorToken(visitor.token).fetch();
+			result = LivechatRooms.findOpenByVisitorToken(visitor.token, {}).fetch();
 		}
 
-		return result.map((room) => this.orch.getConverters().get('rooms').convertRoom(room));
+		return result.map((room: ILivechatRoom) => this.orch.getConverters()?.get('rooms').convertRoom(room));
 	}
 
-	async createVisitor(visitor, appId) {
+	protected async createVisitor(visitor: IVisitor, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${ appId } is creating a livechat visitor.`);
 
 		const registerData = {
@@ -108,6 +124,9 @@ export class AppLivechatBridge {
 			username: visitor.username,
 			name: visitor.name,
 			token: visitor.token,
+			email: '',
+			connectionData: undefined,
+			phone: {},
 		};
 
 		if (visitor.visitorEmails && visitor.visitorEmails.length) {
@@ -115,13 +134,13 @@ export class AppLivechatBridge {
 		}
 
 		if (visitor.phone && visitor.phone.length) {
-			registerData.phone = { number: visitor.phone[0].phoneNumber };
+			(registerData as any).phone = { number: visitor.phone[0].phoneNumber };
 		}
 
 		return Livechat.registerGuest(registerData);
 	}
 
-	async transferVisitor(visitor, transferData, appId) {
+	protected async transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${ appId } is transfering a livechat.`);
 
 		if (!visitor) {
@@ -134,7 +153,7 @@ export class AppLivechatBridge {
 			currentRoom,
 		} = transferData;
 
-		const appUser = Users.findOneByAppId(appId);
+		const appUser = Users.findOneByAppId(appId, {});
 		if (!appUser) {
 			throw new Error('Invalid app user, cannot transfer');
 		}
@@ -147,53 +166,53 @@ export class AppLivechatBridge {
 		};
 
 		return Livechat.transfer(
-			this.orch.getConverters().get('rooms').convertAppRoom(currentRoom),
-			this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
+			this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom),
+			this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			{ userId: targetAgent ? targetAgent.id : undefined, departmentId, transferredBy },
 		);
 	}
 
-	async findVisitors(query, appId) {
+	protected async findVisitors(query: object, appId: string): Promise<Array<IVisitor>> {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
 		if (this.orch.isDebugging()) {
 			console.warn('The method AppLivechatBridge.findVisitors is deprecated. Please consider using its alternatives');
 		}
 
-		return LivechatVisitors.find(query).fetch().map((visitor) => this.orch.getConverters().get('visitors').convertVisitor(visitor));
+		return LivechatVisitors.find(query).fetch().map((visitor: IVisitor) => this.orch.getConverters()?.get('visitors').convertVisitor(visitor));
 	}
 
-	async findVisitorById(id, appId) {
+	protected async findVisitorById(id: string, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
-		return this.orch.getConverters().get('visitors').convertById(id);
+		return this.orch.getConverters()?.get('visitors').convertById(id);
 	}
 
-	async findVisitorByEmail(email, appId) {
+	protected async findVisitorByEmail(email: string, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
-		return this.orch.getConverters().get('visitors').convertVisitor(LivechatVisitors.findOneGuestByEmailAddress(email));
+		return this.orch.getConverters()?.get('visitors').convertVisitor(LivechatVisitors.findOneGuestByEmailAddress(email));
 	}
 
-	async findVisitorByToken(token, appId) {
+	protected async findVisitorByToken(token: string, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
-		return this.orch.getConverters().get('visitors').convertVisitor(LivechatVisitors.getVisitorByToken(token));
+		return this.orch.getConverters()?.get('visitors').convertVisitor(LivechatVisitors.getVisitorByToken(token, {}));
 	}
 
-	async findVisitorByPhoneNumber(phoneNumber, appId) {
+	protected async findVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat visitors.`);
 
-		return this.orch.getConverters().get('visitors').convertVisitor(LivechatVisitors.findOneVisitorByPhone(phoneNumber));
+		return this.orch.getConverters()?.get('visitors').convertVisitor(LivechatVisitors.findOneVisitorByPhone(phoneNumber));
 	}
 
-	async findDepartmentByIdOrName(value, appId) {
+	protected async findDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined> {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat departments.`);
 
-		return this.orch.getConverters().get('departments').convertDepartment(LivechatDepartment.findOneByIdOrName(value));
+		return this.orch.getConverters()?.get('departments').convertDepartment(LivechatDepartment.findOneByIdOrName(value, {}));
 	}
 
-	async setCustomFields(data, appId) {
+	protected async setCustomFields(data: { token: IVisitor['token']; key: string; value: string; overwrite: boolean }, appId: string): Promise<number> {
 		this.orch.debugLog(`The App ${ appId } is setting livechat visitor's custom fields.`);
 
 		return Livechat.setCustomFields(data);

@@ -1,6 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import express from 'express';
+import express, { Response, Request, IRouter, RequestHandler } from 'express';
 import { WebApp } from 'meteor/webapp';
+import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
+import { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
+import { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
+import { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
+
+import { AppServerOrchestrator } from '../orchestrator';
 
 const apiServer = express();
 
@@ -8,23 +14,21 @@ apiServer.disable('x-powered-by');
 
 WebApp.connectHandlers.use(apiServer);
 
-export class AppApisBridge {
-	constructor(orch) {
-		this.orch = orch;
+type RequestWithPrivateHash = Request & {
+	_privateHash?: string;
+	content?: any;
+};
+
+export class AppApisBridge extends ApiBridge {
+	appRouters: Map<string, IRouter>;
+
+	// eslint-disable-next-line no-empty-function
+	constructor(private readonly orch: AppServerOrchestrator) {
+		super();
 		this.appRouters = new Map();
 
-		// apiServer.use('/api/apps', (req, res, next) => {
-		// 	this.orch.debugLog({
-		// 		method: req.method.toLowerCase(),
-		// 		url: req.url,
-		// 		query: req.query,
-		// 		body: req.body,
-		// 	});
-		// 	next();
-		// });
-
-		apiServer.use('/api/apps/private/:appId/:hash', (req, res) => {
-			const notFound = () => res.sendStatus(404);
+		apiServer.use('/api/apps/private/:appId/:hash', (req: RequestWithPrivateHash, res: Response) => {
+			const notFound = (): Response => res.sendStatus(404);
 
 			const router = this.appRouters.get(req.params.appId);
 
@@ -36,8 +40,8 @@ export class AppApisBridge {
 			notFound();
 		});
 
-		apiServer.use('/api/apps/public/:appId', (req, res) => {
-			const notFound = () => res.sendStatus(404);
+		apiServer.use('/api/apps/public/:appId', (req: Request, res: Response) => {
+			const notFound = (): Response => res.sendStatus(404);
 
 			const router = this.appRouters.get(req.params.appId);
 
@@ -49,28 +53,31 @@ export class AppApisBridge {
 		});
 	}
 
-	registerApi({ api, computedPath, endpoint }, appId) {
+	public registerApi({ api, computedPath, endpoint }: AppApi, appId: string): void {
 		this.orch.debugLog(`The App ${ appId } is registering the api: "${ endpoint.path }" (${ computedPath })`);
 
 		this._verifyApi(api, endpoint);
 
-		if (!this.appRouters.get(appId)) {
-			this.appRouters.set(appId, express.Router()); // eslint-disable-line
+		let router = this.appRouters.get(appId);
+
+		if (!router) {
+			router = express.Router(); // eslint-disable-line new-cap
+			this.appRouters.set(appId, router);
 		}
 
-		const router = this.appRouters.get(appId);
-
-		const method = api.method || 'all';
+		const method = 'all';
 
 		let routePath = endpoint.path.trim();
 		if (!routePath.startsWith('/')) {
 			routePath = `/${ routePath }`;
 		}
 
-		router[method](routePath, Meteor.bindEnvironment(this._appApiExecutor(api, endpoint, appId)));
+		if (router[method] instanceof Function) {
+			router[method](routePath, Meteor.bindEnvironment(this._appApiExecutor(endpoint, appId)));
+		}
 	}
 
-	unregisterApis(appId) {
+	public unregisterApis(appId: string): void {
 		this.orch.debugLog(`The App ${ appId } is unregistering all apis`);
 
 		if (this.appRouters.get(appId)) {
@@ -78,7 +85,7 @@ export class AppApisBridge {
 		}
 	}
 
-	_verifyApi(api, endpoint) {
+	private _verifyApi(api: IApi, endpoint: IApiEndpoint): void {
 		if (typeof api !== 'object') {
 			throw new Error('Invalid Api parameter provided, it must be a valid IApi object.');
 		}
@@ -88,18 +95,18 @@ export class AppApisBridge {
 		}
 	}
 
-	_appApiExecutor(api, endpoint, appId) {
-		return (req, res) => {
-			const request = {
-				method: req.method.toLowerCase(),
-				headers: req.headers,
-				query: req.query || {},
+	private _appApiExecutor(endpoint: IApiEndpoint, appId: string): RequestHandler {
+		return (req: RequestWithPrivateHash, res: Response): void => {
+			const request: IApiRequest = {
+				method: req.method.toLowerCase() as RequestMethod,
+				headers: req.headers as { [key: string]: string },
+				query: req.query as { [key: string]: string } || {},
 				params: req.params || {},
 				content: req.body,
 				privateHash: req._privateHash,
 			};
 
-			this.orch.getManager().getApiManager().executeApi(appId, endpoint.path, request)
+			this.orch.getManager()?.getApiManager().executeApi(appId, endpoint.path, request)
 				.then(({ status, headers = {}, content }) => {
 					res.set(headers);
 					res.status(status);

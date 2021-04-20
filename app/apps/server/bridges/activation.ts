@@ -1,23 +1,29 @@
-import { Users } from '../../../models/server/raw';
+import { AppActivationBridge as ActivationBridge } from '@rocket.chat/apps-engine/server/bridges/AppActivationBridge';
+import { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
-export class AppActivationBridge {
-	constructor(orch) {
-		this.orch = orch;
+import { Users } from '../../../models/server/raw';
+import { AppServerOrchestrator } from '../orchestrator';
+
+export class AppActivationBridge extends ActivationBridge {
+	// eslint-disable-next-line no-empty-function
+	constructor(private readonly orch: AppServerOrchestrator) {
+		super();
 	}
 
-	async appAdded(app) {
+	protected async appAdded(app: ProxiedApp): Promise<void> {
 		await this.orch.getNotifier().appAdded(app.getID());
 	}
 
-	async appUpdated(app) {
+	protected async appUpdated(app: ProxiedApp): Promise<void> {
 		await this.orch.getNotifier().appUpdated(app.getID());
 	}
 
-	async appRemoved(app) {
+	protected async appRemoved(app: ProxiedApp): Promise<void> {
 		await this.orch.getNotifier().appRemoved(app.getID());
 	}
 
-	async appStatusChanged(app, status) {
+	protected async appStatusChanged(app: ProxiedApp, status: AppStatus): Promise<void> {
 		const userStatus = ['auto_enabled', 'manually_enabled'].includes(status) ? 'online' : 'offline';
 
 		await Users.updateStatusByAppId(app.getID(), userStatus);
