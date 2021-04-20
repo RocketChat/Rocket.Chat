@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper.js';
 
-
 describe('Meteor.methods', function() {
 	this.retries(0);
 
@@ -1281,6 +1280,203 @@ describe('Meteor.methods', function() {
 					expect(data.result).to.have.a.property('update').that.is.an('array');
 				})
 				.end(done);
+		});
+	});
+
+	describe('[@sendMessage]', () => {
+		let rid = false;
+		let channelName = false;
+
+		before('create room', (done) => {
+			channelName = `methods-test-channel-${ Date.now() }`;
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					rid = res.body.group._id;
+				})
+				.end(done);
+		});
+
+		it('should send a message', (done) => {
+			request.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message' }],
+						id: 1000,
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result.msg).to.equal('test message');
+				})
+				.end(done);
+		});
+
+		it('should parse correctly urls sent in message', (done) => {
+			request.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message with https://github.com' }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('urls').that.is.an('array');
+					expect(data.result.urls[0].url).to.equal('https://github.com');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[@updateMessage]', () => {
+		let rid = false;
+		let messageId;
+		let messageWithMarkdownId;
+		let channelName = false;
+
+		before('create room', (done) => {
+			channelName = `methods-test-channel-${ Date.now() }`;
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					rid = res.body.group._id;
+				})
+				.end(done);
+		});
+
+		before('send message with URL', (done) => {
+			request.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message with https://github.com' }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('urls').that.is.an('array');
+					expect(data.result.urls[0].url).to.equal('https://github.com');
+					messageId = data.result._id;
+				})
+				.end(done);
+		});
+
+		before('send message with URL inside markdown', (done) => {
+			request.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message with ```https://github.com```' }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					messageWithMarkdownId = data.result._id;
+				})
+				.end(done);
+		});
+
+		it('should update a message with a URL', (done) => {
+			request.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: 'https://github.com updated' }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('msg').that.is.an('string');
+				})
+				.end(done);
+		});
+
+		it('should not parse URLs inside markdown on update', (done) => {
+			request.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageWithMarkdownId, rid, msg: 'test message with ```https://github.com``` updated' }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('msg').that.is.an('string');
+				})
+				.then(() => {
+					request.get(api(`chat.getMessage?msgId=${ messageWithMarkdownId }`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('message').that.is.an('object');
+							expect(res.body.message.msg).to.equal('test message with ```https://github.com``` updated');
+							expect(res.body.message).to.have.property('urls');
+							expect(res.body.message.urls.length).to.be.equal(0);
+						})
+						.end(done);
+				});
 		});
 	});
 });

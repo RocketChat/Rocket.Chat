@@ -1,19 +1,31 @@
+import { MongoInternals } from 'meteor/mongo';
+import Future from 'fibers/future';
+
 import { Migrations } from '../../../app/migrations';
-import { LivechatRooms, Subscriptions } from '../../../app/models/server';
+import { Rooms } from '../../../app/models/server/raw';
+import { TeamRaw } from '../../../app/models/server/raw/Team';
+import { TEAM_TYPE } from '../../../definition/ITeam';
+
+async function migrateTeamNames(fut) {
+	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
+	const Team = new TeamRaw(mongo.db.collection('rocketchat_team'));
+
+	const rooms = await Rooms.find({ teamMain: true }, { projection: { name: 1, fname: 1, teamId: 1, t: 1 } }).toArray();
+	await Promise.all(rooms.map(async ({ name, fname, t, teamId }) => {
+		const update = {
+			name: fname || name,
+			type: t === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE,
+		};
+		Team.updateNameAndType(teamId, update);
+	}));
+	fut.return();
+}
 
 Migrations.add({
 	version: 221,
-	async up() {
-		Subscriptions.find({
-			t: 'l',
-		}).forEach((subscription) => {
-			const { _id, rid } = subscription;
-			const room = LivechatRooms.findOneById(rid, { open: 1 });
-			if (room?.open) {
-				return;
-			}
-
-			Subscriptions.remove({ _id });
-		});
+	up() {
+		const fut = new Future();
+		migrateTeamNames(fut);
+		fut.wait();
 	},
 });
