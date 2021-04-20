@@ -49,18 +49,8 @@ export interface IRoom extends IRocketChatRecord {
 	teamMain?: boolean;
 	teamId?: string;
 	teamDefault?: boolean;
-	v?: {
-		_id?: string;
-		token?: string;
-		status?: string;
-	};
-	transcriptRequest?: IRequestTranscript;
+
 	open?: boolean;
-	servedBy?: {
-		_id: string;
-	};
-	onHold?: boolean;
-	departmentId?: string;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
@@ -70,9 +60,28 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 }
 
 
-export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
+export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | 'featured' | ''> {
 	t: 'l';
 	v: {
+		_id?: string;
+		token?: string;
 		status: 'online' | 'busy' | 'away' | 'offline';
 	};
+	transcriptRequest?: IRequestTranscript;
+	servedBy?: {
+		_id: string;
+	};
+	onHold?: boolean;
+	departmentId?: string;
+
+	tags: any;
+	closedAt: any;
+	metrics: any;
+	topic: any;
+	waitingResponse: any;
+	responseBy: any;
+	priorityId: any;
+	livechatData: any;
 }
+
+export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom => room.t === 'l';

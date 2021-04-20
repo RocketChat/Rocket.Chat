@@ -9,15 +9,14 @@ import { useRoute } from '../../../../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserSubscription } from '../../../../../contexts/UserContext';
-import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
+import { useOmichannelRoom } from '../../../../room/providers/RoomProvider';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
-import { FormSkeleton } from '../../Skeleton';
 import AgentField from './AgentField';
 import ContactField from './ContactField';
 import DepartmentField from './DepartmentField';
@@ -33,23 +32,24 @@ function ChatInfo({ id, route }) {
 	);
 	const [customFields, setCustomFields] = useState([]);
 	const formatDuration = useFormatDuration();
-	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${id}`);
+
+	const room = useOmichannelRoom();
+
 	const {
-		room: {
-			ts,
-			tags,
-			closedAt,
-			departmentId,
-			v,
-			servedBy,
-			metrics,
-			topic,
-			waitingResponse,
-			responseBy,
-			priorityId,
-			livechatData,
-		},
-	} = data || { room: { v: {} } };
+		ts,
+		tags,
+		closedAt,
+		departmentId,
+		v,
+		servedBy,
+		metrics,
+		topic,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+	} = room;
+
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
@@ -93,23 +93,11 @@ function ChatInfo({ id, route }) {
 		);
 	});
 
-	if (state === AsyncStatePhase.LOADING) {
-		return (
-			<Box pi='x24'>
-				<FormSkeleton />
-			</Box>
-		);
-	}
-
-	if (error || !data || !data.room) {
-		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
-	}
-
 	return (
 		<>
 			<VerticalBar.ScrollableContent p='x24'>
 				<Margins block='x4'>
-					<ContactField contact={v} room={data.room} />
+					<ContactField contact={v} room={room} />
 					{visitorId && <VisitorClientInfo uid={visitorId} />}
 					{servedBy && <AgentField agent={servedBy} />}
 					{departmentId && <DepartmentField departmentId={departmentId} />}
