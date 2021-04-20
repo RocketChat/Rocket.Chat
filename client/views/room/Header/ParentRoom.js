@@ -8,10 +8,12 @@ const ParentRoom = ({ room }) => {
 	const href = roomTypes.getRouteLink(room.t, room);
 
 	return (
-		<Header.Tag>
-			<HeaderIcon room={room} />
-			<Header.Link href={href}>{roomTypes.getRoomName(room.t, room)}</Header.Link>
-		</Header.Tag>
+		<Header.Link href={href}>
+			<Header.Tag>
+				<HeaderIcon room={room} />
+				<Header.Link href={href}>{roomTypes.getRoomName(room.t, room)}</Header.Link>
+			</Header.Tag>
+		</Header.Link>
 	);
 };
 
