@@ -6,7 +6,7 @@ import { useSetting } from '../../../client/contexts/SettingsContext';
 addAction('pinned-messages', () => {
 	const pinningAllowed = useSetting('Message_AllowPinning');
 	return useMemo(() => (pinningAllowed ? {
-		groups: ['channel', 'group', 'direct'],
+		groups: ['channel', 'group', 'direct', 'team'],
 		id: 'pinned-messages',
 		title: 'Pinned_Messages',
 		icon: 'pin',

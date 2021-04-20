@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/camelcase */
-import { EJSON } from 'meteor/ejson';
-
 declare module 'meteor/meteor' {
+	import { EJSON } from 'meteor/ejson';
+
 	namespace Meteor {
 		interface IDDPMessage {
 			msg: 'method';
@@ -18,6 +17,7 @@ declare module 'meteor/meteor' {
 		interface IMeteorConnection {
 			_send(message: IDDPMessage): void;
 
+			// eslint-disable-next-line @typescript-eslint/camelcase
 			_livedata_data(message: IDDPUpdatedMessage): void;
 
 			_stream: {
@@ -36,24 +36,8 @@ declare module 'meteor/meteor' {
 		}
 
 		const connection: IMeteorConnection;
-	}
-}
 
-declare module 'meteor/tracker' {
-	namespace Tracker {
-		function nonreactive<T>(func: () => T): T;
-	}
-}
-
-declare module 'meteor/mongo' {
-	namespace Mongo {
-		// eslint-disable-next-line @typescript-eslint/interface-name-prefix
-		interface CollectionStatic {
-			new <T>(name: string | null, options?: {
-				connection?: object | null;
-				idGeneration?: string;
-				transform?: Function | null;
-			}): Collection<T>;
-		}
+		function _relativeToSiteRootUrl(path: string): void;
+		const _localStorage: Window['localStorage'];
 	}
 }

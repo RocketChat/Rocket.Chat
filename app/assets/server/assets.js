@@ -209,7 +209,7 @@ export const RocketChatAssets = new class {
 			});
 		}
 
-		const file = new Buffer(binaryContent, 'binary');
+		const file = Buffer.from(binaryContent, 'binary');
 		if (assets[asset].constraints.width || assets[asset].constraints.height) {
 			const dimensions = sizeOf(file);
 			if (assets[asset].constraints.width && assets[asset].constraints.width !== dimensions.width) {

@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import { DDP_EVENTS, WS_ERRORS } from './constants';
 import { Account, Presence, MeteorService } from '../../../../server/sdk';
-import { USER_STATUS } from '../../../../definition/UserStatus';
+import { UserStatus } from '../../../../definition/UserStatus';
 import { Server } from './Server';
 import { AutoUpdateRecord } from '../../../../server/sdk/types/IMeteor';
 
@@ -116,14 +116,14 @@ server.methods({
 		if (!userId) {
 			return;
 		}
-		return Presence.setConnectionStatus(userId, USER_STATUS.ONLINE, session);
+		return Presence.setConnectionStatus(userId, UserStatus.ONLINE, session);
 	},
 	'UserPresence:away'() {
 		const { userId, session } = this;
 		if (!userId) {
 			return;
 		}
-		return Presence.setConnectionStatus(userId, USER_STATUS.AWAY, session);
+		return Presence.setConnectionStatus(userId, UserStatus.AWAY, session);
 	},
 	'setUserStatus'(status, statusText) {
 		const { userId } = this;
