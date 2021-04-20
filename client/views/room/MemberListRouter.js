@@ -10,7 +10,7 @@ const getUid = (room, ownUserId) => {
 	if (room.uids.length === 1) {
 		return room.uids[0];
 	}
-	console.log(room.uids);
+
 	const uid = room.uids.filter((uid) => uid !== ownUserId).shift();
 
 	// Self DMs used to be created with the userId duplicated.
