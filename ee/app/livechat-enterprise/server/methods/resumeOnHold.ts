@@ -5,7 +5,7 @@ import { LivechatRooms, LivechatInquiry, Messages, Users, LivechatVisitors } fro
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../app/callbacks/server';
 
-const resolveOnHoldCommentInfo = (options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): { comment: string } => {
+const resolveOnHoldCommentInfo = (options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): string => {
 	let comment = '';
 	if (options.clientAction) {
 		comment = TAPi18n.__('Omnichannel_on_hold_chat_manually', { user: onHoldChatResumedBy.name || onHoldChatResumedBy.username });
@@ -19,7 +19,7 @@ const resolveOnHoldCommentInfo = (options: { clientAction: boolean }, room: any,
 		comment = TAPi18n.__('Omnichannel_on_hold_chat_automatically', { guest });
 	}
 
-	return { comment };
+	return comment;
 };
 
 Meteor.methods({
@@ -44,7 +44,7 @@ Meteor.methods({
 
 		const onHoldChatResumedBy = options.clientAction ? Meteor.user() : Users.findOneById('rocket.cat');
 
-		const { comment } = resolveOnHoldCommentInfo(options, room, onHoldChatResumedBy);
+		const comment = resolveOnHoldCommentInfo(options, room, onHoldChatResumedBy);
 		(Messages as any).createOnHoldResumedHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldChatResumedBy);
 
 		const updatedRoom = LivechatRooms.findOneById(roomId);
