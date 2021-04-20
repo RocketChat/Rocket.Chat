@@ -31,7 +31,7 @@ export class MediaService extends ServiceClass implements IMediaService {
 		'dcm',
 	]);
 
-	resizeFromBuffer(input: Buffer, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
+	async resizeFromBuffer(input: Buffer, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
 		const transformer = sharp(input)
 			.resize({ width, height, fit, withoutEnlargement: !enlarge });
 
@@ -43,10 +43,16 @@ export class MediaService extends ServiceClass implements IMediaService {
 			transformer.blur();
 		}
 
-		return transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
+		const { data, info: { width: widthInfo, height: heightInfo } } = await transformer.toBuffer({ resolveWithObject: true });
+
+		return {
+			data,
+			width: widthInfo,
+			height: heightInfo,
+		};
 	}
 
-	resizeFromStream(input: Readable, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
+	async resizeFromStream(input: Readable, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
 		const transformer = sharp()
 			.resize({ width, height, fit, withoutEnlargement: !enlarge });
 
@@ -58,10 +64,15 @@ export class MediaService extends ServiceClass implements IMediaService {
 			transformer.blur();
 		}
 
-		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
+		const result = transformer.toBuffer({ resolveWithObject: true });
 		input.pipe(transformer);
 
-		return result;
+		const { data, info: { width: widthInfo, height: heightInfo } } = await result;
+		return {
+			data,
+			width: widthInfo,
+			height: heightInfo,
+		};
 	}
 
 	isImage(buff: Buffer): boolean {
