@@ -181,7 +181,7 @@ export class Spotlight {
 		// Overwrite this method to include extra searches
 	}
 
-	searchUsers({ userId, rid, text, usernames }) {
+	searchUsers({ userId, rid, text, usernames, mentions }) {
 		const users = [];
 
 		const options = {
@@ -252,6 +252,7 @@ export class Spotlight {
 			users,
 			canListOutsiders,
 			insiderExtraQuery,
+			mentions,
 		};
 
 		// Exact match for username only

@@ -1,28 +1,24 @@
 import { Field, Button, TextInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useState, useMemo } from 'react';
-import { useSubscription } from 'use-subscription';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
-import { formsSubscription } from '../../../views/omnichannel/additionalForms';
+import Tags from '../Tags';
 
-const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
+const CloseChatModal = ({ department = {}, onCancel, onConfirm }) => {
 	const t = useTranslation();
 
 	const inputRef = useAutoFocus(true);
-	const forms = useSubscription(formsSubscription);
-
-	const { useCurrentChatTags = () => {} } = forms;
-
-	const Tags = useCurrentChatTags();
 
 	const { values, handlers } = useForm({ comment: '', tags: [] });
 
 	const { comment, tags } = values;
 	const { handleComment, handleTags } = handlers;
 	const [commentError, setCommentError] = useState('');
+	const [tagError, setTagError] = useState('');
+	const [tagRequired, setTagRequired] = useState(false);
 
 	const handleConfirm = useCallback(() => {
 		onConfirm(comment, tags);
@@ -32,10 +28,23 @@ const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 		setCommentError(!comment ? t('The_field_is_required', t('Comment')) : '');
 	}, [t, comment]);
 
-	const canConfirm = useMemo(() => !!comment, [comment]);
+	const canConfirm = useMemo(() => (!tagRequired ? !!comment : !!comment && tags.length > 0), [
+		comment,
+		tagRequired,
+		tags,
+	]);
+
+	useEffect(() => {
+		department?.requestTagBeforeClosingChat && setTagRequired(true);
+		setTagError(
+			tagRequired && (!tags || tags.length === 0)
+				? t('error-tags-must-be-assigned-before-closing-chat')
+				: '',
+		);
+	}, [department, tagRequired, t, tags]);
 
 	return (
-		<Modal {...props}>
+		<Modal>
 			<Modal.Header>
 				<Icon name='baloon-close-top-right' size={20} />
 				<Modal.Title>{t('Closing_chat')}</Modal.Title>
@@ -59,10 +68,8 @@ const CloseChatModal = ({ onCancel, onConfirm, ...props }) => {
 				</Field>
 				{Tags && (
 					<Field>
-						<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-						<Field.Row>
-							<Tags value={tags} handler={handleTags} />
-						</Field.Row>
+						<Tags tags={tags} handler={handleTags} error={tagError} />
+						<Field.Error>{tagError}</Field.Error>
 					</Field>
 				)}
 			</Modal.Content>

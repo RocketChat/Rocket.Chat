@@ -231,6 +231,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(
 		useMemo(() => ['archive-room', 'unarchive-room'], []),
+		room._id,
 	);
 	const canDelete = usePermission(`delete-${room.t}`);
 	const canToggleEncryption =
@@ -365,7 +366,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 								/>
 							</Field.Row>
 						</Box>
-						<Field.Hint>{t('Just_invited_people_can_access_this_channel')}</Field.Hint>
+						<Field.Hint>{t('Teams_New_Private_Description_Enabled')}</Field.Hint>
 					</Field>
 				)}
 				{canViewReadOnly && (
