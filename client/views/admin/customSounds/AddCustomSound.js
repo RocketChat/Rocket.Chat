@@ -106,7 +106,7 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 						<Button mie='x4' onClick={close}>
 							{t('Cancel')}
 						</Button>
-						<Button primary onClick={handleSave} disabled={name === '' || typeof sound == 'undefined'}>
+						<Button primary onClick={handleSave} disabled={name === '' || typeof sound === 'undefined'}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
