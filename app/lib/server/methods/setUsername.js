@@ -8,7 +8,6 @@ import { callbacks } from '../../../callbacks';
 import { checkUsernameAvailability } from '../functions';
 import { RateLimiter } from '../lib';
 import { saveUserIdentity } from '../functions/saveUserIdentity';
-import { validateName } from '../functions/validateName';
 
 Meteor.methods({
 	setUsername(username, param = {}) {
@@ -36,7 +35,7 @@ Meteor.methods({
 			nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 		}
 
-		if (!nameValidation.test(username) || !validateName(username)) {
+		if (!nameValidation.test(username)) {
 			throw new Meteor.Error('username-invalid', `${ _.escape(username) } is not a valid username, use only letters, numbers, dots, hyphens and underscores`);
 		}
 
