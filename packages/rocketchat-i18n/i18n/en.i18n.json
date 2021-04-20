@@ -3781,6 +3781,7 @@
   "System_messages": "System Messages",
   "Tag": "Tag",
   "Tag_removed": "Tag Removed",
+  "Tag_already_exists": "Tag already exists",
   "Take_it": "Take it!",
   "Taken_at": "Taken at",
   "Target user not allowed to receive messages": "Target user not allowed to receive messages",
