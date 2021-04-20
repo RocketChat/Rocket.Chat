@@ -20,6 +20,10 @@ const ChatsContextualBar = ({ chatReload }) => {
 	};
 
 	const handleChatsVerticalBarCloseButtonClick = () => {
+		directoryRoute.push({ tab: 'chats' });
+	};
+
+	const handleChatsVerticalBarBackButtonClick = () => {
 		directoryRoute.push({ tab: 'chats', context: 'info', id });
 	};
 
@@ -49,7 +53,7 @@ const ChatsContextualBar = ({ chatReload }) => {
 			{context === 'edit' && (
 				<RoomEditWithData
 					id={id}
-					close={handleChatsVerticalBarCloseButtonClick}
+					close={handleChatsVerticalBarBackButtonClick}
 					reload={chatReload}
 				/>
 			)}
