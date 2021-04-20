@@ -242,7 +242,7 @@ export class Rooms extends Base {
 			},
 		};
 
-		return this.update(query, update);
+		return this.update(query, update, { multi: true });
 	}
 
 	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
