@@ -84,7 +84,7 @@ MessageTypes.registerType({
 MessageTypes.registerType({
 	id: 'omnichannel_placed_chat_on_hold',
 	system: true,
-	message: 'Livechat_placed_chat_on_hold',
+	message: 'Omnichannel_placed_chat_on_hold',
 	data(message) {
 		return {
 			comment: message.comment,
@@ -95,7 +95,7 @@ MessageTypes.registerType({
 MessageTypes.registerType({
 	id: 'omnichannel_on_hold_chat_resumed',
 	system: true,
-	message: 'livechat_on_hold_chat_resumed',
+	message: 'Omnichannel_on_hold_chat_resumed',
 	data(message) {
 		return {
 			comment: message.comment,

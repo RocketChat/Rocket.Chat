@@ -26,7 +26,7 @@ Messages.prototype.createPriorityHistoryWithRoomIdMessageAndUser = function(room
 
 
 Messages.prototype.createOnHoldHistoryWithRoomIdMessageAndUser = function(roomId, comment, user) {
-	const type = 'livechat_placed_chat_on-hold';
+	const type = 'omnichannel_placed_chat_on_hold';
 	const record = {
 		t: type,
 		rid: roomId,
@@ -44,7 +44,7 @@ Messages.prototype.createOnHoldHistoryWithRoomIdMessageAndUser = function(roomId
 };
 
 Messages.prototype.createOnHoldResumedHistoryWithRoomIdMessageAndUser = function(roomId, comment, user) {
-	const type = 'livechat_on-hold_chat_resumed';
+	const type = 'omnichannel_on_hold_chat_resumed';
 	const record = {
 		t: type,
 		rid: roomId,
