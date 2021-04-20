@@ -72,6 +72,17 @@ class ImportDataModel extends Base {
 
 		return channel?.data?.importIds?.shift();
 	}
+
+	findDMForImportedUsers(...users: Array<string>): IImportChannelRecord | undefined {
+		const query = {
+			dataType: 'channel',
+			'data.users': {
+				$all: users,
+			},
+		};
+
+		return this.findOne(query);
+	}
 }
 
 export const ImportData = new ImportDataModel();

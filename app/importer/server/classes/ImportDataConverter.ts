@@ -519,6 +519,13 @@ export class ImportDataConverter {
 		this.updateRoomId(room._id, roomData);
 	}
 
+	findDMForImportedUsers(...users: Array<string>): IImportChannel | undefined {
+		const record = ImportData.findDMForImportedUsers(...users);
+		if (record) {
+			return record.data;
+		}
+	}
+
 	findImportedRoomId(importId: string): string | null {
 		if (this._roomCache.has(importId)) {
 			return this._roomCache.get(importId) as string;

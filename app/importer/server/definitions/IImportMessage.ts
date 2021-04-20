@@ -30,7 +30,6 @@ export interface IImportMessage {
 	};
 
 	msg: string;
-	// avatarUrl?: string;
 	alias?: string;
 	ts: Date;
 	t?: string;
