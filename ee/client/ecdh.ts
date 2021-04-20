@@ -1,15 +1,19 @@
-import { ClientSession } from 'ecdh-proxy';
 import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from '../../app/utils/client';
+import { ClientSession } from '../app/ecdh/ClientSession';
 
 let resolveSession: (value: ClientSession | void) => void;
-const sessionPromise = new Promise<ClientSession | void>((resolve) => { resolveSession = resolve; });
+const sessionPromise = new Promise<ClientSession | void>((resolve) => {
+	resolveSession = resolve;
+});
 
 function init(session: ClientSession): void {
 	Meteor.connection._stream._launchConnectionAsync();
 
-	const _didMessage = Meteor.connection._stream.socket._didMessage.bind(Meteor.connection._stream.socket);
+	const _didMessage = Meteor.connection._stream.socket._didMessage.bind(
+		Meteor.connection._stream.socket,
+	);
 	const send = Meteor.connection._stream.socket.send.bind(Meteor.connection._stream.socket);
 
 	Meteor.connection._stream.socket._didMessage = async (data): Promise<void> => {
