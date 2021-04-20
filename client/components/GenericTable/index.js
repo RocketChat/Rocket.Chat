@@ -60,7 +60,7 @@ const GenericTable = (
 				</Tile>
 			) : (
 				<>
-					<Box mi='neg-x24' pi='x24' height={"100%"} flexShrink={1} flexGrow={1} ref={ref} overflow='hidden'>
+					<Box mi='neg-x24' pi='x24' height='100%' flexShrink={1} flexGrow={1} ref={ref} overflow='hidden'>
 						<ScrollableContentWrapper>
 							<Table fixed={fixed} sticky>
 								{header && (
