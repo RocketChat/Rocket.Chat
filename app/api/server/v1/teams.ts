@@ -1,3 +1,4 @@
+import { FindOneOptions } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 
@@ -6,6 +7,7 @@ import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
+import { IUser } from '../../../../definition/IUser';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
@@ -191,9 +193,7 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName, status, username, name } = this.queryParams;
 
-		if (status && !Array.isArray(status)) {
-			throw new Meteor.Error('error-status-param-not-an-array', 'The parameter "status" should be an array of strings');
-		}
+		// check(status, [String]);
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
@@ -205,9 +205,9 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 			username,
 			name,
 			status: status ? { $in: status } : undefined,
-		};
+		} as Partial<FindOneOptions<IUser>>;
 
-		const { records, total } = Promise.await(Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, { query }));
+		const { records, total } = Promise.await(Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query));
 
 		return API.v1.success({
 			members: records,

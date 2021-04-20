@@ -475,7 +475,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamMembersModel.findByTeamIds(teamIds, options).toArray();
 	}
 
-	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { query }: IQueryOptions<IUser>): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
+	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, query: Partial<FindOneOptions<IUser>>): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
 		if (!isMember && !canSeeAll) {
 			return {
@@ -488,9 +488,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		const records = await cursor.toArray();
 		const results: ITeamMemberInfo[] = [];
-		const findOneQuery = query as FindOneOptions<IUser>;
 		for await (const record of records) {
-			const user = await this.Users.findOne({ ...findOneQuery, _id: record.userId });
+			const user = await this.Users.findOne({ ...query, _id: record.userId });
 			if (user) {
 				results.push({
 					user: {
