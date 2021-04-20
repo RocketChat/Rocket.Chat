@@ -10,10 +10,7 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-export const useRoomIcon = (
-	room: IRoom,
-	small = true,
-): JSX.Element | { name: string; color?: string } | null => {
+export const useRoomIcon = (room: IRoom): JSX.Element | { name: string; color?: string } | null => {
 	if (room.prid) {
 		return { name: 'baloons' };
 	}
@@ -38,7 +35,6 @@ export const useRoomIcon = (
 				return (
 					<ReactiveUserStatus
 						{...({
-							small,
 							uid: direct.uids.filter((uid) => uid !== room.u._id)[0] || room.u._id,
 						} as any)}
 					/>
