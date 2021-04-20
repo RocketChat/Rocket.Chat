@@ -31,6 +31,7 @@ export { getStatusText } from './getStatusText';
 export { setUserAvatar } from './setUserAvatar';
 export { _setUsername, setUsername } from './setUsername';
 export { unarchiveRoom } from './unarchiveRoom';
+export { updateLastLogin } from './updateLastLogin';
 export { updateMessage } from './updateMessage';
 export { validateCustomFields } from './validateCustomFields';
 export { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
