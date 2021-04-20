@@ -45,8 +45,8 @@ const RoomActions = ({ room, reload }) => {
 	});
 
 	const DeleteChannelAction = useReactModal(ConfirmationModal, {
-		onConfirmAction: () => {
-			deleteRoomEndpoint({ roomId: room._id });
+		onConfirmAction: async () => {
+			await deleteRoomEndpoint({ roomId: room._id });
 			reload();
 		},
 		labelButton: t('Delete'),
