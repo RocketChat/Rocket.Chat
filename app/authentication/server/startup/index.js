@@ -345,7 +345,6 @@ Accounts.validateLoginAttempt(function(login) {
 
 	login = callbacks.run('onValidateLogin', login);
 
-	Users.updateLastLoginById(login.user._id);
 	Meteor.defer(function() {
 		return callbacks.run('afterValidateLogin', login);
 	});

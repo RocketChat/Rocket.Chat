@@ -39,7 +39,7 @@ function UserInfoWithData({
 			username,
 		]),
 	);
-	console.log(value);
+
 	const user = useMemo(() => {
 		const { user } = value || { user: {} };
 		const {
