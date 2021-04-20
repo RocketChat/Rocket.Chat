@@ -30,7 +30,7 @@ const ContactContextualBar = ({ contactReload }) => {
 				{context === 'info' && (
 					<>
 						<VerticalBar.Icon name='user' />
-						<VerticalBar.Text>{t('New_Contact')}</VerticalBar.Text>
+						<VerticalBar.Text>{t('Contact_Info')}</VerticalBar.Text>
 					</>
 				)}
 				{context === 'edit' && (
