@@ -1,4 +1,4 @@
-import React, { useMemo, lazy } from 'react';
+import React, { useMemo, lazy, ReactNode } from 'react';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { Option, Badge } from '@rocket.chat/fuselage';
 
@@ -32,10 +32,10 @@ addAction('bbb_video', ({ room }) => {
 		icon: 'phone',
 		template: templateBBB,
 		order: live ? -1 : 0,
-		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>
+		renderAction: (props): ReactNode => <Header.ToolBoxAction {...props}>
 			{live ? <Header.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.Badge> : null}
 		</Header.ToolBoxAction>,
-		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}><Badge title={t('Started_a_video_call')} variant='primary'>!</Badge></Option>,
+		renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => <Option label={title} title={title} icon={icon} {...props}><Badge title={t('Started_a_video_call')} variant='primary'>!</Badge></Option>,
 	} : null), [enabled, groups, live, t]);
 });
 
@@ -66,10 +66,10 @@ addAction('video', ({ room }) => {
 		template: templateJitsi,
 		full: true,
 		order: live ? -1 : 0,
-		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>
+		renderAction: (props): ReactNode => <Header.ToolBoxAction {...props}>
 			{live && <Header.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.Badge>}
 		</Header.ToolBoxAction>,
-		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}>
+		renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => <Option label={title} title={title} icon={icon} {...props}>
 			{ live && <Badge title={t('Started_a_video_call')} variant='primary'>!</Badge> }
 		</Option>,
 	} : null), [enabled, groups, live, t]);
