@@ -1,4 +1,3 @@
-import { Icon, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
@@ -34,9 +33,8 @@ const ContactsContextualBar = ({ rid }) => {
 	return (
 		<>
 			<VerticalBar.Header>
-				<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
-					<Icon name='user' size='x20' /> {t('Contact_Info')}
-				</Box>
+				<VerticalBar.Icon name='user' />
+				<VerticalBar.Text>{t('Contact_Info')}</VerticalBar.Text>
 				<VerticalBar.Close onClick={closeContextualBar} />
 			</VerticalBar.Header>
 			{context === 'edit' ? (
