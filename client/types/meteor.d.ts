@@ -25,7 +25,7 @@ declare module 'meteor/meteor' {
 					message: Array<(data: string) => void>;
 				};
 				socket: {
-					onmessage: (data: {type: string; data: string}) => void;
+					onmessage: (data: { type: string; data: string }) => void;
 					_didMessage: (data: string) => void;
 					send: (data: string) => void;
 				};
