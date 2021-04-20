@@ -1,7 +1,7 @@
 import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult, DeleteWriteOpResultObject, FilterQuery } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { ITeam } from '../../../../definition/ITeam';
+import { ITeam, TEAM_TYPE } from '../../../../definition/ITeam';
 
 type T = ITeam;
 export class TeamRaw extends BaseRaw<T> {
@@ -73,5 +73,25 @@ export class TeamRaw extends BaseRaw<T> {
 
 	deleteOneByName(name: string): Promise<DeleteWriteOpResultObject> {
 		return this.col.deleteOne({ name });
+	}
+
+	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TEAM_TYPE }): Promise < UpdateWriteOpResult > {
+		const query = {
+			_id: teamId,
+		};
+
+		const update = {
+			$set: {},
+		};
+
+		if (nameAndType.name) {
+			Object.assign(update.$set, { name: nameAndType.name });
+		}
+
+		if (typeof nameAndType.type !== 'undefined') {
+			Object.assign(update.$set, { type: nameAndType.type });
+		}
+
+		return this.col.updateOne(query, update);
 	}
 }

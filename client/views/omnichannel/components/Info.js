@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import React from 'react';
 
-import UserCard from '../../../../../components/UserCard';
+import UserCard from '../../../components/UserCard';
 
 const wordBreak = css`
 	word-break: break-word;
