@@ -528,9 +528,11 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameOrFNameAndTypeIncludingTeamRooms(name, type, teamIds, options) {
+	findByNameOrFNameAndTypeIncludingTeamRooms(name, types, teamIds, options) {
 		const query = {
-			t: type,
+			t: {
+				$in: types,
+			},
 			teamMain: {
 				$exists: false,
 			},
