@@ -17,7 +17,7 @@ const Title: FC<TitleProps> = ({ title, icon }) => (
 		withTruncatedText
 	>
 		{typeof icon === 'string' ? <Icon name={icon} size='x22' /> : icon}
-		<Box mis='x16' flexGrow={1} withTruncatedText>
+		<Box mis='x8' flexGrow={1} withTruncatedText>
 			{title}
 		</Box>
 	</Box>
