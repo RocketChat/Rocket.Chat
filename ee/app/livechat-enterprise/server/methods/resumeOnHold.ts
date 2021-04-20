@@ -50,8 +50,8 @@ Meteor.methods({
 
 		await RoutingManager.takeInquiry(inquiry, { agentId, username }, options);
 
-		const { comment, onHoldChatResumedBy } = resolveOnHoldCommentInfo(options, room);
-		(Messages as any).createOnHoldResumedHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldChatResumedBy);
+		const { comment } = resolveOnHoldCommentInfo(options, room, user);
+		(Messages as any).createOnHoldResumedHistoryWithRoomIdMessageAndUser(roomId, comment, user);
 
 		const updatedRoom = LivechatRooms.findOneById(roomId);
 		updatedRoom && Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));

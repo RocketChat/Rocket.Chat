@@ -35,7 +35,7 @@ API.v1.addRoute('livechat/room.onHold', { authRequired: true }, {
 		}
 
 		const onHoldBy = { _id: user._id, username: user.username, name: user.name };
-		const comment = TAPi18n.__('Livechat_On_Hold_manually', { user: onHoldBy.name || `@${ onHoldBy.username }` });
+		const comment = TAPi18n.__('Omnichannel_On_Hold_manually', { user: onHoldBy.name || `@${ onHoldBy.username }` });
 
 		LivechatEnterprise.placeRoomOnHold(room, comment, onHoldBy);
 
