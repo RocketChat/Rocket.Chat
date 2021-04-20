@@ -1,10 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../../lib/asyncState';
-import { FormSkeleton } from '../../Skeleton';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { FormSkeleton } from '../directory/Skeleton';
+import Field from './Field';
 import Info from './Info';
 import Label from './Label';
 
@@ -20,10 +21,10 @@ const CustomField = ({ id, value }) => {
 	const { label } = data.customField;
 	return (
 		label && (
-			<>
+			<Field>
 				<Label>{label}</Label>
 				<Info>{value}</Info>
-			</>
+			</Field>
 		)
 	);
 };
