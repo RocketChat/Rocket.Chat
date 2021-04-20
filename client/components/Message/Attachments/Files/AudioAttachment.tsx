@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 
-import { useCollapse } from '../hooks/useCollapse';
-import { useMediaUrl } from '../context/AttachmentContext';
 import { FileProp } from '..';
-import { Attachment, AttachmentPropsBase } from '../Attachment';
 import MarkdownText from '../../../MarkdownText';
-
+import Attachment from '../Attachment';
+import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
+import { useMediaUrl } from '../context/AttachmentContext';
+import { useCollapse } from '../hooks/useCollapse';
 
 export type AudioAttachmentProps = {
 	audio_url: string;
@@ -26,18 +26,22 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 }) => {
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
-	return <Attachment>
-		<MarkdownText variant='inline' content={description} />
-		<Attachment.Row>
-			<Attachment.Title>{title}</Attachment.Title>
-			{size && <Attachment.Size size={size}/>}
-			{collapse}
-			{hasDownload && link && <Attachment.Download title={title} href={getURL(link)}/>}
-		</Attachment.Row>
-		{ !collapsed && <Attachment.Content border='none'>
-			<audio controls>
-				<source src={getURL(url)} type={type}/>
-			</audio>
-		</Attachment.Content> }
-	</Attachment>;
+	return (
+		<Attachment>
+			<MarkdownText variant='inline' content={description} />
+			<Attachment.Row>
+				<Attachment.Title>{title}</Attachment.Title>
+				{size && <Attachment.Size size={size} />}
+				{collapse}
+				{hasDownload && link && <Attachment.Download title={title} href={getURL(link)} />}
+			</Attachment.Row>
+			{!collapsed && (
+				<Attachment.Content border='none'>
+					<audio controls>
+						<source src={getURL(url)} type={type} />
+					</audio>
+				</Attachment.Content>
+			)}
+		</Attachment>
+	);
 };
