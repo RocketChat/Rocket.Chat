@@ -2484,7 +2484,7 @@
   "Livechat_offline": "Omnicanal hors ligne",
   "Livechat_offline_message_sent": "Message hors ligne en direct envoyé",
   "Livechat_OfflineMessageToChannel_enabled": "Envoyer des messages hors ligne du chat en direct à un canal",
-  "Livechat_onHold_Chat": "Mettre le chat en attente",
+  "Omnichannel_onHold_Chat": "Mettre le chat en attente",
   "Livechat_online": "Omnicanal en ligne",
   "Livechat_Queue": "File d'attente omnicanal",
   "Livechat_registration_form": "Formulaire d'inscription",
