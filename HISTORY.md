@@ -1,11 +1,52 @@
 
+# 3.13.3
+`2021-04-19  ·  2 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.21.0`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.24.1`
+
+### 🐛 Bug fixes
+
+
+- Livechat not retrieving messages ([#21644](https://github.com/RocketChat/Rocket.Chat/pull/21644) by [@cuonghuunguyen](https://github.com/cuonghuunguyen))
+
+- Team's channels list for teams with too many channels ([#21491](https://github.com/RocketChat/Rocket.Chat/pull/21491))
+
+  - Fix teams.listRooms pagination for non-admin users
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@cuonghuunguyen](https://github.com/cuonghuunguyen)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.13.2
-`2021-04-14  ·  1 🐛  ·  3 👩‍💻👨‍💻`
+`2021-04-14  ·  1 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.21.0`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.24.1`
 
 ### 🐛 Bug fixes
 
 
 - Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.13.2 ([#21570](https://github.com/RocketChat/Rocket.Chat/pull/21570))
+
+</details>
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
