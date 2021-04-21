@@ -229,6 +229,22 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	setReadOnlyByUserId(_id, readOnly, reactWhenReadOnly) {
+		const query = {
+			uids: _id,
+			t: 'd',
+		};
+
+		const update = {
+			$set: {
+				ro: readOnly,
+				reactWhenReadOnly,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
 		const query = {
 			_id,
