@@ -49,6 +49,16 @@ function TeamsTable() {
 					{t('Name')}
 				</GenericTable.HeaderCell>,
 				<GenericTable.HeaderCell
+					key={'usersCount'}
+					direction={sort[1]}
+					active={sort[0] === 'usersCount'}
+					onClick={onHeaderClick}
+					sort='usersCount'
+					style={{ width: '100px' }}
+				>
+					{t('Users')}
+				</GenericTable.HeaderCell>,
+				<GenericTable.HeaderCell
 					key={'channelsCount'}
 					direction={sort[1]}
 					active={sort[0] === 'channelsCount'}
@@ -93,7 +103,7 @@ function TeamsTable() {
 	const formatDate = useFormatDate();
 	const renderRow = useCallback(
 		(team) => {
-			const { _id, ts, t, name, fname, topic, roomsCount } = team;
+			const { _id, ts, t, name, fname, topic, roomsCount, usersCount } = team;
 			const avatarUrl = roomTypes.getConfig(t).getAvatarPath(team);
 
 			return (
@@ -129,6 +139,9 @@ function TeamsTable() {
 								)}
 							</Box>
 						</Box>
+					</Table.Cell>
+					<Table.Cell fontScale='p1' color='hint' style={style}>
+						{usersCount}
 					</Table.Cell>
 					<Table.Cell fontScale='p1' color='hint' style={style}>
 						{roomsCount}
