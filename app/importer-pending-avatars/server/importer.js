@@ -8,12 +8,6 @@ import {
 import { Users } from '../../models';
 
 export class PendingAvatarImporter extends Base {
-	constructor(info, importRecord) {
-		super(info, importRecord);
-		this.userTags = [];
-		this.bots = {};
-	}
-
 	prepareFileCount() {
 		this.logger.debug('start preparing import operation');
 		super.updateProgress(ProgressStep.PREPARING_STARTED);
