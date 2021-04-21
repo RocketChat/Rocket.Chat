@@ -17,19 +17,34 @@ onLicense('ldap-enterprise', () => {
 		validateLDAPRolesMappingChanges();
 
 		let LDAP_Enable_LDAP_Roles_To_RC_Roles;
+		let LDAP_Enable_LDAP_Groups_To_RC_Teams;
+		let callbackEnabled = false;
 		let LDAP_Sync_User_Active_State;
 
-		settings.get('LDAP_Enable_LDAP_Roles_To_RC_Roles', (key, value) => {
-			if (LDAP_Enable_LDAP_Roles_To_RC_Roles === value) {
+		const updateCallbackState = () => {
+			if (callbackEnabled) {
+				if (!LDAP_Enable_LDAP_Roles_To_RC_Roles && !LDAP_Enable_LDAP_Groups_To_RC_Teams) {
+					callbacks.remove('afterLDAPLogin', 'checkRoleMapping');
+					callbackEnabled = false;
+				}
+
 				return;
 			}
 
-			LDAP_Enable_LDAP_Roles_To_RC_Roles = value;
-			if (!value) {
-				return callbacks.remove('afterLDAPLogin', 'checkRoleMapping');
+			if (LDAP_Enable_LDAP_Roles_To_RC_Roles || LDAP_Enable_LDAP_Groups_To_RC_Teams) {
+				callbackEnabled = true;
+				callbacks.add('afterLDAPLogin', onLdapLogin, callbacks.priority.MEDIUM, 'checkRoleMapping');
 			}
+		};
 
-			callbacks.add('afterLDAPLogin', onLdapLogin, callbacks.priority.MEDIUM, 'checkRoleMapping');
+		settings.get('LDAP_Enable_LDAP_Roles_To_RC_Roles', (key, value) => {
+			LDAP_Enable_LDAP_Roles_To_RC_Roles = value;
+			updateCallbackState();
+		});
+
+		settings.get('LDAP_Enable_LDAP_Groups_To_RC_Teams', (key, value) => {
+			LDAP_Enable_LDAP_Groups_To_RC_Teams = value;
+			updateCallbackState();
 		});
 
 		settings.get('LDAP_Sync_User_Active_State', (key, value) => {
