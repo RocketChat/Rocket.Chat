@@ -1034,6 +1034,18 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
+	addPasswordToHistory(_id, password) {
+		const update = {
+			$push: {
+				'services.passwordHistory': {
+					$each: [password],
+					$slice: -Number(settings.get('Accounts_Password_History_Amount')),
+				},
+			},
+		};
+		return this.update(_id, update);
+	}
+
 	setServiceId(_id, serviceName, serviceId) {
 		const update =		{ $set: {} };
 
