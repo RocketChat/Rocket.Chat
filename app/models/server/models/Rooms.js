@@ -616,9 +616,16 @@ export class Rooms extends Base {
 			default: {
 				$ne: true,
 			},
-			teamId: {
-				$exists: false,
-			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamMain: true,
+				},
+			],
 		};
 
 		// do not use cache
@@ -646,6 +653,12 @@ export class Rooms extends Base {
 					_id: {
 						$in: ids,
 					},
+				},
+				{
+					// Also return the main room of public teams
+					// this will have no effect if the method is called without the 'c' type, as the type filter is outside the $or group.
+					teamMain: true,
+					t: 'c',
 				},
 			],
 			name,
@@ -942,7 +955,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	resetLastMessageById(_id, messageId) {
+	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };
 		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 
