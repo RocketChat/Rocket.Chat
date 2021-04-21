@@ -3,8 +3,8 @@ import React, { memo } from 'react';
 import { usePresence } from '../../hooks/usePresence';
 import UserStatus from './UserStatus';
 
-const ReactiveUserStatus = ({ uid, presence, ...props }) => {
-	const status = usePresence(uid, presence);
+const ReactiveUserStatus = ({ uid, ...props }) => {
+	const status = usePresence(uid);
 	return <UserStatus status={status} {...props} />;
 };
 
