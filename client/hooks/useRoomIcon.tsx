@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import { IRoom, IOmnichannelRoom, IDirectMessageRoom } from '../../definition/IRoom';
 import { ReactiveUserStatus } from '../components/UserStatus';
@@ -10,7 +10,7 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-export const useRoomIcon = (room: IRoom): JSX.Element | { name: string; color?: string } | null => {
+export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: string } | null => {
 	if (room.prid) {
 		return { name: 'baloons' };
 	}
