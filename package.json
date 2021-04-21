@@ -189,6 +189,8 @@
 		"codemirror": "^5.56.0",
 		"coffeescript": "^2.5.1",
 		"connect": "^3.7.0",
+		"cookie": "^0.4.1",
+		"cookie-parser": "^1.4.5",
 		"core-js": "^3.8.1",
 		"cors": "^2.8.5",
 		"csv-parse": "^4.12.0",
