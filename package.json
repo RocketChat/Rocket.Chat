@@ -74,7 +74,7 @@
 		"@types/mock-require": "^2.0.0",
 		"@types/moment-timezone": "^0.5.30",
 		"@types/mongodb": "^3.5.26",
-		"@types/node": "^10.12.14",
+		"@types/node": "^12.20.10",
 		"@types/react-dom": "^16.9.8",
 		"@types/rewire": "^2.5.28",
 		"@types/semver": "^7.3.3",
