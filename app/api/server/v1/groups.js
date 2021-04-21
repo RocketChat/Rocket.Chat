@@ -35,7 +35,7 @@ export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = t
 
 	const user = Users.findOneById(userId, { fields: { username: 1 } });
 
-	if (!canAccessRoom(room, user)) {
+	if (!hasPermission(user._id,'view-room-administration') && !canAccessRoom(room, user)) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
