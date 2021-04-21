@@ -23,7 +23,7 @@ export const onLdapLogin = ({ user, ldapUser, ldap }) => {
 
 	if (mapTeams) {
 		const ldapUserTeams = getLdapTeamsByUsername(ldapUser.uid, ldap);
-		const roles = getRocketChatTeamsByLdapTeams(JSON.parse(settings.get('LDAP_Roles_To_Rocket_Chat_Roles')), ldapUserTeams);
-		updateUserUsingMappedLdapTeams(userId, roles);
+		const teams = getRocketChatTeamsByLdapTeams(JSON.parse(settings.get('LDAP_Groups_To_Rocket_Chat_Teams')), ldapUserTeams);
+		updateUserUsingMappedLdapTeams(userId, teams);
 	}
 };
