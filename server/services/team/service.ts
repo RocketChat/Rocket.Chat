@@ -323,7 +323,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 				throw new Error('room-already-on-team');
 			}
 
-			if (room.u._id !== uid) {
+			if (room.u?._id !== uid) {
 				throw new Error('invalid-user');
 			}
 
