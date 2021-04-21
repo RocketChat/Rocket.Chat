@@ -75,10 +75,10 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 		usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
 	const handleDelete = useMutableCallback(() => {
-		const onConfirm = () => {
+		const onConfirm = async () => {
 			try {
 				resetState && resetState({});
-				deleteRoom({ roomId: rid });
+				await deleteRoom({ roomId: rid });
 				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
 				!resetState && router.push({});
 			} catch (error) {

@@ -71,14 +71,13 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 API.v1.addRoute('teams.addRooms', { authRequired: true }, {
 	post() {
 		const { rooms, teamId, teamName } = this.bodyParams;
-		console.log(rooms, teamId, teamName);
+
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}
 
 		if (!hasPermission(this.userId, 'add-team-channel', team.roomId)) {
-			console.log(!hasPermission(this.userId, 'add-team-channel', team.roomId), this);
 			return API.v1.unauthorized();
 		}
 
