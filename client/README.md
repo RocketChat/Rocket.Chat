@@ -31,4 +31,4 @@ each folder is composed by:
 We strongly suggest that you start developing your components/hooks/libs inside the folder where they will be directly used. If you ever find that you will use them in more than one place, then you should "promote" the code to an upper level, where it can be commonly accessed by all others
 
 
-we have being moving code from blaze to react, but sometimes we will need render under blaze enviroment, to do that use `createTemplateForComponent`
+we have been moving code from blaze to react, but sometimes we will need to render under blaze environment. To do that use `createTemplateForComponent`.
