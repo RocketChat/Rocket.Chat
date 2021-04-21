@@ -190,9 +190,18 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 				{conditionValuePlaceholder && (
 					<Field.Row>
 						{conditionName === 'time-on-site' ? (
-							<NumberInput value={conditionValue} onChange={handleConditionValue} placeholder={conditionValuePlaceholder} />
+							<NumberInput
+								value={conditionValue}
+								onChange={handleConditionValue}
+								placeholder={conditionValuePlaceholder}
+							/>
 						) : (
-							<TextInput value={conditionValue} onChange={handleConditionValue} placeholder={conditionValuePlaceholder} />)}
+							<TextInput
+								value={conditionValue}
+								onChange={handleConditionValue}
+								placeholder={conditionValuePlaceholder}
+							/>
+						)}
 					</Field.Row>
 				)}
 			</Field>
