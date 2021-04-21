@@ -6,6 +6,7 @@ import { hasPermission } from '../../../authorization';
 import { RocketChatFile } from '../../../file';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 import { api } from '../../../../server/sdk/api';
+import { Media } from '../../../../server/sdk';
 
 const getFile = async (file, extension) => {
 	if (extension !== 'svg+xml') {
@@ -19,6 +20,8 @@ const getFile = async (file, extension) => {
 
 Meteor.methods({
 	async uploadEmojiCustom(binaryContent, contentType, emojiData) {
+		// technically, since this method doesnt have any datatype validations, users can
+		// upload videos as emojis. The FE won't play them, but they will waste space for sure.
 		if (!hasPermission(this.userId, 'manage-emoji')) {
 			throw new Meteor.Error('not_authorized');
 		}
@@ -28,10 +31,19 @@ Meteor.methods({
 		delete emojiData.aliases;
 
 		const file = await getFile(Buffer.from(binaryContent, 'binary'), emojiData.extension);
-
 		emojiData.extension = emojiData.extension === 'svg+xml' ? 'png' : emojiData.extension;
 
-		const rs = RocketChatFile.bufferToStream(file);
+		let fileBuffer;
+		// sharp doesn't support these formats without imagemagick or libvips installed
+		// so they will be stored as they are :(
+		if (['gif', 'x-icon', 'bmp', 'webm'].includes(emojiData.extension)) {
+			fileBuffer = file;
+		} else {
+			const { data: resizedEmojiBuffer } = await Media.resizeFromBuffer(file, 128, 128, true, false, false, 'inside');
+			fileBuffer = resizedEmojiBuffer;
+		}
+
+		const rs = RocketChatFile.bufferToStream(fileBuffer);
 		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`));
 		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(encodeURIComponent(`${ emojiData.name }.${ emojiData.extension }`), contentType);
 		ws.on('end', Meteor.bindEnvironment(() =>
