@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
@@ -21,12 +20,10 @@ const RoomHeader = ({ room, topic }) => {
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room} />;
 	const showQuickActions = roomTypes.showQuickActionButtons(room.t);
-	const hasBurgerMenuButton = useMediaQuery('(max-width: 780px)');
-	const showBurger = isMobile || hasBurgerMenuButton;
 
 	return (
 		<Header>
-			{showBurger && (
+			{isMobile && (
 				<Header.ToolBox>
 					<Burger />
 				</Header.ToolBox>
