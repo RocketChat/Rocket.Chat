@@ -142,6 +142,10 @@ API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 			getAllRooms = true;
 		}
 
+		if (!getAllRooms) {
+			return API.v1.unauthorized();
+		}
+
 		const listFilter = {
 			name: filter,
 			isDefault: type === 'autoJoin',
