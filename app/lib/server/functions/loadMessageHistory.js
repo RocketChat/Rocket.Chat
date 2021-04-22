@@ -10,7 +10,7 @@ settings.get('Hide_System_Messages', function(key, values) {
 	hiddenTypes.forEach((item) => hideMessagesOfTypeServer.add(item));
 });
 
-export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls, showThreadMessages }) {
+export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls, showThreadMessages = true }) {
 	const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 
 	const hiddenMessageTypes = Array.isArray(room && room.sysMes) ? room.sysMes : Array.from(hideMessagesOfTypeServer.values()); // TODO probably remove on chained event system

@@ -4,10 +4,10 @@ import { check } from 'meteor/check';
 import { Subscriptions } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
-import { loadMessageHistory } from '../../app/lib';
+import { loadMessageHistory } from '../../app/lib/server';
 
 Meteor.methods({
-	loadHistory(rid, end, limit = 20, ls, showThreadMessages = false) {
+	loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
 		check(rid, String);
 
 		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === false) {
