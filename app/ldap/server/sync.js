@@ -313,23 +313,36 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 		return [];
 	}
 
-	_.map(fieldMap, function(channels, ldapField) {
+	// Invert the array to map channel names to disjunctive LDAP group memberships
+	const groupMap = {};
+	_.forEach(fieldMap, function(channels, ldapField) {
 		if (!Array.isArray(channels)) {
 			channels = [channels];
 		}
-
 		for (const channel of channels) {
-			let room = Rooms.findOneByNonValidatedName(channel);
-			if (!room) {
-				room = createRoomForSync(channel);
+			if (channel in groupMap) {
+				groupMap[channel].push(ldapField);
+			} else {
+				groupMap[channel] = [ldapField];
 			}
+		}
+	});
+
+	_.forEach(groupMap, function(ldapFields, channel) {
+		let room = Rooms.findOneByNonValidatedName(channel);
+		if (!room) {
+			room = createRoomForSync(channel);
+		}
+		for (const ldapField of ldapFields) {
 			if (isUserInLDAPGroup(ldap, ldapUser, user, ldapField)) {
 				userChannels.push(room._id);
-			} else if (syncUserRolesEnforceAutoChannels) {
-				const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
-				if (subscription) {
-					removeUserFromRoom(room._id, user);
-				}
+				break;
+			}
+		}
+		if (syncUserRolesEnforceAutoChannels && !_.contains(userChannels, room._id)) {
+			const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+			if (subscription) {
+				removeUserFromRoom(room._id, user);
 			}
 		}
 	});
