@@ -110,6 +110,15 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findActiveByIds(userIds, options = {}) {
+		const query = {
+			_id: { $in: userIds },
+			active: true,
+		};
+
+		return this.find(query, options);
+	}
+
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
@@ -590,5 +599,14 @@ export class UsersRaw extends BaseRaw {
 				'services.resume': 1,
 			},
 		});
+	}
+
+	removeRoomsByRoomIdsAndUserId(rids, userId) {
+		return this.update({
+			_id: userId,
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
 	}
 }

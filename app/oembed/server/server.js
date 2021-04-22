@@ -102,6 +102,7 @@ const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callb
 		maxRedirects: redirectCount,
 		headers: {
 			'User-Agent': settings.get('API_Embed_UserAgent'),
+			'Accept-Language': settings.get('Language') || 'en',
 		},
 	};
 	let headers = null;
