@@ -85,6 +85,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 			this.lastRid = rid;
 			this.rid = undefined;
 			this.emit('back', rid);
+			this.emit('changed', this.rid);
 		}
 	}
 
@@ -106,7 +107,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 			this.rooms.set(rid, new RoomStore(rid));
 		}
 		this.rid = rid;
-		this.emit('opened', rid);
+		this.emit('opened', this.rid);
 		this.emit('changed', this.rid);
 	}
 
