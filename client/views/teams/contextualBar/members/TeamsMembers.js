@@ -44,6 +44,7 @@ const TeamMembers = ({ rid }) => {
 			() => [
 				room.t === 'p' ? 'add-user-to-any-p-room' : 'add-user-to-any-c-room',
 				'add-user-to-joined-room',
+				'add-team-member',
 			],
 			[room.t],
 		),
