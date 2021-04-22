@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { logger } from '../logger';
 import { settings } from '../../../settings/server';
-
 
 interface IKeyable {
 	[key: string]: any;
@@ -12,6 +10,11 @@ class EventArgumentHandler {
 		const argObject: IKeyable = {
 			event: args[0],
 		};
+
+		logger.outgoing.debug(
+			`Got the event arguments for the event: ${ argObject.event }`,
+			argObject,
+		);
 
 		switch (argObject.event) {
 			case 'sendMessage':
@@ -53,17 +56,27 @@ class EventArgumentHandler {
 				}
 				break;
 			default:
-				logger.outgoing.warn(`An Unhandled Trigger Event was called: ${ argObject.event }`);
+				logger.outgoing.warn(
+					`An Unhandled Trigger Event was called: ${ argObject.event }`,
+				);
 				argObject.event = undefined;
 				break;
 		}
 
-		logger.outgoing.debug(`Got the event arguments for the event: ${ argObject.event }`, argObject);
-
 		return argObject;
 	}
 
-	mapEventArgsToData(data: any, { event, message, room, owner, user }: { event: any; message: any; room: any; owner: any; user: any}): void {
+	mapEventArgsToData(
+		data: any,
+		{
+			event,
+			message,
+			room,
+			owner,
+			user,
+		}: { event: any; message: any; room: any; owner: any; user: any },
+	): void {
+		/* eslint-disable @typescript-eslint/camelcase */
 		switch (event) {
 			case 'sendMessage':
 				data.channel_id = room._id;
@@ -148,6 +161,7 @@ class EventArgumentHandler {
 			default:
 				break;
 		}
+		/* eslint-enable @typescript-eslint/camelcase */
 	}
 }
 
