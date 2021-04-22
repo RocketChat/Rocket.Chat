@@ -197,7 +197,7 @@ jobs:
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
-        mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
+        mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
 
     - name: Restore build for tests
       uses: actions/download-artifact@v2
