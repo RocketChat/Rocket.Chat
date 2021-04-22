@@ -3,6 +3,7 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
+rocketchat:ddp
 rocketchat:mongo-config
 
 accounts-facebook@1.3.2
@@ -50,7 +51,6 @@ dispatch:run-as-user
 jalik:ufs@1.0.2
 jalik:ufs-gridfs@1.0.2
 jparker:gravatar
-kadira:blaze-layout
 kadira:flow-router
 mizzao:timesync
 mrt:reactive-store

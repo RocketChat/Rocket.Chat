@@ -5,7 +5,7 @@ import { Users } from '../../../../../app/models';
 import { LivechatInquiry, OmnichannelQueue } from '../../../../../app/models/server/raw';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { LivechatRooms, Subscriptions } from '../../../../../app/models/server';
+import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
@@ -167,7 +167,7 @@ export const LivechatEnterprise = {
 		updateRoomPriorityHistory(roomId, user, priority);
 	},
 
-	placeRoomOnHold(room) {
+	placeRoomOnHold(room, comment, onHoldBy) {
 		const { _id: roomId, onHold } = room;
 		if (!roomId || onHold) {
 			return false;
@@ -175,6 +175,7 @@ export const LivechatEnterprise = {
 		LivechatRooms.setOnHold(roomId);
 		Subscriptions.setOnHold(roomId);
 
+		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
 		Meteor.defer(() => {
 			callbacks.run('livechat:afterOnHold', room);
 		});
