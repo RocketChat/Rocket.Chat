@@ -76,11 +76,13 @@ function UserInfoWithData({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
-				<VerticalBar.Text>{t('User_Info')}</VerticalBar.Text>
-				{onClose && <VerticalBar.Close onClick={onClose} />}
-			</VerticalBar.Header>
+			{onClose && (
+				<VerticalBar.Header>
+					{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
+					<VerticalBar.Text>{t('User_Info')}</VerticalBar.Text>
+					{onClose && <VerticalBar.Close onClick={onClose} />}
+				</VerticalBar.Header>
+			)}
 
 			{(error && (
 				<VerticalBar.Content>
