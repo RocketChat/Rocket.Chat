@@ -238,3 +238,5 @@ createTemplateForComponent(
 );
 
 createTemplateForComponent('UserDropdown', () => import('./sidebar/header/UserDropdown'));
+
+createTemplateForComponent('MessageStatusIcon', () => import('./components/Message/StatusIcon'));

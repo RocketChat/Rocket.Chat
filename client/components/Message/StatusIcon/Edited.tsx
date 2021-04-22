@@ -18,7 +18,7 @@ const Edited: EditedType = ({ msg }) => {
 	return (
 		<Icon
 			name='pencil'
-			title={`${t('edited')} ${t('at')} ${editedTime}  ${t('by')} ${editedBy && editedBy.username}`}
+			title={t('edited_message_time', { editedTime, username: editedBy && editedBy.username })}
 			data-title={t('Edited')}
 			color={editedBy && editedBy.username !== u.username ? 'danger' : ''}
 		/>

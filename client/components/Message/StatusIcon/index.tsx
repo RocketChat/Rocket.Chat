@@ -8,12 +8,21 @@ import SentByMail from './SentByMail';
 import Starred from './Starred';
 import Translated from './Translated';
 
+type TypeList =
+	| 'edited'
+	| 'e2e'
+	| 'otr-ack'
+	| 'translated'
+	| 'pinned'
+	| 'starred'
+	| 'sent-by-email';
+
 type StatusIconType = FC<{
-	type: string;
+	type: TypeList;
 	msg: IMessage;
 }>;
 
-const renderStatus = (type: string, msg: IMessage): ReactElement | undefined => {
+const renderStatus = (type: TypeList, msg: IMessage): ReactElement | undefined => {
 	switch (type) {
 		case 'edited':
 			return <Edited msg={msg} />;
@@ -33,7 +42,7 @@ const renderStatus = (type: string, msg: IMessage): ReactElement | undefined => 
 };
 
 const StatusIcon: StatusIconType = ({ type, msg }) => (
-	<Box is='span' mis='x3'>
+	<Box is='span' mis='x4'>
 		{renderStatus(type, msg)}
 	</Box>
 );
