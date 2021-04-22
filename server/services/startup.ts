@@ -8,6 +8,7 @@ import { NPSService } from './nps/service';
 import { RoomService } from './room/service';
 import { TeamService } from './team/service';
 import { UiKitCoreApp } from './uikit-core-app/service';
+import { MediaService } from './image/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -18,3 +19,4 @@ api.registerService(new UiKitCoreApp());
 api.registerService(new NPSService(db));
 api.registerService(new RoomService(db));
 api.registerService(new TeamService(db));
+api.registerService(new MediaService());

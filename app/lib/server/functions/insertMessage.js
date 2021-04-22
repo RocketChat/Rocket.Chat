@@ -76,8 +76,8 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-export const insertMessage = function(user, message, room, upsert = false) {
-	if (!user || !message || !room._id) {
+export const insertMessage = function(user, message, rid, upsert = false) {
+	if (!user || !message || !rid) {
 		return false;
 	}
 
@@ -103,7 +103,7 @@ export const insertMessage = function(user, message, room, upsert = false) {
 		_id,
 		username,
 	};
-	message.rid = room._id;
+	message.rid = rid;
 
 	if (!Match.test(message.msg, String)) {
 		message.msg = '';

@@ -2479,7 +2479,7 @@
   "Livechat_offline": "LiveChat desconectado",
   "Livechat_offline_message_sent": "Mensaje de Livechat enviado sin conexión ",
   "Livechat_OfflineMessageToChannel_enabled": "Enviar mensajes sin conexión de LiveChat a un canal",
-  "Livechat_onHold_Chat": "Poner chat en espera",
+  "Omnichannel_onHold_Chat": "Poner chat en espera",
   "Livechat_online": "LiveChat en línea",
   "Livechat_Queue": "Cola de LiveChat",
   "Livechat_registration_form": "Formulario de Registro",

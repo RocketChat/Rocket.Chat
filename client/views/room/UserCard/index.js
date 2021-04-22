@@ -57,7 +57,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }) => {
 			bio,
 			etag: avatarETag,
 			localTime: Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
-			status: status && <ReactiveUserStatus uid={_id} presence={status} />,
+			status: <ReactiveUserStatus uid={_id} />,
 			customStatus: statusText,
 			nickname,
 		};
