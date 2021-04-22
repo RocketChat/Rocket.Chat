@@ -179,6 +179,7 @@ settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
 <script>
 	window.addEventListener('load', function() {
 		if (window.localStorage) {
+			window.sessionStorage.clear();
 			Object.keys(window.localStorage).forEach(function(key) {
 				window.sessionStorage.setItem(key, window.localStorage.getItem(key));
 			});
