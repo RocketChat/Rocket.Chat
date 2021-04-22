@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 import { roomTypes } from '../../../../../app/utils/client';
 import RoomAvatar from '../../../../components/avatar/RoomAvatar';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { usePreventProgation } from '../../../../hooks/usePreventProgation';
 import RoomActions from './RoomActions';
@@ -11,6 +12,8 @@ import RoomActions from './RoomActions';
 const TeamsChannelItem = ({ room, onClickView, reload }) => {
 	const t = useTranslation();
 	const [showButton, setShowButton] = useState();
+
+	const canEditTeamChannel = usePermission('edit-team-channel');
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 	const handleMenuEvent = {
@@ -39,13 +42,15 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 					)}
 				</Box>
 			</Option.Content>
-			<Option.Menu onClick={onClick}>
-				{showButton ? (
-					<RoomActions room={room} reload={reload} />
-				) : (
-					<ActionButton ghost tiny icon='kebab' />
-				)}
-			</Option.Menu>
+			{canEditTeamChannel && (
+				<Option.Menu onClick={onClick}>
+					{showButton ? (
+						<RoomActions room={room} reload={reload} />
+					) : (
+						<ActionButton ghost tiny icon='kebab' />
+					)}
+				</Option.Menu>
+			)}
 		</Option>
 	);
 };
