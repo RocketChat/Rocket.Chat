@@ -229,6 +229,22 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	setReadOnlyByUserId(_id, readOnly, reactWhenReadOnly) {
+		const query = {
+			uids: _id,
+			t: 'd',
+		};
+
+		const update = {
+			$set: {
+				ro: readOnly,
+				reactWhenReadOnly,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
 		const query = {
 			_id,
@@ -602,9 +618,16 @@ export class Rooms extends Base {
 			default: {
 				$ne: true,
 			},
-			teamId: {
-				$exists: false,
-			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamMain: true,
+				},
+			],
 		};
 
 		// do not use cache
@@ -632,6 +655,12 @@ export class Rooms extends Base {
 					_id: {
 						$in: ids,
 					},
+				},
+				{
+					// Also return the main room of public teams
+					// this will have no effect if the method is called without the 'c' type, as the type filter is outside the $or group.
+					teamMain: true,
+					t: 'c',
 				},
 			],
 			name,
@@ -928,7 +957,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	resetLastMessageById(_id, messageId) {
+	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };
 		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 

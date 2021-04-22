@@ -33,14 +33,8 @@ const CreateChannel = ({
 	const namesValidation = useSetting('UTF8_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const channelNameExists = useMethod('roomNameExists');
-	const channelNameRegex = useMemo(() => {
-		if (allowSpecialNames) {
-			return '';
-		}
-		const regex = new RegExp(`^${namesValidation}$`);
 
-		return regex;
-	}, [allowSpecialNames, namesValidation]);
+	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 
 	const [nameError, setNameError] = useState();
 
@@ -53,7 +47,7 @@ const CreateChannel = ({
 			if (!name || name.length === 0) {
 				return setNameError(t('Field_required'));
 			}
-			if (!channelNameRegex.test(name)) {
+			if (!allowSpecialNames && !channelNameRegex.test(name)) {
 				return setNameError(t('error-invalid-name'));
 			}
 			const isNotAvailable = await channelNameExists(name);
@@ -62,7 +56,7 @@ const CreateChannel = ({
 			}
 		},
 		100,
-		[name],
+		[channelNameRegex],
 	);
 
 	useEffect(() => {

@@ -38,7 +38,6 @@ function SideBarItemTemplateWithData({
 	isAnonymous,
 }) {
 	const title = roomTypes.getRoomName(room.t, room);
-	const icon = <SidebarIcon room={room} small={sidebarViewMode !== 'medium'} />;
 	const href = roomTypes.getRouteLink(room.t, room);
 
 	const {
@@ -54,6 +53,11 @@ function SideBarItemTemplateWithData({
 		t: type,
 		cl,
 	} = room;
+
+	const highlighted = !hideUnreadStatus && (alert || unread);
+	const icon = (
+		<SidebarIcon highlighted={highlighted} room={room} small={sidebarViewMode !== 'medium'} />
+	);
 
 	const isQueued = room.status === 'queued';
 
@@ -82,7 +86,7 @@ function SideBarItemTemplateWithData({
 			id={id}
 			data-qa='sidebar-item'
 			aria-level='2'
-			unread={!hideUnreadStatus && (alert || unread)}
+			unread={highlighted}
 			threadUnread={threadUnread}
 			selected={selected}
 			href={href}

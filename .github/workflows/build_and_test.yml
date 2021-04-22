@@ -108,6 +108,9 @@ jobs:
       if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
       run: |
         meteor npm install
+        cd ./ee/server/services
+        npm install
+        cd -
 
     - run: meteor npm run lint
 
@@ -597,9 +600,9 @@ jobs:
         docker push rocketchat/${{ matrix.service }}-service:${IMAGE_TAG}
 
         if [[ $GITHUB_REF == refs/tags/* ]]; then
-          if echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
+          if echo "$IMAGE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
             RELEASE="latest"
-          elif echo "$GIT_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
+          elif echo "$IMAGE_TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$' ; then
             RELEASE="release-candidate"
           fi
 
