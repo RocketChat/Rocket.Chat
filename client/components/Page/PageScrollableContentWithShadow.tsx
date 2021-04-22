@@ -12,7 +12,7 @@ const PageScrollableContentWithShadow: FC<PageScrollableContentWithShadowProps> 
 	const [, setBorder] = useContext(PageContext);
 	return (
 		<PageScrollableContent
-			onScrollContent={({ top, ...args }): void => {
+			onScrollContent={({ top, ...args }: { top: boolean }): void => {
 				setBorder(!!top);
 				onScrollContent && onScrollContent({ top, ...args });
 			}}

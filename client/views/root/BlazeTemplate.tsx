@@ -27,19 +27,14 @@ const BlazeTemplate: FC<BlazeTemplateProps> = ({ template, data }) => {
 
 		const data = dataRef.current;
 
-		const view = Blaze.renderWithData(
-			Template[template],
-			() => data.all(),
-			ref.current.parentNode,
-			ref.current,
-		);
+		const view = Blaze.renderWithData(Template[template], () => data.all(), ref.current.parentNode);
 
 		return (): void => {
 			Blaze.remove(view);
 		};
 	}, [template]);
 
-	return <div ref={ref} style={hiddenStyle} />;
+	return <div ref={ref} data-blaze-template style={hiddenStyle} />;
 };
 
 export default BlazeTemplate;
