@@ -1,8 +1,7 @@
-import React, { FC, memo } from 'react';
 import { Icon } from '@rocket.chat/fuselage';
+import React, { FC, memo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-
 
 const SentByEmail: FC = () => {
 	const t = useTranslation();

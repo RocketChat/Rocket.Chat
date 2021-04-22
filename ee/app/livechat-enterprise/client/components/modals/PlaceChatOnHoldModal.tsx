@@ -2,10 +2,10 @@ import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { RequiredModalProps } from '../../../../../../client/components/withDoNotAskAgain';
 
-type PlaceChatOnHoldModalProps = RequiredModalProps & {
+type PlaceChatOnHoldModalProps = {
 	onOnHoldChat: () => void;
+	confirm?: () => void;
 	onCancel: () => void;
 };
 
@@ -20,7 +20,7 @@ const PlaceChatOnHoldModal: FC<PlaceChatOnHoldModalProps> = ({
 	return <Modal {...props}>
 		<Modal.Header>
 			<Icon name='pause-unfilled' size={20}/>
-			<Modal.Title>{t('Livechat_onHold_Chat')}</Modal.Title>
+			<Modal.Title>{t('Omnichannel_onHold_Chat')}</Modal.Title>
 			<Modal.Close onClick={onCancel}/>
 		</Modal.Header>
 		<Modal.Content fontScale='p1'>
@@ -30,7 +30,7 @@ const PlaceChatOnHoldModal: FC<PlaceChatOnHoldModalProps> = ({
 			<Box>
 				<ButtonGroup align='end'>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button primary onClick={confirm}>{t('Livechat_onHold_Chat')}</Button>
+					<Button primary onClick={confirm}>{t('Omnichannel_onHold_Chat')}</Button>
 				</ButtonGroup>
 			</Box>
 		</Modal.Footer>

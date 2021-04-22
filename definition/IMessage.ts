@@ -37,4 +37,6 @@ export interface IMessage extends IRocketChatRecord {
 	};
 	editedAt?: Date;
 	autoTranslateFetching?: boolean;
+	t?: string;
+	e2e?: 'pending';
 }

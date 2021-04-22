@@ -1,12 +1,12 @@
-import React, { FC, memo, ReactElement } from 'react';
 import { Box, Icon } from '@rocket.chat/fuselage';
+import React, { FC, memo, ReactElement } from 'react';
 
 import { IMessage } from '../../../../definition/IMessage';
 import Edited from './Edited';
-import Translated from './Translated';
 import Pinned from './Pinned';
-import Starred from './Starred';
 import SentByMail from './SentByMail';
+import Starred from './Starred';
+import Translated from './Translated';
 
 type StatusIconType = FC<{
 	type: string;
@@ -32,6 +32,10 @@ const renderStatus = (type: string, msg: IMessage): ReactElement | undefined => 
 	}
 };
 
-const StatusIcon: StatusIconType = ({ type, msg }) => <Box is='span' mis='x3'>{renderStatus(type, msg)}</Box>;
+const StatusIcon: StatusIconType = ({ type, msg }) => (
+	<Box is='span' mis='x3'>
+		{renderStatus(type, msg)}
+	</Box>
+);
 
 export default memo(StatusIcon);

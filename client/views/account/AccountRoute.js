@@ -1,22 +1,29 @@
 import React, { useEffect } from 'react';
 
-import { SideNav } from '../../../app/ui-utils';
-import { useSetting } from '../../contexts/SettingsContext';
-import { usePermission } from '../../contexts/AuthorizationContext';
-import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
+import { SideNav } from '../../../app/ui-utils/client';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
-import AccountProfilePage from './AccountProfilePage';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
+import { useSetting } from '../../contexts/SettingsContext';
 import AccountIntegrationsPage from './AccountIntegrationsPage';
+import AccountProfilePage from './AccountProfilePage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';
 import AccountSecurityPage from './security/AccountSecurityPage';
 import AccountTokensPage from './tokens/AccountTokensPage';
 import './sidebarItems';
 
 const AccountRoute = () => {
+	const [routeName] = useCurrentRoute();
 	const page = useRouteParameter('group');
 	const router = useRoute('account');
 
-	useEffect(() => { !page && router.push({ group: 'profile' }); }, [page, router]);
+	useEffect(() => {
+		if (routeName !== 'account') {
+			return;
+		}
+
+		!page && router.push({ group: 'profile' });
+	}, [routeName, page, router]);
 
 	useEffect(() => {
 		SideNav.setFlex('accountFlex');
