@@ -6,9 +6,9 @@
 				<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
 					{{> avatar username=msg.u.username}}
 				</button>
-				<span role="button" class="js-toggle-thread-reply thread-reply-preview color-primary-font-color">
-					<span class="message-body--unstyled">{{{threadMessage}}}</span>
-				</span>
+				<div role="button" class="js-toggle-thread-reply thread-reply-preview color-primary-font-color">
+					{{{threadMessage}}}
+				</div>
 			</div>
 		{{/if}}
 		{{#unless shouldHideBody}}
