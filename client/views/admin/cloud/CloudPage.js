@@ -3,17 +3,21 @@ import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 
 import Page from '../../../components/Page';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { useSetModal } from '../../../contexts/ModalContext';
+import {
+	useQueryStringParameter,
+	useRoute,
+	useRouteParameter,
+} from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useQueryStringParameter, useRoute, useRouteParameter } from '../../../contexts/RouterContext';
-import WhatIsItSection from './WhatIsItSection';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import ConnectToCloudSection from './ConnectToCloudSection';
-import TroubleshootingSection from './TroubleshootingSection';
-import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
-import WorkspaceLoginSection from './WorkspaceLoginSection';
 import ManualWorkspaceRegistrationModal from './ManualWorkspaceRegistrationModal';
-import { useSetModal } from '../../../contexts/ModalContext';
+import TroubleshootingSection from './TroubleshootingSection';
+import WhatIsItSection from './WhatIsItSection';
+import WorkspaceLoginSection from './WorkspaceLoginSection';
+import WorkspaceRegistrationSection from './WorkspaceRegistrationSection';
 import { cloudConsoleUrl } from './constants';
 
 function CloudPage() {
@@ -106,42 +110,52 @@ function CloudPage() {
 	const isConnectToCloudDesired = registerStatus?.connectToCloud;
 	const isWorkspaceRegistered = registerStatus?.workspaceRegistered;
 
-	return <Page>
-		<Page.Header title={t('Connectivity_Services')}>
-			<ButtonGroup>
-				{!isWorkspaceRegistered && <Button onClick={handleManualWorkspaceRegistrationButtonClick}>
-					{t('Cloud_Register_manually')}
-				</Button>}
-				<Button is='a' primary href={cloudConsoleUrl} target='_blank' rel='noopener noreferrer'>
-					{t('Cloud_console')}
-				</Button>
-			</ButtonGroup>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
-				<Margins block='x24'>
-					<WhatIsItSection />
+	return (
+		<Page>
+			<Page.Header title={t('Connectivity_Services')}>
+				<ButtonGroup>
+					{!isWorkspaceRegistered && (
+						<Button onClick={handleManualWorkspaceRegistrationButtonClick}>
+							{t('Cloud_Register_manually')}
+						</Button>
+					)}
+					<Button is='a' primary href={cloudConsoleUrl} target='_blank' rel='noopener noreferrer'>
+						{t('Cloud_console')}
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
+			<Page.ScrollableContentWithShadow>
+				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
+					<Margins block='x24'>
+						<WhatIsItSection />
 
-					{isConnectToCloudDesired && <>
-						{isWorkspaceRegistered
-							? <>
-								<WorkspaceLoginSection onRegisterStatusChange={fetchRegisterStatus} />
-								<TroubleshootingSection onRegisterStatusChange={fetchRegisterStatus} />
+						{isConnectToCloudDesired && (
+							<>
+								{isWorkspaceRegistered ? (
+									<>
+										<WorkspaceLoginSection onRegisterStatusChange={fetchRegisterStatus} />
+										<TroubleshootingSection onRegisterStatusChange={fetchRegisterStatus} />
+									</>
+								) : (
+									<WorkspaceRegistrationSection
+										email={registerStatus?.email}
+										token={registerStatus?.token}
+										workspaceId={registerStatus?.workspaceId}
+										uniqueId={registerStatus?.uniqueId}
+										onRegisterStatusChange={fetchRegisterStatus}
+									/>
+								)}
 							</>
-							: <WorkspaceRegistrationSection
-								email={registerStatus?.email}
-								token={registerStatus?.token}
-								workspaceId={registerStatus?.workspaceId}
-								uniqueId={registerStatus?.uniqueId}
-								onRegisterStatusChange={fetchRegisterStatus}
-							/>}
-					</>}
+						)}
 
-					{!isConnectToCloudDesired && <ConnectToCloudSection onRegisterStatusChange={fetchRegisterStatus} />}
-				</Margins>
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+						{!isConnectToCloudDesired && (
+							<ConnectToCloudSection onRegisterStatusChange={fetchRegisterStatus} />
+						)}
+					</Margins>
+				</Box>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 }
 
 export default CloudPage;

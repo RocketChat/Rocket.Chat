@@ -30,6 +30,18 @@ Meteor.startup(function() {
 				},
 			});
 
+
+			this.add('bigbluebutton_Open_New_Window', false, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'bigbluebutton_Enabled',
+					value: true,
+				},
+				i18nLabel: 'Always_open_in_new_window',
+				public: true,
+			});
+
+
 			this.add('bigbluebutton_enable_d', true, {
 				type: 'boolean',
 				i18nLabel: 'WebRTC_Enable_Direct',

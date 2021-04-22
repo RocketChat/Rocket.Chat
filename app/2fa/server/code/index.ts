@@ -15,6 +15,7 @@ import { IMethodConnection } from '../../../../definition/IMethodThisType';
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
 	disableRememberMe?: boolean;
+	requireSecondFactor?: boolean; // whether any two factor should be required
 }
 
 export const totpCheck = new TOTPCheck();
@@ -83,6 +84,11 @@ export function isAuthorizedForToken(connection: IMethodConnection, user: IUser,
 		return false;
 	}
 
+	// if any two factor is required, early abort
+	if (options.requireSecondFactor) {
+		return false;
+	}
+
 	if (tokenObject.bypassTwoFactor === true) {
 		return true;
 	}
@@ -131,7 +137,29 @@ interface ICheckCodeForUser {
 	connection?: IMethodConnection;
 }
 
-function _checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): boolean {
+const getSecondFactorMethod = (user: IUser, method: string | undefined, options: ITwoFactorOptions): ICodeCheck | undefined => {
+	// try first getting one of the available methods or the one that was already provided
+	const selectedMethod = getMethodByNameOrFirstActiveForUser(user, method);
+	if (selectedMethod) {
+		return selectedMethod;
+	}
+
+	// if none found but a second factor is required, chose the password check
+	if (options.requireSecondFactor) {
+		return passwordCheckFallback;
+	}
+
+	// check if password fallback is enabled
+	if (!options.disablePasswordFallback && passwordCheckFallback.isEnabled(user, !!options.requireSecondFactor)) {
+		return passwordCheckFallback;
+	}
+};
+
+export function checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): boolean {
+	if (process.env.TEST_MODE && !options.requireSecondFactor) {
+		return true;
+	}
+
 	if (typeof user === 'string') {
 		user = getUserForCheck(user);
 	}
@@ -145,13 +173,10 @@ function _checkCodeForUser({ user, code, method, options = {}, connection }: ICh
 		return true;
 	}
 
-	let selectedMethod = getMethodByNameOrFirstActiveForUser(user, method);
-
+	// select a second factor method or return if none is found/available
+	const selectedMethod = getSecondFactorMethod(user, method, options);
 	if (!selectedMethod) {
-		if (options.disablePasswordFallback || !passwordCheckFallback.isEnabled(user)) {
-			return true;
-		}
-		selectedMethod = passwordCheckFallback;
+		return true;
 	}
 
 	if (!code) {
@@ -161,7 +186,7 @@ function _checkCodeForUser({ user, code, method, options = {}, connection }: ICh
 		throw new Meteor.Error('totp-required', 'TOTP Required', { method: selectedMethod.name, ...data, availableMethods });
 	}
 
-	const valid = selectedMethod.verify(user, code);
+	const valid = selectedMethod.verify(user, code, options.requireSecondFactor);
 
 	if (!valid) {
 		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', { method: selectedMethod.name });
@@ -173,5 +198,3 @@ function _checkCodeForUser({ user, code, method, options = {}, connection }: ICh
 
 	return true;
 }
-
-export const checkCodeForUser = process.env.TEST_MODE ? (): boolean => true : _checkCodeForUser;

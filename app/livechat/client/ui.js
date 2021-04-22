@@ -31,3 +31,9 @@ MessageTypes.registerType({
 		};
 	},
 });
+
+MessageTypes.registerType({
+	id: 'livechat-started',
+	system: true,
+	message: 'Chat_started',
+});

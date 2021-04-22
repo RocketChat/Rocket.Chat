@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, lazy, ReactNode } from 'react';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { Option, Badge } from '@rocket.chat/fuselage';
 
@@ -6,6 +6,8 @@ import { useSetting } from '../../../client/contexts/SettingsContext';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import Header from '../../../client/components/Header';
+
+const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/Call/BBB'));
 
 addAction('bbb_video', ({ room }) => {
 	const enabled = useSetting('bigbluebutton_Enabled');
@@ -26,16 +28,18 @@ addAction('bbb_video', ({ room }) => {
 	return useMemo(() => (enabled ? {
 		groups,
 		id: 'bbb_video',
-		title: 'BBB Video Call',
+		title: 'BBB_Video_Call',
 		icon: 'phone',
-		template: 'videoFlexTabBbb',
+		template: templateBBB,
 		order: live ? -1 : 0,
-		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>
+		renderAction: (props): ReactNode => <Header.ToolBoxAction {...props}>
 			{live ? <Header.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.Badge> : null}
 		</Header.ToolBoxAction>,
-		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}><Badge title={t('Started_a_video_call')} variant='primary'>!</Badge></Option>,
+		renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => <Option label={title} title={title} icon={icon} {...props}><Badge title={t('Started_a_video_call')} variant='primary'>!</Badge></Option>,
 	} : null), [enabled, groups, live, t]);
 });
+
+const templateJitsi = lazy(() => import('../../../client/views/room/contextualBar/Call/Jitsi'));
 
 addAction('video', ({ room }) => {
 	const enabled = useSetting('Jitsi_Enabled');
@@ -59,12 +63,13 @@ addAction('video', ({ room }) => {
 		id: 'video',
 		title: 'Call',
 		icon: 'phone',
-		template: 'videoFlexTab',
+		template: templateJitsi,
+		full: true,
 		order: live ? -1 : 0,
-		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>
+		renderAction: (props): ReactNode => <Header.ToolBoxAction {...props}>
 			{live && <Header.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.Badge>}
 		</Header.ToolBoxAction>,
-		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}>
+		renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => <Option label={title} title={title} icon={icon} {...props}>
 			{ live && <Badge title={t('Started_a_video_call')} variant='primary'>!</Badge> }
 		</Option>,
 	} : null), [enabled, groups, live, t]);

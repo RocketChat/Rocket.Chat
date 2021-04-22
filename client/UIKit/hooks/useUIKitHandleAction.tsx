@@ -10,15 +10,20 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 import { UiKitPayload, UIKitActionEvent } from '../../../definition/UIKit';
 
-const useUIKitHandleAction = <S extends UiKitPayload>(state: S): (event: UIKitActionEvent) => Promise<void> => useMutableCallback(async ({ blockId, value, appId, actionId }) => ActionManager.triggerBlockAction({
-	container: {
-		type: UIKitIncomingInteractionContainerType.VIEW,
-		id: state.viewId || state.appId,
-	},
-	actionId,
-	appId,
-	value,
-	blockId,
-}));
+const useUIKitHandleAction = <S extends UiKitPayload>(
+	state: S,
+): ((event: UIKitActionEvent) => Promise<void>) =>
+	useMutableCallback(async ({ blockId, value, appId, actionId }) =>
+		ActionManager.triggerBlockAction({
+			container: {
+				type: UIKitIncomingInteractionContainerType.VIEW,
+				id: state.viewId || state.appId,
+			},
+			actionId,
+			appId,
+			value,
+			blockId,
+		}),
+	);
 
 export { useUIKitHandleAction };
