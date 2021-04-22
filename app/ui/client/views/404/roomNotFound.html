@@ -2,15 +2,22 @@
 	<section class="page-container page-list content-background-color">
 		{{#with data}}
 			{{> header sectionName=headerMessage}}
-			<div class="content room-not-found error-color">
+			<div class="content room-not-found pending-color">
 				<i class="icon-attention"></i>
 				<div>
 					{{#if $eq type 'c'}}
 						{{{_ 'No_channel_with_name_%s_was_found' name}}}
+						<p class="rc-text__medium ">
+							{{{_ 'Ask_to_join_private_channel_%s' name}}}
+						</p>
 					{{/if}}
 					{{#if $eq type 'p'}}
 						{{{_ 'No_group_with_name_%s_was_found' name}}}
+					     <p class="rc-text__medium ">
+							 {{{_ 'Ask_to_join_private_channel_%s' name}}}
+						 </p>
 					{{/if}}
+
 					{{#if $eq type 'd'}}
 						{{#if hasCustomErrorData }}
 							{{{_ customErrorMessage }}}

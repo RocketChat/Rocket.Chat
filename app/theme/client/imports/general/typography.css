@@ -6,4 +6,12 @@
 
 		line-height: 1.25rem;
 	}
+
+	&__medium {
+		letter-spacing: 0.1rem;
+
+		font-size: 1.2rem;
+
+		line-height: 1.5rem;
+	}
 }
