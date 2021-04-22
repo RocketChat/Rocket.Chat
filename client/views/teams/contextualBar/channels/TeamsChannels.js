@@ -6,7 +6,9 @@ import {
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { roomTypes } from '../../../../../app/utils/client';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
+import { useUserRoom } from '../../../../contexts/UserContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import CreateChannelWithData from '../../../../sidebar/header/CreateChannelWithData';
@@ -30,14 +32,21 @@ const useReactModal = (Component, props) => {
 	});
 };
 
-const TeamsChannels = ({ teamId }) => {
+const TeamsChannels = ({ teamId, rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 
 	const [type, setType] = useLocalStorage('channels-list-type', 'all');
 	const [text, setText] = useState('');
 
+	const room = useUserRoom(rid);
+
 	const debouncedText = useDebouncedValue(text, 800);
+
+	const canAddChannels = usePermission(
+		useMemo(() => ['add-team-channel'], [room.t]),
+		rid,
+	);
 
 	const { teamsChannelList, loadMoreItems, reload } = useTeamsChannelList(
 		useMemo(() => ({ teamId, text: debouncedText, type }), [teamId, debouncedText, type]),
@@ -80,8 +89,8 @@ const TeamsChannels = ({ teamId }) => {
 			channels={items}
 			total={total}
 			onClickClose={onClickClose}
-			onClickAddExisting={addExisting}
-			onClickCreateNew={createNew}
+			onClickAddExisting={canAddChannels && addExisting}
+			onClickCreateNew={canAddChannels && createNew}
 			onClickView={viewRoom}
 			loadMoreItems={loadMoreItems}
 			reload={reload}
