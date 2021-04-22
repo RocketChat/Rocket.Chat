@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
@@ -579,9 +580,9 @@ API.v1.addRoute('channels.members', { authRequired: true }, {
 		const { sort = {} } = this.parseJsonQuery();
 		const { status, username, name } = this.queryParams;
 
-		if (status && !Array.isArray(status)) {
-			throw new Meteor.Error('error-status-param-not-an-array', 'The parameter "status" should be an array of strings');
-		}
+		check(status, Match.Maybe([String]));
+		check(username, Match.Maybe(String));
+		check(name, Match.Maybe(String));
 
 		const subscriptions = Subscriptions.findByRoomId(findResult._id, {
 			fields: { 'u._id': 1 },
