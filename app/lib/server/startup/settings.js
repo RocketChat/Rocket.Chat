@@ -115,6 +115,10 @@ settings.addGroup('Accounts', function() {
 				key: 'users',
 				i18nLabel: 'Users',
 			},
+			{
+				key: 'teams',
+				i18nLabel: 'Teams',
+			},
 		],
 		public: true,
 	});
