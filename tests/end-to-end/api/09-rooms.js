@@ -907,6 +907,30 @@ describe('[Rooms]', function() {
 				.end(done);
 		});
 	});
+	describe('[/rooms.autocomplete.availableForTeams]', () => {
+		it('should return the rooms to fill auto complete', (done) => {
+			request.get(api('rooms.autocomplete.availableForTeams'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should return the filtered rooms to fill auto complete', (done) => {
+			request.get(api('rooms.autocomplete.availableForTeams?name=group'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
 	describe('/rooms.adminRooms', () => {
 		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
 			updatePermission('view-room-administration', []).then(() => {

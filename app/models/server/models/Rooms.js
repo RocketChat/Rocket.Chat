@@ -26,6 +26,11 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ fname: 1 }, { sparse: true });
 		// field used for DMs only
 		this.tryEnsureIndex({ uids: 1 }, { sparse: true });
+
+		this.tryEnsureIndex({
+			teamId: 1,
+			teamDefault: 1,
+		}, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -222,6 +227,22 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	setReadOnlyByUserId(_id, readOnly, reactWhenReadOnly) {
+		const query = {
+			uids: _id,
+			t: 'd',
+		};
+
+		const update = {
+			$set: {
+				ro: readOnly,
+				reactWhenReadOnly,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 
 	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
@@ -523,6 +544,71 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
+	findByNameOrFNameAndTypeIncludingTeamRooms(name, type, teamIds, options) {
+		const query = {
+			t: type,
+			teamMain: {
+				$exists: false,
+			},
+			$and: [
+				{
+					$or: [
+						{
+							teamId: {
+								$exists: false,
+							},
+						},
+						{
+							teamId: {
+								$in: teamIds,
+							},
+						},
+					],
+				},
+				{
+					$or: [{
+						name,
+					}, {
+						fname: name,
+					}],
+				},
+			],
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
+	findContainingNameOrFNameInIdsAsTeamMain(text, rids, options) {
+		const query = {
+			teamMain: true,
+			$and: [{
+				$or: [{
+					t: 'p',
+					_id: {
+						$in: rids,
+					},
+				}, {
+					t: 'c',
+				}],
+			}],
+		};
+
+		if (text) {
+			const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
+
+			query.$and.push({
+				$or: [{
+					name: regex,
+				}, {
+					fname: regex,
+				}],
+			});
+		}
+
+		return this._db.find(query, options);
+	}
+
 	findByNameAndTypeNotDefault(name, type, options) {
 		const query = {
 			t: type,
@@ -530,9 +616,16 @@ export class Rooms extends Base {
 			default: {
 				$ne: true,
 			},
-			teamId: {
-				$exists: false,
-			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamMain: true,
+				},
+			],
 		};
 
 		// do not use cache
@@ -560,6 +653,12 @@ export class Rooms extends Base {
 					_id: {
 						$in: ids,
 					},
+				},
+				{
+					// Also return the main room of public teams
+					// this will have no effect if the method is called without the 'c' type, as the type filter is outside the $or group.
+					teamMain: true,
+					t: 'c',
 				},
 			],
 			name,
@@ -856,7 +955,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	resetLastMessageById(_id, messageId) {
+	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };
 		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 
@@ -1113,7 +1212,7 @@ export class Rooms extends Base {
 		const query = { _id };
 
 		const update = {
-			[value === true ? '$set' : '$unset']: {
+			[value === true ? '$set' : '$unset']: {
 				'retention.ignoreThreads': true,
 			},
 		};
