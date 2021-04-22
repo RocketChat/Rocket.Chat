@@ -6,6 +6,7 @@ import {
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { roomTypes } from '../../../../../app/utils/client';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
@@ -52,6 +53,8 @@ const TeamsChannels = ({ teamId }) => {
 	const addExisting = useReactModal(AddExistingModal, { teamId, reload });
 	const createNew = useReactModal(CreateChannelWithData, { teamId, reload });
 
+	const canAddExisting = usePermission('add-team-channel');
+
 	const goToRoom = useCallback((room) => roomTypes.openRouteLink(room.t, room), []);
 	const handleBack = useCallback(() => setState({}), [setState]);
 	const viewRoom = useMutableCallback((room) => {
@@ -80,7 +83,7 @@ const TeamsChannels = ({ teamId }) => {
 			channels={items}
 			total={total}
 			onClickClose={onClickClose}
-			onClickAddExisting={addExisting}
+			onClickAddExisting={canAddExisting && addExisting}
 			onClickCreateNew={createNew}
 			onClickView={viewRoom}
 			loadMoreItems={loadMoreItems}
