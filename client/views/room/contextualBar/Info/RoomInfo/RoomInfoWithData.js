@@ -79,8 +79,8 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			try {
 				resetState && resetState({});
 				await deleteRoom({ roomId: rid });
-				!resetState && router.push({});
 				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
+				!resetState && router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

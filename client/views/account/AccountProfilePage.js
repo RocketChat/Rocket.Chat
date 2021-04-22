@@ -5,7 +5,6 @@ import React, { useMemo, useState, useCallback } from 'react';
 import ConfirmOwnerChangeWarningModal from '../../components/ConfirmOwnerChangeWarningModal';
 import Page from '../../components/Page';
 import { useSetModal } from '../../contexts/ModalContext';
-import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -66,7 +65,7 @@ const AccountProfilePage = () => {
 	const ldapUsernameLinked = ldapEnabled && ldapUsernameField;
 	const requireName = useSetting('Accounts_RequireNameForSignUp');
 	const namesRegexSetting = useSetting('UTF8_Names_Validation');
-	console.log(allowPasswordChange)
+
 	if (allowPasswordChange && !allowOAuthPasswordChange) {
 		allowPasswordChange = Boolean(user?.services?.password?.bcrypt);
 	}
