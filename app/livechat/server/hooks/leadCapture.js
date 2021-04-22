@@ -1,3 +1,4 @@
+
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../callbacks';
@@ -48,8 +49,13 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	return message;
 }, callbacks.priority.LOW, 'leadCapture');
 
-callbacks.add('beforeSaveMessage', function() {
+callbacks.add('beforeSaveMessage', function(message, room) {
 	if (settings.get('Livechat_kill_switch')) {
-		throw new Meteor.Error(settings.get('Livechat_kill_switch_message'));
+		if (room && room.lastMessage.msg !== settings.get('Livechat_kill_switch_message')) {
+			message.msg = settings.get('Livechat_kill_switch_message');
+			message.avatar = '';
+			message.u._id = room.servedBy._id;
+			message.u.username = room.servedBy.username;
+		}
 	}
 }, callbacks.priority.LOW, 'leadCapture');

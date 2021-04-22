@@ -219,34 +219,36 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	}
 
 	message = callbacks.run('beforeSaveMessage', message, room);
-	if (message) {
-		if (message._id && upsert) {
-			const { _id } = message;
-			delete message._id;
-			Messages.upsert({
-				_id,
-				'u._id': message.u._id,
-			}, message);
-			message._id = _id;
-		} else {
-			const messageAlreadyExists = message._id && Messages.findOneById(message._id, { fields: { _id: 1 } });
-			if (messageAlreadyExists) {
-				return;
+	if (!settings.get('Livechat_kill_switch') || room.lastMessage.msg !== settings.get('Livechat_kill_switch_message')) {
+		if (message) {
+			if (message._id && upsert) {
+				const { _id } = message;
+				delete message._id;
+				Messages.upsert({
+					_id,
+					'u._id': message.u._id,
+				}, message);
+				message._id = _id;
+			} else {
+				const messageAlreadyExists = message._id && Messages.findOneById(message._id, { fields: { _id: 1 } });
+				if (messageAlreadyExists) {
+					return;
+				}
+				message._id = Messages.insert(message);
 			}
-			message._id = Messages.insert(message);
-		}
 
-		if (Apps && Apps.isLoaded()) {
-			// This returns a promise, but it won't mutate anything about the message
-			// so, we don't really care if it is successful or fails
-			Apps.getBridges().getListenerBridge().messageEvent('IPostMessageSent', message);
-		}
+			if (Apps && Apps.isLoaded()) {
+				// This returns a promise, but it won't mutate anything about the message
+				// so, we don't really care if it is successful or fails
+				Apps.getBridges().getListenerBridge().messageEvent('IPostMessageSent', message);
+			}
 
-		/*
-		Defer other updates as their return is not interesting to the user
-		*/
-		// Execute all callbacks
-		callbacks.runAsync('afterSaveMessage', message, room, user._id);
-		return message;
+			/*
+			Defer other updates as their return is not interesting to the user
+			*/
+			// Execute all callbacks
+			callbacks.runAsync('afterSaveMessage', message, room, user._id);
+			return message;
+		}
 	}
 };
