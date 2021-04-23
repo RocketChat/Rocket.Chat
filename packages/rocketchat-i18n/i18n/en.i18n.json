@@ -1484,6 +1484,7 @@
   "edit-room-retention-policy_description": "Permission to edit a room’s retention policy, to automatically delete messages in it",
   "edit-omnichannel-contact": "Edit Omnichannel Contact",
   "edit-omnichannel-contact_description": "Permission to edit Omnichannel Contact",
+  "edit-team": "Edit Team",
   "Edit_Contact_Profile": "Edit Contact Profile",
   "edited": "edited",
   "Editing_room": "Editing room",
