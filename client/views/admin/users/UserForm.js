@@ -264,6 +264,7 @@ export default function UserForm({
 									onChange={handleRoles}
 									placeholder={t('Select_role')}
 									flexShrink={1}
+									disabled={true}
 								/>
 							</Field.Row>
 						</Field>

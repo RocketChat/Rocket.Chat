@@ -16,6 +16,7 @@ function UsersPage() {
 	const t = useTranslation();
 
 	const canCreateUser = usePermission('create-user');
+	const canBulkCreateUser = usePermission('bulk-register-user');
 
 	const usersRoute = useRoute('admin-users');
 
@@ -43,9 +44,11 @@ function UsersPage() {
 								<Icon name='plus' /> {t('New')}
 							</Button>
 						)}
-						<Button onClick={handleInviteButtonClick}>
-							<Icon name='send' /> {t('Invite')}
-						</Button>
+						{canBulkCreateUser && (
+							<Button onClick={handleInviteButtonClick}>
+								<Icon name='send' /> {t('Invite')}
+							</Button>
+						)}
 					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>
