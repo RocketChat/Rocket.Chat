@@ -192,19 +192,10 @@ export class RoomsRaw extends BaseRaw {
 			prid: {
 				$exists: false,
 			},
-			$or: [
-				{
-					t: 'c',
-				},
-				{
-					t: 'p',
-					_id: {
-						$in: groupsToAccept,
-					},
-				},
-			],
+			_id: {
+				$in: groupsToAccept,
+			},
 			name: nameRegex,
-			'u._id': uid,
 		};
 		return this.find(query, options);
 	}

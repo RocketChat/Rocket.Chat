@@ -136,7 +136,7 @@ export async function findRoomsAvailableForTeams({ uid, name }) {
 		},
 	};
 
-	const userRooms = Subscriptions.findByUserIdAndType(uid, 'p', { fields: { rid: 1 } })
+	const userRooms = Subscriptions.findByUserIdAndRoles(uid, ['owner'], { fields: { rid: 1 } })
 		.fetch()
 		.map((item) => item.rid);
 

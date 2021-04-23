@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper.js';
 
-describe('[Teams]', () => {
+describe.only('[Teams]', () => {
 	before((done) => getCredentials(done));
 
 	const community = `community${ Date.now() }`;
@@ -670,7 +670,8 @@ describe('[Teams]', () => {
 						expect(res.body.rooms[0]).to.have.property('teamId', teamId);
 						expect(res.body.rooms[0]).to.not.have.property('teamDefault');
 					})
-					.then(() => done());
+					.then(() => done())
+					.catch(done);
 			});
 
 			before('create channel 2', (done) => {
@@ -869,7 +870,7 @@ describe('[Teams]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-						expect(res.body.error).to.be.equal('Teams_add_channel_no_permission');
+						expect(res.body.error).to.be.equal('error-no-permission-team-channel');
 					})
 					.end(done);
 			});
@@ -990,7 +991,7 @@ describe('[Teams]', () => {
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error');
-							expect(res.body.error).to.be.equal('Teams_add_channel_requires_ownership');
+							expect(res.body.error).to.be.equal('error-no-owner-channel');
 						})
 						.end(done);
 				})
