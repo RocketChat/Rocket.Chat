@@ -32,7 +32,6 @@ const validateUrl = (url, message) => {
 		return false;
 	}
 };
-// const regex = (marker) => new RegExp(`(\\${ marker }+(?!\s))([^\\${ marker }\r\n]+)(\\${ marker }+)`, 'gm');
 
 const parseWithCustomMarker = (msg, marker, tagName) => msg.replace(new RegExp(`(\\${ marker }+(?!\\s))([^\\${ marker }\r\n]+)(\\${ marker }+)`, 'gm'), (match, p1, p2, p3) => {
 	if (p2.substring(p2.length - 1).match(/\s/)) {
