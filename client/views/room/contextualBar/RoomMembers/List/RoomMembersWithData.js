@@ -51,7 +51,7 @@ const RoomMembersWithData = ({ rid }) => {
 		),
 		rid,
 	);
-	const canCreateInviteLinks = usePermission('create-invite-links"');
+	const canCreateInviteLinks = usePermission('create-invite-links');
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
