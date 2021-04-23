@@ -312,12 +312,12 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		// validate access for every room first
-		validRooms.forEach(async (room) => {
+		for await (const room of validRooms) {
 			const canSeeRoom = await canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
-		});
+		}
 
 		for (const room of validRooms) {
 			if (room.teamId) {
@@ -325,7 +325,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			}
 
 			if (room.u?._id !== uid) {
-				throw new Error('invalid-user');
+				throw new Error('Teams_add_channel_requires_ownership');
 			}
 
 			room.teamId = teamId;

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper.js';
 
 describe('[Teams]', () => {
@@ -15,13 +15,14 @@ describe('[Teams]', () => {
 	let privateRoom2 = null;
 	let testUser;
 	let testUser2;
+	const testUserCredentials = {};
 
 	before('Create test users', (done) => {
 		let username = `user.test.${ Date.now() }`;
 		let email = `${ username }@rocket.chat`;
 		request.post(api('users.create'))
 			.set(credentials)
-			.send({ email, name: username, username, password: username })
+			.send({ email, name: username, username, password: username, roles: ['user'] })
 			.then((res) => {
 				testUser = res.body.user;
 
@@ -35,6 +36,21 @@ describe('[Teams]', () => {
 						done();
 					});
 			});
+	});
+
+	before('login testUser', (done) => {
+		request.post(api('login'))
+			.send({
+				user: testUser.username,
+				password: testUser.username,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
+				testUserCredentials['X-User-Id'] = res.body.data.userId;
+			})
+			.end(done);
 	});
 
 	describe('/teams.create', () => {
@@ -742,6 +758,8 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.addRooms', () => {
+		let privateRoom3;
+
 		before('create private channel', (done) => {
 			const channelName = `community-channel-private${ Date.now() }`;
 			request.post(api('groups.create'))
@@ -777,6 +795,25 @@ describe('[Teams]', () => {
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.msgs', 0);
 					privateRoom2 = res.body.group;
+				})
+				.end(done);
+		});
+		before('create yet another private channel', (done) => {
+			const channelName = `community-channel-private${ Date.now() }`;
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					privateRoom3 = res.body.group;
 				})
 				.end(done);
 		});
@@ -832,7 +869,7 @@ describe('[Teams]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-						expect(res.body.error).to.be.equal('unauthorized');
+						expect(res.body.error).to.be.equal('Teams_add_channel_no_permission');
 					})
 					.end(done);
 			});
@@ -904,6 +941,60 @@ describe('[Teams]', () => {
 					})
 					.end(done);
 			});
+		});
+
+		it('should fail if the user cannot access the channel', (done) => {
+			updatePermission('add-team-channel', ['admin', 'user'])
+				.then(() => {
+					request.post(api('teams.addRooms'))
+						.set(testUserCredentials)
+						.send({
+							rooms: [privateRoom3._id],
+							teamId: privateTeam._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error');
+							expect(res.body.error).to.be.equal('invalid-room');
+						})
+						.end(done);
+				})
+				.catch(done);
+		});
+
+		it('should fail if the user is not the owner of the channel', (done) => {
+			request.post(methodCall('addUsersToRoom'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'addUsersToRoom',
+						params: [{ rid: privateRoom3._id, users: [testUser.username] }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.then(() => {
+					request.post(api('teams.addRooms'))
+						.set(testUserCredentials)
+						.send({
+							rooms: [privateRoom3._id],
+							teamId: privateTeam._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error');
+							expect(res.body.error).to.be.equal('Teams_add_channel_requires_ownership');
+						})
+						.end(done);
+				})
+				.catch(done);
 		});
 	});
 

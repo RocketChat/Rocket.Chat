@@ -140,7 +140,7 @@ export async function findRoomsAvailableForTeams({ uid, name }) {
 		.fetch()
 		.map((item) => item.rid);
 
-	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStarting(name, userRooms, options).toArray();
+	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, userRooms, options).toArray();
 
 	return {
 		items: rooms,

@@ -3864,6 +3864,8 @@
   "Teams_Select_a_team": "Select a team",
   "Teams_Search_teams": "Search Teams",
   "Teams_New_Read_only_Label": "Read Only",
+  "Teams_add_channel_no_permission": "You don't have permission to add a channel to this team",
+  "Teams_add_channel_requires_ownership": "Only the owner of the channel can add it to a team",
   "Technology_Services": "Technology Services",
   "Terms": "Terms",
   "Test_Connection": "Test Connection",
