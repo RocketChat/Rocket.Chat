@@ -6,6 +6,7 @@ import Header from '../../../components/Header';
 import MarkdownText from '../../../components/MarkdownText';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useLayout } from '../../../contexts/LayoutContext';
+import { useUserSubscription } from '../../../contexts/UserContext';
 import Burger from './Burger';
 import QuickActions from './Omnichannel/QuickActions';
 import ParentRoomWithData from './ParentRoomWithData';
@@ -19,6 +20,7 @@ import Translate from './icons/Translate';
 const RoomHeader = ({ room, topic }) => {
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room} />;
+	const subscription = useUserSubscription(room._id);
 	const showQuickActions = roomTypes.showQuickActionButtons(room.t);
 	return (
 		<Header>
@@ -31,7 +33,7 @@ const RoomHeader = ({ room, topic }) => {
 			<Header.Content>
 				<Header.Content.Row>
 					<RoomTitle room={room} />
-					<Favorite room={room} />
+					{subscription ? <Favorite room={room} /> : null}
 					{room.prid && <ParentRoomWithData room={room} />}
 					{room.teamId && !room.teamMain && <ParentTeam room={room} />}
 					<Encrypted room={room} />
