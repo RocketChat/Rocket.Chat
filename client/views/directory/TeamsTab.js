@@ -5,7 +5,7 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import TeamsTable from './TeamsTable';
 
 function TeamsTab(props) {
-	const canViewPublicRooms = usePermission('view-c-room');
+	const canViewPublicRooms = usePermission('view-all-teams');
 
 	if (canViewPublicRooms) {
 		return <TeamsTable {...props} />;
