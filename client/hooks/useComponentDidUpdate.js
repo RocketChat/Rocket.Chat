@@ -1,9 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export const useComponentDidUpdate = (
-	effect,
-	dependencies = [],
-) => {
+export const useComponentDidUpdate = (effect, dependencies = []) => {
 	const hasMounted = useRef(false);
 	useEffect(() => {
 		if (!hasMounted.current) {
@@ -11,6 +8,6 @@ export const useComponentDidUpdate = (
 			return;
 		}
 		effect();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, dependencies);
 };
