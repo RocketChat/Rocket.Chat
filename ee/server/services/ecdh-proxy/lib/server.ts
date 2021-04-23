@@ -93,7 +93,10 @@ app.post('/api/ecdh_proxy/initEncryptedSession', async (req, res) => {
 		const session = await getSessionCached(req.body.clientPublicKey);
 
 		res.cookie('ecdhSession', req.body.clientPublicKey);
-		res.send(session.publicKeyString);
+		res.send({
+			success: true,
+			publicKeyString: session.publicKeyString,
+		});
 	} catch (e) {
 		res.status(400).send(e.message);
 	}
