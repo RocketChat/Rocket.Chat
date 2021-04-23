@@ -5,7 +5,10 @@ import {
 } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { useAtLeastOnePermission } from '../../../../../contexts/AuthorizationContext';
+import {
+	useAtLeastOnePermission,
+	usePermission,
+} from '../../../../../contexts/AuthorizationContext';
 import { useUserRoom } from '../../../../../contexts/UserContext';
 import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
@@ -48,6 +51,7 @@ const RoomMembersWithData = ({ rid }) => {
 		),
 		rid,
 	);
+	const canCreateInviteLinks = usePermission('create-invite-links"');
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
@@ -105,7 +109,7 @@ const RoomMembersWithData = ({ rid }) => {
 			onClickClose={onClickClose}
 			onClickView={viewUser}
 			onClickAdd={canAddUsers && addUser}
-			onClickInvite={canAddUsers && createInvite}
+			onClickInvite={canCreateInviteLinks && canAddUsers && createInvite}
 			loadMoreItems={loadMoreItems}
 			reload={reload}
 		/>
