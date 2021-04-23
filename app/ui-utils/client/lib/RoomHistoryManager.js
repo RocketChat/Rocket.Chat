@@ -141,10 +141,10 @@ export const RoomHistoryManager = new class extends Emitter {
 
 	run(fn) {
 		const difference = differenceInMilliseconds(new Date(), this.lastRequest);
-		if (!this.lastRequest || difference > 400) {
+		if (!this.lastRequest || difference > 500) {
 			return fn();
 		}
-		return setTimeout(fn, 400 - difference);
+		return setTimeout(fn, 500 - difference);
 	}
 
 	unqueue() {
@@ -189,8 +189,8 @@ export const RoomHistoryManager = new class extends Emitter {
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
 
-		// const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
-		const result = await call('loadHistory', rid, ts, limit, ls);
+		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
+		const result = await call('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
 
 		this.unqueue();
 
