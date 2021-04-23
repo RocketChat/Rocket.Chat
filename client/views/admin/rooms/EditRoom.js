@@ -157,8 +157,6 @@ function EditRoom({ room, onChange }) {
 		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
 	});
 
-	console.log(room);
-
 	return (
 		<VerticalBar.ScrollableContent
 			is='form'
