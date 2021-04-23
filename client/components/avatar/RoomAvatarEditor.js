@@ -57,7 +57,7 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...prop
 					<Button
 						small
 						title={t('Upload_user_avatar')}
-						disabled={!canEditRoomAvatar }
+						disabled={!canEditRoomAvatar}
 						onClick={clickUpload}
 					>
 						<Icon name='upload' size='x16' />
