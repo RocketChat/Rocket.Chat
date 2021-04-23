@@ -72,7 +72,7 @@ const CreateChannel = ({
 	const canSave = useMemo(() => hasUnsavedChanges && !nameError, [hasUnsavedChanges, nameError]);
 
 	const canSetReadOnly = usePermission('set-readonly');
-	console.log(canSetReadOnly)
+
 	return (
 		<Modal>
 			<Modal.Header>
