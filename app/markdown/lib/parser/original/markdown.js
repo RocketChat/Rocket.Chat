@@ -60,13 +60,13 @@ const parseNotEscaped = (message, {
 	}
 
 	// Support *text* to make bold
-	msg = msg.replace(/(|&gt;|[ >_~`])\*{1,2}([^\s^\*\r\n]+)\*{1,2}([<_~`]|\B|\b|$)/gm, '$1<span class="copyonly">*</span><strong>$2</strong><span class="copyonly">*</span>$3');
+	msg = msg.replace(/\*{1,2}(?!\s)([^\*\r\n]+)(?<!\s)\*{1,2}/gm, '<span class="copyonly">*</span><strong>$1</strong><span class="copyonly">*</span>');
 
 	// Support _text_ to make italics
-	msg = msg.replace(/(^|&gt;|[ >*~`])\_{1,2}([^\s^\_\r\n]+)\_{1,2}([<*~`]|\B|\b|$)/gm, '$1<span class="copyonly">_</span><em>$2</em><span class="copyonly">_</span>$3');
+	msg = msg.replace(/(?<!\_)\_{1,2}(?!\s)([^\_\r\n]+)(?<!\s)\_{1,2}(?!\_)/gm, '<span class="copyonly">_</span><em>$1</em><span class="copyonly">_</span>');
 
 	// Support ~text~ to strike through text
-	msg = msg.replace(/(^|&gt;|[ >_*`])\~{1,2}([^\s^~\r\n]+)\~{1,2}([<_*`]|\B|\b|$)/gm, '$1<span class="copyonly">~</span><strike>$2</strike><span class="copyonly">~</span>$3');
+	msg = msg.replace(/(?<!\~)\~{1,2}(?!\s)([^~\r\n]+)(?<!\s)\~{1,2}(?!\~)/gm, '<span class="copyonly">~</span><strike>$1</strike><span class="copyonly">~</span>');
 
 	// Support for block quote
 	// >>>
