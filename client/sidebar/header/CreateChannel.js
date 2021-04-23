@@ -130,7 +130,7 @@ const CreateChannel = ({
 						</Box>
 						<ToggleSwitch
 							checked={values.readOnly}
-							disabled={!canSetReadOnly || values.broadcast}
+							disabled={values.broadcast}
 							onChange={handlers.handleReadOnly}
 						/>
 					</Box>
