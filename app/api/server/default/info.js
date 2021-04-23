@@ -21,7 +21,7 @@ API.default.addRoute('info', { authRequired: false }, {
 API.default.addRoute('ecdh_proxy/initEncryptedSession', { authRequired: false }, {
 	post() {
 		return {
-			statusCode: 406,
+			statusCode: 200,
 			body: {
 				success: false,
 				error: 'Not Acceptable',
