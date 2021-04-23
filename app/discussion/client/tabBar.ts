@@ -15,6 +15,6 @@ addAction('discussions', () => {
 		icon: 'discussion',
 		template,
 		full: true,
-		order: 7,
+		order: 3,
 	} : null), [discussionEnabled]);
 });
