@@ -16,7 +16,11 @@ import { roomTypes, RoomSettingsEnum } from '../../../../app/utils/client';
 import DeleteChannelWarning from '../../../components/DeleteChannelWarning';
 import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
-import { usePermission } from '../../../contexts/AuthorizationContext';
+import {
+	usePermission,
+	useAtLeastOnePermission,
+	useRole,
+} from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -100,7 +104,21 @@ function EditRoom({ room, onChange }) {
 
 	const changeArchivation = archived !== !!room.archived;
 
+	const isAdmin = useRole('admin');
+
+	const getCanChangeType = (room, canCreateChannel, canCreateGroup, isAdmin) =>
+		(!room.default || isAdmin) &&
+		((room.t === 'p' && canCreateChannel) || (room.t === 'c' && canCreateGroup));
+
 	const canDelete = usePermission(`delete-${room.t}`);
+	const canArchiveOrUnarchive = useAtLeastOnePermission(
+		useMemo(() => ['archive-room', 'unarchive-room'], []),
+		room._id,
+	);
+	const canSetRo = usePermission('set-readonly', room._id);
+	const canCreateChannel = usePermission('create-c');
+	const canCreateGroup = usePermission('create-p');
+	const canChangeType = getCanChangeType(room, canCreateChannel, canCreateGroup, isAdmin);
 
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
 	const archiveMessage = room.archived ? 'Room_has_been_unarchived' : 'Room_has_been_archived';
@@ -234,7 +252,7 @@ function EditRoom({ room, onChange }) {
 							<Field.Row>
 								<Field.Label>{t('Private')}</Field.Label>
 								<ToggleSwitch
-									disabled={deleted}
+									disabled={deleted || !canChangeType}
 									checked={roomType === 'p'}
 									onChange={changeRoomType}
 								/>
@@ -247,7 +265,11 @@ function EditRoom({ room, onChange }) {
 							<Field.Row>
 								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 									<Field.Label>{t('Read_only')}</Field.Label>
-									<ToggleSwitch disabled={deleted} checked={readOnly} onChange={handleReadOnly} />
+									<ToggleSwitch
+										disabled={deleted || !canSetRo}
+										checked={readOnly}
+										onChange={handleReadOnly}
+									/>
 								</Box>
 							</Field.Row>
 							<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
@@ -258,7 +280,11 @@ function EditRoom({ room, onChange }) {
 							<Field.Row>
 								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 									<Field.Label>{t('Archived')}</Field.Label>
-									<ToggleSwitch disabled={deleted} checked={archived} onChange={handleArchived} />
+									<ToggleSwitch
+										disabled={deleted || !canArchiveOrUnarchive}
+										checked={archived}
+										onChange={handleArchived}
+									/>
 								</Box>
 							</Field.Row>
 						</Field>
