@@ -161,7 +161,7 @@ function EditUser({ data, roles, ...props }) {
 				username={values.username}
 				etag={data.avatarETag}
 				setAvatarObj={setAvatarObj}
-				disabled={canEditOtherUserAvatar}
+				disabled={!canEditOtherUserAvatar}
 			/>
 		),
 		[data.username, data.avatarETag, values.username, canEditOtherUserAvatar],
