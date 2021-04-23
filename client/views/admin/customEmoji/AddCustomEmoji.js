@@ -101,16 +101,6 @@ function AddCustomEmoji({ close, onChange, ...props }) {
 					</ButtonGroup>
 				</Field.Row>
 			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button primary danger>
-							<Icon name='trash' mie='x4' />
-							{t('Delete')}
-						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
 		</VerticalBar.ScrollableContent>
 	);
 }
