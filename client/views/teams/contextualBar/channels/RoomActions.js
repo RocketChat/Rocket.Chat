@@ -3,6 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
 import { roomTypes } from '../../../../../app/utils/client';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -24,6 +25,9 @@ const useReactModal = (Component, props) => {
 const RoomActions = ({ room, reload }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const canRemoveTeamChannel = usePermission('remove-team-channel');
+	const canEditTeamChannel = usePermission('edit-team-channel');
 
 	const updateRoomEndpoint = useEndpointActionExperimental('POST', 'teams.updateRoom');
 	const removeRoomEndpoint = useEndpointActionExperimental(
@@ -93,21 +97,7 @@ const RoomActions = ({ room, reload }) => {
 			reload();
 		};
 
-		return [
-			{
-				label: {
-					label: t('Team_Auto-join'),
-					icon: room.t === 'c' ? 'hash' : 'hashtag-lock',
-				},
-				action: AutoJoinAction,
-			},
-			{
-				label: {
-					label: t('Team_Remove_from_team'),
-					icon: 'cross',
-				},
-				action: RemoveFromTeamAction,
-			},
+		const options = [
 			{
 				label: {
 					label: t('Delete'),
@@ -116,6 +106,26 @@ const RoomActions = ({ room, reload }) => {
 				action: DeleteChannelAction,
 			},
 		];
+
+		if (canEditTeamChannel) {
+			options.push({
+				label: {
+					label: t('Team_Auto-join'),
+					icon: room.t === 'c' ? 'hash' : 'hashtag-lock',
+				},
+				action: AutoJoinAction,
+			});
+		}
+		if (canRemoveTeamChannel) {
+			options.push({
+				label: {
+					label: t('Team_Remove_from_team'),
+					icon: 'cross',
+				},
+				action: RemoveFromTeamAction,
+			});
+		}
+		return options;
 	}, [
 		DeleteChannelAction,
 		RemoveFromTeamAction,
@@ -126,6 +136,8 @@ const RoomActions = ({ room, reload }) => {
 		updateRoomEndpoint,
 		reload,
 		dispatchToastMessage,
+		canEditTeamChannel,
+		canRemoveTeamChannel,
 	]);
 
 	return (
