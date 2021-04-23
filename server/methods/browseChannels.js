@@ -11,7 +11,6 @@ import { getFederationDomain } from '../../app/federation/server/lib/getFederati
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';
 import { escapeRegExp } from '../../lib/escapeRegExp';
-import { getSubscribedRoomsForUserWithDetails } from '../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { Team } from '../sdk';
 
 const sortChannels = function(field, direction) {
@@ -52,8 +51,9 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 
 	const teams = Promise.await(Team.getAllPublicTeams());
 	const teamIds = teams.map(({ _id }) => _id);
+	const userRooms = user.__rooms;
 
-	const rooms = Rooms.findByNameOrFNameAndTypeIncludingTeamRooms(searchTerm, ['c', 'p'], teamIds, {
+	const result = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, teamIds, userRooms, {
 		...pagination,
 		sort: {
 			featured: -1,
@@ -74,24 +74,18 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 			prid: 1,
 			teamId: 1,
 		},
-	}).fetch();
+	});
 
-	const roomsIds = rooms.map((room) => room._id);
-	const roomData = getSubscribedRoomsForUserWithDetails(user._id, false, roomsIds);
-	const results = [];
-
-	for (const room of rooms) {
+	const total = result.count(); // count ignores the `skip` and `limit` options
+	const results = result.fetch().map((room) => {
 		if (room.teamId) {
 			const team = teams.find((team) => team._id === room.teamId);
 			if (team) {
 				room.belongsTo = team.name;
 			}
 		}
-		if (roomData.find((data) => data.rid === room._id)) {
-			results.push(room);
-		}
-	}
-	const total = results.length;
+		return room;
+	});
 
 	return {
 		total,

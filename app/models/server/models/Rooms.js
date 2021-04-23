@@ -544,10 +544,13 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameOrFNameAndTypeIncludingTeamRooms(name, types, teamIds, options) {
+	findByNameOrFNameAndRoomIdsIncludingTeamRooms(name, teamIds, roomIds, options) {
 		const query = {
 			t: {
-				$in: types,
+				$in: [
+					'p',
+					'c',
+				],
 			},
 			teamMain: {
 				$exists: false,
@@ -556,14 +559,38 @@ export class Rooms extends Base {
 				{
 					$or: [
 						{
-							teamId: {
-								$exists: false,
-							},
+							$and: [
+								{
+									t: 'p',
+								},
+								roomIds ? { _id: { $in: roomIds } } : false,
+							],
 						},
 						{
-							teamId: {
-								$in: teamIds,
-							},
+							$and: [
+								{
+									t: 'c',
+								},
+								{
+									teamId: {
+										$exists: false,
+									},
+								},
+							],
+						},
+						{
+							$and: [
+								{
+									teamId: {
+										$exists: true,
+									},
+								},
+								{
+									teamId: {
+										$in: teamIds,
+									},
+								},
+							],
 						},
 					],
 				},
