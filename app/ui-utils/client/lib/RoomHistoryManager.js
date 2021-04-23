@@ -216,8 +216,6 @@ export const RoomHistoryManager = new class extends Emitter {
 			room.loaded = 0;
 		}
 
-		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
-
 		const visibleMessages = messages.filter((msg) => !msg.tmid || showMessageInMainThread || msg.tshow);
 
 		room.loaded += visibleMessages.length;
