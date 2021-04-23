@@ -558,39 +558,17 @@ export class Rooms extends Base {
 			$and: [
 				{
 					$or: [
+						roomIds ? { _id: { $in: roomIds }, t: 'p' } : false,
 						{
-							$and: [
-								{
-									t: 'p',
-								},
-								roomIds ? { _id: { $in: roomIds } } : false,
-							],
+							t: 'c',
+							teamId: {
+								$exists: false,
+							},
 						},
 						{
-							$and: [
-								{
-									t: 'c',
-								},
-								{
-									teamId: {
-										$exists: false,
-									},
-								},
-							],
-						},
-						{
-							$and: [
-								{
-									teamId: {
-										$exists: true,
-									},
-								},
-								{
-									teamId: {
-										$in: teamIds,
-									},
-								},
-							],
+							teamId: {
+								$in: teamIds,
+							},
 						},
 					],
 				},
