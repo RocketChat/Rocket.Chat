@@ -3,6 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
+import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -31,6 +32,8 @@ function EditUser({ data, roles, ...props }) {
 
 	const [avatarObj, setAvatarObj] = useState();
 	const [errors, setErrors] = useState({});
+
+	const canEditOtherUserAvatar = usePermission('edit-other-user-avatar');
 
 	const validationKeys = {
 		name: (name) =>
@@ -158,9 +161,10 @@ function EditUser({ data, roles, ...props }) {
 				username={values.username}
 				etag={data.avatarETag}
 				setAvatarObj={setAvatarObj}
+				disabled={canEditOtherUserAvatar}
 			/>
 		),
-		[data.username, data.avatarETag, values.username],
+		[data.username, data.avatarETag, values.username, canEditOtherUserAvatar],
 	);
 
 	const append = useMemo(
