@@ -3,6 +3,7 @@ import React from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
+import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AddUser } from './AddUser';
@@ -13,6 +14,9 @@ import UsersTable from './UsersTable';
 
 function UsersPage() {
 	const t = useTranslation();
+
+	const canCreateUser = usePermission('create-user');
+	const canBulkCreateUser = usePermission('bulk-register-user');
 
 	const usersRoute = useRoute('admin-users');
 
@@ -35,12 +39,16 @@ function UsersPage() {
 			<Page>
 				<Page.Header title={t('Users')}>
 					<ButtonGroup>
-						<Button onClick={handleNewButtonClick}>
-							<Icon name='plus' /> {t('New')}
-						</Button>
-						<Button onClick={handleInviteButtonClick}>
-							<Icon name='send' /> {t('Invite')}
-						</Button>
+						{canCreateUser && (
+							<Button onClick={handleNewButtonClick}>
+								<Icon name='plus' /> {t('New')}
+							</Button>
+						)}
+						{canBulkCreateUser && (
+							<Button onClick={handleInviteButtonClick}>
+								<Icon name='send' /> {t('Invite')}
+							</Button>
+						)}
 					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>
