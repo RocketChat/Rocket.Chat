@@ -132,11 +132,11 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 		roomsCount: getChannelsCountForTeam(room.teamId),
 	}));
 
-	if (Object.keys(sort)[0] === 'channelsCount') {
+	if (sort.channelsCount) {
 		rooms.sort((a, b) => {
 			if (a.featured && !b.featured) { return -1; }
 			if (b.featured && !a.featured) { return 1; }
-			return sort[Object.keys(sort)[0]] === -1 ? b.roomsCount - a.roomsCount : a.roomsCount - b.roomsCount;
+			return sort.channelsCount === -1 ? b.roomsCount - a.roomsCount : a.roomsCount - b.roomsCount;
 		});
 	}
 	return {
