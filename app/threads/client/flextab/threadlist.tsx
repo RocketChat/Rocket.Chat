@@ -35,6 +35,6 @@ addAction('thread', (options) => {
 				{ unread > 0 && <Header.Badge variant={variant}>{unread}</Header.Badge> }
 			</Header.ToolBoxAction>;
 		},
-		order: 4,
+		order: 2,
 	} : null), [threadsEnabled, room.tunread?.length, room.tunreadUser?.length, room.tunreadGroup?.length]);
 });
