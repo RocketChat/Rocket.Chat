@@ -24,6 +24,7 @@ export default function UserForm({
 	append,
 	prepend,
 	errors,
+	validationPermissions,
 	...props
 }) {
 	const t = useTranslation();
@@ -101,6 +102,7 @@ export default function UserForm({
 								<TextInput
 									error={errors && errors.username}
 									flexGrow={1}
+									disabled={!validationPermissions.username}
 									value={username}
 									onChange={handleUsername}
 									addon={<Icon name='at' size='x20' />}
@@ -109,7 +111,7 @@ export default function UserForm({
 							{errors && errors.username && <Field.Error>{errors.username}</Field.Error>}
 						</Field>
 					),
-					[t, username, handleUsername, errors],
+					[t, username, handleUsername, errors, validationPermissions.username],
 				)}
 				{useMemo(
 					() => (
@@ -120,7 +122,12 @@ export default function UserForm({
 									error={errors && errors.email}
 									flexGrow={1}
 									value={email}
-									error={!isEmail(email) && email.length > 0 ? 'error' : undefined}
+									disabled={!validationPermissions.email}
+									error={
+										validationPermissions.email &&
+										!isEmail(email) &&
+										(email.length > 0 ? 'error' : undefined)
+									}
 									onChange={handleEmail}
 									addon={<Icon name='mail' size='x20' />}
 								/>
@@ -136,12 +143,16 @@ export default function UserForm({
 									mbs='x4'
 								>
 									<Box>{t('Verified')}</Box>
-									<ToggleSwitch checked={verified} onChange={handleVerified} />
+									<ToggleSwitch
+										checked={verified}
+										disabled={!validationPermissions.email}
+										onChange={handleVerified}
+									/>
 								</Box>
 							</Field.Row>
 						</Field>
 					),
-					[t, email, handleEmail, verified, handleVerified, errors],
+					[t, email, handleEmail, verified, handleVerified, errors, validationPermissions.email],
 				)}
 				{useMemo(
 					() => (
@@ -201,6 +212,7 @@ export default function UserForm({
 									errors={errors && errors.password}
 									autoComplete='off'
 									flexGrow={1}
+									disabled={!validationPermissions.password}
 									value={password}
 									onChange={handlePassword}
 									addon={<Icon name='key' size='x20' />}
@@ -209,7 +221,7 @@ export default function UserForm({
 							{errors && errors.password && <Field.Error>{errors.password}</Field.Error>}
 						</Field>
 					),
-					[t, password, handlePassword, errors],
+					[t, password, handlePassword, errors, validationPermissions.password],
 				)}
 				{useMemo(
 					() => (
@@ -264,12 +276,12 @@ export default function UserForm({
 									onChange={handleRoles}
 									placeholder={t('Select_role')}
 									flexShrink={1}
-									disabled={true}
+									disabled={!validationPermissions.roles}
 								/>
 							</Field.Row>
 						</Field>
 					),
-					[availableRoles, handleRoles, roles, t],
+					[availableRoles, handleRoles, roles, t, validationPermissions.roles],
 				)}
 				{useMemo(
 					() =>

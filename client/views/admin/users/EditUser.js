@@ -33,7 +33,15 @@ function EditUser({ data, roles, ...props }) {
 	const [avatarObj, setAvatarObj] = useState();
 	const [errors, setErrors] = useState({});
 
-	const canEditOtherUserAvatar = usePermission('edit-other-user-avatar');
+	const validationPermissions = {
+		avatar: usePermission('edit-other-user-avatar'),
+		name: usePermission('edit-other-user-info'),
+		username: usePermission('edit-other-user-info'),
+		email: usePermission('edit-other-user-info'),
+		verified: usePermission('edit-other-user-info'),
+		password: usePermission('edit-other-user-password'),
+		roles: usePermission('assign-roles'),
+	};
 
 	const validationKeys = {
 		name: (name) =>
@@ -134,10 +142,11 @@ function EditUser({ data, roles, ...props }) {
 	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
 			validationKeys[key] && validationKeys[key](value);
+			!validationPermissions[key] && delete values[key];
 		});
-
+		console.log(values);
 		const { name, username, email } = values;
-		if (name === '' || username === '' || email === '') {
+		if (name === '' || username === '' || (validationPermissions.email && email) === '') {
 			return false;
 		}
 
@@ -161,10 +170,10 @@ function EditUser({ data, roles, ...props }) {
 				username={values.username}
 				etag={data.avatarETag}
 				setAvatarObj={setAvatarObj}
-				disabled={!canEditOtherUserAvatar}
+				disabled={!validationPermissions.avatar}
 			/>
 		),
-		[data.username, data.avatarETag, values.username, canEditOtherUserAvatar],
+		[data.username, data.avatarETag, values.username, validationPermissions.avatar],
 	);
 
 	const append = useMemo(
@@ -195,6 +204,7 @@ function EditUser({ data, roles, ...props }) {
 			availableRoles={availableRoles}
 			prepend={prepend}
 			append={append}
+			validationPermissions={validationPermissions}
 			{...props}
 		/>
 	);
