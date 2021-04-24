@@ -21,10 +21,10 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 
 	const onChangeRoomSelection = useCallback((room) => {
 		setSelectedRooms((selectedRooms) => {
-			if (selectedRooms[room.rid]) {
-				return { ...selectedRooms, [room.rid]: undefined };
+			if (selectedRooms[room._id]) {
+				return { ...selectedRooms, [room._id]: undefined };
 			}
-			return { ...selectedRooms, [room.rid]: room };
+			return { ...selectedRooms, [room._id]: room };
 		});
 	}, []);
 
@@ -32,7 +32,7 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 		setSelectedRooms((selectedRooms) => {
 			if (Object.values(selectedRooms).filter(Boolean).length === 0) {
 				return Object.fromEntries(
-					rooms.filter(({ isLastOwner }) => !isLastOwner).map((room) => [room.rid, room]),
+					rooms.filter(({ isLastOwner }) => !isLastOwner).map((room) => [room._id, room]),
 				);
 			}
 
@@ -42,7 +42,7 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 
 	const onSelectRooms = useMutableCallback(() => {
 		const keptRooms = Object.fromEntries(
-			rooms.filter((room) => !selectedRooms[room.rid]).map((room) => [room.rid, room]),
+			rooms.filter((room) => !selectedRooms[room._id]).map((room) => [room._id, room]),
 		);
 		setKeptRooms(keptRooms);
 		onContinue();
