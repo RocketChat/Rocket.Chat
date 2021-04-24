@@ -123,11 +123,7 @@ export default function UserForm({
 									flexGrow={1}
 									value={email}
 									disabled={!validationPermissions.email}
-									error={
-										validationPermissions.email &&
-										!isEmail(email) &&
-										(email.length > 0 ? 'error' : undefined)
-									}
+									error={!isEmail(email) && email && email.length > 0 ? 'error' : undefined}
 									onChange={handleEmail}
 									addon={<Icon name='mail' size='x20' />}
 								/>
