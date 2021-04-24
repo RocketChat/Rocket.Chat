@@ -106,6 +106,7 @@ function UserAvatarEditor({
 						<TextInput
 							flexGrow={0}
 							placeholder={t('Use_url_for_avatar')}
+							disabled={disabled}
 							value={avatarFromUrl}
 							onChange={handleAvatarFromUrlChange}
 						/>
