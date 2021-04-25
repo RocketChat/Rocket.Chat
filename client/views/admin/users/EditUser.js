@@ -89,14 +89,12 @@ function EditUser({ data, roles, ...props }) {
 		[router],
 	);
 
-	const valuesForQuery = useMemo(() => ({ ...values }), [values]);
-
 	const saveQuery = useMemo(
 		() => ({
 			userId: data._id,
-			data: valuesForQuery,
+			data: values,
 		}),
-		[data._id, valuesForQuery],
+		[data._id, values],
 	);
 
 	const saveAvatarQuery = useMemo(
@@ -152,7 +150,6 @@ function EditUser({ data, roles, ...props }) {
 	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
 			validationKeys[key] && validationKeys[key](value);
-			//!validationPermissions[key] && delete valuesForQuery[key];
 		});
 
 		const { name, username, email } = values;
