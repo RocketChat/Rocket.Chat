@@ -7,7 +7,7 @@ import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
 import { useMediaUrl } from '../context/AttachmentContext';
 
 export type GenericFileAttachmentProps = {
-	file: FileProp;
+	file?: FileProp;
 } & AttachmentPropsBase;
 
 export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
@@ -20,7 +20,7 @@ export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 		size,
 		// format,
 		// name,
-	},
+	} = {},
 }) => {
 	// const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();

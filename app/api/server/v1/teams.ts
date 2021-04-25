@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
+import { Match, check } from 'meteor/check';
 
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
@@ -377,5 +378,32 @@ API.v1.addRoute('teams.autocomplete', { authRequired: true }, {
 		const teams = Promise.await(Team.autocomplete(this.userId, name));
 
 		return API.v1.success({ teams });
+	},
+});
+
+API.v1.addRoute('teams.update', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			teamId: String,
+			data: {
+				name: Match.Maybe(String),
+				type: Match.Maybe(Number),
+			},
+		});
+
+		const { teamId, data } = this.bodyParams;
+
+		const team = teamId && Promise.await(Team.getOneById(teamId));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
+
+		if (!hasPermission(this.userId, 'edit-team', team.roomId)) {
+			return API.v1.unauthorized();
+		}
+
+		Promise.await(Team.update(this.userId, teamId, { name: data.name, type: data.type }));
+
+		return API.v1.success();
 	},
 });

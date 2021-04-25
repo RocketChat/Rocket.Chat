@@ -5,6 +5,7 @@ import { useSubscription } from 'use-subscription';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
+import Tags from '../../../../../components/Omnichannel/Tags';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
@@ -15,27 +16,11 @@ import { useForm } from '../../../../../hooks/useForm';
 import { formsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../Skeleton';
 
-const initialValuesUser = {
-	name: '',
-};
-
 const initialValuesRoom = {
 	topic: '',
-	tags: '',
+	tags: [],
 	livechatData: {},
 	priorityId: '',
-};
-
-const getInitialValuesUser = (visitor) => {
-	if (!visitor) {
-		return initialValuesUser;
-	}
-
-	const { name, fname } = visitor;
-
-	return {
-		name: (name || fname) ?? '',
-	};
 };
 
 const getInitialValuesRoom = (room) => {
@@ -56,9 +41,6 @@ const getInitialValuesRoom = (room) => {
 function RoomEdit({ room, visitor, reload, close }) {
 	const t = useTranslation();
 
-	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(
-		getInitialValuesUser(visitor),
-	);
 	const {
 		values: valuesRoom,
 		handlers: handlersRoom,
@@ -67,17 +49,13 @@ function RoomEdit({ room, visitor, reload, close }) {
 	const canViewCustomFields = () =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const { handleName } = handlers;
-	const { name } = values;
-
 	const { handleTopic, handleTags, handlePriorityId } = handlersRoom;
 	const { topic, tags, priorityId } = valuesRoom;
 
 	const forms = useSubscription(formsSubscription);
 
-	const { useCurrentChatTags = () => {}, usePrioritiesSelect = () => {} } = forms;
+	const { usePrioritiesSelect = () => {} } = forms;
 
-	const Tags = useCurrentChatTags();
 	const PrioritiesSelect = usePrioritiesSelect();
 
 	const {
@@ -131,13 +109,12 @@ function RoomEdit({ room, visitor, reload, close }) {
 		e.preventDefault();
 		const userData = {
 			_id: visitor._id,
-			name,
 		};
 
 		const roomData = {
 			_id: room._id,
 			topic,
-			tags: Object.values(tags),
+			tags: tags.sort(),
 			livechatData,
 			...(priorityId && { priorityId }),
 		};
@@ -153,8 +130,7 @@ function RoomEdit({ room, visitor, reload, close }) {
 	});
 
 	const formIsValid =
-		(hasUnsavedChangesContact || hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) &&
-		customFieldsError.length === 0;
+		(hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) && customFieldsError.length === 0;
 
 	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
@@ -165,12 +141,6 @@ function RoomEdit({ room, visitor, reload, close }) {
 	return (
 		<>
 			<VerticalBar.ScrollableContent is='form'>
-				<Field>
-					<Field.Label>{t('Name')}</Field.Label>
-					<Field.Row>
-						<TextInput flexGrow={1} value={name} onChange={handleName} />
-					</Field.Row>
-				</Field>
 				{canViewCustomFields() && allCustomFields && (
 					<CustomFieldsForm
 						jsonCustomFields={jsonCustomField}
@@ -187,10 +157,7 @@ function RoomEdit({ room, visitor, reload, close }) {
 				</Field>
 				{Tags && (
 					<Field>
-						<Field.Label mb='x4'>{t('Tags')}</Field.Label>
-						<Field.Row>
-							<Tags value={Object.values(tags)} handler={handleTags} />
-						</Field.Row>
+						<Tags tags={tags} handler={handleTags} />
 					</Field>
 				)}
 				{PrioritiesSelect && priorities && priorities.length > 0 && (
