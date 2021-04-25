@@ -40,7 +40,7 @@ const ChannelDeletionTable = ({
 		} else if (sort[0] === 'usersCount') {
 			sortedRooms = rooms.sort((a, b) => a.usersCount - b.usersCount);
 		}
-		if (sort[1] === 'asc') {
+		if (sort[1] === 'desc') {
 			return sortedRooms.reverse();
 		}
 		return sortedRooms;
