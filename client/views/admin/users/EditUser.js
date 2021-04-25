@@ -3,6 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
+import { usePermission, useRole } from '../../../contexts/AuthorizationContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -32,6 +33,23 @@ function EditUser({ data, roles, ...props }) {
 	const [avatarObj, setAvatarObj] = useState();
 	const [errors, setErrors] = useState({});
 
+	const validationPermissions = {
+		avatar: usePermission('edit-other-user-avatar'),
+		name: usePermission('edit-other-user-info'),
+		username: usePermission('edit-other-user-info'),
+		email: usePermission('edit-other-user-info'),
+		verified: usePermission('edit-other-user-info'),
+		password: usePermission('edit-other-user-password'),
+		roles: usePermission('assign-roles'),
+		viewFullOtherUserInfo: usePermission('view-full-other-user-info'),
+		isAdminEdit: useRole('admin'),
+	};
+
+	const isAdminEdit = useMemo(
+		() => validationPermissions.isAdmin || validationPermissions.viewFullOtherUserInfo,
+		[validationPermissions.isAdmin, validationPermissions.viewFullOtherUserInfo],
+	);
+
 	const validationKeys = {
 		name: (name) =>
 			setErrors((errors) => ({
@@ -46,7 +64,8 @@ function EditUser({ data, roles, ...props }) {
 		email: (email) =>
 			setErrors((errors) => ({
 				...errors,
-				email: !email.trim().length ? t('The_field_is_required', t('email')) : undefined,
+				email:
+					isAdminEdit && !email.trim().length ? t('The_field_is_required', t('email')) : undefined,
 			})),
 	};
 
@@ -134,7 +153,11 @@ function EditUser({ data, roles, ...props }) {
 		});
 
 		const { name, username, email } = values;
-		if (name === '' || username === '' || email === '') {
+		if (
+			name === '' ||
+			username === '' ||
+			(validationPermissions.email && isAdminEdit && email === '')
+		) {
 			return false;
 		}
 
@@ -158,9 +181,10 @@ function EditUser({ data, roles, ...props }) {
 				username={values.username}
 				etag={data.avatarETag}
 				setAvatarObj={setAvatarObj}
+				disabled={!validationPermissions.avatar}
 			/>
 		),
-		[data.username, data.avatarETag, values.username],
+		[data.username, data.avatarETag, values.username, validationPermissions.avatar],
 	);
 
 	const append = useMemo(
@@ -191,6 +215,8 @@ function EditUser({ data, roles, ...props }) {
 			availableRoles={availableRoles}
 			prepend={prepend}
 			append={append}
+			validationPermissions={validationPermissions}
+			isAdminEdit={isAdminEdit}
 			{...props}
 		/>
 	);
