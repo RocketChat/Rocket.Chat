@@ -47,7 +47,7 @@ const ChannelDesertionTable = ({
 		} else if (sort[0] === 'joinedAt') {
 			sortedRooms = rooms.sort((a, b) => a.ts - b.ts);
 		}
-		if (sort[1] === 'asc') {
+		if (sort[1] === 'desc') {
 			return sortedRooms.reverse();
 		}
 		return sortedRooms;
