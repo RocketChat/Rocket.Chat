@@ -152,7 +152,7 @@ function EditUser({ data, roles, ...props }) {
 	const handleSave = useMutableCallback(async () => {
 		Object.entries(values).forEach(([key, value]) => {
 			validationKeys[key] && validationKeys[key](value);
-			!validationPermissions[key] && delete valuesForQuery[key];
+			//!validationPermissions[key] && delete valuesForQuery[key];
 		});
 
 		const { name, username, email } = values;
