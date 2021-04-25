@@ -164,7 +164,7 @@
 	font-size: 28px;
 }
 
-@media (width <= 500px) {
+@media (width <= 780px) {
 	.rc-header {
 		&__block {
 			margin: 0 0.25rem;
