@@ -25,6 +25,7 @@ export default function UserForm({
 	prepend,
 	errors,
 	validationPermissions,
+	isAdminEdit,
 	...props
 }) {
 	const t = useTranslation();
@@ -123,7 +124,9 @@ export default function UserForm({
 									flexGrow={1}
 									value={email}
 									disabled={!validationPermissions.email}
-									error={!isEmail(email) && email && email.length > 0 ? 'error' : undefined}
+									error={
+										(isAdminEdit || email.length > 0) && !isEmail(email) && email.length > 0 ? 'error' : undefined
+									}
 									onChange={handleEmail}
 									addon={<Icon name='mail' size='x20' />}
 								/>
@@ -148,7 +151,16 @@ export default function UserForm({
 							</Field.Row>
 						</Field>
 					),
-					[t, email, handleEmail, verified, handleVerified, errors, validationPermissions.email],
+					[
+						t,
+						email,
+						handleEmail,
+						verified,
+						handleVerified,
+						errors,
+						validationPermissions.email,
+						isAdminEdit,
+					],
 				)}
 				{useMemo(
 					() => (

@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useCallback } from 'react';
 
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
-import { usePermission } from '../../../contexts/AuthorizationContext';
+import { usePermission, useRole } from '../../../contexts/AuthorizationContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
@@ -41,7 +41,14 @@ function EditUser({ data, roles, ...props }) {
 		verified: usePermission('edit-other-user-info'),
 		password: usePermission('edit-other-user-password'),
 		roles: usePermission('assign-roles'),
+		viewFullOtherUserInfo: usePermission('view-full-other-user-info'),
+		isAdminEdit: useRole('admin'),
 	};
+
+	const isAdminEdit = useMemo(
+		() => validationPermissions.isAdmin || validationPermissions.viewFullOtherUserInfo,
+		[validationPermissions.isAdmin, validationPermissions.viewFullOtherUserInfo],
+	);
 
 	const validationKeys = {
 		name: (name) =>
@@ -57,7 +64,8 @@ function EditUser({ data, roles, ...props }) {
 		email: (email) =>
 			setErrors((errors) => ({
 				...errors,
-				email: !email.trim().length ? t('The_field_is_required', t('email')) : undefined,
+				email:
+					isAdminEdit && !email.trim().length ? t('The_field_is_required', t('email')) : undefined,
 			})),
 	};
 
@@ -146,9 +154,13 @@ function EditUser({ data, roles, ...props }) {
 			validationKeys[key] && validationKeys[key](value);
 			!validationPermissions[key] && delete valuesForQuery[key];
 		});
-		console.log(values);
+
 		const { name, username, email } = values;
-		if (name === '' || username === '' || (validationPermissions.email && email) === '') {
+		if (
+			name === '' ||
+			username === '' ||
+			(validationPermissions.email && isAdminEdit && email === '')
+		) {
 			return false;
 		}
 
@@ -207,6 +219,7 @@ function EditUser({ data, roles, ...props }) {
 			prepend={prepend}
 			append={append}
 			validationPermissions={validationPermissions}
+			isAdminEdit={isAdminEdit}
 			{...props}
 		/>
 	);
