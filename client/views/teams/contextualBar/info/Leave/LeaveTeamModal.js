@@ -51,7 +51,7 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 	if (step === 2) {
 		return (
 			<StepTwo
-				onConfirm={onConfirm}
+				onConfirm={() => onConfirm(selectedRooms)}
 				onCancel={rooms.length > 1 && onReturn}
 				onClose={onCancel}
 				lastOwnerRooms={Object.fromEntries(lastOwnerRooms.map((room) => [room._id, room]))}
