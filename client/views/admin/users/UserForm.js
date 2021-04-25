@@ -125,7 +125,9 @@ export default function UserForm({
 									value={email}
 									disabled={!validationPermissions.email}
 									error={
-										(isAdminEdit || email.length > 0) && !isEmail(email) && email.length > 0 ? 'error' : undefined
+										(isAdminEdit || email.length > 0) && !isEmail(email) && email.length > 0
+											? 'error'
+											: undefined
 									}
 									onChange={handleEmail}
 									addon={<Icon name='mail' size='x20' />}
