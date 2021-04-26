@@ -41,7 +41,6 @@ LivechatRooms.prototype.findAbandonedOpenRooms = function(date) {
 	return this.find({
 		'omnichannel.predictedVisitorAbandonmentAt': { $lte: date },
 		waitingResponse: { $exists: false },
-		servedBy: { $exists: true },
 		closedAt: { $exists: false },
 		open: true,
 	});
