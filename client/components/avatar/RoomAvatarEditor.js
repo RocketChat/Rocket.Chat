@@ -4,7 +4,6 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect } from 'react';
 
 import { getAvatarURL } from '../../../app/utils/lib/getAvatarURL';
-import { usePermission } from '../../contexts/AuthorizationContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFileInput } from '../../hooks/useFileInput';
 import RoomAvatar from './RoomAvatar';
@@ -30,8 +29,6 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...prop
 		!roomAvatar && reset();
 	}, [roomAvatar, reset]);
 
-	const canEditRoomAvatar = usePermission('edit-room-avatar');
-
 	const defaultUrl = room.prid
 		? getAvatarURL({ roomId: room.prid })
 		: getAvatarURL({ username: `@${room.name}` }); // Discussions inherit avatars from the parent room
@@ -54,12 +51,7 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...prop
 				m='x12'
 			>
 				<ButtonGroup>
-					<Button
-						small
-						title={t('Upload_user_avatar')}
-						disabled={!canEditRoomAvatar}
-						onClick={clickUpload}
-					>
+					<Button small title={t('Upload_user_avatar')} onClick={clickUpload}>
 						<Icon name='upload' size='x16' />
 						{t('Upload')}
 					</Button>
@@ -69,7 +61,7 @@ const RoomAvatarEditor = ({ room, roomAvatar, onChangeAvatar = () => {}, ...prop
 						small
 						danger
 						title={t('Accounts_SetDefaultAvatar')}
-						disabled={roomAvatar === null || !canEditRoomAvatar}
+						disabled={roomAvatar === null}
 						onClick={clickReset}
 					>
 						<Icon name='trash' size='x16' />

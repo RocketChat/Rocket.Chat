@@ -3,6 +3,7 @@ export { addUserToRoom } from './addUserToRoom';
 export { archiveRoom } from './archiveRoom';
 export { attachMessage } from './attachMessage';
 export { checkEmailAvailability } from './checkEmailAvailability';
+export { checkUsernameAvailability } from './checkUsernameAvailability';
 export { cleanRoomHistory } from './cleanRoomHistory';
 export { createRoom } from './createRoom';
 export { createDirectRoom } from './createDirectRoom';
