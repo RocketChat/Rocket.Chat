@@ -1,6 +1,6 @@
 import { FindOneOptions } from 'mongodb';
 
-import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember } from '../../../definition/ITeam';
+import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { ICreateRoomParams } from './IRoomService';
@@ -47,6 +47,12 @@ export interface IListRoomsFilter {
 	allowPrivateTeam: boolean;
 }
 
+export interface ITeamUpdateData {
+	name: string;
+	type: TEAM_TYPE;
+	updateRoom?: boolean; // default is true
+}
+
 export interface ITeamService {
 	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
 	addRooms(uid: string, rooms: Array<string>, teamId: string): Promise<Array<IRoom>>;
@@ -76,4 +82,5 @@ export interface ITeamService {
 	autocomplete(uid: string, name: string): Promise<Array<IRoom>>;
 	getAllPublicTeams(options: FindOneOptions<ITeam>): Promise<Array<ITeam>>;
 	getMembersByTeamIds(teamIds: Array<string>, options: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember>>;
+	update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void>;
 }
