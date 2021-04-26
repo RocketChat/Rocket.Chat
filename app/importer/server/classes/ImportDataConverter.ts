@@ -64,6 +64,8 @@ export class ImportDataConverter {
 
 	private _roomNameCache: Map<string, string>;
 
+	private _logger: NullableLogger;
+
 	constructor() {
 		this._userCache = new Map();
 		this._userDisplayNameCache = new Map();
@@ -72,7 +74,7 @@ export class ImportDataConverter {
 	}
 
 	setLogger(logger: NullableLogger): void {
-		this.logger = logger;
+		this._logger = logger;
 	}
 
 	addUserToCache(importId: string, _id: string, username: string | undefined): IUserIdentification {
@@ -168,8 +170,8 @@ export class ImportDataConverter {
 			try {
 				Users.update({ _id: existingUser._id }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
 			} catch (error) {
-				this.logger.warn(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
-				this.logger.error(error);
+				this._logger.warn(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
+				this._logger.error(error);
 			}
 		}
 	}
@@ -209,8 +211,8 @@ export class ImportDataConverter {
 				try {
 					Users.update({ _id: userId }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
 				} catch (error) {
-					this.logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
-					this.logger.error(error);
+					this._logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
+					this._logger.error(error);
 				}
 			}
 		});
@@ -286,7 +288,7 @@ export class ImportDataConverter {
 	}
 
 	saveError(importId: string, error: Error): void {
-		this.logger.error(error);
+		this._logger.error(error);
 		ImportData.update({
 			_id: importId,
 		}, {
@@ -407,7 +409,7 @@ export class ImportDataConverter {
 			const _id = this.findImportedRoomId(importId);
 
 			if (!_id || !name) {
-				this.logger.warn(`Mentioned room not found: ${ importId }`);
+				this._logger.warn(`Mentioned room not found: ${ importId }`);
 				continue;
 			}
 
@@ -438,7 +440,7 @@ export class ImportDataConverter {
 
 				const creator = this.findImportedUser(m.u._id);
 				if (!creator) {
-					this.logger.warn(`Imported user not found: ${ m.u._id }`);
+					this._logger.warn(`Imported user not found: ${ m.u._id }`);
 					throw new Error('importer-message-unknown-user');
 				}
 
@@ -491,8 +493,8 @@ export class ImportDataConverter {
 				try {
 					insertMessage(creator, msgObj, rid, true);
 				} catch (e) {
-					this.logger.warn(`Failed to import message with timestamp ${ String(msgObj.ts) } to room ${ rid }`);
-					this.logger.error(e);
+					this._logger.warn(`Failed to import message with timestamp ${ String(msgObj.ts) } to room ${ rid }`);
+					this._logger.error(e);
 				}
 
 				if (afterImportFn) {
@@ -507,8 +509,8 @@ export class ImportDataConverter {
 			try {
 				Rooms.resetLastMessageById(rid);
 			} catch (e) {
-				this.logger.warn(`Failed to update last message of room ${ rid }`);
-				this.logger.error(e);
+				this._logger.warn(`Failed to update last message of room ${ rid }`);
+				this._logger.error(e);
 			}
 		}
 	}
@@ -692,7 +694,7 @@ export class ImportDataConverter {
 
 		if (roomData.t === 'd') {
 			if (members.length < roomData.users.length) {
-				this.logger.warn(`One or more imported users not found: ${ roomData.users }`);
+				this._logger.warn(`One or more imported users not found: ${ roomData.users }`);
 				throw new Error('importer-channel-missing-users');
 			}
 		}
@@ -707,8 +709,8 @@ export class ImportDataConverter {
 				roomData._id = roomInfo.rid;
 			});
 		} catch (e) {
-			this.logger.warn(roomData.name, members);
-			this.logger.error(e);
+			this._logger.warn(roomData.name, members);
+			this._logger.error(e);
 			throw e;
 		}
 
