@@ -33,6 +33,21 @@ const validateUrl = (url, message) => {
 	}
 };
 
+const getParserWithCustomMarker = (marker, tagName) => (msg) => msg.replace(new RegExp(`(\\${ marker }+(?!\\s))([^\\${ marker }\r\n]+)(\\${ marker }+)`, 'gm'), (match, p1, p2, p3) => {
+	if (p2.substring(p2.length - 1).match(/\s/)) {
+		return match;
+	}
+	const usableMarkers = p1.length > 1 ? 2 : 1;
+	const finalMarkerCount = p3.length - usableMarkers >= 0 ? usableMarkers : 1;
+	return `${ p1.substring(finalMarkerCount) }<span class="copyonly">${ marker }</span><${ tagName }>${ p2 }</${ tagName }><span class="copyonly">${ marker }</span>${ p3.substring(finalMarkerCount) }`;
+});
+
+const parseBold = getParserWithCustomMarker('*', 'strong');
+
+const parseItalic = getParserWithCustomMarker('_', 'em');
+
+const parseStrike = getParserWithCustomMarker('~', 'strike');
+
 const parseNotEscaped = (message, {
 	supportSchemesForLink,
 	headers,
@@ -60,13 +75,13 @@ const parseNotEscaped = (message, {
 	}
 
 	// Support *text* to make bold
-	msg = msg.replace(/(|&gt;|[ >_~`])\*{1,2}([^\s^\*\r\n]+)\*{1,2}([<_~`]|\B|\b|$)/gm, '$1<span class="copyonly">*</span><strong>$2</strong><span class="copyonly">*</span>$3');
+	msg = parseBold(msg);
 
 	// Support _text_ to make italics
-	msg = msg.replace(/(^|&gt;|[ >*~`])\_{1,2}([^\s^\_\r\n]+)\_{1,2}([<*~`]|\B|\b|$)/gm, '$1<span class="copyonly">_</span><em>$2</em><span class="copyonly">_</span>$3');
+	msg = parseItalic(msg);
 
-	// Support ~text~ to strike through text
-	msg = msg.replace(/(^|&gt;|[ >_*`])\~{1,2}([^\s^~\r\n]+)\~{1,2}([<_*`]|\B|\b|$)/gm, '$1<span class="copyonly">~</span><strike>$2</strike><span class="copyonly">~</span>$3');
+	// // Support ~text~ to strike through text
+	msg = parseStrike(msg);
 
 	// Support for block quote
 	// >>>
