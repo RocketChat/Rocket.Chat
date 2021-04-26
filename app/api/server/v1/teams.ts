@@ -194,7 +194,11 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName, status, username, name } = this.queryParams;
 
-		// check(status, [String]);
+		check(teamId, Match.Maybe(String));
+		check(teamName, Match.Maybe(String));
+		check(status, Match.Maybe([String]));
+		check(username, Match.Maybe(String));
+		check(name, Match.Maybe(String));
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
