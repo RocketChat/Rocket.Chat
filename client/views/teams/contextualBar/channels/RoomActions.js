@@ -50,7 +50,7 @@ const RoomActions = ({ room, reload }) => {
 		content: (
 			<Box is='span' size='14px'>
 				{t('Team_Remove_from_team_modal_content', {
-					teamName: roomTypes.getRoomName(room.t, room),
+					channelName: roomTypes.getRoomName(room.t, room),
 				})}
 			</Box>
 		),
