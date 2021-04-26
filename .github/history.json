@@ -59198,6 +59198,117 @@
           ]
         }
       ]
+    },
+    "3.14.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0-alpha.4943",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21809",
+          "title": "Regression: Update fuselage for icons fix",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "21594",
+          "title": "[FIX] Too many request on loadHistory method",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21780",
+          "title": "regression: Markdown broken on safari",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21776",
+          "title": "Regression: Change CI files hashes for caching",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21270",
+          "title": "[FIX] Discussions not showing in Safari",
+          "userLogin": "Kartik18g",
+          "milestone": "3.14.0",
+          "contributors": [
+            "Kartik18g",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21741",
+          "title": "Regression: Reconnection not working properly due to changes on ECHD Proxy",
+          "userLogin": "rodrigok",
+          "description": "The ECHD Proxy implements a delay on websocket connection, the first implementation lost the reference to auto reconnect functionality.",
+          "milestone": "3.14.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "21731",
+          "title": "Regression: Fix scroll to bottom",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21739",
+          "title": "[FIX] Toolbox icons order",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "21747",
+          "title": "Regression: Bold, italic and strike render (Original markdown)",
+          "userLogin": "gabriellsh",
+          "description": "Modified regex to avoid spaces between the marked text and the symbols. Also made it possible to apply the three markings at the same time, independing of order.",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21757",
+          "title": "Regression: Fix room not returning to the previous room after directory",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21750",
+          "title": "Regression: Fix services Docker image build",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }

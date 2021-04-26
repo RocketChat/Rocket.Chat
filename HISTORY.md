@@ -1,6 +1,57 @@
 
 # 3.14.0 (Under Release Candidate Process)
 
+## 3.14.0-rc.1
+`2021-04-26  ·  3 🐛  ·  8 🔍  ·  7 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Discussions not showing in Safari ([#21270](https://github.com/RocketChat/Rocket.Chat/pull/21270) by [@Kartik18g](https://github.com/Kartik18g))
+
+- Too many request on loadHistory method ([#21594](https://github.com/RocketChat/Rocket.Chat/pull/21594))
+
+- Toolbox icons order ([#21739](https://github.com/RocketChat/Rocket.Chat/pull/21739))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Bold, italic and strike render (Original markdown) ([#21747](https://github.com/RocketChat/Rocket.Chat/pull/21747))
+
+  Modified regex to avoid spaces between the marked text and the symbols. Also made it possible to apply the three markings at the same time, independing of order.
+
+- Regression: Change CI files hashes for caching ([#21776](https://github.com/RocketChat/Rocket.Chat/pull/21776))
+
+- Regression: Fix room not returning to the previous room after directory ([#21757](https://github.com/RocketChat/Rocket.Chat/pull/21757))
+
+- Regression: Fix scroll to bottom ([#21731](https://github.com/RocketChat/Rocket.Chat/pull/21731))
+
+- Regression: Fix services Docker image build ([#21750](https://github.com/RocketChat/Rocket.Chat/pull/21750))
+
+- regression: Markdown broken on safari ([#21780](https://github.com/RocketChat/Rocket.Chat/pull/21780))
+
+- Regression: Reconnection not working properly due to changes on ECHD Proxy ([#21741](https://github.com/RocketChat/Rocket.Chat/pull/21741))
+
+  The ECHD Proxy implements a delay on websocket connection, the first implementation lost the reference to auto reconnect functionality.
+
+- Regression: Update fuselage for icons fix ([#21809](https://github.com/RocketChat/Rocket.Chat/pull/21809))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Kartik18g](https://github.com/Kartik18g)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 ## 3.14.0-rc.0
 `2021-04-21  ·  9 🎉  ·  9 🚀  ·  48 🐛  ·  20 🔍  ·  29 👩‍💻👨‍💻`
 
