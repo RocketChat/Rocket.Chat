@@ -25,6 +25,7 @@ import './methods/archiveRoom';
 import './methods/blockUser';
 import './methods/checkRegistrationSecretURL';
 import './methods/checkUsernameAvailability';
+import './methods/checkExistingPassword';
 import './methods/cleanRoomHistory';
 import './methods/createChannel';
 import './methods/createPrivateGroup';
