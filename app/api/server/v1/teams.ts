@@ -193,14 +193,18 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName, status, username, name } = this.queryParams;
-
+		
 		check(teamId, Match.Maybe(String));
 		check(teamName, Match.Maybe(String));
 		check(status, Match.Maybe([String]));
 		check(username, Match.Maybe(String));
 		check(name, Match.Maybe(String));
 
-		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!teamId && !teamName) {
+			return API.v1.failure('missing-teamId-or-teamName');
+		}
+
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName!));
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}
