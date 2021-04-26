@@ -9,14 +9,7 @@ type LegacyBannerProps = {
 };
 
 const LegacyBanner: FC<LegacyBannerProps> = ({ config }) => {
-	const {
-		closable = true,
-		title,
-		text,
-		html,
-		icon,
-		modifiers,
-	} = config;
+	const { closable = true, title, text, html, icon, modifiers } = config;
 
 	const inline = !modifiers?.includes('large');
 	const variant = modifiers?.includes('danger') ? 'danger' : 'info';
@@ -45,19 +38,21 @@ const LegacyBanner: FC<LegacyBannerProps> = ({ config }) => {
 		banners.close();
 	}, [config.onClose]);
 
-	return <Banner
-		inline={inline}
-		actionable={!!config.action}
-		closeable={closable}
-		icon={icon ? <Icon name={icon} size={20} /> : undefined}
-		title={title}
-		variant={variant}
-		onAction={handleAction}
-		onClose={handleClose}
-	>
-		{text}
-		{html && <div dangerouslySetInnerHTML={{ __html: html }} />}
-	</Banner>;
+	return (
+		<Banner
+			inline={inline}
+			actionable={!!config.action}
+			closeable={closable}
+			icon={icon ? <Icon name={icon} size={20} /> : undefined}
+			title={title}
+			variant={variant}
+			onAction={handleAction}
+			onClose={handleClose}
+		>
+			{text}
+			{html && <div dangerouslySetInnerHTML={{ __html: html }} />}
+		</Banner>
+	);
 };
 
 export default LegacyBanner;

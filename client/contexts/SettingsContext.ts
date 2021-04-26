@@ -1,18 +1,13 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import {
-	SettingId,
-	ISetting,
-	GroupId,
-	SectionName,
-} from '../../definition/ISetting';
+import { SettingId, ISetting, GroupId, SectionName } from '../../definition/ISetting';
 
 export type SettingsContextQuery = {
 	readonly _id?: SettingId[];
 	readonly group?: GroupId;
 	readonly section?: SectionName;
-}
+};
 
 export type SettingsContextValue = {
 	readonly hasPrivateAccess: boolean;
@@ -20,7 +15,7 @@ export type SettingsContextValue = {
 	readonly querySetting: (_id: SettingId) => Subscription<ISetting | undefined>;
 	readonly querySettings: (query: SettingsContextQuery) => Subscription<ISetting[]>;
 	readonly dispatch: (changes: Partial<ISetting>[]) => Promise<void>;
-}
+};
 
 export const SettingsContext = createContext<SettingsContextValue>({
 	hasPrivateAccess: false,
@@ -39,8 +34,7 @@ export const SettingsContext = createContext<SettingsContextValue>({
 export const useIsPrivilegedSettingsContext = (): boolean =>
 	useContext(SettingsContext).hasPrivateAccess;
 
-export const useIsSettingsContextLoading = (): boolean =>
-	useContext(SettingsContext).isLoading;
+export const useIsSettingsContextLoading = (): boolean => useContext(SettingsContext).isLoading;
 
 export const useSettingStructure = (_id: SettingId): ISetting | undefined => {
 	const { querySetting } = useContext(SettingsContext);
@@ -48,8 +42,7 @@ export const useSettingStructure = (_id: SettingId): ISetting | undefined => {
 	return useSubscription(subscription);
 };
 
-export const useSetting = (_id: SettingId): unknown | undefined =>
-	useSettingStructure(_id)?.value;
+export const useSetting = (_id: SettingId): unknown | undefined => useSettingStructure(_id)?.value;
 
 export const useSettings = (query?: SettingsContextQuery): ISetting[] => {
 	const { querySettings } = useContext(SettingsContext);
@@ -60,7 +53,9 @@ export const useSettings = (query?: SettingsContextQuery): ISetting[] => {
 export const useSettingsDispatch = (): ((changes: Partial<ISetting>[]) => Promise<void>) =>
 	useContext(SettingsContext).dispatch;
 
-export const useSettingSetValue = <T extends ISetting['value']>(_id: SettingId): ((value: T) => Promise<void>) => {
+export const useSettingSetValue = <T extends ISetting['value']>(
+	_id: SettingId,
+): ((value: T) => Promise<void>) => {
 	const dispatch = useSettingsDispatch();
 	return useCallback((value: T) => dispatch([{ _id, value }]), [dispatch, _id]);
 };
