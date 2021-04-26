@@ -12,8 +12,8 @@ import { generateUsernameSuggestion, insertMessage } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser } from '../../../../definition/IUser';
 
-// @ts-ignore
-type NullableLogger = Logger | Null;
+// @ts-ignore //@ToDo: Add the Logger class definitions.
+type FakeLogger = Logger;
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -64,7 +64,7 @@ export class ImportDataConverter {
 
 	private _roomNameCache: Map<string, string>;
 
-	private _logger: NullableLogger;
+	private _logger: FakeLogger;
 
 	constructor() {
 		this._userCache = new Map();
@@ -73,7 +73,7 @@ export class ImportDataConverter {
 		this._roomNameCache = new Map();
 	}
 
-	setLogger(logger: NullableLogger): void {
+	setLogger(logger: FakeLogger): void {
 		this._logger = logger;
 	}
 
