@@ -69,7 +69,7 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 
 	users
 		// .slice(0, 5)
-		.forEach(({ username, nickname, name, status, avatarETag, outside }) => {
+		.forEach(({ username, nickname, name, status, avatarETag, outside, isTeam, type }) => {
 			// if (records.length < 5) {
 			records.push({
 				_id: username,
@@ -79,6 +79,9 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 				status,
 				avatarETag,
 				outside,
+				teamMain: isTeam,
+				isTeam,
+				t: isTeam && type === 0 ? 'c' : 'p',
 				sort: 3,
 			});
 			// }
