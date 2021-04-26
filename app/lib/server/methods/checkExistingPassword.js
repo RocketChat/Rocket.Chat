@@ -10,6 +10,6 @@ Meteor.methods({
 		}
 		const user = Users.findOneById(userId);
 
-		return Boolean(user?.services?.password?.bcrypt?.trim());
+		return Boolean(user.services.password.bcrypt.trim());
 	},
 });
