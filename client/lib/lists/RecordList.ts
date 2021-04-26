@@ -48,8 +48,11 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 		return this.#itemCount ?? this.#index.size;
 	}
 
-	public get getText(): string {
-		return this._options.text;
+	public get getText(): any {
+		if (this._options) {
+			return this._options.text;
+		}
+		return null;
 	}
 
 	private insert(item: T): void {
