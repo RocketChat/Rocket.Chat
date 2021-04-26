@@ -22,6 +22,8 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 
 	#itemCount: number | undefined = undefined;
 
+	private _options: any;
+
 	protected filter(_item: T): boolean {
 		return true;
 	}
@@ -44,6 +46,10 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 
 	public get itemCount(): number {
 		return this.#itemCount ?? this.#index.size;
+	}
+
+	public get getText(): string {
+		return this._options.text;
 	}
 
 	private insert(item: T): void {
