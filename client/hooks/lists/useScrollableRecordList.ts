@@ -16,7 +16,11 @@ export const useScrollableRecordList = <T extends IRocketChatRecord>(
 } => {
 	const loadMoreItems = useCallback(
 		(start: number) => {
-			if (recordList.phase === AsyncStatePhase.LOADING || start + 1 < recordList.itemCount) {
+			if (
+				recordList.phase === AsyncStatePhase.LOADING ||
+				start + 1 < recordList.itemCount ||
+				recordList.getText === ''
+			) {
 				recordList.batchHandle(() => fetchBatchChanges(start, initialItemCount));
 			}
 		},
