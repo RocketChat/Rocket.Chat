@@ -4418,7 +4418,7 @@
   "You_followed_this_message": "Śledziłeś tę wiadomość.",
   "You_have_a_new_message": "Masz nową wiadomość",
   "You_have_been_muted": "Zostałeś wyciszony i nie możesz mówić w tym pokoju",
-  "You_have_n_codes_remaining": "Zostało ci __liczba__ kodów.",
+  "You_have_n_codes_remaining": "Zostało ci __number__ kodów.",
   "You_have_not_verified_your_email": "Nie zweryfikowałeś e-maila.",
   "You_have_successfully_unsubscribed": "Twój email został usunięty z naszej listy powiadomień.",
   "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Trzeba najpierw ustawić token API, aby móc korzystać z integracji.",
