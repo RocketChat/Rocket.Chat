@@ -57,17 +57,7 @@ export const getLdapTeamsByUsername = (username, ldap) => {
 		return [];
 	}
 
-	const items = ldapUserGroups.filter((field) => field && field.ou).map((field) => (typeof field.ou === 'string' ? field.ou.split(',') : field.ou));
-	const groups = [];
-	for (const item of items) {
-		if (Array.isArray(item)) {
-			groups.push(...item);
-		} else {
-			groups.push(item);
-		}
-	}
-
-	return groups;
+	return ldapUserGroups.filter((field) => field && field.ou).map((field) => field.ou).flat();
 };
 
 export const getRocketChatRolesByLdapRoles = (mappedRoles, ldapUserRoles) => {
@@ -101,9 +91,7 @@ export const getRocketChatTeamsByLdapTeams = (mappedTeams, ldapUserTeams) => {
 		return [];
 	}
 
-	const rcTeams = filteredTeams.map((ldapTeam) => mappedTeams[ldapTeam])
-		.reduce((acc, roles) => acc.concat(...roles));
-	return [...new Set(rcTeams)];
+	return [...new Set(filteredTeams.map((ldapTeam) => mappedTeams[ldapTeam]).flat())];
 };
 
 export const updateUserUsingMappedLdapRoles = (userId, roles) => {
@@ -111,7 +99,7 @@ export const updateUserUsingMappedLdapRoles = (userId, roles) => {
 };
 
 async function updateUserUsingMappedLdapTeamsAsync(userId, teamNames, map) {
-	const allTeamNames = [...new Set(Object.values(map).reduce((acc, roles) => acc.concat(...roles)))];
+	const allTeamNames = [...new Set(Object.values(map).flat())];
 	const allTeams = await Team.listByNames(allTeamNames, { projection: { _id: 1, name: 1 } });
 
 	const inTeamIds = allTeams.filter(({ name }) => teamNames.includes(name)).map(({ _id }) => _id);
