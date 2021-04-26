@@ -3,7 +3,7 @@ import { LivechatRooms } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 
 const afterReturnRoomAsInquiry = ({ room }: { room: any }): void => {
-	if (!room || !room._id || !room.omnichannel?.predictedVisitorAbandonmentAt) {
+	if (!room?._id || !room?.omnichannel?.predictedVisitorAbandonmentAt) {
 		return;
 	}
 
