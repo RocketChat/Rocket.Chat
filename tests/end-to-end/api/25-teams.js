@@ -1100,7 +1100,8 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.update', () => {
-		let testTeam; let testTeam2;
+		let testTeam;
+		let testTeam2;
 		before('Create test team', (done) => {
 			const teamName = `test-team-name${ Date.now() }`;
 			request.post(api('teams.create'))
@@ -1200,7 +1201,6 @@ describe('[Teams]', () => {
 
 		it('should not update team if permissions are not met', async () => {
 			const unauthorizedUser = await createUser();
-			console.log('new user: ', unauthorizedUser);
 			const unauthorizedUserCredentials = await login(unauthorizedUser.username, password);
 
 			const res = await request.post(api('teams.update'))
