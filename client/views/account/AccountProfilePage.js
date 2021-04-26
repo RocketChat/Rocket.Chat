@@ -132,7 +132,6 @@ const AccountProfilePage = () => {
 					},
 					customFields,
 				);
-
 				handlePassword('');
 				handleConfirmationPassword('');
 				const avatarResult = await updateAvatar();
