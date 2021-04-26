@@ -17,6 +17,8 @@ export class RoomStore extends Emitter<{
 
 	scroll?: number;
 
+	lm?: Date;
+
 	atBottom = true;
 
 	constructor(readonly rid: string) {
