@@ -4,12 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { StepOne, StepTwo } from '.';
 
 export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
-	const [step, setStep] = useState(() => {
-		if (rooms.length === 0) {
-			return 2;
-		}
-		return 1;
-	});
+	const [step, setStep] = useState(1);
 	const [selectedRooms, setSelectedRooms] = useState({});
 	const [keptRooms, setKeptRooms] = useState({});
 
@@ -48,7 +43,7 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 		onContinue();
 	});
 
-	if (step === 2) {
+	if (rooms.length === 0 || step === 2) {
 		return (
 			<StepTwo
 				onConfirm={() => onConfirm(selectedRooms)}
