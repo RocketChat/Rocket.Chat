@@ -5,6 +5,7 @@ import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
 import { settings } from '../../../settings';
+import { workspaceScopes } from '../oauthScopes';
 
 export function getWorkspaceAccessTokenWithScope(scope = '') {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
@@ -21,7 +22,7 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 	}
 
 	if (scope === '') {
-		return tokenResponse;
+		scope = workspaceScopes.join(' ');
 	}
 
 	const cloudUrl = settings.get('Cloud_Url');
@@ -59,6 +60,7 @@ export function getWorkspaceAccessTokenWithScope(scope = '') {
 	expiresAt.setSeconds(expiresAt.getSeconds() + authTokenResult.data.expires_in);
 
 	tokenResponse.expiresAt = expiresAt;
+	tokenResponse.token = authTokenResult.data.access_token;
 
 	return tokenResponse;
 }

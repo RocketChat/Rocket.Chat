@@ -7,6 +7,7 @@ import {
 	credentials,
 	apiPublicChannelName,
 	channel,
+	reservedWords,
 } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper';
@@ -836,6 +837,28 @@ describe('[Channels]', function() {
 	it('/channels.rename', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
+		function failRenameChannel(name) {
+			it(`should not rename a channel to the reserved name ${ name }`, (done) => {
+				request.post(api('channels.rename'))
+					.set(credentials)
+					.send({
+						roomId: channel._id,
+						name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `${ name } is already in use :( [error-field-unavailable]`);
+					})
+					.end(done);
+			});
+		}
+
+		reservedWords.forEach((name) => {
+			failRenameChannel(name);
+		});
+
 		return request.post(api('channels.rename'))
 			.set(credentials)
 			.send({
@@ -1497,6 +1520,82 @@ describe('[Channels]', function() {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('/channels.convertToTeam', () => {
+		before((done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({ name: `channel-${ Date.now() }` })
+				.then((response) => {
+					this.newChannel = response.body.channel;
+				})
+				.then(() => done());
+		});
+
+		it('should fail to convert channel if lacking edit-room permission', (done) => {
+			updatePermission('create-team', []).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('channels.convertToTeam'))
+						.set(credentials)
+						.send({ channelId: this.newChannel._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should fail to convert channel if lacking create-team permission', (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', []).then(() => {
+					request.post(api('channels.convertToTeam'))
+						.set(credentials)
+						.send({ channelId: this.newChannel._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should successfully convert a channel to a team', (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('channels.convertToTeam'))
+						.set(credentials)
+						.send({ channelId: this.newChannel._id })
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should fail to convert channel without the required parameters', (done) => {
+			request.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({})
+				.expect(400)
+				.end(done);
+		});
+
+		it('should fail to convert channel if it\'s already taken', (done) => {
+			request.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelId: this.newChannel._id })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
+				})
+				.end(done);
 		});
 	});
 });

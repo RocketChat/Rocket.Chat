@@ -48,10 +48,8 @@ const useParameters = () => {
 		let mounted = true;
 		const requestParameters = async () => {
 			try {
-				const {
-					settings = [],
-					allowStandaloneServer = false,
-				} = await getSetupWizardParameters() || {};
+				const { settings = [], allowStandaloneServer = false } =
+					(await getSetupWizardParameters()) || {};
 
 				if (!mounted) {
 					return;
@@ -92,29 +90,42 @@ const SetupWizardContext = createContext({
 
 function SetupWizardState() {
 	const [currentStep, setCurrentStep] = useStepRouting();
-	const {
-		loaded,
-		settings,
-		canDeclineServerRegistration,
-	} = useParameters();
+	const { loaded, settings, canDeclineServerRegistration } = useParameters();
 
-	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
-	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
+	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [
+		setCurrentStep,
+	]);
+	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [
+		setCurrentStep,
+	]);
 	const goToFinalStep = useCallback(() => setCurrentStep(finalStep), [setCurrentStep]);
 
-	const value = useMemo(() => ({
-		currentStep,
-		loaded,
-		settings,
-		canDeclineServerRegistration,
-		goToPreviousStep,
-		goToNextStep,
-		goToFinalStep,
-	}), [currentStep, loaded, settings, canDeclineServerRegistration, goToPreviousStep, goToNextStep, goToFinalStep]);
+	const value = useMemo(
+		() => ({
+			currentStep,
+			loaded,
+			settings,
+			canDeclineServerRegistration,
+			goToPreviousStep,
+			goToNextStep,
+			goToFinalStep,
+		}),
+		[
+			currentStep,
+			loaded,
+			settings,
+			canDeclineServerRegistration,
+			goToPreviousStep,
+			goToNextStep,
+			goToFinalStep,
+		],
+	);
 
-	return <SetupWizardContext.Provider value={value}>
-		<SetupWizardPage currentStep={currentStep} />
-	</SetupWizardContext.Provider>;
+	return (
+		<SetupWizardContext.Provider value={value}>
+			<SetupWizardPage currentStep={currentStep} />
+		</SetupWizardContext.Provider>
+	);
 }
 
 export const useSetupWizardContext = () => useContext(SetupWizardContext);
