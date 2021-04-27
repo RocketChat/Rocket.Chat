@@ -182,7 +182,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findChannelAndGroupListWithoutTeamsByNameStarting(name, groupsToAccept, options) {
+	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, groupsToAccept, options) {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
 		const query = {
@@ -192,20 +192,11 @@ export class RoomsRaw extends BaseRaw {
 			prid: {
 				$exists: false,
 			},
-			$or: [
-				{
-					t: 'c',
-				},
-				{
-					t: 'p',
-					_id: {
-						$in: groupsToAccept,
-					},
-				},
-			],
+			_id: {
+				$in: groupsToAccept,
+			},
 			name: nameRegex,
 		};
-
 		return this.find(query, options);
 	}
 
