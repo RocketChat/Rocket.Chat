@@ -12,6 +12,9 @@ import { generateUsernameSuggestion, insertMessage } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser } from '../../../../definition/IUser';
 
+// @ts-ignore //@ToDo: Add the Logger class definitions.
+type FakeLogger = Logger;
+
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
 type IUserIdentification = {
@@ -61,11 +64,17 @@ export class ImportDataConverter {
 
 	private _roomNameCache: Map<string, string>;
 
+	private _logger: FakeLogger;
+
 	constructor() {
 		this._userCache = new Map();
 		this._userDisplayNameCache = new Map();
 		this._roomCache = new Map();
 		this._roomNameCache = new Map();
+	}
+
+	setLogger(logger: FakeLogger): void {
+		this._logger = logger;
 	}
 
 	addUserToCache(importId: string, _id: string, username: string | undefined): IUserIdentification {
@@ -161,8 +170,8 @@ export class ImportDataConverter {
 			try {
 				Users.update({ _id: existingUser._id }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
 			} catch (error) {
-				console.warn(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
-				console.error(error);
+				this._logger.warn(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
+				this._logger.error(error);
 			}
 		}
 	}
@@ -202,8 +211,8 @@ export class ImportDataConverter {
 				try {
 					Users.update({ _id: userId }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
 				} catch (error) {
-					console.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
-					console.error(error);
+					this._logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
+					this._logger.error(error);
 				}
 			}
 		});
@@ -279,7 +288,7 @@ export class ImportDataConverter {
 	}
 
 	saveError(importId: string, error: Error): void {
-		console.error(error);
+		this._logger.error(error);
 		ImportData.update({
 			_id: importId,
 		}, {
@@ -400,7 +409,7 @@ export class ImportDataConverter {
 			const _id = this.findImportedRoomId(importId);
 
 			if (!_id || !name) {
-				console.warn(`Mentioned room not found: ${ importId }`);
+				this._logger.warn(`Mentioned room not found: ${ importId }`);
 				continue;
 			}
 
@@ -431,7 +440,7 @@ export class ImportDataConverter {
 
 				const creator = this.findImportedUser(m.u._id);
 				if (!creator) {
-					console.warn(`Imported user not found: ${ m.u._id }`);
+					this._logger.warn(`Imported user not found: ${ m.u._id }`);
 					throw new Error('importer-message-unknown-user');
 				}
 
@@ -484,8 +493,8 @@ export class ImportDataConverter {
 				try {
 					insertMessage(creator, msgObj, rid, true);
 				} catch (e) {
-					console.warn(`Failed to import message with timestamp ${ String(msgObj.ts) } to room ${ rid }`);
-					console.error(e);
+					this._logger.warn(`Failed to import message with timestamp ${ String(msgObj.ts) } to room ${ rid }`);
+					this._logger.error(e);
 				}
 
 				if (afterImportFn) {
@@ -500,8 +509,8 @@ export class ImportDataConverter {
 			try {
 				Rooms.resetLastMessageById(rid);
 			} catch (e) {
-				console.warn(`Failed to update last message of room ${ rid }`);
-				console.error(e);
+				this._logger.warn(`Failed to update last message of room ${ rid }`);
+				this._logger.error(e);
 			}
 		}
 	}
@@ -685,7 +694,7 @@ export class ImportDataConverter {
 
 		if (roomData.t === 'd') {
 			if (members.length < roomData.users.length) {
-				console.warn('One or more imported users not found: ${ roomData.users }');
+				this._logger.warn(`One or more imported users not found: ${ roomData.users }`);
 				throw new Error('importer-channel-missing-users');
 			}
 		}
@@ -700,8 +709,8 @@ export class ImportDataConverter {
 				roomData._id = roomInfo.rid;
 			});
 		} catch (e) {
-			console.warn(roomData.name, members);
-			console.error(e);
+			this._logger.warn(roomData.name, members);
+			this._logger.error(e);
 			throw e;
 		}
 
