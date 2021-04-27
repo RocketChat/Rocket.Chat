@@ -13,13 +13,14 @@ import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
+import CustomField from '../../../components/CustomField';
+import Field from '../../../components/Field';
+import Info from '../../../components/Info';
+import Label from '../../../components/Label';
 import { FormSkeleton } from '../../Skeleton';
 import AgentField from './AgentField';
 import ContactField from './ContactField';
-import CustomField from './CustomField';
 import DepartmentField from './DepartmentField';
-import Info from './Info';
-import Label from './Label';
 import PriorityField from './PriorityField';
 import VisitorClientInfo from './VisitorClientInfo';
 
@@ -93,7 +94,11 @@ function ChatInfo({ id, route }) {
 	});
 
 	if (state === AsyncStatePhase.LOADING) {
-		return <FormSkeleton />;
+		return (
+			<Box pi='x24'>
+				<FormSkeleton />
+			</Box>
+		);
 	}
 
 	if (error || !data || !data.room) {
@@ -109,7 +114,7 @@ function ChatInfo({ id, route }) {
 					{servedBy && <AgentField agent={servedBy} />}
 					{departmentId && <DepartmentField departmentId={departmentId} />}
 					{tags && tags.length > 0 && (
-						<>
+						<Field>
 							<Label>{t('Tags')}</Label>
 							<Info>
 								{tags.map((tag) => (
@@ -120,59 +125,59 @@ function ChatInfo({ id, route }) {
 									</Box>
 								))}
 							</Info>
-						</>
+						</Field>
 					)}
 					{topic && (
-						<>
+						<Field>
 							<Label>{t('Topic')}</Label>
 							<Info>{topic}</Info>
-						</>
+						</Field>
 					)}
 					{ts && (
-						<>
+						<Field>
 							<Label>{t('Queue_Time')}</Label>
 							{servedBy ? (
 								<Info>{moment(servedBy.ts).from(moment(ts), true)}</Info>
 							) : (
 								<Info>{moment(ts).fromNow(true)}</Info>
 							)}
-						</>
+						</Field>
 					)}
 					{closedAt && (
-						<>
+						<Field>
 							<Label>{t('Chat_Duration')}</Label>
 							<Info>{moment(closedAt).from(moment(ts), true)}</Info>
-						</>
+						</Field>
 					)}
 					{ts && (
-						<>
+						<Field>
 							<Label>{t('Created_at')}</Label>
 							<Info>{formatDateAndTime(ts)}</Info>
-						</>
+						</Field>
 					)}
 					{closedAt && (
-						<>
+						<Field>
 							<Label>{t('Closed_At')}</Label>
 							<Info>{formatDateAndTime(closedAt)}</Info>
-						</>
+						</Field>
 					)}
 					{servedBy?.ts && (
-						<>
+						<Field>
 							<Label>{t('Taken_at')}</Label>
 							<Info>{formatDateAndTime(servedBy.ts)}</Info>
-						</>
+						</Field>
 					)}
 					{metrics?.response?.avg && formatDuration(metrics.response.avg) && (
-						<>
+						<Field>
 							<Label>{t('Avg_response_time')}</Label>
 							<Info>{formatDuration(metrics.response.avg)}</Info>
-						</>
+						</Field>
 					)}
-					{!waitingResponse && (
-						<>
+					{!waitingResponse && responseBy?.lastMessageTs && (
+						<Field>
 							<Label>{t('Inactivity_Time')}</Label>
 							<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
-						</>
+						</Field>
 					)}
 					{canViewCustomFields() &&
 						livechatData &&

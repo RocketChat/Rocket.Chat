@@ -8,7 +8,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { goToRoomById } from '../../../../lib/goToRoomById';
-import Row from '../../../../sidebar/RoomList/Row';
+import Row from './Row';
 import { withData } from './withData';
 
 function DiscussionList({
@@ -70,7 +70,7 @@ function DiscussionList({
 					{!error && total > 0 && discussions.length > 0 && (
 						<>
 							<Virtuoso
-								style={{ height: blockSize, width: inlineSize, overflow: 'hidden' }}
+								style={{ minHeight: blockSize, width: inlineSize, overflow: 'hidden' }}
 								totalCount={total}
 								endReached={
 									loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))

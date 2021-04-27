@@ -2,6 +2,7 @@ import { Base } from './classes/ImporterBase';
 import { ImporterWebsocket } from './classes/ImporterWebsocket';
 import { Progress } from './classes/ImporterProgress';
 import { RawImports } from './models/RawImports';
+import { ImportData } from './models/ImportData';
 import { Selection } from './classes/ImporterSelection';
 import { SelectionChannel } from './classes/ImporterSelectionChannel';
 import { SelectionUser } from './classes/ImporterSelectionUser';
@@ -25,6 +26,7 @@ export {
 	Progress,
 	ProgressStep,
 	RawImports,
+	ImportData,
 	Selection,
 	SelectionChannel,
 	SelectionUser,
