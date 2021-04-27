@@ -1352,6 +1352,29 @@ describe('Meteor.methods', function() {
 				})
 				.end(done);
 		});
+
+		it('should not parse urls with <> in the sent message', (done) => {
+			request.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'https://rocket.chat is test1 and test2 is <https://youtube.com> and  https://github.com is test3' }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data.result.urls).to.have.lengthOf(2);
+					expect(data.result.urls[0].url).to.equal('https://rocket.chat');
+					expect(data.result.urls[1].url).to.equal('https://github.com');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[@updateMessage]', () => {

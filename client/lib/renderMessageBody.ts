@@ -7,7 +7,7 @@ export const renderMessageBody = <T extends Partial<IMessage> & { html?: string 
 ): string => {
 	const msgWithRemovedAngleBrackets = message.msg // remove the <> in urls
 		?.replace(
-			/(<)(?<actualURL>([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?)(>)/g,
+			/<(?<actualURL>([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?)>/g,
 			'$<actualURL>',
 		);
 
