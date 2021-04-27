@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
 import * as Mailer from '../../../mailer';
-import { Users, Subscriptions } from '../../../models';
+import { Users, Subscriptions, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
@@ -39,8 +39,10 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 
 	if (active === false) {
 		Users.unsetLoginTokens(userId);
+		Rooms.setReadOnlyByUserId(userId, true, false);
 	} else {
 		Users.unsetReason(userId);
+		Rooms.setReadOnlyByUserId(userId, false, false);
 	}
 	if (active && !settings.get('Accounts_Send_Email_When_Activating')) {
 		return true;

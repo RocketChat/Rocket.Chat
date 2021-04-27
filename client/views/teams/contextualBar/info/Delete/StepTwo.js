@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
@@ -25,7 +26,8 @@ export const StepTwo = ({
 			onClose={onCancel}
 			confirmText={t('Continue')}
 		>
-			{t('Teams_delete_team_choose_channels')}
+			<Box>{t('Teams_delete_team_choose_channels')}</Box>
+			<Box mbs='x20'>{t('Teams_delete_team_public_notice')}</Box>
 			<ChannelDeletionTable
 				onToggleAllRooms={onToggleAllRooms}
 				rooms={rooms}
