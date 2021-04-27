@@ -26,6 +26,14 @@ const validateLDAPRolesMappingStructure = (mappedRoles) => {
 	}
 };
 
+const validateLDAPTeamsMappingStructure = (mappedTeams) => {
+	const mappedRocketChatTeams = Object.values(mappedTeams);
+	const validStructureMapping = mappedRocketChatTeams.every(mustBeAnArrayOfStrings);
+	if (!validStructureMapping) {
+		throw new Error('Please verify your mapping for LDAP X RocketChat Teams. The structure is invalid, the structure should be an object like: {key: LdapTeam, value: [An array of rocket.chat teams]}');
+	}
+};
+
 export const getLdapRolesByUsername = (username, ldap) => {
 	const searchOptions = {
 		filter: settings.get('LDAP_Query_To_Get_User_Groups').replace(/#{username}/g, username),
@@ -43,9 +51,13 @@ export const getLdapTeamsByUsername = (username, ldap) => {
 		scope: ldap.options.User_Search_Scope || 'sub',
 		sizeLimit: ldap.options.Search_Size_Limit,
 	};
-	const getLdapTeams = (ldapUserGroups) => ldapUserGroups.filter((field) => field && field.ou).map((field) => field.ou);
 	const ldapUserGroups = ldap.searchAllSync(ldap.options.BaseDN, searchOptions);
-	return Array.isArray(ldapUserGroups) ? getLdapTeams(ldapUserGroups) : [];
+
+	if (!Array.isArray(ldapUserGroups)) {
+		return [];
+	}
+
+	return ldapUserGroups.filter((field) => field && field.ou).map((field) => field.ou).flat();
 };
 
 export const getRocketChatRolesByLdapRoles = (mappedRoles, ldapUserRoles) => {
@@ -79,8 +91,7 @@ export const getRocketChatTeamsByLdapTeams = (mappedTeams, ldapUserTeams) => {
 		return [];
 	}
 
-	const rcTeams = filteredTeams.map((ldapTeam) => mappedTeams[ldapTeam]);
-	return [...new Set(rcTeams)];
+	return [...new Set(filteredTeams.map((ldapTeam) => mappedTeams[ldapTeam]).flat())];
 };
 
 export const updateUserUsingMappedLdapRoles = (userId, roles) => {
@@ -88,7 +99,7 @@ export const updateUserUsingMappedLdapRoles = (userId, roles) => {
 };
 
 async function updateUserUsingMappedLdapTeamsAsync(userId, teamNames, map) {
-	const allTeamNames = [...new Set(Object.values(map))];
+	const allTeamNames = [...new Set(Object.values(map).flat())];
 	const allTeams = await Team.listByNames(allTeamNames, { projection: { _id: 1, name: 1 } });
 
 	const inTeamIds = allTeams.filter(({ name }) => teamNames.includes(name)).map(({ _id }) => _id);
@@ -112,6 +123,19 @@ export const validateLDAPRolesMappingChanges = () => {
 				const mappedRoles = JSON.parse(value);
 				validateLDAPRolesMappingStructure(mappedRoles);
 				validateRoleMapping(mappedRoles);
+			}
+		} catch (error) {
+			logger.error(error);
+		}
+	});
+};
+
+export const validateLDAPTeamsMappingChanges = () => {
+	settings.get('LDAP_Groups_To_Rocket_Chat_Teams', (key, value) => {
+		try {
+			if (value) {
+				const mappedTeams = JSON.parse(value);
+				validateLDAPTeamsMappingStructure(mappedTeams);
 			}
 		} catch (error) {
 			logger.error(error);
