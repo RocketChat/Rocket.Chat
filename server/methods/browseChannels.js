@@ -208,7 +208,8 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', 'usersCount', ['channels', 'teams'].includes(...type) ? ['usernames', 'lastMessage'] : [], ...type === 'users' ? ['username', 'email', 'bio'] : []].includes(sortBy)) {
+		// eslint-disable-next-line no-extra-parens
+		if (!['name', 'createdAt', 'usersCount', ...(['channels', 'teams'].includes(type) ? ['usernames', 'lastMessage'] : []), ...(type === 'users' ? ['username', 'email', 'bio'] : [])].includes(sortBy)) {
 			return;
 		}
 
