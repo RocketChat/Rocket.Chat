@@ -275,7 +275,7 @@ export class CachedCollection extends Emitter {
 				let room;
 				if (this.eventName === 'subscriptions-changed') {
 					room = ChatRoom.findOne(record.rid);
-					this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
+					room && this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
 				} else {
 					room = this.collection.findOne({
 						_id: record._id,

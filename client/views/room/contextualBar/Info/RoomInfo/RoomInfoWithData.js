@@ -78,6 +78,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 		const onConfirm = async () => {
 			try {
 				resetState && resetState({});
+				onClickClose();
 				await deleteRoom({ roomId: rid });
 				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
 				!resetState && router.push({});
