@@ -12,14 +12,17 @@ export const createReactiveSubscriptionFactory = <T>(
 
 	const callbacks = new Set<Unsubscribe>();
 
-	let currentValue: T;
+	let currentValue = computeCurrentValue();
 
-	const computation = Tracker.autorun(() => {
-		currentValue = computeCurrentValue();
-		callbacks.forEach((callback) => {
-			callback();
+	let computation: Tracker.Computation | undefined;
+	const timeout = setTimeout(() => {
+		computation = Tracker.autorun(() => {
+			currentValue = computeCurrentValue();
+			callbacks.forEach((callback) => {
+				callback();
+			});
 		});
-	});
+	}, 0);
 
 	return {
 		getCurrentValue: (): T => currentValue,
@@ -27,10 +30,12 @@ export const createReactiveSubscriptionFactory = <T>(
 			callbacks.add(callback);
 
 			return (): void => {
+				clearTimeout(timeout);
+
 				callbacks.delete(callback);
 
 				if (callbacks.size === 0) {
-					computation.stop();
+					computation && computation.stop();
 				}
 			};
 		},
