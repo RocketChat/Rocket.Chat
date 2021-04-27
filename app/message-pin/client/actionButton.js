@@ -51,8 +51,11 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition({ msg, subscription }) {
+		condition({ msg, subscription, u }) {
 			if (!subscription || !settings.get('Message_AllowPinning') || !msg.pinned) {
+				return false;
+			}
+			if (hasAtLeastOnePermission('edit-room', msg.rid) || !(msg.pinnedBy._id === Meteor.userId())) {
 				return false;
 			}
 
