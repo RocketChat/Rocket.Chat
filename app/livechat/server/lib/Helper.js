@@ -260,7 +260,7 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 			sender: v,
 			hasMentionToAll: true, // consider all agents to be in the room
 			hasMentionToHere: false,
-			message: Object.assign({}, { u: v }),
+			message: Object.assign({}, { u: v, rid }),
 			notificationMessage: TAPi18n.__('User_started_a_new_conversation', { username: notificationUserName }, language),
 			room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
 			mentionIds: [],

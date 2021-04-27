@@ -9,12 +9,13 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { e2e } from '../../../e2e/client';
-import { Users, ChatSubscription } from '../../../models';
+import { Users } from '../../../models';
 import { getUserPreference } from '../../../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { getAvatarAsPng } from '../../../ui-utils';
 import { promises } from '../../../promises/client';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
+import { roomTypes } from '../../../utils/client';
 
 export const KonchatNotification = {
 	notificationStatus: new ReactiveVar(),
@@ -103,22 +104,13 @@ export const KonchatNotification = {
 	newMessage(rid) {
 		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
 			const userId = Meteor.userId();
-			const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
 			const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
 
-			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
+			const emitNewMessageNotification = roomTypes.emitNewMessageNotification(rid);
 
-			if (sub && sub.audioNotificationValue !== 'none') {
-				if (sub && sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-					CustomSounds.play(sub.audioNotificationValue, {
-						volume: Number((audioVolume / 100).toPrecision(2)),
-					});
-				} else if (newMessageNotification !== 'none') {
-					CustomSounds.play(newMessageNotification, {
-						volume: Number((audioVolume / 100).toPrecision(2)),
-					});
-				}
-			}
+			emitNewMessageNotification && CustomSounds.play(emitNewMessageNotification, {
+				volume: Number((audioVolume / 100).toPrecision(2)),
+			});
 		}
 	},
 

@@ -5,7 +5,7 @@ import { ChatRoom } from '../../models';
 import { settings } from '../../settings';
 import { hasPermission } from '../../authorization';
 import { openRoom } from '../../ui-utils';
-import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig } from '../../utils';
+import { RoomMemberActions, RoomSettingsEnum, UiTextContext, RoomTypeRouteConfig, RoomTypeConfig, getUserPreference } from '../../utils';
 import { getAvatarURL } from '../../utils/lib/getAvatarURL';
 
 let LivechatInquiry;
@@ -129,5 +129,10 @@ export default class LivechatRoomType extends RoomTypeConfig {
 
 	showQuickActionButtons() {
 		return true;
+	}
+
+	emitNewMessageNotification() {
+		const userId = Meteor.userId();
+		return getUserPreference(userId, 'newRoomNotification');
 	}
 }

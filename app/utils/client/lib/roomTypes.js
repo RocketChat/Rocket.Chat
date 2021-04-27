@@ -1,9 +1,11 @@
+import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 
 import { RoomTypesCommon } from '../../lib/RoomTypesCommon';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { ChatRoom, ChatSubscription } from '../../../models';
+import { getUserPreference } from '../..';
 
 export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	checkCondition(roomType) {
@@ -65,6 +67,22 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 
 	canSendMessage(rid) {
 		return ChatSubscription.find({ rid }).count() > 0;
+	}
+
+	emitNewMessageNotification(rid) {
+		const roomType = this.getRoomType(rid);
+		const newMessageNotificationFunction = this.roomTypes[roomType || 'l'].emitNewMessageNotification;
+
+		if (typeof newMessageNotificationFunction === 'function') {
+			return newMessageNotificationFunction();
+		}
+
+		const userId = Meteor.userId();
+		const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
+		const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
+		const audioValue = sub?.audioNotificationValue || newMessageNotification;
+
+		return audioValue !== 'none' && audioValue !== '0' && audioValue;
 	}
 
 	readOnly(rid, user) {
