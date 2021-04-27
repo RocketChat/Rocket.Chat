@@ -18,6 +18,7 @@ import { IRoom } from '../../../../../../definition/IRoom';
 import PlaceChatOnHoldModal from '../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import Header from '../../../../../components/Header';
 import CloseChatModal from '../../../../../components/Omnichannel/modals/CloseChatModal';
+import CloseChatModalData from '../../../../../components/Omnichannel/modals/CloseChatModalData';
 import ForwardChatModal from '../../../../../components/Omnichannel/modals/ForwardChatModal';
 import ReturnChatQueueModal from '../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../components/Omnichannel/modals/TranscriptModal';
@@ -213,7 +214,17 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 				);
 				break;
 			case QuickActionsEnum.CloseChat:
-				setModal(<CloseChatModal onConfirm={handleClose} onCancel={closeModal} />);
+				setModal(
+					room?.departmentId ? (
+						<CloseChatModalData
+							departmentId={room?.departmentId}
+							onConfirm={handleClose}
+							onCancel={closeModal}
+						/>
+					) : (
+						<CloseChatModal onConfirm={handleClose} onCancel={closeModal} />
+					),
+				);
 				break;
 			case QuickActionsEnum.OnHoldChat:
 				setModal(<PlaceChatOnHoldModal onOnHoldChat={handleOnHoldChat} onCancel={closeModal} />);

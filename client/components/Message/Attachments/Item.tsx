@@ -7,7 +7,7 @@ import { isFileAttachment, FileAttachment } from './Files';
 import { QuoteAttachment, QuoteAttachmentProps } from './QuoteAttachment';
 
 const isQuoteAttachment = (attachment: AttachmentProps): attachment is QuoteAttachmentProps =>
-	'message_link' in attachment;
+	'message_link' in attachment && attachment.message_link !== null;
 
 const Item: FC<{ attachment: AttachmentProps; file?: FileProp }> = ({ attachment, file }) => {
 	if (isFileAttachment(attachment)) {

@@ -58,11 +58,8 @@ function ImportHistoryPage() {
 		t,
 	]);
 
-	const hasAnySuccessfulSlackImport = useMemo(
-		() =>
-			latestOperations?.some(
-				({ importerKey, status }) => importerKey === 'slack' && status === ProgressStep.DONE,
-			),
+	const hasAnySuccessfulImport = useMemo(
+		() => latestOperations?.some(({ status }) => status === ProgressStep.DONE),
 		[latestOperations],
 	);
 
@@ -119,12 +116,12 @@ function ImportHistoryPage() {
 					<Button primary disabled={isLoading} onClick={handleNewImportClick}>
 						{t('Import_New_File')}
 					</Button>
-					{hasAnySuccessfulSlackImport && (
+					{hasAnySuccessfulImport && (
 						<Button disabled={isLoading} onClick={handleDownloadPendingFilesClick}>
 							{t('Download_Pending_Files')}
 						</Button>
 					)}
-					{hasAnySuccessfulSlackImport && (
+					{hasAnySuccessfulImport && (
 						<Button disabled={isLoading} onClick={handleDownloadPendingAvatarsClick}>
 							{t('Download_Pending_Avatars')}
 						</Button>

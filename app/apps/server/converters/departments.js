@@ -25,6 +25,13 @@ export class AppDepartmentsConverter {
 			enabled: 'enabled',
 			numberOfAgents: 'numAgents',
 			showOnOfflineForm: 'showOnOfflineForm',
+			description: 'description',
+			offlineMessageChannelName: 'offlineMessageChannelName',
+			requestTagBeforeClosingChat: 'requestTagBeforeClosingChat',
+			chatClosingTags: 'chatClosingTags',
+			abandonedRoomsCloseCustomMessage: 'abandonedRoomsCloseCustomMessage',
+			waitingQueueMessage: 'waitingQueueMessage',
+			departmentsAllowedToForward: 'departmentsAllowedToForward',
 			showOnRegistration: 'showOnRegistration',
 		};
 
@@ -45,6 +52,13 @@ export class AppDepartmentsConverter {
 			numAgents: department.numberOfAgents,
 			showOnOfflineForm: department.showOnOfflineForm,
 			showOnRegistration: department.showOnRegistration,
+			description: department.description,
+			offlineMessageChannelName: department.offlineMessageChannelName,
+			requestTagBeforeClosingChat: department.requestTagBeforeClosingChat,
+			chatClosingTags: department.chatClosingTags,
+			abandonedRoomsCloseCustomMessage: department.abandonedRoomsCloseCustomMessage,
+			waitingQueueMessage: department.waitingQueueMessage,
+			departmentsAllowedToForward: department.departmentsAllowedToForward,
 		};
 
 		return Object.assign(newDepartment, department._unmappedProperties_);
