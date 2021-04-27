@@ -638,6 +638,10 @@ export const Livechat = {
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
+		Meteor.defer(() => {
+			callbacks.run('livechat:afterReturnRoomAsInquiry', { room });
+		});
+
 		return true;
 	},
 
