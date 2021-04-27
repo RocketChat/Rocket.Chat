@@ -1705,6 +1705,8 @@
   "error-user-registration-disabled": "User registration is disabled",
   "error-user-registration-secret": "User registration is only allowed via Secret URL",
   "error-validating-department-chat-closing-tags": "At least one closing tag is required when the department requires tag(s) on closing conversations.",
+  "error-no-permission-team-channel": "You don't have permission to add this channel to the team",
+  "error-no-owner-channel": "Only owners can add this channel to the team",
   "error-you-are-last-owner": "You are the last owner. Please set new owner before leaving the room.",
   "Errors_and_Warnings": "Errors and Warnings",
   "Esc_to": "Esc to",
