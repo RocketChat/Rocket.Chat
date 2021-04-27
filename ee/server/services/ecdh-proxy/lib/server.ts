@@ -1,3 +1,5 @@
+/* eslint import/no-unresolved: 0 */
+
 import http, { RequestOptions } from 'http';
 import url from 'url';
 import { Readable } from 'stream';
