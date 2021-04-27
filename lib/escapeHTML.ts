@@ -5,6 +5,7 @@ const characterToHtmlEntityCode = {
 	'€': 'euro',
 	'©': 'copy',
 	'®': 'reg',
+	'™': 'trade',
 	'<': 'lt',
 	'>': 'gt',
 	'"': 'quot',

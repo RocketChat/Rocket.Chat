@@ -10,7 +10,7 @@ describe('escapeHTML', () => {
 		assert.strictEqual(escapeHTML('&lt;'), '&amp;lt;');
 		assert.strictEqual(escapeHTML(' '), ' ');
 		assert.strictEqual(escapeHTML('¢'), '&cent;');
-		assert.strictEqual(escapeHTML('¢ £ ¥ € © ®'), '&cent; &pound; &yen; &euro; &copy; &reg;');
+		assert.strictEqual(escapeHTML('¢ £ ¥ € © ® ™'), '&cent; &pound; &yen; &euro; &copy; &reg; &trade;');
 		assert.strictEqual(escapeHTML(5 as unknown as string), '5');
 		assert.strictEqual(escapeHTML(''), '');
 		assert.strictEqual(escapeHTML(null as unknown as string), '');

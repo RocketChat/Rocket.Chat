@@ -24,6 +24,7 @@ describe('unescapeHTML', () => {
 		assert.strictEqual(unescapeHTML('&nbsp;'), ' ');
 		assert.strictEqual(unescapeHTML('what is the &yen; to &pound; to &euro; conversion process?'), 'what is the ¥ to £ to € conversion process?');
 		assert.strictEqual(unescapeHTML('&reg; trademark'), '® trademark');
+		assert.strictEqual(unescapeHTML('&trade; unregistered trademark'), '™ unregistered trademark');
 		assert.strictEqual(unescapeHTML('&copy; 1992. License available for 50 &cent;'), '© 1992. License available for 50 ¢');
 		assert.strictEqual(unescapeHTML('&nbsp;'), ' ');
 		assert.strictEqual(unescapeHTML('&nbsp;'), ' ');

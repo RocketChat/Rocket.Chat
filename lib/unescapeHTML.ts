@@ -6,6 +6,7 @@ const htmlEntityCodeToCharacter = {
 	euro: '€',
 	copy: '©',
 	reg: '®',
+	trade: '™',
 	lt: '<',
 	gt: '>',
 	quot: '"',
