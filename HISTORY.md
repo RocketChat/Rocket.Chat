@@ -1,6 +1,56 @@
 
 # 3.14.0 (Under Release Candidate Process)
 
+## 3.14.0-rc.2
+`2021-04-27  ·  2 🐛  ·  7 🔍  ·  8 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Attachment files are not rendered properly on SMS channels ([#21746](https://github.com/RocketChat/Rocket.Chat/pull/21746))
+
+- Omnichannel Activity Monitor closing chats returned to the queue ([#21782](https://github.com/RocketChat/Rocket.Chat/pull/21782))
+
+  Fix `VisitorInactivityMonitor` is still monitoring rooms that returned to `Queue Chats`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Add tests for teams.update REST endpoint ([#21653](https://github.com/RocketChat/Rocket.Chat/pull/21653))
+
+  add more tests to this endpoint
+
+- Chore: Cache EE node_modules on CI ([#21831](https://github.com/RocketChat/Rocket.Chat/pull/21831))
+
+- QoL improvements to add channel to team flow ([#21778](https://github.com/RocketChat/Rocket.Chat/pull/21778))
+
+  - Fixed canAccessRoom validation  
+  - Added e2e tests  
+  - Removed channels that user cannot add to the team from autocomplete suggestions  
+  - Improved error messages
+
+- regression: Italic being parsed with surrounding non-whitespace text ([#21815](https://github.com/RocketChat/Rocket.Chat/pull/21815))
+
+- Regression: Problem with Importer's logs ([#21812](https://github.com/RocketChat/Rocket.Chat/pull/21812))
+
+- Regression: team sync not accepting multiple teams ([#21768](https://github.com/RocketChat/Rocket.Chat/pull/21768))
+
+- Regression: Unread Threads Header and List ([#21816](https://github.com/RocketChat/Rocket.Chat/pull/21816))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@g-thome](https://github.com/g-thome)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.14.0-rc.1
 `2021-04-26  ·  3 🐛  ·  8 🔍  ·  7 👩‍💻👨‍💻`
 
