@@ -4,21 +4,11 @@ import React, { memo } from 'react';
 import { roomTypes } from '../../../app/utils/client';
 import { ReactiveUserStatus } from '../../components/UserStatus';
 
-const UserItem = ({
-	item,
-	id,
-	style,
-	t,
-	SideBarItemTemplate,
-	AvatarTemplate,
-	useRealName,
-	sidebarViewMode,
-}) => {
+const UserItem = ({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName }) => {
 	const title = useRealName ? item.fname || item.name : item.name || item.fname;
-	const small = sidebarViewMode !== 'medium';
 	const icon = (
 		<Sidebar.Item.Icon>
-			<ReactiveUserStatus small={small && 'small'} uid={item._id} />
+			<ReactiveUserStatus uid={item._id} />
 		</Sidebar.Item.Icon>
 	);
 	const href = roomTypes.getRouteLink(item.t, item);
