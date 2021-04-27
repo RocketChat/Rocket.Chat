@@ -26,8 +26,12 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition({ msg, subscription }) {
+		condition({ msg, subscription, room }) {
+			console.log(msg, subscription, room)
 			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
+				return false;
+			}
+			if (room.ro && !hasAtLeastOnePermission('post-readonly', msg.rid)) {
 				return false;
 			}
 
@@ -51,8 +55,11 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition({ msg, subscription }) {
+		condition({ msg, subscription, room }) {
 			if (!subscription || !settings.get('Message_AllowPinning') || !msg.pinned) {
+				return false;
+			}
+			if (room.ro && !hasAtLeastOnePermission('post-readonly', msg.rid)) {
 				return false;
 			}
 
