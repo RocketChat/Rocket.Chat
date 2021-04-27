@@ -27,7 +27,6 @@ Meteor.startup(function() {
 			});
 		},
 		condition({ msg, subscription, room }) {
-			console.log(msg, subscription, room)
 			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
 				return false;
 			}
