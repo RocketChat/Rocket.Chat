@@ -53,6 +53,8 @@ const italic = {
 	'__ __': '__ __',
 	'_ Hello_': '_ Hello_',
 	'_Hello _': '_Hello _',
+	':custom_emoji_case:': ':custom_emoji_case:',
+	text_hello_text: 'text_hello_text',
 	'_Hel lo_': italicWrapper('Hel lo'),
 	_Hello_: italicWrapper('Hello'),
 	__Hello__: italicWrapper('Hello'),
