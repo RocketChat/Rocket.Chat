@@ -74,7 +74,11 @@ function WorkspaceRegistrationSection({
 				</Field>
 
 				<ButtonGroup>
-					<Button primary disabled={isProcessing || !token.length} onClick={handleConnectButtonClick}>
+					<Button
+						primary
+						disabled={isProcessing || !token.length}
+						onClick={handleConnectButtonClick}
+					>
 						{t('Connect')}
 					</Button>
 				</ButtonGroup>
