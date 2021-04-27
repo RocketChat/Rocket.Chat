@@ -47,7 +47,7 @@ function AddCustomEmoji({ close, onChange, ...props }) {
 		} else {
 			dispatchToastMessage({
 				type: 'error',
-				message: t('You_Can_not_use_special_characters_in_custom_emoji'),
+				message: t('custom_emoji_special_characters'),
 			});
 		}
 	}, [emojiFile, name, aliases, saveAction, onChange, close]);
