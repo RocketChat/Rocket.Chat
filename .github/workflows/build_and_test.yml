@@ -149,7 +149,6 @@ jobs:
     - name: Try building micro services
       run: |
         cd ./ee/server/services
-        npm i
         npm run build
         rm -rf dist/
 
@@ -242,7 +241,9 @@ jobs:
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
-        path: node_modules
+        path: |
+          ./node_modules
+          ./ee/server/services/node_modules
         key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: NPM install
@@ -304,7 +305,9 @@ jobs:
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
-        path: node_modules
+        path: |
+          ./node_modules
+          ./ee/server/services/node_modules
         key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
