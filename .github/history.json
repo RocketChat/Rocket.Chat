@@ -59309,6 +59309,109 @@
           ]
         }
       ]
+    },
+    "3.14.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0-alpha.4943",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21782",
+          "title": "[FIX] Omnichannel Activity Monitor closing chats returned to the queue",
+          "userLogin": "murtaza98",
+          "description": "Fix `VisitorInactivityMonitor` is still monitoring rooms that returned to `Queue Chats`",
+          "milestone": "3.14.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21812",
+          "title": "Regression: Problem with Importer's logs",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.14.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21653",
+          "title": "Chore: Add tests for teams.update REST endpoint",
+          "userLogin": "g-thome",
+          "description": "add more tests to this endpoint",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "21778",
+          "title": "QoL improvements to add channel to team flow",
+          "userLogin": "KevLehman",
+          "description": "- Fixed canAccessRoom validation\r\n- Added e2e tests\r\n- Removed channels that user cannot add to the team from autocomplete suggestions\r\n- Improved error messages",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21831",
+          "title": "Chore: Cache EE node_modules on CI",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21768",
+          "title": "Regression: team sync not accepting multiple teams",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.14.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21815",
+          "title": "regression: Italic being parsed with surrounding non-whitespace text",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21816",
+          "title": "Regression: Unread Threads Header and List",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21746",
+          "title": "[FIX] Attachment files are not rendered properly on SMS channels",
+          "userLogin": "renatobecker",
+          "milestone": "3.14.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
