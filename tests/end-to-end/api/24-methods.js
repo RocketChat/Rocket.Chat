@@ -1714,7 +1714,7 @@ describe('Meteor.methods', function() {
 				});
 		});
 
-		/* it('should keep readonly=true when user is activated (and the other side is deactivated)', (done) => {
+		it('should keep readonly=true when user is activated (and the other side is deactivated)', (done) => {
 			request.post(methodCall('getRoomByTypeAndName'))
 				.set(testUserCredentials)
 				.send({
@@ -1729,6 +1729,6 @@ describe('Meteor.methods', function() {
 					expect(result.result.ro).to.equal(false);
 					done();
 				});
-		}); */
+		});
 	});
 });
