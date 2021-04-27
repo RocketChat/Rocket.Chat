@@ -91,7 +91,7 @@
 		"chai": "^4.2.0",
 		"chai-datetime": "^1.7.0",
 		"chai-spies": "^1.0.0",
-		"cypress": "^4.12.1",
+		"cypress": "^7.1.0",
 		"emojione-assets": "^4.5.0",
 		"eslint": "^6.8.0",
 		"eslint-config-prettier": "^8.1.0",
