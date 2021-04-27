@@ -109,7 +109,7 @@ function AddCustomSound({ goToNew, close, onChange, ...props }) {
 						<Button
 							primary
 							onClick={handleSave}
-							disabled={name === '' || typeof sound === 'undefined'}
+							disabled={name.trim() === '' || typeof sound === 'undefined'}
 						>
 							{t('Save')}
 						</Button>
