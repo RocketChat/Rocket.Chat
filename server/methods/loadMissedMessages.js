@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Message } from '../sdk';
+import { Messages } from '../../app/models';
 import { settings } from '../../app/settings';
 
 Meteor.methods({
@@ -20,21 +20,18 @@ Meteor.methods({
 			return false;
 		}
 
-		const queryOptions = {
-			returnTotal: false,
+		const options = {
 			sort: {
 				ts: -1,
 			},
 		};
 
 		if (!settings.get('Message_ShowEditedStatus')) {
-			queryOptions.fields = {
+			options.fields = {
 				editedAt: 0,
 			};
 		}
 
-		const { records } = Promise.await(Message.get(fromId, { rid, queryOptions }));
-
-		return records;
+		return Messages.findVisibleByRoomIdAfterTimestamp(rid, start, options).fetch();
 	},
 });

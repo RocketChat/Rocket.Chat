@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 
-import { EmailInbox } from '../../../app/models/server/raw';
+import { EmailInbox, EmailMessageHistory } from '../../../app/models/server/raw';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { onEmailReceived } from './EmailInbox_Incoming';
@@ -46,7 +46,18 @@ export async function configureEmailInboxes(): Promise<void> {
 			markSeen: true,
 		});
 
-		imap.on('email', Meteor.bindEnvironment((email) => onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department)));
+		imap.on('email', Meteor.bindEnvironment(async (email) => {
+			if (!email.messageId) {
+				return;
+			}
+
+			try {
+				await EmailMessageHistory.insertOne({ _id: email.messageId, email: emailInboxRecord.email });
+				onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
+			} catch (e) {
+				// In case the email message history has been received by other instance..
+			}
+		}));
 
 		imap.start();
 

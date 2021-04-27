@@ -1,22 +1,22 @@
-import React from 'react';
 import { Meteor } from 'meteor/meteor';
+import React from 'react';
 
-import { Info as info } from '../../app/utils';
+import { Info as info, APIClient } from '../../app/utils/client';
 import { ServerContext } from '../contexts/ServerContext';
-import { APIClient } from '../../app/utils/client';
 
 const absoluteUrl = (path) => Meteor.absoluteUrl(path);
 
-const callMethod = (methodName, ...args) => new Promise((resolve, reject) => {
-	Meteor.call(methodName, ...args, (error, result) => {
-		if (error) {
-			reject(error);
-			return;
-		}
+const callMethod = (methodName, ...args) =>
+	new Promise((resolve, reject) => {
+		Meteor.call(methodName, ...args, (error, result) => {
+			if (error) {
+				reject(error);
+				return;
+			}
 
-		resolve(result);
+			resolve(result);
+		});
 	});
-});
 
 const callEndpoint = (httpMethod, endpoint, ...args) => {
 	const allowedHttpMethods = ['get', 'post', 'delete'];
@@ -63,7 +63,8 @@ const contextValue = {
 	getStream,
 };
 
-const ServerProvider = ({ children }) =>
-	<ServerContext.Provider children={children} value={contextValue} />;
+const ServerProvider = ({ children }) => (
+	<ServerContext.Provider children={children} value={contextValue} />
+);
 
 export default ServerProvider;

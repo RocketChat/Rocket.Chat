@@ -1,53 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import { Blaze } from 'meteor/blaze';
-import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 import { Session } from 'meteor/session';
-import mem from 'mem';
 import _ from 'underscore';
 
-import { Messages, ChatSubscription, Rooms } from '../../../models';
+import { appLayout } from '../../../../client/lib/appLayout';
+import { Messages, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes } from '../../../utils';
 import { call, callMethod } from './callMethod';
 import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
+import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
+import { Rooms } from '../../../models/client';
 
 window.currentTracker = undefined;
 
 // cleanup session when hot reloading
 Session.set('openedRoom', null);
 
-const getDomOfLoading = mem(function getDomOfLoading() {
-	const loadingDom = document.createElement('div');
-	const contentAsFunc = (content) => () => content;
-
-	const template = Blaze._TemplateWith({ }, contentAsFunc(Template.loading));
-	Blaze.render(template, loadingDom);
-
-	return loadingDom;
-});
-
-function replaceCenterDomBy(dom) {
-	document.dispatchEvent(new CustomEvent('main-content-destroyed'));
-
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			const mainNode = document.querySelector('.main-content');
-			if (mainNode) {
-				for (const child of Array.from(mainNode.children)) {
-					if (child) { mainNode.removeChild(child); }
-				}
-				const roomNode = dom();
-				mainNode.appendChild(roomNode);
-				return resolve([mainNode, roomNode]);
-			}
-			resolve(mainNode);
-		}, 0);
-	});
-}
 
 const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
 	Tracker.autorun((c) => {
@@ -59,19 +30,24 @@ const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
 	});
 });
 
+
+NewRoomManager.on('changed', (rid) => {
+	Session.set('openedRoom', rid);
+	RoomManager.openedRoom = rid;
+});
+
 export const openRoom = async function(type, name) {
 	window.currentTracker && window.currentTracker.stop();
 	window.currentTracker = Tracker.autorun(async function(c) {
 		const user = Meteor.user();
 		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
-			BlazeLayout.render('main');
+			appLayout.render('main');
 			return;
 		}
 
 		try {
 			const room = roomTypes.findRoom(type, name, user) || await callMethod('getRoomByTypeAndName', type, name);
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
-
 
 			if (room._id !== name && type === 'd') { // Redirect old url using username to rid
 				RoomManager.close(type + name);
@@ -83,33 +59,18 @@ export const openRoom = async function(type, name) {
 				return;
 			}
 
-			if (RoomManager.open(type + name).ready() !== true) {
-				if (settings.get('Accounts_AllowAnonymousRead')) {
-					BlazeLayout.render('main');
-				}
-				await replaceCenterDomBy(() => getDomOfLoading());
-				return;
-			}
+			RoomManager.open(type + name);
 
-			BlazeLayout.render('main', {
-				center: 'loading',
-			});
+			appLayout.render('main', { center: 'room' });
+
 
 			c.stop();
 
 			if (window.currentTracker) {
 				window.currentTracker = undefined;
 			}
-			const [mainNode, roomDom] = await replaceCenterDomBy(() => RoomManager.getDomOfRoom(type + name, room._id, roomTypes.getConfig(type).mainTemplate));
 
-			if (mainNode) {
-				if (roomDom.classList.contains('.room-container .messages-box > .wrapper')) {
-					roomDom.querySelector('.messages-box > .wrapper').scrollTop = roomDom.oldScrollTop;
-				}
-			}
-
-			Session.set('openedRoom', room._id);
-			RoomManager.openedRoom = room._id;
+			NewRoomManager.open(room._id);
 
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 
@@ -147,7 +108,7 @@ export const openRoom = async function(type, name) {
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });
-			return BlazeLayout.render('main', { center: 'roomNotFound' });
+			return appLayout.render('main', { center: 'roomNotFound' });
 		}
 	});
 };

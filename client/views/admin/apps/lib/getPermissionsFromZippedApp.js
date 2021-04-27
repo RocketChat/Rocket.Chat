@@ -27,7 +27,7 @@ function getAppManifest(unzippedAppBuffer) {
 
 function getPermissionsFromManifest(manifest) {
 	if (!manifest.permissions) {
-		return [];
+		return undefined;
 	}
 
 	if (!Array.isArray(manifest.permissions)) {

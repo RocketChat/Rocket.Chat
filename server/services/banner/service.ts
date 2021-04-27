@@ -46,8 +46,8 @@ export class BannerService extends ServiceClass implements IBannerService {
 		}
 
 		await this.Banners.insertOne({
-			_id: bannerId,
 			...doc,
+			_id: bannerId,
 		});
 
 		const banner = await this.Banners.findOneById(bannerId);

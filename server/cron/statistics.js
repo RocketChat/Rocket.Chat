@@ -51,7 +51,7 @@ export function statsCron(SyncedCron, logger) {
 			return;
 		}
 
-		generateStatistics();
+		generateStatistics(logger);
 
 		SyncedCron.add({
 			name,

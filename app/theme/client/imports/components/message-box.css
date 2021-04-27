@@ -270,6 +270,10 @@
 		margin: 0 0.5rem;
 	}
 
+	&__resume-it-button {
+		margin: 0 0.5rem;
+	}
+
 	&__cannot-send {
 		display: flex;
 		justify-content: space-between;

@@ -18,26 +18,26 @@ describe('capitalize', () => {
 	});
 
 	it('should convert undefined to ""', () => {
-		assert.equal(capitalize(undefined as unknown as string), '');
+		assert.equal(capitalize((undefined as unknown) as string), '');
 	});
 
 	it('should convert null to ""', () => {
-		assert.equal(capitalize(null as unknown as string), '');
+		assert.equal(capitalize((null as unknown) as string), '');
 	});
 
 	it('should convert false to ""', () => {
-		assert.equal(capitalize(false as unknown as string), '');
+		assert.equal(capitalize((false as unknown) as string), '');
 	});
 
 	it('should convert true to ""', () => {
-		assert.equal(capitalize(true as unknown as string), '');
+		assert.equal(capitalize((true as unknown) as string), '');
 	});
 
 	it('should convert 0 to ""', () => {
-		assert.equal(capitalize(0 as unknown as string), '');
+		assert.equal(capitalize((0 as unknown) as string), '');
 	});
 
 	it('should convert 1 to ""', () => {
-		assert.equal(capitalize(1 as unknown as string), '');
+		assert.equal(capitalize((1 as unknown) as string), '');
 	});
 });
