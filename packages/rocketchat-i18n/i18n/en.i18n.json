@@ -4482,5 +4482,6 @@
   "Your_server_link": "Your server link",
   "Your_temporary_password_is_password": "Your temporary password is <strong>[password]</strong>.",
   "Your_TOTP_has_been_reset": "Your Two Factor TOTP has been reset.",
-  "Your_workspace_is_ready": "Your workspace is ready to use 🎉"
+  "Your_workspace_is_ready": "Your workspace is ready to use 🎉",
+  "custom_emoji_special_characters": "You can not use any special characters in emoji name",
 }
