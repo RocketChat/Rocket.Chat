@@ -35,7 +35,6 @@ function ThreadList({
 	setText,
 }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
-	const threadsRef = useRef();
 
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
@@ -59,8 +58,6 @@ function ThreadList({
 		],
 		[t],
 	);
-
-	threadsRef.current = threads;
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({
 		debounceDelay: 200,
