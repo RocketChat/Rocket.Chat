@@ -205,7 +205,7 @@
 		"file-type": "^10.11.0",
 		"filenamify": "^4.2.0",
 		"filesize": "^3.6.1",
-		"googleapis": "^25.0.0",
+		"googleapis": "^39.1.0",
 		"grapheme-splitter": "^1.0.4",
 		"gridfs-stream": "^1.1.1",
 		"he": "^1.2.0",
