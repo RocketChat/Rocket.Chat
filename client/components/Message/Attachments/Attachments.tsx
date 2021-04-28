@@ -8,15 +8,14 @@ import Item from './Item';
 const Attachments: FC<{
 	attachments: Array<AttachmentProps>;
 	file?: FileProp;
-	isInner?: boolean;
-}> = ({ attachments = null, file, isInner }): any => {
+}> = ({ attachments = null, file }): any => {
 	const { className, ref } = useBlockRendered();
 	return (
 		<>
 			<div className={className} ref={ref as any} />
 			{attachments &&
 				attachments.map((attachment, index) => (
-					<Item key={index} file={file} attachment={attachment} isInner={isInner} />
+					<Item key={index} file={file} attachment={attachment} />
 				))}
 		</>
 	);

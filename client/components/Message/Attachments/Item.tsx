@@ -12,14 +12,13 @@ const isQuoteAttachment = (attachment: AttachmentProps): attachment is QuoteAtta
 const Item: FC<{ attachment: AttachmentProps; file?: FileProp; isInner?: boolean }> = ({
 	attachment,
 	file,
-	isInner,
 }) => {
 	if (isFileAttachment(attachment)) {
 		return <FileAttachment {...attachment} file={file} />;
 	}
 
 	if (isQuoteAttachment(attachment)) {
-		return <QuoteAttachment isInner={isInner} {...attachment} />;
+		return <QuoteAttachment {...attachment} />;
 	}
 
 	return <DefaultAttachment {...(attachment as any)} />;

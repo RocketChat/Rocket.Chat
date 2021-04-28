@@ -37,12 +37,11 @@ export const QuoteAttachment: FC<QuoteAttachmentProps> = ({
 	ts,
 	text,
 	attachments,
-	isInner,
 }) => {
 	const format = useTimeAgo();
 	return (
 		<>
-			<Attachment.Content className={hover} width='full' isInner={isInner}>
+			<Attachment.Content className={hover} width='full'>
 				<Attachment.Details
 					is='blockquote'
 					borderRadius='x2'
@@ -67,8 +66,8 @@ export const QuoteAttachment: FC<QuoteAttachmentProps> = ({
 					</Attachment.Author>
 					<MarkdownText variant='inline' content={text} />
 					{attachments && (
-						<Attachment.Inner>
-							<Attachments attachments={attachments} isInner={true} />
+						<Attachment.Inner mbe='-12px'>
+							<Attachments attachments={attachments} />
 						</Attachment.Inner>
 					)}
 				</Attachment.Details>
