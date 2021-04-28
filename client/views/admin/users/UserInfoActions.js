@@ -2,7 +2,6 @@ import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
 import React, { useCallback, useMemo } from 'react';
 
 import ConfirmOwnerChangeWarningModal from '../../../components/ConfirmOwnerChangeWarningModal';
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
 import GenericModal from '../../../components/GenericModal';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -31,6 +30,11 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 	const canDeleteUser = usePermission('delete-user');
 
 	const enforcePassword = useSetting('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback');
+
+	const handleClose = () => {
+		setModal();
+		onChange();
+	};
 
 	const confirmOwnerChanges = (action, modalProps = {}) => async () => {
 		try {
@@ -73,13 +77,9 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 			const result = await deleteUserEndpoint(deleteUserQuery);
 			if (result.success) {
 				setModal(
-					<DeleteSuccessModal
-						children={t('User_has_been_deleted')}
-						onClose={() => {
-							setModal();
-							onChange();
-						}}
-					/>,
+					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+						{t('User_has_been_deleted')}
+					</GenericModal>,
 				);
 			} else {
 				setModal();
@@ -124,16 +124,12 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 		if (result) {
 			setModal(
-				<DeleteSuccessModal
-					children={t('Users_key_has_been_reset')}
-					onClose={() => {
-						setModal();
-						onChange();
-					}}
-				/>,
+				<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+					{t('Users_key_has_been_reset')}
+				</GenericModal>,
 			);
 		}
-	}, [resetE2EEKeyRequest, onChange, setModal, t, _id]);
+	}, [resetE2EEKeyRequest, setModal, t, _id, handleClose]);
 
 	const resetTOTP = useCallback(async () => {
 		setModal();
@@ -141,16 +137,12 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 		if (result) {
 			setModal(
-				<DeleteSuccessModal
-					children={t('Users_TOTP_has_been_reset')}
-					onClose={() => {
-						setModal();
-						onChange();
-					}}
-				/>,
+				<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+					{t('Users_TOTP_has_been_reset')}
+				</GenericModal>,
 			);
 		}
-	}, [resetTOTPRequest, onChange, setModal, t, _id]);
+	}, [resetTOTPRequest, setModal, t, _id, handleClose]);
 
 	const confirmResetE2EEKey = useCallback(() => {
 		setModal(

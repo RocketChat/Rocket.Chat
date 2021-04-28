@@ -1,7 +1,6 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rocket.chat/fuselage';
 import React, { useCallback, useState, useMemo, useEffect, FC, ChangeEvent } from 'react';
 
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -95,7 +94,9 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 			try {
 				await deleteAction();
 				setModal(() => (
-					<DeleteSuccessModal children={t('Custom_Emoji_Has_Been_Deleted')} onClose={handleClose} />
+					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+						{t('Custom_Emoji_Has_Been_Deleted')}
+					</GenericModal>
 				));
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

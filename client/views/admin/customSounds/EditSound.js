@@ -1,7 +1,6 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rocket.chat/fuselage';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -108,7 +107,9 @@ function EditSound({ close, onChange, data, ...props }) {
 			try {
 				await deleteCustomSound(_id);
 				setModal(() => (
-					<DeleteSuccessModal children={t('Custom_Sound_Has_Been_Deleted')} onClose={handleClose} />
+					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+						{t('Custom_Sound_Has_Been_Deleted')}
+					</GenericModal>
 				));
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

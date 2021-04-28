@@ -1,7 +1,6 @@
 import { Button, ButtonGroup, TextInput, Field, Select, Icon } from '@rocket.chat/fuselage';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -71,10 +70,9 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 			try {
 				await deleteStatus(_id);
 				setModal(() => (
-					<DeleteSuccessModal
-						children={t('Custom_User_Status_Has_Been_Deleted')}
-						onClose={handleClose}
-					/>
+					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+						{t('Custom_User_Status_Has_Been_Deleted')}
+					</GenericModal>
 				));
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

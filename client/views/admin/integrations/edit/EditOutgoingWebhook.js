@@ -1,7 +1,6 @@
 import { Field, Box, Margins, Button } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
-import DeleteSuccessModal from '../../../../components/DeleteSuccessModal';
 import GenericModal from '../../../../components/GenericModal';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRoute } from '../../../../contexts/RouterContext';
@@ -57,17 +56,19 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 
 	const handleDeleteIntegration = useCallback(() => {
 		const closeModal = () => setModal();
+
+		const handleClose = () => {
+			closeModal();
+			router.push({});
+		};
+
 		const onDelete = async () => {
 			const result = await deleteIntegration();
 			if (result.success) {
 				setModal(
-					<DeleteSuccessModal
-						children={t('Your_entry_has_been_deleted')}
-						onClose={() => {
-							closeModal();
-							router.push({});
-						}}
-					/>,
+					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+						{t('Your_entry_has_been_deleted')}
+					</GenericModal>,
 				);
 			}
 		};

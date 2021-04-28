@@ -10,7 +10,6 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { useCallback, useState, useMemo } from 'react';
 
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import { useSetModal } from '../../../contexts/ModalContext';
@@ -54,14 +53,16 @@ function EditOauthApp({ onChange, data, ...props }) {
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteApp(data._id);
+
+			const handleClose = () => {
+				setModal();
+				close();
+			};
+
 			setModal(() => (
-				<DeleteSuccessModal
-					children={t('Your_entry_has_been_deleted')}
-					onClose={() => {
-						setModal();
-						close();
-					}}
-				/>
+				<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+					{t('Your_entry_has_been_deleted')}
+				</GenericModal>
 			));
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
