@@ -125,10 +125,8 @@ const validators = {
 };
 
 const settingSavers = {
-	roomName({ value, rid, user, room }) {
-		if (room.t !== 'd') {
-			saveRoomName(rid, value, user);
-		}
+	roomName({ value, rid, user }) {
+		saveRoomName(rid, value, user);
 	},
 	roomTopic({ value, room, rid, user }) {
 		if (value !== room.topic) {
