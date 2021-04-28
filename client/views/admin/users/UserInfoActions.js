@@ -31,10 +31,10 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const enforcePassword = useSetting('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback');
 
-	const handleClose = () => {
+	const handleClose = useCallback(() => {
 		setModal();
 		onChange();
-	};
+	}, [setModal, onChange]);
 
 	const confirmOwnerChanges = (action, modalProps = {}) => async () => {
 		try {
