@@ -3,7 +3,7 @@ import React from 'react';
 
 import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
 import { roomTypes, UiTextContext } from '../../../../../../app/utils/client';
-import DeleteChannelWarning from '../../../../../components/DeleteChannelWarning';
+import GenericModal from '../../../../../components/GenericModal';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
@@ -87,7 +87,16 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			closeModal();
 		};
 
-		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={closeModal} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onConfirm}
+				onCancel={closeModal}
+				confirmText={t('Yes_delete_it')}
+			>
+				{t('Delete_Room_Warning')}
+			</GenericModal>,
+		);
 	});
 
 	const handleLeave = useMutableCallback(() => {
