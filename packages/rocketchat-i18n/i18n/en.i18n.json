@@ -2361,7 +2361,6 @@
   "LDAP_Group_Filter_ObjectClass": "Group ObjectClass",
   "LDAP_Group_Filter_ObjectClass_Description": "The *objectclass* that identify the groups.<br/> E.g. OpenLDAP:groupOfUniqueNames",
   "LDAP_Groups_To_Rocket_Chat_Teams": "Team mapping from LDAP to Rocket.Chat.",
-
   "LDAP_Host": "Host",
   "LDAP_Host_Description": "The LDAP host, e.g. `ldap.example.com` or `10.0.0.30`.",
   "LDAP_Idle_Timeout": "Idle Timeout (ms)",
