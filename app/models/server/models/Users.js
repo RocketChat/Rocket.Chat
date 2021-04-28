@@ -735,6 +735,15 @@ export class Users extends Base {
 		}, options);
 	}
 
+	findActiveByUserIds(ids, options = {}) {
+		return this.find({
+			active: true,
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			_id: { $in: ids },
+		}, options);
+	}
+
 	findActiveLocalGuests(idExceptions = [], options = {}) {
 		const query = {
 			active: true,
@@ -1031,6 +1040,18 @@ export class Users extends Base {
 			},
 		};
 
+		return this.update(_id, update);
+	}
+
+	addPasswordToHistory(_id, password) {
+		const update = {
+			$push: {
+				'services.passwordHistory': {
+					$each: [password],
+					$slice: -Number(settings.get('Accounts_Password_History_Amount')),
+				},
+			},
+		};
 		return this.update(_id, update);
 	}
 
