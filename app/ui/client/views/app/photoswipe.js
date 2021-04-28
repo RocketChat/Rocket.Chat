@@ -25,6 +25,7 @@ Meteor.startup(() => {
 		showHideOpacity: true,
 		counterEl: false,
 		shareEl: false,
+		clickToCloseNonZoomable: false,
 	};
 
 	const createEventListenerFor = (className) => (event) => {
