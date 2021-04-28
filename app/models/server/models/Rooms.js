@@ -229,9 +229,13 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setReadOnlyByUserId(_id, readOnly, reactWhenReadOnly) {
+	setDmReadOnlyByUserId(_id, ids, readOnly, reactWhenReadOnly) {
 		const query = {
-			uids: _id,
+			uids: {
+				$size: 2,
+				$in: [_id],
+			},
+			...ids && Array.isArray(ids) ? { _id: { $in: ids } } : {},
 			t: 'd',
 		};
 
@@ -243,6 +247,10 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	getDirectConversationsByUserId(_id, options) {
+		return this.find({ t: 'd', uids: { $size: 2, $in: [_id] } }, options);
 	}
 
 	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {

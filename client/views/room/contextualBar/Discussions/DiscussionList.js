@@ -70,7 +70,7 @@ function DiscussionList({
 					{!error && total > 0 && discussions.length > 0 && (
 						<>
 							<Virtuoso
-								style={{ height: blockSize, width: inlineSize, overflow: 'hidden' }}
+								style={{ minHeight: blockSize, width: inlineSize, overflow: 'hidden' }}
 								totalCount={total}
 								endReached={
 									loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))
