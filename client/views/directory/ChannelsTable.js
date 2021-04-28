@@ -24,7 +24,7 @@ function ChannelsTable() {
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 
 	const query = useQuery(params, sort, 'channels');
-	console.log(query, sort);
+
 	const onHeaderClick = useCallback(
 		(id) => {
 			const [sortBy, sortDirection] = sort;
