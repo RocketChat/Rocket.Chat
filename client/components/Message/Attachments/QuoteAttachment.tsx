@@ -16,7 +16,7 @@ export type QuoteAttachmentProps = {
 	message_link?: string;
 	text: string;
 	attachments?: Array<QuoteAttachmentProps>;
-} & AttachmentPropsBase & { isInner?: boolean };
+} & AttachmentPropsBase;
 
 const hover = css`
 	&:hover,

@@ -78,7 +78,7 @@ API.v1.addRoute('teams.addRooms', { authRequired: true }, {
 		}
 
 		if (!hasPermission(this.userId, 'add-team-channel', team.roomId)) {
-			return API.v1.unauthorized();
+			return API.v1.unauthorized('error-no-permission-team-channel');
 		}
 
 		const validRooms = Promise.await(Team.addRooms(this.userId, rooms, team._id));
