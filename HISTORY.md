@@ -1,6 +1,33 @@
 
 # 3.14.0 (Under Release Candidate Process)
 
+## 3.14.0-rc.3
+`2021-04-27  ·  1 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- **Enterprise:** Omnichannel simultaneous chat limit is not properly checking the limit by department ([#21839](https://github.com/RocketChat/Rocket.Chat/pull/21839))
+
+  The Omnichannel Concurrent Chat Limit feature is not working properly when checking the limit per department, the reason is that the algorithm that fetches the number of ongoing chats per agent wasn't considering the department of the subscriptions, hence,  the number returned from DB was bigger than it should be.
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump Apps-Engine version ([#21840](https://github.com/RocketChat/Rocket.Chat/pull/21840))
+
+- Regression: Reactivate direct conversations only if all involved users are active ([#21714](https://github.com/RocketChat/Rocket.Chat/pull/21714))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@d-gubert](https://github.com/d-gubert)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.14.0-rc.2
 `2021-04-27  ·  2 🐛  ·  7 🔍  ·  8 👩‍💻👨‍💻`
 
