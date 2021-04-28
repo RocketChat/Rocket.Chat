@@ -489,6 +489,7 @@
   "Apps_Permissions_livechat-room_read": "Access Livechat room information",
   "Apps_Permissions_livechat-room_write": "Modify Livechat room information",
   "Apps_Permissions_livechat-department_read": "Access Livechat department information",
+  "Apps_Permissions_livechat-department_multiple": "Access to multiple Livechat departments information",
   "Apps_Permissions_livechat-department_write": "Modify Livechat department information",
   "Apps_Permissions_slashcommand": "Register new slash commands",
   "Apps_Permissions_api": "Register new HTTP endpoints",
