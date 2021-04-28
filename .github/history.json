@@ -59454,6 +59454,38 @@
           ]
         }
       ]
+    },
+    "3.14.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21841",
+          "title": "bump fuselage",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21810",
+          "title": "[FIX] Duplicated header on admin's user contextualbar",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/116125858-5ff60600-a69c-11eb-9859-41f7393b78bf.png)",
+          "contributors": [
+            "dougfabris",
+            "gabriellsh",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }

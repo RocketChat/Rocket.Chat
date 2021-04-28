@@ -1,6 +1,30 @@
 
 # 3.14.0 (Under Release Candidate Process)
 
+## 3.14.0-rc.4
+`2021-04-27  ·  1 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Duplicated header on admin's user contextualbar ([#21810](https://github.com/RocketChat/Rocket.Chat/pull/21810))
+
+  ![image](https://user-images.githubusercontent.com/27704687/116125858-5ff60600-a69c-11eb-9859-41f7393b78bf.png)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- bump fuselage ([#21841](https://github.com/RocketChat/Rocket.Chat/pull/21841))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+
 ## 3.14.0-rc.3
 `2021-04-27  ·  1 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
 
