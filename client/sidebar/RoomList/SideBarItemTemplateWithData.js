@@ -36,6 +36,7 @@ function SideBarItemTemplateWithData({
 	style,
 	sidebarViewMode,
 	isAnonymous,
+	onClickItem,
 }) {
 	const title = roomTypes.getRoomName(room.t, room);
 	const href = roomTypes.getRouteLink(room.t, room);
@@ -115,6 +116,7 @@ function SideBarItemTemplateWithData({
 					/>
 				))
 			}
+			onClick={onClickItem}
 		/>
 	);
 }

@@ -1,8 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useEffect, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import { useLayout } from '../../contexts/LayoutContext';
 import { useSession } from '../../contexts/SessionContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserPreference, useUserId } from '../../contexts/UserContext';
@@ -30,6 +31,11 @@ const RoomList = () => {
 
 	const t = useTranslation();
 
+	const { sidebar } = useLayout();
+	const onClickItem = useMutableCallback(() => {
+		sidebar.toggle();
+	});
+
 	const roomsList = useRoomList();
 	const itemData = useMemo(
 		() => ({
@@ -40,8 +46,18 @@ const RoomList = () => {
 			openedRoom,
 			sidebarViewMode,
 			isAnonymous,
+			onClickItem,
 		}),
-		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t],
+		[
+			avatarTemplate,
+			extended,
+			isAnonymous,
+			openedRoom,
+			sideBarItemTemplate,
+			sidebarViewMode,
+			t,
+			onClickItem,
+		],
 	);
 
 	usePreventDefault(ref);

@@ -9,7 +9,15 @@ const sections = {
 };
 
 const Row = ({ data, item }) => {
-	const { extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
+	const {
+		extended,
+		t,
+		SideBarItemTemplate,
+		AvatarTemplate,
+		openedRoom,
+		sidebarViewMode,
+		onClickItem,
+	} = data;
 
 	if (typeof item === 'string') {
 		const Section = sections[item];
@@ -28,6 +36,7 @@ const Row = ({ data, item }) => {
 			extended={extended}
 			SideBarItemTemplate={SideBarItemTemplate}
 			AvatarTemplate={AvatarTemplate}
+			onClickItem={onClickItem}
 		/>
 	);
 };
