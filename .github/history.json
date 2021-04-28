@@ -59412,6 +59412,48 @@
           ]
         }
       ]
+    },
+    "3.14.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21840",
+          "title": "Bump Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "3.14.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "21839",
+          "title": "[FIX][Enterprise] Omnichannel simultaneous chat limit is not properly checking the limit by department",
+          "userLogin": "renatobecker",
+          "description": "The Omnichannel Concurrent Chat Limit feature is not working properly when checking the limit per department, the reason is that the algorithm that fetches the number of ongoing chats per agent wasn't considering the department of the subscriptions, hence,  the number returned from DB was bigger than it should be.",
+          "milestone": "3.14.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21714",
+          "title": "Regression: Reactivate direct conversations only if all involved users are active",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
