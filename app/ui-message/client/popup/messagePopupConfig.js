@@ -61,7 +61,7 @@ const reloadUsersFromRoomMessages = (rid, template) => {
 const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => {
 	const usernames = records.map(({ username }) => username);
 
-	const { users } = await call('spotlight', filterText, usernames, { users: true }, rid);
+	const { users } = await call('spotlight', filterText, usernames, { users: true, mentions: true }, rid);
 
 	if (!users || users.length <= 0) {
 		return;
@@ -95,7 +95,7 @@ const fetchRoomsFromServer = _.throttle(async (filterText, records, rid, cb) => 
 		return;
 	}
 
-	const { rooms } = await call('spotlight', filterText, null, { rooms: true }, rid);
+	const { rooms } = await call('spotlight', filterText, null, { rooms: true, mentions: true }, rid);
 
 	if (!rooms || rooms.length <= 0) {
 		return;

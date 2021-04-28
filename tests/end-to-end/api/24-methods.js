@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { getCredentials, request, methodCall, api, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper.js';
 
-
 describe('Meteor.methods', function() {
 	this.retries(0);
 
@@ -1281,6 +1280,455 @@ describe('Meteor.methods', function() {
 					expect(data.result).to.have.a.property('update').that.is.an('array');
 				})
 				.end(done);
+		});
+	});
+
+	describe('[@sendMessage]', () => {
+		let rid = false;
+		let channelName = false;
+
+		before('create room', (done) => {
+			channelName = `methods-test-channel-${ Date.now() }`;
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					rid = res.body.group._id;
+				})
+				.end(done);
+		});
+
+		it('should send a message', (done) => {
+			request.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message' }],
+						id: 1000,
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result.msg).to.equal('test message');
+				})
+				.end(done);
+		});
+
+		it('should parse correctly urls sent in message', (done) => {
+			request.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message with https://github.com' }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('urls').that.is.an('array');
+					expect(data.result.urls[0].url).to.equal('https://github.com');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[@updateMessage]', () => {
+		let rid = false;
+		let messageId;
+		let messageWithMarkdownId;
+		let channelName = false;
+
+		before('create room', (done) => {
+			channelName = `methods-test-channel-${ Date.now() }`;
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					expect(res.body).to.have.nested.property('group.name', channelName);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					rid = res.body.group._id;
+				})
+				.end(done);
+		});
+
+		before('send message with URL', (done) => {
+			request.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message with https://github.com' }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('urls').that.is.an('array');
+					expect(data.result.urls[0].url).to.equal('https://github.com');
+					messageId = data.result._id;
+				})
+				.end(done);
+		});
+
+		before('send message with URL inside markdown', (done) => {
+			request.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'test message with ```https://github.com```' }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('object');
+					messageWithMarkdownId = data.result._id;
+				})
+				.end(done);
+		});
+
+		it('should update a message with a URL', (done) => {
+			request.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: 'https://github.com updated' }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('msg').that.is.an('string');
+				})
+				.end(done);
+		});
+
+		it('should not parse URLs inside markdown on update', (done) => {
+			request.post(methodCall('updateMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageWithMarkdownId, rid, msg: 'test message with ```https://github.com``` updated' }],
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('msg').that.is.an('string');
+				})
+				.then(() => {
+					request.get(api(`chat.getMessage?msgId=${ messageWithMarkdownId }`))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('message').that.is.an('object');
+							expect(res.body.message.msg).to.equal('test message with ```https://github.com``` updated');
+							expect(res.body.message).to.have.property('urls');
+							expect(res.body.message.urls.length).to.be.equal(0);
+						})
+						.end(done);
+				});
+		});
+	});
+
+	describe('[@setUserActiveStatus]', () => {
+		let testUser;
+		let testUser2;
+		const testUserCredentials = {};
+		let dmId;
+		let dmTestId;
+
+		before('create test user', (done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password: username, roles: ['user'] })
+				.end((err, res) => {
+					testUser = res.body.user;
+					done();
+				});
+		});
+
+		before('create test user 2', (done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password: username, roles: ['user'] })
+				.end((err, res) => {
+					testUser2 = res.body.user;
+					done();
+				});
+		});
+
+		before('login testUser', (done) => {
+			request.post(api('login'))
+				.send({
+					user: testUser.username,
+					password: testUser.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
+					testUserCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+
+		before('create direct conversation with user', (done) => {
+			request.post(methodCall('createDirectMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'createDirectMessage',
+						params: [testUser.username],
+					}),
+				})
+				.end((err, res) => {
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.an('object');
+					expect(result.result).to.have.property('rid').that.is.an('string');
+
+					dmId = result.result.rid;
+					done();
+				});
+		});
+
+		before('create direct conversation between both users', (done) => {
+			request.post(methodCall('createDirectMessage'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'createDirectMessage',
+						params: [testUser2.username],
+					}),
+				})
+				.end((err, res) => {
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.an('object');
+					expect(result.result).to.have.property('rid').that.is.an('string');
+
+					dmTestId = result.result.rid;
+					done();
+				});
+		});
+
+		it('should deactivate a user', (done) => {
+			request.post(methodCall('setUserActiveStatus'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'setUserActiveStatus',
+						params: [testUser._id, false, false],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body).to.have.property('success').that.is.an('boolean');
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.equal(true);
+					done();
+				});
+		});
+
+		it('should deactivate another user', (done) => {
+			request.post(methodCall('setUserActiveStatus'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'setUserActiveStatus',
+						params: [testUser2._id, false, false],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body).to.have.property('success').that.is.an('boolean');
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.equal(true);
+					done();
+				});
+		});
+
+		it('should mark the direct conversation between admin=>testUser as readonly when user is deactivated', (done) => {
+			request.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body.success).to.equal(true);
+					const result = JSON.parse(res.body.message);
+					expect(result.result.ro).to.equal(true);
+					done();
+				});
+		});
+
+		it('should activate a user', (done) => {
+			request.post(methodCall('setUserActiveStatus'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'setUserActiveStatus',
+						params: [testUser._id, true, false],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body).to.have.property('success').that.is.an('boolean');
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.equal(true);
+					done();
+				});
+		});
+
+		it('should set readonly=false when user is activated (and the other side is also active)', (done) => {
+			request.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body.success).to.equal(true);
+					const result = JSON.parse(res.body.message);
+					expect(result.result.ro).to.equal(false);
+					done();
+				});
+		});
+
+		it('should keep the direct conversation between testUser=>testUser2 as readonly when one of them is deactivated', (done) => {
+			request.post(api('login'))
+				.send({
+					user: testUser.username,
+					password: testUser.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
+					testUserCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.then(() => {
+					request.post(methodCall('getRoomByTypeAndName'))
+						.set(testUserCredentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getRoomByTypeAndName',
+								params: ['d', dmTestId],
+							}),
+						})
+						.end((err, res) => {
+							expect(res.body.success).to.equal(true);
+							const result = JSON.parse(res.body.message);
+							expect(result.result.ro).to.equal(true);
+							done();
+						});
+				})
+				.catch(done);
+		});
+
+		it('should activate another user', (done) => {
+			request.post(methodCall('setUserActiveStatus'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'setUserActiveStatus',
+						params: [testUser2._id, true, false],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body).to.have.property('success').that.is.an('boolean');
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.equal(true);
+					done();
+				});
+		});
+
+		it('should set readonly=false when both users are activated', (done) => {
+			request.post(methodCall('getRoomByTypeAndName'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmTestId],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body.success).to.equal(true);
+					const result = JSON.parse(res.body.message);
+					expect(result.result.ro).to.equal(false);
+					done();
+				});
+		});
+
+		it('should keep readonly=true when user is activated (and the other side is deactivated)', (done) => {
+			request.post(methodCall('getRoomByTypeAndName'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmTestId],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body.success).to.equal(true);
+					const result = JSON.parse(res.body.message);
+					expect(result.result.ro).to.equal(false);
+					done();
+				});
 		});
 	});
 });
