@@ -468,6 +468,15 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
+	findByUserIdAndRoles(userId, roles, options) {
+		const query = {
+			'u._id': userId,
+			roles: { $in: roles },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByUserIdUpdatedAfter(userId, updatedAt, options) {
 		const query = {
 			'u._id': userId,

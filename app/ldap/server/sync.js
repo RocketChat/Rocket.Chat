@@ -320,12 +320,17 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 
 		for (const channel of channels) {
 			let room = Rooms.findOneByNonValidatedName(channel);
+
 			if (!room) {
 				room = createRoomForSync(channel);
 			}
 			if (isUserInLDAPGroup(ldap, ldapUser, user, ldapField)) {
-				userChannels.push(room._id);
-			} else if (syncUserRolesEnforceAutoChannels) {
+				if (room.teamMain) {
+					logger.error(`Can't add user to channel ${ channel } because it is a team.`);
+				} else {
+					userChannels.push(room._id);
+				}
+			} else if (syncUserRolesEnforceAutoChannels && !room.teamMain) {
 				const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
 				if (subscription) {
 					removeUserFromRoom(room._id, user);
