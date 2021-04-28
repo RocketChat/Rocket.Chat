@@ -2,7 +2,7 @@ import { Button, ButtonGroup, TextInput, Field, Select, Icon } from '@rocket.cha
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
@@ -87,11 +87,14 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		};
 
 		setModal(() => (
-			<DeleteWarningModal
-				children={t('Custom_User_Status_Delete_Warning')}
-				onDelete={handleDelete}
+			<GenericModal
+				variant='danger'
+				onConfirm={handleDelete}
 				onCancel={handleCancel}
-			/>
+				confirmText={t('Delete')}
+			>
+				{t('Custom_User_Status_Delete_Warning')}
+			</GenericModal>
 		));
 	}, [_id, close, deleteStatus, dispatchToastMessage, onChange, setModal, t]);
 

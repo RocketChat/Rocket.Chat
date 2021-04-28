@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import ConfirmOwnerChangeWarningModal from '../../../components/ConfirmOwnerChangeWarningModal';
 import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import GenericModal from '../../../components/GenericModal';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -93,11 +93,14 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const confirmDeleteUser = useCallback(() => {
 		setModal(
-			<DeleteWarningModal
-				children={t(`Delete_User_Warning_${erasureType}`)}
+			<GenericModal
+				variant='danger'
+				onConfirm={deleteUser}
 				onCancel={() => setModal()}
-				onDelete={deleteUser}
-			/>,
+				confirmText={t('Delete')}
+			>
+				{t(`Delete_User_Warning_${erasureType}`)}
+			</GenericModal>,
 		);
 	}, [deleteUser, erasureType, setModal, t]);
 
@@ -151,23 +154,27 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const confirmResetE2EEKey = useCallback(() => {
 		setModal(
-			<DeleteWarningModal
-				children={t('E2E_Reset_Other_Key_Warning')}
-				deleteText={t('Reset')}
+			<GenericModal
+				variant='danger'
+				onConfirm={resetE2EEKey}
 				onCancel={() => setModal()}
-				onDelete={resetE2EEKey}
-			/>,
+				confirmText={t('Reset')}
+			>
+				{t('E2E_Reset_Other_Key_Warning')}
+			</GenericModal>,
 		);
 	}, [resetE2EEKey, t, setModal]);
 
 	const confirmResetTOTP = useCallback(() => {
 		setModal(
-			<DeleteWarningModal
-				children={t('TOTP_Reset_Other_Key_Warning')}
-				deleteText={t('Reset')}
+			<GenericModal
+				variant='danger'
+				onConfirm={resetTOTP}
 				onCancel={() => setModal()}
-				onDelete={resetTOTP}
-			/>,
+				confirmText={t('Reset')}
+			>
+				{t('TOTP_Reset_Other_Key_Warning')}
+			</GenericModal>,
 		);
 	}, [resetTOTP, t, setModal]);
 
