@@ -215,7 +215,7 @@
 		"imap": "^0.8.19",
 		"ip-range-check": "^0.0.2",
 		"is-svg": "^4.3.1",
-		"jquery": "^3.5.1",
+		"jquery": "^3.6.0",
 		"jschardet": "^1.6.0",
 		"jsdom": "^16.4.0",
 		"jsrsasign": "^8.0.24",
