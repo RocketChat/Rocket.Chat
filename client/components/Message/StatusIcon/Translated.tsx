@@ -7,9 +7,10 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 
 type TranslatedType = FC<{
 	msg: IMessage;
+	size?: string;
 }>;
 
-const Translated: TranslatedType = ({ msg }) => {
+const Translated: TranslatedType = ({ msg, ...props }) => {
 	const t = useTranslation();
 	const { autoTranslateFetching, translationProvider } = msg;
 	return (
@@ -20,6 +21,7 @@ const Translated: TranslatedType = ({ msg }) => {
 			}
 			className={autoTranslateFetching ? 'loading' : ''}
 			title={t('Translated')}
+			{...props}
 		/>
 	);
 };

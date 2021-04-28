@@ -7,9 +7,10 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 
 type EditedType = FC<{
 	msg: IMessage;
+	size?: string;
 }>;
 
-const Edited: EditedType = ({ msg }) => {
+const Edited: EditedType = ({ msg, ...props }) => {
 	const t = useTranslation();
 
 	const { editedBy, u, editedAt } = msg;
@@ -21,6 +22,7 @@ const Edited: EditedType = ({ msg }) => {
 			title={t('edited_message_time', { editedTime, username: editedBy && editedBy.username })}
 			data-title={t('Edited')}
 			color={editedBy && editedBy.username !== u.username ? 'danger' : ''}
+			{...props}
 		/>
 	);
 };

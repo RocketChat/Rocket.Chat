@@ -1,5 +1,5 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { FC, memo, ReactElement } from 'react';
+import React, { createRef, FC, memo, ReactElement } from 'react';
 
 import { IMessage } from '../../../../definition/IMessage';
 import Edited from './Edited';
@@ -23,21 +23,23 @@ type StatusIconType = FC<{
 }>;
 
 const renderStatus = (type: TypeList, msg: IMessage): ReactElement | undefined => {
+	const iconSize = '16px';
+
 	switch (type) {
 		case 'edited':
-			return <Edited msg={msg} />;
+			return <Edited size={iconSize} msg={msg} />;
 		case 'e2e':
-			return <Icon name='key' />;
+			return <Icon size={iconSize} name='key' />;
 		case 'otr-ack':
-			return <Icon name='shredder' />;
+			return <Icon size={iconSize} name='shredder' />;
 		case 'translated':
-			return <Translated msg={msg} />;
+			return <Translated size={iconSize} msg={msg} />;
 		case 'pinned':
-			return <Pinned />;
+			return <Pinned size={iconSize} />;
 		case 'starred':
-			return <Starred />;
+			return <Starred size={iconSize} />;
 		case 'sent-by-email':
-			return <SentByMail />;
+			return <SentByMail size={iconSize} />;
 	}
 };
 
