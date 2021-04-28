@@ -61,7 +61,9 @@ jobs:
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
-        path: node_modules
+        path: |
+          ./node_modules
+          ./ee/server/services/node_modules
         key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
