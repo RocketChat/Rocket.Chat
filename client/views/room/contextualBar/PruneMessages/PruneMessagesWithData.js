@@ -2,7 +2,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
 
-import DeleteWarningModal from '../../../../components/DeleteWarningModal';
+import GenericModal from '../../../../components/GenericModal';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
@@ -126,13 +126,15 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 
 	const handleModal = () => {
 		setModal(
-			<DeleteWarningModal
+			<GenericModal
+				variant='danger'
+				onClose={closeModal}
 				onCancel={closeModal}
-				onDelete={handlePrune}
-				deleteText={t('Yes_prune_them')}
+				onConfirm={handlePrune}
+				confirmText={t('Yes_prune_them')}
 			>
 				{t('Prune_Modal')}
-			</DeleteWarningModal>,
+			</GenericModal>,
 		);
 	};
 
