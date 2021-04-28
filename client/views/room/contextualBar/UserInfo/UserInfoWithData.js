@@ -47,7 +47,6 @@ function UserInfoWithData({
 			name,
 			username,
 			roles = [],
-			status = null,
 			statusText,
 			bio,
 			utcOffset,
@@ -69,7 +68,7 @@ function UserInfoWithData({
 			email: getUserEmailAddress(user),
 			utcOffset,
 			createdAt: user.createdAt,
-			status: status && <ReactiveUserStatus uid={_id} presence={status} />,
+			status: <ReactiveUserStatus uid={_id} />,
 			customStatus: statusText,
 			nickname,
 		};

@@ -4,9 +4,10 @@ import React from 'react';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
+import Field from '../../../components/Field';
+import Info from '../../../components/Info';
+import Label from '../../../components/Label';
 import { FormSkeleton } from '../../Skeleton';
-import Info from './Info';
-import Label from './Label';
 
 const PriorityField = ({ id }) => {
 	const t = useTranslation();
@@ -21,10 +22,10 @@ const PriorityField = ({ id }) => {
 	}
 	const { name } = data;
 	return (
-		<>
+		<Field>
 			<Label>{t('Priority')}</Label>
 			<Info>{name}</Info>
-		</>
+		</Field>
 	);
 };
 

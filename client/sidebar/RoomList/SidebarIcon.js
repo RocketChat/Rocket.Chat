@@ -3,10 +3,14 @@ import React from 'react';
 
 import { useRoomIcon } from '../../hooks/useRoomIcon';
 
-const SidebarIcon = ({ room, small }) => {
-	const icon = useRoomIcon(room, small);
+const SidebarIcon = ({ room, highlighted }) => {
+	const icon = useRoomIcon(room);
 
-	return <Sidebar.Item.Icon {...(icon.name && icon)}>{!icon.name && icon}</Sidebar.Item.Icon>;
+	return (
+		<Sidebar.Item.Icon highlighted={highlighted} {...(icon.name && icon)}>
+			{!icon.name && icon}
+		</Sidebar.Item.Icon>
+	);
 };
 
 export default SidebarIcon;

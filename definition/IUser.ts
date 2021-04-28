@@ -37,6 +37,7 @@ export interface IUserServices {
 	password?: {
 		bcrypt: string;
 	};
+	passwordHistory?: string[];
 	email?: {
 		verificationTokens?: IUserEmailVerificationToken[];
 	};
