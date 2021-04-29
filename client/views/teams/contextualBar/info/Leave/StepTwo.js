@@ -4,7 +4,7 @@ import GenericModal from '../../../../../components/GenericModal';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import RoomLinkList from '../../RoomLinkList';
 
-export const StepTwo = ({ lastOwnerRooms, keptRooms, onConfirm, onCancel, onClose }) => {
+export const StepTwo = ({ lastOwnerRooms, keptRooms, onConfirm, onCancel, onClose, rooms }) => {
 	const t = useTranslation();
 
 	const showLastOwnerWarning = !!Object.values(lastOwnerRooms).length;
@@ -20,7 +20,7 @@ export const StepTwo = ({ lastOwnerRooms, keptRooms, onConfirm, onCancel, onClos
 			onCancel={onCancel}
 			onClose={onClose}
 			confirmText={t('Leave')}
-			cancelText={t('Back')}
+			cancelText={rooms?.filter((room) => !room.isLastOwner).length > 0 ? t('Back') : t('Cancel')}
 		>
 			{showLastOwnerWarning && (
 				<>

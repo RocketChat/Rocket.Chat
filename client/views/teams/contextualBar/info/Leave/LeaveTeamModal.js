@@ -3,16 +3,28 @@ import React, { useState, useCallback } from 'react';
 
 import { StepOne, StepTwo } from '.';
 
-export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
-	const [step, setStep] = useState(1);
+const STEPS = {
+	LIST_ROOMS: 'LIST_ROOMS',
+	CONFIRM_LEAVE: 'CONFIRM_LEAVE',
+};
+
+export const LeaveRoomModal = ({
+	onCancel,
+	onConfirm,
+	rooms,
+	currentStep = rooms?.filter((room) => !room.isLastOwner).length === 0
+		? STEPS.CONFIRM_LEAVE
+		: STEPS.LIST_ROOMS,
+}) => {
+	const [step, setStep] = useState(currentStep);
+
 	const [selectedRooms, setSelectedRooms] = useState({});
 	const [keptRooms, setKeptRooms] = useState({});
 
 	const lastOwnerRooms = rooms.filter(({ isLastOwner }) => isLastOwner);
 
-	const onContinue = useCallback(() => setStep((step) => step + 1), []);
-
-	const onReturn = useCallback(() => setStep((step) => step - 1), []);
+	const onContinue = useCallback(() => setStep(STEPS.CONFIRM_LEAVE), []);
+	const onReturn = useCallback(() => setStep(STEPS.LIST_ROOMS), []);
 
 	const onChangeRoomSelection = useCallback((room) => {
 		setSelectedRooms((selectedRooms) => {
@@ -43,11 +55,11 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 		onContinue();
 	});
 
-	if (rooms.length === 0 || step === 2) {
+	if (step === STEPS.CONFIRM_LEAVE) {
 		return (
 			<StepTwo
 				onConfirm={() => onConfirm(selectedRooms)}
-				onCancel={rooms.length > 1 && onReturn}
+				onCancel={rooms?.filter((room) => !room.isLastOwner).length > 0 ? onReturn : onCancel}
 				onClose={onCancel}
 				lastOwnerRooms={Object.fromEntries(lastOwnerRooms.map((room) => [room._id, room]))}
 				keptRooms={keptRooms}
@@ -64,7 +76,7 @@ export const LeaveRoomModal = ({ onCancel, onConfirm, rooms }) => {
 			eligibleRoomsLength={rooms.length - lastOwnerRooms.length}
 			selectedRooms={selectedRooms}
 			onToggleAllRooms={onToggleAllRooms}
-			onChangeParams={(...args) => console.log(args)}
+			// onChangeParams={(...args) => console.log(args)}
 			onConfirm={onSelectRooms}
 			onChangeRoomSelection={onChangeRoomSelection}
 		/>
