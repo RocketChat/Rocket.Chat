@@ -118,7 +118,6 @@ const AccountProfilePage = () => {
 	const updateAvatar = useUpdateAvatar(avatar, user._id);
 
 	const onSave = useCallback(async () => {
-		// eslint-disable-next-line no-unused-vars
 		const save = async (typedPassword) => {
 			try {
 				await saveFn(
