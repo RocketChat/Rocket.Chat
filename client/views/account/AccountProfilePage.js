@@ -108,6 +108,7 @@ const AccountProfilePage = () => {
 		statusText,
 		statusType,
 		customFields,
+		confirmationPassword,
 		bio,
 		nickname,
 	} = values;
@@ -117,13 +118,16 @@ const AccountProfilePage = () => {
 	const updateAvatar = useUpdateAvatar(avatar, user._id);
 
 	const onSave = useCallback(async () => {
+		// eslint-disable-next-line no-unused-vars
 		const save = async (typedPassword) => {
 			try {
 				await saveFn(
 					{
 						...(allowRealNameChange && { realname }),
 						...(allowEmailChange && getUserEmailAddress(user) !== email && { email }),
-						...(allowPasswordChange && { newPassword: password }),
+						...(allowPasswordChange && {
+							newPassword: password === confirmationPassword ? password : '',
+						}),
 						...(canChangeUsername && { username }),
 						...(allowUserStatusMessageChange && { statusText }),
 						...(typedPassword && { typedPassword: SHA256(typedPassword) }),
@@ -157,6 +161,7 @@ const AccountProfilePage = () => {
 		canChangeUsername,
 		email,
 		password,
+		confirmationPassword,
 		realname,
 		statusText,
 		username,
