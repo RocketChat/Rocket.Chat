@@ -125,7 +125,7 @@ const CreateChannel = ({
 						<Box display='flex' flexDirection='column'>
 							<Field.Label>{t('Read_only')}</Field.Label>
 							<Field.Description>
-								{t('All_users_in_the_channel_can_write_new_messages')}
+								{t('Only_authorized_users_can_write_new_messages')}
 							</Field.Description>
 						</Box>
 						<ToggleSwitch
