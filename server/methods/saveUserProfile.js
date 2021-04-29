@@ -8,6 +8,7 @@ import { settings as rcSettings } from '../../app/settings/server';
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
 import { compareUserPassword } from '../lib/compareUserPassword';
+import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 
 function saveUserProfile(settings, customFields) {
 	if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
@@ -75,11 +76,19 @@ function saveUserProfile(settings, customFields) {
 				});
 			}
 
+			if (user.services?.passwordHistory && !compareUserPasswordHistory(user, { plain: settings.newPassword })) {
+				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
+					method: 'saveUserProfile',
+				});
+			}
+
 			passwordPolicy.validate(settings.newPassword);
 
 			Accounts.setPassword(this.userId, settings.newPassword, {
 				logout: false,
 			});
+
+			Users.addPasswordToHistory(this.userId, user.services?.password.bcrypt);
 
 			try {
 				Meteor.call('removeOtherTokens');

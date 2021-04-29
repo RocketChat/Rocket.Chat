@@ -439,6 +439,15 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
+	findByUserIdAndRoomIds(userId, roomIds, options) {
+		const query = {
+			'u._id': userId,
+			rid: { $in: roomIds },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByUserIdAndType(userId, type, options) {
 		const query = {
 			'u._id': userId,
@@ -454,6 +463,15 @@ export class Subscriptions extends Base {
 			t: {
 				$in: types,
 			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findByUserIdAndRoles(userId, roles, options) {
+		const query = {
+			'u._id': userId,
+			roles: { $in: roles },
 		};
 
 		return this.find(query, options);

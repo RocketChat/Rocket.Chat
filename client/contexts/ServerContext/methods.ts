@@ -1,4 +1,5 @@
 import { FollowMessageMethod } from './methods/followMessage';
+import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 import { RoomNameExistsMethod } from './methods/roomNameExists';
 import { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import { SaveSettingsMethod } from './methods/saveSettings';
@@ -129,12 +130,19 @@ export type ServerMethods = {
 	'updateOAuthApp': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
+	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 };
 
 export type ServerMethodName = keyof ServerMethods;
 
-export type ServerMethodParameters<MethodName extends ServerMethodName> = Parameters<ServerMethods[MethodName]>;
+export type ServerMethodParameters<MethodName extends ServerMethodName> = Parameters<
+	ServerMethods[MethodName]
+>;
 
-export type ServerMethodReturn<MethodName extends ServerMethodName> = ReturnType<ServerMethods[MethodName]>;
+export type ServerMethodReturn<MethodName extends ServerMethodName> = ReturnType<
+	ServerMethods[MethodName]
+>;
 
-export type ServerMethodFunction<MethodName extends ServerMethodName> = (...args: ServerMethodParameters<MethodName>) => Promise<ServerMethodReturn<MethodName>>;
+export type ServerMethodFunction<MethodName extends ServerMethodName> = (
+	...args: ServerMethodParameters<MethodName>
+) => Promise<ServerMethodReturn<MethodName>>;

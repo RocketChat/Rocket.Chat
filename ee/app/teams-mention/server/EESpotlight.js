@@ -10,7 +10,11 @@ export const SpotlightEnterprise = {
 		});
 	},
 
-	_searchTeams(_, userId, { text, options, users }) {
+	_searchTeams(_, userId, { text, options, users, mentions }) {
+		if (!mentions) {
+			return users;
+		}
+
 		options.limit -= users.length;
 
 		if (options.limit <= 0) {
@@ -25,8 +29,6 @@ export const SpotlightEnterprise = {
 	},
 
 	_performExtraUserSearches(_, userId, searchParams) {
-		if (this._searchTeams(userId, searchParams)) {
-			return searchParams.users;
-		}
+		return this._searchTeams(userId, searchParams);
 	},
 };
