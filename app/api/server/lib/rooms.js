@@ -136,11 +136,11 @@ export async function findRoomsAvailableForTeams({ uid, name }) {
 		},
 	};
 
-	const userRooms = Subscriptions.findByUserIdAndType(uid, 'p', { fields: { rid: 1 } })
+	const userRooms = Subscriptions.findByUserIdAndRoles(uid, ['owner'], { fields: { rid: 1 } })
 		.fetch()
 		.map((item) => item.rid);
 
-	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStarting(name, userRooms, options).toArray();
+	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, userRooms, options).toArray();
 
 	return {
 		items: rooms,

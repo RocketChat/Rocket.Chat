@@ -1,8 +1,8 @@
-import React, { ReactNode, useContext, useMemo, memo } from 'react';
+import React, { ReactNode, useContext, useMemo, memo, useEffect } from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
 import { IRoom } from '../../../../definition/IRoom';
-import { useHandleRoom } from '../../../lib/RoomManager';
+import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import Skeleton from '../Room/Skeleton';
 import { RoomContext } from '../contexts/RoomContext';
@@ -25,6 +25,13 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 			room: { ...room, name: roomTypes.getRoomName(room.t, room) },
 		};
 	}, [room, rid]);
+
+	useEffect(() => {
+		RoomManager.open(rid);
+		return (): void => {
+			RoomManager.back(rid);
+		};
+	}, [rid]);
 
 	if (phase === AsyncStatePhase.LOADING || !room) {
 		return <Skeleton />;
