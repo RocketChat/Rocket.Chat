@@ -7,6 +7,7 @@ import {
 	credentials,
 	apiPublicChannelName,
 	channel,
+	reservedWords,
 } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper';
@@ -835,6 +836,28 @@ describe('[Channels]', function() {
 
 	it('/channels.rename', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
+
+		function failRenameChannel(name) {
+			it(`should not rename a channel to the reserved name ${ name }`, (done) => {
+				request.post(api('channels.rename'))
+					.set(credentials)
+					.send({
+						roomId: channel._id,
+						name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `${ name } is already in use :( [error-field-unavailable]`);
+					})
+					.end(done);
+			});
+		}
+
+		reservedWords.forEach((name) => {
+			failRenameChannel(name);
+		});
 
 		return request.post(api('channels.rename'))
 			.set(credentials)

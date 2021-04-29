@@ -60,7 +60,7 @@ export const createSettings = () => {
 		values: [
 			{ key: 'none', i18nLabel: 'Do_Nothing' },
 			{ key: 'close', i18nLabel: 'Livechat_close_chat' },
-			{ key: 'on-hold', i18nLabel: 'Livechat_onHold_Chat' },
+			{ key: 'on-hold', i18nLabel: 'Omnichannel_onHold_Chat' },
 		],
 		enterprise: true,
 		public: true,
