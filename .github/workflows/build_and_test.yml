@@ -54,27 +54,29 @@ jobs:
       uses: actions/cache@v2
       with:
         path: /home/runner/.cache/Cypress
-        key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+        key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache node modules
       if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
-        path: node_modules
-        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+        path: |
+          ./node_modules
+          ./ee/server/services/node_modules
+        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v2
       with:
         path: ./.meteor/local
-        key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+        key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor
       uses: actions/cache@v2
       with:
         path: ~/.meteor
-        key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+        key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
 
     - name: Install Meteor
       run: |
@@ -149,7 +151,6 @@ jobs:
     - name: Try building micro services
       run: |
         cd ./ee/server/services
-        npm i
         npm run build
         rm -rf dist/
 
@@ -194,13 +195,13 @@ jobs:
     strategy:
       matrix:
         node-version: ["12.22.1"]
-        mongodb-version: ["3.4", "3.6", "4.0"]
+        mongodb-version: ["3.4", "3.6", "4.0", "4.2"]
 
     steps:
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
-        mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
+        mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
 
     - name: Restore build for tests
       uses: actions/download-artifact@v2
@@ -235,15 +236,17 @@ jobs:
       uses: actions/cache@v2
       with:
         path: /home/runner/.cache/Cypress
-        key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+        key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache node modules
       if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
-        path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+        path: |
+          ./node_modules
+          ./ee/server/services/node_modules
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: NPM install
       if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
@@ -304,20 +307,22 @@ jobs:
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
-        path: node_modules
-        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+        path: |
+          ./node_modules
+          ./ee/server/services/node_modules
+        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v2
       with:
         path: ./.meteor/local
-        key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+        key: ${{ runner.OS }}-meteor_cache-${{ hashFiles('.meteor/versions', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor
       uses: actions/cache@v2
       with:
         path: ~/.meteor
-        key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release') }}-${{ hashFiles('.github/workflows/build_and_test.yml') }}
+        key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
 
     - name: Use Node.js 12.22.1
       uses: actions/setup-node@v2
