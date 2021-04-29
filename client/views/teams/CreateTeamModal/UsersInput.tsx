@@ -20,7 +20,7 @@ const useUsersAutoComplete = (term: string): AutocompleteData => {
 		[term],
 	);
 	const { value: data } = useEndpointData('users.autocomplete', params);
-	console.log(data);
+
 	return useMemo<AutocompleteData>(() => {
 		if (!data) {
 			return [[], {}];
@@ -40,7 +40,7 @@ const useUsersAutoComplete = (term: string): AutocompleteData => {
 
 const UsersInput: FC<UsersInputProps> = ({ onChange, ...props }) => {
 	const [filter, setFilter] = useState('');
-	const [options, labelData] = useUsersAutoComplete(useDebouncedValue(filter, 1000));
+	const [options] = useUsersAutoComplete(useDebouncedValue(filter, 1000));
 
 	const onClickSelected = useCallback(
 		(e) => {
