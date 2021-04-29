@@ -1,6 +1,6 @@
 import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
 import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
@@ -36,7 +36,6 @@ function ThreadList({
 	setText,
 }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
-	const threadsRef = useRef();
 
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
@@ -60,8 +59,6 @@ function ThreadList({
 		],
 		[t],
 	);
-
-	threadsRef.current = threads;
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({
 		debounceDelay: 200,
@@ -116,7 +113,7 @@ function ThreadList({
 					{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
 					{!error && total > 0 && threads.length > 0 && (
 						<Virtuoso
-							style={{ height: blockSize, width: inlineSize }}
+							style={{ minHeight: blockSize, width: inlineSize }}
 							totalCount={total}
 							endReached={
 								loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))
