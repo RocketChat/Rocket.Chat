@@ -735,6 +735,15 @@ export class Users extends Base {
 		}, options);
 	}
 
+	findActiveByUserIds(ids, options = {}) {
+		return this.find({
+			active: true,
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			_id: { $in: ids },
+		}, options);
+	}
+
 	findActiveLocalGuests(idExceptions = [], options = {}) {
 		const query = {
 			active: true,
