@@ -20,7 +20,7 @@ const useUsersAutoComplete = (term: string): AutocompleteData => {
 		[term],
 	);
 	const { value: data } = useEndpointData('users.autocomplete', params);
-
+	console.log(data);
 	return useMemo<AutocompleteData>(() => {
 		if (!data) {
 			return [[], {}];
@@ -29,7 +29,7 @@ const useUsersAutoComplete = (term: string): AutocompleteData => {
 		const options =
 			data.items.map((user) => ({
 				label: user.name ?? '',
-				value: user._id ?? '',
+				value: user.username ?? '',
 			})) || [];
 
 		const labelData = Object.fromEntries(data.items.map((user) => [user._id, user.username]) || []);
@@ -63,15 +63,15 @@ const UsersInput: FC<UsersInputProps> = ({ onChange, ...props }) => {
 						onClick={onClickSelected}
 						mie='x4'
 					>
-						<UserAvatar size='x20' username={labelData[value] as string} />
+						<UserAvatar size='x20' username={value as string} />
 						<Box is='span' margin='none' mis='x4'>
-							{labelData[value]}
+							{value}
 						</Box>
 					</Chip>
 				))}
 			</>
 		),
-		[onClickSelected, props, labelData],
+		[onClickSelected, props],
 	);
 
 	const renderItem = useCallback<FC<{ value: string }>>(
@@ -79,10 +79,10 @@ const UsersInput: FC<UsersInputProps> = ({ onChange, ...props }) => {
 			<Option
 				key={value}
 				{...props}
-				avatar={<UserAvatar size={Options.AvatarSize} username={labelData[value] as string} />}
+				avatar={<UserAvatar size={Options.AvatarSize} username={value as string} />}
 			/>
 		),
-		[labelData],
+		[],
 	);
 
 	return (
