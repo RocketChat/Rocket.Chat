@@ -554,12 +554,6 @@ export class Rooms extends Base {
 
 	findByNameOrFNameAndRoomIdsIncludingTeamRooms(name, teamIds, roomIds, options) {
 		const query = {
-			t: {
-				$in: [
-					'p',
-					'c',
-				],
-			},
 			teamMain: {
 				$exists: false,
 			},
