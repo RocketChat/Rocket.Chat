@@ -61,7 +61,9 @@ jobs:
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
-        path: node_modules
+        path: |
+          ./node_modules
+          ./ee/server/services/node_modules
         key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
@@ -193,13 +195,13 @@ jobs:
     strategy:
       matrix:
         node-version: ["12.22.1"]
-        mongodb-version: ["3.4", "3.6", "4.0"]
+        mongodb-version: ["3.4", "3.6", "4.0", "4.2"]
 
     steps:
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
-        mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
+        mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
 
     - name: Restore build for tests
       uses: actions/download-artifact@v2
