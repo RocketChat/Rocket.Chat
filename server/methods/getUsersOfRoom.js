@@ -39,10 +39,16 @@ function findUsersActiveTotal({ rid }) {
 			_updatedAt: 1,
 		},
 	};
+	const query = {
+		$and: [
+			{
+				active: true,
+				__rooms: rid,
+			},
+		],
+	};
 
-	return Users.findByActiveUsersExcept('', undefined, options, undefined, [{
-		__rooms: rid,
-	}]).count();
+	return Users.find(query, options).count();
 }
 
 Meteor.methods({
