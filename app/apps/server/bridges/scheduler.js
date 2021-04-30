@@ -120,9 +120,7 @@ export class AppSchedulerBridge {
 		this.orch.debugLog(`The App ${ appId } is scheduling a recurring job`, id);
 		try {
 			await this.startScheduler();
-			const job = this.scheduler.create(id, data || {});
-			job.repeatEvery(interval, { skipImmediate });
-			await job.save();
+			await this.scheduler.every(interval, id, data || {}, { skipImmediate });
 		} catch (e) {
 			this.orch.getRocketChatLogger().error(e);
 		}
