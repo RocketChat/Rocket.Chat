@@ -30,7 +30,13 @@ function AdminUserInformationStep({ step, title, active }) {
 	const callbacks = useCallbacks();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const registerAdminUser = async ({ name, username, email, password, onRegistrationEmailSent }) => {
+	const registerAdminUser = async ({
+		name,
+		username,
+		email,
+		password,
+		onRegistrationEmailSent,
+	}) => {
 		await registerUser({ name, username, email, pass: password });
 		callbacks.run('userRegistered');
 
@@ -52,7 +58,9 @@ function AdminUserInformationStep({ step, title, active }) {
 	};
 
 	const regexpForUsernameValidation = useSetting('UTF8_Names_Validation');
-	const usernameRegExp = useMemo(() => new RegExp(`^${ regexpForUsernameValidation }$`), [regexpForUsernameValidation]);
+	const usernameRegExp = useMemo(() => new RegExp(`^${regexpForUsernameValidation}$`), [
+		regexpForUsernameValidation,
+	]);
 	const emailRegExp = useMemo(() => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i, []);
 
 	const [name, setName] = useState('');
@@ -63,7 +71,12 @@ function AdminUserInformationStep({ step, title, active }) {
 	const [isUsernameValid, validateUsername] = useState(true);
 	const [isEmailValid, validateEmail] = useState(true);
 
-	const isContinueEnabled = useMemo(() => name && username && email && password, [name, username, email, password]);
+	const isContinueEnabled = useMemo(() => name && username && email && password, [
+		name,
+		username,
+		email,
+		password,
+	]);
 
 	const [commiting, setCommiting] = useState(false);
 
@@ -110,69 +123,79 @@ function AdminUserInformationStep({ step, title, active }) {
 	const emailInputId = useUniqueId();
 	const passwordInputId = useUniqueId();
 
-	return <Step active={active} working={commiting} onSubmit={handleSubmit}>
-		<StepHeader number={step} title={title} />
+	return (
+		<Step active={active} working={commiting} onSubmit={handleSubmit}>
+			<StepHeader number={step} title={title} />
 
-		<Margins blockEnd='x32'>
-			<FieldGroup>
-				<Field>
-					<Field.Label htmlFor={nameInputId} required>{t('Name')}</Field.Label>
-					<Field.Row>
-						<TextInput
-							ref={autoFocusRef}
-							id={nameInputId}
-							addon={<Icon name='user' size='x20' />}
-							placeholder={t('Type_your_name')}
-							value={name}
-							onChange={({ currentTarget: { value } }) => setName(value)}
-						/>
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label htmlFor={usernameInputId} required>{t('Username')}</Field.Label>
-					<Field.Row>
-						<TextInput
-							id={usernameInputId}
-							addon={<Icon name='at' size='x20' />}
-							placeholder={t('Type_your_username')}
-							value={username}
-							onChange={({ currentTarget: { value } }) => setUsername(value)}
-							error={username && !usernameRegExp.test(username) ? 'error' : ''}
-						/>
-					</Field.Row>
-					{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
-				</Field>
-				<Field>
-					<Field.Label htmlFor={emailInputId} required>{t('Organization_Email')}</Field.Label>
-					<Field.Row>
-						<EmailInput
-							id={emailInputId}
-							addon={<Icon name='mail' size='x20' />}
-							placeholder={t('Type_your_email')}
-							value={email}
-							onChange={({ currentTarget: { value } }) => setEmail(value)}
-							error={!isEmailValid ? 'error' : ''}
-						/>
-					</Field.Row>
-					{!isEmailValid && <Field.Error>{t('Invalid_email')}</Field.Error>}
-				</Field>
-				<Field>
-					<Field.Label htmlFor={passwordInputId} required>{t('Password')}</Field.Label>
-					<Field.Row>
-						<PasswordInput
-							id={passwordInputId}
-							addon={<Icon name='key' size='x20' />}
-							placeholder={t('Type_your_password')}
-							value={password}
-							onChange={({ currentTarget: { value } }) => setPassword(value)}
-						/>
-					</Field.Row>
-				</Field>
-			</FieldGroup>
-		</Margins>
+			<Margins blockEnd='x32'>
+				<FieldGroup>
+					<Field>
+						<Field.Label htmlFor={nameInputId} required>
+							{t('Name')}
+						</Field.Label>
+						<Field.Row>
+							<TextInput
+								ref={autoFocusRef}
+								id={nameInputId}
+								addon={<Icon name='user' size='x20' />}
+								placeholder={t('Type_your_name')}
+								value={name}
+								onChange={({ currentTarget: { value } }) => setName(value)}
+							/>
+						</Field.Row>
+					</Field>
+					<Field>
+						<Field.Label htmlFor={usernameInputId} required>
+							{t('Username')}
+						</Field.Label>
+						<Field.Row>
+							<TextInput
+								id={usernameInputId}
+								addon={<Icon name='at' size='x20' />}
+								placeholder={t('Type_your_username')}
+								value={username}
+								onChange={({ currentTarget: { value } }) => setUsername(value)}
+								error={username && !usernameRegExp.test(username) ? 'error' : ''}
+							/>
+						</Field.Row>
+						{!isUsernameValid && <Field.Error>{t('Invalid_username')}</Field.Error>}
+					</Field>
+					<Field>
+						<Field.Label htmlFor={emailInputId} required>
+							{t('Organization_Email')}
+						</Field.Label>
+						<Field.Row>
+							<EmailInput
+								id={emailInputId}
+								addon={<Icon name='mail' size='x20' />}
+								placeholder={t('Type_your_email')}
+								value={email}
+								onChange={({ currentTarget: { value } }) => setEmail(value)}
+								error={!isEmailValid ? 'error' : ''}
+							/>
+						</Field.Row>
+						{!isEmailValid && <Field.Error>{t('Invalid_email')}</Field.Error>}
+					</Field>
+					<Field>
+						<Field.Label htmlFor={passwordInputId} required>
+							{t('Password')}
+						</Field.Label>
+						<Field.Row>
+							<PasswordInput
+								id={passwordInputId}
+								addon={<Icon name='key' size='x20' />}
+								placeholder={t('Type_your_password')}
+								value={password}
+								onChange={({ currentTarget: { value } }) => setPassword(value)}
+							/>
+						</Field.Row>
+					</Field>
+				</FieldGroup>
+			</Margins>
 
-		<Pager disabled={commiting} isContinueEnabled={isContinueEnabled} />
-	</Step>;
+			<Pager disabled={commiting} isContinueEnabled={isContinueEnabled} />
+		</Step>
+	);
 }
 
 export default AdminUserInformationStep;

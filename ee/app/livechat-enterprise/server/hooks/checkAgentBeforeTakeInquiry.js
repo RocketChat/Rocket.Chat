@@ -27,7 +27,7 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({ agent, inquiry, o
 		return agent;
 	}
 
-	const user = await Users.getAgentAndAmountOngoingChats(agentId);
+	const user = await Users.getAgentAndAmountOngoingChats(agentId, departmentId);
 	if (!user) {
 		return null;
 	}
