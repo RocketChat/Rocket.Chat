@@ -826,7 +826,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 		// we need to use the normal model here. The raw one didn't propagate the changes to the FE
 		// let me know if there's a way of doing that
 		await Subscriptions.removeByRoomIdsAndUserId([roomId], userId);
-		await this.RoomsModel.incUsersCountByIds([roomId], -1);
 		await this.Users.removeRoomsByRoomIdsAndUserId([roomId], userId);
 	}
 }
