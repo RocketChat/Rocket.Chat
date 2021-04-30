@@ -78,19 +78,17 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 
 	const openUserInfo = useCallback(
 		(username) => {
-			switch (room.t) {
-				case 'l':
-					open('room-info', username);
-					break;
-				case 'd':
-					open('user-info', username);
-					break;
-				default:
-					open('members-list', username);
-					break;
+			if (room.t === 'l') {
+				open('room-info', username);
+			} else if (room.t === 'd') {
+				open('user-info', username);
+			} else if (room.teamMain) {
+				open('team-members', username);
+			} else {
+				open('members-list', username);
 			}
 		},
-		[room.t, open],
+		[room.t, open, room.teamMain],
 	);
 
 	useLayoutEffect(() => {

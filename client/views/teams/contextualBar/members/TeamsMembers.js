@@ -3,7 +3,7 @@ import {
 	useDebouncedValue,
 	useLocalStorage,
 } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 
 import { useAtLeastOnePermission } from '../../../../contexts/AuthorizationContext';
 import { useUserRoom } from '../../../../contexts/UserContext';
@@ -14,18 +14,28 @@ import AddUsers from '../../../room/contextualBar/RoomMembers/AddUsers';
 import InviteUsers from '../../../room/contextualBar/RoomMembers/InviteUsers';
 import RoomMembers from '../../../room/contextualBar/RoomMembers/List/RoomMembers';
 import UserInfoWithData from '../../../room/contextualBar/UserInfo';
-import { useTabBarClose } from '../../../room/providers/ToolboxProvider';
+import { useTabBarClose, useTabContext } from '../../../room/providers/ToolboxProvider';
 
 const TeamMembers = ({ rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
+	const selectedUser = useTabContext();
 
 	room.type = room.t;
 	room.rid = rid;
 
 	const [type, setType] = useLocalStorage('members-list-type', 'online');
 	const [text, setText] = useState('');
+
+	useEffect(() => {
+		if (selectedUser) {
+			setState({
+				username: selectedUser,
+				tab: 'UserInfo',
+			});
+		}
+	}, [selectedUser]);
 
 	const debouncedText = useDebouncedValue(text, 500);
 
