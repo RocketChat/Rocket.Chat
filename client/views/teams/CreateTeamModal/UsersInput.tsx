@@ -29,7 +29,7 @@ const useUsersAutoComplete = (term: string): AutocompleteData => {
 		const options =
 			data.items.map((user) => ({
 				label: user.name ?? '',
-				value: user._id ?? '',
+				value: user.username ?? '',
 			})) || [];
 
 		const labelData = Object.fromEntries(data.items.map((user) => [user._id, user.username]) || []);
