@@ -1,20 +1,25 @@
 import { Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { FC } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-const AppUpdateModal = ({ confirm, cancel, ...props }) => {
+type AppUpdateModalProps = {
+	confirm: () => void;
+	cancel: () => void;
+};
+
+const AppUpdateModal: FC<AppUpdateModalProps> = ({ confirm, cancel, ...props }) => {
 	const t = useTranslation();
 
-	const handleCloseButtonClick = () => {
+	const handleCloseButtonClick = (): void => {
 		cancel();
 	};
 
-	const handleCancelButtonClick = () => {
+	const handleCancelButtonClick = (): void => {
 		cancel();
 	};
 
-	const handleConfirmButtonClick = () => {
+	const handleConfirmButtonClick = (): void => {
 		confirm();
 	};
 
