@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users, Subscriptions } from '../../app/models/server';
+import { Subscriptions, Users } from '../../app/models/server';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 
