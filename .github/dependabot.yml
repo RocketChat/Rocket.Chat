@@ -1,5 +1,7 @@
 version: 2
 updates:
+
+# Main repo NPM package
 - package-ecosystem: npm
   directory: "/"
   schedule:
@@ -12,3 +14,16 @@ updates:
   - dependency-name: "@storybook/addon-essentials"
     versions:
     - 6.2.8
+
+## EE dependencies
+- package-ecosystem: npm
+  directory: "/ee/server/services"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+
+# Maintain dependencies for GitHub Actions
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "daily"
