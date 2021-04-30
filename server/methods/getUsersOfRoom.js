@@ -67,7 +67,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const total = await findUsersActiveTotal({ rid });
+		const total = findUsersActiveTotal({ rid });
 
 		const users = await findUsers({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter });
 
