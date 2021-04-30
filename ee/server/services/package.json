@@ -18,7 +18,7 @@
 	"author": "Rocket.Chat",
 	"license": "MIT",
 	"dependencies": {
-		"bcrypt": "^5.0.0",
+		"bcrypt": "^5.0.1",
 		"ejson": "^2.2.0",
 		"jaeger-client": "^3.18.1",
 		"mem": "^6.1.0",
