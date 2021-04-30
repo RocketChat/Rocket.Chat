@@ -31,12 +31,7 @@ function findUsers({ rid, status, skip, limit, filter = '' }) {
 function findUsersActiveTotal({ rid }) {
 	const options = {
 		fields: {
-			name: 1,
 			username: 1,
-			nickname: 1,
-			status: 1,
-			avatarETag: 1,
-			_updatedAt: 1,
 		},
 	};
 	const query = {
