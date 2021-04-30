@@ -120,13 +120,12 @@ export class AppRoomBridge {
 			addUserToRoom(rm._id, member);
 		}
 	}
-	
+
 	async delete(roomId, appId) {
 		this.orch.debugLog(`The App ${ appId } is deleting a room.`);
-
 		Rooms.removeById(roomId);
 	}
-	
+
 	async createDiscussion(room, parentMessage = null, reply = '', members = [], appId) {
 		this.orch.debugLog(`The App ${ appId } is creating a new discussion.`, room);
 
