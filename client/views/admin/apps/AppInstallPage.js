@@ -63,20 +63,13 @@ function AppInstallPage() {
 		fileData.append('app', appFile, appFile.name);
 		fileData.append('permissions', JSON.stringify(permissionsGranted));
 
-		try {
-			if (appId) {
-				await uploadUpdateApp(fileData);
-			} else {
-				await uploadApp(fileData);
-			}
-		} catch (e) {
-			const errMsg = e.xhr.responseJSON.error;
-			if (errMsg === 'App already exists.') {
-				await uploadUpdateApp(fileData);
-			}
+		if (appId) {
+			await uploadUpdateApp(fileData);
+		} else {
+			app = await uploadApp(fileData);
 		}
 
-		appsRoute.push({ context: 'details', id: app.id });
+		appsRoute.push({ context: 'details', id: appId || app.app.id });
 		setModal(null);
 	};
 
