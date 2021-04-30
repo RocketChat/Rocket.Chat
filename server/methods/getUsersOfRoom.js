@@ -25,25 +25,7 @@ function findUsers({ rid, status, skip, limit, filter = '' }) {
 	return Users.findByActiveUsersExcept(filter, undefined, options, undefined, [{
 		__rooms: rid,
 		...status && { status },
-	}]).fetch();
-}
-
-function findUsersActiveTotal({ rid }) {
-	const options = {
-		fields: {
-			username: 1,
-		},
-	};
-	const query = {
-		$and: [
-			{
-				active: true,
-				__rooms: rid,
-			},
-		],
-	};
-
-	return Users.find(query, options).count();
+	}]);
 }
 
 Meteor.methods({
@@ -62,9 +44,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const total = findUsersActiveTotal({ rid });
+		const total = findUsers({ rid }).count();
 
-		const users = await findUsers({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter });
+		const users = await findUsers({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter }).fetch();
 
 		return {
 			total,
