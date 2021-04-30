@@ -1539,6 +1539,8 @@
 
 .rc-old .rc-message-box .reply-preview__wrap {
 	position: relative;
+	max-height: 240px;
+	overflow-y: auto;
 }
 
 .rc-old .rc-message-box .reply-preview {
