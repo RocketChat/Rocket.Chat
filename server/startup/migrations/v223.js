@@ -1,10 +1,11 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import { Migrations } from '../../../app/migrations/server';
+import { Permissions } from '../../../app/models/server';
+
+const roleName = 'user';
 
 Migrations.add({
 	version: 223,
 	up() {
-		Settings.remove({ _id: 'UTF8_Names_Validation' });
-		console.log('Removed Setting UTF8_Names_Validation');
+		Permissions.update({ _id: 'message-impersonate' }, { $addToSet: { roles: roleName } });
 	},
 });
