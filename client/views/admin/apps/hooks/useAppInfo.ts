@@ -7,7 +7,7 @@ import { App } from '../types';
 
 const getBundledIn = async (appId: string, appVersion: string): Promise<App['bundledIn']> => {
 	try {
-		const { bundledIn } = await Apps.getLatestAppFromMarketplace(appId, appVersion) as App;
+		const { bundledIn } = (await Apps.getLatestAppFromMarketplace(appId, appVersion)) as App;
 		if (!bundledIn) {
 			return [];
 		}
@@ -51,10 +51,12 @@ const getApis = async (appId: string, installed: boolean): Promise<Record<string
 	}
 };
 
-type AppInfo = Partial<App & {
-	settings: Record<string, unknown>;
-	apis: Record<string, unknown>;
-}>;
+type AppInfo = Partial<
+	App & {
+		settings: Record<string, unknown>;
+		apis: Record<string, unknown>;
+	}
+>;
 
 export const useAppInfo = (appId: string): AppInfo => {
 	const { apps } = useContext(AppsContext);
@@ -68,7 +70,7 @@ export const useAppInfo = (appId: string): AppInfo => {
 			}
 
 			const app = apps.find((app) => app.id === appId) ?? {
-				...await Apps.getApp(appId),
+				...(await Apps.getApp(appId)),
 				installed: true,
 				marketplace: false,
 			};

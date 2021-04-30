@@ -46,6 +46,20 @@ LivechatRooms.prototype.findAbandonedOpenRooms = function(date) {
 	});
 };
 
+LivechatRooms.prototype.setOnHold = function(roomId) {
+	return this.update(
+		{ _id: roomId },
+		{ $set: { onHold: true } },
+	);
+};
+
+LivechatRooms.prototype.unsetOnHold = function(roomId) {
+	return this.update(
+		{ _id: roomId },
+		{ $unset: { onHold: 1 } },
+	);
+};
+
 LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function() {
 	return this.update({
 		open: true,
@@ -54,6 +68,25 @@ LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function() {
 		$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
 	}, {
 		multi: true,
+	});
+};
+
+LivechatRooms.prototype.unsetPredictedVisitorAbandonmentByRoomId = function(roomId) {
+	return this.update({
+		_id: roomId,
+	}, {
+		$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
+	});
+};
+
+LivechatRooms.prototype.unsetAllOnHoldFieldsByRoomId = function(roomId) {
+	return this.update({
+		_id: roomId,
+	}, {
+		$unset: {
+			'omnichannel.predictedVisitorAbandonmentAt': 1,
+			onHold: 1,
+		},
 	});
 };
 

@@ -3,6 +3,7 @@ import limax from 'limax';
 
 import { settings } from '../../settings';
 import { Rooms } from '../../models';
+import { validateName } from '../../lib/server/functions/validateName';
 
 export const getValidRoomName = (displayName, rid = '', options = {}) => {
 	let slugifiedName = displayName;
@@ -33,7 +34,7 @@ export const getValidRoomName = (displayName, rid = '', options = {}) => {
 		}
 	}
 
-	if (!nameValidation.test(slugifiedName)) {
+	if (!nameValidation.test(slugifiedName) || !validateName(slugifiedName)) {
 		throw new Meteor.Error('error-invalid-room-name', `${ slugifiedName } is not a valid room name.`, {
 			function: 'RocketChat.getValidRoomName',
 			channel_name: slugifiedName,
