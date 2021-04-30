@@ -141,6 +141,14 @@ export class Uploads extends Base {
 		}
 		return this.remove({ _id: fileId });
 	}
+
+	findByIds(fileIds) {
+		if (!fileIds || !Array.isArray(fileIds)) {
+			return;
+		}
+
+		return this.find({ _id: { $in: fileIds } });
+	}
 }
 
 export default new Uploads();
