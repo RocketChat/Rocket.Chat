@@ -26,7 +26,7 @@
 		"mongodb": "^3.6.1",
 		"nats": "^1.4.8",
 		"underscore.string": "^3.3.5",
-		"uuid": "^7.0.3",
+		"uuid": "^8.3.2",
 		"ws": "^7.2.3",
 		"eventemitter3": "^4.0.7",
 		"body-parser": "^1.19.0",
