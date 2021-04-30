@@ -81,9 +81,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		// TODO add validations to `data` and `members`
 
-		const membersResult = await this.Users.findActiveByIds(members, { projection: { username: 1, _id: 0 } }).toArray();
-		const memberUsernames = membersResult.map(({ username }) => username);
-
 		const teamData = {
 			...team,
 			createdAt: new Date(),
@@ -132,7 +129,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 					...room,
 					type: roomType,
 					name: team.name,
-					members: memberUsernames,
+					members,
 					extraData: {
 						...room.extraData,
 						teamId,
