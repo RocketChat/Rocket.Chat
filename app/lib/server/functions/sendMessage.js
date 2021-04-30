@@ -4,11 +4,10 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
-import { Markdown } from '../../../markdown/server';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
-
+import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 /**
  * IMPORTANT
@@ -209,20 +208,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		}
 	}
 
-	if (message.parseUrls !== false) {
-		message.html = message.msg;
-		message = Markdown.code(message);
-
-		const urls = message.html.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
-		if (urls) {
-			message.urls = urls.map((url) => ({ url }));
-		}
-
-		message = Markdown.mountTokensBack(message, false);
-		message.msg = message.html;
-		delete message.html;
-		delete message.tokens;
-	}
+	parseUrlsInMessage(message);
 
 	message = callbacks.run('beforeSaveMessage', message, room);
 	if (message) {
