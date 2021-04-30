@@ -23,7 +23,7 @@
 		"jaeger-client": "^3.18.1",
 		"mem": "^6.1.0",
 		"moleculer": "^0.14.10",
-		"mongodb": "^3.6.1",
+		"mongodb": "^3.6.6",
 		"nats": "^1.4.8",
 		"underscore.string": "^3.3.5",
 		"uuid": "^7.0.3",
