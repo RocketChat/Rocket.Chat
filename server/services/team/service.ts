@@ -312,20 +312,20 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		// validate access for every room first
-		validRooms.forEach(async (room) => {
+		for await (const room of validRooms) {
 			const canSeeRoom = await canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
-		});
+		}
 
-		for (const room of validRooms) {
+		for await (const room of validRooms) {
 			if (room.teamId) {
 				throw new Error('room-already-on-team');
 			}
 
-			if (room.u?._id !== uid) {
-				throw new Error('invalid-user');
+			if (!await this.SubscriptionsModel.isUserInRole(uid, 'owner', room._id)) {
+				throw new Error('error-no-owner-channel');
 			}
 
 			room.teamId = teamId;

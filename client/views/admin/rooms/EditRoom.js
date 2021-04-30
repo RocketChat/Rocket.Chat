@@ -120,7 +120,7 @@ function EditRoom({ room, onChange }) {
 		const save = () =>
 			saveAction({
 				rid: room._id,
-				roomName,
+				roomName: roomType === 'd' ? undefined : roomName,
 				roomTopic,
 				roomType,
 				readOnly,
