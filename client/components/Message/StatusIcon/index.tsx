@@ -1,5 +1,5 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { createRef, FC, memo, ReactElement } from 'react';
+import React, { FC, memo, ReactElement } from 'react';
 
 import { IMessage } from '../../../../definition/IMessage';
 import Edited from './Edited';
