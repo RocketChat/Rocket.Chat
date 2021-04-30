@@ -7,13 +7,6 @@ updates:
   schedule:
     interval: daily
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: cypress
-    versions:
-    - 7.1.0
-  - dependency-name: "@storybook/addon-essentials"
-    versions:
-    - 6.2.8
 
 ## EE dependencies
 - package-ecosystem: npm
