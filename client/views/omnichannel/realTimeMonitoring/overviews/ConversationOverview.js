@@ -23,7 +23,7 @@ const ConversationOverview = ({ params, reloadRef, ...props }) => {
 
 	reloadRef.current.conversationOverview = reload;
 
-	return <CounterContainer state={state} data={data} initialData={initialData} {...props}/>;
+	return <CounterContainer state={state} data={data} initialData={initialData} {...props} />;
 };
 
 export default ConversationOverview;

@@ -1,10 +1,10 @@
+import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Box, Icon, Scrollable } from '@rocket.chat/fuselage';
 
 import Page from '../../../components/Page';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 const foregroundColors = {
@@ -19,7 +19,7 @@ const foregroundColors = {
 };
 
 const ansispan = (str) => {
-	str =	str
+	str = str
 		.replace(/\s/g, '&nbsp;')
 		.replace(/(\\n|\n)/g, '<br>')
 		.replace(/>/g, '&gt;')
@@ -33,12 +33,10 @@ const ansispan = (str) => {
 		.replace(/\033\[0m/g, '</span>')
 		.replace(/\033\[39m/g, '</span>');
 	return Object.entries(foregroundColors).reduce((str, [ansiCode, color]) => {
-		const span = `<span style="color: ${ color }">`;
-		return (
-			str
-				.replace(new RegExp(`\\033\\[${ ansiCode }m`, 'g'), span)
-				.replace(new RegExp(`\\033\\[0;${ ansiCode }m`, 'g'), span)
-		);
+		const span = `<span style="color: ${color}">`;
+		return str
+			.replace(new RegExp(`\\033\\[${ansiCode}m`, 'g'), span)
+			.replace(new RegExp(`\\033\\[0;${ansiCode}m`, 'g'), span);
 	}, str);
 };
 
@@ -184,62 +182,67 @@ function ViewLogs() {
 		sendToBottomIfNecessary();
 	}, [sendToBottomIfNecessary]);
 
-	return <Page>
-		<Page.Header title={t('View_Logs')} />
-		<Page.Content>
-			<Box
-				width='full'
-				height='full'
-				overflow='hidden'
-				position='relative'
-				display='flex'
-				marginBlock='x8'
-			>
-				<Scrollable vertical>
-					<Box
-						ref={wrapperRef}
-						display='flex'
-						flexDirection='column'
-						padding='x8'
-						flexGrow={1}
-						fontFamily='mono'
-						color='alternative'
-						backgroundColor='neutral-800'
-						style={{ wordBreak: 'break-all' }}
-						onWheel={handleWheel}
-						onTouchStart={handleTouchStart}
-						onTouchEnd={handleTouchEnd}
-						onScroll={handleScroll}
-					>
-						{lines.sort((a, b) => a.ts - b.ts).map(({ string }, i) =>
-							<span key={i} dangerouslySetInnerHTML={{ __html: ansispan(string) }} />)}
-					</Box>
-				</Scrollable>
+	return (
+		<Page>
+			<Page.Header title={t('View_Logs')} />
+			<Page.Content>
 				<Box
-					position='absolute'
-					insetBlockEnd='x8'
-					insetInlineStart='50%'
-					width='x132'
-					height='x32'
-					marginInline='neg-x64'
-					paddingBlock='x8'
-					fontScale='c1'
-					borderRadius='full'
-					color='primary-500'
-					backgroundColor='surface'
-					onClick={handleClick}
-					textAlign='center'
-					style={{
-						cursor: 'pointer',
-						transition: 'transform 0.3s ease-out',
-						transform: newLogsVisible ? 'translateY(0)' : 'translateY(150%)',
-					}}
+					width='full'
+					height='full'
+					overflow='hidden'
+					position='relative'
+					display='flex'
+					marginBlock='x8'
 				>
-					<Icon name='jump' size='x16' /> {t('New_logs')}
+					<Scrollable vertical>
+						<Box
+							ref={wrapperRef}
+							display='flex'
+							flexDirection='column'
+							padding='x8'
+							flexGrow={1}
+							fontFamily='mono'
+							color='alternative'
+							backgroundColor='neutral-800'
+							style={{ wordBreak: 'break-all' }}
+							onWheel={handleWheel}
+							onTouchStart={handleTouchStart}
+							onTouchEnd={handleTouchEnd}
+							onScroll={handleScroll}
+						>
+							{lines
+								.sort((a, b) => a.ts - b.ts)
+								.map(({ string }, i) => (
+									<span key={i} dangerouslySetInnerHTML={{ __html: ansispan(string) }} />
+								))}
+						</Box>
+					</Scrollable>
+					<Box
+						position='absolute'
+						insetBlockEnd='x8'
+						insetInlineStart='50%'
+						width='x132'
+						height='x32'
+						marginInline='neg-x64'
+						paddingBlock='x8'
+						fontScale='c1'
+						borderRadius='full'
+						color='primary-500'
+						backgroundColor='surface'
+						onClick={handleClick}
+						textAlign='center'
+						style={{
+							cursor: 'pointer',
+							transition: 'transform 0.3s ease-out',
+							transform: newLogsVisible ? 'translateY(0)' : 'translateY(150%)',
+						}}
+					>
+						<Icon name='jump' size='x16' /> {t('New_logs')}
+					</Box>
 				</Box>
-			</Box>
-		</Page.Content>
-	</Page>;
+			</Page.Content>
+		</Page>
+	);
 }
 
 export default ViewLogs;
