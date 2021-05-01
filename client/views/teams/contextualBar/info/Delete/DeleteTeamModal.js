@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useState } from 'react';
 
 import { StepOne, StepTwo, StepThree } from '.';
 
@@ -38,36 +38,41 @@ export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	});
 
 	const onSelectRooms = useMutableCallback(() => {
-		const keptRooms = Object.fromEntries(rooms.filter((room) => !deletedRooms[room._id]).map((room) => [room._id, room]));
+		const keptRooms = Object.fromEntries(
+			rooms.filter((room) => !deletedRooms[room._id]).map((room) => [room._id, room]),
+		);
 		setKeptRooms(keptRooms);
 		onContinue();
 	});
 
 	if (step === 2) {
-		return <StepTwo
-			rooms={rooms}
-			onCancel={onCancel}
-			params={{}}
-			selectedRooms={deletedRooms}
-			onToggleAllRooms={onToggleAllRooms}
-			onChangeParams={(...args) => console.log(args)}
-			onConfirm={onSelectRooms}
-			onChangeRoomSelection={onChangeRoomSelection}
-		/>;
+		return (
+			<StepTwo
+				rooms={rooms}
+				onCancel={onCancel}
+				params={{}}
+				selectedRooms={deletedRooms}
+				onToggleAllRooms={onToggleAllRooms}
+				onChangeParams={(...args) => console.log(args)}
+				onConfirm={onSelectRooms}
+				onChangeRoomSelection={onChangeRoomSelection}
+			/>
+		);
 	}
 
 	if (step === 3) {
-		return <StepThree
-			onConfirm={onConfirm}
-			onReturn={onReturn}
-			onCancel={onCancel}
-			deletedRooms={deletedRooms}
-			keptRooms={keptRooms}
-		/>;
+		return (
+			<StepThree
+				onConfirm={onConfirm}
+				onReturn={onReturn}
+				onCancel={onCancel}
+				deletedRooms={deletedRooms}
+				keptRooms={keptRooms}
+			/>
+		);
 	}
 
 	return <StepOne onConfirm={onContinue} onCancel={onCancel} />;
 };
-
 
 export default DeleteTeamModal;

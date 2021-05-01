@@ -4,5 +4,4 @@ type SidebarContextValue = [boolean, (open: boolean | ((isOpen: boolean) => bool
 
 export const SidebarContext = createContext<SidebarContextValue>([false, (): void => undefined]);
 
-export const useSidebar = (): SidebarContextValue =>
-	useContext(SidebarContext);
+export const useSidebar = (): SidebarContextValue => useContext(SidebarContext);
