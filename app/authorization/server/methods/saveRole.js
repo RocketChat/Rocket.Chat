@@ -18,7 +18,7 @@ Meteor.methods({
 		};
 		const roleExists = Roles.findOne(roleData.name, options);
 		if (roleExists) {
-			throw new Meteor.Error('error-role-already-present', 'Role is already present', {
+			throw new Meteor.Error('error-role-already-present', 'A role with this name already exists', {
 				method: 'authorization:saveRole',
 			});
 		}
