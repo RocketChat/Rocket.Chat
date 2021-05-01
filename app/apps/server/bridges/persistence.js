@@ -34,7 +34,7 @@ export class AppPersistenceBridge {
 
 		const record = this.orch.getPersistenceModel().findOneById(id);
 
-		return record.data;
+		return record?.data;
 	}
 
 	async readByAssociations(associations, appId) {
