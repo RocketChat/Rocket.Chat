@@ -19,6 +19,7 @@ import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesConte
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useForm } from '../../../../hooks/useForm';
 import { useUserRoom } from '../../hooks/useUserRoom';
+import { useTabBarClose } from '../../providers/ToolboxProvider';
 
 const clickable = css`
 	cursor: pointer;
@@ -26,6 +27,7 @@ const clickable = css`
 
 const MailExportForm = ({ onCancel, rid }) => {
 	const t = useTranslation();
+	const close = useTabBarClose();
 
 	const room = useUserRoom(rid);
 	const roomName = room && room.t && roomTypes.getRoomName(room.t, room);
@@ -120,6 +122,8 @@ const MailExportForm = ({ onCancel, rid }) => {
 				type: 'success',
 				message: t('Your_email_has_been_queued_for_sending'),
 			});
+
+			close();
 		} catch (error) {
 			dispatchToastMessage({
 				type: 'error',
