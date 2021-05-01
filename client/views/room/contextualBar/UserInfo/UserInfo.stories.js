@@ -5,7 +5,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import UserInfo from './UserInfo';
 
 export default {
-	title: 'components/UserInfo',
+	title: 'room/contextualBar/UserInfo',
 	component: UserInfo,
 };
 
