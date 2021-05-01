@@ -132,7 +132,7 @@ function UserTable({ workspace = 'local' }) {
 										{username}
 									</Box>
 								</Box>
-								<MarkdownText fontScale='p1' color='hint' content={bio} />
+								<MarkdownText variant='inline' fontScale='p1' color='hint' content={bio} />
 							</Box>
 						</Box>
 					</Flex.Container>

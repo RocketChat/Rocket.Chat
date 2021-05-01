@@ -13,7 +13,11 @@ import { useFormatDate } from '../../hooks/useFormatDate';
 import RoomTags from './RoomTags';
 import { useQuery } from './hooks';
 
-const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+const style = {
+	whiteSpace: 'nowrap',
+	textOverflow: 'ellipsis',
+	overflow: 'hidden',
+};
 
 function TeamsTable() {
 	const t = useTranslation();
@@ -79,7 +83,7 @@ function TeamsTable() {
 
 	const query = useQuery(params, sort, 'teams');
 
-	const { value: data = { result: [] } } = useEndpointData('directory', query);
+	const { value: data = {} } = useEndpointData('directory', query);
 
 	const onClick = useMemo(
 		() => (name, type) => (e) => {

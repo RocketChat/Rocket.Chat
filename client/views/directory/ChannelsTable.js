@@ -13,7 +13,11 @@ import { useFormatDate } from '../../hooks/useFormatDate';
 import RoomTags from './RoomTags';
 import { useQuery } from './hooks';
 
-const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+const style = {
+	whiteSpace: 'nowrap',
+	textOverflow: 'ellipsis',
+	overflow: 'hidden',
+};
 
 function ChannelsTable() {
 	const t = useTranslation();
@@ -102,7 +106,7 @@ function ChannelsTable() {
 
 	const channelRoute = useRoute('channel');
 
-	const { value: data = { result: [] } } = useEndpointData('directory', query);
+	const { value: data = {} } = useEndpointData('directory', query);
 
 	const onClick = useMemo(
 		() => (name) => (e) => {
