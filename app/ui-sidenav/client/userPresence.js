@@ -6,7 +6,7 @@ import _ from 'underscore';
 import mem from 'mem';
 
 import { APIClient } from '../../utils/client';
-import { saveUser, interestedUserIds } from '../../../imports/startup/client/listenActiveUsers';
+import { saveUser, interestedUserIds } from '../../../client/startup/listenActiveUsers';
 import { Presence } from '../../../client/lib/presence';
 
 import './userPresence.html';
