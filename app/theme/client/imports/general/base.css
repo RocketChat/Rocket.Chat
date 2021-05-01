@@ -251,13 +251,19 @@ button {
 	cursor: pointer;
 }
 
-#rocket_not_found{
+#rocket_not_found {
 	transform: translateZ(160px);
-	transform: translateZ(160px) translateY(300px) ;
+	transform: translateZ(160px) translateY(300px);
 	animation: rocketfly 5s infinite ease-out;
 	animation-delay: -2s;
 }
+
 @keyframes rocketfly {
-	70% {transform: translateZ(160px) translateY(150px) rotateZ(0deg) scale(0.7);}
-	100% {transform: translateZ(170px) translateY(-150px) rotateZ(-2deg) scale(0.9);}
+	70% {
+		transform: translateZ(160px) translateY(150px) rotateZ(0deg) scale(0.7);
+	}
+
+	100% {
+		transform: translateZ(170px) translateY(-150px) rotateZ(-2deg) scale(0.9);
+	}
 }
