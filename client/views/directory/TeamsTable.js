@@ -52,14 +52,7 @@ function TeamsTable() {
 				>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'channelsCount'}
-					direction={sort[1]}
-					active={sort[0] === 'channelsCount'}
-					onClick={onHeaderClick}
-					sort='channelsCount'
-					style={{ width: '100px' }}
-				>
+				<GenericTable.HeaderCell key={'channelsCount'} style={{ width: '100px' }}>
 					{t('Channels')}
 				</GenericTable.HeaderCell>,
 				mediaQuery && (

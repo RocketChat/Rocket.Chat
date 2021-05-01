@@ -89,14 +89,7 @@ function ChannelsTable() {
 					</GenericTable.HeaderCell>
 				),
 				mediaQuery && (
-					<GenericTable.HeaderCell
-						key={'belongsTo'}
-						direction={sort[1]}
-						active={sort[0] === 'belongsTo'}
-						onClick={onHeaderClick}
-						sort='belongsTo'
-						style={{ width: '150px' }}
-					>
+					<GenericTable.HeaderCell key={'belongsTo'} style={{ width: '150px' }}>
 						{t('Belongs_To')}
 					</GenericTable.HeaderCell>
 				),

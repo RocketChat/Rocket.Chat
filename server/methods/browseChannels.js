@@ -52,18 +52,11 @@ const getChannels = (user, canViewAnon, searchTerm, sort, pagination) => {
 	const teams = Promise.await(Team.getAllPublicTeams());
 	const teamIds = teams.map(({ _id }) => _id);
 
-	const sortBelongsTo = Object.keys(sort).includes('belongsTo');
-
-	let sortChannels = sort;
-	if (sortBelongsTo) {
-		sortChannels = { name: 1 };
-	}
-
 	const result = Rooms.findByNameOrFNameAndTypeIncludingTeamRooms(searchTerm, 'c', teamIds, {
 		...pagination,
 		sort: {
 			featured: -1,
-			...sortChannels,
+			...sort,
 		},
 		fields: {
 			t: 1,
@@ -93,25 +86,6 @@ const getChannels = (user, canViewAnon, searchTerm, sort, pagination) => {
 		return room;
 	});
 
-	if (sortBelongsTo) {
-		results.sort((a, b) => {
-			const nameA = a.belongsTo ? a.belongsTo.toUpperCase() : '';
-			const nameB = b.belongsTo ? b.belongsTo.toUpperCase() : '';
-			if (nameA < nameB) {
-				return -1;
-			}
-			if (nameA > nameB) {
-				return 1;
-			}
-
-			return 0;
-		});
-
-		if (sort.belongsTo === -1) {
-			results.reverse();
-		}
-	}
-
 	return {
 		total,
 		results,
@@ -127,20 +101,13 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 		return;
 	}
 
-	const sortChannelsCount = Object.keys(sort).includes('channelsCount');
-
-	let sortTeams = sort;
-	if (sortChannelsCount) {
-		sortTeams = { name: 1 };
-	}
-
 	const userSubs = Subscriptions.cachedFindByUserId(user._id).fetch();
 	const ids = userSubs.map((sub) => sub.rid);
 	const result = Rooms.findContainingNameOrFNameInIdsAsTeamMain(searchTerm, ids, {
 		...pagination,
 		sort: {
 			featured: -1,
-			...sortTeams,
+			...sort,
 		},
 		fields: {
 			t: 1,
@@ -164,23 +131,6 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 		...room,
 		roomsCount: getChannelsCountForTeam(room.teamId),
 	}));
-
-	if (sortChannelsCount) {
-		rooms.sort((a, b) => {
-			if (a.roomsCount < b.roomsCount) {
-				return -1;
-			}
-			if (a.roomsCount > b.roomsCount) {
-				return 1;
-			}
-
-			return 0;
-		});
-
-		if (sort.channelsCount === -1) {
-			rooms.reverse();
-		}
-	}
 
 	return {
 		total: result.count(), // count ignores the `skip` and `limit` options
@@ -258,11 +208,10 @@ Meteor.methods({
 			return;
 		}
 
-		const teamFilters = type === 'teams' ? ['channelsCount'] : [];
 		const channelFilters = ['channels', 'teams'].includes(type) ? ['usernames', 'lastMessage', 'belongsTo'] : [];
 		const userFilters = type === 'users' ? ['username', 'email', 'bio'] : [];
 
-		if (!['name', 'createdAt', 'usersCount', ...channelFilters, ...userFilters, ...teamFilters].includes(sortBy)) {
+		if (!['name', 'createdAt', 'usersCount', ...channelFilters, ...userFilters].includes(sortBy)) {
 			return;
 		}
 
