@@ -359,6 +359,7 @@ export const Livechat = {
 
 		LivechatRooms.closeByRoomId(rid, closeData);
 		LivechatInquiry.removeByRoomId(rid);
+		Subscriptions.removeByRoomId(rid);
 
 		const message = {
 			t: 'livechat-close',
@@ -372,9 +373,7 @@ export const Livechat = {
 
 		sendMessage(user || visitor, message, room);
 
-		if (servedBy) {
-			Subscriptions.removeByRoomIdAndUserId(rid, servedBy._id);
-		}
+
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
 		Meteor.defer(() => {
@@ -638,6 +637,10 @@ export const Livechat = {
 			console.error(e);
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
 		}
+
+		Meteor.defer(() => {
+			callbacks.run('livechat:afterReturnRoomAsInquiry', { room });
+		});
 
 		return true;
 	},

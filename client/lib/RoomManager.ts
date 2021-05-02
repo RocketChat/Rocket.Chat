@@ -17,18 +17,34 @@ export class RoomStore extends Emitter<{
 
 	scroll?: number;
 
+	lm?: Date;
+
+	atBottom = true;
+
 	constructor(readonly rid: string) {
 		super();
 
 		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
-	update({ scroll, lastTime }: { scroll?: number; lastTime?: Date }): void {
+	update({
+		scroll,
+		lastTime,
+		atBottom,
+	}: {
+		scroll?: number;
+		lastTime?: Date;
+		atBottom?: boolean;
+	}): void {
 		if (scroll !== undefined) {
 			this.scroll = scroll;
 		}
 		if (lastTime !== undefined) {
 			this.lastTime = lastTime;
+		}
+
+		if (atBottom !== undefined) {
+			this.atBottom = atBottom;
 		}
 		if (scroll || lastTime) {
 			this.emit('changed');
@@ -85,6 +101,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 			this.lastRid = rid;
 			this.rid = undefined;
 			this.emit('back', rid);
+			this.emit('changed', this.rid);
 		}
 	}
 
@@ -106,7 +123,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 			this.rooms.set(rid, new RoomStore(rid));
 		}
 		this.rid = rid;
-		this.emit('opened', rid);
+		this.emit('opened', this.rid);
 		this.emit('changed', this.rid);
 	}
 
