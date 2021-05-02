@@ -1099,6 +1099,10 @@ settings.addGroup('Message', function() {
 		type: 'boolean',
 		public: true,
 	});
+	this.add('Message_AllowThreadMessagesinMainChannel', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.add('Message_ShowFormattingTips', true, {
 		type: 'boolean',
 		public: true,
