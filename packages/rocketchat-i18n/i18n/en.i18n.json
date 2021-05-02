@@ -2696,6 +2696,7 @@
   "Message_AllowPinning_Description": "Allow messages to be pinned to any of the channels.",
   "Message_AllowSnippeting": "Allow Message Snippeting",
   "Message_AllowStarring": "Allow Message Starring",
+  "Message_AllowThreadMessagesinMainChannel":"Allow Thread Messages in Main Channel",
   "Message_AllowUnrecognizedSlashCommand": "Allow Unrecognized Slash Commands",
   "Message_Already_Sent": "This message has already been sent and is being processed by the server",
   "Message_AlwaysSearchRegExp": "Always Search Using RegExp",
