@@ -6,6 +6,7 @@ import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
+import { hasPermission } from '../../../authorization/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 /**
@@ -126,7 +127,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-const validateMessage = (message) => {
+const validateMessage = (message, userId) => {
 	check(message, objectMaybeIncluding({
 		_id: String,
 		msg: String,
@@ -140,6 +141,10 @@ const validateMessage = (message) => {
 		blocks: [Match.Any],
 	}));
 
+	if ((message.alias || message.avatar) && !hasPermission(userId, 'message-impersonate', message.rid)) {
+		throw new Error('Not enough permission');
+	}
+
 	if (Array.isArray(message.attachments) && message.attachments.length) {
 		validateBodyAttachments(message.attachments);
 	}
@@ -150,7 +155,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		return false;
 	}
 
-	validateMessage(message);
+	validateMessage(message, user._id);
 
 	if (!message.ts) {
 		message.ts = new Date();
@@ -199,7 +204,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 			message = Object.assign(message, result);
 
 			// Some app may have inserted malicious/invalid values in the message, let's check it again
-			validateMessage(message);
+			validateMessage(message, user._id);
 		}
 	}
 
