@@ -34,7 +34,7 @@ const getInitialValues = (room) => ({
 	isDefault: !!room.default,
 	favorite: !!room.favorite,
 	featured: !!room.featured,
-	reactWhenReadOnly: room.reactWhenReadOnly,
+	reactWhenReadOnly: !!room.reactWhenReadOnly,
 	roomTopic: room.topic ?? '',
 	roomDescription: room.description ?? '',
 	roomAnnouncement: room.announcement ?? '',
@@ -120,7 +120,7 @@ function EditRoom({ room, onChange }) {
 		'rooms.changeArchivationState',
 		t(archiveMessage),
 	);
-
+	console.log(reactWhenReadOnly);
 	const handleSave = useMutableCallback(async () => {
 		const save = () =>
 			saveAction({
@@ -264,7 +264,11 @@ function EditRoom({ room, onChange }) {
 							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 								<Field.Label>{t('React_when_read_only')}</Field.Label>
 								<Field.Row>
-									<ToggleSwitch checked={reactWhenReadOnly} onChange={handleReactWhenReadOnly} />
+									<ToggleSwitch
+										disabled={deleted}
+										checked={reactWhenReadOnly}
+										onChange={handleReactWhenReadOnly}
+									/>
 								</Field.Row>
 							</Box>
 							<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
