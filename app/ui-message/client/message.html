@@ -43,7 +43,9 @@
 					{{#if getStatus}}
 						<button class="message-custom-status" title="{{getStatus}}">💬</button>
 					{{/if}}
-					<span class="info border-component-color color-info-font-color"></span>
+					{{#if t}}
+						{{>MessageStatusIcon type=t}}
+					{{/if}}
 					{{# if showRoles }}
 						{{#each role in roleTags}}
 							<span class="role-tag color-secondary-color border-component-color" data-role="{{role.description}}">{{role.description}}</span>
@@ -55,25 +57,26 @@
 					<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
 					{{#if showTranslated}}
 						<span class="translated">
-							<i class="icon-language {{#if msg.autoTranslateFetching}}loading{{/if}}" title="{{_ "Translated"}}"></i>
-							<span class="translation-provider">{{ translationProvider }}</span>
+							{{>MessageStatusIcon type='translated' msg=msg}}
 						</span>
 					{{/if}}
 					{{#if msg.sentByEmail}}
 						<span class="sent-by-email">
-							<i class="icon-mail" title='{{_ "Message_sent_by_email"}}'></i>
+							{{>MessageStatusIcon type='sent-by-email'}}
 						</span>
 					{{/if}}
 					{{#if edited}}
-						<span class="edited" title='{{_ "edited"}} {{_ "at"}} {{editTime}} {{_ "by"}} {{editedBy}}'>
-							<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" title="{{_ "Edited"}}"></i>
-						</span>
+						{{>MessageStatusIcon type='edited' msg=msg}}
 					{{/if}}
 					{{#if msg.pinned}}
-						<span title="{{_ "Message_has_been_pinned"}}" class="pinned"><i class="icon-pin"></i></span>
+						<span class="pinned">
+							{{>MessageStatusIcon type='pinned'}}
+						</span>
 					{{/if}}
 					{{#if showStar}}
-						<span title="{{_ "Message_has_been_starred"}}" class="starred"><i class="icon-star"></i></span>
+						<span class="starred">
+							{{>MessageStatusIcon type='starred'}}
+						</span>
 					{{/if}}
 					{{#if following }}
 						{{#unless msg.tcount}}
@@ -123,7 +126,6 @@
 			{{#if hasAttachments}}
 				{{> reactAttachments attachments=msg.attachments file=msg.file }}
 			{{/if}}
-			
 
 			{{#with readReceipt}}
 				<div class="read-receipt {{readByEveryone}}">
@@ -170,7 +172,7 @@
 			{{#if msg.drid}}
 				{{> DiscussionMetric count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
 			{{/if}}
-			
+
 			{{#if $and settings.showReplyButton msg.tcount}}
 			    {{> ThreadMetric counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
 			{{/if}}
