@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 
 import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models';
 import { hasPermission } from '../../../authorization';
@@ -204,12 +205,13 @@ API.v1.addRoute(['dm.members', 'im.members'], { authRequired: true }, {
 		const { sort } = this.parseJsonQuery();
 		const { status, username, name } = this.queryParams;
 
-		if (status && !Array.isArray(status)) {
-			throw new Meteor.Error('error-status-param-not-an-array', 'The parameter "status" should be an array of strings');
-		}
+		check(status, Match.Maybe([String]));
+		check(username, Match.Maybe(String));
+		check(name, Match.Maybe(String));
 
 		const cursor = Subscriptions.findByRoomId(findResult.room._id, {
 			sort: { 'u.username': sort && sort.username ? sort.username : 1 },
+			projection: { u: 1 },
 			skip: offset,
 			limit: count,
 		});
