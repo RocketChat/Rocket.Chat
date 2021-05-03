@@ -2778,12 +2778,10 @@ describe('[Users]', function() {
 		let user;
 		before(async () => {
 			user = await createUser();
-			await updateSetting('Accounts_AllowInvisibleStatusOption', false);
 		});
 		after(async () => {
 			await deleteUser(user);
 			user = undefined;
-			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
 		});
 
 		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
@@ -2875,8 +2873,10 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled', (done) => {
-			request.post(api('users.setStatus'))
+		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
+			await updateSetting('Accounts_AllowInvisibleStatusOption', false);
+
+			await request.post(api('users.setStatus'))
 				.set(credentials)
 				.send({
 					status: 'offline',
@@ -2885,10 +2885,11 @@ describe('[Users]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-not-allowed');
-					expect(res.body.error).to.be.equal('Invisible status is disabled [error-not-allowed]');
-				})
-				.end(done);
+					expect(res.body.errorType).to.be.equal('error-status-not-allowed');
+					expect(res.body.error).to.be.equal('Invisible status is disabled [error-status-not-allowed]');
+				});
+
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
 		});
 	});
 
