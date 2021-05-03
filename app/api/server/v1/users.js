@@ -458,7 +458,7 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 					const { status } = this.bodyParams;
 
 					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-						throw new Meteor.Error('error-not-allowed', 'Invisible status is disabled', {
+						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
 							method: 'users.setStatus',
 						});
 					}
