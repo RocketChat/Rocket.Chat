@@ -10,5 +10,5 @@ addAction('channel-settings', {
 	title: 'Room_Info',
 	icon: 'info-circled',
 	template: lazy(() => import('../../../client/views/room/contextualBar/Info')) as LazyExoticComponent<FC>,
-	order: 7,
+	order: 1,
 });
