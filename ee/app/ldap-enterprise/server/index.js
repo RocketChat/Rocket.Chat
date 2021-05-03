@@ -9,12 +9,13 @@ import { onLicense } from '../../license/server';
 
 onLicense('ldap-enterprise', () => {
 	const { createSettings } = require('./settings');
-	const { validateLDAPRolesMappingChanges } = require('./ldapEnterprise');
+	const { validateLDAPRolesMappingChanges, validateLDAPTeamsMappingChanges } = require('./ldapEnterprise');
 	const { onLdapLogin } = require('./listener');
 
 	Meteor.startup(function() {
 		createSettings();
 		validateLDAPRolesMappingChanges();
+		validateLDAPTeamsMappingChanges();
 
 		let LDAP_Enable_LDAP_Roles_To_RC_Roles;
 		let LDAP_Enable_LDAP_Groups_To_RC_Teams;
