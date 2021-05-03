@@ -653,20 +653,51 @@ API = {
 };
 
 const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
-	if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
-		if (settings.get('API_Enable_CORS') === true) {
-			this.response.writeHead(200, {
-				'Access-Control-Allow-Origin': settings.get('API_CORS_Origin'),
-				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
-				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
-			});
-		} else {
-			this.response.writeHead(405);
-			this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
-		}
-	} else {
-		this.response.writeHead(404);
+	// check if a pre-flight request
+	if (!this.request.headers['access-control-request-method'] && !this.request.headers.origin) {
+		this.done();
+		return;
 	}
+
+	if (!settings.get('API_Enable_CORS')) {
+		this.response.writeHead(405);
+		this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
+		this.done();
+		return;
+	}
+
+	const CORSOriginSetting = String(settings.get('API_CORS_Origin'));
+
+	const defaultHeaders = {
+		'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
+		'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+	};
+
+	if (CORSOriginSetting === '*') {
+		this.response.writeHead(200, {
+			'Access-Control-Allow-Origin': '*',
+			...defaultHeaders,
+		});
+		this.done();
+		return;
+	}
+
+	const origins = CORSOriginSetting
+		.trim()
+		.split(',')
+		.map((origin) => String(origin).trim().toLocaleLowerCase());
+
+	// if invalid origin reply without required CORS headers
+	if (!origins.includes(this.request.headers.origin)) {
+		this.done();
+		return;
+	}
+
+	this.response.writeHead(200, {
+		'Access-Control-Allow-Origin': this.request.headers.origin,
+		Vary: 'Origin',
+		...defaultHeaders,
+	});
 	this.done();
 };
 
@@ -678,24 +709,6 @@ const createApi = function _createApi(_api, options = {}) {
 		defaultOptionsEndpoint,
 		auth: getUserAuth(),
 	}, options));
-
-	delete _api._config.defaultHeaders['Access-Control-Allow-Origin'];
-	delete _api._config.defaultHeaders['Access-Control-Allow-Headers'];
-	delete _api._config.defaultHeaders.Vary;
-
-	if (settings.get('API_Enable_CORS')) {
-		const origin = settings.get('API_CORS_Origin');
-
-		if (origin) {
-			_api._config.defaultHeaders['Access-Control-Allow-Origin'] = origin;
-
-			if (origin !== '*') {
-				_api._config.defaultHeaders.Vary = 'Origin';
-			}
-		}
-
-		_api._config.defaultHeaders['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token';
-	}
 
 	return _api;
 };

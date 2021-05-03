@@ -19,7 +19,13 @@ callbacks.add('onValidateLogin', (login) => {
 		return login;
 	}
 
-	const { totp } = login.methodArguments[0];
+	const [loginArgs] = login.methodArguments;
+	// CAS login doesn't yet support 2FA.
+	if (loginArgs.cas) {
+		return login;
+	}
+
+	const { totp } = loginArgs;
 
 	checkCodeForUser({ user: login.user, code: totp && totp.code, options: { disablePasswordFallback: true } });
 

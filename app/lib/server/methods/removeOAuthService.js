@@ -34,6 +34,7 @@ Meteor.methods({
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-button_label_color`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-button_color`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-login_style`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-key_field`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-username_field`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-email_field`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-name_field`);
@@ -42,5 +43,9 @@ Meteor.methods({
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_roles`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_users`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-show_button`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-groups_claim`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-channels_admin`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-map_channels`);
+		settings.removeById(`Accounts_OAuth_Custom-${ name }-groups_channel_map`);
 	},
 });

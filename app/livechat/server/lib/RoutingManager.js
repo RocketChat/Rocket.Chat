@@ -5,13 +5,15 @@ import { settings } from '../../../settings/server';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
+	dispatchInquiryQueued,
 	forwardRoomToAgent,
 	forwardRoomToDepartment,
 	removeAgentFromSubscription,
 	updateChatDepartment,
+	allowAgentSkipQueue,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry } from '../../../models/server';
+import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
 import { Apps, AppEvents } from '../../../apps/server';
 
 export const RoutingManager = {
@@ -37,19 +39,13 @@ export const RoutingManager = {
 		return this.getMethod().config || {};
 	},
 
-	async getNextAgent(department) {
-		let agent = callbacks.run('livechat.beforeGetNextAgent', department);
-
-		if (!agent) {
-			agent = await this.getMethod().getNextAgent(department);
-		}
-
-		return agent;
+	async getNextAgent(department, ignoreAgentId) {
+		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
 	async delegateInquiry(inquiry, agent) {
 		const { department, rid } = inquiry;
-		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username))) {
+		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username) && !allowAgentSkipQueue(agent))) {
 			agent = await this.getNextAgent(department);
 		}
 
@@ -85,7 +81,7 @@ export const RoutingManager = {
 	},
 
 	unassignAgent(inquiry, departmentId) {
-		const { _id, rid, department } = inquiry;
+		const { rid, department } = inquiry;
 		const room = LivechatRooms.findOneById(rid);
 
 		if (!room || !room.open) {
@@ -110,12 +106,11 @@ export const RoutingManager = {
 			dispatchAgentDelegated(rid, null);
 		}
 
-		LivechatInquiry.queueInquiry(_id);
-		this.getMethod().delegateAgent(null, inquiry);
+		dispatchInquiryQueued(inquiry);
 		return true;
 	},
 
-	async takeInquiry(inquiry, agent) {
+	async takeInquiry(inquiry, agent, options = { clientAction: false }) {
 		check(agent, Match.ObjectIncluding({
 			agentId: String,
 			username: String,
@@ -133,13 +128,18 @@ export const RoutingManager = {
 			return room;
 		}
 
-		if (room.servedBy && room.servedBy._id === agent.agentId) {
+		if (room.servedBy && room.servedBy._id === agent.agentId && !room.onHold) {
 			return room;
 		}
 
-		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', agent, inquiry);
+		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', { agent, inquiry, options });
 		if (!agent) {
+			await callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
 			return null;
+		}
+
+		if (room.onHold) {
+			Subscriptions.removeByRoomIdAndUserId(room._id, agent.agentId);
 		}
 
 		LivechatInquiry.takeInquiry(_id);
@@ -160,6 +160,16 @@ export const RoutingManager = {
 		}
 
 		return false;
+	},
+
+	delegateAgent(agent, inquiry) {
+		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', { agent, department: inquiry?.department });
+		if (defaultAgent) {
+			LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
+		}
+
+		dispatchInquiryQueued(inquiry, defaultAgent);
+		return defaultAgent;
 	},
 };
 

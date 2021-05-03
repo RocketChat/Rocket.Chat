@@ -41,7 +41,7 @@ Meteor.methods({
 
 				const message = Messages.createWithTypeRoomIdMessageAndUser('jitsi_call_started', rid, '', Meteor.user(), {
 					actionLinks: [
-						{ icon: 'icon-videocam', label: TAPi18n.__('Click_to_join'), method_id: 'joinJitsiCall', params: '' },
+						{ icon: 'icon-videocam', label: TAPi18n.__('Click_to_join'), i18nLabel: 'Click_to_join', method_id: 'joinJitsiCall', params: '' },
 					],
 				});
 				message.msg = TAPi18n.__('Started_a_video_call');

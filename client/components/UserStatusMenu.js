@@ -1,12 +1,5 @@
+import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
 import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
-import {
-	Button,
-	PositionAnimated,
-	Margins,
-	Options,
-	useCursor,
-	Box,
-} from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { UserStatus } from './UserStatus';
@@ -23,12 +16,14 @@ const UserStatusMenu = ({
 	const [status, setStatus] = useState(initialStatus);
 
 	const options = useMemo(() => {
-		const renderOption = (status, label) => <Box display='flex' flexDirection='row' alignItems='center'>
-			<Margins inlineEnd='x8'>
-				<UserStatus status={status} />
-			</Margins>
-			{label}
-		</Box>;
+		const renderOption = (status, label) => (
+			<Box display='flex' flexDirection='row' alignItems='center'>
+				<Box marginInlineEnd='x8'>
+					<UserStatus status={status} />
+				</Box>
+				{label}
+			</Box>
+		);
 
 		return [
 			['online', renderOption('online', t('Online'))],
@@ -38,11 +33,15 @@ const UserStatusMenu = ({
 		];
 	}, [t]);
 
-	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(-1, options, ([selected], [, hide]) => {
-		setStatus(selected);
-		reset();
-		hide();
-	});
+	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(
+		-1,
+		options,
+		([selected], [, hide]) => {
+			setStatus(selected);
+			reset();
+			hide();
+		},
+	);
 
 	const ref = useRef();
 	const onClick = useCallback(() => {
@@ -50,11 +49,14 @@ const UserStatusMenu = ({
 		ref.current.classList.add('focus-visible');
 	}, [show]);
 
-	const handleSelection = useCallback(([selected]) => {
-		setStatus(selected);
-		reset();
-		hide();
-	}, [hide, reset]);
+	const handleSelection = useCallback(
+		([selected]) => {
+			setStatus(selected);
+			reset();
+			hide();
+		},
+		[hide, reset],
+	);
 
 	useEffect(() => onChange(status), [status, onChange]);
 
@@ -63,6 +65,7 @@ const UserStatusMenu = ({
 			<Button
 				ref={ref}
 				small
+				square
 				ghost
 				onClick={onClick}
 				onBlur={hide}
@@ -70,20 +73,10 @@ const UserStatusMenu = ({
 				onKeyDown={handleKeyDown}
 				{...props}
 			>
-				<UserStatus status={status}/>
+				<UserStatus status={status} />
 			</Button>
-			<PositionAnimated
-				width='auto'
-				visible={visible}
-				anchor={ref}
-				placement={placement}
-			>
-				<Options
-					width={optionWidth}
-					onSelect={handleSelection}
-					options={options}
-					cursor={cursor}
-				/>
+			<PositionAnimated width='auto' visible={visible} anchor={ref} placement={placement}>
+				<Options width={optionWidth} onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
 		</>
 	);

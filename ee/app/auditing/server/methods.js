@@ -26,7 +26,7 @@ const getRoomInfoByAuditParams = ({ type, roomId, users, visitor, agent }) => {
 	}
 
 	if (type === 'l') {
-		console.warning('Deprecation Warning! This method will be removed in the next version (4.0.0)');
+		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
 		const rooms = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, { fields: { _id: 1 } }).fetch();
 		return rooms && rooms.length && { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') };
 	}

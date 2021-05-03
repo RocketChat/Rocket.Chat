@@ -1,3 +1,5 @@
+import mem from 'mem';
+
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
@@ -13,7 +15,7 @@ import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInquiry';
 import { IBaseData } from '../../../definition/IBaseData';
 import { IPermission } from '../../../definition/IPermission';
-import { ISetting } from '../../../definition/ISetting';
+import { ISetting, SettingValue } from '../../../definition/ISetting';
 import { IInquiry } from '../../../definition/IInquiry';
 import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
 import { IUserSession } from '../../../definition/IUserSession';
@@ -30,6 +32,8 @@ import { ILivechatDepartmentAgents } from '../../../definition/ILivechatDepartme
 import { IIntegration } from '../../../definition/IIntegration';
 import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 import { EventSignatures } from '../../sdk/lib/Events';
+import { IEmailInbox } from '../../../definition/IEmailInbox';
+import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -46,6 +50,7 @@ interface IModelsParam {
 	InstanceStatus: InstanceStatusRaw;
 	IntegrationHistory: IntegrationHistoryRaw;
 	Integrations: IntegrationsRaw;
+	EmailInbox: EmailInboxRaw;
 }
 
 interface IChange<T> {
@@ -77,7 +82,15 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		InstanceStatus,
 		IntegrationHistory,
 		Integrations,
+		EmailInbox,
 	} = models;
+
+	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
+
+	const getUserNameCached = mem(async (userId: string): Promise<string | undefined> => {
+		const user = await Users.findOneById(userId, { projection: { name: 1 } });
+		return user?.name;
+	}, { maxAge: 10000 });
 
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
@@ -89,18 +102,16 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 				}
 
 				if (message._hidden !== true && message.imported == null) {
-					const UseRealName = await Settings.getValueById('UI_Use_Real_Name') === true;
+					const UseRealName = await getSettingCached('UI_Use_Real_Name') === true;
 
 					if (UseRealName) {
 						if (message.u?._id) {
-							const user = await Users.findOneById(message.u._id);
-							message.u.name = user?.name;
+							message.u.name = await getUserNameCached(message.u._id);
 						}
 
 						if (message.mentions?.length) {
 							for await (const mention of message.mentions) {
-								const user = await Users.findOneById(mention._id);
-								mention.name = user?.name;
+								mention.name = await getUserNameCached(mention._id);
 							}
 						}
 					}
@@ -333,5 +344,19 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 
 		broadcast('watch.integrations', { clientAction, data, id });
+	});
+
+	watch<IEmailInbox>(EmailInbox, async ({ clientAction, id, data }) => {
+		if (clientAction === 'removed') {
+			broadcast('watch.emailInbox', { clientAction, id, data: { _id: id } });
+			return;
+		}
+
+		data = data ?? await EmailInbox.findOneById(id);
+		if (!data) {
+			return;
+		}
+
+		broadcast('watch.emailInbox', { clientAction, data, id });
 	});
 }

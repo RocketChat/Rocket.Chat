@@ -12,9 +12,10 @@ import { RoomsRaw } from '../../../../app/models/server/raw/Rooms';
 import { LoginServiceConfigurationRaw } from '../../../../app/models/server/raw/LoginServiceConfiguration';
 import { InstanceStatusRaw } from '../../../../app/models/server/raw/InstanceStatus';
 import { IntegrationHistoryRaw } from '../../../../app/models/server/raw/IntegrationHistory';
-import { LivechatDepartmentAgentsRaw } from '../../../app/models/server/raw/LivechatDepartmentAgents';
+import { LivechatDepartmentAgentsRaw } from '../../../../app/models/server/raw/LivechatDepartmentAgents';
 import { IntegrationsRaw } from '../../../../app/models/server/raw/Integrations';
 import { PermissionsRaw } from '../../../../app/models/server/raw/Permissions';
+import { EmailInboxRaw } from '../../../../app/models/server/raw/EmailInbox';
 import { api } from '../../../../server/sdk/api';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
@@ -41,6 +42,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const InstanceStatus = new InstanceStatusRaw(db.collection('instances'), Trash);
 		const IntegrationHistory = new IntegrationHistoryRaw(db.collection('rocketchat_integration_history'), Trash);
 		const Integrations = new IntegrationsRaw(db.collection('rocketchat_integrations'), Trash);
+		const EmailInbox = new EmailInboxRaw(db.collection('rocketchat_email_inbox'), Trash);
 
 		const models = {
 			Messages,
@@ -57,6 +59,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			InstanceStatus,
 			IntegrationHistory,
 			Integrations,
+			EmailInbox,
 		};
 
 		initWatchers(models, api.broadcast.bind(api), (model, fn) => {

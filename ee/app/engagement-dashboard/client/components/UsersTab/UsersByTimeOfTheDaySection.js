@@ -109,7 +109,7 @@ export function UsersByTimeOfTheDaySection() {
 								padding={4}
 								margin={{
 									// TODO: Get it from theme
-									left: 40,
+									left: 60,
 									bottom: 20,
 								}}
 								colors={[

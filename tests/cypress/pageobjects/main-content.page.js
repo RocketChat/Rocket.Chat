@@ -76,6 +76,8 @@ class MainContent extends Page {
 
 	get messageUnread() { return browser.element('[data-id="mark-message-as-unread"][data-type="message-action"]'); }
 
+	get messageReplyInDM() { return browser.element('[data-id="reply-directly"][data-type="message-action"]'); }
+
 	// get messageReaction() { return browser.element('.message-actions__button[data-message-action="reaction-message"]'); }
 	get messagePin() { return browser.element('[data-id="pin-message"][data-type="message-action"]'); }
 	// get messageClose() { return browser.element('[data-id="rc-popover-close"][data-type="message-action"]'); }

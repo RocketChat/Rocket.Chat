@@ -10,7 +10,7 @@ import { StatusCode } from './constants';
 
 // @ToDo remove this ts-ignore someday
 // @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would bring a lot of baggage with its dependencies, affecting the unit tests)
-type NullableLogger = Logger | Null;
+type NullableLogger = Logger | null;
 
 let providerList: Array<IServiceProviderOptions> = [];
 let debug = false;
@@ -27,6 +27,8 @@ const globalSettings: ISAMLGlobalSettings = {
 	roleAttributeSync: false,
 	userDataFieldMap: '{"username":"username", "email":"email", "cn": "name"}',
 	usernameNormalize: 'None',
+	channelsAttributeUpdate: false,
+	includePrivateChannelsInUpdate: false,
 };
 
 export class SAMLUtils {
@@ -73,6 +75,8 @@ export class SAMLUtils {
 		globalSettings.nameOverwrite = Boolean(samlConfigs.nameOverwrite);
 		globalSettings.mailOverwrite = Boolean(samlConfigs.mailOverwrite);
 		globalSettings.roleAttributeSync = Boolean(samlConfigs.roleAttributeSync);
+		globalSettings.channelsAttributeUpdate = Boolean(samlConfigs.channelsAttributeUpdate);
+		globalSettings.includePrivateChannelsInUpdate = Boolean(samlConfigs.includePrivateChannelsInUpdate);
 
 		if (samlConfigs.immutableProperty && typeof samlConfigs.immutableProperty === 'string') {
 			globalSettings.immutableProperty = samlConfigs.immutableProperty;
@@ -148,7 +152,7 @@ export class SAMLUtils {
 	}
 
 	public static inflateXml(base64Data: string, successCallback: (xml: string) => void, errorCallback: (err: string | object | null) => void): void {
-		const buffer = new Buffer(base64Data, 'base64');
+		const buffer = Buffer.from(base64Data, 'base64');
 		zlib.inflateRaw(buffer, (err, decoded) => {
 			if (err) {
 				this.log(`Error while inflating. ${ err }`);
