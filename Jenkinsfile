@@ -5,9 +5,9 @@ node (label: 'linux') {
 	def originBranch = ""
 	def isDevelop = env.BRANCH_NAME == "develop"
 	def releaseVersion = ""
-	
+
 	try
-	{	
+	{
 		ws(workspace) {
 			stage ('Docker Prepare Workspace') {
 				try {
@@ -19,7 +19,7 @@ node (label: 'linux') {
 				git branch: env.BRANCH_NAME, credentialsId: 'b4897104-66f2-48d0-bb2d-1cfd7ce2cfc2', url: 'https://github.com/drivevelocity/Rocket.Chat.git'
 				commitHash = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
 				pullRequestDetails = getPullRequestDetails(commitHash)
-				
+
 				if (pullRequestDetails) {
 					originBranch = pullRequestDetails.base.ref
 				} else {
@@ -27,8 +27,8 @@ node (label: 'linux') {
 				}
 				sh 'git checkout develop'
 				sh 'git checkout ' + env.BRANCH_NAME
-				
-				def gitVersion = sh(returnStdout: true, script: 'docker run --rm -v "$(pwd):/repo" -u $(id -u):$(id -g) gittools/gitversion:5.0.0-linux-centos-7-netcoreapp2.2 /repo /showvariable semver').trim()
+
+				def gitVersion = sh(returnStdout: true, script: 'docker run --rm -v "$(pwd):/repo" -u $(id -u):$(id -g) gittools/gitversion:5.6.1-alpine.3.12-x64-5.0 /repo /showvariable semver').trim()
 
 				releaseVersion = gitVersion + ".${env.BUILD_NUMBER}"
 			}
@@ -81,17 +81,17 @@ def getVersion(gitVersionString) {
 def getPullRequestDetails(commitHash) {
 	def issuesUrl = "https://api.github.com/search/issues?q=sha:${commitHash}+is:pr+is:open"
 	def issueResponse = httpRequest authentication: 'b4897104-66f2-48d0-bb2d-1cfd7ce2cfc2', httpMode: 'GET', responseHandle: 'STRING', url: issuesUrl
-	
+
 	def issueResponseJson = readJSON text: issueResponse.content
 
 	if(issueResponseJson['total_count'] > 0) {
 		def pullRequestId = issueResponseJson['items'][0]['number']
-		
+
 		def prUrl = "https://api.github.com/repos/drivevelocity/Rocket.Chat/pulls/${pullRequestId}"
 		def prResponse = httpRequest authentication: 'b4897104-66f2-48d0-bb2d-1cfd7ce2cfc2', httpMode: 'GET', responseHandle: 'STRING', url: prUrl
-	
+
 		def prResponseJson = readJSON text: prResponse.content
-	
+
 		return prResponseJson
 	} else {
 		return null

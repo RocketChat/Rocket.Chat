@@ -74,6 +74,8 @@ export function updateUsersSubscriptions(message, room, users) {
 			Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, _.compact(_.unique(mentionIds.concat(highlightsIds, users))), 1, incUnread);
 		} else if (unreadCount === 'all_messages') {
 			Subscriptions.incUnreadForRoomIdExcludingUserId(room._id, message.u._id);
+		}	else {
+			Subscriptions.incUnreadForInterestedUsersByRoomIdExcludingUserId(room._id, message.u._id);
 		}
 	}
 

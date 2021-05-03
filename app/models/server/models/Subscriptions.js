@@ -294,6 +294,26 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
+	updateUnreadMessagesCounterValueById(_id, unreadMessagesCounter) {
+		const query = {
+			_id,
+		};
+
+		const update = {};
+
+		if (unreadMessagesCounter === null || unreadMessagesCounter === 'default') {
+			update.$unset = {
+				unreadMessagesCounter: 1,
+			};
+		} else {
+			update.$set = {
+				unreadMessagesCounter,
+			};
+		}
+
+		return this.update(query, update);
+	}
+
 	findAlwaysNotifyAudioUsersByRoomId(roomId) {
 		const query = {
 			rid: roomId,
@@ -890,6 +910,31 @@ export class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	incUnreadForInterestedUsersByRoomIdExcludingUserId(roomId, userId, inc) {
+		if (inc == null) {
+			inc = 1;
+		}
+		const query = {
+			rid: roomId,
+			'u._id': {
+				$ne: userId,
+			},
+			unreadMessagesCounter: 'all',
+		};
+
+		const update = {
+			$set: {
+				alert: true,
+				open: true,
+			},
+			$inc: {
+				unread: inc,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
 	incUnreadForRoomIdExcludingUserId(roomId, userId, inc) {
 		if (inc == null) {
 			inc = 1;
@@ -898,6 +943,9 @@ export class Subscriptions extends Base {
 			rid: roomId,
 			'u._id': {
 				$ne: userId,
+			},
+			unreadMessagesCounter: {
+				$ne: 'none',
 			},
 		};
 
@@ -920,6 +968,9 @@ export class Subscriptions extends Base {
 			'u._id': {
 				$ne: userId,
 			},
+			unreadMessagesCounter: {
+				$ne: 'none',
+			},
 		};
 
 		const update = {
@@ -941,6 +992,9 @@ export class Subscriptions extends Base {
 			rid: roomId,
 			'u._id': {
 				$in: userIds,
+			},
+			unreadMessagesCounter: {
+				$ne: 'none',
 			},
 		};
 

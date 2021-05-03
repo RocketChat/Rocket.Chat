@@ -65,6 +65,9 @@ Meteor.methods({
 			audioNotificationValue: {
 				updateMethod: (subscription, value) => Subscriptions.updateAudioNotificationValueById(subscription._id, value),
 			},
+			unreadMessagesCounter: {
+				updateMethod: (subscription, value) => Subscriptions.updateUnreadMessagesCounterValueById(subscription._id, value),
+			},
 		};
 		const isInvalidNotification = !Object.keys(notifications).includes(field);
 		const basicValuesForNotifications = ['all', 'mentions', 'nothing', 'default'];

@@ -77,6 +77,9 @@ Template.pushNotificationsFlexTab.helpers({
 	desktopNotificationDuration() {
 		return Template.instance().form.desktopNotificationDuration.get();
 	},
+	unreadMessagesCounter() {
+		return Template.instance().form.unreadMessagesCounter.get();
+	},
 	subValue(field) {
 		const { form } = Template.instance();
 		if (form[field]) {
@@ -85,6 +88,8 @@ Template.pushNotificationsFlexTab.helpers({
 					return t('All_messages');
 				case 'nothing':
 					return t('Nothing');
+				case 'none':
+					return t('None');
 				case 'default':
 					return t('Use_account_preference');
 				case 'mentions':
@@ -134,6 +139,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 			desktopNotificationDuration: 1,
 			audioNotificationValue: 1,
 			muteGroupMentions: 1,
+			unreadMessagesCounter: 1,
 		},
 	}) || {};
 
@@ -146,6 +152,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		emailNotifications = 'default',
 		desktopNotificationDuration = 0,
 		muteGroupMentions = false,
+		unreadMessagesCounter = 'default',
 	} = sub;
 
 	const audioNotificationValue = sub.audioNotificationValue && getAudioAssetValue(sub.audioNotificationValue);
@@ -160,6 +167,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
 		audioNotificationValue: new ReactiveVar(audioNotificationValue),
 		muteGroupMentions: new ReactiveVar(muteGroupMentions),
+		unreadMessagesCounter: new ReactiveVar(unreadMessagesCounter),
 	};
 
 	this.form = {
@@ -172,6 +180,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotificationDuration: new ReactiveVar(desktopNotificationDuration),
 		audioNotificationValue: new ReactiveVar(audioNotificationValue),
 		muteGroupMentions: new ReactiveVar(muteGroupMentions),
+		unreadMessagesCounter: new ReactiveVar(unreadMessagesCounter),
 	};
 
 	this.saveSetting = async () => {
@@ -298,6 +307,26 @@ Template.pushNotificationsFlexTab.events({
 					name: 'desktopNotificationDuration',
 					label: `5 ${ t('seconds') }`,
 					value: 5,
+				}];
+				break;
+			case 'unreadMessagesCounter':
+				options = [{
+					id: 'unreadMessagesCounterDefault',
+					name: 'unreadMessagesCounter',
+					label: 'Default',
+					value: 'default',
+				},
+				{
+					id: 'unreadMessagesCounterAll_messages',
+					name: 'unreadMessagesCounter',
+					label: 'All_messages',
+					value: 'all',
+				},
+				{
+					id: 'unreadMessagesCounterNone',
+					name: 'unreadMessagesCounter',
+					label: 'None',
+					value: 'none',
 				}];
 				break;
 			default:

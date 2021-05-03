@@ -66,6 +66,23 @@
 				</div>
 			</div>
 		</div>
+		<div class="rc-user-info__row rc-user-info__row--separator">
+			<div class="rc-user-info__config">
+				<div class="rc-user-info__config-header">
+					{{> icon block="rc-user-info__config-icon" icon="thread"}}
+					<span class="rc-user-info__config-label">{{_ "Unread"}}</span>
+				</div>
+				<div class="rc-user-info__config-content">
+					<div class="rc-user-info__config-name">{{_ "Unread_Count"}}:</div>
+					{{# with "unreadMessagesCounter"}}
+						<div class="rc-user-info__config-value">
+							{{subValue 'unreadMessagesCounter'}}
+							{{> icon block="rc-user-info__config-content-icon" icon="arrow-down"}}
+						</div>
+					{{/with}}
+				</div>
+			</div>
+		</div>
 		{{#if notificationIsEnabled}}
 			<div class="rc-user-info__row rc-user-info__row--separator">
 				<div class="rc-user-info__config">
