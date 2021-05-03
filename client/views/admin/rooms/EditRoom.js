@@ -34,6 +34,7 @@ const getInitialValues = (room) => ({
 	isDefault: !!room.default,
 	favorite: !!room.favorite,
 	featured: !!room.featured,
+	reactWhenReadOnly: room.reactWhenReadOnly,
 	roomTopic: room.topic ?? '',
 	roomDescription: room.description ?? '',
 	roomAnnouncement: room.announcement ?? '',
@@ -42,7 +43,7 @@ const getInitialValues = (room) => ({
 
 function EditRoom({ room, onChange }) {
 	const t = useTranslation();
-
+	console.log(room);
 	const [deleted, setDeleted] = useState(false);
 
 	const setModal = useSetModal();
@@ -57,6 +58,7 @@ function EditRoom({ room, onChange }) {
 		canViewDescription,
 		canViewType,
 		canViewReadOnly,
+		canViewReactWhenReadOnly,
 	] = useMemo(() => {
 		const isAllowed = roomTypes.getConfig(room.t).allowRoomSettingChange;
 		return [
@@ -67,6 +69,7 @@ function EditRoom({ room, onChange }) {
 			isAllowed(room, RoomSettingsEnum.DESCRIPTION),
 			isAllowed(room, RoomSettingsEnum.TYPE),
 			isAllowed(room, RoomSettingsEnum.READ_ONLY),
+			isAllowed(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
 		];
 	}, [room]);
 
@@ -74,6 +77,7 @@ function EditRoom({ room, onChange }) {
 		roomName,
 		roomType,
 		readOnly,
+		reactWhenReadOnly,
 		archived,
 		isDefault,
 		favorite,
@@ -91,6 +95,7 @@ function EditRoom({ room, onChange }) {
 		handleRoomName,
 		handleRoomType,
 		handleReadOnly,
+		handleReactWhenReadOnly,
 		handleArchived,
 		handleRoomAvatar,
 		handleRoomTopic,
@@ -124,6 +129,7 @@ function EditRoom({ room, onChange }) {
 				roomTopic,
 				roomType,
 				readOnly,
+				reactWhenReadOnly,
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
 				featured,
@@ -250,6 +256,17 @@ function EditRoom({ room, onChange }) {
 									<ToggleSwitch disabled={deleted} checked={readOnly} onChange={handleReadOnly} />
 								</Box>
 							</Field.Row>
+							<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
+						</Field>
+					)}
+					{canViewReactWhenReadOnly && (
+						<Field>
+							<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+								<Field.Label>{t('React_when_read_only')}</Field.Label>
+								<Field.Row>
+									<ToggleSwitch checked={reactWhenReadOnly} onChange={handleReactWhenReadOnly} />
+								</Field.Row>
+							</Box>
 							<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
 						</Field>
 					)}
