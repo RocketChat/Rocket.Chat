@@ -43,7 +43,7 @@ const getInitialValues = (room) => ({
 
 function EditRoom({ room, onChange }) {
 	const t = useTranslation();
-	console.log(room);
+
 	const [deleted, setDeleted] = useState(false);
 
 	const setModal = useSetModal();
@@ -120,7 +120,7 @@ function EditRoom({ room, onChange }) {
 		'rooms.changeArchivationState',
 		t(archiveMessage),
 	);
-	console.log(reactWhenReadOnly);
+
 	const handleSave = useMutableCallback(async () => {
 		const save = () =>
 			saveAction({
