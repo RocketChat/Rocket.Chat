@@ -38,8 +38,8 @@ const style = {
 	marginRight: '-16px',
 };
 
-const setStatus = (status) => {
-	AccountBox.setStatus(status);
+const setStatus = (status, statusText) => {
+	AccountBox.setStatus(status, statusText);
 	callbacks.run('userStatusManuallySet', status);
 };
 
@@ -95,6 +95,21 @@ const UserDropdown = ({ user, onClose }) => {
 
 	const accountBoxItems = useReactiveValue(getItems);
 
+	const existingStatusText = Object.values(userStatus.list).map((elem) => elem.name);
+
+	const handleStatusText = (name, localizeName) => {
+		if (existingStatusText.includes(statusText) || statusText === '') {
+			if (localizeName) {
+				return '';
+			}
+			return name;
+		}
+		if (statusText !== '' && !localizeName && existingStatusText.includes(name)) {
+			return name;
+		}
+		return statusText;
+	};
+
 	return (
 		<Box display='flex' flexDirection='column' maxWidth='244px'>
 			<Box display='flex' flexDirection='row' mi='neg-x8'>
@@ -135,11 +150,12 @@ const UserDropdown = ({ user, onClose }) => {
 					const status = userStatus.list[key];
 					const name = status.localizeName ? t(status.name) : status.name;
 					const modifier = status.statusType || user.status;
+					const statusText = handleStatusText(name, status.localizeName);
 
 					return (
 						<Option
 							onClick={() => {
-								setStatus(status.statusType);
+								setStatus(status.statusType, statusText);
 								onClose();
 							}}
 							key={i}
