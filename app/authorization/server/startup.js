@@ -125,6 +125,7 @@ Meteor.startup(function() {
 		{ _id: 'send-omnichannel-chat-transcript',   roles: ['livechat-manager', 'admin'] },
 		{ _id: 'mail-messages',                      roles: ['admin'] },
 		{ _id: 'toggle-room-e2e-encryption',         roles: ['owner'] },
+		{ _id: 'message-impersonate', roles: ['bot'] },
 		{ _id: 'create-team',         roles: ['admin', 'user'] },
 		{ _id: 'delete-team',         roles: ['admin', 'owner'] },
 		{ _id: 'edit-team',           roles: ['admin', 'owner'] },
