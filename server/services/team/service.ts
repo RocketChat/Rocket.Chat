@@ -4,7 +4,6 @@ import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
-import { Subscriptions } from '../../../app/models/server';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
@@ -584,7 +583,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await this.TeamMembersModel.deleteByUserIdAndTeamId(userId, teamId);
 	}
 
-	async removeMembers(teamId: string, members: Array<ITeamMemberParams>): Promise<boolean> {
+	async removeMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<boolean> {
 		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('team-does-not-exist');
@@ -609,8 +608,9 @@ export class TeamService extends ServiceClass implements ITeamService {
 			}
 
 			this.TeamMembersModel.removeById(existingMember._id);
-
-			await this.unsubscribeFromMain(team.roomId, member.userId);
+			const removedUser = await this.Users.findOneById(member.userId, { projection: { _id: 1, username: 1 } });
+			const byUser = uid !== member.userId ? await this.Users.findOneById(uid, { projection: { _id: 1, username: 1 } }) : undefined;
+			removeUserFromRoom(team.roomId, removedUser, { byUser });
 		}
 
 		return true;
@@ -820,13 +820,5 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}).toArray();
 
 		return rooms;
-	}
-
-	async unsubscribeFromMain(roomId: string, userId: string): Promise<void> {
-		// we need to use the normal model here. The raw one didn't propagate the changes to the FE
-		// let me know if there's a way of doing that
-		await Subscriptions.removeByRoomIdsAndUserId([roomId], userId);
-		await this.RoomsModel.incUsersCountByIds([roomId], -1);
-		await this.Users.removeRoomsByRoomIdsAndUserId([roomId], userId);
 	}
 }
