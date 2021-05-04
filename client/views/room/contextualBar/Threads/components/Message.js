@@ -57,17 +57,17 @@ export default memo(function Message({
 				<MessageTemplate.BodyClamp>
 					<RawText>{msg}</RawText>
 				</MessageTemplate.BodyClamp>
-				<Metrics color='neutral-600'>
+				<Metrics color='neutral-600' mi='neg-x8'>
 					<Metrics.Item>
-						<Metrics.Item.Icon name='thread' size='x20' mi='x2' />
+						<Metrics.Item.Icon name='thread' />
 						<Metrics.Item.Label>{replies}</Metrics.Item.Label>
 					</Metrics.Item>
 					<Metrics.Item>
-						<Metrics.Item.Icon name='user' size='x20' mi='x2' />
+						<Metrics.Item.Icon name='user' />
 						<Metrics.Item.Label>{participants}</Metrics.Item.Label>
 					</Metrics.Item>
 					<Metrics.Item>
-						<Metrics.Item.Icon name='clock' size='x20' mi='x2' />
+						<Metrics.Item.Icon name='clock' />
 						<Metrics.Item.Label>{formatDate(tlm)}</Metrics.Item.Label>
 					</Metrics.Item>
 				</Metrics>
