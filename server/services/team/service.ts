@@ -2,6 +2,7 @@ import { Db, FindOneOptions } from 'mongodb';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { Subscriptions } from '../../../app/models/server';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
@@ -166,12 +167,14 @@ export class TeamService extends ServiceClass implements ITeamService {
 			return;
 		}
 
-		if (updateData.name) {
-			saveRoomName(team.roomId, updateData.name, user);
+		const { name, type, updateRoom = true } = updateData;
+
+		if (updateRoom && name) {
+			saveRoomName(team.roomId, name, user);
 		}
 
-		if (updateData.type) {
-			saveRoomType(team.roomId, updateData.type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
+		if (updateRoom && typeof type !== 'undefined') {
+			saveRoomType(team.roomId, type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
 		}
 
 		await this.TeamModel.updateNameAndType(teamId, updateData);
@@ -309,16 +312,20 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		// validate access for every room first
-		validRooms.forEach(async (room) => {
+		for await (const room of validRooms) {
 			const canSeeRoom = await canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
-		});
+		}
 
-		for (const room of validRooms) {
+		for await (const room of validRooms) {
 			if (room.teamId) {
 				throw new Error('room-already-on-team');
+			}
+
+			if (!await this.SubscriptionsModel.isUserInRole(uid, 'owner', room._id)) {
+				throw new Error('error-no-owner-channel');
 			}
 
 			room.teamId = teamId;
@@ -408,6 +415,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
+	async listTeamsBySubscriberUserId(uid: string, options?: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember> | null> {
+		return this.TeamMembersModel.findByUserId(uid, options).toArray();
+	}
+
 	async listRooms(uid: string, teamId: string, filter: IListRoomsFilter, { offset: skip, count: limit }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<IRoom>> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
@@ -425,22 +436,20 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		if (getAllRooms) {
-			const teamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, { skip, limit });
+			const teamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, undefined, { skip, limit });
 			return {
 				total: await teamRoomsCursor.count(),
 				records: await teamRoomsCursor.toArray(),
 			};
 		}
-		const teamRooms = await this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, { skip, limit, projection: { _id: 1, t: 1 } }).toArray();
-		const privateTeamRoomIds = teamRooms.filter((room) => room.t === 'p').map((room) => room._id);
-		const publicTeamRoomIds = teamRooms.filter((room) => room.t === 'c').map((room) => room._id);
 
-		const subscriptionsCursor = this.SubscriptionsModel.findByUserIdAndRoomIds(uid, privateTeamRoomIds);
-		const subscriptionRoomIds = (await subscriptionsCursor.toArray()).map((subscription) => subscription.rid);
-		const availableRoomsCursor = this.RoomsModel.findManyByRoomIds([...subscriptionRoomIds, ...publicTeamRoomIds], { skip, limit });
+		const user = await this.Users.findOneById(uid, { fields: { __rooms: 1 } });
+		const userRooms = user.__rooms;
+		const validTeamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, userRooms, { skip, limit });
+
 		return {
-			total: await availableRoomsCursor.count(),
-			records: await availableRoomsCursor.toArray(),
+			total: await validTeamRoomsCursor.count(),
+			records: await validTeamRoomsCursor.toArray(),
 		};
 	}
 
@@ -605,6 +614,34 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		return true;
+	}
+
+	async insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void> {
+		const inviter = { _id: 'rocket.cat', username: 'rocket.cat' };
+
+		await Promise.all(teamIds.map(async (teamId) => {
+			const team = await this.TeamModel.findOneById(teamId);
+			const user = await this.Users.findOneById(userId);
+
+			if (!team || !user) {
+				return;
+			}
+
+			await addUserToRoom(team.roomId, user, inviter, false);
+		}));
+	}
+
+	async removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void> {
+		await Promise.all(teamIds.map(async (teamId) => {
+			const team = await this.TeamModel.findOneById(teamId);
+			const user = await this.Users.findOneById(userId);
+
+			if (!team || !user) {
+				return;
+			}
+
+			await removeUserFromRoom(team.roomId, user);
+		}));
 	}
 
 	async addMember(inviter: IUser, userId: string, teamId: string): Promise<boolean> {

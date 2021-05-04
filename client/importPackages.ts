@@ -21,7 +21,6 @@ import '../app/google-vision/client';
 import '../app/iframe-login/client';
 import '../app/importer/client';
 import '../app/importer-csv/client';
-import '../app/importer-hipchat/client';
 import '../app/importer-hipchat-enterprise/client';
 import '../app/importer-slack/client';
 import '../app/importer-slack-users/client';

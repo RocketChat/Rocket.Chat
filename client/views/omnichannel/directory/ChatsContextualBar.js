@@ -1,4 +1,3 @@
-import { Icon, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
@@ -24,14 +23,17 @@ const ChatsContextualBar = ({ chatReload }) => {
 		directoryRoute.push({ tab: 'chats' });
 	};
 
+	const handleChatsVerticalBarBackButtonClick = () => {
+		directoryRoute.push({ tab: 'chats', context: 'info', id });
+	};
+
 	return (
 		<VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
 				{context === 'info' && (
 					<>
-						<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
-							<Icon name='info-circled' size='x20' /> {t('Room_Info')}
-						</Box>
+						<VerticalBar.Icon name='info-circled' />
+						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
 						<VerticalBar.Action
 							title={t('View_full_conversation')}
 							name={'new-window'}
@@ -40,9 +42,10 @@ const ChatsContextualBar = ({ chatReload }) => {
 					</>
 				)}
 				{context === 'edit' && (
-					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
-						<Icon name='pencil' size='x20' /> {t('edit-room')}
-					</Box>
+					<>
+						<VerticalBar.Icon name='pencil' />
+						<VerticalBar.Text>{t('edit-room')}</VerticalBar.Text>
+					</>
 				)}
 				<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
@@ -50,7 +53,7 @@ const ChatsContextualBar = ({ chatReload }) => {
 			{context === 'edit' && (
 				<RoomEditWithData
 					id={id}
-					close={handleChatsVerticalBarCloseButtonClick}
+					close={handleChatsVerticalBarBackButtonClick}
 					reload={chatReload}
 				/>
 			)}
