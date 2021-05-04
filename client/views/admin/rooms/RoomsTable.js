@@ -28,7 +28,7 @@ const getRoomType = (room) => {
 		return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
 	}
 	if (room.prid) {
-		return 'Discussion';
+		return room.t === 'c' ? 'Discussion_Public' : 'Discussion_Private';
 	}
 	return roomTypeI18nMap[room.t];
 };

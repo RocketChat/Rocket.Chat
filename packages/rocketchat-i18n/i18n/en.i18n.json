@@ -1395,6 +1395,8 @@
   "Discussion_title": "Create a new discussion",
   "discussion-created": "__message__",
   "Discussions": "Discussions",
+  "Discussion_Private": "Private Discussion",
+  "Discussion_Public": "Public Discussion",
   "Display_chat_permissions": "Display chat permissions",
   "Display_offline_form": "Display Offline Form",
   "Display_setting_permissions": "Display permissions to change settings",
