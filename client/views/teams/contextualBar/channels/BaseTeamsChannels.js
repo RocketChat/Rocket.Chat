@@ -14,6 +14,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import Row from './Row';
 
@@ -34,6 +35,8 @@ const BaseTeamsChannels = ({
 }) => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
+
+	const canAddChannel = usePermission('add-team-channel');
 
 	const options = useMemo(
 		() => [
@@ -102,12 +105,12 @@ const BaseTeamsChannels = ({
 
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
-					{onClickAddExisting && (
+					{onClickAddExisting && canAddChannel && (
 						<Button onClick={onClickAddExisting} width='50%'>
 							{t('Team_Add_existing')}
 						</Button>
 					)}
-					{onClickCreateNew && (
+					{onClickCreateNew && canAddChannel && (
 						<Button onClick={onClickCreateNew} width='50%'>
 							{t('Create_new')}
 						</Button>
