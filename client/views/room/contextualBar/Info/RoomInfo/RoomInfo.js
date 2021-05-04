@@ -65,7 +65,7 @@ function RoomInfo({
 			...(onClickMoveToTeam && {
 				move: {
 					label: t('Teams_move_channel_to_team'),
-					icon: 'team',
+					icon: 'team-arrow-right',
 					action: onClickMoveToTeam,
 				},
 			}),
