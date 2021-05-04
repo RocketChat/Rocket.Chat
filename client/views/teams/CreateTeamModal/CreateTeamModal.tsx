@@ -51,7 +51,7 @@ type CreateTeamModalState = {
 const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
-	const namesValidation = useSetting('UTF8_Names_Validation');
+	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
