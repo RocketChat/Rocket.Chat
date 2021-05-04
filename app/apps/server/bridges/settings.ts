@@ -21,7 +21,7 @@ export class AppSettingBridge extends SettingBridge {
 	protected async getOneById(id: string, appId: string): Promise<ISetting> {
 		this.orch.debugLog(`The App ${ appId } is getting the setting by id ${ id }.`);
 
-		if (!this.isReadableById(id, appId)) {
+		if (!await this.isReadableById(id, appId)) {
 			throw new Error(`The setting "${ id }" is not readable.`);
 		}
 
@@ -37,7 +37,7 @@ export class AppSettingBridge extends SettingBridge {
 	protected async hideSetting(id: string, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is hidding the setting ${ id }.`);
 
-		if (!this.isReadableById(id, appId)) {
+		if (!await this.isReadableById(id, appId)) {
 			throw new Error(`The setting "${ id }" is not readable.`);
 		}
 
@@ -53,7 +53,7 @@ export class AppSettingBridge extends SettingBridge {
 	protected async updateOne(setting: ISetting & { id: string }, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is updating the setting ${ setting.id } .`);
 
-		if (!this.isReadableById(setting.id, appId)) {
+		if (!await this.isReadableById(setting.id, appId)) {
 			throw new Error(`The setting "${ setting.id }" is not readable.`);
 		}
 
