@@ -1,4 +1,3 @@
-  
 import { Meteor } from 'meteor/meteor';
 
 import { Subscriptions, Users } from '../../app/models/server';
