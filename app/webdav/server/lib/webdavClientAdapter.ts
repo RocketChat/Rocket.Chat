@@ -40,6 +40,7 @@ export class WebdavClientAdapter {
 		try {
 			return await this._client.createDirectory(path);
 		} catch (error) {
+			console.error(error);
 			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error creating directory on webdav');
 		}
 	}
@@ -64,6 +65,7 @@ export class WebdavClientAdapter {
 		try {
 			return await this._client.getDirectoryContents(path);
 		} catch (error) {
+			console.error(error);
 			throw new Error(error.response && error.response.statusText ? error.response.statusText : 'Error getting directory contents webdav');
 		}
 	}
