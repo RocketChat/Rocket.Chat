@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { IUser } from '../../../../../definition/IUser';
@@ -15,13 +15,7 @@ export const useThreadsList = (
 	initialItemCount: number;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	const [threadsList] = useState(() => new ThreadsList(options));
-
-	useEffect(() => {
-		if (threadsList.options !== options) {
-			threadsList.updateFilters(options);
-		}
-	}, [threadsList, options]);
+	const threadsList = useMemo(() => new ThreadsList(options), [options]);
 
 	const getThreadsList = useEndpoint('GET', 'chat.getThreadsList');
 

@@ -52,7 +52,7 @@ const DeploymentCard = memo(function DeploymentCard({ info, statistics, instance
 							() =>
 								`${statistics.migration.version} (${formatDateAndTime(
 									statistics.migration.lockedAt,
-								)}`,
+								)})`,
 						)}
 					</Card.Col.Section>
 					<Card.Col.Section>
