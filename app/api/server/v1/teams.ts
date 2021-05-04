@@ -350,7 +350,7 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 		}
 
 		const rooms: string[] = Promise.await(Team.getMatchingTeamRooms(team._id, roomsToRemove));
-		console.log(rooms, this.bodyParams);
+
 		// Remove the team's main room
 		Meteor.call('eraseRoom', team.roomId);
 
