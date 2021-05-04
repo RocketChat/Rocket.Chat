@@ -20,7 +20,6 @@ import {
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import RemoveUsersModal from '../../teams/contextualBar/members/RemoveUsersModal';
-import { useTabBarClose } from '../providers/ToolboxProvider';
 import { useUserRoom } from './useUserRoom';
 
 const useUserHasRoomRole = (uid, rid, role) =>
@@ -99,7 +98,6 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const directRoute = useRoute('direct');
-	const closeTabBar = useTabBarClose();
 
 	const setModal = useSetModal();
 
@@ -431,7 +429,7 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 				confirm={async () => {
 					await removeUserAction({ roomId: rid, userId: uid });
 					closeModal();
-					closeTabBar();
+					reload && reload();
 				}}
 			/>,
 		);
