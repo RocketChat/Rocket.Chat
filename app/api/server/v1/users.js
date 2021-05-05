@@ -195,7 +195,7 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 		const { fields } = this.parseJsonQuery();
 
 		const user = getFullUserDataByIdOrUsername({ userId: this.userId, filterId: userId, filterUsername: username });
-		console.log(user)
+
 		if (!user) {
 			return API.v1.failure('User not found.');
 		}
