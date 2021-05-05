@@ -59,7 +59,7 @@ export const FileUpload = {
 	},
 
 	validateFileUpload(fileData) {
-		const { file = fileData, content = [] } = fileData;
+		const { file = fileData, content = Buffer.from([]) } = fileData;
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
