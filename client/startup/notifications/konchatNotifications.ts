@@ -98,6 +98,10 @@ Meteor.startup(() => {
 				'muteFocusedConversations',
 			);
 
+			if (notification.payload.type === 'l' /* && INQUIRY_TEST */) {
+				return KonchatNotification.newInquiry();
+			}
+
 			if (Layout.isEmbedded()) {
 				if (!hasFocus && messageIsInOpenedRoom) {
 					// Play a notification sound

@@ -101,25 +101,37 @@ export const KonchatNotification = {
 	},
 
 	newMessage(rid) {
-		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
-			const userId = Meteor.userId();
-			const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
-			const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
+		const userId = Meteor.userId();
+		const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
 
-			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
+		const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 
-			if (sub && sub.audioNotificationValue !== 'none') {
-				if (sub && sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-					CustomSounds.play(sub.audioNotificationValue, {
-						volume: Number((audioVolume / 100).toPrecision(2)),
-					});
-				} else if (newMessageNotification !== 'none') {
-					CustomSounds.play(newMessageNotification, {
-						volume: Number((audioVolume / 100).toPrecision(2)),
-					});
-				}
+		if (sub && sub.audioNotificationValue !== 'none') {
+			if (sub && sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
+				this.emmitSound(sub.audioNotificationValue);
+			} else if (newMessageNotification !== 'none') {
+				this.emmitSound(newMessageNotification);
 			}
 		}
+	},
+
+	emmitSound(sound) {
+		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
+			const userId = Meteor.userId();
+			// const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
+			const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
+
+			CustomSounds.play(sound, {
+				volume: Number((audioVolume / 100).toPrecision(2)),
+			});
+		}
+	},
+
+	newInquiry() {
+		const userId = Meteor.userId();
+		const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
+
+		this.emmitSound(newMessageNotification);
 	},
 
 	newRoom(rid/* , withSound = true*/) {
