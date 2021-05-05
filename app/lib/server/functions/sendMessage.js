@@ -1,4 +1,5 @@
 import { Match, check } from 'meteor/check';
+import { parser } from '@rocket.chat/message-parser';
 
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
@@ -206,6 +207,11 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	parseUrlsInMessage(message);
 
 	message = callbacks.run('beforeSaveMessage', message, room);
+	try {
+		message.md = parser(message.msg);
+	} catch (e) {
+		console.log(e); // temporary
+	}
 	if (message) {
 		if (message._id && upsert) {
 			const { _id } = message;
