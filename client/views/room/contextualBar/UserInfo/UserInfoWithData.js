@@ -31,7 +31,7 @@ function UserInfoWithData({
 	const getRoles = useRolesDescription();
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
-
+	console.log(uid, username)
 	const { value, phase: state, error } = useEndpointData(
 		'users.info',
 		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [

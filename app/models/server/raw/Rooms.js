@@ -209,7 +209,7 @@ export class RoomsRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateMany(query, update, options);
+		return this.update(query, update, options);
 	}
 
 	unsetTeamById(rid, options = {}) {
