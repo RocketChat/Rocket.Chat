@@ -120,6 +120,11 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
 	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
+
+	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
+		notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+	}
+
 	return isValid;
 };
 
