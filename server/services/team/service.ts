@@ -2,6 +2,7 @@ import { Db, FindOneOptions } from 'mongodb';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { Subscriptions } from '../../../app/models/server';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
@@ -311,16 +312,20 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		// validate access for every room first
-		validRooms.forEach(async (room) => {
+		for await (const room of validRooms) {
 			const canSeeRoom = await canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
-		});
+		}
 
-		for (const room of validRooms) {
+		for await (const room of validRooms) {
 			if (room.teamId) {
 				throw new Error('room-already-on-team');
+			}
+
+			if (!await this.SubscriptionsModel.isUserInRole(uid, 'owner', room._id)) {
+				throw new Error('error-no-owner-channel');
 			}
 
 			room.teamId = teamId;
@@ -408,6 +413,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return {
 			...room,
 		};
+	}
+
+	async listTeamsBySubscriberUserId(uid: string, options?: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember> | null> {
+		return this.TeamMembersModel.findByUserId(uid, options).toArray();
 	}
 
 	async listRooms(uid: string, teamId: string, filter: IListRoomsFilter, { offset: skip, count: limit }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<IRoom>> {
@@ -605,6 +614,34 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		return true;
+	}
+
+	async insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void> {
+		const inviter = { _id: 'rocket.cat', username: 'rocket.cat' };
+
+		await Promise.all(teamIds.map(async (teamId) => {
+			const team = await this.TeamModel.findOneById(teamId);
+			const user = await this.Users.findOneById(userId);
+
+			if (!team || !user) {
+				return;
+			}
+
+			await addUserToRoom(team.roomId, user, inviter, false);
+		}));
+	}
+
+	async removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void> {
+		await Promise.all(teamIds.map(async (teamId) => {
+			const team = await this.TeamModel.findOneById(teamId);
+			const user = await this.Users.findOneById(userId);
+
+			if (!team || !user) {
+				return;
+			}
+
+			await removeUserFromRoom(team.roomId, user);
+		}));
 	}
 
 	async addMember(inviter: IUser, userId: string, teamId: string): Promise<boolean> {

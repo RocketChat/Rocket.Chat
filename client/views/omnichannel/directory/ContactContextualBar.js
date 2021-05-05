@@ -16,7 +16,11 @@ const ContactContextualBar = ({ contactReload }) => {
 	const t = useTranslation();
 
 	const handleContactsVerticalBarCloseButtonClick = () => {
-		directoryRoute.push({});
+		directoryRoute.push({ tab: 'contacts' });
+	};
+
+	const handleContactsVerticalBarBackButtonClick = () => {
+		directoryRoute.push({ tab: 'contacts', context: 'info', id });
 	};
 
 	return (
@@ -47,7 +51,7 @@ const ContactContextualBar = ({ contactReload }) => {
 				<ContactEditWithData
 					id={id}
 					reload={contactReload}
-					close={handleContactsVerticalBarCloseButtonClick}
+					close={handleContactsVerticalBarBackButtonClick}
 				/>
 			)}
 		</VerticalBar>

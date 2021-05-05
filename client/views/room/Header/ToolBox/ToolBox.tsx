@@ -49,7 +49,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					},
 					...item,
 				},
-			];
+			] as any;
 		}),
 	);
 
