@@ -141,7 +141,7 @@ const validateMessage = (message, userId) => {
 		blocks: [Match.Any],
 	}));
 
-	if ((message.alias || message.avatar) && !hasPermission(userId, 'message-impersonate', message.rid)) {
+	if (!message.token && (message.alias || message.avatar) && !hasPermission(userId, 'message-impersonate', message.rid)) {
 		throw new Error('Not enough permission');
 	}
 
