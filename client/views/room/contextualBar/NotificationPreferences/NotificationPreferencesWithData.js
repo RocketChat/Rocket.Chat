@@ -27,17 +27,25 @@ const NotificationPreferencesWithData = ({ rid }) => {
 		muteGroupMentions: subscription && subscription.muteGroupMentions,
 		showCounter: subscription && !subscription.hideUnreadStatus,
 		desktopAlert:
-			subscription && (subscription.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) ||
+			(subscription &&
+				subscription.desktopPrefOrigin === 'subscription' &&
+				subscription.desktopNotifications) ||
 			'default',
 		desktopAudio:
-		subscription && (subscription.audioPrefOrigin === 'subscription' && subscription.audioNotifications) ||
+			(subscription &&
+				subscription.audioPrefOrigin === 'subscription' &&
+				subscription.audioNotifications) ||
 			'default',
-		desktopSound: subscription && subscription.audioNotificationValue || 'default',
+		desktopSound: (subscription && subscription.audioNotificationValue) || 'default',
 		mobileAlert:
-		subscription && (subscription.mobilePrefOrigin === 'subscription' && subscription.mobilePushNotifications) ||
+			(subscription &&
+				subscription.mobilePrefOrigin === 'subscription' &&
+				subscription.mobilePushNotifications) ||
 			'default',
 		emailAlert:
-		subscription && (subscription.emailPrefOrigin === 'subscription' && subscription.emailNotifications) ||
+			(subscription &&
+				subscription.emailPrefOrigin === 'subscription' &&
+				subscription.emailNotifications) ||
 			'default',
 	});
 
