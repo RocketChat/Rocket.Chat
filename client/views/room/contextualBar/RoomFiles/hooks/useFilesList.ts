@@ -24,6 +24,7 @@ export const useFilesList = (
 	useComponentDidUpdate(() => {
 		options && reload();
 	}, [options, reload]);
+
 	useEffect(() => {
 		if (filesList.options !== options) {
 			filesList.updateFilters(options);
