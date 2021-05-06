@@ -590,7 +590,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		const membersIds = members.map((m) => m.userId);
-		const usersToRemove = await this.Users.find({ _id: { $in: membersIds } }, { projection: { _id: 1, username: 1 } }).toArray();
+		const usersToRemove = await this.Users.findByIds(membersIds, { projection: { _id: 1, username: 1 } }).toArray();
 		const byUser = await this.Users.findOneById(uid, { projection: { _id: 1, username: 1 } });
 
 		for await (const member of members) {
