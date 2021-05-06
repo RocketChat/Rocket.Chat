@@ -149,7 +149,7 @@
 		"@rocket.chat/fuselage-tokens": "^0.24.0",
 		"@rocket.chat/fuselage-ui-kit": "^0.24.0",
 		"@rocket.chat/memo": "^0.24.0",
-		"@rocket.chat/message-parser": "file:../Rocket.Chat.Fuselage/packages/message-parser",
+		"@rocket.chat/message-parser": "^0.6.3-dev.241",
 		"@rocket.chat/mp3-encoder": "^0.24.0",
 		"@rocket.chat/ui-kit": "^0.24.0",
 		"@slack/client": "^4.12.0",
