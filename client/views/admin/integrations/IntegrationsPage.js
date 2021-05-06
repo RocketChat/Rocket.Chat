@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Icon, Tabs } from '@rocket.chat/fuselage';
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import Page from '../../../components/Page';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
@@ -18,6 +18,7 @@ function IntegrationsPage() {
 	}, [router]);
 
 	const context = useRouteParameter('context');
+
 	const showTable = !['zapier', 'bots'].includes(context);
 
 	const goToIncoming = useCallback(() => router.push({ context: 'webhook-incoming' }), [router]);
