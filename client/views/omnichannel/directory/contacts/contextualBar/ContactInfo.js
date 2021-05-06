@@ -70,7 +70,6 @@ const ContactInfo = ({ id, rid, route }) => {
 	const [currentRouteName] = useCurrentRoute();
 	const liveRoute = useRoute('live');
 
-	console.log(data);
 	if (state === AsyncStatePhase.LOADING) {
 		return (
 			<Box pi='x24'>
@@ -85,7 +84,7 @@ const ContactInfo = ({ id, rid, route }) => {
 
 	const {
 		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
-	} = data || { contact: {} };
+	} = data;
 
 	const checkIsVisibleAndScopeVisitor = (key) => {
 		const field = customFields.find(({ _id }) => _id === key);
