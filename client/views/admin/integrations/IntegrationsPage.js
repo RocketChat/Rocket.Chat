@@ -18,12 +18,6 @@ function IntegrationsPage() {
 	}, [router]);
 
 	const context = useRouteParameter('context');
-	useEffect(() => {
-		if (!context) {
-			router.push({ context: 'webhook-incoming' });
-		}
-	}, [context, router]);
-
 	const showTable = !['zapier', 'bots'].includes(context);
 
 	const goToIncoming = useCallback(() => router.push({ context: 'webhook-incoming' }), [router]);
