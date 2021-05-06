@@ -18,7 +18,7 @@ const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ room, slots: parentSlot })
 				!!isMobile ||
 				(name === 'omnichannel-directory' && (
 					<TemplateHeader.ToolBox>
-						{isMobile && <Burger />}
+						{isMobile /* lgtm[js/trivial-conditional] */ && <Burger />}
 						{name === 'omnichannel-directory' && <BackButton />}
 					</TemplateHeader.ToolBox>
 				)),
