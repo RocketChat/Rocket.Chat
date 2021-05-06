@@ -217,8 +217,8 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		const canSeeAllMembers = hasPermission(this.userId, 'view-all-teams', team.roomId);
 
 		const query = {
-			username: { $regex: username, $options: 'i' },
-			name: { $regex: name, $options: 'i' },
+			username: username ? { $regex: username, $options: 'i' } : undefined,
+			name: name ? { $regex: name, $options: 'i' } : undefined,
 			status: status ? { $in: status } : undefined,
 		} as Partial<FindOneOptions<IUser>>;
 
