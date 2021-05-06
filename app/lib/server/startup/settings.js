@@ -118,6 +118,12 @@ settings.addGroup('Accounts', function() {
 		],
 		public: true,
 	});
+	this.add('Accounts_AllowInvisibleStatusOption', true, {
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'Accounts_AllowInvisibleStatusOption',
+	});
+
 	this.section('Registration', function() {
 		this.add('Accounts_Send_Email_When_Activating', true, {
 			type: 'boolean',
