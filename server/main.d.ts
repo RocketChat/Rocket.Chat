@@ -37,7 +37,7 @@ declare module 'meteor/meteor' {
 		interface Error extends globalError {
 			error: string | number;
 			reason?: string;
-			details?: string | undefined | Record<string, string>;
+			details?: string;// | Record<string, string>;
 		}
 
 		const Streamer: IStreamerConstructor;
@@ -112,23 +112,5 @@ declare module 'meteor/mongo' {
 		class ConnectionClass {}
 
 		function Connection(): ConnectionClass;
-	}
-}
-
-declare module 'async_hooks' {
-	export class AsyncLocalStorage<T> {
-		disable(): void;
-
-		getStore(): T | undefined;
-
-		run(store: T, callback: (...args: any[]) => void, ...args: any[]): void;
-
-		exit(callback: (...args: any[]) => void, ...args: any[]): void;
-
-		runSyncAndReturn<R>(store: T, callback: (...args: any[]) => R, ...args: any[]): R;
-
-		exitSyncAndReturn<R>(callback: (...args: any[]) => R, ...args: any[]): R;
-
-		enterWith(store: T): void;
 	}
 }

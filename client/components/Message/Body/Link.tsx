@@ -5,24 +5,27 @@ import Bold from './Bold';
 import Italic from './Italic';
 import Strike from './Strike';
 
-const fn = (block: ASTLink['value']['label']) => {
-	switch (block.type) {
-		case 'PLAIN_TEXT':
-			return block.value;
-		case 'STRIKE':
-			return <Strike value={block.value} />;
-		case 'ITALIC':
-			return <Italic value={block.value} />;
-		case 'BOLD':
-			return <Bold value={block.value} />;
-		default:
-			return null;
-	}
-};
 const Link: FC<{ value: ASTLink['value'] }> = ({ value }) => {
 	const { src, label } = value;
 
-	return <a href={src.value}>{fn(label)}</a>;
+	return (
+		<a href={src.value}>
+			{((block: ASTLink['value']['label']): JSX.Element | null => {
+				switch (block.type) {
+					case 'PLAIN_TEXT':
+						return block.value;
+					case 'STRIKE':
+						return <Strike value={block.value} />;
+					case 'ITALIC':
+						return <Italic value={block.value} />;
+					case 'BOLD':
+						return <Bold value={block.value} />;
+					default:
+						return null;
+				}
+			})(label)}
+		</a>
+	);
 };
 
 export default Link;
