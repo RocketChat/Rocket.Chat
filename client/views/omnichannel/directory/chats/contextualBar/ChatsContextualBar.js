@@ -25,8 +25,18 @@ const ChatsContextualBar = ({ rid }) => {
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='info-circled' />
-				<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
+				{(context === 'info' || !context) && (
+					<>
+						<VerticalBar.Icon name='info-circled' />
+						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
+					</>
+				)}
+				{context === 'edit' && (
+					<>
+						<VerticalBar.Icon name='pencil' />
+						<VerticalBar.Text>{t('edit-room')}</VerticalBar.Text>
+					</>
+				)}
 				<VerticalBar.Close onClick={closeContextualBar} />
 			</VerticalBar.Header>
 			{context === 'edit' ? (

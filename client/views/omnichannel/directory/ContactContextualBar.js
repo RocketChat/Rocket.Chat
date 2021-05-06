@@ -10,17 +10,21 @@ import ContactNewEdit from './contacts/contextualBar/ContactNewEdit';
 
 const ContactContextualBar = ({ contactReload }) => {
 	const directoryRoute = useRoute('omnichannel-directory');
-	const bar = useRouteParameter('bar') || 'info';
+	const bar = useRouteParameter('bar');
+	const page = useRouteParameter('page');
+	const tab = useRouteParameter('tab');
 	const id = useRouteParameter('id');
+
+	console.log(bar, tab, page, id);
 
 	const t = useTranslation();
 
 	const handleContactsVerticalBarCloseButtonClick = () => {
-		directoryRoute.push({ tab: 'contacts' });
+		directoryRoute.push({ page: 'contacts' });
 	};
 
 	const handleContactsVerticalBarBackButtonClick = () => {
-		directoryRoute.push({ tab: 'contacts', context: 'info', id });
+		directoryRoute.push({ page: 'contacts', id, bar: 'info' });
 	};
 
 	return (

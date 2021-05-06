@@ -5,10 +5,10 @@ import ChatsContextualBar from './ChatsContextualBar';
 import ContactContextualBar from './ContactContextualBar';
 
 const ContextualBar = ({ contactReload, chatReload }) => {
-	const id = useRouteParameter('id');
 	const page = useRouteParameter('page');
+	const bar = useRouteParameter('bar');
 
-	if (!id) {
+	if (!bar) {
 		return null;
 	}
 

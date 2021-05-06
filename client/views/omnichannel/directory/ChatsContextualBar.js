@@ -17,18 +17,18 @@ const ChatsContextualBar = ({ chatReload }) => {
 	const t = useTranslation();
 
 	const openInRoom = () => {
-		directoryRoute.push({ page: 'chats', id, bar: 'chat' });
+		directoryRoute.push({ page: 'chats', id, bar: 'view' });
 	};
 
 	const handleChatsVerticalBarCloseButtonClick = () => {
-		directoryRoute.push({ tab: 'chats' });
+		directoryRoute.push({ page: 'chats' });
 	};
 
 	const handleChatsVerticalBarBackButtonClick = () => {
-		directoryRoute.push({ tab: 'chats', context: 'info', id });
+		directoryRoute.push({ page: 'chats', id, bar: 'info' });
 	};
 
-	if (bar === 'chat') {
+	if (bar === 'view') {
 		return <Chat rid={id} />;
 	}
 

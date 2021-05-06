@@ -81,14 +81,14 @@ function ChatInfo({ id, route }) {
 		routePath.push(
 			route
 				? {
-						page: 'room-info',
-						bar: 'edit',
+						tab: 'room-info',
+						context: 'edit',
 						id,
 				  }
 				: {
 						page: 'chats',
-						bar: 'edit',
 						id,
+						bar: 'edit',
 				  },
 		);
 	});
