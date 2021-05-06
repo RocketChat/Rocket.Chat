@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 
 const InlineCode: FC<{ value: ASTInlineCode['value'] }> = ({ value }) => (
 	<code className='code-colors inline'>
-		{((block) => {
+		{((block): string | null => {
 			switch (block.type) {
 				case 'PLAIN_TEXT':
 					return block.value;

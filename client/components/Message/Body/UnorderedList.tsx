@@ -1,18 +1,16 @@
-import { UnorderedList as ASTUnorderedList } from "@rocket.chat/message-parser";
-import React, { FC } from "react";
+import { UnorderedList as ASTUnorderedList } from '@rocket.chat/message-parser';
+import React, { FC } from 'react';
 
-import Inline from "./Inline";
+import Inline from './Inline';
 
-const UnorderedList: FC<{ value: ASTUnorderedList["value"] }> = ({ value }) => {
-  return (
-    <ul>
-      {value.map((item) => (
-        <li>
-          <Inline value={item.value} />
-        </li>
-      ))}
-    </ul>
-  );
-};
+const UnorderedList: FC<{ value: ASTUnorderedList['value'] }> = ({ value }) => (
+	<ul>
+		{value.map((item) => (
+			<li>
+				<Inline value={item.value} />
+			</li>
+		))}
+	</ul>
+);
 
 export default UnorderedList;
