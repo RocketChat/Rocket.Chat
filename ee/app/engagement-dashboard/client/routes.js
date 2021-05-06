@@ -1,7 +1,8 @@
 import { hasAllPermission } from '../../../../app/authorization';
 import { registerAdminRoute, registerAdminSidebarItem } from '../../../../client/views/admin';
-import { renderRouteComponent } from '../../../../client/reactAdapters';
 import { hasLicense } from '../../license/client';
+import { createTemplateForComponent } from '../../../../client/lib/portals/createTemplateForComponent';
+import { appLayout } from '../../../../client/lib/appLayout';
 
 registerAdminRoute('/engagement-dashboard/:tab?', {
 	name: 'engagement-dashboard',
@@ -11,7 +12,8 @@ registerAdminRoute('/engagement-dashboard/:tab?', {
 			return;
 		}
 
-		renderRouteComponent(() => import('./components/EngagementDashboardRoute'), { template: 'main', region: 'center' });
+		const EngagementDashboardRoute = createTemplateForComponent('EngagementDashboardRoute', () => import('./components/EngagementDashboardRoute'), { attachment: 'at-parent' });
+		appLayout.render('main', { center: EngagementDashboardRoute });
 	},
 });
 

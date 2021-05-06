@@ -49,7 +49,8 @@ API.v1.addRoute('info', { authRequired: false }, {
 
 API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId, { fields: getDefaultUserFields() })));
+		const { 'services.password.bcrypt': password, ...fields } = getDefaultUserFields();
+		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId, { fields })));
 	},
 });
 

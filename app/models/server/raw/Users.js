@@ -68,7 +68,7 @@ export class UsersRaw extends BaseRaw {
 	findByActiveUsersExcept(searchTerm, exceptions, options, searchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
-		if (Array.isArray(exceptions)) {
+		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
 
@@ -105,6 +105,15 @@ export class UsersRaw extends BaseRaw {
 				},
 				...extraQuery,
 			],
+		};
+
+		return this.find(query, options);
+	}
+
+	findActiveByIds(userIds, options = {}) {
+		const query = {
+			_id: { $in: userIds },
+			active: true,
 		};
 
 		return this.find(query, options);
@@ -187,11 +196,11 @@ export class UsersRaw extends BaseRaw {
 		return result.value;
 	}
 
-	async getAgentAndAmountOngoingChats(userId) {
+	async getAgentAndAmountOngoingChats(userId, department) {
 		const aggregate = [
 			{ $match: { _id: userId, status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
 			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
-			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $eq: ['$$sub.t', 'l'] } } } } } },
+			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }, { ...department && { $eq: ['$$sub.department', department] } }] } } } } } },
 			{ $sort: { 'queueInfo.chats': 1, lastAssignTime: 1, lastRoutingTime: 1, username: 1 } },
 		];
 
@@ -388,6 +397,27 @@ export class UsersRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
+	getUserLanguages() {
+		const pipeline = [
+			{
+				$match: {
+					language: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+			},
+			{
+				$group: {
+					_id: '$language',
+					total: { $sum: 1 },
+				},
+			},
+		];
+
+		return this.col.aggregate(pipeline).toArray();
+	}
+
 	updateStatusText(_id, statusText) {
 		const update = {
 			$set: {
@@ -569,5 +599,14 @@ export class UsersRaw extends BaseRaw {
 				'services.resume': 1,
 			},
 		});
+	}
+
+	removeRoomsByRoomIdsAndUserId(rids, userId) {
+		return this.update({
+			_id: userId,
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
 	}
 }

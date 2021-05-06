@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Tracker } from 'meteor/tracker';
 
 import { Subscriptions, Rooms, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
@@ -10,6 +11,7 @@ import { AutoTranslate } from '../../../autotranslate/client';
 import { Layout } from './Layout';
 import { fireGlobalEvent } from './fireGlobalEvent';
 import { actionLinks } from '../../../action-links/client';
+import { goToRoomById } from '../../../../client/lib/goToRoomById';
 
 
 const fields = { name: 1, username: 1, 'settings.preferences.showMessageInMainThread': 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
@@ -17,7 +19,7 @@ const fields = { name: 1, username: 1, 'settings.preferences.showMessageInMainTh
 export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
 	const user = Users.findOne({ _id: uid }, { fields }) || {};
-	const instace = Template.instance();
+	const instance = Template.instance();
 	const openThread = (e) => {
 		const { rid, mid, tmid } = e.currentTarget.dataset;
 		const room = Rooms.findOne({ _id: rid });
@@ -29,6 +31,8 @@ export function messageContext({ rid } = Template.instance()) {
 		}, {
 			jump: tmid && tmid !== mid && mid && mid,
 		});
+		e.preventDefault();
+		e.stopPropagation();
 	};
 
 	const runAction = Layout.isEmbedded() ? (msg, e) => {
@@ -40,7 +44,7 @@ export function messageContext({ rid } = Template.instance()) {
 		});
 	} : (msg, e) => {
 		const { actionlink } = e.currentTarget.dataset;
-		actionLinks.run(actionlink, msg._id, instace, (err) => {
+		actionLinks.run(actionlink, msg._id, instance, (err) => {
 			if (err) {
 				handleError(err);
 			}
@@ -49,8 +53,9 @@ export function messageContext({ rid } = Template.instance()) {
 
 	const openDiscussion = (e) => {
 		e.preventDefault();
+		e.stopPropagation();
 		const { drid } = e.currentTarget.dataset;
-		FlowRouter.goToRoomById(drid);
+		goToRoomById(drid);
 	};
 
 	const replyBroadcast = (e) => {
@@ -60,13 +65,12 @@ export function messageContext({ rid } = Template.instance()) {
 
 	return {
 		u: user,
-		room: Rooms.findOne({ _id: rid }, {
-			reactive: false,
+		room: Tracker.nonreactive(() => Rooms.findOne({ _id: rid }, {
 			fields: {
 				_updatedAt: 0,
 				lastMessage: 0,
 			},
-		}),
+		})),
 		subscription: Subscriptions.findOne({ rid }, {
 			fields: {
 				name: 1,

@@ -4,9 +4,10 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
-import { Markdown } from '../../../markdown/server';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
+import { hasPermission } from '../../../authorization/server';
+import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 /**
  * IMPORTANT
@@ -126,7 +127,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-const validateMessage = (message) => {
+const validateMessage = (message, room, user) => {
 	check(message, objectMaybeIncluding({
 		_id: String,
 		msg: String,
@@ -140,6 +141,14 @@ const validateMessage = (message) => {
 		blocks: [Match.Any],
 	}));
 
+	if (message.alias || message.avatar) {
+		const isLiveChatGuest = !message.avatar && user.token && user.token === room.v?.token;
+
+		if (!isLiveChatGuest && !hasPermission(user._id, 'message-impersonate', room._id)) {
+			throw new Error('Not enough permission');
+		}
+	}
+
 	if (Array.isArray(message.attachments) && message.attachments.length) {
 		validateBodyAttachments(message.attachments);
 	}
@@ -150,7 +159,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		return false;
 	}
 
-	validateMessage(message);
+	validateMessage(message, room, user);
 
 	if (!message.ts) {
 		message.ts = new Date();
@@ -199,24 +208,11 @@ export const sendMessage = function(user, message, room, upsert = false) {
 			message = Object.assign(message, result);
 
 			// Some app may have inserted malicious/invalid values in the message, let's check it again
-			validateMessage(message);
+			validateMessage(message, user._id);
 		}
 	}
 
-	if (message.parseUrls !== false) {
-		message.html = message.msg;
-		message = Markdown.code(message);
-
-		const urls = message.html.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
-		if (urls) {
-			message.urls = urls.map((url) => ({ url }));
-		}
-
-		message = Markdown.mountTokensBack(message, false);
-		message.msg = message.html;
-		delete message.html;
-		delete message.tokens;
-	}
+	parseUrlsInMessage(message);
 
 	message = callbacks.run('beforeSaveMessage', message, room);
 	if (message) {

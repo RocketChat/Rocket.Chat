@@ -2,12 +2,13 @@ import { IServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings, MeteorService } from '../../sdk/index';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
+import { UserStatus } from '../../../definition/UserStatus';
 
 const STATUS_MAP: {[k: string]: number} = {
-	offline: 0,
-	online: 1,
-	away: 2,
-	busy: 3,
+	[UserStatus.OFFLINE]: 0,
+	[UserStatus.ONLINE]: 1,
+	[UserStatus.AWAY]: 2,
+	[UserStatus.BUSY]: 3,
 };
 
 export const minimongoChangeMap: Record<string, string> = { inserted: 'added', updated: 'changed', removed: 'removed' };
@@ -101,7 +102,7 @@ export class ListenersModule {
 
 			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, _sub, eventName, args, allowed) => streamer.changedPayload(streamer.subscriptionName, 'id', {
 				eventName,
-				args: [args, allowed],
+				args: [...args, allowed],
 			}));
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);

@@ -1,4 +1,5 @@
-import { USER_STATUS } from './UserStatus';
+import { UserStatus } from './UserStatus';
+import { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -36,6 +37,7 @@ export interface IUserServices {
 	password?: {
 		bcrypt: string;
 	};
+	passwordHistory?: string[];
 	email?: {
 		verificationTokens?: IUserEmailVerificationToken[];
 	};
@@ -85,7 +87,7 @@ export interface IRole {
 	_id: string;
 }
 
-export interface IUser {
+export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;
 	roles: string[];
@@ -95,19 +97,19 @@ export interface IUser {
 	name?: string;
 	services?: IUserServices;
 	emails?: IUserEmail[];
-	status?: USER_STATUS;
+	status?: UserStatus;
 	statusConnection?: string;
 	lastLogin?: Date;
 	avatarOrigin?: string;
 	avatarETag?: string;
 	utcOffset?: number;
 	language?: string;
-	statusDefault?: USER_STATUS;
+	statusDefault?: UserStatus;
 	statusText?: string;
 	oauth?: {
 		authorizedClients: string[];
 	};
-	_updatedAt?: Date;
+	_updatedAt: Date;
 	statusLivechat?: string;
 	e2e?: {
 		private_key: string;
@@ -118,6 +120,7 @@ export interface IUser {
 		[key: string]: any;
 	};
 	settings?: IUserSettings;
+	defaultRoom?: string;
 }
 
 export type IUserDataEvent = {

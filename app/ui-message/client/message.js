@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
@@ -16,11 +17,8 @@ import { AutoTranslate } from '../../autotranslate/client';
 import { escapeHTML } from '../../../lib/escapeHTML';
 import { renderMentions } from '../../mentions/client/client';
 import { renderMessageBody } from '../../../client/lib/renderMessageBody';
-import { createTemplateForComponent } from '../../../client/reactAdapters';
-
+import { settings } from '../../settings/client';
 import './message.html';
-
-createTemplateForComponent('messageLocation', () => import('../../../client/views/location/MessageLocation'));
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
@@ -451,7 +449,16 @@ Template.message.helpers({
 	},
 	showStar() {
 		const { msg } = this;
-		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
+		return msg.starred && msg.starred.length > 0 && msg.starred.find((star) => star._id === Meteor.userId()) && !(msg.actionContext === 'starred' || this.context === 'starred');
+	},
+	readReceipt() {
+		if (!settings.get('Message_Read_Receipt_Enabled')) {
+			return;
+		}
+
+		return {
+			readByEveryone: (!this.msg.unread && 'read') || 'color-component-color',
+		};
 	},
 });
 
@@ -544,6 +551,11 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 	const previousNode = (index === undefined || index > 0) && getPreviousSentMessage(currentNode);
 	const nextNode = currentNode.nextElementSibling;
 
+	if (!previousNode) {
+		setTimeout(() => {
+			currentNode.dispatchEvent(new CustomEvent('MessageGroup', { bubbles: true }));
+		}, 100);
+	}
 	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
 		currentNode.classList.add('sequential');
 	} else {
