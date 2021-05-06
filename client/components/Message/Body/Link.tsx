@@ -5,7 +5,11 @@ import Bold from './Bold';
 import Italic from './Italic';
 import Strike from './Strike';
 
-const Link: FC<{ value: ASTLink['value'] }> = ({ value }) => {
+type LinkProps = {
+	value: ASTLink['value'];
+};
+
+const Link: FC<LinkProps> = ({ value }) => {
 	const { src, label } = value;
 
 	return (
@@ -13,7 +17,7 @@ const Link: FC<{ value: ASTLink['value'] }> = ({ value }) => {
 			{((block: ASTLink['value']['label']): JSX.Element | null => {
 				switch (block.type) {
 					case 'PLAIN_TEXT':
-						return block.value;
+						return <>{block.value}</>;
 					case 'STRIKE':
 						return <Strike value={block.value} />;
 					case 'ITALIC':
