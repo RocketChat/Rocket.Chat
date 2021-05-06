@@ -589,6 +589,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('team-does-not-exist');
 		}
 
+		const membersIds = members.map((m) => m.userId);
+		const usersToRemove = await this.Users.find({ _id: { $in: membersIds } }, { projection: { _id: 1, username: 1 } }).toArray();
+		const byUser = await this.Users.findOneById(uid, { projection: { _id: 1, username: 1 } });
+
 		for await (const member of members) {
 			if (!member.userId) {
 				throw new Error('invalid-user');
@@ -608,9 +612,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 			}
 
 			this.TeamMembersModel.removeById(existingMember._id);
-			const removedUser = await this.Users.findOneById(member.userId, { projection: { _id: 1, username: 1 } });
-			const byUser = uid !== member.userId ? await this.Users.findOneById(uid, { projection: { _id: 1, username: 1 } }) : undefined;
-			removeUserFromRoom(team.roomId, removedUser, { byUser });
+			const removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
+			removeUserFromRoom(team.roomId, removedUser, { byUser: uid !== member.userId ? byUser : undefined });
 		}
 
 		return true;
