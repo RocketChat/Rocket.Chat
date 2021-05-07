@@ -58,12 +58,12 @@ Template.message.helpers({
 	},
 	mention() {
 		const { msg, subscription } = this;
-		return subscription.tunreadUser?.includes(msg._id);
+		return subscription?.tunreadUser?.includes(msg._id);
 	},
 
 	all() {
 		const { msg, subscription } = this;
-		return subscription.tunreadGroup?.includes(msg._id);
+		return subscription?.tunreadGroup?.includes(msg._id);
 	},
 	following() {
 		const { msg, u } = this;
