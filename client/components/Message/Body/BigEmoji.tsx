@@ -3,7 +3,11 @@ import React, { FC } from 'react';
 
 import Emoji from '../../Emoji';
 
-const BigEmoji: FC<{ value: ASTBigEmoji['value'] }> = ({ value = [] }) => (
+type BigEmojiProps = {
+	value: ASTBigEmoji['value'];
+};
+
+const BigEmoji: FC<BigEmojiProps> = ({ value }) => (
 	<strong>
 		{value.map((block, index) => (
 			<Emoji className='big' key={index} emojiHandle={`:${block.value.value}:`} />
