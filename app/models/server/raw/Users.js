@@ -119,6 +119,14 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findByIds(userIds, options = {}) {
+		const query = {
+			_id: { $in: userIds },
+		};
+
+		return this.find(query, options);
+	}
+
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');

@@ -209,7 +209,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 			message = Object.assign(message, result);
 
 			// Some app may have inserted malicious/invalid values in the message, let's check it again
-			validateMessage(message, user._id);
+			validateMessage(message, room, user);
 		}
 	}
 
