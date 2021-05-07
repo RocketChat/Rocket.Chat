@@ -127,7 +127,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-const validateMessage = (message, userId) => {
+const validateMessage = (message, room, user) => {
 	check(message, objectMaybeIncluding({
 		_id: String,
 		msg: String,
@@ -141,8 +141,12 @@ const validateMessage = (message, userId) => {
 		blocks: [Match.Any],
 	}));
 
-	if ((message.alias || message.avatar) && !hasPermission(userId, 'message-impersonate', message.rid)) {
-		throw new Error('Not enough permission');
+	if (message.alias || message.avatar) {
+		const isLiveChatGuest = !message.avatar && user.token && user.token === room.v?.token;
+
+		if (!isLiveChatGuest && !hasPermission(user._id, 'message-impersonate', room._id)) {
+			throw new Error('Not enough permission');
+		}
 	}
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
@@ -155,7 +159,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		return false;
 	}
 
-	validateMessage(message, user._id);
+	validateMessage(message, room, user);
 
 	if (!message.ts) {
 		message.ts = new Date();
