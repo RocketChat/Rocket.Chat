@@ -48,7 +48,7 @@ export const updateMessage = function(message, user, originalMessage) {
 	try {
 		message.md = parser(message.msg);
 	} catch (e) {
-		console.log(e); // temporary
+		console.log(e); // errors logged while the parser is at experimental stage
 	}
 
 	const tempid = message._id;

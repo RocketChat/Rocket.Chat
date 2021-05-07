@@ -266,7 +266,7 @@ API.v1.addRoute('teams.removeMember', { authRequired: true }, {
 			return API.v1.failure('invalid-user');
 		}
 
-		if (!Promise.await(Team.removeMembers(team._id, [{ userId }]))) {
+		if (!Promise.await(Team.removeMembers(this.userId, team._id, [{ userId }]))) {
 			return API.v1.failure();
 		}
 
@@ -279,7 +279,6 @@ API.v1.addRoute('teams.removeMember', { authRequired: true }, {
 				});
 			});
 		}
-
 		return API.v1.success();
 	},
 });
@@ -290,7 +289,7 @@ API.v1.addRoute('teams.leave', { authRequired: true }, {
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 
-		Promise.await(Team.removeMembers(team._id, [{
+		Promise.await(Team.removeMembers(this.userId, team._id, [{
 			userId: this.userId,
 		}]));
 
@@ -301,8 +300,6 @@ API.v1.addRoute('teams.leave', { authRequired: true }, {
 				removeUserFromRoom(rid, this.user);
 			});
 		}
-
-		removeUserFromRoom(team.roomId, this.user);
 
 		return API.v1.success();
 	},

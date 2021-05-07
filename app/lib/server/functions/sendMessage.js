@@ -209,7 +209,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 			message = Object.assign(message, result);
 
 			// Some app may have inserted malicious/invalid values in the message, let's check it again
-			validateMessage(message, user._id);
+			validateMessage(message, room, user);
 		}
 	}
 
@@ -219,7 +219,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 	try {
 		message.md = parser(message.msg);
 	} catch (e) {
-		console.log(e); // temporary
+		console.log(e); // errors logged while the parser is at experimental stage
 	}
 	if (message) {
 		if (message._id && upsert) {
