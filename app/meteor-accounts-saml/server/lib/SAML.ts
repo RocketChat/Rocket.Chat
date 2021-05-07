@@ -5,6 +5,7 @@ import { Random } from 'meteor/random';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import fiber from 'fibers';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../../settings/server';
 import { Users, Rooms, CredentialTokens } from '../../../models/server';
@@ -17,7 +18,6 @@ import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
 import { escapeHTML } from '../../../../lib/escapeHTML';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
 	res.writeHead(200, {
