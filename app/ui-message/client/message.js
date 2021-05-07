@@ -4,6 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -14,7 +15,6 @@ import { Markdown } from '../../markdown/client';
 import { t, roomTypes } from '../../utils';
 import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
-import { escapeHTML } from '../../../lib/escapeHTML';
 import { renderMentions } from '../../mentions/client/client';
 import { renderMessageBody } from '../../../client/lib/renderMessageBody';
 import { settings } from '../../settings/client';

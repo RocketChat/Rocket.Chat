@@ -3,7 +3,7 @@ import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -18,7 +18,7 @@ import {
 } from '../lib/restrictLoginAttempts';
 import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { escapeHTML } from '../../../../lib/escapeHTML';
+
 
 Accounts.config({
 	forbidClientAccountCreation: true,
