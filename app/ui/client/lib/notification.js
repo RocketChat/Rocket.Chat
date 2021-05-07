@@ -101,12 +101,12 @@ export const KonchatNotification = {
 		});
 	},
 
-	newMessage(rid) {
+	newMessage({ rid, type }) {
 		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
 			const userId = Meteor.userId();
 			const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
 
-			const emitNewMessageNotification = roomTypes.emitNewMessageNotification(rid);
+			const emitNewMessageNotification = roomTypes.emitNewMessageNotification(rid, type);
 
 			emitNewMessageNotification && CustomSounds.play(emitNewMessageNotification, {
 				volume: Number((audioVolume / 100).toPrecision(2)),

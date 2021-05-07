@@ -69,9 +69,9 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		return ChatSubscription.find({ rid }).count() > 0;
 	}
 
-	emitNewMessageNotification(rid) {
+	emitNewMessageNotification(rid, type) {
 		const roomType = this.getRoomType(rid);
-		const newMessageNotificationFunction = this.roomTypes[roomType || 'l'].emitNewMessageNotification;
+		const newMessageNotificationFunction = this.roomTypes[roomType || type].emitNewMessageNotification;
 
 		if (typeof newMessageNotificationFunction === 'function') {
 			return newMessageNotificationFunction();

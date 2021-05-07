@@ -51,6 +51,7 @@ type AudioNotificationEvent = {
 		sender: IMessage['u'];
 		type: IRoom['t'];
 		name: IRoom['name'];
+		status: string;
 	};
 };
 
@@ -101,11 +102,11 @@ Meteor.startup(() => {
 			if (Layout.isEmbedded()) {
 				if (!hasFocus && messageIsInOpenedRoom) {
 					// Play a notification sound
-					KonchatNotification.newMessage(notification.payload.rid);
+					KonchatNotification.newMessage(notification.payload);
 				}
 			} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
 				// Play a notification sound
-				KonchatNotification.newMessage(notification.payload.rid);
+				KonchatNotification.newMessage(notification.payload);
 			}
 		});
 
