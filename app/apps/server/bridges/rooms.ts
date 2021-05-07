@@ -127,6 +127,11 @@ export class AppRoomBridge extends RoomBridge {
 		}
 	}
 
+	protected async delete(roomId: string, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${ appId } is deleting a room.`);
+		Rooms.removeById(roomId);
+	}
+
 	protected async createDiscussion(room: IRoom, parentMessage: IMessage | undefined = undefined,
 		reply: string | undefined = '', members: Array<string> = [], appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${ appId } is creating a new discussion.`, room);
