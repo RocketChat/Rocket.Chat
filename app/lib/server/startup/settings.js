@@ -507,22 +507,19 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'New_Message_Notification',
 		});
-		this.add('Accounts_Default_User_Preferences_muteFocusedConversations', true, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Mute_Focused_Conversations',
-		});
-		this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
-			type: 'int',
-			public: true,
-			i18nLabel: 'Notifications_Sound_Volume',
-		});
 
 		this.add('Accounts_Default_User_Preferences_muteFocusedConversations', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Mute_Focused_Conversations',
 		});
+
+		this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
+			type: 'int',
+			public: true,
+			i18nLabel: 'Notifications_Sound_Volume',
+		});
+
 		this.add('Accounts_Default_User_Preferences_enableMessageParserEarlyAdoption', false, {
 			type: 'boolean',
 			public: true,
