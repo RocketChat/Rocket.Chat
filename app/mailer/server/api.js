@@ -25,11 +25,10 @@ settings.get('Language', (key, value) => {
 	lng = value || 'en';
 });
 
-const nonEscapeKeys = ['room_path', 'password'];
 
 export const replacekey = (str, key, value = '') => str.replace(
 	new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'),
-	nonEscapeKeys.includes(key) ? value : escapeHTML(value),
+	value,
 );
 
 export const translate = (str) => replaceVariables(str, (match, key) => TAPi18n.__(key, { lng }));
@@ -50,6 +49,8 @@ export const replace = function replace(str, data = {}) {
 	return Object.entries(options).reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str));
 };
 
+const nonEscapeKeys = ['room_path'];
+
 export const replaceEscaped = (str, data = {}) => replace(str, {
 	Site_Name: escapeHTML(settings.get('Site_Name')),
 	Site_Url: escapeHTML(settings.get('Site_Url')),
@@ -58,6 +59,7 @@ export const replaceEscaped = (str, data = {}) => replace(str, {
 		return ret;
 	}, {}),
 });
+
 export const wrap = (html, data = {}) => {
 	if (settings.get('email_plain_text_only')) {
 		return replace(html, data);
