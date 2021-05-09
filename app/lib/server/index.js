@@ -62,6 +62,7 @@ import './methods/setAdminStatus';
 import './methods/setEmail';
 import './methods/setRealName';
 import './methods/setUsername';
+import './methods/updateLastLogin';
 import './methods/unarchiveRoom';
 import './methods/unblockUser';
 import './methods/updateMessage';
