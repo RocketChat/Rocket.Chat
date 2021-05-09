@@ -1526,6 +1526,8 @@
   "Emoji_provided_by_JoyPixels": "Emoji provided by <strong>JoyPixels</strong>",
   "EmojiCustomFilesystem": "Custom Emoji Filesystem",
   "Empty_title": "Empty title",
+  "Enable_message_parser_early_adoption": "Enable the Message parser",
+  "Enable_message_parser_early_adoption_alert": "This is an experimental feature and will remain that way at least until version 3.19.0, this option is to help us with tests and edge cases. As soon as we don't find any more problems, we will remove that option and migrate to the new solution",
   "See_on_Engagement_Dashboard": "See on Engagement Dashboard",
   "Enable": "Enable",
   "Enable_Auto_Away": "Enable Auto Away",
