@@ -132,6 +132,14 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 		roomsCount: getChannelsCountForTeam(room.teamId),
 	}));
 
+	const sortTeamsByRoomCount = (a, b) => {
+		if (a.featured && !b.featured) { return -1; }
+		if (b.featured && !a.featured) { return 1; }
+		return sort.channelsCount === -1 ? b.roomsCount - a.roomsCount : a.roomsCount - b.roomsCount;
+	};
+	if (sort.channelsCount) {
+		rooms.sort(sortTeamsByRoomCount);
+	}
 	return {
 		total: result.count(), // count ignores the `skip` and `limit` options
 		results: rooms,
@@ -208,7 +216,7 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', 'usersCount', ['channels', 'teams'].includes(...type) ? ['usernames', 'lastMessage'] : [], ...type === 'users' ? ['username', 'email', 'bio'] : []].includes(sortBy)) {
+		if (!['name', 'createdAt', 'usersCount', ...['channels', 'teams'].includes(type) ? ['usernames', 'lastMessage', 'channelsCount'] : [], ...type === 'users' ? ['username', 'email', 'bio'] : []].includes(sortBy)) {
 			return;
 		}
 
