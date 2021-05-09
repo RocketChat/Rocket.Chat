@@ -291,6 +291,9 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 	const ignoreUser = useMethod('ignoreUser');
 	const ignoreUserAction = useMutableCallback(async () => {
 		try {
+			if (!currentSubscription) {
+				throw new Error('Chatpal_channel_not_joined_yet');
+			}
 			await ignoreUser({ rid, userId: uid, ignore: !isIgnored });
 			if (isIgnored) {
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_unignored') });
@@ -312,7 +315,7 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 		[ignoreUserAction, isIgnored, ownUserId, roomCanIgnore, t, uid],
 	);
 
-	const isUserBlocked = currentSubscription.blocker;
+	const isUserBlocked = currentSubscription?.blocker;
 	const toggleBlock = useMethod(isUserBlocked ? 'unblockUser' : 'blockUser');
 	const toggleBlockUserAction = useMutableCallback(async () => {
 		try {
