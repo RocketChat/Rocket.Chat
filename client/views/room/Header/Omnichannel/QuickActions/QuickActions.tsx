@@ -35,7 +35,7 @@ import { QuickActionsContext } from '../../../lib/QuickActions/QuickActionsConte
 
 type QuickActionsProps = {
 	room: IRoom;
-	className: ComponentProps<typeof Box>['className'];
+	className?: ComponentProps<typeof Box>['className'];
 };
 
 const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
