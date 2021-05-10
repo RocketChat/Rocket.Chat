@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import Autolinker from 'autolinker';
-
-import { escapeRegExp } from '../../../lib/escapeRegExp';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 export const createAutolinkerMessageRenderer = (config) =>
 	(message) => {

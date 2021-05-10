@@ -1,4 +1,5 @@
 import { Db, FindOneOptions } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
@@ -21,7 +22,6 @@ import {
 	TEAM_TYPE,
 } from '../../../definition/ITeam';
 import { IUser } from '../../../definition/IUser';
-import { escapeRegExp } from '../../../lib/escapeRegExp';
 import { Room } from '../../sdk';
 import {
 	IListRoomsFilter,
