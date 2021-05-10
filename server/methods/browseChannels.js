@@ -208,7 +208,10 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', 'usersCount', ['channels', 'teams'].includes(...type) ? ['usernames', 'lastMessage'] : [], ...type === 'users' ? ['username', 'email', 'bio'] : []].includes(sortBy)) {
+		const roomParams = ['channels', 'teams'].includes(type) ? ['usernames', 'lastMessage'] : [];
+		const userParams = type === 'users' ? ['username', 'email', 'bio'] : [];
+
+		if (!['name', 'createdAt', 'usersCount', ...roomParams, ...userParams].includes(sortBy)) {
 			return;
 		}
 
