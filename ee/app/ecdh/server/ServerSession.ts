@@ -1,4 +1,4 @@
-import { Session } from './Session';
+import { Session } from '../Session';
 
 export type ProcessString = (text: string[]) => string;
 export type ProcessBuffer = (text: Buffer) => Buffer[];
