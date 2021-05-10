@@ -210,7 +210,7 @@ export class RoomsRaw extends BaseRaw {
 			},
 		};
 
-		return this.update(query, update, options);
+		return this.updateMany(query, update, options);
 	}
 
 	unsetTeamById(rid, options = {}) {
