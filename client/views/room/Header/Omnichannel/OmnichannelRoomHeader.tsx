@@ -14,14 +14,12 @@ const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ room, slots: parentSlot })
 	const slots = useMemo(
 		() => ({
 			...parentSlot,
-			start:
-				!!isMobile ||
-				(name === 'omnichannel-directory' && (
-					<TemplateHeader.ToolBox>
-						{isMobile && <Burger />}
-						{name === 'omnichannel-directory' && <BackButton />}
-					</TemplateHeader.ToolBox>
-				)),
+			start: (!!isMobile || name === 'omnichannel-directory') && (
+				<TemplateHeader.ToolBox>
+					{isMobile && <Burger />}
+					{name === 'omnichannel-directory' && <BackButton />}
+				</TemplateHeader.ToolBox>
+			),
 			insideContent: <QuickActions room={room} />,
 		}),
 		[isMobile, name, parentSlot, room],
