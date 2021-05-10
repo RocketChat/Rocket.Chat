@@ -1,83 +1,88 @@
-import React, { FC } from 'react';
-import { differenceInMinutes, isSameDay } from 'date-fns';
-import { Message, Reactions, ThreadMessage } from '@rocket.chat/fuselage';
+import { Message as MessageTemplate } from '@rocket.chat/fuselage';
+import { isSameDay } from 'date-fns';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 
-import { useRoom } from '../providers/RoomProvider';
-import { useMessages } from './hooks/useMessages';
-import { IRoom } from '../../../../definition/IRoom';
 import { IMessage } from '../../../../definition/IMessage';
-import UserAvatar from '../../../components/avatar/UserAvatar';
-import { useFormatTime } from '../../../hooks/useFormatTime';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
-import MessageBlock from '../../blocks/MessageBlock';
-import MessageLocation from '../../location/MessageLocation';
+import { IRoom, IRoom } from '../../../../definition/IRoom';
 import Attachments from '../../../components/Message/Attachments';
 import Discussion from '../../../components/Message/Metrics/Discussion';
 import Thread from '../../../components/Message/Metrics/Thread';
-import { Virtuoso } from 'react-virtuoso';
+import RoomForeword from '../../../components/RoomForeword';
+import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import UserAvatar from '../../../components/avatar/UserAvatar';
+import { useFormatDateAndTime, useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import { useFormatTime } from '../../../hooks/useFormatTime';
+import MessageBlock from '../../blocks/MessageBlock';
+import { useRoom, useRoomContext } from '../providers/RoomProvider';
+import { Message } from './components/Message';
+import { SequentialMessage } from './components/SequentialMessage';
+import { useMessages } from './hooks/useMessages';
 
+
+import MessageLocation from '../../location/MessageLocation';
 
 const M: FC<{ message: IMessage }> = ({ message }) => {
 	const format = useFormatTime();
 
-	return <Message>
-		<Message.LeftContainer>
-		  { message.u.username && <UserAvatar username={message.u.username}
-			size={'x36'}
-		  /> }
-		</Message.LeftContainer>
-		<Message.Container>
-		  <Message.Header>
-			<Message.Name>{message.u.username}</Message.Name>
-			{/* <Message.Username>@haylie.george</Message.Username> */}
-			{/* <Message.Role>Admin</Message.Role>
+	return (
+		<Message>
+			<Message.LeftContainer>
+				{message.u.username && <UserAvatar username={message.u.username} size={'x36'} />}
+			</Message.LeftContainer>
+			<Message.Container>
+				<Message.Header>
+					<Message.Name>{message.u.username}</Message.Name>
+					{/* <Message.Username>@haylie.george</Message.Username> */}
+					{/* <Message.Role>Admin</Message.Role>
 			<Message.Role>User</Message.Role>
 			<Message.Role>Owner</Message.Role> */}
-			<Message.Timestamp>{format(message.ts)}</Message.Timestamp>
-		  </Message.Header>
-		  <Message.Body>
-			{!message.blocks && message.msg}
-		  </Message.Body>
-		  {message.blocks && <MessageBlock mid={message.mid} blocks={message.blocks} appId rid={message.rid} /> }
-		  {message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
+					<Message.Timestamp>{format(message.ts)}</Message.Timestamp>
+				</Message.Header>
+				<Message.Body>{!message.blocks && message.msg}</Message.Body>
+				{message.blocks && (
+					<MessageBlock mid={message.mid} blocks={message.blocks} appId rid={message.rid} />
+				)}
+				{message.attachments && (
+					<Attachments attachments={message.attachments} file={message.file} />
+				)}
 
-		  { message.tcount && <Thread counter={message.tcount} /> }
-		  {/* //following={following} lm={message.tlm} rid={message.rid} mid={message._id} unread={unread} mention={mention all={all openThread={actions.openThread }} */}
+				{message.tcount && <Thread counter={message.tcount} />}
+				{/* //following={following} lm={message.tlm} rid={message.rid} mid={message._id} unread={unread} mention={mention all={all openThread={actions.openThread }} */}
 
-		  {message.drid && <Discussion count={message.dcount} drid={message.drid} lm={message.dlm} />}
-		  {message.location && <MessageLocation location={message.location} /> }
-		  {/* <Reactions>
+				{message.drid && <Discussion count={message.dcount} drid={message.drid} lm={message.dlm} />}
+				{message.location && <MessageLocation location={message.location} />}
+				{/* <Reactions>
 			<Reactions.Reaction counter={1} />
 			<Reactions.Reaction counter={2} />
 			<Reactions.Reaction counter={3} />
 			<Reactions.Action />
 		  </Reactions> */}
-		</Message.Container>
-		{/* <Message.Toolbox>
+			</Message.Container>
+			{/* <Message.Toolbox>
 		  <Message.Toolbox.Item icon='quote' />
 		  <Message.Toolbox.Item icon='clock' />
 		  <Message.Toolbox.Item icon='thread' />
 		</Message.Toolbox> */}
-	</Message>
-}
+		</Message>
+	);
+};
 
-const Sequential: FC<{ message: IMessage }> = ({ message }) => {
-	return <Message>
-		<Message.LeftContainer>
-		</Message.LeftContainer>
+const Sequential: FC<{ message: IMessage }> = ({ message }) => (
+	<Message>
+		<Message.LeftContainer></Message.LeftContainer>
 		<Message.Container>
-		  <Message.Body>
-			{message.msg}
-		  </Message.Body>
-		  {message.blocks && <MessageBlock mid={message.mid} blocks={message.blocks} appId rid={message.rid} /> }
-		  {message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
+			<Message.Body>{message.msg}</Message.Body>
+			{message.blocks && (
+				<MessageBlock mid={message.mid} blocks={message.blocks} appId rid={message.rid} />
+			)}
+			{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
 
-		  {message.drid && <Discussion count={message.dcount} drid={message.drid} lm={message.dlm} />}
-		  {message.location && <MessageLocation location={message.location} /> }
+			{message.drid && <Discussion count={message.dcount} drid={message.drid} lm={message.dlm} />}
+			{message.location && <MessageLocation location={message.location} />}
 		</Message.Container>
 	</Message>
-}
+);
 
 const isSequential = (current: IMessage, previous?: IMessage): boolean => {
 	if (!previous) {
@@ -88,28 +93,61 @@ const isSequential = (current: IMessage, previous?: IMessage): boolean => {
 
 export const MessageList: FC = () => {
 	const room = useRoom() as IRoom;
+
+	const prepending = useRef(0);
+
 	const messages = useMessages({ rid: room._id });
 
 	const format = useFormatDateAndTime();
+	const { getMore } = useRoomContext();
 
+	const [firstItemIndex, setFirstItemIndex] = useState(messages.length);
 
-	return <Virtuoso
-	overscan={50}
-	totalCount={messages.length}
-	data={messages}
-	components={{ Scroller: ScrollableContentWrapper }}
-	followOutput={"smooth"}
-	itemContent={(index, message) => {
-		const previous = messages[index - 1];
+	const more = useCallback(() => {
+		prepending.current = messages.length;
+		getMore();
+	}, [getMore, messages.length]);
 
-		const sequential = isSequential(message, previous);
+	useEffect(() => {
+		if (prepending.current) {
+			setFirstItemIndex((old) => messages.length - old);
+			prepending.current = 0;
+		}
+	}, [messages.length]);
 
-		const newDay = !previous || !isSameDay(message.ts, previous.ts);
+	const itemContent = useCallback(
+		(_, message) => {
+			const index = messages.findIndex((m) => m === message);
+			const previous = messages[index - 1];
 
-		const Tab = sequential ? Sequential : M;
-		return <>
-			{newDay && <Message.Divider>{format(message.ts)}</Message.Divider>}
-			<Tab message={message} key={message._id}/>
-		</>}}
-/>
+			const sequential = isMessageSequential(message, previous);
+
+			const newDay = !previous || !isSameDay(message.ts, previous.ts);
+
+			const Template = sequential ? SequentialMessage : Message;
+			return (
+				<>
+					{newDay && <MessageTemplate.Divider>{format(message.ts)}</MessageTemplate.Divider>}
+					<Template message={message} key={message._id} />
+				</>
+			);
+		},
+		[messages],
+	);
+	return (
+		<Virtuoso
+			overscan={50}
+			firstItemIndex={firstItemIndex}
+			totalCount={messages.length}
+			data={messages}
+			defaultItemHeight={49}
+			components={{
+				Scroller: ScrollableContentWrapper as any,
+				Header: () => <RoomForeword rid={room._id} />,
+			}}
+			followOutput
+			startReached={more}
+			itemContent={itemContent}
+		/>
+	);
 };
