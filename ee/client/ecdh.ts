@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from '../../app/utils/client';
-import { ClientSession } from '../app/ecdh/ClientSession';
+import { ClientSession } from '../app/ecdh/client/ClientSession';
 
 let resolveSession: (value: ClientSession | void) => void;
 const sessionPromise = new Promise<ClientSession | void>((resolve) => {
