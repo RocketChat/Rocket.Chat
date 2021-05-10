@@ -111,9 +111,11 @@
 									{{/if}}
 								{{/if}}
 
-								<!-- {{# with messageContext}}
-									{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room  actions=actions subscription=subscription settings=settings u=u}}{{/each}}
-								{{/with}} -->
+								{{# unless $eq (preference 'enableMessageParserEarlyAdoption') true}}
+									{{# with messageContext}}
+										{{#each msg in messagesHistory}}{{> message showRoles=true index=@index shouldCollapseReplies=false msg=msg room=room  actions=actions subscription=subscription settings=settings u=u}}{{/each}}
+									{{/with}}
+								{{/unless}}
 
 								{{#if hasMoreNext}}
 									<li class="load-more">

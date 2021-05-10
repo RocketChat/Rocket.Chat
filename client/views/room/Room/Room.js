@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
+import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import Header from '../Header';
 import BlazeTemplate from '../components/BlazeTemplate';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
@@ -26,8 +27,12 @@ const Room = () => {
 	const open = useTabBarOpen();
 	const close = useTabBarClose();
 	const openUserInfo = useTabBarOpenUserInfo();
+	const isLayoutEmbedded = useEmbeddedLayout();
 
 	const hideFlexTab = useUserPreference('hideFlexTab');
+
+	const earlyAdopter = useUserPreference('enableMessageParserEarlyAdoption');
+
 	const isOpen = useMutableCallback(() => !!(tab && tab.template));
 
 	const tabBar = useMemo(() => ({ open, close, isOpen, openUserInfo }), [
@@ -43,6 +48,10 @@ const Room = () => {
 				<Header room={room} rid={room._id} />
 			</RoomTemplate.Header>
 			<RoomTemplate.Body>
+				{!isLayoutEmbedded && room.announcement && (
+					<Announcement announcement={room.announcement} />
+				)}
+				{earlyAdopter && <MessageList />}
 				<BlazeTemplate
 					onClick={hideFlexTab ? close : undefined}
 					name='roomOld'
