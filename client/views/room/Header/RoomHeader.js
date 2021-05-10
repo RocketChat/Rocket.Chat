@@ -20,6 +20,7 @@ const RoomHeader = ({ room, topic }) => {
 	const { isMobile } = useLayout();
 	const avatar = <RoomAvatar room={room} />;
 	const showQuickActions = roomTypes.showQuickActionButtons(room.t);
+
 	return (
 		<Header>
 			{isMobile && (
