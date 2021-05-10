@@ -3,7 +3,10 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
+import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import Announcement from '../Announcement';
 import Header from '../Header';
+import { MessageList } from '../MessageList/MessageList';
 import BlazeTemplate from '../components/BlazeTemplate';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
@@ -27,7 +30,12 @@ const Room = () => {
 	const close = useTabBarClose();
 	const openUserInfo = useTabBarOpenUserInfo();
 
+	const isLayoutEmbedded = useEmbeddedLayout();
+
 	const hideFlexTab = useUserPreference('hideFlexTab');
+
+	const earlyAdopter = useUserPreference('enableMessageParserEarlyAdoption');
+
 	const isOpen = useMutableCallback(() => !!(tab && tab.template));
 
 	const tabBar = useMemo(() => ({ open, close, isOpen, openUserInfo }), [
@@ -37,12 +45,17 @@ const Room = () => {
 		openUserInfo,
 	]);
 
+	console.log(earlyAdopter);
 	return (
 		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
 			<RoomTemplate.Header>
 				<Header room={room} rid={room._id} />
 			</RoomTemplate.Header>
 			<RoomTemplate.Body>
+				{!isLayoutEmbedded && room.announcement && (
+					<Announcement announcement={room.announcement} />
+				)}
+				{earlyAdopter && <MessageList />}
 				<BlazeTemplate
 					onClick={hideFlexTab ? close : undefined}
 					name='roomOld'
