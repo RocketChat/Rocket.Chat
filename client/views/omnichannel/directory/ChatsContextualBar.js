@@ -1,4 +1,3 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
