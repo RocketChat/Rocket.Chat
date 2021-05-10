@@ -5,9 +5,9 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
 import stripHtml from 'string-strip-html';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings/server';
-import { escapeHTML } from '../../../lib/escapeHTML';
 import { replaceVariables } from './utils.js';
 
 let contentHeader;

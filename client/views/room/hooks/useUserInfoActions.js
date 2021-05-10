@@ -1,11 +1,11 @@
 import { Button, ButtonGroup, Icon, Modal, Box } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 import React, { useCallback, useMemo } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
 import { roomTypes, RoomMemberActions } from '../../../../app/utils/client';
 import { WebRTC } from '../../../../app/webrtc/client';
-import { escapeHTML } from '../../../../lib/escapeHTML';
 import { usePermission, useAllPermissions } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';

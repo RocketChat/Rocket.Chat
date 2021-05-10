@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-
-import { escapeHTML } from '../../../../../lib/escapeHTML';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 Meteor.startup(() => {
 	let currentGallery = null;
