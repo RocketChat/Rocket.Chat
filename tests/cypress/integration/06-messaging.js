@@ -5,10 +5,13 @@ import { username, email, password } from '../../data/user.js';
 import { publicChannelName, privateChannelName } from '../../data/channel.js';
 import { targetUser, imgURL } from '../../data/interactions.js';
 import { checkIfUserIsValid, publicChannelCreated, privateChannelCreated, directMessageCreated, setPublicChannelCreated, setPrivateChannelCreated, setDirectMessageCreated } from '../../data/checks';
-
+import { updatePermission } from '../../data/permissions.helper';
+import { api, getCredentials, credentials, request } from '../../data/api-data';
+import { createUser, login } from '../../data/users.helper';
 
 // Test data
 const message = `message from ${ username }`;
+let testDMUsername;
 
 function messagingTest(currentTest) {
 	describe('Normal message:', () => {
@@ -88,7 +91,63 @@ function messagingTest(currentTest) {
 	});
 }
 
-function messageActionsTest(currentTest) {
+function grantCreateDPermission() {
+	return new Promise((resolve) => {
+		getCredentials(() => {
+			updatePermission('create-d', ['user']).then(resolve);
+		});
+	});
+}
+
+function revokeCreateDPermission() {
+	return new Promise((resolve) => {
+		getCredentials(() => {
+			updatePermission('create-d', []).then(resolve);
+		});
+	});
+}
+
+function toggleOpenMessageActionMenu() {
+	mainContent.popoverWrapper.click();
+	mainContent.openMessageActionMenu();
+}
+
+function createDMUserAndPost(testChannel, done) {
+	getCredentials(() => {
+		createUser().then((createdUser) => {
+			testDMUsername = createdUser.username;
+
+			request.post(api('users.setActiveStatus'))
+				.set(credentials)
+				.send({
+					activeStatus: true,
+					userId: createdUser._id,
+				}).then(() => {
+					login(testDMUsername, password).then((userCredentials) => {
+						request.post(api('chat.postMessage'))
+							.set(userCredentials)
+							.send({
+								channel: testChannel,
+								text: 'Message from Test DM user',
+							})
+							.end(done);
+					});
+				});
+		});
+	});
+}
+
+function leaveTestDM() {
+	// Leave the existing DM
+	const dmElement = sideNav.getChannelFromList(testDMUsername).scrollIntoView();
+	dmElement.closest('.sidebar-item').find('.sidebar-item__menu').invoke('show').click();
+	sideNav.popOverHideOption.click();
+
+	Global.modal.should('be.visible');
+	Global.modalConfirm.click();
+}
+
+function messageActionsTest(currentTest, testChannel) {
 	describe('[Actions]', () => {
 		before(() => {
 			mainContent.sendMessage('Message for Message Actions Tests');
@@ -139,6 +198,66 @@ function messageActionsTest(currentTest) {
 			it('it should not show the mark as unread action', () => {
 				mainContent.messageUnread.should('not.be.visible');
 			});
+
+			if (currentTest === 'direct') {
+				it('it should not show the Reply to DM action', () => {
+					mainContent.messageReplyInDM.should('not.be.visible');
+				});
+			} else if (currentTest !== 'private') {
+				context('when the channel last message was posted by someone else', () => {
+					before((done) => {
+						revokeCreateDPermission().then(() => {
+							createDMUserAndPost(testChannel, done);
+						});
+					});
+
+					it('it should not show the Reply to DM action', () => {
+						toggleOpenMessageActionMenu();
+
+						// We don't have the test DM user in a DM channel or have the `create-d` permission
+						mainContent.messageReplyInDM.should('not.be.visible');
+					});
+
+					context('when the user has permission to create DMs', () => {
+						before(() => grantCreateDPermission());
+						after(() => revokeCreateDPermission());
+
+						it('it should show the Reply to DM action', () => {
+							toggleOpenMessageActionMenu();
+
+							mainContent.messageReplyInDM.should('be.visible');
+						});
+					});
+
+					context('when the user already has a created DM', () => {
+						// Grant Create DM permission, create a DM, then revoke the permission
+						before(() => grantCreateDPermission());
+
+						before(() => {
+							mainContent.popoverWrapper.click();
+							sideNav.spotlightSearchIcon.click();
+							sideNav.searchChannel(testDMUsername);
+						});
+
+						before(() => revokeCreateDPermission());
+
+						before(() => {
+							sideNav.openChannel(testChannel);
+							mainContent.openMessageActionMenu();
+						});
+
+						after(() => {
+							mainContent.popoverWrapper.click();
+							leaveTestDM();
+							mainContent.openMessageActionMenu();
+						});
+
+						it('it should show the Reply to DM action', () => {
+							mainContent.messageReplyInDM.should('be.visible');
+						});
+					});
+				});
+			}
 		});
 
 		describe('[Usage]', () => {
@@ -252,7 +371,7 @@ describe('[Message]', () => {
 			sideNav.searchChannel('general');
 		});
 		messagingTest('general');
-		messageActionsTest('general');
+		messageActionsTest('general', 'general');
 	});
 
 	describe('[Public Channel]', () => {
@@ -265,7 +384,7 @@ describe('[Message]', () => {
 			sideNav.openChannel(publicChannelName);
 		});
 		messagingTest('public');
-		messageActionsTest('public');
+		messageActionsTest('public', publicChannelName);
 	});
 
 	describe('[Private Channel]', () => {
@@ -278,7 +397,7 @@ describe('[Message]', () => {
 			sideNav.openChannel(privateChannelName);
 		});
 		messagingTest('private');
-		messageActionsTest('private');
+		messageActionsTest('private', privateChannelName);
 	});
 
 	describe('[Direct Message]', () => {
@@ -292,5 +411,6 @@ describe('[Message]', () => {
 			sideNav.openChannel(targetUser);
 		});
 		messagingTest('direct');
+		messageActionsTest('direct');
 	});
 });
