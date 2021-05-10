@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { FC } from 'react';
 
-const Title = ({ children }) => (
+const Title: FC = ({ children }) => (
 	<Box mb='x8' fontScale='p2'>
 		{children}
 	</Box>

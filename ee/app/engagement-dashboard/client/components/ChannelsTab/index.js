@@ -1,9 +1,7 @@
 import React from 'react';
 
-import { TableSection } from './TableSection';
+import TableSection from './TableSection';
 
-export function ChannelsTab() {
-	return <>
-		<TableSection />
-	</>;
-}
+const ChannelsTab = () => <TableSection />;
+
+export default ChannelsTab;

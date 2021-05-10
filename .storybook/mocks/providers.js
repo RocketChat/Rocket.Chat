@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import React from 'react';
 
 import { TranslationContext } from '../../client/contexts/TranslationContext';
+import ServerProvider from '../../client/providers/ServerProvider';
 
 let contextValue;
 
@@ -61,7 +62,9 @@ function TranslationProviderMock({ children }) {
 }
 
 export function MeteorProviderMock({ children }) {
-	return <TranslationProviderMock>
-		{children}
-	</TranslationProviderMock>;
+	return <ServerProvider>
+		<TranslationProviderMock>
+			{children}
+		</TranslationProviderMock>
+	</ServerProvider>;
 }

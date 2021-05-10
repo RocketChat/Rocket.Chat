@@ -9,7 +9,7 @@ import RoomAvatar from '../avatar/RoomAvatar';
 import Header from './Header';
 
 export default {
-	title: 'Chat Header',
+	title: 'room/Header',
 	component: Header,
 };
 

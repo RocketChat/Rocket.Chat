@@ -24,36 +24,35 @@ export type RoomHeaderProps = {
 	};
 };
 
-const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => {
-	const avatar = <RoomAvatar room={room} />;
-	return (
-		<Header>
-			{slots?.start}
-			{avatar && <Header.Avatar>{avatar}</Header.Avatar>}
-			{slots?.preContent}
-			<Header.Content>
-				<Header.Content.Row>
-					<RoomTitle room={room} />
-					<Favorite room={room} />
-					{room.prid && <ParentRoomWithData room={room} />}
-					{room.teamId && !room.teamMain && <ParentTeam room={room} />}
-					<Encrypted room={room} />
-					<Translate room={room} />
-					{slots?.insideContent}
-				</Header.Content.Row>
-				<Header.Content.Row>
-					<Header.Subtitle>
-						{topic && <MarkdownText variant='inlineWithoutBreaks' content={topic} />}
-					</Header.Subtitle>
-				</Header.Content.Row>
-			</Header.Content>
-			{slots?.posContent}
-			<Header.ToolBox>
-				<ToolBox room={room} />
-			</Header.ToolBox>
-			{slots?.end}
-		</Header>
-	);
-};
+const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => (
+	<Header>
+		{slots?.start}
+		<Header.Avatar>
+			<RoomAvatar room={room} />
+		</Header.Avatar>
+		{slots?.preContent}
+		<Header.Content>
+			<Header.Content.Row>
+				<RoomTitle room={room} />
+				<Favorite room={room} />
+				{room.prid && <ParentRoomWithData room={room} />}
+				{room.teamId && !room.teamMain && <ParentTeam room={room} />}
+				<Encrypted room={room} />
+				<Translate room={room} />
+				{slots?.insideContent}
+			</Header.Content.Row>
+			<Header.Content.Row>
+				<Header.Subtitle>
+					{topic && <MarkdownText variant='inlineWithoutBreaks' content={topic} />}
+				</Header.Subtitle>
+			</Header.Content.Row>
+		</Header.Content>
+		{slots?.posContent}
+		<Header.ToolBox>
+			<ToolBox room={room} />
+		</Header.ToolBox>
+		{slots?.end}
+	</Header>
+);
 
 export default RoomHeader;

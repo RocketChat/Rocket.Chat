@@ -9,6 +9,7 @@ const HeaderLink: FC<ComponentProps<typeof Box>> = (props) => (
 		{...props}
 		className={[
 			css`
+				color: ${colors.n700} !important;
 				&:hover,
 				&:focus {
 					color: ${colors.n800} !important;
