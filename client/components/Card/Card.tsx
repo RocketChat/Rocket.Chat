@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { FC } from 'react';
 
-const Card = ({ children, ...props }) => (
+const Card: FC = ({ children, ...props }) => (
 	<Box
 		display='flex'
 		flexDirection='column'

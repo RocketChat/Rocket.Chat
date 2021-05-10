@@ -138,7 +138,8 @@ const useTheme = () => {
 	return result;
 };
 
-const toVar = (color) => (color[0] === '#' ? color : oldPallet[color] || `var(--${color})`);
+const toVar = (color) =>
+	color && color[0] === '#' ? color : oldPallet[color] || `var(--${color})`;
 
 const getStyle = ((selector) => (colors) => `
 		${selector} {
