@@ -1380,6 +1380,18 @@ export class Rooms extends Base {
 	countDiscussions() {
 		return this.find({ prid: { $exists: true } }).count();
 	}
+
+	setAutojoin(rid, autojoin) {
+		const query = { _id: rid };
+
+		const update = {
+			$set: {
+				autojoin,
+			},
+		};
+
+		return this.update(query, update);
+	}
 }
 
 export default new Rooms('room', true);

@@ -10,7 +10,7 @@ import { API } from '../api';
 import { settings } from '../../../settings/server';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
-
+import { addUserToRoom } from '../../../lib/server';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
@@ -1146,5 +1146,56 @@ API.v1.addRoute('channels.convertToTeam', { authRequired: true }, {
 		const team = Promise.await(Team.create(this.userId, teamData));
 
 		return API.v1.success({ team });
+	},
+});
+
+API.v1.addRoute('channels.setAutojoin', { authRequired: true }, {
+	post() {
+		const { roomId, roomName, autojoin } = this.bodyParams;
+
+		if (!roomId && !roomName) {
+			return API.v1.failure('Provide either rid or roomName');
+		}
+
+		if (typeof autojoin !== 'boolean') {
+			return API.v1.failure('The autojoin field is required and should be a boolean');
+		}
+
+		let room;
+		if (roomId) {
+			room = Rooms.findOneById(roomId);
+		} else if (roomName) {
+			room = Rooms.findOneByName(roomName);
+		}
+
+		if (!room) {
+			return API.v1.failure('Channel not found');
+		}
+
+		if (!room.teamId) {
+			return API.v1.failure('Channel is not part of a team');
+		}
+
+		if (!hasPermission(this.userId, 'edit-room', room._id)) {
+			return API.v1.unauthorized();
+		}
+
+		if (!hasPermission(this.userId, 'edit-team-member', room.teamId)) {
+			return API.v1.unauthorized();
+		}
+
+		Rooms.setAutojoin(room._id, autojoin);
+
+		if (!autojoin) {
+			return API.v1.success();
+		}
+
+		const teamMembers = Promise.await(Team.members(this.userId, room.teamId, true, {}, {}));
+
+		console.log('members: ', teamMembers);
+
+		teamMembers.records.map((m) => addUserToRoom(room._id, m.user));
+
+		return API.v1.success();
 	},
 });
