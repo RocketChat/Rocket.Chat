@@ -28,10 +28,10 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 				{room.t === 'c' ? <Icon name='hash' size='x15' /> : <Icon name='hashtag-lock' size='x15' />}
 			</Option.Column>
 			<Option.Content>
-				<Box display='inline-flex'>
+				<Box display='inline-flex' alignItems='center'>
 					{roomTypes.getRoomName(room.t, room)}{' '}
 					{room.teamDefault ? (
-						<Box mi='x8'>
+						<Box mi='x4'>
 							<Tag>{t('Team_Auto-join')}</Tag>
 						</Box>
 					) : (
