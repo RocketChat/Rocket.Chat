@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
 import { getConfig } from '../../app/ui-utils/client/config';
+import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 import { IRoom } from '../../definition/IRoom';
 import { useUserId, useUserRoom, useUserSubscription } from '../contexts/UserContext';
 import { useAsyncState } from '../hooks/useAsyncState';
@@ -103,6 +104,10 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 			this.emit('back', rid);
 			this.emit('changed', this.rid);
 		}
+	}
+
+	getMore(rid: IRoom['_id']): void {
+		RoomHistoryManager.getMore(rid);
 	}
 
 	close(rid: IRoom['_id']): void {

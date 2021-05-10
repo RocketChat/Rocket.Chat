@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext, useMemo, memo, useEffect } from 'react';
+import React, { ReactNode, useContext, useMemo, memo, useEffect, useCallback } from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
 import { IRoom } from '../../../../definition/IRoom';
@@ -34,6 +34,11 @@ const replyBroadcast = () => {
 
 const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 	const { phase, value: room } = useHandleRoom(rid);
+
+	const getMore = useCallback(() => {
+		RoomManager.getMore(rid);
+	}, [rid]);
+
 	const context = useMemo(() => {
 		if (!room) {
 			return null;
@@ -50,8 +55,9 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 				openThread,
 				replyBroadcast,
 			},
+			getMore,
 		};
-	}, [room, rid]);
+	}, [room, rid, getMore]);
 
 	useEffect(() => {
 		RoomManager.open(rid);
@@ -77,6 +83,14 @@ export const useRoom = (): IRoom => {
 		throw Error('useRoom should be used only inside rooms context');
 	}
 	return context.room;
+};
+
+export const useRoomContext = (): RoomContextValue => {
+	const context = useContext(RoomContext);
+	if (!context) {
+		throw Error('useRoom should be used only inside rooms context');
+	}
+	return context;
 };
 
 export const useRoomActions = (): RoomContextValue['actions'] => {

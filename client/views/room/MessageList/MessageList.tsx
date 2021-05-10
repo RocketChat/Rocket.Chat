@@ -88,9 +88,34 @@ const isSequential = (current: IMessage, previous?: IMessage): boolean => {
 
 export const MessageList: FC = () => {
 	const room = useRoom() as IRoom;
+
+	const prepending = useRef(0);
+
 	const messages = useMessages({ rid: room._id });
 
 	const format = useFormatDateAndTime();
+	const { getMore } = useRoomContext();
+
+	const [firstItemIndex, setFirstItemIndex] = useState(messages.length);
+
+	const more = useCallback(() => {
+		prepending.current = messages.length;
+		getMore();
+	}, [getMore, messages.length]);
+
+	useEffect(() => {
+		if (prepending.current) {
+			setFirstItemIndex((old) => messages.length - old);
+			prepending.current = 0;
+		}
+	}, [messages.length]);
+
+	const itemContent = useCallback(
+		(_, message) => {
+			const index = messages.findIndex((m) => m === message);
+			const previous = messages[index - 1];
+
+			const sequential = isMessageSequential(message, previous);
 
 
 	return <Virtuoso
