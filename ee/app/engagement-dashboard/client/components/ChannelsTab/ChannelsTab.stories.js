@@ -1,7 +1,7 @@
 import { Margins } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { ChannelsTab } from '.';
+import ChannelsTab from '.';
 
 export default {
 	title: 'admin/enterprise/engagement/ChannelsTab',
