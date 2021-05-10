@@ -1,4 +1,5 @@
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import {
 	hasAllPermission,
@@ -10,7 +11,6 @@ import { Users } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
 import { searchableRoomTypes } from '../../app/utils/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
-import { escapeRegExp } from '../../lib/escapeRegExp';
 
 export class Spotlight {
 	fetchRooms(userId, rooms) {

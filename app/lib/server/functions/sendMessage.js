@@ -1,4 +1,5 @@
 import { Match, check } from 'meteor/check';
+import { parser } from '@rocket.chat/message-parser';
 
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
@@ -127,7 +128,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-const validateMessage = (message, userId) => {
+const validateMessage = (message, room, user) => {
 	check(message, objectMaybeIncluding({
 		_id: String,
 		msg: String,
@@ -141,8 +142,12 @@ const validateMessage = (message, userId) => {
 		blocks: [Match.Any],
 	}));
 
-	if ((message.alias || message.avatar) && !hasPermission(userId, 'message-impersonate', message.rid)) {
-		throw new Error('Not enough permission');
+	if (message.alias || message.avatar) {
+		const isLiveChatGuest = !message.avatar && user.token && user.token === room.v?.token;
+
+		if (!isLiveChatGuest && !hasPermission(user._id, 'message-impersonate', room._id)) {
+			throw new Error('Not enough permission');
+		}
 	}
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
@@ -155,7 +160,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		return false;
 	}
 
-	validateMessage(message, user._id);
+	validateMessage(message, room, user);
 
 	if (!message.ts) {
 		message.ts = new Date();
@@ -204,13 +209,18 @@ export const sendMessage = function(user, message, room, upsert = false) {
 			message = Object.assign(message, result);
 
 			// Some app may have inserted malicious/invalid values in the message, let's check it again
-			validateMessage(message, user._id);
+			validateMessage(message, room, user);
 		}
 	}
 
 	parseUrlsInMessage(message);
 
 	message = callbacks.run('beforeSaveMessage', message, room);
+	try {
+		message.md = parser(message.msg);
+	} catch (e) {
+		console.log(e); // errors logged while the parser is at experimental stage
+	}
 	if (message) {
 		if (message._id && upsert) {
 			const { _id } = message;

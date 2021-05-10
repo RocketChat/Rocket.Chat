@@ -1,6 +1,5 @@
+import { capitalize } from '@rocket.chat/string-helpers';
 import { useCallback, useReducer, useMemo, ChangeEvent } from 'react';
-
-import { capitalize } from '../lib/capitalize';
 
 type Field = {
 	name: string;

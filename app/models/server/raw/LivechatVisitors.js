@@ -1,4 +1,5 @@
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatVisitorsRaw extends BaseRaw {

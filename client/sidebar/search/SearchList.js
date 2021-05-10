@@ -7,12 +7,12 @@ import {
 	useAutoFocus,
 	useUniqueId,
 } from '@rocket.chat/fuselage-hooks';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
-import { escapeRegExp } from '../../../lib/escapeRegExp';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
