@@ -32,8 +32,18 @@ const ContactsContextualBar = ({ rid }) => {
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='user' />
-				<VerticalBar.Text>{t('Contact_Info')}</VerticalBar.Text>
+				{(context === 'info' || !context) && (
+					<>
+						<VerticalBar.Icon name='info-circled' />
+						<VerticalBar.Text>{t('Contact_Info')}</VerticalBar.Text>
+					</>
+				)}
+				{context === 'edit' && (
+					<>
+						<VerticalBar.Icon name='pencil' />
+						<VerticalBar.Text>{t('Edit_Contact_Profile')}</VerticalBar.Text>
+					</>
+				)}
 				<VerticalBar.Close onClick={closeContextualBar} />
 			</VerticalBar.Header>
 			{context === 'edit' ? (

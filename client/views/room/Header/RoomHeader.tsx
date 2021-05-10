@@ -16,11 +16,11 @@ export type RoomHeaderProps = {
 	room: IRoom;
 	topic?: string;
 	slots: {
-		start?: FC;
-		preContent?: FC;
-		insideContent?: FC;
-		posContent?: FC;
-		end?: FC;
+		start?: unknown;
+		preContent?: unknown;
+		insideContent?: unknown;
+		posContent?: unknown;
+		end?: unknown;
 	};
 };
 

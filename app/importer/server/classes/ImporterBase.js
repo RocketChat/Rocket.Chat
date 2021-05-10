@@ -55,6 +55,8 @@ export class Base {
 		this.info = info;
 
 		this.logger = new Logger(`${ this.info.name } Importer`, {});
+		this.converter.setLogger(this.logger);
+
 		this.progress = new Progress(this.info.key, this.info.name);
 		this.collection = RawImports;
 
@@ -158,7 +160,6 @@ export class Base {
 		this.reloadCount();
 		const started = Date.now();
 		const startedByUserId = Meteor.userId();
-		console.log(importSelection);
 
 		const beforeImportFn = (data, type) => {
 			switch (type) {

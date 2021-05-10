@@ -164,7 +164,6 @@ export const WithToolboxContext = () => {
 	);
 };
 
-
 export const Omnichannel = () => {
 	const icon = useRoomIcon(room);
 	const avatar = <RoomAvatar room={room} />;
@@ -192,4 +191,4 @@ export const Omnichannel = () => {
 			</Header>
 		</SettingsContext.Provider>
 	);
-}
+};
