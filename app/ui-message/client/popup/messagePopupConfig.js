@@ -6,6 +6,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Messages, Subscriptions } from '../../../models/client';
 import { settings } from '../../../settings/client';
@@ -17,7 +18,6 @@ import { customMessagePopups } from './customMessagePopups';
 import './messagePopupConfig.html';
 import './messagePopupSlashCommand.html';
 import './messagePopupUser.html';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const reloadUsersFromRoomMessages = (rid, template) => {
 	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
@@ -61,7 +61,7 @@ const reloadUsersFromRoomMessages = (rid, template) => {
 const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => {
 	const usernames = records.map(({ username }) => username);
 
-	const { users } = await call('spotlight', filterText, usernames, { users: true }, rid);
+	const { users } = await call('spotlight', filterText, usernames, { users: true, mentions: true }, rid);
 
 	if (!users || users.length <= 0) {
 		return;
@@ -95,7 +95,7 @@ const fetchRoomsFromServer = _.throttle(async (filterText, records, rid, cb) => 
 		return;
 	}
 
-	const { rooms } = await call('spotlight', filterText, null, { rooms: true }, rid);
+	const { rooms } = await call('spotlight', filterText, null, { rooms: true, mentions: true }, rid);
 
 	if (!rooms || rooms.length <= 0) {
 		return;

@@ -65,12 +65,11 @@ class AppClientOrchestrator {
 
 	getAppsFromMarketplace = async () => {
 		const appsOverviews = await APIClient.get('apps', { marketplace: 'true' });
-		return appsOverviews.map(({ latest, price, pricingPlans, purchaseType, permissions }) => ({
+		return appsOverviews.map(({ latest, price, pricingPlans, purchaseType }) => ({
 			...latest,
 			price,
 			pricingPlans,
 			purchaseType,
-			permissions,
 		}));
 	}
 
