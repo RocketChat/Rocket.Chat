@@ -14,9 +14,12 @@ import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { modal } from './modal';
+import { IMessage } from '../../../../definition/IMessage';
+import { IUser } from '../../../../definition/IUser';
 
-const call = (method, ...args) => new Promise((resolve, reject) => {
-	Meteor.call(method, ...args, function(err, data) {
+
+const call = (method: string, ...args: any[]): Promise<any> => new Promise((resolve, reject) => {
+	Meteor.call(method, ...args, function(err: any, data: any) {
 		if (err) {
 			return reject(err);
 		}
@@ -33,6 +36,28 @@ export const addMessageToList = (messagesList, message) => {
 	return messagesList;
 };
 
+
+type MessageActionGroup = 'message' | 'menu';
+type MessageActionContext = 'message' | 'thread';
+
+type MessageActionConditionProps = {
+	message: IMessage;
+	user: IUser;
+};
+
+type MessageActionConfig = {
+	id: string;
+	icont: string;
+	label: string;
+	order?: number;
+	group: MessageActionGroup;
+	context: MessageActionContext[];
+	action: () => any;
+	condition?: ({}) => boolean;
+}
+
+type MessageActionConfigList = MessageActionConfig[];
+
 export const MessageAction = new class {
 	/*
   	config expects the following keys (only id is mandatory):
@@ -45,13 +70,11 @@ export const MessageAction = new class {
 			group: string (message or menu)
    */
 
-	constructor() {
-		this.buttons = new ReactiveVar({});
-	}
+	buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
 
-	addButton(config) {
+	addButton(config: MessageActionConfig): void{
 		if (!config || !config.id) {
-			return false;
+			return;
 		}
 
 		if (!config.group) {
@@ -66,12 +89,12 @@ export const MessageAction = new class {
 			const btns = this.buttons.get();
 			btns[config.id] = config;
 			mem.clear(this._getButtons);
-			mem.clear(this._getButtonsByGroup);
+			mem.clear(this.getButtonsByGroup);
 			return this.buttons.set(btns);
 		});
 	}
 
-	removeButton(id) {
+	removeButton(id: MessageActionConfig['id']): void {
 		return Tracker.nonreactive(() => {
 			const btns = this.buttons.get();
 			delete btns[id];
@@ -79,7 +102,7 @@ export const MessageAction = new class {
 		});
 	}
 
-	updateButton(id, config) {
+	updateButton(id: MessageActionConfig['id'], config: MessageActionConfig): void {
 		return Tracker.nonreactive(() => {
 			const btns = this.buttons.get();
 			if (btns[id]) {
@@ -89,36 +112,37 @@ export const MessageAction = new class {
 		});
 	}
 
-	getButtonById(id) {
+	getButtonById(id: MessageActionConfig['id']): MessageActionConfig | undefined {
 		const allButtons = this.buttons.get();
 		return allButtons[id];
 	}
 
-	_getButtons = mem(function() {
+	_getButtons = mem((): MessageActionConfigList => {
 		return _.sortBy(_.toArray(this.buttons.get()), 'order');
 	})
 
-	_getButtonsByGroup = mem(function(group) {
-		return this._getButtons().filter((button) => (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
+	getButtonsByGroup = mem(function(group: string, arr: MessageActionConfigList = this._getButtons()): MessageActionConfigList {
+		return arr.filter((button) => (group && Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 	})
 
-	getButtons(message, context, group) {
-		const allButtons = group ? this._getButtonsByGroup(group) : this._getButtons();
+	getButtonsByContext = mem(function(context: MessageActionContext, arr: MessageActionConfigList): MessageActionConfigList {
+		return arr.filter((button) => !context || button.context == null || button.context.includes(context));
+	})
 
-		if (message) {
-			return allButtons.filter(function(button) {
-				if (button.context == null || button.context.includes(context)) {
-					return button.condition == null || button.condition(message, context);
-				}
-				return false;
+	getButtons(props: MessageActionConditionProps, context: MessageActionContext, group: MessageActionGroup): MessageActionConfigList {
+		const allButtons = this.getButtonsByGroup(group);
+
+		if (props) {
+			return this.getButtonsByContext(context, allButtons).filter(function(button) {
+				return button.condition == null || button.condition(props);
 			});
 		}
 		return allButtons;
 	}
 
-	resetButtons() {
+	resetButtons(): void {
 		mem.clear(this._getButtons);
-		mem.clear(this._getButtonsByGroup);
+		mem.clear(this.getButtonsByGroup);
 		return this.buttons.set({});
 	}
 
