@@ -40,7 +40,6 @@ export const Room: FC<{}> = () => {
 		openUserInfo,
 	]);
 
-	console.log(earlyAdopter);
 	return (
 		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
 			<RoomTemplate.Header>

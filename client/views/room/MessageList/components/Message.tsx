@@ -3,18 +3,24 @@ import React, { FC, memo } from 'react';
 
 import { IMessage } from '../../../../../definition/IMessage';
 import Attachments from '../../../../components/Message/Attachments';
-import Body from '../../../../components/Message/Body';
+import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
+import Broadcast from '../../../../components/Message/Metrics/Broadcast';
 import Discussion from '../../../../components/Message/Metrics/Discussion';
 import Thread from '../../../../components/Message/Metrics/Thread';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { useUserData } from '../../../../hooks/useUserData';
 import { UserPresence } from '../../../../lib/presence';
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
+import { useMessageActions } from '../../contexts/MessageContext';
 
 const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequential }) => {
-	const format = useFormatTime();
+	const {
+		broadcast,
+		actions: { openDiscussion, openThread, openUserCard, replyBroadcast },
+		formatters,
+	} = useMessageActions();
+
 	const user: UserPresence = useUserData(message.u._id) || message.u;
 	return (
 		<MessageTemplate>
@@ -26,9 +32,13 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequ
 			<MessageTemplate.Container>
 				{!sequential && (
 					<MessageTemplate.Header>
-						<MessageTemplate.Name>{user.name || user.username}</MessageTemplate.Name>
+						<MessageTemplate.Name data-username={user.username} onClick={openUserCard}>
+							{user.name || user.username}
+						</MessageTemplate.Name>
 						{user.name && user.name !== user.username && (
-							<MessageTemplate.Username>@haylie.george</MessageTemplate.Username>
+							<MessageTemplate.Username data-username={user.username} onClick={openUserCard}>
+								@{user.username}
+							</MessageTemplate.Username>
 						)}
 						{Array.isArray(user.roles) && user.roles.length > 0 && (
 							<MessageTemplate.Roles>
@@ -37,12 +47,14 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequ
 								))}
 							</MessageTemplate.Roles>
 						)}
-						<MessageTemplate.Timestamp>{format(message.ts)}</MessageTemplate.Timestamp>
+						<MessageTemplate.Timestamp data-time={message.ts.toISOString()}>
+							{formatters.messageHeader(message.ts)}
+						</MessageTemplate.Timestamp>
 					</MessageTemplate.Header>
 				)}
 				<MessageTemplate.Body>
 					{!message.blocks && message.md && (
-						<Body mentions={message.mentions} tokens={message.md} />
+						<MessageBodyRender mentions={message.mentions} tokens={message.md} />
 					)}
 					{!message.blocks && !message.md && message.msg}
 				</MessageTemplate.Body>
@@ -52,18 +64,28 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequ
 				{message.attachments && (
 					<Attachments attachments={message.attachments} file={message.file} />
 				)}
+				{/* <Reactions>
+				<Reactions.Reaction counter={1} />
+				<Reactions.Reaction counter={2} />
+				<Reactions.Reaction counter={3} />
+				<Reactions.Action />
+			  </Reactions> */}
 
-				{message.tcount && <Thread counter={message.tcount} />}
+				{message.tcount && <Thread openThread={openThread} counter={message.tcount} />}
 				{/* //following={following} lm={message.tlm} rid={message.rid} mid={message._id} unread={unread} mention={mention all={all openThread={actions.openThread }} */}
 
-				{message.drid && <Discussion count={message.dcount} drid={message.drid} lm={message.dlm} />}
+				{message.drid && (
+					<Discussion
+						count={message.dcount}
+						drid={message.drid}
+						lm={message.dlm}
+						openDiscussion={openDiscussion}
+					/>
+				)}
 				{message.location && <MessageLocation location={message.location} />}
-				{/* <Reactions>
-			<Reactions.Reaction counter={1} />
-			<Reactions.Reaction counter={2} />
-			<Reactions.Reaction counter={3} />
-			<Reactions.Action />
-		  </Reactions> */}
+				{broadcast && user.username && (
+					<Broadcast replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />
+				)}
 			</MessageTemplate.Container>
 			<MessageTemplate.Toolbox>
 				<MessageTemplate.Toolbox.Item icon='quote' />

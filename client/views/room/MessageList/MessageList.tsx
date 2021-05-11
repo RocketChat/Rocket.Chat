@@ -1,6 +1,6 @@
 import { Message as MessageTemplate } from '@rocket.chat/fuselage';
 import { isSameDay } from 'date-fns';
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { IRoom } from '../../../../definition/IRoom';
@@ -29,7 +29,7 @@ export const MessageList: FC = () => {
 		getMore();
 	}, [getMore, messages.length]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (prepending.current) {
 			setFirstItemIndex((old) => messages.length - old);
 			prepending.current = 0;
@@ -53,11 +53,13 @@ export const MessageList: FC = () => {
 		},
 		[messages],
 	);
+
+	console.log(firstItemIndex);
 	return (
 		<Virtuoso
 			overscan={50}
 			firstItemIndex={firstItemIndex}
-			totalCount={messages.length}
+			totalCount={Math.max(messages.length, Math.min(300, room.msgs))}
 			data={messages}
 			defaultItemHeight={49}
 			components={{

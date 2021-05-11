@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { AutoTranslate } from './autotranslate';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { MessageAction } from '../../../ui-utils';
+import { MessageAction } from '../../../ui-utils/client/lib/MessageAction';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { Messages } from '../../../models';
 
