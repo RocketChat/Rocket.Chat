@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Subscriptions, Users } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 
@@ -25,7 +25,7 @@ function findUsers({ rid, status, skip, limit, filter = '' }) {
 	return Users.findByActiveUsersExcept(filter, undefined, options, undefined, [{
 		__rooms: rid,
 		...status && { status },
-	}]).fetch();
+	}]);
 }
 
 Meteor.methods({
@@ -44,9 +44,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
+		const total = findUsers({ rid }).count();
 
-		const users = await findUsers({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter });
+		const users = await findUsers({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter }).fetch();
 
 		return {
 			total,
