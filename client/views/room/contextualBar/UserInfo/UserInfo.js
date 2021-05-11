@@ -147,13 +147,13 @@ function UserInfo({
 					)}
 
 					{customFieldsToShow.map((customField) =>
-							Object.values(customField)[0] ? (
-								<InfoPanel.Field key={Object.keys(customField)[0]}>
-									<InfoPanel.Label>{t(Object.keys(customField)[0])}</InfoPanel.Label>
-									<InfoPanel.Text>{Object.values(customField)[0]}</InfoPanel.Text>
-								</InfoPanel.Field>
-							) : null,
-						)}
+						Object.values(customField)[0] ? (
+							<InfoPanel.Field key={Object.keys(customField)[0]}>
+								<InfoPanel.Label>{t(Object.keys(customField)[0])}</InfoPanel.Label>
+								<InfoPanel.Text>{Object.values(customField)[0]}</InfoPanel.Text>
+							</InfoPanel.Field>
+						) : null,
+					)}
 
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
