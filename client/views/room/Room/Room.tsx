@@ -1,32 +1,26 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { Suspense, useMemo, FC } from 'react';
+import React, { useMemo, FC } from 'react';
 
-import { IRoom } from '../../../definition/IRoom';
-import VerticalBar from '../../components/VerticalBar';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useUserPreference } from '../../contexts/UserContext';
-import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
-import Announcement from './Announcement';
-import Header from './Header';
-import { MessageList } from './MessageList';
-import BlazeTemplate from './components/BlazeTemplate';
-import { RoomTemplate } from './components/RoomTemplate';
-import VerticalBarOldActions from './components/VerticalBarOldActions';
-import RoomProvider, { useRoom } from './providers/RoomProvider';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useUserPreference } from '../../../contexts/UserContext';
+import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import Announcement from '../Announcement';
+import Header from '../Header';
+import { MessageList } from '../MessageList/MessageList';
+import BlazeTemplate from '../components/BlazeTemplate';
+import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
+import VerticalBarOldActions from '../components/VerticalBarOldActions';
+import { useRoom } from '../providers/RoomProvider';
 import {
 	useTab,
 	useTabBarOpen,
 	useTabBarClose,
 	useTabBarOpenUserInfo,
-} from './providers/ToolboxProvider';
+} from '../providers/ToolboxProvider';
+import LazyComponent from './LazyComponent';
 
-const LazyComponent: FC<{ template: FC }> = ({ template: TabbarTemplate, ...props }) => (
-	<Suspense fallback={<VerticalBar.Skeleton />}>
-		<TabbarTemplate {...props} />
-	</Suspense>
-);
-
-const Room: FC<{ room: IRoom }> = ({ room }) => {
+export const Room: FC<{}> = () => {
+	const room = useRoom();
 	const t = useTranslation();
 	const tab = useTab();
 	const open = useTabBarOpen();
@@ -87,21 +81,3 @@ const Room: FC<{ room: IRoom }> = ({ room }) => {
 		</RoomTemplate>
 	);
 };
-
-const RoomSkeleton: FC = () => <>Loading</>;
-
-const RoomRouter: FC = () => {
-	const room = useRoom();
-	if (!room) {
-		return <RoomSkeleton />;
-	}
-	return <Room room={room} />;
-};
-
-const Provider: FC<{ _id: IRoom['_id'] }> = (props) => (
-	<RoomProvider rid={props._id}>
-		<RoomRouter />
-	</RoomProvider>
-);
-
-export default Provider;
