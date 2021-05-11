@@ -26,15 +26,15 @@ Meteor.startup(() => {
 					const { msg: message } = messageArgs(this);
 					const language = AutoTranslate.getLanguage(message.rid);
 					if (!message.translations || !message.translations[language]) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
-						AutoTranslate.messageIdsToWait[message._id] = true;
+						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
 					}
 					const action = message.autoTranslateShowInverse ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
-				condition({ msg, u }) {
-					return msg && msg.u && msg.u._id !== u._id && msg.translations && !msg.translations.original;
+				condition({ message, user }) {
+					return message && message.u && message.u._id !== user._id && message.translations && !message.translations.original;
 				},
 				order: 90,
 			});
@@ -51,15 +51,15 @@ Meteor.startup(() => {
 					const { msg: message } = messageArgs(this);
 					const language = AutoTranslate.getLanguage(message.rid);
 					if (!message.translations || !message.translations[language]) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
-						AutoTranslate.messageIdsToWait[message._id] = true;
+						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
 						Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
 						Meteor.call('autoTranslate.translateMessage', message, language);
 					}
 					const action = message.autoTranslateShowInverse ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
-				condition({ msg, u }) {
-					return msg && msg.u && msg.u._id !== u._id && msg.translations && msg.translations.original;
+				condition({ message, user }) {
+					return message && message.u && message.u._id !== user._id && message.translations && message.translations.original;
 				},
 				order: 90,
 			});

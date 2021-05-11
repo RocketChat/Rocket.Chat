@@ -16,7 +16,8 @@ import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/c
 import { modal } from './modal';
 import { IMessage } from '../../../../definition/IMessage';
 import { IUser } from '../../../../definition/IUser';
-
+import { ISubscription } from '../../../../definition/ISubscription';
+import { TranslationKey } from '../../../../client/contexts/TranslationContext';
 
 const call = (method: string, ...args: any[]): Promise<any> => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err: any, data: any) {
@@ -38,22 +39,24 @@ export const addMessageToList = (messagesList, message) => {
 
 
 type MessageActionGroup = 'message' | 'menu';
-type MessageActionContext = 'message' | 'thread';
+type MessageActionContext = 'message' | 'threads' | 'message-mobile'| 'pinned' | 'direct' | 'starred' | 'mentions';
 
 type MessageActionConditionProps = {
 	message: IMessage;
 	user: IUser;
+	subscription?: ISubscription;
+	context?: MessageActionContext;
 };
 
 type MessageActionConfig = {
 	id: string;
 	icon: string;
-	label: string;
+	label: TranslationKey;
 	order?: number;
-	group: MessageActionGroup;
-	context: MessageActionContext[];
+	group?: MessageActionGroup | MessageActionGroup[];
+	context?: MessageActionContext[];
 	action: () => any;
-	condition?: ({}) => boolean;
+	condition?: (props: MessageActionConditionProps) => boolean;
 }
 
 type MessageActionConfigList = MessageActionConfig[];
@@ -121,7 +124,7 @@ export const MessageAction = new class {
 		return _.sortBy(_.toArray(this.buttons.get()), 'order');
 	})
 
-	getButtonsByGroup = mem(function(group: string, arr: MessageActionConfigList = this._getButtons()): MessageActionConfigList {
+	getButtonsByGroup = mem(function(group: MessageActionGroup, arr: MessageActionConfigList = this._getButtons()): MessageActionConfigList {
 		return arr.filter((button) => (group && Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 	})
 
@@ -266,7 +269,7 @@ Meteor.startup(async function() {
 		id: 'copy',
 		icon: 'copy',
 		label: 'Copy',
-		classes: 'clipboard',
+		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: { msg } } = messageArgs(this);
@@ -289,7 +292,7 @@ Meteor.startup(async function() {
 			const { msg } = messageArgs(this);
 			getChatMessagesFrom(msg).edit(document.getElementById(msg.tmid ? `thread-${ msg._id }` : msg._id));
 		},
-		condition({ msg: message, subscription, settings }) {
+		condition({ message, subscription, settings }) {
 			if (subscription == null) {
 				return false;
 			}
@@ -327,7 +330,7 @@ Meteor.startup(async function() {
 			const { msg } = messageArgs(this);
 			getChatMessagesFrom(msg).confirmDeleteMsg(msg);
 		},
-		condition({ msg: message, subscription }) {
+		condition({ message, subscription }) {
 			if (!subscription) {
 				return false;
 			}
@@ -402,7 +405,7 @@ Meteor.startup(async function() {
 				data: { reactions, tabBar, rid, onClose: () => modal.close() },
 			});
 		},
-		condition({ msg: { reactions } }) {
+		condition({ message: { reactions } }) {
 			return !!reactions;
 		},
 		order: 18,

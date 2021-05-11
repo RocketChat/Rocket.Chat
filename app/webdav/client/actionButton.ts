@@ -1,17 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 
-import { t, getURL } from '../../utils';
-import { WebdavAccounts } from '../../models';
-import { settings } from '../../settings';
-import { MessageAction, modal } from '../../ui-utils';
+import { t, getURL } from '../../utils/client';
+import { WebdavAccounts } from '../../models/client';
+import { settings } from '../../settings/client';
+import { MessageAction, modal } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'webdav-upload',
 		icon: 'upload',
-		label: t('Save_To_Webdav'),
-		condition: ({ msg: message, subscription }) => {
+		label: 'Save_To_Webdav',
+		condition: ({ message, subscription }) => {
 			if (subscription == null) {
 				return false;
 			}

@@ -4,9 +4,9 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import toastr from 'toastr';
 
-import { handleError } from '../../utils';
-import { settings } from '../../settings';
-import { RoomHistoryManager, MessageAction } from '../../ui-utils';
+import { handleError } from '../../utils/client';
+import { settings } from '../../settings/client';
+import { RoomHistoryManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { Rooms } from '../../models/client';
 
@@ -18,19 +18,18 @@ Meteor.startup(function() {
 		context: ['starred', 'message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
-			message.starred = Meteor.userId();
-			Meteor.call('starMessage', message, function(error) {
+			Meteor.call('starMessage', { ...message, starred: true }, function(error: any) {
 				if (error) {
 					return handleError(error);
 				}
 			});
 		},
-		condition({ msg: message, subscription, u }) {
+		condition({ message, subscription, user }) {
 			if (subscription == null && settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
-			return !message.starred || !message.starred.find((star) => star._id === u._id);
+			return !message.starred || !message.starred.find((star: any) => star._id === user._id);
 		},
 		order: 9,
 		group: 'menu',
@@ -43,19 +42,19 @@ Meteor.startup(function() {
 		context: ['starred', 'message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
-			message.starred = false;
-			Meteor.call('starMessage', message, function(error) {
+
+			Meteor.call('starMessage', { ...message, starred: false }, function(error?: any) {
 				if (error) {
 					handleError(error);
 				}
 			});
 		},
-		condition({ msg: message, subscription, u }) {
+		condition({ message, subscription, user }) {
 			if (subscription == null && settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
-			return message.starred && message.starred.find((star) => star._id === u._id);
+			return Boolean(message.starred && message.starred.find((star: any) => star._id === user._id));
 		},
 		order: 9,
 		group: 'menu',
@@ -69,7 +68,7 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
-				Template.instance().tabBar.close();
+				(Template.instance() as any).tabBar.close();
 			}
 			if (message.tmid) {
 				return FlowRouter.go(FlowRouter.getRouteName(), {
@@ -84,12 +83,12 @@ Meteor.startup(function() {
 			}
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
-		condition({ msg, subscription, u }) {
+		condition({ message, subscription, user }) {
 			if (subscription == null || !settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
-			return msg.starred && msg.starred.find((star) => star._id === u._id);
+			return Boolean(message.starred && message.starred.find((star) => star._id === user._id));
 		},
 		order: 100,
 		group: ['message', 'menu'],
@@ -99,7 +98,7 @@ Meteor.startup(function() {
 		id: 'permalink-star',
 		icon: 'permalink',
 		label: 'Get_link',
-		classes: 'clipboard',
+		// classes: 'clipboard',
 		context: ['starred', 'threads'],
 		async action() {
 			const { msg: message } = messageArgs(this);
@@ -107,12 +106,12 @@ Meteor.startup(function() {
 			navigator.clipboard.writeText(permalink);
 			toastr.success(TAPi18n.__('Copied'));
 		},
-		condition({ msg, subscription, u }) {
+		condition({ message, subscription, user }) {
 			if (subscription == null) {
 				return false;
 			}
 
-			return msg.starred && msg.starred.find((star) => star._id === u._id);
+			return Boolean(message.starred && message.starred.find((star) => star._id === user._id));
 		},
 		order: 101,
 		group: 'menu',

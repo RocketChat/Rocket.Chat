@@ -28,8 +28,8 @@ Meteor.startup(() => {
 				return FlowRouter.go('home');
 			});
 		},
-		condition({ msg, u }) {
-			return msg.u._id !== u._id;
+		condition({ message, user }) {
+			return message.u._id !== user._id;
 		},
 		order: 10,
 		group: 'menu',

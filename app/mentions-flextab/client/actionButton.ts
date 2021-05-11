@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { MessageAction, RoomHistoryManager } from '../../ui-utils';
+import { MessageAction, RoomHistoryManager } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { Rooms } from '../../models/client';
 
@@ -17,7 +17,7 @@ Meteor.startup(function() {
 			e.stopPropagation();
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
-				Template.instance().tabBar.close();
+				(Template.instance() as any).tabBar.close();
 			}
 			if (message.tmid) {
 				return FlowRouter.go(FlowRouter.getRouteName(), {

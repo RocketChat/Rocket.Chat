@@ -27,7 +27,7 @@ Meteor.startup(function() {
 					content: 'CreateDiscussion',
 					data: { rid: message.rid,
 						message,
-						onCreate() {
+						onCreate(): void {
 							modal.close();
 						} },
 					confirmOnEnter: false,
@@ -35,15 +35,15 @@ Meteor.startup(function() {
 					showCancelButton: false,
 				});
 			},
-			condition({ msg: { u: { _id: uid }, drid, dcount }, subscription, u }) {
-				if (drid || !isNaN(dcount)) {
+			condition({ message: { u: { _id: uid }, drid, dcount }, subscription, user }) { // TODO SUBSCRIPTION
+				if (drid || !isNaN(dcount as any)) {
 					return false;
 				}
 				if (!subscription) {
 					return false;
 				}
 
-				return uid !== u._id ? hasPermission('start-discussion-other-user') : hasPermission('start-discussion');
+				return uid !== user._id ? hasPermission('start-discussion-other-user') : hasPermission('start-discussion');
 			},
 			order: 1,
 			group: 'menu',

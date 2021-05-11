@@ -4,11 +4,11 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import toastr from 'toastr';
 
-import { RoomHistoryManager, MessageAction } from '../../ui-utils';
+import { RoomHistoryManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { handleError } from '../../utils';
-import { settings } from '../../settings';
-import { hasAtLeastOnePermission } from '../../authorization';
+import { handleError } from '../../utils/client';
+import { settings } from '../../settings/client';
+import { hasAtLeastOnePermission } from '../../authorization/client';
 import { Rooms } from '../../models/client';
 
 Meteor.startup(function() {
@@ -26,12 +26,12 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition({ msg, subscription }) {
-			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
+		condition({ message, subscription }) {
+			if (!settings.get('Message_AllowPinning') || message.pinned || !subscription) {
 				return false;
 			}
 
-			return hasAtLeastOnePermission('pin-message', msg.rid);
+			return hasAtLeastOnePermission('pin-message', message.rid);
 		},
 		order: 7,
 		group: 'menu',
@@ -51,12 +51,12 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition({ msg, subscription }) {
-			if (!subscription || !settings.get('Message_AllowPinning') || !msg.pinned) {
+		condition({ message, subscription }) {
+			if (!subscription || !settings.get('Message_AllowPinning') || !message.pinned) {
 				return false;
 			}
 
-			return hasAtLeastOnePermission('pin-message', msg.rid);
+			return hasAtLeastOnePermission('pin-message', message.rid);
 		},
 		order: 8,
 		group: 'menu',
@@ -70,7 +70,7 @@ Meteor.startup(function() {
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
-				Template.instance().tabBar.close();
+				(Template.instance() as any).tabBar.close();
 			}
 			if (message.tmid) {
 				return FlowRouter.go(FlowRouter.getRouteName(), {
@@ -96,7 +96,7 @@ Meteor.startup(function() {
 		id: 'permalink-pinned',
 		icon: 'permalink',
 		label: 'Get_link',
-		classes: 'clipboard',
+		// classes: 'clipboard',
 		context: ['pinned'],
 		async action() {
 			const { msg: message } = messageArgs(this);

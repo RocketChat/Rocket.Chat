@@ -23,6 +23,8 @@ export interface IMessage extends IRocketChatRecord {
 
 	mid?: string;
 
+	tmid?: string;
+
 	bot?: string;
 
 	md: ReturnType<typeof parser>;
@@ -33,6 +35,12 @@ export interface IMessage extends IRocketChatRecord {
 		name?: string;
 		username?: string;
 	}[];
+
+	reactions?: string[];
+
+	translations: any;
+	autoTranslateShowInverse: any;
+
 	channels?: Array<ChannelName>;
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 

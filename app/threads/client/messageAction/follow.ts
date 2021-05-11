@@ -24,14 +24,14 @@ Meteor.startup(function() {
 					toastr.success(TAPi18n.__('You_followed_this_message')),
 				);
 			},
-			condition({ msg: { _id, tmid, replies = [] }, u }, context) {
+			condition({ message: { _id, tmid, replies = [] }, user, context }) {
 				if (tmid || context) {
 					const parentMessage = Messages.findOne({ _id: tmid || _id }, { fields: { replies: 1 } });
 					if (parentMessage) {
 						replies = parentMessage.replies || [];
 					}
 				}
-				return !replies.includes(u._id);
+				return !replies.includes(user._id);
 			},
 			order: 2,
 			group: 'menu',
