@@ -37,19 +37,15 @@ function UserInfo({
 
 	const customFieldsToShowSetting = useSetting('Accounts_CustomFieldsToShowInUserInfo');
 	const customFieldsToShow = [];
-	try {
-		const customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
-		customFieldsToShowObj &&
-			Object.values(customFieldsToShowObj).map((value) => {
-				const role = Object.keys(value);
-				const roleNameToShow = Object.values(value);
-				const customField = {};
-				customField[roleNameToShow] = customFields[role];
-				return customFieldsToShow.push(customField);
-			});
-	} catch (e) {
-		console.log(e);
-	}
+	const customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
+	customFieldsToShowObj &&
+		Object.values(customFieldsToShowObj).map((value) => {
+			const role = Object.keys(value);
+			const roleNameToShow = Object.values(value);
+			const customField = {};
+			customField[roleNameToShow] = customFields[role];
+			return customFieldsToShow.push(customField);
+		});
 
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
