@@ -50,7 +50,7 @@ function UserInfo({
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
-					{!!roles && (
+					{roles.length !== 0 && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
 							<UserCard.Roles>{roles}</UserCard.Roles>
@@ -73,10 +73,12 @@ function UserInfo({
 						</InfoPanel.Field>
 					)}
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
-						<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
-					</InfoPanel.Field>
+					{lastLogin && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
+							<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
 
 					{name && (
 						<InfoPanel.Field>
@@ -137,10 +139,12 @@ function UserInfo({
 							</InfoPanel.Field>
 						))}
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
-						<InfoPanel.Text>{timeAgo(createdAt)}</InfoPanel.Text>
-					</InfoPanel.Field>
+					{createdAt && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
+							<InfoPanel.Text>{timeAgo(createdAt)}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
 				</InfoPanel.Section>
 			</InfoPanel>
 		</VerticalBar.ScrollableContent>
