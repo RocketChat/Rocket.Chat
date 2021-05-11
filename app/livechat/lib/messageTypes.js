@@ -80,3 +80,25 @@ MessageTypes.registerType({
 	system: true,
 	message: 'New_videocall_request',
 });
+
+MessageTypes.registerType({
+	id: 'omnichannel_placed_chat_on_hold',
+	system: true,
+	message: 'Omnichannel_placed_chat_on_hold',
+	data(message) {
+		return {
+			comment: message.comment,
+		};
+	},
+});
+
+MessageTypes.registerType({
+	id: 'omnichannel_on_hold_chat_resumed',
+	system: true,
+	message: 'Omnichannel_on_hold_chat_resumed',
+	data(message) {
+		return {
+			comment: message.comment,
+		};
+	},
+});

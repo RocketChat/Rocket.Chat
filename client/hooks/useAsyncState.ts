@@ -18,27 +18,30 @@ export const useAsyncState = <T>(initialValue?: T | (() => T)): AsyncStateObject
 			}
 
 			return asyncState.resolved<T>(
-				typeof initialValue === 'function'
-					? (initialValue as () => T)()
-					: initialValue,
+				typeof initialValue === 'function' ? (initialValue as () => T)() : initialValue,
 			);
 		}),
 	);
 
-	const resolve = useCallback((value: T | ((prev: T | undefined) => T)) => {
-		setState((state) => {
-			if (typeof value === 'function') {
-				return asyncState.resolve(state, (value as (prev: T | undefined) => T)(state.value));
-			}
+	const resolve = useCallback(
+		(value: T | ((prev: T | undefined) => T)) => {
+			setState((state) => {
+				if (typeof value === 'function') {
+					return asyncState.resolve(state, (value as (prev: T | undefined) => T)(state.value));
+				}
 
-			return asyncState.resolve(state, value);
-		});
-	}, [setState]);
+				return asyncState.resolve(state, value);
+			});
+		},
+		[setState],
+	);
 
-	const reject = useCallback((error: Error) => {
-		setState((state) => asyncState.reject(state, error));
-	}, [setState]);
-
+	const reject = useCallback(
+		(error: Error) => {
+			setState((state) => asyncState.reject(state, error));
+		},
+		[setState],
+	);
 
 	const update = useCallback(() => {
 		setState((state) => asyncState.update(state));
@@ -48,16 +51,16 @@ export const useAsyncState = <T>(initialValue?: T | (() => T)): AsyncStateObject
 		setState((state) => asyncState.reload(state));
 	}, [setState]);
 
-	return useMemo(() => ({
-		...state,
-		resolve,
-		reject,
-		reset,
-		update,
-	}), [state, resolve, reject, reset, update]);
+	return useMemo(
+		() => ({
+			...state,
+			resolve,
+			reject,
+			reset,
+			update,
+		}),
+		[state, resolve, reject, reset, update],
+	);
 };
 
-export {
-	AsyncStatePhase,
-	AsyncState,
-};
+export { AsyncStatePhase, AsyncState };

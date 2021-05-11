@@ -1,69 +1,34 @@
 import React, { memo, FC, useState, useMemo } from 'react';
-import { Box, Icon, BoxProps } from '@rocket.chat/fuselage';
-import { css } from '@rocket.chat/css-in-js';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useAttachmentDimensions } from '../context/AttachmentContext';
+import { Dimensions } from './Dimensions';
+import ImageBox from './ImageBox';
+import Load from './Load';
+import Retry from './Retry';
 
-export type Dimensions = {
-	width: number;
-	height: number;
-};
-
-
-export type ImageProps = {
+type ImageProps = {
 	previewUrl?: string;
 	src: string;
 	loadImage?: boolean;
 	setLoadImage: () => void;
-} & Dimensions & ({ loadImage: true } | { loadImage: false; setLoadImage: () => void });
+} & Dimensions &
+	({ loadImage: true } | { loadImage: false; setLoadImage: () => void });
 
-const ImageBox: FC<BoxProps> = (props) => <Box display='flex' maxWidth='full' flexDirection='column' justifyContent='center' alignItems='center' alignContent='center' borderRadius='x2' borderWidth='x2' borderStyle='solid' borderColor='neutral-200' {...props}/>;
+const getDimensions = (
+	originalWidth: Dimensions['width'],
+	originalHeight: Dimensions['height'],
+	limits: { width: number; height: number },
+): { width: number; height: number } => {
+	const widthRatio = originalWidth / (limits.width - 4);
+	const heightRatio = originalHeight / limits.height;
 
-export const Retry: FC<BoxProps & { retry: () => void }> = ({ retry }) => {
-	const t = useTranslation();
-	const clickable = css`
-        cursor: pointer;
-        background: var(--rxc-color-neutral-100, ${ colors.n100 }) !important;
-
-        &:hover,
-        &:focus {
-            background: var(--rxc-color-neutral-300, ${ colors.n300 }) !important;
-        }
-    `;
-	return <ImageBox className={clickable} onClick={retry} size={160}>
-		<Icon name='refresh' color='neutral-700' size='x64'/>
-		<Box fontScale='h1' color='default'>{t('Retry')}</Box>
-	</ImageBox>;
-};
-
-export const Load: FC<BoxProps & { load: () => void }> = ({ load, ...props }) => {
-	const t = useTranslation();
-	const clickable = css`
-        cursor: pointer;
-        background: var(--rxc-color-neutral-100, ${ colors.n100 }) !important;
-
-        &:hover,
-        &:focus {
-            background: var(--rxc-color-neutral-300, ${ colors.n300 }) !important;
-        }
-    `;
-	return <ImageBox className={clickable} {...props} onClick={load}>
-		<Icon name='image' color='neutral-700' size='x64'/>
-		<Box fontScale='h1' color='default'>{t('Click_to_load')}</Box>
-	</ImageBox>;
-};
-
-
-const getDimensions = (width: Dimensions['width'], height: Dimensions['height'], limits: { width: number; height: number }): { width: 'auto' | number; height: 'auto' | number } => {
-	const ratio = height / width;
-
-	if (height >= width || Math.min(width, limits.width) * ratio > limits.height) {
-		return { width: width * Math.min(height, limits.height) / height, height: 'auto' };
+	if (widthRatio > heightRatio) {
+		const width = Math.min(originalWidth, limits.width - 4);
+		return { width, height: (width / originalWidth) * originalHeight };
 	}
 
-	return { width: Math.min(width, limits.width), height: 'auto' };
+	const height = Math.min(originalHeight, limits.height);
+	return { width: (height / originalHeight) * originalWidth, height };
 };
 
 const Image: FC<ImageProps> = ({ previewUrl, loadImage = true, setLoadImage, src, ...size }) => {
@@ -71,25 +36,36 @@ const Image: FC<ImageProps> = ({ previewUrl, loadImage = true, setLoadImage, src
 	const { width = limits.width, height = limits.height } = size;
 	const [error, setError] = useState(false);
 
-	const { setHasError, setHasNoError } = useMemo(() => ({
-		setHasError: (): void => setError(true),
-		setHasNoError: (): void => setError(false),
-	}), []);
+	const { setHasError, setHasNoError } = useMemo(
+		() => ({
+			setHasError: (): void => setError(true),
+			setHasNoError: (): void => setError(false),
+		}),
+		[],
+	);
 
 	const dimensions = getDimensions(width, height, limits);
 
-	const background = previewUrl && `url(${ previewUrl }) center center / cover no-repeat fixed`;
+	const background = previewUrl && `url(${previewUrl}) center center / cover no-repeat fixed`;
 
 	if (!loadImage) {
-		return <Load { ...limits } load={setLoadImage}/>;
+		return <Load {...dimensions} {...limits} load={setLoadImage} />;
 	}
 
 	if (error) {
-		return <Retry retry={setHasNoError}/>;
+		return <Retry {...dimensions} retry={setHasNoError} />;
 	}
 
-	return <ImageBox className='gallery-item' onError={setHasError} {...previewUrl && { style: { background } } as any } { ...dimensions } src={src} is='img'/>;
+	return (
+		<ImageBox
+			onError={setHasError}
+			{...(previewUrl && ({ style: { background, boxSizing: 'content-box' } } as any))}
+			{...dimensions}
+			is='picture'
+		>
+			<img className='gallery-item' src={src} {...dimensions} />
+		</ImageBox>
+	);
 };
-
 
 export default memo(Image);

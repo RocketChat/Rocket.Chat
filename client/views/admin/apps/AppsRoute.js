@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
+import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
+import PageSkeleton from '../../../components/PageSkeleton';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useRouteParameter, useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
-import PageSkeleton from '../../../components/PageSkeleton';
 import AppDetailsPage from './AppDetailsPage';
-import MarketplacePage from './MarketplacePage';
-import AppsPage from './AppsPage';
 import AppInstallPage from './AppInstallPage';
-import AppsProvider from './AppsProvider';
 import AppLogsPage from './AppLogsPage';
+import AppsPage from './AppsPage';
+import AppsProvider from './AppsProvider';
+import MarketplacePage from './MarketplacePage';
 
 function AppsRoute() {
 	const [isLoading, setLoading] = useState(true);
@@ -26,7 +26,7 @@ function AppsRoute() {
 				return;
 			}
 
-			if (!await isAppsEngineEnabled()) {
+			if (!(await isAppsEngineEnabled())) {
 				appsWhatIsItRoute.push();
 				return;
 			}
@@ -61,15 +61,15 @@ function AppsRoute() {
 		return <PageSkeleton />;
 	}
 
-	return <AppsProvider>
-		{
-			(!context && isMarketPlace && <MarketplacePage />)
-		|| (!context && !isMarketPlace && <AppsPage />)
-		|| (context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version}/>)
-		|| (context === 'logs' && <AppLogsPage id={id}/>)
-		|| (context === 'install' && <AppInstallPage />)
-		}
-	</AppsProvider>;
+	return (
+		<AppsProvider>
+			{(!context && isMarketPlace && <MarketplacePage />) ||
+				(!context && !isMarketPlace && <AppsPage />) ||
+				(context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version} />) ||
+				(context === 'logs' && <AppLogsPage id={id} />) ||
+				(context === 'install' && <AppInstallPage />)}
+		</AppsProvider>
+	);
 }
 
 export default AppsRoute;
