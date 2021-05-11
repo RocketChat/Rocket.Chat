@@ -1028,6 +1028,11 @@ settings.addGroup('General', function() {
 			type: 'boolean',
 		});
 	});
+	this.add('Prune_message_limit', 2000, {
+		type: 'int',
+		public: true,
+		i18nDescription: 'Prune_message_limit_description',
+	});
 });
 
 settings.addGroup('Message', function() {
