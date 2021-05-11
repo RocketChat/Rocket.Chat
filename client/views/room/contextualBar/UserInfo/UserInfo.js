@@ -40,8 +40,8 @@ function UserInfo({
 	const customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
 	customFieldsToShowObj &&
 		Object.values(customFieldsToShowObj).map((value) => {
-			const role = Object.keys(value);
-			const roleNameToShow = Object.values(value);
+			const role = Object.values(value);
+			const roleNameToShow = Object.keys(value);
 			const customField = {};
 			customField[roleNameToShow] = customFields[role];
 			return customFieldsToShow.push(customField);
