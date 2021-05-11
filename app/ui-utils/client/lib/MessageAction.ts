@@ -47,7 +47,7 @@ type MessageActionConditionProps = {
 
 type MessageActionConfig = {
 	id: string;
-	icont: string;
+	icon: string;
 	label: string;
 	order?: number;
 	group: MessageActionGroup;

@@ -1,5 +1,5 @@
 import { Message as MessageTemplate } from '@rocket.chat/fuselage';
-import React, { FC, memo } from 'react';
+import React, { FC, memo, useRef } from 'react';
 
 import { IMessage } from '../../../../../definition/IMessage';
 import Attachments from '../../../../components/Message/Attachments';
@@ -13,6 +13,7 @@ import { UserPresence } from '../../../../lib/presence';
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions } from '../../contexts/MessageContext';
+import Toolbox from './Toolbox';
 
 const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequential }) => {
 	const {
@@ -87,11 +88,7 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequ
 					<Broadcast replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />
 				)}
 			</MessageTemplate.Container>
-			<MessageTemplate.Toolbox>
-				<MessageTemplate.Toolbox.Item icon='quote' />
-				<MessageTemplate.Toolbox.Item icon='clock' />
-				<MessageTemplate.Toolbox.Item icon='thread' />
-			</MessageTemplate.Toolbox>
+			<Toolbox />
 		</MessageTemplate>
 	);
 };
