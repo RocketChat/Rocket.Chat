@@ -36,16 +36,17 @@ function UserInfo({
 	const timeAgo = useTimeAgo();
 
 	const customFieldsToShowSetting = useSetting('Accounts_CustomFieldsToShowInUserInfo');
-	const customFieldsToShow = [];
 	const customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
-	customFieldsToShowObj &&
-		Object.values(customFieldsToShowObj).map((value) => {
-			const role = Object.values(value);
-			const roleNameToShow = Object.keys(value);
-			const customField = {};
-			customField[roleNameToShow] = customFields[role];
-			return customFieldsToShow.push(customField);
-		});
+
+	const customFieldsToShow = customFieldsToShowObj
+		? Object.values(customFieldsToShowObj).map((value) => {
+				const role = Object.values(value);
+				const roleNameToShow = Object.keys(value);
+				const customField = {};
+				customField[roleNameToShow] = customFields[role];
+				return customField;
+		  })
+		: [];
 
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
