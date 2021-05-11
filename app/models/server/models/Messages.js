@@ -521,11 +521,12 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid, messageId) {
+	getLastVisibleMessageSentByRoomId(rid, messageId) {
+		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(rid);
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			t: { $exists: false },
+			t: sysMes ? { $nin: sysMes } : undefined,
 			$or: [
 				{ tmid: { $exists: false } },
 				{ tshow: true },
