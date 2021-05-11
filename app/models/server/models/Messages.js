@@ -3,6 +3,7 @@ import _ from 'underscore';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
+import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
 export class Messages extends Base {
@@ -781,7 +782,16 @@ export class Messages extends Base {
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
-		Rooms.incMsgCountById(roomId, 1);
+
+		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(roomId);
+		if (!sysMes || !sysMes.includes(type)) {
+			const byUser = extraData ? extraData.u._id : user._id;
+			Rooms.incMsgCountAndSetLastMessageById(roomId, 1, record.ts, settings.get('Store_Last_Message') && record);
+			Subscriptions.setAlertForRoomIdExcludingUserId(roomId, byUser);
+		} else {
+			Rooms.incMsgCountById(roomId, 1);
+		}
+
 		return record;
 	}
 

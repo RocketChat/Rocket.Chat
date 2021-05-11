@@ -253,6 +253,10 @@ export class Rooms extends Base {
 		return this.find({ t: 'd', uids: { $size: 2, $in: [_id] } }, options);
 	}
 
+	getHiddenSystemMessagesTypesById(_id, options) {
+		return this.findOne({ _id }, { ...options, projection: { sysMes: 1 } });
+	}
+
 	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
 		const query = {
 			_id,
