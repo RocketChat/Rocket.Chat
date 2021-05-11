@@ -1,14 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 import { EJSON } from 'meteor/ejson';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { E2ERoom } from './rocketchat.e2e.room';
 import {
-	Deferred,
 	toString,
 	toArrayBuffer,
 	joinVectorAndEcryptedData,
@@ -21,46 +19,41 @@ import {
 	importRawKey,
 	deriveKey,
 } from './helper';
-import { Rooms, Subscriptions, Messages } from '../../models';
-import { promises } from '../../promises/client';
-import { settings } from '../../settings';
-import { Notifications } from '../../notifications/client';
-import { Layout, call, modal } from '../../ui-utils';
 import * as banners from '../../../client/lib/banners';
-
+import { Rooms, Subscriptions, Messages } from '../../models';
+import { call, modal } from '../../ui-utils';
 import './events.js';
 import './tabbar';
+import { log, logError } from './logger';
+import { waitUntilFind } from './waitUntilFind';
 
 let failedToDecodeKey = false;
-let showingE2EAlert = false;
 
-const waitUntilFind = (fn) => new Promise((resolve) => {
-	Tracker.autorun((c) => {
-		const result = fn();
-		return result && resolve(result) && c.stop();
-	});
-});
-
-class E2E {
+class E2E extends Emitter {
 	constructor() {
+		super();
 		this.started = false;
 		this.enabled = new ReactiveVar(false);
 		this._ready = new ReactiveVar(false);
 		this.instancesByRoomId = {};
-		this.readyPromise = new Deferred();
-		this.readyPromise.then(() => {
+
+		this.on('ready', () => {
 			this._ready.set(true);
+			this.log('startClient -> Done');
+			this.log('decryptSubscriptions');
+
+			this.decryptSubscriptions();
+			this.log('decryptSubscriptions -> Done');
 		});
 	}
 
 	log(...msg) {
-		console.log('[E2E]', ...msg);
+		log('E2E', ...msg);
 	}
 
 	error(...msg) {
-		console.error('[E2E]', ...msg);
+		logError('E2E', ...msg);
 	}
-
 
 	isEnabled() {
 		return this.enabled.get();
@@ -70,36 +63,26 @@ class E2E {
 		return this.enabled.get() && this._ready.get();
 	}
 
-	async ready() {
-		return this.readyPromise;
-	}
+	async getInstanceByRoomId(rid) {
+		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
 
-	getE2ERoom(rid) {
+		if (room.t !== 'd' && room.t !== 'p') {
+			return null;
+		}
+
+		if (room.encrypted !== true && !room.e2eKeyId) {
+			return null;
+		}
+
+		if (!this.instancesByRoomId[rid]) {
+			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), rid, room.t);
+		}
+
 		return this.instancesByRoomId[rid];
 	}
 
 	removeInstanceByRoomId(rid) {
 		delete this.instancesByRoomId[rid];
-	}
-
-	async getInstanceByRoomId(roomId) {
-		await this.ready();
-
-		const room = await waitUntilFind(() => Rooms.findOne({
-			_id: roomId,
-		}));
-
-		if (room.t !== 'd' && room.t !== 'p') {
-			return;
-		}
-
-		if (room.encrypted !== true && !room.e2eKeyId) {
-			return;
-		}
-
-		this.instancesByRoomId[roomId] = this.instancesByRoomId[roomId] ?? new E2ERoom(Meteor.userId(), roomId, room.t);
-
-		return this.instancesByRoomId[roomId];
 	}
 
 	async startClient() {
@@ -186,21 +169,12 @@ class E2E {
 				},
 			});
 		}
-
-		this.readyPromise.resolve();
-		this.log('startClient -> Done');
-		this.log('decryptPendingSubscriptions');
-
-		this.decryptPendingSubscriptions();
-		this.log('decryptPendingSubscriptions -> Done');
+		this.emit('ready');
 	}
 
 	async stopClient() {
 		this.log('-> Stop Client');
-		// This flag is used to avoid closing unrelated alerts.
-		if (showingE2EAlert) {
-			banners.close();
-		}
+		this.closeAlert();
 
 		Meteor._localStorage.removeItem('public_key');
 		Meteor._localStorage.removeItem('private_key');
@@ -209,11 +183,6 @@ class E2E {
 		this.enabled.set(false);
 		this._ready.set(false);
 		this.started = false;
-
-		this.readyPromise = new Deferred();
-		this.readyPromise.then(() => {
-			this._ready.set(true);
-		});
 	}
 
 	async changePassword(newPassword) {
@@ -390,7 +359,7 @@ class E2E {
 			return message;
 		}
 
-		const e2eRoom = this.getE2ERoom(message.rid);
+		const e2eRoom = await this.getInstanceByRoomId(message.rid);
 
 		if (!e2eRoom) {
 			return message;
@@ -417,130 +386,23 @@ class E2E {
 
 	async decryptSubscription(rid) {
 		const e2eRoom = await this.getInstanceByRoomId(rid);
-		this.log('decryptPendingSubscriptions ->', rid);
-		e2eRoom?.decryptPendingSubscription();
+		this.log('decryptSubscription ->', rid);
+		e2eRoom?.decryptSubscription();
 	}
 
-	async decryptPendingSubscriptions() {
+	async decryptSubscriptions() {
 		Subscriptions.find({
 			encrypted: true,
 		}).forEach((room) => this.decryptSubscription(room._id));
 	}
 
 	openAlert(config) {
-		showingE2EAlert = true;
-		banners.open(config);
+		banners.open({ id: 'e2e', ...config });
 	}
 
 	closeAlert() {
-		if (showingE2EAlert) {
-			banners.close();
-		}
-		showingE2EAlert = false;
+		banners.closeById('e2e');
 	}
 }
 
 export const e2e = new E2E();
-
-const handle = async (roomId, keyId) => {
-	const e2eRoom = await e2e.getInstanceByRoomId(roomId);
-	if (!e2eRoom) {
-		return;
-	}
-
-	e2eRoom.provideKeyToUser(keyId);
-};
-
-Meteor.startup(function() {
-	Tracker.autorun(function() {
-		if (Meteor.userId()) {
-			const adminEmbedded = Layout.isEmbedded() && FlowRouter.current().path.startsWith('/admin');
-
-			if (!adminEmbedded && settings.get('E2E_Enable') && window.crypto) {
-				e2e.startClient();
-				e2e.enabled.set(true);
-			} else {
-				e2e.enabled.set(false);
-				e2e.closeAlert();
-			}
-		}
-	});
-
-	let observable = null;
-	Tracker.autorun(() => {
-		if (!e2e.isReady()) {
-			promises.remove('onClientMessageReceived', 'e2e-decript-message');
-			Notifications.unUser('e2ekeyRequest', handle);
-			observable?.stop();
-			return promises.remove('onClientBeforeSendMessage', 'e2e');
-		}
-
-
-		Notifications.onUser('e2ekeyRequest', handle);
-
-
-		observable = Subscriptions.find().observe({
-			changed: async (doc) => {
-				if (!doc.encrypted && !doc.E2EKey) {
-					return e2e.removeInstanceByRoomId(doc.rid);
-				}
-				const e2eRoom = await e2e.getInstanceByRoomId(doc.rid);
-
-				if (!e2eRoom) {
-					return;
-				}
-
-
-				doc.encrypted ? e2eRoom.enable() : e2eRoom.pause();
-
-				// Cover private groups and direct messages
-				if (!e2eRoom.isSupportedRoomType(doc.t)) {
-					return e2eRoom.disable();
-				}
-
-
-				if (doc.E2EKey && e2eRoom.isWaitingKeys()) {
-					return e2eRoom.keyReceived();
-				}
-				if (!e2eRoom.isReady()) {
-					return;
-				}
-				e2eRoom.decryptPendingSubscription();
-			},
-			added: async (doc) => {
-				if (!doc.encrypted && !doc.E2EKey) {
-					return;
-				}
-				return e2e.getInstanceByRoomId(doc.rid);
-			},
-			removed: (doc) => {
-				e2e.removeInstanceByRoomId(doc.rid);
-			},
-		});
-
-		promises.add('onClientMessageReceived', (msg) => {
-			const e2eRoom = e2e.getE2ERoom(msg.rid);
-			if (!e2eRoom || !e2eRoom.shouldConvertReceivedMessages()) {
-				return msg;
-			}
-			return e2e.decryptMessage(msg);
-		}, promises.priority.HIGH, 'e2e-decript-message');
-
-		// Encrypt messages before sending
-		promises.add('onClientBeforeSendMessage', async function(message) {
-			const e2eRoom = e2e.getE2ERoom(message.rid);
-			if (!e2eRoom || !e2eRoom.shouldConvertSentMessages()) {
-				return message;
-			}
-			// Should encrypt this message.
-			return e2eRoom
-				.encrypt(message)
-				.then((msg) => {
-					message.msg = msg;
-					message.t = 'e2e';
-					message.e2e = 'pending';
-					return message;
-				});
-		}, promises.priority.HIGH, 'e2e');
-	});
-});

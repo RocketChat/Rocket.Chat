@@ -8,8 +8,9 @@ export class Nps implements IUiKitCoreApp {
 	async blockAction(payload: any): Promise<any> {
 		const {
 			triggerId,
+			actionId,
 			container: {
-				id: bannerId,
+				id: viewId,
 			},
 			payload: {
 				value: score,
@@ -18,10 +19,13 @@ export class Nps implements IUiKitCoreApp {
 			user,
 		} = payload;
 
+		const bannerId = viewId.replace(`${ npsId }-`, '');
+
 		return createModal({
+			type: actionId === 'nps-score' ? 'modal.update' : 'modal.open',
+			id: `${ npsId }-${ bannerId }`,
 			appId: this.appId,
 			npsId,
-			bannerId,
 			triggerId,
 			score,
 			user,
@@ -37,7 +41,7 @@ export class Nps implements IUiKitCoreApp {
 			payload: {
 				view: {
 					state,
-					id: bannerId,
+					id: viewId,
 				},
 			},
 			user: {
@@ -48,9 +52,11 @@ export class Nps implements IUiKitCoreApp {
 
 		const [npsId] = Object.keys(state);
 
+		const bannerId = viewId.replace(`${ npsId }-`, '');
+
 		const {
 			[npsId]: {
-				score,
+				'nps-score': score,
 				comment,
 			},
 		} = state;

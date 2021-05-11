@@ -31,7 +31,3 @@ Template.secretURL.onCreated(function() {
 		return this.hashIsValid.set(false);
 	});
 });
-
-Template.secretURL.onRendered(function() {
-	return $('#initial-page-loading').remove();
-});
