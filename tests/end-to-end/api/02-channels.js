@@ -1600,10 +1600,10 @@ describe('[Channels]', function() {
 	});
 
 	describe.only('/channels.setAutojoin', () => {
-		let testTeam;
+		// let testTeam;
 		let testChannel;
-		let testUser1;
-		let testUser2;
+		// let testUser1;
+		// let testUser2;
 		before(async () => {
 			const teamCreateRes = await request.post(api('teams.create'))
 				.set(credentials)
@@ -1625,10 +1625,10 @@ describe('[Channels]', function() {
 
 			const { channel } = channelCreateRes.body;
 
-			testTeam = team;
+			// testTeam = team;
 			testChannel = channel;
-			testUser1 = user1;
-			testUser2 = user2;
+			// testUser1 = user1;
+			// testUser2 = user2;
 
 			await request.post(api('teams.addMembers'))
 				.set(credentials)
