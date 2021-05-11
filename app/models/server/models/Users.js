@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const queryStatusAgentOnline = (extraFilters = {}) => {
 	if (settings.get('Livechat_enabled_when_agent_idle') === false) {
@@ -443,6 +443,15 @@ export class Users extends Base {
 		}, { multi: true });
 	}
 
+	removeRoomsByRoomIdsAndUserId(rids, userId) {
+		return this.update({
+			_id: userId,
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
+	}
+
 	update2FABackupCodesByUserId(userId, backupCodes) {
 		return this.update({
 			_id: userId,
@@ -708,11 +717,30 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findByUsernamesIgnoringCase(usernames, options) {
+		const query = {
+			username: {
+				$in: usernames.filter(Boolean).map((u) => new RegExp(`^${ escapeRegExp(u) }$`, 'i')),
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	findActive(options = {}) {
 		return this.find({
 			active: true,
 			type: { $nin: ['app'] },
 			roles: { $ne: ['guest'] },
+		}, options);
+	}
+
+	findActiveByUserIds(ids, options = {}) {
+		return this.find({
+			active: true,
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			_id: { $in: ids },
 		}, options);
 	}
 
@@ -1012,6 +1040,18 @@ export class Users extends Base {
 			},
 		};
 
+		return this.update(_id, update);
+	}
+
+	addPasswordToHistory(_id, password) {
+		const update = {
+			$push: {
+				'services.passwordHistory': {
+					$each: [password],
+					$slice: -Number(settings.get('Accounts_Password_History_Amount')),
+				},
+			},
+		};
 		return this.update(_id, update);
 	}
 

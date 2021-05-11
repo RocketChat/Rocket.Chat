@@ -1,8 +1,8 @@
-import React from 'react';
 import { Box, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import React from 'react';
 // import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
-import Card from '../../../components/Card/Card';
+import Card from '../../../components/Card';
 import { useTranslation } from '../../../contexts/TranslationContext';
 // import { useSetModal } from '../../contexts/ModalContext';
 import UsagePieGraph from './UsagePieGraph';
@@ -16,23 +16,25 @@ const PushCard = () => {
 
 	// const setModal = useSetModal();
 
-	return <Card alignSelf='flex-start'>
-		<Card.Title>{t('Push_Notifications')}</Card.Title>
-		<Card.Body>
-			<Card.Col>
-				<Card.Col.Section>
-					<Box display='flex' flexDirection='row' justifyContent='center'>
-						<UsagePieGraph label={t('Push_Notifications')} used={300} total={300} size={180}/>
-					</Box>
-				</Card.Col.Section>
-			</Card.Col>
-		</Card.Body>
-		<Card.Footer>
-			<ButtonGroup align='end'>
-				<Button small>{t('Details')}</Button>
-			</ButtonGroup>
-		</Card.Footer>
-	</Card>;
+	return (
+		<Card alignSelf='flex-start'>
+			<Card.Title>{t('Push_Notifications')}</Card.Title>
+			<Card.Body>
+				<Card.Col>
+					<Card.Col.Section>
+						<Box display='flex' flexDirection='row' justifyContent='center'>
+							<UsagePieGraph label={t('Push_Notifications')} used={300} total={300} size={180} />
+						</Box>
+					</Card.Col.Section>
+				</Card.Col>
+			</Card.Body>
+			<Card.Footer>
+				<ButtonGroup align='end'>
+					<Button small>{t('Details')}</Button>
+				</ButtonGroup>
+			</Card.Footer>
+		</Card>
+	);
 };
 
 export default PushCard;

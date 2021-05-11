@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { placeholders } from '../../../utils';
 import * as Mailer from '../../../mailer';
-import { escapeHTML } from '../../../../lib/escapeHTML';
 
 export const sendMail = function(from, subject, body, dryrun, query) {
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');

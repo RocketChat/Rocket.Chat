@@ -71,7 +71,3 @@ Template.invite.onCreated(function() {
 		}
 	});
 });
-
-Template.invite.onRendered(function() {
-	return $('#initial-page-loading').remove();
-});

@@ -1,13 +1,13 @@
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { Button, ButtonGroup, TextInput, Field, Select, Icon } from '@rocket.chat/fuselage';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useMethod } from '../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useSetModal } from '../../../contexts/ModalContext';
-import VerticalBar from '../../../components/VerticalBar';
 import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import VerticalBar from '../../../components/VerticalBar';
+import { useSetModal } from '../../../contexts/ModalContext';
+import { useMethod } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 
 export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 	const t = useTranslation();
@@ -27,7 +27,10 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 	const saveStatus = useMethod('insertOrUpdateUserStatus');
 	const deleteStatus = useMethod('deleteCustomUserStatus');
 
-	const hasUnsavedChanges = useMemo(() => previousName !== name || previousStatusType !== statusType, [name, previousName, previousStatusType, statusType]);
+	const hasUnsavedChanges = useMemo(
+		() => previousName !== name || previousStatusType !== statusType,
+		[name, previousName, previousStatusType, statusType],
+	);
 	const handleSave = useCallback(async () => {
 		try {
 			await saveStatus({
@@ -37,12 +40,25 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 				name,
 				statusType,
 			});
-			dispatchToastMessage({ type: 'success', message: t('Custom_User_Status_Updated_Successfully') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Custom_User_Status_Updated_Successfully'),
+			});
 			onChange();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [saveStatus, _id, previousName, previousStatusType, name, statusType, dispatchToastMessage, t, onChange]);
+	}, [
+		saveStatus,
+		_id,
+		previousName,
+		previousStatusType,
+		name,
+		statusType,
+		dispatchToastMessage,
+		t,
+		onChange,
+	]);
 
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleClose = () => {
@@ -54,10 +70,12 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		const handleDelete = async () => {
 			try {
 				await deleteStatus(_id);
-				setModal(() => <DeleteSuccessModal
-					children={t('Custom_User_Status_Has_Been_Deleted')}
-					onClose={handleClose}
-				/>);
+				setModal(() => (
+					<DeleteSuccessModal
+						children={t('Custom_User_Status_Has_Been_Deleted')}
+						onClose={handleClose}
+					/>
+				));
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 				onChange();
@@ -68,11 +86,13 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 			setModal(null);
 		};
 
-		setModal(() => <DeleteWarningModal
-			children={t('Custom_User_Status_Delete_Warning')}
-			onDelete={handleDelete}
-			onCancel={handleCancel}
-		/>);
+		setModal(() => (
+			<DeleteWarningModal
+				children={t('Custom_User_Status_Delete_Warning')}
+				onDelete={handleDelete}
+				onCancel={handleCancel}
+			/>
+		));
 	}, [_id, close, deleteStatus, dispatchToastMessage, onChange, setModal, t]);
 
 	const presenceOptions = [
@@ -82,37 +102,51 @@ export function EditCustomUserStatus({ close, onChange, data, ...props }) {
 		['offline', t('Offline')],
 	];
 
-	return <VerticalBar.ScrollableContent {...props}>
-		<Field>
-			<Field.Label>{t('Name')}</Field.Label>
-			<Field.Row>
-				<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} placeholder={t('Name')} />
-			</Field.Row>
-		</Field>
-		<Field>
-			<Field.Label>{t('Presence')}</Field.Label>
-			<Field.Row>
-				<Select value={statusType} onChange={(value) => setStatusType(value)} placeholder={t('Presence')} options={presenceOptions}/>
-			</Field.Row>
-		</Field>
-		<Field>
-			<Field.Row>
-				<ButtonGroup stretch w='full'>
-					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>{t('Save')}</Button>
-				</ButtonGroup>
-			</Field.Row>
-		</Field>
-		<Field>
-			<Field.Row>
-				<ButtonGroup stretch w='full'>
-					<Button primary danger onClick={handleDeleteButtonClick}>
-						<Icon name='trash' mie='x4'/>{t('Delete')}
-					</Button>
-				</ButtonGroup>
-			</Field.Row>
-		</Field>
-	</VerticalBar.ScrollableContent>;
+	return (
+		<VerticalBar.ScrollableContent {...props}>
+			<Field>
+				<Field.Label>{t('Name')}</Field.Label>
+				<Field.Row>
+					<TextInput
+						value={name}
+						onChange={(e) => setName(e.currentTarget.value)}
+						placeholder={t('Name')}
+					/>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Presence')}</Field.Label>
+				<Field.Row>
+					<Select
+						value={statusType}
+						onChange={(value) => setStatusType(value)}
+						placeholder={t('Presence')}
+						options={presenceOptions}
+					/>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Row>
+					<ButtonGroup stretch w='full'>
+						<Button onClick={close}>{t('Cancel')}</Button>
+						<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+							{t('Save')}
+						</Button>
+					</ButtonGroup>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Row>
+					<ButtonGroup stretch w='full'>
+						<Button primary danger onClick={handleDeleteButtonClick}>
+							<Icon name='trash' mie='x4' />
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				</Field.Row>
+			</Field>
+		</VerticalBar.ScrollableContent>
+	);
 }
 
 export default EditCustomUserStatus;
