@@ -48,7 +48,6 @@ function UserInfo({
 				return customFieldsToShow.push(customField);
 			});
 	} catch (e) {
-		// Do Something
 		console.log(e);
 	}
 
