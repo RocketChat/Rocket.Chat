@@ -1,3 +1,5 @@
+import { parser } from '@rocket.chat/message-parser';
+
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IUser } from './IUser';
 import { ChannelName, RoomID } from './IRoom';
@@ -22,6 +24,8 @@ export interface IMessage extends IRocketChatRecord {
 	mid?: string;
 
 	bot?: string;
+
+	md: ReturnType<typeof parser>;
 
 	mentions?: {
 		_id: string;

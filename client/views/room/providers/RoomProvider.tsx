@@ -4,11 +4,7 @@ import { roomTypes } from '../../../../app/utils/client';
 import { IRoom } from '../../../../definition/IRoom';
 import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-<<<<<<< HEAD
-import RoomSkeleton from '../Room/Skeleton';
-=======
 import RoomSkeleton from '../Room/RoomSkeleton';
->>>>>>> message-write
 import { RoomContext, RoomContextValue } from '../contexts/RoomContext';
 import ToolboxProvider from './ToolboxProvider';
 

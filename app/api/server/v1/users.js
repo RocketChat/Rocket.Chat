@@ -794,7 +794,7 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 
 		if (ids) {
 			return API.v1.success({
-				users: Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).fetch(),
+				users: Users.findByIds(Array.isArray(ids) ? ids : ids.split(','), options).fetch(),
 				full: false,
 			});
 		}
@@ -812,7 +812,7 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 		}
 
 		return API.v1.success({
-			users: Users.findUsersNotOffline(options).fetch(),
+			users: Users.find({}, options).fetch(),
 			full: true,
 		});
 	},

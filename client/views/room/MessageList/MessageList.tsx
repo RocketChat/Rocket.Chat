@@ -44,12 +44,10 @@ export const MessageList: FC = () => {
 			const sequential = isMessageSequential(message, previous);
 
 			const newDay = !previous || !isSameDay(message.ts, previous.ts);
-
-			// const Template = sequential ? SequentialMessage : Message;
 			return (
 				<>
 					{newDay && <MessageTemplate.Divider>{format(message.ts)}</MessageTemplate.Divider>}
-					<Message message={message} key={message._id} />
+					<Message sequential={sequential} message={message} key={message._id} />
 				</>
 			);
 		},
