@@ -1,5 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo } from 'react';
+import React, { useMemo, FC } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
@@ -17,21 +17,16 @@ import {
 	useTabBarClose,
 	useTabBarOpenUserInfo,
 } from '../providers/ToolboxProvider';
-import Aside from './Aside';
-import Body from './Body';
-import Footer from './Footer';
 import LazyComponent from './LazyComponent';
 
-const Room = () => {
-	const t = useTranslation();
+export const Room: FC<{}> = () => {
 	const room = useRoom();
+	const t = useTranslation();
 	const tab = useTab();
 	const open = useTabBarOpen();
 	const close = useTabBarClose();
 	const openUserInfo = useTabBarOpenUserInfo();
-
 	const isLayoutEmbedded = useEmbeddedLayout();
-
 	const hideFlexTab = useUserPreference('hideFlexTab');
 
 	const earlyAdopter = useUserPreference('enableMessageParserEarlyAdoption');
@@ -89,10 +84,3 @@ const Room = () => {
 		</RoomTemplate>
 	);
 };
-
-export default Object.assign(Room, {
-	Header,
-	Body,
-	Footer,
-	Aside,
-});

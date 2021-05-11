@@ -6,7 +6,6 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import * as NotificationStatus from '../NotificationStatus';
 import { followStyle, anchor } from '../helpers/followSyle';
-import { useBlockRendered } from '../hooks/useBlockRendered';
 
 type ThreadReplyOptions = {
 	unread: boolean;
@@ -35,8 +34,6 @@ const ThreadMetric: FC<ThreadReplyOptions> = ({
 }) => {
 	const t = useTranslation();
 
-	const { className, ref } = useBlockRendered();
-
 	const followMessage = useEndpoint('POST', 'chat.followMessage');
 	const unfollowMessage = useEndpoint('POST', 'chat.unfollowMessage');
 	const format = useTimeAgo();
@@ -48,7 +45,6 @@ const ThreadMetric: FC<ThreadReplyOptions> = ({
 
 	return (
 		<Message.Block className={followStyle}>
-			<div className={className} ref={ref as any} />
 			<Message.Metrics>
 				<Message.Metrics.Reply data-rid={rid} data-mid={mid} onClick={openThread}>
 					{t('Reply')}

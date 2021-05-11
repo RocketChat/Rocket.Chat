@@ -1,5 +1,5 @@
-import { Message } from '@rocket.chat/fuselage';
 import React from 'react';
+import { Message } from '@rocket.chat/fuselage';
 
 import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
@@ -25,9 +25,9 @@ export default React.memo(function MessageDiscussion({
 }) {
 	return (
 		<Message {...props} className={className}>
-			<Message.AvatarContainer>
+			<Message.LeftContainer>
 				<UserAvatar username={username} className='rcx-message__avatar' size='x36' />
-			</Message.AvatarContainer>
+			</Message.LeftContainer>
 			<Message.Container>
 				<Message.Header>
 					<Message.Name title={username}>{name}</Message.Name>
