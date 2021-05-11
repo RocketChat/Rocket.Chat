@@ -5,8 +5,8 @@ import MarkdownText from '../../../../components/MarkdownText';
 import UTCClock from '../../../../components/UTCClock';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
-import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import InfoPanel from '../../../InfoPanel';
 import Avatar from './Avatar';
@@ -40,17 +40,16 @@ function UserInfo({
 	try {
 		const customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
 		customFieldsToShowObj &&
-			Object.values(customFieldsToShowObj).map((value) =>{
+			Object.values(customFieldsToShowObj).map((value) => {
 				const role = Object.keys(value);
 				const roleNameToShow = Object.values(value);
-				var customField = {};
+				const customField = {};
 				customField[roleNameToShow] = customFields[role];
-				customFieldsToShow.push(customField)
-			}
-			);
+				return customFieldsToShow.push(customField);
+			});
 	} catch (e) {
 		// Do Something
-		console.log("error", e)
+		console.log(e);
 	}
 
 	return (
@@ -148,13 +147,15 @@ function UserInfo({
 						</InfoPanel.Field>
 					)}
 
-					{customFieldsToShow && customFieldsToShow.map((customField) => Object.values(customField)[0] ? (
-							<InfoPanel.Field key={Object.keys(customField)[0]}>
-								<InfoPanel.Label>{t(Object.keys(customField)[0])}</InfoPanel.Label>
-								<InfoPanel.Text>{Object.values(customField)[0]}</InfoPanel.Text>
-							</InfoPanel.Field>
-						)
-						: null )}
+					{customFieldsToShow &&
+						customFieldsToShow.map((customField) =>
+							Object.values(customField)[0] ? (
+								<InfoPanel.Field key={Object.keys(customField)[0]}>
+									<InfoPanel.Label>{t(Object.keys(customField)[0])}</InfoPanel.Label>
+									<InfoPanel.Text>{Object.values(customField)[0]}</InfoPanel.Text>
+								</InfoPanel.Field>
+							) : null,
+						)}
 
 					<InfoPanel.Field>
 						<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
