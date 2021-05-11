@@ -146,8 +146,7 @@ function UserInfo({
 						</InfoPanel.Field>
 					)}
 
-					{customFieldsToShow &&
-						customFieldsToShow.map((customField) =>
+					{customFieldsToShow.map((customField) =>
 							Object.values(customField)[0] ? (
 								<InfoPanel.Field key={Object.keys(customField)[0]}>
 									<InfoPanel.Label>{t(Object.keys(customField)[0])}</InfoPanel.Label>
