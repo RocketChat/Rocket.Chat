@@ -1,5 +1,6 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import type { IMessage } from '../../../definition/IMessage';
-import { escapeRegExp } from '../../../lib/escapeRegExp';
 import { MessageList } from './MessageList';
 
 type DiscussionMessage = Omit<IMessage, 'drid'> & Required<Pick<IMessage, 'drid'>>;

@@ -1,10 +1,10 @@
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
 import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const logger = new Logger('getFullUserData');
 

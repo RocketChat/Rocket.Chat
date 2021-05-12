@@ -2776,13 +2776,14 @@ describe('[Users]', function() {
 
 	describe('[/users.setStatus]', () => {
 		let user;
-		before((done) => {
-			createUser()
-				.then((createdUser) => {
-					user = createdUser;
-					done();
-				});
+		before(async () => {
+			user = await createUser();
 		});
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+		});
+
 		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
 			updateSetting('Accounts_AllowUserStatusMessageChange', false).then(() => {
 				request.post(api('users.setStatus'))
@@ -2871,6 +2872,24 @@ describe('[Users]', function() {
 					expect(res.body.error).to.be.equal('Valid status types include online, away, offline, and busy. [error-invalid-status]');
 				})
 				.end(done);
+		});
+		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
+			await updateSetting('Accounts_AllowInvisibleStatusOption', false);
+
+			await request.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'offline',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-status-not-allowed');
+					expect(res.body.error).to.be.equal('Invisible status is disabled [error-status-not-allowed]');
+				});
+
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
 		});
 	});
 
