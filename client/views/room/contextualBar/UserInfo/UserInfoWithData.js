@@ -40,22 +40,8 @@ function UserInfoWithData({
 		]),
 	);
 
-	const customFieldsToShowSetting = useSetting('Accounts_CustomFieldsToShowInUserInfo');
-
 	const user = useMemo(() => {
 		const { user } = value || { user: {} };
-
-		const customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
-
-		const customFieldsToShow = customFieldsToShowObj
-			? Object.values(customFieldsToShowObj).map((value) => {
-					const role = Object.values(value);
-					const roleNameToShow = Object.keys(value);
-					const customField = {};
-					customField[roleNameToShow] = user?.customFields[role];
-					return customField;
-			  })
-			: [];
 
 		const {
 			_id,
@@ -78,7 +64,7 @@ function UserInfoWithData({
 				getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
 			phone: user.phone,
-			customFields: customFieldsToShow,
+			customFields: user.customFields,
 			verified: getUserEmailVerified(user),
 			email: getUserEmailAddress(user),
 			utcOffset,
@@ -87,7 +73,7 @@ function UserInfoWithData({
 			customStatus: statusText,
 			nickname,
 		};
-	}, [value, customFieldsToShowSetting, showRealNames, getRoles]);
+	}, [value, showRealNames, getRoles]);
 
 	return (
 		<>
