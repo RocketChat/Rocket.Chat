@@ -48,9 +48,17 @@ Meteor.startup(() => {
 			const appHost = Meteor.absoluteUrl();
 
 			if (redirectUrl.startsWith(appRedirectUrl)) {
-				const { token, secret } = details.credentials;
+				redirectUrl = `${ appRedirectUrl }?host=${ appHost }&type=oauth`;
 
-				redirectUrl = `${ appRedirectUrl }?host=${ appHost }&type=oauth&credentialToken=${ token }&credentialSecret=${ secret }`;
+				if (details.error) {
+					const error = encodeURIComponent(details.error.toString());
+					redirectUrl = `${ redirectUrl }&error=${ error }`;
+				}
+
+				if (details.credentials) {
+					const { token, secret } = details.credentials;
+					redirectUrl = `${ redirectUrl }&credentialToken=${ token }&credentialSecret=${ secret }`;
+				}
 			} else if (!Meteor.settings?.packages?.oauth?.disableCheckRedirectUrlOrigin && OAuth._checkRedirectUrlOrigin(redirectUrl)) {
 				details.error = `redirectUrl (${ redirectUrl }) is not on the same host as the app (${ appHost })`;
 				redirectUrl = appHost;
