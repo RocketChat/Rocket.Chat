@@ -1,3 +1,5 @@
+import './lib/messageActionDefault';
+
 export { modal } from './lib/modal';
 export { SideNav } from './lib/SideNav';
 export { AccountBox } from './lib/AccountBox';

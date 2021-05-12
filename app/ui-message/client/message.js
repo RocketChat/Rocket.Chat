@@ -422,7 +422,7 @@ Template.message.helpers({
 			context = 'message';
 		}
 
-		return MessageAction.getButtons(this, context, messageGroup);
+		return MessageAction.getButtons({ ...this, message: this.msg, user: this.u }, context, messageGroup);
 	},
 	isSnippet() {
 		const { msg } = this;

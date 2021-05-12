@@ -29,7 +29,7 @@ const mountPopover = (e, i, outerContext) => {
 
 	const messageContext = messageArgs(outerContext);
 
-	let menuItems = MessageAction.getButtons(messageContext, context, "menu").map(
+	let menuItems = MessageAction.getButtons({ ...messageContext, message: messageContext.msg }, context, "menu").map(
 		(item) => ({
 			icon: item.icon,
 			name: t(item.label),
