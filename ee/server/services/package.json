@@ -19,7 +19,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"bcrypt": "^5.0.0",
-		"ejson": "^2.2.0",
+		"ejson": "^2.2.1",
 		"jaeger-client": "^3.18.1",
 		"mem": "^6.1.0",
 		"moleculer": "^0.14.10",
