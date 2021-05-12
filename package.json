@@ -109,7 +109,7 @@
 		"mocha": "^8.1.1",
 		"mock-require": "^3.0.3",
 		"mongo-unit": "^2.0.1",
-		"postcss": "^7.0.32",
+		"postcss": "^8.2.10",
 		"postcss-custom-properties": "^9.1.1",
 		"postcss-easy-import": "^3.0.0",
 		"postcss-load-config": "^2.1.0",
