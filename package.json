@@ -70,7 +70,7 @@
 		"@types/jsdom": "^16.2.6",
 		"@types/less": "^3.0.2",
 		"@types/meteor": "^1.4.49",
-		"@types/mocha": "^8.0.3",
+		"@types/mocha": "^8.2.2",
 		"@types/mock-require": "^2.0.0",
 		"@types/moment-timezone": "^0.5.30",
 		"@types/mongodb": "^3.5.26",
