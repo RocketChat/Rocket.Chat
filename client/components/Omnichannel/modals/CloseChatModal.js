@@ -2,6 +2,7 @@ import { Field, Button, TextInput, Icon, ButtonGroup, Modal, Box } from '@rocket
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
+import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
@@ -14,6 +15,8 @@ const CloseChatModal = ({ department = {}, onCancel, onConfirm }) => {
 
 	const { values, handlers } = useForm({ comment: '', tags: [] });
 
+	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation');
+
 	const { comment, tags } = values;
 	const { handleComment, handleTags } = handlers;
 	const [commentError, setCommentError] = useState('');
@@ -25,14 +28,14 @@ const CloseChatModal = ({ department = {}, onCancel, onConfirm }) => {
 	}, [comment, onConfirm, tags]);
 
 	useComponentDidUpdate(() => {
-		setCommentError(!comment ? t('The_field_is_required', t('Comment')) : '');
-	}, [t, comment]);
+		setCommentError(!comment && commentRequired ? t('The_field_is_required', t('Comment')) : '');
+	}, [commentRequired, comment, t]);
 
-	const canConfirm = useMemo(() => (!tagRequired ? !!comment : !!comment && tags.length > 0), [
-		comment,
-		tagRequired,
-		tags,
-	]);
+	const canConfirm = useMemo(() => {
+		const canConfirmTag = !tagError && (tagRequired ? tags.length > 0 : true);
+		const canConfirmComment = !commentError && (commentRequired ? !!comment : true);
+		return canConfirmTag && canConfirmComment;
+	}, [comment, commentError, commentRequired, tagError, tagRequired, tags.length]);
 
 	useEffect(() => {
 		department?.requestTagBeforeClosingChat && setTagRequired(true);
@@ -53,7 +56,7 @@ const CloseChatModal = ({ department = {}, onCancel, onConfirm }) => {
 			<Modal.Content fontScale='p1'>
 				<Box color='neutral-600'>{t('Close_room_description')}</Box>
 				<Field marginBlock='x15'>
-					<Field.Label>{t('Comment')}*</Field.Label>
+					<Field.Label required={commentRequired}>{t('Comment')}</Field.Label>
 					<Field.Row>
 						<TextInput
 							ref={inputRef}

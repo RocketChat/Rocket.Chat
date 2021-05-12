@@ -1,11 +1,11 @@
 import _ from 'underscore';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import { getValidRoomName } from '../../../utils';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -227,6 +227,30 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	setDmReadOnlyByUserId(_id, ids, readOnly, reactWhenReadOnly) {
+		const query = {
+			uids: {
+				$size: 2,
+				$in: [_id],
+			},
+			...ids && Array.isArray(ids) ? { _id: { $in: ids } } : {},
+			t: 'd',
+		};
+
+		const update = {
+			$set: {
+				ro: readOnly,
+				reactWhenReadOnly,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	getDirectConversationsByUserId(_id, options) {
+		return this.find({ t: 'd', uids: { $size: 2, $in: [_id] } }, options);
 	}
 
 	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
@@ -939,7 +963,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	resetLastMessageById(_id, messageId) {
+	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };
 		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 

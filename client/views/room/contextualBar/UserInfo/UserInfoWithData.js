@@ -40,14 +40,28 @@ function UserInfoWithData({
 		]),
 	);
 
+	const customFieldsToShowSetting = useSetting('Accounts_CustomFieldsToShowInUserInfo');
+
 	const user = useMemo(() => {
 		const { user } = value || { user: {} };
+
+		const customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
+
+		const customFieldsToShow = customFieldsToShowObj
+			? Object.values(customFieldsToShowObj).map((value) => {
+					const role = Object.values(value);
+					const roleNameToShow = Object.keys(value);
+					const customField = {};
+					customField[roleNameToShow] = user?.customFields[role];
+					return customField;
+			  })
+			: [];
+
 		const {
 			_id,
 			name,
 			username,
 			roles = [],
-			status = null,
 			statusText,
 			bio,
 			utcOffset,
@@ -64,16 +78,16 @@ function UserInfoWithData({
 				getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
 			phone: user.phone,
-			customFields: user.customFields,
+			customFields: customFieldsToShow,
 			verified: getUserEmailVerified(user),
 			email: getUserEmailAddress(user),
 			utcOffset,
 			createdAt: user.createdAt,
-			status: status && <ReactiveUserStatus uid={_id} presence={status} />,
+			status: <ReactiveUserStatus uid={_id} />,
 			customStatus: statusText,
 			nickname,
 		};
-	}, [value, showRealNames, getRoles]);
+	}, [value, customFieldsToShowSetting, showRealNames, getRoles]);
 
 	return (
 		<>
@@ -96,7 +110,7 @@ function UserInfoWithData({
 					<UserInfo
 						{...user}
 						data={user}
-						actions={<UserActions user={user} rid={rid} />}
+						actions={<UserActions user={user} rid={rid} backToList={onClickBack} />}
 						{...props}
 						p='x24'
 					/>

@@ -5,6 +5,7 @@ import React, { memo, useState } from 'react';
 const Medium = ({
 	icon,
 	title = '',
+	titleIcon,
 	avatar,
 	actions,
 	href,

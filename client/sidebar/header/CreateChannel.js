@@ -120,7 +120,7 @@ const CreateChannel = ({
 						/>
 					</Box>
 				</Field>
-				<Field mbe='x24' disabled={values.broadcast}>
+				<Field mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
 						<Box display='flex' flexDirection='column'>
 							<Field.Label>{t('Read_only')}</Field.Label>
@@ -135,7 +135,7 @@ const CreateChannel = ({
 						/>
 					</Box>
 				</Field>
-				<Field disabled={e2edisabled} mbe='x24'>
+				<Field mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
 						<Box display='flex' flexDirection='column'>
 							<Field.Label>{t('Encrypted')}</Field.Label>

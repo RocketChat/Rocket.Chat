@@ -31,7 +31,7 @@ addAction('bbb_video', ({ room }) => {
 		title: 'BBB_Video_Call',
 		icon: 'phone',
 		template: templateBBB,
-		order: live ? -1 : 0,
+		order: live ? -1 : 4,
 		renderAction: (props): ReactNode => <Header.ToolBoxAction {...props}>
 			{live ? <Header.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.Badge> : null}
 		</Header.ToolBoxAction>,
@@ -65,7 +65,7 @@ addAction('video', ({ room }) => {
 		icon: 'phone',
 		template: templateJitsi,
 		full: true,
-		order: live ? -1 : 0,
+		order: live ? -1 : 4,
 		renderAction: (props): ReactNode => <Header.ToolBoxAction {...props}>
 			{live && <Header.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.Badge>}
 		</Header.ToolBoxAction>,

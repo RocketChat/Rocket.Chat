@@ -23,6 +23,7 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	encrypted?: boolean;
+	topic: any;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 
@@ -82,7 +83,6 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	tags: any;
 	closedAt: any;
 	metrics: any;
-	topic: any;
 	waitingResponse: any;
 	responseBy: any;
 	priorityId: any;

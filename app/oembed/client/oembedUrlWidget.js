@@ -1,8 +1,7 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-
-import { unescapeHTML } from '../../../lib/unescapeHTML';
+import { unescapeHTML } from '@rocket.chat/string-helpers';
 
 const getTitle = function(self) {
 	if (self.meta == null) {

@@ -14,7 +14,7 @@ const loginServiceConfigurationCollection = 'meteor_accounts_loginServiceConfigu
 const loginServiceConfigurationPublication = 'meteor.loginServiceConfiguration';
 const loginServices = new Map<string, any>();
 
-MeteorService.getLoginServiceConfiguration().then((records) => records.forEach((record) => loginServices.set(record._id, record)));
+MeteorService.getLoginServiceConfiguration().then((records = []) => records.forEach((record) => loginServices.set(record._id, record)));
 
 server.publish(loginServiceConfigurationPublication, async function() {
 	loginServices.forEach((record) => this.added(loginServiceConfigurationCollection, record._id, record));
@@ -43,7 +43,7 @@ server.publish(loginServiceConfigurationPublication, async function() {
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
 
-MeteorService.getLastAutoUpdateClientVersions().then((records) => {
+MeteorService.getLastAutoUpdateClientVersions().then((records = []) => {
 	records.forEach((record) => autoUpdateRecords.set(record._id, record));
 });
 
