@@ -37,6 +37,7 @@ function RoomInfo({
 		filesOnlyDefault,
 		excludePinnedDefault,
 		maxAgeDefault,
+		retentionEnabledDefault,
 	} = retentionPolicy;
 
 	const memoizedActions = useMemo(
@@ -195,7 +196,7 @@ function RoomInfo({
 							</InfoPanel.Field>
 						)}
 
-						{retentionPolicyEnabled && (
+						{retentionPolicyEnabled && retentionEnabledDefault && (
 							<RetentionPolicyCallout
 								filesOnlyDefault={filesOnlyDefault}
 								excludePinnedDefault={excludePinnedDefault}

@@ -69,7 +69,10 @@ const RoomMembersWithData = ({ rid }) => {
 		setState({ tab: 'AddUsers' });
 	});
 
-	const handleBack = useCallback(() => setState({}), [setState]);
+	const handleBack = useCallback(() => {
+		setState({});
+		reload();
+	}, [setState, reload]);
 
 	if (state.tab === 'UserInfo') {
 		return (

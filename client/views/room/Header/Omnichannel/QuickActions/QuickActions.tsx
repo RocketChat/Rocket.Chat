@@ -13,6 +13,7 @@ import React, {
 } from 'react';
 import toastr from 'toastr';
 
+import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { handleError } from '../../../../../../app/utils/client';
 import { IRoom } from '../../../../../../definition/IRoom';
 import PlaceChatOnHoldModal from '../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
@@ -35,7 +36,7 @@ import { QuickActionsContext } from '../../../lib/QuickActions/QuickActionsConte
 
 type QuickActionsProps = {
 	room: IRoom;
-	className: ComponentProps<typeof Box>['className'];
+	className?: ComponentProps<typeof Box>['className'];
 };
 
 const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
@@ -92,8 +93,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			try {
 				await requestTranscript(rid, email, subject);
 				closeModal();
-				Session.set('openedRoom', null);
-				FlowRouter.go('/home');
+				RoomManager.close(`l${rid}`);
 				toastr.success(t('Livechat_transcript_has_been_requested'));
 			} catch (error) {
 				handleError(error);

@@ -18,6 +18,7 @@ const styleDefault = {
 };
 
 export type CustomScrollbarsProps = {
+	overflowX?: boolean;
 	style?: CSSProperties;
 	children?: ReactNode;
 	onScroll?: (values: ScrollValues) => void;
@@ -26,7 +27,7 @@ export type CustomScrollbarsProps = {
 };
 
 const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(
-	function WrappedComponent({ children, style, onScroll, renderView }, ref) {
+	function WrappedComponent({ children, style, onScroll, overflowX, renderView }, ref) {
 		const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [
 			style,
 		]) as CSSProperties;
@@ -39,9 +40,13 @@ const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(
 				style={scrollbarsStyle}
 				onScrollFrame={onScroll}
 				renderView={renderView}
-				renderTrackHorizontal={(props): ReactElement => (
-					<div {...props} className='track-horizontal' style={{ display: 'none' }} />
-				)}
+				renderTrackHorizontal={
+					overflowX
+						? undefined
+						: (props): ReactElement => (
+								<div {...props} className='track-horizontal' style={{ display: 'none' }} />
+						  )
+				}
 				renderThumbVertical={({ style, ...props }): JSX.Element => (
 					<div
 						{...props}
