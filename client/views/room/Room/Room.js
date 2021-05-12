@@ -7,7 +7,7 @@ import Header from '../Header';
 import BlazeTemplate from '../components/BlazeTemplate';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
-import { useRoom } from '../providers/RoomProvider';
+import { useRoom } from '../contexts/RoomContext';
 import {
 	useTab,
 	useTabBarOpen,
@@ -30,12 +30,10 @@ const Room = () => {
 	const hideFlexTab = useUserPreference('hideFlexTab');
 	const isOpen = useMutableCallback(() => !!(tab && tab.template));
 
-	const tabBar = useMemo(() => ({ open, close, isOpen, openUserInfo }), [
-		open,
-		close,
-		isOpen,
-		openUserInfo,
-	]);
+	const tabBar = useMemo(
+		() => ({ open, close, isOpen, openUserInfo }),
+		[open, close, isOpen, openUserInfo],
+	);
 
 	return (
 		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
