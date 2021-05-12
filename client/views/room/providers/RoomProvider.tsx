@@ -1,7 +1,7 @@
-import React, { ReactNode, useContext, useMemo, memo } from 'react';
+import React, { ReactNode, useMemo, memo } from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
-import { IRoom, IOmnichannelRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
+import { IRoom } from '../../../../definition/IRoom';
 import { useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import Skeleton from '../Room/Skeleton';
@@ -36,15 +36,4 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 		</RoomContext.Provider>
 	);
 };
-
-export const useRoom = (): undefined | IRoom => useContext(RoomContext)?.room;
-
-export const useOmichannelRoom = (): IOmnichannelRoom => {
-	const room = useRoom();
-	if (!room || !isOmnichannelRoom(room)) {
-		throw new Error('Invalid Room type');
-	}
-	return room;
-};
-
 export default memo(RoomProvider);

@@ -16,7 +16,7 @@ interface IRequestTranscript {
 export interface IRoom extends IRocketChatRecord {
 	_id: RoomID;
 	t: RoomType;
-	name: string;
+	name?: string;
 	fname: string;
 	msgs: number;
 	default?: true;
@@ -49,8 +49,13 @@ export interface IRoom extends IRocketChatRecord {
 	teamMain?: boolean;
 	teamId?: string;
 	teamDefault?: boolean;
-
 	open?: boolean;
+
+	autoTranslateLanguage: string;
+	autoTranslate?: boolean;
+	unread?: number;
+	alert?: boolean;
+	hideUnreadStatus?: boolean;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
@@ -84,4 +89,4 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	livechatData: any;
 }
 
-export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom => room.t === 'l';
+export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';

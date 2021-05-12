@@ -3,7 +3,7 @@ import React from 'react';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useRoute, useRouteParameter } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useRoom } from '../../../../room/providers/RoomProvider';
+import { useOmnichannelRoom } from '../../../../room/providers/RoomProvider';
 import ContactEditWithData from './ContactEditWithData';
 import ContactInfo from './ContactInfo';
 
@@ -24,7 +24,7 @@ const ContactsContextualBar = ({ rid }) => {
 		directoryRoute.push({ id: rid, tab: 'contact-profile' });
 	};
 
-	const room = useRoom();
+	const room = useOmnichannelRoom();
 
 	const {
 		v: { _id },
