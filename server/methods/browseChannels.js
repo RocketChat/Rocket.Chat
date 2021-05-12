@@ -51,9 +51,11 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 
 	const teams = Promise.await(Team.getAllPublicTeams());
 	const teamIds = teams.map(({ _id }) => _id);
+
+	const userTeams = Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
 	const userRooms = user.__rooms;
 
-	const result = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, teamIds, userRooms, {
+	const result = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, [...userTeams, ...teamIds], userRooms, {
 		...pagination,
 		sort: {
 			featured: -1,
@@ -203,7 +205,7 @@ const getUsers = (user, text, workspace, sort, pagination) => {
 
 Meteor.methods({
 	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
-		const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
+		const searchTerm = s.trim(escapeRegExp(text));
 
 		if (!['channels', 'users', 'teams'].includes(type) || !['asc', 'desc'].includes(sortDirection) || ((!page && page !== 0) && (!offset && offset !== 0))) {
 			return;
@@ -231,9 +233,9 @@ Meteor.methods({
 
 		switch (type) {
 			case 'channels':
-				return getChannelsAndGroups(user, canViewAnonymous, regex, sortChannels(sortBy, sortDirection), pagination);
+				return getChannelsAndGroups(user, canViewAnonymous, searchTerm, sortChannels(sortBy, sortDirection), pagination);
 			case 'teams':
-				return getTeams(user, text, sortChannels(sortBy, sortDirection), pagination);
+				return getTeams(user, searchTerm, sortChannels(sortBy, sortDirection), pagination);
 			case 'users':
 				return getUsers(user, text, workspace, sortUsers(sortBy, sortDirection), pagination);
 			default:
