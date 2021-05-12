@@ -194,7 +194,7 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 
 		const inclusive = this.bodyParams.inclusive || false;
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('cleanRoomHistory', {
+		const count = Meteor.runAsUser(this.userId, () => Meteor.call('cleanRoomHistory', {
 			roomId: findResult._id,
 			latest,
 			oldest,
@@ -207,7 +207,7 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 			fromUsers: this.bodyParams.users,
 		}));
 
-		return API.v1.success();
+		return API.v1.success({ count });
 	},
 });
 
