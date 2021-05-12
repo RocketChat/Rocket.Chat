@@ -3,30 +3,38 @@ import React from 'react';
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import Chat from './chats/Chat';
 import ChatInfo from './chats/contextualBar/ChatInfo';
 import RoomEditWithData from './chats/contextualBar/RoomEditWithData';
 
 const ChatsContextualBar = ({ chatReload }) => {
-	const liveRoute = useRoute('live');
 	const directoryRoute = useRoute('omnichannel-directory');
 
-	const context = useRouteParameter('context');
+	const bar = useRouteParameter('bar') || 'info';
 	const id = useRouteParameter('id');
 
 	const t = useTranslation();
 
 	const openInRoom = () => {
-		liveRoute.push({ id });
+		directoryRoute.push({ page: 'chats', id, bar: 'view' });
 	};
 
 	const handleChatsVerticalBarCloseButtonClick = () => {
-		directoryRoute.push({ tab: 'chats' });
+		directoryRoute.push({ page: 'chats' });
 	};
+
+	const handleChatsVerticalBarBackButtonClick = () => {
+		directoryRoute.push({ page: 'chats', id, bar: 'info' });
+	};
+
+	if (bar === 'view') {
+		return <Chat rid={id} />;
+	}
 
 	return (
 		<VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
-				{context === 'info' && (
+				{bar === 'info' && (
 					<>
 						<VerticalBar.Icon name='info-circled' />
 						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
@@ -37,7 +45,7 @@ const ChatsContextualBar = ({ chatReload }) => {
 						/>
 					</>
 				)}
-				{context === 'edit' && (
+				{bar === 'edit' && (
 					<>
 						<VerticalBar.Icon name='pencil' />
 						<VerticalBar.Text>{t('edit-room')}</VerticalBar.Text>
@@ -45,11 +53,11 @@ const ChatsContextualBar = ({ chatReload }) => {
 				)}
 				<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
-			{context === 'info' && <ChatInfo id={id} />}
-			{context === 'edit' && (
+			{bar === 'info' && <ChatInfo id={id} />}
+			{bar === 'edit' && (
 				<RoomEditWithData
 					id={id}
-					close={handleChatsVerticalBarCloseButtonClick}
+					close={handleChatsVerticalBarBackButtonClick}
 					reload={chatReload}
 				/>
 			)}

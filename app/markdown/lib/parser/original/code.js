@@ -3,8 +3,8 @@
  * @param {Object} message - The message object
  */
 import { Random } from 'meteor/random';
+import { unescapeHTML } from '@rocket.chat/string-helpers';
 
-import { unescapeHTML } from '../../../../../lib/unescapeHTML';
 import hljs from '../../hljs';
 
 const inlinecode = (message) => {
