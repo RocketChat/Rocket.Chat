@@ -279,7 +279,7 @@
 		"twilio": "^3.48.2",
 		"twit": "^2.2.11",
 		"ua-parser-js": "^0.7.21",
-		"underscore": "^1.10.2",
+		"underscore": "^1.12.1",
 		"underscore.string": "^3.3.5",
 		"url-polyfill": "^1.1.10",
 		"use-subscription": "^1.4.1",
