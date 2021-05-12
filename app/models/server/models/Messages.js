@@ -784,8 +784,9 @@ export class Messages extends Base {
 
 		record._id = this.insertOrUpsert(record);
 
+		const hiddenSysMesSettings = settings.get('Hide_System_Messages');
 		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(roomId);
-		if (!sysMes || !sysMes.includes(type)) {
+		if (!hiddenSysMesSettings.includes(type) && (!sysMes || !sysMes.includes(type))) {
 			const byUser = extraData ? extraData.u._id : user._id;
 			Rooms.incMsgCountAndSetLastMessageById(roomId, 1, record.ts, settings.get('Store_Last_Message') && record);
 			Subscriptions.setAlertForRoomIdExcludingUserId(roomId, byUser);
