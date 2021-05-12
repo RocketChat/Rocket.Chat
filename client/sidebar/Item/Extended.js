@@ -14,6 +14,7 @@ const Extended = ({
 	menu,
 	menuOptions,
 	subtitle = '',
+	titleIcon,
 	badges,
 	threadUnread,
 	unread,

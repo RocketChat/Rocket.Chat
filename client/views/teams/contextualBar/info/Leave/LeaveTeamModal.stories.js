@@ -3,7 +3,7 @@ import React from 'react';
 import LeaveTeamModal, { StepOne, StepTwo } from '.';
 
 export default {
-	title: 'components/LeaveTeamModal',
+	title: 'teams/LeaveTeamModal',
 	component: LeaveTeamModal,
 };
 

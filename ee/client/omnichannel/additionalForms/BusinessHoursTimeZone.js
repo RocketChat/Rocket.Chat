@@ -21,7 +21,7 @@ const BusinessHoursTimeZone = ({ onChange, data, className, hasChanges = () => {
 
 	const timeZonesOptions = useMemo(() => timeZones.map((name) => [name, t(name)]), [t, timeZones]);
 
-	onChange({ name });
+	onChange && onChange({ name });
 	hasChanges(hasUnsavedChanges);
 
 	return (
