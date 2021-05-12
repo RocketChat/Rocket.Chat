@@ -12,7 +12,7 @@ import { useUserSubscription } from '../../../../../contexts/UserContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
-import { useOmichannelRoom } from '../../../../room/contexts/RoomContext';
+import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
@@ -27,13 +27,12 @@ function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData(
-		'livechat/custom-fields',
-	);
+	const { value: allCustomFields, phase: stateCustomFields } =
+		useEndpointData('livechat/custom-fields');
 	const [customFields, setCustomFields] = useState([]);
 	const formatDuration = useFormatDuration();
 
-	const room = useOmichannelRoom();
+	const room = useOmnichannelRoom();
 
 	const {
 		ts,
