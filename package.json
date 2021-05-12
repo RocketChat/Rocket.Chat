@@ -63,7 +63,7 @@
 		"@storybook/react": "^6.2.2",
 		"@types/agenda": "^2.0.9",
 		"@types/bcrypt": "^3.0.0",
-		"@types/chai": "^4.2.12",
+		"@types/chai": "^4.2.18",
 		"@types/chai-spies": "^1.0.1",
 		"@types/clipboard": "^2.0.1",
 		"@types/ejson": "^2.1.2",
