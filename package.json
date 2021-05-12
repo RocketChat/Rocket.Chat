@@ -64,7 +64,7 @@
 		"@types/agenda": "^2.0.9",
 		"@types/bcrypt": "^3.0.0",
 		"@types/chai": "^4.2.12",
-		"@types/chai-spies": "^1.0.1",
+		"@types/chai-spies": "^1.0.3",
 		"@types/clipboard": "^2.0.1",
 		"@types/ejson": "^2.1.2",
 		"@types/jsdom": "^16.2.6",
