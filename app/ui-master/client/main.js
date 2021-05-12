@@ -75,6 +75,14 @@ Template.main.helpers({
 		if (!user || (user.services.totp !== undefined && user.services.totp.enabled) || (user.services.email2fa !== undefined && user.services.email2fa.enabled)) {
 			return false;
 		}
+		const is2faEnabled = settings.get('Accounts_TwoFactorAuthentication_Enabled');
+		const isEmail2faEnabled = settings.get('Accounts_TwoFactorAuthentication_By_Email_Enabled');
+		const isE2ECipherEnabled = settings.get('E2E_Enabled');
+
+		// if none of the 2fa/e2e settings are active, skip setup
+		if (![is2faEnabled, isEmail2faEnabled, isE2ECipherEnabled].includes(true)) {
+			return false;
+		}
 
 		const mandatoryRole = Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
 		return mandatoryRole !== undefined;
