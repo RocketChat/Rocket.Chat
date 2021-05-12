@@ -16,6 +16,12 @@ settings.addGroup('Accounts', function() {
 			enableQuery: enable2FA,
 		});
 
+		this.add('Accounts_TwoFactorAuthentication_By_TOTP_Enabled', true, {
+			type: 'boolean',
+			enableQuery: enable2FA,
+			public: true,
+		});
+
 		this.add('Accounts_TwoFactorAuthentication_By_Email_Enabled', true, {
 			type: 'boolean',
 			enableQuery: enable2FA,
