@@ -35,7 +35,7 @@ jobs:
       with:
         node-version: "12.22.1"
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
 
     - name: Free disk space
       run: |
@@ -229,7 +229,7 @@ jobs:
         docker exec mongo mongo --eval 'rs.initiate({_id:"rs0", members: [{"_id":1, "host":"localhost:27017"}]})'
         docker exec mongo mongo --eval 'rs.status()'
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
 
     - name: Cache cypress
       id: cache-cypress
@@ -286,7 +286,7 @@ jobs:
         release: ["official", "preview"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
@@ -410,7 +410,7 @@ jobs:
     needs: test
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
 
     - name: Restore build
       uses: actions/download-artifact@v2
@@ -494,7 +494,7 @@ jobs:
       IMAGE: "rocketchat/rocket.chat"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
 
     - name: Login to DockerHub
       uses: docker/login-action@v1
@@ -568,7 +568,7 @@ jobs:
         service: ["account", "authorization", "ddp-streamer", "presence", "stream-hub"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
 
     - name: Use Node.js 12.22.1
       uses: actions/setup-node@v2
