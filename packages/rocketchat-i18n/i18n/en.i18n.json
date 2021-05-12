@@ -231,7 +231,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Enable Two Factor Authentication via Email",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Users with email verified and the option enabled in their profile page will receive an email with a temporary code to authorize certain actions like login, save the profile, etc.",
   "Accounts_TwoFactorAuthentication_Enabled": "Enable Two Factor Authentication via TOTP",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Users can setup their Two Factor Authentication using any TOTP app, like Google Authenticator or Authy",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Users can setup their Two Factor Authentication using any TOTP app, like Google Authenticator or Authy. If deactivated, this setting will deactivate all 2FA.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Enforce password fallback",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Users will be forced to enter their password, for important actions, if no other Two Factor Authentication method is enabled for that user and a password is set for him.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",
