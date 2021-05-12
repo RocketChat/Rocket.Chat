@@ -31,7 +31,7 @@ jobs:
         cat $GITHUB_EVENT_PATH
 
     - name: Use Node.js 12.22.1
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v2.1.5
       with:
         node-version: "12.22.1"
 
@@ -216,7 +216,7 @@ jobs:
         cd -
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v2.1.5
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -325,7 +325,7 @@ jobs:
         key: ${{ runner.OS }}-meteor-${{ hashFiles('.meteor/release', '.github/workflows/build_and_test.yml') }}
 
     - name: Use Node.js 12.22.1
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v2.1.5
       with:
         node-version: "12.22.1"
 
@@ -571,7 +571,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Use Node.js 12.22.1
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v2.1.5
       with:
         node-version: "12.22.1"
 
