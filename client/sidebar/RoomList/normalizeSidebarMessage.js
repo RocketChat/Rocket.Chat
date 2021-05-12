@@ -1,7 +1,7 @@
+import { escapeHTML } from '@rocket.chat/string-helpers';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { filterMarkdown } from '../../../app/markdown/lib/markdown';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 
 export const normalizeSidebarMessage = (message, t) => {
 	if (message.t) {
