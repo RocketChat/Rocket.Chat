@@ -49,9 +49,9 @@ const ContactInfo = ({ id, rid, route }) => {
 						id: rid,
 				  }
 				: {
-						tab: 'contacts',
-						context: 'edit',
+						page: 'contacts',
 						id,
+						bar: 'edit',
 				  },
 		);
 	});
@@ -70,9 +70,6 @@ const ContactInfo = ({ id, rid, route }) => {
 	const [currentRouteName] = useCurrentRoute();
 	const liveRoute = useRoute('live');
 
-	const {
-		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
-	} = data || { contact: {} };
 	if (state === AsyncStatePhase.LOADING) {
 		return (
 			<Box pi='x24'>
@@ -84,6 +81,10 @@ const ContactInfo = ({ id, rid, route }) => {
 	if (error || !data || !data.contact) {
 		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
 	}
+
+	const {
+		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
+	} = data;
 
 	const checkIsVisibleAndScopeVisitor = (key) => {
 		const field = customFields.find(({ _id }) => _id === key);

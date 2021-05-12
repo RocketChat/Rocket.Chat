@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import CannedResponseEdit from './CannedResponseEdit';
+import { CannedResponseEdit } from './CannedResponseEdit';
 
 export default {
-	title: 'omnichannel/CannedResponseEdit',
+	title: 'omnichannel/CannedResponse/CannedResponseEdit',
 	component: CannedResponseEdit,
 };
 
@@ -15,6 +15,6 @@ const cannedResponse = {
 
 export const Default = () => (
 	<Box maxWidth='x300' alignSelf='center' w='full'>
-		<CannedResponseEdit {...cannedResponse} />
+		<CannedResponseEdit response={cannedResponse} />
 	</Box>
 );

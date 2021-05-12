@@ -149,9 +149,9 @@ const Sidebar = () => (
 	<>
 		<SettingsContext.Provider value={settingContextValue}>
 			<UserContext.Provider value={userContextValue}>
-				<aside class='sidebar sidebar--main' role='navigation'>
+				<aside className='sidebar sidebar--main' role='navigation'>
 					<Header />
-					<div class='rooms-list sidebar--custom-colors' aria-label='Channels' role='region'>
+					<div className='rooms-list sidebar--custom-colors' aria-label='Channels' role='region'>
 						<RoomList />
 					</div>
 				</aside>
