@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { settings } from '../../../settings';
 import { Team } from '../../../../server/sdk';
 import { validateName } from './validateName';

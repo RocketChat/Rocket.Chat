@@ -54,6 +54,10 @@ const UserDropdown = ({ user, onClose }) => {
 	const { name, username, avatarETag, status, statusText } = user;
 
 	const useRealName = useSetting('UI_Use_Real_Name');
+	const filterInvisibleStatus = !useSetting('Accounts_AllowInvisibleStatusOption')
+		? (key) => userStatus.list[key].name !== 'invisible'
+		: () => true;
+
 	const showAdmin = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 
 	const handleCustomStatus = useMutableCallback((e) => {
@@ -131,26 +135,28 @@ const UserDropdown = ({ user, onClose }) => {
 				<Box pi='x16' fontScale='c1' textTransform='uppercase'>
 					{t('Status')}
 				</Box>
-				{Object.keys(userStatus.list).map((key, i) => {
-					const status = userStatus.list[key];
-					const name = status.localizeName ? t(status.name) : status.name;
-					const modifier = status.statusType || user.status;
+				{Object.keys(userStatus.list)
+					.filter(filterInvisibleStatus)
+					.map((key, i) => {
+						const status = userStatus.list[key];
+						const name = status.localizeName ? t(status.name) : status.name;
+						const modifier = status.statusType || user.status;
 
-					return (
-						<Option
-							onClick={() => {
-								setStatus(status.statusType);
-								onClose();
-							}}
-							key={i}
-						>
-							<Option.Column>
-								<UserStatus status={modifier} />
-							</Option.Column>
-							<Option.Content>{name}</Option.Content>
-						</Option>
-					);
-				})}
+						return (
+							<Option
+								onClick={() => {
+									setStatus(status.statusType);
+									onClose();
+								}}
+								key={i}
+							>
+								<Option.Column>
+									<UserStatus status={modifier} />
+								</Option.Column>
+								<Option.Content>{name}</Option.Content>
+							</Option>
+						);
+					})}
 				<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus} />
 			</div>
 
