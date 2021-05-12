@@ -161,6 +161,7 @@ const mergeSubRoom = (subscription) => {
 			retention: 1,
 			teamId: 1,
 			teamMain: 1,
+			msgs: 1,
 		},
 	};
 
@@ -193,6 +194,7 @@ const mergeSubRoom = (subscription) => {
 
 	subscription.teamId = room.teamId;
 	subscription.teamMain = room.teamMain;
+	subscription.msgs = room.msgs;
 	return Object.assign(subscription, getLowerCaseNames(subscription));
 };
 
@@ -210,6 +212,7 @@ const mergeRoomSub = (room) => {
 			cl: room.cl,
 			topic: room.topic,
 			announcement: room.announcement,
+			msgs: room.msgs,
 			broadcast: room.broadcast,
 			archived: room.archived,
 			retention: room.retention,

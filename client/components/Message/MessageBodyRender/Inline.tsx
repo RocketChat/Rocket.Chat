@@ -16,27 +16,27 @@ const Inline: FC<{ value: ASTParagraph['value']; mentions?: UserMention[] }> = (
 	mentions = [],
 }) => (
 	<>
-		{value.map((block) => {
+		{value.map((block, index) => {
 			switch (block.type) {
 				case 'PLAIN_TEXT':
 					return block.value;
 				case 'BOLD':
-					return <Bold value={block.value} />;
+					return <Bold value={block.value} key={index} />;
 				case 'STRIKE':
-					return <Strike value={block.value} />;
+					return <Strike value={block.value} key={index} />;
 				case 'ITALIC':
-					return <Italic value={block.value} />;
+					return <Italic value={block.value} key={index} />;
 				case 'LINK':
-					return <Link value={block.value} />;
+					return <Link value={block.value} key={index} />;
 				case 'MENTION_USER':
-					return <Mention value={block.value} mentions={mentions} />;
+					return <Mention value={block.value} mentions={mentions} key={index} />;
 				case 'EMOJI':
-					return <Emoji emojiHandle={`:${block.value.value}:`} />;
+					return <Emoji emojiHandle={`:${block.value.value}:`} key={index} />;
 				case 'MENTION_CHANNEL':
 					// case 'COLOR':
-					return <Plain value={block.value} />;
+					return <Plain value={block.value} key={index} />;
 				case 'INLINE_CODE':
-					return <InlineCode value={block.value} />;
+					return <InlineCode value={block.value} key={index} />;
 				default:
 					return null;
 			}
