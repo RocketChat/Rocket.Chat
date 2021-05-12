@@ -40,7 +40,7 @@
 		"@types/ejson": "^2.1.2",
 		"@types/node": "^14.6.4",
 		"@types/ws": "^7.2.6",
-		"pm2": "^4.4.1",
+		"pm2": "^4.5.6",
 		"ts-node": "^9.0.0",
 		"typescript": "^3.9.7",
 		"@types/cookie": "^0.4.0",
