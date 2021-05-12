@@ -4,7 +4,7 @@ import React from 'react';
 import DotLeader from './DotLeader';
 
 export default {
-	title: 'components/basic/DotLeader',
+	title: 'components/DotLeader',
 	component: DotLeader,
 };
 

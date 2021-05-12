@@ -5,7 +5,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import AutoTranslate from './AutoTranslate';
 
 export default {
-	title: 'components/basic/AutoTranslate',
+	title: 'room/contextualBar/AutoTranslate',
 	component: AutoTranslate,
 };
 
