@@ -1,10 +1,10 @@
 import { Db, FindOneOptions } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
-import { Subscriptions } from '../../../app/models/server';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
@@ -22,7 +22,6 @@ import {
 	TEAM_TYPE,
 } from '../../../definition/ITeam';
 import { IUser } from '../../../definition/IUser';
-import { escapeRegExp } from '../../../lib/escapeRegExp';
 import { Room } from '../../sdk';
 import {
 	IListRoomsFilter,
@@ -312,20 +311,20 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		// validate access for every room first
-		validRooms.forEach(async (room) => {
+		for await (const room of validRooms) {
 			const canSeeRoom = await canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
-		});
+		}
 
-		for (const room of validRooms) {
+		for await (const room of validRooms) {
 			if (room.teamId) {
 				throw new Error('room-already-on-team');
 			}
 
-			if (room.u?._id !== uid) {
-				throw new Error('invalid-user');
+			if (!await this.SubscriptionsModel.isUserInRole(uid, 'owner', room._id)) {
+				throw new Error('error-no-owner-channel');
 			}
 
 			room.teamId = teamId;
@@ -584,11 +583,15 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await this.TeamMembersModel.deleteByUserIdAndTeamId(userId, teamId);
 	}
 
-	async removeMembers(teamId: string, members: Array<ITeamMemberParams>): Promise<boolean> {
+	async removeMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<boolean> {
 		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('team-does-not-exist');
 		}
+
+		const membersIds = members.map((m) => m.userId);
+		const usersToRemove = await this.Users.findByIds(membersIds, { projection: { _id: 1, username: 1 } }).toArray();
+		const byUser = await this.Users.findOneById(uid, { projection: { _id: 1, username: 1 } });
 
 		for await (const member of members) {
 			if (!member.userId) {
@@ -609,8 +612,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 			}
 
 			this.TeamMembersModel.removeById(existingMember._id);
-
-			await this.unsubscribeFromMain(team.roomId, member.userId);
+			const removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
+			removeUserFromRoom(team.roomId, removedUser, { byUser: uid !== member.userId ? byUser : undefined });
 		}
 
 		return true;
@@ -820,13 +823,5 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}).toArray();
 
 		return rooms;
-	}
-
-	async unsubscribeFromMain(roomId: string, userId: string): Promise<void> {
-		// we need to use the normal model here. The raw one didn't propagate the changes to the FE
-		// let me know if there's a way of doing that
-		await Subscriptions.removeByRoomIdsAndUserId([roomId], userId);
-		await this.RoomsModel.incUsersCountByIds([roomId], -1);
-		await this.Users.removeRoomsByRoomIdsAndUserId([roomId], userId);
 	}
 }

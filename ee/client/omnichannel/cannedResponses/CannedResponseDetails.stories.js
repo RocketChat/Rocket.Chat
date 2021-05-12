@@ -4,7 +4,7 @@ import React from 'react';
 import { CannedResponseDetails } from './CannedResponseDetails';
 
 export default {
-	title: 'omnichannel/CannedResponseDetails',
+	title: 'omnichannel/CannedResponse/CannedResponseDetails',
 	component: CannedResponseDetails,
 };
 
@@ -16,6 +16,6 @@ const cannedResponse = {
 
 export const Default = () => (
 	<Box maxWidth='x300' alignSelf='center' w='full'>
-		<CannedResponseDetails {...cannedResponse} />
+		<CannedResponseDetails response={cannedResponse} />
 	</Box>
 );

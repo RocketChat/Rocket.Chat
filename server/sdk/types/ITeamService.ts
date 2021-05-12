@@ -67,7 +67,7 @@ export interface ITeamService {
 	members(uid: string, teamId: string, canSeeAll: boolean, options?: IPaginationOptions, queryOptions?: IQueryOptions<ITeamMember>): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
 	addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, members: ITeamMemberParams): Promise<void>;
-	removeMembers(teamId: string, members: Array<ITeamMemberParams>): Promise<boolean>;
+	removeMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<boolean>;
 	getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined>;
 	getInfoById(teamId: string): Promise<Partial<ITeam> | undefined>;
 	deleteById(teamId: string): Promise<boolean>;

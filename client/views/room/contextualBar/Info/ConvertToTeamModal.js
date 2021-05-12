@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
@@ -13,8 +14,12 @@ const ChannelToTeamModal = ({ onClose, onConfirm }) => {
 			onClose={onClose}
 			onCancel={onClose}
 			onConfirm={onConfirm}
+			confirmText={t('Convert')}
 		>
-			{t('Teams_convert_channel_to_team_warning')}
+			<Box is='span' fontWeight='600' color='danger-500'>
+				{t('This_cant_be_undone')}
+			</Box>
+			{` ${t('Once_you_convert_a_channel_to_team')}`}
 		</GenericModal>
 	);
 };
