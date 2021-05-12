@@ -77,7 +77,7 @@
 		"@types/node": "^12.20.10",
 		"@types/react-dom": "^16.9.8",
 		"@types/rewire": "^2.5.28",
-		"@types/semver": "^7.3.3",
+		"@types/semver": "^7.3.5",
 		"@types/toastr": "^2.1.38",
 		"@typescript-eslint/eslint-plugin": "^2.34.0",
 		"@typescript-eslint/parser": "^2.34.0",
