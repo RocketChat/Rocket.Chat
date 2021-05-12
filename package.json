@@ -278,7 +278,7 @@
 		"turndown": "^5.0.3",
 		"twilio": "^3.48.2",
 		"twit": "^2.2.11",
-		"ua-parser-js": "^0.7.21",
+		"ua-parser-js": "^0.7.24",
 		"underscore": "^1.10.2",
 		"underscore.string": "^3.3.5",
 		"url-polyfill": "^1.1.10",
