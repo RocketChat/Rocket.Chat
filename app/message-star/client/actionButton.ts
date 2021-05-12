@@ -16,8 +16,8 @@ Meteor.startup(function() {
 		icon: 'star',
 		label: 'Star',
 		context: ['starred', 'message', 'message-mobile', 'threads'],
-		action() {
-			const { msg: message } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			Meteor.call('starMessage', { ...message, starred: true }, function(error: any) {
 				if (error) {
 					return handleError(error);
@@ -40,8 +40,8 @@ Meteor.startup(function() {
 		icon: 'star',
 		label: 'Unstar_Message',
 		context: ['starred', 'message', 'message-mobile', 'threads'],
-		action() {
-			const { msg: message } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 
 			Meteor.call('starMessage', { ...message, starred: false }, function(error?: any) {
 				if (error) {
@@ -65,8 +65,8 @@ Meteor.startup(function() {
 		icon: 'jump',
 		label: 'Jump_to_message',
 		context: ['starred', 'threads', 'message-mobile'],
-		action() {
-			const { msg: message } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				(Template.instance() as any).tabBar.close();
 			}
@@ -100,8 +100,8 @@ Meteor.startup(function() {
 		label: 'Get_link',
 		// classes: 'clipboard',
 		context: ['starred', 'threads'],
-		async action() {
-			const { msg: message } = messageArgs(this);
+		async action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			const permalink = await MessageAction.getPermaLink(message._id);
 			navigator.clipboard.writeText(permalink);
 			toastr.success(TAPi18n.__('Copied'));

@@ -69,10 +69,10 @@ Meteor.startup(function() {
 			'message-mobile',
 			'threads',
 		],
-		action(event) {
+		action(event, props) {
 			event.stopPropagation();
-			const { msg } = messageArgs(this);
-			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, msg._id));
+			const { message = messageArgs(this).msg } = props;
+			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${ emoji }:`, message._id));
 		},
 		condition({ message, user, room, subscription }) {
 			if (!room) {

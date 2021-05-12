@@ -12,10 +12,10 @@ Meteor.startup(function() {
 		icon: 'jump',
 		label: 'Jump_to_message',
 		context: ['mentions', 'threads'],
-		action(e) {
+		action(e, props) {
 			e.preventDefault();
 			e.stopPropagation();
-			const { msg: message } = messageArgs(this);
+			const { message = messageArgs(this).msg } = props;
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				(Template.instance() as any).tabBar.close();
 			}

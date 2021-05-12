@@ -24,8 +24,8 @@ Meteor.startup(function() {
 
 			return settings.get('Webdav_Integration_Enabled');
 		},
-		action() {
-			const { msg: message } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			const [attachment] = message.attachments;
 			const { file } = message;
 			const url = getURL(attachment.title_link, { full: true });

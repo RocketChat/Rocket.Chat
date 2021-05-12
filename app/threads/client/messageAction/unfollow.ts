@@ -18,9 +18,9 @@ Meteor.startup(function() {
 			icon: 'bell-off',
 			label: 'Unfollow_message',
 			context: ['message', 'message-mobile', 'threads'],
-			async action() {
-				const { msg } = messageArgs(this);
-				call('unfollowMessage', { mid: msg._id }).then(() =>
+			async action(_, props) {
+				const { message = messageArgs(this).msg } = props;
+				call('unfollowMessage', { mid: message._id }).then(() =>
 					toastr.success(TAPi18n.__('You_unfollowed_this_message')),
 				);
 			},

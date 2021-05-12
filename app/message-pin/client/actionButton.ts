@@ -17,8 +17,8 @@ Meteor.startup(function() {
 		icon: 'pin',
 		label: 'Pin',
 		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct'],
-		action() {
-			const { msg: message } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			message.pinned = true;
 			Meteor.call('pinMessage', message, function(error) {
 				if (error) {
@@ -42,8 +42,8 @@ Meteor.startup(function() {
 		icon: 'pin',
 		label: 'Unpin',
 		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct'],
-		action() {
-			const { msg: message } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			message.pinned = false;
 			Meteor.call('unpinMessage', message, function(error) {
 				if (error) {
@@ -67,8 +67,8 @@ Meteor.startup(function() {
 		icon: 'jump',
 		label: 'Jump_to_message',
 		context: ['pinned', 'message-mobile', 'direct'],
-		action() {
-			const { msg: message } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				(Template.instance() as any).tabBar.close();
 			}
@@ -98,8 +98,8 @@ Meteor.startup(function() {
 		label: 'Get_link',
 		// classes: 'clipboard',
 		context: ['pinned'],
-		async action() {
-			const { msg: message } = messageArgs(this);
+		async action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			const permalink = await MessageAction.getPermaLink(message._id);
 			navigator.clipboard.writeText(permalink);
 			toastr.success(TAPi18n.__('Copied'));

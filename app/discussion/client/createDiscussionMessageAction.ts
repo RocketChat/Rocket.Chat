@@ -18,8 +18,8 @@ Meteor.startup(function() {
 			icon: 'discussion',
 			label: 'Discussion_start',
 			context: ['message', 'message-mobile'],
-			async action() {
-				const { msg: message } = messageArgs(this);
+			async action(_, props) {
+				const { message = messageArgs(this).msg } = props;
 
 				modal.open({
 					title: t('Discussion_title'),

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { RoomManager, MessageAction } from '../../ui-utils';
+import { RoomManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { handleError } from '../../utils';
-import { ChatSubscription } from '../../models';
+import { handleError } from '../../utils/client';
+import { ChatSubscription } from '../../models/client';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -12,9 +12,9 @@ Meteor.startup(() => {
 		icon: 'flag',
 		label: 'Mark_unread',
 		context: ['message', 'message-mobile', 'threads'],
-		action() {
-			const { msg: message } = messageArgs(this);
-			return Meteor.call('unreadMessages', message, function(error) {
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
+			return Meteor.call('unreadMessages', message, function(error: any) {
 				if (error) {
 					return handleError(error);
 				}

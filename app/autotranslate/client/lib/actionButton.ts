@@ -22,8 +22,8 @@ Meteor.startup(() => {
 					'message-mobile',
 					'threads',
 				],
-				action() {
-					const { msg: message } = messageArgs(this);
+				action(_, props) {
+					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
 					if (!message.translations || !message.translations[language]) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
@@ -47,8 +47,8 @@ Meteor.startup(() => {
 					'message-mobile',
 					'threads',
 				],
-				action() {
-					const { msg: message } = messageArgs(this);
+				action(_, props) {
+					const { message = messageArgs(this).msg } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
 					if (!message.translations || !message.translations[language]) { // } && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; })) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;

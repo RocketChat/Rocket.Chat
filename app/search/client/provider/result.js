@@ -19,8 +19,8 @@ Meteor.startup(function() {
 		icon: 'jump',
 		label: 'Jump_to_message',
 		context: ['search'],
-		action() {
-			const { msg: message } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			if (message.tmid) {
 				return FlowRouter.go(FlowRouter.getRouteName(), {
 					tab: 'thread',

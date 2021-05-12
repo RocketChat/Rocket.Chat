@@ -88,7 +88,7 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequ
 					<Broadcast replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />
 				)}
 			</MessageTemplate.Container>
-			<Toolbox />
+			<Toolbox message={message} />
 		</MessageTemplate>
 	);
 };

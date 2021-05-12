@@ -1,3 +1,4 @@
+import { MouseEvent } from 'react';
 import _ from 'underscore';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
@@ -47,7 +48,7 @@ type MessageActionConfig = {
 	order?: number;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
-	action: () => any;
+	action: (e: MouseEvent, { message }: { message: IMessage }) => any;
 	condition?: (props: MessageActionConditionProps) => boolean;
 }
 
@@ -119,7 +120,7 @@ export const MessageAction = new class {
 	}
 
 	getButtonsByGroup = mem(function(group: MessageActionGroup, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList {
-		return arr.filter((button) => (group && Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
+		return arr.filter((button) => (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
 	})
 
 	getButtonsByContext = mem(function(context: MessageActionContext, arr: MessageActionConfigList): MessageActionConfigList {
@@ -127,7 +128,7 @@ export const MessageAction = new class {
 	})
 
 	getButtons(props: MessageActionConditionProps, context: MessageActionContext, group: MessageActionGroup): MessageActionConfigList {
-		const allButtons = this.getButtonsByGroup(group);
+		const allButtons = group ? this.getButtonsByGroup(group) : MessageAction._getButtons();
 
 		if (props.message) {
 			return this.getButtonsByCondition({ ...props, context }, this.getButtonsByContext(context, allButtons));
@@ -141,7 +142,7 @@ export const MessageAction = new class {
 		return this.buttons.set({});
 	}
 
-	async getPermaLink(msgId: string): Promise<string | undefined> {
+	async getPermaLink(msgId: string): Promise<string> {
 		if (!msgId) {
 			throw new Error('invalid-parameter');
 		}

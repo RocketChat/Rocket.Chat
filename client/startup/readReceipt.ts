@@ -18,8 +18,8 @@ Meteor.startup(() => {
 			icon: 'info-circled',
 			label: 'Info',
 			context: ['starred', 'message', 'message-mobile', 'threads'],
-			action() {
-				const { msg: message } = messageArgs(this);
+			action(_, props) {
+				const { message = messageArgs(this).msg } = props;
 				modal.open({
 					title: t('Info'),
 					content: 'readReceipts',

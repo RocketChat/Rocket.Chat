@@ -2,7 +2,7 @@ import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useEffect, MutableRefObject } from 'react';
 
 export const useIsVisible = (ref: MutableRefObject<HTMLInputElement | undefined>): [boolean] => {
-	const [menuVisibility, setMenuVisibility] = useDebouncedState(!!window.DISABLE_ANIMATION, 300);
+	const [menuVisibility, setMenuVisibility] = useDebouncedState(!!window.DISABLE_ANIMATION, 100);
 
 	useEffect(() => {
 		if (!ref.current) {
@@ -19,7 +19,7 @@ export const useIsVisible = (ref: MutableRefObject<HTMLInputElement | undefined>
 		return (): void => {
 			observer.disconnect();
 		};
-	}, [setMenuVisibility, ref.current]);
+	}, [setMenuVisibility, ref]);
 
 	return [menuVisibility];
 };

@@ -35,11 +35,11 @@ Meteor.startup(async function() {
 		icon: 'reply-directly',
 		label: 'Reply_in_direct_message',
 		context: ['message', 'message-mobile', 'threads'],
-		action() {
-			const { msg } = messageArgs(this);
-			roomTypes.openRouteLink('d', { name: msg.u.username }, {
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
+			roomTypes.openRouteLink('d', { name: message.u.username }, {
 				...FlowRouter.current().queryParams,
-				reply: msg._id,
+				reply: message._id,
 			});
 		},
 		condition({ subscription, room, msg, u }) {
@@ -69,8 +69,8 @@ Meteor.startup(async function() {
 		icon: 'quote',
 		label: 'Quote',
 		context: ['message', 'message-mobile', 'threads'],
-		action() {
-			const { msg: message } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			const { input } = getChatMessagesFrom(message);
 			const $input = $(input);
 
@@ -101,8 +101,8 @@ Meteor.startup(async function() {
 		label: 'Get_link',
 		classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads'],
-		async action() {
-			const { msg: message } = messageArgs(this);
+		async action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			const permalink = await MessageAction.getPermaLink(message._id);
 			navigator.clipboard.writeText(permalink);
 			toastr.success(TAPi18n.__('Copied'));
@@ -120,9 +120,9 @@ Meteor.startup(async function() {
 		label: 'Copy',
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads'],
-		action() {
-			const { msg: { msg } } = messageArgs(this);
-			navigator.clipboard.writeText(msg);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
+			navigator.clipboard.writeText(message);
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition({ subscription }) {
@@ -137,9 +137,9 @@ Meteor.startup(async function() {
 		icon: 'edit',
 		label: 'Edit',
 		context: ['message', 'message-mobile', 'threads'],
-		action() {
-			const { msg } = messageArgs(this);
-			getChatMessagesFrom(msg).edit(document.getElementById(msg.tmid ? `thread-${ msg._id }` : msg._id));
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
+			getChatMessagesFrom(message).edit(document.getElementById(message.tmid ? `thread-${ message._id }` : message._id));
 		},
 		condition({ message, subscription, settings }) {
 			if (subscription == null) {
@@ -175,9 +175,9 @@ Meteor.startup(async function() {
 		label: 'Delete',
 		context: ['message', 'message-mobile', 'threads'],
 		color: 'alert',
-		action() {
-			const { msg } = messageArgs(this);
-			getChatMessagesFrom(msg).confirmDeleteMsg(msg);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
+			getChatMessagesFrom(message).confirmDeleteMsg(message);
 		},
 		condition({ message, subscription }) {
 			if (!subscription) {
@@ -200,8 +200,8 @@ Meteor.startup(async function() {
 		label: 'Report',
 		context: ['message', 'message-mobile', 'threads'],
 		color: 'alert',
-		action() {
-			const { msg: message } = messageArgs(this);
+		action(_, props) {
+			const { message = messageArgs(this).msg } = props;
 			modal.open({
 				title: TAPi18n.__('Report_this_message_question_mark'),
 				text: message.msg,
@@ -246,12 +246,12 @@ Meteor.startup(async function() {
 		icon: 'emoji',
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads'],
-		action(_, { tabBar, rid }) {
-			const { msg: { reactions } } = messageArgs(this);
+		action(_, { tabBar, rid, ...props }) {
+			const { message = messageArgs(this).msg } = props;
 
 			modal.open({
 				template: 'reactionList',
-				data: { reactions, tabBar, rid, onClose: () => modal.close() },
+				data: { reactions: message.reactions, tabBar, rid, onClose: () => modal.close() },
 			});
 		},
 		condition({ message: { reactions } }) {
