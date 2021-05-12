@@ -4,7 +4,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import OTR from './OTR';
 
 export default {
-	title: 'components/OTR',
+	title: 'room/contextualBar/OTR',
 	component: OTR,
 };
 

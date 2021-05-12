@@ -1,1 +1,1 @@
-import './lib/startup';
+import './lib/tabBar';
