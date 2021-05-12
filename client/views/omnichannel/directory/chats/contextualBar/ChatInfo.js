@@ -12,7 +12,7 @@ import { useUserSubscription } from '../../../../../contexts/UserContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
-import { useOmichannelRoom } from '../../../../room/providers/RoomProvider';
+import { useOmichannelRoom } from '../../../../room/contexts/RoomContext';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
