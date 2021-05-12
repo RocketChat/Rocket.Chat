@@ -108,17 +108,16 @@ export const KonchatNotification = {
 
 		if (sub && sub.audioNotificationValue !== 'none') {
 			if (sub && sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-				this.emmitSound(sub.audioNotificationValue);
+				this.emitSound(sub.audioNotificationValue);
 			} else if (newMessageNotification !== 'none') {
-				this.emmitSound(newMessageNotification);
+				this.emitSound(newMessageNotification);
 			}
 		}
 	},
 
-	emmitSound(sound) {
+	emitSound(sound) {
 		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
 			const userId = Meteor.userId();
-			// const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
 			const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
 
 			CustomSounds.play(sound, {
@@ -130,8 +129,11 @@ export const KonchatNotification = {
 	newInquiry() {
 		const userId = Meteor.userId();
 		const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
+		const audioNotificationValue = getUserPreference(userId, 'audioNotifications');
 
-		this.emmitSound(newMessageNotification);
+		if (audioNotificationValue === 'all') {
+			this.emitSound(newMessageNotification);
+		}
 	},
 
 	newRoom(rid/* , withSound = true*/) {

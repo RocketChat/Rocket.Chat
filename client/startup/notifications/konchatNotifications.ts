@@ -98,7 +98,7 @@ Meteor.startup(() => {
 				'muteFocusedConversations',
 			);
 
-			if (notification.payload.type === 'l' /* && INQUIRY_TEST */) {
+			if (notification.payload.type === 'l') {
 				return KonchatNotification.newInquiry();
 			}
 
