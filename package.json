@@ -160,7 +160,7 @@
 		"@types/mailparser": "^3.0.0",
 		"@types/marked": "^1.2.2",
 		"@types/mkdirp": "^1.0.1",
-		"@types/nodemailer": "^6.4.0",
+		"@types/nodemailer": "^6.4.1",
 		"@types/sharp": "^0.28.0",
 		"@types/string-strip-html": "^5.0.0",
 		"@types/underscore.string": "0.0.38",
