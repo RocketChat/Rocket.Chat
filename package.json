@@ -201,7 +201,7 @@
 		"eslint-plugin-import": "^2.22.0",
 		"eventemitter3": "^4.0.7",
 		"express": "^4.17.1",
-		"express-rate-limit": "^5.1.3",
+		"express-rate-limit": "^5.2.6",
 		"fflate": "^0.5.3",
 		"fibers": "4.0.3",
 		"file-type": "^10.11.0",
