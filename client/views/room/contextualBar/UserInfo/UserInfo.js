@@ -13,6 +13,7 @@ import Avatar from './Avatar';
 function UserInfo({
 	username,
 	bio,
+	canViewAllInfo,
 	email,
 	verified,
 	showRealNames,
@@ -33,7 +34,6 @@ function UserInfo({
 	const t = useTranslation();
 
 	const timeAgo = useTimeAgo();
-
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
 			<InfoPanel>
@@ -73,12 +73,12 @@ function UserInfo({
 						</InfoPanel.Field>
 					)}
 
-					{lastLogin && 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
-						<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
-					</InfoPanel.Field>
-					}
+					{canViewAllInfo && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
+							<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
 
 					{name && (
 						<InfoPanel.Field>
@@ -139,10 +139,12 @@ function UserInfo({
 							</InfoPanel.Field>
 						))}
 
-					{createdAt && <InfoPanel.Field>
-						<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
-						<InfoPanel.Text>{timeAgo(createdAt)}</InfoPanel.Text>
-					</InfoPanel.Field> }
+					{createdAt && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
+							<InfoPanel.Text>{timeAgo(createdAt)}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
 				</InfoPanel.Section>
 			</InfoPanel>
 		</VerticalBar.ScrollableContent>

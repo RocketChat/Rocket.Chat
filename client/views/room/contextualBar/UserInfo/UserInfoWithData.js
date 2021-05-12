@@ -52,6 +52,7 @@ function UserInfoWithData({
 			utcOffset,
 			lastLogin,
 			nickname,
+			canViewAllInfo,
 		} = user;
 		return {
 			_id,
@@ -62,6 +63,7 @@ function UserInfoWithData({
 				roles &&
 				getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
+			canViewAllInfo,
 			phone: user.phone,
 			customFields: user.customFields,
 			verified: getUserEmailVerified(user),
