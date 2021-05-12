@@ -500,6 +500,8 @@
   "Apps_Permissions_scheduler": "Register and maintain scheduled jobs",
   "Apps_Permissions_ui_interact": "Interact with the UI",
   "Apps_Settings": "App's Settings",
+  "Apps_Manual_Update_Modal_Title": "This app is already installed",
+  "Apps_Manual_Update_Modal_Body": "Do you want to update it?",
   "Apps_User_Already_Exists": "The username \"__username__\" is already being used. Rename or remove the user using it to install this App",
   "Apps_WhatIsIt": "Apps: What Are They?",
   "Apps_WhatIsIt_paragraph1": "A new icon in the administration area! What does this mean and what are Apps?",
