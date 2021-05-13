@@ -5,7 +5,7 @@ import { updatePermission } from '../../data/permissions.helper.js';
 import { createUser, login } from '../../data/users.helper';
 import { password } from '../../data/user';
 
-describe.only('[Teams]', () => {
+describe('[Teams]', () => {
 	before((done) => getCredentials(done));
 
 	const community = `community${ Date.now() }`;
