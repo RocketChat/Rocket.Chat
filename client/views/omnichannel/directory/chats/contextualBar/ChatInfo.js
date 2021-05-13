@@ -86,9 +86,9 @@ function ChatInfo({ id, route }) {
 						id,
 				  }
 				: {
-						tab: 'chats',
-						context: 'edit',
+						page: 'chats',
 						id,
+						bar: 'edit',
 				  },
 		);
 	});

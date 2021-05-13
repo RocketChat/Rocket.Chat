@@ -41,8 +41,10 @@ export const withValue = () => (
 		_id='setting_id'
 		label='Label'
 		placeholder='Placeholder'
-		value='1'
-		values={options}
+		value={[
+			[1, 'Lorem Ipsum'],
+			[2, 'Lorem Ipsum'],
+		]}
 	/>
 );
 

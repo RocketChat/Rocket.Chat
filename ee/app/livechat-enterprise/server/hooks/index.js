@@ -17,3 +17,4 @@ import './onSaveVisitorInfo';
 import './onBusinessHourStart';
 import './onAgentAssignmentFailed';
 import './afterOnHoldChatResumed';
+import './afterReturnRoomAsInquiry';

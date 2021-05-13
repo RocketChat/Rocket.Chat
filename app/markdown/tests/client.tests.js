@@ -3,10 +3,11 @@ import 'babel-polyfill';
 import assert from 'assert';
 
 import './client.mocks.js';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+
 import { original } from '../lib/parser/original/original';
 import { filtered } from '../lib/parser/filtered/filtered';
 import { Markdown } from '../lib/markdown';
-import { escapeHTML } from '../../../lib/escapeHTML';
 
 const wrapper = (text, tag) => `<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
 const boldWrapper = (text) => wrapper(`<strong>${ text }</strong>`, '*');
@@ -25,6 +26,10 @@ const bold = {
 	'** **': '** **',
 	'* Hello*': '* Hello*',
 	'*Hello *': '*Hello *',
+	':custom*emoji*case:': `:custom${ boldWrapper('emoji') }case:`,
+	'text*hello*text': `text${ boldWrapper('hello') }text`,
+	'*hello*text': `${ boldWrapper('hello') }text`,
+	'text*hello*': `text${ boldWrapper('hello') }`,
 	'*Hel lo*': boldWrapper('Hel lo'),
 	'*Hello*': boldWrapper('Hello'),
 	'**Hello**': boldWrapper('Hello'),
@@ -53,6 +58,10 @@ const italic = {
 	'__ __': '__ __',
 	'_ Hello_': '_ Hello_',
 	'_Hello _': '_Hello _',
+	':custom_emoji_case:': ':custom_emoji_case:',
+	text_hello_text: 'text_hello_text',
+	_hello_text: '_hello_text',
+	text_hello_: 'text_hello_',
 	'_Hel lo_': italicWrapper('Hel lo'),
 	_Hello_: italicWrapper('Hello'),
 	__Hello__: italicWrapper('Hello'),
@@ -79,6 +88,10 @@ const strike = {
 	'~~ ~~': '~~ ~~',
 	'~ Hello~': '~ Hello~',
 	'~Hello ~': '~Hello ~',
+	':custom~emoji~case:': `:custom${ strikeWrapper('emoji') }case:`,
+	'text~hello~text': `text${ strikeWrapper('hello') }text`,
+	'~hello~text': `${ strikeWrapper('hello') }text`,
+	'text~hello~': `text${ strikeWrapper('hello') }`,
 	'~Hel lo~': strikeWrapper('Hel lo'),
 	'~Hello~': strikeWrapper('Hello'),
 	'~~Hello~~': strikeWrapper('Hello'),

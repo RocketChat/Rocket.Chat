@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { parser } from '@rocket.chat/message-parser';
 
 import { Messages, Rooms } from '../../../models';
 import { settings } from '../../../settings';
@@ -43,6 +44,12 @@ export const updateMessage = function(message, user, originalMessage) {
 	parseUrlsInMessage(message);
 
 	message = callbacks.run('beforeSaveMessage', message);
+
+	try {
+		message.md = parser(message.msg);
+	} catch (e) {
+		console.log(e); // errors logged while the parser is at experimental stage
+	}
 
 	const tempid = message._id;
 	delete message._id;

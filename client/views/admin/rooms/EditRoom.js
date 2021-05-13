@@ -120,7 +120,7 @@ function EditRoom({ room, onChange }) {
 		const save = () =>
 			saveAction({
 				rid: room._id,
-				roomName,
+				roomName: roomType === 'd' ? undefined : roomName,
 				roomTopic,
 				roomType,
 				readOnly,
@@ -257,7 +257,7 @@ function EditRoom({ room, onChange }) {
 						<Field>
 							<Field.Row>
 								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-									<Field.Label>{t('Archived')}</Field.Label>
+									<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
 									<ToggleSwitch disabled={deleted} checked={archived} onChange={handleArchived} />
 								</Box>
 							</Field.Row>
