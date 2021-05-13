@@ -60,6 +60,8 @@ export interface IRoom extends IRocketChatRecord {
 		_id: string;
 	};
 	onHold?: boolean;
+	autoTranslateLanguage: string;
+	autoTranslate?: boolean;
 	unread?: number;
 	alert?: boolean;
 	hideUnreadStatus?: boolean;

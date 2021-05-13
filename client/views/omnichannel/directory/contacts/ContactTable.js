@@ -42,16 +42,16 @@ function ContactTable({ setContactReload }) {
 
 	const onButtonNewClick = useMutableCallback(() =>
 		directoryRoute.push({
-			tab: 'contacts',
-			context: 'new',
+			page: 'contacts',
+			bar: 'new',
 		}),
 	);
 
 	const onRowClick = useMutableCallback((id) => () =>
 		directoryRoute.push({
-			tab: 'contacts',
-			context: 'info',
+			page: 'contacts',
 			id,
+			bar: 'info',
 		}),
 	);
 

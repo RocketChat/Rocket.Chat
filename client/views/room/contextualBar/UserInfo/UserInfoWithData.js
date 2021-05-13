@@ -42,6 +42,7 @@ function UserInfoWithData({
 
 	const user = useMemo(() => {
 		const { user } = value || { user: {} };
+
 		const {
 			_id,
 			name,
@@ -95,7 +96,7 @@ function UserInfoWithData({
 					<UserInfo
 						{...user}
 						data={user}
-						actions={<UserActions user={user} rid={rid} />}
+						actions={<UserActions user={user} rid={rid} backToList={onClickBack} />}
 						{...props}
 						p='x24'
 					/>
