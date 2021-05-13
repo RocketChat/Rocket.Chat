@@ -9,11 +9,9 @@ import ContactNewEdit from './ContactNewEdit';
 
 function ContactEditWithData({ id, close }) {
 	const t = useTranslation();
-	const {
-		value: data,
-		phase: state,
-		error,
-	} = useEndpointData(`omnichannel/contact?contactId=${id}`); // TODO OMNICHANNEL
+	const { value: data, phase: state, error } = useEndpointData(
+		`omnichannel/contact?contactId=${id}`,
+	); // TODO OMNICHANNEL
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
