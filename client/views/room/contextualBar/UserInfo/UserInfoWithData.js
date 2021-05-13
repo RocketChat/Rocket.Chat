@@ -42,6 +42,7 @@ function UserInfoWithData({
 
 	const user = useMemo(() => {
 		const { user } = value || { user: {} };
+
 		const {
 			_id,
 			name,

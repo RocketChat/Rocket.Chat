@@ -282,7 +282,8 @@ export class CachedCollection extends Emitter {
 					});
 				}
 				if (room) {
-					RoomManager.close(room.t + room.name);
+					room.name && RoomManager.close(room.t + room.name);
+					!room.name && RoomManager.close(room.t + room._id);
 				}
 				this.collection.remove(record._id);
 			} else {
