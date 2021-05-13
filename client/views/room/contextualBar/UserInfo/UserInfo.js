@@ -5,6 +5,7 @@ import MarkdownText from '../../../../components/MarkdownText';
 import UTCClock from '../../../../components/UTCClock';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
+import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import InfoPanel from '../../../InfoPanel';
@@ -32,8 +33,20 @@ function UserInfo({
 	...props
 }) {
 	const t = useTranslation();
-
 	const timeAgo = useTimeAgo();
+	const customFieldsToShowSetting = useSetting('Accounts_CustomFieldsToShowInUserInfo');
+	const customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
+
+	const customFieldsToShow = customFieldsToShowObj
+		? Object.values(customFieldsToShowObj).map((value) => {
+				const role = Object.values(value);
+				const roleNameToShow = Object.keys(value);
+				const customField = {};
+				customField[roleNameToShow] = customFields[role];
+				return customField;
+		  })
+		: [];
+
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
 			<InfoPanel>
@@ -131,13 +144,14 @@ function UserInfo({
 						</InfoPanel.Field>
 					)}
 
-					{customFields &&
-						Object.entries(customFields).map(([label, value]) => (
-							<InfoPanel.Field key={label}>
-								<InfoPanel.Label>{t(label)}</InfoPanel.Label>
-								<InfoPanel.Text>{value}</InfoPanel.Text>
+					{customFieldsToShow.map((customField) =>
+						Object.values(customField)[0] ? (
+							<InfoPanel.Field key={Object.keys(customField)[0]}>
+								<InfoPanel.Label>{t(Object.keys(customField)[0])}</InfoPanel.Label>
+								<InfoPanel.Text>{Object.values(customField)[0]}</InfoPanel.Text>
 							</InfoPanel.Field>
-						))}
+						) : null,
+					)}
 
 					{createdAt && (
 						<InfoPanel.Field>
