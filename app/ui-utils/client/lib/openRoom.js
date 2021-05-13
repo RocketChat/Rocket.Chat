@@ -99,6 +99,7 @@ export const openRoom = async function(type, name) {
 			fireGlobalEvent('room-opened', _.omit(room, 'usernames'));
 
 			Session.set('editRoomTitle', false);
+			call('setRecentlyVisitedRoom', room._id);
 			// KonchatNotification.removeRoomNotification(params._id)
 			// update user's room subscription
 			const sub = ChatSubscription.findOne({ rid: room._id });

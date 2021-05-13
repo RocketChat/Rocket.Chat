@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
-import { SideNav, menu } from '../../ui-utils';
+import { call, SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { roomTypes, getUserPreference } from '../../utils';
 import { Users, Rooms } from '../../models';
@@ -78,11 +78,17 @@ Template.sideNav.events({
 	},
 });
 
-const redirectToDefaultChannelIfNeeded = () => {
+const redirectToDefaultChannelIfNeeded = async () => {
 	const currentRouteState = FlowRouter.current();
 	const needToBeRedirect = ['/', '/home'];
 	if (!needToBeRedirect.includes(currentRouteState.path)) {
 		return;
+	}
+
+	const recentlyVisitedRoom = await call('getRecentlyVisitedRoom');
+	if (recentlyVisitedRoom) {
+		const link = roomTypes.getRouteLink(recentlyVisitedRoom.t, { name: recentlyVisitedRoom.name, rid: recentlyVisitedRoom._id });
+		return FlowRouter.go(link);
 	}
 
 	const firstChannelAfterLogin = settings.get('First_Channel_After_Login');

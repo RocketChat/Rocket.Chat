@@ -1032,6 +1032,23 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
+	setRecentlyVisitedRoom(_id, rid) {
+		const update = {
+			$set: {
+				recentlyVisitedRoom: rid,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+	getRecentlyVisitedRoom(_id) {
+		const query = { _id };
+
+		const user = this.findOne(query, { fields: { recentlyVisitedRoom: 1 } }).fetch();
+		return user && user.recentlyVisitedRoom;
+	}
+
 	setAvatarOrigin(_id, origin) {
 		const update = {
 			$set: {
