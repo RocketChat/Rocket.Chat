@@ -31,6 +31,8 @@
   "Accounts_AvatarBlockUnauthenticatedAccess": "অবতারগুলিতে অযৌক্তিক অ্যাক্সেসটিকে অবরুদ্ধ করুন",
   "Accounts_ForgetUserSessionOnWindowClose": "উইন্ডো বন্ধে ব্যবহারকারী সেশনটি ভুলে যান",
   "Edit_Status": "স্থিতি সম্পাদনা করুন",
+  "Filters": "ছাঁকনি",
+  "Home": "বাড়ি",
   "Login_Logs_UserAgent": "ব্যর্থ লগইন প্রচেষ্টা লগগুলিতে ব্যবহারকারীর এজেন্ট প্রদর্শন করুন",
   "Looked_for": "অনুসন্ধান করা"
 }

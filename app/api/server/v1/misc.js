@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EJSON } from 'meteor/ejson';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { hasRole, hasPermission } from '../../../authorization/server';
 import { Info } from '../../../utils/server';
@@ -14,7 +15,6 @@ import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
 import { StdOut } from '../../../logger/server/streamer';
-import { escapeHTML } from '../../../../lib/escapeHTML';
 
 
 // DEPRECATED
@@ -49,7 +49,8 @@ API.v1.addRoute('info', { authRequired: false }, {
 
 API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId, { fields: getDefaultUserFields() })));
+		const { 'services.password.bcrypt': password, ...fields } = getDefaultUserFields();
+		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId, { fields })));
 	},
 });
 

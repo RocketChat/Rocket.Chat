@@ -92,5 +92,15 @@ Meteor.startup(function() {
 			},
 			i18nLabel: 'Reactions',
 		});
+
+		this.add('SlackBridge_Remove_Channel_Links', 'removeSlackBridgeChannelLinks', {
+			type: 'action',
+			actionText: 'Remove_Channel_Links',
+			i18nDescription: 'SlackBridge_Remove_Channel_Links_Description',
+			enableQuery: {
+				_id: 'SlackBridge_Enabled',
+				value: true,
+			},
+		});
 	});
 });

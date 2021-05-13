@@ -1,9 +1,9 @@
 import moment from 'moment';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 /**
  * Chechs if a messages contains a user highlight
@@ -23,7 +23,9 @@ export function messageContainsHighlight(message, highlights) {
 	});
 }
 
-export function getMentions({ mentions, u: { _id: senderId } }) {
+export function getMentions(message) {
+	const { mentions, u: { _id: senderId } } = message;
+
 	if (!mentions) {
 		return {
 			toAll: false,
@@ -34,9 +36,19 @@ export function getMentions({ mentions, u: { _id: senderId } }) {
 
 	const toAll = mentions.some(({ _id }) => _id === 'all');
 	const toHere = mentions.some(({ _id }) => _id === 'here');
-	const mentionIds = mentions
+
+	const userMentions = mentions.filter((mention) => !mention.type || mention.type === 'user');
+	const otherMentions = mentions.filter((mention) => mention?.type !== 'user');
+
+	const filteredMentions = userMentions
 		.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id))
 		.map(({ _id }) => _id);
+
+	const mentionIds = callbacks.run('beforeGetMentions', filteredMentions, {
+		userMentions,
+		otherMentions,
+		message,
+	});
 
 	return {
 		toAll,
@@ -69,7 +81,8 @@ const getUserIdsFromHighlights = (rid, message) => {
 };
 
 export function updateUsersSubscriptions(message, room) {
-	if (room != null) {
+	// Don't increase unread counter on thread messages
+	if (room != null && !message.tmid) {
 		const {
 			toAll,
 			toHere,

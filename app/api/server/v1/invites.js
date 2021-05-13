@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { API } from '../api';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
 import { removeInvite } from '../../../invites/server/functions/removeInvite';
@@ -45,10 +43,6 @@ API.v1.addRoute('useInviteToken', { authRequired: true }, {
 API.v1.addRoute('validateInviteToken', { authRequired: false }, {
 	post() {
 		const { token } = this.bodyParams;
-
-		if (!token) {
-			throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', { method: 'validateInviteToken', field: 'token' });
-		}
 
 		let valid = true;
 		try {

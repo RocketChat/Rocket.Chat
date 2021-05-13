@@ -26,7 +26,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 		super({
 			identifier: 'p',
 			order: 40,
-			icon: 'lock',
+			icon: 'hashtag-lock',
 			label: 'Private_Groups',
 			route: new PrivateRoomRoute(),
 		});
@@ -35,6 +35,9 @@ export class PrivateRoomType extends RoomTypeConfig {
 	getIcon(roomData) {
 		if (roomData.prid) {
 			return 'discussion';
+		}
+		if (roomData.teamMain) {
+			return 'team-lock';
 		}
 		return this.icon;
 	}
@@ -91,8 +94,6 @@ export class PrivateRoomType extends RoomTypeConfig {
 				return !room.broadcast && room.ro;
 			case RoomSettingsEnum.E2E:
 				return settings.get('E2E_Enable') === true;
-			case RoomSettingsEnum.HIDE_HISTORY_NEW_MEMBERS:
-				return true;
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			default:
 				return true;

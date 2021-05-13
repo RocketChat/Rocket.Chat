@@ -1,11 +1,11 @@
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 import _marked from 'marked';
-
+import createDOMPurify from 'dompurify';
+import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 
 import hljs from '../../hljs';
-import { escapeHTML } from '../../../../../lib/escapeHTML';
-import { unescapeHTML } from '../../../../../lib/unescapeHTML';
+import { getGlobalWindow } from '../../getGlobalWindow';
 
 const renderer = new _marked.Renderer();
 
@@ -103,9 +103,12 @@ export const marked = (message, {
 		smartLists,
 		smartypants,
 		renderer,
-		sanitize: true,
 		highlight,
 	});
+
+	const window = getGlobalWindow();
+	const DomPurify = createDOMPurify(window);
+	message.html = DomPurify.sanitize(message.html, { ADD_ATTR: ['target'] });
 
 	return message;
 };

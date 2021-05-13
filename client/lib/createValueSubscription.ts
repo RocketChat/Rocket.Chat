@@ -7,7 +7,9 @@ type ValueSubscription<T> = Subscription<T> & {
 
 export const createValueSubscription = <T>(initialValue: T): ValueSubscription<T> => {
 	let value: T = initialValue;
-	const emitter = new Emitter();
+	const emitter = new Emitter<{
+		update: undefined;
+	}>();
 
 	return {
 		getCurrentValue: (): T => value,
