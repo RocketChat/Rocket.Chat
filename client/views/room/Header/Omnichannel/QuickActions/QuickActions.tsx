@@ -293,7 +293,6 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 					color,
 					'title': t(title as any),
 					className,
-					'tabId': id,
 					index,
 					'primary': false,
 					'data-quick-actions': index,
