@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models';
-import { hasPermission } from '../../../authorization';
+import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
 
@@ -203,39 +203,33 @@ API.v1.addRoute(['dm.members', 'im.members'], { authRequired: true }, {
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
-		const { status, username, name } = this.queryParams;
 
-		check(status, Match.Maybe([String]));
-		check(username, Match.Maybe(String));
-		check(name, Match.Maybe(String));
+		check(this.queryParams, Match.ObjectIncluding({
+			status: Match.Maybe([String]),
+			filter: Match.Maybe(String),
+		}));
+		const { status, filter } = this.queryParams;
 
-		const cursor = Subscriptions.findByRoomId(findResult.room._id, {
-			sort: { 'u.username': sort && sort.username ? sort.username : 1 },
-			projection: { u: 1 },
-			skip: offset,
-			limit: count,
-		});
-
-		const total = cursor.count();
-		const members = cursor.fetch().map((s) => s.u && s.u.username);
-		if (username && !members.includes(username)) {
-			return API.v1.failure('The queried user is not a member of the given room');
-		}
-
-		const query = {
-			name,
-			username: username || { $in: members },
-			status: status ? { $in: status } : undefined,
+		const extraQuery = {
+			_id: { $in: findResult.room.uids },
+			...status && { status: { $in: status } },
 		};
 
-		const users = Users.find(query, {
-			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
+		const options = {
 			sort: { username: sort && sort.username ? sort.username : 1 },
-		}).fetch();
+			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
+			skip: offset,
+			limit: count,
+		};
+
+		const cursor = Users.findByActiveUsersExcept(filter, [], options, null, [extraQuery]);
+
+		const members = cursor.fetch();
+		const total = cursor.count();
 
 		return API.v1.success({
-			members: users,
-			count: users.length,
+			members,
+			count: members.length,
 			offset,
 			total,
 		});
