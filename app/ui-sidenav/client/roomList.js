@@ -200,7 +200,8 @@ const mergeSubRoom = (subscription) => {
 
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
 
-	return Object.assign(subscription, getLowerCaseNames(subscription), {encrypted,
+	return Object.assign(subscription, getLowerCaseNames(subscription), {
+		encrypted,
 		description,
 		cl,
 		topic,
