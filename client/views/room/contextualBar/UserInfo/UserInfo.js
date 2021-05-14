@@ -37,7 +37,6 @@ function UserInfo({
 	const customFieldsToShowSetting = useSetting('Accounts_CustomFieldsToShowInUserInfo');
 	let customFieldsToShowObj;
 	try {
-		
 		customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
 	} catch (error) {
 		customFieldsToShowObj = undefined;
