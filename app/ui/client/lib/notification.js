@@ -101,38 +101,24 @@ export const KonchatNotification = {
 	},
 
 	newMessage(rid) {
-		const userId = Meteor.userId();
-		const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
-
-		const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
-
-		if (sub && sub.audioNotificationValue !== 'none') {
-			if (sub && sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-				this.emitSound(sub.audioNotificationValue);
-			} else if (newMessageNotification !== 'none') {
-				this.emitSound(newMessageNotification);
-			}
-		}
-	},
-
-	emitSound(sound) {
 		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
 			const userId = Meteor.userId();
+			const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
 			const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
 
-			CustomSounds.play(sound, {
-				volume: Number((audioVolume / 100).toPrecision(2)),
-			});
-		}
-	},
+			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 
-	newInquiry() {
-		const userId = Meteor.userId();
-		const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
-		const audioNotificationValue = getUserPreference(userId, 'audioNotifications');
-
-		if (audioNotificationValue === 'all') {
-			this.emitSound(newMessageNotification);
+			if (sub && sub.audioNotificationValue !== 'none') {
+				if (sub && sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
+					CustomSounds.play(sub.audioNotificationValue, {
+						volume: Number((audioVolume / 100).toPrecision(2)),
+					});
+				} else if (newMessageNotification !== 'none') {
+					CustomSounds.play(newMessageNotification, {
+						volume: Number((audioVolume / 100).toPrecision(2)),
+					});
+				}
+			}
 		}
 	},
 
