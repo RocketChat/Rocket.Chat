@@ -4,7 +4,7 @@ import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManage
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 
-const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inquiry: any; room: any; options: { forwardRoomToDepartment?: string; clienAction?: boolean} }): Promise<any> => {
+const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inquiry: any; room: any; options: { forwardRoomOldDepartment?: string; clienAction?: boolean} }): Promise<any> => {
 	if (!inquiry || !room) {
 		return;
 	}
@@ -31,7 +31,7 @@ const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inqui
 		return;
 	}
 
-	const { forwardRoomToDepartment: oldDepartmentId } = options;
+	const { forwardRoomOldDepartment: oldDepartmentId } = options;
 	const { department: newDepartmentId } = inquiry;
 
 	if (!newDepartmentId || !oldDepartmentId || newDepartmentId === oldDepartmentId) {
