@@ -2712,6 +2712,8 @@
   "Message_Attachments": "Message Attachments",
   "Message_Attachments_GroupAttach": "Group Attachment Buttons",
   "Message_Attachments_GroupAttachDescription": "This groups the icons under an expandable menu. Takes up less screen space.",
+  "Message_Attachments_Strip_Exif": "Remove EXIF metadata from supported files",
+  "Message_Attachments_Strip_ExifDescription": "Strips out EXIF metadata from image files (jpeg, tiff, etc). This setting is not retroactive, so files uploaded while disabled will have EXIF data",
   "Message_Audio": "Audio Message",
   "Message_Audio_bitRate": "Audio Message Bit Rate",
   "Message_AudioRecorderEnabled": "Audio Recorder Enabled",

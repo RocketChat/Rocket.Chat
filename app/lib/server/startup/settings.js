@@ -1037,6 +1037,11 @@ settings.addGroup('Message', function() {
 			public: true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription',
 		});
+		this.add('Message_Attachments_Strip_Exif', false, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Message_Attachments_Strip_ExifDescription',
+		});
 	});
 	this.section('Message_Audio', function() {
 		this.add('Message_AudioRecorderEnabled', true, {
