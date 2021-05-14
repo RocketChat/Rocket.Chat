@@ -43,7 +43,7 @@ export const RoutingManager = {
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
-	async delegateInquiry(inquiry, agent) {
+	async delegateInquiry(inquiry, agent, options = {}) {
 		const { department, rid } = inquiry;
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username) && !allowAgentSkipQueue(agent))) {
 			agent = await this.getNextAgent(department);
@@ -53,7 +53,7 @@ export const RoutingManager = {
 			return LivechatRooms.findOneById(rid);
 		}
 
-		return this.takeInquiry(inquiry, agent);
+		return this.takeInquiry(inquiry, agent, options);
 	},
 
 	assignAgent(inquiry, agent) {
