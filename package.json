@@ -151,7 +151,7 @@
 		"@rocket.chat/memo": "^0.24.0",
 		"@rocket.chat/message-parser": "^0.6.3-dev.245",
 		"@rocket.chat/mp3-encoder": "^0.24.0",
-		"@rocket.chat/string-helpers": "^0.6.3-dev.248",
+		"@rocket.chat/string-helpers": "^0.6.3-dev.245",
 		"@rocket.chat/ui-kit": "^0.24.0",
 		"@slack/client": "^4.12.0",
 		"@types/dompurify": "^2.2.1",
