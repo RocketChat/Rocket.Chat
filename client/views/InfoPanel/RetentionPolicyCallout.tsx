@@ -2,6 +2,7 @@ import { Callout } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useFormattedRelativeTime } from '../../hooks/useFormattedRelativeTime';
 
 type RetentionPolicyCalloutProps = {
 	filesOnlyDefault: boolean;
@@ -15,19 +16,22 @@ const RetentionPolicyCallout: FC<RetentionPolicyCalloutProps> = ({
 	maxAgeDefault,
 }) => {
 	const t = useTranslation();
+
+	const time = useFormattedRelativeTime(maxAgeDefault * 1000 * 60 * 60 * 24);
+
 	return (
 		<Callout type='warning'>
 			{filesOnlyDefault && excludePinnedDefault && (
-				<p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time: maxAgeDefault })}</p>
+				<p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time })}</p>
 			)}
 			{filesOnlyDefault && !excludePinnedDefault && (
-				<p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time: maxAgeDefault })}</p>
+				<p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time })}</p>
 			)}
 			{!filesOnlyDefault && excludePinnedDefault && (
-				<p>{t('RetentionPolicy_RoomWarning', { time: maxAgeDefault })}</p>
+				<p>{t('RetentionPolicy_RoomWarning', { time })}</p>
 			)}
 			{!filesOnlyDefault && !excludePinnedDefault && (
-				<p>{t('RetentionPolicy_RoomWarning_Unpinned', { time: maxAgeDefault })}</p>
+				<p>{t('RetentionPolicy_RoomWarning_Unpinned', { time })}</p>
 			)}
 		</Callout>
 	);
