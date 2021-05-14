@@ -12,6 +12,9 @@ import {
 	findPercentageOfAbandonedRooms,
 	findAllAverageOfChatDurationTime,
 } from '../../../../../app/livechat/server/lib/analytics/departments';
+import {
+	findAllDepartments,
+} from '../lib/Department';
 
 API.v1.addRoute('livechat/analytics/departments/amount-of-chats', { authRequired: true }, {
 	get() {
@@ -316,5 +319,19 @@ API.v1.addRoute('livechat/analytics/departments/percentage-abandoned-chats', { a
 			offset,
 			total,
 		});
+	},
+});
+
+API.v1.addRoute('livechat/department.available-by-unit/:unitId', { authRequired: true }, {
+	get() {
+		check(this.urlParams, {
+			unitId: Match.Maybe(String),
+		});
+		const { offset, count } = this.getPaginationItems();
+		const { unitId } = this.urlParams;
+
+		const departments = Promise.await(findAllDepartments(unitId, offset, count));
+
+		return API.v1.success({ departments });
 	},
 });
