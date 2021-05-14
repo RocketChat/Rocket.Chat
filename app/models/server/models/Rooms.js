@@ -254,7 +254,7 @@ export class Rooms extends Base {
 	}
 
 	getHiddenSystemMessagesTypesById(_id, options) {
-		return this.findOne({ _id }, { ...options, projection: { sysMes: 1 } });
+		return this.findOne({ _id }, { ...options, fields: { sysMes: 1 } });
 	}
 
 	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
