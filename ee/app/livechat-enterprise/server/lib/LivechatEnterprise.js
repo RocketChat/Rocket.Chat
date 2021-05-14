@@ -173,7 +173,6 @@ export const LivechatEnterprise = {
 			return false;
 		}
 		LivechatRooms.setOnHold(roomId);
-		Subscriptions.setOnHold(roomId);
 
 		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
 		Meteor.defer(() => {

@@ -161,6 +161,7 @@ const mergeSubRoom = (subscription) => {
 			retention: 1,
 			teamId: 1,
 			teamMain: 1,
+			onHold: 1,
 		},
 	};
 
@@ -195,7 +196,6 @@ const mergeSubRoom = (subscription) => {
 		responseBy,
 		priorityId,
 		livechatData,
-
 	} = room;
 
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
