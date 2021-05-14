@@ -72,14 +72,21 @@ export class AppLivechatBridge {
 		return this.orch.getConverters().get('rooms').convertRoom(result.room);
 	}
 
-	async closeRoom(room, comment, appId) {
+	async closeRoom(room, comment, closer, appId) {
 		this.orch.debugLog(`The App ${ appId } is closing a livechat room.`);
 
-		return Livechat.closeRoom({
-			visitor: this.orch.getConverters().get('visitors').convertAppVisitor(room.visitor),
+		const closeData = {
 			room: this.orch.getConverters().get('rooms').convertAppRoom(room),
 			comment,
-		});
+		};
+
+		if (closer?.id) {
+			closeData.user = this.orch.getConverters().get('users').convertById(closer.id);
+		} else {
+			closeData.visitor = this.orch.getConverters().get('visitors').convertAppVisitor(room.visitor);
+		}
+
+		return Livechat.closeRoom(closeData);
 	}
 
 	async findRooms(visitor, departmentId, appId) {
