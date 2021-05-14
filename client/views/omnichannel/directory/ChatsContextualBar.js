@@ -31,7 +31,9 @@ const ChatsContextualBar = ({ chatReload }) => {
 		directoryRoute.push({ page: 'chats', id, bar: 'info' });
 	};
 
-	const { value: data, phase: state, error } = useEndpointData(`rooms.info?roomId=${id}`);
+	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(
+		`rooms.info?roomId=${id}`,
+	);
 
 	if (bar === 'view') {
 		return <Chat rid={id} />;
@@ -77,6 +79,7 @@ const ChatsContextualBar = ({ chatReload }) => {
 					id={id}
 					close={handleChatsVerticalBarBackButtonClick}
 					reload={chatReload}
+					reloadInfo={reloadInfo}
 				/>
 			)}
 		</VerticalBar>

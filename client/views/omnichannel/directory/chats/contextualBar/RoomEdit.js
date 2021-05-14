@@ -38,7 +38,7 @@ const getInitialValuesRoom = (room) => {
 	};
 };
 
-function RoomEdit({ room, visitor, reload, close }) {
+function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 	const t = useTranslation();
 
 	const {
@@ -123,6 +123,7 @@ function RoomEdit({ room, visitor, reload, close }) {
 			saveRoom(userData, roomData);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload && reload();
+			reloadInfo && reloadInfo();
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
