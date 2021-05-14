@@ -2,6 +2,7 @@ import { callbacks } from '../../../../../app/callbacks/server';
 import { LivechatInquiry, Subscriptions, LivechatRooms } from '../../../../../app/models/server';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { settings } from '../../../../../app/settings/server';
 
 const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inquiry: any; room: any; options: { forwardRoomToDepartment?: string; clienAction?: boolean} }): Promise<any> => {
 	if (!inquiry || !room) {
@@ -23,6 +24,10 @@ const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inqui
 
 		await queueInquiry(room, newInquiry);
 
+		return;
+	}
+
+	if (!settings.get('Livechat_waiting_queue')) {
 		return;
 	}
 
