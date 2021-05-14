@@ -378,7 +378,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	// Fake the department to forward the inquiry - Case the forward process does not success
 	// the inquiry will stay in the same original department
 	inquiry.department = departmentId;
-	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent, { clientAction: false, forwardRoomToDepartment: oldDepartmentId });
+	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent, { clientAction: false, forwardRoomOldDepartment: oldDepartmentId });
 	if (!roomTaken) {
 		return false;
 	}
