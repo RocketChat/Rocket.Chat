@@ -17,7 +17,7 @@ const AccountSecurityPage = () => {
 	const twoFactorByEmailEnabled = useSetting('Accounts_TwoFactorAuthentication_By_Email_Enabled');
 	const e2eEnabled = useSetting('E2E_Enable');
 
-	if ((!twoFactorEnabled || (!twoFactorTOTP && !twoFactorByEmailEnabled)) && !e2eEnabled) {
+	if (!twoFactorEnabled && !e2eEnabled) {
 		return <NotAuthorizedPage />;
 	}
 
@@ -27,7 +27,7 @@ const AccountSecurityPage = () => {
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<Accordion>
-						{(twoFactorTOTP || twoFactorByEmailEnabled) && (
+						{(twoFactorTOTP || twoFactorByEmailEnabled) && twoFactorEnabled && (
 							<Accordion.Item title={t('Two Factor Authentication')} defaultExpanded>
 								{twoFactorTOTP && <TwoFactorTOTP />}
 								{twoFactorByEmailEnabled && <TwoFactorEmail />}
