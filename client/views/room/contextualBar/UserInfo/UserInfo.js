@@ -36,7 +36,12 @@ function UserInfo({
 	const timeAgo = useTimeAgo();
 
 	const customFieldsToShowSetting = useSetting('Accounts_CustomFieldsToShowInUserInfo');
-	const customFieldsToShowObj = customFieldsToShowSetting && JSON.parse(customFieldsToShowSetting);
+	let customFieldsToShowObj;
+	try {
+		customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
+	} catch (error) {
+		customFieldsToShowObj = undefined;
+	}
 
 	const customFieldsToShow = customFieldsToShowObj
 		? Object.values(customFieldsToShowObj).map((value) => {
