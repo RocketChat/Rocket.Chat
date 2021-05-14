@@ -190,7 +190,6 @@ export const LivechatEnterprise = {
 
 		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
 		LivechatRooms.unsetAllOnHoldFieldsByRoomId(roomId);
-		Subscriptions.unsetOnHold(roomId);
 	},
 };
 
