@@ -200,15 +200,13 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 			return true;
 		});
 
-		check(teamId, Match.Maybe(String));
-		check(teamName, SecondaryOptionalParam);
-		check(status, Match.Maybe([String]));
-		check(username, Match.Maybe(String));
-		check(name, Match.Maybe(String));
-
-		if (!teamId && !teamName) {
-			return API.v1.failure('missing-teamId-or-teamName');
-		}
+		check(this.queryParams, Match.ObjectIncluding({
+			teamId: Match.Maybe(String),
+			teamName: SecondaryOptionalParam,
+			status: Match.Maybe([String]),
+			username: Match.Maybe(String),
+			name: Match.Maybe(String),
+		}));
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
@@ -217,8 +215,8 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		const canSeeAllMembers = hasPermission(this.userId, 'view-all-teams', team.roomId);
 
 		const query = {
-			username: username ? { $regex: username, $options: 'i' } : undefined,
-			name: name ? { $regex: name, $options: 'i' } : undefined,
+			username: username ? new RegExp(username, 'i') : undefined,
+			name: name ? new RegExp(name, 'i') : undefined,
 			status: status ? { $in: status } : undefined,
 		} as Partial<FindOneOptions<IUser>>;
 
