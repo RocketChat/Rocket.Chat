@@ -39,7 +39,7 @@ function ChatInfo({ id, route }) {
 		ts,
 		tags,
 		closedAt,
-		departmentId,
+		department,
 		v,
 		servedBy,
 		metrics,
@@ -100,7 +100,7 @@ function ChatInfo({ id, route }) {
 					{room && v && <ContactField contact={v} room={room} />}
 					{visitorId && <VisitorClientInfo uid={visitorId} />}
 					{servedBy && <AgentField agent={servedBy} />}
-					{departmentId && <DepartmentField departmentId={departmentId} />}
+					{department && <DepartmentField departmentId={department} />}
 					{tags && tags.length > 0 && (
 						<Field>
 							<Label>{t('Tags')}</Label>

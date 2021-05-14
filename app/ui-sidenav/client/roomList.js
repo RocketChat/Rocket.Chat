@@ -162,6 +162,10 @@ const mergeSubRoom = (subscription) => {
 			teamId: 1,
 			teamMain: 1,
 			onHold: 1,
+			metrics: 1,
+			servedBy: 1,
+			ts: 1,
+			waitingResponse: 1,
 		},
 	};
 
@@ -196,6 +200,7 @@ const mergeSubRoom = (subscription) => {
 		responseBy,
 		priorityId,
 		livechatData,
+		ts,
 	} = room;
 
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
@@ -227,6 +232,7 @@ const mergeSubRoom = (subscription) => {
 		responseBy,
 		priorityId,
 		livechatData,
+		ts,
 	});
 };
 
@@ -263,6 +269,7 @@ const mergeRoomSub = (room) => {
 		responseBy,
 		priorityId,
 		livechatData,
+		ts,
 
 	} = room;
 
@@ -295,6 +302,7 @@ const mergeRoomSub = (room) => {
 			responseBy,
 			priorityId,
 			livechatData,
+			ts,
 			...getLowerCaseNames(room, sub.name, sub.fname),
 		},
 	});
