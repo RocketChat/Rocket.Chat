@@ -13,7 +13,8 @@ import {
 	findAllAverageOfChatDurationTime,
 } from '../../../../../app/livechat/server/lib/analytics/departments';
 import {
-	findAllDepartments,
+	findAllDepartmentsAvailable,
+	findAllDepartmentsByUnit,
 } from '../lib/Department';
 
 API.v1.addRoute('livechat/analytics/departments/amount-of-chats', { authRequired: true }, {
@@ -322,7 +323,7 @@ API.v1.addRoute('livechat/analytics/departments/percentage-abandoned-chats', { a
 	},
 });
 
-API.v1.addRoute('livechat/department.available-by-unit/:unitId', { authRequired: true }, {
+API.v1.addRoute('livechat/departments.available-by-unit/:unitId', { authRequired: true }, {
 	get() {
 		check(this.urlParams, {
 			unitId: Match.Maybe(String),
@@ -330,8 +331,32 @@ API.v1.addRoute('livechat/department.available-by-unit/:unitId', { authRequired:
 		const { offset, count } = this.getPaginationItems();
 		const { unitId } = this.urlParams;
 
-		const departments = Promise.await(findAllDepartments(unitId, offset, count));
+		const { departments, total } = Promise.await(findAllDepartmentsAvailable(unitId, offset, count));
 
-		return API.v1.success({ departments });
+		return API.v1.success({
+			departments,
+			count: departments.length,
+			offset,
+			total,
+		});
+	},
+});
+
+API.v1.addRoute('livechat/departments.by-unit/:unitId', { authRequired: true }, {
+	get() {
+		check(this.urlParams, {
+			unitId: String,
+		});
+		const { offset, count } = this.getPaginationItems();
+		const { unitId } = this.urlParams;
+
+		const { departments, total } = Promise.await(findAllDepartmentsByUnit(unitId, offset, count));
+
+		return API.v1.success({
+			departments,
+			count: departments.length,
+			offset,
+			total,
+		});
 	},
 });
