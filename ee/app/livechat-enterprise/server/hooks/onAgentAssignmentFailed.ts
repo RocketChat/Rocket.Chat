@@ -3,8 +3,9 @@ import { LivechatInquiry, Subscriptions, LivechatRooms } from '../../../../../ap
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
+import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 
-const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inquiry: any; room: any; options: { forwardRoomOldDepartment?: string; clienAction?: boolean} }): Promise<any> => {
+const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inquiry: any; room: any; options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clienAction?: boolean} }): Promise<any> => {
 	if (!inquiry || !room) {
 		return;
 	}
@@ -31,7 +32,11 @@ const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inqui
 		return;
 	}
 
-	const { forwardRoomOldDepartment: oldDepartmentId } = options;
+	const { forwardingToDepartment: { oldDepartmentId, transferData } = {}, forwardingToDepartment } = options;
+	if (!forwardingToDepartment) {
+		return;
+	}
+
 	const { department: newDepartmentId } = inquiry;
 
 	if (!newDepartmentId || !oldDepartmentId || newDepartmentId === oldDepartmentId) {
@@ -47,6 +52,8 @@ const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inqui
 	const newInquiry = LivechatInquiry.findOneById(inquiry._id);
 
 	await queueInquiry(room, newInquiry);
+
+	Livechat.saveTransferHistory(room, transferData);
 };
 
 callbacks.add('livechat.onAgentAssignmentFailed', handleOnAgentAssignmentFailed, callbacks.priority.HIGH, 'livechat-agent-assignment-failed');

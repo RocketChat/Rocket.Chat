@@ -273,7 +273,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		return false;
 	}
 
-	const { userId: agentId } = transferData;
+	const { userId: agentId, clientAction } = transferData;
 	const user = Users.findOneOnlineAgentById(agentId);
 	if (!user) {
 		throw new Meteor.Error('error-user-is-offline', 'User is offline', { function: 'forwardRoomToAgent' });
@@ -291,9 +291,11 @@ export const forwardRoomToAgent = async (room, transferData) => {
 
 	const { username } = user;
 	const agent = { agentId, username };
-	// There are some Enterprise features that may interrupt the fowarding process
+	// Remove department from inquiry to make sure the routing algorithm treat this as forwarding to agent and not as forwarding to department
+	inquiry.department = undefined;
+	// There are some Enterprise features that may interrupt the forwarding process
 	// Due to that we need to check whether the agent has been changed or not
-	const roomTaken = await RoutingManager.takeInquiry(inquiry, agent);
+	const roomTaken = await RoutingManager.takeInquiry(inquiry, agent, { ...clientAction && { clientAction } });
 	if (!roomTaken) {
 		return false;
 	}
@@ -356,7 +358,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		throw new Meteor.Error('error-forwarding-chat-same-department', 'The selected department and the current room department are the same', { function: 'forwardRoomToDepartment' });
 	}
 
-	const { userId: agentId } = transferData;
+	const { userId: agentId, clientAction } = transferData;
 	if (agentId) {
 		let user = Users.findOneOnlineAgentById(agentId);
 		if (!user) {
@@ -378,7 +380,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	// Fake the department to forward the inquiry - Case the forward process does not success
 	// the inquiry will stay in the same original department
 	inquiry.department = departmentId;
-	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent, { clientAction: false, forwardRoomOldDepartment: oldDepartmentId });
+	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent, { forwardingToDepartment: { oldDepartmentId, transferData }, ...clientAction && { clientAction } });
 	if (!roomTaken) {
 		return false;
 	}

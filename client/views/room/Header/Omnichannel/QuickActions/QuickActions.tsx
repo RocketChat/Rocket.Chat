@@ -137,12 +137,14 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			}
 			const transferData: {
 				roomId: string;
+				clientAction: boolean;
 				comment?: string;
 				departmentId?: string;
 				userId?: string;
 			} = {
 				roomId: rid,
 				comment,
+				clientAction: true,
 			};
 
 			if (departmentId) {
