@@ -1,5 +1,6 @@
 import { Box, Margins, Tag, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
@@ -54,6 +55,7 @@ function ChatInfo({ id, route }) {
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
 	const hasGlobalEditRoomPermission = hasPermission('save-others-livechat-room-info');
+	const hasLocalEditRoomPermission = servedBy?._id === Meteor.userId();
 	const visitorId = v?._id;
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -73,7 +75,8 @@ function ChatInfo({ id, route }) {
 	};
 
 	const onEditClick = useMutableCallback(() => {
-		const hasEditAccess = !!subscription || hasGlobalEditRoomPermission;
+		const hasEditAccess =
+			!!subscription || hasLocalEditRoomPermission || hasGlobalEditRoomPermission;
 		if (!hasEditAccess) {
 			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
 		}
