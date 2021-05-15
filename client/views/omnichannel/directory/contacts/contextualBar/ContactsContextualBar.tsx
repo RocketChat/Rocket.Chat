@@ -1,16 +1,17 @@
-import React from 'react';
+import React, { FC } from 'react';
 
+import { IOmnichannelRoom } from '../../../../../../definition/IRoom';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useRoute, useRouteParameter } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useRoom } from '../../../../room/providers/RoomProvider';
+import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
 import { useTabBarClose } from '../../../../room/providers/ToolboxProvider';
 import ContactEditWithData from './ContactEditWithData';
 import ContactInfo from './ContactInfo';
 
 const PATH = 'live';
 
-const ContactsContextualBar = ({ rid }) => {
+const ContactsContextualBar: FC<{ rid: IOmnichannelRoom['_id'] }> = ({ rid }) => {
 	const t = useTranslation();
 
 	const closeContextualBar = useTabBarClose();
@@ -19,11 +20,11 @@ const ContactsContextualBar = ({ rid }) => {
 
 	const context = useRouteParameter('context');
 
-	const handleContactEditBarCloseButtonClick = () => {
+	const handleContactEditBarCloseButtonClick = (): void => {
 		directoryRoute.push({ id: rid, tab: 'contact-profile' });
 	};
 
-	const room = useRoom();
+	const room = useOmnichannelRoom();
 
 	const {
 		v: { _id },
