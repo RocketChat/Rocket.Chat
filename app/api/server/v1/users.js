@@ -626,7 +626,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				sidebarViewMode: Match.Optional(String),
 				sidebarHideAvatar: Match.Optional(Boolean),
 				sidebarGroupByType: Match.Optional(Boolean),
-				sidebarShowDiscussion: Match.Optional(Boolean),
+				// sidebarShowDiscussion: Match.Optional(Boolean),
 				muteFocusedConversations: Match.Optional(Boolean),
 			}),
 		});

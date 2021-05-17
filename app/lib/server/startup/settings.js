@@ -355,10 +355,10 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Hide_flextab',
 		});
-		this.add('Accounts_Default_User_Preferences_hideAvatars', false, {
+		this.add('Accounts_Default_User_Preferences_displayAvatars', true, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars',
+			i18nLabel: 'Display_avatars',
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
 			type: 'boolean',

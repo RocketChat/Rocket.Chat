@@ -29,7 +29,7 @@ type UserPreferences = {
 	sidebarViewMode: string;
 	sidebarHideAvatar: boolean;
 	sidebarGroupByType: boolean;
-	sidebarShowDiscussion: boolean;
+	// sidebarShowDiscussion: boolean;
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
 };

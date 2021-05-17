@@ -144,7 +144,7 @@ describe('miscellaneous', function() {
 					'sidebarHideAvatar',
 					'sidebarGroupByType',
 					'muteFocusedConversations',
-					'sidebarShowDiscussion',
+					// 'sidebarShowDiscussion',
 				];
 
 				expect(res.body).to.have.property('success', true);

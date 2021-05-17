@@ -22,11 +22,14 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 		hideUsernames: useUserPreference('hideUsernames'),
 		hideRoles: useUserPreference('hideRoles'),
 		hideFlexTab: useUserPreference('hideFlexTab'),
-		hideAvatars: useUserPreference('hideAvatars'),
 		clockMode: useUserPreference('clockMode') ?? 0,
 		sendOnEnter: useUserPreference('sendOnEnter'),
 		messageViewMode: useUserPreference('messageViewMode'),
+		displayAvatars: useUserPreference('displayAvatars'),
 	};
+
+	console.log(settings.hideAvatars);
+	console.log(settings.displayAvatars);
 
 	const { values, handlers, commit } = useForm(settings, onChange);
 
@@ -41,7 +44,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 		hideUsernames,
 		hideRoles,
 		hideFlexTab,
-		hideAvatars,
+		displayAvatars,
 		clockMode,
 		sendOnEnter,
 		messageViewMode,
@@ -58,7 +61,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 		handleHideUsernames,
 		handleHideRoles,
 		handleHideFlexTab,
-		handleHideAvatars,
+		handleDisplayAvatars,
 		handleClockMode,
 		handleSendOnEnter,
 		handleMessageViewMode,
@@ -229,13 +232,13 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 				{useMemo(
 					() => (
 						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Hide_Avatars')}</Field.Label>
+							<Field.Label>{t('Display_avatars')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch checked={hideAvatars} onChange={handleHideAvatars} />
+								<ToggleSwitch checked={displayAvatars} onChange={handleDisplayAvatars} />
 							</Field.Row>
 						</Field>
 					),
-					[handleHideAvatars, hideAvatars, t],
+					[handleDisplayAvatars, displayAvatars, t],
 				)}
 				{useMemo(
 					() => (
