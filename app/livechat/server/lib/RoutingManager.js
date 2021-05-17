@@ -47,9 +47,6 @@ export const RoutingManager = {
 		const { department, rid } = inquiry;
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username) && !allowAgentSkipQueue(agent))) {
 			agent = await this.getNextAgent(department);
-			if (!agent && options.forwardingToDepartment) {
-				throw new Meteor.Error('error-no-agents-online-in-department', 'No agents online in the department', { function: 'forwardRoomToDepartment' });
-			}
 		}
 
 		if (!agent) {
