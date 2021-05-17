@@ -13,6 +13,7 @@ import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { queueInquiry } from './QueueManager';
 
 export const allowAgentSkipQueue = (agent) => {
 	check(agent, Match.ObjectIncluding({
@@ -385,8 +386,8 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		return false;
 	}
 
-	const { servedBy } = roomTaken;
-	if (oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
+	const { servedBy, chatQueued } = roomTaken;
+	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		return false;
 	}
 
@@ -394,11 +395,17 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (oldServedBy) {
 		removeAgentFromSubscription(rid, oldServedBy);
 	}
-	if (servedBy) {
+	if (!chatQueued && servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
 	}
 
 	updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
+
+	if (chatQueued) {
+		LivechatInquiry.readyInquiry(inquiry._id);
+		const newInquiry = LivechatInquiry.findOneById(inquiry._id);
+		await queueInquiry(room, newInquiry);
+	}
 
 	const { token } = guest;
 	Livechat.setDepartmentForGuest({ token, department: departmentId });

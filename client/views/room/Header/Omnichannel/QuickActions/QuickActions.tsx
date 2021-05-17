@@ -155,10 +155,13 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			}
 
 			try {
-				await forwardChat(transferData);
-				closeModal();
+				const result = await forwardChat(transferData);
+				if (!result) {
+					throw new Error(t('error-forwarding-chat'));
+				}
 				toastr.success(t('Transferred'));
 				FlowRouter.go('/');
+				closeModal();
 			} catch (error) {
 				handleError(error);
 			}

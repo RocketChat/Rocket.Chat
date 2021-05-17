@@ -1,9 +1,7 @@
 import { callbacks } from '../../../../../app/callbacks/server';
 import { LivechatInquiry, Subscriptions, LivechatRooms } from '../../../../../app/models/server';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 
 const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inquiry: any; room: any; options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean} }): Promise<any> => {
 	if (!inquiry || !room) {
@@ -32,7 +30,7 @@ const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inqui
 		return;
 	}
 
-	const { forwardingToDepartment: { oldDepartmentId, transferData } = {}, forwardingToDepartment } = options;
+	const { forwardingToDepartment: { oldDepartmentId } = {}, forwardingToDepartment } = options;
 	if (!forwardingToDepartment) {
 		return;
 	}
@@ -43,17 +41,8 @@ const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inqui
 		return;
 	}
 
-	// Undo the FAKE Department we did before RoutingManager.delegateInquiry()
-	inquiry.department = oldDepartmentId;
-	RoutingManager.unassignAgent(inquiry, newDepartmentId);
-
-	LivechatInquiry.readyInquiry(inquiry._id);
-
-	const newInquiry = LivechatInquiry.findOneById(inquiry._id);
-
-	await queueInquiry(room, newInquiry);
-
-	Livechat.saveTransferHistory(room, transferData);
+	room.chatQueued = true;
+	return room;
 };
 
 callbacks.add('livechat.onAgentAssignmentFailed', handleOnAgentAssignmentFailed, callbacks.priority.HIGH, 'livechat-agent-assignment-failed');

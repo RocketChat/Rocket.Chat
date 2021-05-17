@@ -47,6 +47,9 @@ export const RoutingManager = {
 		const { department, rid } = inquiry;
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username) && !allowAgentSkipQueue(agent))) {
 			agent = await this.getNextAgent(department);
+			if (!agent && options.forwardingToDepartment) {
+				throw new Meteor.Error('error-no-agents-online-in-department', 'No agents online in the department', { function: 'forwardRoomToDepartment' });
+			}
 		}
 
 		if (!agent) {
@@ -134,8 +137,7 @@ export const RoutingManager = {
 
 		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', { agent, inquiry, options });
 		if (!agent) {
-			await callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
-			return null;
+			return callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
 		}
 
 		if (room.onHold) {
