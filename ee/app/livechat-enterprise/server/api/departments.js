@@ -330,8 +330,10 @@ API.v1.addRoute('livechat/departments.available-by-unit/:unitId', { authRequired
 		});
 		const { offset, count } = this.getPaginationItems();
 		const { unitId } = this.urlParams;
+		const { text } = this.queryParams;
 
-		const { departments, total } = Promise.await(findAllDepartmentsAvailable(unitId, offset, count));
+
+		const { departments, total } = Promise.await(findAllDepartmentsAvailable(unitId, offset, count, text));
 
 		return API.v1.success({
 			departments,
