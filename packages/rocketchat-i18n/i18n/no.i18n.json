@@ -1142,6 +1142,7 @@
   "error-invalid-urls": "Ugyldige nettadresser",
   "error-invalid-user": "Ugyldig bruker",
   "error-invalid-username": "Ugyldig brukernavn",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "Webhook-nettadressen reagerte med en annen status enn 200",
   "error-logged-user-not-in-room": "Du er ikke på rommet `%s`",
   "error-max-number-simultaneous-chats-reached": "Det maksimale antallet samtidige chatter per agent er nådd.",

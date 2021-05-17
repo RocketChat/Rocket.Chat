@@ -1073,6 +1073,7 @@
   "error-invalid-urls": "URL tidak valid",
   "error-invalid-user": "Pengguna tidak valid",
   "error-invalid-username": "Nama pengguna tidak valid",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "URL WebHook menanggapi dengan status selain 200",
   "error-logged-user-not-in-room": "Anda tidak berada di ruangan `%s`",
   "error-message-deleting-blocked": "Pesan menghapus diblokir",

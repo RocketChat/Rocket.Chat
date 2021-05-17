@@ -1407,6 +1407,7 @@
   "error-invalid-urls": "Недійсні URL - посилання",
   "error-invalid-user": "Невірний користувач",
   "error-invalid-username": "Невірне ім'я користувача",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "Webhook URL відповів зі статусом не 200",
   "error-logged-user-not-in-room": "Ви не перебуваєте в кімнаті `%s`",
   "error-max-guests-number-reached": "Ви досягли максимальної кількості відвідувачів, дозволених ліцензією. Зверніться до sale@rocket.chat для отримання нової ліцензії.",

@@ -1073,6 +1073,7 @@
   "error-invalid-urls": "Virheellisiä URL-osoitteita",
   "error-invalid-user": "Virheellinen käyttäjä",
   "error-invalid-username": "Virheellinen käyttäjätunnus",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "Webhook URL vastasi muun tilan kuin koodin 200",
   "error-logged-user-not-in-room": "Et ole huoneessa `%s`",
   "error-message-deleting-blocked": "Viestin poistaminen on estetty",

@@ -1140,6 +1140,7 @@
   "error-invalid-urls": "Ogiltiga webbadresser",
   "error-invalid-user": "Ogiltig användare",
   "error-invalid-username": "Ogiltigt användarnamn",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "Webhook-URL svarade med en annan status än 200",
   "error-logged-user-not-in-room": "Du är inte i rummet `%s`",
   "error-message-deleting-blocked": "Meddelanderadering är blockerad",

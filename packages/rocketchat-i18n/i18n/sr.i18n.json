@@ -897,6 +897,7 @@
   "error-invalid-urls": "Погрешна УРЛ адреса",
   "error-invalid-user": "Погрешан корисник",
   "error-invalid-username": "Погрешно корисничко име",
+  "error-invalid-value": "Invalid value",
   "error-logged-user-not-in-room": "Нисте у соби `%s`",
   "error-message-deleting-blocked": "Брисање порука је блокирано",
   "error-message-editing-blocked": "Уређивање порука је блокирано",

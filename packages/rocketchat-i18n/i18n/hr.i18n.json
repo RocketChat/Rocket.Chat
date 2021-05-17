@@ -1204,6 +1204,7 @@
   "error-invalid-urls": "Nevažeći URL-ovi",
   "error-invalid-user": "Nevaljani korisnik",
   "error-invalid-username": "Nevaljano korisničko ime",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "URL webhook odgovorio sa statusom drugačijim od 200",
   "error-logged-user-not-in-room": "Niste u sobi `%s`",
   "error-message-deleting-blocked": "Brisanje poruke je blokirano",

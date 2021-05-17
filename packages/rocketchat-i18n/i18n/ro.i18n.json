@@ -1071,6 +1071,7 @@
   "error-invalid-urls": "Adrese URL nevalide",
   "error-invalid-user": "Utilizator incorect",
   "error-invalid-username": "Nume de utilizator invalid",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "URL-ul webhook a răspuns cu o altă țară decât 200 de stare",
   "error-logged-user-not-in-room": "Nu sunteți în camera `%s`",
   "error-message-deleting-blocked": "Mesajul este blocat ștergerea",

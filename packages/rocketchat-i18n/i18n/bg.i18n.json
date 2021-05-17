@@ -1073,6 +1073,7 @@
   "error-invalid-urls": "Невалидни URL адреси",
   "error-invalid-user": "Невалиден потребител",
   "error-invalid-username": "Невалидно потребителско име",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "URL адресът на webhook отговаря със състояние, различно от 200",
   "error-logged-user-not-in-room": "Не сте в стаята `%s`",
   "error-message-deleting-blocked": "Изтриването на съобщения е блокирано",

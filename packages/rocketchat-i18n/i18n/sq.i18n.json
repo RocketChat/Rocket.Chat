@@ -1073,6 +1073,7 @@
   "error-invalid-urls": "URL të pavlefshme",
   "error-invalid-user": "përdoruesi i pavlefshëm",
   "error-invalid-username": "Emri i përdoruesit pavlefshëm",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "Webhook URL përgjigj me një status tjetër nga 200",
   "error-logged-user-not-in-room": "Ju nuk jeni në dhomën `%s`",
   "error-message-deleting-blocked": "Mesazhi fshirjes është bllokuar",

@@ -1322,6 +1322,7 @@
   "error-invalid-urls": "آدرس های نا معتبر",
   "error-invalid-user": "کاربر نامعتبر",
   "error-invalid-username": "نام کاربری نامعتبر",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "آدرس webhook جوابی به غیر از کد ۲۰۰ می دهد",
   "error-logged-user-not-in-room": "شما در اتاق `%s` نیستید",
   "error-max-guests-number-reached": "شما به حداکثر تعداد کاربر میهمان بر اساس لایسنس خود رسیدید. برای لایسنس جدید با sale@rocket.chat مکاتبه کنید.",

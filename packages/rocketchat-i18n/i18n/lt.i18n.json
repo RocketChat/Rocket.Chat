@@ -1073,6 +1073,7 @@
   "error-invalid-urls": "Netinkami URL",
   "error-invalid-user": "Netinkamas naudotojas",
   "error-invalid-username": "Neteisingas vartotojo vardas",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "\"Webhook URL\" atsakė su kita nei 200 statusu",
   "error-logged-user-not-in-room": "Jūs nesate \"%s\" kambaryje",
   "error-message-deleting-blocked": "Pranešimo ištrynimas užblokuotas",

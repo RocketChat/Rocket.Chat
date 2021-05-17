@@ -1079,6 +1079,7 @@
   "error-invalid-urls": "Μη έγκυρα URL",
   "error-invalid-user": "Μη έγκυρος χρήστης",
   "error-invalid-username": "Μη έγκυρο όνομα χρήστη",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "Tο webhook URL απάντησε με κατάσταση διαφορετική από 200",
   "error-logged-user-not-in-room": "Δεν βρίσκεστε στο δωμάτιο `%s`",
   "error-message-deleting-blocked": "διαγραφή του μηνύματος είναι αποκλεισμένη",

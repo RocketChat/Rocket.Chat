@@ -1070,6 +1070,7 @@
   "error-invalid-urls": "URL 'Invalid",
   "error-invalid-user": "user Invalid",
   "error-invalid-username": "navê bikarhêner ê nederbasdar",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "The URL webhook bi statuyek din ji 200 bersiv",
   "error-logged-user-not-in-room": "Tu di odeya `%s` de ne",
   "error-message-deleting-blocked": "Message jêbirina asteng kirin",

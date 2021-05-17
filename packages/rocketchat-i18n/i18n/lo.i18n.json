@@ -1101,6 +1101,7 @@
   "error-invalid-urls": "ທີ່ຢູ່ເວັບໄຊທີ່ບໍ່ຖືກຕ້ອງ",
   "error-invalid-user": "ຜູ້ໃຊ້ທີ່ບໍ່ຖືກຕ້ອງ",
   "error-invalid-username": "ຊື່​ຜູ້​ໃຊ້​ທີ່​ບໍ່​ຖືກ​ຕ້ອງ",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "The URL webhook ຕອບສະຫນອງກັບສະຖານະພາບອື່ນໆກ່ວ​​າ 200",
   "error-logged-user-not-in-room": "ທ່ານບໍ່ຢູ່ໃນຫ້ອງ `%s`",
   "error-max-guests-number-reached": "ທ່ານມີຜູ້ໃຊ້ທີ່ໄດ້ຮັບອະນຸຍາດຕາມຈໍານວນສູງສຸດທີ່ອະນຸຍາດແລ້ວ. ຕິດຕໍ່ sale@rocket.chat ເພື່ອຂໍຕໍ່ໃບອະນຸຍາດໃໝ່.",

@@ -1306,6 +1306,7 @@
   "error-invalid-urls": "URLs ដែលមិនត្រឹមត្រូវ",
   "error-invalid-user": "អ្នកប្រើមិនត្រឹមត្រូវ",
   "error-invalid-username": "ឈ្មោះ​អ្នកប្រើប្រាស់​មិន​ត្រឹមត្រូវ",
+  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "URL ដែលបាន webhook ឆ្លើយតបដោយមានស្ថានភាពផ្សេងទៀតជាង 200",
   "error-logged-user-not-in-room": "អ្នកមិននៅក្នុងបន្ទប់ `%s`",
   "error-max-guests-number-reached": "អ្នកបានឈានដល់ចំនួនអតិបរិមានៃអ្នកប្រើប្រាស់ភ្ញៀវដែលបានអនុញ្ញាតដោយអាជ្ញាប័ណ្ណរបស់អ្នក។ ទាក់ទង sale@rocket.chat សម្រាប់អាជ្ញាប័ណ្ណថ្មី។",
