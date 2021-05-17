@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { LivechatRooms, LivechatInquiry, Messages, Users, LivechatVisitors } from '../../../../../app/models/server';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { callbacks } from '../../../../../app/callbacks/server';
 
 const resolveOnHoldCommentInfo = (options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): string => {
@@ -33,14 +33,12 @@ Meteor.methods({
 			throw new Meteor.Error('room-closed', 'Room is not OnHold', { method: 'livechat:resumeOnHold' });
 		}
 
-		const { servedBy: { _id: agentId, username } } = room;
-
 		const inquiry = LivechatInquiry.findOneByRoomId(roomId, {});
 		if (!inquiry) {
 			throw new Meteor.Error('inquiry-not-found', 'Error! No inquiry found for this room', { method: 'livechat:resumeOnHold' });
 		}
 
-		await RoutingManager.takeInquiry(inquiry, { agentId, username }, options);
+		LivechatEnterprise.releaseOnHoldChat(room);
 
 		const onHoldChatResumedBy = options.clientAction ? Meteor.user() : Users.findOneById('rocket.cat');
 
