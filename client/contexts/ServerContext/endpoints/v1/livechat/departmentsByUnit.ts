@@ -7,7 +7,7 @@ export type LivechatDepartmentsByUnit = {
 		offset: number;
 		count: number;
 	}) => {
-		files: ObjectFromApi<ILivechatDepartment>[];
+		departments: ObjectFromApi<ILivechatDepartment>[];
 		total: number;
 	};
 };

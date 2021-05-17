@@ -43,9 +43,9 @@ export type ServerEndpoints = {
 	'teams.addRooms': TeamsAddRoomsEndpoint;
 	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
 	'livechat/room.onHold': LivechatRoomOnHoldEndpoint;
-	'livechat/monitors.list ': LivechatMonitorsList;
-	'livechat/department ': LivechatDepartment;
-	'livechat/departments.by-unit': LivechatDepartmentsByUnit;
+	'livechat/monitors.list': LivechatMonitorsList;
+	'livechat/department': LivechatDepartment;
+	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;

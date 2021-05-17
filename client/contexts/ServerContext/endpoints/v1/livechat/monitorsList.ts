@@ -7,7 +7,7 @@ export type LivechatMonitorsList = {
 		offset: number;
 		count: number;
 	}) => {
-		files: ObjectFromApi<ILivechatMonitor>[];
+		monitors: ObjectFromApi<ILivechatMonitor>[];
 		total: number;
 	};
 };
