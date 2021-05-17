@@ -5,7 +5,7 @@ import { Users } from '../../../../../app/models';
 import { LivechatInquiry, OmnichannelQueue } from '../../../../../app/models/server/raw';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
+import { LivechatRooms, Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
@@ -173,7 +173,6 @@ export const LivechatEnterprise = {
 			return false;
 		}
 		LivechatRooms.setOnHold(roomId);
-		Subscriptions.setOnHold(roomId);
 
 		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
 		Meteor.defer(() => {
@@ -191,7 +190,6 @@ export const LivechatEnterprise = {
 
 		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
 		LivechatRooms.unsetAllOnHoldFieldsByRoomId(roomId);
-		Subscriptions.unsetOnHold(roomId);
 	},
 };
 
