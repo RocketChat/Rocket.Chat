@@ -9,16 +9,13 @@ const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inqui
 	}
 
 	if (room.onHold) {
-		const { _id: roomId, servedBy } = room;
+		const { _id: roomId } = room;
 
 		const { _id: inquiryId } = inquiry;
 		LivechatInquiry.readyInquiry(inquiryId);
 		LivechatInquiry.removeDefaultAgentById(inquiryId);
 		LivechatRooms.removeAgentByRoomId(roomId);
-		if (servedBy?._id) {
-			Subscriptions.removeByRoomIdAndUserId(roomId, servedBy._id);
-		}
-
+		Subscriptions.removeByRoomId(roomId);
 		const newInquiry = LivechatInquiry.findOneById(inquiryId);
 
 		await queueInquiry(room, newInquiry);
