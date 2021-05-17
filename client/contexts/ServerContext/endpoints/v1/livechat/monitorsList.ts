@@ -1,7 +1,13 @@
+import { ILivechatMonitor } from '../../../../../../definition/ILivechatMonitor';
+import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi';
+
 export type LivechatMonitorsList = {
 	GET: (params: {
-		query: string;
+		text: string;
+		offset: number;
+		count: number;
 	}) => {
-		statuses: unknown[];
+		files: ObjectFromApi<ILivechatMonitor>[];
+		total: number;
 	};
 };

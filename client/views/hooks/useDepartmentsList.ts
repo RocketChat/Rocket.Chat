@@ -19,14 +19,11 @@ export const useDepartmentsList = (
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	// debugger
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
+	const endpoint = `livechat/departments.available-by-unit/${options.unitId || 'none'}`;
 
-	const getDepartments: any = useEndpoint(
-		'GET',
-		`livechat/departments.available-by-unit/${options.unitId || 'none'}`,
-	);
+	const getDepartments = useEndpoint('GET', endpoint);
 
 	useComponentDidUpdate(() => {
 		options && reload();

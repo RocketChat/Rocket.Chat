@@ -21,7 +21,9 @@ export const useMonitorsList = (
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatMonitorRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatMonitorRecord>()), []);
 
-	const getMonitors: any = useEndpoint('GET', 'livechat/monitors.list');
+	const endpoint = 'livechat/monitors.list';
+
+	const getMonitors = useEndpoint('GET', endpoint);
 
 	useComponentDidUpdate(() => {
 		options && reload();

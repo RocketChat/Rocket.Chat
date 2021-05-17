@@ -1,7 +1,13 @@
+import { ILivechatDepartment } from '../../../../../../definition/ILivechatDepartment';
+import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi';
+
 export type LivechatDepartmentsByUnit = {
 	GET: (params: {
-		query: string;
+		text: string;
+		offset: number;
+		count: number;
 	}) => {
-		statuses: unknown[];
+		files: ObjectFromApi<ILivechatDepartment>[];
+		total: number;
 	};
 };
