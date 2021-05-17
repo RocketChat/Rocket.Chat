@@ -5,7 +5,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 
-const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inquiry: any; room: any; options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clienAction?: boolean} }): Promise<any> => {
+const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inquiry: any; room: any; options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean} }): Promise<any> => {
 	if (!inquiry || !room) {
 		return;
 	}
