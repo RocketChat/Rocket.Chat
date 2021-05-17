@@ -3,10 +3,14 @@ import stream, { Readable } from 'stream';
 import fileType from 'file-type';
 import sharp from 'sharp';
 import isSvg from 'is-svg';
-import ExifTransformer from 'exif-be-gone';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IMediaService, ResizeResult } from '../../sdk/types/IMediaService';
+
+/* eslint-disable  @typescript-eslint/no-var-requires */
+const ExifTransformer = require('exif-be-gone');
+/* eslint-enable  @typescript-eslint/no-var-requires */
+
 
 export class MediaService extends ServiceClass implements IMediaService {
 	protected name = 'media';
