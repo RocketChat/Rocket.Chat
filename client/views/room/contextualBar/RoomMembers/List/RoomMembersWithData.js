@@ -29,10 +29,11 @@ const RoomMembersWithData = ({ rid }) => {
 	const debouncedText = useDebouncedValue(text, 800);
 
 	const { membersList, loadMoreItems, reload } = useMembersList(
-		useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [
+		useMemo(() => ({ rid, type, limit: 50, debouncedText, roomType: room.t }), [
 			rid,
 			type,
 			debouncedText,
+			room.t,
 		]),
 	);
 
