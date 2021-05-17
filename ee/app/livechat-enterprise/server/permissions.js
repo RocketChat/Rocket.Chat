@@ -40,6 +40,7 @@ export const createPermissions = () => {
 		'view-livechat-room-closed-by-another-agent',
 		'view-livechat-room-customfields',
 		'edit-livechat-room-customfields',
+		'manage-livechat-departments',
 	];
 
 
