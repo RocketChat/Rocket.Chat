@@ -255,28 +255,28 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 						},
 					},
 					{
-						$skip: offset,
-					},
-					{
-						$limit: count,
-					},
-					{
 						$facet: {
-							sortedResults: [{ $sort: actualSort }],
-							totalCount: [{ $count: 'value' }],
+							sortedResults: [{
+								$sort: actualSort,
+							}, {
+								$skip: offset,
+							}, {
+								$limit: count,
+							}],
+							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 						},
 					},
 				])
 				.toArray(),
 		);
 
-		const { sortedResults: users, totalCount } = result[0];
+		const { sortedResults: users, totalCount: [{ total } = { total: 0 }] } = result[0];
 
 		return API.v1.success({
 			users,
 			count: users.length,
 			offset,
-			total: totalCount[0].value,
+			total,
 		});
 	},
 });
@@ -456,12 +456,20 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
 					const { status } = this.bodyParams;
+
+					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+							method: 'users.setStatus',
+						});
+					}
+
 					Meteor.users.update(user._id, {
 						$set: {
 							status,
 							statusDefault: status,
 						},
 					});
+
 					setUserStatus(user, status);
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {

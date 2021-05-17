@@ -1,12 +1,11 @@
 import React from 'react';
 
-import VerticalBar from '../../../../components/VerticalBar';
 import * as Status from '../../../../components/UserStatus';
-
-import { UserInfo } from '.';
+import VerticalBar from '../../../../components/VerticalBar';
+import UserInfo from './UserInfo';
 
 export default {
-	title: 'components/UserInfo',
+	title: 'room/contextualBar/UserInfo',
 	component: UserInfo,
 };
 
@@ -28,5 +27,13 @@ const nickname = {
 	nickname: 'Nickname',
 };
 
-export const Default = () => <VerticalBar height={800}><UserInfo { ...user } /></VerticalBar>;
-export const Nickname = () => <VerticalBar height={800}><UserInfo { ...nickname } /></VerticalBar>;
+export const Default = () => (
+	<VerticalBar height={800}>
+		<UserInfo {...user} />
+	</VerticalBar>
+);
+export const Nickname = () => (
+	<VerticalBar height={800}>
+		<UserInfo {...nickname} />
+	</VerticalBar>
+);

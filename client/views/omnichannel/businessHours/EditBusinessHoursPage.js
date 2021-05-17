@@ -1,25 +1,28 @@
-import React, { useRef, useMemo, useState } from 'react';
 import { Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useRef, useMemo, useState } from 'react';
 
-import BusinessHoursFormContainer from './BusinessHoursFormContainer';
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
-import { useIsSingleBusinessHours } from './BusinessHoursRouter';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useMethod } from '../../../contexts/ServerContext';
-import { mapBusinessHoursForm } from './mapBusinessHoursForm';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import BusinessHoursFormContainer from './BusinessHoursFormContainer';
+import { useIsSingleBusinessHours } from './BusinessHoursRouter';
+import { mapBusinessHoursForm } from './mapBusinessHoursForm';
 
 const EditBusinessHoursPage = ({ id, type }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isSingleBH = useIsSingleBusinessHours();
 
-	const { value: data, phase: state } = useEndpointData('livechat/business-hour', useMemo(() => ({ _id: id, type }), [id, type]));
+	const { value: data, phase: state } = useEndpointData(
+		'livechat/business-hour',
+		useMemo(() => ({ _id: id, type }), [id, type]),
+	);
 
 	const saveData = useRef({ form: {} });
 
@@ -35,14 +38,19 @@ const EditBusinessHoursPage = ({ id, type }) => {
 			return;
 		}
 
-		const { current: {
-			form,
-			multiple: { departments, ...multiple } = {},
-			timezone: { name: timezoneName } = {},
-		} } = saveData;
+		const {
+			current: {
+				form,
+				multiple: { departments, ...multiple } = {},
+				timezone: { name: timezoneName } = {},
+			},
+		} = saveData;
 
 		if (data.businessHour.type !== 'default' && multiple.name === '') {
-			return dispatchToastMessage({ type: 'error', message: t('error-the-field-is-required', { field: t('Name') }) });
+			return dispatchToastMessage({
+				type: 'error',
+				message: t('error-the-field-is-required', { field: t('Name') }),
+			});
 		}
 
 		const mappedForm = mapBusinessHoursForm(form, data.businessHour);
@@ -89,41 +97,42 @@ const EditBusinessHoursPage = ({ id, type }) => {
 	}
 
 	if (state === AsyncStatePhase.REJECTED || (AsyncStatePhase.RESOLVED && !data.businessHour)) {
-		return <Page>
-			<Page.Header title={t('Business_Hours')}>
-				<Button onClick={handleReturn}>
-					{t('Back')}
-				</Button>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow>
-				<Callout type='danger'>
-					{t('Error')}
-				</Callout>
-			</Page.ScrollableContentWithShadow>
-		</Page>;
+		return (
+			<Page>
+				<Page.Header title={t('Business_Hours')}>
+					<Button onClick={handleReturn}>{t('Back')}</Button>
+				</Page.Header>
+				<Page.ScrollableContentWithShadow>
+					<Callout type='danger'>{t('Error')}</Callout>
+				</Page.ScrollableContentWithShadow>
+			</Page>
+		);
 	}
 
-	return <Page>
-		<Page.Header title={t('Business_Hours')}>
-			<ButtonGroup>
-				{!isSingleBH && <Button onClick={handleReturn}>
-					{t('Back')}
-				</Button>}
-				{type === 'custom' && <Button primary danger onClick={handleDelete}>
-					{t('Delete')}
-				</Button>}
-				<Button primary onClick={handleSave} disabled={!hasChanges}>
-					{t('Save')}
-				</Button>
-			</ButtonGroup>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow>
-			<BusinessHoursFormContainer
-				data={data.businessHour}
-				saveRef={saveData}
-				onChange={setHasChanges} />
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+	return (
+		<Page>
+			<Page.Header title={t('Business_Hours')}>
+				<ButtonGroup>
+					{!isSingleBH && <Button onClick={handleReturn}>{t('Back')}</Button>}
+					{type === 'custom' && (
+						<Button primary danger onClick={handleDelete}>
+							{t('Delete')}
+						</Button>
+					)}
+					<Button primary onClick={handleSave} disabled={!hasChanges}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
+			<Page.ScrollableContentWithShadow>
+				<BusinessHoursFormContainer
+					data={data.businessHour}
+					saveRef={saveData}
+					onChange={setHasChanges}
+				/>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 };
 
 export default EditBusinessHoursPage;

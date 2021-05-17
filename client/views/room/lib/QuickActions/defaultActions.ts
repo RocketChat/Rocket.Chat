@@ -1,6 +1,5 @@
 import { addAction, QuickActionsEnum } from '.';
 
-
 addAction(QuickActionsEnum.MoveQueue, {
 	groups: ['live'],
 	id: QuickActionsEnum.MoveQueue,
@@ -30,6 +29,6 @@ addAction(QuickActionsEnum.CloseChat, {
 	id: QuickActionsEnum.CloseChat,
 	title: 'Close',
 	icon: 'balloon-close-top-right',
-	order: 4,
+	order: 5,
 	color: 'danger',
 });

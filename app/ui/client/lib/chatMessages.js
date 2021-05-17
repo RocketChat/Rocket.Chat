@@ -6,6 +6,7 @@ import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { KonchatNotification } from './notification';
 import { MsgTyping } from './msgTyping';
@@ -27,7 +28,6 @@ import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
-import { escapeHTML } from '../../../../lib/escapeHTML';
 
 
 const messageBoxState = {
