@@ -15,7 +15,7 @@ const newInquirySound = () => {
 	const newRoomNotification = getUserPreference(userId, 'newRoomNotification');
 	const audioNotificationValue = getUserPreference(userId, 'audioNotifications');
 
-	if (audioNotificationValue === 'all') {
+	if (audioNotificationValue !== 'none') {
 		CustomSounds.play(newRoomNotification, {
 			volume: Number((audioVolume / 100).toPrecision(2)),
 		});
