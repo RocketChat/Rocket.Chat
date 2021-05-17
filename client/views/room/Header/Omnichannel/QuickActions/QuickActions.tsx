@@ -157,7 +157,9 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			try {
 				const result = await forwardChat(transferData);
 				if (!result) {
-					throw new Error(t('error-forwarding-chat'));
+					throw new Error(
+						departmentId ? t('error-no-agents-online-in-department') : t('error-forwarding-chat'),
+					);
 				}
 				toastr.success(t('Transferred'));
 				FlowRouter.go('/');
