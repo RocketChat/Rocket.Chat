@@ -23,6 +23,6 @@ addAction('game-center', () => {
 				title: 'Apps_Game_Center',
 				icon: 'game',
 				template: 'GameCenter',
-				order: -1,
+				order: 98,
 			} : null), [enabled, hasError, hasExternalComponents, state]);
 });

@@ -16,7 +16,7 @@ export type QuoteAttachmentProps = {
 	message_link?: string;
 	text: string;
 	attachments?: Array<QuoteAttachmentProps>;
-} & AttachmentPropsBase;
+} & AttachmentPropsBase & { isInner?: boolean };
 
 const hover = css`
 	&:hover,
@@ -37,11 +37,12 @@ export const QuoteAttachment: FC<QuoteAttachmentProps> = ({
 	ts,
 	text,
 	attachments,
+	isInner,
 }) => {
 	const format = useTimeAgo();
 	return (
 		<>
-			<Attachment.Content className={hover} width='full'>
+			<Attachment.Content className={hover} width='full' isInner={isInner}>
 				<Attachment.Details
 					is='blockquote'
 					borderRadius='x2'
@@ -67,7 +68,7 @@ export const QuoteAttachment: FC<QuoteAttachmentProps> = ({
 					<MarkdownText variant='inline' content={text} />
 					{attachments && (
 						<Attachment.Inner>
-							<Attachments attachments={attachments} />
+							<Attachments attachments={attachments} isInner={true} />
 						</Attachment.Inner>
 					)}
 				</Attachment.Details>
