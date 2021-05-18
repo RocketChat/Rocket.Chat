@@ -28,9 +28,6 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }) => {
 		displayAvatars: useUserPreference('displayAvatars'),
 	};
 
-	console.log(settings.hideAvatars);
-	console.log(settings.displayAvatars);
-
 	const { values, handlers, commit } = useForm(settings, onChange);
 
 	const {

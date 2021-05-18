@@ -19,15 +19,15 @@ function ViewModeList() {
 		useCallback(() => saveUserPreferences({ sidebarViewMode: value }), [value]);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode', 'extended');
-	const sidebarHideAvatar = useUserPreference('sidebarHideAvatar', false);
+	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', false);
 
 	const setToExtended = useHandleChange('extended');
 	const setToMedium = useHandleChange('medium');
 	const setToCondensed = useHandleChange('condensed');
 
-	const handleChangeSidebarHideAvatar = useCallback(
-		() => saveUserPreferences({ sidebarHideAvatar: !sidebarHideAvatar }),
-		[saveUserPreferences, sidebarHideAvatar],
+	const handleChangeSidebarDisplayAvatar = useCallback(
+		() => saveUserPreferences({ sidebarDisplayAvatar: !sidebarDisplayAvatar }),
+		[saveUserPreferences, sidebarDisplayAvatar],
 	);
 
 	return (
@@ -80,9 +80,9 @@ function ViewModeList() {
 						text={t('Avatars')}
 						input={
 							<ToggleSwitch
-								onChange={handleChangeSidebarHideAvatar}
-								name='sidebarHideAvatar'
-								checked={!sidebarHideAvatar}
+								onChange={handleChangeSidebarDisplayAvatar}
+								name='sidebarDisplayAvatar'
+								checked={sidebarDisplayAvatar}
 							/>
 						}
 					/>

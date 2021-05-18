@@ -101,7 +101,7 @@ const subscriptions = [
 
 const userPreferences = {
 	sidebarViewMode: 'medium',
-	sidebarHideAvatar: false,
+	sidebarDisplayAvatar: true,
 	sidebarGroupByType: true,
 	sidebarShowFavorites: true,
 	sidebarShowDiscussion: true,
