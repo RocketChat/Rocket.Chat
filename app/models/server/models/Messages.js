@@ -523,10 +523,12 @@ export class Messages extends Base {
 
 	getLastVisibleMessageSentByRoomId(rid, messageId) {
 		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(rid);
+		const hiddenSysMesSettings = settings.get('Hide_System_Messages');
+		const hiddenSysMes = sysMes || hiddenSysMesSettings;
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			t: sysMes ? { $nin: sysMes } : undefined,
+			t: hiddenSysMes ? { $nin: hiddenSysMes } : undefined,
 			$or: [
 				{ tmid: { $exists: false } },
 				{ tshow: true },
@@ -787,12 +789,12 @@ export class Messages extends Base {
 
 		const hiddenSysMesSettings = settings.get('Hide_System_Messages');
 		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(roomId);
-		if (!hiddenSysMesSettings.includes(type) && (!sysMes || !sysMes.includes(type))) {
+		if ((!sysMes && hiddenSysMesSettings.includes(type)) || (sysMes && sysMes.includes(type))) {
+			Rooms.incMsgCountById(roomId, 1);
+		} else {
 			const byUser = extraData ? extraData.u._id : user._id;
 			Rooms.incMsgCountAndSetLastMessageById(roomId, 1, record.ts, settings.get('Store_Last_Message') && record);
 			Subscriptions.setAlertForRoomIdExcludingUserId(roomId, byUser);
-		} else {
-			Rooms.incMsgCountById(roomId, 1);
 		}
 
 		return record;
