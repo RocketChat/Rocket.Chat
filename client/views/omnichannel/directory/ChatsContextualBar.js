@@ -1,10 +1,14 @@
+import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { FormSkeleton } from './Skeleton';
 import Chat from './chats/Chat';
-import ChatInfo from './chats/contextualBar/ChatInfo';
+import ChatInfoDirectory from './chats/contextualBar/ChatInfoDirectory';
 import RoomEditWithData from './chats/contextualBar/RoomEditWithData';
 
 const ChatsContextualBar = ({ chatReload }) => {
@@ -27,8 +31,24 @@ const ChatsContextualBar = ({ chatReload }) => {
 		directoryRoute.push({ page: 'chats', id, bar: 'info' });
 	};
 
+	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(
+		`rooms.info?roomId=${id}`,
+	);
+
 	if (bar === 'view') {
 		return <Chat rid={id} />;
+	}
+
+	if (state === AsyncStatePhase.LOADING) {
+		return (
+			<Box pi='x24'>
+				<FormSkeleton />
+			</Box>
+		);
+	}
+
+	if (error || !data || !data.room) {
+		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
 	}
 
 	return (
@@ -53,12 +73,13 @@ const ChatsContextualBar = ({ chatReload }) => {
 				)}
 				<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
-			{bar === 'info' && <ChatInfo id={id} />}
+			{bar === 'info' && <ChatInfoDirectory id={id} room={data.room} />}
 			{bar === 'edit' && (
 				<RoomEditWithData
 					id={id}
 					close={handleChatsVerticalBarBackButtonClick}
 					reload={chatReload}
+					reloadInfo={reloadInfo}
 				/>
 			)}
 		</VerticalBar>

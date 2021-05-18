@@ -14,6 +14,7 @@ import Avatar from './Avatar';
 function UserInfo({
 	username,
 	bio,
+	canViewAllInfo,
 	email,
 	verified,
 	showRealNames,
@@ -32,11 +33,14 @@ function UserInfo({
 	...props
 }) {
 	const t = useTranslation();
-
 	const timeAgo = useTimeAgo();
-
 	const customFieldsToShowSetting = useSetting('Accounts_CustomFieldsToShowInUserInfo');
-	const customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
+	let customFieldsToShowObj;
+	try {
+		customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
+	} catch (error) {
+		customFieldsToShowObj = undefined;
+	}
 
 	const customFieldsToShow = customFieldsToShowObj
 		? Object.values(customFieldsToShowObj).map((value) => {
@@ -64,7 +68,7 @@ function UserInfo({
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
-					{!!roles && (
+					{roles.length !== 0 && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
 							<UserCard.Roles>{roles}</UserCard.Roles>
@@ -87,10 +91,12 @@ function UserInfo({
 						</InfoPanel.Field>
 					)}
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
-						<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
-					</InfoPanel.Field>
+					{canViewAllInfo && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
+							<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
 
 					{name && (
 						<InfoPanel.Field>
@@ -152,10 +158,12 @@ function UserInfo({
 						) : null,
 					)}
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
-						<InfoPanel.Text>{timeAgo(createdAt)}</InfoPanel.Text>
-					</InfoPanel.Field>
+					{createdAt && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
+							<InfoPanel.Text>{timeAgo(createdAt)}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
 				</InfoPanel.Section>
 			</InfoPanel>
 		</VerticalBar.ScrollableContent>
