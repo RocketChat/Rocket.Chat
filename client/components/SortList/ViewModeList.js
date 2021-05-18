@@ -1,4 +1,4 @@
-import { ToggleSwitch, RadioButton, Box, Margins } from '@rocket.chat/fuselage';
+import { RadioButton, Box, Margins, CheckBox } from '@rocket.chat/fuselage';
 import React, { useCallback } from 'react';
 
 import { useMethod } from '../../contexts/ServerContext';
@@ -79,7 +79,7 @@ function ViewModeList() {
 						icon={'user-rounded'}
 						text={t('Hide_Avatars')}
 						input={
-							<ToggleSwitch
+							<CheckBox
 								onChange={handleChangeSidebarHideAvatar}
 								name='sidebarHideAvatar'
 								checked={sidebarHideAvatar}
