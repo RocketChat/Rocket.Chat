@@ -8,16 +8,15 @@ export const findAllDepartmentsAvailable = async (unitId, offset, count, text) =
 	const filterReg = new RegExp(escapeRegExp(text), 'i');
 
 	const cursor = LivechatDepartment.find({
-		$or: [{ ancestors: { $in: [unitId] } }, { ancestors: { $exists: false } }],
+		$or: [{ ancestors: { $in: [[unitId], null, []] } }, { ancestors: { $exists: false } }],
 		...text && { name: filterReg },
 
 	}, { limit: count, offset });
 
 	const departments = await cursor.toArray();
 	const total = await cursor.count();
-	const departmentsFiltered = departments.filter((department) => !department.ancestors?.length);
 
-	return { departments: departmentsFiltered, total };
+	return { departments, total };
 };
 
 export const findAllDepartmentsByUnit = async (unitId, offset, count) => {
