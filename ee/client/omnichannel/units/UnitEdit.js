@@ -1,47 +1,59 @@
-import { Field, TextInput, Button, Box, MultiSelect, Select, Margins } from '@rocket.chat/fuselage';
+import {
+	Field,
+	TextInput,
+	Button,
+	Box,
+	PaginatedMultiSelectFiltered,
+	Select,
+	Margins,
+} from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useForm } from '../../../../client/hooks/useForm';
+import { useDepartmentsList } from '../../../../client/views/hooks/useDepartmentsList';
+import { useMonitorsList } from '../../../../client/views/hooks/useMonitorsList';
 
-function UnitEdit({
-	data,
-	unitId,
-	isNew,
-	availableDepartments,
-	availableMonitors,
-	unitMonitors,
-	reload,
-	...props
-}) {
+function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, ...props }) {
 	const t = useTranslation();
 	const unitsRoute = useRoute('omnichannel-units');
+	const [monitorsFilter, setMonitorsFilter] = useState('');
+	const [departmentsFilter, setDepartmentsFilter] = useState('');
+
+	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
+		useMemo(() => ({ limit: 50, filter: monitorsFilter }), [monitorsFilter]),
+	);
+
+	const { phase: monitorsPhase, items: monitorsItems, itemCount: monitorsTotal } = useRecordList(
+		monitorsList,
+	);
+
+	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
+		useMemo(() => ({ limit: 50, filter: departmentsFilter }), [departmentsFilter]),
+	);
+
+	const {
+		phase: departmentsPhase,
+		items: departmentsItems,
+		itemCount: departmentsTotal,
+	} = useRecordList(departmentsList);
 
 	const unit = data || {};
 
-	const depOptions = useMemo(
-		() =>
-			availableDepartments && availableDepartments.departments
-				? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id])
-				: [],
-		[availableDepartments],
-	);
-	const monOptions = useMemo(
-		() =>
-			availableMonitors && availableMonitors.monitors
-				? availableMonitors.monitors.map(({ _id, name }) => [_id, name || _id])
-				: [],
-		[availableMonitors],
-	);
 	const currUnitMonitors = useMemo(
 		() =>
 			unitMonitors && unitMonitors.monitors
-				? unitMonitors.monitors.map(({ monitorId }) => monitorId)
+				? unitMonitors.monitors.map(({ monitorId, username }) => ({
+						value: monitorId,
+						label: username,
+				  }))
 				: [],
 		[unitMonitors],
 	);
@@ -49,26 +61,22 @@ function UnitEdit({
 		['public', t('Public')],
 		['private', t('Private')],
 	];
-	const unitDepartments = useMemo(
+
+	const currUnitDepartments = useMemo(
 		() =>
-			availableDepartments && availableDepartments.departments && unitId
-				? availableDepartments.departments
-						.map((department) => {
-							let result;
-							if (department.parentId === unitId) {
-								result = department._id;
-							}
-							return result;
-						})
-						.filter((department) => !!department)
+			unitDepartments && unitDepartments.departments && unitId
+				? unitDepartments.departments.map(({ _id, name }) => ({
+						value: _id,
+						label: name,
+				  }))
 				: [],
-		[availableDepartments, unitId],
+		[unitDepartments, unitId],
 	);
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
 		name: unit.name,
 		visibility: unit.visibility,
-		departments: unitDepartments,
+		departments: currUnitDepartments,
 		monitors: currUnitMonitors,
 	});
 
@@ -114,11 +122,11 @@ function UnitEdit({
 
 	const handleSave = useMutableCallback(async () => {
 		const unitData = { name, visibility };
-		const departmentsData = departments.map((department) => ({ departmentId: department }));
-		const monitorsData = monitors.map((monitor) => {
-			const monitorInfo = monOptions.find((el) => el[0] === monitor);
-			return { monitorId: monitorInfo[0], username: monitorInfo[1] };
-		});
+		const departmentsData = departments.map((department) => ({ departmentId: department.value }));
+		const monitorsData = monitors.map((monitor) => ({
+			monitorId: monitor.value,
+			username: monitor.label,
+		}));
 
 		if (!canSave) {
 			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
@@ -164,28 +172,42 @@ function UnitEdit({
 			<Field>
 				<Field.Label>{t('Departments')}*</Field.Label>
 				<Field.Row>
-					<MultiSelect
-						options={depOptions}
+					<PaginatedMultiSelectFiltered
+						filter={departmentsFilter}
+						setFilter={setDepartmentsFilter}
+						options={departmentsItems}
 						value={departments}
 						error={hasUnsavedChanges && departmentError}
 						maxWidth='100%'
 						placeholder={t('Select_an_option')}
 						onChange={handleDepartments}
 						flexGrow={1}
+						endReached={
+							departmentsPhase === AsyncStatePhase.LOADING
+								? () => {}
+								: (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+						}
 					/>
 				</Field.Row>
 			</Field>
 			<Field>
 				<Field.Label>{t('Monitors')}*</Field.Label>
 				<Field.Row>
-					<MultiSelect
-						options={monOptions}
+					<PaginatedMultiSelectFiltered
+						filter={monitorsFilter}
+						setFilter={setMonitorsFilter}
+						options={monitorsItems}
 						value={monitors}
 						error={hasUnsavedChanges && unitMonitorsError}
 						maxWidth='100%'
 						placeholder={t('Select_an_option')}
 						onChange={handleMonitors}
 						flexGrow={1}
+						endReached={
+							monitorsPhase === AsyncStatePhase.LOADING
+								? () => {}
+								: (start) => loadMoreMonitors(start, Math.min(50, monitorsTotal))
+						}
 					/>
 				</Field.Row>
 			</Field>
