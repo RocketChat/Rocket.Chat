@@ -83,8 +83,8 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 
 	const onClickLeave = useMutableCallback(() => {
 		const onConfirm = async (roomsLeft) => {
+			roomsLeft = Object.keys(roomsLeft).map((key) => roomsLeft[key].rid);
 			const rooms = Array.isArray(roomsLeft) && roomsLeft.length > 0 ? roomsLeft : null;
-
 			try {
 				await leaveTeam({ teamId: room.teamId, rooms });
 				router.push({});
