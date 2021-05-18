@@ -28,7 +28,7 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 
 	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
-		useMemo(() => ({ limit: 50, filter: monitorsFilter }), [monitorsFilter]),
+		useMemo(() => ({ filter: monitorsFilter }), [monitorsFilter]),
 	);
 
 	const { phase: monitorsPhase, items: monitorsItems, itemCount: monitorsTotal } = useRecordList(
@@ -36,7 +36,7 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 	);
 
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
-		useMemo(() => ({ limit: 50, filter: departmentsFilter }), [departmentsFilter]),
+		useMemo(() => ({ filter: departmentsFilter, unitId }), [departmentsFilter, unitId]),
 	);
 
 	const {
