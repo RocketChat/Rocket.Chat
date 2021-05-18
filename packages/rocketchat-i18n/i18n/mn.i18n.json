@@ -1069,7 +1069,6 @@
   "error-invalid-urls": "Буруу URL",
   "error-invalid-user": "Буруу хэрэглэгч",
   "error-invalid-username": "Хэрэглэгчийн нэр хүчингүй",
-  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "Webhook URL 200-с өөр статустай хариулсан байна",
   "error-logged-user-not-in-room": "Та `%s` гэсэн өрөөнд ороогүй байна",
   "error-message-deleting-blocked": "Зурвас устгах хориглогдсон байна",

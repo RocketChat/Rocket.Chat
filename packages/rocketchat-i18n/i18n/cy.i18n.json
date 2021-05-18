@@ -1071,7 +1071,6 @@
   "error-invalid-urls": "URLau annilys",
   "error-invalid-user": "Defnyddiwr annilys",
   "error-invalid-username": "Enw defnyddiwr annilys",
-  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "Ymatebodd yr we weoledig â statws heblaw am 200",
   "error-logged-user-not-in-room": "Nid ydych chi yn yr ystafell `%s`",
   "error-message-deleting-blocked": "Mae dileu neges yn cael ei atal",

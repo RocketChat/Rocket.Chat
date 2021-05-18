@@ -1082,7 +1082,6 @@
   "error-invalid-urls": "Nederīgi URL",
   "error-invalid-user": "Nederīgs lietotājs",
   "error-invalid-username": "Nederīgs lietotājvārds",
-  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "Webhoku URL atbildēja ar statusu, kas nav 200",
   "error-logged-user-not-in-room": "Jūs neatrodaties istabā `%s`",
   "error-max-guests-number-reached": "Jūs esat sasniedzis maksimālo vieslietotāju skaitu, ko atļauj jūsu licence. Lai iegūtu jaunu licenci, sazinieties ar sale@rocket.chat.",

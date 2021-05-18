@@ -1073,7 +1073,6 @@
   "error-invalid-urls": "Ongeldige URL's",
   "error-invalid-user": "Ongeldige gebruiker",
   "error-invalid-username": "Ongeldige gebruikersnaam",
-  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "Die webhook-URL het gereageer met 'n ander status as 200",
   "error-logged-user-not-in-room": "Jy is nie in die kamer `%s` nie",
   "error-message-deleting-blocked": "Boodskap verwydering is geblokkeer",

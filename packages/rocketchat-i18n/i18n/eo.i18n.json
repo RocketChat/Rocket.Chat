@@ -1073,7 +1073,6 @@
   "error-invalid-urls": "Malvalidaj URLoj",
   "error-invalid-user": "Nevalida uzanto",
   "error-invalid-username": "Nevalida salutnomon",
-  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "La adresula URL respondis kun statuso krom 200",
   "error-logged-user-not-in-room": "Vi ne estas en la ĉambro `%s`",
   "error-message-deleting-blocked": "Mesaĝo forigo estas blokita",

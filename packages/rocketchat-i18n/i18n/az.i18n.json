@@ -1073,7 +1073,6 @@
   "error-invalid-urls": "Yanlış URL'ler",
   "error-invalid-user": "Yanlış istifadəçi",
   "error-invalid-username": "Etibarsız istifadəçi adı",
-  "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "Webhook URL 200-dən başqa bir statusu ilə cavab verdi",
   "error-logged-user-not-in-room": "Siz `%s`da deyilsiniz",
   "error-message-deleting-blocked": "Mesajın silinməsi engellendi",

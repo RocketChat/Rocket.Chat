@@ -1421,6 +1421,7 @@
   "error-invalid-urls": "URLs inválidas",
   "error-invalid-user": "Usuário inválido",
   "error-invalid-username": "Nome de usuário Inválido",
+  "error-invalid-value": "Valor Inválido",
   "error-invalid-webhook-response": "O URL do webhook respondeu com um status diferente de 200",
   "error-logged-user-not-in-room": "Você não está na sala `%s`",
   "error-max-number-simultaneous-chats-reached": "O número máximo de bate-papos simultâneos por agente foi atingido.",
