@@ -233,7 +233,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Enable Two Factor Authentication via Email",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Users with email verified and the option enabled in their profile page will receive an email with a temporary code to authorize certain actions like login, save the profile, etc.",
   "Accounts_TwoFactorAuthentication_Enabled": "Enable Two Factor Authentication",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "If deactivated, this setting will deactivate all Two Factor Authentication.<br>In `Accounts` > `Registration` > `Registration with Authentication Services` is possible to force users to enable Two Factor Authentication based on their roles.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "If deactivated, this setting will deactivate all Two Factor Authentication.<br>To force users to use Two Factor Authentication, the admin has to configure the 'user' role to enforce it.",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback": "Enforce password fallback",
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Users will be forced to enter their password, for important actions, if no other Two Factor Authentication method is enabled for that user and a password is set for him.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",

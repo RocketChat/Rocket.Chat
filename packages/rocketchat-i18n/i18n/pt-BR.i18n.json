@@ -216,7 +216,7 @@
   "Accounts_TwoFactorAuthentication_By_Email_Enabled": "Ativar autenticação de dois fatores por Email",
   "Accounts_TwoFactorAuthentication_By_Email_Enabled_Description": "Usuários com email verificado e com a opção habilitada em seu perfil receberão um email com um código temporário para autorizar certas ações como o login, salvar o perfil, etc.",
   "Accounts_TwoFactorAuthentication_Enabled": "Ativar autenticação de dois fatores",
-  "Accounts_TwoFactorAuthentication_Enabled_Description": "Se essa opção estiver desativada, toda a autenticação de dois fatores também será desativada.<br>Em `Contas` > `Registro` > `Registro com os Serviços de Autenticação` é possível forçar usuários a ativarem a autenticação de dois fatores com base em sua função.",
+  "Accounts_TwoFactorAuthentication_Enabled_Description": "Se essa opção estiver desativada, toda a autenticação de dois fatores também será desativada.<br>Para forçar os usúarios a usarem a autenticação de dois fatores, o administrador deve configurar a role 'user' para isso.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Delta máximo",
   "Accounts_TwoFactorAuthentication_MaxDelta_Description": "O Delta máximo determina quantos tokens são válidos em qualquer momento. Os tokens são gerados a cada 30 segundos e são válidos por (30 * Delta máximo) segundos. <br/>Exemplo: com um Delta máximo configurado para 10, cada token pode ser usado até 300 segundos antes ou depois do timestamp. Isso é útil quando o relógio do cliente não está corretamente sincronizado com o servidor.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Lembrar a autenticação por (segundos)",
