@@ -12,6 +12,7 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import UserAutoCompleteMultiple from '../../../ee/client/audit/UserAutoCompleteMultiple';
+import { usePermission } from '../../contexts/AuthorizationContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -69,6 +70,8 @@ const CreateChannel = ({
 	);
 
 	const canSave = useMemo(() => hasUnsavedChanges && !nameError, [hasUnsavedChanges, nameError]);
+
+	const canSetReadOnly = usePermission('set-readonly');
 
 	return (
 		<Modal>
@@ -130,7 +133,7 @@ const CreateChannel = ({
 						</Box>
 						<ToggleSwitch
 							checked={values.readOnly}
-							disabled={values.broadcast}
+							disabled={!canSetReadOnly || values.broadcast}
 							onChange={handlers.handleReadOnly}
 						/>
 					</Box>
