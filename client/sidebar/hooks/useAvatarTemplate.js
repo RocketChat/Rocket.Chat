@@ -7,7 +7,7 @@ export const useAvatarTemplate = () => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar');
 	return useMemo(() => {
-		if (sidebarDisplayAvatar) {
+		if (!sidebarDisplayAvatar) {
 			return null;
 		}
 
