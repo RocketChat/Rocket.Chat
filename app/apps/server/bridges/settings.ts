@@ -1,10 +1,10 @@
 import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import { SettingBridge } from '@rocket.chat/apps-engine/server/bridges/SettingBridge';
+import { ServerSettingBridge } from '@rocket.chat/apps-engine/server/bridges/SettingBridge';
 
 import { Settings } from '../../../models/server';
 import { AppServerOrchestrator } from '../orchestrator';
 
-export class AppSettingBridge extends SettingBridge {
+export class AppSettingBridge extends ServerSettingBridge {
 	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
