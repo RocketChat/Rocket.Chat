@@ -1,4 +1,4 @@
-import { Db, FindOneOptions } from 'mongodb';
+import { Db, FindOneOptions, FilterQuery } from 'mongodb';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
@@ -509,7 +509,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamMembersModel.findByTeamIds(teamIds, options).toArray();
 	}
 
-	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, query: Partial<FindOneOptions<IUser>>): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
+	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, query: FilterQuery<IUser>): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
 		if (!isMember && !canSeeAll) {
 			return {
