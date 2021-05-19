@@ -1,9 +1,9 @@
 import React from 'react';
 
 import { useUserId } from '../../contexts/UserContext';
+import { useRoom } from './contexts/RoomContext';
 import RoomMembers from './contextualBar/RoomMembers';
 import UserInfo from './contextualBar/UserInfo';
-import { useRoom } from './providers/RoomProvider';
 import { useTab, useTabBarClose, useTabContext } from './providers/ToolboxProvider';
 
 const getUid = (room, ownUserId) => {

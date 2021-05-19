@@ -1,4 +1,5 @@
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
@@ -114,6 +115,14 @@ export class UsersRaw extends BaseRaw {
 		const query = {
 			_id: { $in: userIds },
 			active: true,
+		};
+
+		return this.find(query, options);
+	}
+
+	findByIds(userIds, options = {}) {
+		const query = {
+			_id: { $in: userIds },
 		};
 
 		return this.find(query, options);

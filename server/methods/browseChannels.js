@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 import mem from 'mem';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Users, Subscriptions } from '../../app/models/server';
@@ -10,7 +11,6 @@ import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';
-import { escapeRegExp } from '../../lib/escapeRegExp';
 import { Team } from '../sdk';
 
 const sortChannels = function(field, direction) {
@@ -208,7 +208,10 @@ Meteor.methods({
 			return;
 		}
 
-		if (!['name', 'createdAt', 'usersCount', ['channels', 'teams'].includes(...type) ? ['usernames', 'lastMessage'] : [], ...type === 'users' ? ['username', 'email', 'bio'] : []].includes(sortBy)) {
+		const roomParams = ['channels', 'teams'].includes(type) ? ['usernames', 'lastMessage'] : [];
+		const userParams = type === 'users' ? ['username', 'email', 'bio'] : [];
+
+		if (!['name', 'createdAt', 'usersCount', ...roomParams, ...userParams].includes(sortBy)) {
 			return;
 		}
 
