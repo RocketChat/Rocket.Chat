@@ -1,6 +1,70 @@
 
+# 3.14.1
+`2021-05-19  ·  1 🎉  ·  2 🚀  ·  4 🐛  ·  3 🔍  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.25.0`
+
+### 🎉 New features
+
+
+- Paginated and Filtered selects on new/edit unit ([#22052](https://github.com/RocketChat/Rocket.Chat/pull/22052))
+
+  REQUIRES https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/447
+
+  Adds infinite scrolling selects to the units edit/create  with the ability to be filtered by text as well
+
+  ![Screen Shot 2021-05-17 at 9 24 19 AM](https://user-images.githubusercontent.com/20868078/118487999-abc32a80-b6f1-11eb-8d58-d031111ea0fb.png)
+
+  This Affects the monitors and departments inputs
+
+### 🚀 Improvements
+
+
+- Forwarding Department behaviour with Waiting queue feature ([#22043](https://github.com/RocketChat/Rocket.Chat/pull/22043))
+
+- Omnichannel Room Information panel flow when user save or close on form page. ([#21688](https://github.com/RocketChat/Rocket.Chat/pull/21688))
+
+### 🐛 Bug fixes
+
+
+- Close stream properly at Omnichannel room when move to queue ([#22015](https://github.com/RocketChat/Rocket.Chat/pull/22015))
+
+- IE11 support ([#21893](https://github.com/RocketChat/Rocket.Chat/pull/21893))
+
+- Notify with sound first message in queue list ([#21969](https://github.com/RocketChat/Rocket.Chat/pull/21969))
+
+- When closing chats a comment is always required ([#21947](https://github.com/RocketChat/Rocket.Chat/pull/21947))
+
+  Fixes issue with the setting `Livechat_request_comment_when_closing_conversation` not working as intended
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- [EE] Omnichannel monitors not authorized to view departments ([#22048](https://github.com/RocketChat/Rocket.Chat/pull/22048))
+
+- [Patch] [EE] Improve Forwarding Department behaviour with Waiting queue feature ([#22077](https://github.com/RocketChat/Rocket.Chat/pull/22077))
+
+- regression: fix departments with empty ancestors not being returned ([#22068](https://github.com/RocketChat/Rocket.Chat/pull/22068))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@murtaza98](https://github.com/murtaza98)
+- [@rafaelblink](https://github.com/rafaelblink)
+- [@renatobecker](https://github.com/renatobecker)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 # 3.14.0
-`2021-04-27  ·  9 🎉  ·  9 🚀  ·  55 🐛  ·  38 🔍  ·  30 👩‍💻👨‍💻`
+`2021-04-28  ·  9 🎉  ·  9 🚀  ·  55 🐛  ·  38 🔍  ·  30 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.22.1`
