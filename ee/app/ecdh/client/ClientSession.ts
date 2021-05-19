@@ -1,4 +1,4 @@
-import { Session } from './Session';
+import { Session } from '../Session';
 
 export class ClientSession extends Session {
 	async init(): Promise<string> {

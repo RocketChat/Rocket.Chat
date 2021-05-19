@@ -13,6 +13,7 @@ import React, {
 } from 'react';
 import toastr from 'toastr';
 
+import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { handleError } from '../../../../../../app/utils/client';
 import { IRoom } from '../../../../../../definition/IRoom';
 import PlaceChatOnHoldModal from '../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
@@ -92,8 +93,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			try {
 				await requestTranscript(rid, email, subject);
 				closeModal();
-				Session.set('openedRoom', null);
-				FlowRouter.go('/home');
+				RoomManager.close(`l${rid}`);
 				toastr.success(t('Livechat_transcript_has_been_requested'));
 			} catch (error) {
 				handleError(error);
@@ -137,12 +137,14 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			}
 			const transferData: {
 				roomId: string;
+				clientAction: boolean;
 				comment?: string;
 				departmentId?: string;
 				userId?: string;
 			} = {
 				roomId: rid,
 				comment,
+				clientAction: true,
 			};
 
 			if (departmentId) {
@@ -153,10 +155,15 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			}
 
 			try {
-				await forwardChat(transferData);
-				closeModal();
+				const result = await forwardChat(transferData);
+				if (!result) {
+					throw new Error(
+						departmentId ? t('error-no-agents-online-in-department') : t('error-forwarding-chat'),
+					);
+				}
 				toastr.success(t('Transferred'));
 				FlowRouter.go('/');
+				closeModal();
 			} catch (error) {
 				handleError(error);
 			}
