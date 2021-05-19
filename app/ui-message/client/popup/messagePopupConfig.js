@@ -6,6 +6,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Messages, Subscriptions } from '../../../models/client';
 import { settings } from '../../../settings/client';
@@ -17,7 +18,6 @@ import { customMessagePopups } from './customMessagePopups';
 import './messagePopupConfig.html';
 import './messagePopupSlashCommand.html';
 import './messagePopupUser.html';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const reloadUsersFromRoomMessages = (rid, template) => {
 	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });

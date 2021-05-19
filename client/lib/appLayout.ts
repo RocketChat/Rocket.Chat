@@ -4,7 +4,7 @@ import { Subscription, Unsubscribe } from 'use-subscription';
 
 type BlazeLayoutDescriptor = {
 	template: string;
-	data?: Record<string, unknown>;
+	data?: EJSONable;
 };
 
 type ComponentLayoutDescriptor<Props extends {} = {}> = {
@@ -29,13 +29,10 @@ class AppLayoutSubscription
 	}
 
 	render: {
-		(template: string, data?: Record<string, unknown>): void;
+		(template: string, data?: EJSONable): void;
 		(descriptor: BlazeLayoutDescriptor): void;
 		<Props = {}>(descriptor: ComponentLayoutDescriptor<Props>): void;
-	} = (
-		templateOrDescriptor: string | AppLayoutDescriptor,
-		data?: Record<string, unknown>,
-	): void => {
+	} = (templateOrDescriptor: string | AppLayoutDescriptor, data?: EJSONable): void => {
 		if (typeof templateOrDescriptor === 'string') {
 			this.setCurrentValue({ template: templateOrDescriptor, data });
 			return;

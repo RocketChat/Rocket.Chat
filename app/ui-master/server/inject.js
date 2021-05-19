@@ -3,8 +3,8 @@ import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { escapeHTML } from '../../../lib/escapeHTML';
 import { Settings } from '../../models';
 import { settings } from '../../settings/server';
 

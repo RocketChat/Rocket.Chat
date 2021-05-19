@@ -42,6 +42,7 @@
 	"exclude": [
 		"./.meteor/**",
 		"./packages/**"
+		// "./ee/server/services/**"
 		// "node_modules"
 	]
 }
