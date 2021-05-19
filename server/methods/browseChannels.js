@@ -51,9 +51,14 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 
 	const teams = Promise.await(Team.getAllPublicTeams());
 	const teamIds = teams.map(({ _id }) => _id);
+	const teamsMains = Rooms.findTeamMainRooms({
+		fields: {
+			name: 1,
+			teamId: 1,
+		},
+	}).fetch();
 
 	const userTeamsIds = Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
-	const userTeams = Promise.await(Team.listByIds(userTeamsIds, { projection: { _id: 1, name: 1 } }));
 	const userRooms = user.__rooms;
 
 	const result = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, [...userTeamsIds, ...teamIds], userRooms, {
@@ -82,7 +87,7 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 	const total = result.count(); // count ignores the `skip` and `limit` options
 	const results = result.fetch().map((room) => {
 		if (room.teamId) {
-			const team = teams.find((team) => team._id === room.teamId) || userTeams.find((team) => team._id === room.teamId) || Promise.await(Team.getInfoById(room.teamId));
+			const team = teamsMains.find((mainRoom) => mainRoom.teamId === room.teamId);
 			if (team) {
 				room.belongsTo = team.name;
 			}
