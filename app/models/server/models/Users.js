@@ -774,7 +774,7 @@ export class Users extends Base {
 		}
 
 		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-		if (searchTerm === '') {
+		if (!searchTerm) {
 			const query = {
 				$and: [
 					{
