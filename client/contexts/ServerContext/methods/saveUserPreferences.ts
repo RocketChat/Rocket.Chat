@@ -29,7 +29,6 @@ type UserPreferences = {
 	sidebarViewMode: string;
 	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
-	// sidebarShowDiscussion: boolean;
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
 };

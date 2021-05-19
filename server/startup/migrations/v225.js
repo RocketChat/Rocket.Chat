@@ -22,8 +22,11 @@ Migrations.add({
 				value: !hideAvatarsSetting.value,
 			},
 		});
-		const users = Users.find({}, { fields: { _id: 1, 'settings.preferences': 1 } });
+		const users = Users.find({}, { fields: { _id: 1, 'settings.preferences': 1 } }).fetch();
 		users.forEach((user) => {
+			if (!(user.settings && user.settings.preferences)) {
+				return;
+			}
 			Users.update(
 				{ _id: user._id },
 				{
