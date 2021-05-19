@@ -137,12 +137,14 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			}
 			const transferData: {
 				roomId: string;
+				clientAction: boolean;
 				comment?: string;
 				departmentId?: string;
 				userId?: string;
 			} = {
 				roomId: rid,
 				comment,
+				clientAction: true,
 			};
 
 			if (departmentId) {
@@ -153,10 +155,15 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			}
 
 			try {
-				await forwardChat(transferData);
-				closeModal();
+				const result = await forwardChat(transferData);
+				if (!result) {
+					throw new Error(
+						departmentId ? t('error-no-agents-online-in-department') : t('error-forwarding-chat'),
+					);
+				}
 				toastr.success(t('Transferred'));
 				FlowRouter.go('/');
+				closeModal();
 			} catch (error) {
 				handleError(error);
 			}
