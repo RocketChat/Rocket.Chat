@@ -6,6 +6,7 @@ Migrations.add({
 	up() {
 		const hideAvatarsSetting = Settings.findById('Accounts_Default_User_Preferences_hideAvatars');
 		const hideAvatarsSidebarSetting = Settings.findById('Accounts_Default_User_Preferences_sidebarHideAvatar');
+		Settings.removeById('Accounts_Default_User_Preferences_sidebarShowDiscussion');
 		Settings.removeById('Accounts_Default_User_Preferences_sidebarHideAvatar');
 		Settings.upsert({
 			_id: 'Accounts_Default_User_Preferences_sidebarDisplayAvatar',
@@ -37,6 +38,7 @@ Migrations.add({
 					$unset: {
 						'settings.preferences.hideAvatars': 1,
 						'settings.preferences.sidebarHideAvatar': 1,
+						'settings.preferences.sidebarShowDiscussion': 1,
 					},
 				},
 				{ multi: true },

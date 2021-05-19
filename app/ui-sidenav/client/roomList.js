@@ -78,11 +78,6 @@ Template.roomList.helpers({
 				query.tokens = { $exists: true };
 			}
 
-			// if we display discussions as a separate group, we should hide them from the other lists
-			// if (getUserPreference(user, 'sidebarShowDiscussion')) {
-			// 	query.prid = { $exists: false };
-			// }
-
 			if (getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [
 					{ alert: { $ne: true } },
