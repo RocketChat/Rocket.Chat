@@ -535,6 +535,10 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
+	findTeamMainRooms(options) {
+		return this._db.find({ teamMain: { $exists: true, $eq: true } }, options);
+	}
+
 	findByNameOrFNameAndType(name, type, options) {
 		const query = {
 			t: type,
