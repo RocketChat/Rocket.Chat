@@ -8,7 +8,7 @@ const get = function(file, req, res) {
 	this.store.getReadStream(file._id, file)
 		.on('error', () => {
 			console.error('An error ocurred when fetching the file');
-			res.writeHead(400);
+			res.writeHead(503);
 			res.end();
 		})
 		.on('data', (chunk) => {
