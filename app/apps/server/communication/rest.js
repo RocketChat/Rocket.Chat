@@ -156,13 +156,7 @@ export class AppsRestApi {
 					});
 				}
 
-				const apps = manager.get().map((prl) => {
-					const info = prl.getInfo();
-					info.languages = prl.getStorageItem().languageContent;
-					info.status = prl.getStatus();
-
-					return info;
-				});
+				const apps = manager.get().map(formatAppInstanceForRest);
 
 				return API.v1.success({ apps });
 			},
