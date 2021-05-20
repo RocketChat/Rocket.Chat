@@ -1,5 +1,7 @@
 import fs from 'fs';
 import stream from 'stream';
+import util from 'util';
+import path from 'path';
 
 import { Meteor } from 'meteor/meteor';
 import streamBuffers from 'stream-buffers';
@@ -11,6 +13,8 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import ffmpeg from 'fluent-ffmpeg';
+import ffmpeg_static from 'ffmpeg-static';
 
 import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
@@ -264,6 +268,48 @@ export const FileUpload = {
 		const result = transformer.toBuffer().then((out) => out.toString('base64'));
 		image.pipe(transformer);
 		return result;
+	},
+
+	getVideoPreview(file, details) {
+		const { _id: id } = file;
+		const finished = util.promisify(stream.finished);
+
+		file = Uploads.findOneById(id);
+		file = FileUpload.addExtensionTo(file);
+		const tempFile = UploadFS.getTempFilePath(id);
+		const video = FileUpload.getStore('Uploads')._store.getReadStream(id, file).pipe(fs.createWriteStream(tempFile));
+		const fileExtension = path.extname(file.path).split('.')[1];
+
+		return Promise.all([finished(video), tempFile, fileExtension])
+			.then(([, descriptorPath, fileExtension]) => {
+				const writable = new stream.Writable();
+				writable.data = [];
+				writable._write = function(chunk) {
+					this.data.push(chunk);
+				};
+
+				return new Promise((resolve, reject) => {
+					ffmpeg()
+						.input(descriptorPath)
+						.inputFormat(fileExtension)
+						.setFfmpegPath(ffmpeg_static)
+						.seekInput('00:00.000')
+						.addOutputOption('-vframes', '1')
+						.addOutputOption('-movflags', 'frag_keyframe+empty_moov')
+						.outputFormat('image2')
+						.noAudio()
+						.size('50%')
+						.output(writable, { end: true })
+						.on('error', reject)
+						.on('end', () => resolve(Buffer.concat(writable.data)))
+						.run();
+				});
+			})
+			.then((buffer) => {
+				// const fileStream = fs.createReadStream(filePath)
+				const store = FileUpload.getStore('Uploads');
+				return store.insertSync(details, buffer);
+			});
 	},
 
 	uploadsOnValidate(file) {
@@ -608,6 +654,11 @@ export class FileUploadClass {
 		const filter = this.store.getFilter();
 		if (filter && filter.check) {
 			filter.check({ file: fileData, content: streamOrBuffer });
+		}
+
+		// check if size is defined
+		if (!fileData.size) {
+			fileData.size = streamOrBuffer.length;
 		}
 
 		return this._doInsert(fileData, streamOrBuffer, cb);
