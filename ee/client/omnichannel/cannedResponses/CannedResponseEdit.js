@@ -4,7 +4,9 @@ import React, { memo, useState, useCallback } from 'react';
 import toastr from 'toastr';
 
 import { handleError } from '../../../../app/utils/client';
+import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
 import VerticalBar from '../../../../client/components/VerticalBar';
+import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
@@ -17,6 +19,7 @@ export const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 
 	const { values, handlers } = useForm({ shortcut: response.shortcut, text: response.text });
 	const { shortcut, text } = values;
+	const setModal = useSetModal();
 
 	const handleSave = useMutableCallback(() => {
 		if (!shortcut) {
@@ -34,15 +37,28 @@ export const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 
 	const removeCannedResponse = useMethod('removeCannedResponse');
 
-	const handleRemove = useCallback(() => {
-		try {
-			removeCannedResponse(response._id);
-			toastr.success(t('Canned_Response_Removed'));
-			onReturn();
-		} catch (error) {
-			handleError(error);
-		}
-	}, [onReturn, removeCannedResponse, response._id, t]);
+	const handleRemoveClick = useCallback(() => {
+		const handleCancel = () => {
+			setModal(null);
+		};
+		const handleDelete = () => {
+			try {
+				removeCannedResponse(response._id);
+				toastr.success(t('Canned_Response_Removed'));
+				onReturn();
+				handleCancel();
+			} catch (error) {
+				handleError(error);
+			}
+		};
+		setModal(() => (
+			<DeleteWarningModal
+				children={t('Canned_Response_Delete_Warning')}
+				onDelete={handleDelete}
+				onCancel={handleCancel}
+			/>
+		));
+	}, [onReturn, removeCannedResponse, response._id, setModal, t]);
 
 	return (
 		<VerticalBar>
@@ -64,7 +80,7 @@ export const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 					</Button>
 				</ButtonGroup>
 				<ButtonGroup stretch w='full'>
-					<Button primary danger onClick={handleRemove}>
+					<Button primary danger onClick={handleRemoveClick}>
 						<Icon name='trash' mie='x4' />
 						{t('Delete')}
 					</Button>
