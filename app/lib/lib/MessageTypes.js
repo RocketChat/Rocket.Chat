@@ -48,6 +48,16 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
+		id: 'ult',
+		system: true,
+		message: 'User_left_team',
+		data(message) {
+			return {
+				user_left: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
 		id: 'uj',
 		system: true,
 		message: 'User_joined_channel',
