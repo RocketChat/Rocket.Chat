@@ -56,7 +56,6 @@ Migrations.add({
 						'settings.preferences.sidebarShowDiscussion': 1,
 					},
 				},
-				{ multi: true },
 			);
 		});
 	},
