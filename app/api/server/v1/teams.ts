@@ -1,4 +1,4 @@
-import { FindOneOptions } from 'mongodb';
+import { FilterQuery } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { Match, check } from 'meteor/check';
@@ -192,21 +192,19 @@ API.v1.addRoute('teams.listRoomsOfUser', { authRequired: true }, {
 API.v1.addRoute('teams.members', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { teamId, teamName, status, username, name } = this.queryParams;
-		const SecondaryOptionalParam = Match.Where((value) => {
-			if (!teamId) {
-				check(value, String);
-			}
-			return true;
-		});
 
 		check(this.queryParams, Match.ObjectIncluding({
 			teamId: Match.Maybe(String),
-			teamName: SecondaryOptionalParam,
+			teamName: Match.Maybe(String),
 			status: Match.Maybe([String]),
 			username: Match.Maybe(String),
 			name: Match.Maybe(String),
 		}));
+		const { teamId, teamName, status, username, name } = this.queryParams;
+
+		if (!teamId && !teamName) {
+			return API.v1.failure('missing-teamId-or-teamName');
+		}
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
@@ -218,7 +216,7 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 			username: username ? new RegExp(username, 'i') : undefined,
 			name: name ? new RegExp(name, 'i') : undefined,
 			status: status ? { $in: status } : undefined,
-		} as Partial<FindOneOptions<IUser>>;
+		} as FilterQuery<IUser>;
 
 		const { records, total } = Promise.await(Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query));
 
