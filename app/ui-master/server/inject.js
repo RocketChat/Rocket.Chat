@@ -34,7 +34,7 @@ Meteor.startup(() => {
 		Inject.rawModHtml('headInjections', applyHeadInjections(injections));
 	});
 
-	injectIntoHead('noreferrer', '<meta name="referrer" content="origin-when-cross-origin" />');
+	injectIntoHead('noreferrer', '<meta name="referrer" content="strict-origin" />');
 
 	if (process.env.DISABLE_ANIMATION) {
 		injectIntoHead('disable-animation', `
