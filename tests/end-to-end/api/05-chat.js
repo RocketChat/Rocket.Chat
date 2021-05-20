@@ -423,9 +423,7 @@ describe('[Chat]', function() {
 				.send({
 					channel: 'general',
 					text: 'Sample message',
-					alias: 'Gruggy',
 					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png',
 					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
@@ -659,9 +657,7 @@ describe('[Chat]', function() {
 						_id: message._id,
 						rid: 'GENERAL',
 						msg: 'Sample message',
-						alias: 'Gruggy',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -708,18 +704,14 @@ describe('[Chat]', function() {
 					_id: `id-${ Date.now() }`,
 					rid: 'GENERAL',
 					msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
-					alias: 'Gruggy',
 					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png',
 				};
 
 				const imgUrlMsgPayload = {
 					_id: `id-${ Date.now() }1`,
 					rid: 'GENERAL',
 					msg: 'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
-					alias: 'Gruggy',
 					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png',
 				};
 
 				const ytPostResponse = await request.post(api('chat.sendMessage'))
@@ -758,7 +750,7 @@ describe('[Chat]', function() {
 								.to.have.string('<iframe style="max-width: 100%"');
 						})
 						.end(done);
-				}, 200);
+				}, 500);
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
@@ -881,25 +873,64 @@ describe('[Chat]', function() {
 					.end(done);
 			});
 
-			it('should send a message when the user has permission to send messages on readonly channels', (done) => {
-				updatePermission('post-readonly', ['user']).then(() => {
-					request.post(api('chat.sendMessage'))
-						.set(userCredentials)
-						.send({
-							message: {
-								rid: readOnlyChannel._id,
-								msg: 'Sample message overwriting readonly status',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('message').and.to.be.an('object');
-						})
-						.end(done);
-				});
+			it('should send a message when the user has permission to send messages on readonly channels', async () => {
+				await updatePermission('post-readonly', ['user']);
+
+				await request.post(api('chat.sendMessage'))
+					.set(userCredentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Sample message overwriting readonly status',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message').and.to.be.an('object');
+					});
+
+				await updatePermission('post-readonly', ['admin', 'owner', 'moderator']);
 			});
+		});
+
+		it('should fail if user does not have the message-impersonate permission and tries to send message with alias param', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: 'GENERAL',
+						msg: 'Sample message',
+						alias: 'Gruggy',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Not enough permission');
+				})
+				.end(done);
+		});
+
+		it('should fail if user does not have the message-impersonate permission and tries to send message with avatar param', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: 'GENERAL',
+						msg: 'Sample message',
+						avatar: 'http://site.com/logo.png',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Not enough permission');
+				})
+				.end(done);
 		});
 	});
 

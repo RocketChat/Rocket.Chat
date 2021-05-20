@@ -107,7 +107,7 @@ Installing snaps is very quick. By running that command you have your full Rocke
 
 Our snap features a built-in reverse proxy that can request and maintain free Let's Encrypt SSL certificates. You can go from zero to a public-facing SSL-secured Rocket.Chat server in less than 5 minutes.
 
-Find out more information about our snaps [here](https://rocket.chat/docs/installation/manual-installation/ubuntu/snaps/).
+Find out more information about our snaps [here](https://docs.rocket.chat/installation/snaps).
 
 ## DigitalOcean droplet
 
@@ -155,19 +155,19 @@ Host your docker container at [sloppy.io](http://sloppy.io). Get an account and 
 
 
 ## Docker
-[Deploy with docker compose](https://rocket.chat/docs/installation/docker-containers/docker-compose/)
+[Deploy with docker compose](https://docs.rocket.chat/installation/docker-containers#3-installing-docker-and-docker-compose)
 
 [![Rocket.Chat logo](https://d207aa93qlcgug.cloudfront.net/1.95.5.qa/img/nav/docker-logo-loggedout.png)](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 OR Use the automated build image of our [most recent release](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 ```
-docker pull rocketchat/rocket.chat:latest
+docker pull registry.rocket.chat/rocketchat/rocket.chat:latest
 ```
 
 OR select a specific release ([details of releases available](https://github.com/RocketChat/Rocket.Chat/releases)):
 ```
-docker pull rocketchat/rocket.chat:vX.X.X
+docker pull registry.rocket.chat/rocketchat/rocket.chat:vX.X.X
 ```
 
 OR our [official docker registry image](https://hub.docker.com/_/rocket.chat/), containing recent stable release build approved by Docker:
@@ -193,7 +193,7 @@ Add Rocket.Chat to this world famous time tested small enterprise server today.
 [![Koozali SME](https://raw.githubusercontent.com/Sing-Li/bbug/master/images/koozali.png)](https://wiki.contribs.org/Rocket_Chat)
 
 ## Ubuntu VPS
-Follow these [deployment instructions](https://rocket.chat/docs/installation/manual-installation/ubuntu/).
+Follow these [deployment instructions](https://docs.rocket.chat/installation/manual-installation/ubuntu).
 
 ## D2C.io
 Deploy Rocket.Chat stack to your server with [D2C](https://d2c.io/). Scale with a single click, check live logs and metrics:
@@ -340,7 +340,7 @@ We are developing the APIs based on the competition, so stay tuned and you will 
 
 ## Documentation
 
-Check out [Rocket.Chat documentation](https://rocket.chat/docs/).
+Check out [Rocket.Chat documentation](https://docs.rocket.chat/).
 
 ## License
 
@@ -373,11 +373,11 @@ meteor debug
 ```
 You'll find a nodejs icon in the developer console.
 
-If you are not a developer and just want to run the server - see [deployment methods](https://rocket.chat/docs/installation/paas-deployments/).
+If you are not a developer and just want to run the server - see [deployment methods](https://docs.rocket.chat/installation/paas-deployments).
 
 ## Branching Model
 
-See [Branches and Releases](https://rocket.chat/docs/developer-guides/branches-and-releases/).
+See [Branches and Releases](https://docs.rocket.chat/guides/developer/branches-and-releases).
 
 It is based on [Gitflow Workflow](http://nvie.com/posts/a-successful-git-branching-model/), reference section below is derived from Vincent Driessen at nvie.
 
@@ -389,7 +389,7 @@ If you want to help, send an email to support at rocket.chat to be invited to th
 
 ## How to Contribute
 
-Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors' community. For more information, check out our [Contributing Guide](.github/CONTRIBUTING.md) and our [Official Documentation for Contributors](https://rocket.chat/docs/contributing/).
+Already a JavaScript developer? Familiar with Meteor? [Pick an issue](https://github.com/RocketChat/Rocket.Chat/labels/contrib%3A%20easy), push a PR and instantly become a member of Rocket.Chat's international contributors' community. For more information, check out our [Contributing Guide](.github/CONTRIBUTING.md) and our [Official Documentation for Contributors](https://docs.rocket.chat/contributors/contributing).
 
 A lot of work has already gone into Rocket.Chat, but we have much bigger plans for it!
 

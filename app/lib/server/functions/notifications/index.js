@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { escapeRegExp } from '../../../../../lib/escapeRegExp';
 import { callbacks } from '../../../../callbacks';
 import { settings } from '../../../../settings';
 

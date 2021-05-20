@@ -67,11 +67,7 @@ const queryQueryStringParameter = (
 const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']> =>
 	createSubscription(() => {
 		FlowRouter.watchPathChange();
-		const {
-			route,
-			params,
-			queryParams,
-		} = FlowRouter.current();
+		const { route, params, queryParams } = FlowRouter.current();
 		return [route?.name, params, queryParams, route?.group?.name];
 	});
 
@@ -85,7 +81,8 @@ const contextValue = {
 	queryCurrentRoute,
 };
 
-const RouterProvider: FC = ({ children }) =>
-	<RouterContext.Provider children={children} value={contextValue} />;
+const RouterProvider: FC = ({ children }) => (
+	<RouterContext.Provider children={children} value={contextValue} />
+);
 
 export default RouterProvider;
