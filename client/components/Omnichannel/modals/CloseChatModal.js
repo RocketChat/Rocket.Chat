@@ -6,6 +6,7 @@ import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
+import GenericModal from '../../GenericModal';
 import Tags from '../Tags';
 
 const CloseChatModal = ({ department = {}, onCancel, onConfirm }) => {
@@ -45,6 +46,19 @@ const CloseChatModal = ({ department = {}, onCancel, onConfirm }) => {
 				: '',
 		);
 	}, [department, tagRequired, t, tags]);
+
+	if (!commentRequired && !tagRequired) {
+		return (
+			<GenericModal
+				variant='warning'
+				title={t('Are_you_sure_you_want_to_close_this_chat')}
+				onConfirm={handleConfirm}
+				onCancel={onCancel}
+				onClose={onCancel}
+				confirmText={t('Confirm')}
+			></GenericModal>
+		);
+	}
 
 	return (
 		<Modal>
