@@ -684,6 +684,7 @@
   "Canceled": "Canceled",
   "Canned_Response_Delete_Warning": "Deleting a canned response cannot be undone.",
   "Canned_Response_Removed": "Canned Response Removed",
+  "Canned Responses": "Canned Responses",
   "Canned_Responses_Enable": "Enable Canned Responses",
   "Cannot_invite_users_to_direct_rooms": "Cannot invite users to direct rooms",
   "Cannot_open_conversation_with_yourself": "Cannot Direct Message with yourself",
