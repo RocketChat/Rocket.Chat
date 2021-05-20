@@ -206,6 +206,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}));
 	}
 
+	async getTeamsByIds(teamIds: string[], options?: FindOneOptions<ITeam>): Promise<ITeam[]> {
+		return this.TeamModel.findByIds(teamIds, options).toArray();
+	}
+
 	async search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]> {
 		if (typeof term === 'string') {
 			term = new RegExp(`^${ escapeRegExp(term) }`, 'i');
