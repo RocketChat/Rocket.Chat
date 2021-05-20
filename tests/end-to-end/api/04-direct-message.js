@@ -441,7 +441,7 @@ describe('[Direct Messages]', function() {
 				})
 				.end(done);
 		});
-		it('should return and array with one member', (done) => {
+		it.skip('should return and array with one member', (done) => {
 			request.get(api('im.members'))
 				.set(credentials)
 				.query({
@@ -458,7 +458,7 @@ describe('[Direct Messages]', function() {
 				})
 				.end(done);
 		});
-		it('should return and array with one member queried by status', (done) => {
+		it.skip('should return and array with one member queried by status', (done) => {
 			request.get(api('im.members'))
 				.set(credentials)
 				.query({
