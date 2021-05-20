@@ -1,5 +1,6 @@
-import { Box, Chip, Divider, Margins } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import { Box, Callout, Chip, Divider, Margins } from '@rocket.chat/fuselage';
+import React, { FC, ReactNode } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
 import AppAvatar from '../../../components/avatar/AppAvatar';
@@ -77,6 +78,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 				</Box>
 			</Box>
 			<Divider />
+			{renderLicenseMessage(data)}
 			<Box display='flex' flexDirection='column'>
 				<Margins block='x12'>
 					<Box fontScale='s2'>{t('Categories')}</Box>
@@ -158,5 +160,32 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 		</>
 	);
 };
+
+function renderLicenseMessage(app: App): ReactNode {
+	if (!app.licenseValidation) {
+		return null;
+	}
+
+	const { errors, warnings } = app.licenseValidation;
+
+	const messages = ([] as Array<ReactNode>).concat(
+		Object.entries(warnings).map(([key, message]) => (
+			<Callout key={key} type='warning'>
+				{message}
+			</Callout>
+		)),
+		Object.entries(errors).map(([key, message]) => (
+			<Callout key={key} type='danger'>
+				{message}
+			</Callout>
+		)),
+	);
+
+	if (!messages.length) {
+		return null;
+	}
+
+	return messages;
+}
 
 export default AppDetailsPageContent;
