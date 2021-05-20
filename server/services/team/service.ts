@@ -409,6 +409,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 		room.teamDefault = isDefault;
 		this.RoomsModel.setTeamDefaultById(rid, isDefault);
+
+		if (room.teamDefault) {
+			const teamMembers = await this.members(uid, room.teamId, true, undefined, undefined);
+
+			teamMembers.records.map((m) => addUserToRoom(room._id, m.user));
+		}
+
 		return {
 			...room,
 		};
