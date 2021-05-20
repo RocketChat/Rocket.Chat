@@ -9,12 +9,6 @@ Meteor.methods({
 		check(rid, String);
 		check(start, Date);
 
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'loadMissedMessages',
-			});
-		}
-
 		const fromId = Meteor.userId();
 		if (!Meteor.call('canAccessRoom', rid, fromId)) {
 			return false;
