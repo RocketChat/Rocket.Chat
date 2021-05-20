@@ -30,6 +30,7 @@ import './hooks/scheduleAutoTransfer';
 import './hooks/resumeOnHold';
 import './hooks/afterOnHold';
 import './lib/routing/LoadBalancing';
+import './lib/routing/LoadRotation';
 import './lib/AutoCloseOnHoldScheduler';
 import { onLicense } from '../../license/server';
 import './business-hour';
