@@ -24,7 +24,6 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarSortby': 1,
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
-				'settings.preferences.sidebarShowDiscussion': 1,
 				'services.tokenpass': 1,
 				messageViewMode: 1,
 			},
@@ -77,11 +76,6 @@ Template.roomList.helpers({
 				query.tokens = { $exists: false };
 			} else if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
 				query.tokens = { $exists: true };
-			}
-
-			// if we display discussions as a separate group, we should hide them from the other lists
-			if (getUserPreference(user, 'sidebarShowDiscussion')) {
-				query.prid = { $exists: false };
 			}
 
 			if (getUserPreference(user, 'sidebarShowUnread')) {
