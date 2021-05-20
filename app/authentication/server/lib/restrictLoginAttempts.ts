@@ -21,7 +21,8 @@ export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date
 		return;
 	}
 	// verify channel exists
-	const room = await Rooms.findOneByName(channelToNotify);
+	// to avoid issues when "fname" is presented in the UI, check if the name matches it as well
+	const room = await Rooms.findOneByNameOrFname(channelToNotify);
 	if (!room) {
 		/* @ts-expect-error */
 		logger.error('Cannot notify failed logins: channel provided doesn\'t exists');

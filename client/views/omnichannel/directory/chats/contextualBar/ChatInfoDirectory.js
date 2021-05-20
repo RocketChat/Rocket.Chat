@@ -13,7 +13,6 @@ import { useUserSubscription } from '../../../../../contexts/UserContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
-import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
@@ -24,7 +23,7 @@ import DepartmentField from './DepartmentField';
 import PriorityField from './PriorityField';
 import VisitorClientInfo from './VisitorClientInfo';
 
-function ChatInfo({ id, route }) {
+function ChatInfoDirectory({ id, route, room }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
@@ -34,13 +33,11 @@ function ChatInfo({ id, route }) {
 	const [customFields, setCustomFields] = useState([]);
 	const formatDuration = useFormatDuration();
 
-	const room = useOmnichannelRoom();
-
 	const {
 		ts,
 		tags,
 		closedAt,
-		department,
+		departmentId,
 		v,
 		servedBy,
 		metrics,
@@ -103,7 +100,7 @@ function ChatInfo({ id, route }) {
 					{room && v && <ContactField contact={v} room={room} />}
 					{visitorId && <VisitorClientInfo uid={visitorId} />}
 					{servedBy && <AgentField agent={servedBy} />}
-					{department && <DepartmentField departmentId={department} />}
+					{departmentId && <DepartmentField departmentId={departmentId} />}
 					{tags && tags.length > 0 && (
 						<Field>
 							<Label>{t('Tags')}</Label>
@@ -191,4 +188,4 @@ function ChatInfo({ id, route }) {
 	);
 }
 
-export default ChatInfo;
+export default ChatInfoDirectory;
