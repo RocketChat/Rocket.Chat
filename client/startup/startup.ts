@@ -37,7 +37,7 @@ Meteor.startup(() => {
 	window.lastMessageWindowHistory = {};
 
 	let status: UserStatus | undefined = undefined;
-	Tracker.autorun(async () => {
+	Accounts.onLogin(async () => {
 		const uid = Meteor.userId();
 		if (!uid) {
 			return;
