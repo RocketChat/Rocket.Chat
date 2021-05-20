@@ -523,8 +523,7 @@ export class Messages extends Base {
 
 	getLastVisibleMessageSentByRoomId(rid, messageId) {
 		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(rid);
-		const hiddenSysMesSettings = settings.get('Hide_System_Messages');
-		const hiddenSysMes = sysMes || hiddenSysMesSettings;
+		const hiddenSysMes = sysMes || settings.get('Hide_System_Messages');
 		const query = {
 			rid,
 			_hidden: { $ne: true },
@@ -787,9 +786,9 @@ export class Messages extends Base {
 
 		record._id = this.insertOrUpsert(record);
 
-		const hiddenSysMesSettings = settings.get('Hide_System_Messages');
 		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(roomId);
-		if ((!sysMes && hiddenSysMesSettings.includes(type)) || (sysMes && sysMes.includes(type))) {
+		const hiddenSysMes = sysMes || settings.get('Hide_System_Messages');
+		if (hiddenSysMes && hiddenSysMes.includes(type)) {
 			Rooms.incMsgCountById(roomId, 1);
 		} else {
 			const byUser = extraData ? extraData.u._id : user._id;
