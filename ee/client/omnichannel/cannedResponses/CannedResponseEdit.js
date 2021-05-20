@@ -1,8 +1,11 @@
-import { ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useCallback } from 'react';
+import toastr from 'toastr';
 
+import { handleError } from '../../../../app/utils/client';
 import VerticalBar from '../../../../client/components/VerticalBar';
+import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 import CannedResponsesForm from './CannedResponseForm';
@@ -29,6 +32,18 @@ export const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 		onReturn();
 	});
 
+	const removeCannedResponse = useMethod('removeCannedResponse');
+
+	const handleRemove = useCallback(() => {
+		try {
+			removeCannedResponse(response._id);
+			toastr.success(t('Canned_Response_Removed'));
+			onReturn();
+		} catch (error) {
+			handleError(error);
+		}
+	}, [onReturn, removeCannedResponse, response._id, t]);
+
 	return (
 		<VerticalBar>
 			<VerticalBar.Header>
@@ -43,8 +58,15 @@ export const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
+					<Button onClick={onReturn}>{t('Cancel')}</Button>
 					<Button primary onClick={handleSave}>
 						{t('Save')}
+					</Button>
+				</ButtonGroup>
+				<ButtonGroup stretch w='full'>
+					<Button primary danger onClick={handleRemove}>
+						<Icon name='trash' mie='x4' />
+						{t('Delete')}
 					</Button>
 				</ButtonGroup>
 			</VerticalBar.Footer>
