@@ -788,7 +788,7 @@ export class Messages extends Base {
 
 		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(roomId);
 		const hiddenSysMes = sysMes || settings.get('Hide_System_Messages');
-		if (hiddenSysMes && hiddenSysMes.includes(type)) {
+		if (hiddenSysMes.length && hiddenSysMes.includes(type)) {
 			Rooms.incMsgCountById(roomId, 1);
 		} else {
 			const byUser = extraData ? extraData.u._id : user._id;
