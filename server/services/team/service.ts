@@ -524,13 +524,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const records = await cursor.toArray();
 		const results: ITeamMemberInfo[] = [];
 		for await (const record of records) {
-			const index = userIds.indexOf(record.userId);
+			const user = users.find((u) => u._id === record.userId);
 			results.push({
 				user: {
-					_id: users[index]._id,
-					username: users[index].username,
-					name: users[index].name,
-					status: users[index].status,
+					_id: user._id,
+					username: user.username,
+					name: user.name,
+					status: user.status,
 				},
 				roles: record.roles,
 				createdBy: {
