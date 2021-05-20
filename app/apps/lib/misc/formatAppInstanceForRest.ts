@@ -17,8 +17,10 @@ export function formatAppInstanceForRest(app: ProxiedApp): IAppInfoRest {
 		languages: app.getStorageItem().languageContent,
 	};
 
-	if (appRest.status === AppStatus.INVALID_LICENSE_DISABLED) {
-		appRest.licenseValidation = app.getLatestLicenseValidationResult();
+	const licenseValidation = app.getLatestLicenseValidationResult();
+
+	if (licenseValidation.hasErrors || licenseValidation.hasWarnings) {
+		appRest.licenseValidation = licenseValidation;
 	}
 
 	return appRest;
