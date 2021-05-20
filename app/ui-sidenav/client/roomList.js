@@ -159,6 +159,13 @@ const mergeSubRoom = (subscription) => {
 			broadcast: 1,
 			archived: 1,
 			retention: 1,
+			teamId: 1,
+			teamMain: 1,
+			onHold: 1,
+			metrics: 1,
+			servedBy: 1,
+			ts: 1,
+			waitingResponse: 1,
 		},
 	};
 
@@ -166,29 +173,67 @@ const mergeSubRoom = (subscription) => {
 
 	const lastRoomUpdate = room.lm || subscription.ts || subscription._updatedAt;
 
-	if (room.uids) {
-		subscription.uids = room.uids;
-	}
+	const {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
 
-	if (room.v) {
-		subscription.v = room.v;
-	}
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		ts,
+	} = room;
 
-	subscription.usernames = room.usernames;
-
-	subscription.lastMessage = room.lastMessage;
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
-	subscription.streamingOptions = room.streamingOptions;
 
-	subscription.encrypted = room.encrypted;
-	subscription.description = room.description;
-	subscription.cl = room.cl;
-	subscription.topic = room.topic;
-	subscription.announcement = room.announcement;
-	subscription.broadcast = room.broadcast;
-	subscription.archived = room.archived;
-	subscription.retention = room.retention;
-	return Object.assign(subscription, getLowerCaseNames(subscription));
+	return Object.assign(subscription, getLowerCaseNames(subscription), {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
+
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		ts,
+	});
 };
 
 const mergeRoomSub = (room) => {
@@ -196,23 +241,68 @@ const mergeRoomSub = (room) => {
 	if (!sub) {
 		return room;
 	}
+
+	const {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
+
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		ts,
+
+	} = room;
+
 	Subscriptions.update({
 		rid: room._id,
 	}, {
 		$set: {
-			encrypted: room.encrypted,
-			description: room.description,
-			cl: room.cl,
-			topic: room.topic,
-			announcement: room.announcement,
-			broadcast: room.broadcast,
-			archived: room.archived,
-			retention: room.retention,
-			...Array.isArray(room.uids) && { uids: room.uids },
-			...Array.isArray(room.uids) && { usernames: room.usernames },
-			...room.v && { v: room.v },
-			lastMessage: room.lastMessage,
-			streamingOptions: room.streamingOptions,
+			encrypted,
+			description,
+			cl,
+			topic,
+			announcement,
+			broadcast,
+			archived,
+			retention,
+			uids,
+			usernames,
+			lastMessage,
+			streamingOptions,
+			teamId,
+			teamMain,
+			v,
+			transcriptRequest,
+			servedBy,
+			onHold,
+			tags,
+			closedAt,
+			metrics,
+			waitingResponse,
+			responseBy,
+			priorityId,
+			livechatData,
+			ts,
 			...getLowerCaseNames(room, sub.name, sub.fname),
 		},
 	});

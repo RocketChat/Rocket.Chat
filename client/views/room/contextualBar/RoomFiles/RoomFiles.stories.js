@@ -1,10 +1,10 @@
 import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
-import { RoomFiles } from './RoomFiles';
+import RoomFiles from './RoomFiles';
 
 export default {
-	title: 'components/RoomFiles',
+	title: 'room/contextualBar/RoomFiles',
 	component: RoomFiles,
 };
 
@@ -36,28 +36,28 @@ const options = [
 	['files', 'Files'],
 ];
 
-export const Default = () => <VerticalBar>
-	<RoomFiles
-		icon='lock'
-		options={options}
-		filesItems={filesItems}
-		onClickHide={alert}
-		onClickLeave={alert}
-		onClickEdit={alert}
-		onClickDelete={alert}
-	/>
-</VerticalBar>;
+export const Default = () => (
+	<VerticalBar>
+		<RoomFiles
+			icon='lock'
+			options={options}
+			filesItems={filesItems}
+			onClickHide={alert}
+			onClickLeave={alert}
+			onClickEdit={alert}
+			onClickDelete={alert}
+		/>
+	</VerticalBar>
+);
 
-export const Loading = () => <VerticalBar>
-	<RoomFiles
-		loading
-		options={options}
-	/>
-</VerticalBar>;
+export const Loading = () => (
+	<VerticalBar>
+		<RoomFiles loading options={options} />
+	</VerticalBar>
+);
 
-export const Empty = () => <VerticalBar>
-	<RoomFiles
-		filesItems={[]}
-		options={options}
-	/>
-</VerticalBar>;
+export const Empty = () => (
+	<VerticalBar>
+		<RoomFiles filesItems={[]} options={options} />
+	</VerticalBar>
+);

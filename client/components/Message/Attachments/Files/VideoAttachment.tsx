@@ -1,10 +1,11 @@
-import React, { FC } from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import React, { FC } from 'react';
 
-import { useCollapse } from '../hooks/useCollapse';
-import { Attachment, AttachmentPropsBase } from '../Attachment';
 import { FileProp } from '..';
+import Attachment from '../Attachment';
+import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
 import { useMediaUrl } from '../context/AttachmentContext';
+import { useCollapse } from '../hooks/useCollapse';
 
 export type VideoAttachmentProps = {
 	video_url: string;
@@ -13,7 +14,8 @@ export type VideoAttachmentProps = {
 	file?: FileProp;
 } & AttachmentPropsBase;
 
-export const VideoAttachment: FC<VideoAttachmentProps> = ({ title,
+export const VideoAttachment: FC<VideoAttachmentProps> = ({
+	title,
 	video_url: url,
 	video_type: type,
 	collapsed: collapsedDefault = false,
@@ -25,18 +27,22 @@ export const VideoAttachment: FC<VideoAttachmentProps> = ({ title,
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	// useTranslation();
 	const getURL = useMediaUrl();
-	return <Attachment>
-		<Attachment.Row>
-			<Attachment.Title>{title}</Attachment.Title>
-			{size && <Attachment.Size size={size}/>}
-			{collapse}
-			{hasDownload && link && <Attachment.Download title={title} href={link}/>}
-		</Attachment.Row>
-		{ !collapsed && <Attachment.Content width='full'>
-			<Box is='video' width='full' controls>
-				<source src={getURL(url)} type={type}/>
-			</Box>
-			{description && <Attachment.Details is='figcaption'>{description}</Attachment.Details>}
-		</Attachment.Content>}
-	</Attachment>;
+	return (
+		<Attachment>
+			<Attachment.Row>
+				<Attachment.Title>{title}</Attachment.Title>
+				{size && <Attachment.Size size={size} />}
+				{collapse}
+				{hasDownload && link && <Attachment.Download title={title} href={getURL(link)} />}
+			</Attachment.Row>
+			{!collapsed && (
+				<Attachment.Content width='full'>
+					<Box is='video' width='full' controls>
+						<source src={getURL(url)} type={type} />
+					</Box>
+					{description && <Attachment.Details is='figcaption'>{description}</Attachment.Details>}
+				</Attachment.Content>
+			)}
+		</Attachment>
+	);
 };

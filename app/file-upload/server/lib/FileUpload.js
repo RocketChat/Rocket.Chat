@@ -58,7 +58,8 @@ export const FileUpload = {
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
-	validateFileUpload({ file, content }) {
+	validateFileUpload(fileData) {
+		const { file = fileData, content = Buffer.from([]) } = fileData;
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -266,7 +267,7 @@ export const FileUpload = {
 	},
 
 	uploadsOnValidate(file) {
-		if (!/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
+		if (!/^image\/((x-windows-)?bmp|p?jpeg|png|gif)$/.test(file.type)) {
 			return;
 		}
 

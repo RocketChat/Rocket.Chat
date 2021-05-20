@@ -61,7 +61,7 @@ export class AppsRestApi {
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
 			if (!e.hasOwnProperty('response')) {
-				orchestrator.getRocketChatLogger().error(message, e.message);
+				orchestrator.getRocketChatLogger().warn(message, e.message);
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
 
@@ -96,7 +96,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleError('Error getting the App information from the Marketplace:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (!result || result.statusCode !== 200) {
@@ -260,7 +260,9 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true }));
+				const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+
+				const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user }));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
@@ -368,7 +370,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleError('Error getting the App information from the Marketplace:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (!result || result.statusCode !== 200 || result.data.length === 0) {
@@ -394,7 +396,7 @@ export class AppsRestApi {
 							headers,
 						});
 					} catch (e) {
-						return handleError('Error getting the App update info from the Marketplace:', e);
+						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
 					if (result.statusCode !== 200 || result.data.length === 0) {
@@ -423,6 +425,7 @@ export class AppsRestApi {
 			},
 			post() {
 				let buff;
+				let permissionsGranted;
 
 				if (this.bodyParams.url) {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
@@ -449,7 +452,6 @@ export class AppsRestApi {
 							npmRequestOptions: { encoding: null },
 						});
 					} catch (e) {
-						console.log(e, e.response.content.toString());
 						orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
 						return API.v1.internalError();
 					}
@@ -469,14 +471,23 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 					}
 
-					buff = multipartFormDataHandler(this.request)?.app;
+					const formData = multipartFormDataHandler(this.request);
+					buff = formData?.app;
+					permissionsGranted = (() => {
+						try {
+							const permissions = JSON.parse(formData?.permissions || '');
+							return permissions.length ? permissions : undefined;
+						} catch {
+							return undefined;
+						}
+					})();
 				}
 
 				if (!buff) {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.update(buff, this.bodyParams.permissionsGranted));
+				const aff = Promise.await(manager.update(buff, permissionsGranted));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
@@ -506,7 +517,9 @@ export class AppsRestApi {
 					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 
-				Promise.await(manager.remove(prl.getID()));
+				const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+
+				Promise.await(manager.remove(prl.getID(), { user }));
 
 				const info = prl.getInfo();
 				info.status = prl.getStatus();

@@ -63,11 +63,11 @@
 	}
 
 	&:first-child {
-		margin-top: 0;
+		margin-top: 4px;
 	}
 
 	&:last-child {
-		margin-bottom: 0;
+		margin-bottom: 4px;
 	}
 
 	&:first-child::before {
@@ -143,18 +143,6 @@
 
 	text-align: center;
 	justify-content: center;
-}
-
-.connection-status > .alert {
-	position: absolute;
-	z-index: 1000000;
-	top: 0;
-
-	width: 100%;
-	margin-top: 0 !important;
-	padding: 2px;
-
-	border-width: 0 0 1px;
 }
 
 .rc-old .alert {
@@ -2007,9 +1995,6 @@
 
 		& .title {
 			position: absolute;
-			left: 5px;
-
-			width: 60px;
 
 			text-align: right;
 			justify-content: flex-end;
@@ -2040,6 +2025,12 @@
 
 				margin-left: 1px;
 			}
+		}
+
+		&:not(.message--ignored) .title {
+			left: 5px;
+
+			width: 60px;
 		}
 
 		&:hover .edited {

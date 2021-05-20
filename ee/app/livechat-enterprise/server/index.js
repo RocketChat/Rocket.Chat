@@ -11,6 +11,7 @@ import './methods/saveUnit';
 import './methods/savePriority';
 import './methods/removePriority';
 import './methods/removeBusinessHour';
+import './methods/resumeOnHold';
 import LivechatUnit from '../../models/server/models/LivechatUnit';
 import LivechatTag from '../../models/server/models/LivechatTag';
 import LivechatUnitMonitors from '../../models/server/models/LivechatUnitMonitors';
@@ -26,7 +27,10 @@ import './hooks/onLoadConfigApi';
 import './hooks/onCloseLivechat';
 import './hooks/onSaveVisitorInfo';
 import './hooks/scheduleAutoTransfer';
+import './hooks/resumeOnHold';
+import './hooks/afterOnHold';
 import './lib/routing/LoadBalancing';
+import './lib/AutoCloseOnHoldScheduler';
 import { onLicense } from '../../license/server';
 import './business-hour';
 
