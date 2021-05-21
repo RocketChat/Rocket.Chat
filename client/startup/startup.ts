@@ -37,7 +37,7 @@ Meteor.startup(() => {
 	window.lastMessageWindowHistory = {};
 
 	let status: UserStatus | undefined = undefined;
-	Accounts.onLogin(async () => {
+	Tracker.autorun(async () => {
 		const uid = Meteor.userId();
 		if (!uid) {
 			return;
@@ -47,6 +47,7 @@ Meteor.startup(() => {
 		}
 
 		const user = await synchronizeUserData(uid);
+
 		if (!user) {
 			return;
 		}
