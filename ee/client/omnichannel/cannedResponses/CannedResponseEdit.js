@@ -1,13 +1,8 @@
-import { ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useState, useCallback } from 'react';
-import toastr from 'toastr';
+import React, { memo, useState } from 'react';
 
-import { handleError } from '../../../../app/utils/client';
-import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
 import VerticalBar from '../../../../client/components/VerticalBar';
-import { useSetModal } from '../../../../client/contexts/ModalContext';
-import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 import CannedResponsesForm from './CannedResponseForm';
@@ -19,7 +14,6 @@ export const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 
 	const { values, handlers } = useForm({ shortcut: response.shortcut, text: response.text });
 	const { shortcut, text } = values;
-	const setModal = useSetModal();
 
 	const handleSave = useMutableCallback(() => {
 		if (!shortcut) {
@@ -34,31 +28,6 @@ export const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 		onSave(values, response._id);
 		onReturn();
 	});
-
-	const removeCannedResponse = useMethod('removeCannedResponse');
-
-	const handleRemoveClick = useCallback(() => {
-		const handleCancel = () => {
-			setModal(null);
-		};
-		const handleDelete = () => {
-			try {
-				removeCannedResponse(response._id);
-				toastr.success(t('Canned_Response_Removed'));
-				onReturn();
-				handleCancel();
-			} catch (error) {
-				handleError(error);
-			}
-		};
-		setModal(() => (
-			<DeleteWarningModal
-				children={t('Canned_Response_Delete_Warning')}
-				onDelete={handleDelete}
-				onCancel={handleCancel}
-			/>
-		));
-	}, [onReturn, removeCannedResponse, response._id, setModal, t]);
 
 	return (
 		<VerticalBar>
@@ -77,12 +46,6 @@ export const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 					<Button onClick={onReturn}>{t('Cancel')}</Button>
 					<Button primary onClick={handleSave}>
 						{t('Save')}
-					</Button>
-				</ButtonGroup>
-				<ButtonGroup stretch w='full'>
-					<Button primary danger onClick={handleRemoveClick}>
-						<Icon name='trash' mie='x4' />
-						{t('Delete')}
 					</Button>
 				</ButtonGroup>
 			</VerticalBar.Footer>
