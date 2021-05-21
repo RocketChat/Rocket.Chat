@@ -396,8 +396,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-room');
 		}
 
+		const user = await this.Users.findOneById(uid);
 		if (!canUpdateAnyRoom) {
-			const user = await this.Users.findOneById(uid);
 			const canSeeRoom = await canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
@@ -409,6 +409,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 		room.teamDefault = isDefault;
 		this.RoomsModel.setTeamDefaultById(rid, isDefault);
+
+		if (room.teamDefault) {
+			const teamMembers = await this.members(uid, room.teamId, true, undefined, undefined);
+
+			teamMembers.records.map((m) => addUserToRoom(room._id, m.user, user));
+		}
+
 		return {
 			...room,
 		};
@@ -508,7 +515,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamMembersModel.findByTeamIds(teamIds, options).toArray();
 	}
 
-	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, query: FilterQuery<IUser>): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
+	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, query: FilterQuery<IUser> = {}): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
 		if (!isMember && !canSeeAll) {
 			return {
