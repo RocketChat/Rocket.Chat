@@ -1,4 +1,4 @@
-import { Db, FindOneOptions } from 'mongodb';
+import { Db, FindOneOptions, FilterQuery } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
@@ -515,7 +515,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamMembersModel.findByTeamIds(teamIds, options).toArray();
 	}
 
-	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { query }: IQueryOptions<ITeam> = {}): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
+	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, query: FilterQuery<IUser> = {}): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
 		if (!isMember && !canSeeAll) {
 			return {
@@ -524,28 +524,28 @@ export class TeamService extends ServiceClass implements ITeamService {
 			};
 		}
 
-		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset, query);
+		const users = await this.Users.find({ ...query }).toArray();
+		const userIds = users.map((m) => m._id);
+		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset, { userId: { $in: userIds } });
 
 		const records = await cursor.toArray();
 		const results: ITeamMemberInfo[] = [];
 		for await (const record of records) {
-			const user = await this.Users.findOneById(record.userId);
-			if (user) {
-				results.push({
-					user: {
-						_id: user._id,
-						username: user.username,
-						name: user.name,
-						status: user.status,
-					},
-					roles: record.roles,
-					createdBy: {
-						_id: record.createdBy._id,
-						username: record.createdBy.username,
-					},
-					createdAt: record.createdAt,
-				});
-			}
+			const user = users.find((u) => u._id === record.userId);
+			results.push({
+				user: {
+					_id: user._id,
+					username: user.username,
+					name: user.name,
+					status: user.status,
+				},
+				roles: record.roles,
+				createdBy: {
+					_id: record.createdBy._id,
+					username: record.createdBy.username,
+				},
+				createdAt: record.createdAt,
+			});
 		}
 
 		return {
