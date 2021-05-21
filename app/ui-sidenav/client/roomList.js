@@ -146,6 +146,7 @@ const mergeSubRoom = (subscription) => {
 			usernames: 1,
 			topic: 1,
 			encrypted: 1,
+			jitsiTimeout: 1,
 			// autoTranslate: 1,
 			// autoTranslateLanguage: 1,
 			description: 1,
@@ -182,6 +183,7 @@ const mergeSubRoom = (subscription) => {
 		teamMain,
 		uids,
 		usernames,
+		jitsiTimeout,
 
 		v,
 		transcriptRequest,
@@ -214,6 +216,7 @@ const mergeSubRoom = (subscription) => {
 		teamMain,
 		uids,
 		usernames,
+		jitsiTimeout,
 
 		v,
 		transcriptRequest,
@@ -251,6 +254,7 @@ const mergeRoomSub = (room) => {
 		teamMain,
 		uids,
 		usernames,
+		jitsiTimeout,
 
 		v,
 		transcriptRequest,
@@ -296,6 +300,7 @@ const mergeRoomSub = (room) => {
 			responseBy,
 			priorityId,
 			livechatData,
+			jitsiTimeout,
 			ts,
 			...getLowerCaseNames(room, sub.name, sub.fname),
 		},
