@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
@@ -11,7 +12,6 @@ import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
-import { escapeHTML } from '../../../../lib/escapeHTML';
 
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 

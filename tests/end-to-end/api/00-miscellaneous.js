@@ -133,7 +133,7 @@ describe('miscellaneous', function() {
 					'messageViewMode',
 					'hideUsernames',
 					'hideRoles',
-					'hideAvatars',
+					'displayAvatars',
 					'hideFlexTab',
 					'sendOnEnter',
 					'idleTimeLimit',
@@ -141,10 +141,9 @@ describe('miscellaneous', function() {
 					'sidebarShowUnread',
 					'sidebarSortby',
 					'sidebarViewMode',
-					'sidebarHideAvatar',
+					'sidebarDisplayAvatar',
 					'sidebarGroupByType',
 					'muteFocusedConversations',
-					'sidebarShowDiscussion',
 				];
 
 				expect(res.body).to.have.property('success', true);

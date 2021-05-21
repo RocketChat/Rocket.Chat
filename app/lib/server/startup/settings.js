@@ -118,6 +118,12 @@ settings.addGroup('Accounts', function() {
 		],
 		public: true,
 	});
+	this.add('Accounts_AllowInvisibleStatusOption', true, {
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'Accounts_AllowInvisibleStatusOption',
+	});
+
 	this.section('Registration', function() {
 		this.add('Accounts_Send_Email_When_Activating', true, {
 			type: 'boolean',
@@ -349,10 +355,10 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Hide_flextab',
 		});
-		this.add('Accounts_Default_User_Preferences_hideAvatars', false, {
+		this.add('Accounts_Default_User_Preferences_displayAvatars', true, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars',
+			i18nLabel: 'Display_avatars',
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
 			type: 'boolean',
@@ -378,10 +384,10 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Sidebar_list_mode',
 		});
-		this.add('Accounts_Default_User_Preferences_sidebarHideAvatar', false, {
+		this.add('Accounts_Default_User_Preferences_sidebarDisplayAvatar', true, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars_Sidebar',
+			i18nLabel: 'Display_Avatars_Sidebar',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
@@ -501,15 +507,24 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'New_Message_Notification',
 		});
+
 		this.add('Accounts_Default_User_Preferences_muteFocusedConversations', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Mute_Focused_Conversations',
 		});
+
 		this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
+		});
+
+		this.add('Accounts_Default_User_Preferences_enableMessageParserEarlyAdoption', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Enable_message_parser_early_adoption',
+			alert: 'Enable_message_parser_early_adoption_alert',
 		});
 	});
 
