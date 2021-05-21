@@ -29,7 +29,7 @@ Migrations.add({
 
 		const users = Users.find({}, { fields: { _id: 1, 'settings.preferences': 1 } }).fetch();
 		users.forEach((user) => {
-			if (!(user.settings && user.settings.preferences && typeof user.setting.preferences !== 'object')) {
+			if (!(user.settings && user.settings.preferences && typeof user.settings.preferences !== 'object')) {
 				return;
 			}
 
