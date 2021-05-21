@@ -11,7 +11,6 @@ import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
-import { escapeHTML } from '../../../../lib/escapeHTML';
 
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 
@@ -34,13 +33,13 @@ function _sendUserEmail(subject, html, userData) {
 		subject,
 		html,
 		data: {
-			email: escapeHTML(userData.email),
-			password: escapeHTML(userData.password),
+			email: userData.email,
+			password: userData.password,
 		},
 	};
 
 	if (typeof userData.name !== 'undefined') {
-		email.data.name = escapeHTML(userData.name);
+		email.data.name = userData.name;
 	}
 
 	try {
