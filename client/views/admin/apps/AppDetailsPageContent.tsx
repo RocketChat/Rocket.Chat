@@ -1,4 +1,5 @@
-import { Box, Chip, Divider, Margins } from '@rocket.chat/fuselage';
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import { Box, Callout, Chip, Divider, Margins } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
@@ -77,6 +78,23 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 				</Box>
 			</Box>
 			<Divider />
+
+			{data.licenseValidation && (
+				<>
+					{Object.entries(data.licenseValidation.warnings).map(([key, message]) => (
+						<Callout key={key} type='warning'>
+							{message}
+						</Callout>
+					))}
+
+					{Object.entries(data.licenseValidation.errors).map(([key, message]) => (
+						<Callout key={key} type='danger'>
+							{message}
+						</Callout>
+					))}
+				</>
+			)}
+
 			<Box display='flex' flexDirection='column'>
 				<Margins block='x12'>
 					<Box fontScale='s2'>{t('Categories')}</Box>
