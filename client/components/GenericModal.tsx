@@ -1,5 +1,5 @@
-import { Box, Button, ButtonGroup, Icon, Modal, ButtonProps } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
+import React, { FC, ComponentProps } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { withDoNotAskAgain, RequiredModalProps } from './withDoNotAskAgain';
@@ -24,7 +24,7 @@ const iconMap = {
 	success: 'check',
 };
 
-const getButtonProps = (variant: VariantType): ButtonProps => {
+const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => {
 	switch (variant) {
 		case 'danger':
 			return { primary: true, danger: true };

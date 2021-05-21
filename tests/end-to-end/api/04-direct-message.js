@@ -451,10 +451,10 @@ describe('[Direct Messages]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count').and.to.be.equal(1);
+					expect(res.body).to.have.property('count').and.to.be.equal(2);
 					expect(res.body).to.have.property('offset').and.to.be.equal(0);
 					expect(res.body).to.have.property('total').and.to.be.equal(2);
-					expect(res.body).to.have.property('members').and.to.have.lengthOf(1);
+					expect(res.body).to.have.property('members').and.to.have.lengthOf(2);
 				})
 				.end(done);
 		});
@@ -471,7 +471,7 @@ describe('[Direct Messages]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('count').and.to.be.equal(1);
 					expect(res.body).to.have.property('offset').and.to.be.equal(0);
-					expect(res.body).to.have.property('total').and.to.be.equal(2);
+					expect(res.body).to.have.property('total').and.to.be.equal(1);
 					expect(res.body).to.have.property('members').and.to.have.lengthOf(1);
 				})
 				.end(done);
