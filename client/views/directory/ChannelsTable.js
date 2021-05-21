@@ -101,16 +101,17 @@ function ChannelsTable() {
 	);
 
 	const channelRoute = useRoute('channel');
+	const groupsRoute = useRoute('group');
 
 	const { value: data = { result: [] } } = useEndpointData('directory', query);
 
 	const onClick = useMemo(
-		() => (name) => (e) => {
+		() => (name, type) => (e) => {
 			if (e.type === 'click' || e.key === 'Enter') {
-				channelRoute.push({ name });
+				type === 'c' ? channelRoute.push({ name }) : groupsRoute.push({ name });
 			}
 		},
-		[channelRoute],
+		[channelRoute, groupsRoute],
 	);
 
 	const formatDate = useFormatDate();
@@ -122,8 +123,8 @@ function ChannelsTable() {
 			return (
 				<Table.Row
 					key={_id}
-					onKeyDown={onClick(name)}
-					onClick={onClick(name)}
+					onKeyDown={onClick(name, t)}
+					onClick={onClick(name, t)}
 					tabIndex={0}
 					role='link'
 					action

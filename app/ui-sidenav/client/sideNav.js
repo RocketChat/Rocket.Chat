@@ -44,7 +44,7 @@ Template.sideNav.helpers({
 	},
 
 	sidebarHideAvatar() {
-		return getUserPreference(Meteor.userId(), 'sidebarHideAvatar');
+		return !getUserPreference(Meteor.userId(), 'sidebarDisplayAvatar');
 	},
 });
 
