@@ -190,6 +190,29 @@ export class UsersRaw extends BaseRaw {
 		return agent;
 	}
 
+	async getLastAvailableAgentRouted(department, ignoreAgentId) {
+		const aggregate = [
+			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent', ...ignoreAgentId && { _id: { $ne: ignoreAgentId } } } },
+			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
+			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1 } },
+			{ $sort: { lastRoutingTime: 1, username: 1 } },
+		];
+
+		if (department) {
+			aggregate.push({ $unwind: '$departments' });
+			aggregate.push({ $match: { 'departments.departmentId': department } });
+		}
+
+		aggregate.push({ $limit: 1 });
+
+		const [agent] = await this.col.aggregate(aggregate).toArray();
+		if (agent) {
+			await this.setLastRoutingTime(agent.agentId);
+		}
+
+		return agent;
+	}
+
 	async setLastRoutingTime(userId) {
 		const result = await this.col.findAndModify(
 			{ _id: userId }
