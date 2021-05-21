@@ -81,7 +81,7 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 	const result = cursor.fetch();
 
 	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
-	const teamsMains = Promise.await(Team.getTeamsByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }));
+	const teamsMains = Promise.await(Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }));
 
 	const results = result.map((room) => {
 		if (room.teamId) {
