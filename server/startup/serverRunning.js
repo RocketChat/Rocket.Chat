@@ -33,7 +33,7 @@ Meteor.startup(function() {
 			`     MongoDB Engine: ${ mongoStorageEngine }`,
 			`           Platform: ${ process.platform }`,
 			`       Process Port: ${ process.env.PORT }`,
-			`           Site URL: ${ settings.get('Site_Url') }`,
+			`      Workspace URL: ${ settings.get('Workspace_Url') }`,
 			`   ReplicaSet OpLog: ${ oplogEnabled ? 'Enabled' : 'Disabled' }`,
 		];
 

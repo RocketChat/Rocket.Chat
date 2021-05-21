@@ -84,7 +84,7 @@ Meteor.startup(() => {
 	window.favico = favicon;
 
 	Tracker.autorun(() => {
-		const siteName = settings.get('Site_Name') ?? '';
+		const siteName = settings.get('Workspace_Name') ?? '';
 
 		const unread = Session.get('unread');
 		fireGlobalEvent('unread-changed', unread);

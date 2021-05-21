@@ -8,8 +8,8 @@ export const placeholders = {
 			return '';
 		}
 
-		str = str.replace(/\[Site_Name\]/g, settings.get('Site_Name') || '');
-		str = str.replace(/\[Site_URL\]/g, settings.get('Site_Url') || '');
+		str = str.replace(/\[Workspace_Name\]/g, settings.get('Workspace_Name') || '');
+		str = str.replace(/\[Workspace_URL\]/g, settings.get('Workspace_Url') || '');
 
 		if (data) {
 			str = str.replace(/\[name\]/g, data.name || '');

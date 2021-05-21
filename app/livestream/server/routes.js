@@ -9,7 +9,7 @@ const { OAuth2 } = google.auth;
 
 API.v1.addRoute('livestream/oauth', {
 	get: function functionName() {
-		const clientAuth = new OAuth2(settings.get('Broadcasting_client_id'), settings.get('Broadcasting_client_secret'), `${ settings.get('Site_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'));
+		const clientAuth = new OAuth2(settings.get('Broadcasting_client_id'), settings.get('Broadcasting_client_secret'), `${ settings.get('Workspace_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'));
 		const { userId } = this.queryParams;
 		const url = clientAuth.generateAuthUrl({
 			access_type: 'offline',
@@ -35,7 +35,7 @@ API.v1.addRoute('livestream/oauth/callback', {
 
 		const { userId } = JSON.parse(state);
 
-		const clientAuth = new OAuth2(settings.get('Broadcasting_client_id'), settings.get('Broadcasting_client_secret'), `${ settings.get('Site_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'));
+		const clientAuth = new OAuth2(settings.get('Broadcasting_client_id'), settings.get('Broadcasting_client_secret'), `${ settings.get('Workspace_Url') }/api/v1/livestream/oauth/callback`.replace(/\/{2}api/g, '/api'));
 
 		const ret = Meteor.wrapAsync(clientAuth.getToken.bind(clientAuth))(code);
 

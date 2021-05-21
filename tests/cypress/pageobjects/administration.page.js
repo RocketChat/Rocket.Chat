@@ -138,13 +138,13 @@ class Administration extends Page {
 
 	get generalSectionUTF8() { return browser.element('[data-qa-section="UTF8"]'); }
 
-	get generalSiteUrl() { return browser.element('[data-qa-setting-id="Site_Url"]'); }
+	get generalSiteUrl() { return browser.element('[data-qa-setting-id="Workspace_Url"]'); }
 
-	get generalSiteUrlReset() { return browser.element('[data-qa-reset-setting-id="Site_Url"]'); }
+	get generalSiteUrlReset() { return browser.element('[data-qa-reset-setting-id="Workspace_Url"]'); }
 
-	get generalSiteName() { return browser.element('[data-qa-setting-id="Site_Name"]'); }
+	get generalSiteName() { return browser.element('[data-qa-setting-id="Workspace_Name"]'); }
 
-	get generalSiteNameReset() { return browser.element('[data-qa-reset-setting-id="Site_Name"]'); }
+	get generalSiteNameReset() { return browser.element('[data-qa-reset-setting-id="Workspace_Name"]'); }
 
 	get generalLanguage() { return browser.element('[data-qa-setting-id="Language"]'); }
 

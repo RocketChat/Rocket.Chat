@@ -32,9 +32,9 @@ export const replace = function replace(str, data = {}) {
 		return '';
 	}
 	const options = {
-		Site_Name: Settings.get('Site_Name'),
-		Site_URL: Settings.get('Site_Url'),
-		Site_URL_Slash: Settings.get('Site_Url').replace(/\/?$/, '/'),
+		Workspace_Name: Settings.get('Workspace_Name'),
+		Workspace_URL: Settings.get('Workspace_Url'),
+		Workspace_URL_Slash: Settings.get('Workspace_Url').replace(/\/?$/, '/'),
 		...data.name && {
 			fname: s.strLeft(data.name, ' '),
 			lname: s.strRightBack(data.name, ' '),
@@ -47,8 +47,8 @@ export const replace = function replace(str, data = {}) {
 const nonEscapeKeys = ['room_path'];
 
 export const replaceEscaped = (str, data = {}) => replace(str, {
-	Site_Name: escapeHTML(settings.get('Site_Name')),
-	Site_Url: escapeHTML(settings.get('Site_Url')),
+	Workspace_Name: escapeHTML(settings.get('Workspace_Name')),
+	Workspace_Url: escapeHTML(settings.get('Workspace_Url')),
 	...Object.entries(data).reduce((ret, [key, value]) => {
 		ret[key] = nonEscapeKeys.includes(key) ? value : escapeHTML(value);
 		return ret;

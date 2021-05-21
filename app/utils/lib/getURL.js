@@ -68,5 +68,5 @@ export const getURL = (path, { cdn = true, full = false, cloud = false, cloud_ro
 	cloud_params,
 	_cdn_prefix: settings.get('CDN_PREFIX'),
 	_root_url_path_prefix: __meteor_runtime_config__.ROOT_URL_PATH_PREFIX,
-	_site_url: settings.get('Site_Url'),
+	_site_url: settings.get('Workspace_Url'),
 });

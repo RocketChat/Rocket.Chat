@@ -6,7 +6,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 
 function FinalStep() {
 	const t = useTranslation();
-	const siteUrl = useSetting('Site_Url');
+	const siteUrl = useSetting('Workspace_Url');
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 
 	const handleClick = () => {

@@ -22,7 +22,7 @@ const setPrometheusData = async () => {
 	metrics.info.set({
 		version: Info.version,
 		unique_id: settings.get('uniqueID'),
-		site_url: settings.get('Site_Url'),
+		site_url: settings.get('Workspace_Url'),
 	}, 1);
 
 	const sessions = Array.from(Meteor.server.sessions.values());
