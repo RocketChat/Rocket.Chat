@@ -3,7 +3,6 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
@@ -34,13 +33,13 @@ function _sendUserEmail(subject, html, userData) {
 		subject,
 		html,
 		data: {
-			email: escapeHTML(userData.email),
-			password: escapeHTML(userData.password),
+			email: userData.email,
+			password: userData.password,
 		},
 	};
 
 	if (typeof userData.name !== 'undefined') {
-		email.data.name = escapeHTML(userData.name);
+		email.data.name = userData.name;
 	}
 
 	try {
