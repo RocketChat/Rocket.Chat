@@ -871,6 +871,11 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('ul', roomId, message, user, extraData);
 	}
 
+	createUserLeaveTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('ult', roomId, message, user, extraData);
+	}
+
 	createUserRemovedWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('ru', roomId, message, user, extraData);
