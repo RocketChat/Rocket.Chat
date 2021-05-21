@@ -1599,7 +1599,7 @@ describe('[Channels]', function() {
 		});
 	});
 
-	describe.only('/channels.setAutojoin', () => {
+	describe.skip('/channels.setAutojoin', () => {
 		// let testTeam;
 		let testChannel;
 		// let testUser1;
