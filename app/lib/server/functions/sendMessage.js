@@ -10,6 +10,8 @@ import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
+const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
+
 /**
  * IMPORTANT
  *
@@ -217,7 +219,9 @@ export const sendMessage = function(user, message, room, upsert = false) {
 
 	message = callbacks.run('beforeSaveMessage', message, room);
 	try {
-		message.md = parser(message.msg);
+		if (message.msg && DISABLE_MESSAGE_PARSER !== 'true') {
+			message.md = parser(message.msg);
+		}
 	} catch (e) {
 		console.log(e); // errors logged while the parser is at experimental stage
 	}
