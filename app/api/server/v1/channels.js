@@ -10,7 +10,6 @@ import { API } from '../api';
 import { settings } from '../../../settings/server';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
-import { addUserToRoom } from '../../../lib/server';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
