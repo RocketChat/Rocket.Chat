@@ -747,7 +747,7 @@ describe('[Chat]', function() {
 							expect(res.body.message.urls[0])
 								.to.have.property('meta')
 								.to.have.property('oembedHtml')
-								.to.have.string('<iframe style="max-width: 100%"');
+								.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
 						})
 						.end(done);
 				}, 500);
