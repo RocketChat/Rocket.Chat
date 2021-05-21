@@ -13,7 +13,11 @@ import { useFormatDate } from '../../hooks/useFormatDate';
 import RoomTags from './RoomTags';
 import { useQuery } from './hooks';
 
-const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+const style = {
+	whiteSpace: 'nowrap',
+	textOverflow: 'ellipsis',
+	overflow: 'hidden',
+};
 
 function ChannelsTable() {
 	const t = useTranslation();
@@ -85,14 +89,7 @@ function ChannelsTable() {
 					</GenericTable.HeaderCell>
 				),
 				mediaQuery && (
-					<GenericTable.HeaderCell
-						key={'belongsTo'}
-						direction={sort[1]}
-						active={sort[0] === 'belongsTo'}
-						onClick={onHeaderClick}
-						sort='belongsTo'
-						style={{ width: '150px' }}
-					>
+					<GenericTable.HeaderCell key={'belongsTo'} style={{ width: '150px' }}>
 						{t('Belongs_To')}
 					</GenericTable.HeaderCell>
 				),
@@ -103,7 +100,7 @@ function ChannelsTable() {
 	const channelRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
 
-	const { value: data = { result: [] } } = useEndpointData('directory', query);
+	const { value: data = {} } = useEndpointData('directory', query);
 
 	const onClick = useMemo(
 		() => (name, type) => (e) => {
