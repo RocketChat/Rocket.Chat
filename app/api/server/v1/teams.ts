@@ -2,6 +2,7 @@ import { FilterQuery } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { Match, check } from 'meteor/check';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
@@ -213,8 +214,8 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 		const canSeeAllMembers = hasPermission(this.userId, 'view-all-teams', team.roomId);
 
 		const query = {
-			username: username ? new RegExp(username, 'i') : undefined,
-			name: name ? new RegExp(name, 'i') : undefined,
+			username: username ? new RegExp(escapeRegExp(username), 'i') : undefined,
+			name: name ? new RegExp(escapeRegExp(name), 'i') : undefined,
 			status: status ? { $in: status } : undefined,
 		} as FilterQuery<IUser>;
 
