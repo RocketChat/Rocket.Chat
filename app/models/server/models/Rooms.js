@@ -556,38 +556,40 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameOrFNameAndTypeIncludingTeamRooms(name, type, teamIds, options) {
+	findByNameOrFNameAndRoomIdsIncludingTeamRooms(text, teamIds, roomIds, options) {
+		const searchTerm = text && new RegExp(text, 'i');
+
 		const query = {
-			t: type,
-			teamMain: {
-				$exists: false,
-			},
 			$and: [
+				{ teamMain: { $exists: false } },
+				{ prid: { $exists: false } },
 				{
 					$or: [
 						{
-							teamId: {
-								$exists: false,
-							},
+							t: 'c',
+							teamId: { $exists: false },
 						},
 						{
-							teamId: {
-								$in: teamIds,
-							},
+							t: 'c',
+							teamId: { $in: teamIds },
 						},
+						...roomIds?.length > 0 ? [{
+							_id: {
+								$in: roomIds,
+							},
+						}] : [],
 					],
 				},
-				{
+				...searchTerm ? [{
 					$or: [{
-						name,
+						name: searchTerm,
 					}, {
-						fname: name,
+						fname: searchTerm,
 					}],
-				},
+				}] : [],
 			],
 		};
 
-		// do not use cache
 		return this._db.find(query, options);
 	}
 
@@ -607,7 +609,7 @@ export class Rooms extends Base {
 		};
 
 		if (text) {
-			const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
+			const regex = new RegExp(text, 'i');
 
 			query.$and.push({
 				$or: [{

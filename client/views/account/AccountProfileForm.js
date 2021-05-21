@@ -151,7 +151,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		[statusText, t],
 	);
 	const {
-		emails: [{ verified = false }],
+		emails: [{ verified = false } = { verified: false }],
 	} = user;
 
 	const canSave = !![
