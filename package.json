@@ -222,7 +222,7 @@
 		"jschardet": "^1.6.0",
 		"jsdom": "^16.4.0",
 		"jsrsasign": "^8.0.24",
-		"juice": "^5.2.0",
+		"juice": "^7.0.0",
 		"katex": "^0.11.1",
 		"ldap-escape": "^2.0.4",
 		"ldapjs": "^1.0.2",
