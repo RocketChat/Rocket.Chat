@@ -35,7 +35,7 @@ const AppsProvider: FC = ({ children }) => {
 	const [finishedLoading, setFinishedLoading] = useState<boolean>(() => false);
 
 	const ref = useRef(apps);
-	// ref.current = apps;
+	ref.current = apps;
 
 	const invalidateData = (): void => {
 		setApps((apps) => [...apps]);
