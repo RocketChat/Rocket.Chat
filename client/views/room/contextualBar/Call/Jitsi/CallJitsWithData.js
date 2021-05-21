@@ -7,7 +7,8 @@ import { useConnectionStatus } from '../../../../../contexts/ConnectionStatusCon
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useSettings } from '../../../../../contexts/SettingsContext';
-import { useUserRoom, useUser } from '../../../../../contexts/UserContext';
+import { useUser } from '../../../../../contexts/UserContext';
+import { useRoom } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import CallJitsi from './CallJitsi';
 import CallModal from './components/CallModal';
@@ -34,7 +35,7 @@ const CallJitsWithData = ({ rid }) => {
 	const { connected } = useConnectionStatus();
 	const [accessToken, setAccessToken] = useSafely(useState());
 	const [accepted, setAccepted] = useState(false);
-	const room = useUserRoom(rid);
+	const room = useRoom();
 	const setModal = useSetModal();
 	const handleClose = useTabBarClose();
 	const closeModal = useMutableCallback(() => setModal(null));
@@ -119,6 +120,12 @@ const CallJitsWithData = ({ rid }) => {
 	]);
 
 	const testAndHandleTimeout = useMutableCallback(() => {
+		if (jitsi.openNewWindow) {
+			if (jitsi.window?.closed) {
+				return jitsi.dispose();
+			}
+			return updateTimeout(rid);
+		}
 		if (new Date() - new Date(room.jitsiTimeout) > TIMEOUT) {
 			return jitsi.dispose();
 		}
@@ -137,11 +144,13 @@ const CallJitsWithData = ({ rid }) => {
 		updateTimeout(rid);
 
 		jitsi.on('HEARTBEAT', testAndHandleTimeout);
-
-		return () => {
+		const none = () => {};
+		const clear = () => {
 			jitsi.off('HEARTBEAT', testAndHandleTimeout);
 			jitsi.dispose();
 		};
+
+		return jitsi.openNewWindow ? none : clear;
 	}, [accepted, jitsi, rid, testAndHandleTimeout, updateTimeout]);
 
 	const handleYes = useMutableCallback(() => {
