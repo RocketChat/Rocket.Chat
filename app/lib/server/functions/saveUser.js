@@ -34,13 +34,13 @@ function _sendUserEmail(subject, html, userData) {
 		subject,
 		html,
 		data: {
-			email: escapeHTML(userData.email),
-			password: escapeHTML(userData.password),
+			email: userData.email,
+			password: userData.password,
 		},
 	};
 
 	if (typeof userData.name !== 'undefined') {
-		email.data.name = escapeHTML(userData.name);
+		email.data.name = userData.name;
 	}
 
 	try {
