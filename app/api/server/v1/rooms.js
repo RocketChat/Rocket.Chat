@@ -7,6 +7,8 @@ import { API } from '../api';
 import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findRoomsAvailableForTeams } from '../lib/rooms';
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
+import { Media } from '../../../../server/sdk';
+import { settings } from '../../../settings/server/index';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -120,7 +122,12 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 		};
 
 		const fileData = Meteor.runAsUser(this.userId, () => {
+			const stripExif = settings.get('Message_Attachments_Strip_Exif');
 			const fileStore = FileUpload.getStore('Uploads');
+			if (stripExif) {
+				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
+				file.fileBuffer = Promise.await(Media.stripExifFromBuffer(file.fileBuffer));
+			}
 			const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
 
 			uploadedFile.description = fields.description;
