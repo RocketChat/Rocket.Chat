@@ -104,7 +104,11 @@
 							{{> Blocks blocks=msg.blocks rid=msg.rid mid=msg._id}}
 						</div>
 					{{else}}
-						{{{body}}}
+						{{# if enableMessageParserEarlyAdoption }}
+							{{> MessageBody tokens=msg.md mentions=msg.mentions }}
+						{{else}}
+							{{{body}}}
+						{{/if}}
 					{{/if}}
 					{{#if msg.location}}
 						{{> messageLocation location=msg.location}}
@@ -123,7 +127,7 @@
 			{{#if hasAttachments}}
 				{{> reactAttachments attachments=msg.attachments file=msg.file }}
 			{{/if}}
-			
+
 
 			{{#with readReceipt}}
 				<div class="read-receipt {{readByEveryone}}">
@@ -170,7 +174,7 @@
 			{{#if msg.drid}}
 				{{> DiscussionMetric count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
 			{{/if}}
-			
+
 			{{#if $and settings.showReplyButton msg.tcount}}
 			    {{> ThreadMetric counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
 			{{/if}}
