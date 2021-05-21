@@ -31,7 +31,7 @@ const useReactModal = (Component, props) => {
 	});
 };
 
-const TeamsChannels = ({ teamId }) => {
+const TeamsChannels = ({ teamId, rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 
@@ -50,7 +50,7 @@ const TeamsChannels = ({ teamId }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const canAddExistingTeam = usePermission('add-team-channel');
+	const canAddExistingTeam = usePermission('add-team-channel', rid);
 	const addExisting = useReactModal(AddExistingModal, { teamId, reload });
 	const createNew = useReactModal(CreateChannelWithData, { teamId, reload });
 
