@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const queryStatusAgentOnline = (extraFilters = {}) => {
 	if (settings.get('Livechat_enabled_when_agent_idle') === false) {
@@ -774,7 +774,7 @@ export class Users extends Base {
 		}
 
 		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-		if (searchTerm === '') {
+		if (!searchTerm) {
 			const query = {
 				$and: [
 					{

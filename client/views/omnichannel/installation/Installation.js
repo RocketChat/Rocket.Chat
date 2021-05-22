@@ -11,7 +11,7 @@ import Wrapper from './Wrapper';
 const Installation = () => {
 	const t = useTranslation();
 
-	const siteUrl = useSetting('Site_Url').replace(/\/$/, '');
+	const siteUrl = useSetting('Site_Url')?.replace(/\/$/, '');
 
 	const installString = `<!-- Start of Rocket.Chat Livechat Script -->
 	<script type="text/javascript">

@@ -19,28 +19,28 @@ function ViewModeList() {
 		useCallback(() => saveUserPreferences({ sidebarViewMode: value }), [value]);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode', 'extended');
-	const sidebarHideAvatar = useUserPreference('sidebarHideAvatar', false);
+	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', false);
 
 	const setToExtended = useHandleChange('extended');
 	const setToMedium = useHandleChange('medium');
 	const setToCondensed = useHandleChange('condensed');
 
-	const handleChangeSidebarHideAvatar = useCallback(
-		() => saveUserPreferences({ sidebarHideAvatar: !sidebarHideAvatar }),
-		[saveUserPreferences, sidebarHideAvatar],
+	const handleChangeSidebarDisplayAvatar = useCallback(
+		() => saveUserPreferences({ sidebarDisplayAvatar: !sidebarDisplayAvatar }),
+		[saveUserPreferences, sidebarDisplayAvatar],
 	);
 
 	return (
 		<>
 			<Margins block='x8'>
 				<Box is='p' style={style} fontScale='micro'>
-					{t('View_mode')}
+					{t('Display')}
 				</Box>
 			</Margins>
 			<ul className='rc-popover__list'>
 				<Margins block='x8'>
 					<SortListItem
-						icon={'th-list'}
+						icon={'extended-view'}
 						text={t('Extended')}
 						input={
 							<RadioButton
@@ -52,7 +52,7 @@ function ViewModeList() {
 						}
 					/>
 					<SortListItem
-						icon={'list'}
+						icon={'medium-view'}
 						text={t('Medium')}
 						input={
 							<RadioButton
@@ -64,7 +64,7 @@ function ViewModeList() {
 						}
 					/>
 					<SortListItem
-						icon={'list-alt'}
+						icon={'condensed-view'}
 						text={t('Condensed')}
 						input={
 							<RadioButton
@@ -77,12 +77,12 @@ function ViewModeList() {
 					/>
 					<SortListItem
 						icon={'user-rounded'}
-						text={t('Hide_Avatars')}
+						text={t('Avatars')}
 						input={
 							<ToggleSwitch
-								onChange={handleChangeSidebarHideAvatar}
-								name='sidebarHideAvatar'
-								checked={sidebarHideAvatar}
+								onChange={handleChangeSidebarDisplayAvatar}
+								name='sidebarDisplayAvatar'
+								checked={sidebarDisplayAvatar}
 							/>
 						}
 					/>

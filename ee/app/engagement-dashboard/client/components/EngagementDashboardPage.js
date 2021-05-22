@@ -3,14 +3,14 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import Page from '../../../../../client/components/Page';
-import { UsersTab } from './UsersTab';
-import { MessagesTab } from './MessagesTab';
-import { ChannelsTab } from './ChannelsTab';
+import UsersTab from './UsersTab';
+import MessagesTab from './MessagesTab';
+import ChannelsTab from './ChannelsTab';
 
-export function EngagementDashboardPage({
+export const EngagementDashboardPage = ({
 	tab = 'users',
 	onSelectTab,
-}) {
+}) => {
 	const t = useTranslation();
 
 	const handleTabClick = useMemo(() => (onSelectTab ? (tab) => () => onSelectTab(tab) : () => undefined), [onSelectTab]);
@@ -30,4 +30,4 @@ export function EngagementDashboardPage({
 			</Box>
 		</Page.ScrollableContent>
 	</Page>;
-}
+};
