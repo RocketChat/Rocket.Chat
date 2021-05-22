@@ -791,7 +791,7 @@ export class Messages extends Base {
 		if (hiddenSysMes.length && hiddenSysMes.includes(type)) {
 			Rooms.incMsgCountById(roomId, 1);
 		} else {
-			const byUser = extraData ? extraData.u._id : user._id;
+			const byUser = extraData && extraData.u ? extraData.u._id : user._id;
 			Rooms.incMsgCountAndSetLastMessageById(roomId, 1, record.ts, settings.get('Store_Last_Message') && record);
 			Subscriptions.setAlertForRoomIdExcludingUserId(roomId, byUser);
 		}
