@@ -4,6 +4,7 @@ import React, { memo, useContext, ReactNode, useRef, ComponentProps, FC } from '
 // import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard
+import { IRoom } from '../../../../../definition/IRoom';
 import Header from '../../../../components/Header';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -16,7 +17,8 @@ const renderMenuOption: OptionRenderer = ({ label: { title, icon }, ...props }: 
 );
 
 type ToolBoxProps = {
-	className: ComponentProps<typeof Box>['className'];
+	className?: ComponentProps<typeof Box>['className'];
+	room?: IRoom;
 };
 
 const ToolBox: FC<ToolBoxProps> = ({ className }) => {
@@ -47,7 +49,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					},
 					...item,
 				},
-			];
+			] as any;
 		}),
 	);
 
@@ -79,14 +81,12 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 					icon,
 					'title': t(title),
 					className,
-					'tabId': id,
 					index,
-					'primary': id === tab?.id,
+					'info': id === tab?.id,
 					'data-toolbox': index,
 					action,
 					'key': id,
 				};
-
 				if (renderAction) {
 					return renderAction(props);
 				}

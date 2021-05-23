@@ -118,6 +118,12 @@ settings.addGroup('Accounts', function() {
 		],
 		public: true,
 	});
+	this.add('Accounts_AllowInvisibleStatusOption', true, {
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'Accounts_AllowInvisibleStatusOption',
+	});
+
 	this.section('Registration', function() {
 		this.add('Accounts_Send_Email_When_Activating', true, {
 			type: 'boolean',
@@ -163,6 +169,10 @@ settings.addGroup('Accounts', function() {
 		});
 		this.add('Accounts_BlockedUsernameList', '', {
 			type: 'string',
+		});
+		this.add('Accounts_SystemBlockedUsernameList', 'admin,administrator,system,user', {
+			type: 'string',
+			hidden: true,
 		});
 		this.add('Accounts_UseDefaultBlockedDomainsList', true, {
 			type: 'boolean',
@@ -345,10 +355,10 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Hide_flextab',
 		});
-		this.add('Accounts_Default_User_Preferences_hideAvatars', false, {
+		this.add('Accounts_Default_User_Preferences_displayAvatars', true, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars',
+			i18nLabel: 'Display_avatars',
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
 			type: 'boolean',
@@ -374,10 +384,10 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Sidebar_list_mode',
 		});
-		this.add('Accounts_Default_User_Preferences_sidebarHideAvatar', false, {
+		this.add('Accounts_Default_User_Preferences_sidebarDisplayAvatar', true, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars_Sidebar',
+			i18nLabel: 'Display_Avatars_Sidebar',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
@@ -497,15 +507,24 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'New_Message_Notification',
 		});
+
 		this.add('Accounts_Default_User_Preferences_muteFocusedConversations', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Mute_Focused_Conversations',
 		});
+
 		this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
+		});
+
+		this.add('Accounts_Default_User_Preferences_enableMessageParserEarlyAdoption', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Enable_message_parser_early_adoption',
+			alert: 'Enable_message_parser_early_adoption_alert',
 		});
 	});
 
@@ -594,6 +613,26 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true, {
 			type: 'boolean',
 			enableQuery,
+		});
+	});
+
+	this.section('Password_History', function() {
+		this.add('Accounts_Password_History_Enabled', false, {
+			type: 'boolean',
+			i18nLabel: 'Enable_Password_History',
+			i18nDescription: 'Enable_Password_History_Description',
+		});
+
+		const enableQuery = {
+			_id: 'Accounts_Password_History_Enabled',
+			value: true,
+		};
+
+		this.add('Accounts_Password_History_Amount', 5, {
+			type: 'int',
+			enableQuery,
+			i18nLabel: 'Password_History_Amount',
+			i18nDescription: 'Password_History_Amount_Description',
 		});
 	});
 });
@@ -997,6 +1036,11 @@ settings.addGroup('Message', function() {
 			type: 'boolean',
 			public: true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription',
+		});
+		this.add('Message_Attachments_Strip_Exif', false, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Message_Attachments_Strip_ExifDescription',
 		});
 	});
 	this.section('Message_Audio', function() {

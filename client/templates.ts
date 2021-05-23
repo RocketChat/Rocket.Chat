@@ -6,12 +6,25 @@ createTemplateForComponent('MessageActions', () => import('./components/Message/
 
 createTemplateForComponent('reactAttachments', () => import('./components/Message/Attachments'));
 
-createTemplateForComponent('ThreadMetric', () => import('./components/Message/Metrics/Thread'));
+createTemplateForComponent('ThreadMetric', () => import('./components/Message/Metrics/Thread'), {
+	renderContainerView: () =>
+		HTML.DIV({
+			style: 'min-height: 36px;',
+		}),
+});
 
 createTemplateForComponent(
 	'DiscussionMetric',
 	() => import('./components/Message/Metrics/Discussion'),
+	{
+		renderContainerView: () =>
+			HTML.DIV({
+				style: 'min-height: 36px;',
+			}),
+	},
 );
+
+createTemplateForComponent('MessageBody', () => import('./components/Message/Body'));
 
 createTemplateForComponent(
 	'BroadCastMetric',
@@ -46,7 +59,10 @@ createTemplateForComponent('messageLocation', () => import('./views/location/Mes
 createTemplateForComponent('sidebarHeader', () => import('./sidebar/header'));
 
 createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/index'), {
-	attachment: 'at-parent',
+	renderContainerView: () =>
+		HTML.DIV({
+			style: 'display: flex; flex: 1 1 100%;',
+		}),
 });
 
 createTemplateForComponent(

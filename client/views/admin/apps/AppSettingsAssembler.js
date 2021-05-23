@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
+import { capitalize } from '@rocket.chat/string-helpers';
 import React from 'react';
 
-import { capitalize } from '../../../lib/capitalize';
 import AppSetting from './AppSetting';
 
 const AppSettingsAssembler = ({ settings, values, handlers }) => (

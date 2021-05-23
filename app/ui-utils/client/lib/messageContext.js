@@ -13,8 +13,7 @@ import { fireGlobalEvent } from './fireGlobalEvent';
 import { actionLinks } from '../../../action-links/client';
 import { goToRoomById } from '../../../../client/lib/goToRoomById';
 
-
-const fields = { name: 1, username: 1, 'settings.preferences.showMessageInMainThread': 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
+const fields = { name: 1, username: 1, 'settings.preferences.enableMessageParserEarlyAdoption': 1, 'settings.preferences.showMessageInMainThread': 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
 
 export function messageContext({ rid } = Template.instance()) {
 	const uid = Meteor.userId();
@@ -31,6 +30,8 @@ export function messageContext({ rid } = Template.instance()) {
 		}, {
 			jump: tmid && tmid !== mid && mid && mid,
 		});
+		e.preventDefault();
+		e.stopPropagation();
 	};
 
 	const runAction = Layout.isEmbedded() ? (msg, e) => {
@@ -51,6 +52,7 @@ export function messageContext({ rid } = Template.instance()) {
 
 	const openDiscussion = (e) => {
 		e.preventDefault();
+		e.stopPropagation();
 		const { drid } = e.currentTarget.dataset;
 		goToRoomById(drid);
 	};
@@ -96,6 +98,7 @@ export function messageContext({ rid } = Template.instance()) {
 			translateLanguage: AutoTranslate.getLanguage(rid),
 			showMessageInMainThread: getUserPreference(user, 'showMessageInMainThread'),
 			autoImageLoad: getUserPreference(user, 'autoImageLoad'),
+			enableMessageParserEarlyAdoption: getUserPreference(user, 'enableMessageParserEarlyAdoption'),
 			saveMobileBandwidth: Meteor.Device.isPhone() && getUserPreference(user, 'saveMobileBandwidth'),
 			collapseMediaByDefault: getUserPreference(user, 'collapseMediaByDefault'),
 			showreply: true,

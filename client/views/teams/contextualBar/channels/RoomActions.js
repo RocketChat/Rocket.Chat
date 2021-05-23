@@ -3,9 +3,11 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
 import { roomTypes } from '../../../../../app/utils/client';
+import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
-import { useEndpoint } from '../../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
 import ConfirmationModal from './ConfirmationModal';
 
 const useReactModal = (Component, props) => {
@@ -22,16 +24,34 @@ const useReactModal = (Component, props) => {
 
 const RoomActions = ({ room, reload }) => {
 	const t = useTranslation();
-	const updateRoomEndpoint = useEndpoint('POST', 'teams.updateRoom');
-	const removeRoomEndpoint = useEndpoint('POST', 'teams.removeRoom');
-	const deleteRoomEndpoint = useEndpoint(
+	const rid = room._id;
+	const type = room.t;
+
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const canDeleteTeamChannel = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
+	const canEditTeamChannel = usePermission('edit-team-channel');
+	const canRemoveTeamChannel = usePermission('remove-team-channel');
+
+	const updateRoomEndpoint = useEndpointActionExperimental('POST', 'teams.updateRoom');
+	const removeRoomEndpoint = useEndpointActionExperimental(
+		'POST',
+		'teams.removeRoom',
+		t('Success'),
+	);
+	const deleteRoomEndpoint = useEndpointActionExperimental(
 		'POST',
 		room.t === 'c' ? 'channels.delete' : 'groups.delete',
+		t('Success'),
 	);
 
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {
-		onConfirmAction: () => {
-			removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
+		onConfirmAction: async () => {
+			try {
+				await removeRoomEndpoint({ teamId: room.teamId, roomId: room._id });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 			reload();
 		},
 		labelButton: t('Remove'),
@@ -45,8 +65,12 @@ const RoomActions = ({ room, reload }) => {
 	});
 
 	const DeleteChannelAction = useReactModal(ConfirmationModal, {
-		onConfirmAction: () => {
-			deleteRoomEndpoint({ roomId: room._id });
+		onConfirmAction: async () => {
+			try {
+				await deleteRoomEndpoint({ roomId: room._id });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 			reload();
 		},
 		labelButton: t('Delete'),
@@ -64,47 +88,55 @@ const RoomActions = ({ room, reload }) => {
 	});
 
 	const menuOptions = useMemo(() => {
-		const AutoJoinAction = () => {
-			updateRoomEndpoint({
-				roomId: room._id,
-				isDefault: !room.teamDefault,
-			});
+		const AutoJoinAction = async () => {
+			try {
+				await updateRoomEndpoint({
+					roomId: rid,
+					isDefault: !room.teamDefault,
+				});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 
 			reload();
 		};
 
 		return [
-			{
+			canEditTeamChannel && {
 				label: {
 					label: t('Team_Auto-join'),
-					icon: room.t === 'c' ? 'hash' : 'hashtag-lock',
+					icon: type === 'c' ? 'hash' : 'hashtag-lock',
 				},
 				action: AutoJoinAction,
 			},
-			{
+			canRemoveTeamChannel && {
 				label: {
 					label: t('Team_Remove_from_team'),
 					icon: 'cross',
 				},
 				action: RemoveFromTeamAction,
 			},
-			{
+			canDeleteTeamChannel && {
 				label: {
 					label: t('Delete'),
 					icon: 'trash',
 				},
 				action: DeleteChannelAction,
 			},
-		];
+		].filter(Boolean);
 	}, [
 		DeleteChannelAction,
 		RemoveFromTeamAction,
-		room._id,
-		room.t,
+		rid,
+		type,
 		room.teamDefault,
 		t,
 		updateRoomEndpoint,
 		reload,
+		dispatchToastMessage,
+		canDeleteTeamChannel,
+		canRemoveTeamChannel,
+		canEditTeamChannel,
 	]);
 
 	return (
@@ -123,7 +155,7 @@ const RoomActions = ({ room, reload }) => {
 					</Box>
 				)
 			}
-			options={menuOptions}
+			options={(canEditTeamChannel || canRemoveTeamChannel || canDeleteTeamChannel) && menuOptions}
 		/>
 	);
 };
