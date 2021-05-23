@@ -40,6 +40,4 @@ ENV DEPLOY_METHOD=docker \
     NODE_ENV=production \
     HOME=/tmp
 
-EXPOSE 3000
-
 CMD ["node", "main.js"]
