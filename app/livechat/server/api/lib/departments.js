@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
+import { callbacks } from '../../../../callbacks/server';
 
 
 export async function findDepartments({ userId, onlyMyDepartments, text, enabled, pagination: { offset, count, sort } }) {
@@ -16,7 +16,7 @@ export async function findDepartments({ userId, onlyMyDepartments, text, enabled
 	};
 
 	if (onlyMyDepartments) {
-		query = Meteor.call('livechat:applyDepartmentRestrictions', query) || query;
+		query = callbacks.run('livechat.applyDepartmentRestrictions', query) || query;
 	}
 
 	const cursor = LivechatDepartment.find(query, {
