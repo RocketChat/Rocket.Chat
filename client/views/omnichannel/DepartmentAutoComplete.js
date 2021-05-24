@@ -14,7 +14,6 @@ const query = (term = '', enabled = false, onlyMyDepartments = false) => ({
 
 const DepartmentAutoComplete = (props) => {
 	const { enabled, onlyMyDepartments = false } = props;
-	console.log(props);
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'livechat/department.autocomplete',
